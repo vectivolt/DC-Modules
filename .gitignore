@@ -3,3 +3,4 @@ dist/
 spice/generated/*.out
 *.log
 .DS_Store
+.tscircuit/
