@@ -1,0 +1,10 @@
+param,value
+n_eff,1
+g_pfm_min,0.8
+g_pfm_max,1.25
+bank_V_min_PFM,260
+bank_V_max_PFM,531.3
+bank_V_required_min,150
+bank_V_required_max,525
+gain_hole_V,150-260
+g_needed_at_150V_bus650,0.462

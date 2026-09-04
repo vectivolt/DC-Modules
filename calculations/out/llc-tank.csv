@@ -1,0 +1,15 @@
+param,value,unit,tolerance,note
+fr,140,kHz,±4%,from Lr+trim ±5% + Cr ±5%
+Lr,7,µH,±5%,3 leakage + 4 external trim
+Cr,185.4,nF,±5%,3× parallel 1200 V PP pulse film
+Lm,63,µH,±10%,gapped 3×PQ50/50
+Ln,9,,,joint solve
+Q_crit,0.28,,,at bank 518 full load
+Np=Ns,7,turns,exact,2 secondaries (bank A/B)
+dB_pp,215,mT,,at bus 830
+Pfe,13,W,,PC95 fit VERIFY
+Pcu,7.6,W,,litz AC×1.15
+Ip_rms_design,45.6,A,,envelope-flat worst
+Is_rms_per_winding,22.2,A,,two windings share section current
+Im_pk_830,11.8,A,,ZVS OK / ≤13 A ceiling
+Vcr_pk,865,V,,worst map point

@@ -1,0 +1,43 @@
+sku,mcu,resource,required,available,margin,note
+30kW,PFC,HRTIM PWM ch,3,12,9,1 PWM/phase (common-source pair), lane phase-shift via timer units
+30kW,PFC,ADC fast ch (I),3,16,13,per-lane phase currents, sampled every sw period
+30kW,PFC,ADC slow ch (V+T),10,16,6,3 phase V, VBUS+/-/mid, 4 temps — sequencer-muxed
+30kW,PFC,ADC kSPS (I loops),210,16000,15790,≥1 conv/ch/period @70 kHz
+30kW,PFC,Comparators (OC+OVP),3,8,5,1 lane-OC (3φ OR-ed ext.) + bus OVP + midpoint
+30kW,PFC,DAC (thresholds),2,4,2,
+30kW,PFC,Relay/fan/misc GPIO,8,20,12,precharge, discharge, 2 fan PWM, 2 tach, kill, LED
+30kW,LLC,HRTIM PWM ch,3,12,9,half-bridge pairs from complementary units, common PFM clock
+30kW,LLC,SR PWM ch (if SR),4,8,4,
+30kW,LLC,ADC fast ch (Ires),1,16,15,1 protection-grade resonant I per channel (per-leg via ext. OR)
+30kW,LLC,ADC slow ch,8,16,8,Vout, Iout, VbankA/B, temps
+30kW,LLC,Comparators,3,8,5,per-channel resonant OC + output OVP + spare
+30kW,LLC,CAN,2,2,0,1 ext isolated CAN2.0B + 1 internal link (CAN-FD internal)
+30kW,LLC,Relay drives + readback,8,20,12,K_SER, K_PAR_A/B, precharge, discharge + 3 sense
+60kW,PFC,HRTIM PWM ch,6,12,6,1 PWM/phase (common-source pair), lane phase-shift via timer units
+60kW,PFC,ADC fast ch (I),6,16,10,per-lane phase currents, sampled every sw period
+60kW,PFC,ADC slow ch (V+T),10,16,6,3 phase V, VBUS+/-/mid, 4 temps — sequencer-muxed
+60kW,PFC,ADC kSPS (I loops),420,16000,15580,≥1 conv/ch/period @70 kHz
+60kW,PFC,Comparators (OC+OVP),4,8,4,1 lane-OC (3φ OR-ed ext.) + bus OVP + midpoint
+60kW,PFC,DAC (thresholds),2,4,2,
+60kW,PFC,Relay/fan/misc GPIO,8,20,12,precharge, discharge, 2 fan PWM, 2 tach, kill, LED
+60kW,LLC,HRTIM PWM ch,6,12,6,half-bridge pairs from complementary units, common PFM clock
+60kW,LLC,SR PWM ch (if SR),8,8,0,
+60kW,LLC,ADC fast ch (Ires),2,16,14,1 protection-grade resonant I per channel (per-leg via ext. OR)
+60kW,LLC,ADC slow ch,8,16,8,Vout, Iout, VbankA/B, temps
+60kW,LLC,Comparators,4,8,4,per-channel resonant OC + output OVP + spare
+60kW,LLC,CAN,2,2,0,1 ext isolated CAN2.0B + 1 internal link (CAN-FD internal)
+60kW,LLC,Relay drives + readback,8,20,12,K_SER, K_PAR_A/B, precharge, discharge + 3 sense
+120kW,PFC,HRTIM PWM ch,12,12,0,1 PWM/phase (common-source pair), lane phase-shift via timer units
+120kW,PFC,ADC fast ch (I),12,16,4,per-lane phase currents, sampled every sw period
+120kW,PFC,ADC slow ch (V+T),10,16,6,3 phase V, VBUS+/-/mid, 4 temps — sequencer-muxed
+120kW,PFC,ADC kSPS (I loops),840,16000,15160,≥1 conv/ch/period @70 kHz
+120kW,PFC,Comparators (OC+OVP),6,8,2,1 lane-OC (3φ OR-ed ext.) + bus OVP + midpoint
+120kW,PFC,DAC (thresholds),2,4,2,
+120kW,PFC,Relay/fan/misc GPIO,8,20,12,precharge, discharge, 2 fan PWM, 2 tach, kill, LED
+120kW,LLC,HRTIM PWM ch,12,12,0,half-bridge pairs from complementary units, common PFM clock
+120kW,LLC,SR PWM ch (if SR),16,8,-8,SR NOT timer-driven at 120 kW → SR controller ICs or JBS (Phase 7)
+120kW,LLC,ADC fast ch (Ires),4,16,12,1 protection-grade resonant I per channel (per-leg via ext. OR)
+120kW,LLC,ADC slow ch,8,16,8,Vout, Iout, VbankA/B, temps
+120kW,LLC,Comparators,6,8,2,per-channel resonant OC + output OVP + spare
+120kW,LLC,CAN,2,2,0,1 ext isolated CAN2.0B + 1 internal link (CAN-FD internal)
+120kW,LLC,Relay drives + readback,8,20,12,K_SER, K_PAR_A/B, precharge, discharge + 3 sense

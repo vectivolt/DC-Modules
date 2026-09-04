@@ -1,0 +1,59 @@
+* vienna 3ph AVERAGED 30kW VLL=400 P=31088
+RNEUT neut 0 10meg
+
+BA a neut V=326.59863237109045*sin(6.2831853*50*time)
+RGA a ag 0.02
+LA ag al 130u ic=0
+VSA al pha DC 0
+BIA ifa 0 V=v(a,ag)*50
+RFA ifa ifaf 1k
+CFA ifaf 0 10n
+BDA da 0 V=min(max(1-abs(v(a,neut))/(v(p)/2+1)+0.0044*(64.1*abs(sin(6.2831853*50*time))-abs(v(ifaf)))+0.004*(v(p)/2-v(mid))*(v(ifaf)/(abs(v(ifaf))+0.5)),0.02),0.98)
+BSA sa 0 V=0.5*(1+v(ifaf)/(abs(v(ifaf))+0.2))
+BVA pha 0 V=v(mid)+(1-v(da))*(v(sa)*(v(p)-v(mid))-(1-v(sa))*v(mid))
+BIPA 0 p I=(1-v(da))*v(sa)*i(VSA)
+BIMA 0 mid I=v(da)*i(VSA)
+BINA 0 n I=(1-v(da))*(1-v(sa))*i(VSA)
+
+BB b neut V=326.59863237109045*sin(6.2831853*50*time-2.0943951)
+RGB b bg 0.02
+LB bg bl 130u ic=0
+VSB bl phb DC 0
+BIB ifb 0 V=v(b,bg)*50
+RFB ifb ifbf 1k
+CFB ifbf 0 10n
+BDB db 0 V=min(max(1-abs(v(b,neut))/(v(p)/2+1)+0.0044*(64.1*abs(sin(6.2831853*50*time-2.0943951))-abs(v(ifbf)))+0.004*(v(p)/2-v(mid))*(v(ifbf)/(abs(v(ifbf))+0.5)),0.02),0.98)
+BSB sb 0 V=0.5*(1+v(ifbf)/(abs(v(ifbf))+0.2))
+BVB phb 0 V=v(mid)+(1-v(db))*(v(sb)*(v(p)-v(mid))-(1-v(sb))*v(mid))
+BIPB 0 p I=(1-v(db))*v(sb)*i(VSB)
+BIMB 0 mid I=v(db)*i(VSB)
+BINB 0 n I=(1-v(db))*(1-v(sb))*i(VSB)
+
+BC c neut V=326.59863237109045*sin(6.2831853*50*time+2.0943951)*(1-u(time-0.025))
+RGC c cg 0.02
+LC cg cl 130u ic=0
+VSC cl phc DC 0
+BIC ifc 0 V=v(c,cg)*50
+RFC ifc ifcf 1k
+CFC ifcf 0 10n
+BDC dc 0 V=min(max(1-abs(v(c,neut))/(v(p)/2+1)+0.0044*(64.1*abs(sin(6.2831853*50*time+2.0943951))-abs(v(ifcf)))+0.004*(v(p)/2-v(mid))*(v(ifcf)/(abs(v(ifcf))+0.5)),0.02),0.98)
+BSC sc 0 V=0.5*(1+v(ifcf)/(abs(v(ifcf))+0.2))
+BVC phc 0 V=v(mid)+(1-v(dc))*(v(sc)*(v(p)-v(mid))-(1-v(sc))*v(mid))
+BIPC 0 p I=(1-v(dc))*v(sc)*i(VSC)
+BIMC 0 mid I=v(dc)*i(VSC)
+BINC 0 n I=(1-v(dc))*(1-v(sc))*i(VSC)
+CP p mid 0.00235 ic=400
+CN mid n 0.00235 ic=400
+RBALP p mid 100k
+RBALN mid n 100k
+VN n 0 DC 0
+RLOAD p n 20.59
+.tran 5u 0.05 0 2u uic
+.option method=gear reltol=1e-3 abstol=1e-6 vntol=1u itl4=100
+.control
+set filetype=ascii
+run
+wrdata pfc-400-phloss.out i(VSA) i(VSB) i(VSC) v(p) v(mid) v(pha)
+quit
+.endc
+.end

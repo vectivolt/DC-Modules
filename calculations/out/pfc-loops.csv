@@ -1,0 +1,4 @@
+loop,Kp,Ki,fc_Hz,PM_deg,GM_dB,method
+current,0.00439,11.72,2976,50.2,8.7,analytical(with delay)
+current,0.00439,11.72,2924,50.6,,ngspice AC + delay correction
+voltage,0.2059,9.049,15,65,,analytical (placement)

@@ -1,0 +1,32 @@
+* generated DPT SIC1200_23R V=935.0000000000001 I=25 Rgon=4.7 Rgoff=6.8 Lloop=1e-8
+.include ../models/sic-behavioral.lib
+VBUS bus 0 DC 935.0000000000001
+CDC bus 0 100u ic=935.0000000000001
+LLP bus kd 1e-8
+MFW kd gfw swk SIC1200_23R
+LFWK swk sw 1.5n
+RGFW gfw fwref 4.7
+VGFW fwref swk -4
+RSN sw nsn 10
+CSN nsn 0 470p
+LLD kd sw 0.00006 ic=0
+VSNS sw d1 0
+LD d1 d 8n
+M1 d g ks SIC1200_23R
+LKS ks s 1.5n
+LSP s 0 6n
+VDRV drv ks PWL(0 -4 1e-7 -4 1.05e-7 18 0.00000170427807486631 18 0.00000170927807486631 -4 0.00000320427807486631 -4 0.00000320927807486631 18 0.0000040042780748663095 18 0.0000040092780748663095 -4)
+RGN drv gon 4.7
+DGN gon g DIDEAL
+DGF g goff DIDEAL
+RGF goff drv 6.8
+.model DIDEAL D(Is=1e-3 N=0.1)
+.tran 0.25n 0.00000460427807486631 uic
+.option method=gear reltol=1e-3 abstol=1u vntol=1m
+.control
+set filetype=ascii
+run
+wrdata dpt-llc1200-tuned-vhi.out v(d,ks) v(g,ks) i(VSNS) v(gfw,swk)
+quit
+.endc
+.end

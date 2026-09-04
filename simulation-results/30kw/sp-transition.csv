@@ -1,0 +1,6 @@
+# parallel-closure mismatch study; CBANK=1.5mF/bank; relay 2mOhm + 50nH loop; make-rating 300 A (HFE82-class, VERIFY)
+dV_V,Ipk_A,I2t_A2s,t_settle_ms,verdict_vs_300A
+2,205,0.76,1.16,OK
+5,512,4.76,1.2,EXCEEDS make rating
+10,1023,19.05,1.24,EXCEEDS make rating
+20,2047,76.21,1.28,EXCEEDS make rating

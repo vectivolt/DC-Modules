@@ -1,0 +1,306 @@
+// cells.tsx — parameterized power cells shared by 30/60/120 kW boards (§7).
+// Footprint dimensions: TO-247 pitch 2.54 mm, hole 1.8/pad 2.4 (VERIFY vs vendor drawing before fab —
+// §40 rule; these are industry-standard TO-247 dimensions). PQ50 bobbin 2×6 pins @4 mm pitch, rows
+// 40 mm apart (VERIFY vs bobbin drawing). Snap-in caps 10 mm pitch, 2.0 mm holes. HFE82-class relay
+// modeled as 4× M4-stud plated holes (VERIFY). All values from frozen design (docs/assumptions.md).
+
+const th = (hints: string[], x: number, y: number, d = 1.8, od = 2.4) =>
+  hints.map((h, i) => (
+    <platedhole key={h} portHints={[h]} pcbX={x + i * 2.54} pcbY={y} holeDiameter={`${d}mm`} outerDiameter={`${od}mm`} shape="circle" />
+  ));
+
+export const TO247_4 = () => (
+  <footprint>
+    {th(["pin1", "pin2", "pin3", "pin4"], -3.81, 0)}
+  </footprint>
+);
+export const TO247_2 = () => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-2.72} pcbY={0} holeDiameter="1.8mm" outerDiameter="2.4mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={2.72} pcbY={0} holeDiameter="1.8mm" outerDiameter="2.4mm" shape="circle" />
+  </footprint>
+);
+// T79 sendust choke: 4× 2.5 mm holes (2 in, 2 out, doubled for current), 80 mm body
+export const ChokeFP = () => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-30} pcbY={-35} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
+    <platedhole portHints={["pin1_b"]} pcbX={-24} pcbY={-35} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={30} pcbY={-35} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
+    <platedhole portHints={["pin2_b"]} pcbX={24} pcbY={-35} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
+  </footprint>
+);
+// PQ50 3-stack transformer: 2 rows × 6 pins, 4 mm pitch, rows 40 mm apart
+export const XfmrFP = () => (
+  <footprint>
+    {["p1", "p2", "sh", "nc1", "nc2", "nc3"].map((h, i) => (
+      <platedhole key={h} portHints={[h]} pcbX={-10 + i * 4} pcbY={-20} holeDiameter="1.6mm" outerDiameter="2.6mm" shape="circle" />
+    ))}
+    {["s1a", "s1b", "s2a", "s2b", "nc4", "nc5"].map((h, i) => (
+      <platedhole key={h} portHints={[h]} pcbX={-10 + i * 4} pcbY={20} holeDiameter="1.6mm" outerDiameter="2.6mm" shape="circle" />
+    ))}
+  </footprint>
+);
+export const SnapInFP = () => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-5} pcbY={0} holeDiameter="2.1mm" outerDiameter="3.6mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={5} pcbY={0} holeDiameter="2.1mm" outerDiameter="3.6mm" shape="circle" />
+  </footprint>
+);
+export const RelayFP = () => (
+  <footprint>
+    {["coil1", "coil2"].map((h, i) => (
+      <platedhole key={h} portHints={[h]} pcbX={-8 + i * 16} pcbY={-12} holeDiameter="1.5mm" outerDiameter="2.5mm" shape="circle" />
+    ))}
+    {["a", "b"].map((h, i) => (
+      <platedhole key={h} portHints={[h]} pcbX={-10 + i * 20} pcbY={8} holeDiameter="4.2mm" outerDiameter="8mm" shape="circle" />
+    ))}
+  </footprint>
+);
+export const StudFP = () => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={0} pcbY={0} holeDiameter="8.5mm" outerDiameter="16mm" shape="circle" />
+  </footprint>
+);
+export const TrimFP = () => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-15} pcbY={0} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={15} pcbY={0} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
+  </footprint>
+);
+export const FilmBoxFP = (pitch = 27.5) => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-pitch / 2} pcbY={0} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={pitch / 2} pcbY={0} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
+  </footprint>
+);
+
+// ---------------- Vienna switch cell: common-source pair + driver + gate network + clamp (E4/E5)
+export const ViennaSwitchCell = ({ id, ph, mid, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id: string; ph: string; mid: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`vsc${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={0} schY={0} />
+    <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={11} pcbY={0} schX={2} schY={0} />
+    <chip name={`U${id}D`} footprint="soic16" pinLabels={{ pin1: "VIA", pin2: "GNDA", pin3: "PWM", pin4: "EN", pin5: "FLT", pin6: "RDY", pin7: "DESAT_A", pin8: "NC1", pin9: "CLAMP", pin10: "VEE", pin11: "OUTL", pin12: "OUTH", pin13: "VCC2", pin14: "KSRC", pin15: "DST", pin16: "NC2" }} pcbX={5.5} pcbY={14} schX={1} schY={2} />
+    <resistor name={`R${id}GA`} resistance="4.7" footprint="1206" pcbX={1} pcbY={7} schX={-(0.6)} schY={1} />
+    <resistor name={`R${id}GB`} resistance="4.7" footprint="1206" pcbX={10} pcbY={7} schX={2.6} schY={1} />
+    <resistor name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={5.5} pcbY={7} schX={1} schY={0.6} />
+    {/* RC snubber + RCD clamp per DPT-final */}
+    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={18} pcbY={3} schX={3.4} schY={0} />
+    <capacitor name={`C${id}SN`} capacitance="470pF" footprint="1812" pcbX={18} pcbY={8} schX={3.4} schY={0.8} />
+    <trace from={`.Q${id}A > .S`} to={`.Q${id}B > .S`} />
+    <trace from={`.Q${id}A > .KS`} to={`.U${id}D > .KSRC`} />
+    <trace from={`.Q${id}A > .G`} to={`.R${id}GA > .pin2`} />
+    <trace from={`.R${id}GA > .pin1`} to={`.U${id}D > .OUTH`} />
+    <trace from={`.Q${id}B > .G`} to={`.R${id}GB > .pin2`} />
+    <trace from={`.R${id}GB > .pin1`} to={`.U${id}D > .OUTH`} />
+    <trace from={`.R${id}GS > .pin1`} to={`.Q${id}A > .G`} />
+    <trace from={`.R${id}GS > .pin2`} to={`.Q${id}A > .KS`} />
+    <trace from={`.Q${id}A > .D`} to={ph} />
+    <trace from={`.Q${id}B > .D`} to={mid} />
+    <trace from={`.R${id}SN > .pin1`} to={ph} />
+    <trace from={`.R${id}SN > .pin2`} to={`.C${id}SN > .pin1`} />
+    <trace from={`.C${id}SN > .pin2`} to={mid} />
+  </group>
+);
+
+// ---------------- Vienna phase: choke + switch cell + 2 boost JBS + RCD clamps to rails
+export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id: string; ac: string; dcp: string; dcn: string; mid: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`vp${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    <chip name={`L${id}`} footprint={<ChokeFP />} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={0} pcbY={62} schX={0} schY={-(2)} />
+    <ViennaSwitchCell id={id} ph={`net.PH${id}`} mid={mid} pcbX={-12} pcbY={0} schX={0} schY={0} />
+    <diode name={`D${id}T`} footprint={<TO247_2 />} pcbX={40} pcbY={0} schX={1} schY={-(1)} />
+    <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={40} pcbY={12} schX={1} schY={1.6} />
+    {/* RCD clamp (shared per phase node): D + 100n + 470R to DC+ */}
+    <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={58} pcbY={0} schX={2} schY={-(2)} />
+    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(15)} pcbX={58} pcbY={14} schX={2.8} schY={-(2)} />
+    <resistor name={`R${id}C`} resistance="470" footprint="2512" pcbX={58} pcbY={22} schX={3.6} schY={-(2)} />
+    <trace from={ac} to={`.L${id} > .A`} />
+    <trace from={`.L${id} > .B`} to={`net.PH${id}`} />
+    <trace from={`.D${id}T > .anode`} to={`net.PH${id}`} />
+    <trace from={`.D${id}T > .cathode`} to={dcp} />
+    <trace from={`.D${id}B > .cathode`} to={`net.PH${id}`} />
+    <trace from={`.D${id}B > .anode`} to={dcn} />
+    <trace from={`.D${id}C > .anode`} to={`net.PH${id}`} />
+    <trace from={`.D${id}C > .cathode`} to={`.C${id}C > .pin1`} />
+    <trace from={`.C${id}C > .pin2`} to={dcp} />
+    <trace from={`.R${id}C > .pin1`} to={`.C${id}C > .pin1`} />
+    <trace from={`.R${id}C > .pin2`} to={dcp} />
+  </group>
+);
+
+// ---------------- LLC half-bridge leg (2× 1200 V SiC + drivers + snubber)
+export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id: string; bus: string; gnd: string; sw: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`leg${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    <chip name={`Q${id}H`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={0} schY={0} />
+    <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={11} pcbY={0} schX={0} schY={1.6} />
+    <chip name={`U${id}H`} footprint="soic16" pinLabels={{ pin1: "VIA", pin2: "GNDA", pin3: "PWM", pin4: "EN", pin5: "FLT", pin6: "RDY", pin7: "DESAT_A", pin8: "NC1", pin9: "CLAMP", pin10: "VEE", pin11: "OUTL", pin12: "OUTH", pin13: "VCC2", pin14: "KSRC", pin15: "DST", pin16: "NC2" }} pcbX={0} pcbY={14} schX={-(1)} schY={0} />
+    <chip name={`U${id}L`} footprint="soic16" pinLabels={{ pin1: "VIA", pin2: "GNDA", pin3: "PWM", pin4: "EN", pin5: "FLT", pin6: "RDY", pin7: "DESAT_A", pin8: "NC1", pin9: "CLAMP", pin10: "VEE", pin11: "OUTL", pin12: "OUTH", pin13: "VCC2", pin14: "KSRC", pin15: "DST", pin16: "NC2" }} pcbX={11} pcbY={14} schX={-(1)} schY={1.6} />
+    <resistor name={`R${id}GH`} resistance="4.7" footprint="1206" pcbX={1} pcbY={7} schX={-(0.5)} schY={0.5} />
+    <resistor name={`R${id}GL`} resistance="4.7" footprint="1206" pcbX={12} pcbY={7} schX={-(0.5)} schY={2.1} />
+    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={20} pcbY={3} schX={1} schY={0.8} />
+    <capacitor name={`C${id}SN`} capacitance="470pF" footprint="1812" pcbX={20} pcbY={9} schX={1.8} schY={0.8} />
+    <trace from={`.Q${id}H > .D`} to={bus} />
+    <trace from={`.Q${id}H > .S`} to={sw} />
+    <trace from={`.Q${id}L > .D`} to={sw} />
+    <trace from={`.Q${id}L > .S`} to={gnd} />
+    <trace from={`.R${id}GH > .pin1`} to={`.U${id}H > .OUTH`} />
+    <trace from={`.R${id}GH > .pin2`} to={`.Q${id}H > .G`} />
+    <trace from={`.R${id}GL > .pin1`} to={`.U${id}L > .OUTH`} />
+    <trace from={`.R${id}GL > .pin2`} to={`.Q${id}L > .G`} />
+    <trace from={`.U${id}H > .KSRC`} to={`.Q${id}H > .KS`} />
+    <trace from={`.U${id}L > .KSRC`} to={`.Q${id}L > .KS`} />
+    <trace from={`.R${id}SN > .pin1`} to={sw} />
+    <trace from={`.R${id}SN > .pin2`} to={`.C${id}SN > .pin1`} />
+    <trace from={`.C${id}SN > .pin2`} to={gnd} />
+  </group>
+);
+
+// ---------------- Resonant tank + transformer section + dual JBS bridges
+export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id: string; sw: string; star: string; bkAp: string; bkAn: string; bkBp: string; bkBn: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`sec${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    {[0, 1, 2, 3].map(i => (
+      <capacitor key={i} name={`C${id}R${i}`} capacitance="44nF" footprint={FilmBoxFP(27.5)} pcbX={0} pcbY={i * 8 - 12} schX={i * 0.5 - 1} schY={-(1)} />
+    ))}
+    <chip name={`L${id}T`} footprint={<TrimFP />} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={12} pcbY={28} schX={0} schY={-(0.4)} />
+    <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ p1: "P1", p2: "P2", sh: "SH", s1a: "S1A", s1b: "S1B", s2a: "S2A", s2b: "S2B", nc1: "NC1", nc2: "NC2", nc3: "NC3", nc4: "NC4", nc5: "NC5" }} pcbX={0} pcbY={70} schX={0} schY={1} />
+    {["A1", "A2", "A3", "A4"].map((d, i) => (
+      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-14 + i * 9} pcbY={105} schX={-(1 + i * 0.5)} schY={2.6} />
+    ))}
+    {["B1", "B2", "B3", "B4"].map((d, i) => (
+      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-14 + i * 9} pcbY={120} schX={-(1 + i * 0.5)} schY={3.6} />
+    ))}
+    {/* tank: sw -> Cr(×4 parallel) -> Ltrim -> P1; P2 -> star */}
+    {[0, 1, 2, 3].map(i => (
+      <trace key={`t${i}`} from={sw} to={`.C${id}R${i} > .pin1`} />
+    ))}
+    {[0, 1, 2, 3].map(i => (
+      <trace key={`u${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .A`} />
+    ))}
+    <trace from={`.L${id}T > .B`} to={`.T${id} > .P1`} />
+    <trace from={`.T${id} > .P2`} to={star} />
+    {/* bridge A: S1A/S1B into bank A */}
+    <trace from={`.D${id}A1 > .anode`} to={`.T${id} > .S1A`} />
+    <trace from={`.D${id}A1 > .cathode`} to={bkAp} />
+    <trace from={`.D${id}A2 > .cathode`} to={`.T${id} > .S1A`} />
+    <trace from={`.D${id}A2 > .anode`} to={bkAn} />
+    <trace from={`.D${id}A3 > .anode`} to={`.T${id} > .S1B`} />
+    <trace from={`.D${id}A3 > .cathode`} to={bkAp} />
+    <trace from={`.D${id}A4 > .cathode`} to={`.T${id} > .S1B`} />
+    <trace from={`.D${id}A4 > .anode`} to={bkAn} />
+    <trace from={`.D${id}B1 > .anode`} to={`.T${id} > .S2A`} />
+    <trace from={`.D${id}B1 > .cathode`} to={bkBp} />
+    <trace from={`.D${id}B2 > .cathode`} to={`.T${id} > .S2A`} />
+    <trace from={`.D${id}B2 > .anode`} to={bkBn} />
+    <trace from={`.D${id}B3 > .anode`} to={`.T${id} > .S2B`} />
+    <trace from={`.D${id}B3 > .cathode`} to={bkBp} />
+    <trace from={`.D${id}B4 > .cathode`} to={`.T${id} > .S2B`} />
+    <trace from={`.D${id}B4 > .anode`} to={bkBn} />
+  </group>
+);
+
+// ---------------- Split DC link (n× per half) + balance + sense dividers
+export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id?: string; nPerHalf: number; dcp: string; dcn: string; mid: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`dclink${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    {Array.from({ length: nPerHalf }, (_, i) => (
+      <capacitor key={`t${i}`} name={`CDT${id}${i}`} capacitance="470uF" footprint={<SnapInFP />} pcbX={i * 40} pcbY={0} schX={i * 0.5} schY={0} />
+    ))}
+    {Array.from({ length: nPerHalf }, (_, i) => (
+      <capacitor key={`b${i}`} name={`CDB${id}${i}`} capacitance="470uF" footprint={<SnapInFP />} pcbX={i * 40} pcbY={-45} schX={i * 0.5} schY={1.4} />
+    ))}
+    <resistor name={`RBALT${id}`} resistance="100k" footprint="2512" pcbX={nPerHalf * 40} pcbY={0} schX={5.4} schY={0} />
+    <resistor name={`RBALB${id}`} resistance="100k" footprint="2512" pcbX={nPerHalf * 40} pcbY={-45} schX={5.4} schY={1.4} />
+    {Array.from({ length: nPerHalf }, (_, i) => [
+      <trace key={`tt${i}`} from={`.CDT${id}${i} > .pin1`} to={dcp} />,
+      <trace key={`tm${i}`} from={`.CDT${id}${i} > .pin2`} to={mid} />,
+      <trace key={`bm${i}`} from={`.CDB${id}${i} > .pin1`} to={mid} />,
+      <trace key={`bn${i}`} from={`.CDB${id}${i} > .pin2`} to={dcn} />,
+    ])}
+    <trace from={`.RBALT${id} > .pin1`} to={dcp} />
+    <trace from={`.RBALT${id} > .pin2`} to={mid} />
+    <trace from={`.RBALB${id} > .pin1`} to={mid} />
+    <trace from={`.RBALB${id} > .pin2`} to={dcn} />
+  </group>
+);
+
+// ---------------- S/P relay matrix with pre-insertion (E12) + K_OUT + discharge
+export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { bkAp: string; bkAn: string; bkBp: string; bkBn: string; outp: string; outn: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name="spmatrix" pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    {["KSER", "KPARA", "KPARB", "KOUT"].map((k, i) => (
+      <chip key={k} name={k} footprint={<RelayFP />} pinLabels={{ coil1: "C1", coil2: "C2", a: "A", b: "B" }} pcbX={i * 30} pcbY={0} schX={i * 1.6} schY={0} />
+    ))}
+    {["KPREA", "KPREB"].map((k, i) => (
+      <chip key={k} name={k} footprint={<RelayFP />} pinLabels={{ coil1: "C1", coil2: "C2", a: "A", b: "B" }} pcbX={i * 34} pcbY={32} schX={i * 1.6} schY={1.6} />
+    ))}
+    <resistor name="RPREA" resistance="10" footprint="2512" pcbX={70} pcbY={32} schX={3.4} schY={1.6} />
+    <resistor name="RPREB" resistance="10" footprint="2512" pcbX={82} pcbY={32} schX={4} schY={1.6} />
+    {/* series: bankA- to bankB+ ; parallel: A+//B+ and A-//B- ; out: A+ (par) / A+..B- (ser) */}
+    <trace from=".KSER > .A" to={bkAn} />
+    <trace from=".KSER > .B" to={bkBp} />
+    <trace from=".KPARA > .A" to={bkAp} />
+    <trace from=".KPARA > .B" to={bkBp} />
+    <trace from=".KPARB > .A" to={bkAn} />
+    <trace from=".KPARB > .B" to={bkBn} />
+    <trace from=".KPREA > .A" to={bkAp} />
+    <trace from=".KPREA > .B" to=".RPREA > .pin1" />
+    <trace from=".RPREA > .pin2" to={bkBp} />
+    <trace from=".KPREB > .A" to={bkAn} />
+    <trace from=".KPREB > .B" to=".RPREB > .pin1" />
+    <trace from=".RPREB > .pin2" to={bkBn} />
+    <trace from=".KOUT > .A" to={bkAp} />
+    <trace from=".KOUT > .B" to={outp} />
+    <trace from={bkBn} to={outn} />
+  </group>
+);
+
+// ---------------- HV sense divider chain (8× 1206 in series for creepage, §19/§33)
+export const HvDivider = ({ id, hv, lv, gnd, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id: string; hv: string; lv: string; gnd: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`hvd${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    {Array.from({ length: 8 }, (_, i) => (
+      <resistor key={i} name={`R${id}D${i}`} resistance="475k" footprint="1206" pcbX={i * 5} pcbY={0} schX={i * 0.4} schY={0} />
+    ))}
+    <resistor name={`R${id}DL`} resistance="6.8k" footprint="0805" pcbX={42} pcbY={0} schX={3.4} schY={0} />
+    <capacitor name={`C${id}DF`} capacitance="10nF" footprint="0805" pcbX={42} pcbY={5} schX={3.4} schY={0.5} />
+    <trace from={hv} to={`.R${id}D0 > .pin1`} />
+    {Array.from({ length: 7 }, (_, i) => (
+      <trace key={i} from={`.R${id}D${i} > .pin2`} to={`.R${id}D${i + 1} > .pin1`} />
+    ))}
+    <trace from={`.R${id}D7 > .pin2`} to={lv} />
+    <trace from={`.R${id}DL > .pin1`} to={lv} />
+    <trace from={`.R${id}DL > .pin2`} to={gnd} />
+    <trace from={`.C${id}DF > .pin1`} to={lv} />
+    <trace from={`.C${id}DF > .pin2`} to={gnd} />
+  </group>
+);
+
+// ---------------- MCU (custom LQFP100 generated) + decoupling
+export const Lqfp100 = () => (
+  <footprint>
+    {Array.from({ length: 100 }, (_, i) => {
+      const side = Math.floor(i / 25), k = i % 25, off = -6 + k * 0.5;
+      const pos = side === 0 ? { x: -7.6, y: off, w: 1.2, h: 0.3 } : side === 1 ? { x: off, y: -7.6, w: 0.3, h: 1.2 }
+        : side === 2 ? { x: 7.6, y: -off, w: 1.2, h: 0.3 } : { x: -off, y: 7.6, w: 0.3, h: 1.2 };
+      return <smtpad key={i} portHints={[`pin${i + 1}`]} pcbX={pos.x} pcbY={pos.y} width={`${pos.w}mm`} height={`${pos.h}mm`} shape="rect" />;
+    })}
+  </footprint>
+);
+export const ControlMcu = ({ id, pcbX = 0, pcbY = 0, schX = 0, schY = 0 }:
+  { id: string; pcbX?: number; pcbY?: number; schX?: number; schY?: number }) => (
+  <group name={`mcu${id}`} pcbX={pcbX} pcbY={pcbY} schX={schX} schY={schY}>
+    <chip name={`U${id}`} footprint={<Lqfp100 />} pcbX={0} pcbY={0} schX={0} schY={0} />
+    {[0, 1, 2, 3].map(i => (
+      <capacitor key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 6} pcbY={9} schX={i * 0.4 - 1} schY={1.6} />
+    ))}
+    {[0, 1, 2, 3].map(i => [
+      <trace key={`p${i}`} from={`.C${id}D${i} > .pin1`} to="net.V3P3" />,
+      <trace key={`g${i}`} from={`.C${id}D${i} > .pin2`} to="net.DGND" />,
+    ])}
+    <trace from={`.U${id} > .pin11`} to="net.V3P3" />
+    <trace from={`.U${id} > .pin10`} to="net.DGND" />
+  </group>
+);

@@ -1,0 +1,54 @@
+* sic-behavioral.lib — Behavioral SiC device models for ngspice (VDMOS + JBS diodes)
+* ============================ PROVENANCE / LIMITATIONS =============================
+* These are BEHAVIORAL models built for this project. They are fits to headline
+* datasheet-class figures of the named candidate parts; they are NOT vendor-supplied
+* models. Vendor PSpice models for BASiC/SiChain are encrypted or PSpice-only and do
+* not run in ngspice (documented incompatibility per project §8). Original vendor
+* models, when obtained under NDA at RFQ, are to be stored in spice/models/vendor/
+* (empty until then) and used to re-calibrate these fits.
+*   Fit targets (25 C):
+*     SIC750_10R  ~ BASiC B3M010C075Z class: 750 V, Rds_on ~10 mOhm @ Vgs 18 V,
+*                   Ciss ~6.5 nF, Coss(800V-ish scaled to 425 V) ~ 400 pF, Cgd nonlinear,
+*                   Vth ~3.2 V (min 2.5), internal Rg ~1.2 Ohm
+*     SIC1200_23R ~ SiChain SG2M023120LJ class: 1200 V, ~23 mOhm, Ciss ~3.4 nF,
+*                   Vth ~3.5 V, internal Rg ~2 Ohm
+*     JBS1200_40  ~ 1200 V/40 A SiC JBS: Vf 1.35 V hot / 1.5 V 25C @40 A, Cj0 ~1.1 nF
+*     JBS1200_20  ~ 1200 V/20 A SiC JBS secondary rectifier
+*   Temperature: parameters are 25 C. VDMOS tempco is NOT calibrated — thermal loss
+*   derating handled analytically in calculations/pfc + thermal (documented limitation).
+*   Body-diode reverse recovery: SiC ~ negligible; VDMOS body diode used for 3rd-quadrant.
+* ==================================================================================
+
+* 750 V / 10 mOhm class (PFC switch). Rds = Rd + channel ~ 10 mOhm total @ Vgs=18.
+.model SIC750_10R VDMOS(
++ Vto=3.2 Kp=140 Lambda=0.002
++ Rd=0.0075 Rs=0.0008 Rg=1.2
++ Cgdmax=2.2n Cgdmin=60p a=0.6
++ Cgs=5.5n
++ Cjo=8.7n Vj=0.9 m=0.5
++ Is=1e-10 N=1.3 Rb=0.004
++ mtriode=0.4)
+
+* 1200 V / 23 mOhm class (LLC primary)
+.model SIC1200_23R VDMOS(
++ Vto=3.5 Kp=70 Lambda=0.002
++ Rd=0.019 Rs=0.0012 Rg=2.0
++ Cgdmax=1.1n Cgdmin=45p a=0.55
++ Cgs=3.0n
++ Cjo=3.4n Vj=0.9 m=0.5
++ Is=1e-10 N=1.3 Rb=0.009
++ mtriode=0.4)
+
+* 1200 V / 40 A SiC JBS (PFC boost diode): Vf ~1.5 V @ 40 A 25C
+.model JBS1200_40 D(Is=2e-12 N=1.05 Rs=0.011 Cjo=1.1n Vj=1.0 m=0.48 Eg=3.26 Xti=2 Bv=1350 Ibv=1m)
+
+* 1200 V / 20 A SiC JBS (secondary rectifier)
+.model JBS1200_20 D(Is=1e-12 N=1.05 Rs=0.022 Cjo=0.6n Vj=1.0 m=0.48 Eg=3.26 Xti=2 Bv=1350 Ibv=1m)
+
+* 750 V / ~30 mOhm class (optional secondary SR / smaller positions)
+.model SIC750_30R VDMOS(
++ Vto=3.2 Kp=55 Lambda=0.002
++ Rd=0.024 Rs=0.002 Rg=2.5
++ Cgdmax=0.9n Cgdmin=15p a=0.6
++ Cgs=2.2n Cjo=1.2n Vj=0.9 m=0.55
++ Is=1e-10 N=1.3 Rb=0.012 mtriode=0.4)

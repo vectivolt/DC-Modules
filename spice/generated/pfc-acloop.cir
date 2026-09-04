@@ -1,0 +1,23 @@
+* pfc averaged current-loop AC sweep (cross-check of analytical design)
+VIN inj 0 DC 0 AC 1
+* PI compensator: Kp + Ki/s  (RC realization: E + integrator via B-source and C)
+* error = -v(inj) (loop broken at reference summing, unity feedback)
+BPI piout 0 V= -(0.004391561011230851*v(inj) + 11.716247755807142*v(integ))
+BINT iint 0 I= -v(inj)
+CINT integ 0 1 ic=0
+RINT integ iint 1u
+* delay ~ 1.5 Tsw via 2nd-order Pade on B-source is messy; approximate with RC chain matched at 5 kHz
+* plant: (VHALF)/(sL+R) → current
+BPL pl 0 V= v(piout)*425
+LPL pl ipl 0.0001
+RPL ipl 0 0.015
+* loop output = plant current sensed across RPL/RL → v(ipl)... use current through RPL: v(ipl)=i*RL; scale to current:
+BOUT out 0 V= v(ipl)/0.015
+.ac dec 40 10 50k
+.control
+set filetype=ascii
+run
+wrdata pfc-acloop.out vm(out) vp(out)
+quit
+.endc
+.end

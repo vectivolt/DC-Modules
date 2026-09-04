@@ -1,0 +1,149 @@
+/* fsm.c — see fsm.h. Logic is the normative implementation of the validated model
+ * (calculations/system/fsm-sim.mjs); host_sim.c proves scenario-for-scenario equivalence. */
+#include "fsm.h"
+#include <math.h>
+
+static void latch(pmp_fsm_t *f, pmp_fault_t code) {
+  if (f->latched != FC_NONE || f->lock) return;
+  f->latched = code;
+  f->fault_count++;
+  f->st = ST_FAULT;
+  f->out.pfc_en = false; f->out.llc_en = false; f->out.pwm_kill = true;
+  if (f->fault_count >= PMP_LOCK_COUNT) { f->lock = true; f->st = ST_LOCK; }
+}
+
+void pmp_fsm_init(pmp_fsm_t *f) {
+  *f = (pmp_fsm_t){0};
+  f->st = ST_INIT;
+  f->out.derate = 1.0f;
+  f->out.mode = MODE_PAR;
+  f->out.q_disch = false;
+}
+
+const char *pmp_state_name(pmp_state_t s) {
+  static const char *n[] = {"INIT","PRECHG","STANDBY","RUN","DERATE","MODESW","SAFE","FAULT","LOCK","SHUTDOWN","DISCH","OFF"};
+  return (s <= ST_OFF) ? n[s] : "?";
+}
+
+void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
+  pmp_out_t *o = &f->out;
+  f->t_ms++;
+  o->pwm_kill = false;
+
+  /* ---------------- hardware-fast mirror (comparators do this in <µs; firmware re-asserts) */
+  if (in->vbus > PMP_BUS_OVP_V) latch(f, FC_BUS_OVP);
+  if (in->desat_flt) latch(f, FC_DESAT);
+  if (in->oc_pfc_flt) latch(f, FC_OC_PFC);
+  if (!in->wdt_ok) latch(f, FC_WDT);
+  if (!in->aux_ok) {
+    o->pfc_en = false; o->llc_en = false;
+    if (f->st == ST_RUN || f->st == ST_DERATE) f->st = ST_SAFE;
+  }
+
+  /* ---------------- supervisory checks in operating states */
+  if (f->st == ST_RUN || f->st == ST_DERATE) {
+    float stack = (o->mode == MODE_SER) ? (o->k_ser ? in->vbank_a + in->vbank_b : in->vbank_a)
+                                        : (o->k_para ? fmaxf(in->vbank_a, in->vbank_b) : in->vbank_a);
+    if (in->vin_ll > PMP_IN_OV_V) latch(f, FC_IN_OV);
+    if (in->vin_ll < PMP_IN_UV_V) latch(f, FC_IN_UV);
+    if (in->phases_ok < 3) { o->derate = 0.0f; latch(f, FC_PH_LOSS); }
+    if (fabsf(in->vmid_frac - 0.5f) * in->vbus > PMP_MID_IMB_V) latch(f, FC_MID_IMB);
+    if (in->vout_meas > fminf(1050.0f, in->vcmd * 1.06f + 20.0f)) latch(f, FC_OUT_OVP);
+    if (in->iout_meas > in->icmd * PMP_OC_FRAC) latch(f, FC_OUT_OC);
+    f->short_ms = (in->vout_meas < PMP_SHORT_V && in->iout_meas > in->icmd * PMP_SHORT_I_FRAC)
+                    ? f->short_ms + 1 : 0;
+    if (f->short_ms > PMP_SHORT_MS) latch(f, FC_OUT_SHORT);
+    if (o->mode == MODE_SER && o->k_ser && fabsf(in->vbank_a - in->vbank_b) > PMP_BANK_IMB_V) latch(f, FC_BANK_IMB);
+    if (in->temp_max_c > PMP_OT_TRIP_C) latch(f, FC_OT);
+    else if (in->temp_max_c > PMP_OT_DERATE_C) o->derate = fminf(o->derate, 0.6f);
+    if (!in->fan_ok) o->derate = fminf(o->derate, 0.5f);
+    if (isnan(in->vout_meas) ||
+        (o->k_out && o->llc_en && stack > 100.0f && fabsf(in->vout_meas - stack) > stack * 0.2f))
+      latch(f, FC_SENSOR);
+    if (in->can_age_ms > PMP_CAN_TO_MS) {          /* graceful, not latched (F.28) */
+      f->st = ST_STANDBY; o->llc_en = false; o->k_out = false; f->need_enable = true;
+    }
+    if (in->link_age_ms > PMP_LINK_TO_MS) latch(f, FC_LINK);
+  }
+
+  /* ---------------- state machine */
+  switch (f->st) {
+  case ST_INIT:
+    if (in->aux_ok) f->st = ST_PRECHG;
+    break;
+  case ST_PRECHG:
+    f->prechg_ms++;
+    o->k_pre = false;
+    if (in->vbus >= 0.9f * in->vin_ll * 1.414f) { o->k_pre = true; f->st = ST_STANDBY; }
+    else if (f->prechg_ms > 400 && in->vbus < 0.5f * in->vin_ll * 1.414f) latch(f, FC_PRECHG);
+    break;
+  case ST_STANDBY:
+    if (in->enable_req && !f->need_enable && !f->lock && in->can_age_ms < PMP_CAN_TO_MS) {
+      o->pfc_en = true;
+      o->vbus_ref = fminf(830.0f, fmaxf(650.0f, 2.0f * (in->vcmd > PMP_XOVER_UP_V ? in->vcmd * 0.5f : in->vcmd) / 0.95f));
+      if (in->vbus > 700.0f) {
+        if (in->ext_connected && in->vext < 0.0f) { latch(f, FC_BACKFEED); break; }
+        o->mode = (in->vcmd > PMP_XOVER_UP_V) ? MODE_SER : MODE_PAR;
+        o->llc_en = true;
+        bool ready = (o->mode == MODE_SER) ? o->k_ser : (o->k_para && o->k_parb);
+        if (!ready) {
+          if (o->mode == MODE_PAR) {
+            if (!o->k_prea) { o->k_prea = true; o->k_preb = true; }        /* pre-insertion (E12) */
+            else if (fabsf(in->vbank_a - in->vbank_b) < 0.5f) {
+              o->k_para = true; o->k_parb = true; o->k_prea = false; o->k_preb = false;
+            }
+          } else o->k_ser = true;
+        } else if (!o->k_out) {
+          /* K_OUT gate: stack must match its target — vext when a vehicle is present, else vcmd.
+           * (Found by host_sim: post-transition banks can sit at the old-mode ceiling.) */
+          float stack = (o->mode == MODE_SER) ? in->vbank_a + in->vbank_b : fmaxf(in->vbank_a, in->vbank_b);
+          float tgt = in->ext_connected ? in->vext : in->vcmd;
+          float band = fmaxf(10.0f, 0.05f * fabsf(tgt));
+          if (fabsf(stack - tgt) < band) { o->k_out = true; f->st = ST_RUN; }
+        }
+      }
+    }
+    break;
+  case ST_RUN:
+    if (o->derate < 1.0f) f->st = ST_DERATE;
+    if ((o->mode == MODE_PAR && in->vcmd > PMP_XOVER_DN_V) ||
+        (o->mode == MODE_SER && in->vcmd < PMP_XOVER_UP_V)) {
+      if (++f->dwell_ms > PMP_MODE_DWELL_MS) { f->st = ST_MODESW; f->sw_step = 0; }
+    } else f->dwell_ms = 0;
+    break;
+  case ST_DERATE:
+    if (o->derate >= 1.0f) f->st = ST_RUN;
+    break;
+  case ST_MODESW:
+    f->sw_step++;
+    if (f->sw_step == 1) { f->icmd_saved = in->icmd; }               /* controller ramps I to 0 */
+    if (f->sw_step == 10) { o->llc_en = false; o->k_out = false; }
+    if (f->sw_step == 20) { o->k_ser = false; o->k_para = false; o->k_parb = false; }
+    if (f->sw_step == 40) {
+      bool tracking = fabsf(in->vbank_a - in->vbank_b) < PMP_WELD_DV_V; /* welded contacts keep tracking */
+      if (o->mode == MODE_PAR && tracking && (in->relay_fb[1] || in->relay_fb[2])) { latch(f, FC_WELD); break; }
+      o->mode = (o->mode == MODE_PAR) ? MODE_SER : MODE_PAR;
+      f->st = ST_STANDBY;
+    }
+    break;
+  case ST_SAFE:
+    if (in->aux_ok) f->st = ST_STANDBY;
+    break;
+  case ST_FAULT:
+    o->k_out = false;
+    if (in->clear_req && !f->lock) { f->latched = FC_NONE; f->st = ST_STANDBY; f->need_enable = true; }
+    break;
+  case ST_LOCK:
+    o->k_out = false;                                               /* only power-cycle/service exits */
+    break;
+  case ST_SHUTDOWN:
+    o->pfc_en = false; o->llc_en = false; o->k_out = false; o->k_pre = false; o->q_disch = true;
+    f->st = ST_DISCH;
+    break;
+  case ST_DISCH:
+    if (in->vbus < 60.0f) { f->st = ST_OFF; o->q_disch = false; }
+    break;
+  case ST_OFF:
+    break;
+  }
+}

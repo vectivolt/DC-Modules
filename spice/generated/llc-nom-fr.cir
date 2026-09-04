@@ -1,0 +1,107 @@
+* 3-phase LLC op-point VBUS=800 VBANK=400 fsw=140.0k PAR
+.model DREC D(Is=1e-9 N=1.8 Rs=0.022)
+VBUS bus 0 DC 800
+
+VGH1 gh1 0 PULSE(0 1 0.0000e+0 20n 20n 3.4500e-6 7.1429e-6)
+VGL1 gl1 0 PULSE(0 1 3.5714e-6 20n 20n 3.4500e-6 7.1429e-6)
+BSH1 bus leg1 I=v(bus,leg1)*(2e-5+v(gh1)*28.57)
+BSL1 leg1 0 I=v(leg1)*(2e-5+v(gl1)*28.57)
+CPAR1 leg1 0 250p
+VSP1 leg1 tk1 DC 0
+CR1 tk1 tk1b 1.778e-7 ic=400
+LR1 tk1b pri1 0.0000073
+RW1 pri1 pri1b 0.005
+LM1 pri1b star 0.000065
+LS11 s11w s11n 0.000065
+RW11 s11w s11p 0.005
+LS21 s21w s21n 0.000065
+RW21 s21w s21p 0.005
+KA1 LM1 LS11 0.9999
+KB1 LM1 LS21 0.9999
+KC1 LS11 LS21 0.9999
+RB11 s11p 0ba 1meg
+RB21 s11n 0ba 1meg
+RB31 s21p 0bb 1meg
+RB41 s21n 0bb 1meg
+DA11 s11p bkA DREC
+DA21 0ba s11p DREC
+DA31 s11n bkA DREC
+DA41 0ba s11n DREC
+DB11 s21p bkB DREC
+DB21 0bb s21p DREC
+DB31 s21n bkB DREC
+DB41 0bb s21n DREC
+
+VGH2 gh2 0 PULSE(0 1 2.3810e-6 20n 20n 3.4500e-6 7.1429e-6)
+VGL2 gl2 0 PULSE(0 1 5.9524e-6 20n 20n 3.4500e-6 7.1429e-6)
+BSH2 bus leg2 I=v(bus,leg2)*(2e-5+v(gh2)*28.57)
+BSL2 leg2 0 I=v(leg2)*(2e-5+v(gl2)*28.57)
+CPAR2 leg2 0 250p
+VSP2 leg2 tk2 DC 0
+CR2 tk2 tk2b 1.778e-7 ic=400
+LR2 tk2b pri2 0.0000073
+RW2 pri2 pri2b 0.005
+LM2 pri2b star 0.000065
+LS12 s12w s12n 0.000065
+RW12 s12w s12p 0.005
+LS22 s22w s22n 0.000065
+RW22 s22w s22p 0.005
+KA2 LM2 LS12 0.9999
+KB2 LM2 LS22 0.9999
+KC2 LS12 LS22 0.9999
+RB12 s12p 0ba 1meg
+RB22 s12n 0ba 1meg
+RB32 s22p 0bb 1meg
+RB42 s22n 0bb 1meg
+DA12 s12p bkA DREC
+DA22 0ba s12p DREC
+DA32 s12n bkA DREC
+DA42 0ba s12n DREC
+DB12 s22p bkB DREC
+DB22 0bb s22p DREC
+DB32 s22n bkB DREC
+DB42 0bb s22n DREC
+
+VGH3 gh3 0 PULSE(0 1 4.7619e-6 20n 20n 3.4500e-6 7.1429e-6)
+VGL3 gl3 0 PULSE(0 1 8.3333e-6 20n 20n 3.4500e-6 7.1429e-6)
+BSH3 bus leg3 I=v(bus,leg3)*(2e-5+v(gh3)*28.57)
+BSL3 leg3 0 I=v(leg3)*(2e-5+v(gl3)*28.57)
+CPAR3 leg3 0 250p
+VSP3 leg3 tk3 DC 0
+CR3 tk3 tk3b 1.778e-7 ic=400
+LR3 tk3b pri3 0.0000073
+RW3 pri3 pri3b 0.005
+LM3 pri3b star 0.000065
+LS13 s13w s13n 0.000065
+RW13 s13w s13p 0.005
+LS23 s23w s23n 0.000065
+RW23 s23w s23p 0.005
+KA3 LM3 LS13 0.9999
+KB3 LM3 LS23 0.9999
+KC3 LS13 LS23 0.9999
+RB13 s13p 0ba 1meg
+RB23 s13n 0ba 1meg
+RB33 s23p 0bb 1meg
+RB43 s23n 0bb 1meg
+DA13 s13p bkA DREC
+DA23 0ba s13p DREC
+DA33 s13n bkA DREC
+DA43 0ba s13n DREC
+DB13 s23p bkB DREC
+DB23 0bb s23p DREC
+DB33 s23n bkB DREC
+DB43 0bb s23n DREC
+VBKA bkA 0ba DC 400
+VBKB bkB 0bb DC 400
+RTA 0ba 0 1u
+RTB 0bb 0 1u
+RSTAR star 0 100meg
+.tran 30n 0.0004 0 15n uic
+.option method=gear reltol=1e-3 abstol=1e-6 vntol=1u itl4=100
+.control
+set filetype=ascii
+run
+wrdata llc-nom-fr.out i(VSP1) i(VBKA) i(VBKB) v(leg1) v(gh1) i(VSP2)
+quit
+.endc
+.end

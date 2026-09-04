@@ -1,0 +1,4 @@
+sku,C_total_uF,C_per_half_uF,caps_470uF_450V,E_stored_J,precharge_E_J
+30kW,1175,2350,10,376,376
+60kW,2115,4230,18,677,677
+120kW,4230,8460,36,1354,1354

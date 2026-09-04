@@ -1,0 +1,32 @@
+* generated DPT SIC750_10R V=425 I=78 Rgon=4.7 Rgoff=4.7 Lloop=1e-8
+.include ../models/sic-behavioral.lib
+VBUS bus 0 DC 425
+CDC bus 0 100u ic=425
+LLP bus kd 1e-8
+DFW sw kd JBS1200_40
+RSN sw nsn 10
+CSN nsn 0 470p
+DCL sw clp JBS1200_40
+CCL clp bus 100n ic=0
+RCL clp bus 470
+LLD kd sw 0.000042 ic=0
+VSNS sw d1 0
+LD d1 d 2n
+M1 d g ks SIC750_10R
+LKS ks s 1.5n
+LSP s 0 2n
+VDRV drv ks PWL(0 -4 1e-7 -4 1.05e-7 18 0.000007808235294117647 18 0.000007813235294117648 -4 0.000009308235294117648 -4 0.000009313235294117649 18 0.000010108235294117647 18 0.000010113235294117648 -4)
+RGN drv gon 4.7
+DGN gon g DIDEAL
+DGF g goff DIDEAL
+RGF goff drv 4.7
+.model DIDEAL D(Is=1e-3 N=0.1)
+.tran 0.25n 0.000010708235294117647 uic
+.option method=gear reltol=1e-3 abstol=1u vntol=1m
+.control
+set filetype=ascii
+run
+wrdata dpt-pfc750-final.out v(d,ks) v(g,ks) i(VSNS) v(sw)
+quit
+.endc
+.end

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="250" viewBox="0 0 880 250" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">
+  <rect width="880" height="250" rx="12" fill="#14161c"/>
+  <rect x="1" y="1" width="878" height="248" rx="11" fill="none" stroke="#3a3f52" stroke-width="1.5"/>
+  <text x="30" y="36" font-size="16" font-weight="700" fill="#f3f0e8">Verification scoreboard — everything below was actually executed</text>
+
+  <g font-size="12">
+    <!-- row template: label, bar (pass fraction), score -->
+    <g transform="translate(30,60)">
+      <text x="0" y="12" fill="#c9d0dd">§35 envelope grid</text>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#232838"/>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#6fae7d"><animate attributeName="width" from="0" to="500" dur="0.8s" fill="freeze"/></rect>
+      <text x="745" y="13" fill="#6fae7d" font-weight="700">3024 / 3024</text>
+    </g>
+    <g transform="translate(30,88)">
+      <text x="0" y="12" fill="#c9d0dd">§37 Monte-Carlo batches</text>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#232838"/>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#6fae7d"><animate attributeName="width" from="0" to="500" dur="0.8s" begin="0.1s" fill="freeze"/></rect>
+      <text x="745" y="13" fill="#6fae7d" font-weight="700">6 / 6</text>
+    </g>
+    <g transform="translate(30,116)">
+      <text x="0" y="12" fill="#c9d0dd">§36 fault scenarios (model)</text>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#232838"/>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#6fae7d"><animate attributeName="width" from="0" to="500" dur="0.8s" begin="0.2s" fill="freeze"/></rect>
+      <text x="745" y="13" fill="#6fae7d" font-weight="700">26 / 26</text>
+    </g>
+    <g transform="translate(30,144)">
+      <text x="0" y="12" fill="#c9d0dd">Firmware C logic (ASan/UBSan)</text>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#232838"/>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#6fae7d"><animate attributeName="width" from="0" to="500" dur="0.8s" begin="0.3s" fill="freeze"/></rect>
+      <text x="745" y="13" fill="#6fae7d" font-weight="700">33 / 33</text>
+    </g>
+    <g transform="translate(30,172)">
+      <text x="0" y="12" fill="#c9d0dd">Board schematics ERC</text>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#232838"/>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#6fae7d"><animate attributeName="width" from="0" to="500" dur="0.8s" begin="0.4s" fill="freeze"/></rect>
+      <text x="745" y="13" fill="#6fae7d" font-weight="700">6 / 6 clean</text>
+    </g>
+    <g transform="translate(30,200)">
+      <text x="0" y="12" fill="#c9d0dd">BOM component match</text>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#232838"/>
+      <rect x="230" y="0" width="500" height="16" rx="8" fill="#6fae7d"><animate attributeName="width" from="0" to="500" dur="0.8s" begin="0.5s" fill="freeze"/></rect>
+      <text x="745" y="13" fill="#6fae7d" font-weight="700">100 %</text>
+    </g>
+  </g>
+  <text x="30" y="238" font-size="11" fill="#7d8598">bench / chamber / certification are hardware-phase (docs/evt-plan.md) — never claimed by this repo (§50 rule)</text>
+</svg>

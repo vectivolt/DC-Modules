@@ -1,0 +1,2 @@
+fsw_kHz,geom_mat,stack,N,L0_uH,Lpk_uH,dIpp_A,dB_mT,Pcu_W,Pfe_W,Pind_W,dT_C,ind_cost,Ppair_W,Tj_C,Pdiode_W,Pstage_W,emi_proxy,total_score
+50,T79 (OD79/ID49/H17 sendust)|26u|17.200000000000003mm2,3,36,165.4,82.8,21.4,70.7,31.4,2.1,33.5,35,1708,54.8,138,28,349,750,26809

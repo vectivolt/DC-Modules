@@ -1,0 +1,12 @@
+* discharge
+CP p mid 2350u ic=425
+CN mid 0 2350u ic=425
+RD p 0 640
+.tran 1m 3 uic
+.control
+set filetype=ascii
+run
+wrdata dis.out v(p)
+quit
+.endc
+.end
