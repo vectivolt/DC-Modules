@@ -39,6 +39,15 @@ Executed: DPT (26), PFC loops AC, Vienna line-cycle (6), precharge/discharge, LL
 **LISN pre-compliance (E22 closes 30 kW gap, +7.8 dB estimate margin)**, **§36 scenario suite 26/26 PASS (fsm-sim)**.
 Open: none in the simulation domain. Hardware-domain items (bench/chamber/PD/relay-life) = EVT T-01…T-10 — physically outside this environment.
 
+## Independent design review (2026-09-05)
+
+Adversarial production audit `design-review-production.md`: **verdict NO** — 15 critical blockers
+(filter/bank cap ratings, isolation-breaching sense dividers, floating AGND, aux block unbuildable +
+range/budget, precharge bypass rating, missing Vienna film caps, enable/kill/WD chain unimplemented,
+discharge fail-engaged hazard, CLAMP pins floating, no SWD/boot, link TX/TX, unbiased bipolar senses),
+12 high, 10 medium. Fault-matrix delta rows FAIL until fixed; §K datasheet gate defined. This
+supersedes the earlier schematic-verification optimism: ERC-clean ≠ electrically correct.
+
 ## Risk register (rev B)
 
 | ID | Risk | Sev×Lik | Mitigation / retirement | Status |

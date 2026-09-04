@@ -35,6 +35,7 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 | [`drc-erc-report.md`](drc-erc-report.md) | formal 6-board ERC report (generated from builds) |
 | [`verification-matrix.md`](verification-matrix.md) | requirement→evidence matrix + risk register |
 | [`evt-plan.md`](evt-plan.md) | the 10-test bench campaign this repo is staged for |
+| [`design-review-production.md`](design-review-production.md) | **adversarial production-readiness review — verdict NO: 15 blockers (CB-1…15), fixes quantified** |
 
 ## Generated data & plots
 
