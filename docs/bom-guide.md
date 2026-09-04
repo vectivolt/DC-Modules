@@ -38,7 +38,7 @@ pie showData title 30 kW COGS ₹31,861 @1k
 | **Capacitors** | 3,770 | 14× 470 µF/450 V (split bus + banks), 12× 1200 V pulse-rated resonant film (46 nF, ±5 %, binned system), commutation/output film, X2/Y2 |
 | **Relays** | 2,155 | the safety architecture found by simulation: hard-paralleling banks at 2 V mismatch = **205 A** through a closing contact → pre-insertion aux relays + resistors, plus K_OUT with its matched-voltage gate (E12/E12b) |
 | **Drive + control** | 1,466 | 9× NSI6611 (DESAT/Miller/UVLO — non-negotiable §24 hardware layer), 2× GD32G553, ULN drivers, iso-amps, CAN |
-| **Bias/iso** | 546 | E23 executed: custom multi-secondary bias transformer + per-channel rect sets replaced ₹95 modules (₹24/ch) — the first lever that moved from "planned" into the totals |
+| **Bias/iso** | 546→ modules | **E23 deferred to ECO-1** (review HR-10: the BOM priced the custom set while the schematic drew modules — unbuildable divergence). Rev C ships ₹95 QA01C-class modules per channel in BOTH schematic and BOM; the −₹0.9k @30 kW lever returns with drawing D5 (C_io ≤ 10 pF spec). Rev C also *adds* the iso voltage-sense set (E25) to this category |
 
 ## Price basis & breaks
 

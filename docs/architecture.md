@@ -48,3 +48,32 @@ Same two-board outline family, same heatsink extrusion profile (length scales), 
 ## Efficiency / thermal snapshot (loss-budget.mjs)
 
 η at 400 V/full/≥300 V out: 97.4 / 97.5 / 97.5 % (JBS baseline; SR variant +0.68 pt). Worst corner (330 V in): 30 kW = 871 W total, 620 W on heatsink → Rth ≤0.032 K/W at rated airflow; derate 100%@55 °C → 40%@75 °C.
+
+
+---
+
+## Rev C (2026-09-05) — production-review closure deltas
+
+The frozen power path is unchanged. What changed is the support architecture (register E25–E31):
+
+```mermaid
+flowchart LR
+  subgraph SELV["SELV control domain (AGND=DGND, soft-bonded to PE)"]
+    MCUP["MCU-PFC + WD-A"] --- AND_A["AND: EN_PFC × EN_LLC × WDO"] --> GEA["GATE_EN_A ⭢ 9–36 driver EN"]
+    MCUL["MCU-LLC + WD-B"] --- AND_B["AND ×3"] --> GEB["GATE_EN_B"]
+    MCUP <-->|"UART, crossed on DC-DC side"| MCUL
+  end
+  ACD["AC phases"] -- "±5 V iso amps vs artificial star" --> MCUP
+  BUS["DCP/MID"] -- "0–2 V iso amps vs DCN" --> MCUP
+  BKS["banks / output"] -- "iso amps in-domain" --> MCUL
+  CTS["line + resonant CTs"] -- "AVMID-biased burdens" --> MCUP & MCUL
+  DIS["discharge FET (DCN)"] -- "opto, default-OFF" --> MCUP
+```
+
+- **Enable/kill:** no software-only gate path remains — E27 wired-AND with per-board windowed
+  watchdogs; harness loss or a hung MCU disables both boards' gates in hardware.
+- **Sensing:** every HV measurement is isolated (E25); the control domain is touch-safe SELV, so
+  the HMI/SWD/fans/CAN need no additional barriers.
+- **Aux:** full-bus 60 W flyback (E26) — boots from 285 VAC cold; powers worst-case relay+fan load.
+- **Energy storage:** bank strings 2×450 V (E29); Vienna legs carry local film commutation caps.
+- **Readback:** all HV relays have mirror contacts wired to the MCUs (E30) — F.19 is real.

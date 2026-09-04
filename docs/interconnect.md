@@ -48,3 +48,34 @@ MCU-LLC adds: HMI_DAT/CLK/LAT = pins 88/89/90, DIG1/2 = 91/92, BTN1/2 = 93/94; r
 CTL_KSER..KPREB = 80–85; CAN moved to 48/49; senses per boards.tsx map. MCU-PFC adds:
 CTL_KPRE = 72, CTL_QDIS = 73 (inverted drive, pull-up to V15 — discharge engages when commanded
 or on control collapse with aux still alive; documented E19), FLT_PFC = 74.
+
+
+---
+
+## Rev C deltas (2026-09-05, production-review closure)
+
+**Harness pin semantics (16-way, unchanged pinout — net mapping revised):**
+
+| Pin | Label | Rev C meaning |
+|---|---|---|
+| 7 | LTX | AC-DC: `LINK_TX` (MCU-PFC TX) → **DC-DC maps it to `LINK_RX`** (CB-14 crossover lives in the DC-DC net map — harness itself stays straight-through pin-to-pin) |
+| 8 | LRX | AC-DC: `LINK_RX` ← DC-DC maps `LINK_TX` |
+| 9 | EN | `EN_PFC` (MCU-PFC's enable *output*, both boards) |
+| 10 | KILL | `EN_LLC` (MCU-LLC's enable output; the legacy KILL label is kept on the connector) |
+| 13 | TINL | **reserved** — inlet NTC is read by MCU-PFC only and shared over the link (MR-2: no double-biased analog node across the harness) |
+| 16 | SHLD | bonded to PE on both boards |
+
+Both link lines carry 10 k idle pullups on each board. Each board's `SafetyChain` ANDs
+(own EN) × (received EN, 100 k pulldown → harness loss = gates off) × (local watchdog WDO) into
+`GATE_EN_A/B` with a 10 k pulldown — the E27 default-disabled chain. Loss of the harness therefore
+disables **both** boards' gates within the driver's EN response time.
+
+**Discharge (E19 rev B):** `CTL_QDIS` drives an opto gate driver's LED (active-high, 330 Ω);
+the output stage is biased by a DCN-referenced isolated module and the QDISF gate has a 10 k
+pulldown to DCN — MCU dead/reset/unprogrammed = discharge OFF. The rev-A "fail-engaged" behavior
+is deleted (review CB-11).
+
+**Grounding (E25):** AGND–DGND 0 Ω tie per board (single point, at the MCU ADC ground — layout
+note P-3); DGND→PE 1 MΩ ∥ 4.7 nF on the AC-DC board. The whole control domain is SELV; every HV
+measurement crosses on an isolated amplifier, so the HMI (buttons/display), SWD headers, fan
+connectors and CAN stay touch-safe by architecture.

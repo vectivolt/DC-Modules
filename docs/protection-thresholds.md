@@ -25,7 +25,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 16 | Output short | **rev B: V<50 V & I>90%·I_cmd sustained 10 ms** (a healthy CC loop never exceeds 110% — found by fsm-sim) | 10 ms | FW | burst-retry ×3 → latch | F.16 |
 | 17 | Bank imbalance (series) | |VA−VB|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
 | 18 | Relay weld | ΔV<1.5 V @200 ms, ≥10 A ref (E13) | 200 ms | FW | latch, inhibit mode change | F.18 |
-| 19 | Relay open-fail | contact readback mismatch 100 ms | 100 ms | FW | latch | F.19 |
+| 19 | Relay open-fail | mirror-contact readback mismatch 100 ms (hardware path per E30: RELAY_FB_* nets, KPRE series pair) | 100 ms | FW | latch | F.19 |
 | 20 | Precharge fail | bus <90% line pk in 400 ms | 400 ms | FW | abort, open KPRE | F.20 |
 | 21 | Discharge fail | bus >60 V @ 4 s after cmd | 4 s | FW | flag, inhibit touch-service bit | F.21 |
 | 22 | OT PFC/LLC/XFMR | 95/100/115 °C NTC | 1 s | FW | derate −2%/°C → stop @+10 °C | F.22–24 |
@@ -36,7 +36,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 27 | Sensor implausible | cross-checks (ΣI≈0, Vout vs bank sum ±5%, T range) | 100 ms | FW | stop, latch | F.29 |
 | 28 | EEPROM CRC | at boot | boot | FW | safe defaults, F-code, no output | F.30 |
 | 29 | Repeated fault lockout | 5 latches / 10 min | — | FW | lockout until CAN clear + ENABLE | F.31 |
-| 30 | Watchdog | 10 ms window | HW | independent WD → PWM_KILL line | kill both boards | F.32 |
+| 30 | Watchdog | 10 ms window | HW | independent windowed WD per board → GATE_EN wired-AND (E27; PWM_KILL retired) | gates default-disabled | F.32 |
 
 Hardware comparator DACs: thresholds from MCU DAC but **latch path is analog** — firmware can
 tighten, never loosen beyond table max (resistor-set ceilings on comparator references).

@@ -45,7 +45,9 @@ for (const s of SKUS) {
   const { jbsW, srW } = secondary(100);
   const secJ = jbsW * s.ch, secS = srW * s.ch;
   const bus = 0.00015 * s.Iout ** 2 + 25e-6 * s.Iout ** 2; // busbar ~0.15 mΩ + shunt 25 µΩ paths
-  const aux = 18 + 6 * s.lanes + 8 * s.ch;
+  // rev C (review closure): E26 aux stage at running load (~6.5 W), iso-sense bias modules (E25,
+  // ~2.5 W), per-lane Vienna snubber 3×0.86 W + clamp bleeders 3×~2 W nominal (E28/HR-3), driver bias
+  const aux = 24 + 8.5 * s.lanes + 8 * s.ch;
   const fansW = s.fans * 10;
   const totJ = pfcSemis + pfcMag + dclink + pri + xf + tank + secJ + bus + aux + fansW;
   const totS = totJ - secJ + secS;

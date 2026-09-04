@@ -88,3 +88,30 @@ sequenceDiagram
 MCU-PFC runs the subordinate slice of the same header (precharge, lane enables, `GATE_EN`,
 `CTL_QDIS`) so both processors share one vocabulary of states and fault codes — which is also what
 the HMI displays (`F.xx`) and CAN telemetry (STATUS2/FAULT_EVT) speak.
+
+
+---
+
+## Board rev C integration notes (2026-09-05)
+
+The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to the rev C hardware:
+
+- **ADC scaling:** line/resonant CT channels are now biased at AVMID (VREF/2 ≈ 1.65 V):
+  `i = (raw·3.3/4096 − 1.65) / (33 Ω) · N` (N = 2500 line / 100 resonant). AC phase-voltage
+  channels come from ±5 V iso amps (gain 0.41, output centered mid-rail): bipolar conversion with
+  the amp's datasheet offset. Bus/bank/output channels are unipolar 0–2 V iso-amp outputs.
+  `SNS_IOUT`/`SNS_IOUTN` form a software differential (subtract before scaling — MR-6).
+- **Watchdog:** kick `WDI_PFC` (pin 70) / `WDI_LLC` (pin 46) inside the 10 ms window from the
+  control loop tick — the external WD's WDO is a hard input to the GATE_EN AND (E27). A missed
+  window disables gates without firmware involvement; firmware sees it as F.32 on the FLT path.
+- **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
+  the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
+- **Relay feedback:** `relay_fb[]` now reads real pins — MCU-LLC 2–7 = KSER, KPARA, KPARB, KOUT,
+  KPREA, KPREB mirror contacts (low = main open); MCU-PFC 50 = KPRE1+KPRE2 series chain
+  (high = both mains open). F.19 evaluates exactly as already coded.
+- **Discharge:** `CTL_QDIS` is active-high into an opto LED; default (reset/tri-state) = OFF.
+  No inversion vs the FSM's `discharge_cmd`.
+- **Relay economization (E26):** after 60 ms pull-in at 100 % duty, PWM coil hold at ~40 %
+  (24 V coils, 20 kHz) — halves steady 24 V demand; implement in the HAL coil driver.
+- **Boot/provisioning:** BOOT0 strapped low, SWD on the JSWD headers (CB-13); EOL flow per
+  dfm-production.md step 4 is now physically possible.

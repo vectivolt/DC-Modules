@@ -22,3 +22,19 @@ EOL (production, §45) derives from T-00/T-03/T-06 subsets: 100% = aux, isolatio
 (AC-DC: 2.5 kV pri-PE 1 min; DC-DC: 3.5 kV pri-sec via transformer already covered at part level +
 1.5 kV out-PE), cal (V/I two-point), limited-power functional (5 kW into load), relay/fan/HMI check.
 Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer lot sample (5/lot).
+
+
+---
+
+## Rev C additions — review-mandated tests (T-11…T-18)
+
+| ID | Test | Pass criterion |
+|---|---|---|
+| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere; aux BR brown-in 320–340 V |
+| T-12 | Programming-session thermal watch (SWD attached, bus at 830 V, MCU held in reset 10 min) | discharge chain stays OFF (E19 rev B); no component > 60 °C rise |
+| T-13 | Filter-cap soak 475 VAC 48 h | CX ΔT ≤ 10 K, no capacitance loss > 5 % |
+| T-14 | Hipot + touch-leakage **with all sense chains fitted** | 4 kV pri↔sec < 5 mA (Y-caps dominated), leakage < 3.5 mA |
+| T-15 | KPRE thermography at rated line current 1 h | contact rise ≤ 30 K; mirror readback consistent |
+| T-16 | Gate-enable glitch capture, 1000 power cycles | zero gate pulses while GATE_EN_x low (scope-latched) |
+| T-17 | CT front-end linearity ±150 A + OC step | ≤ 1 % to 120 A; F.02 trip point ±5 %; no ADC injection (AVMID bias, CB-15) |
+| T-18 | Aux load-dump: all relays pull-in + fans 100 % at 65 °C ambient | V24 ≥ 22.8 V, V15 ≥ 13.5 V; aux switch ≤ 110 °C |

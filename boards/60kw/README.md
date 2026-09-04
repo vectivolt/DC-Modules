@@ -25,7 +25,7 @@ flowchart LR
   lane1 --> BUS
   BUS --> CH0["LLC ch 0<br/>SW1–3 · T1–3 · STAR0"]
   BUS --> CH1["LLC ch 1<br/>SW4–6 · T4–6 · STAR1"]
-  CH0 --> BANKS[("banks A + B<br/>shared, 8× 470 µF")]
+  CH0 --> BANKS[("banks A + B<br/>shared, 8× 2-series 470 µF strings (E29)")]
   CH1 --> BANKS
 ```
 
@@ -43,7 +43,7 @@ flowchart LR
 One AC front end (bigger CM cores, same footprint family) · one precharge · one discharge · one
 split-bus assembly (2×9 caps) · **two MCUs total** (lane 1 = phase-shifted copies on HRTIM
 channels D/E/F; pins `PWM_A1/B1/C1` = 58/59/60, `I_A1/B1/C1` = 33/34/35 — same asserted map) ·
-one S/P matrix with **200 A-class** HFE82V relays · one HMI, one CAN node.
+one S/P matrix with **200 A-class** HFE82V-M mirror-contact relays (E30) · one HMI, one CAN node.
 
 ## Current sharing between lanes
 
@@ -60,7 +60,7 @@ Per-lane PI integrators null static mismatch; the Monte-Carlo residual from CT g
 | `SICJBS-1200-20` | secondary JBS bridges | 48 | 90 | **4,320** |
 | `XFMR-LLC-10K` | LLC transformer stacks | 6 | 680 | **4,080** |
 | `B3M010C075Z` | 750 V 10 mΩ SiC (PFC) | 12 | 330 | **3,960** |
-| `ELH-470u450` | 470 µF/450 V snap-in | 26 | 150 | **3,900** |
+| `ELH-470u450` | 470 µF/450 V snap-in (bus + 2-series bank strings, E29) | 34 | 150 | **5,100** |
 | `PP-44n-1200` | resonant pulse film | 24 | 68 | **1,632** |
 | `NSI6611` | iso gate drivers | 18 | 85 | **1,530** |
 | `SICJBS-1200-40` | PFC boost JBS | 12 | 120 | **1,440** |

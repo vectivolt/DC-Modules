@@ -5,8 +5,8 @@ Every SKU is **one module = two boards**, generated from a single parameterized 
 
 | | Role | Contents | Source |
 |---|---|---|---|
-| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · fuses · MOV Δ · 2× 3-φ CM stages + 22 µH DM stage · 2-pole precharge · **N× Vienna lanes** · split DC link · discharge · MCU-PFC · line CTs · AC/bus dividers · aux flyback · fans | [`AcDcBoard`](../packages/common-components/boards.tsx) |
-| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · **3N× LLC half-bridge legs** · tanks · **N×3 transformer sections** · dual JBS banks · bank caps · S/P matrix + pre-insertion + K_OUT · output filter/shunt/studs · MCU-LLC · isolated CAN · **config HMI** | [`DcDcBoard`](../packages/common-components/boards.tsx) |
+| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · fuses · MOV Δ + MOV/GDT L-PE · 2× 3-φ CM stages + 22 µH DM stage (D6) · precharge w/ line-rated bypass relays · **N× Vienna lanes** (per-phase film caps) · split DC link · default-OFF isolated discharge · MCU-PFC + watchdog/enable AND + SWD · line CTs (AVMID-biased) · isolated AC/bus senses · 60 W full-bus aux flyback · fans | [`AcDcBoard`](../packages/common-components/boards.tsx) |
+| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · **3N× LLC half-bridge legs** · tanks · **N×3 transformer sections** · dual JBS banks · 2-series bank cap strings · S/P matrix (mirror-contact relays + readback) + pre-insertion + K_OUT · output filter/shunt/studs · MCU-LLC + watchdog/enable AND + SWD · isolated bank/output senses · isolated CAN · **config HMI** | [`DcDcBoard`](../packages/common-components/boards.tsx) |
 
 The boards mount **face-to-face**: TO-247 rows clamp outward onto the two heatsink extrusions,
 magnetics stand in the inter-board airflow tunnel, power crosses on bolted **DCP/DCN/PE stud

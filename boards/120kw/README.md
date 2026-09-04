@@ -20,7 +20,7 @@ flowchart LR
   L2["lane 2 · 180°"] --> BUS
   L3["lane 3 · 270°"] --> BUS
   BUS --> C0["ch 0 · T1–3"] & C1["ch 1 · T4–6"] & C2["ch 2 · T7–9"] & C3["ch 3 · T10–12"]
-  C0 & C1 & C2 & C3 --> BK[("banks A + B<br/>16× 470 µF")]
+  C0 & C1 & C2 & C3 --> BK[("banks A + B<br/>16× 2-series 470 µF strings (E29)")]
   BK --> SP["S/P matrix<br/>2× 200 A relays per position"] --> OUT["400 A OUT±"]
 ```
 
@@ -57,7 +57,7 @@ flowchart LR
 | `SICJBS-1200-20` | secondary JBS bridges | 96 | 90 | **8,640** |
 | `XFMR-LLC-10K` | LLC transformer stacks | 12 | 680 | **8,160** |
 | `B3M010C075Z` | 750 V 10 mΩ SiC (PFC) | 24 | 330 | **7,920** |
-| `ELH-470u450` | 470 µF/450 V snap-in | 52 | 150 | **7,800** |
+| `ELH-470u450` | 470 µF/450 V snap-in (bus + 2-series bank strings, E29) | 68 | 150 | **10,200** |
 | `PP-44n-1200` | resonant pulse film | 48 | 68 | **3,264** |
 | `NSI6611` | iso gate drivers | 36 | 85 | **3,060** |
 | `SICJBS-1200-40` | PFC boost JBS | 24 | 120 | **2,880** |

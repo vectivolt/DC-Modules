@@ -69,3 +69,37 @@ Cost roll-up lives in `calculations/out/cost-model.csv` and `docs/bom-cost.md` (
 | Bus studs | M8 pillar sets ×3 | 1 set | ₹84 | E17, torque 12 N·m |
 
 Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49-21/22).
+
+
+---
+
+## Rev C parts deltas (2026-09-05, production-review closure)
+
+| Change | Was | Now | Driver |
+|---|---|---|---|
+| X caps | X2 2.2 µF **310 VAC** | **X1 2.2 µF 530 VAC** | CB-1: 475 VAC line-line continuous |
+| Y caps (incl. output, PE bond) | Y2 300 VAC | **Y1 440 VAC** | MR-4 |
+| Bank electrolytics | 1× 450 V across ≤525 V | **2-series 450 V strings + balance** | CB-2/E29 |
+| Bus/bank film | 900 V | **1100 V** (830 V = 76 %) | HR-1 |
+| Output film | 1100 V | **1200 V** (1000 V = 83 %) | HR-8 |
+| Vienna phase films | — (missing) | **2× 1 µF 600 V per phase** | CB-9 |
+| Precharge bypass | HF115F-2Z 8 A 2-pole | **2× HF167F-class power relay w/ mirror (80/120/250 A per SKU)** | CB-8/E30 |
+| S/P + pre-insertion relays | plain | **mirror-contact variants (-M)** | E30/HR-4 |
+| Aux switch | 650 V SJ (half-bus) | **1700 V SiC** (full-bus feed) | CB-6/E26 |
+| Aux transformer | EF20 19 W | **ETD29 60 W (D4 rev B)** | CB-7 |
+| Aux controller wiring | FB→15 V rail only | **full application circuit** | CB-5 |
+| HV senses | resistive dividers → AGND | **AMC1311/1350-class iso amps + iso 5 V bias per domain** | CB-3/E25 |
+| Watchdog + AND | — | **TPS3430-class + 74HC11 per board** | CB-10/E27 |
+| Discharge drive | ULN + V15 pullup (fail-engaged) | **opto driver + DCN bias module, default-OFF** | CB-11 |
+| Gate driver CLAMP | floating | **wired to gate** | CB-12 |
+| SWD/BOOT | — | **1×5 header + BOOT0 strap + NRST cap per MCU** | CB-13 |
+| LLC node snubbers | 10 Ω 1 W + 470 pF | **deleted** | E28 |
+| Vienna snubber | 470 pF + 1 W R | **100 pF + 2 W R** | E28 |
+| Clamp bleeder | 470 Ω 1 W 2512 | **470 Ω 5 W axial** | HR-3 |
+| Pre-insertion R | 10 W ceramic on 2512 | **SQP 25 W pulse axial** | HR-12/MR-1 |
+| Precharge/discharge R | 25 W p/n on 2512 | **axial footprints** | MR-1 |
+| DM chokes | ₹38 unsized | **D6 drawing, per-SKU rated** | HR-9 |
+| HV divider resistors | plain 1206 | **anti-surge (HV73-class)** | MR-3 |
+| Bias modules | custom E23 set (BOM) vs modules (schematic) | **modules (QA01C-class) both; E23 → ECO-1** | HR-10 |
+| L-PE surge | — | **3× MOV 550 VAC + GDT 3.5 kV** | HR-7 |
+| ULN spare inputs | floating | **grounded** | MR-8 |

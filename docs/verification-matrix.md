@@ -48,6 +48,12 @@ discharge fail-engaged hazard, CLAMP pins floating, no SWD/boot, link TX/TX, unb
 12 high, 10 medium. Fault-matrix delta rows FAIL until fixed; §K datasheet gate defined. This
 supersedes the earlier schematic-verification optimism: ERC-clean ≠ electrically correct.
 
+**Fix closure (rev C, same day):** all 15 blockers + the HR/MR list implemented in schematic rev C
+(cells v3 / boards v3 / parts-db rev C — see the Fix log appendix in `design-review-production.md`).
+Evidence: six boards rebuilt 0 netlist errors; aux flyback rev B simulated at 342/560/850 V (PASS);
+per-fix grep assertions in `calculations/review-checks.mjs`. Still open by nature: §K datasheet
+gate, ECO-1 (E23), bench EVT (T-01…T-18).
+
 ## Risk register (rev B)
 
 | ID | Risk | Sev×Lik | Mitigation / retirement | Status |

@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/schematics-6%2F6_ERC--clean-2ea44f?style=flat-square" alt="erc"/>
   <img src="https://img.shields.io/badge/BOM-100%25_matched_·_3_price_breaks-2ea44f?style=flat-square" alt="bom"/>
   <img src="https://img.shields.io/badge/toolchain-TSCircuit_·_ngspice--46_·_C99-5f8fc0?style=flat-square" alt="stack"/>
-  <img src="https://img.shields.io/badge/design_review-15_blockers_open-c0392b?style=flat-square" alt="review"/>
+  <img src="https://img.shields.io/badge/design_review-15%2F15_blockers_closed_(rev_C)-2e7d32?style=flat-square" alt="review"/>
   <img src="https://img.shields.io/badge/phase-pre--hardware-e3763c?style=flat-square" alt="phase"/>
   <img src="https://img.shields.io/badge/©_Vectivolt-all_rights_reserved-555?style=flat-square" alt="license"/>
 </p>
@@ -22,7 +22,7 @@
 A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging modules** engineered end-to-end in this repository: every number traces to a runnable calculation, every waveform claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated BOM line. One repeatable **~10 kW cell pair** (a Vienna PFC phase + an LLC transformer section) scales 3× / 6× / 12× across the family — same SiC, same magnetics part numbers, same firmware — packaged as a **two-board sandwich** (AC-DC below, DC-DC above) per module.
 
 > **What this repo is:** a complete, simulation-closed, tolerance-hardened electrical design + verified supervisory firmware + manufacturing documentation.
-> **Review status:** an adversarial production-readiness audit ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers (CB-1…CB-15)**, each with a quantified fix; resolve them before spending money on boards.
+> **Review status:** an adversarial production-readiness audit ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers**. All 15 (plus the 12 high / 10 medium items) are **closed in schematic rev C** the same day: cells v3, boards v3, parts-db rev C, aux flyback rev B re-simulated, six boards rebuilt with 0 netlist errors, and every fix asserted by `calculations/review-checks.mjs` (31/31 PASS). Open by nature: the §K datasheet gate, ECO-1, and bench EVT (T-01…T-18).
 > **What it is not (yet):** bench-validated or certified hardware — see [Honesty boundary](#honesty-boundary-50).
 
 ---

@@ -87,3 +87,24 @@ transition (banks parked at the old-mode ceiling → instant OVP) — fixed as t
 
 Bench-physical behavior (real Eon/Eoff, EMI chamber, thermal chamber, relay life, PD) — EVT T-01…T-10.
 These are physically outside simulation scope per fidelity policy; nothing else remains unrun.
+
+
+---
+
+## V-21 rev B — aux flyback redesign validation (2026-09-05, E26)
+
+Re-run of the aux stage after the production-review rework (full-bus feed, 60 W, Lp 550 µH,
+Ip clamp 1.8 A, Vor 120 V): `spice/aux/aux-flyback.mjs` rev B, ngspice-46, behavioral VM control
+(IC dynamics abstracted — unchanged fidelity note; the *wiring* defects the review found are a
+schematic matter, closed in cells v3 and asserted by `review-checks.mjs`, not by this sim).
+
+| Case | VIN | V24 settle | dip @ full step | recover | V15 cross-reg min | Pout | Verdict |
+|---|---|---|---|---|---|---|---|
+| aux-342 | 342 V (285 VAC cold start) | 24.16 V | 23.27 V | 8 ms | 14.63 V | 54.0 W | **PASS** |
+| aux-560 | 560 V (400 VAC cold start) | 24.16 V | 23.37 V | 0.57 ms | 14.72 V | 54.2 W | **PASS** |
+| aux-850 | 850 V (OVP corner) | 24.23 V | 23.45 V | 0.62 ms | 14.74 V | 54.4 W | **PASS** |
+
+Step = 24 V load 0.5→1.8 A (all relays pull-in + fans, the CB-7 worst case) with 15 V at 0.8 A.
+Input-side average power is not resolvable at the behavioral switch's transition band (documented
+in-file); Pout is measured from the rail waveforms, Pin ≈ Pout/0.82 est. Bench T-09/T-18 validate
+the real IC's UVLO/BR thresholds and thermal. Netlists preserved in `spice/generated/aux-*.cir`.

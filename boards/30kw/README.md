@@ -20,13 +20,13 @@ every cell explained here is instantiated unchanged across the family.
 flowchart LR
   J["ACL1/2/3 + PE<br/>M8 studs"] --> F["F1–F3 gG fuses"] --> MOV["MOV Δ<br/>3× S20K550"]
   MOV --> CM1["CMC1<br/>3-φ CM 2 mH"] --> X1["CX11–13<br/>X2 2.2 µF Δ"] --> CM2["CMC2"] --> LDM["LDM1–3<br/>22 µH DM (E22)"] --> X2["CX21–23 + CY1–3"]
-  X2 --> PRE["KPRE 2-pole<br/>+ 2× 33 Ω (E14b)"]
+  X2 --> PRE["KPRE1+KPRE2 80 A relays<br/>+ 2× 33 Ω pulse (E14b/CB-8)"]
   PRE --> PH["3× ViennaPhase<br/>A0 · B0 · C0"]
   PH --> DC[("SplitDcLink<br/>2×5× 470 µF + balance")]
   DC --> ST["DCP/DCN/PE<br/>pillars → DC-DC board"]
   PH -.PWM/FLT.- MCU["MCU-PFC<br/>GD32G553"]
-  DC -.dividers.- MCU
-  AUX["AuxPower flyback<br/>DCP→MID (E20)"] -.24/15/3.3 V.- MCU
+  DC -.iso senses (E25).- MCU
+  AUX["AuxPower flyback 60 W<br/>full bus 342–860 V (E26)"] -.24/15/3.3 V.- MCU
 ```
 
 ### Cell-by-cell
@@ -35,12 +35,12 @@ flowchart LR
 |---|---|---|
 | `ViennaPhase` ×3 | one PFC phase | 165 µH sendust choke ([D1](../../docs/magnetics.md)); **common-source 750 V SiC pair** (B3M010C075Z ×2) driven by ONE `DriverCh` — this single choice makes 2 MCUs suffice at 120 kW; two 1200 V/40 A JBS to the rails (they block the **full** bus — calculated, not assumed); 10 Ω+470 pF RC **and** RCD clamp (JBS+100 nF+470 Ω) per node — the exact network that took DPT overshoot from 115 % to **70 %** |
 | `DriverCh` ×3 | isolated gate channel | NSI6611 (DESAT, Miller clamp, UVLO, soft-off) · split Rg **4.7/4.7 Ω** (E5) · +18/−4 V from a bias secondary set (E23) · 2× US1M DESAT chain + 100 pF blanking · 10 k gate-source · Kelvin return |
-| `SplitDcLink` | energy buffer | 2×5× 470 µF/450 V snap-in, 100 k balancers, midpoint sensed; window 650–830 V, **HW OVP 860 V** (E2) |
+| `SplitDcLink` | energy buffer | 2×5× 470 µF/450 V snap-in (415 V max/half ✓), 100 k balancers, midpoint sensed; window 650–830 V, **HW OVP 860 V** (E2); per-phase film caps at the legs (CB-9) |
 | precharge | inrush control | 33 Ω in **two lines** + 2-pole bypass — a single-line resistor is a 3-wire-system fallacy (E14b); 20 A pk, 243 J, t₉₅ ≈ 160 ms (simulated) |
 | discharge | touch safety | 4× 160 Ω + 1200 V SiC FET, ULN-driven with V15 pull-up (fail-engaged logic E19): 850→60 V in **2.0 s** |
 | `CtSensor` ×3 | phase current | 1:2500 line CTs + 33 Ω burden (E18 — beat shunt+iso-amp on cost, isolation and OC speed) |
-| `HvDivider` ×5 | AC + bus sense | 8× 475 k 1206 in series (creepage by construction) + 6.8 k 0.1 % bottom + RC |
-| `AuxPower` | house power | flyback fed **DCP→MID** so a 650 V FET suffices (E20); 24 V/15 V/3.3 V rails; validated in ngspice incl. the CS-clamp lesson ([report §9](../../docs/simulation-report.md)) |
+| `IsoVSense` ×5 | AC + bus sense | 8× 475 k anti-surge chain **inside the measured domain** + iso amp + iso 5 V bias (E25/CB-3): AC vs artificial star (±5 V class), bus/MID vs DCN (0–2 V class) |
+| `AuxPower` | house power | **rev B (E26)**: full-bus 342–860 V, 1700 V SiC, 60 W, complete controller application (HV startup, aux-winding VCC, BR brown-in, type-II COMP); 24 V/15 V/3.3 V; re-simulated at 342/560/850 V ([V-21 rev B](../../docs/simulation-report.md)) |
 | `ControlMcu` PFC | control | pin map below — **asserted unique at build** |
 
 ### MCU-PFC pin map (from `boards.tsx`, build-asserted)
@@ -51,7 +51,7 @@ flowchart LR
 | `I_A0/B0/C0` (CTs) | 30/31/32 | | `SNS_VBUSP` / `SNS_VMID` | 46 / 47 |
 | `FAN_PWM1/TACH1` | 76/77 | | `T_PFC` / `T_INLET` | 48 / 49 |
 | `FAN_PWM2/TACH2` | 78/79 | | `LINK_TX/RX` | 68/69 |
-| `CTL_KPRE` / `CTL_QDIS` | 72 / 73 | | `PWM_KILL` / `GATE_EN` | 70 / 71 |
+| `CTL_KPRE` / `CTL_QDIS` | 72 / 73 | | `WDI_PFC` / `EN_PFC` | 70 / 71 |
 | `FLT_PFC` (wire-OR) | 74 | | | |
 
 ---
@@ -64,7 +64,7 @@ flowchart LR
   CF --> L1["LlcHalfBridgeLeg ×3<br/>1200 V SiC + 2 DriverCh"]
   L1 --> TK["LlcSection ×3<br/>4× 46 nF Cr ∥ · 4.0 µH trim<br/>resonant CT · PQ50 stack 7:7:7"]
   TK --> BR["2× JBS bridges / section<br/>→ bank A + bank B"]
-  BR --> BC["bank caps<br/>4× 470 µF + film"]
+  BR --> BC["bank caps<br/>2× (2-series 470 µF strings) + film (E29)"]
   BC --> SP["S/P matrix<br/>KSER · KPARA/B + 10 Ω pre-insert<br/>K_OUT (E12b gate)"]
   SP --> OF["output filter<br/>2× 4.7 µF + Y caps"] --> SH["manganin shunt<br/>+ NSI1200"] --> OUT["OUT± M8 studs"]
   SP -.coils.- ULN["ULN2803"]
@@ -80,7 +80,7 @@ flowchart LR
 | `LlcHalfBridgeLeg` ×3 | resonant legs | SG2M023120LJ 1200 V/23 mΩ pair, Rg **4.7/2.2 Ω** (E6), per-node RC; runs 100–203 kHz PFM around fr = 140 kHz; **ZVS confirmed at every simulated gate edge** |
 | `LlcSection` ×3 | tank + isolation | Cr = 4× 46 nF/1200 V pulse PP ∥ · trim inductor **binned to the mated transformer's measured leakage** (D2 rev B — the §37 Monte-Carlo fix) · resonant CT 1:100 · transformer **3× PQ50/50, 7:7:7**, Lm 63 µH gap-ground ±7 %, dual TIW secondaries, reinforced insulation, PD-sample-tested ([D3](../../docs/magnetics.md)) |
 | dual JBS bridges | rectification | 8× 1200 V/20 A JBS per section (banks A+B) — chose diodes over SR on quantified ₹/W (E11: SR flips only above ₹41/W cooling cost); SR stays a premium variant |
-| `SeriesParallelRelayMatrix` | range extension | K_SER · K_PARA/B **with 10 Ω pre-insertion aux relays** (hard 2 V-mismatch close = 205 A — simulated, E12) · **K_OUT with the E12b gate**: closes only when stack matches v_ext-or-v_cmd (a defect the C-firmware port caught) · weld detect 1.5 V/200 ms |
+| `SeriesParallelRelayMatrix` | range extension | K_SER · K_PARA/B **with 10 Ω pulse-rated pre-insertion aux relays** (hard 2 V-mismatch close = 205 A — simulated, E12) · **K_OUT with the E12b gate** · all relays mirror-contact w/ per-relay readback (E30) · weld detect 1.5 V/200 ms **+ hardware F.19 path** |
 | `OutputShunt` | current truth | manganin + NSI1200 iso-amp, Kelvin; ±0.2 % post-cal (Monte-Carlo) |
 | `ConfigHmi` | field config | 2 buttons + 2-digit 7-seg via 74HC595 + 2 NPN mux: CAN address 00–63, group, `F.xx` fault paging ([spec](../../docs/interconnect.md)) |
 | `IsolatedCan` | external world | CAN 2.0B 125 kbps 29-bit, isolated + CM choke + TVS + jumpered 120 Ω ([protocol](../../docs/can-protocol.md)) |
@@ -95,14 +95,14 @@ flowchart LR
 | `CTL_KSER…KPREB` | 80–85 | | `T_LLC` / `T_XFMR` | 42 / 43 |
 | `HMI_DAT/CLK/LAT` | 88/89/90 | | `LINK_TX/RX` | 44/45 |
 | `HMI_DIG1/2` · `BTN1/2` | 91/92 · 93/94 | | `CAN_TX/RX` | 48/49 |
-| `PWM_KILL` / `GATE_EN` | 46 / 47 | | | |
+| `WDI_LLC` / `EN_LLC` | 46 / 47 | | `RELAY_FB_*` ×6 / `SNS_IOUTN` | 2–7 / 95 |
 
 ---
 
 ## Protections living on this pair
 
 HW-fast: per-phase CT comparators (105 A pk) → HRTIM kill · DESAT per SiC · bus OVP 860 V ·
-output OVP · driver UVLO chain (aux collapse ⇒ gates held low) · watchdog `PWM_KILL` line across
+output OVP · driver UVLO chain (aux collapse ⇒ gates held low) · per-board windowed watchdog into the `GATE_EN` wired-AND (E27) across
 the harness. Supervisory: the full 32-row table ([protection-thresholds.md](../../docs/protection-thresholds.md)),
 exercised by the [26-scenario suite](../../docs/simulation-report.md) and the
 [C firmware](../../firmware/) (33/33 under sanitizers).
@@ -114,7 +114,7 @@ exercised by the [26-scenario suite](../../docs/simulation-report.md) and the
 | `IND-PFC-165u` | PFC choke 165 µH, 3× T79 26µ sendust, N=36 | 3 | 1035 | **3,105** |
 | `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L | 6 | 390 | **2,340** |
 | `SICJBS-1200-20` | SiC JBS 1200 V 20 A (secondary bridges) | 24 | 90 | **2,160** |
-| `ELH-470u450` | 470 µF 450 V snap-in 105 °C | 14 | 150 | **2,100** |
+| `ELH-470u450` | 470 µF 450 V snap-in (incl. 2-series bank strings, E29) | 18 | 150 | **2,700** |
 | `XFMR-LLC-10K` | LLC transformer 3× PQ50/50, 7:7:7 | 3 | 680 | **2,040** |
 | `B3M010C075Z` | SiC MOSFET 750 V 10 mΩ TO-247-4 | 6 | 330 | **1,980** |
 | `PP-44n-1200` | 46 nF 1200 V pulse film (resonant) | 12 | 68 | **816** |

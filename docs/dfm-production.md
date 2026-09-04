@@ -10,7 +10,7 @@ Fasteners: M3 (PCB), M4 (TO-247 clamps/tabs), M5 (choke lugs), M6 (relay), M8 (p
 1. SMT both boards (double-sided reflow; THT wave/selective for drivers' pin-rows, relays, film caps).
 2. THT power: TO-247 rows loose-fit → clamp bars → snap-in caps → studs.
 3. Magnetics kitting: transformer units mated to trim-inductor **bin per leakage label (D2 rev B)**; chokes torqued M6, thermocouple pocket check (first article per lot).
-4. Board test A (AC-DC) and B (DC-DC) separately at low voltage: aux rails, MCU program+boot, gate pulses into dummy RC (PWM-off isolation §45), relay click test, HMI/CAN on B.
+4. Board test A (AC-DC) and B (DC-DC) separately at low voltage: aux rails, **MCU program+boot via the JSWD headers (BOOT0 strapped low; CB-13 — this step is now physically provisioned)**, gate pulses into dummy RC (PWM-off isolation §45), relay click **+ mirror-contact readback** test (E30), HMI/CAN on B.
 5. TO-247 clamp to respective extrusion with phase-change TIM (0.5 K·cm²/W class), torque M4 = 1.2 N·m, pattern center-out; TIM coverage witness on 1/50.
 6. Sandwich mate: pillar studs DCP/DCN/PE 12 N·m + belleville; 16-way harness with retention clip, shield drain to PE (AC-DC end).
 7. Enclosure: tunnel baffles, fans (arrow check), filter, front panel (display window + button actuators + CAN/term access).

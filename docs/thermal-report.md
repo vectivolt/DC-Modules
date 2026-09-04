@@ -48,3 +48,20 @@ Derating curve: 100% ≤55 °C → linear → 40% @75 °C → 0 @88 °C; plot `s
 
 Open: CFD/plenum check of tunnel back-pressure with 12 magnetics @120 kW (T-04 instrumented), TIM
 process spec (phase-change pad 0.5 K·cm²/W class) in DFM flow.
+
+
+---
+
+## Rev C deltas (2026-09-05)
+
+- **LLC node snubbers deleted (E28):** removes what would have been ≈ 45 W/leg of RC loss the
+  rev-B budget never carried (the review corrected this) — no budget change, but the *risk* of a
+  silent +135–540 W heat source is gone.
+- **Vienna snubber re-size:** 100 pF/2 W → 0.86 W per phase actual (was 4.05 W on a 1 W part —
+  scorch risk). Budget delta: −3.2 W per lane vs the notional 470 pF fit.
+- **Vienna clamp bleeder:** 470 Ω now 5 W axial (worst-case 4.3 W measured basis in review §F-5) —
+  rating fix, dissipation unchanged.
+- **Aux stage (E26):** 60 W class at η ≈ 0.82 → ≈ 11 W dissipated in the aux corner at full
+  aux load (was ≈ 4 W); the 1700 V switch gets the existing small-TO220 pad + airflow — add to the
+  EVT thermography checklist (T-18).
+- **Per-phase film caps (CB-9):** negligible dissipation; they *reduce* electrolytic ripple heating.

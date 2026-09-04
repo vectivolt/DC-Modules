@@ -1,4 +1,5 @@
-# ngspice-46; behavioral VM control (IC dynamics abstracted — bench T-09 validates UVLO/limits); netlists spice/generated/aux-*.cir
-case,VIN,v24_settle,v24_dip_at_step,v24_recover_ms,v15_at_step_crossreg,Pin_avg_W,verdict
-aux-300,300,24.09,23.46,0.2,15.02,13225.8,PASS
-aux-425,425,24.26,23.93,0.2,15.24,9096.6,PASS
+# ngspice-46; rev B (E26 full-bus 60 W redesign); behavioral VM control (IC dynamics abstracted — bench T-09 validates UVLO/BR); netlists spice/generated/aux-*.cir
+case,VIN,v24_settle,v24_dip_at_step,v24_recover_ms,v15_at_step_crossreg,Pout_full_W,verdict
+aux-342,342,24.16,23.27,8,14.63,54,PASS
+aux-560,560,24.16,23.37,0.57,14.72,54.2,PASS
+aux-850,850,24.23,23.45,0.62,14.74,54.4,PASS

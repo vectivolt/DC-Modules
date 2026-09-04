@@ -42,3 +42,19 @@ domain (CGND) floats — 4 mm to everything.
 - [ ] Leakage current budget through Y network (calc pending with final Y values, EMI rev)
 - [ ] 61851-23 system items delegated to charger integrator documented in manual (IMD, output contactors, gun lock)
 - [ ] EMC immunity plan (surge 61000-4-5 on MOV/fuse network — §27 energy calc at EMI rev)
+
+
+---
+
+## Rev C deltas (2026-09-05, E25)
+
+- The three output-domain resistive divider chains (review CB-3) are **gone** — bank/output
+  voltages are sensed inside their own domains by isolated amplifiers. The pri↔sec barrier is
+  again purely magnetic/opto/iso-amp: hipot no longer sees a 3.8 MΩ resistive path.
+- The **aux transformer (D4 rev B) barrier is now safety-load-bearing** for the SELV control
+  domain (primary at bus potential): reinforced, 100 % hipot 4 kV in production (not sampled).
+- Iso voltage-sense amps and their 5 V bias modules must be reinforced-rated for their domain's
+  working voltage (1000 V output domain / 830 V bus) — add to §K datasheet gate (O-items).
+- Mirror contacts (E30) are separated from main contacts per the relay's internal construction —
+  basic isolation minimum at 1000 VDC; VERIFY in the relay datasheet at RFQ (§K).
+- Control domain to PE: 1 MΩ ∥ 4.7 nF Y1 soft bond (no hard earth loop; leakage < 1 mA budget).

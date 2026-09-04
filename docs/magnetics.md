@@ -54,3 +54,27 @@ EE19/EF20 class, PC40, primary 425 V-max input (fed DCP→MID, E20), 3 outputs: 
 
 - Line CT (CT-60A): 1:2500, ferrite, window ≥ 9 mm (busbar pass-through), 33 Ω burden → 0.79 V/55 A rms; linearity ≤1% to 150 A pk (OC observability); qty 3/6/12.
 - Resonant CT (CT-RES): 1:100 on 10 mm toroid, in series with tank; 33 Ω burden → 0.33 V/A-primary·(1/100)·... calibrated at EOL; qty 3/6/12.
+
+
+---
+
+## D4 rev B — aux flyback transformer (E26)
+
+Superseded rev A (EF20, half-bus). Now ETD29 PC95, 342–860 V input, 60 W: see the generated
+[`aux-transformer-D4.md`](aux-transformer-D4.md) turns sheet. The primary sits at **bus potential**;
+the pri→sec barrier is reinforced (TIW + 3 mm margin, hipot 4 kV) and is now the load-bearing
+barrier for the E25 SELV control domain — flag it as a **safety-critical winding operation** in
+the winder's traveler (100 % hipot, not sampled).
+
+## D6 — DM line chokes (HR-9, new drawing)
+
+The 3rd-stage DM chokes (`LDM1–3`, E22) carry the full line current and now get a real drawing:
+
+| SKU | I_rms/line | I_pk (ripple incl.) | Core | Winding | L @ I_pk |
+|---|---|---|---|---|---|
+| 30 kW | 55 A | 82 A | 26µ sendust OD47×24×18 | 14 T × 2×AWG12 eq. flat | ≥ 22 µH ≥ 70 % roll-off point |
+| 60 kW | 110 A | 158 A | 26µ sendust OD57×26×20 | 11 T × copper foil 0.3×20 | ≥ 22 µH |
+| 120 kW | 220 A | 311 A | 26µ sendust OD79×40×17 ×2 stacked | 8 T × foil 0.5×25 | ≥ 22 µH |
+
+Acceptance: L(I_pk) ≥ 15 µH (LISN margin recomputed at −3 dB worst-case — still ≥ +4 dB over the
+E22 closure), ΔT ≤ 45 K at I_rms (foil), hipot winding–core 2.5 kV. Same vendor/traveler flow as D1.

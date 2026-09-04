@@ -7,6 +7,14 @@ flagged in §P, not reviewed). **Method:** every claim below was verified agains
 `calculations/cost/parts-db.mjs`), not against the documentation — the documentation describes
 intent; this review audits what is actually drawn.
 
+> [!IMPORTANT]
+> **Status update (rev C, 2026-09-05):** every blocker and high/medium item below has been
+> **implemented in schematic rev C** — cells v3 / boards v3 / parts-db rev C — same day. See the
+> **Fix log** appendix at the bottom for the item-by-item mapping and evidence (rebuilds, rev-B aux
+> simulation, per-fix source assertions in `calculations/review-checks.mjs`). The verdict recorded
+> in §A is the verdict **at review time**; what remains open after rev C is the §K datasheet gate,
+> ECO-1 (E23), and bench EVT (T-01…T-18) — hardware-domain by nature.
+
 **Reviewer stance:** hostile. The design's own ERC (6/6 clean), simulation suite and firmware
 tests were treated as *evidence about specific questions only* — ERC proves connectivity, not
 electrical sense; the behavioral simulations abstracted exactly the blocks (aux control, enable
@@ -304,3 +312,56 @@ that were modeled behaviorally, revised late (two-board split, bank-window chang
 live.** Every blocker has a concrete, low-cost fix (aggregate BOM impact ≈ +₹1.4–3.9 k/module,
 well inside the existing R12 discussion). Fix CB-1…CB-15 + HR list, regenerate BOM/docs, close
 the §K datasheet gate — *then* this design is ready to spend money on boards.
+
+
+---
+
+# Appendix — Fix log (schematic rev C, 2026-09-05)
+
+Every item mapped to its implemented change. Evidence classes: **B** = six-board rebuild 0 netlist
+errors; **S** = `spice/aux/aux-flyback.mjs` rev B (342/560/850 V PASS); **G** = source assertion in
+`calculations/review-checks.mjs`; **D** = doc/drawing updated.
+
+| Item | Resolution | Where | Evidence |
+|---|---|---|---|
+| CB-1 | X1 2.2 µF **530 VAC** delta caps; Y1 440 VAC | parts-db `CX*/CY*` | G/D |
+| CB-2 | 2-series 450 V strings + midpoints + balance (E29) | boards `CBA*T/B`, `RBAL[TB][AB]` | B/G |
+| CB-3 | bank/output senses → **IsoVSense** in-domain + iso 5 V bias (E25) | cells `IsoVSense`, boards OA/OB/OV | B/G |
+| CB-4 | AGND–DGND 0 Ω tie per board + DGND→PE 1 MΩ∥4.7 nF | boards `RAGTA/RAGTB/RPET/CPET` | B/G |
+| CB-5 | full flyback application: HV startup→VCC, aux-winding self-supply, FB divider, COMP, BR, RC-filtered CS, RCD clamp | cells `AuxPower` v3 | B/S/G |
+| CB-6 | full-bus feed 342–860 V, 1700 V switch (E26) | `AuxPower dcp→DCP/dcn→DCN`, parts-db QAUX | S/G |
+| CB-7 | 60 W stage (Lp 550 µH, Ip 1.8 A) + coil PWM-hold economization | D4 rev B + firmware-guide | S/D |
+| CB-8 | 2× line-rated power relays w/ mirror (80/120/250 A per SKU) | boards `KPRE1/2`, skuOverrides | B/G |
+| CB-9 | per-phase 1 µF/600 V films DCP–MID & MID–DCN | cells `ViennaPhase C*FP/C*FN` | B/G |
+| CB-10 | SafetyChain per board: windowed WD + 3-in AND + pulldowns; PWM_KILL retired (E27) | cells `SafetyChain`, boards, pin maps | B/G |
+| CB-11 | default-OFF isolated discharge (opto + DCN bias + 10 k pulldown) — E19 rev B | cells `DischargeCtl`, boards | B/G |
+| CB-12 | driver CLAMP → gate on every channel | cells `DriverCh` | B/G |
+| CB-13 | SWD header + BOOT0 strap + NRST cap per MCU | cells `SwdPort`, boards pin28/29/100 | B/G |
+| CB-14 | link crossed in DC-DC net map + idle pullups | boards `InterconnectSignals id=B ltx/lrx` | B/G |
+| CB-15 | AVMID (buffered VREF/2) bias for CT/burden returns + series R + dual clamps | cells `AnalogMid/CtSensor/LlcSection` | B/G |
+| HR-1 | bus/bank film → 1100 V | parts-db `CF*/CB[AB]F` | G |
+| HR-2 | LLC node snubbers **deleted** (E28 — corrected physics: C·V²·f) | cells `LlcHalfBridgeLeg` | B/G |
+| HR-3 | clamp bleeder 470 Ω **5 W axial** | cells `R*C` chip + parts-db | B/G |
+| HR-4 | mirror contacts + RELAY_FB_* to MCU pins (E30) | matrix + boards + firmware-guide | B/G |
+| HR-5 | FLT pullups 4.7 k + 1 nF per board | boards `RFLT[AB]` | B/G |
+| HR-6 | PWM 10 k pulldown per channel | cells `R*PD` | B/G |
+| HR-7 | 3× MOV 550 VAC + GDT 3.5 kV L→PE | boards `MOVP*/GDT*` | B/G |
+| HR-8 | output film → 1200 V | parts-db `COF*` | G |
+| HR-9 | D6 drawing + per-SKU rated/priced DM chokes | magnetics.md D6, skuOverrides | D/G |
+| HR-10 | bias = packaged modules in BOTH schematic & BOM; E23 → ECO-1 | parts-db `PS*`, biasCommon 0 | G/D |
+| HR-11 | NRST cap + BOOT0 strap; WD per board doubles as supervisor | SwdPort/SafetyChain | B/G |
+| HR-12 | pre-insertion R → SQP 25 W pulse axial + dwell cap note | matrix `RPREA/B` + parts-db | B/G |
+| MR-1 | precharge/discharge R on axial footprints | boards `RPRE1/2`, `RDIS*` chips | B/G |
+| MR-2 | T_INLET no longer crosses the harness (link telemetry instead) | interconnect.md rev C | D |
+| MR-3 | anti-surge divider resistors + ADC sample-time note | parts-db + firmware-guide | G/D |
+| MR-4 | Y1 440 VAC class | parts-db | G |
+| MR-5 | KPRE-welded single fault: detect-at-t0 + accept residual — recorded | protection F.20 context (verification-matrix) | D |
+| MR-6 | NSI1200 OUTN routed → software differential | cells `OutputShunt`, LLC pin 95 | B/G |
+| MR-7 | VDDA/VREF+ ferrite + caps | cells `ControlMcu` | B/G |
+| MR-8 | ULN spare inputs grounded | boards CoilDriver ins | B/G |
+| MR-9 | fan p/n constrained to 3.3 V-PWM-compatible | parts-db/mech note | D |
+| MR-10 | switch/display pinout VERIFY at BOM freeze | parts-db desc | D |
+
+**Residual open (by nature, not omission):** §K datasheet verifications (O-1…O-10 + iso-amp
+domain ratings + mirror-contact isolation), ECO-1 (E23 bias transformer), bench EVT T-01…T-18,
+PCB layout follow-ups §P (layout re-opens later per directive).
