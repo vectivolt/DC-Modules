@@ -45,15 +45,15 @@ A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging module
 
 ```mermaid
 flowchart LR
-  AC["3φ AC\n285–475 V"] --> P1["Fuses · MOV Δ\n2× 3-φ CM stages\n+ 22 µH DM stage (E22)"]
-  P1 --> P2["Precharge\n2× 33 Ω + 2-pole bypass"]
-  P2 --> PFC["N× Vienna lanes · 50 kHz\n750 V SiC pairs · 1200 V JBS\nRC + RCD clamp per node"]
-  PFC --> BUS[("Split DC bus\n650–830 V · OVP 860 V\n2×(5…18)× 470 µF")]
-  BUS --> LLC["N× 3-φ LLC · fr 140 kHz\n1200 V SiC half-bridges\nCr 185 nF · Lr 7 µH · Lm 63 µH"]
-  LLC --> XF["N×3 transformer sections\n3× PQ50/50 · 7:7:7\ndual TIW secondaries"]
-  XF --> BK["Banks A + B\nSiC JBS bridges"]
-  BK --> SP["S/P matrix\npre-insertion relays (E12)\nK_OUT gate (E12b)"]
-  SP --> OUT["150–1000 VDC\n100 / 200 / 400 A"]
+  AC["3φ AC<br/>285–475 V"] --> P1["Fuses · MOV Δ<br/>2× 3-φ CM stages<br/>+ 22 µH DM stage (E22)"]
+  P1 --> P2["Precharge<br/>2× 33 Ω + 2-pole bypass"]
+  P2 --> PFC["N× Vienna lanes · 50 kHz<br/>750 V SiC pairs · 1200 V JBS<br/>RC + RCD clamp per node"]
+  PFC --> BUS[("Split DC bus<br/>650–830 V · OVP 860 V<br/>2×(5…18)× 470 µF")]
+  BUS --> LLC["N× 3-φ LLC · fr 140 kHz<br/>1200 V SiC half-bridges<br/>Cr 185 nF · Lr 7 µH · Lm 63 µH"]
+  LLC --> XF["N×3 transformer sections<br/>3× PQ50/50 · 7:7:7<br/>dual TIW secondaries"]
+  XF --> BK["Banks A + B<br/>SiC JBS bridges"]
+  BK --> SP["S/P matrix<br/>pre-insertion relays (E12)<br/>K_OUT gate (E12b)"]
+  SP --> OUT["150–1000 VDC<br/>100 / 200 / 400 A"]
   style PFC stroke:#f2b705,stroke-width:2.5px
   style LLC stroke:#f2b705,stroke-width:2.5px
   style SP stroke:#e3763c,stroke-width:2.5px

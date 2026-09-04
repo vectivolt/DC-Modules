@@ -4,11 +4,11 @@ The BOM is **not a spreadsheet someone typed** — it is generated from the six 
 
 ```mermaid
 flowchart LR
-  TSX["boards/*/acdc.tsx + dcdc.tsx"] -->|"tsci build"| CJ["dist/**/circuit.json\n(every component instance)"]
-  DB["calculations/cost/parts-db.mjs\nMPN · mfr · 2nd source · ₹@1k\n+ per-SKU overrides"] --> GEN
-  CJ --> GEN["bom-gen.mjs\npattern-classify every part\nrefuse sign-off on any unmatched"]
-  GEN --> CSV["calculations/out/bom-{sku}.csv\n76 lines · qty · 100/1k/5k breaks · refs"]
-  GEN --> MD["docs/bom-cost.md\nroll-up vs targets + lever table"]
+  TSX["boards/*/acdc.tsx + dcdc.tsx"] -->|"tsci build"| CJ["dist/**/circuit.json<br/>(every component instance)"]
+  DB["calculations/cost/parts-db.mjs<br/>MPN · mfr · 2nd source · ₹@1k<br/>+ per-SKU overrides"] --> GEN
+  CJ --> GEN["bom-gen.mjs<br/>pattern-classify every part<br/>refuse sign-off on any unmatched"]
+  GEN --> CSV["calculations/out/bom-{sku}.csv<br/>76 lines · qty · 100/1k/5k breaks · refs"]
+  GEN --> MD["docs/bom-cost.md<br/>roll-up vs targets + lever table"]
 ```
 
 Regenerate any time: `npx tsci build boards/<sku>/{acdc,dcdc}.tsx` then

@@ -15,13 +15,13 @@ two boards, still two MCUs.** Cell internals: [30 kW canonical page](../30kw/REA
 
 ```mermaid
 flowchart LR
-  L0["lane 0 · 0°"] --> BUS[("split bus\n2×18× 470 µF")]
+  L0["lane 0 · 0°"] --> BUS[("split bus<br/>2×18× 470 µF")]
   L1["lane 1 · 90°"] --> BUS
   L2["lane 2 · 180°"] --> BUS
   L3["lane 3 · 270°"] --> BUS
   BUS --> C0["ch 0 · T1–3"] & C1["ch 1 · T4–6"] & C2["ch 2 · T7–9"] & C3["ch 3 · T10–12"]
-  C0 & C1 & C2 & C3 --> BK[("banks A + B\n16× 470 µF")]
-  BK --> SP["S/P matrix\n2× 200 A relays per position"] --> OUT["400 A OUT±"]
+  C0 & C1 & C2 & C3 --> BK[("banks A + B<br/>16× 470 µF")]
+  BK --> SP["S/P matrix<br/>2× 200 A relays per position"] --> OUT["400 A OUT±"]
 ```
 
 - **90° carrier spacing** pushes the first surviving DM ripple harmonic to **200 kHz**, where the

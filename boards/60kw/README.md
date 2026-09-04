@@ -21,11 +21,11 @@ flowchart LR
   subgraph lane1["Vienna lane 1 · carrier 180°"]
     A1["φA1"] --- B1["φB1"] --- C1["φC1"]
   end
-  lane0 --> BUS[("shared split bus\n2×9× 470 µF")]
+  lane0 --> BUS[("shared split bus<br/>2×9× 470 µF")]
   lane1 --> BUS
-  BUS --> CH0["LLC ch 0\nSW1–3 · T1–3 · STAR0"]
-  BUS --> CH1["LLC ch 1\nSW4–6 · T4–6 · STAR1"]
-  CH0 --> BANKS[("banks A + B\nshared, 8× 470 µF")]
+  BUS --> CH0["LLC ch 0<br/>SW1–3 · T1–3 · STAR0"]
+  BUS --> CH1["LLC ch 1<br/>SW4–6 · T4–6 · STAR1"]
+  CH0 --> BANKS[("banks A + B<br/>shared, 8× 470 µF")]
   CH1 --> BANKS
 ```
 

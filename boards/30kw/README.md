@@ -18,15 +18,15 @@ every cell explained here is instantiated unchanged across the family.
 
 ```mermaid
 flowchart LR
-  J["ACL1/2/3 + PE\nM8 studs"] --> F["F1–F3 gG fuses"] --> MOV["MOV Δ\n3× S20K550"]
-  MOV --> CM1["CMC1\n3-φ CM 2 mH"] --> X1["CX11–13\nX2 2.2 µF Δ"] --> CM2["CMC2"] --> LDM["LDM1–3\n22 µH DM (E22)"] --> X2["CX21–23 + CY1–3"]
-  X2 --> PRE["KPRE 2-pole\n+ 2× 33 Ω (E14b)"]
-  PRE --> PH["3× ViennaPhase\nA0 · B0 · C0"]
-  PH --> DC[("SplitDcLink\n2×5× 470 µF + balance")]
-  DC --> ST["DCP/DCN/PE\npillars → DC-DC board"]
-  PH -.PWM/FLT.- MCU["MCU-PFC\nGD32G553"]
+  J["ACL1/2/3 + PE<br/>M8 studs"] --> F["F1–F3 gG fuses"] --> MOV["MOV Δ<br/>3× S20K550"]
+  MOV --> CM1["CMC1<br/>3-φ CM 2 mH"] --> X1["CX11–13<br/>X2 2.2 µF Δ"] --> CM2["CMC2"] --> LDM["LDM1–3<br/>22 µH DM (E22)"] --> X2["CX21–23 + CY1–3"]
+  X2 --> PRE["KPRE 2-pole<br/>+ 2× 33 Ω (E14b)"]
+  PRE --> PH["3× ViennaPhase<br/>A0 · B0 · C0"]
+  PH --> DC[("SplitDcLink<br/>2×5× 470 µF + balance")]
+  DC --> ST["DCP/DCN/PE<br/>pillars → DC-DC board"]
+  PH -.PWM/FLT.- MCU["MCU-PFC<br/>GD32G553"]
   DC -.dividers.- MCU
-  AUX["AuxPower flyback\nDCP→MID (E20)"] -.24/15/3.3 V.- MCU
+  AUX["AuxPower flyback<br/>DCP→MID (E20)"] -.24/15/3.3 V.- MCU
 ```
 
 ### Cell-by-cell
@@ -60,17 +60,17 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  ST["DCP/DCN/PE\npillars"] --> CF["CF0–2\n1 µF/900 V film"]
-  CF --> L1["LlcHalfBridgeLeg ×3\n1200 V SiC + 2 DriverCh"]
-  L1 --> TK["LlcSection ×3\n4× 46 nF Cr ∥ · 4.0 µH trim\nresonant CT · PQ50 stack 7:7:7"]
-  TK --> BR["2× JBS bridges / section\n→ bank A + bank B"]
-  BR --> BC["bank caps\n4× 470 µF + film"]
-  BC --> SP["S/P matrix\nKSER · KPARA/B + 10 Ω pre-insert\nK_OUT (E12b gate)"]
-  SP --> OF["output filter\n2× 4.7 µF + Y caps"] --> SH["manganin shunt\n+ NSI1200"] --> OUT["OUT± M8 studs"]
+  ST["DCP/DCN/PE<br/>pillars"] --> CF["CF0–2<br/>1 µF/900 V film"]
+  CF --> L1["LlcHalfBridgeLeg ×3<br/>1200 V SiC + 2 DriverCh"]
+  L1 --> TK["LlcSection ×3<br/>4× 46 nF Cr ∥ · 4.0 µH trim<br/>resonant CT · PQ50 stack 7:7:7"]
+  TK --> BR["2× JBS bridges / section<br/>→ bank A + bank B"]
+  BR --> BC["bank caps<br/>4× 470 µF + film"]
+  BC --> SP["S/P matrix<br/>KSER · KPARA/B + 10 Ω pre-insert<br/>K_OUT (E12b gate)"]
+  SP --> OF["output filter<br/>2× 4.7 µF + Y caps"] --> SH["manganin shunt<br/>+ NSI1200"] --> OUT["OUT± M8 studs"]
   SP -.coils.- ULN["ULN2803"]
   MCU2["MCU-LLC"] -.-> ULN
-  MCU2 -.-> HMI["HMI: 2 buttons\n2-digit 7-seg + 74HC595"]
-  MCU2 -.-> CAN["NSI1042 iso CAN\n+ choke + TVS + 120 Ω jumper"]
+  MCU2 -.-> HMI["HMI: 2 buttons<br/>2-digit 7-seg + 74HC595"]
+  MCU2 -.-> CAN["NSI1042 iso CAN<br/>+ choke + TVS + 120 Ω jumper"]
 ```
 
 ### Cell-by-cell
