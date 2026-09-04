@@ -1,4 +1,4 @@
-# Protection Thresholds (§24/§49-19) — rev B (two-board)
+# Protection Thresholds (§24/§49-19) — rev C (R2 re-audit closure, 2026-09-05)
 
 HW = comparator/driver hardware, independent of firmware; FW = supervisory firmware.
 Tolerances include sense-chain error (divider 1% + 0.1% bottom, CT 1%+burden 1%, shunt 0.5% + amp).
@@ -9,7 +9,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 |---|---|---|---|---|---|---|
 | 1 | PFC phase OC | 105 A pk (CT, per lane-phase) | <2 µs | HW comp→HRTIM kill | PFC PWM off, latch | F.01 |
 | 2 | PFC DESAT | VDS>9 V @on, 2.5 µs blank | <3 µs | HW driver | soft-off, FLT latch | F.02 |
-| 3 | Bus OVP | **860 V** total (E2) | <10 µs | HW comp | all PWM kill | F.03 |
+| 3 | Bus OVP | **860 V** total (E2) | <25 µs¹ | HW comp | all PWM kill | F.03 |
 | 4 | Bus OV (fw) | 845 V, 1 ms | 1 ms | FW | controlled stop | F.04 |
 | 5 | Bus UV | <620 V in run | 10 ms | FW | stop, retry ×3 | F.05 |
 | 6 | Midpoint imbalance | |ΔV|>40 V, 10 ms | 10 ms | FW | derate→stop | F.06 |
@@ -17,17 +17,18 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 8 | Input UV / sag | <260 VAC, 100 ms (ride-through below) | 100 ms | FW | derate/stop | F.08 |
 | 9 | Phase loss | line current <10% expected 40 ms (validated `400-phloss` sim) | 40 ms | FW | fold back → stop | F.09 |
 | 10 | Phase sequence | PLL sign at start | start | FW | inhibit start (any rotation accepted, mapped) | F.10 |
-| 11 | LLC resonant OC | 70 A pk per section CT | <2 µs | HW comp | LLC PWM off | F.11 |
+| 11 | LLC resonant OC | 70 A pk per section CT (**2.0 Ω burden → 1.40 V above AVMID = 3.05 V at comparator — R2 CB-16**; full-load 46 A rms = 0.92 V rms) | <2 µs | HW comp | LLC PWM off | F.11 |
 | 12 | LLC DESAT | as #2 | <3 µs | HW | soft-off latch | F.12 |
-| 13 | Output OVP | 1050 V (or mode-max +6%) | <10 µs | HW comp on OV divider | LLC off, K_OUT opens after I≈0 | F.13 |
+| 13 | Output OVP | 1050 V (or mode-max +6%) | <25 µs¹ | HW comp on OV iso-sense | LLC off, K_OUT opens after I≈0 | F.13 |
 | 14 | Output OV (fw) | cmd +4%, 2 ms | 2 ms | FW | CV clamp/stop | F.14 |
 | 15 | Output OC | 102% Imax 100 ms / 130% 2 ms | — | FW (CC loop is primary) | CC fold, then stop | F.15 |
 | 16 | Output short | **rev B: V<50 V & I>90%·I_cmd sustained 10 ms** (a healthy CC loop never exceeds 110% — found by fsm-sim) | 10 ms | FW | burst-retry ×3 → latch | F.16 |
 | 17 | Bank imbalance (series) | |VA−VB|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
 | 18 | Relay weld | ΔV<1.5 V @200 ms, ≥10 A ref (E13) | 200 ms | FW | latch, inhibit mode change | F.18 |
 | 19 | Relay open-fail | mirror-contact readback mismatch 100 ms (hardware path per E30: RELAY_FB_* nets, KPRE series pair) | 100 ms | FW | latch | F.19 |
-| 20 | Precharge fail | bus <90% line pk in 400 ms | 400 ms | FW | abort, open KPRE | F.20 |
-| 21 | Discharge fail | bus >60 V @ 4 s after cmd | 4 s | FW | flag, inhibit touch-service bit | F.21 |
+| 20 | Precharge fail | **as implemented (fsm.c): abort iff t > 400 ms AND bus < 50% line pk** — tolerant of the per-SKU charge time (t95 ≈ 160/288/576 ms at 30/60/120 kW); the earlier "<90% in 400 ms" wording described the completion check, not the abort (R2 HR-14 doc fix) | — | FW | abort, open KPRE | F.20 |
+| 21 | Discharge fail | bus >60 V after per-SKU timeout: **3 / 5.5 / 9 s** (`PMP_DISCH_TO_MS`, physics: t<60 V ≈ 2.0/3.6/7.2 s at 640 Ω) — **now implemented in fsm.c** (R2: the row previously had no code) | per SKU | FW | latch, discharge stays commanded | F.21 |
+| 21b | Bank discharge fail | either bank >60 V @ **2.5×** bank-bleed τ after `CTL_QDISBK` (E33; τ = 8.8 kΩ·C_bank ≈ 4.1/8.3/16.5 s → timeout 10.3/20.6/41.2 s per SKU; 2.0τ would false-fail a healthy bleed at 525·e⁻² = 71 V — caught by the per-SKU deck) | per SKU | FW | latch, inhibit touch-service bit | F.21 |
 | 22 | OT PFC/LLC/XFMR | 95/100/115 °C NTC | 1 s | FW | derate −2%/°C → stop @+10 °C | F.22–24 |
 | 23 | Fan fail | tach < 50% cmd 3 s | 3 s | FW | derate 50%, F-code | F.25 |
 | 24 | Aux UV | V15<12.5 V | <100 µs | HW driver-UVLO chain | gates hold-low (§28) | F.26 |
@@ -40,3 +41,8 @@ Display code `F.xx` per docs/interconnect.md HMI.
 
 Hardware comparator DACs: thresholds from MCU DAC but **latch path is analog** — firmware can
 tighten, never loosen beyond table max (resistor-set ceilings on comparator references).
+
+¹ R2/MR-18: OVP latency restated honestly — the iso-sense channels that feed OVP comparators now
+carry a 1 nF filter (pole ≈ 23 kHz) + AMC1311 group delay → total trip path ≈ 10–20 µs. The old
+"<10 µs" figure predated the isolated front-ends. Consequence at trip dV/dt (≈18 V/ms load-dump):
+overshoot ≤ 0.5 V — no margin impact; the number in the table is now the number the hardware has.

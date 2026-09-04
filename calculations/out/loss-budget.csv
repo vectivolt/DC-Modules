@@ -1,4 +1,4 @@
-sku,pfc_semis_W,pfc_mag_W,dclink_W,llc_pri_W,xfmr_W,tank_W,sec_jbs_W,sec_sr_W,busbar_shunt_W,aux_gate_W,fans_W,total_jbs_W,eta_jbs_pct,total_sr_W,eta_sr_pct
-30kW,158.4,72.4,12,57,61.5,13,360.4,146.7,1.7,40.5,20,796.9,97.41,583.3,98.09
-60kW,316.8,144.7,24,114,123,26.1,720.7,293.5,7,57,20,1553.3,97.48,1126.1,98.16
-120kW,633.7,289.4,48,228,246,52.1,1441.4,587,28,90,40,3096.7,97.48,2242.2,98.17
+sku,pfc_semis_W,pfc_mag_W,dclink_W,llc_pri_W,xfmr_W,tank_W,sec_jbs_W,sec_sr_W,busbar_shunt_W,emi_filter_W,aux_gate_W,fans_W,total_jbs_W,eta_jbs_pct,total_sr_W,eta_sr_pct
+30kW,158.4,72.4,12,57,61.5,13,360.4,146.7,1.7,49.4,38,20,843.8,97.26,630.2,97.94
+60kW,316.8,144.7,24,114,123,26.1,720.7,293.5,7,131.5,56,20,1683.8,97.27,1256.6,97.95
+120kW,633.7,289.4,48,228,246,52.1,1441.4,587,28,247.8,92,40,3346.5,97.29,2492,97.97

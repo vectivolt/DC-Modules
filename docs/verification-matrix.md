@@ -54,6 +54,23 @@ Evidence: six boards rebuilt 0 netlist errors; aux flyback rev B simulated at 34
 per-fix grep assertions in `calculations/review-checks.mjs`. Still open by nature: §K datasheet
 gate, ECO-1 (E23), bench EVT (T-01…T-18).
 
+## R2 re-audit (2026-09-05, second adversarial pass on rev C)
+
+`design-review-production-r2.md`: **verdict NO again** — 7 new critical blockers (CB-16…CB-22:
+resonant burden ×15 mis-scale, DC-DC board without a 3.3 V source, thermally-impossible LDO,
+100 V aux rectifiers at 160–200 V PIV, 60 W aux vs ≈90 W 120 kW demand, FLT_LLC unread by any MCU,
+drawn tank ≠ MC-validated rev-D2 tank), 8 high (watchdog symbol unpowered, per-SKU pulse/timing
+gaps, no bank discharge, 1.5 kV bias modules inside the reinforced barrier, 120 kW fan/relay
+scaling, CM-choke copper at 28 A/mm², balance-resistor stress), 15 medium. Every finding was
+re-verified in a dedicated falsification pass before action (one sub-claim retracted: fsm.c's
+precharge abort is tolerant as coded — doc wording only; the pass also *found* that F.21 had no
+implementation). **Fix closure (rev D, same day):** cells v4 / boards v4 / parts-db rev D /
+fsm F.21 / aux deck rev C — fix log in the R2 doc. Evidence: six boards rebuilt clean, aux rev C
+sim 9/9 PASS at per-SKU loads, firmware 33/33, gate extended to 60+ asserts incl. class checks
+(rail sourcing per board, every FLT net on a pin map). Meta-lesson recorded: the rev-C closure
+gate held only the ground R1 had mapped — R2's defects lived in the fixes themselves and in
+30 kW-defaults standing in for SKU scaling.
+
 ## Risk register (rev B)
 
 | ID | Risk | Sev×Lik | Mitigation / retirement | Status |
@@ -69,7 +86,7 @@ gate, ECO-1 (E23), bench EVT (T-01…T-18).
 | R9 | GD32G553 datasheet deltas (pins/HRTIM) | M×M | A6 verify; pin maps regenerate from tables | Open |
 | R10 | Vienna zero-cross distortion (common-gate) | L×M | THD sims clean at averaged level; bench check T-02 | Mitigated |
 | R11 | Two-board harness single point of failure | M×L | KILL/EN fail-safe + link CRC/timeout; harness retention + shield | Mitigated (design) |
-| R12 | COGS over red-line at schematic-exact count | H×H | **Rev C widened the gap deliberately**: review closure added ₹4.2k/6.1k/10.3k per module (iso-sense set, mirror relays, line-rated bypass, 2-series banks, X1 class, 60 W aux, E23 deferral back to modules) — safety/buildability bought with BOM. Now ₹36.1/61.4/114.8k vs red 25/42/78k. Levers: ECO-1 (E23, −₹0.9–3.2k), RFQ rounds (A7 ±25%), relay/iso-amp domestic alternates. Stretch unreachable — management flag stands | **Open (external-quote-dependent only)** |
+| R12 | COGS vs red-line | H×M | **Re-based at the ≥10k units/yr directive (A7 rev B, 2026-09-05)**: 10k-tier COGS (see bom-cost.md headline) sits near/below the red-lines with the remaining R12-rev-D levers (magnetics winder RFQ, 4-layer AC-DC, relay frame, fuse externalization) closing the rest; ECO-1 retired, ECO-2a/2b executed in rev D. Heuristic ×0.80/×0.87 + p10k converts to quotes at RFQ round 1 — the risk is now quote realization, not architecture. Stretch flag reviewed after RFQ | **Open (quote-dependent only, severity reduced)** |
 
 ## EVT plan pointer
 

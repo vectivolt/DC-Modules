@@ -96,19 +96,30 @@ the HMI displays (`F.xx`) and CAN telemetry (STATUS2/FAULT_EVT) speak.
 
 The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to the rev C hardware:
 
-- **ADC scaling:** line/resonant CT channels are now biased at AVMID (VREF/2 ≈ 1.65 V):
-  `i = (raw·3.3/4096 − 1.65) / (33 Ω) · N` (N = 2500 line / 100 resonant). AC phase-voltage
-  channels come from ±5 V iso amps (gain 0.41, output centered mid-rail): bipolar conversion with
-  the amp's datasheet offset. Bus/bank/output channels are unipolar 0–2 V iso-amp outputs.
-  `SNS_IOUT`/`SNS_IOUTN` form a software differential (subtract before scaling — MR-6).
+- **ADC scaling (rev D — R2 CB-16):** CT channels are biased at AVMID (VREF/2 ≈ 1.65 V) with
+  **per-family burdens**: line `i = (raw·3.3/4096 − 1.65) / 33 · 2500`; resonant
+  `i = (raw·3.3/4096 − 1.65) / 2.0 · 100` (2.0 Ω burden — the 33 Ω constant here was the R2
+  CB-16 defect; F.11 comparator DAC = 3.05 V for 70 A pk). AC phase-voltage channels come from
+  ±5 V iso amps (gain 0.41, output centered mid-rail): bipolar conversion with the amp's datasheet
+  offset. Bus/bank/output channels are unipolar 0–2 V iso-amp outputs. `SNS_IOUT`/`SNS_IOUTN`
+  form a software differential (subtract before scaling — MR-6). **Rail monitors** SNS_V24/SNS_V15
+  (pins 51/52): ÷7.8 and ÷5.7 dividers — alarm at ±15 %.
+- **LLC fault path (rev D — R2 CB-21):** `FLT_LLC` lands on MCU-LLC pin 74 — latch F.02/F.12-class
+  faults from it exactly as MCU-PFC does from pin 74; it is also the F.32 visibility path on this
+  board.
+- **Bank discharge (rev D — E33):** on SHUTDOWN, after `q_disch`, assert `CTL_QDISBK` (pin 75) —
+  both bank bleeders fire (τ ≈ 4–17 s per SKU); supervise as F.21b (2× τ timeout per SKU). The
+  bus F.21 timeout is now implemented in `fsm.c` with `PMP_DISCH_TO_MS` (override per SKU at
+  build: 3000/5500/9000 ms).
 - **Watchdog:** kick `WDI_PFC` (pin 70) / `WDI_LLC` (pin 46) inside the 10 ms window from the
   control loop tick — the external WD's WDO is a hard input to the GATE_EN AND (E27). A missed
   window disables gates without firmware involvement; firmware sees it as F.32 on the FLT path.
 - **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
   the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
 - **Relay feedback:** `relay_fb[]` now reads real pins — MCU-LLC 2–7 = KSER, KPARA, KPARB, KOUT,
-  KPREA, KPREB mirror contacts (low = main open); MCU-PFC 50 = KPRE1+KPRE2 series chain
-  (high = both mains open). F.19 evaluates exactly as already coded.
+  KPREA, KPREB mirror contacts (low = main open; **at 120 kW each HV function is a dual relay
+  pair with series mirrors on the same net — low = BOTH mains open, R2 HR-19**); MCU-PFC 50 =
+  KPRE1+KPRE2 series chain (high = both mains open). F.19 evaluates exactly as already coded.
 - **Discharge:** `CTL_QDIS` is active-high into an opto LED; default (reset/tri-state) = OFF.
   No inversion vs the FSM's `discharge_cmd`.
 - **Relay economization (E26):** after 60 ms pull-in at 100 % duty, PWM coil hold at ~40 %

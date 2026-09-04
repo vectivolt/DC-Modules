@@ -103,3 +103,47 @@ Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49
 | Bias modules | custom E23 set (BOM) vs modules (schematic) | **modules (QA01C-class) both; E23 → ECO-1** | HR-10 |
 | L-PE surge | — | **3× MOV 550 VAC + GDT 3.5 kV** | HR-7 |
 | ULN spare inputs | floating | **grounded** | MR-8 |
+
+---
+
+## Rev D parts deltas (2026-09-05, R2 re-audit closure — docs/design-review-production-r2.md)
+
+| Change | Was | Now | Driver |
+|---|---|---|---|
+| Resonant CT burden | 33 Ω 1206 (line-CT value, 15 V rms/7 W at the front-end) | **2.0 Ω 1 W 2512** | R2 CB-16 |
+| 3.3 V rail | AMS1117 SOT-223 from 15 V, AC-DC board only | **TPS54202-class sync buck, one per board** | CB-17/CB-18 |
+| Aux rectifiers | SS310 (100 V) at 130–199 V PIV | **400 V ultrafast (UF-400V-3A SMC / US2G)** | CB-19 |
+| Aux stage | 60 W ETD29 (rev B) | **110 W ETD34 (D4 rev C), NCP1252A, CS 0.31 Ω, rail TVS** | CB-20/MR-13/MR-17 |
+| LLC fault path | FLT_LLC unread | **MCU-LLC pin 74** | CB-21 |
+| Tank | 4×44 nF + single 4.3 µH trim (rev D) | **4×46 nF + D2 bin set (rev D2 as frozen)** | CB-22 |
+| Watchdog symbol | 3-pin, unpowered | **6-pin w/ VDD + SET straps** | HR-13 |
+| Pulse resistors @120 kW | one 25 W p/n all SKUs | **50 W variants (477/382 J events)** | HR-14 |
+| Bank discharge | none (balance chains only, 3–14 min) | **commanded bleeders: 2× (4× 2.2 k 10 W + 1200 V FET + opto)** | HR-15/E33 |
+| Iso-5V bias modules | B1505S (1.5 kV functional) | **reinforced-rated ≥5 kVrms class** | HR-16 |
+| Fans @120 kW | 2 headers for 4 fans | **4 headers, 4 monitored tachs** | HR-17 |
+| CM chokes | one p/n, 4 mm² wire (14–28 A/mm²) | **per-SKU D7 foil windings** | HR-18 |
+| 120 kW S/P relay pairs | BOM qtyMul only | **dual schematic instances w/ series mirrors** | HR-19 |
+| Balance/star resistors | single 100 k 2512 (415 V/1.7 W each) | **2-series 47 k HV anti-surge** | HR-20 |
+| AVMID buffer | op-amp direct into 10 µF | **4.7 Ω isolation + dual feedback** | MR-11 |
+| MCU mpn | GD32G553**R**ET6 (64-pin!) | **GD32G553VET6** | MR-12 |
+| B2B harness | JST PHD (1 A contacts) | **Micro-Fit 3.0-class 5 A; spares = GND; link series 100 Ω** | MR-14 |
+| OVP sense filters | 10 nF (τ 68 µs vs "<10 µs" claim) | **1 nF on OVP channels; table restated <25 µs** | MR-18 |
+| Clamp bleeder | 470 Ω 5 W (86 % worst) | **470 Ω 10 W** | MR-19 |
+| HMI buttons | direct to MCU pins | **+100 nF ESD/bounce caps** | MR-22 |
+| Aux CS resistor | generic small-signal catch-all | **0.31 Ω 0.5 W 1206 current-sense line** | §L |
+| F.21 | documented, unimplemented | **fsm.c disch timer + per-SKU `PMP_DISCH_TO_MS` (33/33 pass)** | HR-14 |
+
+---
+
+## Rev D.1 deltas (2026-09-05, 10k-volume directive + ECO-2 + deck-driven refinements)
+
+| Change | Was | Now | Driver |
+|---|---|---|---|
+| Bank-bleed drive | 2× (TLP152 opto + QA01C bias module) | **2× VOM1271-class PV driver** (no floating supply; ms turn-on is the requirement) | ECO-2a / E33 rev B (−₹204) |
+| Iso/bias module pricing | 1k-target only | **`p10k` volume quotes** (gate modules ₹55, reinforced 5 V ₹65, PSQD ₹60) | ECO-2b / A7 rev B |
+| E23 custom bias transformer | deferred ECO-1 | **RETIRED — modules permanent** (10k module pricing beats the custom set's risk-adjusted saving; D5 cancelled) | E23 rev B |
+| BOM tiers | 100/1k/5k | **+10k tier (×0.80/×0.87 + p10k)** — planning basis | A7 rev B |
+| AVMID AC-feedback cap | 100 pF | **2.2 nF** (corner must sit below the ~30 kHz outer-loop crossover — ct-frontend deck) | MR-11 refinement |
+| Resonant ADC filter | 1 nF (25 % attenuation at 140 kHz → F.11 drift) | **220 pF** (F.11 crisp at 3.02 V) | CB-16 refinement |
+| Loss budget | EMI filter unbudgeted | **emi_filter_W column (49/132/248 W); η restated 97.26–97.29 %** | HR-18 executed |
+| F.21b timeout | 2.0×τ (false-fails at 71 V) | **2.5×τ** (10.3/20.6/41.2 s) | per-SKU deck catch |

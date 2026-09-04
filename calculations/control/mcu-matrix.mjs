@@ -55,40 +55,42 @@ for (const { name, lanes, ch } of SKUS) {
 }
 writeFileSync(join(OUT, "mcu-matrix.csv"), rows.map(r => r.join(",")).join("\n") + "\n");
 
-// Pin-level assignment table (30 kW shown; 60/120 add lane/channel columns on same units).
-// CONVENTION: STM32G474-compatible port mapping, TO BE VERIFIED against GD32G553 datasheet.
+// Pin-level assignment table — rev D (2026-09-05): regenerated to mirror the boards.tsx numeric
+// maps (the §20 build-asserted artifact), which are the authority. Numbers are SYMBOLIC on
+// G474-style conventions pending A6 closure against the real GD32G553VET6 datasheet — the
+// assertUniquePins reserved list [10,11,14,19,20,26,27,28,29,100] and every number below MUST be
+// regenerated at A6 (real VDD/VSS sit at 49/50, 74/75, 99 on some LQFP100 parts). The pre-rev-D
+// version of this table (PA-port conventions, shunt+NSI1200 phase sensing, PA14/15 link = SWD
+// pins, PA11 CAN conflict) predated E18/E25/rev C-D and was retired as misleading.
 const pins = [
-  ["MCU","signal","peripheral","pin(conv.)","direction","notes"],
-  ["PFC","PWM_PHA","HRTIM_CHA1","PA8","out","lane0 phase A gate (pair)"],
-  ["PFC","PWM_PHB","HRTIM_CHB1","PA10","out","lane0 phase B"],
-  ["PFC","PWM_PHC","HRTIM_CHC1","PB12","out","lane0 phase C"],
-  ["PFC","PWM_PHA_L1","HRTIM_CHD1","PB14","out","lane1 (60/120 kW) 180°"],
-  ["PFC","PWM_PHB_L1","HRTIM_CHE1","PC8","out","lane1"],
-  ["PFC","PWM_PHC_L1","HRTIM_CHF1","PC6","out","lane1"],
-  ["PFC","I_PHA0..","ADC1_IN1..3","PA0,PA1,PA2","in","lane0 currents, shunt+NSI1200"],
-  ["PFC","I_L1..","ADC2_IN1..3","PA4,PA5,PA6","in","lane1 currents"],
-  ["PFC","VAB,VBC,VCA","ADC3_IN","PB0,PB1,PB2","in","divider+RC"],
-  ["PFC","VBUS+,VBUS-,VMID","ADC4_IN","PC0,PC1,PC2","in","HV dividers"],
-  ["PFC","TEMP1..4","ADC3_IN slow","PC3,PC4,PC5,PB11","in","NTC"],
-  ["PFC","OC_KILL","COMP1→HRTIM FLT1","PB3","in","hardware PWM kill"],
-  ["PFC","BUS_OVP","COMP2→FLT2","PB4","in",""],
-  ["PFC","PRECHG,DISCHG","GPIO","PB5,PB6","out","relay drivers"],
-  ["PFC","FAN_PWM1/2,TACH1/2","TIM3 CH1/2, TIM4 CH1/2","PB7,PB8,PB9,PA3","io",""],
-  ["PFC","LINK_TX/RX","USART2","PA14,PA15","io","internal link, CRC+seq"],
-  ["LLC","PWM_LEG1_H/L","HRTIM_CHA1/2","PA8,PA9","out","channel0 leg1"],
-  ["LLC","PWM_LEG2_H/L","HRTIM_CHB1/2","PA10,PA11","out",""],
-  ["LLC","PWM_LEG3_H/L","HRTIM_CHC1/2","PB12,PB13","out",""],
-  ["LLC","CH1 legs (60/120)","HRTIM_CHD/E/F","PB14,PB15,PC8,PC9,PC6,PC7","out","channel1"],
-  ["LLC","I_RES_CH0..3","ADC1/2_IN","PA0,PA1,PA4,PA5","in","resonant CT burden"],
-  ["LLC","VOUT,IOUT","ADC3_IN1/2","PB0,PB1","in","iso ΣΔ / shunt"],
-  ["LLC","VBANK_A/B","ADC4_IN1/2","PC0,PC1","in","iso amps"],
-  ["LLC","RES_OC,OUT_OVP","COMP1/2→FLT1/2","PB3,PB4","in","PWM kill"],
-  ["LLC","K_SER,K_PAR_A,K_PAR_B","GPIO","PB5,PB6,PB7","out","relay coil drivers"],
-  ["LLC","K_SENSE_1..3","GPIO in","PB8,PB9,PB10","in","contact readback"],
-  ["LLC","CAN_EXT","CAN1 TX/RX","PA12,PA11→remap PD0/PD1","io","VERIFY remap — PA11 conflict flagged, resolve on datasheet"],
-  ["LLC","CAN_INT","CAN2/USART2","PA14,PA15","io","internal link"],
-  ["LLC","ENABLE_IN,FAULT_OUT","GPIO","PC10,PC11","io",""],
+  ["mcu","signal","pin(symbolic)","dir","notes"],
+  ["PFC","PWM_<phase> (A0 B0 C0 A1 ...)","55+i (55-66 @120kW)","out","HRTIM; one PWM per Vienna phase (E4)"],
+  ["PFC","I_<phase> line CT","30+i (30-41 @120kW)","in","AVMID-biased burden 33R 1:2500 (E18/CB-15)"],
+  ["PFC","SNS_VAC1..3","43-45","in","AMC1350-class iso amps vs artificial star (E25)"],
+  ["PFC","SNS_VBUSP / SNS_VMID","46 / 47","in","AMC1311-class 0-2V; 1nF fast filter (F.03 - MR-18)"],
+  ["PFC","T_PFC / T_INLET","48 / 49","in","NTC (inlet read here only; shared over link - MR-2)"],
+  ["PFC","RELAY_FB_KPRE","50","in","KPRE1+KPRE2 series mirrors (high = both mains open)"],
+  ["PFC","SNS_V24 / SNS_V15","51 / 52","in","rail monitors /7.8 and /5.7 (rev D)"],
+  ["PFC","LINK_TX / LINK_RX","68 / 69","io","internal UART CRC16+seq"],
+  ["PFC","WDI_PFC / EN_PFC","70 / 71","out","E27 chain (WD kick; enable into both SafetyChains)"],
+  ["PFC","CTL_KPRE / CTL_QDIS","72 / 73","out","ULN in1; bus-discharge opto LED (default-OFF E19revB)"],
+  ["PFC","FLT_PFC","74","in","driver FLT wire-OR (4.7k pullup)"],
+  ["PFC","FAN_PWM/TACH 1-2","76-79","io","all SKUs"],
+  ["PFC","FAN_PWM/TACH 3-4","80-83","io","120 kW only (HR-17)"],
+  ["PFC","(structural) VDD/VSS 10 11 26 27 · NRST 14 · VDDA 19 20 · SWD 28 29 · BOOT0 100","-","-","reserved in assertUniquePins"],
+  ["LLC","PWM_L<n>H / PWM_L<n>L","50+2i / 51+2i (50-73 @120kW)","out","HRTIM complementary pairs"],
+  ["LLC","I_RES<n> resonant CT","30+i (30-41 @120kW)","in","AVMID-biased burden 2.0R 1:100 (CB-16)"],
+  ["LLC","T_LLC / T_XFMR","42 / 43","in","NTC"],
+  ["LLC","LINK_TX / LINK_RX","44 / 45","io","crossed to harness on this side (CB-14)"],
+  ["LLC","WDI_LLC / EN_LLC","46 / 47","out","E27 chain"],
+  ["LLC","CAN_TX / CAN_RX","48 / 49","io","external isolated CAN"],
+  ["LLC","FLT_LLC","74","in","driver FLT wire-OR (rev D - CB-21)"],
+  ["LLC","CTL_QDISBK","75","out","both bank-bleed PV-driver LEDs (E33 revB, ~12 mA)"],
+  ["LLC","CTL_KSER..CTL_KPREB","80-85","out","ULN inputs"],
+  ["LLC","HMI DAT/CLK/LAT/DIG1/DIG2/BTN1/BTN2","88-94","io","E21"],
+  ["LLC","SNS_IOUTN/VOUT/IOUT/VBKA/VBKB","95-99","in","iso amps; OV/OA/OB carry the 1nF fast filter"],
+  ["LLC","RELAY_FB KSER/KPARA/KPARB/KOUT/KPREA/KPREB","2-7","in","mirrors (120kW: series pairs - HR-19)"],
+  ["LLC","(structural) VDD/VSS 10 11 26 27 · NRST 14 · VDDA 19 20 · SWD 28 29 · BOOT0 100","-","-","reserved in assertUniquePins"],
 ];
 writeFileSync(join(OUT, "mcu-pinmap.csv"), pins.map(r => r.join(",")).join("\n") + "\n");
-console.log("Pin map (convention-mapped, VERIFY vs datasheet) → out/mcu-pinmap.csv");
-console.log("Known conflict flagged: LLC CAN1 default pins overlap HRTIM CHB — resolve via remap at datasheet check.");
+console.log("Pin map (rev D, mirrors boards.tsx; symbolic pending A6) → out/mcu-pinmap.csv");

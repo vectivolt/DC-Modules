@@ -1,3 +1,9 @@
+// boards.tsx v4 — R2 review closure (docs/design-review-production-r2.md, E32):
+//   CB-17/18 Rail3V3 buck per board (DC-DC had NO 3.3 V source; LDO was thermally impossible)
+//   CB-21 FLT_LLC → MCU-LLC pin 74 · HR-15 bank bleeders (2× DischargeCtl + FET + chains, pin 75)
+//   HR-17 4 fan ports + pins 80–83 at 120 kW · HR-19 dual S/P relays at 120 kW (matrix `dual`)
+//   HR-20 RNS star + bank balance → 2-series 47 k HV · MR-18 1 nF filter on OVP sense channels
+//   E32 V24/V15 rail monitors → MCU-PFC pins 51/52
 // boards.tsx v3 — AC-DC and DC-DC board generators for the two-board sandwich architecture
 // (customer directive 2026-09-04; E17). Lanes/channels parameterized: 30 kW = 1, 60 kW = 2,
 // 120 kW = 4. Schematic-complete; PCB layout deliberately untuned.
@@ -13,7 +19,7 @@ import {
   ViennaPhase, LlcHalfBridgeLeg, LlcSection, SplitDcLink, SeriesParallelRelayMatrix,
   IsoVSense, Bias5Module, AnalogMid, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
   InterconnectSignals, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
-  DischargeCtl, StudFP, RelayMFP, FilmBoxFP, Cm3FP, SnapInFP,
+  DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, Cm3FP, SnapInFP,
 } from "../power-primitives/cells";
 
 const assertUniquePins = (label: string, entries: [string, number][]) => {
@@ -30,6 +36,7 @@ const assertUniquePins = (label: string, entries: [string, number][]) => {
 // ================= AC-DC BOARD =================
 export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number }) => {
   const phases = Array.from({ length: lanes }, (_, l) => ["A", "B", "C"].map(p => ({ id: `${p}${l}`, ac: `net.AC${p === "A" ? "1F" : p === "B" ? "2F" : "3"}` }))).flat();
+  const nFans = lanes === 4 ? 4 : 2; // HR-17: thermal architecture is 2/2/4 fans — every fan gets its own header + monitored tach
   // MCU-PFC pin map (§20): PWM per phase, CT per phase, senses, temps, fans, link, safety chain
   const pfcPins: [string, number][] = [
     ...phases.map((p, i) => [`net.PWM_${p.id}`, 55 + i] as [string, number]),
@@ -37,7 +44,11 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
     ["net.SNS_VAC1", 43], ["net.SNS_VAC2", 44], ["net.SNS_VAC3", 45],
     ["net.SNS_VBUSP", 46], ["net.SNS_VMID", 47],
     ["net.T_PFC", 48], ["net.T_INLET", 49],
-    ["net.FAN_PWM1", 76], ["net.FAN_TACH1", 77], ["net.FAN_PWM2", 78], ["net.FAN_TACH2", 79],
+    ["net.SNS_V24", 51], ["net.SNS_V15", 52],
+    ...Array.from({ length: nFans }, (_, i) => [
+      [`net.FAN_PWM${i + 1}`, i < 2 ? 76 + 2 * i : 80 + 2 * (i - 2)] as [string, number],
+      [`net.FAN_TACH${i + 1}`, i < 2 ? 77 + 2 * i : 81 + 2 * (i - 2)] as [string, number],
+    ]).flat(),
     ["net.LINK_TX", 68], ["net.LINK_RX", 69],
     ["net.WDI_PFC", 70], ["net.EN_PFC", 71],
     ["net.CTL_KPRE", 72], ["net.CTL_QDIS", 73], ["net.FLT_PFC", 74],
@@ -193,23 +204,25 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
       <trace from=".QDISF > .G" to="net.G_QDIS" />
 
       {/* sensing (E25: every HV sense isolated; SELV control domain preserved).
-          AC senses reference a 3×100 k artificial star; bus senses reference DCN. */}
-      {[1, 2, 3].map(i => (
-        <resistor key={`ns${i}`} name={`RNS${i}`} resistance="100k" footprint="2512" pcbX={-w / 2 + 250} pcbY={-h / 2 + 100 - i * 6} schX={-25} schY={2 + i * 0.4} />
-      ))}
-      <trace from=".RNS1 > .pin1" to="net.AC1" />
-      <trace from=".RNS1 > .pin2" to="net.NSTAR" />
-      <trace from=".RNS2 > .pin1" to="net.AC2" />
-      <trace from=".RNS2 > .pin2" to="net.NSTAR" />
-      <trace from=".RNS3 > .pin1" to="net.AC3" />
-      <trace from=".RNS3 > .pin2" to="net.NSTAR" />
+          AC senses reference a 3×(2×47 k) artificial star (HR-20: 2-series halves per-element
+          V/W — 0.46 W & 152 Vrms each); bus senses reference DCN. NOTE: the star doubles as the
+          X-cap bleed path (τ ≈ 0.42 s) — do not delete without replacing that function. */}
+      {[1, 2, 3].map(i => [
+        <resistor key={`nsa${i}`} name={`RNS${i}A`} resistance="47k" footprint="2512" pcbX={-w / 2 + 250} pcbY={-h / 2 + 100 - i * 6} schX={-25} schY={2 + i * 0.4} />,
+        <resistor key={`nsb${i}`} name={`RNS${i}B`} resistance="47k" footprint="2512" pcbX={-w / 2 + 258} pcbY={-h / 2 + 100 - i * 6} schX={-24.5} schY={2 + i * 0.4} />,
+      ])}
+      {[1, 2, 3].map(i => [
+        <trace key={`nt1${i}`} from={`.RNS${i}A > .pin1`} to={`net.AC${i}`} />,
+        <trace key={`nt2${i}`} from={`.RNS${i}A > .pin2`} to={`.RNS${i}B > .pin1`} />,
+        <trace key={`nt3${i}`} from={`.RNS${i}B > .pin2`} to="net.NSTAR" />,
+      ])}
       <Bias5Module id="AC" p5="net.B5AC" com="net.NSTAR" x={-w / 2 + 250} y={-h / 2 + 110} sx={-25} sy={3.6} />
       <Bias5Module id="BUS" p5="net.B5BUS" com="net.DCN" x={-w / 2 + 250} y={-h / 2 + 120} sx={-23} sy={3.6} />
       <IsoVSense id="V1" hv="net.AC1" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC1" x={-w / 2 + 240} y={-h / 2 + 90} sx={-24} sy={4} />
       <IsoVSense id="V2" hv="net.AC2" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC2" x={-w / 2 + 240} y={-h / 2 + 80} sx={-24} sy={4.8} />
       <IsoVSense id="V3" hv="net.AC3" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC3" x={-w / 2 + 240} y={-h / 2 + 70} sx={-24} sy={5.6} />
-      <IsoVSense id="BP" hv="net.DCP" ref="net.DCN" biasP="net.B5BUS" out="net.SNS_VBUSP" x={-w / 2 + 240} y={-h / 2 + 60} sx={-24} sy={6.4} />
-      <IsoVSense id="BM" hv="net.MID" ref="net.DCN" biasP="net.B5BUS" out="net.SNS_VMID" x={-w / 2 + 240} y={-h / 2 + 50} sx={-24} sy={7.2} />
+      <IsoVSense id="BP" hv="net.DCP" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VBUSP" x={-w / 2 + 240} y={-h / 2 + 60} sx={-24} sy={6.4} />
+      <IsoVSense id="BM" hv="net.MID" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VMID" x={-w / 2 + 240} y={-h / 2 + 50} sx={-24} sy={7.2} />
       <AnalogMid x={-w / 2 + 240} y={-h / 2 + 15} sx={-20} sy={8} />
       <NtcInput id="TPFC" out="net.T_PFC" x={-w / 2 + 240} y={-h / 2 + 35} sx={-24} sy={8} />
       <NtcInput id="TINL" out="net.T_INLET" x={-w / 2 + 240} y={-h / 2 + 25} sx={-22} sy={8} />
@@ -242,8 +255,23 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
         outs={["net.COIL_KPRE", "net.NC_O2", "net.NC_O3", "net.NC_O4", "net.NC_O5", "net.NC_O6", "net.NC_O7A", "net.NC_O8A"]}
         x={-w / 2 + 130} y={-h / 2 + 60} sx={-11} sy={4} />
       <AuxPower dcp="net.DCP" dcn="net.DCN" x={-w / 2 + 130} y={-h / 2 + 30} sx={-11} sy={5.6} />
-      <FanPort id="1" x={w / 2 - 40} y={-h / 2 + 80} sx={7} sy={4} />
-      <FanPort id="2" x={w / 2 - 40} y={-h / 2 + 65} sx={7} sy={4.8} />
+      <Rail3V3 id="A" x={-w / 2 + 190} y={-h / 2 + 30} sx={-8} sy={5.6} />
+      {/* E32: rail monitors — firmware finally sees its own supplies (24 V: ÷7.8 → 3.08 V; 15 V: ÷5.7 → 2.63 V) */}
+      <resistor name="RM24A" resistance="68k" footprint="0603" pcbX={-w / 2 + 210} pcbY={-h / 2 + 30} schX={-6.5} schY={5.6} />
+      <resistor name="RM24B" resistance="10k" footprint="0603" pcbX={-w / 2 + 216} pcbY={-h / 2 + 30} schX={-6} schY={5.6} />
+      <resistor name="RM15A" resistance="47k" footprint="0603" pcbX={-w / 2 + 210} pcbY={-h / 2 + 38} schX={-6.5} schY={6.1} />
+      <resistor name="RM15B" resistance="10k" footprint="0603" pcbX={-w / 2 + 216} pcbY={-h / 2 + 38} schX={-6} schY={6.1} />
+      <trace from=".RM24A > .pin1" to="net.V24" />
+      <trace from=".RM24A > .pin2" to="net.SNS_V24" />
+      <trace from=".RM24B > .pin1" to="net.SNS_V24" />
+      <trace from=".RM24B > .pin2" to="net.AGND" />
+      <trace from=".RM15A > .pin1" to="net.V15" />
+      <trace from=".RM15A > .pin2" to="net.SNS_V15" />
+      <trace from=".RM15B > .pin1" to="net.SNS_V15" />
+      <trace from=".RM15B > .pin2" to="net.AGND" />
+      {Array.from({ length: nFans }, (_, i) => (
+        <FanPort key={i} id={`${i + 1}`} x={w / 2 - 40} y={-h / 2 + 80 - i * 15} sx={7} sy={4 + i * 0.8} />
+      ))}
       <InterconnectSignals id="A" ltx="net.LINK_TX" lrx="net.LINK_RX" enA="net.EN_PFC" enB="net.EN_LLC"
         x={w / 2 - 40} y={-h / 2 + 110} sx={7} sy={5.8} />
       {/* MCU pin bindings (§20 map, asserted unique) */}
@@ -280,6 +308,8 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
     ["net.HMI_DAT", 88], ["net.HMI_CLK", 89], ["net.HMI_LAT", 90], ["net.HMI_DIG1", 91], ["net.HMI_DIG2", 92],
     ["net.BTN1", 93], ["net.BTN2", 94],
     ["net.CTL_KSER", 80], ["net.CTL_KPARA", 81], ["net.CTL_KPARB", 82], ["net.CTL_KOUT", 83], ["net.CTL_KPREA", 84], ["net.CTL_KPREB", 85],
+    ["net.FLT_LLC", 74],      // CB-21: the LLC driver fault wire-OR finally reaches the MCU (mirrors FLT_PFC=74)
+    ["net.CTL_QDISBK", 75],   // HR-15: commanded bank bleeders (both optos on one GPIO, ~12 mA)
     ...relayFb.map((k, i) => [`net.RELAY_FB_${k}`, 2 + i] as [string, number]),
   ];
   assertUniquePins("MCU-LLC", llcPins);
@@ -328,10 +358,15 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
       {Array.from({ length: nBank }, (_, i) => (
         <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 110 + (i % 2) * 20} pcbY={h / 2 - 42 - Math.floor(i / 2) * 25} schX={7 + (i % 2) * 1} schY={-7.65 + Math.floor(i / 2) * 0.7} />
       ))}
-      <resistor name="RBALTA" resistance="100k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 30} schX={3.4} schY={-8} />
-      <resistor name="RBALBA" resistance="100k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 42} schX={3.4} schY={-7.65} />
-      <resistor name="RBALTB" resistance="100k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 30} schX={9} schY={-8} />
-      <resistor name="RBALBB" resistance="100k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 42} schX={9} schY={-7.65} />
+      {/* HR-20: 2-series 47 k per string half (bank ≤525 V → ≤131 V & 0.37 W per element) */}
+      <resistor name="RBALTA1" resistance="47k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 30} schX={3.4} schY={-8} />
+      <resistor name="RBALTA2" resistance="47k" footprint="2512" pcbX={w / 2 - 188} pcbY={h / 2 - 30} schX={3.1} schY={-8} />
+      <resistor name="RBALBA1" resistance="47k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 42} schX={3.4} schY={-7.65} />
+      <resistor name="RBALBA2" resistance="47k" footprint="2512" pcbX={w / 2 - 188} pcbY={h / 2 - 42} schX={3.1} schY={-7.65} />
+      <resistor name="RBALTB1" resistance="47k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 30} schX={9} schY={-8} />
+      <resistor name="RBALTB2" resistance="47k" footprint="2512" pcbX={w / 2 - 82} pcbY={h / 2 - 30} schX={9.3} schY={-8} />
+      <resistor name="RBALBB1" resistance="47k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 42} schX={9} schY={-7.65} />
+      <resistor name="RBALBB2" resistance="47k" footprint="2512" pcbX={w / 2 - 82} pcbY={h / 2 - 42} schX={9.3} schY={-7.65} />
       <capacitor name="CBAF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={w / 2 - 160} pcbY={h / 2 - 20} schX={6} schY={-6.4} />
       <capacitor name="CBBF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={w / 2 - 110} pcbY={h / 2 - 15} schX={8.4} schY={-6.4} />
       {Array.from({ length: nBank }, (_, i) => [
@@ -344,22 +379,58 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
         <trace key={`bm2${i}`} from={`.CBB${i}B > .pin1`} to="net.BKBM" />,
         <trace key={`bn${i}`} from={`.CBB${i}B > .pin2`} to="net.BKBN" />,
       ])}
-      <trace from=".RBALTA > .pin1" to="net.BKAP" />
-      <trace from=".RBALTA > .pin2" to="net.BKAM" />
-      <trace from=".RBALBA > .pin1" to="net.BKAM" />
-      <trace from=".RBALBA > .pin2" to="net.BKAN" />
-      <trace from=".RBALTB > .pin1" to="net.BKBP" />
-      <trace from=".RBALTB > .pin2" to="net.BKBM" />
-      <trace from=".RBALBB > .pin1" to="net.BKBM" />
-      <trace from=".RBALBB > .pin2" to="net.BKBN" />
+      <trace from=".RBALTA1 > .pin1" to="net.BKAP" />
+      <trace from=".RBALTA1 > .pin2" to=".RBALTA2 > .pin1" />
+      <trace from=".RBALTA2 > .pin2" to="net.BKAM" />
+      <trace from=".RBALBA1 > .pin1" to="net.BKAM" />
+      <trace from=".RBALBA1 > .pin2" to=".RBALBA2 > .pin1" />
+      <trace from=".RBALBA2 > .pin2" to="net.BKAN" />
+      <trace from=".RBALTB1 > .pin1" to="net.BKBP" />
+      <trace from=".RBALTB1 > .pin2" to=".RBALTB2 > .pin1" />
+      <trace from=".RBALTB2 > .pin2" to="net.BKBM" />
+      <trace from=".RBALBB1 > .pin1" to="net.BKBM" />
+      <trace from=".RBALBB1 > .pin2" to=".RBALBB2 > .pin1" />
+      <trace from=".RBALBB2 > .pin2" to="net.BKBN" />
       <trace from=".CBAF > .pin1" to="net.BKAP" />
       <trace from=".CBAF > .pin2" to="net.BKAN" />
       <trace from=".CBBF > .pin1" to="net.BKBP" />
       <trace from=".CBBF > .pin2" to="net.BKBN" />
 
-      {/* S/P matrix (mirror-contact relays + readback, E30) + coil driver */}
+      {/* S/P matrix (mirror-contact relays + readback, E30) + coil driver.
+          HR-19: at 120 kW the paralleled second relay per HV function is a real schematic
+          instance (contacts + coil + series mirror), not a BOM multiplier. */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
-        outp="net.OUTP" outn="net.OUTN_SH" x={w / 2 - 220} y={-h / 2 + 100} sx={2} sy={2} />
+        outp="net.OUTP" outn="net.OUTN_SH" dual={channels === 4} x={w / 2 - 220} y={-h / 2 + 100} sx={2} sy={2} />
+      {/* HR-15: commanded bank bleeders — banks otherwise hold ≤525 V for 3–14 min on the balance
+          chains alone (bus discharge never touches them). One GPIO drives both optos; default-OFF
+          like the bus chain (E19 rev B pattern). 4× 2.2 k 10 W axial per bank: τ ≈ 4–17 s,
+          ≤65 J/resistor at 120 kW. F.21b supervision per protection-thresholds rev C. */}
+      {[0, 1, 2, 3].map(i => (
+        <chip key={`ba${i}`} name={`RBDA${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 240 + i * 10} pcbY={-h / 2 + 150} schX={0.5 + i * 0.7} schY={5.5} />
+      ))}
+      {[0, 1, 2, 3].map(i => (
+        <chip key={`bb${i}`} name={`RBDB${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 240 + i * 10} pcbY={-h / 2 + 160} schX={0.5 + i * 0.7} schY={6.1} />
+      ))}
+      <chip name="QDISA" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 195} pcbY={-h / 2 + 150} schX={3.6} schY={5.5} />
+      <chip name="QDISB" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 195} pcbY={-h / 2 + 160} schX={3.6} schY={6.1} />
+      {/* ECO-2a (E33 rev B): PV drivers replace the opto+bias stacks — bleeders need ms-class
+          default-OFF drive only; −₹204/module, two fewer floating supplies */}
+      <PvGateDrive id="A" ctl="net.CTL_QDISBK" gateOut="net.G_QDISA" src="net.BKAN" x={w / 2 - 260} y={-h / 2 + 150} sx={-1.5} sy={5.5} />
+      <PvGateDrive id="B" ctl="net.CTL_QDISBK" gateOut="net.G_QDISB" src="net.BKBN" x={w / 2 - 260} y={-h / 2 + 160} sx={-1.5} sy={6.1} />
+      <trace from=".RBDA0 > .A" to="net.BKAP" />
+      <trace from=".RBDA0 > .B" to=".RBDA1 > .A" />
+      <trace from=".RBDA1 > .B" to=".RBDA2 > .A" />
+      <trace from=".RBDA2 > .B" to=".RBDA3 > .A" />
+      <trace from=".RBDA3 > .B" to=".QDISA > .D" />
+      <trace from=".QDISA > .S" to="net.BKAN" />
+      <trace from=".QDISA > .G" to="net.G_QDISA" />
+      <trace from=".RBDB0 > .A" to="net.BKBP" />
+      <trace from=".RBDB0 > .B" to=".RBDB1 > .A" />
+      <trace from=".RBDB1 > .B" to=".RBDB2 > .A" />
+      <trace from=".RBDB2 > .B" to=".RBDB3 > .A" />
+      <trace from=".RBDB3 > .B" to=".QDISB > .D" />
+      <trace from=".QDISB > .S" to="net.BKBN" />
+      <trace from=".QDISB > .G" to="net.G_QDISB" />
       <CoilDriver id="LB" ins={["net.CTL_KSER", "net.CTL_KPARA", "net.CTL_KPARB", "net.CTL_KOUT", "net.CTL_KPREA", "net.CTL_KPREB", "net.DGND", "net.DGND"]}
         outs={["net.COIL_KSER", "net.COIL_KPARA", "net.COIL_KPARB", "net.COIL_KOUT", "net.COIL_KPREA", "net.COIL_KPREB", "net.NC_O7", "net.NC_O8"]}
         x={w / 2 - 260} y={-h / 2 + 40} sx={2} sy={5} />
@@ -386,15 +457,16 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
       {/* sensing (E25: bank/output voltages isolated inside their own domains — CB-3 fix) */}
       <Bias5Module id="BKA" p5="net.B5BKA" com="net.BKAN" x={-w / 2 + 60} y={-h / 2 + 105} sx={-25} sy={3.4} />
       <Bias5Module id="BKB" p5="net.B5BKB" com="net.BKBN" x={-w / 2 + 60} y={-h / 2 + 98} sx={-23} sy={3.4} />
-      <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" out="net.SNS_VBKA" x={-w / 2 + 60} y={-h / 2 + 90} sx={-24} sy={4} />
-      <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" out="net.SNS_VBKB" x={-w / 2 + 60} y={-h / 2 + 80} sx={-24} sy={4.8} />
-      <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" out="net.SNS_VOUT" x={-w / 2 + 60} y={-h / 2 + 70} sx={-24} sy={5.6} />
+      <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" cf="1nF" out="net.SNS_VBKA" x={-w / 2 + 60} y={-h / 2 + 90} sx={-24} sy={4} />
+      <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" cf="1nF" out="net.SNS_VBKB" x={-w / 2 + 60} y={-h / 2 + 80} sx={-24} sy={4.8} />
+      <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" cf="1nF" out="net.SNS_VOUT" x={-w / 2 + 60} y={-h / 2 + 70} sx={-24} sy={5.6} />
       <AnalogMid x={-w / 2 + 60} y={-h / 2 + 35} sx={-20} sy={6.4} />
       <NtcInput id="TLLC" out="net.T_LLC" x={-w / 2 + 60} y={-h / 2 + 55} sx={-24} sy={6.4} />
       <NtcInput id="TXFR" out="net.T_XFMR" x={-w / 2 + 60} y={-h / 2 + 45} sx={-22} sy={6.4} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
       <ControlMcu id="LLC" x={-w / 2 + 150} y={-h / 2 + 60} sx={-14} sy={4.4} />
+      <Rail3V3 id="B" x={-w / 2 + 190} y={-h / 2 + 40} sx={-12} sy={5.4} />
       <SafetyChain id="B" enLocal="net.EN_LLC" enRemote="net.EN_PFC" wdi="net.WDI_LLC" gateEn="net.GATE_EN_B"
         x={-w / 2 + 150} y={-h / 2 + 95} sx={-14} sy={3} />
       <SwdPort id="LLC" x={-w / 2 + 110} y={-h / 2 + 60} sx={-16} sy={4.4} />

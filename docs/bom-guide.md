@@ -43,7 +43,7 @@ pie showData title 30 kW COGS ₹36,066 @1k (rev C)
 ## Price basis & breaks
 
 - `₹@1k` = direct-manufacturer RFQ-target at ~1000-module aggregate volume, **assumption A7, ±25 %** until quotes land. Never LCSC retail.
-- Breaks: 100 pc = ×1.35 (electronics) / ×1.15 (mech); 5000 pc = ×0.88 / ×0.93 — heuristic pending real quote ladders.
+- Breaks: 100 pc = ×1.35 (electronics) / ×1.15 (mech); 5000 pc = ×0.88 / ×0.93; **10k pc = ×0.80 / ×0.87 + per-part `p10k` quote overrides — the planning basis since the ≥10k units/yr directive (A7 rev B, 2026-09-05)** — heuristics pending real quote ladders at RFQ round 1.
 - Every line carries a **second source** (§49-22); single-sourced customs (chokes, transformers) carry drawing references D1–D5 so any winder can quote.
 
 ## The red-line problem, stated plainly

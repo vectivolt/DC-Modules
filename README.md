@@ -22,7 +22,7 @@
 A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging modules** engineered end-to-end in this repository: every number traces to a runnable calculation, every waveform claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated BOM line. One repeatable **~10 kW cell pair** (a Vienna PFC phase + an LLC transformer section) scales 3× / 6× / 12× across the family — same SiC, same magnetics part numbers, same firmware — packaged as a **two-board sandwich** (AC-DC below, DC-DC above) per module.
 
 > **What this repo is:** a complete, simulation-closed, tolerance-hardened electrical design + verified supervisory firmware + manufacturing documentation.
-> **Review status:** an adversarial production-readiness audit ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers**. All 15 (plus the 12 high / 10 medium items) are **closed in schematic rev C** the same day: cells v3, boards v3, parts-db rev C, aux flyback rev B re-simulated, six boards rebuilt with 0 netlist errors, and every fix asserted by `calculations/review-checks.mjs` (31/31 PASS). Open by nature: the §K datasheet gate, ECO-1, and bench EVT (T-01…T-18).
+> **Review status:** TWO adversarial production-readiness audits. R1 ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers** → closed same day as **rev C**. R2 ([docs/design-review-production-r2.md](docs/design-review-production-r2.md)) re-audited rev C and returned **NO again — 7 new criticals** (resonant sensing mis-scale, a board with no 3.3 V source, 100 V aux rectifiers at 160–200 V PIV, 60 W aux vs the 120 kW load, an unread LLC fault net, drawn-vs-frozen tank drift) → every finding falsification-checked, then closed same day as **rev D** (cells v4, boards v4, parts-db rev D, F.21 implemented in firmware, aux rev C re-simulated 9/9 at per-SKU loads, per-SKU protection decks, six boards rebuilt clean, gate extended to 60+ asserts incl. class checks). **Rev D.1**: 10k-volume basis (A7 rev B), ECO-2a/2b executed, E23 retired. Open by nature: the §K datasheet gate and bench EVT (T-01…T-25).
 > **What it is not (yet):** bench-validated or certified hardware — see [Honesty boundary](#honesty-boundary-50).
 
 ---
@@ -34,7 +34,7 @@ A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging module
 | Input | 3-φ 285–475 VAC | Full power 330–475 V, **86 % @285 V** constant-current derate — calculated trade, saves ~16 % on SiC/copper/EMI |
 | Output | 150–1000 VDC CV/CC | Series/parallel banks, crossover **500/525 V** + 30 s dwell; PS-mode below 260 V bank; ZVS held at **every** simulated edge |
 | THD | ≤5 % (stretch 3 %) | **0.59–1.05 %** full power, 2.55 % @25 % (line-cycle sim, THD-40) |
-| Peak efficiency | ≥97 % | **97.4–97.5 %** @nominal (loss-budget, temperature-iterated) |
+| Peak efficiency | ≥97 % | **97.26–97.29 %** @nominal (loss-budget rev D — EMI-filter copper now honestly budgeted; pre-R2 97.4–97.5 % omitted it) |
 | Envelope | full power to +55 °C | 3 SKUs × 1008 grid points: **0 violations**, worst Tj 139 °C vs 150 ceiling |
 | Accuracy | ±0.5 % V / ±1 % I | **±0.18 % / ±0.2 %** post-cal (10 k-sample Monte-Carlo, EOL 2-pt cal mandatory) |
 | Protections | §24 catalogue | **32-row threshold table**, HW-fast + supervisory, all 26 fault scenarios executed green |
@@ -73,7 +73,7 @@ flowchart LR
 | Board pair (mm) | 420×300 + 460×320 | 460×420 + 520×420 | 560×600 + 640×620 |
 | MCUs | 2 | 2 | 2 (HRTIM exactly full: 12+12 PWM) |
 | Effective ripple @EMI filter | 50 kHz | 100 kHz | 200 kHz |
-| COGS @1k (BOM-exact, **rev C**) | ₹36,066 | ₹61,415 | ₹114,833 |
+| COGS (BOM-exact, **rev D.1**) @1k / **@10k basis** | ₹37,034 / **₹29,957** | ₹62,884 / **₹50,780** | ₹117,216 / **₹94,614** |
 
 ---
 

@@ -30,14 +30,15 @@ IIIa (CTI ≥175) FR-4 baseline.
 
 Layout rules bank (for the later PCB phase): slots under every iso component; guard the S/P relay
 area (banks float — both banks treated at 1000 V class to PE); Y-caps only across defined barriers
-(3 line-PE Y2 on AC-DC; 2 output-PE Y2 on DC-DC); no SELV track inside HV zones; CAN connector
-domain (CGND) floats — 4 mm to everything.
+(3 line-PE + 2 output-PE — **Y1 440 VAC class since rev C/MR-4**; "Y2" in older text is historic);
+no SELV track inside HV zones; CAN connector domain (CGND) floats — 4 mm to everything, with the
+rev-D 1 MΩ ∥ 4.7 nF static bleed to DGND.
 
 ## §47 design-for-compliance checklist (excerpt, full tracking in verification matrix)
 
 - [x] Insulation coordination table (this doc) — VERIFY table values against purchased standard editions
 - [x] Protective separation of external CAN (iso 5 kV part + floating CGND + TVS)
-- [x] Touch-discharge: bus <60 V in ≤2 s active +100k passive backup (E14, F.21 supervision)
+- [x] Touch-discharge (restated honestly, R2 HR-15): **bus** <60 V in ≈2.0/3.6/7.2 s per SKU (640 Ω active, F.21 per-SKU supervision now implemented); **banks** <60 V in ≈8–34 s via the E33 commanded bleeders (F.21b) — previously the banks had no active discharge at all and held ≤525 V for 3–14 min; passive balance chains remain the backup. Tool-access marking per 62477 still applies for the passive-only failure case
 - [x] Single-fault: aux collapse → gates held low (T-09); relay weld detected (F.18); fan fail derate
 - [ ] Leakage current budget through Y network (calc pending with final Y values, EMI rev)
 - [ ] 61851-23 system items delegated to charger integrator documented in manual (IMD, output contactors, gun lock)
@@ -54,7 +55,11 @@ domain (CGND) floats — 4 mm to everything.
 - The **aux transformer (D4 rev B) barrier is now safety-load-bearing** for the SELV control
   domain (primary at bus potential): reinforced, 100 % hipot 4 kV in production (not sampled).
 - Iso voltage-sense amps and their 5 V bias modules must be reinforced-rated for their domain's
-  working voltage (1000 V output domain / 830 V bus) — add to §K datasheet gate (O-items).
+  working voltage (1000 V output domain / 830 V bus / AC mains star) — **rev D (R2 HR-16): the
+  BOM now specifies reinforced-class modules (ISO5V-RFC-6K, ≥5 kVrms test) at every Bias5/PSCAN/
+  PSSH position; the previously-priced B1505S (1.5 kVDC functional, no cert) could never have
+  passed this row.** Certificate class per part = §K gate; same audit applies to the QA01C
+  gate-bias and PSQD positions (their barriers parallel the NSI6611's reinforced one).
 - Mirror contacts (E30) are separated from main contacts per the relay's internal construction —
   basic isolation minimum at 1000 VDC; VERIFY in the relay datasheet at RFQ (§K).
 - Control domain to PE: 1 MΩ ∥ 4.7 nF Y1 soft bond (no hard earth loop; leakage < 1 mA budget).

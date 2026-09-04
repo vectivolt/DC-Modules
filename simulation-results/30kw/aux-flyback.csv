@@ -1,5 +1,11 @@
-# ngspice-46; rev B (E26 full-bus 60 W redesign); behavioral VM control (IC dynamics abstracted — bench T-09 validates UVLO/BR); netlists spice/generated/aux-*.cir
-case,VIN,v24_settle,v24_dip_at_step,v24_recover_ms,v15_at_step_crossreg,Pout_full_W,verdict
-aux-342,342,24.16,23.27,8,14.63,54,PASS
-aux-560,560,24.16,23.37,0.57,14.72,54.2,PASS
-aux-850,850,24.23,23.45,0.62,14.74,54.4,PASS
+# ngspice-46; rev C (E26 rev C 110 W, per-SKU load matrix — R2/CB-20); behavioral VM control (bench T-09 validates NCP1252A UVLO/BO); netlists spice/generated/aux-*.cir
+case,VIN,sku,v24_settle,v24_dip_at_step,v24_recover_ms,v15_at_step_min,Pout_full_W,verdict
+aux-30kw-342,342,30kw,24.46,23.91,0.2,15.7,56.5,PASS
+aux-30kw-560,560,30kw,24.76,23.99,0.22,15.87,56.8,PASS
+aux-30kw-850,850,30kw,25.18,23.73,0.22,15.03,57.4,PASS
+aux-60kw-342,342,60kw,24.42,23.71,0.2,14.98,71.6,PASS
+aux-60kw-560,560,60kw,24.64,23.81,0.21,15.58,72,PASS
+aux-60kw-850,850,60kw,25.19,23.28,0.28,14.79,73.2,PASS
+aux-120kw-342,342,120kw,24.36,23.87,0.2,15.37,106.2,PASS
+aux-120kw-560,560,120kw,24.43,23.68,0.2,15.54,106.8,PASS
+aux-120kw-850,850,120kw,24.4,23.31,0.2,15.6,107.3,PASS

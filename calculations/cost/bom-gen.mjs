@@ -1,6 +1,9 @@
 // bom-gen.mjs — BOM generator (§49-7/21/22, §43): reads built circuit JSON of all six boards,
 // classifies every component via parts-db patterns, emits per-board BOM CSVs, per-module costed
-// roll-ups at 100/1000/5000 pcs, a second-source BOM, and docs/bom-cost.md.
+// roll-ups at 100/1k/5k/10k pcs, a second-source BOM, and docs/bom-cost.md.
+// rev D (2026-09-05): 10k tier added on the customer's ≥10k units/yr directive (A7 rev B) —
+// heuristic ×0.80 electronics / ×0.87 mech off the 1k basis, overridden per-part where a
+// volume-specific quote basis exists (`p10k` in parts-db: bias/iso modules, PV drivers).
 // UNMATCHED components are listed loudly — the BOM is not "perfect" until that list is empty.
 // Run (after tsci builds): node calculations/cost/bom-gen.mjs
 
@@ -42,7 +45,7 @@ for (const sku of SKUS) {
       if (!rule) { unmatched.add(`${side}:${name} (${c.ftype ?? "?"})`); anyUnmatched = true; continue; }
       const ov = (skuOverrides[sku] ?? {})[name] ?? {};
       const key = ov.price1k ? `${rule.mpn}@${name}` : rule.mpn;
-      const rec = parts.get(key) ?? { mpn: rule.mpn, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, sides: new Set(), refs: [] };
+      const rec = parts.get(key) ?? { mpn: rule.mpn, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
       rec.qty += ov.qtyMul ?? 1;
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);
@@ -50,29 +53,31 @@ for (const sku of SKUS) {
     }
   }
   const rows = [...parts.values()].sort((a, b) => b.qty * b.price1k - a.qty * a.price1k);
-  const csv = [["mpn", "manufacturer", "description", "second_source", "boards", "qty", "unit_100", "unit_1k", "unit_5k", "ext_1k_INR", "sample_refs"]];
-  let totE = 0;
+  const csv = [["mpn", "manufacturer", "description", "second_source", "boards", "qty", "unit_100", "unit_1k", "unit_5k", "unit_10k", "ext_1k_INR", "ext_10k_INR", "sample_refs"]];
+  let totE = 0, totE10 = 0;
   const cats = {};
   for (const r of rows) {
-    const ext = r.qty * r.price1k;
-    totE += ext;
+    const u10 = r.p10k ?? f(r.price1k * 0.80, 1);
+    const ext = r.qty * r.price1k, ext10 = r.qty * u10;
+    totE += ext; totE10 += ext10;
     const cat = CAT(r.mpn, r.desc);
     cats[cat] = (cats[cat] ?? 0) + ext;
-    csv.push([r.mpn, r.mfr, `"${r.desc}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), f(ext), r.refs.join(" ")]);
+    csv.push([r.mpn, r.mfr, `"${r.desc}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
-  csv.push(["BIAS-XFMR-SET", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, f(biasCommon.price1k * 1.35, 0), biasCommon.price1k, f(biasCommon.price1k * 0.88, 0), 2 * biasCommon.price1k, ""]);
+  csv.push(["BIAS-XFMR-SET", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
   cats["bias/iso modules"] = (cats["bias/iso modules"] ?? 0) + 2 * biasCommon.price1k;
   let mechTot = 0;
-  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; csv.push([`MECH`, "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(e), ""]); }
+  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; csv.push([`MECH`, "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
   cats["mechanical/assembly"] = mechTot;
   const grand = totE + mechTot;
-  csv.push(["TOTAL_ELECTRONIC", "", "", "", "", "", "", "", "", f(totE), ""]);
-  csv.push(["TOTAL_MODULE_1K", "", "", "", "", "", "", "", "", f(grand), ""]);
+  const grand10 = totE10 + mechTot * 0.87;
+  csv.push(["TOTAL_ELECTRONIC", "", "", "", "", "", "", "", "", "", f(totE), f(totE10), ""]);
+  csv.push(["TOTAL_MODULE", "", "", "", "", "", "", "", "", "", f(grand), f(grand10), ""]);
   writeFileSync(join(ROOT, "calculations", "out", `bom-${sku}.csv`), csv.map(r => r.join(",")).join("\n") + "\n");
   const [red, stretch] = TARGETS[sku];
-  summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };
-  console.log(`${sku}: ${rows.length} BOM lines, electronics ₹${f(totE)}, module ₹${f(grand)} @1k (red ₹${red}) ${grand <= red ? "≤ RED ✓" : "OVER by ₹" + f(grand - red)}`);
+  summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), g10k: f(grand10), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };
+  console.log(`${sku}: ${rows.length} BOM lines, electronics ₹${f(totE)}, module ₹${f(grand)} @1k / ₹${f(grand10)} @10k (red ₹${red}) ${grand10 <= red ? "10k ≤ RED ✓" : "10k OVER by ₹" + f(grand10 - red)}`);
   if (unmatched.size) console.log(`   UNMATCHED (${unmatched.size}): ${[...unmatched].slice(0, 10).join(", ")}${unmatched.size > 10 ? " …" : ""}`);
 }
 
@@ -80,37 +85,39 @@ for (const sku of SKUS) {
 const md = [`# BOM & Cost Roll-up (generated by calculations/cost/bom-gen.mjs — do not hand-edit)
 
 Basis: schematic-exact quantities from the six built boards (two-board sandwich per module, E17),
-parts-db RFQ-target pricing (A7, ±25%), mechanical/assembly lines from thermal/DFM calcs.
-Price breaks: 100 pc = ×1.35 electronics / ×1.15 mech; 5000 pc = ×0.88 / ×0.93 (heuristic, RFQ refines).
-Full line-item CSVs: \`calculations/out/bom-{sku}.csv\` (second-source column included).
+parts-db RFQ-target pricing (A7 rev B, ±25%), mechanical/assembly lines from thermal/DFM calcs.
+Price breaks: 100 pc = ×1.35 electronics / ×1.15 mech; 5000 pc = ×0.88 / ×0.93;
+**10k pc = ×0.80 / ×0.87 with per-part quote-based overrides (p10k)** — customer volume directive
+2026-09-05 (≥10k units/yr): the 10k column is the planning basis; heuristics resolve at RFQ round 1.
+Full line-item CSVs: \`calculations/out/bom-{sku}.csv\` (second-source + 10k columns included).
 `];
 for (const sku of SKUS) {
   const s = summary[sku];
-  md.push(`## ${sku.toUpperCase()} — module COGS ₹${f(s.grand)} @1k (100 pc ₹${s.g100}, 5k ₹${s.g5k}) vs red-line ₹${s.red} / stretch ₹${s.stretch} → **${s.grand <= s.red ? "UNDER red-line" : `OVER red-line by ₹${f(s.grand - s.red)}`}${s.grand <= s.stretch ? ", meets stretch" : ""}**\n`);
+  md.push(`## ${sku.toUpperCase()} — module COGS **₹${s.g10k} @10k** (1k ₹${f(s.grand)}, 5k ₹${s.g5k}, 100 pc ₹${s.g100}) vs red-line ₹${s.red} / stretch ₹${s.stretch} → **${s.g10k <= s.red ? `@10k UNDER red-line by ₹${f(s.red - s.g10k)}` : `@10k OVER red-line by ₹${f(s.g10k - s.red)}`}${s.g10k <= s.stretch ? ", meets stretch" : ""}**\n`);
   md.push(`| Category | ₹ @1k | share |`, `|---|---|---|`);
   const tot = s.grand;
   for (const [c, v] of Object.entries(s.cats).sort((a, b) => b[1] - a[1])) md.push(`| ${c} | ${f(v)} | ${f(100 * v / tot, 1)}% |`);
   if (s.unmatched.length) md.push(`\n**UNMATCHED PARTS (${s.unmatched.length}) — BOM incomplete:** ${s.unmatched.join(", ")}`);
   md.push("");
 }
-md.push(`## Red-line closure levers (R12) — quantified, owner = Phase-17 RFQ round
+md.push(`## Red-line closure levers (R12 rev D — 10k basis; the generic volume break is ALREADY in the 10k column, so the old "5k-break" lever is retired to avoid double-counting)
 
 | Lever | Δ @30 kW | Δ @60 kW | Δ @120 kW | Condition |
 |---|---|---|---|---|
-| ~~Custom gate-bias transformer (E23)~~ **EXECUTED — already in totals** | 0 | 0 | 0 | done (was −₹0.2–0.9k net incl. E22 adds) |
-| Magnetics RFQ at Chinese winder (choke ₹1035→800, xfmr ₹680→550) | −₹1,095 | −₹2,190 | −₹4,380 | quotes at 1k volume |
-| SiC 5000-pc break (×0.88 on semis) | −₹950 | −₹1,900 | −₹3,800 | aggregate order |
-| AC-DC board 4-layer (control zones only need 4) | −₹300 | −₹430 | −₹740 | layout phase confirms |
-| Relay direct RFQ (Hongfa annual) | −₹500 | −₹900 | −₹1,900 | volume agreement |
-| Fuse→MCB-coordinated external (charger-level absorbs) | −₹270 | −₹630 | −₹1,440 | system integrator accepts |
-| 120 kW partial magnetics de-commonization (12→6 larger chokes; 12→6 dual-section xfmrs) | — | — | −₹6,100 | Phase-12 rev; breaks family p/n, keep only if 120 kW volume justifies |
-| **Sum of levers** | **−₹3,695** | **−₹7,210** | **−₹20,680** | |
+| ~~Custom gate-bias transformer (E23/ECO-1)~~ **RETIRED** — at 10k volume the module p10k (₹55) beats the custom set's risk-adjusted saving | 0 | 0 | 0 | closed decision, E23 rev B |
+| ~~ECO-2a/2b (PV bleeder drivers, reinforced-module volume pricing)~~ **EXECUTED — in totals** | 0 | 0 | 0 | done rev D |
+| Magnetics winder RFQ below target (choke ₹828→640, xfmr ₹544→440 at 10k-basis prices) | −₹880 | −₹1,760 | −₹3,520 | quotes at committed volume |
+| AC-DC board 4-layer (control zones only need 4) | −₹240 | −₹345 | −₹590 | layout phase confirms |
+| Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹720 | −₹1,520 | volume agreement |
+| Fuse→MCB-coordinated external (charger-level absorbs) | −₹215 | −₹505 | −₹1,150 | system integrator accepts |
+| 120 kW partial magnetics de-commonization (12→6 larger chokes; 12→6 dual-section xfmrs) | — | — | −₹4,880 | Phase-12 rev; breaks family p/n, keep only if 120 kW volume justifies |
+| **Sum of levers** | **−₹1,735** | **−₹3,330** | **−₹11,660** | |
 
-Red-line reachability after levers: 30 kW ≈ ₹28.2k (−₹3.2k gap), 60 kW ≈ ₹48.2k (−₹6.2k gap),
-120 kW ≈ ₹83.6k (−₹5.6k gap). Closing the remainder requires combinations of: SR-variant/clamp
-trade (−₹0.3–0.9k), bank-cap optimization (−₹0.3–1.2k), assembly localization (−₹0.5–1.5k),
-sandwich→single-board reversal (−₹1.45k+, **conflicts with directive E17**), or red-line renegotiation.
-**Stretch targets are not reachable in this architecture — standing management flag (R12).**
+Architecture-level options NOT taken without a directive (they change the product): LV/HV fixed
+variants deleting the S/P matrix (−₹3k+ @30 kW, collapses the 150–1000 V single-SKU spec),
+750 V-class secondary diodes (−₹0.8k, thins E11 margin), sandwich reversal (−₹1.45k,
+**conflicts with directive E17**). **Stretch targets remain a management flag (R12)** — see the
+10k headline above for where the red-lines actually stand now.
 `);
 md.push(`## Directive cost impacts (recorded)
 - Two-board sandwich (E17): +1 PCB, interconnect studs/harness — ≈ +₹1,450/-module @30 kW vs single-board baseline.

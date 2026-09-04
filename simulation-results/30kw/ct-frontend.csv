@@ -1,0 +1,8 @@
+# ngspice-46; R2 §G closure deck — AVMID dual-feedback stability (MR-11) + corrected resonant burden (CB-16); behavioral 10 MHz op-amp
+case,metric,value,limit,verdict
+avmid-revD,steady ripple pk-pk (V),0,≤0.01,PASS
+avmid-revD,clamp-pulse dip (V),1.639,≥1.55,PASS
+avmid-revC-baseline,steady ripple pk-pk (V),0.0041,reference (expected ringing),REF
+res-fullload-65Apk,ADC max (V),2.926,≤3.2,PASS
+res-fullload-65Apk,ADC min (V),0.374,≥0.1,PASS
+res-F11-70Apk,ADC peak (V),3.024,3.02±0.1 & ≤3.3,PASS

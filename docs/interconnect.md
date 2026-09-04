@@ -45,9 +45,11 @@ protection-thresholds.md). Driven by MCU-LLC: 74HC595 (segments) + 2 NPN digit m
 ## MCU pin-map deltas (extends calculations/out/mcu-pinmap.csv; asserted unique at build)
 
 MCU-LLC adds: HMI_DAT/CLK/LAT = pins 88/89/90, DIG1/2 = 91/92, BTN1/2 = 93/94; relay controls
-CTL_KSER..KPREB = 80–85; CAN moved to 48/49; senses per boards.tsx map. MCU-PFC adds:
-CTL_KPRE = 72, CTL_QDIS = 73 (inverted drive, pull-up to V15 — discharge engages when commanded
-or on control collapse with aux still alive; documented E19), FLT_PFC = 74.
+CTL_KSER..KPREB = 80–85; CAN = 48/49; **FLT_LLC = 74 and CTL_QDISBK (bank bleeders) = 75 (rev D,
+R2 CB-21/E33)**; senses per boards.tsx map. MCU-PFC adds: CTL_KPRE = 72, CTL_QDIS = 73
+(**active-high into the opto LED, default-OFF — E19 rev B**; the original "inverted drive,
+pull-up to V15" wording here described the retired rev-A fail-engaged scheme), FLT_PFC = 74,
+**SNS_V24/SNS_V15 rail monitors = 51/52 (rev D)**; fan PWM/TACH 3–4 = pins 80–83 at 120 kW (HR-17).
 
 
 ---
@@ -63,9 +65,12 @@ or on control collapse with aux still alive; documented E19), FLT_PFC = 74.
 | 9 | EN | `EN_PFC` (MCU-PFC's enable *output*, both boards) |
 | 10 | KILL | `EN_LLC` (MCU-LLC's enable output; the legacy KILL label is kept on the connector) |
 | 13 | TINL | **reserved** — inlet NTC is read by MCU-PFC only and shared over the link (MR-2: no double-biased analog node across the harness) |
+| 14,15 | SP1/SP2 → **GND** | rev D (R2 MR-14): spares now carry control-ground return — the 2-pin GND was the harness's weakest link at 120 kW |
 | 16 | SHLD | bonded to PE on both boards |
 
-Both link lines carry 10 k idle pullups on each board. Each board's `SafetyChain` ANDs
+**Rev D connector (R2 MR-14):** Micro-Fit 3.0-class 16-way, 5 A/contact — the JST PHD's 1 A
+contacts were over-run by V15 (≈1.9 A at 120 kW) and the GND return. Both link lines carry 10 k
+idle pullups **and series 100 Ω** on each board. Each board's `SafetyChain` ANDs
 (own EN) × (received EN, 100 k pulldown → harness loss = gates off) × (local watchdog WDO) into
 `GATE_EN_A/B` with a 10 k pulldown — the E27 default-disabled chain. Loss of the harness therefore
 disables **both** boards' gates within the driver's EN response time.

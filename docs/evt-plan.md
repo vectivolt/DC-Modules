@@ -30,11 +30,23 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 
 | ID | Test | Pass criterion |
 |---|---|---|
-| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere; aux BR brown-in 320–340 V |
+| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere; aux BO brown-in 310–335 V (NCP1252A) |
 | T-12 | Programming-session thermal watch (SWD attached, bus at 830 V, MCU held in reset 10 min) | discharge chain stays OFF (E19 rev B); no component > 60 °C rise |
 | T-13 | Filter-cap soak 475 VAC 48 h | CX ΔT ≤ 10 K, no capacitance loss > 5 % |
 | T-14 | Hipot + touch-leakage **with all sense chains fitted** | 4 kV pri↔sec < 5 mA (Y-caps dominated), leakage < 3.5 mA |
 | T-15 | KPRE thermography at rated line current 1 h | contact rise ≤ 30 K; mirror readback consistent |
 | T-16 | Gate-enable glitch capture, 1000 power cycles | zero gate pulses while GATE_EN_x low (scope-latched) |
-| T-17 | CT front-end linearity ±150 A + OC step | ≤ 1 % to 120 A; F.02 trip point ±5 %; no ADC injection (AVMID bias, CB-15) |
-| T-18 | Aux load-dump: all relays pull-in + fans 100 % at 65 °C ambient | V24 ≥ 22.8 V, V15 ≥ 13.5 V; aux switch ≤ 110 °C |
+| T-17 | CT front-end linearity ±150 A line / ±100 A resonant + OC steps | ≤ 1 % to 120 A; F.02 **and F.11 (2.0 Ω burden, R2 CB-16)** trip points ±5 %; no ADC injection (AVMID bias, CB-15); AVMID spectrum clean (MR-11 buffer) |
+| T-18 | Aux load-dump **at the per-SKU load table (R2 §J)**: all relays pull-in + fans 100 % at 65 °C ambient | V24 ≥ 22.8 V, V15 ≥ 13.5 V; aux switch ≤ 110 °C; D24 PIV scope ≤ 300 V at 850 V bus (CB-19) |
+
+### Rev D additions (R2 re-audit closure)
+
+| ID | Test | Pass criterion |
+|---|---|---|
+| T-19 | 3.3 V rails both boards, 55 °C, full driver load | 3.30 ± 0.15 V; buck Tj-est < 105 °C (CB-17/18) |
+| T-20 | FLT_LLC injection (driver DESAT jig on one LLC channel) | F.12 latch on MCU-LLC ≤ 10 ms; no flux-walk on adjacent sections (CB-21) |
+| T-21 | Bank discharge: shutdown from series 1000 V and parallel 500 V | both banks < 60 V within 2× τ table; F.21/F.21b timing per SKU (HR-15/HR-14); resistor ΔT per pulse spec |
+| T-22 | Precharge/discharge timing per SKU (extends T-05) | t95 within ±25 % of 160/288/576 ms; pulse parts < 180 °C at the 50 W 120 kW variants |
+| T-23 | CM choke thermography at rated line current per SKU (extends T-04) | ΔT ≤ 45 K (D7 windings, HR-18) |
+| T-24 | Dual-relay pair current share at 120 kW (Rogowski both paths) | worst split ≤ 60/40 at 400 A, or pair re-binned (HR-19) |
+| T-25 | Tolerance-corner gain capability (deliberate worst-bin trim + low-Lm transformer build) | bank_max ≥ 525 V at full load (CB-22 / §37 yield fix validated in hardware) |

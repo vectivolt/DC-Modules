@@ -1,4 +1,13 @@
-// cells.tsx v3 — schematic-complete parameterized cells for the two-board (AC-DC / DC-DC) split.
+// cells.tsx v4 — schematic-complete parameterized cells for the two-board (AC-DC / DC-DC) split.
+// v4 (2026-09-05, R2 review closure — docs/design-review-production-r2.md, register E32/E26-revC):
+//   CB-16 resonant CT burden 33→2.0 Ω 2512 (46 A rms/1:100 scaling) · CB-22 Cr 44→46 nF (rev D2 tank)
+//   CB-18 Rail3V3 sync-buck cell replaces the 15 V-fed LDO (fitted per board — CB-17)
+//   CB-19/20 aux rev C: 110 W all SKUs (Lp 490 µH, Ip 3.0 A @ 0.33 Ω, 50 kHz, D4 rev C), 400 V
+//   rectifiers, rail TVS (MR-17), QAUX gate pulldown, NCP1252 BR divider re-sized (MR-13)
+//   HR-13 watchdog symbol → 6-pin (VDD + window straps) · HR-15 DischargeCtl gets id param (bank bleeders)
+//   HR-20 balance/star resistors → 2-series HV · MR-11 AnalogMid dual-feedback + isolation R
+//   MR-18 IsoVSense filter parameterized (1 nF on OVP channels) · MR-22 button caps · CGND soft bond
+//   MR-14 link series 100 Ω + harness spares→GND · E27 local-EN pulldown hygiene
 // PCB layout intentionally NOT tuned (customer directive 2026-09-04): pcb coords are coarse grid
 // only so builds succeed; schematic completeness + BOM accuracy are the deliverable.
 // v3 (2026-09-05) closes the production-review blockers CB-1…CB-15 + HR list
@@ -278,13 +287,18 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, x = 0,
 export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {[0, 1, 2, 3].map(i => (
-      <capacitor key={i} name={`C${id}R${i}`} capacitance="44nF" footprint={FilmBoxFP(27.5)} pcbX={0} pcbY={i * 8} schX={0} schY={i * 0.4} />
+      <capacitor key={i} name={`C${id}R${i}`} capacitance="46nF" footprint={FilmBoxFP(27.5)} pcbX={0} pcbY={i * 8} schX={0} schY={i * 0.4} />
     ))}
     <chip name={`L${id}T`} footprint={<TrimFP />} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={40} pcbY={0} schX={1.3} schY={0} />
     <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={40} pcbY={10} schX={1.3} schY={0.8} />
-    <resistor name={`R${id}CT`} resistance="33" footprint="1206" pcbX={52} pcbY={10} schX={2} schY={0.8} />
+    {/* CB-16: 1:100 CT at 46 A rms design current → 2.0 Ω burden (0.92 V rms; F.11 70 A pk = 3.05 V
+        at the comparator; 0.42 W → 1 W 2512). 33 Ω was the 1:2500 line-CT value copied through. */}
+    <resistor name={`R${id}CT`} resistance="2" footprint="2512" pcbX={52} pcbY={10} schX={2} schY={0.8} />
+    {/* 220 pF: a 1 nF/1 k pole (159 kHz) attenuates the 140 kHz resonant fundamental 25 % and
+        makes the F.11 trip drift with the pole tolerance — 220 pF (723 kHz) keeps the comparator
+        threshold crisp at 3.02 V for 70 A pk (ct-frontend.mjs evidence). Line CTs (50 Hz) keep 1 nF. */}
     <resistor name={`R${id}CF`} resistance="1k" footprint="0603" pcbX={58} pcbY={10} schX={2.5} schY={0.8} />
-    <capacitor name={`C${id}CF`} capacitance="1nF" footprint="0603" pcbX={64} pcbY={14} schX={2.9} schY={1.2} />
+    <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={64} pcbY={14} schX={2.9} schY={1.2} />
     <diode name={`D${id}CP`} footprint="sod323" pcbX={64} pcbY={6} schX={2.9} schY={0.3} />
     <diode name={`D${id}CN`} footprint="sod323" pcbX={70} pcbY={6} schX={3.3} schY={0.3} />
     <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "S1A", pin5: "S1B", pin6: "S2A", pin7: "S2B" }} pcbX={80} pcbY={10} schX={3} schY={0.4} />
@@ -341,29 +355,45 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, x = 0, y = 0, sx
     {Array.from({ length: nPerHalf }, (_, i) => (
       <capacitor key={`b${i}`} name={`CDB${id}${i}`} capacitance="470uF" footprint={<SnapInFP />} pcbX={i * 40} pcbY={-45} schX={i * 0.8} schY={1.2} />
     ))}
-    <resistor name={`RBALT${id}`} resistance="100k" footprint="2512" pcbX={nPerHalf * 40} pcbY={0} schX={nPerHalf * 0.8} schY={0} />
-    <resistor name={`RBALB${id}`} resistance="100k" footprint="2512" pcbX={nPerHalf * 40} pcbY={-45} schX={nPerHalf * 0.8} schY={1.2} />
+    {/* HR-20: 2-series 47 k HV per half — halves per-element V (≈208 V) and W (≈0.92 W on 3 W) */}
+    <resistor name={`RBALT${id}A`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40} pcbY={0} schX={nPerHalf * 0.8} schY={0} />
+    <resistor name={`RBALT${id}B`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40 + 8} pcbY={0} schX={nPerHalf * 0.8 + 0.5} schY={0} />
+    <resistor name={`RBALB${id}A`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40} pcbY={-45} schX={nPerHalf * 0.8} schY={1.2} />
+    <resistor name={`RBALB${id}B`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40 + 8} pcbY={-45} schX={nPerHalf * 0.8 + 0.5} schY={1.2} />
     {Array.from({ length: nPerHalf }, (_, i) => [
       <trace key={`tt${i}`} from={`.CDT${id}${i} > .pin1`} to={dcp} />,
       <trace key={`tm${i}`} from={`.CDT${id}${i} > .pin2`} to={mid} />,
       <trace key={`bm${i}`} from={`.CDB${id}${i} > .pin1`} to={mid} />,
       <trace key={`bn${i}`} from={`.CDB${id}${i} > .pin2`} to={dcn} />,
     ])}
-    <trace from={`.RBALT${id} > .pin1`} to={dcp} />
-    <trace from={`.RBALT${id} > .pin2`} to={mid} />
-    <trace from={`.RBALB${id} > .pin1`} to={mid} />
-    <trace from={`.RBALB${id} > .pin2`} to={dcn} />
+    <trace from={`.RBALT${id}A > .pin1`} to={dcp} />
+    <trace from={`.RBALT${id}A > .pin2`} to={`.RBALT${id}B > .pin1`} />
+    <trace from={`.RBALT${id}B > .pin2`} to={mid} />
+    <trace from={`.RBALB${id}A > .pin1`} to={mid} />
+    <trace from={`.RBALB${id}A > .pin2`} to={`.RBALB${id}B > .pin1`} />
+    <trace from={`.RBALB${id}B > .pin2`} to={dcn} />
   </group>
 );
 
 // ---------- S/P matrix incl. pre-insertion aux relays + K_OUT (E12); coils to CoilDriver nets
 // v3/E30: mirror-contact relays; per-relay readback net (10 k pull-up, closed-main → mirror open).
 // HR-12: pre-insertion resistors are pulse-rated axial (94 J single-fault case documented).
-export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+// v4/HR-19: `dual` (120 kW) instantiates the paralleled second relay per HV function that the
+// architecture/skuOverrides always specified: contacts paralleled, coils share the COIL_ net
+// (2× ~70 mA on one ULN channel), mirrors in SERIES with the primary's → RELAY_FB reads
+// "both mains open" (same semantics as the KPRE chain). Sharing note: contact-R-matched pairs
+// or 250 A-class contacts — §K; symmetric busbar per layout note P-16.
+export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, dual = false, x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+  const HV = ["KSER", "KPARA", "KPARB", "KOUT"];
+  const contacts: Record<string, [string, string]> = { KSER: [bkAn, bkBp], KPARA: [bkAp, bkBp], KPARB: [bkAn, bkBn], KOUT: [bkAp, outp] };
+  return (
   <group name="spmatrix" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
       <chip key={k} name={k} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 3) * 40} pcbY={Math.floor(i / 3) * 35} schX={(i % 3) * 2} schY={Math.floor(i / 3) * 1.4} />
     ))}
+    {dual ? HV.map((k, i) => (
+      <chip key={`${k}2`} name={`${k}2`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 3) * 40} pcbY={80 + Math.floor(i / 3) * 35} schX={(i % 3) * 2} schY={3.2 + Math.floor(i / 3) * 1.4} />
+    )) : null}
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
       <resistor key={`r${k}`} name={`RKPU${k}`} resistance="10k" footprint="0603" pcbX={(i % 3) * 40 + 20} pcbY={Math.floor(i / 3) * 35 + 15} schX={(i % 3) * 2 + 1} schY={Math.floor(i / 3) * 1.4 + 0.7} />
     ))}
@@ -373,9 +403,22 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, 
       <trace key={`c1${k}`} from={`.${k} > .C1`} to="net.V24" />,
       <trace key={`c2${k}`} from={`.${k} > .C2`} to={`net.COIL_${k}`} />,
       <trace key={`m1${k}`} from={`.${k} > .M1`} to="net.DGND" />,
-      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`net.RELAY_FB_${k}`} />,
       <trace key={`pu${k}`} from={`.RKPU${k} > .pin1`} to="net.V3P3" />,
       <trace key={`pu2${k}`} from={`.RKPU${k} > .pin2`} to={`net.RELAY_FB_${k}`} />,
+    ])}
+    {/* mirror chain: single → M2 to FB; dual → M2 into the pair relay's mirror, then FB */}
+    {["KPREA", "KPREB"].map(k => (
+      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`net.RELAY_FB_${k}`} />
+    ))}
+    {HV.map(k => dual ? [
+      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`.${k}2 > .M1`} />,
+      <trace key={`m3${k}`} from={`.${k}2 > .M2`} to={`net.RELAY_FB_${k}`} />,
+      <trace key={`c12${k}`} from={`.${k}2 > .C1`} to="net.V24" />,
+      <trace key={`c22${k}`} from={`.${k}2 > .C2`} to={`net.COIL_${k}`} />,
+      <trace key={`a2${k}`} from={`.${k}2 > .A`} to={contacts[k][0]} />,
+      <trace key={`b2${k}`} from={`.${k}2 > .B`} to={contacts[k][1]} />,
+    ] : [
+      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`net.RELAY_FB_${k}`} />,
     ])}
     <trace from=".KSER > .A" to={bkAn} />
     <trace from=".KSER > .B" to={bkBp} />
@@ -393,7 +436,8 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, 
     <trace from=".KOUT > .B" to={outp} />
     <trace from={bkBn} to={outn} />
   </group>
-);
+  );
+};
 
 // ---------- relay-coil driver (8-ch darlington array, COM clamp to 24 V). Unused inputs to DGND (MR-8).
 export const CoilDriver = ({ id, ins, outs, x = 0, y = 0, sx = 0, sy = 0 }: { id: string; ins: string[]; outs: string[]; x?: number; y?: number; sx?: number; sy?: number }) => (
@@ -410,13 +454,15 @@ export const CoilDriver = ({ id, ins, outs, x = 0, y = 0, sx = 0, sy = 0 }: { id
 // CB-3): 8× 1206 divider chain referenced INSIDE the measured domain + iso voltage-sense amp
 // (AMC1311-class unipolar / AMC1350-class ±bipolar for AC) + isolated 5 V floating-side bias.
 // biasP/biasG: floating-side rail nodes (share one Bias5Module per domain). outN optional.
-export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+// v4/MR-18: `cf` parameterizes the input filter — channels that feed a hardware OVP comparator
+// (bus/bank/output) use 1 nF (pole ≈ 23 kHz → trip path ≈ 10–20 µs); AC metering keeps 10 nF.
+export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "10nF", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`ivs${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {Array.from({ length: 8 }, (_, i) => (
       <resistor key={i} name={`R${id}D${i}`} resistance="475k" footprint="1206" pcbX={i * 6} pcbY={0} schX={i * 0.6} schY={0} />
     ))}
     <resistor name={`R${id}DL`} resistance={rBot} footprint="0805" pcbX={50} pcbY={5} schX={4.9} schY={0.5} />
-    <capacitor name={`C${id}DF`} capacitance="10nF" footprint="0805" pcbX={56} pcbY={5} schX={5.5} schY={0.5} />
+    <capacitor name={`C${id}DF`} capacitance={cf} footprint="0805" pcbX={56} pcbY={5} schX={5.5} schY={0.5} />
     <chip name={`UIV${id}`} footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={64} pcbY={0} schX={6.2} schY={0} />
     <trace from={hv} to={`.R${id}D0 > .pin1`} />
     {Array.from({ length: 7 }, (_, i) => (
@@ -437,14 +483,23 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", x = 0,
   </group>
 );
 
-// ---------- buffered mid-rail (E31/CB-15): VREF/2 source for every bipolar CT/sense return
+// ---------- buffered mid-rail (E31/CB-15): VREF/2 source for every bipolar CT/sense return.
+// v4/MR-11: dual-feedback buffer — 4.7 Ω isolates the 10 µF reservoir from the op-amp (no bare
+// op-amp is stable into 10 µF); DC feedback via 10 k from AVMID (accuracy), AC feedback via
+// 100 pF local (stability). Standard cap-load topology, layout note P-12.
 export const AnalogMid = ({ x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="avmid" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     <resistor name="RAVH" resistance="10k" footprint="0603" pcbX={0} pcbY={0} schX={0} schY={0} />
     <resistor name="RAVL" resistance="10k" footprint="0603" pcbX={0} pcbY={5} schX={0} schY={0.5} />
     <capacitor name="CAVM" capacitance="100nF" footprint="0603" pcbX={6} pcbY={5} schX={0.6} schY={0.5} />
     <chip name="UAVB" footprint="soic8" pinLabels={{ pin1: "OUT", pin2: "INN", pin3: "INP", pin4: "VN", pin5: "NC1", pin6: "NC2", pin7: "NC3", pin8: "VP" }} pcbX={12} pcbY={0} schX={1.2} schY={0} />
-    <capacitor name="CAVO" capacitance="10uF" footprint="0805" pcbX={22} pcbY={5} schX={2} schY={0.5} />
+    {/* CAVF 2.2 nF: its corner (1/2πR_F·C_F ≈ 7 kHz) must sit BELOW the outer-loop crossover
+        (~30 kHz with a 10 MHz op-amp into 10 µF) or the buffer still rings — found by the
+        ct-frontend.mjs deck, which runs both topologies as regression evidence. */}
+    <resistor name="RAVI" resistance="4.7" footprint="0603" pcbX={18} pcbY={0} schX={1.8} schY={0} />
+    <resistor name="RAVF" resistance="10k" footprint="0603" pcbX={18} pcbY={6} schX={1.8} schY={0.5} />
+    <capacitor name="CAVF" capacitance="2.2nF" footprint="0603" pcbX={12} pcbY={6} schX={1.2} schY={0.5} />
+    <capacitor name="CAVO" capacitance="10uF" footprint="0805" pcbX={24} pcbY={5} schX={2.4} schY={0.5} />
     <trace from=".RAVH > .pin1" to="net.V3P3" />
     <trace from=".RAVH > .pin2" to="net.AVREF_MID" />
     <trace from=".RAVL > .pin1" to="net.AVREF_MID" />
@@ -452,8 +507,12 @@ export const AnalogMid = ({ x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <trace from=".CAVM > .pin1" to="net.AVREF_MID" />
     <trace from=".CAVM > .pin2" to="net.AGND" />
     <trace from=".UAVB > .INP" to="net.AVREF_MID" />
-    <trace from=".UAVB > .INN" to="net.AVMID" />
-    <trace from=".UAVB > .OUT" to="net.AVMID" />
+    <trace from=".UAVB > .OUT" to=".RAVI > .pin1" />
+    <trace from=".RAVI > .pin2" to="net.AVMID" />
+    <trace from=".RAVF > .pin1" to="net.AVMID" />
+    <trace from=".RAVF > .pin2" to=".UAVB > .INN" />
+    <trace from=".CAVF > .pin1" to=".UAVB > .OUT" />
+    <trace from=".CAVF > .pin2" to=".UAVB > .INN" />
     <trace from=".UAVB > .VP" to="net.V3P3" />
     <trace from=".UAVB > .VN" to="net.AGND" />
     <trace from=".CAVO > .pin1" to="net.AVMID" />
@@ -503,16 +562,27 @@ export const NtcInput = ({ id, out, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
 // GATE_EN_x = AND(own-MCU EN, other-MCU EN via harness w/ 100 k pulldown, watchdog WDO w/ 10 k pullup)
 // → 10 k pulldown on the output: gates default-DISABLED for any missing/floating/reset condition.
 // USUP = external windowed watchdog (protection rows 24/30); spare AND gates' inputs tied low.
+// v4/HR-13: watchdog symbol corrected to the real 6-pin device class (TPS3430: VDD/GND/WDI/WDO/
+// window-set straps) — the v3 3-pin symbol had no supply. SET straps to DGND = datasheet default
+// window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
+// input on the safety AND while the local MCU is in reset).
 export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name={`USUP${id}`} footprint="sot23" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "WDO" }} pcbX={0} pcbY={0} schX={0} schY={0} />
+    <chip name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} />
     <chip name={`UAND${id}`} footprint="soic14" pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "C2", pin6: "Y2", pin7: "GND", pin8: "Y3", pin9: "A3", pin10: "B3", pin11: "C3", pin12: "Y1", pin13: "C1", pin14: "VCC" }} pcbX={14} pcbY={0} schX={1.4} schY={0} />
     <resistor name={`RWPU${id}`} resistance="10k" footprint="0603" pcbX={0} pcbY={8} schX={0} schY={0.8} />
     <resistor name={`RENR${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={8} schX={0.7} schY={0.8} />
+    <resistor name={`RENL${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={13} schX={0.7} schY={1.3} />
     <resistor name={`RGPD${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={8} schX={2.6} schY={0.8} />
     <capacitor name={`CSF${id}`} capacitance="100nF" footprint="0603" pcbX={20} pcbY={8} schX={2} schY={0.8} />
     <trace from={`.USUP${id} > .WDI`} to={wdi} />
     <trace from={`.USUP${id} > .GND`} to="net.DGND" />
+    <trace from={`.USUP${id} > .VDD`} to="net.V3P3" />
+    <trace from={`.USUP${id} > .SET0`} to="net.DGND" />
+    <trace from={`.USUP${id} > .SET1`} to="net.DGND" />
+    <trace from={`.CSF${id} > .pin1`} to={`.USUP${id} > .VDD`} />
+    <trace from={`.RENL${id} > .pin1`} to={enLocal} />
+    <trace from={`.RENL${id} > .pin2`} to="net.DGND" />
     <trace from={`.USUP${id} > .WDO`} to={`net.WDO_${id}`} />
     <trace from={`.RWPU${id} > .pin1`} to="net.V3P3" />
     <trace from={`.RWPU${id} > .pin2`} to={`net.WDO_${id}`} />
@@ -529,7 +599,6 @@ export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, x = 0, y = 0, 
     ))}
     <trace from={`.UAND${id} > .VCC`} to="net.V3P3" />
     <trace from={`.UAND${id} > .GND`} to="net.DGND" />
-    <trace from={`.CSF${id} > .pin1`} to="net.V3P3" />
     <trace from={`.CSF${id} > .pin2`} to="net.DGND" />
   </group>
 );
@@ -556,25 +625,49 @@ export const SwdPort = ({ id, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
 // (active-high, 330 Ω from GPIO); output stage biased by a DCN-referenced isolated module; 10 k
 // gate pulldown to DCN ⇒ MCU reset/dead/unprogrammed = discharge OFF. Passive bleed = balancers
 // (τ documented, E19 rev B); commanded discharge covers normal shutdown + FSM SAFE entry.
-export const DischargeCtl = ({ ctl, gateOut, dcn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
-  <group name="dsch" pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name="UQD" footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VEE", pin6: "OUT", pin7: "NC3", pin8: "VCC" }} pcbX={0} pcbY={0} schX={0} schY={0} />
-    <chip name="PSQD" footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P18", pin4: "COM", pin5: "N4" }} pcbX={0} pcbY={10} schX={0} schY={1} />
-    <resistor name="RQDL" resistance="330" footprint="0603" pcbX={-10} pcbY={0} schX={-1} schY={0} />
-    <resistor name="RQDG" resistance="100" footprint="0805" pcbX={12} pcbY={0} schX={1.2} schY={0} />
-    <resistor name="RQDPD" resistance="10k" footprint="0805" pcbX={12} pcbY={6} schX={1.2} schY={0.6} />
-    <trace from={ctl} to=".RQDL > .pin1" />
-    <trace from=".RQDL > .pin2" to=".UQD > .ANO" />
-    <trace from=".UQD > .CAT" to="net.DGND" />
-    <trace from=".PSQD > .VIN" to="net.V15" />
-    <trace from=".PSQD > .GND" to="net.DGND" />
-    <trace from=".PSQD > .P18" to=".UQD > .VCC" />
-    <trace from={`.PSQD > .COM`} to={dcn} />
-    <trace from=".UQD > .VEE" to={dcn} />
-    <trace from=".UQD > .OUT" to=".RQDG > .pin1" />
-    <trace from=".RQDG > .pin2" to={gateOut} />
-    <trace from=".RQDPD > .pin1" to={gateOut} />
-    <trace from=".RQDPD > .pin2" to={dcn} />
+// v4/HR-15: id param so the cell instantiates more than once (bus discharge on AC-DC, bank
+// bleeders on DC-DC). dcn = the measured domain's negative rail (DCN / BKAN / BKBN).
+export const DischargeCtl = ({ id = "", ctl, gateOut, dcn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+  <group name={`dsch${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    <chip name={`UQD${id}`} footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VEE", pin6: "OUT", pin7: "NC3", pin8: "VCC" }} pcbX={0} pcbY={0} schX={0} schY={0} />
+    <chip name={`PSQD${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P18", pin4: "COM", pin5: "N4" }} pcbX={0} pcbY={10} schX={0} schY={1} />
+    <resistor name={`RQDL${id}`} resistance="330" footprint="0603" pcbX={-10} pcbY={0} schX={-1} schY={0} />
+    <resistor name={`RQDG${id}`} resistance="100" footprint="0805" pcbX={12} pcbY={0} schX={1.2} schY={0} />
+    <resistor name={`RQDPD${id}`} resistance="10k" footprint="0805" pcbX={12} pcbY={6} schX={1.2} schY={0.6} />
+    <trace from={ctl} to={`.RQDL${id} > .pin1`} />
+    <trace from={`.RQDL${id} > .pin2`} to={`.UQD${id} > .ANO`} />
+    <trace from={`.UQD${id} > .CAT`} to="net.DGND" />
+    <trace from={`.PSQD${id} > .VIN`} to="net.V15" />
+    <trace from={`.PSQD${id} > .GND`} to="net.DGND" />
+    <trace from={`.PSQD${id} > .P18`} to={`.UQD${id} > .VCC`} />
+    <trace from={`.PSQD${id} > .COM`} to={dcn} />
+    <trace from={`.UQD${id} > .VEE`} to={dcn} />
+    <trace from={`.UQD${id} > .OUT`} to={`.RQDG${id} > .pin1`} />
+    <trace from={`.RQDG${id} > .pin2`} to={gateOut} />
+    <trace from={`.RQDPD${id} > .pin1`} to={gateOut} />
+    <trace from={`.RQDPD${id} > .pin2`} to={dcn} />
+  </group>
+);
+
+// ---------- photovoltaic gate drive (ECO-2a, E33 rev B): VOM1271-class PV driver for the bank
+// bleeders — the bleeder needs default-OFF isolation and ms-class turn-on only, so the opto +
+// DCN-referenced bias-module stack (₹137/bank) is over-built; the PV driver (₹35) needs NO
+// floating supply. Output ~8.4 V open-circuit: enough to enhance the SiC bleeder FET at its
+// 60 mA operating point (Rds elevated at Vgs 8 V — irrelevant at I²R ≈ mW). Integrated
+// turn-off circuit; RGB bleed for belt-and-braces default-OFF. NOT for the bus discharge
+// (QDISF keeps the fast opto+bias chain) and never for switching gates.
+export const PvGateDrive = ({ id, ctl, gateOut, src, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+  <group name={`pvg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    <chip name={`UPV${id}`} footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VN", pin6: "NC3", pin7: "NC4", pin8: "VP" }} pcbX={0} pcbY={0} schX={0} schY={0} />
+    <resistor name={`RPVL${id}`} resistance="330" footprint="0603" pcbX={-10} pcbY={0} schX={-1} schY={0} />
+    <resistor name={`RPVB${id}`} resistance="1M" footprint="0805" pcbX={10} pcbY={0} schX={1} schY={0} />
+    <trace from={ctl} to={`.RPVL${id} > .pin1`} />
+    <trace from={`.RPVL${id} > .pin2`} to={`.UPV${id} > .ANO`} />
+    <trace from={`.UPV${id} > .CAT`} to="net.DGND" />
+    <trace from={`.UPV${id} > .VP`} to={gateOut} />
+    <trace from={`.UPV${id} > .VN`} to={src} />
+    <trace from={`.RPVB${id} > .pin1`} to={gateOut} />
+    <trace from={`.RPVB${id} > .pin2`} to={src} />
   </group>
 );
 
@@ -598,6 +691,10 @@ export const ConfigHmi = ({ x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     ))}
     {["1", "2"].map((d, i) => (
       <resistor key={d} name={`RSW${d}`} resistance="10k" footprint="0603" pcbX={80 + i * 15} pcbY={8} schX={6 + i * 1.2} schY={0.9} />
+    ))}
+    {/* MR-22: panel-actuated buttons — ESD/bounce cap at the MCU net */}
+    {["1", "2"].map((d, i) => (
+      <capacitor key={`c${d}`} name={`CSW${d}`} capacitance="100nF" footprint="0603" pcbX={80 + i * 15} pcbY={14} schX={6 + i * 1.2} schY={1.4} />
     ))}
     <trace from=".USR1 > .VCC" to="net.V3P3" />
     <trace from=".USR1 > .GND" to="net.DGND" />
@@ -628,6 +725,10 @@ export const ConfigHmi = ({ x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <trace from=".SW2 > .P3" to="net.DGND" />
     <trace from=".RSW2 > .pin1" to="net.V3P3" />
     <trace from=".RSW2 > .pin2" to="net.BTN2" />
+    <trace from=".CSW1 > .pin1" to="net.BTN1" />
+    <trace from=".CSW1 > .pin2" to="net.DGND" />
+    <trace from=".CSW2 > .pin1" to="net.BTN2" />
+    <trace from=".CSW2 > .pin2" to="net.DGND" />
   </group>
 );
 
@@ -673,36 +774,50 @@ export const InterconnectSignals = ({ id, ltx, lrx, enA, enB, x = 0, y = 0, sx =
     <chip name={`JIC${id}`} footprint="pinrow16" pinLabels={{ pin1: "V24A", pin2: "V24B", pin3: "GNDA", pin4: "GNDB", pin5: "V15A", pin6: "V15B", pin7: "LTX", pin8: "LRX", pin9: "EN", pin10: "KILL", pin11: "FPWM", pin12: "FTACH", pin13: "TINL", pin14: "SP1", pin15: "SP2", pin16: "SHLD" }} pcbX={0} pcbY={0} schX={0} schY={0} />
     <resistor name={`R${id}LTX`} resistance="10k" footprint="0603" pcbX={20} pcbY={0} schX={1.8} schY={0} />
     <resistor name={`R${id}LRX`} resistance="10k" footprint="0603" pcbX={20} pcbY={5} schX={1.8} schY={0.5} />
+    {/* v4: the CB-14 fix note promised series 100 Ω on both link lines — now fitted */}
+    <resistor name={`R${id}LTS`} resistance="100" footprint="0603" pcbX={26} pcbY={0} schX={2.4} schY={0} />
+    <resistor name={`R${id}LRS`} resistance="100" footprint="0603" pcbX={26} pcbY={5} schX={2.4} schY={0.5} />
     <trace from={`.JIC${id} > .V24A`} to="net.V24" />
     <trace from={`.JIC${id} > .V24B`} to="net.V24" />
     <trace from={`.JIC${id} > .GNDA`} to="net.DGND" />
     <trace from={`.JIC${id} > .GNDB`} to="net.DGND" />
     <trace from={`.JIC${id} > .V15A`} to="net.V15" />
     <trace from={`.JIC${id} > .V15B`} to="net.V15" />
-    <trace from={`.JIC${id} > .LTX`} to={ltx} />
-    <trace from={`.JIC${id} > .LRX`} to={lrx} />
+    <trace from={`.JIC${id} > .LTX`} to={`.R${id}LTS > .pin1`} />
+    <trace from={`.R${id}LTS > .pin2`} to={ltx} />
+    <trace from={`.JIC${id} > .LRX`} to={`.R${id}LRS > .pin1`} />
+    <trace from={`.R${id}LRS > .pin2`} to={lrx} />
     <trace from={`.R${id}LTX > .pin1`} to="net.V3P3" />
     <trace from={`.R${id}LTX > .pin2`} to={ltx} />
     <trace from={`.R${id}LRX > .pin1`} to="net.V3P3" />
     <trace from={`.R${id}LRX > .pin2`} to={lrx} />
     <trace from={`.JIC${id} > .EN`} to={enA} />
     <trace from={`.JIC${id} > .KILL`} to={enB} />
+    {/* MR-14: spares carry extra GND — the 2-pin return was the harness's weakest link at 120 kW */}
+    <trace from={`.JIC${id} > .SP1`} to="net.DGND" />
+    <trace from={`.JIC${id} > .SP2`} to="net.DGND" />
     <trace from={`.JIC${id} > .SHLD`} to="net.PE" />
   </group>
 );
 
-// ---------- aux flyback — v3 (E26/D4 rev B): closes CB-5/6/7.
+// ---------- aux flyback — v4 (E26 rev C / D4 rev C): closes CB-19/CB-20 on top of CB-5/6/7.
 //  · fed from the FULL unboosted bus (DCP→DCN): 342 V (285 VAC cold start) … 860 V (OVP corner)
-//  · 1700 V SiC switch, 60 W deliverable (Lp 550 µH, Ip clamp 1.8 A via 0.55 Ω CS, 65 kHz DCM)
-//  · complete controller application: 2×470 k HV startup into VCC, aux-winding self-supply,
-//    FB divider from the aux rail (primary-side regulation), type-II COMP, brown-in divider on BR
-//    (starts ≥ ~330 V), RC-filtered CS (V-21 chatter fix), RCD clamp on the primary.
+//  · 1700 V SiC switch, **110 W class all SKUs** (Lp 345 µH, Ip clamp 3.2 A via 0.31 Ω CS,
+//    65 kHz DCM, Vor ≈ 157 V, ETD34, Np 38 / N24 6 / N15 4 / Naux 4 — D4 rev C; single p/n keeps
+//    commonization and covers the 120 kW worst load ≈ 84 W steady with ≥20 % corner margin;
+//    DCM proof: t_on 3.2 µs + t_reset 7.0 µs = 10.3 µs < 13.8 µs usable @342 V full load)
+//  · CB-19: output rectifiers are 400 V ultrafast (PIV ≈ 160/152/151 V + leakage ring — the
+//    100 V Schottkys of rev B avalanche at high bus); MR-17: SMBJ TVS on both rails
+//  · controller application = NCP1252A 65 kHz (MR-13): VCC startup Rs, BO divider re-sized for
+//    the 1.0 V BO threshold (brown-in ≈ 322 V), aux-winding self-supply, primary-side FB, COMP,
+//    RC-filtered CS, primary RCD clamp, gate pulldown on QAUX for the VCC-charge window.
 //  · relay-coil PWM hold economization is firmware (halves 24 V steady demand — E26).
 export const AuxPower = ({ dcp, dcn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="aux" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "FB", pin4: "COMP", pin5: "CS", pin6: "GATE", pin7: "VCC", pin8: "BR" }} pcbX={0} pcbY={0} schX={0} schY={0} />
     <chip name="QAUX" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={22} pcbY={0} schX={1.4} schY={0} />
-    <resistor name="RAUXCS" resistance="0.55" footprint="1206" pcbX={22} pcbY={8} schX={1.4} schY={0.9} />
+    <resistor name="RAUXCS" resistance="0.31" footprint="1206" pcbX={22} pcbY={8} schX={1.4} schY={0.9} />
+    <resistor name="RAUXG" resistance="100k" footprint="0603" pcbX={28} pcbY={4} schX={1.8} schY={0.4} />
     <resistor name="RCSF" resistance="1k" footprint="0603" pcbX={16} pcbY={8} schX={0.9} schY={0.9} />
     <capacitor name="CCSF" capacitance="470pF" footprint="0603" pcbX={16} pcbY={12} schX={0.9} schY={1.3} />
     <chip name="TAUX" footprint={<XfmrAuxFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "S24A", pin4: "S24B", pin5: "S15A", pin6: "S15B", pin7: "AXA", pin8: "AXB" }} pcbX={48} pcbY={0} schX={2.6} schY={0} />
@@ -712,14 +827,14 @@ export const AuxPower = ({ dcp, dcn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <capacitor name="CAUX24" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={0} schX={5} schY={-0.5} />
     <capacitor name="CAUX15" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={8} schX={5} schY={0.5} />
     <capacitor name="CVCC" capacitance="47uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={16} schX={5} schY={1.5} />
-    <chip name="U3V3" footprint="sot223" pinLabels={{ pin1: "IN", pin2: "GND", pin3: "OUT", pin4: "TAB" }} pcbX={98} pcbY={0} schX={5.8} schY={0} />
-    <capacitor name="C3V3" capacitance="10uF" footprint="0805" pcbX={108} pcbY={0} schX={6.6} schY={0.4} />
+    <diode name="DTVS24" footprint="smb" pcbX={98} pcbY={0} schX={5.8} schY={-0.5} />
+    <diode name="DTVS15" footprint="smb" pcbX={108} pcbY={0} schX={5.8} schY={0.5} />
     <resistor name="RAUXST1" resistance="470k" footprint="2512" pcbX={0} pcbY={10} schX={0} schY={0.9} />
     <resistor name="RAUXST2" resistance="470k" footprint="2512" pcbX={6} pcbY={10} schX={0.5} schY={0.9} />
     <resistor name="RBR1A" resistance="2.4M" footprint="2512" pcbX={0} pcbY={16} schX={0} schY={1.4} />
     <resistor name="RBR1B" resistance="2.4M" footprint="2512" pcbX={6} pcbY={16} schX={0.5} schY={1.4} />
-    <resistor name="RBR2" resistance="27k" footprint="0603" pcbX={12} pcbY={16} schX={1} schY={1.4} />
-    <resistor name="RFB1" resistance="100k" footprint="0603" pcbX={-10} pcbY={0} schX={-1} schY={0} />
+    <resistor name="RBR2" resistance="15k" footprint="0603" pcbX={12} pcbY={16} schX={1} schY={1.4} />
+    <resistor name="RFB1" resistance="118k" footprint="0603" pcbX={-10} pcbY={0} schX={-1} schY={0} />
     <resistor name="RFB2" resistance="10k" footprint="0603" pcbX={-10} pcbY={5} schX={-1} schY={0.5} />
     <resistor name="RCOMP" resistance="10k" footprint="0603" pcbX={-10} pcbY={10} schX={-1} schY={1} />
     <capacitor name="CCOMP" capacitance="100nF" footprint="0603" pcbX={-10} pcbY={15} schX={-1} schY={1.5} />
@@ -764,6 +879,8 @@ export const AuxPower = ({ dcp, dcn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <trace from=".RCLA1 > .pin2" to=".RCLA2 > .pin1" />
     <trace from=".RCLA2 > .pin2" to={dcp} />
     <trace from=".UAUX > .GATE" to=".QAUX > .G" />
+    <trace from=".RAUXG > .pin1" to=".QAUX > .G" />
+    <trace from=".RAUXG > .pin2" to={dcn} />
     <trace from=".QAUX > .S" to=".RAUXCS > .pin1" />
     <trace from=".RAUXCS > .pin2" to={dcn} />
     <trace from=".RCSF > .pin1" to=".RAUXCS > .pin1" />
@@ -781,11 +898,43 @@ export const AuxPower = ({ dcp, dcn, x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <trace from=".CAUX24 > .pin2" to="net.DGND" />
     <trace from=".CAUX15 > .pin1" to="net.V15" />
     <trace from=".CAUX15 > .pin2" to="net.DGND" />
-    <trace from=".U3V3 > .IN" to="net.V15" />
-    <trace from=".U3V3 > .GND" to="net.DGND" />
-    <trace from=".U3V3 > .OUT" to="net.V3P3" />
-    <trace from=".C3V3 > .pin1" to="net.V3P3" />
-    <trace from=".C3V3 > .pin2" to="net.DGND" />
+    {/* MR-17: rail clamps — a single FB/divider fault otherwise drives V24→30 V+/V15→20 V into
+        every coil, fan and bias module. SMBJ26A / SMBJ16A class. */}
+    <trace from=".DTVS24 > .cathode" to="net.V24" />
+    <trace from=".DTVS24 > .anode" to="net.DGND" />
+    <trace from=".DTVS15 > .cathode" to="net.V15" />
+    <trace from=".DTVS15 > .anode" to="net.DGND" />
+  </group>
+);
+
+// ---------- 3.3 V rail (CB-17/CB-18): 15 V → 3.3 V synchronous buck, one per board.
+// Replaces the v3 SOT-223 LDO (2.9–4.1 W linear loss = thermal shutdown; AMS1117 Vin max = 15 V
+// was also at/over its operating limit on a 15 V rail). TPS54202-class: FB 0.596 V ref →
+// 45.3 k / 10 k = 3.296 V. The DC-DC board previously had NO 3.3 V source at all (CB-17).
+export const Rail3V3 = ({ id = "", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+  <group name={`r3v3${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    <chip name={`UBK${id}`} footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "SW", pin4: "FB", pin5: "EN", pin6: "BST", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} />
+    <chip name={`LBK${id}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={14} pcbY={0} schX={1.4} schY={0} />
+    <capacitor name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-0.8} schY={0.5} />
+    <capacitor name={`CBKO${id}`} capacitance="22uF" footprint="0805" pcbX={22} pcbY={4} schX={2.2} schY={0.5} />
+    <capacitor name={`CBST${id}`} capacitance="100nF" footprint="0603" pcbX={8} pcbY={-6} schX={0.8} schY={-0.6} />
+    <resistor name={`RBKF1${id}`} resistance="45.3k" footprint="0603" pcbX={14} pcbY={8} schX={1.4} schY={0.9} />
+    <resistor name={`RBKF2${id}`} resistance="10k" footprint="0603" pcbX={20} pcbY={8} schX={2} schY={0.9} />
+    <trace from={`.UBK${id} > .VIN`} to="net.V15" />
+    <trace from={`.UBK${id} > .EN`} to="net.V15" />
+    <trace from={`.UBK${id} > .GND`} to="net.DGND" />
+    <trace from={`.CBKI${id} > .pin1`} to="net.V15" />
+    <trace from={`.CBKI${id} > .pin2`} to="net.DGND" />
+    <trace from={`.UBK${id} > .SW`} to={`.LBK${id} > .A`} />
+    <trace from={`.CBST${id} > .pin1`} to={`.UBK${id} > .BST`} />
+    <trace from={`.CBST${id} > .pin2`} to={`.UBK${id} > .SW`} />
+    <trace from={`.LBK${id} > .B`} to="net.V3P3" />
+    <trace from={`.CBKO${id} > .pin1`} to="net.V3P3" />
+    <trace from={`.CBKO${id} > .pin2`} to="net.DGND" />
+    <trace from={`.RBKF1${id} > .pin1`} to="net.V3P3" />
+    <trace from={`.RBKF1${id} > .pin2`} to={`.UBK${id} > .FB`} />
+    <trace from={`.RBKF2${id} > .pin1`} to={`.UBK${id} > .FB`} />
+    <trace from={`.RBKF2${id} > .pin2`} to="net.DGND" />
   </group>
 );
 
@@ -813,6 +962,9 @@ export const IsolatedCan = ({ x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <resistor name="RTERM" resistance="120" footprint="1206" pcbX={32} pcbY={8} schX={2.3} schY={0.8} />
     <chip name="JTERM" footprint="pinrow2" pinLabels={{ pin1: "P1", pin2: "P2" }} pcbX={32} pcbY={14} schX={2.3} schY={1.3} />
     <chip name="TVSCAN" footprint="sot23" pinLabels={{ pin1: "A", pin2: "B", pin3: "C" }} pcbX={44} pcbY={8} schX={3.2} schY={0.8} />
+    {/* v4: CGND static bleed — floating CAN domain accumulates charge on unterminated cable */}
+    <resistor name="RCGB" resistance="1M" footprint="1206" pcbX={10} pcbY={16} schX={0.8} schY={1.6} />
+    <capacitor name="CCGB" capacitance="4.7nF" footprint="1206" pcbX={16} pcbY={16} schX={1.4} schY={1.6} />
     <trace from=".UCAN > .TXD" to="net.CAN_TX" />
     <trace from=".UCAN > .RXD" to="net.CAN_RX" />
     <trace from=".UCAN > .VDD1" to="net.V3P3" />
@@ -833,6 +985,10 @@ export const IsolatedCan = ({ x = 0, y = 0, sx = 0, sy = 0 }: any) => (
     <trace from=".TVSCAN > .A" to=".LCAN > .B1" />
     <trace from=".TVSCAN > .B" to=".LCAN > .B2" />
     <trace from=".TVSCAN > .C" to="net.CGND" />
+    <trace from=".RCGB > .pin1" to="net.CGND" />
+    <trace from=".RCGB > .pin2" to="net.DGND" />
+    <trace from=".CCGB > .pin1" to="net.CGND" />
+    <trace from=".CCGB > .pin2" to="net.DGND" />
   </group>
 );
 

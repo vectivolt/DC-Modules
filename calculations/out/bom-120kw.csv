@@ -1,105 +1,122 @@
-mpn,manufacturer,description,second_source,boards,qty,unit_100,unit_1k,unit_5k,ext_1k_INR,sample_refs
-IND-PFC-165u,custom (docs/magnetics.md D1),"PFC choke 165 µH, 3× T79 26µ sendust, N=36","POCO/DMEGC equiv core",acdc,12,1397.3,1035,910.8,12420,LA0 LB0 LC0 LA1 LB1 LC1 LA2 LB2 LC2 LA3 LB3 LC3
-ELH-470u450,Aishi,"470 µF 450 V snap-in 105 °C (split bus: 415 V max per half)","ChengX/Nichicon",acdc+dcdc,68,202.5,150,132,10200,CDT00 CDT01 CDT02 CDT03 CDT04 CDT05 CDB00 CDB01 CDB02 CDB03 CDB04 CDB05
-SG2M023120LJ,SiChain,"SiC MOSFET 1200 V 23 mΩ TO-247-4L","BASiC B3M020120ZL",dcdc,24,526.5,390,343.2,9360,Q1H Q1L Q2H Q2L Q3H Q3L Q4H Q4L Q5H Q5L Q6H Q6L
-SICJBS-1200-20,SiChain,"SiC JBS 1200 V 20 A TO-247-2 (secondary bridge)","CR Micro 1200V/20A",dcdc,96,121.5,90,79.2,8640,D1A1 D1A2 D1A3 D1A4 D1B1 D1B2 D1B3 D1B4 D2A1 D2A2 D2A3 D2A4
-XFMR-LLC-10K,custom (D3),"LLC section transformer 3× PQ50/50 PC95, 7:7:7","PQ65 single-core variant",dcdc,12,918,680,598.4,8160,T1 T2 T3 T4 T5 T6 T7 T8 T9 T10 T11 T12
-B3M010C075Z,BASiC,"SiC MOSFET 750 V 10 mΩ TO-247-4","SiChain 750V/10mΩ (RFQ)",acdc,24,445.5,330,290.4,7920,QA0A QA0B QB0A QB0B QC0A QC0B QA1A QA1B QB1A QB1B QC1A QC1B
-QA01C-15S18,MORNSUN,"iso gate-bias module +18/−4-configured (HR-10: packaged module; custom E23 transformer = cost ECO-1, C_io ≤10 pF spec D5)","custom multi-secondary set (ECO-1, ₹24 share)",acdc+dcdc,35,128.3,95,83.6,3325,PSA0G PSB0G PSC0G PSA1G PSB1G PSC1G PSA2G PSB2G PSC2G PSA3G PSB3G PSC3G
-PP-44n-1200,Faratronic,"46 nF 1200 V PP pulse film (resonant, rev D)","Songtian pulse PP",dcdc,48,91.8,68,59.8,3264,C1R0 C1R1 C1R2 C1R3 C2R0 C2R1 C2R2 C2R3 C3R0 C3R1 C3R2 C3R3
-NSI6611,NOVOSENSE,"iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16","NSI6602B",acdc+dcdc,36,114.8,85,74.8,3060,UA0G UB0G UC0G UA1G UB1G UC1G UA2G UB2G UC2G UA3G UB3G UC3G
-SICJBS-1200-40,SiChain,"SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)","BASiC B3D040120H",acdc,24,162,120,105.6,2880,DA0T DA0B DB0T DB0B DC0T DC0B DA1T DA1B DB1T DB1B DC1T DC1B
-HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU) [2× 200 A paralleled]","GIGAVAC eq",dcdc,2,1107,820,721.6,1640,KSER
-HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU)","GIGAVAC eq",dcdc,2,1107,820,721.6,1640,KPARA
-HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU)","GIGAVAC eq",dcdc,2,1107,820,721.6,1640,KPARB
-HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU) [2× 200 A paralleled (E12/arch)]","GIGAVAC eq",dcdc,2,1107,820,721.6,1640,KOUT
-IND-TRIM-4u3,custom (D2),"resonant trim 4.3 µH ±5%","air-core option",dcdc,12,114.8,85,74.8,1020,L1T L2T L3T L4T L5T L6T L7T L8T L9T L10T L11T L12T
-PP-1u-1100,Faratronic,"1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)","Songtian",dcdc,14,91.8,68,59.8,952,CF0 CF1 CF2 CF3 CF4 CF5 CF6 CF7 CF8 CF9 CF10 CF11
-CT-60A-1:2500,ZEMCT/eq,"line CT 60 A class (E18)","HCT series",acdc,12,87.8,65,57.2,780,CTA0 CTB0 CTC0 CTA1 CTB1 CTC1 CTA2 CTB2 CTC2 CTA3 CTB3 CTC3
-PP-1u-600,Faratronic,"1 µF 600 V film (Vienna per-phase commutation, CB-9)","Songtian",acdc,24,43.2,32,28.2,768,CA0FP CA0FN CB0FP CB0FN CC0FP CC0FN CA1FP CA1FN CB1FP CB1FN CC1FP CC1FN
-SICJBS-1200-10,SiChain,"SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)","CR Micro 1200V/10A",acdc,12,74.3,55,48.4,660,DA0C DB0C DC0C DA1C DB1C DC1C DA2C DB2C DC2C DA3C DB3C DC3C
-CT-RES-1:100,custom,"resonant CT (toroid, 1:100)","—",dcdc,12,74.3,55,48.4,660,CT1 CT2 CT3 CT4 CT5 CT6 CT7 CT8 CT9 CT10 CT11 CT12
-AMC1311-class,TI/NOVOSENSE,"iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)","NSI1311 class",acdc+dcdc,5,155.3,115,101.2,575,UIVBP UIVBM UIVOA UIVOB UIVOV
-HF167F-80A-M,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override) [250 A class (220 A line)]","TE T9G / contactor option",acdc,1,702,520,457.6,520,KPRE1
-HF167F-80A-M,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override)","TE T9G / contactor option",acdc,1,702,520,457.6,520,KPRE2
-FUSE-gG-690V,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,480,F1
-FUSE-gG-690V,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,480,F2
-FUSE-gG-690V,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,480,F3
-DM-22u-SKU,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6) [D6 240 A winding]","DMEGC eq",acdc,1,648,480,422.4,480,LDM1
-DM-22u-SKU,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,480,LDM2
-DM-22u-SKU,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,480,LDM3
-CMC-3PH-2mH,custom/Hongfa mag,"3-phase CM choke 2 mH nanocrystalline","sendust CM",acdc,2,283.5,210,184.8,420,CMC1 CMC2
-GD32G553RET6,GigaDevice,"MCU Cortex-M33 216 MHz LQFP100 (pkg/pins TBC, A6; BOOT0 strap + SWD fitted, CB-13)","GD32G563",acdc+dcdc,2,283.5,210,184.8,420,UPFC ULLC
-HFE9-10A-1kV-M,Hongfa,"aux HV relay 10 A 1000 VDC w/ mirror contact (pre-insertion)","—",dcdc,2,283.5,210,184.8,420,KPREA KPREB
-AMC1350-class,TI/NOVOSENSE,"iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)","NSI1300 class",acdc,3,182.3,135,118.8,405,UIVV1 UIVV2 UIVV3
-X1-2u2-530,Faratronic/Songtian,"X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)","Vishay 3386 X1",acdc,6,83.7,62,54.6,372,CX11 CX12 CX13 CX21 CX22 CX23
-B1505S-2WR2,MORNSUN,"iso 15→5 V 2 W module (iso-sense floating bias, E25)","WRB1505S",acdc+dcdc,8,60.8,45,39.6,360,PS5AC PS5BUS PS5H PS5L PSSH PS5BKA PS5BKB PSCAN
-STUD-M8,local,"M8 stud terminal","M6 for signal PE",acdc+dcdc,12,37.8,28,24.6,336,JACL1 JACL2 JACL3 JPE JDCP JDCN JPEB JDCP JDCN JPEB JOUTP JOUTN
-SHUNT-MANG,Isabellenhütte-eq/local,"manganin shunt 50 mV class (SKU current)","local manganin",dcdc,1,351,260,228.8,260,RSHO
-PP-4u7-1200,Faratronic,"4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)","—",dcdc,2,168.8,125,110,250,COF1 COF2
-FILM-100n-250,Faratronic,"100 nF 250 V film (Vienna RCD clamp)","MLCC 250V",acdc,13,24.3,18,15.8,234,CA0C CB0C CC0C CA1C CB1C CC1C CA2C CB2C CC2C CA3C CB3C CC3C
-CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; MR-1 footprint fixed; pulse VERIFY T-05)","SQP25",acdc,6,37.8,28,24.6,168,RPRE1 RPRE2 RDIS0 RDIS1 RDIS2 RDIS3
-WW-470R-5W,local/TE,"470 Ω 5 W wirewound axial (Vienna clamp bleeder — HR-3: 4.3 W worst-case)","SQP5",acdc,12,18.9,14,12.3,168,RA0C RB0C RC0C RA1C RB1C RC1C RA2C RB2C RC2C RA3C RB3C RC3C
-SIC-1700-1R,CR Micro/BASiC,"SiC FET 1700 V ~1 Ω TO-220 (aux flyback, full-bus feed E26)","G3R1700 class",acdc,1,216,160,140.8,160,QAUX
-XFMR-AUX-FLY-B,custom (D4 rev B),"aux flyback transformer EF25, 60 W, 342–860 V input (E26)","—",acdc,1,189,140,123.2,140,TAUX
-S20K550,TDK/Songtian,"MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE)","Songtian eq",acdc,6,29.7,22,19.4,132,MOV1 MOV2 MOV3 MOVP1 MOVP2 MOVP3
-SIC-1200-5A,CR Micro,"SiC FET 1200 V 5 A (bus discharge)","BASiC small 1200V",acdc,1,162,120,105.6,120,QDISF
-R1206-RG,any,"gate resistor 1206 (4.7/2.2 Ω per E5/E6)","any",acdc+dcdc,72,2,1.5,1.3,108,RA0GON RA0GOFF RB0GON RB0GOFF RC0GON RC0GOFF RA1GON RA1GOFF RB1GON RB1GOFF RC1GON RC1GOFF
-Y1-4n7-440,Songtian/Faratronic,"Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)","TDK CD series",acdc+dcdc,6,21.6,16,14.1,96,CY1 CY2 CY3 CPET CYO1 CYO2
-HV73-475k-1%,KOA/UniOhm,"475 kΩ 1206 1% anti-surge (HV divider — MR-3)","any anti-surge 1%",acdc+dcdc,64,1.9,1.4,1.2,90,RV1D0 RV1D1 RV1D2 RV1D3 RV1D4 RV1D5 RV1D6 RV1D7 RV2D0 RV2D1 RV2D2 RV2D3
-US1M,Yageo/MDD,"1 kV 1 A fast diode SMA (DESAT chain)","M7/US1M any",acdc+dcdc,72,1.6,1.2,1.1,86,DA0GS1 DA0GS2 DB0GS1 DB0GS2 DC0GS1 DC0GS2 DA1GS1 DA1GS2 DB1GS1 DB1GS2 DC1GS1 DC1GS2
-C1812-100p-1k,any MLCC,"100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)","film 630V",acdc,12,9.5,7,6.2,84,CA0SN CB0SN CC0SN CA1SN CB1SN CC1SN CA2SN CB2SN CC2SN CA3SN CB3SN CC3SN
-R2512-100k-3W,any,"100 kΩ 2512 3 W (balance / artificial star)","2× 1206 series",acdc+dcdc,13,8.1,6,5.3,78,RBALT0 RBALB0 RBALT1 RBALB1 RBALT2 RBALB2 RNS1 RNS2 RNS3 RBALTA RBALBA RBALTB
-R2512-10R-2W,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,12,8.1,6,5.3,72,RA0SN RB0SN RC0SN RA1SN RB1SN RC1SN RA2SN RB2SN RC2SN RA3SN RB3SN RC3SN
-TPS3430-class,TI/eq,"external windowed watchdog (protection rows 24/30 — CB-10)","MAX6753",acdc+dcdc,2,47.3,35,30.8,70,USUPA USUPB
-NSI1200-DSWR,NOVOSENSE,"iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6)","AMC1200",dcdc,1,94.5,70,61.6,70,USHO
-NSI1042,NOVOSENSE,"iso CAN transceiver","NSI1050",dcdc,1,81,60,52.8,60,UCAN
-MLCC-1u-0805,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,72,1.1,0.8,0.7,58,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 CA1GB1 CA1GB2 CB1GB1 CB1GB2 CC1GB1 CC1GB2
-GDT-3k5-20kA,Bourns/eq,"gas discharge tube 3.5 kV (L-PE surge path, HR-7)","Littelfuse CG3",acdc,3,24.3,18,15.8,54,GDT1 GDT2 GDT3
-SQP-10R-25W,local,"10 Ω 25 W wirewound pulse, axial (bank pre-insertion — HR-12: 94 J single-fault case)","—",dcdc,2,32.4,24,21.1,48,RPREA RPREB
-R1206-33R-1%,any,"33 Ω CT burden 1%","any",acdc+dcdc,31,2,1.5,1.3,47,RA0B RB0B RC0B RA1B RB1B RC1B RA2B RB2B RC2B RA3B RB3B RC3B
-PHD2.0-16,JST/eq,"16-way board-to-board harness header (link crossover in DC-DC net map — CB-14)","Molex",acdc+dcdc,2,29.7,22,19.4,44,JICA JICB
-TLP152-class,Toshiba/eq,"opto gate driver (isolated discharge control, default-OFF — CB-11)","1ED31xx lite",acdc,1,56.7,42,37,42,UQD
-R-small,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,102,0.5,0.4,0.4,41,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RA2GPD RB2GPD RC2GPD RA3GPD RB3GPD
-MLCC-small,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,52,0.7,0.5,0.4,26,CA0F CB0F CC0F CA1F CB1F CC1F CA2F CB2F CC2F CA3F CB3F CC3F
-TLV9061-class,TI/3PEAK,"rail-to-rail op-amp (AVMID buffer, E31)","LMV321",acdc+dcdc,2,16.2,12,10.6,24,UAVB UAVB
-R0805-prec-0.1%,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)","any 0.1%",acdc+dcdc,9,3.4,2.5,2.2,23,RQDL RV1DL RV2DL RV3DL RBPDL RBMDL ROADL ROBDL ROVDL
-UCC28C43-class,TI/onsemi,"current-mode flyback controller SOIC-8 (full application wired — CB-5; final IC O-3)","NCP1252",acdc,1,29.7,22,19.4,22,UAUX
-1N4148WS,any,"clamp diode SOD-323 (to 3V3)","BAS316",acdc+dcdc,48,0.5,0.4,0.4,19,DA0P DA0N DB0P DB0N DC0P DC0N DA1P DA1N DB1P DB1N DC1P DC1N
-R0805-10k,any,"10 kΩ gate-source","any",acdc+dcdc,36,0.7,0.5,0.4,18,RA0GGS RB0GGS RC0GGS RA1GGS RB1GGS RC1GGS RA2GGS RB2GGS RC2GGS RA3GGS RB3GGS RC3GGS
-ULN2803A,any,"8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)","TBD62083",acdc+dcdc,2,12.2,9,7.9,18,UPA ULB
-LED-2DIG-0.56CC,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,18,DISP1
-74HC11,any,"triple 3-input AND (gate-enable wired-AND, E27)","74LVC1G11 ×1",acdc+dcdc,2,10.8,8,7,16,UANDA UANDB
-HDR-1x5-2.54,any,"SWD/boot header (EOL programming — CB-13; LV-only test state §45)","TC2030 pads",acdc+dcdc,2,10.8,8,7,16,JSWDPFC JSWDLLC
-PH-2,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,15,JTPFC JTINL JTLLC JTXFR JTERM
-R2512-HV,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,15,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
-MLCC-100p-0603,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,36,0.5,0.4,0.4,14,CA0GBL CB0GBL CC0GBL CA1GBL CB1GBL CC1GBL CA2GBL CB2GBL CC2GBL CA3GBL CB3GBL CC3GBL
-PH-4-FAN,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9)","any",acdc,2,8.1,6,5.3,12,JFAN1 JFAN2
-PP-10n-1200,Faratronic,"10 nF 1200 V film (aux RCD clamp)","MLCC 1kV ×2",acdc,1,12.2,9,7.9,9,CCLA
-EL-220u-35,Aishi,"220 µF 35 V","any",acdc,2,5.4,4,3.5,8,CAUX24 CAUX15
-CMC-CAN-51uH,any,"CAN common-mode choke","any",dcdc,1,10.8,8,7,8,LCAN
-PH-4,JST,"CAN connector 4-way","any",dcdc,1,10.8,8,7,8,JCAN
-SS310,MDD,"100 V 3 A Schottky SMB (aux secondaries/self-supply)","SS36",acdc,3,3,2.2,1.9,7,DAUX24 DAUX15 DAUXVC
-TAB-M4,local,"discharge FET heatsink tab stud","—",acdc,1,8.1,6,5.3,6,QDIS
-AMS1117-3.3,AMS/eq,"3.3 V LDO SOT-223","SPX1117",acdc,1,8.1,6,5.3,6,U3V3
-FAST-1200-1A,MDD/eq,"1200 V 1 A fast diode SMB (aux RCD clamp)","US1M ×2 series",acdc,1,8.1,6,5.3,6,DCLA
-TACT-6x6,any,"tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)","any",dcdc,2,4.1,3,2.6,6,SW1 SW2
-PESD1CAN,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,4,TVSCAN
-74HC595,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,4,USR1
-MLCC-100n-0402,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
-R0603-220,any,"220 Ω segment","any",dcdc,8,0.4,0.3,0.3,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
-FB-600R-0805,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",acdc+dcdc,2,1.1,0.8,0.7,2,FBPFCA FBLLCA
-MLCC-10u-0805,any,"10 µF 0805","any",acdc,1,1.6,1.2,1.1,1,C3V3
-S8050,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,1,QDIG1 QDIG2
-BIAS-XFMR-SET,custom,"BIAS-XFMR multi-secondary set (E23) — deferred to ECO-1, modules fitted instead (HR-10)","—",acdc+dcdc,2,0,0,0,0,
-MECH,—,"PCB-ACDC 6L 560×600","—",module,1,3450,3000,2790,3000,
-MECH,—,"PCB-DCDC 6L 640×620","—",module,1,4082,3550,3302,3550,
-MECH,—,"Heatsink extrusions","—",module,1,5980,5200,4836,5200,
-MECH,—,"Fans 120×38 PWM (3.3 V-PWM-compatible p/n)","—",module,4,322,280,260,1120,
-MECH,—,"Enclosure sheet metal + hardware","—",module,1,2185,1900,1767,1900,
-MECH,—,"Busbars/interconnect + harness (busbar-calc)","—",module,1,4794,4169,3877,4169,
-MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,72,
-MECH,—,"TIM/insulators/fasteners","—",module,1,1093,950,884,950,
-MECH,—,"Assembly + calibration + EOL test","—",module,1,4485,3900,3627,3900,
-TOTAL_ELECTRONIC,,,,,,,,,90972,
-TOTAL_MODULE_1K,,,,,,,,,114833,
+mpn,manufacturer,description,second_source,boards,qty,unit_100,unit_1k,unit_5k,unit_10k,ext_1k_INR,ext_10k_INR,sample_refs
+IND-PFC-165u,custom (docs/magnetics.md D1),"PFC choke 165 µH, 3× T79 26µ sendust, N=36","POCO/DMEGC equiv core",acdc,12,1397.3,1035,910.8,828,12420,9936,LA0 LB0 LC0 LA1 LB1 LC1 LA2 LB2 LC2 LA3 LB3 LC3
+ELH-470u450,Aishi,"470 µF 450 V snap-in 105 °C (split bus: 415 V max per half)","ChengX/Nichicon",acdc+dcdc,68,202.5,150,132,120,10200,8160,CDT00 CDT01 CDT02 CDT03 CDT04 CDT05 CDB00 CDB01 CDB02 CDB03 CDB04 CDB05
+SG2M023120LJ,SiChain,"SiC MOSFET 1200 V 23 mΩ TO-247-4L","BASiC B3M020120ZL",dcdc,24,526.5,390,343.2,312,9360,7488,Q1H Q1L Q2H Q2L Q3H Q3L Q4H Q4L Q5H Q5L Q6H Q6L
+SICJBS-1200-20,SiChain,"SiC JBS 1200 V 20 A TO-247-2 (secondary bridge)","CR Micro 1200V/20A",dcdc,96,121.5,90,79.2,72,8640,6912,D1A1 D1A2 D1A3 D1A4 D1B1 D1B2 D1B3 D1B4 D2A1 D2A2 D2A3 D2A4
+XFMR-LLC-10K,custom (D3),"LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% (E7 rev D2)","PQ65 single-core variant",dcdc,12,918,680,598.4,544,8160,6528,T1 T2 T3 T4 T5 T6 T7 T8 T9 T10 T11 T12
+B3M010C075Z,BASiC,"SiC MOSFET 750 V 10 mΩ TO-247-4","SiChain 750V/10mΩ (RFQ)",acdc,24,445.5,330,290.4,264,7920,6336,QA0A QA0B QB0A QB0B QC0A QC0B QA1A QA1B QB1A QB1B QC1A QC1B
+QA01C-15S18,MORNSUN,"iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)","domestic iso-module eq (2nd source at RFQ)",acdc+dcdc,35,128.3,95,83.6,55,3325,1925,PSA0G PSB0G PSC0G PSA1G PSB1G PSC1G PSA2G PSB2G PSC2G PSA3G PSB3G PSC3G
+PP-46n-1200,Faratronic,"46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)","Songtian pulse PP",dcdc,48,91.8,68,59.8,54.4,3264,2611,C1R0 C1R1 C1R2 C1R3 C2R0 C2R1 C2R2 C2R3 C3R0 C3R1 C3R2 C3R3
+NSI6611,NOVOSENSE,"iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16","NSI6602B",acdc+dcdc,36,114.8,85,74.8,68,3060,2448,UA0G UB0G UC0G UA1G UB1G UC1G UA2G UB2G UC2G UA3G UB3G UC3G
+SICJBS-1200-40,SiChain,"SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)","BASiC B3D040120H",acdc,24,162,120,105.6,96,2880,2304,DA0T DA0B DB0T DB0B DC0T DC0B DA1T DA1B DB1T DB1B DC1T DC1B
+IND-TRIM-BIN4,custom (D2 rev B),"resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked against measured transformer leakage so Lr(total)=7.0 µH (CB-22: the single 4.3 µH p/n was the pre-MC rev-A part; kitting per DFM step 3)","air-core option",dcdc,12,114.8,85,74.8,68,1020,816,L1T L2T L3T L4T L5T L6T L7T L8T L9T L10T L11T L12T
+PP-1u-1100,Faratronic,"1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)","Songtian",dcdc,14,91.8,68,59.8,54.4,952,762,CF0 CF1 CF2 CF3 CF4 CF5 CF6 CF7 CF8 CF9 CF10 CF11
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K) [2× 200 A paralleled]","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KSER
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARA
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARB
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K) [2× 200 A paralleled (dual instance)]","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KOUT
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KSER2
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARA2
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARB2
+HFE82V-M-CLASS,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KOUT2
+CMC-3PH-2mH-SKU,custom/Hongfa mag,"3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/drawing D7: the family-wide 4 mm² wire ran 14–28 A/mm²; foil/busbar wound at 60/120 kW, ΔT ≤ 45 K acceptance) [D7 240 A winding (busbar/foil, stacked cores — was 28 A/mm², HR-18)]","sendust CM",acdc,1,1053,780,686.4,624,780,624,CMC1
+CMC-3PH-2mH-SKU,custom/Hongfa mag,"3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/drawing D7: the family-wide 4 mm² wire ran 14–28 A/mm²; foil/busbar wound at 60/120 kW, ΔT ≤ 45 K acceptance)","sendust CM",acdc,1,1053,780,686.4,624,780,624,CMC2
+CT-60A-1:2500,ZEMCT/eq,"line CT 60 A class (E18)","HCT series",acdc,12,87.8,65,57.2,52,780,624,CTA0 CTB0 CTC0 CTA1 CTB1 CTC1 CTA2 CTB2 CTC2 CTA3 CTB3 CTC3
+PP-1u-600,Faratronic,"1 µF 600 V film (Vienna per-phase commutation, CB-9)","Songtian",acdc,24,43.2,32,28.2,25.6,768,614,CA0FP CA0FN CB0FP CB0FN CC0FP CC0FN CA1FP CA1FN CB1FP CB1FN CC1FP CC1FN
+ISO5V-RFC-6K,MORNSUN QA/URB-grade,"iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / DCN / BKAN / BKBN)","RECOM RxxP-R / certified eq",acdc+dcdc,8,128.3,95,83.6,65,760,520,PS5AC PS5BUS PS5H PS5L PSSH PS5BKA PS5BKB PSCAN
+SICJBS-1200-10,SiChain,"SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)","CR Micro 1200V/10A",acdc,12,74.3,55,48.4,44,660,528,DA0C DB0C DC0C DA1C DB1C DC1C DA2C DB2C DC2C DA3C DB3C DC3C
+CT-RES-1:100,custom,"resonant CT (toroid, 1:100)","—",dcdc,12,74.3,55,48.4,44,660,528,CT1 CT2 CT3 CT4 CT5 CT6 CT7 CT8 CT9 CT10 CT11 CT12
+AMC1311-class,TI/NOVOSENSE,"iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)","NSI1311 class",acdc+dcdc,5,155.3,115,101.2,92,575,460,UIVBP UIVBM UIVOA UIVOB UIVOV
+HF167F-80A-M,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line) [250 A class (220 A line)]","TE T9G / contactor option",acdc,1,702,520,457.6,416,520,416,KPRE1
+HF167F-80A-M,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line)","TE T9G / contactor option",acdc,1,702,520,457.6,416,520,416,KPRE2
+FUSE-gG-690V,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F1
+FUSE-gG-690V,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F2
+FUSE-gG-690V,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F3
+DM-22u-SKU,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6) [D6 240 A winding]","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM1
+DM-22u-SKU,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM2
+DM-22u-SKU,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM3
+GD32G553VET6,GigaDevice,"MCU Cortex-M33 216 MHz LQFP100 (MR-12: V-suffix = 100-pin — the earlier RET6 was the 64-pin part; full pin map regenerates at A6)","GD32G563",acdc+dcdc,2,283.5,210,184.8,168,420,336,UPFC ULLC
+HFE9-10A-1kV-M,Hongfa,"aux HV relay 10 A 1000 VDC w/ mirror contact (pre-insertion)","—",dcdc,2,283.5,210,184.8,168,420,336,KPREA KPREB
+AMC1350-class,TI/NOVOSENSE,"iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)","NSI1300 class",acdc,3,182.3,135,118.8,108,405,324,UIVV1 UIVV2 UIVV3
+X1-2u2-530,Faratronic/Songtian,"X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)","Vishay 3386 X1",acdc,6,83.7,62,54.6,49.6,372,298,CX11 CX12 CX13 CX21 CX22 CX23
+SIC-1200-5A,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
+STUD-M8,local,"M8 stud terminal","M6 for signal PE",acdc+dcdc,12,37.8,28,24.6,22.4,336,269,JACL1 JACL2 JACL3 JPE JDCP JDCN JPEB JDCP JDCN JPEB JOUTP JOUTN
+WW-470R-10W,local/TE,"470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating)","SQP10",acdc,12,29.7,22,19.4,17.6,264,211,RA0C RB0C RC0C RA1C RB1C RC1C RA2C RB2C RC2C RA3C RB3C RC3C
+SHUNT-MANG,Isabellenhütte-eq/local,"manganin shunt 50 mV class (SKU current)","local manganin",dcdc,1,351,260,228.8,208,260,208,RSHO
+PP-4u7-1200,Faratronic,"4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)","—",dcdc,2,168.8,125,110,100,250,200,COF1 COF2
+FILM-100n-250,Faratronic,"100 nF 250 V film (Vienna RCD clamp)","MLCC 250V",acdc,13,24.3,18,15.8,14.4,234,187,CA0C CB0C CC0C CA1C CB1C CC1C CA2C CB2C CC2C CA3C CB3C CC3C
+XFMR-AUX-FLY-C,custom (D4 rev C),"aux flyback transformer ETD34, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 (E26 rev C — CB-20 SKU-load closure; reinforced pri→sec barrier, 100% hipot 4 kV)","—",acdc,1,222.8,165,145.2,132,165,132,TAUX
+SIC-1700-1R,CR Micro/BASiC,"SiC FET 1700 V ~1 Ω (aux flyback, full-bus E26 rev C; TO-247 likely package — MR-23, footprint placeholder §40)","G3R1700 class",acdc,1,216,160,140.8,128,160,128,QAUX
+R1206-RG-0.5W,any thick-film HP,"gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%)","2× 0805 parallel",acdc+dcdc,72,2.7,2,1.8,1.6,144,115,RA0GON RA0GOFF RB0GON RB0GOFF RC0GON RC0GOFF RA1GON RA1GOFF RB1GON RB1GOFF RC1GON RC1GOFF
+S20K550,TDK/Songtian,"MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE)","Songtian eq",acdc,6,29.7,22,19.4,17.6,132,106,MOV1 MOV2 MOV3 MOVP1 MOVP2 MOVP3
+CER-2k2-10W-AX,TE/local,"2.2 kΩ 10 W wirewound axial (bank bleeder chain, HR-15 — ≤65 J/pulse at 120 kW, τ 4–17 s to <60 V)","SQP10",dcdc,8,18.9,14,12.3,11.2,112,90,RBDA0 RBDA1 RBDA2 RBDA3 RBDB0 RBDB1 RBDB2 RBDB3
+R2512-47k-HV-AS,KOA/UniOhm,"47 kΩ 2512 anti-surge HV type, used 2-series per position (HR-20: halves per-element V and W — ≤208 V / ≤0.92 W continuous)","any HV 2512",acdc+dcdc,26,5.4,4,3.5,3.2,104,83,RBALT0A RBALT0B RBALB0A RBALB0B RBALT1A RBALT1B RBALB1A RBALB1B RBALT2A RBALT2B RBALB2A RBALB2B
+Y1-4n7-440,Songtian/Faratronic,"Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)","TDK CD series",acdc+dcdc,6,21.6,16,14.1,12.8,96,77,CY1 CY2 CY3 CPET CYO1 CYO2
+HV73-475k-1%,KOA/UniOhm,"475 kΩ 1206 1% anti-surge (HV divider — MR-3)","any anti-surge 1%",acdc+dcdc,64,1.9,1.4,1.2,1.1,90,70,RV1D0 RV1D1 RV1D2 RV1D3 RV1D4 RV1D5 RV1D6 RV1D7 RV2D0 RV2D1 RV2D2 RV2D3
+US1M,Yageo/MDD,"1 kV 1 A fast diode SMA (DESAT chain)","M7/US1M any",acdc+dcdc,72,1.6,1.2,1.1,1,86,72,DA0GS1 DA0GS2 DB0GS1 DB0GS2 DC0GS1 DC0GS2 DA1GS1 DA1GS2 DB1GS1 DB1GS2 DC1GS1 DC1GS2
+C1812-100p-1k,any MLCC,"100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)","film 630V",acdc,12,9.5,7,6.2,5.6,84,67,CA0SN CB0SN CC0SN CA1SN CB1SN CC1SN CA2SN CB2SN CC2SN CA3SN CB3SN CC3SN
+MICROFIT3-16,Molex 43045-16 class,"16-way board-to-board harness header, 5 A/contact (MR-14: JST PHD's 1 A contacts were over-run by V15/GND at 120 kW; spares 14/15 now carry GND)","JST VL / TE MicroMate",acdc+dcdc,2,51.3,38,33.4,30.4,76,61,JICA JICB
+R2512-10R-2W,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,12,8.1,6,5.3,4.8,72,58,RA0SN RB0SN RC0SN RA1SN RB1SN RC1SN RA2SN RB2SN RC2SN RA3SN RB3SN RC3SN
+TPS3430-class,TI/eq,"external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window pins; strap values per datasheet at A6/§K)","MAX6753",acdc+dcdc,2,47.3,35,30.8,28,70,56,USUPA USUPB
+VOM1271T,Vishay/eq,"photovoltaic MOSFET driver w/ integrated turn-off (bank bleeders — ECO-2a/E33 rev B: no floating supply needed, ms-class turn-on is the point)","TLP3906",dcdc,2,47.3,35,30.8,28,70,56,UPVA UPVB
+NSI1200-DSWR,NOVOSENSE,"iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6)","AMC1200",dcdc,1,94.5,70,61.6,56,70,56,USHO
+NSI1042,NOVOSENSE,"iso CAN transceiver","NSI1050",dcdc,1,81,60,52.8,48,60,48,UCAN
+MLCC-1u-0805,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,72,1.1,0.8,0.7,0.6,58,43,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 CA1GB1 CA1GB2 CB1GB1 CB1GB2 CC1GB1 CC1GB2
+GDT-3k5-20kA,Bourns/eq,"gas discharge tube 3.5 kV (L-PE surge path, HR-7)","Littelfuse CG3",acdc,3,24.3,18,15.8,14.4,54,43,GDT1 GDT2 GDT3
+SQP-10R-25W,local,"10 Ω 25 W wirewound pulse, axial (bank pre-insertion — HR-12: 94 J single-fault case)","—",dcdc,2,32.4,24,21.1,19.2,48,38,RPREA RPREB
+R-small,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,119,0.5,0.4,0.4,0.3,48,36,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RA2GPD RB2GPD RC2GPD RA3GPD RB3GPD
+CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05) [50 W pulse variant (477 J/event — HR-14)]","SQP25",acdc,1,60.8,45,39.6,36,45,36,RPRE1
+CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RPRE2
+CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05) [50 W pulse variant (382 J — HR-14)]","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS0
+CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS1
+CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS2
+CER-25W-AX,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS3
+TLP152-class,Toshiba/eq,"opto gate driver (isolated bus-discharge control, default-OFF — CB-11)","1ED31xx lite",acdc,1,56.7,42,37,33.6,42,34,UQD
+R1206-33R-1%,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc+dcdc,27,2,1.5,1.3,1.2,41,32,RA0B RB0B RC0B RA1B RB1B RC1B RA2B RB2B RC2B RA3B RB3B RC3B
+R2512-2R0-1W-1%,any,"2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)","2× 1206 1R0 series",dcdc,12,4.1,3,2.6,2.4,36,29,R1CT R2CT R3CT R4CT R5CT R6CT R7CT R8CT R9CT R10CT R11CT R12CT
+MLCC-small,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,63,0.7,0.5,0.4,0.4,32,25,CA0F CB0F CC0F CA1F CB1F CC1F CA2F CB2F CC2F CA3F CB3F CC3F
+TPS54202-class,TI/eq,"15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; one per board)","MP2451/SY8113",acdc+dcdc,2,20.3,15,13.2,12,30,24,UBKA UBKB
+TLV9061-class,TI/3PEAK,"rail-to-rail op-amp (AVMID buffer, E31)","LMV321",acdc+dcdc,2,16.2,12,10.6,9.6,24,19,UAVB UAVB
+NCP1252A,onsemi,"current-mode flyback controller, fixed 65 kHz, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC; the previously-priced UCC28C43 has no BO pin and needs an RT/CT network the schematic never drew","UCC28C43 + RT/CT & BO rework",acdc,1,32.4,24,21.1,19.2,24,19,UAUX
+PH-4-FAN,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17)","any",acdc,4,8.1,6,5.3,4.8,24,19,JFAN1 JFAN2 JFAN3 JFAN4
+R0805-prec-0.1%,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)","any 0.1%",acdc+dcdc,9,3.4,2.5,2.2,2,23,18,RQDL RV1DL RV2DL RV3DL RBPDL RBMDL ROADL ROBDL ROVDL
+1N4148WS,any,"clamp diode SOD-323 (to 3V3)","BAS316",acdc+dcdc,48,0.5,0.4,0.4,0.3,19,14,DA0P DA0N DB0P DB0N DC0P DC0N DA1P DA1N DB1P DB1N DC1P DC1N
+R0805-10k,any,"10 kΩ gate-source","any",acdc+dcdc,36,0.7,0.5,0.4,0.4,18,14,RA0GGS RB0GGS RC0GGS RA1GGS RB1GGS RC1GGS RA2GGS RB2GGS RC2GGS RA3GGS RB3GGS RC3GGS
+ULN2803A,any,"8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)","TBD62083",acdc+dcdc,2,12.2,9,7.9,7.2,18,14,UPA ULB
+LED-2DIG-0.56CC,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
+74HC11,any,"triple 3-input AND (gate-enable wired-AND, E27)","74LVC1G11 ×1",acdc+dcdc,2,10.8,8,7,6.4,16,13,UANDA UANDB
+HDR-1x5-2.54,any,"SWD/boot header (EOL programming — CB-13; LV-only test state §45)","TC2030 pads",acdc+dcdc,2,10.8,8,7,6.4,16,13,JSWDPFC JSWDLLC
+PH-2,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,2.4,15,12,JTPFC JTINL JTLLC JTXFR JTERM
+R2512-HV,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
+MLCC-100p-0603,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,36,0.5,0.4,0.4,0.3,14,11,CA0GBL CB0GBL CC0GBL CA1GBL CB1GBL CC1GBL CA2GBL CB2GBL CC2GBL CA3GBL CB3GBL CC3GBL
+IND-10u-3A,any shielded,"10 µH 3 A shielded power inductor (3V3 buck)","any",acdc+dcdc,2,8.1,6,5.3,4.8,12,10,LBKA LBKB
+PP-10n-1200,Faratronic,"10 nF 1200 V film (aux RCD clamp)","MLCC 1kV ×2",acdc,1,12.2,9,7.9,7.2,9,7,CCLA
+EL-220u-35,Aishi,"220 µF 35 V","any",acdc,2,5.4,4,3.5,3.2,8,6,CAUX24 CAUX15
+CMC-CAN-51uH,any,"CAN common-mode choke","any",dcdc,1,10.8,8,7,6.4,8,6,LCAN
+PH-4,JST,"CAN connector 4-way","any",dcdc,1,10.8,8,7,6.4,8,6,JCAN
+TAB-M4,local,"discharge FET heatsink tab stud","—",acdc,1,8.1,6,5.3,4.8,6,5,QDIS
+US2G,MDD/Yageo,"400 V 2 A ultrafast SMB (aux 15 V / self-supply rectifiers — CB-19: PIV ≈ 157 V + ring)","MURS240",acdc,2,4.1,3,2.6,2.4,6,5,DAUX15 DAUXVC
+FAST-1200-1A,MDD/eq,"1200 V 1 A fast diode SMB (aux RCD clamp)","US1M ×2 series",acdc,1,8.1,6,5.3,4.8,6,5,DCLA
+TACT-6x6,any,"tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)","any",dcdc,2,4.1,3,2.6,2.4,6,5,SW1 SW2
+UF-400V-3A,onsemi/MDD (MURS340 class),"400 V 3 A ultrafast, SMC pad (aux 24 V rectifier — CB-19: PIV ≈ 176 V + leakage ring; 100 V Schottky avalanched)","ES3 series 400 V",acdc,1,6.8,5,4.4,4,5,4,DAUX24
+PESD1CAN,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,TVSCAN
+74HC595,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
+SMBJ26A,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
+SMBJ16A,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
+R1206-R31-1%-0.5W,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
+MLCC-100n-0402,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,0.2,2,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
+R0603-220,any,"220 Ω segment","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
+FB-600R-0805,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",acdc+dcdc,2,1.1,0.8,0.7,0.6,2,1,FBPFCA FBLLCA
+S8050,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
+BIAS-XFMR-SET,custom,"BIAS-XFMR multi-secondary set (E23) — RETIRED at 10k volume (modules permanent, E23 rev B)","—",acdc+dcdc,2,0,0,0,0,0,0,
+MECH,—,"PCB-ACDC 6L 560×600","—",module,1,3450,3000,2790,2610,3000,2610,
+MECH,—,"PCB-DCDC 6L 640×620","—",module,1,4082,3550,3302,3089,3550,3089,
+MECH,—,"Heatsink extrusions","—",module,1,5980,5200,4836,4524,5200,4524,
+MECH,—,"Fans 120×38 PWM (3.3 V-PWM-compatible p/n)","—",module,4,322,280,260,244,1120,974,
+MECH,—,"Enclosure sheet metal + hardware","—",module,1,2185,1900,1767,1653,1900,1653,
+MECH,—,"Busbars/interconnect + harness (busbar-calc)","—",module,1,4794,4169,3877,3627,4169,3627,
+MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
+MECH,—,"TIM/insulators/fasteners","—",module,1,1093,950,884,827,950,827,
+MECH,—,"Assembly + calibration + EOL test","—",module,1,4485,3900,3627,3393,3900,3393,
+TOTAL_ELECTRONIC,,,,,,,,,,93355,73855,
+TOTAL_MODULE,,,,,,,,,,117216,94614,

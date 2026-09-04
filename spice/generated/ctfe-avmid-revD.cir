@@ -1,0 +1,26 @@
+* AVMID buffer rev D dual-feedback (MR-11)
+VDD vdd 0 3.3
+VREF inp 0 1.65
+
+* op-amp OA: G-C dominant pole (Aol 1e6, fp 10 Hz -> GBW 10 MHz) + output R
+GOA 0 OAx inp inn 1
+ROAp OAx 0 1meg
+COAp OAx 0 15.9n
+EOA OAo 0 OAx 0 1
+ROAo OAo opo 150
+
+RAVI opo avmid 4.7
+CAVO avmid 0 10u ic=1.65
+RAVF avmid inn 10k
+CAVF opo inn 2.2n
+* clamp-event surrogate: 5 mA load pulse into AVMID at t=1ms for 200us
+IL avmid 0 PULSE(0 5m 1m 1u 1u 200u 10m)
+.tran 0.2u 4m 0 0.1u uic
+.option method=gear reltol=1e-4 abstol=1e-9
+.control
+set filetype=ascii
+run
+wrdata ctfe-avmid-revD.out v(avmid) v(opo)
+quit
+.endc
+.end

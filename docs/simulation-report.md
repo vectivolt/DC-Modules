@@ -83,6 +83,24 @@ plus CAN codec round-trip/guards and a 100k-frame malformed-input fuzz, compiled
 real defect the JS pass had masked — blind K_OUT closure with no vehicle attached after a mode
 transition (banks parked at the old-mode ceiling → instant OVP) — fixed as the E12b gate in both.
 
+## 11b. R2 §G closure decks (2026-09-05, rev D)
+
+- **CT front-end + AVMID stability** — `spice/protection/ct-frontend.mjs` → `ct-frontend.csv`.
+  Behavioral 10 MHz/1e6-Aol op-amp, rev-D dual-feedback network vs the rev-C direct-into-10 µF
+  baseline, plus the corrected 2.0 Ω resonant chain. **ALL PASS**: AVMID steady ripple ≈ 0 (limit
+  10 mV), clamp-pulse dip 1.64 V (limit ≥1.55); resonant full-load ADC 0.37–2.93 V in-rails;
+  **F.11 70 A pk = 3.024 V** at the comparator. The deck-writing process itself forced two value
+  refinements (CAVF 100 p→2.2 n — corner must sit below the outer-loop crossover; resonant CF
+  1 n→220 p — the 159 kHz pole was eating 25 % of the 140 kHz signal). Fidelity note printed by
+  the deck: the single-pole behavioral model under-predicts the rev-C baseline's ring (the real
+  part's higher-order poles are why MR-11 stands on datasheet grounds); bench T-17 arbitrates.
+- **Per-SKU precharge/discharge/bank-bleed** — `spice/protection/prechg-disch.mjs` →
+  `prechg-disch-sku.csv`. **9/9 PASS**: precharge t95 = 193/347/694 ms with F.20-as-coded never
+  tripping (bus ≥50 % at 400 ms everywhere); Ipk ≤ 19.5 A; per-resistor energy 113/202/402 J
+  (the 120 kW numbers are the HR-14 basis for the 50 W parts); bus discharge 1.99/3.59/7.18 s vs
+  `PMP_DISCH_TO_MS` 3.0/5.5/9.0 s; bank bleed 9/18/36 s vs the F.21b 2.5·τ windows — the deck
+  caught that a 2.0·τ window would false-fail a healthy bleed (525·e⁻² = 71 V) → F.21b set to 2.5·τ.
+
 ## 12. Remaining NOT SIMULATED (hardware-domain by nature)
 
 Bench-physical behavior (real Eon/Eoff, EMI chamber, thermal chamber, relay life, PD) — EVT T-01…T-10.
@@ -91,7 +109,26 @@ These are physically outside simulation scope per fidelity policy; nothing else 
 
 ---
 
-## V-21 rev B — aux flyback redesign validation (2026-09-05, E26)
+## V-21 rev C — aux validation at the per-SKU load matrix (2026-09-05, E26 rev C / R2 CB-19+CB-20)
+
+The rev-B run below validated a 60 W stage against a **fixed** load (24 V step + 15 V @0.8 A) —
+the R2 re-audit showed the real V15 demand scales 9→36 gate-bias modules with SKU (≈90 W peak at
+120 kW) and the rev-B rectifier models had no reverse breakdown (hiding 100 V parts at 160–200 V
+PIV). Rev C: 110 W stage (Lp 345 µH, Ip 3.2 A, 65 kHz, Vor 157 V, D4 rev C), per-SKU loads,
+diodes modeled with BV = 400 V (the specified rating — an under-rated part now breaks the run),
+NCP1252A-style light-load skip added to the behavioral control:
+
+| Case (VIN × SKU load) | v24 settle | dip @ full step | recover | v15 min | Pout | Verdict |
+|---|---|---|---|---|---|---|
+| 342/560/850 V × 30 kW (0.7→1.6 A + 1.0 A) | 24.5–25.2 V | ≥23.7 V | ≤0.22 ms | ≥15.0 V | ≈57 W | **PASS ×3** |
+| 342/560/850 V × 60 kW (0.9→1.9 A + 1.45 A) | 24.4–25.2 V | ≥23.3 V | ≤0.28 ms | ≥14.8 V | ≈72 W | **PASS ×3** |
+| 342/560/850 V × 120 kW (1.6→2.6 A + 2.55 A) | 24.4 V | ≥23.3 V | ≤0.2 ms | ≥15.4 V | **≈107 W** | **PASS ×3** |
+
+`spice/aux/aux-flyback.mjs` rev C, ngspice-46; netlists `spice/generated/aux-*-*.cir`; results
+`simulation-results/30kw/aux-flyback.csv`. Bench T-09/T-18 validate the real NCP1252A UVLO/BO/skip
+and thermal at the per-SKU table.
+
+## V-21 rev B — aux flyback redesign validation (2026-09-05, E26) — superseded by rev C above
 
 Re-run of the aux stage after the production-review rework (full-bus feed, 60 W, Lp 550 µH,
 Ip clamp 1.8 A, Vor 120 V): `spice/aux/aux-flyback.mjs` rev B, ngspice-46, behavioral VM control

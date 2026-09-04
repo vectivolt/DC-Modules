@@ -29,7 +29,7 @@ Fasteners: M3 (PCB), M4 (TO-247 clamps/tabs), M5 (choke lugs), M6 (relay), M8 (p
 2. Hipot: AC-in↔PE 2.5 kV DC 1 min; OUT↔PE 1.5 kV; (pri↔sec covered at transformer part level 4 kV + PD sample 5/lot).
 3. LV functional: aux from bus-sim 700 V bench source at 200 W ceiling; rails ±5%; link CRC soak 60 s; watchdog kill line provoked.
 4. Gate-driver test PWM-disabled: bias ±rails per channel, DESAT loop-back pulse.
-5. Precharge into internal bank (timing 150–300 ms window), discharge <60 V ≤2.5 s (F.21 path).
+5. Precharge into internal bank (timing window **per SKU**: 120–250 / 220–420 / 450–780 ms — R2 HR-14: charge time scales with bus C), discharge <60 V within the per-SKU F.21 window (≤2.5 / ≤4.5 / ≤8.5 s) **+ bank-bleed check (E33): both banks <60 V within the F.21b window**.
 6. **Gain-capability cal (rev D2)**: measure per-unit peak bank voltage at bus 830 low-current → store bank_max (fallback E7); 2-point V/I calibration both directions (accuracy budget: monte-carlo.csv says post-cal ±0.18%/±0.2%).
 7. Limited-power functional 5 kW into load bank: THD sniff (FFT on line CT), midpoint balance, mode transition LV↔HV once (contact currents logged), fan tach, all NTC plausibility.
 8. Fault-injection subset: OVP comparator (bus pump), CAN timeout ramp-off, HMI buttons/display segments.

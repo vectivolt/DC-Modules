@@ -54,7 +54,7 @@ typedef struct {
   pmp_fault_t latched;
   uint8_t fault_count;
   bool lock, need_enable;
-  uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms;
+  uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms;
   float icmd_saved;
   pmp_out_t out;
 } pmp_fsm_t;
@@ -84,4 +84,10 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_XOVER_UP_V     500.0f   /* E9 rev B */
 #define PMP_XOVER_DN_V     525.0f
 #define PMP_LOCK_COUNT       5u
+/* F.21 discharge supervision (R2 review: the doc row previously had no implementation).
+   Physics scales with bus C: t(<60 V) ≈ 2.0 / 3.6 / 7.2 s at 30/60/120 kW (640 Ω, 850 V) —
+   HAL builds override per SKU: 30 kW 3000, 60 kW 5500, 120 kW 9000. Default covers the worst. */
+#ifndef PMP_DISCH_TO_MS
+#define PMP_DISCH_TO_MS   9000u
+#endif
 #endif

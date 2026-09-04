@@ -13,8 +13,9 @@ One repeatable ~10 kW **cell pair** (PFC phase cell + LLC section) instantiated 
  → split bus 800 V (650–830 V commanded), 2×(5× 470 µF/450 V) + film, midpoint sensed,
    HW OVP 860 V, balancing loop, discharge 640 Ω/FET
  → 3-phase half-bridge LLC per channel, SG2M023120LJ, PFM 100–203 kHz around fr=140 kHz,
-   per phase: Cr 178 nF (4×44 nF 1200 V PP) + Lr trim 4.3 µH + section transformer
-   (3×PQ50/50, 7:7:7, Lm 65 µH, leakage 3 µH), star primaries
+   per phase (E7 rev D2): Cr 185 nF (4×46 nF 1200 V PP) + Lr trim binned 3.3–4.35 µH
+   (D2, Lr total 7.0 µH) + section transformer (3×PQ50/50, 7:7:7, Lm 63 µH, leakage ~3 µH),
+   star primaries
  → per section 2 secondaries → 2× SiC JBS bridges (1200 V/20 A) → floating banks A, B
  → S/P matrix: K_PAR_A/B (each with 10 Ω pre-insertion aux), K_SER, K_OUT, bleed
  → output filter → shunt (manganin + NSI1200) → busbar 150–1000 V, 100/200/400 A
@@ -77,3 +78,14 @@ flowchart LR
 - **Aux:** full-bus 60 W flyback (E26) — boots from 285 VAC cold; powers worst-case relay+fan load.
 - **Energy storage:** bank strings 2×450 V (E29); Vienna legs carry local film commutation caps.
 - **Readback:** all HV relays have mirror contacts wired to the MCUs (E30) — F.19 is real.
+
+## Rev D (2026-09-05) — R2 re-audit closure deltas (E32/E33, E26 rev C)
+
+Power path unchanged again; the R2 pass caught defects inside the rev-C fixes and 30 kW-defaults
+masquerading as SKU scaling: resonant sensing re-scaled (2.0 Ω burdens), **each board now sources
+its own 3.3 V via sync buck** (the DC-DC board had no 3.3 V source at all), aux re-rated to a
+single 110 W stage family-wide (D4 rev C, NCP1252A, 400 V rectifiers), `FLT_LLC` reaches MCU-LLC,
+commanded **bank** discharge added (E33), tank aligned to the frozen rev-D2 values, watchdog symbol
+completed, reinforced-class bias modules, 4 monitored fans + dual S/P relay instances + per-SKU
+CM chokes/pulse parts at 120 kW, F.21 implemented in firmware. Full log:
+`docs/design-review-production-r2.md`.

@@ -1,0 +1,19 @@
+* resonant CT front-end, corrected burden (CB-16): Ipri_pk=70 A
+VAV avmid 0 1.65
+ICT avmid b SIN(0 0.7 140k)
+RB b avmid 2.0
+RF b adc 1k
+CF adc avmid 220p
+VDD vdd 0 3.3
+DP adc vdd DCLMP
+DN 0 adc DCLMP
+.model DCLMP D(Is=1e-9 N=1.05 Rs=1)
+.tran 20n 200u 0 10n uic
+.option method=gear reltol=1e-4 abstol=1e-9
+.control
+set filetype=ascii
+run
+wrdata ctfe-res-70.out v(adc) v(b)
+quit
+.endc
+.end

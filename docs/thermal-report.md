@@ -1,26 +1,33 @@
-# Thermal Report (§29/§49-17/18) — rev B (two-board sandwich)
+# Thermal Report (§29/§49-17/18) — rev D (R2/HR-18 closure: EMI filter budgeted)
 
 Sources: `calculations/thermal/loss-budget.mjs` → `out/loss-budget.csv`, `out/derating.csv`;
-device Tj iteration in `calculations/pfc/pfc-design.mjs`. Status: calculated; chamber validation = EVT T-04.
+device Tj iteration in `calculations/pfc/pfc-design.mjs`. Status: calculated; chamber validation = EVT T-04/T-23.
 
-## Loss budgets at rated point (400 VAC, ≥300 V out, JBS baseline)
+## Loss budgets at rated point (400 VAC, ≥300 V out, JBS baseline) — regenerated rev D
 
 | W | 30 kW | 60 kW | 120 kW |
 |---|---|---|---|
-| PFC semis | 158 | 316 | 632 |
+| PFC semis | 158 | 317 | 634 |
 | PFC magnetics | 72 | 145 | 289 |
 | DC-link ESR | 12 | 24 | 48 |
-| LLC primary | 33 | 67 | 133 |
+| LLC primary | 57 | 114 | 228 |
 | Transformers | 62 | 123 | 246 |
 | Tank (Cr+trim) | 13 | 26 | 52 |
 | Secondary JBS | 360 | 721 | 1441 |
-| Busbar+shunt | 18 | 71 | 280 |
-| Aux+gate | 32 | 46 | 74 |
+| Busbar+shunt | 2 | 7 | 28 |
+| **EMI filter (D6+D7 as-drawn — was unbudgeted pre-R2)** | **49** | **132** | **248** |
+| Aux+gate (E26 rev C per-SKU load) | 38 | 56 | 92 |
 | Fans | 20 | 20 | 40 |
-| **Total** | **788** | **1542** | **3081** |
-| **η** | **97.44%** | **97.49%** | **97.50%** |
+| **Total** | **844** | **1684** | **3347** |
+| **η** | **97.26%** | **97.27%** | **97.29%** |
 
-Worst continuous corner (330 VAC full power): 30 kW = 871 W (semis-on-sink 620 W). SR variant saves 214/427/854 W (premium build, E11).
+Spec check: peak η ≥97 % still MET at every SKU — but the pre-R2 97.4–97.5 % headline was
+counting a filter that dissipated nothing. Worst continuous corner (330 VAC full power):
+30 kW = **938 W** (filter at I² ≈ ×1.35; heatsink-mounted semis 620 W unchanged → Rth
+requirement unchanged, the filter heat is airstream-borne, not sink-borne). SR variant saves
+214/427/854 W (premium build, E11). D6's 60/120 kW foils run 17–18 A/mm² — the drawing's
+ΔT ≤ 45 K acceptance governs; if first articles fail it, the next foil gauge is absorbed in the
+D6 price (T-23 thermography arbitrates).
 
 ## Sandwich thermal architecture (E17)
 
@@ -65,3 +72,20 @@ process spec (phase-change pad 0.5 K·cm²/W class) in DFM flow.
   aux load (was ≈ 4 W); the 1700 V switch gets the existing small-TO220 pad + airflow — add to the
   EVT thermography checklist (T-18).
 - **Per-phase film caps (CB-9):** negligible dissipation; they *reduce* electrolytic ripple heating.
+
+## Rev D deltas (2026-09-05, R2 re-audit closure)
+
+- **EMI-filter losses now budgeted** (R2 HR-18): executed — see the regenerated table above
+  (CMC at D7 windings 23/33/72 W + LDM as-drawn 26/98/176 W per module). η headline moves to
+  **97.26/97.27/97.29 %** (still ≥97 spec everywhere).
+- **3.3 V rail** (CB-17/18): sync buck per board ≈ 0.4 W each (the deleted 15 V-fed SOT-223 LDO
+  would have dissipated 2.9–4.1 W — thermal-shutdown territory before the enclosure even warmed).
+- **Aux rev C (110 W)**: at the 120 kW worst load ≈ 84 W out, η ≈ 0.85 → ≈15 W in the aux corner
+  (QAUX ≈ 4–5 W with clip + airflow, D24 ≈ 2.6 W on SMC pad, clamp Rs ≈ 1.2 W) — T-18
+  thermography at the per-SKU load table.
+- **Resonant burdens** (CB-16): 0.42 W × 3–12 on 1 W 2512 (the mis-scaled 33 Ω would have burned
+  7 W in a 0.25 W 1206 — self-clearing within seconds at first load).
+- **Balance/star resistors** (HR-20): ≤0.92 W per element after 2-series split (was 1.72 W on
+  single parts, 24/7).
+- **Bank bleeders** (E33): pulse duty only — ≤65 J/resistor per discharge at 120 kW on 10 W
+  wirewound; no steady heat.

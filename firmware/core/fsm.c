@@ -138,10 +138,13 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     break;
   case ST_SHUTDOWN:
     o->pfc_en = false; o->llc_en = false; o->k_out = false; o->k_pre = false; o->q_disch = true;
+    f->disch_ms = 0;
     f->st = ST_DISCH;
     break;
   case ST_DISCH:
+    f->disch_ms++;
     if (in->vbus < 60.0f) { f->st = ST_OFF; o->q_disch = false; }
+    else if (f->disch_ms > PMP_DISCH_TO_MS) latch(f, FC_DISCH);   /* F.21 — discharge kept commanded */
     break;
   case ST_OFF:
     break;
