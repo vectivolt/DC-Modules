@@ -9,7 +9,7 @@ every cell explained here is instantiated unchanged across the family.
 | Output | 150–1000 VDC · **100 A max** · CV/CC · auto S/P mode |
 | Boards | AC-DC 420×300 mm · DC-DC 460×320 mm |
 | Cells | 1 Vienna lane (3 phases) · 1 LLC channel (3 legs + 3 sections) |
-| COGS @1k | **₹31,861** BOM-exact ([levers](../../docs/bom-cost.md)) |
+| COGS @1k | **₹36,066** BOM-exact, rev C ([levers](../../docs/bom-cost.md)) |
 | Exports | [`out/acdc-schematic.svg`](out/acdc-schematic.svg) · [`out/dcdc-schematic.svg`](out/dcdc-schematic.svg) · netlists · [v1 single-board Gerbers](out/) |
 
 ---

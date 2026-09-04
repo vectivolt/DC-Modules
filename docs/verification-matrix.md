@@ -69,7 +69,7 @@ gate, ECO-1 (E23), bench EVT (T-01…T-18).
 | R9 | GD32G553 datasheet deltas (pins/HRTIM) | M×M | A6 verify; pin maps regenerate from tables | Open |
 | R10 | Vienna zero-cross distortion (common-gate) | L×M | THD sims clean at averaged level; bench check T-02 | Mitigated |
 | R11 | Two-board harness single point of failure | M×L | KILL/EN fail-safe + link CRC/timeout; harness retention + shield | Mitigated (design) |
-| R12 | COGS over red-line at schematic-exact count | H×H | **Internal levers EXECUTED**: E23 custom bias (−₹0.9k @30 kW, in BOM); remaining levers are external RFQs (quantified in bom-cost.md); stretch unreachable — management flag stands | **Open (external-quote-dependent only)** |
+| R12 | COGS over red-line at schematic-exact count | H×H | **Rev C widened the gap deliberately**: review closure added ₹4.2k/6.1k/10.3k per module (iso-sense set, mirror relays, line-rated bypass, 2-series banks, X1 class, 60 W aux, E23 deferral back to modules) — safety/buildability bought with BOM. Now ₹36.1/61.4/114.8k vs red 25/42/78k. Levers: ECO-1 (E23, −₹0.9–3.2k), RFQ rounds (A7 ±25%), relay/iso-amp domestic alternates. Stretch unreachable — management flag stands | **Open (external-quote-dependent only)** |
 
 ## EVT plan pointer
 

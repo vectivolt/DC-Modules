@@ -17,13 +17,13 @@
 
     <!-- 30 kW group: actual 31861, red 25000, stretch 22000  (h = v/120000*220) -->
     <g>
-      <rect x="120" y="231.6" width="52" height="58.4" rx="4" fill="#e3763c">
-        <animate attributeName="height" from="0" to="58.4" dur="0.7s" fill="freeze"/>
+      <rect x="120" y="223.9" width="52" height="66.1" rx="4" fill="#e3763c">
+        <animate attributeName="height" from="0" to="66.1" dur="0.7s" fill="freeze"/>
         <animate attributeName="y" from="290" to="231.6" dur="0.7s" fill="freeze"/>
       </rect>
       <rect x="180" y="244.2" width="52" height="45.8" rx="4" fill="#5f8fc0"/>
       <rect x="240" y="249.7" width="52" height="40.3" rx="4" fill="#3d5a78"/>
-      <text x="146" y="224" text-anchor="middle" fill="#f2b705" font-weight="700">31.9k</text>
+      <text x="146" y="216" text-anchor="middle" fill="#f2b705" font-weight="700">36.1k</text>
       <text x="206" y="237" text-anchor="middle" fill="#9db7d2">25k</text>
       <text x="266" y="243" text-anchor="middle" fill="#7d94ac">22k</text>
       <text x="206" y="312" text-anchor="middle" fill="#c9d0dd" font-weight="700">30 kW</text>
@@ -31,13 +31,13 @@
 
     <!-- 60 kW: actual 55319, red 42000, stretch 36000 -->
     <g>
-      <rect x="380" y="188.6" width="52" height="101.4" rx="4" fill="#e3763c">
-        <animate attributeName="height" from="0" to="101.4" dur="0.7s" begin="0.15s" fill="freeze"/>
+      <rect x="380" y="177.6" width="52" height="112.4" rx="4" fill="#e3763c">
+        <animate attributeName="height" from="0" to="112.4" dur="0.7s" begin="0.15s" fill="freeze"/>
         <animate attributeName="y" from="290" to="188.6" dur="0.7s" begin="0.15s" fill="freeze"/>
       </rect>
       <rect x="440" y="213" width="52" height="77" rx="4" fill="#5f8fc0"/>
       <rect x="500" y="224" width="52" height="66" rx="4" fill="#3d5a78"/>
-      <text x="406" y="181" text-anchor="middle" fill="#f2b705" font-weight="700">55.3k</text>
+      <text x="406" y="170" text-anchor="middle" fill="#f2b705" font-weight="700">61.4k</text>
       <text x="466" y="206" text-anchor="middle" fill="#9db7d2">42k</text>
       <text x="526" y="217" text-anchor="middle" fill="#7d94ac">36k</text>
       <text x="466" y="312" text-anchor="middle" fill="#c9d0dd" font-weight="700">60 kW</text>
@@ -45,13 +45,13 @@
 
     <!-- 120 kW: actual 104555, red 78000, stretch 68000 -->
     <g>
-      <rect x="640" y="98.3" width="52" height="191.7" rx="4" fill="#e3763c">
-        <animate attributeName="height" from="0" to="191.7" dur="0.7s" begin="0.3s" fill="freeze"/>
+      <rect x="640" y="79.8" width="52" height="210.2" rx="4" fill="#e3763c">
+        <animate attributeName="height" from="0" to="210.2" dur="0.7s" begin="0.3s" fill="freeze"/>
         <animate attributeName="y" from="290" to="98.3" dur="0.7s" begin="0.3s" fill="freeze"/>
       </rect>
       <rect x="700" y="147" width="52" height="143" rx="4" fill="#5f8fc0"/>
       <rect x="760" y="165.3" width="52" height="124.7" rx="4" fill="#3d5a78"/>
-      <text x="666" y="91" text-anchor="middle" fill="#f2b705" font-weight="700">104.6k</text>
+      <text x="666" y="72" text-anchor="middle" fill="#f2b705" font-weight="700">114.8k</text>
       <text x="726" y="140" text-anchor="middle" fill="#9db7d2">78k</text>
       <text x="786" y="158" text-anchor="middle" fill="#7d94ac">68k</text>
       <text x="726" y="312" text-anchor="middle" fill="#c9d0dd" font-weight="700">120 kW</text>
@@ -59,7 +59,7 @@
 
     <!-- legend (inside plot, above tallest bar) -->
     <g transform="translate(519,44)" font-size="11.5">
-      <rect x="0" y="0" width="12" height="12" rx="3" fill="#e3763c"/><text x="18" y="10" fill="#c9d0dd">actual (BOM-exact)</text>
+      <rect x="0" y="0" width="12" height="12" rx="3" fill="#e3763c"/><text x="18" y="10" fill="#c9d0dd">actual (BOM-exact, rev C)</text>
       <rect x="162" y="0" width="12" height="12" rx="3" fill="#5f8fc0"/><text x="180" y="10" fill="#c9d0dd">red-line</text>
       <rect x="255" y="0" width="12" height="12" rx="3" fill="#3d5a78"/><text x="273" y="10" fill="#c9d0dd">stretch</text>
     </g>

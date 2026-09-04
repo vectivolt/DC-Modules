@@ -73,7 +73,7 @@ flowchart LR
 | Board pair (mm) | 420×300 + 460×320 | 460×420 + 520×420 | 560×600 + 640×620 |
 | MCUs | 2 | 2 | 2 (HRTIM exactly full: 12+12 PWM) |
 | Effective ripple @EMI filter | 50 kHz | 100 kHz | 200 kHz |
-| COGS @1k (BOM-exact) | ₹31,861 | ₹55,319 | ₹104,555 |
+| COGS @1k (BOM-exact, **rev C**) | ₹36,066 | ₹61,415 | ₹114,833 |
 
 ---
 

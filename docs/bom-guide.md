@@ -18,7 +18,7 @@ Regenerate any time: `npx tsci build boards/<sku>/{acdc,dcdc}.tsx` then
 ## Where a 30 kW rupee goes
 
 ```mermaid
-pie showData title 30 kW COGS ₹31,861 @1k
+pie showData title 30 kW COGS ₹36,066 @1k (rev C)
   "mechanical/assembly" : 8706
   "semiconductors" : 7513
   "magnetics" : 6401
@@ -50,7 +50,7 @@ pie showData title 30 kW COGS ₹31,861 @1k
 
 | @1k | 30 kW | 60 kW | 120 kW |
 |---|---|---|---|
-| **Actual (BOM-exact)** | ₹31,861 | ₹55,319 | ₹104,555 |
+| **Actual (BOM-exact, rev C)** | ₹36,066 | ₹61,415 | ₹114,833 |
 | Red-line | 25,000 | 42,000 | 78,000 |
 | Gap | **+6,861** | **+13,319** | **+26,555** |
 

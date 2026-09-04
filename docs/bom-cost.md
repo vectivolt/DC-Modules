@@ -5,56 +5,53 @@ parts-db RFQ-target pricing (A7, ±25%), mechanical/assembly lines from thermal/
 Price breaks: 100 pc = ×1.35 electronics / ×1.15 mech; 5000 pc = ×0.88 / ×0.93 (heuristic, RFQ refines).
 Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source column included).
 
-## 30KW — module COGS ₹31861 @1k (100 pc ₹41271, 5k ₹28473) vs red-line ₹25000 / stretch ₹22000 → **OVER red-line by ₹6861**
+## 30KW — module COGS ₹36066 @1k (100 pc ₹46948, 5k ₹32174) vs red-line ₹25000 / stretch ₹22000 → **OVER red-line by ₹11066**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| mechanical/assembly | 8706 | 27.3% |
-| semiconductors | 7513 | 23.6% |
-| magnetics | 6401 | 20.1% |
-| capacitors | 3770 | 11.8% |
-| relays | 2155 | 6.8% |
-| drive+control ICs | 1466 | 4.6% |
-| bias/iso modules | 546 | 1.7% |
-| resistors/shunts | 492 | 1.5% |
-| connectors | 421 | 1.3% |
-| protection | 340 | 1.1% |
-| misc | 27 | 0.1% |
+| magnetics | 9488 | 26.3% |
+| mechanical/assembly | 8706 | 24.1% |
+| semiconductors | 7645 | 21.2% |
+| capacitors | 4900 | 13.6% |
+| drive+control ICs | 3622 | 10% |
+| resistors/shunts | 598 | 1.7% |
+| connectors | 437 | 1.2% |
+| protection | 406 | 1.1% |
+| misc | 241 | 0.7% |
 | HMI | 24 | 0.1% |
+| bias/iso modules | 0 | 0% |
 
-## 60KW — module COGS ₹55319 @1k (100 pc ₹72045, 5k ₹49339) vs red-line ₹42000 / stretch ₹36000 → **OVER red-line by ₹13319**
-
-| Category | ₹ @1k | share |
-|---|---|---|
-| semiconductors | 14878 | 26.9% |
-| mechanical/assembly | 13177 | 23.8% |
-| magnetics | 12170 | 22% |
-| capacitors | 6664 | 12% |
-| relays | 3595 | 6.5% |
-| drive+control ICs | 2246 | 4.1% |
-| bias/iso modules | 762 | 1.4% |
-| protection | 700 | 1.3% |
-| resistors/shunts | 632 | 1.1% |
-| connectors | 421 | 0.8% |
-| misc | 50 | 0.1% |
-| HMI | 24 | 0% |
-
-## 120KW — module COGS ₹104555 @1k (100 pc ₹136377, 5k ₹93201) vs red-line ₹78000 / stretch ₹68000 → **OVER red-line by ₹26555**
+## 60KW — module COGS ₹61415 @1k (100 pc ₹80275, 5k ₹54704) vs red-line ₹42000 / stretch ₹36000 → **OVER red-line by ₹19415**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| semiconductors | 29608 | 28.3% |
-| mechanical/assembly | 23861 | 22.8% |
-| magnetics | 23708 | 22.7% |
-| capacitors | 12752 | 12.2% |
-| relays | 6715 | 6.4% |
-| drive+control ICs | 3804 | 3.6% |
-| protection | 1510 | 1.4% |
-| bias/iso modules | 1194 | 1.1% |
-| resistors/shunts | 862 | 0.8% |
-| connectors | 421 | 0.4% |
-| misc | 96 | 0.1% |
+| magnetics | 17217 | 28% |
+| semiconductors | 15010 | 24.4% |
+| mechanical/assembly | 13177 | 21.5% |
+| capacitors | 8594 | 14% |
+| drive+control ICs | 5157 | 8.4% |
+| resistors/shunts | 767 | 1.2% |
+| protection | 766 | 1.2% |
+| connectors | 437 | 0.7% |
+| misc | 267 | 0.4% |
 | HMI | 24 | 0% |
+| bias/iso modules | 0 | 0% |
+
+## 120KW — module COGS ₹114833 @1k (100 pc ₹150252, 5k ₹102246) vs red-line ₹78000 / stretch ₹68000 → **OVER red-line by ₹36833**
+
+| Category | ₹ @1k | share |
+|---|---|---|
+| magnetics | 33115 | 28.8% |
+| semiconductors | 29740 | 25.9% |
+| mechanical/assembly | 23861 | 20.8% |
+| capacitors | 16281 | 14.2% |
+| drive+control ICs | 8425 | 7.3% |
+| protection | 1576 | 1.4% |
+| resistors/shunts | 1054 | 0.9% |
+| connectors | 437 | 0.4% |
+| misc | 320 | 0.3% |
+| HMI | 24 | 0% |
+| bias/iso modules | 0 | 0% |
 
 ## Red-line closure levers (R12) — quantified, owner = Phase-17 RFQ round
 

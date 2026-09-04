@@ -8,7 +8,7 @@ two boards, still two MCUs.** Cell internals: [30 kW canonical page](../30kw/REA
 | Output | 150–1000 VDC · **400 A max** |
 | Boards | AC-DC 560×600 mm · DC-DC 640×620 mm |
 | Cells | 4 lanes @ **0/90/180/270°** · 12 LLC legs · 12 sections |
-| COGS @1k | **₹104,555** BOM-exact |
+| COGS @1k | **₹114,833** BOM-exact |
 | Exports | [`out/acdc-schematic.svg`](out/acdc-schematic.svg) · [`out/dcdc-schematic.svg`](out/dcdc-schematic.svg) · netlists |
 
 ## The 4-lane symphony 🎼

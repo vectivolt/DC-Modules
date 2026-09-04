@@ -209,6 +209,9 @@ HF115F-2Z (CB-8), PP-1u-900 on the bus (HR-1), COF-1100 (HR-8), LDM ₹38 (HR-9)
 drawings — OK. Lifecycle: all majors active (A-grade check at RFQ). **Action:** fix parts-db in
 the same change-set as the schematic fixes so the BOM regenerates correctly (est. net BOM impact
 of all fixes: ≈ +₹1.4 k / +₹2.1 k / +₹3.9 k — update R12 economics accordingly).
+*Post-fix actuals (rev C BOM regen): **+₹4.2 k / +₹6.1 k / +₹10.3 k** — the delta over the estimate
+is dominated by the E23→module reversion (HR-10, +₹0.9–3.2 k) and the full iso-sense set (E25
+went beyond the minimum CB-3 fix to all eight channels + biases). Recorded in R12.*
 
 ## M. Reference-design comparison
 

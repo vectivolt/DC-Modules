@@ -8,7 +8,7 @@ Same cells as the [30 kW canonical walkthrough](../30kw/README.md) — this page
 | Output | 150–1000 VDC · **200 A max** |
 | Boards | AC-DC 460×420 mm · DC-DC 520×420 mm |
 | Cells | **2 Vienna lanes @ 0/180°** · **2 LLC channels** (6 legs, 6 sections) |
-| COGS @1k | **₹55,319** BOM-exact |
+| COGS @1k | **₹61,415** BOM-exact, rev C |
 | Exports | [`out/acdc-schematic.svg`](out/acdc-schematic.svg) · [`out/dcdc-schematic.svg`](out/dcdc-schematic.svg) · netlists |
 
 ## What scales ×2 (and why interleaved, not bigger)
