@@ -127,14 +127,14 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
       <trace from=".CMC2 > .B2" to="net.AC2D" schDisplayLabel="AC2D" />
       <trace from=".CMC2 > .B3" to="net.AC3D" schDisplayLabel="AC3D" />
       {[1, 2, 3].map(i => (
-        <chip key={`ldm${i}`} name={`LDM${i}`} footprint={FilmBoxFP(20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 200} pcbY={h / 2 - 20 - (i - 1) * 18} schX={41} schY={46 - (i - 1) * 3} />
+        <inductor key={`ldm${i}`} name={`LDM${i}`} inductance="22uH" footprint={FilmBoxFP(20)} pcbX={-w / 2 + 200} pcbY={h / 2 - 20 - (i - 1) * 18} schX={41} schY={46 - (i - 1) * 3} schSectionName="EMI" />
       ))}
-      <trace from=".LDM1 > .A" to="net.AC1D" schDisplayLabel="AC1D" />
-      <trace from=".LDM1 > .B" to="net.AC1" schDisplayLabel="AC1" />
-      <trace from=".LDM2 > .A" to="net.AC2D" schDisplayLabel="AC2D" />
-      <trace from=".LDM2 > .B" to="net.AC2" schDisplayLabel="AC2" />
-      <trace from=".LDM3 > .A" to="net.AC3D" schDisplayLabel="AC3D" />
-      <trace from=".LDM3 > .B" to="net.AC3" schDisplayLabel="AC3" />
+      <trace from=".LDM1 > .pin1" to="net.AC1D" schDisplayLabel="AC1D" />
+      <trace from=".LDM1 > .pin2" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".LDM2 > .pin1" to="net.AC2D" schDisplayLabel="AC2D" />
+      <trace from=".LDM2 > .pin2" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".LDM3 > .pin1" to="net.AC3D" schDisplayLabel="AC3D" />
+      <trace from=".LDM3 > .pin2" to="net.AC3" schDisplayLabel="AC3" />
       <trace from=".CX21 > .pin1" to="net.AC1" schDisplayLabel="AC1" />
       <trace from=".CX21 > .pin2" to="net.AC2" schDisplayLabel="AC2" />
       <trace from=".CX22 > .pin1" to="net.AC2" schDisplayLabel="AC2" />

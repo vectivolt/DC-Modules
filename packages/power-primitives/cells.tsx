@@ -223,7 +223,7 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", 
   <group name={`vp${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 26 × 12: power path L→R along the top (choke → common-source pair → boost
         diodes → films → snubber → clamp), the gate-drive channel in its own room below. */}
-    <chip name={`L${id}`} footprint={<ChokeFP />} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <inductor name={`L${id}`} inductance="165uH" footprint={<ChokeFP />} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={70} pcbY={0} schX={3} schY={0} schSectionName={sec} />
     <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={82} pcbY={0} schX={6} schY={0} schSectionName={sec} />
     <DriverCh id={`${id}G`} pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={70} y={16} sx={4.5} sy={-6.5} />
@@ -236,8 +236,8 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", 
     <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={132} pcbY={0} schX={18.5} schY={1.4} schSectionName={sec} />
     <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(15)} pcbX={132} pcbY={10} schX={21} schY={1.4} schSectionName={sec} />
     <chip name={`R${id}C`} footprint={FilmBoxFP(20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={132} pcbY={18} schX={23.5} schY={1.4} schSectionName={sec} />
-    <trace from={ac} to={`.L${id} > .A`} schDisplayLabel={ac.replace("net.", "")} />
-    <trace from={`.L${id} > .B`} to={`net.PH${id}`} />
+    <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
+    <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .G`} to={`net.G_${id}`} />
     <trace from={`.Q${id}A > .KS`} to={`net.KS_${id}`} />
@@ -297,7 +297,7 @@ export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = 
     {[0, 1, 2, 3].map(i => (
       <capacitor key={i} name={`C${id}R${i}`} capacitance="46nF" footprint={FilmBoxFP(27.5)} pcbX={0} pcbY={i * 8} schX={0} schY={3 - i * 1.4} schSectionName={sec} />
     ))}
-    <chip name={`L${id}T`} footprint={<TrimFP />} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={40} pcbY={0} schX={3} schY={3} schSectionName={sec} />
+    <inductor name={`L${id}T`} inductance="4uH" footprint={<TrimFP />} pcbX={40} pcbY={0} schX={3} schY={3} schSectionName={sec} />
     <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "S1A", pin5: "S1B", pin6: "S2A", pin7: "S2B" }} pcbX={80} pcbY={10} schX={7} schY={1.5} schSectionName={sec} />
     {["A1", "A2", "A3", "A4"].map((d, i) => (
       <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={110 + i * 12} pcbY={0} schX={11 + i * 2.4} schY={3} schSectionName={sec} />
@@ -314,9 +314,9 @@ export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = 
     <diode name={`D${id}CN`} footprint="sod323" pcbX={70} pcbY={6} schX={9.6} schY={-2.6} schSectionName={sec} />
     {[0, 1, 2, 3].map(i => [
       <trace key={`a${i}`} from={sw} to={`.C${id}R${i} > .pin1`} schDisplayLabel={sw.replace("net.", "")} />,
-      <trace key={`b${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .A`} />,
+      <trace key={`b${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .pin1`} />,
     ])}
-    <trace from={`.L${id}T > .B`} to={`.T${id} > .P1`} />
+    <trace from={`.L${id}T > .pin2`} to={`.T${id} > .P1`} />
     <trace from={`.T${id} > .P2`} to={star} schDisplayLabel={star.replace("net.", "")} />
     <trace from={`.T${id} > .SH`} to={star} schDisplayLabel={star.replace("net.", "")} />
     <trace from={`.CT${id} > .S1`} to={`net.CTB${id}`} />
@@ -934,7 +934,7 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
 export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`r3v3${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     <chip name={`UBK${id}`} footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "SW", pin4: "FB", pin5: "EN", pin6: "BST", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <chip name={`LBK${id}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={14} pcbY={0} schX={3} schY={0.6} schSectionName={sec} />
+    <inductor name={`LBK${id}`} inductance="10uH" footprint={FilmBoxFP(10)} pcbX={14} pcbY={0} schX={3} schY={0.6} schSectionName={sec} />
     <capacitor name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-2.6} schY={0.8} schSectionName={sec} />
     <capacitor name={`CBKO${id}`} capacitance="22uF" footprint="0805" pcbX={22} pcbY={4} schX={5.4} schY={0.6} schSectionName={sec} />
     <capacitor name={`CBST${id}`} capacitance="100nF" footprint="0603" pcbX={8} pcbY={-6} schX={1.8} schY={1.9} schSectionName={sec} />
@@ -945,10 +945,10 @@ export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: 
     <trace from={`.UBK${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CBKI${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.CBKI${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.UBK${id} > .SW`} to={`.LBK${id} > .A`} />
+    <trace from={`.UBK${id} > .SW`} to={`.LBK${id} > .pin1`} />
     <trace from={`.CBST${id} > .pin1`} to={`.UBK${id} > .BST`} />
     <trace from={`.CBST${id} > .pin2`} to={`.UBK${id} > .SW`} />
-    <trace from={`.LBK${id} > .B`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.LBK${id} > .pin2`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.CBKO${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.CBKO${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.RBKF1${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
