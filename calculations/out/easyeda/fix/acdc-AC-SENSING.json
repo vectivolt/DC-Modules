@@ -1,28 +1,43 @@
 {
  "page": "acdc-AC-SENSING",
- "page_uuid": "5968c9bb670d73b9",
+ "page_uuid": "873d50fc8bb1b1ec",
  "add_components": [],
  "rm_components": [],
  "external_connect": [
   {
-   "designator": "PS5AC",
-   "pin_number": 3,
-   "signal_name": "NSTAR"
+   "designator": "UIVV1",
+   "pin_number": 8,
+   "signal_name": "V3P3"
+  },
+  {
+   "designator": "UIVV2",
+   "pin_number": 8,
+   "signal_name": "V3P3"
+  },
+  {
+   "designator": "UIVV3",
+   "pin_number": 8,
+   "signal_name": "V3P3"
   },
   {
    "designator": "UIVBP",
-   "pin_number": 1,
-   "signal_name": "B5BUS"
+   "pin_number": 5,
+   "signal_name": "AGND"
+  },
+  {
+   "designator": "UIVBP",
+   "pin_number": 7,
+   "signal_name": "SNS_VBUSP"
   },
   {
    "designator": "UIVBM",
-   "pin_number": 1,
-   "signal_name": "B5BUS"
+   "pin_number": 5,
+   "signal_name": "AGND"
   },
   {
-   "designator": "UAVB",
-   "pin_number": 5,
-   "signal_name": "V3P3"
+   "designator": "UIVBM",
+   "pin_number": 7,
+   "signal_name": "SNS_VMID"
   }
  ],
  "remark_no_connect": [

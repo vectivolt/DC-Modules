@@ -1,6 +1,13 @@
 {
  "page": "acdc-INPUT-EMI",
- "page_uuid": "cf3d7bd75151a39a",
+ "page_uuid": "71e744688a837b1d",
+ "title": "30kW ACDC 1of6 INPUT-EMI",
+ "block_order": [
+  "AC-ENTRY",
+  "SURGE",
+  "EMI-FILTER",
+  "PRECHARGE"
+ ],
  "chunks": [
   [
    {
@@ -115,7 +122,9 @@
       "signal_name": "LF3"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "MOV1",
     "value": "S20K550",
@@ -286,7 +295,9 @@
       "signal_name": "PE"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "CMC1",
     "value": "CMC-3PH-2mH-SKU",
@@ -592,7 +603,9 @@
       "signal_name": "AC3"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "KPRE1",
     "value": "HF167F-80A-M",

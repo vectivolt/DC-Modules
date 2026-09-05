@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DB, skuOverrides, mechLines, biasCommon } from "./parts-db.mjs";
+import { lcscFor, lcscSummary } from "./lcsc-map.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 0) => Number(x.toFixed(d));
 
@@ -53,7 +54,7 @@ for (const sku of SKUS) {
     }
   }
   const rows = [...parts.values()].sort((a, b) => b.qty * b.price1k - a.qty * a.price1k);
-  const csv = [["mpn", "manufacturer", "description", "second_source", "boards", "qty", "unit_100", "unit_1k", "unit_5k", "unit_10k", "ext_1k_INR", "ext_10k_INR", "sample_refs"]];
+  const csv = [["mpn", "lcsc", "lcsc_status", "manufacturer", "description", "second_source", "boards", "qty", "unit_100", "unit_1k", "unit_5k", "unit_10k", "ext_1k_INR", "ext_10k_INR", "sample_refs"]];
   let totE = 0, totE10 = 0;
   const cats = {};
   for (const r of rows) {
@@ -62,18 +63,19 @@ for (const sku of SKUS) {
     totE += ext; totE10 += ext10;
     const cat = CAT(r.mpn, r.desc);
     cats[cat] = (cats[cat] ?? 0) + ext;
-    csv.push([r.mpn, r.mfr, `"${r.desc}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
+    const lc = lcscFor(r.mpn);
+    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
-  csv.push(["BIAS-XFMR-SET", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
+  csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
   cats["bias/iso modules"] = (cats["bias/iso modules"] ?? 0) + 2 * biasCommon.price1k;
   let mechTot = 0;
-  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; csv.push([`MECH`, "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
+  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; csv.push([`MECH`, "", "MECH", "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
   cats["mechanical/assembly"] = mechTot;
   const grand = totE + mechTot;
   const grand10 = totE10 + mechTot * 0.87;
-  csv.push(["TOTAL_ELECTRONIC", "", "", "", "", "", "", "", "", "", f(totE), f(totE10), ""]);
-  csv.push(["TOTAL_MODULE", "", "", "", "", "", "", "", "", "", f(grand), f(grand10), ""]);
+  csv.push(["TOTAL_ELECTRONIC", "", "", "", "", "", "", "", "", "", "", "", f(totE), f(totE10), ""]);
+  csv.push(["TOTAL_MODULE", "", "", "", "", "", "", "", "", "", "", "", f(grand), f(grand10), ""]);
   writeFileSync(join(ROOT, "calculations", "out", `bom-${sku}.csv`), csv.map(r => r.join(",")).join("\n") + "\n");
   const [red, stretch] = TARGETS[sku];
   summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), g10k: f(grand10), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };

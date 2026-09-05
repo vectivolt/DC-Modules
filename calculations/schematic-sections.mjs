@@ -1,0 +1,50 @@
+// Shared section map: which designators belong to which functional section.
+// Extracted from schematic-export.mjs so the exporter and the composer cannot drift.
+export const SECTIONS = {
+  acdc: [
+    ["AC INPUT & PROTECTION", /^(JACL\d|JPE$|F[123]$|MOV[123]$|MOVP[123]$|GDT[123]$)/],
+    ["EMI FILTER", /^(CMC[12]$|CX\d\d$|CY[123]$|LDM[123]$)/],
+    ["PRECHARGE", /^(KPRE[12]$|RPRE[12]$|RKFBP$)/],
+    ["LINE CTs", /^(CT[ABC]\d$|R[ABC]\d[BF]$|C[ABC]\dF$|D[ABC]\d[PN]$)/],
+    ["VIENNA PFC LANES", /^(?:L|Q|D|C|R|U|PS)[ABC]\d/],
+    ["DC LINK", /^(CD[TB]\d|RBAL[TB]\d)/],
+    ["BUS DISCHARGE", /^(RDIS\d|QDIS$|QDISF$|UQD$|PSQD$|RQD)/],
+    ["ISOLATED HV SENSING", /^(RNS\d[AB]$|PS5(AC|BUS)$|UIV(V\d|BP|BM)$|R(V\d|BP|BM)D\d?L?$|C(V\d|BP|BM)DF$)/],
+    ["ANALOG MID-RAIL & TEMP", /^(RAV[HLIF]$|CAV[MFO]$|UAVB$|[JRC]T(PFC|INL))/],
+    ["MCU-PFC & SWD", /^(UPFC$|CPFCD\d|RPFCRST$|FBPFCA$|CPFCA[12]$|JSWDPFC$|RPFCBOOT$|CPFCRST$)/],
+    ["SAFETY CHAIN", /^(USUPA|UANDA|RWPUA|RENRA|RENLA|RGPDA|CSFA|RFLTA|CFLTA)$/],
+    ["GROUND BONDS", /^(RAGTA|RPET|CPET)$/],
+    ["AUX 110 W FLYBACK + 3V3 + RAIL MONITORS", /^(UAUX|QAUX|RAUX\w*|RCSF|CCSF|TAUX|DAUX\w*|CAUX\d\d|CVCC|DTVS\d\d|RBR\w+|RFB[12]|RCOMP|CCOMP|DCLA|CCLA|RCLA[12]|UBKA|LBKA|CBKIA|CBKOA|CBSTA|RBKF[12]A|RM(24|15)[AB])$/],
+    ["COIL DRIVER", /^UPA$/],
+    ["FANS", /^(JFAN\d|RFT\d)$/],
+    ["DC OUT + HARNESS", /^(JICA$|RA(LTX|LRX|LTS|LRS)$|JDCP$|JDCN$|JPEB$)/],
+  ],
+  dcdc: [
+    ["BUS ENTRY & COMMUTATION FILMS", /^(JDCP$|JDCN$|JPEB$|CF\d+$)/],
+    ["LLC HALF-BRIDGE LEGS", /^(Q\d+[HL]$|U\d+[HL]$|PS\d+[HL]$|[RC]\d+[HL]\w*$|D\d+[HL]S\d$)/],
+    ["LLC TANKS, TRANSFORMERS & RECTIFIERS", /^(C\d+R\d$|L\d+T$|T\d+$|D\d+[AB][1-4]$|CT\d+$|R\d+C[TF]$|C\d+CF$|D\d+C[PN]$)/],
+    ["BANK CAPACITORS & BALANCE", /^(CB[AB]\d+[TB]$|RBAL[TB][AB][12]$|CB[AB]F$)/],
+    ["SERIES/PARALLEL MATRIX", /^(K(SER|PARA|PARB|OUT|PREA|PREB)2?$|RKPU|RPRE[AB]$)/],
+    ["BANK BLEEDERS", /^(RBD[AB]\d$|QDIS[AB]$|UPV[AB]$|RPV[LB][AB]$)/],
+    ["OUTPUT & SHUNT", /^(RSHO$|USHO$|PSSH$|COF[12]$|CYO[12]$|JOUTP$|JOUTN$)/],
+    ["ISOLATED SENSING", /^(PS5BK[AB]$|UIVO[ABV]$|RO[ABV]D\d?L?$|CO[ABV]DF$)/],
+    ["ANALOG MID-RAIL & TEMP", /^(RAV[HLIF]$|CAV[MFO]$|UAVB$|[JRC]T(LLC|XFR))/],
+    ["MCU-LLC & SWD", /^(ULLC$|CLLCD\d|RLLCRST$|FBLLCA$|CLLCA[12]$|JSWDLLC$|RLLCBOOT$|CLLCRST$)/],
+    ["SAFETY CHAIN", /^(USUPB|UANDB|RWPUB|RENRB|RENLB|RGPDB|CSFB|RFLTB|CFLTB)$/],
+    ["GROUND BOND", /^RAGTB$/],
+    ["3V3 BUCK", /^(UBKB|LBKB|CBKIB|CBKOB|CBSTB|RBKF[12]B)$/],
+    ["COIL DRIVER", /^ULB$/],
+    ["ISOLATED CAN", /^(UCAN|PSCAN|LCAN|JCAN|RTERM|JTERM|TVSCAN|RCGB|CCGB)$/],
+    ["CONFIG HMI", /^(DISP1|USR1|RSEG\d|QDIG[12]|RDIG[12]|SW[12]|RSW[12]|CSW[12])$/],
+    ["HARNESS", /^(JICB$|RB(LTX|LRX|LTS|LRS)$)/],
+  ],
+};
+
+export const SHEET_TITLES = {
+  "30kw/acdc": "DC-Modules 30 kW — AC-DC board (Vienna PFC)",
+  "30kw/dcdc": "DC-Modules 30 kW — DC-DC board (3-phase LLC)",
+  "60kw/acdc": "DC-Modules 60 kW — AC-DC board (Vienna PFC, 2x cells)",
+  "60kw/dcdc": "DC-Modules 60 kW — DC-DC board (3-phase LLC, 2x cells)",
+  "120kw/acdc": "DC-Modules 120 kW — AC-DC board (Vienna PFC, 4x cells)",
+  "120kw/dcdc": "DC-Modules 120 kW — DC-DC board (3-phase LLC, 4x cells)",
+};

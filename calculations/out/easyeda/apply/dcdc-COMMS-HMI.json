@@ -1,6 +1,11 @@
 {
  "page": "dcdc-COMMS-HMI",
- "page_uuid": "0d12bfb80ab5e55a",
+ "page_uuid": "ea7e678c37c95ade",
+ "title": "30kW DCDC 6of6 COMMS-HMI",
+ "block_order": [
+  "CAN",
+  "HMI"
+ ],
  "chunks": [
   [
    {
@@ -253,7 +258,9 @@
       "signal_name": "DGND"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "DISP1",
     "value": "LED-2DIG-0.56CC",

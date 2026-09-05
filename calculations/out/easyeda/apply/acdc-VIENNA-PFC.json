@@ -1,6 +1,12 @@
 {
  "page": "acdc-VIENNA-PFC",
- "page_uuid": "2deb511a0a22804b",
+ "page_uuid": "608cdb5d09a8da73",
+ "title": "30kW ACDC 2of6 VIENNA-PFC",
+ "block_order": [
+  "PHASE-A",
+  "PHASE-B",
+  "PHASE-C"
+ ],
  "chunks": [
   [
    {
@@ -534,7 +540,9 @@
       "signal_name": "DCP"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "LB0",
     "value": "IND-PFC-165u",

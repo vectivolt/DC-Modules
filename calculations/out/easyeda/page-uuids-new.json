@@ -1,0 +1,14 @@
+{
+  "acdc-INPUT-EMI": "71e744688a837b1d",
+  "acdc-VIENNA-PFC": "608cdb5d09a8da73",
+  "acdc-DC-LINK": "e1044b8c59ea306e",
+  "acdc-AC-SENSING": "873d50fc8bb1b1ec",
+  "acdc-CONTROL": "07dd94172c7b3cff",
+  "acdc-AUX-POWER": "5f269376404ee796",
+  "dcdc-LLC-LEGS": "c7ac017a65dba925",
+  "dcdc-LLC-TANKS": "77a89e9926a76a81",
+  "dcdc-BANKS-SP": "408f1efa65a0c283",
+  "dcdc-OUTPUT-SENSING": "5ab7f30d20d25186",
+  "dcdc-CONTROL": "47b2a46833b287fc",
+  "dcdc-COMMS-HMI": "ea7e678c37c95ade"
+}

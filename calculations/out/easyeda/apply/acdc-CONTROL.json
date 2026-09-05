@@ -1,6 +1,15 @@
 {
  "page": "acdc-CONTROL",
- "page_uuid": "30f27eae62f152f4",
+ "page_uuid": "07dd94172c7b3cff",
+ "title": "30kW ACDC 5of6 CONTROL",
+ "block_order": [
+  "MCU",
+  "SWD",
+  "SAFETY",
+  "GROUNDING",
+  "COIL-DRIVER",
+  "RAIL-MON"
+ ],
  "chunks": [
   [
    {
@@ -348,7 +357,83 @@
       "signal_name": "DGND"
      }
     ]
+   }
+  ],
+  [
+   {
+    "designator": "JSWDPFC",
+    "value": "HDR-1x5-2.54",
+    "block_name": "SWD",
+    "search_query": "HDR-1x5-2.54 SWD/boot header",
+    "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VCC",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "DIO",
+      "signal_name": "SWDIO_PFC"
+     },
+     {
+      "pin_number": 3,
+      "name": "CLK",
+      "signal_name": "SWCLK_PFC"
+     },
+     {
+      "pin_number": 4,
+      "name": "RST",
+      "signal_name": "NRST_PFC"
+     },
+     {
+      "pin_number": 5,
+      "name": "GND",
+      "signal_name": "DGND"
+     }
+    ]
    },
+   {
+    "designator": "RPFCBOOT",
+    "value": "10k",
+    "block_name": "SWD",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BOOT0_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CPFCRST",
+    "value": "100nF",
+    "block_name": "SWD",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "NRST_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   }
+  ],
+  [
    {
     "designator": "USUPA",
     "value": "TPS3430-class",
@@ -563,78 +648,6 @@
     ]
    },
    {
-    "designator": "JSWDPFC",
-    "value": "HDR-1x5-2.54",
-    "block_name": "SWD",
-    "search_query": "HDR-1x5-2.54 SWD/boot header",
-    "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "VCC",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "DIO",
-      "signal_name": "SWDIO_PFC"
-     },
-     {
-      "pin_number": 3,
-      "name": "CLK",
-      "signal_name": "SWCLK_PFC"
-     },
-     {
-      "pin_number": 4,
-      "name": "RST",
-      "signal_name": "NRST_PFC"
-     },
-     {
-      "pin_number": 5,
-      "name": "GND",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "RPFCBOOT",
-    "value": "10k",
-    "block_name": "SWD",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BOOT0_PFC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CPFCRST",
-    "value": "100nF",
-    "block_name": "SWD",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "NRST_PFC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
     "designator": "RFLTA",
     "value": "4.7k",
     "block_name": "SAFETY",
@@ -671,7 +684,9 @@
       "signal_name": "DGND"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "RAGTA",
     "value": "0R",
@@ -728,7 +743,9 @@
       "signal_name": "PE"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "UPA",
     "value": "ULN2803A",
@@ -792,7 +809,9 @@
       "signal_name": "COIL_KPRE"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "RM24A",
     "value": "68k",

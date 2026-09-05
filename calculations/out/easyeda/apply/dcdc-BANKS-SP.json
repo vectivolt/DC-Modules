@@ -1,6 +1,13 @@
 {
  "page": "dcdc-BANKS-SP",
- "page_uuid": "de257312b7ec5bd4",
+ "page_uuid": "408f1efa65a0c283",
+ "title": "30kW DCDC 3of6 BANKS-SP",
+ "block_order": [
+  "BANK-A",
+  "BANK-B",
+  "SP-MATRIX",
+  "BLEEDERS"
+ ],
  "chunks": [
   [
    {
@@ -76,82 +83,6 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "BKAN"
-     }
-    ]
-   },
-   {
-    "designator": "CBB0T",
-    "value": "470uF",
-    "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
-    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BKBP"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "BKBM"
-     }
-    ]
-   },
-   {
-    "designator": "CBB1T",
-    "value": "470uF",
-    "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
-    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BKBP"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "BKBM"
-     }
-    ]
-   },
-   {
-    "designator": "CBB0B",
-    "value": "470uF",
-    "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
-    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BKBM"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "BKBN"
-     }
-    ]
-   },
-   {
-    "designator": "CBB1B",
-    "value": "470uF",
-    "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
-    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BKBM"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "BKBN"
      }
     ]
    },
@@ -232,6 +163,103 @@
     ]
    },
    {
+    "designator": "CBAF",
+    "value": "1uF",
+    "block_name": "BANK-A",
+    "search_query": "PP-1u-1100 1 µF 1100 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "CBB0T",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ]
+   },
+   {
+    "designator": "CBB1T",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ]
+   },
+   {
+    "designator": "CBB0B",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ]
+   },
+   {
+    "designator": "CBB1B",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ]
+   },
+   {
     "designator": "RBALTB1",
     "value": "47k",
     "block_name": "BANK-B",
@@ -308,25 +336,6 @@
     ]
    },
    {
-    "designator": "CBAF",
-    "value": "1uF",
-    "block_name": "BANK-A",
-    "search_query": "PP-1u-1100 1 µF 1100 V film",
-    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BKAP"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "BKAN"
-     }
-    ]
-   },
-   {
     "designator": "CBBF",
     "value": "1uF",
     "block_name": "BANK-B",
@@ -344,7 +353,9 @@
       "signal_name": "BKBN"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "KSER",
     "value": "HFE82V-M-CLASS",

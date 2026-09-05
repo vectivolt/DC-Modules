@@ -1,6 +1,16 @@
 {
  "page": "dcdc-OUTPUT-SENSING",
- "page_uuid": "3e99a4e01244616b",
+ "page_uuid": "5ab7f30d20d25186",
+ "title": "30kW DCDC 4of6 OUTPUT-SENSING",
+ "block_order": [
+  "OUTPUT",
+  "SENSE-VBKA",
+  "SENSE-VBKB",
+  "SENSE-VOUT",
+  "ISO-BIAS",
+  "ANALOG-MID",
+  "NTC"
+ ],
  "chunks": [
   [
    {
@@ -213,65 +223,9 @@
       "signal_name": "OUTN"
      }
     ]
-   },
-   {
-    "designator": "PS5BKA",
-    "value": "ISO5V-RFC-6K",
-    "block_name": "ISO-BIAS",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "Vin",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 1,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "+Vo",
-      "signal_name": "B5BKA"
-     },
-     {
-      "pin_number": 3,
-      "name": "-Vo",
-      "signal_name": "BKAN"
-     }
-    ]
-   },
-   {
-    "designator": "PS5BKB",
-    "value": "ISO5V-RFC-6K",
-    "block_name": "ISO-BIAS",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "Vin",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 1,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "+Vo",
-      "signal_name": "B5BKB"
-     },
-     {
-      "pin_number": 3,
-      "name": "-Vo",
-      "signal_name": "BKBN"
-     }
-    ]
-   },
+   }
+  ],
+  [
    {
     "designator": "ROAD0",
     "value": "475k",
@@ -505,7 +459,9 @@
       "signal_name": "V3P3"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "ROBD0",
     "value": "475k",
@@ -975,7 +931,69 @@
       "signal_name": "V3P3"
      }
     ]
+   }
+  ],
+  [
+   {
+    "designator": "PS5BKA",
+    "value": "ISO5V-RFC-6K",
+    "block_name": "ISO-BIAS",
+    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
+    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "Vin",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "+Vo",
+      "signal_name": "B5BKA"
+     },
+     {
+      "pin_number": 3,
+      "name": "-Vo",
+      "signal_name": "BKAN"
+     }
+    ]
    },
+   {
+    "designator": "PS5BKB",
+    "value": "ISO5V-RFC-6K",
+    "block_name": "ISO-BIAS",
+    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
+    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "Vin",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "+Vo",
+      "signal_name": "B5BKB"
+     },
+     {
+      "pin_number": 3,
+      "name": "-Vo",
+      "signal_name": "BKBN"
+     }
+    ]
+   }
+  ],
+  [
    {
     "designator": "RAVH",
     "value": "10k",
@@ -1142,7 +1160,9 @@
       "signal_name": "AGND"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "JTLLC",
     "value": "PH-2",

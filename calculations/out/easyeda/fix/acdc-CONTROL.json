@@ -1,48 +1,47 @@
 {
  "page": "acdc-CONTROL",
- "page_uuid": "30f27eae62f152f4",
+ "page_uuid": "07dd94172c7b3cff",
  "add_components": [],
- "rm_components": [],
+ "rm_components": [
+  "CPET1",
+  "RAGTA1",
+  "RPET1"
+ ],
  "external_connect": [
   {
-   "designator": "UPFC",
-   "pin_number": 26,
+   "designator": "USUPA",
+   "pin_number": 11,
    "signal_name": "DGND"
   },
   {
-   "designator": "UPFC",
-   "pin_number": 27,
-   "signal_name": "V3P3"
+   "designator": "RAGTA",
+   "pin_number": 1,
+   "signal_name": "AGND"
   },
   {
-   "designator": "UPFC",
-   "pin_number": 69,
-   "signal_name": "LINK_RX"
-  },
-  {
-   "designator": "UPFC",
-   "pin_number": 71,
-   "signal_name": "EN_PFC"
-  },
-  {
-   "designator": "UPFC",
-   "pin_number": 72,
-   "signal_name": "CTL_KPRE"
-  },
-  {
-   "designator": "UPFC",
-   "pin_number": 73,
-   "signal_name": "CTL_QDIS"
-  },
-  {
-   "designator": "JSWDPFC",
-   "pin_number": 4,
-   "signal_name": "NRST_PFC"
-  },
-  {
-   "designator": "JSWDPFC",
-   "pin_number": 5,
+   "designator": "RAGTA",
+   "pin_number": 2,
    "signal_name": "DGND"
+  },
+  {
+   "designator": "RPET",
+   "pin_number": 1,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "RPET",
+   "pin_number": 2,
+   "signal_name": "PE"
+  },
+  {
+   "designator": "CPET",
+   "pin_number": 1,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "CPET",
+   "pin_number": 2,
+   "signal_name": "PE"
   }
  ],
  "remark_no_connect": []

@@ -1,97 +1,18 @@
 {
  "page": "dcdc-CONTROL",
- "page_uuid": "22ef90c364d7fd7e",
+ "page_uuid": "47b2a46833b287fc",
+ "title": "30kW DCDC 5of6 CONTROL",
+ "block_order": [
+  "MCU",
+  "SWD",
+  "SAFETY",
+  "GROUNDING",
+  "BUCK-3V3",
+  "COIL-DRIVER",
+  "INTERCONNECT"
+ ],
  "chunks": [
   [
-   {
-    "designator": "ULB",
-    "value": "ULN2803A",
-    "block_name": "COIL-DRIVER",
-    "search_query": "ULN2803A 8-ch relay coil driver SOIC-18",
-    "part_uuid": "8ad8e57f251a491f822b39e960a0f5a3",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "IN1",
-      "signal_name": "CTL_KSER"
-     },
-     {
-      "pin_number": 2,
-      "name": "IN2",
-      "signal_name": "CTL_KPARA"
-     },
-     {
-      "pin_number": 3,
-      "name": "IN3",
-      "signal_name": "CTL_KPARB"
-     },
-     {
-      "pin_number": 4,
-      "name": "IN4",
-      "signal_name": "CTL_KOUT"
-     },
-     {
-      "pin_number": 5,
-      "name": "IN5",
-      "signal_name": "CTL_KPREA"
-     },
-     {
-      "pin_number": 6,
-      "name": "IN6",
-      "signal_name": "CTL_KPREB"
-     },
-     {
-      "pin_number": 7,
-      "name": "IN7",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 8,
-      "name": "IN8",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 9,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 10,
-      "name": "COM",
-      "signal_name": "V24"
-     },
-     {
-      "pin_number": 13,
-      "name": "OUT6",
-      "signal_name": "COIL_KPREB"
-     },
-     {
-      "pin_number": 14,
-      "name": "OUT5",
-      "signal_name": "COIL_KPREA"
-     },
-     {
-      "pin_number": 15,
-      "name": "OUT4",
-      "signal_name": "COIL_KOUT"
-     },
-     {
-      "pin_number": 16,
-      "name": "OUT3",
-      "signal_name": "COIL_KPARB"
-     },
-     {
-      "pin_number": 17,
-      "name": "OUT2",
-      "signal_name": "COIL_KPARA"
-     },
-     {
-      "pin_number": 18,
-      "name": "OUT1",
-      "signal_name": "COIL_KSER"
-     }
-    ]
-   },
    {
     "designator": "ULLC",
     "value": "GD32G553VET6",
@@ -517,152 +438,54 @@
       "signal_name": "DGND"
      }
     ]
-   },
+   }
+  ],
+  [
    {
-    "designator": "UBKB",
-    "value": "TPS54202-class",
-    "block_name": "BUCK-3V3",
-    "search_query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6",
-    "part_uuid": "3e9435f2ef554f158a0e2db08d24d66e",
+    "designator": "JSWDLLC",
+    "value": "HDR-1x5-2.54",
+    "block_name": "SWD",
+    "search_query": "HDR-1x5-2.54 SWD/boot header",
+    "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
-      "pin_number": 3,
-      "name": "VIN",
-      "signal_name": "V15"
-     },
-     {
       "pin_number": 1,
-      "name": "GND",
-      "signal_name": "DGND"
+      "name": "VCC",
+      "signal_name": "V3P3"
      },
      {
       "pin_number": 2,
-      "name": "SW",
-      "signal_name": "N_DCDC_105"
+      "name": "DIO",
+      "signal_name": "SWDIO_LLC"
+     },
+     {
+      "pin_number": 3,
+      "name": "CLK",
+      "signal_name": "SWCLK_LLC"
      },
      {
       "pin_number": 4,
-      "name": "FB",
-      "signal_name": "N_DCDC_106"
+      "name": "RST",
+      "signal_name": "NRST_LLC"
      },
      {
       "pin_number": 5,
-      "name": "EN",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 6,
-      "name": "BOOT",
-      "signal_name": "N_DCDC_107"
-     }
-    ]
-   },
-   {
-    "designator": "LBKB",
-    "value": "IND-10u-3A",
-    "block_name": "BUCK-3V3",
-    "search_query": "IND-10u-3A 10 µH 3 A shielded power inductor",
-    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_DCDC_105"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "V3P3"
-     }
-    ]
-   },
-   {
-    "designator": "CBKIB",
-    "value": "10uF",
-    "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
+      "name": "GND",
       "signal_name": "DGND"
      }
     ]
    },
    {
-    "designator": "CBKOB",
-    "value": "22uF",
-    "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CBSTB",
-    "value": "100nF",
-    "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_DCDC_107"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "N_DCDC_105"
-     }
-    ]
-   },
-   {
-    "designator": "RBKF1B",
-    "value": "45.3k",
-    "block_name": "BUCK-3V3",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "N_DCDC_106"
-     }
-    ]
-   },
-   {
-    "designator": "RBKF2B",
+    "designator": "RLLCBOOT",
     "value": "10k",
-    "block_name": "BUCK-3V3",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "block_name": "SWD",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_106"
+      "signal_name": "BOOT0_LLC"
      },
      {
       "pin_number": 2,
@@ -671,6 +494,27 @@
      }
     ]
    },
+   {
+    "designator": "CLLCRST",
+    "value": "100nF",
+    "block_name": "SWD",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "NRST_LLC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   }
+  ],
+  [
    {
     "designator": "USUPB",
     "value": "TPS3430-class",
@@ -885,78 +729,6 @@
     ]
    },
    {
-    "designator": "JSWDLLC",
-    "value": "HDR-1x5-2.54",
-    "block_name": "SWD",
-    "search_query": "HDR-1x5-2.54 SWD/boot header",
-    "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "VCC",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "DIO",
-      "signal_name": "SWDIO_LLC"
-     },
-     {
-      "pin_number": 3,
-      "name": "CLK",
-      "signal_name": "SWCLK_LLC"
-     },
-     {
-      "pin_number": 4,
-      "name": "RST",
-      "signal_name": "NRST_LLC"
-     },
-     {
-      "pin_number": 5,
-      "name": "GND",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "RLLCBOOT",
-    "value": "10k",
-    "block_name": "SWD",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BOOT0_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCRST",
-    "value": "100nF",
-    "block_name": "SWD",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "NRST_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
     "designator": "RFLTB",
     "value": "4.7k",
     "block_name": "SAFETY",
@@ -993,7 +765,9 @@
       "signal_name": "DGND"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "RAGTB",
     "value": "0R",
@@ -1012,7 +786,255 @@
       "signal_name": "DGND"
      }
     ]
+   }
+  ],
+  [
+   {
+    "designator": "UBKB",
+    "value": "TPS54202-class",
+    "block_name": "BUCK-3V3",
+    "search_query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6",
+    "part_uuid": "3e9435f2ef554f158a0e2db08d24d66e",
+    "pins": [
+     {
+      "pin_number": 3,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "SW",
+      "signal_name": "N_DCDC_105"
+     },
+     {
+      "pin_number": 4,
+      "name": "FB",
+      "signal_name": "N_DCDC_106"
+     },
+     {
+      "pin_number": 5,
+      "name": "EN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 6,
+      "name": "BOOT",
+      "signal_name": "N_DCDC_107"
+     }
+    ]
    },
+   {
+    "designator": "LBKB",
+    "value": "IND-10u-3A",
+    "block_name": "BUCK-3V3",
+    "search_query": "IND-10u-3A 10 µH 3 A shielded power inductor",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_DCDC_105"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "CBKIB",
+    "value": "10uF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CBKOB",
+    "value": "22uF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CBSTB",
+    "value": "100nF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_DCDC_107"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_DCDC_105"
+     }
+    ]
+   },
+   {
+    "designator": "RBKF1B",
+    "value": "45.3k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_DCDC_106"
+     }
+    ]
+   },
+   {
+    "designator": "RBKF2B",
+    "value": "10k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_DCDC_106"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "ULB",
+    "value": "ULN2803A",
+    "block_name": "COIL-DRIVER",
+    "search_query": "ULN2803A 8-ch relay coil driver SOIC-18",
+    "part_uuid": "8ad8e57f251a491f822b39e960a0f5a3",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "IN1",
+      "signal_name": "CTL_KSER"
+     },
+     {
+      "pin_number": 2,
+      "name": "IN2",
+      "signal_name": "CTL_KPARA"
+     },
+     {
+      "pin_number": 3,
+      "name": "IN3",
+      "signal_name": "CTL_KPARB"
+     },
+     {
+      "pin_number": 4,
+      "name": "IN4",
+      "signal_name": "CTL_KOUT"
+     },
+     {
+      "pin_number": 5,
+      "name": "IN5",
+      "signal_name": "CTL_KPREA"
+     },
+     {
+      "pin_number": 6,
+      "name": "IN6",
+      "signal_name": "CTL_KPREB"
+     },
+     {
+      "pin_number": 7,
+      "name": "IN7",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 8,
+      "name": "IN8",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "COM",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 13,
+      "name": "OUT6",
+      "signal_name": "COIL_KPREB"
+     },
+     {
+      "pin_number": 14,
+      "name": "OUT5",
+      "signal_name": "COIL_KPREA"
+     },
+     {
+      "pin_number": 15,
+      "name": "OUT4",
+      "signal_name": "COIL_KOUT"
+     },
+     {
+      "pin_number": 16,
+      "name": "OUT3",
+      "signal_name": "COIL_KPARB"
+     },
+     {
+      "pin_number": 17,
+      "name": "OUT2",
+      "signal_name": "COIL_KPARA"
+     },
+     {
+      "pin_number": 18,
+      "name": "OUT1",
+      "signal_name": "COIL_KSER"
+     }
+    ]
+   }
+  ],
+  [
    {
     "designator": "JICB",
     "value": "MICROFIT3-16",

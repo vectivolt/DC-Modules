@@ -1,6 +1,14 @@
 {
  "page": "acdc-AUX-POWER",
- "page_uuid": "877cff6394eeb620",
+ "page_uuid": "5f269376404ee796",
+ "title": "30kW ACDC 6of6 AUX-POWER",
+ "block_order": [
+  "FLYBACK",
+  "RAILS",
+  "BUCK-3V3",
+  "FANS",
+  "INTERCONNECT"
+ ],
  "chunks": [
   [
    {
@@ -193,158 +201,6 @@
       "pin_number": 8,
       "name": "AXB",
       "signal_name": "DCN"
-     }
-    ]
-   },
-   {
-    "designator": "DAUX24",
-    "value": "UF-400V-3A",
-    "block_name": "RAILS",
-    "search_query": "UF-400V-3A 400 V 3 A ultrafast, SMC pad",
-    "part_uuid": "7cfbffb807ea4161af53c65b2ac59194",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "N_ACDC_103"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V24"
-     }
-    ]
-   },
-   {
-    "designator": "DAUX15",
-    "value": "US2G",
-    "block_name": "RAILS",
-    "search_query": "US2G 400 V 2 A ultrafast SMB",
-    "part_uuid": "91210a49e36d432a97fd31a71bcdbdb2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "N_ACDC_104"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V15"
-     }
-    ]
-   },
-   {
-    "designator": "DAUXVC",
-    "value": "US2G",
-    "block_name": "RAILS",
-    "search_query": "US2G 400 V 2 A ultrafast SMB",
-    "part_uuid": "91210a49e36d432a97fd31a71bcdbdb2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "N_ACDC_105"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "N_ACDC_95"
-     }
-    ]
-   },
-   {
-    "designator": "CAUX24",
-    "value": "220uF",
-    "block_name": "RAILS",
-    "search_query": "EL-220u-35 220 µF 35 V",
-    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V24"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CAUX15",
-    "value": "220uF",
-    "block_name": "RAILS",
-    "search_query": "EL-220u-35 220 µF 35 V",
-    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CVCC",
-    "value": "47uF",
-    "block_name": "RAILS",
-    "search_query": "FILM-100n-250 100 nF 250 V film",
-    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_95"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DCN"
-     }
-    ]
-   },
-   {
-    "designator": "DTVS24",
-    "value": "SMBJ26A",
-    "block_name": "RAILS",
-    "search_query": "SMBJ26A TVS 26 V uni SMB",
-    "part_uuid": "fadafc8c52304b4fbd6862ec903a02ce",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V24"
-     }
-    ]
-   },
-   {
-    "designator": "DTVS15",
-    "value": "SMBJ16A",
-    "block_name": "RAILS",
-    "search_query": "SMBJ16A TVS 16 V uni SMB",
-    "part_uuid": "f6080a99adb04056a74e23baaa5b895b",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V15"
      }
     ]
    },
@@ -594,7 +450,163 @@
       "signal_name": "DCP"
      }
     ]
+   }
+  ],
+  [
+   {
+    "designator": "DAUX24",
+    "value": "UF-400V-3A",
+    "block_name": "RAILS",
+    "search_query": "UF-400V-3A 400 V 3 A ultrafast, SMC pad",
+    "part_uuid": "7cfbffb807ea4161af53c65b2ac59194",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_103"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V24"
+     }
+    ]
    },
+   {
+    "designator": "DAUX15",
+    "value": "US2G",
+    "block_name": "RAILS",
+    "search_query": "US2G 400 V 2 A ultrafast SMB",
+    "part_uuid": "91210a49e36d432a97fd31a71bcdbdb2",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_104"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V15"
+     }
+    ]
+   },
+   {
+    "designator": "DAUXVC",
+    "value": "US2G",
+    "block_name": "RAILS",
+    "search_query": "US2G 400 V 2 A ultrafast SMB",
+    "part_uuid": "91210a49e36d432a97fd31a71bcdbdb2",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_105"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_95"
+     }
+    ]
+   },
+   {
+    "designator": "CAUX24",
+    "value": "220uF",
+    "block_name": "RAILS",
+    "search_query": "EL-220u-35 220 µF 35 V",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CAUX15",
+    "value": "220uF",
+    "block_name": "RAILS",
+    "search_query": "EL-220u-35 220 µF 35 V",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CVCC",
+    "value": "47uF",
+    "block_name": "RAILS",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_95"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "DTVS24",
+    "value": "SMBJ26A",
+    "block_name": "RAILS",
+    "search_query": "SMBJ26A TVS 26 V uni SMB",
+    "part_uuid": "fadafc8c52304b4fbd6862ec903a02ce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V24"
+     }
+    ]
+   },
+   {
+    "designator": "DTVS15",
+    "value": "SMBJ16A",
+    "block_name": "RAILS",
+    "search_query": "SMBJ16A TVS 16 V uni SMB",
+    "part_uuid": "f6080a99adb04056a74e23baaa5b895b",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V15"
+     }
+    ]
+   }
+  ],
+  [
    {
     "designator": "UBKA",
     "value": "TPS54202-class",
@@ -845,7 +857,9 @@
       "signal_name": "FAN_TACH2"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "JICA",
     "value": "MICROFIT3-16",

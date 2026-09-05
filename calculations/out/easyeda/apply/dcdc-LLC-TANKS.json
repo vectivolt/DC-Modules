@@ -1,6 +1,12 @@
 {
  "page": "dcdc-LLC-TANKS",
- "page_uuid": "15553b4d850f058f",
+ "page_uuid": "77a89e9926a76a81",
+ "title": "30kW DCDC 2of6 LLC-TANKS",
+ "block_order": [
+  "TANK-1",
+  "TANK-2",
+  "TANK-3"
+ ],
  "chunks": [
   [
    {
@@ -407,7 +413,9 @@
       "signal_name": "I_RES1"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "C2R0",
     "value": "46nF",

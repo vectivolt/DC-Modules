@@ -1,6 +1,13 @@
 {
  "page": "dcdc-LLC-LEGS",
- "page_uuid": "cd907a8ea53e24b6",
+ "page_uuid": "c7ac017a65dba925",
+ "title": "30kW DCDC 1of6 LLC-LEGS",
+ "block_order": [
+  "BUS-IN",
+  "LEG-1",
+  "LEG-2",
+  "LEG-3"
+ ],
  "chunks": [
   [
    {
@@ -101,7 +108,9 @@
       "signal_name": "DCN"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "Q1H",
     "value": "SG2M023120LJ",
@@ -727,7 +736,9 @@
       "signal_name": "N_DCDC_8"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "Q2H",
     "value": "SG2M023120LJ",
@@ -1239,9 +1250,7 @@
       "signal_name": "KL_2"
      }
     ]
-   }
-  ],
-  [
+   },
    {
     "designator": "R2LPD",
     "value": "10k",
@@ -1355,7 +1364,9 @@
       "signal_name": "N_DCDC_22"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "Q3H",
     "value": "SG2M023120LJ",

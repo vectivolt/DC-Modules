@@ -1,350 +1,21 @@
 {
  "page": "acdc-AC-SENSING",
- "page_uuid": "5968c9bb670d73b9",
+ "page_uuid": "873d50fc8bb1b1ec",
+ "title": "30kW ACDC 4of6 AC-SENSING",
+ "block_order": [
+  "STAR",
+  "SENSE-VAC1",
+  "SENSE-VAC2",
+  "SENSE-VAC3",
+  "SENSE-VBUS",
+  "SENSE-VMID",
+  "ISO-BIAS",
+  "LINE-CTS",
+  "ANALOG-MID",
+  "NTC"
+ ],
  "chunks": [
   [
-   {
-    "designator": "CTA0",
-    "value": "CT-60A-1:2500",
-    "block_name": "LINE-CTS",
-    "search_query": "CT-60A-1:2500 line CT 60 A class",
-    "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "S1",
-      "signal_name": "N_ACDC_38"
-     },
-     {
-      "pin_number": 2,
-      "name": "S2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RA0B",
-    "value": "33",
-    "block_name": "LINE-CTS",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_38"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RA0F",
-    "value": "1k",
-    "block_name": "LINE-CTS",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_38"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "I_A0"
-     }
-    ]
-   },
-   {
-    "designator": "CA0F",
-    "value": "1nF",
-    "block_name": "LINE-CTS",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "I_A0"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "DA0P",
-    "value": "1N4148WS",
-    "block_name": "LINE-CTS",
-    "search_query": "1N4148WS clamp diode SOD-323",
-    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "I_A0"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V3P3"
-     }
-    ]
-   },
-   {
-    "designator": "DA0N",
-    "value": "1N4148WS",
-    "block_name": "LINE-CTS",
-    "search_query": "1N4148WS clamp diode SOD-323",
-    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "AGND"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "I_A0"
-     }
-    ]
-   },
-   {
-    "designator": "CTB0",
-    "value": "CT-60A-1:2500",
-    "block_name": "LINE-CTS",
-    "search_query": "CT-60A-1:2500 line CT 60 A class",
-    "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "S1",
-      "signal_name": "N_ACDC_39"
-     },
-     {
-      "pin_number": 2,
-      "name": "S2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RB0B",
-    "value": "33",
-    "block_name": "LINE-CTS",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_39"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RB0F",
-    "value": "1k",
-    "block_name": "LINE-CTS",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_39"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "I_B0"
-     }
-    ]
-   },
-   {
-    "designator": "CB0F",
-    "value": "1nF",
-    "block_name": "LINE-CTS",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "I_B0"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "DB0P",
-    "value": "1N4148WS",
-    "block_name": "LINE-CTS",
-    "search_query": "1N4148WS clamp diode SOD-323",
-    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "I_B0"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V3P3"
-     }
-    ]
-   },
-   {
-    "designator": "DB0N",
-    "value": "1N4148WS",
-    "block_name": "LINE-CTS",
-    "search_query": "1N4148WS clamp diode SOD-323",
-    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "AGND"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "I_B0"
-     }
-    ]
-   },
-   {
-    "designator": "CTC0",
-    "value": "CT-60A-1:2500",
-    "block_name": "LINE-CTS",
-    "search_query": "CT-60A-1:2500 line CT 60 A class",
-    "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "S1",
-      "signal_name": "N_ACDC_40"
-     },
-     {
-      "pin_number": 2,
-      "name": "S2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RC0B",
-    "value": "33",
-    "block_name": "LINE-CTS",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_40"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RC0F",
-    "value": "1k",
-    "block_name": "LINE-CTS",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "N_ACDC_40"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "I_C0"
-     }
-    ]
-   },
-   {
-    "designator": "CC0F",
-    "value": "1nF",
-    "block_name": "LINE-CTS",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "I_C0"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "DC0P",
-    "value": "1N4148WS",
-    "block_name": "LINE-CTS",
-    "search_query": "1N4148WS clamp diode SOD-323",
-    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "I_C0"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "V3P3"
-     }
-    ]
-   },
-   {
-    "designator": "DC0N",
-    "value": "1N4148WS",
-    "block_name": "LINE-CTS",
-    "search_query": "1N4148WS clamp diode SOD-323",
-    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "AGND"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "I_C0"
-     }
-    ]
-   },
    {
     "designator": "RNS1A",
     "value": "47k",
@@ -458,65 +129,9 @@
       "signal_name": "NSTAR"
      }
     ]
-   },
-   {
-    "designator": "PS5AC",
-    "value": "ISO5V-RFC-6K",
-    "block_name": "ISO-BIAS",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "Vin",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 1,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "+Vo",
-      "signal_name": "B5AC"
-     },
-     {
-      "pin_number": 3,
-      "name": "-Vo",
-      "signal_name": "NSTAR"
-     }
-    ]
-   },
-   {
-    "designator": "PS5BUS",
-    "value": "ISO5V-RFC-6K",
-    "block_name": "ISO-BIAS",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "Vin",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 1,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "+Vo",
-      "signal_name": "B5BUS"
-     },
-     {
-      "pin_number": 3,
-      "name": "-Vo",
-      "signal_name": "DCN"
-     }
-    ]
-   },
+   }
+  ],
+  [
    {
     "designator": "RV1D0",
     "value": "475k",
@@ -986,7 +601,9 @@
       "signal_name": "V3P3"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "RV3D0",
     "value": "475k",
@@ -1220,7 +837,9 @@
       "signal_name": "V3P3"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "RBPD0",
     "value": "475k",
@@ -1690,7 +1309,413 @@
       "signal_name": "V3P3"
      }
     ]
+   }
+  ],
+  [
+   {
+    "designator": "PS5AC",
+    "value": "ISO5V-RFC-6K",
+    "block_name": "ISO-BIAS",
+    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
+    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "Vin",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "+Vo",
+      "signal_name": "B5AC"
+     },
+     {
+      "pin_number": 3,
+      "name": "-Vo",
+      "signal_name": "NSTAR"
+     }
+    ]
    },
+   {
+    "designator": "PS5BUS",
+    "value": "ISO5V-RFC-6K",
+    "block_name": "ISO-BIAS",
+    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
+    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "Vin",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "+Vo",
+      "signal_name": "B5BUS"
+     },
+     {
+      "pin_number": 3,
+      "name": "-Vo",
+      "signal_name": "DCN"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "CTA0",
+    "value": "CT-60A-1:2500",
+    "block_name": "LINE-CTS",
+    "search_query": "CT-60A-1:2500 line CT 60 A class",
+    "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "S1",
+      "signal_name": "N_ACDC_38"
+     },
+     {
+      "pin_number": 2,
+      "name": "S2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "RA0B",
+    "value": "33",
+    "block_name": "LINE-CTS",
+    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_38"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "RA0F",
+    "value": "1k",
+    "block_name": "LINE-CTS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_38"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "I_A0"
+     }
+    ]
+   },
+   {
+    "designator": "CA0F",
+    "value": "1nF",
+    "block_name": "LINE-CTS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "I_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "DA0P",
+    "value": "1N4148WS",
+    "block_name": "LINE-CTS",
+    "search_query": "1N4148WS clamp diode SOD-323",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "I_A0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "DA0N",
+    "value": "1N4148WS",
+    "block_name": "LINE-CTS",
+    "search_query": "1N4148WS clamp diode SOD-323",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "AGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "I_A0"
+     }
+    ]
+   },
+   {
+    "designator": "CTB0",
+    "value": "CT-60A-1:2500",
+    "block_name": "LINE-CTS",
+    "search_query": "CT-60A-1:2500 line CT 60 A class",
+    "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "S1",
+      "signal_name": "N_ACDC_39"
+     },
+     {
+      "pin_number": 2,
+      "name": "S2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "RB0B",
+    "value": "33",
+    "block_name": "LINE-CTS",
+    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_39"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "RB0F",
+    "value": "1k",
+    "block_name": "LINE-CTS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_39"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "I_B0"
+     }
+    ]
+   },
+   {
+    "designator": "CB0F",
+    "value": "1nF",
+    "block_name": "LINE-CTS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "I_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "DB0P",
+    "value": "1N4148WS",
+    "block_name": "LINE-CTS",
+    "search_query": "1N4148WS clamp diode SOD-323",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "I_B0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "DB0N",
+    "value": "1N4148WS",
+    "block_name": "LINE-CTS",
+    "search_query": "1N4148WS clamp diode SOD-323",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "AGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "I_B0"
+     }
+    ]
+   },
+   {
+    "designator": "CTC0",
+    "value": "CT-60A-1:2500",
+    "block_name": "LINE-CTS",
+    "search_query": "CT-60A-1:2500 line CT 60 A class",
+    "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "S1",
+      "signal_name": "N_ACDC_40"
+     },
+     {
+      "pin_number": 2,
+      "name": "S2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "RC0B",
+    "value": "33",
+    "block_name": "LINE-CTS",
+    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_40"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "RC0F",
+    "value": "1k",
+    "block_name": "LINE-CTS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_40"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "I_C0"
+     }
+    ]
+   },
+   {
+    "designator": "CC0F",
+    "value": "1nF",
+    "block_name": "LINE-CTS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "I_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AVMID"
+     }
+    ]
+   },
+   {
+    "designator": "DC0P",
+    "value": "1N4148WS",
+    "block_name": "LINE-CTS",
+    "search_query": "1N4148WS clamp diode SOD-323",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "I_C0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "DC0N",
+    "value": "1N4148WS",
+    "block_name": "LINE-CTS",
+    "search_query": "1N4148WS clamp diode SOD-323",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "AGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "I_C0"
+     }
+    ]
+   }
+  ],
+  [
    {
     "designator": "RAVH",
     "value": "10k",
@@ -1857,7 +1882,9 @@
       "signal_name": "AGND"
      }
     ]
-   },
+   }
+  ],
+  [
    {
     "designator": "JTPFC",
     "value": "PH-2",

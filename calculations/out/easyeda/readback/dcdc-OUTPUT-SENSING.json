@@ -1,147 +1,89 @@
 [
   {
-    "designator": "CAVF",
+    "designator": "RSHO",
     "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_103"
-      },
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_104"
+        "signal_name": ""
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "3",
+        "name": "3",
+        "signal_name": "N_DCDC_77"
+      },
+      {
+        "pin_number": "4",
+        "name": "4",
+        "signal_name": "N_DCDC_78"
+      },
+      {
+        "pin_number": "5",
+        "name": "5",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "6",
+        "name": "6",
+        "signal_name": ""
       }
     ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
+    "value": "-",
+    "part_uuid": "40f1e5cdd84b4b19997b5bceff1c275c",
+    "footprint_name": "RES-TH_HOFLQ60-75A-75MV-0.5-10H26"
   },
   {
-    "designator": "CAVM",
+    "designator": "USHO",
     "pins": [
       {
         "pin_number": "1",
-        "name": "1",
-        "signal_name": "AVREF_MID"
+        "name": "VDD1",
+        "signal_name": "B5OUT"
       },
       {
         "pin_number": "2",
-        "name": "2",
+        "name": "INP",
+        "signal_name": "N_DCDC_77"
+      },
+      {
+        "pin_number": "3",
+        "name": "INN",
+        "signal_name": "N_DCDC_78"
+      },
+      {
+        "pin_number": "4",
+        "name": "GND1",
+        "signal_name": "N_DCDC_78"
+      },
+      {
+        "pin_number": "5",
+        "name": "GND2",
         "signal_name": "AGND"
-      }
-    ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
-  },
-  {
-    "designator": "CAVO",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "AVMID"
       },
       {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AGND"
-      }
-    ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
-  },
-  {
-    "designator": "COADF",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_86"
+        "pin_number": "6",
+        "name": "OUTN",
+        "signal_name": "SNS_IOUTN"
       },
       {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "BKAN"
-      }
-    ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
-  },
-  {
-    "designator": "COBDF",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_94"
+        "pin_number": "7",
+        "name": "OUTP",
+        "signal_name": "SNS_IOUT"
       },
       {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "BKBN"
+        "pin_number": "8",
+        "name": "VDD2",
+        "signal_name": "V3P3"
       }
     ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
-  },
-  {
-    "designator": "COVDF",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_102"
-      },
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "OUTN"
-      }
-    ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
-  },
-  {
-    "designator": "CTLLCF",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "T_LLC"
-      },
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AGND"
-      }
-    ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
-  },
-  {
-    "designator": "CTXFRF",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "T_XFMR"
-      },
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AGND"
-      }
-    ],
-    "value": "100nF",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "footprint_name": "C0603"
+    "value": "NSI1200-DSWVR",
+    "part_uuid": "6419779bcd2b4f068eb79f6543e83d4a",
+    "footprint_name": "SOIC-8_L7.5-W5.9-P1.27-LS11.5-BL"
   },
   {
     "designator": "COF1",
@@ -242,98 +184,6 @@
     "footprint_name": "TESTPOINT-TH_BD3.2"
   },
   {
-    "designator": "JTLLC",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "T_LLC"
-      },
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AGND"
-      }
-    ],
-    "value": "B2B-PH-K-S",
-    "part_uuid": "465449eae63149879e2ef43e05ff6c5c",
-    "footprint_name": "CONN-TH_B2B-PH-K-S"
-  },
-  {
-    "designator": "JTXFR",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "T_XFMR"
-      },
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AGND"
-      }
-    ],
-    "value": "B2B-PH-K-S",
-    "part_uuid": "465449eae63149879e2ef43e05ff6c5c",
-    "footprint_name": "CONN-TH_B2B-PH-K-S"
-  },
-  {
-    "designator": "PS5BKA",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "GND",
-        "signal_name": "BKAN"
-      },
-      {
-        "pin_number": "2",
-        "name": "Vin",
-        "signal_name": "BKAN"
-      },
-      {
-        "pin_number": "3",
-        "name": "-Vo",
-        "signal_name": "B5BKA"
-      },
-      {
-        "pin_number": "4",
-        "name": "+Vo",
-        "signal_name": "B5BKA"
-      }
-    ],
-    "value": "B1505S-1WR2",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
-    "footprint_name": "PWRM-TH_B2405S-1WR2"
-  },
-  {
-    "designator": "PS5BKB",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "GND",
-        "signal_name": "DGND"
-      },
-      {
-        "pin_number": "2",
-        "name": "Vin",
-        "signal_name": "V15"
-      },
-      {
-        "pin_number": "3",
-        "name": "-Vo",
-        "signal_name": "B5BKB"
-      },
-      {
-        "pin_number": "4",
-        "name": "+Vo",
-        "signal_name": "B5BKB"
-      }
-    ],
-    "value": "B1505S-1WR2",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
-    "footprint_name": "PWRM-TH_B2405S-1WR2"
-  },
-  {
     "designator": "PSSH",
     "pins": [
       {
@@ -362,76 +212,22 @@
     "footprint_name": "PWRM-TH_B2405S-1WR2"
   },
   {
-    "designator": "RAVF",
+    "designator": "COADF",
     "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_104"
-      },
       {
         "pin_number": "1",
         "name": "1",
-        "signal_name": "AVMID"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "RAVH",
-    "pins": [
+        "signal_name": "N_DCDC_86"
+      },
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "AVREF_MID"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "V3P3"
+        "signal_name": "BKAN"
       }
     ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "RAVI",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AVMID"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_103"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "RAVL",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "AGND"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "AVREF_MID"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
+    "value": "100nF",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "footprint_name": "C0603"
   },
   {
     "designator": "ROAD0",
@@ -596,6 +392,72 @@
     "footprint_name": "R0603"
   },
   {
+    "designator": "UIVOA",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "VDD1",
+        "signal_name": "B5BKA"
+      },
+      {
+        "pin_number": "2",
+        "name": "VIN",
+        "signal_name": "N_DCDC_86"
+      },
+      {
+        "pin_number": "3",
+        "name": "SHTDN",
+        "signal_name": "BKAN"
+      },
+      {
+        "pin_number": "4",
+        "name": "GND1",
+        "signal_name": "BKAN"
+      },
+      {
+        "pin_number": "5",
+        "name": "GND2",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "6",
+        "name": "VOUTN",
+        "signal_name": "BKAN"
+      },
+      {
+        "pin_number": "7",
+        "name": "VOUTP",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "8",
+        "name": "VDD2",
+        "signal_name": "V3P3"
+      }
+    ],
+    "value": "AMC1311DWVR",
+    "part_uuid": "5fef53aa06144728914ce6f64aa9808e",
+    "footprint_name": "SOP-8_L7.5-W5.9-P1.27-LS11.0-BL"
+  },
+  {
+    "designator": "COBDF",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": ""
+      }
+    ],
+    "value": "100nF",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "footprint_name": "C0603"
+  },
+  {
     "designator": "ROBD0",
     "pins": [
       {
@@ -637,7 +499,7 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_89"
+        "signal_name": ""
       },
       {
         "pin_number": "1",
@@ -655,12 +517,12 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_90"
+        "signal_name": ""
       },
       {
         "pin_number": "1",
         "name": "1",
-        "signal_name": "N_DCDC_89"
+        "signal_name": ""
       }
     ],
     "value": "10kΩ",
@@ -673,12 +535,12 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_91"
+        "signal_name": ""
       },
       {
         "pin_number": "1",
         "name": "1",
-        "signal_name": "N_DCDC_90"
+        "signal_name": ""
       }
     ],
     "value": "10kΩ",
@@ -691,12 +553,12 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_92"
+        "signal_name": ""
       },
       {
         "pin_number": "1",
         "name": "1",
-        "signal_name": "N_DCDC_91"
+        "signal_name": ""
       }
     ],
     "value": "10kΩ",
@@ -709,12 +571,12 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_93"
+        "signal_name": ""
       },
       {
         "pin_number": "1",
         "name": "1",
-        "signal_name": "N_DCDC_92"
+        "signal_name": ""
       }
     ],
     "value": "10kΩ",
@@ -727,12 +589,12 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "N_DCDC_94"
+        "signal_name": ""
       },
       {
         "pin_number": "1",
         "name": "1",
-        "signal_name": "N_DCDC_93"
+        "signal_name": ""
       }
     ],
     "value": "10kΩ",
@@ -745,334 +607,17 @@
       {
         "pin_number": "2",
         "name": "2",
-        "signal_name": "BKBN"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_94"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD0",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_95"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "OUTP"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD1",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_96"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_95"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD2",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_97"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_96"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD3",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_98"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_97"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD4",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_99"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_98"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD5",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_100"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_99"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD6",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_101"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_100"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVD7",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "N_DCDC_102"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_101"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "ROVDL",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "OUTN"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "N_DCDC_102"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "RTLLCP",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "T_LLC"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "V3P3"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "RTXFRP",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "T_XFMR"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "V3P3"
-      }
-    ],
-    "value": "10kΩ",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "footprint_name": "R0603"
-  },
-  {
-    "designator": "RSHO",
-    "pins": [
-      {
-        "pin_number": "2",
-        "name": "2",
-        "signal_name": "OUTN"
-      },
-      {
-        "pin_number": "1",
-        "name": "1",
-        "signal_name": "OUTN_SH"
-      },
-      {
-        "pin_number": "3",
-        "name": "3",
-        "signal_name": "N_DCDC_77"
-      },
-      {
-        "pin_number": "4",
-        "name": "4",
-        "signal_name": "N_DCDC_78"
-      },
-      {
-        "pin_number": "5",
-        "name": "5",
         "signal_name": ""
       },
       {
-        "pin_number": "6",
-        "name": "6",
-        "signal_name": ""
-      }
-    ],
-    "value": "-",
-    "part_uuid": "40f1e5cdd84b4b19997b5bceff1c275c",
-    "footprint_name": "RES-TH_HOFLQ60-75A-75MV-0.5-10H26"
-  },
-  {
-    "designator": "UAVB",
-    "pins": [
-      {
         "pin_number": "1",
-        "name": "OUT",
-        "signal_name": "N_DCDC_103"
-      },
-      {
-        "pin_number": "2",
-        "name": "V-",
-        "signal_name": "AGND"
-      },
-      {
-        "pin_number": "3",
-        "name": "IN+",
-        "signal_name": "AVREF_MID"
-      },
-      {
-        "pin_number": "4",
-        "name": "IN-",
-        "signal_name": "N_DCDC_104"
-      },
-      {
-        "pin_number": "5",
-        "name": "V+",
+        "name": "1",
         "signal_name": ""
       }
     ],
-    "value": "TLV9061IDBVR",
-    "part_uuid": "705a9444336644f5b67f6e1d80b82ddf",
-    "footprint_name": "SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BL"
-  },
-  {
-    "designator": "UIVOA",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "VDD1",
-        "signal_name": "B5BKA"
-      },
-      {
-        "pin_number": "2",
-        "name": "VIN",
-        "signal_name": "N_DCDC_86"
-      },
-      {
-        "pin_number": "3",
-        "name": "SHTDN",
-        "signal_name": "BKAN"
-      },
-      {
-        "pin_number": "4",
-        "name": "GND1",
-        "signal_name": "BKAN"
-      },
-      {
-        "pin_number": "5",
-        "name": "GND2",
-        "signal_name": "AGND"
-      },
-      {
-        "pin_number": "6",
-        "name": "VOUTN",
-        "signal_name": "BKAN"
-      },
-      {
-        "pin_number": "7",
-        "name": "VOUTP",
-        "signal_name": ""
-      },
-      {
-        "pin_number": "8",
-        "name": "VDD2",
-        "signal_name": "V3P3"
-      }
-    ],
-    "value": "AMC1311DWVR",
-    "part_uuid": "5fef53aa06144728914ce6f64aa9808e",
-    "footprint_name": "SOP-8_L7.5-W5.9-P1.27-LS11.0-BL"
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
   },
   {
     "designator": "UIVOB",
@@ -1085,17 +630,17 @@
       {
         "pin_number": "2",
         "name": "VIN",
-        "signal_name": "N_DCDC_94"
+        "signal_name": ""
       },
       {
         "pin_number": "3",
         "name": "SHTDN",
-        "signal_name": "BKBN"
+        "signal_name": ""
       },
       {
         "pin_number": "4",
         "name": "GND1",
-        "signal_name": "BKBN"
+        "signal_name": ""
       },
       {
         "pin_number": "5",
@@ -1115,7 +660,7 @@
       {
         "pin_number": "8",
         "name": "VDD2",
-        "signal_name": "V3P3"
+        "signal_name": ""
       }
     ],
     "value": "AMC1311DWVR",
@@ -1123,42 +668,222 @@
     "footprint_name": "SOP-8_L7.5-W5.9-P1.27-LS11.0-BL"
   },
   {
-    "designator": "UIVOV",
+    "designator": "COBDF1",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_94"
+      },
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "BKBN"
+      }
+    ],
+    "value": "100nF",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "footprint_name": "C0603"
+  },
+  {
+    "designator": "ROBD8",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_87"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "BKBP"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD9",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_88"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_87"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD10",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_89"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_88"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD11",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_90"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_89"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD12",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_91"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_90"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD13",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_92"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_91"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD14",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_93"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_92"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBD15",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_DCDC_94"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_93"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "ROBDL1",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "BKBN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_DCDC_94"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "UIVOB1",
     "pins": [
       {
         "pin_number": "1",
         "name": "VDD1",
-        "signal_name": ""
+        "signal_name": "B5BKB"
       },
       {
         "pin_number": "2",
         "name": "VIN",
-        "signal_name": "N_DCDC_102"
+        "signal_name": "N_DCDC_94"
       },
       {
         "pin_number": "3",
         "name": "SHTDN",
-        "signal_name": "OUTN"
+        "signal_name": "BKBN"
       },
       {
         "pin_number": "4",
         "name": "GND1",
-        "signal_name": "OUTN"
+        "signal_name": "BKBN"
       },
       {
         "pin_number": "5",
         "name": "GND2",
-        "signal_name": "AGND"
+        "signal_name": ""
       },
       {
         "pin_number": "6",
         "name": "VOUTN",
-        "signal_name": "OUTN"
+        "signal_name": "BKBN"
       },
       {
         "pin_number": "7",
         "name": "VOUTP",
-        "signal_name": "SNS_VOUT"
+        "signal_name": ""
       },
       {
         "pin_number": "8",
@@ -1169,53 +894,5 @@
     "value": "AMC1311DWVR",
     "part_uuid": "5fef53aa06144728914ce6f64aa9808e",
     "footprint_name": "SOP-8_L7.5-W5.9-P1.27-LS11.0-BL"
-  },
-  {
-    "designator": "USHO",
-    "pins": [
-      {
-        "pin_number": "1",
-        "name": "VDD1",
-        "signal_name": "B5OUT"
-      },
-      {
-        "pin_number": "2",
-        "name": "INP",
-        "signal_name": "N_DCDC_77"
-      },
-      {
-        "pin_number": "3",
-        "name": "INN",
-        "signal_name": "N_DCDC_78"
-      },
-      {
-        "pin_number": "4",
-        "name": "GND1",
-        "signal_name": "N_DCDC_78"
-      },
-      {
-        "pin_number": "5",
-        "name": "GND2",
-        "signal_name": "AGND"
-      },
-      {
-        "pin_number": "6",
-        "name": "OUTN",
-        "signal_name": ""
-      },
-      {
-        "pin_number": "7",
-        "name": "OUTP",
-        "signal_name": "SNS_IOUT"
-      },
-      {
-        "pin_number": "8",
-        "name": "VDD2",
-        "signal_name": "V3P3"
-      }
-    ],
-    "value": "NSI1200-DSWVR",
-    "part_uuid": "6419779bcd2b4f068eb79f6543e83d4a",
-    "footprint_name": "SOIC-8_L7.5-W5.9-P1.27-LS11.5-BL"
   }
 ]

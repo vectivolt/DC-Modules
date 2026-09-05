@@ -1,28 +1,18 @@
 {
  "page": "acdc-INPUT-EMI",
- "page_uuid": "cf3d7bd75151a39a",
+ "page_uuid": "71e744688a837b1d",
  "add_components": [],
  "rm_components": [],
  "external_connect": [
   {
-   "designator": "CMC2",
+   "designator": "MOV2",
    "pin_number": 2,
-   "signal_name": "AC1D"
+   "signal_name": "LF3"
   },
   {
-   "designator": "CMC2",
-   "pin_number": 3,
-   "signal_name": "AC2M"
-  },
-  {
-   "designator": "CMC2",
-   "pin_number": 6,
-   "signal_name": "AC3D"
-  },
-  {
-   "designator": "KPRE1",
-   "pin_number": 8,
-   "signal_name": "COIL_KPRE"
+   "designator": "CMC1",
+   "pin_number": 5,
+   "signal_name": "LF3"
   }
  ],
  "remark_no_connect": []
