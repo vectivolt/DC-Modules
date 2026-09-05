@@ -5666,9 +5666,13 @@
     L 2644.0819567595418,6279.17046982073
     Z
   " fill="rgba(255, 255, 255, 0.6)" stroke="rgb(132, 0, 0)" stroke-width="0.5733878613660001px"/><text class="net-label-text sch-net-label-text" data-circuit-json-type="schematic_net_label" data-schematic-net-label-id="schematic_net_label_959" x="2645.1140549100005" y="6276.3035305139" fill="rgb(132, 0, 0)" text-anchor="start" dominant-baseline="central" font-family="sans-serif" font-variant-numeric="tabular-nums" font-size="5.160490752294px" transform="">EN_LLC</text><text class="sch-text" x="2627.339031207654" y="6240.1800952478425" fill="rgb(132, 0, 0)" text-anchor="start" dominant-baseline="middle" font-family="sans-serif" font-size="3.4403271681959997px" transform="rotate(0, 2627.339031207654, 6240.1800952478425)">PE</text><text class="sch-text" x="2728.25529480807" y="6315.867292948154" fill="rgb(132, 0, 0)" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="3.4403271681959997px" transform="rotate(0, 2728.25529480807, 6315.867292948154)">LINK_TX</text><text class="sch-text" x="2625.04547976219" y="6280.3172455434615" fill="rgb(132, 0, 0)" text-anchor="start" dominant-baseline="middle" font-family="sans-serif" font-size="3.4403271681959997px" transform="rotate(0, 2625.04547976219, 6280.3172455434615)">EN_PFC</text></g></g><g class="title-block" font-family="sans-serif">
-<rect x="3615.5" y="4796.0" width="640" height="86" fill="#ffffff" stroke="#40506a" stroke-width="2"/>
-<line x1="3615.5" y1="4830.0" x2="4255.5" y2="4830.0" stroke="#40506a" stroke-width="1"/>
-<text x="3629.5" y="4820.0" font-size="19" font-weight="700" fill="#1c2127">DC-Modules 120 kW — DC-DC board (3-phase LLC, 4x cells)</text>
-<text x="3629.5" y="4848.0" font-size="12.5" fill="#40506a">Rev D.1 · 17 sections · 262 wired clusters · 741 symbols · 2026-09-05</text>
-<text x="3629.5" y="4866.0" font-size="11.5" fill="#7a8aa0">Wires are intra-cluster only; every cross-section link is a net label. LCSC part numbers: docs/bom.</text>
+<rect x="3406.5" y="4796.0" width="849" height="86" fill="#ffffff" stroke="#40506a" stroke-width="2"/>
+<line x1="3406.5" y1="4830.0" x2="4255.5" y2="4830.0" stroke="#40506a" stroke-width="1"/>
+<line x1="4019.7" y1="4796.0" x2="4019.7" y2="4882.0" stroke="#40506a" stroke-width="1"/>
+<text x="3420.5" y="4820.0" font-size="19" font-weight="700" fill="#1c2127">DC-Modules 120 kW — DC-DC board (3-phase LLC, 4x cells)</text>
+<text x="3420.5" y="4848.0" font-size="12.5" fill="#40506a">120 kW module · DC-DC (upper) board · sheet 2 of 2 · 4x Vienna PFC cells + 4x 3-ph LLC cells</text>
+<text x="3420.5" y="4866.0" font-size="11.5" fill="#7a8aa0">17 sections · 262 wired clusters · 741 symbols · cross-section links are net labels</text>
+<text x="4031.7" y="4820.0" font-size="12.5" font-weight="700" fill="#1c2127">Rev D.1</text>
+<text x="4031.7" y="4848.0" font-size="11.5" fill="#40506a">generated 2026-09-05</text>
+<text x="4031.7" y="4866.0" font-size="11.5" fill="#7a8aa0">LCSC: calculations/out/bom-120kw.csv</text>
 </g></svg>

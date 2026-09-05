@@ -26,7 +26,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { convertCircuitJsonToSchematicSvg } = require("circuit-to-svg");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-import { SECTIONS, SHEET_TITLES } from "./schematic-sections.mjs";
+import { SECTIONS, SHEET_TITLES, SHEET_IDENT } from "./schematic-sections.mjs";
 
 const CGUT = 26;       // gutter between clusters inside a section
 const GUT = 44;        // gutter between section frames
@@ -276,13 +276,28 @@ for (const t of list) {
     g += `</g>`;
   }
 
-  const tbW = 640, tbX = totalW - MARGIN - tbW, tbY = totalH - MARGIN - TB_H + 10;
+  // Title block: the sheet must identify itself — which SKU, which board of the pair, and how
+  // this board relates to the 30/60/120 kW set — when printed on its own.
+  const id = SHEET_IDENT[`${sku}/${side}`] ?? { sku: sku.toUpperCase(), board: side, sheet: "?", cells: "" };
+  const idLine = `${id.sku} module · ${id.board} board · sheet ${id.sheet} · ${id.cells}`;
+  const statLine = `${secs.length} sections · ${clusters.size} wired clusters · ${comps.length} symbols · cross-section links are net labels`;
+  const lcscLine = `LCSC: calculations/out/bom-${sku}.csv`;
+  // Size the block to its text: a fixed width clipped the longer SKU titles into the divider.
+  const tw = (s, px, bold) => s.length * px * (bold ? 0.56 : 0.505);
+  const leftW = Math.max(tw(title, 19, true), tw(idLine, 12.5), tw(statLine, 11.5)) + 28;
+  const rightW = Math.max(tw("Rev D.1", 12.5, true), tw(`generated ${date}`, 11.5), tw(lcscLine, 11.5)) + 26;
+  const tbW = Math.ceil(leftW + rightW), tbX = totalW - MARGIN - tbW, tbY = totalH - MARGIN - TB_H + 10;
+  const col = tbX + leftW;
   g += `<g class="title-block" font-family="sans-serif">
 <rect x="${tbX.toFixed(1)}" y="${tbY.toFixed(1)}" width="${tbW}" height="${TB_H - 10}" fill="#ffffff" stroke="#40506a" stroke-width="2"/>
 <line x1="${tbX.toFixed(1)}" y1="${(tbY + 34).toFixed(1)}" x2="${(tbX + tbW).toFixed(1)}" y2="${(tbY + 34).toFixed(1)}" stroke="#40506a" stroke-width="1"/>
+<line x1="${col.toFixed(1)}" y1="${tbY.toFixed(1)}" x2="${col.toFixed(1)}" y2="${(tbY + TB_H - 10).toFixed(1)}" stroke="#40506a" stroke-width="1"/>
 <text x="${(tbX + 14).toFixed(1)}" y="${(tbY + 24).toFixed(1)}" font-size="19" font-weight="700" fill="#1c2127">${esc(title)}</text>
-<text x="${(tbX + 14).toFixed(1)}" y="${(tbY + 52).toFixed(1)}" font-size="12.5" fill="#40506a">Rev D.1 · ${secs.length} sections · ${clusters.size} wired clusters · ${comps.length} symbols · ${date}</text>
-<text x="${(tbX + 14).toFixed(1)}" y="${(tbY + 70).toFixed(1)}" font-size="11.5" fill="#7a8aa0">Wires are intra-cluster only; every cross-section link is a net label. LCSC part numbers: docs/bom.</text>
+<text x="${(tbX + 14).toFixed(1)}" y="${(tbY + 52).toFixed(1)}" font-size="12.5" fill="#40506a">${esc(idLine)}</text>
+<text x="${(tbX + 14).toFixed(1)}" y="${(tbY + 70).toFixed(1)}" font-size="11.5" fill="#7a8aa0">${esc(statLine)}</text>
+<text x="${(col + 12).toFixed(1)}" y="${(tbY + 24).toFixed(1)}" font-size="12.5" font-weight="700" fill="#1c2127">Rev D.1</text>
+<text x="${(col + 12).toFixed(1)}" y="${(tbY + 52).toFixed(1)}" font-size="11.5" fill="#40506a">generated ${date}</text>
+<text x="${(col + 12).toFixed(1)}" y="${(tbY + 70).toFixed(1)}" font-size="11.5" fill="#7a8aa0">${esc(lcscLine)}</text>
 </g>`;
 
   out += g + "</svg>";
@@ -305,6 +320,16 @@ for (const t of list) {
     }
   }
   if (unplaced) { console.log(`   !! ${unplaced} element(s) could not be placed`); bad++; }
+  // title-block text must clear both the divider and the box edge (a fixed width used to clip
+  // the longer SKU titles)
+  for (const [x, f, boldFlag, txt] of [...g.slice(g.indexOf('class="title-block"'))
+    .matchAll(/<text x="([\d.]+)" y="[\d.]+" font-size="([\d.]+)"( font-weight="700")?[^>]*>([^<]+)</g)]
+    .map((m) => [+m[1], +m[2], !!m[3], m[4]])) {
+    const w = txt.length * f * (boldFlag ? 0.56 : 0.505);
+    if ((x < col - 1 && x + w > col - 4) || x + w > tbX + tbW - 6) {
+      console.log(`   !! title-block text overruns: ${JSON.stringify(txt.slice(0, 40))}`); bad++;
+    }
+  }
   if (unsectioned.length) console.log(`   !! unsectioned: ${[...new Set(unsectioned)].slice(0, 10).join(",")}`);
   if (bad) failures++;
   console.log(`${t}: ${comps.length} symbols · ${clusters.size} clusters · ${secs.length} sections · ${Math.ceil(totalW)}×${Math.ceil(totalH)} → ${side}-sheet.svg${bad ? `  [${bad} PROBLEM(S)]` : "  [clean]"}`);

@@ -48,3 +48,14 @@ export const SHEET_TITLES = {
   "120kw/acdc": "DC-Modules 120 kW — AC-DC board (Vienna PFC, 4x cells)",
   "120kw/dcdc": "DC-Modules 120 kW — DC-DC board (3-phase LLC, 4x cells)",
 };
+
+// Which board this sheet is, and where it sits in the product set. Rendered into the title
+// block so a sheet is self-identifying when printed on its own.
+export const SHEET_IDENT = {
+  "30kw/acdc":  { sku: "30 kW", board: "AC-DC (lower)", sheet: "1 of 2", cells: "1x Vienna PFC cell + 1x 3-ph LLC cell" },
+  "30kw/dcdc":  { sku: "30 kW", board: "DC-DC (upper)", sheet: "2 of 2", cells: "1x Vienna PFC cell + 1x 3-ph LLC cell" },
+  "60kw/acdc":  { sku: "60 kW", board: "AC-DC (lower)", sheet: "1 of 2", cells: "2x Vienna PFC cells + 2x 3-ph LLC cells" },
+  "60kw/dcdc":  { sku: "60 kW", board: "DC-DC (upper)", sheet: "2 of 2", cells: "2x Vienna PFC cells + 2x 3-ph LLC cells" },
+  "120kw/acdc": { sku: "120 kW", board: "AC-DC (lower)", sheet: "1 of 2", cells: "4x Vienna PFC cells + 4x 3-ph LLC cells" },
+  "120kw/dcdc": { sku: "120 kW", board: "DC-DC (upper)", sheet: "2 of 2", cells: "4x Vienna PFC cells + 4x 3-ph LLC cells" },
+};

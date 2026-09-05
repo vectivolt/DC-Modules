@@ -1403,9 +1403,13 @@
     L 3093.8304412461544,429.77585523171996
     Z
   " fill="rgba(255, 255, 255, 0.6)" stroke="rgb(132, 0, 0)" stroke-width="0.634605850272px"/><text class="net-label-text sch-net-label-text" data-circuit-json-type="schematic_net_label" data-schematic-net-label-id="schematic_net_label_274" x="3094.972731776644" y="426.60282598035997" fill="rgb(132, 0, 0)" text-anchor="start" dominant-baseline="central" font-family="sans-serif" font-variant-numeric="tabular-nums" font-size="5.711452652447999px" transform="">LINK_TX</text><text class="sch-text" x="3130.1933564667397" y="530.678185424968" fill="rgb(132, 0, 0)" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="3.8076351016319996px" transform="rotate(0, 3130.1933564667397, 530.678185424968)">LINK_RX</text><text class="sch-text" x="3015.9643034177802" y="491.33262270810405" fill="rgb(132, 0, 0)" text-anchor="start" dominant-baseline="middle" font-family="sans-serif" font-size="3.8076351016319996px" transform="rotate(0, 3015.9643034177802, 491.33262270810405)">EN_PFC</text><text class="sch-text" x="3015.9643034177802" y="484.98656420538396" fill="rgb(132, 0, 0)" text-anchor="start" dominant-baseline="middle" font-family="sans-serif" font-size="3.8076351016319996px" transform="rotate(0, 3015.9643034177802, 484.98656420538396)">EN_LLC</text></g></g><g class="title-block" font-family="sans-serif">
-<rect x="2081.1" y="2874.0" width="640" height="86" fill="#ffffff" stroke="#40506a" stroke-width="2"/>
-<line x1="2081.1" y1="2908.0" x2="2721.1" y2="2908.0" stroke="#40506a" stroke-width="1"/>
-<text x="2095.1" y="2898.0" font-size="19" font-weight="700" fill="#1c2127">DC-Modules 30 kW — AC-DC board (Vienna PFC)</text>
-<text x="2095.1" y="2926.0" font-size="12.5" fill="#40506a">Rev D.1 · 16 sections · 77 wired clusters · 300 symbols · 2026-09-05</text>
-<text x="2095.1" y="2944.0" font-size="11.5" fill="#7a8aa0">Wires are intra-cluster only; every cross-section link is a net label. LCSC part numbers: docs/bom.</text>
+<rect x="1901.1" y="2874.0" width="820" height="86" fill="#ffffff" stroke="#40506a" stroke-width="2"/>
+<line x1="1901.1" y1="2908.0" x2="2721.1" y2="2908.0" stroke="#40506a" stroke-width="1"/>
+<line x1="2490.9" y1="2874.0" x2="2490.9" y2="2960.0" stroke="#40506a" stroke-width="1"/>
+<text x="1915.1" y="2898.0" font-size="19" font-weight="700" fill="#1c2127">DC-Modules 30 kW — AC-DC board (Vienna PFC)</text>
+<text x="1915.1" y="2926.0" font-size="12.5" fill="#40506a">30 kW module · AC-DC (lower) board · sheet 1 of 2 · 1x Vienna PFC cell + 1x 3-ph LLC cell</text>
+<text x="1915.1" y="2944.0" font-size="11.5" fill="#7a8aa0">16 sections · 77 wired clusters · 300 symbols · cross-section links are net labels</text>
+<text x="2502.9" y="2898.0" font-size="12.5" font-weight="700" fill="#1c2127">Rev D.1</text>
+<text x="2502.9" y="2926.0" font-size="11.5" fill="#40506a">generated 2026-09-05</text>
+<text x="2502.9" y="2944.0" font-size="11.5" fill="#7a8aa0">LCSC: calculations/out/bom-30kw.csv</text>
 </g></svg>
