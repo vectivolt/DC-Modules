@@ -27,6 +27,7 @@ const require = createRequire(import.meta.url);
 const { convertCircuitJsonToSchematicSvg } = require("circuit-to-svg");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 import { SECTIONS, SHEET_TITLES, SHEET_IDENT } from "./schematic-sections.mjs";
+import { DB } from "./cost/parts-db.mjs";
 
 const CGUT = 26;       // gutter between clusters inside a section
 const GUT = 44;        // gutter between section frames
@@ -120,6 +121,10 @@ for (const t of list) {
   const H = Math.round(W * ((Math.max(...ys) - Math.min(...ys) + 20) / (Math.max(...xs) - Math.min(...xs) + 20)));
   const raw = convertCircuitJsonToSchematicSvg(j, { width: W, height: H });
 
+  const tm = raw.match(/data-real-to-screen-transform="matrix\(([-\d.e]+),0,0,([-\d.e]+),([-\d.e]+),([-\d.e]+)\)"/);
+  const [msx, msy, mtx, mty] = tm ? [+tm[1], +tm[2], +tm[3], +tm[4]] : [1, -1, 0, 0];
+  const px = (x) => msx * x + mtx, py = (y) => msy * y + mty;
+
   // ---- wire graph → clusters (union-find over components joined by a drawn wire) ----
   const ports = new Map(j.filter((e) => e.type === "schematic_port")
     .map((pt) => [pt.schematic_port_id, pt]));
@@ -140,12 +145,29 @@ for (const t of list) {
   const head = raw.slice(0, headEnd);
   const els = topLevel(raw.slice(headEnd, raw.lastIndexOf("</svg>")));
 
+  // Exact owners. Net labels and port markers carry ids, so they can be tied to the component
+  // they annotate instead of guessed by proximity — the guess mis-assigned 39 of 305 labels
+  // (13%), which is why labels appeared detached from their pin after packing.
+  const schPorts = j.filter((e) => e.type === "schematic_port");
+  const portOwnerBySourceId = new Map(schPorts.filter((p) => p.source_port_id)
+    .map((p) => [p.source_port_id, p.schematic_component_id]));
+  const labelOwner = new Map();
+  for (const l of j.filter((e) => e.type === "schematic_net_label")) {
+    const a = l.anchor_position ?? l.center; if (!a) continue;
+    let best = null, bd = Infinity;
+    for (const pt of schPorts) {
+      const d = (pt.center.x - a.x) ** 2 + (pt.center.y - a.y) ** 2;
+      if (d < bd) { bd = d; best = pt; }
+    }
+    if (best) labelOwner.set(l.schematic_net_label_id, best.schematic_component_id);
+  }
+
   const clusters = new Map();   // root component id → cluster
   const clusterOf = (rootId) => {
     if (!clusters.has(rootId)) clusters.set(rootId, { root: rootId, els: [], names: [] });
     return clusters.get(rootId);
   };
-  let styleEl = "", unplaced = 0;
+  let styleEl = "", unplaced = 0, byProximity = 0;
   const loose = [];
   for (const el of els) {
     if (el.startsWith("<style")) { styleEl += el; continue; }
@@ -155,29 +177,56 @@ for (const t of list) {
     if (!b) { unplaced++; continue; }
     const cid = el.match(/data-schematic-component-id="([^"]+)"/)?.[1];
     const tid = el.match(/data-schematic-trace-id="([^"]+)"/)?.[1];
-    let owner = cid ?? (tid ? traceOwner.get(tid) : undefined);
+    const lid = el.match(/data-schematic-net-label-id="([^"]+)"/)?.[1];
+    const pid = el.match(/data-schematic-port-id="([^"]+)"/)?.[1];
+    let owner = cid ?? (tid ? traceOwner.get(tid) : undefined)
+      ?? (lid ? labelOwner.get(lid) : undefined)
+      ?? (pid ? portOwnerBySourceId.get(pid) : undefined);
     if (owner && parent.has(owner)) {
       const c = clusterOf(find(owner));
       c.els.push({ el, b });
       if (cid) c.names.push(compName.get(cid) ?? "?");
-    } else loose.push({ el, b });            // net labels, ports, free text — placed by proximity
+    } else { loose.push({ el, b }); byProximity++; }   // only decoration now: no id to bind it
   }
   for (const c of clusters.values()) {
     const bs = c.els.map((e) => e.b);
     c.box = { x0: Math.min(...bs.map((b) => b.x0)), y0: Math.min(...bs.map((b) => b.y0)),
               x1: Math.max(...bs.map((b) => b.x1)), y1: Math.max(...bs.map((b) => b.y1)) };
   }
-  // loose elements join the nearest cluster so labels travel with the circuit they annotate
+  // What is left carries no id: the designator/value text drawn against a symbol. Bind it to
+  // the NEAREST SYMBOL (not the nearest cluster box) so it always travels with its own part.
+  const centres = comps.map((c) => ({ x: px(c.center.x), y: py(c.center.y), root: find(c.schematic_component_id) }));
   for (const item of loose) {
     let best = null, bd = Infinity;
-    for (const c of clusters.values()) {
-      const dx = Math.max(c.box.x0 - item.b.cx, 0, item.b.cx - c.box.x1);
-      const dy = Math.max(c.box.y0 - item.b.cy, 0, item.b.cy - c.box.y1);
-      const d = dx * dx + dy * dy;
+    for (const c of centres) {
+      const d = (c.x - item.b.cx) ** 2 + (c.y - item.b.cy) ** 2;
       if (d < bd) { bd = d; best = c; }
     }
-    if (best) best.els.push(item); else unplaced++;
+    const cl = best && clusters.get(best.root);
+    if (cl) cl.els.push(item); else unplaced++;
   }
+  // Typed parts (resistor/capacitor/inductor/diode) render with their value; parts declared as
+  // a generic chip in the source render as a bare box with only a designator — 73 of 300 on the
+  // AC-DC board. Annotate those with the part number so no symbol reads as blank.
+  const srcByCompId = new Map(j.filter((e) => e.type === "source_component").map((c) => [c.source_component_id, c]));
+  const mpnFor = (nm) => DB.find((r) => r.m.test(nm))?.mpn ?? "";
+  let annotated = 0;
+  for (const c of comps) {
+    const sc = srcByCompId.get(c.source_component_id);
+    if (!sc || sc.ftype !== "simple_chip") continue;
+    const mpn = mpnFor(sc.name);
+    if (!mpn) continue;
+    const root = find(c.schematic_component_id);
+    const cl = clusters.get(root);
+    if (!cl) continue;
+    const tx = px(c.center.x), ty = py(c.center.y - (c.size?.height ?? 1) / 2) + 11;
+    const el = `<text class="chip-mpn" x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-size="9" `
+      + `text-anchor="middle" fill="#6b5344" font-family="sans-serif">${esc(mpn)}</text>`;
+    const half = mpn.length * 2.6;
+    cl.els.push({ el, b: { x0: tx - half, y0: ty - 9, x1: tx + half, y1: ty + 2, cx: tx, cy: ty } });
+    annotated++;
+  }
+
   for (const c of clusters.values()) {
     const bs = c.els.map((e) => e.b);
     c.box = { x0: Math.min(...bs.map((b) => b.x0)), y0: Math.min(...bs.map((b) => b.y0)),
@@ -332,6 +381,6 @@ for (const t of list) {
   }
   if (unsectioned.length) console.log(`   !! unsectioned: ${[...new Set(unsectioned)].slice(0, 10).join(",")}`);
   if (bad) failures++;
-  console.log(`${t}: ${comps.length} symbols · ${clusters.size} clusters · ${secs.length} sections · ${Math.ceil(totalW)}×${Math.ceil(totalH)} → ${side}-sheet.svg${bad ? `  [${bad} PROBLEM(S)]` : "  [clean]"}`);
+  console.log(`${t}: ${comps.length} symbols (${annotated} chip MPNs added) · ${byProximity} by-proximity · ${clusters.size} clusters · ${secs.length} sections · ${Math.ceil(totalW)}×${Math.ceil(totalH)} → ${side}-sheet.svg${bad ? `  [${bad} PROBLEM(S)]` : "  [clean]"}`);
 }
 process.exit(failures ? 1 : 0);

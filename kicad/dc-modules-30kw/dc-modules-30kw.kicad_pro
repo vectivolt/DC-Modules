@@ -1,0 +1,70 @@
+{
+  "board": {},
+  "boards": [],
+  "cvpcb": {
+    "equivalence_files": []
+  },
+  "libraries": {
+    "pinned_footprint_libs": [],
+    "pinned_symbol_libs": []
+  },
+  "meta": {
+    "filename": "dc-modules-30kw.kicad_pro",
+    "version": 1
+  },
+  "schematic": {
+    "legacy_lib_dir": "",
+    "legacy_lib_list": []
+  },
+  "sheets": [
+    [
+      "f33d7ba5-191e-4d60-a818-2ab55f4c5e47",
+      "acdc-AC-SENSING"
+    ],
+    [
+      "0da9d8e0-f508-4089-a83b-54c8cf14f748",
+      "acdc-AUX-POWER"
+    ],
+    [
+      "97ccdda6-cbe2-4ab6-a01c-6e85c07d27c9",
+      "acdc-CONTROL"
+    ],
+    [
+      "ac7f6974-7f95-4087-a269-39145d43e795",
+      "acdc-DC-LINK"
+    ],
+    [
+      "8dbc99aa-5b91-45e9-a961-2ac0c34192c2",
+      "acdc-INPUT-EMI"
+    ],
+    [
+      "aba155c1-ac25-4435-ad1e-bd9b82d06a2a",
+      "acdc-VIENNA-PFC"
+    ],
+    [
+      "b86c33f3-6249-4515-a35f-a65ae360eb22",
+      "dcdc-BANKS-SP"
+    ],
+    [
+      "a4eae839-6dc5-4e8f-a04a-40c9eda4e492",
+      "dcdc-COMMS-HMI"
+    ],
+    [
+      "1137c544-07da-408a-a42a-9b4ef459ff51",
+      "dcdc-CONTROL"
+    ],
+    [
+      "1d43fcc3-54a6-46cd-a276-24771746d25c",
+      "dcdc-LLC-LEGS"
+    ],
+    [
+      "90783d18-0d00-41fb-adf8-d7610a152fdb",
+      "dcdc-LLC-TANKS"
+    ],
+    [
+      "cdcac4a6-4651-4bd1-a973-57885f4c1eb9",
+      "dcdc-OUTPUT-SENSING"
+    ]
+  ],
+  "text_variables": {}
+}
