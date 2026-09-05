@@ -13,5 +13,6 @@ node calculations/system/monte-carlo.mjs
 node calculations/system/fsm-sim.mjs
 node calculations/emi/lisn-precompliance.mjs
 node calculations/cost/bom-gen.mjs
+if [ -f dist/boards/30kw/acdc/circuit.json ]; then node calculations/schematic-check.mjs 30kw/acdc 30kw/dcdc; fi
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 33/33 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

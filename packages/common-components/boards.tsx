@@ -56,151 +56,155 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
   ];
   assertUniquePins("MCU-PFC", pfcPins);
   const nDcHalf = lanes === 1 ? 5 : lanes === 2 ? 9 : 18;
+  // schematic sheet plan (layout-polish rev): EMI row y=36..48 · Vienna lanes x=4 col from y=24
+  // down (14/row) · line-CT col x=40 · HV-sense col x=56 · DC-link/discharge col x=80 · control
+  // row starts below the tallest column; cY is its baseline.
+  const cY = Math.min(24 - 3 * lanes * 14, 26 - 3 * lanes * 4.5 - 8, -16) - 12;
   const dcBanks = nDcHalf <= 5 ? [[nDcHalf, 0]] : nDcHalf <= 10 ? [[5, 0], [nDcHalf - 5, 1]] : [[6, 0], [6, 1], [6, 2]];
   return (
-    <board width={`${w}mm`} height={`${h}mm`} routingDisabled>
+    <board width={`${w}mm`} height={`${h}mm`} routingDisabled schTraceAutoLabelEnabled schMaxTraceDistance={0}>
       {/* AC entry, protection, EMI (§26/§27): fuses → MOV Δ + MOV/GDT L-PE → CM1 → X → CM2 → X → Y */}
       {["ACL1", "ACL2", "ACL3", "PE"].map((n, i) => (
-        <chip key={n} name={`J${n}`} footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 15} pcbY={h / 2 - 20 - i * 30} schX={-26} schY={-8 + i * 1.4} />
+        <chip key={n} name={`J${n}`} footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 15} pcbY={h / 2 - 20 - i * 30} schX={i < 3 ? 0 : 20} schY={i < 3 ? 46 - i * 3 : 37} />
       ))}
       {[1, 2, 3].map(i => (
-        <chip key={i} name={`F${i}`} footprint={FilmBoxFP(30)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 20 - (i - 1) * 25} schX={-24} schY={-8 + (i - 1) * 1.4} />
+        <chip key={i} name={`F${i}`} footprint={FilmBoxFP(30)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 20 - (i - 1) * 25} schX={5} schY={46 - (i - 1) * 3} />
       ))}
       {[1, 2, 3].map(i => (
-        <chip key={i} name={`MOV${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 105 - (i - 1) * 15} schX={-24} schY={-3.5 + (i - 1) * 0.7} />
+        <chip key={i} name={`MOV${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 105 - (i - 1) * 15} schX={10} schY={46 - (i - 1) * 3} />
       ))}
       {/* HR-7: common-mode surge path — MOV + GDT in series, each line to PE */}
       {[1, 2, 3].map(i => (
-        <chip key={`mp${i}`} name={`MOVP${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 70} pcbY={h / 2 - 105 - (i - 1) * 15} schX={-23} schY={-3.5 + (i - 1) * 0.7} />
+        <chip key={`mp${i}`} name={`MOVP${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 70} pcbY={h / 2 - 105 - (i - 1) * 15} schX={15} schY={46 - (i - 1) * 3} />
       ))}
       {[1, 2, 3].map(i => (
-        <chip key={`g${i}`} name={`GDT${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 85} pcbY={h / 2 - 105 - (i - 1) * 15} schX={-22.2} schY={-3.5 + (i - 1) * 0.7} />
+        <chip key={`g${i}`} name={`GDT${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 85} pcbY={h / 2 - 105 - (i - 1) * 15} schX={20} schY={46 - (i - 1) * 3} />
       ))}
-      <chip name="CMC1" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={-w / 2 + 105} pcbY={h / 2 - 35} schX={-22} schY={-7.4} />
-      <chip name="CMC2" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={-w / 2 + 105} pcbY={h / 2 - 85} schX={-19} schY={-7.4} />
+      <chip name="CMC1" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={-w / 2 + 105} pcbY={h / 2 - 35} schX={26} schY={43} schSectionName="EMI" />
+      <chip name="CMC2" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={-w / 2 + 105} pcbY={h / 2 - 85} schX={36} schY={43} schSectionName="EMI" />
       {[1, 2, 3].map(i => (
-        <capacitor key={`x1${i}`} name={`CX1${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={-w / 2 + 150} pcbY={h / 2 - 20 - (i - 1) * 22} schX={-20.5} schY={-8 + (i - 1) * 0.9} />
-      ))}
-      {[1, 2, 3].map(i => (
-        <capacitor key={`x2${i}`} name={`CX2${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={-w / 2 + 150} pcbY={h / 2 - 90 - (i - 1) * 22} schX={-17.5} schY={-8 + (i - 1) * 0.9} />
+        <capacitor key={`x1${i}`} name={`CX1${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={-w / 2 + 150} pcbY={h / 2 - 20 - (i - 1) * 22} schX={31} schY={46 - (i - 1) * 3} schSectionName="EMI" />
       ))}
       {[1, 2, 3].map(i => (
-        <capacitor key={`y${i}`} name={`CY${i}`} capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={-w / 2 + 180} pcbY={h / 2 - 20 - (i - 1) * 15} schX={-16} schY={-8 + (i - 1) * 0.7} />
+        <capacitor key={`x2${i}`} name={`CX2${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={-w / 2 + 150} pcbY={h / 2 - 90 - (i - 1) * 22} schX={46} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+      ))}
+      {[1, 2, 3].map(i => (
+        <capacitor key={`y${i}`} name={`CY${i}`} capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={-w / 2 + 180} pcbY={h / 2 - 20 - (i - 1) * 15} schX={51} schY={46 - (i - 1) * 3} />
       ))}
       <trace from=".JACL1 > .P" to=".F1 > .A" />
       <trace from=".JACL2 > .P" to=".F2 > .A" />
       <trace from=".JACL3 > .P" to=".F3 > .A" />
-      <trace from=".F1 > .B" to="net.LF1" />
-      <trace from=".F2 > .B" to="net.LF2" />
-      <trace from=".F3 > .B" to="net.LF3" />
-      <trace from=".MOV1 > .A" to="net.LF1" />
-      <trace from=".MOV1 > .B" to="net.LF2" />
-      <trace from=".MOV2 > .A" to="net.LF2" />
-      <trace from=".MOV2 > .B" to="net.LF3" />
-      <trace from=".MOV3 > .A" to="net.LF3" />
-      <trace from=".MOV3 > .B" to="net.LF1" />
+      <trace from=".F1 > .B" to="net.LF1" schDisplayLabel="LF1" />
+      <trace from=".F2 > .B" to="net.LF2" schDisplayLabel="LF2" />
+      <trace from=".F3 > .B" to="net.LF3" schDisplayLabel="LF3" />
+      <trace from=".MOV1 > .A" to="net.LF1" schDisplayLabel="LF1" />
+      <trace from=".MOV1 > .B" to="net.LF2" schDisplayLabel="LF2" />
+      <trace from=".MOV2 > .A" to="net.LF2" schDisplayLabel="LF2" />
+      <trace from=".MOV2 > .B" to="net.LF3" schDisplayLabel="LF3" />
+      <trace from=".MOV3 > .A" to="net.LF3" schDisplayLabel="LF3" />
+      <trace from=".MOV3 > .B" to="net.LF1" schDisplayLabel="LF1" />
       {[1, 2, 3].map(i => [
-        <trace key={`mpa${i}`} from={`.MOVP${i} > .A`} to={`net.LF${i}`} />,
+        <trace key={`mpa${i}`} from={`.MOVP${i} > .A`} to={`net.LF${i}`} schDisplayLabel={`LF${i}`} />,
         <trace key={`mpb${i}`} from={`.MOVP${i} > .B`} to={`.GDT${i} > .A`} />,
-        <trace key={`gb${i}`} from={`.GDT${i} > .B`} to="net.PE" />,
+        <trace key={`gb${i}`} from={`.GDT${i} > .B`} to="net.PE" schDisplayLabel="PE" />,
       ])}
-      <trace from=".CMC1 > .A1" to="net.LF1" />
-      <trace from=".CMC1 > .A2" to="net.LF2" />
-      <trace from=".CMC1 > .A3" to="net.LF3" />
-      <trace from=".CMC1 > .B1" to="net.AC1M" />
-      <trace from=".CMC1 > .B2" to="net.AC2M" />
-      <trace from=".CMC1 > .B3" to="net.AC3M" />
-      <trace from=".CX11 > .pin1" to="net.AC1M" />
-      <trace from=".CX11 > .pin2" to="net.AC2M" />
-      <trace from=".CX12 > .pin1" to="net.AC2M" />
-      <trace from=".CX12 > .pin2" to="net.AC3M" />
-      <trace from=".CX13 > .pin1" to="net.AC3M" />
-      <trace from=".CX13 > .pin2" to="net.AC1M" />
-      <trace from=".CMC2 > .A1" to="net.AC1M" />
-      <trace from=".CMC2 > .A2" to="net.AC2M" />
-      <trace from=".CMC2 > .A3" to="net.AC3M" />
-      <trace from=".CMC2 > .B1" to="net.AC1D" />
-      <trace from=".CMC2 > .B2" to="net.AC2D" />
-      <trace from=".CMC2 > .B3" to="net.AC3D" />
+      <trace from=".CMC1 > .A1" to="net.LF1" schDisplayLabel="LF1" />
+      <trace from=".CMC1 > .A2" to="net.LF2" schDisplayLabel="LF2" />
+      <trace from=".CMC1 > .A3" to="net.LF3" schDisplayLabel="LF3" />
+      <trace from=".CMC1 > .B1" to="net.AC1M" schDisplayLabel="AC1M" />
+      <trace from=".CMC1 > .B2" to="net.AC2M" schDisplayLabel="AC2M" />
+      <trace from=".CMC1 > .B3" to="net.AC3M" schDisplayLabel="AC3M" />
+      <trace from=".CX11 > .pin1" to="net.AC1M" schDisplayLabel="AC1M" />
+      <trace from=".CX11 > .pin2" to="net.AC2M" schDisplayLabel="AC2M" />
+      <trace from=".CX12 > .pin1" to="net.AC2M" schDisplayLabel="AC2M" />
+      <trace from=".CX12 > .pin2" to="net.AC3M" schDisplayLabel="AC3M" />
+      <trace from=".CX13 > .pin1" to="net.AC3M" schDisplayLabel="AC3M" />
+      <trace from=".CX13 > .pin2" to="net.AC1M" schDisplayLabel="AC1M" />
+      <trace from=".CMC2 > .A1" to="net.AC1M" schDisplayLabel="AC1M" />
+      <trace from=".CMC2 > .A2" to="net.AC2M" schDisplayLabel="AC2M" />
+      <trace from=".CMC2 > .A3" to="net.AC3M" schDisplayLabel="AC3M" />
+      <trace from=".CMC2 > .B1" to="net.AC1D" schDisplayLabel="AC1D" />
+      <trace from=".CMC2 > .B2" to="net.AC2D" schDisplayLabel="AC2D" />
+      <trace from=".CMC2 > .B3" to="net.AC3D" schDisplayLabel="AC3D" />
       {[1, 2, 3].map(i => (
-        <chip key={`ldm${i}`} name={`LDM${i}`} footprint={FilmBoxFP(20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 200} pcbY={h / 2 - 20 - (i - 1) * 18} schX={-15.2} schY={-8 + (i - 1) * 0.7} />
+        <chip key={`ldm${i}`} name={`LDM${i}`} footprint={FilmBoxFP(20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 200} pcbY={h / 2 - 20 - (i - 1) * 18} schX={41} schY={46 - (i - 1) * 3} />
       ))}
-      <trace from=".LDM1 > .A" to="net.AC1D" />
-      <trace from=".LDM1 > .B" to="net.AC1" />
-      <trace from=".LDM2 > .A" to="net.AC2D" />
-      <trace from=".LDM2 > .B" to="net.AC2" />
-      <trace from=".LDM3 > .A" to="net.AC3D" />
-      <trace from=".LDM3 > .B" to="net.AC3" />
-      <trace from=".CX21 > .pin1" to="net.AC1" />
-      <trace from=".CX21 > .pin2" to="net.AC2" />
-      <trace from=".CX22 > .pin1" to="net.AC2" />
-      <trace from=".CX22 > .pin2" to="net.AC3" />
-      <trace from=".CX23 > .pin1" to="net.AC3" />
-      <trace from=".CX23 > .pin2" to="net.AC1" />
-      <trace from=".CY1 > .pin1" to="net.AC1" />
-      <trace from=".CY1 > .pin2" to="net.PE" />
-      <trace from=".CY2 > .pin1" to="net.AC2" />
-      <trace from=".CY2 > .pin2" to="net.PE" />
-      <trace from=".CY3 > .pin1" to="net.AC3" />
-      <trace from=".CY3 > .pin2" to="net.PE" />
-      <trace from=".JPE > .P" to="net.PE" />
+      <trace from=".LDM1 > .A" to="net.AC1D" schDisplayLabel="AC1D" />
+      <trace from=".LDM1 > .B" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".LDM2 > .A" to="net.AC2D" schDisplayLabel="AC2D" />
+      <trace from=".LDM2 > .B" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".LDM3 > .A" to="net.AC3D" schDisplayLabel="AC3D" />
+      <trace from=".LDM3 > .B" to="net.AC3" schDisplayLabel="AC3" />
+      <trace from=".CX21 > .pin1" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".CX21 > .pin2" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".CX22 > .pin1" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".CX22 > .pin2" to="net.AC3" schDisplayLabel="AC3" />
+      <trace from=".CX23 > .pin1" to="net.AC3" schDisplayLabel="AC3" />
+      <trace from=".CX23 > .pin2" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".CY1 > .pin1" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".CY1 > .pin2" to="net.PE" schDisplayLabel="PE" />
+      <trace from=".CY2 > .pin1" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".CY2 > .pin2" to="net.PE" schDisplayLabel="PE" />
+      <trace from=".CY3 > .pin1" to="net.AC3" schDisplayLabel="AC3" />
+      <trace from=".CY3 > .pin2" to="net.PE" schDisplayLabel="PE" />
+      <trace from=".JPE > .P" to="net.PE" schDisplayLabel="PE" />
       {/* precharge (E14 rev): 33 Ω pulse resistors in L1/L2; CB-8: bypass = 2× line-rated power
           relays w/ mirror contacts (series readback chain — both-open proof before precharge) */}
       {["1", "2"].map((k, i) => (
-        <chip key={k} name={`KPRE${k}`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={-w / 2 + 220 + i * 30} pcbY={h / 2 - 25} schX={-14 + i * 1.6} schY={-8} />
+        <chip key={k} name={`KPRE${k}`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={-w / 2 + 220 + i * 30} pcbY={h / 2 - 25} schX={58} schY={46 - i * 4} />
       ))}
-      <chip name="RPRE1" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 220} pcbY={h / 2 - 55} schX={-14} schY={-6.6} />
-      <chip name="RPRE2" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 220} pcbY={h / 2 - 65} schX={-14} schY={-6} />
-      <resistor name="RKFBP" resistance="10k" footprint="0603" pcbX={-w / 2 + 260} pcbY={h / 2 - 55} schX={-11} schY={-6.6} />
-      <trace from="net.AC1" to=".RPRE1 > .A" />
-      <trace from=".RPRE1 > .B" to="net.AC1F" />
-      <trace from=".KPRE1 > .A" to="net.AC1" />
-      <trace from=".KPRE1 > .B" to="net.AC1F" />
-      <trace from="net.AC2" to=".RPRE2 > .A" />
-      <trace from=".RPRE2 > .B" to="net.AC2F" />
-      <trace from=".KPRE2 > .A" to="net.AC2" />
-      <trace from=".KPRE2 > .B" to="net.AC2F" />
-      <trace from=".KPRE1 > .C1" to="net.V24" />
-      <trace from=".KPRE1 > .C2" to="net.COIL_KPRE" />
-      <trace from=".KPRE2 > .C1" to="net.V24" />
-      <trace from=".KPRE2 > .C2" to="net.COIL_KPRE" />
-      <trace from=".KPRE1 > .M1" to="net.DGND" />
+      <chip name="RPRE1" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 220} pcbY={h / 2 - 55} schX={62.5} schY={46} schSectionName="PRECHG" />
+      <chip name="RPRE2" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 220} pcbY={h / 2 - 65} schX={62.5} schY={42} schSectionName="PRECHG" />
+      <resistor name="RKFBP" resistance="10k" footprint="0603" pcbX={-w / 2 + 260} pcbY={h / 2 - 55} schX={67} schY={44} schSectionName="PRECHG" />
+      <trace from="net.AC1" to=".RPRE1 > .A" schDisplayLabel="AC1" />
+      <trace from=".RPRE1 > .B" to="net.AC1F" schDisplayLabel="AC1F" />
+      <trace from=".KPRE1 > .A" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".KPRE1 > .B" to="net.AC1F" schDisplayLabel="AC1F" />
+      <trace from="net.AC2" to=".RPRE2 > .A" schDisplayLabel="AC2" />
+      <trace from=".RPRE2 > .B" to="net.AC2F" schDisplayLabel="AC2F" />
+      <trace from=".KPRE2 > .A" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".KPRE2 > .B" to="net.AC2F" schDisplayLabel="AC2F" />
+      <trace from=".KPRE1 > .C1" to="net.V24" schDisplayLabel="V24" />
+      <trace from=".KPRE1 > .C2" to="net.COIL_KPRE" schDisplayLabel="COIL_KPRE" />
+      <trace from=".KPRE2 > .C1" to="net.V24" schDisplayLabel="V24" />
+      <trace from=".KPRE2 > .C2" to="net.COIL_KPRE" schDisplayLabel="COIL_KPRE" />
+      <trace from=".KPRE1 > .M1" to="net.DGND" schDisplayLabel="DGND" />
       <trace from=".KPRE1 > .M2" to=".KPRE2 > .M1" />
-      <trace from=".KPRE2 > .M2" to="net.RELAY_FB_KPRE" />
-      <trace from=".RKFBP > .pin1" to="net.V3P3" />
-      <trace from=".RKFBP > .pin2" to="net.RELAY_FB_KPRE" />
+      <trace from=".KPRE2 > .M2" to="net.RELAY_FB_KPRE" schDisplayLabel="RELAY_FB_KPRE" />
+      <trace from=".RKFBP > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
+      <trace from=".RKFBP > .pin2" to="net.RELAY_FB_KPRE" schDisplayLabel="RELAY_FB_KPRE" />
 
       {/* Vienna lanes (film commutation caps now inside each phase — CB-9) */}
       {phases.map((p, i) => (
         <ViennaPhase key={p.id} id={p.id} ac={p.ac} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
           pwm={`net.PWM_${p.id}`} flt="net.FLT_PFC" en="net.GATE_EN_A"
-          x={-w / 2 + 60} y={h / 2 - 150 - i * 42} sx={-10} sy={-8 + i * 3.4} />
+          x={-w / 2 + 60} y={h / 2 - 150 - i * 42} sx={4} sy={24 - i * 14} />
       ))}
       {/* per-phase line CTs (primary = line conductor through aperture; §19/E18) */}
       {phases.map((p, i) => (
-        <CtSensor key={p.id} id={p.id} out={`net.I_${p.id}`} x={-w / 2 + 240} y={h / 2 - 150 - i * 42} sx={9} sy={-8 + i * 1} />
+        <CtSensor key={p.id} id={p.id} out={`net.I_${p.id}`} x={-w / 2 + 240} y={h / 2 - 150 - i * 42} sx={40} sy={26 - i * 4.5} />
       ))}
 
       {/* DC link banks + balance */}
       {dcBanks.map(([n, k]) => (
         <SplitDcLink key={k} id={`${k}`} nPerHalf={n} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
-          x={-w / 2 + 140} y={-h / 2 + 120 + (k as number) * 100} sx={-4 + (k as number) * 5} sy={5.5} />
+          x={-w / 2 + 140} y={-h / 2 + 120 + (k as number) * 100} sx={80} sy={24 - (k as number) * 8} />
       ))}
 
       {/* discharge: 4× 160 Ω pulse resistors + 1200 V SiC FET.
           CB-11: default-OFF isolated drive (DischargeCtl), gate pulled down to DCN. */}
       {[0, 1, 2, 3].map(i => (
-        <chip key={i} name={`RDIS${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 120 + i * 10} pcbY={-h / 2 + 30} schX={2 + i * 0.7} schY={7.5} />
+        <chip key={i} name={`RDIS${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 120 + i * 10} pcbY={-h / 2 + 30} schX={80 + i * 2.4} schY={-2} schSectionName="DISCH" />
       ))}
-      <chip name="QDIS" footprint={<StudFP />} pinLabels={{ pin1: "TAB" }} pcbX={w / 2 - 60} pcbY={-h / 2 + 30} schX={5.4} schY={7.5} />
-      <chip name="QDISF" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 75} pcbY={-h / 2 + 45} schX={4.6} schY={7.9} />
-      <DischargeCtl ctl="net.CTL_QDIS" gateOut="net.G_QDIS" dcn="net.DCN" x={w / 2 - 100} y={-h / 2 + 55} sx={3.4} sy={8.3} />
-      <trace from=".RDIS0 > .A" to="net.DCP" />
+      <chip name="QDIS" footprint={<StudFP />} pinLabels={{ pin1: "TAB" }} pcbX={w / 2 - 60} pcbY={-h / 2 + 30} schX={93} schY={-2} schSectionName="DISCH" />
+      <chip name="QDISF" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 75} pcbY={-h / 2 + 45} schX={90} schY={-2} schSectionName="DISCH" />
+      <DischargeCtl ctl="net.CTL_QDIS" gateOut="net.G_QDIS" dcn="net.DCN" x={w / 2 - 100} y={-h / 2 + 55} sx={83} sy={-7} />
+      <trace from=".RDIS0 > .A" to="net.DCP" schDisplayLabel="DCP" />
       <trace from=".RDIS0 > .B" to=".RDIS1 > .A" />
       <trace from=".RDIS1 > .B" to=".RDIS2 > .A" />
       <trace from=".RDIS2 > .B" to=".RDIS3 > .A" />
       <trace from=".RDIS3 > .B" to=".QDISF > .D" />
-      <trace from=".QDISF > .S" to="net.DCN" />
+      <trace from=".QDISF > .S" to="net.DCN" schDisplayLabel="DCN" />
       <trace from=".QDISF > .G" to="net.G_QDIS" />
 
       {/* sensing (E25: every HV sense isolated; SELV control domain preserved).
@@ -208,84 +212,84 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
           V/W — 0.46 W & 152 Vrms each); bus senses reference DCN. NOTE: the star doubles as the
           X-cap bleed path (τ ≈ 0.42 s) — do not delete without replacing that function. */}
       {[1, 2, 3].map(i => [
-        <resistor key={`nsa${i}`} name={`RNS${i}A`} resistance="47k" footprint="2512" pcbX={-w / 2 + 250} pcbY={-h / 2 + 100 - i * 6} schX={-25} schY={2 + i * 0.4} />,
-        <resistor key={`nsb${i}`} name={`RNS${i}B`} resistance="47k" footprint="2512" pcbX={-w / 2 + 258} pcbY={-h / 2 + 100 - i * 6} schX={-24.5} schY={2 + i * 0.4} />,
+        <resistor key={`nsa${i}`} name={`RNS${i}A`} resistance="47k" footprint="2512" pcbX={-w / 2 + 250} pcbY={-h / 2 + 100 - i * 6} schX={56} schY={32 - i * 1.6} schSectionName="SENSE" />,
+        <resistor key={`nsb${i}`} name={`RNS${i}B`} resistance="47k" footprint="2512" pcbX={-w / 2 + 258} pcbY={-h / 2 + 100 - i * 6} schX={58.4} schY={32 - i * 1.6} schSectionName="SENSE" />,
       ])}
       {[1, 2, 3].map(i => [
-        <trace key={`nt1${i}`} from={`.RNS${i}A > .pin1`} to={`net.AC${i}`} />,
+        <trace key={`nt1${i}`} from={`.RNS${i}A > .pin1`} to={`net.AC${i}`} schDisplayLabel={`AC${i}`} />,
         <trace key={`nt2${i}`} from={`.RNS${i}A > .pin2`} to={`.RNS${i}B > .pin1`} />,
-        <trace key={`nt3${i}`} from={`.RNS${i}B > .pin2`} to="net.NSTAR" />,
+        <trace key={`nt3${i}`} from={`.RNS${i}B > .pin2`} to="net.NSTAR" schDisplayLabel="NSTAR" />,
       ])}
-      <Bias5Module id="AC" p5="net.B5AC" com="net.NSTAR" x={-w / 2 + 250} y={-h / 2 + 110} sx={-25} sy={3.6} />
-      <Bias5Module id="BUS" p5="net.B5BUS" com="net.DCN" x={-w / 2 + 250} y={-h / 2 + 120} sx={-23} sy={3.6} />
-      <IsoVSense id="V1" hv="net.AC1" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC1" x={-w / 2 + 240} y={-h / 2 + 90} sx={-24} sy={4} />
-      <IsoVSense id="V2" hv="net.AC2" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC2" x={-w / 2 + 240} y={-h / 2 + 80} sx={-24} sy={4.8} />
-      <IsoVSense id="V3" hv="net.AC3" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC3" x={-w / 2 + 240} y={-h / 2 + 70} sx={-24} sy={5.6} />
-      <IsoVSense id="BP" hv="net.DCP" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VBUSP" x={-w / 2 + 240} y={-h / 2 + 60} sx={-24} sy={6.4} />
-      <IsoVSense id="BM" hv="net.MID" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VMID" x={-w / 2 + 240} y={-h / 2 + 50} sx={-24} sy={7.2} />
-      <AnalogMid x={-w / 2 + 240} y={-h / 2 + 15} sx={-20} sy={8} />
-      <NtcInput id="TPFC" out="net.T_PFC" x={-w / 2 + 240} y={-h / 2 + 35} sx={-24} sy={8} />
-      <NtcInput id="TINL" out="net.T_INLET" x={-w / 2 + 240} y={-h / 2 + 25} sx={-22} sy={8} />
+      <Bias5Module id="AC" p5="net.B5AC" com="net.NSTAR" x={-w / 2 + 250} y={-h / 2 + 110} sx={62} sy={30.4} />
+      <Bias5Module id="BUS" p5="net.B5BUS" com="net.DCN" x={-w / 2 + 250} y={-h / 2 + 120} sx={66} sy={30.4} />
+      <IsoVSense id="V1" hv="net.AC1" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC1" x={-w / 2 + 240} y={-h / 2 + 90} sx={56} sy={24} />
+      <IsoVSense id="V2" hv="net.AC2" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC2" x={-w / 2 + 240} y={-h / 2 + 80} sx={56} sy={19.5} />
+      <IsoVSense id="V3" hv="net.AC3" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC3" x={-w / 2 + 240} y={-h / 2 + 70} sx={56} sy={15} />
+      <IsoVSense id="BP" hv="net.DCP" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VBUSP" x={-w / 2 + 240} y={-h / 2 + 60} sx={56} sy={10.5} />
+      <IsoVSense id="BM" hv="net.MID" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VMID" x={-w / 2 + 240} y={-h / 2 + 50} sx={56} sy={6} />
+      <AnalogMid x={-w / 2 + 240} y={-h / 2 + 15} sx={56} sy={-2} />
+      <NtcInput id="TPFC" out="net.T_PFC" x={-w / 2 + 240} y={-h / 2 + 35} sx={56} sy={-6.5} />
+      <NtcInput id="TINL" out="net.T_INLET" x={-w / 2 + 240} y={-h / 2 + 25} sx={68} sy={-6.5} />
 
       {/* control: MCU-PFC + safety chain + SWD + coil driver + aux + fans + interconnect */}
-      <ControlMcu id="PFC" x={-w / 2 + 60} y={-h / 2 + 60} sx={-14} sy={4} />
+      <ControlMcu id="PFC" x={-w / 2 + 60} y={-h / 2 + 60} sx={4} sy={cY} />
       <SafetyChain id="A" enLocal="net.EN_PFC" enRemote="net.EN_LLC" wdi="net.WDI_PFC" gateEn="net.GATE_EN_A"
-        x={-w / 2 + 60} y={-h / 2 + 20} sx={-14} sy={6} />
-      <SwdPort id="PFC" x={-w / 2 + 20} y={-h / 2 + 60} sx={-16} sy={4} />
-      <trace from=".UPFC > .pin28" to="net.SWDIO_PFC" />
-      <trace from=".UPFC > .pin29" to="net.SWCLK_PFC" />
-      <trace from=".UPFC > .pin100" to="net.BOOT0_PFC" />
-      <resistor name="RFLTA" resistance="4.7k" footprint="0603" pcbX={-w / 2 + 100} pcbY={-h / 2 + 20} schX={-12} schY={6} />
-      <capacitor name="CFLTA" capacitance="1nF" footprint="0603" pcbX={-w / 2 + 106} pcbY={-h / 2 + 20} schX={-11.5} schY={6} />
-      <trace from=".RFLTA > .pin1" to="net.V3P3" />
-      <trace from=".RFLTA > .pin2" to="net.FLT_PFC" />
-      <trace from=".CFLTA > .pin1" to="net.FLT_PFC" />
-      <trace from=".CFLTA > .pin2" to="net.DGND" />
+        x={-w / 2 + 60} y={-h / 2 + 20} sx={23} sy={cY - 8} />
+      <SwdPort id="PFC" x={-w / 2 + 20} y={-h / 2 + 60} sx={16} sy={cY} />
+      <trace from=".UPFC > .pin28" to="net.SWDIO_PFC" schDisplayLabel="SWDIO_PFC" />
+      <trace from=".UPFC > .pin29" to="net.SWCLK_PFC" schDisplayLabel="SWCLK_PFC" />
+      <trace from=".UPFC > .pin100" to="net.BOOT0_PFC" schDisplayLabel="BOOT0_PFC" />
+      <resistor name="RFLTA" resistance="4.7k" footprint="0603" pcbX={-w / 2 + 100} pcbY={-h / 2 + 20} schX={23} schY={cY - 12.5} schSectionName="SAFETY" />
+      <capacitor name="CFLTA" capacitance="1nF" footprint="0603" pcbX={-w / 2 + 106} pcbY={-h / 2 + 20} schX={25.5} schY={cY - 12.5} schSectionName="SAFETY" />
+      <trace from=".RFLTA > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
+      <trace from=".RFLTA > .pin2" to="net.FLT_PFC" schDisplayLabel="FLT_PFC" />
+      <trace from=".CFLTA > .pin1" to="net.FLT_PFC" schDisplayLabel="FLT_PFC" />
+      <trace from=".CFLTA > .pin2" to="net.DGND" schDisplayLabel="DGND" />
       {/* CB-4: analog/digital ground single-point tie + DGND→PE soft bond */}
-      <resistor name="RAGTA" resistance="0" footprint="0805" pcbX={-w / 2 + 112} pcbY={-h / 2 + 20} schX={-11} schY={6.4} />
-      <trace from=".RAGTA > .pin1" to="net.AGND" />
-      <trace from=".RAGTA > .pin2" to="net.DGND" />
-      <resistor name="RPET" resistance="1M" footprint="1206" pcbX={-w / 2 + 118} pcbY={-h / 2 + 20} schX={-10.5} schY={6.4} />
-      <capacitor name="CPET" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={-w / 2 + 124} pcbY={-h / 2 + 20} schX={-10} schY={6.4} />
-      <trace from=".RPET > .pin1" to="net.DGND" />
-      <trace from=".RPET > .pin2" to="net.PE" />
-      <trace from=".CPET > .pin1" to="net.DGND" />
-      <trace from=".CPET > .pin2" to="net.PE" />
+      <resistor name="RAGTA" resistance="0" footprint="0805" pcbX={-w / 2 + 112} pcbY={-h / 2 + 20} schX={4} schY={cY - 14} schSectionName="BOND" />
+      <trace from=".RAGTA > .pin1" to="net.AGND" schDisplayLabel="AGND" />
+      <trace from=".RAGTA > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+      <resistor name="RPET" resistance="1M" footprint="1206" pcbX={-w / 2 + 118} pcbY={-h / 2 + 20} schX={6.5} schY={cY - 14} schSectionName="BOND" />
+      <capacitor name="CPET" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={-w / 2 + 124} pcbY={-h / 2 + 20} schX={9} schY={cY - 14} schSectionName="BOND" />
+      <trace from=".RPET > .pin1" to="net.DGND" schDisplayLabel="DGND" />
+      <trace from=".RPET > .pin2" to="net.PE" schDisplayLabel="PE" />
+      <trace from=".CPET > .pin1" to="net.DGND" schDisplayLabel="DGND" />
+      <trace from=".CPET > .pin2" to="net.PE" schDisplayLabel="PE" />
       <CoilDriver id="PA" ins={["net.CTL_KPRE", "net.DGND", "net.DGND", "net.DGND", "net.DGND", "net.DGND", "net.DGND", "net.DGND"]}
         outs={["net.COIL_KPRE", "net.NC_O2", "net.NC_O3", "net.NC_O4", "net.NC_O5", "net.NC_O6", "net.NC_O7A", "net.NC_O8A"]}
-        x={-w / 2 + 130} y={-h / 2 + 60} sx={-11} sy={4} />
-      <AuxPower dcp="net.DCP" dcn="net.DCN" x={-w / 2 + 130} y={-h / 2 + 30} sx={-11} sy={5.6} />
-      <Rail3V3 id="A" x={-w / 2 + 190} y={-h / 2 + 30} sx={-8} sy={5.6} />
+        x={-w / 2 + 130} y={-h / 2 + 60} sx={26} sy={cY} />
+      <AuxPower dcp="net.DCP" dcn="net.DCN" x={-w / 2 + 130} y={-h / 2 + 30} sx={40} sy={cY - 2} />
+      <Rail3V3 id="A" x={-w / 2 + 190} y={-h / 2 + 30} sx={64} sy={cY} />
       {/* E32: rail monitors — firmware finally sees its own supplies (24 V: ÷7.8 → 3.08 V; 15 V: ÷5.7 → 2.63 V) */}
-      <resistor name="RM24A" resistance="68k" footprint="0603" pcbX={-w / 2 + 210} pcbY={-h / 2 + 30} schX={-6.5} schY={5.6} />
-      <resistor name="RM24B" resistance="10k" footprint="0603" pcbX={-w / 2 + 216} pcbY={-h / 2 + 30} schX={-6} schY={5.6} />
-      <resistor name="RM15A" resistance="47k" footprint="0603" pcbX={-w / 2 + 210} pcbY={-h / 2 + 38} schX={-6.5} schY={6.1} />
-      <resistor name="RM15B" resistance="10k" footprint="0603" pcbX={-w / 2 + 216} pcbY={-h / 2 + 38} schX={-6} schY={6.1} />
-      <trace from=".RM24A > .pin1" to="net.V24" />
-      <trace from=".RM24A > .pin2" to="net.SNS_V24" />
-      <trace from=".RM24B > .pin1" to="net.SNS_V24" />
-      <trace from=".RM24B > .pin2" to="net.AGND" />
-      <trace from=".RM15A > .pin1" to="net.V15" />
-      <trace from=".RM15A > .pin2" to="net.SNS_V15" />
-      <trace from=".RM15B > .pin1" to="net.SNS_V15" />
-      <trace from=".RM15B > .pin2" to="net.AGND" />
+      <resistor name="RM24A" resistance="68k" footprint="0603" pcbX={-w / 2 + 210} pcbY={-h / 2 + 30} schX={64} schY={cY - 4} schSectionName="MON" />
+      <resistor name="RM24B" resistance="10k" footprint="0603" pcbX={-w / 2 + 216} pcbY={-h / 2 + 30} schX={66.5} schY={cY - 4} schSectionName="MON" />
+      <resistor name="RM15A" resistance="47k" footprint="0603" pcbX={-w / 2 + 210} pcbY={-h / 2 + 38} schX={64} schY={cY - 5.5} schSectionName="MON" />
+      <resistor name="RM15B" resistance="10k" footprint="0603" pcbX={-w / 2 + 216} pcbY={-h / 2 + 38} schX={66.5} schY={cY - 5.5} schSectionName="MON" />
+      <trace from=".RM24A > .pin1" to="net.V24" schDisplayLabel="V24" />
+      <trace from=".RM24A > .pin2" to="net.SNS_V24" schDisplayLabel="SNS_V24" />
+      <trace from=".RM24B > .pin1" to="net.SNS_V24" schDisplayLabel="SNS_V24" />
+      <trace from=".RM24B > .pin2" to="net.AGND" schDisplayLabel="AGND" />
+      <trace from=".RM15A > .pin1" to="net.V15" schDisplayLabel="V15" />
+      <trace from=".RM15A > .pin2" to="net.SNS_V15" schDisplayLabel="SNS_V15" />
+      <trace from=".RM15B > .pin1" to="net.SNS_V15" schDisplayLabel="SNS_V15" />
+      <trace from=".RM15B > .pin2" to="net.AGND" schDisplayLabel="AGND" />
       {Array.from({ length: nFans }, (_, i) => (
-        <FanPort key={i} id={`${i + 1}`} x={w / 2 - 40} y={-h / 2 + 80 - i * 15} sx={7} sy={4 + i * 0.8} />
+        <FanPort key={i} id={`${i + 1}`} x={w / 2 - 40} y={-h / 2 + 80 - i * 15} sx={74} sy={cY - i * 3} />
       ))}
       <InterconnectSignals id="A" ltx="net.LINK_TX" lrx="net.LINK_RX" enA="net.EN_PFC" enB="net.EN_LLC"
-        x={w / 2 - 40} y={-h / 2 + 110} sx={7} sy={5.8} />
+        x={w / 2 - 40} y={-h / 2 + 110} sx={92} sy={33} />
       {/* MCU pin bindings (§20 map, asserted unique) */}
       {pfcPins.map(([net, pin]) => (
         <trace key={`${net}${pin}`} from={`.UPFC > .pin${pin}`} to={net} />
       ))}
 
       {/* DC bus studs to DC-DC board */}
-      <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={h / 2 - 30} schX={8} schY={-8} />
-      <chip name="JDCN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={h / 2 - 70} schX={8} schY={-7} />
-      <chip name="JPEB" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={h / 2 - 110} schX={8} schY={-6} />
-      <trace from=".JDCP > .P" to="net.DCP" />
-      <trace from=".JDCN > .P" to="net.DCN" />
-      <trace from=".JPEB > .P" to="net.PE" />
+      <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={h / 2 - 30} schX={98} schY={46} schSectionName="INPUT" />
+      <chip name="JDCN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={h / 2 - 70} schX={98} schY={43} schSectionName="INPUT" />
+      <chip name="JPEB" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={h / 2 - 110} schX={98} schY={40} schSectionName="INPUT" />
+      <trace from=".JDCP > .P" to="net.DCP" schDisplayLabel="DCP" />
+      <trace from=".JDCN > .P" to="net.DCN" schDisplayLabel="DCN" />
+      <trace from=".JPEB > .P" to="net.PE" schDisplayLabel="PE" />
     </board>
   );
 };
@@ -314,179 +318,182 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
   ];
   assertUniquePins("MCU-LLC", llcPins);
   const nBank = channels * 2;
+  // schematic sheet plan: bus row y=40..48 · LLC legs x=2 col (16/row from y=24) · sections x=30
+  // · banks/matrix/bleeders x=58 · output+senses x=84 · control row below everything at cYd.
+  const cYd = Math.min(24 - (3 * channels - 1) * 16 - 9.5, -25) - 10;
   return (
-    <board width={`${w}mm`} height={`${h}mm`} routingDisabled>
+    <board width={`${w}mm`} height={`${h}mm`} routingDisabled schTraceAutoLabelEnabled schMaxTraceDistance={0}>
       {/* bus entry studs from AC-DC board + film commutation caps per leg */}
-      <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 30} schX={-26} schY={-8} />
-      <chip name="JDCN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 70} schX={-26} schY={-7} />
-      <chip name="JPEB" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 110} schX={-26} schY={-6} />
-      <trace from=".JDCP > .P" to="net.DCP" />
-      <trace from=".JDCN > .P" to="net.DCN" />
-      <trace from=".JPEB > .P" to="net.PE" />
+      <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 30} schX={0} schY={46} schSectionName="INPUT" />
+      <chip name="JDCN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 70} schX={0} schY={43} schSectionName="INPUT" />
+      <chip name="JPEB" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 110} schX={0} schY={40} schSectionName="INPUT" />
+      <trace from=".JDCP > .P" to="net.DCP" schDisplayLabel="DCP" />
+      <trace from=".JDCN > .P" to="net.DCN" schDisplayLabel="DCN" />
+      <trace from=".JPEB > .P" to="net.PE" schDisplayLabel="PE" />
       {Array.from({ length: 3 * channels }, (_, i) => (
-        <capacitor key={i} name={`CF${i}`} capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-w / 2 + 60 + i * 35} pcbY={h / 2 - 20} schX={-24 + i * 0.8} schY={-8} />
+        <capacitor key={i} name={`CF${i}`} capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-w / 2 + 60 + i * 35} pcbY={h / 2 - 20} schX={6 + i * 2.4} schY={44} />
       ))}
       {Array.from({ length: 3 * channels }, (_, i) => [
-        <trace key={`p${i}`} from={`.CF${i} > .pin1`} to="net.DCP" />,
-        <trace key={`n${i}`} from={`.CF${i} > .pin2`} to="net.DCN" />,
+        <trace key={`p${i}`} from={`.CF${i} > .pin1`} to="net.DCP" schDisplayLabel="DCP" />,
+        <trace key={`n${i}`} from={`.CF${i} > .pin2`} to="net.DCN" schDisplayLabel="DCN" />,
       ])}
 
       {/* LLC legs + sections */}
       {legs.map((l, i) => (
         <LlcHalfBridgeLeg key={l.id} id={l.id} bus="net.DCP" gnd="net.DCN" sw={l.sw}
           pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT_LLC" en="net.GATE_EN_B"
-          x={-w / 2 + 60} y={h / 2 - 70 - i * 44} sx={-16} sy={-7 + i * 4.6} />
+          x={-w / 2 + 60} y={h / 2 - 70 - i * 44} sx={2} sy={24 - i * 16} />
       ))}
       {secs.map((s, i) => (
         <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
           bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
           ctOut={`net.I_RES${s.id}`}
-          x={-w / 2 + 180} y={h / 2 - 70 - i * 44} sx={-8} sy={-7 + i * 2.2} />
+          x={-w / 2 + 180} y={h / 2 - 70 - i * 44} sx={30} sy={24 - i * 16} />
       ))}
 
       {/* bank capacitors — E29/CB-2: two-series 450 V strings (900 V string rating vs ≤525 V bank)
           + shared string midpoints + balance dividers; film across each bank */}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 160 + (i % 2) * 20} pcbY={h / 2 - 30 - Math.floor(i / 2) * 25} schX={4 + (i % 2) * 1} schY={-8 + Math.floor(i / 2) * 0.7} />
+        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 160 + (i % 2) * 20} pcbY={h / 2 - 30 - Math.floor(i / 2) * 25} schX={58 + i * 2.2} schY={27} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 160 + (i % 2) * 20} pcbY={h / 2 - 42 - Math.floor(i / 2) * 25} schX={4 + (i % 2) * 1} schY={-7.65 + Math.floor(i / 2) * 0.7} />
+        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 160 + (i % 2) * 20} pcbY={h / 2 - 42 - Math.floor(i / 2) * 25} schX={58 + i * 2.2} schY={24.2} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 110 + (i % 2) * 20} pcbY={h / 2 - 30 - Math.floor(i / 2) * 25} schX={7 + (i % 2) * 1} schY={-8 + Math.floor(i / 2) * 0.7} />
+        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 110 + (i % 2) * 20} pcbY={h / 2 - 30 - Math.floor(i / 2) * 25} schX={58 + i * 2.2} schY={17} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 110 + (i % 2) * 20} pcbY={h / 2 - 42 - Math.floor(i / 2) * 25} schX={7 + (i % 2) * 1} schY={-7.65 + Math.floor(i / 2) * 0.7} />
+        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={w / 2 - 110 + (i % 2) * 20} pcbY={h / 2 - 42 - Math.floor(i / 2) * 25} schX={58 + i * 2.2} schY={14.2} />
       ))}
       {/* HR-20: 2-series 47 k per string half (bank ≤525 V → ≤131 V & 0.37 W per element) */}
-      <resistor name="RBALTA1" resistance="47k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 30} schX={3.4} schY={-8} />
-      <resistor name="RBALTA2" resistance="47k" footprint="2512" pcbX={w / 2 - 188} pcbY={h / 2 - 30} schX={3.1} schY={-8} />
-      <resistor name="RBALBA1" resistance="47k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 42} schX={3.4} schY={-7.65} />
-      <resistor name="RBALBA2" resistance="47k" footprint="2512" pcbX={w / 2 - 188} pcbY={h / 2 - 42} schX={3.1} schY={-7.65} />
-      <resistor name="RBALTB1" resistance="47k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 30} schX={9} schY={-8} />
-      <resistor name="RBALTB2" resistance="47k" footprint="2512" pcbX={w / 2 - 82} pcbY={h / 2 - 30} schX={9.3} schY={-8} />
-      <resistor name="RBALBB1" resistance="47k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 42} schX={9} schY={-7.65} />
-      <resistor name="RBALBB2" resistance="47k" footprint="2512" pcbX={w / 2 - 82} pcbY={h / 2 - 42} schX={9.3} schY={-7.65} />
-      <capacitor name="CBAF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={w / 2 - 160} pcbY={h / 2 - 20} schX={6} schY={-6.4} />
-      <capacitor name="CBBF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={w / 2 - 110} pcbY={h / 2 - 15} schX={8.4} schY={-6.4} />
+      <resistor name="RBALTA1" resistance="47k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 30} schX={58 + nBank * 2.2 + 1.5} schY={28} schSectionName="BANKS" />
+      <resistor name="RBALTA2" resistance="47k" footprint="2512" pcbX={w / 2 - 188} pcbY={h / 2 - 30} schX={58 + nBank * 2.2 + 1.5} schY={26.6} schSectionName="BANKS" />
+      <resistor name="RBALBA1" resistance="47k" footprint="2512" pcbX={w / 2 - 180} pcbY={h / 2 - 42} schX={58 + nBank * 2.2 + 1.5} schY={25.2} schSectionName="BANKS" />
+      <resistor name="RBALBA2" resistance="47k" footprint="2512" pcbX={w / 2 - 188} pcbY={h / 2 - 42} schX={58 + nBank * 2.2 + 1.5} schY={23.8} schSectionName="BANKS" />
+      <resistor name="RBALTB1" resistance="47k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 30} schX={58 + nBank * 2.2 + 1.5} schY={18} schSectionName="BANKS" />
+      <resistor name="RBALTB2" resistance="47k" footprint="2512" pcbX={w / 2 - 82} pcbY={h / 2 - 30} schX={58 + nBank * 2.2 + 1.5} schY={16.6} schSectionName="BANKS" />
+      <resistor name="RBALBB1" resistance="47k" footprint="2512" pcbX={w / 2 - 90} pcbY={h / 2 - 42} schX={58 + nBank * 2.2 + 1.5} schY={15.2} schSectionName="BANKS" />
+      <resistor name="RBALBB2" resistance="47k" footprint="2512" pcbX={w / 2 - 82} pcbY={h / 2 - 42} schX={58 + nBank * 2.2 + 1.5} schY={13.8} schSectionName="BANKS" />
+      <capacitor name="CBAF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={w / 2 - 160} pcbY={h / 2 - 20} schX={58 + nBank * 2.2 + 5} schY={27} schSectionName="BANKS" />
+      <capacitor name="CBBF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={w / 2 - 110} pcbY={h / 2 - 15} schX={58 + nBank * 2.2 + 5} schY={17} schSectionName="BANKS" />
       {Array.from({ length: nBank }, (_, i) => [
-        <trace key={`ap${i}`} from={`.CBA${i}T > .pin1`} to="net.BKAP" />,
-        <trace key={`am${i}`} from={`.CBA${i}T > .pin2`} to="net.BKAM" />,
-        <trace key={`am2${i}`} from={`.CBA${i}B > .pin1`} to="net.BKAM" />,
-        <trace key={`an${i}`} from={`.CBA${i}B > .pin2`} to="net.BKAN" />,
-        <trace key={`bp${i}`} from={`.CBB${i}T > .pin1`} to="net.BKBP" />,
-        <trace key={`bm${i}`} from={`.CBB${i}T > .pin2`} to="net.BKBM" />,
-        <trace key={`bm2${i}`} from={`.CBB${i}B > .pin1`} to="net.BKBM" />,
-        <trace key={`bn${i}`} from={`.CBB${i}B > .pin2`} to="net.BKBN" />,
+        <trace key={`ap${i}`} from={`.CBA${i}T > .pin1`} to="net.BKAP" schDisplayLabel="BKAP" />,
+        <trace key={`am${i}`} from={`.CBA${i}T > .pin2`} to="net.BKAM" schDisplayLabel="BKAM" />,
+        <trace key={`am2${i}`} from={`.CBA${i}B > .pin1`} to="net.BKAM" schDisplayLabel="BKAM" />,
+        <trace key={`an${i}`} from={`.CBA${i}B > .pin2`} to="net.BKAN" schDisplayLabel="BKAN" />,
+        <trace key={`bp${i}`} from={`.CBB${i}T > .pin1`} to="net.BKBP" schDisplayLabel="BKBP" />,
+        <trace key={`bm${i}`} from={`.CBB${i}T > .pin2`} to="net.BKBM" schDisplayLabel="BKBM" />,
+        <trace key={`bm2${i}`} from={`.CBB${i}B > .pin1`} to="net.BKBM" schDisplayLabel="BKBM" />,
+        <trace key={`bn${i}`} from={`.CBB${i}B > .pin2`} to="net.BKBN" schDisplayLabel="BKBN" />,
       ])}
-      <trace from=".RBALTA1 > .pin1" to="net.BKAP" />
+      <trace from=".RBALTA1 > .pin1" to="net.BKAP" schDisplayLabel="BKAP" />
       <trace from=".RBALTA1 > .pin2" to=".RBALTA2 > .pin1" />
-      <trace from=".RBALTA2 > .pin2" to="net.BKAM" />
-      <trace from=".RBALBA1 > .pin1" to="net.BKAM" />
+      <trace from=".RBALTA2 > .pin2" to="net.BKAM" schDisplayLabel="BKAM" />
+      <trace from=".RBALBA1 > .pin1" to="net.BKAM" schDisplayLabel="BKAM" />
       <trace from=".RBALBA1 > .pin2" to=".RBALBA2 > .pin1" />
-      <trace from=".RBALBA2 > .pin2" to="net.BKAN" />
-      <trace from=".RBALTB1 > .pin1" to="net.BKBP" />
+      <trace from=".RBALBA2 > .pin2" to="net.BKAN" schDisplayLabel="BKAN" />
+      <trace from=".RBALTB1 > .pin1" to="net.BKBP" schDisplayLabel="BKBP" />
       <trace from=".RBALTB1 > .pin2" to=".RBALTB2 > .pin1" />
-      <trace from=".RBALTB2 > .pin2" to="net.BKBM" />
-      <trace from=".RBALBB1 > .pin1" to="net.BKBM" />
+      <trace from=".RBALTB2 > .pin2" to="net.BKBM" schDisplayLabel="BKBM" />
+      <trace from=".RBALBB1 > .pin1" to="net.BKBM" schDisplayLabel="BKBM" />
       <trace from=".RBALBB1 > .pin2" to=".RBALBB2 > .pin1" />
-      <trace from=".RBALBB2 > .pin2" to="net.BKBN" />
-      <trace from=".CBAF > .pin1" to="net.BKAP" />
-      <trace from=".CBAF > .pin2" to="net.BKAN" />
-      <trace from=".CBBF > .pin1" to="net.BKBP" />
-      <trace from=".CBBF > .pin2" to="net.BKBN" />
+      <trace from=".RBALBB2 > .pin2" to="net.BKBN" schDisplayLabel="BKBN" />
+      <trace from=".CBAF > .pin1" to="net.BKAP" schDisplayLabel="BKAP" />
+      <trace from=".CBAF > .pin2" to="net.BKAN" schDisplayLabel="BKAN" />
+      <trace from=".CBBF > .pin1" to="net.BKBP" schDisplayLabel="BKBP" />
+      <trace from=".CBBF > .pin2" to="net.BKBN" schDisplayLabel="BKBN" />
 
       {/* S/P matrix (mirror-contact relays + readback, E30) + coil driver.
           HR-19: at 120 kW the paralleled second relay per HV function is a real schematic
           instance (contacts + coil + series mirror), not a BOM multiplier. */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
-        outp="net.OUTP" outn="net.OUTN_SH" dual={channels === 4} x={w / 2 - 220} y={-h / 2 + 100} sx={2} sy={2} />
+        outp="net.OUTP" outn="net.OUTN_SH" dual={channels === 4} x={w / 2 - 220} y={-h / 2 + 100} sx={58} sy={4} />
       {/* HR-15: commanded bank bleeders — banks otherwise hold ≤525 V for 3–14 min on the balance
           chains alone (bus discharge never touches them). One GPIO drives both optos; default-OFF
           like the bus chain (E19 rev B pattern). 4× 2.2 k 10 W axial per bank: τ ≈ 4–17 s,
           ≤65 J/resistor at 120 kW. F.21b supervision per protection-thresholds rev C. */}
       {[0, 1, 2, 3].map(i => (
-        <chip key={`ba${i}`} name={`RBDA${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 240 + i * 10} pcbY={-h / 2 + 150} schX={0.5 + i * 0.7} schY={5.5} />
+        <chip key={`ba${i}`} name={`RBDA${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 240 + i * 10} pcbY={-h / 2 + 150} schX={58 + i * 2.4} schY={-19} schSectionName="BLEED" />
       ))}
       {[0, 1, 2, 3].map(i => (
-        <chip key={`bb${i}`} name={`RBDB${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 240 + i * 10} pcbY={-h / 2 + 160} schX={0.5 + i * 0.7} schY={6.1} />
+        <chip key={`bb${i}`} name={`RBDB${i}`} footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={w / 2 - 240 + i * 10} pcbY={-h / 2 + 160} schX={58 + i * 2.4} schY={-23} schSectionName="BLEED" />
       ))}
-      <chip name="QDISA" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 195} pcbY={-h / 2 + 150} schX={3.6} schY={5.5} />
-      <chip name="QDISB" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 195} pcbY={-h / 2 + 160} schX={3.6} schY={6.1} />
+      <chip name="QDISA" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 195} pcbY={-h / 2 + 150} schX={69.5} schY={-19} schSectionName="BLEED" />
+      <chip name="QDISB" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={w / 2 - 195} pcbY={-h / 2 + 160} schX={69.5} schY={-23} schSectionName="BLEED" />
       {/* ECO-2a (E33 rev B): PV drivers replace the opto+bias stacks — bleeders need ms-class
           default-OFF drive only; −₹204/module, two fewer floating supplies */}
-      <PvGateDrive id="A" ctl="net.CTL_QDISBK" gateOut="net.G_QDISA" src="net.BKAN" x={w / 2 - 260} y={-h / 2 + 150} sx={-1.5} sy={5.5} />
-      <PvGateDrive id="B" ctl="net.CTL_QDISBK" gateOut="net.G_QDISB" src="net.BKBN" x={w / 2 - 260} y={-h / 2 + 160} sx={-1.5} sy={6.1} />
-      <trace from=".RBDA0 > .A" to="net.BKAP" />
+      <PvGateDrive id="A" ctl="net.CTL_QDISBK" gateOut="net.G_QDISA" src="net.BKAN" x={w / 2 - 260} y={-h / 2 + 150} sx={75.5} sy={-19} />
+      <PvGateDrive id="B" ctl="net.CTL_QDISBK" gateOut="net.G_QDISB" src="net.BKBN" x={w / 2 - 260} y={-h / 2 + 160} sx={75.5} sy={-23} />
+      <trace from=".RBDA0 > .A" to="net.BKAP" schDisplayLabel="BKAP" />
       <trace from=".RBDA0 > .B" to=".RBDA1 > .A" />
       <trace from=".RBDA1 > .B" to=".RBDA2 > .A" />
       <trace from=".RBDA2 > .B" to=".RBDA3 > .A" />
       <trace from=".RBDA3 > .B" to=".QDISA > .D" />
-      <trace from=".QDISA > .S" to="net.BKAN" />
+      <trace from=".QDISA > .S" to="net.BKAN" schDisplayLabel="BKAN" />
       <trace from=".QDISA > .G" to="net.G_QDISA" />
-      <trace from=".RBDB0 > .A" to="net.BKBP" />
+      <trace from=".RBDB0 > .A" to="net.BKBP" schDisplayLabel="BKBP" />
       <trace from=".RBDB0 > .B" to=".RBDB1 > .A" />
       <trace from=".RBDB1 > .B" to=".RBDB2 > .A" />
       <trace from=".RBDB2 > .B" to=".RBDB3 > .A" />
       <trace from=".RBDB3 > .B" to=".QDISB > .D" />
-      <trace from=".QDISB > .S" to="net.BKBN" />
+      <trace from=".QDISB > .S" to="net.BKBN" schDisplayLabel="BKBN" />
       <trace from=".QDISB > .G" to="net.G_QDISB" />
       <CoilDriver id="LB" ins={["net.CTL_KSER", "net.CTL_KPARA", "net.CTL_KPARB", "net.CTL_KOUT", "net.CTL_KPREA", "net.CTL_KPREB", "net.DGND", "net.DGND"]}
         outs={["net.COIL_KSER", "net.COIL_KPARA", "net.COIL_KPARB", "net.COIL_KOUT", "net.COIL_KPREA", "net.COIL_KPREB", "net.NC_O7", "net.NC_O8"]}
-        x={w / 2 - 260} y={-h / 2 + 40} sx={2} sy={5} />
+        x={w / 2 - 260} y={-h / 2 + 40} sx={42} sy={cYd} />
 
       {/* output: shunt in negative, filter, studs, Y caps */}
-      <OutputShunt inn="net.OUTN_SH" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={w / 2 - 120} y={-h / 2 + 60} sx={5.5} sy={2} />
-      <capacitor name="COF1" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 40} schX={5.5} schY={3.4} />
-      <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 30} schX={5.5} schY={4} />
-      <capacitor name="CYO1" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 40} schX={7.5} schY={3.4} />
-      <capacitor name="CYO2" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 30} schX={7.5} schY={4} />
-      <chip name="JOUTP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={-h / 2 + 70} schX={9} schY={2} />
-      <chip name="JOUTN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={-h / 2 + 30} schX={9} schY={3} />
-      <trace from=".JOUTP > .P" to="net.OUTP" />
-      <trace from=".JOUTN > .P" to="net.OUTN" />
-      <trace from=".COF1 > .pin1" to="net.OUTP" />
-      <trace from=".COF1 > .pin2" to="net.OUTN" />
-      <trace from=".COF2 > .pin1" to="net.OUTP" />
-      <trace from=".COF2 > .pin2" to="net.OUTN" />
-      <trace from=".CYO1 > .pin1" to="net.OUTP" />
-      <trace from=".CYO1 > .pin2" to="net.PE" />
-      <trace from=".CYO2 > .pin1" to="net.OUTN" />
-      <trace from=".CYO2 > .pin2" to="net.PE" />
+      <OutputShunt inn="net.OUTN_SH" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={w / 2 - 120} y={-h / 2 + 60} sx={86} sy={27} />
+      <capacitor name="COF1" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 40} schX={86} schY={21.5} schSectionName="OUTPUT" />
+      <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 30} schX={88.5} schY={21.5} schSectionName="OUTPUT" />
+      <capacitor name="CYO1" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 40} schX={91} schY={21.5} schSectionName="OUTPUT" />
+      <capacitor name="CYO2" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 30} schX={93.5} schY={21.5} schSectionName="OUTPUT" />
+      <chip name="JOUTP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={-h / 2 + 70} schX={98} schY={28} schSectionName="OUTPUT" />
+      <chip name="JOUTN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={w / 2 - 20} pcbY={-h / 2 + 30} schX={98} schY={25} schSectionName="OUTPUT" />
+      <trace from=".JOUTP > .P" to="net.OUTP" schDisplayLabel="OUTP" />
+      <trace from=".JOUTN > .P" to="net.OUTN" schDisplayLabel="OUTN" />
+      <trace from=".COF1 > .pin1" to="net.OUTP" schDisplayLabel="OUTP" />
+      <trace from=".COF1 > .pin2" to="net.OUTN" schDisplayLabel="OUTN" />
+      <trace from=".COF2 > .pin1" to="net.OUTP" schDisplayLabel="OUTP" />
+      <trace from=".COF2 > .pin2" to="net.OUTN" schDisplayLabel="OUTN" />
+      <trace from=".CYO1 > .pin1" to="net.OUTP" schDisplayLabel="OUTP" />
+      <trace from=".CYO1 > .pin2" to="net.PE" schDisplayLabel="PE" />
+      <trace from=".CYO2 > .pin1" to="net.OUTN" schDisplayLabel="OUTN" />
+      <trace from=".CYO2 > .pin2" to="net.PE" schDisplayLabel="PE" />
 
       {/* sensing (E25: bank/output voltages isolated inside their own domains — CB-3 fix) */}
-      <Bias5Module id="BKA" p5="net.B5BKA" com="net.BKAN" x={-w / 2 + 60} y={-h / 2 + 105} sx={-25} sy={3.4} />
-      <Bias5Module id="BKB" p5="net.B5BKB" com="net.BKBN" x={-w / 2 + 60} y={-h / 2 + 98} sx={-23} sy={3.4} />
-      <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" cf="1nF" out="net.SNS_VBKA" x={-w / 2 + 60} y={-h / 2 + 90} sx={-24} sy={4} />
-      <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" cf="1nF" out="net.SNS_VBKB" x={-w / 2 + 60} y={-h / 2 + 80} sx={-24} sy={4.8} />
-      <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" cf="1nF" out="net.SNS_VOUT" x={-w / 2 + 60} y={-h / 2 + 70} sx={-24} sy={5.6} />
-      <AnalogMid x={-w / 2 + 60} y={-h / 2 + 35} sx={-20} sy={6.4} />
-      <NtcInput id="TLLC" out="net.T_LLC" x={-w / 2 + 60} y={-h / 2 + 55} sx={-24} sy={6.4} />
-      <NtcInput id="TXFR" out="net.T_XFMR" x={-w / 2 + 60} y={-h / 2 + 45} sx={-22} sy={6.4} />
+      <Bias5Module id="BKA" p5="net.B5BKA" com="net.BKAN" x={-w / 2 + 60} y={-h / 2 + 105} sx={84} sy={16} />
+      <Bias5Module id="BKB" p5="net.B5BKB" com="net.BKBN" x={-w / 2 + 60} y={-h / 2 + 98} sx={88} sy={16} />
+      <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" cf="1nF" out="net.SNS_VBKA" x={-w / 2 + 60} y={-h / 2 + 90} sx={84} sy={12} />
+      <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" cf="1nF" out="net.SNS_VBKB" x={-w / 2 + 60} y={-h / 2 + 80} sx={84} sy={7.5} />
+      <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" cf="1nF" out="net.SNS_VOUT" x={-w / 2 + 60} y={-h / 2 + 70} sx={84} sy={3} />
+      <AnalogMid x={-w / 2 + 60} y={-h / 2 + 35} sx={84} sy={-6} />
+      <NtcInput id="TLLC" out="net.T_LLC" x={-w / 2 + 60} y={-h / 2 + 55} sx={84} sy={-10.5} />
+      <NtcInput id="TXFR" out="net.T_XFMR" x={-w / 2 + 60} y={-h / 2 + 45} sx={94} sy={-10.5} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
-      <ControlMcu id="LLC" x={-w / 2 + 150} y={-h / 2 + 60} sx={-14} sy={4.4} />
-      <Rail3V3 id="B" x={-w / 2 + 190} y={-h / 2 + 40} sx={-12} sy={5.4} />
+      <ControlMcu id="LLC" x={-w / 2 + 150} y={-h / 2 + 60} sx={2} sy={cYd} />
+      <Rail3V3 id="B" x={-w / 2 + 190} y={-h / 2 + 40} sx={32} sy={cYd} />
       <SafetyChain id="B" enLocal="net.EN_LLC" enRemote="net.EN_PFC" wdi="net.WDI_LLC" gateEn="net.GATE_EN_B"
-        x={-w / 2 + 150} y={-h / 2 + 95} sx={-14} sy={3} />
-      <SwdPort id="LLC" x={-w / 2 + 110} y={-h / 2 + 60} sx={-16} sy={4.4} />
-      <trace from=".ULLC > .pin28" to="net.SWDIO_LLC" />
-      <trace from=".ULLC > .pin29" to="net.SWCLK_LLC" />
-      <trace from=".ULLC > .pin100" to="net.BOOT0_LLC" />
-      <resistor name="RFLTB" resistance="4.7k" footprint="0603" pcbX={-w / 2 + 190} pcbY={-h / 2 + 95} schX={-12} schY={3} />
-      <capacitor name="CFLTB" capacitance="1nF" footprint="0603" pcbX={-w / 2 + 196} pcbY={-h / 2 + 95} schX={-11.5} schY={3} />
-      <trace from=".RFLTB > .pin1" to="net.V3P3" />
-      <trace from=".RFLTB > .pin2" to="net.FLT_LLC" />
-      <trace from=".CFLTB > .pin1" to="net.FLT_LLC" />
-      <trace from=".CFLTB > .pin2" to="net.DGND" />
-      <resistor name="RAGTB" resistance="0" footprint="0805" pcbX={-w / 2 + 202} pcbY={-h / 2 + 95} schX={-11} schY={3.4} />
-      <trace from=".RAGTB > .pin1" to="net.AGND" />
-      <trace from=".RAGTB > .pin2" to="net.DGND" />
-      <IsolatedCan x={-w / 2 + 230} y={-h / 2 + 60} sx={-10} sy={4.4} />
-      <ConfigHmi x={-w / 2 + 230} y={-h / 2 + 25} sx={-10} sy={6.2} />
+        x={-w / 2 + 150} y={-h / 2 + 95} sx={23} sy={cYd - 8} />
+      <SwdPort id="LLC" x={-w / 2 + 110} y={-h / 2 + 60} sx={16} sy={cYd} />
+      <trace from=".ULLC > .pin28" to="net.SWDIO_LLC" schDisplayLabel="SWDIO_LLC" />
+      <trace from=".ULLC > .pin29" to="net.SWCLK_LLC" schDisplayLabel="SWCLK_LLC" />
+      <trace from=".ULLC > .pin100" to="net.BOOT0_LLC" schDisplayLabel="BOOT0_LLC" />
+      <resistor name="RFLTB" resistance="4.7k" footprint="0603" pcbX={-w / 2 + 190} pcbY={-h / 2 + 95} schX={23} schY={cYd - 12.5} schSectionName="SAFETY" />
+      <capacitor name="CFLTB" capacitance="1nF" footprint="0603" pcbX={-w / 2 + 196} pcbY={-h / 2 + 95} schX={25.5} schY={cYd - 12.5} schSectionName="SAFETY" />
+      <trace from=".RFLTB > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
+      <trace from=".RFLTB > .pin2" to="net.FLT_LLC" schDisplayLabel="FLT_LLC" />
+      <trace from=".CFLTB > .pin1" to="net.FLT_LLC" schDisplayLabel="FLT_LLC" />
+      <trace from=".CFLTB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+      <resistor name="RAGTB" resistance="0" footprint="0805" pcbX={-w / 2 + 202} pcbY={-h / 2 + 95} schX={4} schY={cYd - 14} schSectionName="BOND" />
+      <trace from=".RAGTB > .pin1" to="net.AGND" schDisplayLabel="AGND" />
+      <trace from=".RAGTB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+      <IsolatedCan x={-w / 2 + 230} y={-h / 2 + 60} sx={48} sy={cYd} />
+      <ConfigHmi x={-w / 2 + 230} y={-h / 2 + 25} sx={63} sy={cYd} />
       {/* CB-14: this side of the harness crosses the link — LTX wire lands on this MCU's RX */}
       <InterconnectSignals id="B" ltx="net.LINK_RX" lrx="net.LINK_TX" enA="net.EN_PFC" enB="net.EN_LLC"
-        x={-w / 2 + 150} y={-h / 2 + 20} sx={-14} sy={6.6} />
+        x={-w / 2 + 150} y={-h / 2 + 20} sx={84} sy={cYd} />
       {llcPins.map(([net, pin]) => (
         <trace key={`${net}${pin}`} from={`.ULLC > .pin${pin}`} to={net} />
       ))}
