@@ -1,0 +1,14 @@
+{
+ "page": "acdc-DC-LINK",
+ "page_uuid": "6331fb4a14a834b0",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "PSQD",
+   "pin_number": 6,
+   "signal_name": "DCN"
+  }
+ ],
+ "remark_no_connect": []
+}

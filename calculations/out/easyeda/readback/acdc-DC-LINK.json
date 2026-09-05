@@ -1,0 +1,521 @@
+[
+  {
+    "designator": "CDB00",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "MID"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDB01",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "MID"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDB02",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "MID"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDB03",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "MID"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDB04",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "MID"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDT00",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "MID"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDT01",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "MID"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDT02",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "MID"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDT03",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "MID"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "CDT04",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "MID"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "220uF±20%25V 6.3*11 2.5mm",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "footprint_name": "CAP-TH_BD6.3-P2.50-D0.5-FD"
+  },
+  {
+    "designator": "JDCN",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCN"
+      }
+    ],
+    "value": "TP-黄色测试点",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "footprint_name": "TESTPOINT-TH_BD3.2"
+  },
+  {
+    "designator": "JDCP",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "TP-黄色测试点",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "footprint_name": "TESTPOINT-TH_BD3.2"
+  },
+  {
+    "designator": "JPEB",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "PE"
+      }
+    ],
+    "value": "TP-黄色测试点",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "footprint_name": "TESTPOINT-TH_BD3.2"
+  },
+  {
+    "designator": "QDIS",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": ""
+      }
+    ],
+    "value": "TP-黄色测试点",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "footprint_name": "TESTPOINT-TH_BD3.2"
+  },
+  {
+    "designator": "PSQD",
+    "pins": [
+      {
+        "pin_number": "1",
+        "name": "VIN",
+        "signal_name": "V15"
+      },
+      {
+        "pin_number": "2",
+        "name": "GND",
+        "signal_name": "DGND"
+      },
+      {
+        "pin_number": "5",
+        "name": "-VO",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "6",
+        "name": "0V",
+        "signal_name": ""
+      },
+      {
+        "pin_number": "7",
+        "name": "+VO",
+        "signal_name": "N_ACDC_49"
+      }
+    ],
+    "value": "95kHz",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "footprint_name": "PWRM-TH_QA01C"
+  },
+  {
+    "designator": "QDISF",
+    "pins": [
+      {
+        "pin_number": "3",
+        "name": "S",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "G",
+        "signal_name": "G_QDIS"
+      },
+      {
+        "pin_number": "2",
+        "name": "D",
+        "signal_name": "N_ACDC_46"
+      }
+    ],
+    "value": "IMW120R350M1H",
+    "part_uuid": "67bd2497788546aa8282bf83fe86508d",
+    "footprint_name": "PG-TO247-3_L15.9-W5.2-P5.44-L"
+  },
+  {
+    "designator": "RBALB0A",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_42"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "MID"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RBALB0B",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_ACDC_42"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RBALT0A",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_41"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RBALT0B",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "MID"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_ACDC_41"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RDIS0",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_43"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "DCP"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RDIS1",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_44"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_ACDC_43"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RDIS2",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_45"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_ACDC_44"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RDIS3",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_46"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_ACDC_45"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RQDG",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "G_QDIS"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "N_ACDC_48"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RQDL",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "N_ACDC_47"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "CTL_QDIS"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "RQDPD",
+    "pins": [
+      {
+        "pin_number": "2",
+        "name": "2",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "1",
+        "name": "1",
+        "signal_name": "G_QDIS"
+      }
+    ],
+    "value": "10kΩ",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "footprint_name": "R0603"
+  },
+  {
+    "designator": "UQD",
+    "pins": [
+      {
+        "pin_number": "6",
+        "name": "VCC",
+        "signal_name": "N_ACDC_49"
+      },
+      {
+        "pin_number": "5",
+        "name": "VO",
+        "signal_name": "N_ACDC_48"
+      },
+      {
+        "pin_number": "4",
+        "name": "GND",
+        "signal_name": "DCN"
+      },
+      {
+        "pin_number": "3",
+        "name": "Cathode",
+        "signal_name": "DGND"
+      },
+      {
+        "pin_number": "1",
+        "name": "Anode",
+        "signal_name": "N_ACDC_47"
+      }
+    ],
+    "value": "TLP152(E",
+    "part_uuid": "5dbcb465a57d45b28a9e98f14ee5f2d2",
+    "footprint_name": "OPTO-SMD-5_L3.7-W4.6-P1.27-LS7.0-BR"
+  }
+]

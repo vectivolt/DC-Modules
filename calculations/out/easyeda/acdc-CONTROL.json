@@ -1,0 +1,980 @@
+{
+ "page": "CONTROL",
+ "flow": [
+  "MCU",
+  "SWD",
+  "SAFETY",
+  "GROUNDING",
+  "COIL-DRIVER",
+  "RAIL-MON"
+ ],
+ "net_style_overrides": {},
+ "net_class_overrides": {
+  "PE": "ground"
+ },
+ "components": [
+  {
+   "designator": "UPFC",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 10,
+     "name": "pin10",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 11,
+     "name": "pin11",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 14,
+     "name": "pin14",
+     "signal_name": "NRST_PFC"
+    },
+    {
+     "pin_number": 19,
+     "name": "pin19",
+     "signal_name": "VDDA_PFC"
+    },
+    {
+     "pin_number": 20,
+     "name": "pin20",
+     "signal_name": "VDDA_PFC"
+    },
+    {
+     "pin_number": 26,
+     "name": "pin26",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 27,
+     "name": "pin27",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 28,
+     "name": "pin28",
+     "signal_name": "SWDIO_PFC"
+    },
+    {
+     "pin_number": 29,
+     "name": "pin29",
+     "signal_name": "SWCLK_PFC"
+    },
+    {
+     "pin_number": 30,
+     "name": "pin30",
+     "signal_name": "I_A0"
+    },
+    {
+     "pin_number": 31,
+     "name": "pin31",
+     "signal_name": "I_B0"
+    },
+    {
+     "pin_number": 32,
+     "name": "pin32",
+     "signal_name": "I_C0"
+    },
+    {
+     "pin_number": 43,
+     "name": "pin43",
+     "signal_name": "SNS_VAC1"
+    },
+    {
+     "pin_number": 44,
+     "name": "pin44",
+     "signal_name": "SNS_VAC2"
+    },
+    {
+     "pin_number": 45,
+     "name": "pin45",
+     "signal_name": "SNS_VAC3"
+    },
+    {
+     "pin_number": 46,
+     "name": "pin46",
+     "signal_name": "SNS_VBUSP"
+    },
+    {
+     "pin_number": 47,
+     "name": "pin47",
+     "signal_name": "SNS_VMID"
+    },
+    {
+     "pin_number": 48,
+     "name": "pin48",
+     "signal_name": "T_PFC"
+    },
+    {
+     "pin_number": 49,
+     "name": "pin49",
+     "signal_name": "T_INLET"
+    },
+    {
+     "pin_number": 50,
+     "name": "pin50",
+     "signal_name": "RELAY_FB_KPRE"
+    },
+    {
+     "pin_number": 51,
+     "name": "pin51",
+     "signal_name": "SNS_V24"
+    },
+    {
+     "pin_number": 52,
+     "name": "pin52",
+     "signal_name": "SNS_V15"
+    },
+    {
+     "pin_number": 55,
+     "name": "pin55",
+     "signal_name": "PWM_A0"
+    },
+    {
+     "pin_number": 56,
+     "name": "pin56",
+     "signal_name": "PWM_B0"
+    },
+    {
+     "pin_number": 57,
+     "name": "pin57",
+     "signal_name": "PWM_C0"
+    },
+    {
+     "pin_number": 68,
+     "name": "pin68",
+     "signal_name": "LINK_TX"
+    },
+    {
+     "pin_number": 69,
+     "name": "pin69",
+     "signal_name": "LINK_RX"
+    },
+    {
+     "pin_number": 70,
+     "name": "pin70",
+     "signal_name": "WDI_PFC"
+    },
+    {
+     "pin_number": 71,
+     "name": "pin71",
+     "signal_name": "EN_PFC"
+    },
+    {
+     "pin_number": 72,
+     "name": "pin72",
+     "signal_name": "CTL_KPRE"
+    },
+    {
+     "pin_number": 73,
+     "name": "pin73",
+     "signal_name": "CTL_QDIS"
+    },
+    {
+     "pin_number": 74,
+     "name": "pin74",
+     "signal_name": "FLT_PFC"
+    },
+    {
+     "pin_number": 76,
+     "name": "pin76",
+     "signal_name": "FAN_PWM1"
+    },
+    {
+     "pin_number": 77,
+     "name": "pin77",
+     "signal_name": "FAN_TACH1"
+    },
+    {
+     "pin_number": 78,
+     "name": "pin78",
+     "signal_name": "FAN_PWM2"
+    },
+    {
+     "pin_number": 79,
+     "name": "pin79",
+     "signal_name": "FAN_TACH2"
+    },
+    {
+     "pin_number": 100,
+     "name": "pin100",
+     "signal_name": "BOOT0_PFC"
+    }
+   ],
+   "nc_pins": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    12,
+    13,
+    15,
+    16,
+    17,
+    18,
+    21,
+    22,
+    23,
+    24,
+    25,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    53,
+    54,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    75,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99
+   ],
+   "value": "GD32G553VET6",
+   "query": "GD32G553VET6 MCU Cortex-M33 216 MHz LQFP100 ",
+   "mpn": "GD32G553VET6"
+  },
+  {
+   "designator": "CPFCD0",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-100n-0402 100 nF 0402 decoupling",
+   "mpn": "MLCC-100n-0402"
+  },
+  {
+   "designator": "CPFCD1",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-100n-0402 100 nF 0402 decoupling",
+   "mpn": "MLCC-100n-0402"
+  },
+  {
+   "designator": "CPFCD2",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-100n-0402 100 nF 0402 decoupling",
+   "mpn": "MLCC-100n-0402"
+  },
+  {
+   "designator": "CPFCD3",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-100n-0402 100 nF 0402 decoupling",
+   "mpn": "MLCC-100n-0402"
+  },
+  {
+   "designator": "RPFCRST",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NRST_PFC"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "FBPFCA",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "VDDA_PFC"
+    }
+   ],
+   "nc_pins": [],
+   "value": "0R",
+   "query": "FB-600R-0805 ferrite bead 600 Ω@100 MHz ",
+   "mpn": "FB-600R-0805"
+  },
+  {
+   "designator": "CPFCA1",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "VDDA_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CPFCA2",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "VDDA_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "USUPA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "WDI",
+     "signal_name": "WDI_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "SET0",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "SET1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "WDO",
+     "signal_name": "WDO_A"
+    },
+    {
+     "pin_number": 6,
+     "name": "VDD",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    7,
+    8
+   ],
+   "value": "TPS3430-class",
+   "query": "TPS3430-class external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps ",
+   "mpn": "TPS3430-class"
+  },
+  {
+   "designator": "UANDA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A1",
+     "signal_name": "EN_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "B1",
+     "signal_name": "EN_LLC"
+    },
+    {
+     "pin_number": 3,
+     "name": "A2",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "B2",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "C2",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 9,
+     "name": "A3",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "B3",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 11,
+     "name": "C3",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "Y1",
+     "signal_name": "GATE_EN_A"
+    },
+    {
+     "pin_number": 13,
+     "name": "C1",
+     "signal_name": "WDO_A"
+    },
+    {
+     "pin_number": 14,
+     "name": "VCC",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6,
+    8
+   ],
+   "value": "74HC11",
+   "query": "74HC11 triple 3-input AND ",
+   "mpn": "74HC11"
+  },
+  {
+   "designator": "RWPUA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "WDO_A"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RENRA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "EN_LLC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RENLA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "EN_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RGPDA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GATE_EN_A"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CSFA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "JSWDPFC",
+   "block_name": "SWD",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VCC",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "DIO",
+     "signal_name": "SWDIO_PFC"
+    },
+    {
+     "pin_number": 3,
+     "name": "CLK",
+     "signal_name": "SWCLK_PFC"
+    },
+    {
+     "pin_number": 4,
+     "name": "RST",
+     "signal_name": "NRST_PFC"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "HDR-1x5-2.54",
+   "query": "HDR-1x5-2.54 SWD/boot header ",
+   "mpn": "HDR-1x5-2.54"
+  },
+  {
+   "designator": "RPFCBOOT",
+   "block_name": "SWD",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BOOT0_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CPFCRST",
+   "block_name": "SWD",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "NRST_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RFLTA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "FLT_PFC"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CFLTA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "FLT_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RAGTA",
+   "block_name": "GROUNDING",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "0R",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RPET",
+   "block_name": "GROUNDING",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1M",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CPET",
+   "block_name": "GROUNDING",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7nF",
+   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
+   "mpn": "Y1-4n7-440"
+  },
+  {
+   "designator": "UPA",
+   "block_name": "COIL-DRIVER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "IN1",
+     "signal_name": "CTL_KPRE"
+    },
+    {
+     "pin_number": 2,
+     "name": "IN2",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "IN3",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "IN4",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "IN5",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 6,
+     "name": "IN6",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "IN7",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 8,
+     "name": "IN8",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "COM",
+     "signal_name": "V24"
+    },
+    {
+     "pin_number": 18,
+     "name": "OUT1",
+     "signal_name": "COIL_KPRE"
+    }
+   ],
+   "nc_pins": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+   ],
+   "value": "ULN2803A",
+   "query": "ULN2803A 8-ch relay coil driver SOIC-18 ",
+   "mpn": "ULN2803A"
+  },
+  {
+   "designator": "RM24A",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_V24"
+    }
+   ],
+   "nc_pins": [],
+   "value": "68k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RM24B",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SNS_V24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RM15A",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_V15"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RM15B",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SNS_V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  }
+ ]
+}

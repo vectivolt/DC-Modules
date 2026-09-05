@@ -1,0 +1,810 @@
+{
+ "page": "COMMS-HMI",
+ "flow": [
+  "CAN",
+  "HMI"
+ ],
+ "net_style_overrides": {
+  "N_DCDC_108": "wire",
+  "N_DCDC_109": "wire",
+  "N_DCDC_110": "wire",
+  "N_DCDC_111": "wire",
+  "N_DCDC_112": "wire",
+  "N_DCDC_113": "wire",
+  "N_DCDC_114": "wire",
+  "N_DCDC_115": "wire",
+  "N_DCDC_116": "wire",
+  "N_DCDC_117": "wire",
+  "N_DCDC_118": "wire",
+  "N_DCDC_119": "wire",
+  "N_DCDC_120": "wire",
+  "N_DCDC_121": "wire",
+  "N_DCDC_122": "wire",
+  "N_DCDC_123": "wire",
+  "N_DCDC_124": "wire",
+  "N_DCDC_125": "wire",
+  "N_DCDC_126": "wire",
+  "N_DCDC_127": "wire",
+  "N_DCDC_128": "wire",
+  "N_DCDC_129": "wire",
+  "N_DCDC_130": "wire",
+  "N_DCDC_131": "wire",
+  "N_DCDC_132": "wire",
+  "N_DCDC_133": "wire"
+ },
+ "net_class_overrides": {},
+ "components": [
+  {
+   "designator": "UCAN",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "TXD",
+     "signal_name": "CAN_TX"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "RXD",
+     "signal_name": "CAN_RX"
+    },
+    {
+     "pin_number": 4,
+     "name": "VDD1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 5,
+     "name": "VDD2",
+     "signal_name": "N_DCDC_108"
+    },
+    {
+     "pin_number": 6,
+     "name": "CANL",
+     "signal_name": "N_DCDC_109"
+    },
+    {
+     "pin_number": 7,
+     "name": "CANH",
+     "signal_name": "N_DCDC_110"
+    },
+    {
+     "pin_number": 8,
+     "name": "GND2",
+     "signal_name": "CGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "NSI1042",
+   "query": "NSI1042 iso CAN transceiver",
+   "mpn": "NSI1042"
+  },
+  {
+   "designator": "PSCAN",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P5",
+     "signal_name": "N_DCDC_108"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "CGND"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "LCAN",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A1",
+     "signal_name": "N_DCDC_110"
+    },
+    {
+     "pin_number": 2,
+     "name": "A2",
+     "signal_name": "N_DCDC_109"
+    },
+    {
+     "pin_number": 7,
+     "name": "B2",
+     "signal_name": "N_DCDC_111"
+    },
+    {
+     "pin_number": 8,
+     "name": "B1",
+     "signal_name": "N_DCDC_112"
+    }
+   ],
+   "nc_pins": [
+    3,
+    4,
+    5,
+    6
+   ],
+   "value": "CMC-CAN-51uH",
+   "query": "CMC-CAN-51uH CAN common-mode choke",
+   "mpn": "CMC-CAN-51uH"
+  },
+  {
+   "designator": "JCAN",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "CANH",
+     "signal_name": "N_DCDC_112"
+    },
+    {
+     "pin_number": 2,
+     "name": "CANL",
+     "signal_name": "N_DCDC_111"
+    },
+    {
+     "pin_number": 3,
+     "name": "SGND",
+     "signal_name": "CGND"
+    }
+   ],
+   "nc_pins": [
+    4
+   ],
+   "value": "PH-4",
+   "query": "PH-4 CAN connector 4-way",
+   "mpn": "PH-4"
+  },
+  {
+   "designator": "RTERM",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_113"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_111"
+    }
+   ],
+   "nc_pins": [],
+   "value": "120",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "JTERM",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_113"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "N_DCDC_112"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PH-2",
+   "query": "PH-2 2-way header ",
+   "mpn": "PH-2"
+  },
+  {
+   "designator": "TVSCAN",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "N_DCDC_112"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "N_DCDC_111"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "CGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PESD1CAN",
+   "query": "PESD1CAN CAN TVS",
+   "mpn": "PESD1CAN"
+  },
+  {
+   "designator": "RCGB",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1M",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "CCGB",
+   "block_name": "CAN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DISP1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "SA",
+     "signal_name": "N_DCDC_114"
+    },
+    {
+     "pin_number": 2,
+     "name": "SB",
+     "signal_name": "N_DCDC_115"
+    },
+    {
+     "pin_number": 3,
+     "name": "SC",
+     "signal_name": "N_DCDC_116"
+    },
+    {
+     "pin_number": 4,
+     "name": "SD",
+     "signal_name": "N_DCDC_117"
+    },
+    {
+     "pin_number": 5,
+     "name": "SE",
+     "signal_name": "N_DCDC_118"
+    },
+    {
+     "pin_number": 6,
+     "name": "SF",
+     "signal_name": "N_DCDC_119"
+    },
+    {
+     "pin_number": 7,
+     "name": "SG",
+     "signal_name": "N_DCDC_120"
+    },
+    {
+     "pin_number": 8,
+     "name": "DP",
+     "signal_name": "N_DCDC_121"
+    },
+    {
+     "pin_number": 9,
+     "name": "DIG1",
+     "signal_name": "N_DCDC_122"
+    },
+    {
+     "pin_number": 10,
+     "name": "DIG2",
+     "signal_name": "N_DCDC_123"
+    }
+   ],
+   "nc_pins": [],
+   "value": "LED-2DIG-0.56CC",
+   "query": "LED-2DIG-0.56CC 2-digit 7-seg 0.56\" common-cathode ",
+   "mpn": "LED-2DIG-0.56CC"
+  },
+  {
+   "designator": "USR1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "QB",
+     "signal_name": "N_DCDC_124"
+    },
+    {
+     "pin_number": 2,
+     "name": "QC",
+     "signal_name": "N_DCDC_125"
+    },
+    {
+     "pin_number": 3,
+     "name": "QD",
+     "signal_name": "N_DCDC_126"
+    },
+    {
+     "pin_number": 4,
+     "name": "QE",
+     "signal_name": "N_DCDC_127"
+    },
+    {
+     "pin_number": 5,
+     "name": "QF",
+     "signal_name": "N_DCDC_128"
+    },
+    {
+     "pin_number": 6,
+     "name": "QG",
+     "signal_name": "N_DCDC_129"
+    },
+    {
+     "pin_number": 7,
+     "name": "QH",
+     "signal_name": "N_DCDC_130"
+    },
+    {
+     "pin_number": 8,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "SRCLR",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 11,
+     "name": "SRCLK",
+     "signal_name": "HMI_CLK"
+    },
+    {
+     "pin_number": 12,
+     "name": "RCLK",
+     "signal_name": "HMI_LAT"
+    },
+    {
+     "pin_number": 13,
+     "name": "OE",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 14,
+     "name": "SER",
+     "signal_name": "HMI_DAT"
+    },
+    {
+     "pin_number": 15,
+     "name": "QA",
+     "signal_name": "N_DCDC_131"
+    },
+    {
+     "pin_number": 16,
+     "name": "VCC",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    9
+   ],
+   "value": "74HC595",
+   "query": "74HC595 shift register SOIC-16 ",
+   "mpn": "74HC595"
+  },
+  {
+   "designator": "RSEG0",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_131"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_114"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_124"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_115"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_125"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_116"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG3",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_126"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_117"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG4",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_127"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_118"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG5",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_128"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_119"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG6",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_129"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_120"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG7",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_130"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_121"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "QDIG1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "B",
+     "signal_name": "N_DCDC_132"
+    },
+    {
+     "pin_number": 2,
+     "name": "E",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "N_DCDC_122"
+    }
+   ],
+   "nc_pins": [],
+   "value": "S8050",
+   "query": "S8050 NPN SOT-23 ",
+   "mpn": "S8050"
+  },
+  {
+   "designator": "QDIG2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "B",
+     "signal_name": "N_DCDC_133"
+    },
+    {
+     "pin_number": 2,
+     "name": "E",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "N_DCDC_123"
+    }
+   ],
+   "nc_pins": [],
+   "value": "S8050",
+   "query": "S8050 NPN SOT-23 ",
+   "mpn": "S8050"
+  },
+  {
+   "designator": "RDIG1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "HMI_DIG1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_132"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RDIG2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "HMI_DIG2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_133"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "SW1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "BTN1"
+    },
+    {
+     "pin_number": 3,
+     "name": "P3",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [
+    2,
+    4
+   ],
+   "value": "TACT-6x6",
+   "query": "TACT-6x6 tactile switch 6×6 ",
+   "mpn": "TACT-6x6"
+  },
+  {
+   "designator": "SW2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "BTN2"
+    },
+    {
+     "pin_number": 3,
+     "name": "P3",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [
+    2,
+    4
+   ],
+   "value": "TACT-6x6",
+   "query": "TACT-6x6 tactile switch 6×6 ",
+   "mpn": "TACT-6x6"
+  },
+  {
+   "designator": "RSW1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BTN1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RSW2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BTN2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CSW1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BTN1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CSW2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BTN2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  }
+ ]
+}

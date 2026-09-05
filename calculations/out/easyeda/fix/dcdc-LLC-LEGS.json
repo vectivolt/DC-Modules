@@ -1,0 +1,174 @@
+{
+ "page": "dcdc-LLC-LEGS",
+ "page_uuid": "cd907a8ea53e24b6",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "U1H",
+   "pin_number": 15,
+   "signal_name": "V3P3"
+  },
+  {
+   "designator": "U1H",
+   "pin_number": 9,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "U1H",
+   "pin_number": 11,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "U1H",
+   "pin_number": 14,
+   "signal_name": "GATE_EN_B"
+  },
+  {
+   "designator": "U1H",
+   "pin_number": 13,
+   "signal_name": "FLT_LLC"
+  },
+  {
+   "designator": "U1H",
+   "pin_number": 3,
+   "signal_name": "KH_1"
+  },
+  {
+   "designator": "U1H",
+   "pin_number": 1,
+   "signal_name": "KH_1"
+  },
+  {
+   "designator": "U2H",
+   "pin_number": 15,
+   "signal_name": "V3P3"
+  },
+  {
+   "designator": "U2H",
+   "pin_number": 9,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "U2H",
+   "pin_number": 11,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "U2H",
+   "pin_number": 14,
+   "signal_name": "GATE_EN_B"
+  },
+  {
+   "designator": "U2H",
+   "pin_number": 13,
+   "signal_name": "FLT_LLC"
+  },
+  {
+   "designator": "U2H",
+   "pin_number": 5,
+   "signal_name": "N_DCDC_18"
+  },
+  {
+   "designator": "Q3H",
+   "pin_number": 3,
+   "signal_name": "KH_3"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 10,
+   "signal_name": "PWM_L3H"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 2,
+   "signal_name": "N_DCDC_33"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 3,
+   "signal_name": "KH_3"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 1,
+   "signal_name": "KH_3"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 16,
+   "signal_name": "KH_3"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 5,
+   "signal_name": "N_DCDC_32"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 4,
+   "signal_name": "N_DCDC_31"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 6,
+   "signal_name": "N_DCDC_30"
+  },
+  {
+   "designator": "U3H",
+   "pin_number": 8,
+   "signal_name": "N_DCDC_29"
+  },
+  {
+   "designator": "PS3H",
+   "pin_number": 7,
+   "signal_name": "N_DCDC_32"
+  },
+  {
+   "designator": "R3HON",
+   "pin_number": 1,
+   "signal_name": "N_DCDC_31"
+  },
+  {
+   "designator": "R3HOFF",
+   "pin_number": 1,
+   "signal_name": "N_DCDC_30"
+  },
+  {
+   "designator": "R3HGS",
+   "pin_number": 2,
+   "signal_name": "KH_3"
+  },
+  {
+   "designator": "R3HPD",
+   "pin_number": 1,
+   "signal_name": "PWM_L3H"
+  },
+  {
+   "designator": "D3HS1",
+   "pin_number": 2,
+   "signal_name": "N_DCDC_33"
+  },
+  {
+   "designator": "C3HBL",
+   "pin_number": 1,
+   "signal_name": "N_DCDC_33"
+  },
+  {
+   "designator": "C3HB1",
+   "pin_number": 1,
+   "signal_name": "N_DCDC_32"
+  },
+  {
+   "designator": "C3HB2",
+   "pin_number": 2,
+   "signal_name": "N_DCDC_29"
+  },
+  {
+   "designator": "U3L",
+   "pin_number": 5,
+   "signal_name": "N_DCDC_39"
+  }
+ ],
+ "remark_no_connect": []
+}

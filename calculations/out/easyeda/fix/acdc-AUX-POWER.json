@@ -1,0 +1,29 @@
+{
+ "page": "acdc-AUX-POWER",
+ "page_uuid": "877cff6394eeb620",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "UBKA",
+   "pin_number": 3,
+   "signal_name": "V15"
+  },
+  {
+   "designator": "UBKA",
+   "pin_number": 1,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "JFAN1",
+   "pin_number": 2,
+   "signal_name": "V24"
+  },
+  {
+   "designator": "JFAN2",
+   "pin_number": 2,
+   "signal_name": "V24"
+  }
+ ],
+ "remark_no_connect": []
+}

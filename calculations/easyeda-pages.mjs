@@ -1,0 +1,192 @@
+// easyeda-pages.mjs — convert the compiled tscircuit netlists (dist/boards/30kw/*/circuit.json)
+// into per-page EasyEDA Copilot payloads: functional pages, blocks with reading flow, every pin
+// carrying its net as signal_name, plus a part-resolution hint (MPN/search query from parts-db).
+// The 30 kW pair is the complete electrical design; 60/120 kW replicate the same cells ×2/×4.
+// Output: calculations/out/easyeda/{acdc,dcdc}-<page>.json + a part-resolution worklist.
+// Run: node calculations/easyeda-pages.mjs
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { DB } from "./cost/parts-db.mjs";
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = join(ROOT, "calculations", "out", "easyeda");
+mkdirSync(OUT, { recursive: true });
+
+// ---- functional pages: page → ordered blocks → designator regexes (first match wins) ----
+const PAGES = {
+  acdc: [
+    ["INPUT-EMI", [
+      ["AC-ENTRY", [/^JACL\d$/, /^JPE$/, /^F[123]$/]],
+      ["SURGE", [/^MOV[123]$/, /^MOVP[123]$/, /^GDT[123]$/]],
+      ["EMI-FILTER", [/^CMC[12]$/, /^CX\d\d$/, /^CY[123]$/, /^LDM[123]$/]],
+      ["PRECHARGE", [/^KPRE[12]$/, /^RPRE[12]$/, /^RKFBP$/]],
+    ], ["AC-ENTRY", "SURGE", "EMI-FILTER", "PRECHARGE"]],
+    ["VIENNA-PFC", [
+      ["PHASE-A", [/^LA0$/, /^QA0[AB]$/, /^DA0[TBC]$/, /^CA0(FP|FN|SN|C)$/, /^RA0(SN|C)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD)$/, /^DA0GS[12]$/, /^CA0G(BL|B1|B2)$/]],
+      ["PHASE-B", [/^LB0$/, /^QB0[AB]$/, /^DB0[TBC]$/, /^CB0(FP|FN|SN|C)$/, /^RB0(SN|C)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD)$/, /^DB0GS[12]$/, /^CB0G(BL|B1|B2)$/]],
+      ["PHASE-C", [/^LC0$/, /^QC0[AB]$/, /^DC0[TBC]$/, /^CC0(FP|FN|SN|C)$/, /^RC0(SN|C)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD)$/, /^DC0GS[12]$/, /^CC0G(BL|B1|B2)$/]],
+    ], ["PHASE-A", "PHASE-B", "PHASE-C"]],
+    ["DC-LINK", [
+      ["LINK-BANK", [/^CD[TB]0\d$/, /^RBAL[TB]0[AB]$/]],
+      ["DISCHARGE", [/^RDIS\d$/, /^QDISF?$/, /^UQD$/, /^PSQD$/, /^RQD(L|G|PD)$/]],
+      ["BUS-STUDS", [/^JDC[PN]$/, /^JPEB$/]],
+    ], ["LINK-BANK", "DISCHARGE", "BUS-STUDS"]],
+    ["AC-SENSING", [
+      ["STAR", [/^RNS\d[AB]$/]],
+      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^UIVV1$/]],
+      ["SENSE-VAC2", [/^RV2D\d$/, /^RV2DL$/, /^CV2DF$/, /^UIVV2$/]],
+      ["SENSE-VAC3", [/^RV3D\d$/, /^RV3DL$/, /^CV3DF$/, /^UIVV3$/]],
+      ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^UIVBP$/]],
+      ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^UIVBM$/]],
+      ["ISO-BIAS", [/^PS5(AC|BUS)$/]],
+      ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/]],
+      ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOF]$/, /^UAVB$/]],
+      ["NTC", [/^JT(PFC|INL)$/, /^RT(PFC|INL)P$/, /^CT(PFC|INL)F$/]],
+    ], ["STAR", "SENSE-VAC1", "SENSE-VAC2", "SENSE-VAC3", "SENSE-VBUS", "SENSE-VMID", "ISO-BIAS", "LINE-CTS", "ANALOG-MID", "NTC"]],
+    ["CONTROL", [
+      ["MCU", [/^UPFC$/, /^CPFCD\d$/, /^RPFCRST$/, /^FBPFCA$/, /^CPFCA[12]$/]],
+      ["SWD", [/^JSWDPFC$/, /^RPFCBOOT$/, /^CPFCRST$/]],
+      ["SAFETY", [/^USUPA$/, /^UANDA$/, /^R(WPU|ENR|ENL|GPD)A$/, /^CSFA$/, /^RFLTA$/, /^CFLTA$/]],
+      ["GROUNDING", [/^RAGTA$/, /^RPET$/, /^CPET$/]],
+      ["COIL-DRIVER", [/^UPA$/]],
+      ["RAIL-MON", [/^RM(24|15)[AB]$/]],
+    ], ["MCU", "SWD", "SAFETY", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
+    ["AUX-POWER", [
+      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^RFB[12]$/, /^RCOMP$/, /^CCOMP$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],
+      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^CVCC$/, /^DTVS(24|15)$/]],
+      ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/]],
+      ["FANS", [/^JFAN\d$/, /^RFT\d$/]],
+      ["INTERCONNECT", [/^JICA$/, /^RAL(TX|RX|TS|RS)$/]],
+    ], ["FLYBACK", "RAILS", "BUCK-3V3", "FANS", "INTERCONNECT"]],
+  ],
+  dcdc: [
+    ["LLC-LEGS", [
+      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d$/]],
+      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/]],
+      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/]],
+      ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/]],
+    ], ["BUS-IN", "LEG-1", "LEG-2", "LEG-3"]],
+    ["LLC-TANKS", [
+      ["TANK-1", [/^C1R\d$/, /^L1T$/, /^T1$/, /^D1[AB][1-4]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/]],
+      ["TANK-2", [/^C2R\d$/, /^L2T$/, /^T2$/, /^D2[AB][1-4]$/, /^CT2$/, /^R2C[TF]$/, /^C2CF$/, /^D2C[PN]$/]],
+      ["TANK-3", [/^C3R\d$/, /^L3T$/, /^T3$/, /^D3[AB][1-4]$/, /^CT3$/, /^R3C[TF]$/, /^C3CF$/, /^D3C[PN]$/]],
+    ], ["TANK-1", "TANK-2", "TANK-3"]],
+    ["BANKS-SP", [
+      ["BANK-A", [/^CBA\d[TB]$/, /^RBALT?A[12]$/, /^RBALBA[12]$/, /^CBAF$/]],
+      ["BANK-B", [/^CBB\d[TB]$/, /^RBALT?B[12]$/, /^RBALBB[12]$/, /^CBBF$/]],
+      ["SP-MATRIX", [/^K(SER|PARA|PARB|OUT|PREA|PREB)2?$/, /^RKPU/, /^RPRE[AB]$/]],
+      ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/]],
+    ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],
+    ["OUTPUT-SENSING", [
+      ["OUTPUT", [/^RSHO$/, /^USHO$/, /^PSSH$/, /^COF[12]$/, /^CYO[12]$/, /^JOUT[PN]$/]],
+      ["SENSE-VBKA", [/^ROAD\d$/, /^ROADL$/, /^COADF$/, /^UIVOA$/]],
+      ["SENSE-VBKB", [/^ROBD\d$/, /^ROBDL$/, /^COBDF$/, /^UIVOB$/]],
+      ["SENSE-VOUT", [/^ROVD\d$/, /^ROVDL$/, /^COVDF$/, /^UIVOV$/]],
+      ["ISO-BIAS", [/^PS5BK[AB]$/]],
+      ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOF]$/, /^UAVB$/]],
+      ["NTC", [/^JT(LLC|XFR)$/, /^RT(LLC|XFR)P$/, /^CT(LLC|XFR)F$/]],
+    ], ["OUTPUT", "SENSE-VBKA", "SENSE-VBKB", "SENSE-VOUT", "ISO-BIAS", "ANALOG-MID", "NTC"]],
+    ["CONTROL", [
+      ["MCU", [/^ULLC$/, /^CLLCD\d$/, /^RLLCRST$/, /^FBLLCA$/, /^CLLCA[12]$/]],
+      ["SWD", [/^JSWDLLC$/, /^RLLCBOOT$/, /^CLLCRST$/]],
+      ["SAFETY", [/^USUPB$/, /^UANDB$/, /^R(WPU|ENR|ENL|GPD)B$/, /^CSFB$/, /^RFLTB$/, /^CFLTB$/]],
+      ["GROUNDING", [/^RAGTB$/]],
+      ["BUCK-3V3", [/^UBKB$/, /^LBKB$/, /^CBK[IO]B$/, /^CBSTB$/, /^RBKF[12]B$/]],
+      ["COIL-DRIVER", [/^ULB$/]],
+      ["INTERCONNECT", [/^JICB$/, /^RBL(TX|RX|TS|RS)$/]],
+    ], ["MCU", "SWD", "SAFETY", "GROUNDING", "BUCK-3V3", "COIL-DRIVER", "INTERCONNECT"]],
+    ["COMMS-HMI", [
+      ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/]],
+      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/]],
+    ], ["CAN", "HMI"]],
+  ],
+};
+
+// nets drawn as wires (path carries meaning) — everything else crossing blocks becomes a name
+const WIRE_NETS = [/^PH[ABC]0$/, /^G_/, /^KS_/, /^GH_/, /^GL_/, /^KH_/, /^KL_/, /^CTB\d$/, /^NSTAR$/, /^AVREF_MID$/, /^SW\d$/, /^STAR\d$/, /^BKAM$/, /^BKBM$/, /^G_QDIS/];
+const RAILS = ["V3P3", "V15", "V24", "DGND", "AGND", "PE", "DCP", "DCN", "MID", "AVMID", "BKAP", "BKAN", "BKBP", "BKBN", "OUTP", "OUTN", "CGND", "B5OUT"];
+
+const f2 = (x) => JSON.stringify(x);
+for (const side of ["acdc", "dcdc"]) {
+  const j = JSON.parse(readFileSync(join(ROOT, "dist", "boards", "30kw", side, "circuit.json"), "utf8"));
+  const comps = j.filter(e => e.type === "source_component");
+  const ports = j.filter(e => e.type === "source_port");
+  const nets = new Map(j.filter(e => e.type === "source_net").map(n => [n.source_net_id, n.name]));
+  const traces = j.filter(e => e.type === "source_trace");
+  // port → net: union-find over trace port groups + explicit net ids
+  const portNet = new Map();
+  const parent = new Map();
+  const find = (x) => { while (parent.get(x) !== x) { parent.set(x, parent.get(parent.get(x))); x = parent.get(x); } return x; };
+  const uni = (a, b) => { a = find(a); b = find(b); if (a !== b) parent.set(a, b); };
+  for (const p of ports) parent.set(p.source_port_id, p.source_port_id);
+  const groupNet = new Map();
+  for (const t of traces) {
+    const ps = t.connected_source_port_ids ?? [];
+    for (let i = 1; i < ps.length; i++) uni(ps[0], ps[i]);
+    for (const nid of t.connected_source_net_ids ?? []) if (ps.length) groupNet.set(find(ps[0]), nets.get(nid));
+  }
+  for (const [g, n] of [...groupNet]) groupNet.set(find(g), n);
+  // synthesize stable names for anonymous local junctions (≥2 ports, no explicit net)
+  const groupSize = new Map();
+  for (const p of ports) { const r = find(p.source_port_id); groupSize.set(r, (groupSize.get(r) ?? 0) + 1); }
+  let anon = 0;
+  for (const p of ports) {
+    const r = find(p.source_port_id);
+    if (!groupNet.has(r) && (groupSize.get(r) ?? 0) >= 2) groupNet.set(r, `N_${side.toUpperCase()}_${++anon}`);
+  }
+  for (const p of ports) {
+    const n = groupNet.get(find(p.source_port_id));
+    if (n) portNet.set(p.source_port_id, n);
+  }
+  // per-component pin lists
+  const byComp = new Map();
+  for (const p of ports) {
+    const arr = byComp.get(p.source_component_id) ?? [];
+    arr.push(p); byComp.set(p.source_component_id, arr);
+  }
+  const eng = (x, unit) => {
+    if (!(x > 0)) return "";
+    const p = [[1e6, "M"], [1e3, "k"], [1, ""], [1e-3, "m"], [1e-6, "u"], [1e-9, "n"], [1e-12, "p"]];
+    for (const [m, s] of p) if (x >= m * 0.9999) return `${Number((x / m).toPrecision(3))}${s}${unit}`;
+    return `${x}${unit}`;
+  };
+  const partInfo = (name, c) => {
+    const rule = DB.find(r => r.m.test(name));
+    const v = c.ftype === "simple_resistor" ? (Number(c.resistance) === 0 ? "0R" : eng(Number(c.resistance), "")) : c.ftype === "simple_capacitor" ? eng(Number(c.capacitance), "F") : (rule?.mpn ?? name);
+    return { value: String(v).replace(/[^\x20-\x7E]/g, "") || (rule?.mpn ?? name), query: rule ? `${rule.mpn} ${rule.desc.split("(")[0]}`.slice(0, 80) : name, mpn: rule?.mpn ?? null };
+  };
+  const seen = new Set();
+  const pagesOut = [];
+  for (const [page, blocks, flow] of PAGES[side]) {
+    const members = [];
+    for (const c of comps) {
+      if (seen.has(c.name) || /^NC_/.test(c.name)) continue;
+      for (const [bname, regexes] of blocks) {
+        if (regexes.some(r => r.test(c.name))) {
+          const allPins = (byComp.get(c.source_component_id) ?? []).map(p => ({
+            pin_number: p.pin_number ?? p.name, name: p.name ?? String(p.pin_number),
+            signal_name: (portNet.get(p.source_port_id) ?? "").replace(/^NC_.*/, ""),
+          }));
+          const pins = allPins.filter(p => p.signal_name);
+          const nc = allPins.filter(p => !p.signal_name).map(p => p.pin_number);
+          members.push({ designator: c.name, block_name: bname, pins, nc_pins: nc, ...partInfo(c.name, c) });
+          seen.add(c.name);
+          break;
+        }
+      }
+    }
+    // suggested planner overrides: anonymous junctions and known-local nets are wires; PE is ground-class
+    const pageNets = new Set(members.flatMap(m => m.pins.map(p => p.signal_name)).filter(Boolean));
+    const styleOv = {};
+    for (const n of pageNets) if (/^N_/.test(n) || WIRE_NETS.some(r => r.test(n))) styleOv[n] = "wire";
+    const classOv = pageNets.has("PE") ? { PE: "ground" } : {};
+    const perBlock = {};
+    for (const m of members) perBlock[m.block_name] = (perBlock[m.block_name] ?? 0) + 1;
+    pagesOut.push({ page, flow, count: members.length, perBlock, components: members });
+    writeFileSync(join(OUT, `${side}-${page}.json`), JSON.stringify({ page, flow, net_style_overrides: styleOv, net_class_overrides: classOv, components: members }, null, 1));
+  }
+  const missed = comps.filter(c => !seen.has(c.name) && !/^NC_/.test(c.name)).map(c => c.name);
+  for (const p of pagesOut) console.log(`${side}/${p.page} (${p.count}): ${Object.entries(p.perBlock).map(([b, n]) => `${b}=${n}`).join(" ")}`);
+  console.log(`${side} UNASSIGNED: ${missed.length ? missed.join(",") : "none"}`);
+}
+console.log(`→ ${OUT}/`);

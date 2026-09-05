@@ -1,0 +1,49 @@
+{
+ "page": "acdc-CONTROL",
+ "page_uuid": "30f27eae62f152f4",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "UPFC",
+   "pin_number": 26,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "UPFC",
+   "pin_number": 27,
+   "signal_name": "V3P3"
+  },
+  {
+   "designator": "UPFC",
+   "pin_number": 69,
+   "signal_name": "LINK_RX"
+  },
+  {
+   "designator": "UPFC",
+   "pin_number": 71,
+   "signal_name": "EN_PFC"
+  },
+  {
+   "designator": "UPFC",
+   "pin_number": 72,
+   "signal_name": "CTL_KPRE"
+  },
+  {
+   "designator": "UPFC",
+   "pin_number": 73,
+   "signal_name": "CTL_QDIS"
+  },
+  {
+   "designator": "JSWDPFC",
+   "pin_number": 4,
+   "signal_name": "NRST_PFC"
+  },
+  {
+   "designator": "JSWDPFC",
+   "pin_number": 5,
+   "signal_name": "DGND"
+  }
+ ],
+ "remark_no_connect": []
+}

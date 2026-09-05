@@ -1,0 +1,68 @@
+{
+ "page": "dcdc-OUTPUT-SENSING",
+ "page_uuid": "3e99a4e01244616b",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "USHO",
+   "pin_number": 6,
+   "signal_name": "SNS_IOUTN"
+  },
+  {
+   "designator": "PSSH",
+   "pin_number": 3,
+   "signal_name": "N_DCDC_78"
+  },
+  {
+   "designator": "PS5BKA",
+   "pin_number": 2,
+   "signal_name": "V15"
+  },
+  {
+   "designator": "PS5BKA",
+   "pin_number": 1,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "PS5BKA",
+   "pin_number": 3,
+   "signal_name": "BKAN"
+  },
+  {
+   "designator": "PS5BKB",
+   "pin_number": 3,
+   "signal_name": "BKBN"
+  },
+  {
+   "designator": "UIVOA",
+   "pin_number": 7,
+   "signal_name": "SNS_VBKA"
+  },
+  {
+   "designator": "UIVOB",
+   "pin_number": 1,
+   "signal_name": "B5BKB"
+  },
+  {
+   "designator": "UIVOV",
+   "pin_number": 1,
+   "signal_name": "B5OUT"
+  },
+  {
+   "designator": "UAVB",
+   "pin_number": 5,
+   "signal_name": "V3P3"
+  }
+ ],
+ "remark_no_connect": [
+  {
+   "designator": "UIVOA",
+   "pin_number": 6
+  },
+  {
+   "designator": "UIVOV",
+   "pin_number": 6
+  }
+ ]
+}

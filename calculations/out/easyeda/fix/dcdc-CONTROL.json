@@ -1,0 +1,54 @@
+{
+ "page": "dcdc-CONTROL",
+ "page_uuid": "22ef90c364d7fd7e",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "ULLC",
+   "pin_number": 7,
+   "signal_name": "RELAY_FB_KPREB"
+  },
+  {
+   "designator": "ULLC",
+   "pin_number": 54,
+   "signal_name": "PWM_L3H"
+  },
+  {
+   "designator": "ULLC",
+   "pin_number": 82,
+   "signal_name": "CTL_KPARB"
+  },
+  {
+   "designator": "UBKB",
+   "pin_number": 3,
+   "signal_name": "V15"
+  },
+  {
+   "designator": "UBKB",
+   "pin_number": 1,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "USUPB",
+   "pin_number": 11,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "USUPB",
+   "pin_number": 8,
+   "signal_name": "WDO_B"
+  },
+  {
+   "designator": "JSWDLLC",
+   "pin_number": 5,
+   "signal_name": "DGND"
+  },
+  {
+   "designator": "JICB",
+   "pin_number": 16,
+   "signal_name": "PE"
+  }
+ ],
+ "remark_no_connect": []
+}

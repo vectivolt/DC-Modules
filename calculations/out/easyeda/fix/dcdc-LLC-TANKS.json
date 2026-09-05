@@ -1,0 +1,35 @@
+{
+ "page": "dcdc-LLC-TANKS",
+ "page_uuid": "15553b4d850f058f",
+ "add_components": [],
+ "rm_components": [
+  "PRBK2",
+  "PRBU1",
+  "PRBU2",
+  "PRBU4",
+  "U1"
+ ],
+ "external_connect": [
+  {
+   "designator": "T1",
+   "pin_number": 2,
+   "signal_name": "STAR0"
+  },
+  {
+   "designator": "T1",
+   "pin_number": 3,
+   "signal_name": "STAR0"
+  },
+  {
+   "designator": "D1CN",
+   "pin_number": 2,
+   "signal_name": "AGND"
+  }
+ ],
+ "remark_no_connect": [
+  {
+   "designator": "T1",
+   "pin_number": 8
+  }
+ ]
+}

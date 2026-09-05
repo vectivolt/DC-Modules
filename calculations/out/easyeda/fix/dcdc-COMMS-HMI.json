@@ -1,0 +1,124 @@
+{
+ "page": "dcdc-COMMS-HMI",
+ "page_uuid": "0d12bfb80ab5e55a",
+ "add_components": [
+  {
+   "designator": "USR1",
+   "value": "74HC595",
+   "block_name": "HMI",
+   "search_query": "74HC595 shift register SOIC-16",
+   "part_uuid": "311aca04969a4e55b3a9cf174487c18c",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "QB",
+     "signal_name": "N_DCDC_124"
+    },
+    {
+     "pin_number": 2,
+     "name": "QC",
+     "signal_name": "N_DCDC_125"
+    },
+    {
+     "pin_number": 3,
+     "name": "QD",
+     "signal_name": "N_DCDC_126"
+    },
+    {
+     "pin_number": 4,
+     "name": "QE",
+     "signal_name": "N_DCDC_127"
+    },
+    {
+     "pin_number": 5,
+     "name": "QF",
+     "signal_name": "N_DCDC_128"
+    },
+    {
+     "pin_number": 6,
+     "name": "QG",
+     "signal_name": "N_DCDC_129"
+    },
+    {
+     "pin_number": 7,
+     "name": "QH",
+     "signal_name": "N_DCDC_130"
+    },
+    {
+     "pin_number": 8,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "SRCLR",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 11,
+     "name": "SRCLK",
+     "signal_name": "HMI_CLK"
+    },
+    {
+     "pin_number": 12,
+     "name": "RCLK",
+     "signal_name": "HMI_LAT"
+    },
+    {
+     "pin_number": 13,
+     "name": "OE",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 14,
+     "name": "SER",
+     "signal_name": "HMI_DAT"
+    },
+    {
+     "pin_number": 15,
+     "name": "QA",
+     "signal_name": "N_DCDC_131"
+    },
+    {
+     "pin_number": 16,
+     "name": "VCC",
+     "signal_name": "V3P3"
+    }
+   ]
+  }
+ ],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "UCAN",
+   "pin_number": 16,
+   "signal_name": "N_DCDC_108"
+  },
+  {
+   "designator": "PSCAN",
+   "pin_number": 4,
+   "signal_name": "N_DCDC_108"
+  },
+  {
+   "designator": "JCAN",
+   "pin_number": 3,
+   "signal_name": "CGND"
+  },
+  {
+   "designator": "DISP1",
+   "pin_number": 2,
+   "signal_name": "N_DCDC_117"
+  },
+  {
+   "designator": "DISP1",
+   "pin_number": 5,
+   "signal_name": "N_DCDC_120"
+  },
+  {
+   "designator": "RSEG3",
+   "pin_number": 2,
+   "signal_name": "N_DCDC_117"
+  }
+ ],
+ "remark_no_connect": []
+}

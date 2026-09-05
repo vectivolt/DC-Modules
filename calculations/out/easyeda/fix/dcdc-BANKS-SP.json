@@ -1,0 +1,14 @@
+{
+ "page": "dcdc-BANKS-SP",
+ "page_uuid": "de257312b7ec5bd4",
+ "add_components": [],
+ "rm_components": [],
+ "external_connect": [
+  {
+   "designator": "UPVA",
+   "pin_number": 4,
+   "signal_name": "G_QDISA"
+  }
+ ],
+ "remark_no_connect": []
+}
