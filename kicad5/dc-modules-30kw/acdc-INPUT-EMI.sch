@@ -1,0 +1,804 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr User 10200 8300
+encoding utf-8
+Sheet 1 1
+Title "30kW ACDC 1of6 INPUT-EMI"
+Date "2026-09-05"
+Rev "D.1"
+Comp "DC-Modules - 30 kW module"
+Comment1 "acdc-INPUT-EMI - 4 sections - 35 components"
+Comment2 "Cross-section links are global net labels; wires are pin stubs only"
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Notes Line
+	500 500 4100 500
+Wire Notes Line
+	4100 500 4100 3350
+Wire Notes Line
+	4100 3350 500 3350
+Wire Notes Line
+	500 3350 500 500
+Text Notes 560 660 0    79   ~ 16
+AC-ENTRY
+$Comp
+L dc-modules:STUD-M8 JACL1
+U 1 1 5E0000C5
+P 1450 1250
+F 0 "JACL1" H 1150 950 50  0000 L CNN
+F 1 "STUD-M8" H 1150 1580 50  0000 L CNN
+F 2 "" H 1450 1250 50  0001 C CNN
+F 3 "~" H 1450 1250 50  0001 C CNN
+F 4 "" H 1450 1250 50  0001 C CNN "LCSC"
+	1    1450 1250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 1150 800 1150
+Text GLabel 800 1150 2    50   Input ~ 0
+N_ACDC_1
+$Comp
+L dc-modules:STUD-M8 JACL2
+U 1 1 5E0000C6
+P 1450 2000
+F 0 "JACL2" H 1150 1700 50  0000 L CNN
+F 1 "STUD-M8" H 1150 2330 50  0000 L CNN
+F 2 "" H 1450 2000 50  0001 C CNN
+F 3 "~" H 1450 2000 50  0001 C CNN
+F 4 "" H 1450 2000 50  0001 C CNN "LCSC"
+	1    1450 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 1900 800 1900
+Text GLabel 800 1900 2    50   Input ~ 0
+N_ACDC_2
+$Comp
+L dc-modules:STUD-M8 JACL3
+U 1 1 5E0000C7
+P 1450 2750
+F 0 "JACL3" H 1150 2450 50  0000 L CNN
+F 1 "STUD-M8" H 1150 3080 50  0000 L CNN
+F 2 "" H 1450 2750 50  0001 C CNN
+F 3 "~" H 1450 2750 50  0001 C CNN
+F 4 "" H 1450 2750 50  0001 C CNN "LCSC"
+	1    1450 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 2650 800 2650
+Text GLabel 800 2650 2    50   Input ~ 0
+N_ACDC_3
+$Comp
+L dc-modules:STUD-M8 JPE
+U 1 1 5E0000C8
+P 3250 1250
+F 0 "JPE" H 2950 950 50  0000 L CNN
+F 1 "STUD-M8" H 2950 1580 50  0000 L CNN
+F 2 "" H 3250 1250 50  0001 C CNN
+F 3 "~" H 3250 1250 50  0001 C CNN
+F 4 "" H 3250 1250 50  0001 C CNN "LCSC"
+	1    3250 1250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 1150 2600 1150
+Text GLabel 2600 1150 2    50   Input ~ 0
+PE
+$Comp
+L dc-modules:R F1
+U 1 1 5E0000C9
+P 3200 1900
+F 0 "F1" H 3200 1740 50  0000 C CNN
+F 1 "FUSE-gG-690V" H 3200 2070 50  0000 C CNN
+F 2 "" H 3200 1900 50  0001 C CNN
+F 3 "~" H 3200 1900 50  0001 C CNN
+F 4 "" H 3200 1900 50  0001 C CNN "LCSC"
+	1    3200 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 1900 2750 1900
+Text GLabel 2750 1900 2    50   Input ~ 0
+N_ACDC_1
+Wire Wire Line
+	3450 1900 3650 1900
+Text GLabel 3650 1900 0    50   Output ~ 0
+LF1
+$Comp
+L dc-modules:R F2
+U 1 1 5E0000CA
+P 3200 2300
+F 0 "F2" H 3200 2140 50  0000 C CNN
+F 1 "FUSE-gG-690V" H 3200 2470 50  0000 C CNN
+F 2 "" H 3200 2300 50  0001 C CNN
+F 3 "~" H 3200 2300 50  0001 C CNN
+F 4 "" H 3200 2300 50  0001 C CNN "LCSC"
+	1    3200 2300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 2300 2750 2300
+Text GLabel 2750 2300 2    50   Input ~ 0
+N_ACDC_2
+Wire Wire Line
+	3450 2300 3650 2300
+Text GLabel 3650 2300 0    50   Output ~ 0
+LF2
+$Comp
+L dc-modules:R F3
+U 1 1 5E0000CB
+P 3200 2700
+F 0 "F3" H 3200 2540 50  0000 C CNN
+F 1 "FUSE-gG-690V" H 3200 2870 50  0000 C CNN
+F 2 "" H 3200 2700 50  0001 C CNN
+F 3 "~" H 3200 2700 50  0001 C CNN
+F 4 "" H 3200 2700 50  0001 C CNN "LCSC"
+	1    3200 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2950 2700 2750 2700
+Text GLabel 2750 2700 2    50   Input ~ 0
+N_ACDC_3
+Wire Wire Line
+	3450 2700 3650 2700
+Text GLabel 3650 2700 0    50   Output ~ 0
+LF3
+Wire Notes Line
+	4500 500 7800 500
+Wire Notes Line
+	7800 500 7800 3550
+Wire Notes Line
+	7800 3550 4500 3550
+Wire Notes Line
+	4500 3550 4500 500
+Text Notes 4560 660 0    79   ~ 16
+SURGE
+$Comp
+L dc-modules:R GDT1
+U 1 1 5E0000CC
+P 5400 1150
+F 0 "GDT1" H 5400 990 50  0000 C CNN
+F 1 "GDT-3k5-20kA" H 5400 1320 50  0000 C CNN
+F 2 "" H 5400 1150 50  0001 C CNN
+F 3 "~" H 5400 1150 50  0001 C CNN
+F 4 "" H 5400 1150 50  0001 C CNN "LCSC"
+	1    5400 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 1150 4950 1150
+Text GLabel 4950 1150 2    50   Input ~ 0
+N_ACDC_4
+Wire Wire Line
+	5650 1150 5850 1150
+Text GLabel 5850 1150 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:R GDT2
+U 1 1 5E0000CD
+P 5400 1550
+F 0 "GDT2" H 5400 1390 50  0000 C CNN
+F 1 "GDT-3k5-20kA" H 5400 1720 50  0000 C CNN
+F 2 "" H 5400 1550 50  0001 C CNN
+F 3 "~" H 5400 1550 50  0001 C CNN
+F 4 "" H 5400 1550 50  0001 C CNN "LCSC"
+	1    5400 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 1550 4950 1550
+Text GLabel 4950 1550 2    50   Input ~ 0
+N_ACDC_5
+Wire Wire Line
+	5650 1550 5850 1550
+Text GLabel 5850 1550 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:R GDT3
+U 1 1 5E0000CE
+P 5400 1950
+F 0 "GDT3" H 5400 1790 50  0000 C CNN
+F 1 "GDT-3k5-20kA" H 5400 2120 50  0000 C CNN
+F 2 "" H 5400 1950 50  0001 C CNN
+F 3 "~" H 5400 1950 50  0001 C CNN
+F 4 "" H 5400 1950 50  0001 C CNN "LCSC"
+	1    5400 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 1950 4950 1950
+Text GLabel 4950 1950 2    50   Input ~ 0
+N_ACDC_6
+Wire Wire Line
+	5650 1950 5850 1950
+Text GLabel 5850 1950 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:R MOV1
+U 1 1 5E0000CF
+P 5250 2350
+F 0 "MOV1" H 5250 2190 50  0000 C CNN
+F 1 "S20K550" H 5250 2520 50  0000 C CNN
+F 2 "" H 5250 2350 50  0001 C CNN
+F 3 "~" H 5250 2350 50  0001 C CNN
+F 4 "" H 5250 2350 50  0001 C CNN "LCSC"
+	1    5250 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5000 2350 4800 2350
+Text GLabel 4800 2350 2    50   Input ~ 0
+LF1
+Wire Wire Line
+	5500 2350 5700 2350
+Text GLabel 5700 2350 0    50   Output ~ 0
+LF2
+$Comp
+L dc-modules:R MOV2
+U 1 1 5E0000D0
+P 5250 2750
+F 0 "MOV2" H 5250 2590 50  0000 C CNN
+F 1 "S20K550" H 5250 2920 50  0000 C CNN
+F 2 "" H 5250 2750 50  0001 C CNN
+F 3 "~" H 5250 2750 50  0001 C CNN
+F 4 "" H 5250 2750 50  0001 C CNN "LCSC"
+	1    5250 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5000 2750 4800 2750
+Text GLabel 4800 2750 2    50   Input ~ 0
+LF2
+Wire Wire Line
+	5500 2750 5700 2750
+Text GLabel 5700 2750 0    50   Output ~ 0
+LF3
+$Comp
+L dc-modules:R MOV3
+U 1 1 5E0000D1
+P 5250 3150
+F 0 "MOV3" H 5250 2990 50  0000 C CNN
+F 1 "S20K550" H 5250 3320 50  0000 C CNN
+F 2 "" H 5250 3150 50  0001 C CNN
+F 3 "~" H 5250 3150 50  0001 C CNN
+F 4 "" H 5250 3150 50  0001 C CNN "LCSC"
+	1    5250 3150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5000 3150 4800 3150
+Text GLabel 4800 3150 2    50   Input ~ 0
+LF3
+Wire Wire Line
+	5500 3150 5700 3150
+Text GLabel 5700 3150 0    50   Output ~ 0
+LF1
+$Comp
+L dc-modules:R MOVP1
+U 1 1 5E0000D2
+P 6900 1150
+F 0 "MOVP1" H 6900 990 50  0000 C CNN
+F 1 "S20K550" H 6900 1320 50  0000 C CNN
+F 2 "" H 6900 1150 50  0001 C CNN
+F 3 "~" H 6900 1150 50  0001 C CNN
+F 4 "" H 6900 1150 50  0001 C CNN "LCSC"
+	1    6900 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6650 1150 6450 1150
+Text GLabel 6450 1150 2    50   Input ~ 0
+LF1
+Wire Wire Line
+	7150 1150 7350 1150
+Text GLabel 7350 1150 0    50   Output ~ 0
+N_ACDC_4
+$Comp
+L dc-modules:R MOVP2
+U 1 1 5E0000D3
+P 6900 1550
+F 0 "MOVP2" H 6900 1390 50  0000 C CNN
+F 1 "S20K550" H 6900 1720 50  0000 C CNN
+F 2 "" H 6900 1550 50  0001 C CNN
+F 3 "~" H 6900 1550 50  0001 C CNN
+F 4 "" H 6900 1550 50  0001 C CNN "LCSC"
+	1    6900 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6650 1550 6450 1550
+Text GLabel 6450 1550 2    50   Input ~ 0
+LF2
+Wire Wire Line
+	7150 1550 7350 1550
+Text GLabel 7350 1550 0    50   Output ~ 0
+N_ACDC_5
+$Comp
+L dc-modules:R MOVP3
+U 1 1 5E0000D4
+P 6900 1950
+F 0 "MOVP3" H 6900 1790 50  0000 C CNN
+F 1 "S20K550" H 6900 2120 50  0000 C CNN
+F 2 "" H 6900 1950 50  0001 C CNN
+F 3 "~" H 6900 1950 50  0001 C CNN
+F 4 "" H 6900 1950 50  0001 C CNN "LCSC"
+	1    6900 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6650 1950 6450 1950
+Text GLabel 6450 1950 2    50   Input ~ 0
+LF3
+Wire Wire Line
+	7150 1950 7350 1950
+Text GLabel 7350 1950 0    50   Output ~ 0
+N_ACDC_6
+Wire Notes Line
+	500 3950 5450 3950
+Wire Notes Line
+	5450 3950 5450 7000
+Wire Notes Line
+	5450 7000 500 7000
+Wire Notes Line
+	500 7000 500 3950
+Text Notes 560 4110 0    79   ~ 16
+EMI-FILTER
+$Comp
+L dc-modules:CMC-3PH-2mH-SKU CMC1
+U 1 1 5E0000D5
+P 1500 4900
+F 0 "CMC1" H 1200 4400 50  0000 L CNN
+F 1 "CMC-3PH-2mH-SKU" H 1200 5430 50  0000 L CNN
+F 2 "" H 1500 4900 50  0001 C CNN
+F 3 "~" H 1500 4900 50  0001 C CNN
+F 4 "" H 1500 4900 50  0001 C CNN "LCSC"
+	1    1500 4900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1050 4600 850 4600
+Text GLabel 850 4600 2    50   Input ~ 0
+LF1
+Wire Wire Line
+	1050 4700 850 4700
+Text GLabel 850 4700 2    50   Input ~ 0
+AC1M
+Wire Wire Line
+	1050 4800 850 4800
+Text GLabel 850 4800 2    50   Input ~ 0
+LF2
+Wire Wire Line
+	1050 4900 850 4900
+Text GLabel 850 4900 2    50   Input ~ 0
+AC2M
+Wire Wire Line
+	1050 5000 850 5000
+Text GLabel 850 5000 2    50   Input ~ 0
+LF3
+Wire Wire Line
+	1050 5100 850 5100
+Text GLabel 850 5100 2    50   Input ~ 0
+AC3M
+$Comp
+L dc-modules:CMC-3PH-2mH-SKU CMC2
+U 1 1 5E0000D6
+P 1500 6050
+F 0 "CMC2" H 1200 5550 50  0000 L CNN
+F 1 "CMC-3PH-2mH-SKU" H 1200 6580 50  0000 L CNN
+F 2 "" H 1500 6050 50  0001 C CNN
+F 3 "~" H 1500 6050 50  0001 C CNN
+F 4 "" H 1500 6050 50  0001 C CNN "LCSC"
+	1    1500 6050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1050 5750 850 5750
+Text GLabel 850 5750 2    50   Input ~ 0
+AC1M
+Wire Wire Line
+	1050 5850 850 5850
+Text GLabel 850 5850 2    50   Input ~ 0
+AC1D
+Wire Wire Line
+	1050 5950 850 5950
+Text GLabel 850 5950 2    50   Input ~ 0
+AC2M
+Wire Wire Line
+	1050 6050 850 6050
+Text GLabel 850 6050 2    50   Input ~ 0
+AC2D
+Wire Wire Line
+	1050 6150 850 6150
+Text GLabel 850 6150 2    50   Input ~ 0
+AC3M
+Wire Wire Line
+	1050 6250 850 6250
+Text GLabel 850 6250 2    50   Input ~ 0
+AC3D
+$Comp
+L dc-modules:R CX11
+U 1 1 5E0000D7
+P 3100 4600
+F 0 "CX11" H 3100 4440 50  0000 C CNN
+F 1 "2.2uF" H 3100 4770 50  0000 C CNN
+F 2 "" H 3100 4600 50  0001 C CNN
+F 3 "~" H 3100 4600 50  0001 C CNN
+F 4 "" H 3100 4600 50  0001 C CNN "LCSC"
+	1    3100 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 4600 2650 4600
+Text GLabel 2650 4600 2    50   Input ~ 0
+AC1M
+Wire Wire Line
+	3350 4600 3550 4600
+Text GLabel 3550 4600 0    50   Output ~ 0
+AC2M
+$Comp
+L dc-modules:R CX12
+U 1 1 5E0000D8
+P 3100 5000
+F 0 "CX12" H 3100 4840 50  0000 C CNN
+F 1 "2.2uF" H 3100 5170 50  0000 C CNN
+F 2 "" H 3100 5000 50  0001 C CNN
+F 3 "~" H 3100 5000 50  0001 C CNN
+F 4 "" H 3100 5000 50  0001 C CNN "LCSC"
+	1    3100 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 5000 2650 5000
+Text GLabel 2650 5000 2    50   Input ~ 0
+AC2M
+Wire Wire Line
+	3350 5000 3550 5000
+Text GLabel 3550 5000 0    50   Output ~ 0
+AC3M
+$Comp
+L dc-modules:R CX13
+U 1 1 5E0000D9
+P 3100 5400
+F 0 "CX13" H 3100 5240 50  0000 C CNN
+F 1 "2.2uF" H 3100 5570 50  0000 C CNN
+F 2 "" H 3100 5400 50  0001 C CNN
+F 3 "~" H 3100 5400 50  0001 C CNN
+F 4 "" H 3100 5400 50  0001 C CNN "LCSC"
+	1    3100 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 5400 2650 5400
+Text GLabel 2650 5400 2    50   Input ~ 0
+AC3M
+Wire Wire Line
+	3350 5400 3550 5400
+Text GLabel 3550 5400 0    50   Output ~ 0
+AC1M
+$Comp
+L dc-modules:R CX21
+U 1 1 5E0000DA
+P 3100 5800
+F 0 "CX21" H 3100 5640 50  0000 C CNN
+F 1 "2.2uF" H 3100 5970 50  0000 C CNN
+F 2 "" H 3100 5800 50  0001 C CNN
+F 3 "~" H 3100 5800 50  0001 C CNN
+F 4 "" H 3100 5800 50  0001 C CNN "LCSC"
+	1    3100 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 5800 2650 5800
+Text GLabel 2650 5800 2    50   Input ~ 0
+AC1
+Wire Wire Line
+	3350 5800 3550 5800
+Text GLabel 3550 5800 0    50   Output ~ 0
+AC2
+$Comp
+L dc-modules:R CX22
+U 1 1 5E0000DB
+P 3100 6200
+F 0 "CX22" H 3100 6040 50  0000 C CNN
+F 1 "2.2uF" H 3100 6370 50  0000 C CNN
+F 2 "" H 3100 6200 50  0001 C CNN
+F 3 "~" H 3100 6200 50  0001 C CNN
+F 4 "" H 3100 6200 50  0001 C CNN "LCSC"
+	1    3100 6200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 6200 2650 6200
+Text GLabel 2650 6200 2    50   Input ~ 0
+AC2
+Wire Wire Line
+	3350 6200 3550 6200
+Text GLabel 3550 6200 0    50   Output ~ 0
+AC3
+$Comp
+L dc-modules:R CX23
+U 1 1 5E0000DC
+P 3100 6600
+F 0 "CX23" H 3100 6440 50  0000 C CNN
+F 1 "2.2uF" H 3100 6770 50  0000 C CNN
+F 2 "" H 3100 6600 50  0001 C CNN
+F 3 "~" H 3100 6600 50  0001 C CNN
+F 4 "" H 3100 6600 50  0001 C CNN "LCSC"
+	1    3100 6600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 6600 2650 6600
+Text GLabel 2650 6600 2    50   Input ~ 0
+AC3
+Wire Wire Line
+	3350 6600 3550 6600
+Text GLabel 3550 6600 0    50   Output ~ 0
+AC1
+$Comp
+L dc-modules:R CY1
+U 1 1 5E0000DD
+P 4650 4600
+F 0 "CY1" H 4650 4440 50  0000 C CNN
+F 1 "4.7nF" H 4650 4770 50  0000 C CNN
+F 2 "" H 4650 4600 50  0001 C CNN
+F 3 "~" H 4650 4600 50  0001 C CNN
+F 4 "" H 4650 4600 50  0001 C CNN "LCSC"
+	1    4650 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4400 4600 4200 4600
+Text GLabel 4200 4600 2    50   Input ~ 0
+AC1
+Wire Wire Line
+	4900 4600 5100 4600
+Text GLabel 5100 4600 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:R CY2
+U 1 1 5E0000DE
+P 4650 5000
+F 0 "CY2" H 4650 4840 50  0000 C CNN
+F 1 "4.7nF" H 4650 5170 50  0000 C CNN
+F 2 "" H 4650 5000 50  0001 C CNN
+F 3 "~" H 4650 5000 50  0001 C CNN
+F 4 "" H 4650 5000 50  0001 C CNN "LCSC"
+	1    4650 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4400 5000 4200 5000
+Text GLabel 4200 5000 2    50   Input ~ 0
+AC2
+Wire Wire Line
+	4900 5000 5100 5000
+Text GLabel 5100 5000 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:R CY3
+U 1 1 5E0000DF
+P 4650 5400
+F 0 "CY3" H 4650 5240 50  0000 C CNN
+F 1 "4.7nF" H 4650 5570 50  0000 C CNN
+F 2 "" H 4650 5400 50  0001 C CNN
+F 3 "~" H 4650 5400 50  0001 C CNN
+F 4 "" H 4650 5400 50  0001 C CNN "LCSC"
+	1    4650 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4400 5400 4200 5400
+Text GLabel 4200 5400 2    50   Input ~ 0
+AC3
+Wire Wire Line
+	4900 5400 5100 5400
+Text GLabel 5100 5400 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:L LDM1
+U 1 1 5E0000E0
+P 4700 5800
+F 0 "LDM1" H 4700 5640 50  0000 C CNN
+F 1 "DM-22u-SKU" H 4700 5970 50  0000 C CNN
+F 2 "" H 4700 5800 50  0001 C CNN
+F 3 "~" H 4700 5800 50  0001 C CNN
+F 4 "" H 4700 5800 50  0001 C CNN "LCSC"
+	1    4700 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4450 5800 4250 5800
+Text GLabel 4250 5800 2    50   Input ~ 0
+AC1D
+Wire Wire Line
+	4950 5800 5150 5800
+Text GLabel 5150 5800 0    50   Output ~ 0
+AC1
+$Comp
+L dc-modules:L LDM2
+U 1 1 5E0000E1
+P 4700 6200
+F 0 "LDM2" H 4700 6040 50  0000 C CNN
+F 1 "DM-22u-SKU" H 4700 6370 50  0000 C CNN
+F 2 "" H 4700 6200 50  0001 C CNN
+F 3 "~" H 4700 6200 50  0001 C CNN
+F 4 "" H 4700 6200 50  0001 C CNN "LCSC"
+	1    4700 6200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4450 6200 4250 6200
+Text GLabel 4250 6200 2    50   Input ~ 0
+AC2D
+Wire Wire Line
+	4950 6200 5150 6200
+Text GLabel 5150 6200 0    50   Output ~ 0
+AC2
+$Comp
+L dc-modules:L LDM3
+U 1 1 5E0000E2
+P 4700 6600
+F 0 "LDM3" H 4700 6440 50  0000 C CNN
+F 1 "DM-22u-SKU" H 4700 6770 50  0000 C CNN
+F 2 "" H 4700 6600 50  0001 C CNN
+F 3 "~" H 4700 6600 50  0001 C CNN
+F 4 "" H 4700 6600 50  0001 C CNN "LCSC"
+	1    4700 6600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4450 6600 4250 6600
+Text GLabel 4250 6600 2    50   Input ~ 0
+AC3D
+Wire Wire Line
+	4950 6600 5150 6600
+Text GLabel 5150 6600 0    50   Output ~ 0
+AC3
+Wire Notes Line
+	5850 3950 9700 3950
+Wire Notes Line
+	9700 3950 9700 6900
+Wire Notes Line
+	9700 6900 5850 6900
+Wire Notes Line
+	5850 6900 5850 3950
+Text Notes 5910 4110 0    79   ~ 16
+PRECHARGE
+$Comp
+L dc-modules:HF167F-80A-M KPRE1
+U 1 1 5E0000E3
+P 7000 4900
+F 0 "KPRE1" H 6700 4400 50  0000 L CNN
+F 1 "HF167F-80A-M" H 6700 5430 50  0000 L CNN
+F 2 "" H 7000 4900 50  0001 C CNN
+F 3 "~" H 7000 4900 50  0001 C CNN
+F 4 "" H 7000 4900 50  0001 C CNN "LCSC"
+	1    7000 4900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6550 4600 6350 4600
+Text GLabel 6350 4600 2    50   Input ~ 0
+V24
+Wire Wire Line
+	6550 4700 6350 4700
+Text GLabel 6350 4700 2    50   Input ~ 0
+N_ACDC_7
+Wire Wire Line
+	6550 4800 6350 4800
+Text GLabel 6350 4800 2    50   Input ~ 0
+AC1
+Wire Wire Line
+	6550 4900 6350 4900
+Text GLabel 6350 4900 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	6550 5000 6350 5000
+Text GLabel 6350 5000 2    50   Input ~ 0
+AC1F
+Wire Wire Line
+	6550 5100 6350 5100
+Text GLabel 6350 5100 2    50   Input ~ 0
+COIL_KPRE
+$Comp
+L dc-modules:HF167F-80A-M KPRE2
+U 1 1 5E0000E4
+P 7000 6050
+F 0 "KPRE2" H 6700 5550 50  0000 L CNN
+F 1 "HF167F-80A-M" H 6700 6580 50  0000 L CNN
+F 2 "" H 7000 6050 50  0001 C CNN
+F 3 "~" H 7000 6050 50  0001 C CNN
+F 4 "" H 7000 6050 50  0001 C CNN "LCSC"
+	1    7000 6050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6550 5750 6350 5750
+Text GLabel 6350 5750 2    50   Input ~ 0
+V24
+Wire Wire Line
+	6550 5850 6350 5850
+Text GLabel 6350 5850 2    50   Input ~ 0
+RELAY_FB_KPRE
+Wire Wire Line
+	6550 5950 6350 5950
+Text GLabel 6350 5950 2    50   Input ~ 0
+AC2
+Wire Wire Line
+	6550 6050 6350 6050
+Text GLabel 6350 6050 2    50   Input ~ 0
+N_ACDC_7
+Wire Wire Line
+	6550 6150 6350 6150
+Text GLabel 6350 6150 2    50   Input ~ 0
+AC2F
+Wire Wire Line
+	6550 6250 6350 6250
+Text GLabel 6350 6250 2    50   Input ~ 0
+COIL_KPRE
+$Comp
+L dc-modules:R RKFBP
+U 1 1 5E0000E5
+P 8650 4600
+F 0 "RKFBP" H 8650 4440 50  0000 C CNN
+F 1 "10k" H 8650 4770 50  0000 C CNN
+F 2 "" H 8650 4600 50  0001 C CNN
+F 3 "~" H 8650 4600 50  0001 C CNN
+F 4 "" H 8650 4600 50  0001 C CNN "LCSC"
+	1    8650 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8400 4600 8200 4600
+Text GLabel 8200 4600 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	8900 4600 9100 4600
+Text GLabel 9100 4600 0    50   Output ~ 0
+RELAY_FB_KPRE
+$Comp
+L dc-modules:R RPRE1
+U 1 1 5E0000E6
+P 8600 5000
+F 0 "RPRE1" H 8600 4840 50  0000 C CNN
+F 1 "CER-25W-AX" H 8600 5170 50  0000 C CNN
+F 2 "" H 8600 5000 50  0001 C CNN
+F 3 "~" H 8600 5000 50  0001 C CNN
+F 4 "" H 8600 5000 50  0001 C CNN "LCSC"
+	1    8600 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8350 5000 8150 5000
+Text GLabel 8150 5000 2    50   Input ~ 0
+AC1
+Wire Wire Line
+	8850 5000 9050 5000
+Text GLabel 9050 5000 0    50   Output ~ 0
+AC1F
+$Comp
+L dc-modules:R RPRE2
+U 1 1 5E0000E7
+P 8600 5400
+F 0 "RPRE2" H 8600 5240 50  0000 C CNN
+F 1 "CER-25W-AX" H 8600 5570 50  0000 C CNN
+F 2 "" H 8600 5400 50  0001 C CNN
+F 3 "~" H 8600 5400 50  0001 C CNN
+F 4 "" H 8600 5400 50  0001 C CNN "LCSC"
+	1    8600 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8350 5400 8150 5400
+Text GLabel 8150 5400 2    50   Input ~ 0
+AC2
+Wire Wire Line
+	8850 5400 9050 5400
+Text GLabel 9050 5400 0    50   Output ~ 0
+AC2F
+$EndSCHEMATC

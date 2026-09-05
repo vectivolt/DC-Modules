@@ -1,0 +1,908 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr User 11500 12400
+encoding utf-8
+Sheet 1 1
+Title "30kW ACDC 5of6 CONTROL"
+Date "2026-09-05"
+Rev "D.1"
+Comp "DC-Modules - 30 kW module"
+Comment1 "acdc-CONTROL - 6 sections - 29 components"
+Comment2 "Cross-section links are global net labels; wires are pin stubs only"
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Notes Line
+	500 500 6500 500
+Wire Notes Line
+	6500 500 6500 5000
+Wire Notes Line
+	6500 5000 500 5000
+Wire Notes Line
+	500 5000 500 500
+Text Notes 560 660 0    79   ~ 16
+MCU
+$Comp
+L dc-modules:GD32G553VET6 UPFC
+U 1 1 5E00008C
+P 1850 2800
+F 0 "UPFC" H 1500 950 50  0000 L CNN
+F 1 "GD32G553VET6" H 1500 4680 50  0000 L CNN
+F 2 "" H 1850 2800 50  0001 C CNN
+F 3 "~" H 1850 2800 50  0001 C CNN
+F 4 "" H 1850 2800 50  0001 C CNN "LCSC"
+	1    1850 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1350 1750 1150 1750
+Text GLabel 1150 1750 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1350 1850 1150 1850
+Text GLabel 1150 1850 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	1350 1950 1150 1950
+Text GLabel 1150 1950 2    50   Input ~ 0
+NRST_PFC
+Wire Wire Line
+	1350 2050 1150 2050
+Text GLabel 1150 2050 2    50   Input ~ 0
+VDDA_PFC
+Wire Wire Line
+	1350 2150 1150 2150
+Text GLabel 1150 2150 2    50   Input ~ 0
+VDDA_PFC
+Wire Wire Line
+	1350 2250 1150 2250
+Text GLabel 1150 2250 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1350 2350 1150 2350
+Text GLabel 1150 2350 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	1350 2450 1150 2450
+Text GLabel 1150 2450 2    50   Input ~ 0
+SWDIO_PFC
+Wire Wire Line
+	1350 2550 1150 2550
+Text GLabel 1150 2550 2    50   Input ~ 0
+SWCLK_PFC
+Wire Wire Line
+	1350 2650 1150 2650
+Text GLabel 1150 2650 2    50   Input ~ 0
+I_A0
+Wire Wire Line
+	1350 2750 1150 2750
+Text GLabel 1150 2750 2    50   Input ~ 0
+I_B0
+Wire Wire Line
+	1350 2850 1150 2850
+Text GLabel 1150 2850 2    50   Input ~ 0
+I_C0
+Wire Wire Line
+	1350 3050 1150 3050
+Text GLabel 1150 3050 2    50   Input ~ 0
+SNS_VAC1
+Wire Wire Line
+	1350 3150 1150 3150
+Text GLabel 1150 3150 2    50   Input ~ 0
+SNS_VAC2
+Wire Wire Line
+	1350 3250 1150 3250
+Text GLabel 1150 3250 2    50   Input ~ 0
+SNS_VAC3
+Wire Wire Line
+	1350 3350 1150 3350
+Text GLabel 1150 3350 2    50   Input ~ 0
+SNS_VBUSP
+Wire Wire Line
+	1350 3450 1150 3450
+Text GLabel 1150 3450 2    50   Input ~ 0
+SNS_VMID
+Wire Wire Line
+	1350 3550 1150 3550
+Text GLabel 1150 3550 2    50   Input ~ 0
+T_PFC
+Wire Wire Line
+	1350 3650 1150 3650
+Text GLabel 1150 3650 2    50   Input ~ 0
+T_INLET
+Wire Wire Line
+	1350 3750 1150 3750
+Text GLabel 1150 3750 2    50   Input ~ 0
+RELAY_FB_KPRE
+Wire Wire Line
+	1350 3850 1150 3850
+Text GLabel 1150 3850 2    50   Input ~ 0
+SNS_V24
+Wire Wire Line
+	1350 3950 1150 3950
+Text GLabel 1150 3950 2    50   Input ~ 0
+SNS_V15
+Wire Wire Line
+	1350 4250 1150 4250
+Text GLabel 1150 4250 2    50   Input ~ 0
+PWM_A0
+Wire Wire Line
+	1350 4350 1150 4350
+Text GLabel 1150 4350 2    50   Input ~ 0
+PWM_B0
+Wire Wire Line
+	2350 1150 2550 1150
+Text GLabel 2550 1150 0    50   Output ~ 0
+PWM_C0
+Wire Wire Line
+	2350 1250 2550 1250
+Text GLabel 2550 1250 0    50   Output ~ 0
+LINK_TX
+Wire Wire Line
+	2350 1350 2550 1350
+Text GLabel 2550 1350 0    50   Output ~ 0
+LINK_RX
+Wire Wire Line
+	2350 1450 2550 1450
+Text GLabel 2550 1450 0    50   Output ~ 0
+WDI_PFC
+Wire Wire Line
+	2350 1550 2550 1550
+Text GLabel 2550 1550 0    50   Output ~ 0
+EN_PFC
+Wire Wire Line
+	2350 1650 2550 1650
+Text GLabel 2550 1650 0    50   Output ~ 0
+CTL_KPRE
+Wire Wire Line
+	2350 1750 2550 1750
+Text GLabel 2550 1750 0    50   Output ~ 0
+CTL_QDIS
+Wire Wire Line
+	2350 1850 2550 1850
+Text GLabel 2550 1850 0    50   Output ~ 0
+FLT_PFC
+Wire Wire Line
+	2350 2050 2550 2050
+Text GLabel 2550 2050 0    50   Output ~ 0
+FAN_PWM1
+Wire Wire Line
+	2350 2150 2550 2150
+Text GLabel 2550 2150 0    50   Output ~ 0
+FAN_TACH1
+Wire Wire Line
+	2350 2250 2550 2250
+Text GLabel 2550 2250 0    50   Output ~ 0
+FAN_PWM2
+Wire Wire Line
+	2350 2350 2550 2350
+Text GLabel 2550 2350 0    50   Output ~ 0
+FAN_TACH2
+Wire Wire Line
+	2350 4250 2550 4250
+Text GLabel 2550 4250 0    50   Output ~ 0
+BOOT0_PFC
+$Comp
+L dc-modules:R CPFCA1
+U 1 1 5E00008D
+P 4000 1150
+F 0 "CPFCA1" H 4000 990 50  0000 C CNN
+F 1 "1uF" H 4000 1320 50  0000 C CNN
+F 2 "" H 4000 1150 50  0001 C CNN
+F 3 "~" H 4000 1150 50  0001 C CNN
+F 4 "" H 4000 1150 50  0001 C CNN "LCSC"
+	1    4000 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 1150 3550 1150
+Text GLabel 3550 1150 2    50   Input ~ 0
+VDDA_PFC
+Wire Wire Line
+	4250 1150 4450 1150
+Text GLabel 4450 1150 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CPFCA2
+U 1 1 5E00008E
+P 4000 1550
+F 0 "CPFCA2" H 4000 1390 50  0000 C CNN
+F 1 "100nF" H 4000 1720 50  0000 C CNN
+F 2 "" H 4000 1550 50  0001 C CNN
+F 3 "~" H 4000 1550 50  0001 C CNN
+F 4 "" H 4000 1550 50  0001 C CNN "LCSC"
+	1    4000 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 1550 3550 1550
+Text GLabel 3550 1550 2    50   Input ~ 0
+VDDA_PFC
+Wire Wire Line
+	4250 1550 4450 1550
+Text GLabel 4450 1550 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CPFCD0
+U 1 1 5E00008F
+P 3850 1950
+F 0 "CPFCD0" H 3850 1790 50  0000 C CNN
+F 1 "100nF" H 3850 2120 50  0000 C CNN
+F 2 "" H 3850 1950 50  0001 C CNN
+F 3 "~" H 3850 1950 50  0001 C CNN
+F 4 "" H 3850 1950 50  0001 C CNN "LCSC"
+	1    3850 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 1950 3400 1950
+Text GLabel 3400 1950 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	4100 1950 4300 1950
+Text GLabel 4300 1950 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CPFCD1
+U 1 1 5E000090
+P 3850 2350
+F 0 "CPFCD1" H 3850 2190 50  0000 C CNN
+F 1 "100nF" H 3850 2520 50  0000 C CNN
+F 2 "" H 3850 2350 50  0001 C CNN
+F 3 "~" H 3850 2350 50  0001 C CNN
+F 4 "" H 3850 2350 50  0001 C CNN "LCSC"
+	1    3850 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 2350 3400 2350
+Text GLabel 3400 2350 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	4100 2350 4300 2350
+Text GLabel 4300 2350 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CPFCD2
+U 1 1 5E000091
+P 3850 2750
+F 0 "CPFCD2" H 3850 2590 50  0000 C CNN
+F 1 "100nF" H 3850 2920 50  0000 C CNN
+F 2 "" H 3850 2750 50  0001 C CNN
+F 3 "~" H 3850 2750 50  0001 C CNN
+F 4 "" H 3850 2750 50  0001 C CNN "LCSC"
+	1    3850 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 2750 3400 2750
+Text GLabel 3400 2750 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	4100 2750 4300 2750
+Text GLabel 4300 2750 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CPFCD3
+U 1 1 5E000092
+P 3850 3150
+F 0 "CPFCD3" H 3850 2990 50  0000 C CNN
+F 1 "100nF" H 3850 3320 50  0000 C CNN
+F 2 "" H 3850 3150 50  0001 C CNN
+F 3 "~" H 3850 3150 50  0001 C CNN
+F 4 "" H 3850 3150 50  0001 C CNN "LCSC"
+	1    3850 3150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3600 3150 3400 3150
+Text GLabel 3400 3150 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	4100 3150 4300 3150
+Text GLabel 4300 3150 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R FBPFCA
+U 1 1 5E000093
+P 5550 1150
+F 0 "FBPFCA" H 5550 990 50  0000 C CNN
+F 1 "0R" H 5550 1320 50  0000 C CNN
+F 2 "" H 5550 1150 50  0001 C CNN
+F 3 "~" H 5550 1150 50  0001 C CNN
+F 4 "" H 5550 1150 50  0001 C CNN "LCSC"
+	1    5550 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 1150 5100 1150
+Text GLabel 5100 1150 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	5800 1150 6000 1150
+Text GLabel 6000 1150 0    50   Output ~ 0
+VDDA_PFC
+$Comp
+L dc-modules:R RPFCRST
+U 1 1 5E000094
+P 5550 1550
+F 0 "RPFCRST" H 5550 1390 50  0000 C CNN
+F 1 "10k" H 5550 1720 50  0000 C CNN
+F 2 "" H 5550 1550 50  0001 C CNN
+F 3 "~" H 5550 1550 50  0001 C CNN
+F 4 "" H 5550 1550 50  0001 C CNN "LCSC"
+	1    5550 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 1550 5100 1550
+Text GLabel 5100 1550 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	5800 1550 6000 1550
+Text GLabel 6000 1550 0    50   Output ~ 0
+NRST_PFC
+Wire Notes Line
+	6900 500 10650 500
+Wire Notes Line
+	10650 500 10650 3350
+Wire Notes Line
+	10650 3350 6900 3350
+Wire Notes Line
+	6900 3350 6900 500
+Text Notes 6960 660 0    79   ~ 16
+SWD
+$Comp
+L dc-modules:HDR-1x5-2.54 JSWDPFC
+U 1 1 5E000095
+P 8050 1800
+F 0 "JSWDPFC" H 7750 1450 50  0000 L CNN
+F 1 "HDR-1x5-2.54" H 7750 2180 50  0000 L CNN
+F 2 "" H 8050 1800 50  0001 C CNN
+F 3 "~" H 8050 1800 50  0001 C CNN
+F 4 "" H 8050 1800 50  0001 C CNN "LCSC"
+	1    8050 1800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7600 1650 7400 1650
+Text GLabel 7400 1650 2    50   Input ~ 0
+SWDIO_PFC
+Wire Wire Line
+	7600 1750 7400 1750
+Text GLabel 7400 1750 2    50   Input ~ 0
+SWCLK_PFC
+Wire Wire Line
+	7600 1850 7400 1850
+Text GLabel 7400 1850 2    50   Input ~ 0
+NRST_PFC
+Wire Wire Line
+	7850 1400 7850 1200
+Text GLabel 7850 1200 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	7850 2200 7850 2400
+Text GLabel 7850 2400 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CPFCRST
+U 1 1 5E000096
+P 7800 2950
+F 0 "CPFCRST" H 7800 2790 50  0000 C CNN
+F 1 "100nF" H 7800 3120 50  0000 C CNN
+F 2 "" H 7800 2950 50  0001 C CNN
+F 3 "~" H 7800 2950 50  0001 C CNN
+F 4 "" H 7800 2950 50  0001 C CNN "LCSC"
+	1    7800 2950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7550 2950 7350 2950
+Text GLabel 7350 2950 2    50   Input ~ 0
+NRST_PFC
+Wire Wire Line
+	8050 2950 8250 2950
+Text GLabel 8250 2950 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R RPFCBOOT
+U 1 1 5E000097
+P 9850 1150
+F 0 "RPFCBOOT" H 9850 990 50  0000 C CNN
+F 1 "10k" H 9850 1320 50  0000 C CNN
+F 2 "" H 9850 1150 50  0001 C CNN
+F 3 "~" H 9850 1150 50  0001 C CNN
+F 4 "" H 9850 1150 50  0001 C CNN "LCSC"
+	1    9850 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9600 1150 9400 1150
+Text GLabel 9400 1150 2    50   Input ~ 0
+BOOT0_PFC
+Wire Wire Line
+	10100 1150 10300 1150
+Text GLabel 10300 1150 0    50   Output ~ 0
+DGND
+Wire Notes Line
+	500 5400 6350 5400
+Wire Notes Line
+	6350 5400 6350 8450
+Wire Notes Line
+	6350 8450 500 8450
+Wire Notes Line
+	500 8450 500 5400
+Text Notes 560 5560 0    79   ~ 16
+SAFETY
+$Comp
+L dc-modules:74HC11 UANDA
+U 1 1 5E000098
+P 1550 7000
+F 0 "UANDA" H 1250 6350 50  0000 L CNN
+F 1 "74HC11" H 1250 7680 50  0000 L CNN
+F 2 "" H 1550 7000 50  0001 C CNN
+F 3 "~" H 1550 7000 50  0001 C CNN
+F 4 "" H 1550 7000 50  0001 C CNN "LCSC"
+	1    1550 7000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1100 6550 900 6550
+Text GLabel 900 6550 2    50   Input ~ 0
+EN_PFC
+Wire Wire Line
+	1100 6650 900 6650
+Text GLabel 900 6650 2    50   Input ~ 0
+EN_LLC
+Wire Wire Line
+	1100 6750 900 6750
+Text GLabel 900 6750 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1100 6850 900 6850
+Text GLabel 900 6850 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1100 6950 900 6950
+Text GLabel 900 6950 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1100 7050 900 7050
+Text GLabel 900 7050 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1100 7150 900 7150
+Text GLabel 900 7150 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1100 7250 900 7250
+Text GLabel 900 7250 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	1100 7350 900 7350
+Text GLabel 900 7350 2    50   Input ~ 0
+WDO_A
+Wire Wire Line
+	2000 6550 2200 6550
+Text GLabel 2200 6550 0    50   Output ~ 0
+GATE_EN_A
+Wire Wire Line
+	1350 6300 1350 6100
+Text GLabel 1350 6100 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	1350 7700 1350 7900
+Text GLabel 1350 7900 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:TPS3430-class USUPA
+U 1 1 5E000099
+P 3800 6750
+F 0 "USUPA" H 3500 6350 50  0000 L CNN
+F 1 "TPS3430-class" H 3500 7180 50  0000 L CNN
+F 2 "" H 3800 6750 50  0001 C CNN
+F 3 "~" H 3800 6750 50  0001 C CNN
+F 4 "" H 3800 6750 50  0001 C CNN "LCSC"
+	1    3800 6750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3350 6550 3150 6550
+Text GLabel 3150 6550 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	3350 6650 3150 6650
+Text GLabel 3150 6650 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	3350 6750 3150 6750
+Text GLabel 3150 6750 2    50   Input ~ 0
+WDI_PFC
+Wire Wire Line
+	3350 6850 3150 6850
+Text GLabel 3150 6850 2    50   Input ~ 0
+WDO_A
+Wire Wire Line
+	3600 6300 3600 6100
+Text GLabel 3600 6100 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	3700 6300 3700 6100
+Text GLabel 3700 6100 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	3600 7200 3600 7400
+Text GLabel 3600 7400 3    50   Output ~ 0
+DGND
+Wire Wire Line
+	3700 7200 3700 7400
+Text GLabel 3700 7400 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CFLTA
+U 1 1 5E00009A
+P 3600 7950
+F 0 "CFLTA" H 3600 7790 50  0000 C CNN
+F 1 "1nF" H 3600 8120 50  0000 C CNN
+F 2 "" H 3600 7950 50  0001 C CNN
+F 3 "~" H 3600 7950 50  0001 C CNN
+F 4 "" H 3600 7950 50  0001 C CNN "LCSC"
+	1    3600 7950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3350 7950 3150 7950
+Text GLabel 3150 7950 2    50   Input ~ 0
+FLT_PFC
+Wire Wire Line
+	3850 7950 4050 7950
+Text GLabel 4050 7950 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R CSFA
+U 1 1 5E00009B
+P 5400 6050
+F 0 "CSFA" H 5400 5890 50  0000 C CNN
+F 1 "100nF" H 5400 6220 50  0000 C CNN
+F 2 "" H 5400 6050 50  0001 C CNN
+F 3 "~" H 5400 6050 50  0001 C CNN
+F 4 "" H 5400 6050 50  0001 C CNN "LCSC"
+	1    5400 6050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 6050 4950 6050
+Text GLabel 4950 6050 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	5650 6050 5850 6050
+Text GLabel 5850 6050 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R RENLA
+U 1 1 5E00009C
+P 5450 6450
+F 0 "RENLA" H 5450 6290 50  0000 C CNN
+F 1 "100k" H 5450 6620 50  0000 C CNN
+F 2 "" H 5450 6450 50  0001 C CNN
+F 3 "~" H 5450 6450 50  0001 C CNN
+F 4 "" H 5450 6450 50  0001 C CNN "LCSC"
+	1    5450 6450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 6450 5000 6450
+Text GLabel 5000 6450 2    50   Input ~ 0
+EN_PFC
+Wire Wire Line
+	5700 6450 5900 6450
+Text GLabel 5900 6450 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R RENRA
+U 1 1 5E00009D
+P 5450 6850
+F 0 "RENRA" H 5450 6690 50  0000 C CNN
+F 1 "100k" H 5450 7020 50  0000 C CNN
+F 2 "" H 5450 6850 50  0001 C CNN
+F 3 "~" H 5450 6850 50  0001 C CNN
+F 4 "" H 5450 6850 50  0001 C CNN "LCSC"
+	1    5450 6850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 6850 5000 6850
+Text GLabel 5000 6850 2    50   Input ~ 0
+EN_LLC
+Wire Wire Line
+	5700 6850 5900 6850
+Text GLabel 5900 6850 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R RFLTA
+U 1 1 5E00009E
+P 5400 7250
+F 0 "RFLTA" H 5400 7090 50  0000 C CNN
+F 1 "4.7k" H 5400 7420 50  0000 C CNN
+F 2 "" H 5400 7250 50  0001 C CNN
+F 3 "~" H 5400 7250 50  0001 C CNN
+F 4 "" H 5400 7250 50  0001 C CNN "LCSC"
+	1    5400 7250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 7250 4950 7250
+Text GLabel 4950 7250 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	5650 7250 5850 7250
+Text GLabel 5850 7250 0    50   Output ~ 0
+FLT_PFC
+$Comp
+L dc-modules:R RGPDA
+U 1 1 5E00009F
+P 5550 7650
+F 0 "RGPDA" H 5550 7490 50  0000 C CNN
+F 1 "10k" H 5550 7820 50  0000 C CNN
+F 2 "" H 5550 7650 50  0001 C CNN
+F 3 "~" H 5550 7650 50  0001 C CNN
+F 4 "" H 5550 7650 50  0001 C CNN "LCSC"
+	1    5550 7650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 7650 5100 7650
+Text GLabel 5100 7650 2    50   Input ~ 0
+GATE_EN_A
+Wire Wire Line
+	5800 7650 6000 7650
+Text GLabel 6000 7650 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R RWPUA
+U 1 1 5E0000A0
+P 5400 8050
+F 0 "RWPUA" H 5400 7890 50  0000 C CNN
+F 1 "10k" H 5400 8220 50  0000 C CNN
+F 2 "" H 5400 8050 50  0001 C CNN
+F 3 "~" H 5400 8050 50  0001 C CNN
+F 4 "" H 5400 8050 50  0001 C CNN "LCSC"
+	1    5400 8050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 8050 4950 8050
+Text GLabel 4950 8050 2    50   Input ~ 0
+V3P3
+Wire Wire Line
+	5650 8050 5850 8050
+Text GLabel 5850 8050 0    50   Output ~ 0
+WDO_A
+Wire Notes Line
+	6750 5400 8300 5400
+Wire Notes Line
+	8300 5400 8300 7250
+Wire Notes Line
+	8300 7250 6750 7250
+Wire Notes Line
+	6750 7250 6750 5400
+Text Notes 6810 5560 0    79   ~ 16
+GROUNDING
+$Comp
+L dc-modules:R CPET
+U 1 1 5E0000A1
+P 7550 6050
+F 0 "CPET" H 7550 5890 50  0000 C CNN
+F 1 "4.7nF" H 7550 6220 50  0000 C CNN
+F 2 "" H 7550 6050 50  0001 C CNN
+F 3 "~" H 7550 6050 50  0001 C CNN
+F 4 "" H 7550 6050 50  0001 C CNN "LCSC"
+	1    7550 6050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7300 6050 7100 6050
+Text GLabel 7100 6050 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	7800 6050 8000 6050
+Text GLabel 8000 6050 0    50   Output ~ 0
+PE
+$Comp
+L dc-modules:R RAGTA
+U 1 1 5E0000A2
+P 7550 6450
+F 0 "RAGTA" H 7550 6290 50  0000 C CNN
+F 1 "0R" H 7550 6620 50  0000 C CNN
+F 2 "" H 7550 6450 50  0001 C CNN
+F 3 "~" H 7550 6450 50  0001 C CNN
+F 4 "" H 7550 6450 50  0001 C CNN "LCSC"
+	1    7550 6450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7300 6450 7100 6450
+Text GLabel 7100 6450 2    50   Input ~ 0
+AGND
+Wire Wire Line
+	7800 6450 8000 6450
+Text GLabel 8000 6450 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R RPET
+U 1 1 5E0000A3
+P 7550 6850
+F 0 "RPET" H 7550 6690 50  0000 C CNN
+F 1 "1M" H 7550 7020 50  0000 C CNN
+F 2 "" H 7550 6850 50  0001 C CNN
+F 3 "~" H 7550 6850 50  0001 C CNN
+F 4 "" H 7550 6850 50  0001 C CNN "LCSC"
+	1    7550 6850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7300 6850 7100 6850
+Text GLabel 7100 6850 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	7800 6850 8000 6850
+Text GLabel 8000 6850 0    50   Output ~ 0
+PE
+Wire Notes Line
+	8700 5400 11000 5400
+Wire Notes Line
+	11000 5400 11000 8350
+Wire Notes Line
+	11000 8350 8700 8350
+Wire Notes Line
+	8700 8350 8700 5400
+Text Notes 8760 5560 0    79   ~ 16
+COIL-DRIVER
+$Comp
+L dc-modules:ULN2803A UPA
+U 1 1 5E0000A4
+P 9800 6950
+F 0 "UPA" H 9500 6350 50  0000 L CNN
+F 1 "ULN2803A" H 9500 7580 50  0000 L CNN
+F 2 "" H 9800 6950 50  0001 C CNN
+F 3 "~" H 9800 6950 50  0001 C CNN
+F 4 "" H 9800 6950 50  0001 C CNN "LCSC"
+	1    9800 6950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9350 6550 9150 6550
+Text GLabel 9150 6550 2    50   Input ~ 0
+CTL_KPRE
+Wire Wire Line
+	9350 6650 9150 6650
+Text GLabel 9150 6650 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9350 6750 9150 6750
+Text GLabel 9150 6750 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9350 6850 9150 6850
+Text GLabel 9150 6850 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9350 6950 9150 6950
+Text GLabel 9150 6950 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9350 7050 9150 7050
+Text GLabel 9150 7050 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9350 7150 9150 7150
+Text GLabel 9150 7150 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9350 7250 9150 7250
+Text GLabel 9150 7250 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	10250 7050 10450 7050
+Text GLabel 10450 7050 0    50   Output ~ 0
+COIL_KPRE
+Wire Wire Line
+	9600 6300 9600 6100
+Text GLabel 9600 6100 1    50   Output ~ 0
+V24
+Wire Wire Line
+	9600 7600 9600 7800
+Text GLabel 9600 7800 3    50   Output ~ 0
+DGND
+Wire Notes Line
+	500 8850 2150 8850
+Wire Notes Line
+	2150 8850 2150 11100
+Wire Notes Line
+	2150 11100 500 11100
+Wire Notes Line
+	500 11100 500 8850
+Text Notes 560 9010 0    79   ~ 16
+RAIL-MON
+$Comp
+L dc-modules:R RM15A
+U 1 1 5E0000A5
+P 1250 9500
+F 0 "RM15A" H 1250 9340 50  0000 C CNN
+F 1 "47k" H 1250 9670 50  0000 C CNN
+F 2 "" H 1250 9500 50  0001 C CNN
+F 3 "~" H 1250 9500 50  0001 C CNN
+F 4 "" H 1250 9500 50  0001 C CNN "LCSC"
+	1    1250 9500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 9500 800 9500
+Text GLabel 800 9500 2    50   Input ~ 0
+V15
+Wire Wire Line
+	1500 9500 1700 9500
+Text GLabel 1700 9500 0    50   Output ~ 0
+SNS_V15
+$Comp
+L dc-modules:R RM15B
+U 1 1 5E0000A6
+P 1400 9900
+F 0 "RM15B" H 1400 9740 50  0000 C CNN
+F 1 "10k" H 1400 10070 50  0000 C CNN
+F 2 "" H 1400 9900 50  0001 C CNN
+F 3 "~" H 1400 9900 50  0001 C CNN
+F 4 "" H 1400 9900 50  0001 C CNN "LCSC"
+	1    1400 9900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 9900 950 9900
+Text GLabel 950 9900 2    50   Input ~ 0
+SNS_V15
+Wire Wire Line
+	1650 9900 1850 9900
+Text GLabel 1850 9900 0    50   Output ~ 0
+AGND
+$Comp
+L dc-modules:R RM24A
+U 1 1 5E0000A7
+P 1250 10300
+F 0 "RM24A" H 1250 10140 50  0000 C CNN
+F 1 "68k" H 1250 10470 50  0000 C CNN
+F 2 "" H 1250 10300 50  0001 C CNN
+F 3 "~" H 1250 10300 50  0001 C CNN
+F 4 "" H 1250 10300 50  0001 C CNN "LCSC"
+	1    1250 10300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 10300 800 10300
+Text GLabel 800 10300 2    50   Input ~ 0
+V24
+Wire Wire Line
+	1500 10300 1700 10300
+Text GLabel 1700 10300 0    50   Output ~ 0
+SNS_V24
+$Comp
+L dc-modules:R RM24B
+U 1 1 5E0000A8
+P 1400 10700
+F 0 "RM24B" H 1400 10540 50  0000 C CNN
+F 1 "10k" H 1400 10870 50  0000 C CNN
+F 2 "" H 1400 10700 50  0001 C CNN
+F 3 "~" H 1400 10700 50  0001 C CNN
+F 4 "" H 1400 10700 50  0001 C CNN "LCSC"
+	1    1400 10700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 10700 950 10700
+Text GLabel 950 10700 2    50   Input ~ 0
+SNS_V24
+Wire Wire Line
+	1650 10700 1850 10700
+Text GLabel 1850 10700 0    50   Output ~ 0
+AGND
+$EndSCHEMATC

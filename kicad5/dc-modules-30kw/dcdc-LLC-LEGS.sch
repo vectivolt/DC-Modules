@@ -1,0 +1,2012 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr User 17150 16200
+encoding utf-8
+Sheet 1 1
+Title "30kW DCDC 1of6 LLC-LEGS"
+Date "2026-09-05"
+Rev "D.1"
+Comp "DC-Modules - 30 kW module"
+Comment1 "dcdc-LLC-LEGS - 4 sections - 78 components"
+Comment2 "Cross-section links are global net labels; wires are pin stubs only"
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Notes Line
+	500 500 3800 500
+Wire Notes Line
+	3800 500 3800 3350
+Wire Notes Line
+	3800 3350 500 3350
+Wire Notes Line
+	500 3350 500 500
+Text Notes 560 660 0    79   ~ 16
+BUS-IN
+$Comp
+L dc-modules:STUD-M8 JDCN
+U 1 1 5E00019D
+P 1450 1250
+F 0 "JDCN" H 1150 950 50  0000 L CNN
+F 1 "STUD-M8" H 1150 1580 50  0000 L CNN
+F 2 "" H 1450 1250 50  0001 C CNN
+F 3 "~" H 1450 1250 50  0001 C CNN
+F 4 "" H 1450 1250 50  0001 C CNN "LCSC"
+	1    1450 1250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 1150 800 1150
+Text GLabel 800 1150 2    50   Input ~ 0
+DCN
+$Comp
+L dc-modules:STUD-M8 JDCP
+U 1 1 5E00019E
+P 1450 2000
+F 0 "JDCP" H 1150 1700 50  0000 L CNN
+F 1 "STUD-M8" H 1150 2330 50  0000 L CNN
+F 2 "" H 1450 2000 50  0001 C CNN
+F 3 "~" H 1450 2000 50  0001 C CNN
+F 4 "" H 1450 2000 50  0001 C CNN "LCSC"
+	1    1450 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 1900 800 1900
+Text GLabel 800 1900 2    50   Input ~ 0
+DCP
+$Comp
+L dc-modules:STUD-M8 JPEB
+U 1 1 5E00019F
+P 1450 2750
+F 0 "JPEB" H 1150 2450 50  0000 L CNN
+F 1 "STUD-M8" H 1150 3080 50  0000 L CNN
+F 2 "" H 1450 2750 50  0001 C CNN
+F 3 "~" H 1450 2750 50  0001 C CNN
+F 4 "" H 1450 2750 50  0001 C CNN "LCSC"
+	1    1450 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 2650 800 2650
+Text GLabel 800 2650 2    50   Input ~ 0
+PE
+$Comp
+L dc-modules:R CF0
+U 1 1 5E0001A0
+P 3050 1150
+F 0 "CF0" H 3050 990 50  0000 C CNN
+F 1 "1uF" H 3050 1320 50  0000 C CNN
+F 2 "" H 3050 1150 50  0001 C CNN
+F 3 "~" H 3050 1150 50  0001 C CNN
+F 4 "" H 3050 1150 50  0001 C CNN "LCSC"
+	1    3050 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 1150 2600 1150
+Text GLabel 2600 1150 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	3300 1150 3500 1150
+Text GLabel 3500 1150 0    50   Output ~ 0
+DCN
+$Comp
+L dc-modules:R CF1
+U 1 1 5E0001A1
+P 3050 1550
+F 0 "CF1" H 3050 1390 50  0000 C CNN
+F 1 "1uF" H 3050 1720 50  0000 C CNN
+F 2 "" H 3050 1550 50  0001 C CNN
+F 3 "~" H 3050 1550 50  0001 C CNN
+F 4 "" H 3050 1550 50  0001 C CNN "LCSC"
+	1    3050 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 1550 2600 1550
+Text GLabel 2600 1550 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	3300 1550 3500 1550
+Text GLabel 3500 1550 0    50   Output ~ 0
+DCN
+$Comp
+L dc-modules:R CF2
+U 1 1 5E0001A2
+P 3050 1950
+F 0 "CF2" H 3050 1790 50  0000 C CNN
+F 1 "1uF" H 3050 2120 50  0000 C CNN
+F 2 "" H 3050 1950 50  0001 C CNN
+F 3 "~" H 3050 1950 50  0001 C CNN
+F 4 "" H 3050 1950 50  0001 C CNN "LCSC"
+	1    3050 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 1950 2600 1950
+Text GLabel 2600 1950 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	3300 1950 3500 1950
+Text GLabel 3500 1950 0    50   Output ~ 0
+DCN
+Wire Notes Line
+	500 3750 16650 3750
+Wire Notes Line
+	16650 3750 16650 7200
+Wire Notes Line
+	16650 7200 500 7200
+Wire Notes Line
+	500 7200 500 3750
+Text Notes 560 3910 0    79   ~ 16
+LEG-1
+$Comp
+L dc-modules:QA01C-15S18 PS1H
+U 1 1 5E0001A3
+P 1350 5000
+F 0 "PS1H" H 1050 4700 50  0000 L CNN
+F 1 "QA01C-15S18" H 1050 5330 50  0000 L CNN
+F 2 "" H 1350 5000 50  0001 C CNN
+F 3 "~" H 1350 5000 50  0001 C CNN
+F 4 "" H 1350 5000 50  0001 C CNN "LCSC"
+	1    1350 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1800 4900 2000 4900
+Text GLabel 2000 4900 0    50   Output ~ 0
+N_DCDC_6
+Wire Wire Line
+	1800 5000 2000 5000
+Text GLabel 2000 5000 0    50   Output ~ 0
+N_DCDC_4
+Wire Wire Line
+	1150 4650 1150 4450
+Text GLabel 1150 4450 1    50   Output ~ 0
+V15
+Wire Wire Line
+	1150 5350 1150 5550
+Text GLabel 1150 5550 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:QA01C-15S18 PS1L
+U 1 1 5E0001A4
+P 3350 5000
+F 0 "PS1L" H 3050 4700 50  0000 L CNN
+F 1 "QA01C-15S18" H 3050 5330 50  0000 L CNN
+F 2 "" H 3350 5000 50  0001 C CNN
+F 3 "~" H 3350 5000 50  0001 C CNN
+F 4 "" H 3350 5000 50  0001 C CNN "LCSC"
+	1    3350 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 4900 4000 4900
+Text GLabel 4000 4900 0    50   Output ~ 0
+N_DCDC_13
+Wire Wire Line
+	3800 5000 4000 5000
+Text GLabel 4000 5000 0    50   Output ~ 0
+N_DCDC_11
+Wire Wire Line
+	3150 4650 3150 4450
+Text GLabel 3150 4450 1    50   Output ~ 0
+V15
+Wire Wire Line
+	3150 5350 3150 5550
+Text GLabel 3150 5550 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:SG2M023120LJ Q1H
+U 1 1 5E0001A5
+P 3500 6300
+F 0 "Q1H" H 3200 5900 50  0000 L CNN
+F 1 "SG2M023120LJ" H 3200 6730 50  0000 L CNN
+F 2 "" H 3500 6300 50  0001 C CNN
+F 3 "~" H 3500 6300 50  0001 C CNN
+F 4 "" H 3500 6300 50  0001 C CNN "LCSC"
+	1    3500 6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 6100 2850 6100
+Text GLabel 2850 6100 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	3050 6200 2850 6200
+Text GLabel 2850 6200 2    50   Input ~ 0
+SW1
+Wire Wire Line
+	3050 6300 2850 6300
+Text GLabel 2850 6300 2    50   Input ~ 0
+KH_1
+Wire Wire Line
+	3050 6400 2850 6400
+Text GLabel 2850 6400 2    50   Input ~ 0
+GH_1
+$Comp
+L dc-modules:SG2M023120LJ Q1L
+U 1 1 5E0001A6
+P 5500 4600
+F 0 "Q1L" H 5200 4200 50  0000 L CNN
+F 1 "SG2M023120LJ" H 5200 5030 50  0000 L CNN
+F 2 "" H 5500 4600 50  0001 C CNN
+F 3 "~" H 5500 4600 50  0001 C CNN
+F 4 "" H 5500 4600 50  0001 C CNN "LCSC"
+	1    5500 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 4400 4850 4400
+Text GLabel 4850 4400 2    50   Input ~ 0
+SW1
+Wire Wire Line
+	5050 4500 4850 4500
+Text GLabel 4850 4500 2    50   Input ~ 0
+DCN
+Wire Wire Line
+	5050 4600 4850 4600
+Text GLabel 4850 4600 2    50   Input ~ 0
+KL_1
+Wire Wire Line
+	5050 4700 4850 4700
+Text GLabel 4850 4700 2    50   Input ~ 0
+GL_1
+$Comp
+L dc-modules:NSI6611 U1H
+U 1 1 5E0001A7
+P 7500 5300
+F 0 "U1H" H 7150 4700 50  0000 L CNN
+F 1 "NSI6611" H 7150 5930 50  0000 L CNN
+F 2 "" H 7500 5300 50  0001 C CNN
+F 3 "~" H 7500 5300 50  0001 C CNN
+F 4 "" H 7500 5300 50  0001 C CNN "LCSC"
+	1    7500 5300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7000 4900 6800 4900
+Text GLabel 6800 4900 2    50   Input ~ 0
+KH_1
+Wire Wire Line
+	7000 5000 6800 5000
+Text GLabel 6800 5000 2    50   Input ~ 0
+N_DCDC_5
+Wire Wire Line
+	7000 5100 6800 5100
+Text GLabel 6800 5100 2    50   Input ~ 0
+GH_1
+Wire Wire Line
+	7000 5200 6800 5200
+Text GLabel 6800 5200 2    50   Input ~ 0
+PWM_L1H
+Wire Wire Line
+	7000 5300 6800 5300
+Text GLabel 6800 5300 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	7000 5400 6800 5400
+Text GLabel 6800 5400 2    50   Input ~ 0
+FLT_LLC
+Wire Wire Line
+	7000 5500 6800 5500
+Text GLabel 6800 5500 2    50   Input ~ 0
+GATE_EN_B
+Wire Wire Line
+	7000 5600 6800 5600
+Text GLabel 6800 5600 2    50   Input ~ 0
+KH_1
+Wire Wire Line
+	8000 4900 8200 4900
+Text GLabel 8200 4900 0    50   Output ~ 0
+N_DCDC_3
+Wire Wire Line
+	8000 5000 8200 5000
+Text GLabel 8200 5000 0    50   Output ~ 0
+N_DCDC_2
+Wire Wire Line
+	7250 4650 7250 4450
+Text GLabel 7250 4450 1    50   Output ~ 0
+N_DCDC_4
+Wire Wire Line
+	7350 4650 7350 4450
+Text GLabel 7350 4450 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	7250 5950 7250 6150
+Text GLabel 7250 6150 3    50   Output ~ 0
+KH_1
+Wire Wire Line
+	7350 5950 7350 6150
+Text GLabel 7350 6150 3    50   Output ~ 0
+N_DCDC_1
+Wire Wire Line
+	7450 5950 7450 6150
+Text GLabel 7450 6150 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:NSI6611 U1L
+U 1 1 5E0001A8
+P 9900 5300
+F 0 "U1L" H 9550 4700 50  0000 L CNN
+F 1 "NSI6611" H 9550 5930 50  0000 L CNN
+F 2 "" H 9900 5300 50  0001 C CNN
+F 3 "~" H 9900 5300 50  0001 C CNN
+F 4 "" H 9900 5300 50  0001 C CNN "LCSC"
+	1    9900 5300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 4900 9200 4900
+Text GLabel 9200 4900 2    50   Input ~ 0
+KL_1
+Wire Wire Line
+	9400 5000 9200 5000
+Text GLabel 9200 5000 2    50   Input ~ 0
+N_DCDC_12
+Wire Wire Line
+	9400 5100 9200 5100
+Text GLabel 9200 5100 2    50   Input ~ 0
+GL_1
+Wire Wire Line
+	9400 5200 9200 5200
+Text GLabel 9200 5200 2    50   Input ~ 0
+PWM_L1L
+Wire Wire Line
+	9400 5300 9200 5300
+Text GLabel 9200 5300 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9400 5400 9200 5400
+Text GLabel 9200 5400 2    50   Input ~ 0
+FLT_LLC
+Wire Wire Line
+	9400 5500 9200 5500
+Text GLabel 9200 5500 2    50   Input ~ 0
+GATE_EN_B
+Wire Wire Line
+	9400 5600 9200 5600
+Text GLabel 9200 5600 2    50   Input ~ 0
+KL_1
+Wire Wire Line
+	10400 4900 10600 4900
+Text GLabel 10600 4900 0    50   Output ~ 0
+N_DCDC_10
+Wire Wire Line
+	10400 5000 10600 5000
+Text GLabel 10600 5000 0    50   Output ~ 0
+N_DCDC_9
+Wire Wire Line
+	9650 4650 9650 4450
+Text GLabel 9650 4450 1    50   Output ~ 0
+N_DCDC_11
+Wire Wire Line
+	9750 4650 9750 4450
+Text GLabel 9750 4450 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	9650 5950 9650 6150
+Text GLabel 9650 6150 3    50   Output ~ 0
+KL_1
+Wire Wire Line
+	9750 5950 9750 6150
+Text GLabel 9750 6150 3    50   Output ~ 0
+N_DCDC_8
+Wire Wire Line
+	9850 5950 9850 6150
+Text GLabel 9850 6150 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R C1HB1
+U 1 1 5E0001A9
+P 9650 6700
+F 0 "C1HB1" H 9650 6540 50  0000 C CNN
+F 1 "1uF" H 9650 6870 50  0000 C CNN
+F 2 "" H 9650 6700 50  0001 C CNN
+F 3 "~" H 9650 6700 50  0001 C CNN
+F 4 "" H 9650 6700 50  0001 C CNN "LCSC"
+	1    9650 6700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 6700 9200 6700
+Text GLabel 9200 6700 2    50   Input ~ 0
+N_DCDC_4
+Wire Wire Line
+	9900 6700 10100 6700
+Text GLabel 10100 6700 0    50   Output ~ 0
+N_DCDC_6
+$Comp
+L dc-modules:R C1HB2
+U 1 1 5E0001AA
+P 12050 4400
+F 0 "C1HB2" H 12050 4240 50  0000 C CNN
+F 1 "1uF" H 12050 4570 50  0000 C CNN
+F 2 "" H 12050 4400 50  0001 C CNN
+F 3 "~" H 12050 4400 50  0001 C CNN
+F 4 "" H 12050 4400 50  0001 C CNN "LCSC"
+	1    12050 4400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 4400 11600 4400
+Text GLabel 11600 4400 2    50   Input ~ 0
+N_DCDC_6
+Wire Wire Line
+	12300 4400 12500 4400
+Text GLabel 12500 4400 0    50   Output ~ 0
+N_DCDC_1
+$Comp
+L dc-modules:R C1HBL
+U 1 1 5E0001AB
+P 12050 4800
+F 0 "C1HBL" H 12050 4640 50  0000 C CNN
+F 1 "100pF" H 12050 4970 50  0000 C CNN
+F 2 "" H 12050 4800 50  0001 C CNN
+F 3 "~" H 12050 4800 50  0001 C CNN
+F 4 "" H 12050 4800 50  0001 C CNN "LCSC"
+	1    12050 4800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 4800 11600 4800
+Text GLabel 11600 4800 2    50   Input ~ 0
+N_DCDC_5
+Wire Wire Line
+	12300 4800 12500 4800
+Text GLabel 12500 4800 0    50   Output ~ 0
+N_DCDC_6
+$Comp
+L dc-modules:R C1LB1
+U 1 1 5E0001AC
+P 12050 5200
+F 0 "C1LB1" H 12050 5040 50  0000 C CNN
+F 1 "1uF" H 12050 5370 50  0000 C CNN
+F 2 "" H 12050 5200 50  0001 C CNN
+F 3 "~" H 12050 5200 50  0001 C CNN
+F 4 "" H 12050 5200 50  0001 C CNN "LCSC"
+	1    12050 5200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 5200 11600 5200
+Text GLabel 11600 5200 2    50   Input ~ 0
+N_DCDC_11
+Wire Wire Line
+	12300 5200 12500 5200
+Text GLabel 12500 5200 0    50   Output ~ 0
+N_DCDC_13
+$Comp
+L dc-modules:R C1LB2
+U 1 1 5E0001AD
+P 12050 5600
+F 0 "C1LB2" H 12050 5440 50  0000 C CNN
+F 1 "1uF" H 12050 5770 50  0000 C CNN
+F 2 "" H 12050 5600 50  0001 C CNN
+F 3 "~" H 12050 5600 50  0001 C CNN
+F 4 "" H 12050 5600 50  0001 C CNN "LCSC"
+	1    12050 5600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 5600 11600 5600
+Text GLabel 11600 5600 2    50   Input ~ 0
+N_DCDC_13
+Wire Wire Line
+	12300 5600 12500 5600
+Text GLabel 12500 5600 0    50   Output ~ 0
+N_DCDC_8
+$Comp
+L dc-modules:R C1LBL
+U 1 1 5E0001AE
+P 12050 6000
+F 0 "C1LBL" H 12050 5840 50  0000 C CNN
+F 1 "100pF" H 12050 6170 50  0000 C CNN
+F 2 "" H 12050 6000 50  0001 C CNN
+F 3 "~" H 12050 6000 50  0001 C CNN
+F 4 "" H 12050 6000 50  0001 C CNN "LCSC"
+	1    12050 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 6000 11600 6000
+Text GLabel 11600 6000 2    50   Input ~ 0
+N_DCDC_12
+Wire Wire Line
+	12300 6000 12500 6000
+Text GLabel 12500 6000 0    50   Output ~ 0
+N_DCDC_13
+$Comp
+L dc-modules:D D1HS1
+U 1 1 5E0001AF
+P 12050 6400
+F 0 "D1HS1" H 12050 6240 50  0000 C CNN
+F 1 "US1M" H 12050 6570 50  0000 C CNN
+F 2 "" H 12050 6400 50  0001 C CNN
+F 3 "~" H 12050 6400 50  0001 C CNN
+F 4 "" H 12050 6400 50  0001 C CNN "LCSC"
+	1    12050 6400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 6400 11600 6400
+Text GLabel 11600 6400 2    50   Input ~ 0
+N_DCDC_7
+Wire Wire Line
+	12300 6400 12500 6400
+Text GLabel 12500 6400 0    50   Output ~ 0
+N_DCDC_5
+$Comp
+L dc-modules:D D1HS2
+U 1 1 5E0001B0
+P 11850 6800
+F 0 "D1HS2" H 11850 6640 50  0000 C CNN
+F 1 "US1M" H 11850 6970 50  0000 C CNN
+F 2 "" H 11850 6800 50  0001 C CNN
+F 3 "~" H 11850 6800 50  0001 C CNN
+F 4 "" H 11850 6800 50  0001 C CNN "LCSC"
+	1    11850 6800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11600 6800 11400 6800
+Text GLabel 11400 6800 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	12100 6800 12300 6800
+Text GLabel 12300 6800 0    50   Output ~ 0
+N_DCDC_7
+$Comp
+L dc-modules:D D1LS1
+U 1 1 5E0001B1
+P 13950 4400
+F 0 "D1LS1" H 13950 4240 50  0000 C CNN
+F 1 "US1M" H 13950 4570 50  0000 C CNN
+F 2 "" H 13950 4400 50  0001 C CNN
+F 3 "~" H 13950 4400 50  0001 C CNN
+F 4 "" H 13950 4400 50  0001 C CNN "LCSC"
+	1    13950 4400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 4400 13500 4400
+Text GLabel 13500 4400 2    50   Input ~ 0
+N_DCDC_14
+Wire Wire Line
+	14200 4400 14400 4400
+Text GLabel 14400 4400 0    50   Output ~ 0
+N_DCDC_12
+$Comp
+L dc-modules:D D1LS2
+U 1 1 5E0001B2
+P 13750 4800
+F 0 "D1LS2" H 13750 4640 50  0000 C CNN
+F 1 "US1M" H 13750 4970 50  0000 C CNN
+F 2 "" H 13750 4800 50  0001 C CNN
+F 3 "~" H 13750 4800 50  0001 C CNN
+F 4 "" H 13750 4800 50  0001 C CNN "LCSC"
+	1    13750 4800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13500 4800 13300 4800
+Text GLabel 13300 4800 2    50   Input ~ 0
+SW1
+Wire Wire Line
+	14000 4800 14200 4800
+Text GLabel 14200 4800 0    50   Output ~ 0
+N_DCDC_14
+$Comp
+L dc-modules:R R1HGS
+U 1 1 5E0001B3
+P 13800 5200
+F 0 "R1HGS" H 13800 5040 50  0000 C CNN
+F 1 "10k" H 13800 5370 50  0000 C CNN
+F 2 "" H 13800 5200 50  0001 C CNN
+F 3 "~" H 13800 5200 50  0001 C CNN
+F 4 "" H 13800 5200 50  0001 C CNN "LCSC"
+	1    13800 5200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13550 5200 13350 5200
+Text GLabel 13350 5200 2    50   Input ~ 0
+GH_1
+Wire Wire Line
+	14050 5200 14250 5200
+Text GLabel 14250 5200 0    50   Output ~ 0
+KH_1
+$Comp
+L dc-modules:R R1HOFF
+U 1 1 5E0001B4
+P 13900 5600
+F 0 "R1HOFF" H 13900 5440 50  0000 C CNN
+F 1 "2.2" H 13900 5770 50  0000 C CNN
+F 2 "" H 13900 5600 50  0001 C CNN
+F 3 "~" H 13900 5600 50  0001 C CNN
+F 4 "" H 13900 5600 50  0001 C CNN "LCSC"
+	1    13900 5600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13650 5600 13450 5600
+Text GLabel 13450 5600 2    50   Input ~ 0
+N_DCDC_2
+Wire Wire Line
+	14150 5600 14350 5600
+Text GLabel 14350 5600 0    50   Output ~ 0
+GH_1
+$Comp
+L dc-modules:R R1HON
+U 1 1 5E0001B5
+P 13900 6000
+F 0 "R1HON" H 13900 5840 50  0000 C CNN
+F 1 "4.7" H 13900 6170 50  0000 C CNN
+F 2 "" H 13900 6000 50  0001 C CNN
+F 3 "~" H 13900 6000 50  0001 C CNN
+F 4 "" H 13900 6000 50  0001 C CNN "LCSC"
+	1    13900 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13650 6000 13450 6000
+Text GLabel 13450 6000 2    50   Input ~ 0
+N_DCDC_3
+Wire Wire Line
+	14150 6000 14350 6000
+Text GLabel 14350 6000 0    50   Output ~ 0
+GH_1
+$Comp
+L dc-modules:R R1HPD
+U 1 1 5E0001B6
+P 13900 6400
+F 0 "R1HPD" H 13900 6240 50  0000 C CNN
+F 1 "10k" H 13900 6570 50  0000 C CNN
+F 2 "" H 13900 6400 50  0001 C CNN
+F 3 "~" H 13900 6400 50  0001 C CNN
+F 4 "" H 13900 6400 50  0001 C CNN "LCSC"
+	1    13900 6400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13650 6400 13450 6400
+Text GLabel 13450 6400 2    50   Input ~ 0
+PWM_L1H
+Wire Wire Line
+	14150 6400 14350 6400
+Text GLabel 14350 6400 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R R1LGS
+U 1 1 5E0001B7
+P 13800 6800
+F 0 "R1LGS" H 13800 6640 50  0000 C CNN
+F 1 "10k" H 13800 6970 50  0000 C CNN
+F 2 "" H 13800 6800 50  0001 C CNN
+F 3 "~" H 13800 6800 50  0001 C CNN
+F 4 "" H 13800 6800 50  0001 C CNN "LCSC"
+	1    13800 6800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13550 6800 13350 6800
+Text GLabel 13350 6800 2    50   Input ~ 0
+GL_1
+Wire Wire Line
+	14050 6800 14250 6800
+Text GLabel 14250 6800 0    50   Output ~ 0
+KL_1
+$Comp
+L dc-modules:R R1LOFF
+U 1 1 5E0001B8
+P 15800 4400
+F 0 "R1LOFF" H 15800 4240 50  0000 C CNN
+F 1 "2.2" H 15800 4570 50  0000 C CNN
+F 2 "" H 15800 4400 50  0001 C CNN
+F 3 "~" H 15800 4400 50  0001 C CNN
+F 4 "" H 15800 4400 50  0001 C CNN "LCSC"
+	1    15800 4400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15550 4400 15350 4400
+Text GLabel 15350 4400 2    50   Input ~ 0
+N_DCDC_9
+Wire Wire Line
+	16050 4400 16250 4400
+Text GLabel 16250 4400 0    50   Output ~ 0
+GL_1
+$Comp
+L dc-modules:R R1LON
+U 1 1 5E0001B9
+P 15850 4800
+F 0 "R1LON" H 15850 4640 50  0000 C CNN
+F 1 "4.7" H 15850 4970 50  0000 C CNN
+F 2 "" H 15850 4800 50  0001 C CNN
+F 3 "~" H 15850 4800 50  0001 C CNN
+F 4 "" H 15850 4800 50  0001 C CNN "LCSC"
+	1    15850 4800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15600 4800 15400 4800
+Text GLabel 15400 4800 2    50   Input ~ 0
+N_DCDC_10
+Wire Wire Line
+	16100 4800 16300 4800
+Text GLabel 16300 4800 0    50   Output ~ 0
+GL_1
+$Comp
+L dc-modules:R R1LPD
+U 1 1 5E0001BA
+P 15800 5200
+F 0 "R1LPD" H 15800 5040 50  0000 C CNN
+F 1 "10k" H 15800 5370 50  0000 C CNN
+F 2 "" H 15800 5200 50  0001 C CNN
+F 3 "~" H 15800 5200 50  0001 C CNN
+F 4 "" H 15800 5200 50  0001 C CNN "LCSC"
+	1    15800 5200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15550 5200 15350 5200
+Text GLabel 15350 5200 2    50   Input ~ 0
+PWM_L1L
+Wire Wire Line
+	16050 5200 16250 5200
+Text GLabel 16250 5200 0    50   Output ~ 0
+DGND
+Wire Notes Line
+	500 7600 16650 7600
+Wire Notes Line
+	16650 7600 16650 11050
+Wire Notes Line
+	16650 11050 500 11050
+Wire Notes Line
+	500 11050 500 7600
+Text Notes 560 7760 0    79   ~ 16
+LEG-2
+$Comp
+L dc-modules:QA01C-15S18 PS2H
+U 1 1 5E0001BB
+P 1350 8850
+F 0 "PS2H" H 1050 8550 50  0000 L CNN
+F 1 "QA01C-15S18" H 1050 9180 50  0000 L CNN
+F 2 "" H 1350 8850 50  0001 C CNN
+F 3 "~" H 1350 8850 50  0001 C CNN
+F 4 "" H 1350 8850 50  0001 C CNN "LCSC"
+	1    1350 8850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1800 8750 2000 8750
+Text GLabel 2000 8750 0    50   Output ~ 0
+N_DCDC_20
+Wire Wire Line
+	1800 8850 2000 8850
+Text GLabel 2000 8850 0    50   Output ~ 0
+N_DCDC_18
+Wire Wire Line
+	1150 8500 1150 8300
+Text GLabel 1150 8300 1    50   Output ~ 0
+V15
+Wire Wire Line
+	1150 9200 1150 9400
+Text GLabel 1150 9400 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:QA01C-15S18 PS2L
+U 1 1 5E0001BC
+P 3350 8850
+F 0 "PS2L" H 3050 8550 50  0000 L CNN
+F 1 "QA01C-15S18" H 3050 9180 50  0000 L CNN
+F 2 "" H 3350 8850 50  0001 C CNN
+F 3 "~" H 3350 8850 50  0001 C CNN
+F 4 "" H 3350 8850 50  0001 C CNN "LCSC"
+	1    3350 8850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 8750 4000 8750
+Text GLabel 4000 8750 0    50   Output ~ 0
+N_DCDC_27
+Wire Wire Line
+	3800 8850 4000 8850
+Text GLabel 4000 8850 0    50   Output ~ 0
+N_DCDC_25
+Wire Wire Line
+	3150 8500 3150 8300
+Text GLabel 3150 8300 1    50   Output ~ 0
+V15
+Wire Wire Line
+	3150 9200 3150 9400
+Text GLabel 3150 9400 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:SG2M023120LJ Q2H
+U 1 1 5E0001BD
+P 3500 10150
+F 0 "Q2H" H 3200 9750 50  0000 L CNN
+F 1 "SG2M023120LJ" H 3200 10580 50  0000 L CNN
+F 2 "" H 3500 10150 50  0001 C CNN
+F 3 "~" H 3500 10150 50  0001 C CNN
+F 4 "" H 3500 10150 50  0001 C CNN "LCSC"
+	1    3500 10150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 9950 2850 9950
+Text GLabel 2850 9950 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	3050 10050 2850 10050
+Text GLabel 2850 10050 2    50   Input ~ 0
+SW2
+Wire Wire Line
+	3050 10150 2850 10150
+Text GLabel 2850 10150 2    50   Input ~ 0
+KH_2
+Wire Wire Line
+	3050 10250 2850 10250
+Text GLabel 2850 10250 2    50   Input ~ 0
+GH_2
+$Comp
+L dc-modules:SG2M023120LJ Q2L
+U 1 1 5E0001BE
+P 5500 8450
+F 0 "Q2L" H 5200 8050 50  0000 L CNN
+F 1 "SG2M023120LJ" H 5200 8880 50  0000 L CNN
+F 2 "" H 5500 8450 50  0001 C CNN
+F 3 "~" H 5500 8450 50  0001 C CNN
+F 4 "" H 5500 8450 50  0001 C CNN "LCSC"
+	1    5500 8450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 8250 4850 8250
+Text GLabel 4850 8250 2    50   Input ~ 0
+SW2
+Wire Wire Line
+	5050 8350 4850 8350
+Text GLabel 4850 8350 2    50   Input ~ 0
+DCN
+Wire Wire Line
+	5050 8450 4850 8450
+Text GLabel 4850 8450 2    50   Input ~ 0
+KL_2
+Wire Wire Line
+	5050 8550 4850 8550
+Text GLabel 4850 8550 2    50   Input ~ 0
+GL_2
+$Comp
+L dc-modules:NSI6611 U2H
+U 1 1 5E0001BF
+P 7500 9150
+F 0 "U2H" H 7150 8550 50  0000 L CNN
+F 1 "NSI6611" H 7150 9780 50  0000 L CNN
+F 2 "" H 7500 9150 50  0001 C CNN
+F 3 "~" H 7500 9150 50  0001 C CNN
+F 4 "" H 7500 9150 50  0001 C CNN "LCSC"
+	1    7500 9150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7000 8750 6800 8750
+Text GLabel 6800 8750 2    50   Input ~ 0
+KH_2
+Wire Wire Line
+	7000 8850 6800 8850
+Text GLabel 6800 8850 2    50   Input ~ 0
+N_DCDC_19
+Wire Wire Line
+	7000 8950 6800 8950
+Text GLabel 6800 8950 2    50   Input ~ 0
+GH_2
+Wire Wire Line
+	7000 9050 6800 9050
+Text GLabel 6800 9050 2    50   Input ~ 0
+PWM_L2H
+Wire Wire Line
+	7000 9150 6800 9150
+Text GLabel 6800 9150 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	7000 9250 6800 9250
+Text GLabel 6800 9250 2    50   Input ~ 0
+FLT_LLC
+Wire Wire Line
+	7000 9350 6800 9350
+Text GLabel 6800 9350 2    50   Input ~ 0
+GATE_EN_B
+Wire Wire Line
+	7000 9450 6800 9450
+Text GLabel 6800 9450 2    50   Input ~ 0
+KH_2
+Wire Wire Line
+	8000 8750 8200 8750
+Text GLabel 8200 8750 0    50   Output ~ 0
+N_DCDC_17
+Wire Wire Line
+	8000 8850 8200 8850
+Text GLabel 8200 8850 0    50   Output ~ 0
+N_DCDC_16
+Wire Wire Line
+	7250 8500 7250 8300
+Text GLabel 7250 8300 1    50   Output ~ 0
+N_DCDC_18
+Wire Wire Line
+	7350 8500 7350 8300
+Text GLabel 7350 8300 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	7250 9800 7250 10000
+Text GLabel 7250 10000 3    50   Output ~ 0
+KH_2
+Wire Wire Line
+	7350 9800 7350 10000
+Text GLabel 7350 10000 3    50   Output ~ 0
+N_DCDC_15
+Wire Wire Line
+	7450 9800 7450 10000
+Text GLabel 7450 10000 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:NSI6611 U2L
+U 1 1 5E0001C0
+P 9900 9150
+F 0 "U2L" H 9550 8550 50  0000 L CNN
+F 1 "NSI6611" H 9550 9780 50  0000 L CNN
+F 2 "" H 9900 9150 50  0001 C CNN
+F 3 "~" H 9900 9150 50  0001 C CNN
+F 4 "" H 9900 9150 50  0001 C CNN "LCSC"
+	1    9900 9150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 8750 9200 8750
+Text GLabel 9200 8750 2    50   Input ~ 0
+KL_2
+Wire Wire Line
+	9400 8850 9200 8850
+Text GLabel 9200 8850 2    50   Input ~ 0
+N_DCDC_26
+Wire Wire Line
+	9400 8950 9200 8950
+Text GLabel 9200 8950 2    50   Input ~ 0
+GL_2
+Wire Wire Line
+	9400 9050 9200 9050
+Text GLabel 9200 9050 2    50   Input ~ 0
+PWM_L2L
+Wire Wire Line
+	9400 9150 9200 9150
+Text GLabel 9200 9150 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9400 9250 9200 9250
+Text GLabel 9200 9250 2    50   Input ~ 0
+FLT_LLC
+Wire Wire Line
+	9400 9350 9200 9350
+Text GLabel 9200 9350 2    50   Input ~ 0
+GATE_EN_B
+Wire Wire Line
+	9400 9450 9200 9450
+Text GLabel 9200 9450 2    50   Input ~ 0
+KL_2
+Wire Wire Line
+	10400 8750 10600 8750
+Text GLabel 10600 8750 0    50   Output ~ 0
+N_DCDC_24
+Wire Wire Line
+	10400 8850 10600 8850
+Text GLabel 10600 8850 0    50   Output ~ 0
+N_DCDC_23
+Wire Wire Line
+	9650 8500 9650 8300
+Text GLabel 9650 8300 1    50   Output ~ 0
+N_DCDC_25
+Wire Wire Line
+	9750 8500 9750 8300
+Text GLabel 9750 8300 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	9650 9800 9650 10000
+Text GLabel 9650 10000 3    50   Output ~ 0
+KL_2
+Wire Wire Line
+	9750 9800 9750 10000
+Text GLabel 9750 10000 3    50   Output ~ 0
+N_DCDC_22
+Wire Wire Line
+	9850 9800 9850 10000
+Text GLabel 9850 10000 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R C2HB1
+U 1 1 5E0001C1
+P 9650 10550
+F 0 "C2HB1" H 9650 10390 50  0000 C CNN
+F 1 "1uF" H 9650 10720 50  0000 C CNN
+F 2 "" H 9650 10550 50  0001 C CNN
+F 3 "~" H 9650 10550 50  0001 C CNN
+F 4 "" H 9650 10550 50  0001 C CNN "LCSC"
+	1    9650 10550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 10550 9200 10550
+Text GLabel 9200 10550 2    50   Input ~ 0
+N_DCDC_18
+Wire Wire Line
+	9900 10550 10100 10550
+Text GLabel 10100 10550 0    50   Output ~ 0
+N_DCDC_20
+$Comp
+L dc-modules:R C2HB2
+U 1 1 5E0001C2
+P 12050 8250
+F 0 "C2HB2" H 12050 8090 50  0000 C CNN
+F 1 "1uF" H 12050 8420 50  0000 C CNN
+F 2 "" H 12050 8250 50  0001 C CNN
+F 3 "~" H 12050 8250 50  0001 C CNN
+F 4 "" H 12050 8250 50  0001 C CNN "LCSC"
+	1    12050 8250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 8250 11600 8250
+Text GLabel 11600 8250 2    50   Input ~ 0
+N_DCDC_20
+Wire Wire Line
+	12300 8250 12500 8250
+Text GLabel 12500 8250 0    50   Output ~ 0
+N_DCDC_15
+$Comp
+L dc-modules:R C2HBL
+U 1 1 5E0001C3
+P 12050 8650
+F 0 "C2HBL" H 12050 8490 50  0000 C CNN
+F 1 "100pF" H 12050 8820 50  0000 C CNN
+F 2 "" H 12050 8650 50  0001 C CNN
+F 3 "~" H 12050 8650 50  0001 C CNN
+F 4 "" H 12050 8650 50  0001 C CNN "LCSC"
+	1    12050 8650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 8650 11600 8650
+Text GLabel 11600 8650 2    50   Input ~ 0
+N_DCDC_19
+Wire Wire Line
+	12300 8650 12500 8650
+Text GLabel 12500 8650 0    50   Output ~ 0
+N_DCDC_20
+$Comp
+L dc-modules:R C2LB1
+U 1 1 5E0001C4
+P 12050 9050
+F 0 "C2LB1" H 12050 8890 50  0000 C CNN
+F 1 "1uF" H 12050 9220 50  0000 C CNN
+F 2 "" H 12050 9050 50  0001 C CNN
+F 3 "~" H 12050 9050 50  0001 C CNN
+F 4 "" H 12050 9050 50  0001 C CNN "LCSC"
+	1    12050 9050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 9050 11600 9050
+Text GLabel 11600 9050 2    50   Input ~ 0
+N_DCDC_25
+Wire Wire Line
+	12300 9050 12500 9050
+Text GLabel 12500 9050 0    50   Output ~ 0
+N_DCDC_27
+$Comp
+L dc-modules:R C2LB2
+U 1 1 5E0001C5
+P 12050 9450
+F 0 "C2LB2" H 12050 9290 50  0000 C CNN
+F 1 "1uF" H 12050 9620 50  0000 C CNN
+F 2 "" H 12050 9450 50  0001 C CNN
+F 3 "~" H 12050 9450 50  0001 C CNN
+F 4 "" H 12050 9450 50  0001 C CNN "LCSC"
+	1    12050 9450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 9450 11600 9450
+Text GLabel 11600 9450 2    50   Input ~ 0
+N_DCDC_27
+Wire Wire Line
+	12300 9450 12500 9450
+Text GLabel 12500 9450 0    50   Output ~ 0
+N_DCDC_22
+$Comp
+L dc-modules:R C2LBL
+U 1 1 5E0001C6
+P 12050 9850
+F 0 "C2LBL" H 12050 9690 50  0000 C CNN
+F 1 "100pF" H 12050 10020 50  0000 C CNN
+F 2 "" H 12050 9850 50  0001 C CNN
+F 3 "~" H 12050 9850 50  0001 C CNN
+F 4 "" H 12050 9850 50  0001 C CNN "LCSC"
+	1    12050 9850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 9850 11600 9850
+Text GLabel 11600 9850 2    50   Input ~ 0
+N_DCDC_26
+Wire Wire Line
+	12300 9850 12500 9850
+Text GLabel 12500 9850 0    50   Output ~ 0
+N_DCDC_27
+$Comp
+L dc-modules:D D2HS1
+U 1 1 5E0001C7
+P 12050 10250
+F 0 "D2HS1" H 12050 10090 50  0000 C CNN
+F 1 "US1M" H 12050 10420 50  0000 C CNN
+F 2 "" H 12050 10250 50  0001 C CNN
+F 3 "~" H 12050 10250 50  0001 C CNN
+F 4 "" H 12050 10250 50  0001 C CNN "LCSC"
+	1    12050 10250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 10250 11600 10250
+Text GLabel 11600 10250 2    50   Input ~ 0
+N_DCDC_21
+Wire Wire Line
+	12300 10250 12500 10250
+Text GLabel 12500 10250 0    50   Output ~ 0
+N_DCDC_19
+$Comp
+L dc-modules:D D2HS2
+U 1 1 5E0001C8
+P 11850 10650
+F 0 "D2HS2" H 11850 10490 50  0000 C CNN
+F 1 "US1M" H 11850 10820 50  0000 C CNN
+F 2 "" H 11850 10650 50  0001 C CNN
+F 3 "~" H 11850 10650 50  0001 C CNN
+F 4 "" H 11850 10650 50  0001 C CNN "LCSC"
+	1    11850 10650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11600 10650 11400 10650
+Text GLabel 11400 10650 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	12100 10650 12300 10650
+Text GLabel 12300 10650 0    50   Output ~ 0
+N_DCDC_21
+$Comp
+L dc-modules:D D2LS1
+U 1 1 5E0001C9
+P 13950 8250
+F 0 "D2LS1" H 13950 8090 50  0000 C CNN
+F 1 "US1M" H 13950 8420 50  0000 C CNN
+F 2 "" H 13950 8250 50  0001 C CNN
+F 3 "~" H 13950 8250 50  0001 C CNN
+F 4 "" H 13950 8250 50  0001 C CNN "LCSC"
+	1    13950 8250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 8250 13500 8250
+Text GLabel 13500 8250 2    50   Input ~ 0
+N_DCDC_28
+Wire Wire Line
+	14200 8250 14400 8250
+Text GLabel 14400 8250 0    50   Output ~ 0
+N_DCDC_26
+$Comp
+L dc-modules:D D2LS2
+U 1 1 5E0001CA
+P 13750 8650
+F 0 "D2LS2" H 13750 8490 50  0000 C CNN
+F 1 "US1M" H 13750 8820 50  0000 C CNN
+F 2 "" H 13750 8650 50  0001 C CNN
+F 3 "~" H 13750 8650 50  0001 C CNN
+F 4 "" H 13750 8650 50  0001 C CNN "LCSC"
+	1    13750 8650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13500 8650 13300 8650
+Text GLabel 13300 8650 2    50   Input ~ 0
+SW2
+Wire Wire Line
+	14000 8650 14200 8650
+Text GLabel 14200 8650 0    50   Output ~ 0
+N_DCDC_28
+$Comp
+L dc-modules:R R2HGS
+U 1 1 5E0001CB
+P 13800 9050
+F 0 "R2HGS" H 13800 8890 50  0000 C CNN
+F 1 "10k" H 13800 9220 50  0000 C CNN
+F 2 "" H 13800 9050 50  0001 C CNN
+F 3 "~" H 13800 9050 50  0001 C CNN
+F 4 "" H 13800 9050 50  0001 C CNN "LCSC"
+	1    13800 9050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13550 9050 13350 9050
+Text GLabel 13350 9050 2    50   Input ~ 0
+GH_2
+Wire Wire Line
+	14050 9050 14250 9050
+Text GLabel 14250 9050 0    50   Output ~ 0
+KH_2
+$Comp
+L dc-modules:R R2HOFF
+U 1 1 5E0001CC
+P 13950 9450
+F 0 "R2HOFF" H 13950 9290 50  0000 C CNN
+F 1 "2.2" H 13950 9620 50  0000 C CNN
+F 2 "" H 13950 9450 50  0001 C CNN
+F 3 "~" H 13950 9450 50  0001 C CNN
+F 4 "" H 13950 9450 50  0001 C CNN "LCSC"
+	1    13950 9450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 9450 13500 9450
+Text GLabel 13500 9450 2    50   Input ~ 0
+N_DCDC_16
+Wire Wire Line
+	14200 9450 14400 9450
+Text GLabel 14400 9450 0    50   Output ~ 0
+GH_2
+$Comp
+L dc-modules:R R2HON
+U 1 1 5E0001CD
+P 13950 9850
+F 0 "R2HON" H 13950 9690 50  0000 C CNN
+F 1 "4.7" H 13950 10020 50  0000 C CNN
+F 2 "" H 13950 9850 50  0001 C CNN
+F 3 "~" H 13950 9850 50  0001 C CNN
+F 4 "" H 13950 9850 50  0001 C CNN "LCSC"
+	1    13950 9850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 9850 13500 9850
+Text GLabel 13500 9850 2    50   Input ~ 0
+N_DCDC_17
+Wire Wire Line
+	14200 9850 14400 9850
+Text GLabel 14400 9850 0    50   Output ~ 0
+GH_2
+$Comp
+L dc-modules:R R2HPD
+U 1 1 5E0001CE
+P 13900 10250
+F 0 "R2HPD" H 13900 10090 50  0000 C CNN
+F 1 "10k" H 13900 10420 50  0000 C CNN
+F 2 "" H 13900 10250 50  0001 C CNN
+F 3 "~" H 13900 10250 50  0001 C CNN
+F 4 "" H 13900 10250 50  0001 C CNN "LCSC"
+	1    13900 10250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13650 10250 13450 10250
+Text GLabel 13450 10250 2    50   Input ~ 0
+PWM_L2H
+Wire Wire Line
+	14150 10250 14350 10250
+Text GLabel 14350 10250 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R R2LGS
+U 1 1 5E0001CF
+P 13800 10650
+F 0 "R2LGS" H 13800 10490 50  0000 C CNN
+F 1 "10k" H 13800 10820 50  0000 C CNN
+F 2 "" H 13800 10650 50  0001 C CNN
+F 3 "~" H 13800 10650 50  0001 C CNN
+F 4 "" H 13800 10650 50  0001 C CNN "LCSC"
+	1    13800 10650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13550 10650 13350 10650
+Text GLabel 13350 10650 2    50   Input ~ 0
+GL_2
+Wire Wire Line
+	14050 10650 14250 10650
+Text GLabel 14250 10650 0    50   Output ~ 0
+KL_2
+$Comp
+L dc-modules:R R2LOFF
+U 1 1 5E0001D0
+P 15850 8250
+F 0 "R2LOFF" H 15850 8090 50  0000 C CNN
+F 1 "2.2" H 15850 8420 50  0000 C CNN
+F 2 "" H 15850 8250 50  0001 C CNN
+F 3 "~" H 15850 8250 50  0001 C CNN
+F 4 "" H 15850 8250 50  0001 C CNN "LCSC"
+	1    15850 8250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15600 8250 15400 8250
+Text GLabel 15400 8250 2    50   Input ~ 0
+N_DCDC_23
+Wire Wire Line
+	16100 8250 16300 8250
+Text GLabel 16300 8250 0    50   Output ~ 0
+GL_2
+$Comp
+L dc-modules:R R2LON
+U 1 1 5E0001D1
+P 15850 8650
+F 0 "R2LON" H 15850 8490 50  0000 C CNN
+F 1 "4.7" H 15850 8820 50  0000 C CNN
+F 2 "" H 15850 8650 50  0001 C CNN
+F 3 "~" H 15850 8650 50  0001 C CNN
+F 4 "" H 15850 8650 50  0001 C CNN "LCSC"
+	1    15850 8650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15600 8650 15400 8650
+Text GLabel 15400 8650 2    50   Input ~ 0
+N_DCDC_24
+Wire Wire Line
+	16100 8650 16300 8650
+Text GLabel 16300 8650 0    50   Output ~ 0
+GL_2
+$Comp
+L dc-modules:R R2LPD
+U 1 1 5E0001D2
+P 15800 9050
+F 0 "R2LPD" H 15800 8890 50  0000 C CNN
+F 1 "10k" H 15800 9220 50  0000 C CNN
+F 2 "" H 15800 9050 50  0001 C CNN
+F 3 "~" H 15800 9050 50  0001 C CNN
+F 4 "" H 15800 9050 50  0001 C CNN "LCSC"
+	1    15800 9050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15550 9050 15350 9050
+Text GLabel 15350 9050 2    50   Input ~ 0
+PWM_L2L
+Wire Wire Line
+	16050 9050 16250 9050
+Text GLabel 16250 9050 0    50   Output ~ 0
+DGND
+Wire Notes Line
+	500 11450 16650 11450
+Wire Notes Line
+	16650 11450 16650 14900
+Wire Notes Line
+	16650 14900 500 14900
+Wire Notes Line
+	500 14900 500 11450
+Text Notes 560 11610 0    79   ~ 16
+LEG-3
+$Comp
+L dc-modules:QA01C-15S18 PS3H
+U 1 1 5E0001D3
+P 1350 12700
+F 0 "PS3H" H 1050 12400 50  0000 L CNN
+F 1 "QA01C-15S18" H 1050 13030 50  0000 L CNN
+F 2 "" H 1350 12700 50  0001 C CNN
+F 3 "~" H 1350 12700 50  0001 C CNN
+F 4 "" H 1350 12700 50  0001 C CNN "LCSC"
+	1    1350 12700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1800 12600 2000 12600
+Text GLabel 2000 12600 0    50   Output ~ 0
+N_DCDC_34
+Wire Wire Line
+	1800 12700 2000 12700
+Text GLabel 2000 12700 0    50   Output ~ 0
+N_DCDC_32
+Wire Wire Line
+	1150 12350 1150 12150
+Text GLabel 1150 12150 1    50   Output ~ 0
+V15
+Wire Wire Line
+	1150 13050 1150 13250
+Text GLabel 1150 13250 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:QA01C-15S18 PS3L
+U 1 1 5E0001D4
+P 3350 12700
+F 0 "PS3L" H 3050 12400 50  0000 L CNN
+F 1 "QA01C-15S18" H 3050 13030 50  0000 L CNN
+F 2 "" H 3350 12700 50  0001 C CNN
+F 3 "~" H 3350 12700 50  0001 C CNN
+F 4 "" H 3350 12700 50  0001 C CNN "LCSC"
+	1    3350 12700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 12600 4000 12600
+Text GLabel 4000 12600 0    50   Output ~ 0
+N_DCDC_41
+Wire Wire Line
+	3800 12700 4000 12700
+Text GLabel 4000 12700 0    50   Output ~ 0
+N_DCDC_39
+Wire Wire Line
+	3150 12350 3150 12150
+Text GLabel 3150 12150 1    50   Output ~ 0
+V15
+Wire Wire Line
+	3150 13050 3150 13250
+Text GLabel 3150 13250 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:SG2M023120LJ Q3H
+U 1 1 5E0001D5
+P 3500 14000
+F 0 "Q3H" H 3200 13600 50  0000 L CNN
+F 1 "SG2M023120LJ" H 3200 14430 50  0000 L CNN
+F 2 "" H 3500 14000 50  0001 C CNN
+F 3 "~" H 3500 14000 50  0001 C CNN
+F 4 "" H 3500 14000 50  0001 C CNN "LCSC"
+	1    3500 14000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3050 13800 2850 13800
+Text GLabel 2850 13800 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	3050 13900 2850 13900
+Text GLabel 2850 13900 2    50   Input ~ 0
+SW3
+Wire Wire Line
+	3050 14000 2850 14000
+Text GLabel 2850 14000 2    50   Input ~ 0
+KH_3
+Wire Wire Line
+	3050 14100 2850 14100
+Text GLabel 2850 14100 2    50   Input ~ 0
+GH_3
+$Comp
+L dc-modules:SG2M023120LJ Q3L
+U 1 1 5E0001D6
+P 5500 12300
+F 0 "Q3L" H 5200 11900 50  0000 L CNN
+F 1 "SG2M023120LJ" H 5200 12730 50  0000 L CNN
+F 2 "" H 5500 12300 50  0001 C CNN
+F 3 "~" H 5500 12300 50  0001 C CNN
+F 4 "" H 5500 12300 50  0001 C CNN "LCSC"
+	1    5500 12300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 12100 4850 12100
+Text GLabel 4850 12100 2    50   Input ~ 0
+SW3
+Wire Wire Line
+	5050 12200 4850 12200
+Text GLabel 4850 12200 2    50   Input ~ 0
+DCN
+Wire Wire Line
+	5050 12300 4850 12300
+Text GLabel 4850 12300 2    50   Input ~ 0
+KL_3
+Wire Wire Line
+	5050 12400 4850 12400
+Text GLabel 4850 12400 2    50   Input ~ 0
+GL_3
+$Comp
+L dc-modules:NSI6611 U3H
+U 1 1 5E0001D7
+P 7500 13000
+F 0 "U3H" H 7150 12400 50  0000 L CNN
+F 1 "NSI6611" H 7150 13630 50  0000 L CNN
+F 2 "" H 7500 13000 50  0001 C CNN
+F 3 "~" H 7500 13000 50  0001 C CNN
+F 4 "" H 7500 13000 50  0001 C CNN "LCSC"
+	1    7500 13000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7000 12600 6800 12600
+Text GLabel 6800 12600 2    50   Input ~ 0
+KH_3
+Wire Wire Line
+	7000 12700 6800 12700
+Text GLabel 6800 12700 2    50   Input ~ 0
+N_DCDC_33
+Wire Wire Line
+	7000 12800 6800 12800
+Text GLabel 6800 12800 2    50   Input ~ 0
+GH_3
+Wire Wire Line
+	7000 12900 6800 12900
+Text GLabel 6800 12900 2    50   Input ~ 0
+PWM_L3H
+Wire Wire Line
+	7000 13000 6800 13000
+Text GLabel 6800 13000 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	7000 13100 6800 13100
+Text GLabel 6800 13100 2    50   Input ~ 0
+FLT_LLC
+Wire Wire Line
+	7000 13200 6800 13200
+Text GLabel 6800 13200 2    50   Input ~ 0
+GATE_EN_B
+Wire Wire Line
+	7000 13300 6800 13300
+Text GLabel 6800 13300 2    50   Input ~ 0
+KH_3
+Wire Wire Line
+	8000 12600 8200 12600
+Text GLabel 8200 12600 0    50   Output ~ 0
+N_DCDC_31
+Wire Wire Line
+	8000 12700 8200 12700
+Text GLabel 8200 12700 0    50   Output ~ 0
+N_DCDC_30
+Wire Wire Line
+	7250 12350 7250 12150
+Text GLabel 7250 12150 1    50   Output ~ 0
+N_DCDC_32
+Wire Wire Line
+	7350 12350 7350 12150
+Text GLabel 7350 12150 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	7250 13650 7250 13850
+Text GLabel 7250 13850 3    50   Output ~ 0
+KH_3
+Wire Wire Line
+	7350 13650 7350 13850
+Text GLabel 7350 13850 3    50   Output ~ 0
+N_DCDC_29
+Wire Wire Line
+	7450 13650 7450 13850
+Text GLabel 7450 13850 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:NSI6611 U3L
+U 1 1 5E0001D8
+P 9900 13000
+F 0 "U3L" H 9550 12400 50  0000 L CNN
+F 1 "NSI6611" H 9550 13630 50  0000 L CNN
+F 2 "" H 9900 13000 50  0001 C CNN
+F 3 "~" H 9900 13000 50  0001 C CNN
+F 4 "" H 9900 13000 50  0001 C CNN "LCSC"
+	1    9900 13000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 12600 9200 12600
+Text GLabel 9200 12600 2    50   Input ~ 0
+KL_3
+Wire Wire Line
+	9400 12700 9200 12700
+Text GLabel 9200 12700 2    50   Input ~ 0
+N_DCDC_40
+Wire Wire Line
+	9400 12800 9200 12800
+Text GLabel 9200 12800 2    50   Input ~ 0
+GL_3
+Wire Wire Line
+	9400 12900 9200 12900
+Text GLabel 9200 12900 2    50   Input ~ 0
+PWM_L3L
+Wire Wire Line
+	9400 13000 9200 13000
+Text GLabel 9200 13000 2    50   Input ~ 0
+DGND
+Wire Wire Line
+	9400 13100 9200 13100
+Text GLabel 9200 13100 2    50   Input ~ 0
+FLT_LLC
+Wire Wire Line
+	9400 13200 9200 13200
+Text GLabel 9200 13200 2    50   Input ~ 0
+GATE_EN_B
+Wire Wire Line
+	9400 13300 9200 13300
+Text GLabel 9200 13300 2    50   Input ~ 0
+KL_3
+Wire Wire Line
+	10400 12600 10600 12600
+Text GLabel 10600 12600 0    50   Output ~ 0
+N_DCDC_38
+Wire Wire Line
+	10400 12700 10600 12700
+Text GLabel 10600 12700 0    50   Output ~ 0
+N_DCDC_37
+Wire Wire Line
+	9650 12350 9650 12150
+Text GLabel 9650 12150 1    50   Output ~ 0
+N_DCDC_39
+Wire Wire Line
+	9750 12350 9750 12150
+Text GLabel 9750 12150 1    50   Output ~ 0
+V3P3
+Wire Wire Line
+	9650 13650 9650 13850
+Text GLabel 9650 13850 3    50   Output ~ 0
+KL_3
+Wire Wire Line
+	9750 13650 9750 13850
+Text GLabel 9750 13850 3    50   Output ~ 0
+N_DCDC_36
+Wire Wire Line
+	9850 13650 9850 13850
+Text GLabel 9850 13850 3    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R C3HB1
+U 1 1 5E0001D9
+P 9650 14400
+F 0 "C3HB1" H 9650 14240 50  0000 C CNN
+F 1 "1uF" H 9650 14570 50  0000 C CNN
+F 2 "" H 9650 14400 50  0001 C CNN
+F 3 "~" H 9650 14400 50  0001 C CNN
+F 4 "" H 9650 14400 50  0001 C CNN "LCSC"
+	1    9650 14400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 14400 9200 14400
+Text GLabel 9200 14400 2    50   Input ~ 0
+N_DCDC_32
+Wire Wire Line
+	9900 14400 10100 14400
+Text GLabel 10100 14400 0    50   Output ~ 0
+N_DCDC_34
+$Comp
+L dc-modules:R C3HB2
+U 1 1 5E0001DA
+P 12050 12100
+F 0 "C3HB2" H 12050 11940 50  0000 C CNN
+F 1 "1uF" H 12050 12270 50  0000 C CNN
+F 2 "" H 12050 12100 50  0001 C CNN
+F 3 "~" H 12050 12100 50  0001 C CNN
+F 4 "" H 12050 12100 50  0001 C CNN "LCSC"
+	1    12050 12100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 12100 11600 12100
+Text GLabel 11600 12100 2    50   Input ~ 0
+N_DCDC_34
+Wire Wire Line
+	12300 12100 12500 12100
+Text GLabel 12500 12100 0    50   Output ~ 0
+N_DCDC_29
+$Comp
+L dc-modules:R C3HBL
+U 1 1 5E0001DB
+P 12050 12500
+F 0 "C3HBL" H 12050 12340 50  0000 C CNN
+F 1 "100pF" H 12050 12670 50  0000 C CNN
+F 2 "" H 12050 12500 50  0001 C CNN
+F 3 "~" H 12050 12500 50  0001 C CNN
+F 4 "" H 12050 12500 50  0001 C CNN "LCSC"
+	1    12050 12500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 12500 11600 12500
+Text GLabel 11600 12500 2    50   Input ~ 0
+N_DCDC_33
+Wire Wire Line
+	12300 12500 12500 12500
+Text GLabel 12500 12500 0    50   Output ~ 0
+N_DCDC_34
+$Comp
+L dc-modules:R C3LB1
+U 1 1 5E0001DC
+P 12050 12900
+F 0 "C3LB1" H 12050 12740 50  0000 C CNN
+F 1 "1uF" H 12050 13070 50  0000 C CNN
+F 2 "" H 12050 12900 50  0001 C CNN
+F 3 "~" H 12050 12900 50  0001 C CNN
+F 4 "" H 12050 12900 50  0001 C CNN "LCSC"
+	1    12050 12900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 12900 11600 12900
+Text GLabel 11600 12900 2    50   Input ~ 0
+N_DCDC_39
+Wire Wire Line
+	12300 12900 12500 12900
+Text GLabel 12500 12900 0    50   Output ~ 0
+N_DCDC_41
+$Comp
+L dc-modules:R C3LB2
+U 1 1 5E0001DD
+P 12050 13300
+F 0 "C3LB2" H 12050 13140 50  0000 C CNN
+F 1 "1uF" H 12050 13470 50  0000 C CNN
+F 2 "" H 12050 13300 50  0001 C CNN
+F 3 "~" H 12050 13300 50  0001 C CNN
+F 4 "" H 12050 13300 50  0001 C CNN "LCSC"
+	1    12050 13300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 13300 11600 13300
+Text GLabel 11600 13300 2    50   Input ~ 0
+N_DCDC_41
+Wire Wire Line
+	12300 13300 12500 13300
+Text GLabel 12500 13300 0    50   Output ~ 0
+N_DCDC_36
+$Comp
+L dc-modules:R C3LBL
+U 1 1 5E0001DE
+P 12050 13700
+F 0 "C3LBL" H 12050 13540 50  0000 C CNN
+F 1 "100pF" H 12050 13870 50  0000 C CNN
+F 2 "" H 12050 13700 50  0001 C CNN
+F 3 "~" H 12050 13700 50  0001 C CNN
+F 4 "" H 12050 13700 50  0001 C CNN "LCSC"
+	1    12050 13700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 13700 11600 13700
+Text GLabel 11600 13700 2    50   Input ~ 0
+N_DCDC_40
+Wire Wire Line
+	12300 13700 12500 13700
+Text GLabel 12500 13700 0    50   Output ~ 0
+N_DCDC_41
+$Comp
+L dc-modules:D D3HS1
+U 1 1 5E0001DF
+P 12050 14100
+F 0 "D3HS1" H 12050 13940 50  0000 C CNN
+F 1 "US1M" H 12050 14270 50  0000 C CNN
+F 2 "" H 12050 14100 50  0001 C CNN
+F 3 "~" H 12050 14100 50  0001 C CNN
+F 4 "" H 12050 14100 50  0001 C CNN "LCSC"
+	1    12050 14100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11800 14100 11600 14100
+Text GLabel 11600 14100 2    50   Input ~ 0
+N_DCDC_35
+Wire Wire Line
+	12300 14100 12500 14100
+Text GLabel 12500 14100 0    50   Output ~ 0
+N_DCDC_33
+$Comp
+L dc-modules:D D3HS2
+U 1 1 5E0001E0
+P 11850 14500
+F 0 "D3HS2" H 11850 14340 50  0000 C CNN
+F 1 "US1M" H 11850 14670 50  0000 C CNN
+F 2 "" H 11850 14500 50  0001 C CNN
+F 3 "~" H 11850 14500 50  0001 C CNN
+F 4 "" H 11850 14500 50  0001 C CNN "LCSC"
+	1    11850 14500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11600 14500 11400 14500
+Text GLabel 11400 14500 2    50   Input ~ 0
+DCP
+Wire Wire Line
+	12100 14500 12300 14500
+Text GLabel 12300 14500 0    50   Output ~ 0
+N_DCDC_35
+$Comp
+L dc-modules:D D3LS1
+U 1 1 5E0001E1
+P 13950 12100
+F 0 "D3LS1" H 13950 11940 50  0000 C CNN
+F 1 "US1M" H 13950 12270 50  0000 C CNN
+F 2 "" H 13950 12100 50  0001 C CNN
+F 3 "~" H 13950 12100 50  0001 C CNN
+F 4 "" H 13950 12100 50  0001 C CNN "LCSC"
+	1    13950 12100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 12100 13500 12100
+Text GLabel 13500 12100 2    50   Input ~ 0
+N_DCDC_42
+Wire Wire Line
+	14200 12100 14400 12100
+Text GLabel 14400 12100 0    50   Output ~ 0
+N_DCDC_40
+$Comp
+L dc-modules:D D3LS2
+U 1 1 5E0001E2
+P 13750 12500
+F 0 "D3LS2" H 13750 12340 50  0000 C CNN
+F 1 "US1M" H 13750 12670 50  0000 C CNN
+F 2 "" H 13750 12500 50  0001 C CNN
+F 3 "~" H 13750 12500 50  0001 C CNN
+F 4 "" H 13750 12500 50  0001 C CNN "LCSC"
+	1    13750 12500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13500 12500 13300 12500
+Text GLabel 13300 12500 2    50   Input ~ 0
+SW3
+Wire Wire Line
+	14000 12500 14200 12500
+Text GLabel 14200 12500 0    50   Output ~ 0
+N_DCDC_42
+$Comp
+L dc-modules:R R3HGS
+U 1 1 5E0001E3
+P 13800 12900
+F 0 "R3HGS" H 13800 12740 50  0000 C CNN
+F 1 "10k" H 13800 13070 50  0000 C CNN
+F 2 "" H 13800 12900 50  0001 C CNN
+F 3 "~" H 13800 12900 50  0001 C CNN
+F 4 "" H 13800 12900 50  0001 C CNN "LCSC"
+	1    13800 12900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13550 12900 13350 12900
+Text GLabel 13350 12900 2    50   Input ~ 0
+GH_3
+Wire Wire Line
+	14050 12900 14250 12900
+Text GLabel 14250 12900 0    50   Output ~ 0
+KH_3
+$Comp
+L dc-modules:R R3HOFF
+U 1 1 5E0001E4
+P 13950 13300
+F 0 "R3HOFF" H 13950 13140 50  0000 C CNN
+F 1 "2.2" H 13950 13470 50  0000 C CNN
+F 2 "" H 13950 13300 50  0001 C CNN
+F 3 "~" H 13950 13300 50  0001 C CNN
+F 4 "" H 13950 13300 50  0001 C CNN "LCSC"
+	1    13950 13300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 13300 13500 13300
+Text GLabel 13500 13300 2    50   Input ~ 0
+N_DCDC_30
+Wire Wire Line
+	14200 13300 14400 13300
+Text GLabel 14400 13300 0    50   Output ~ 0
+GH_3
+$Comp
+L dc-modules:R R3HON
+U 1 1 5E0001E5
+P 13950 13700
+F 0 "R3HON" H 13950 13540 50  0000 C CNN
+F 1 "4.7" H 13950 13870 50  0000 C CNN
+F 2 "" H 13950 13700 50  0001 C CNN
+F 3 "~" H 13950 13700 50  0001 C CNN
+F 4 "" H 13950 13700 50  0001 C CNN "LCSC"
+	1    13950 13700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13700 13700 13500 13700
+Text GLabel 13500 13700 2    50   Input ~ 0
+N_DCDC_31
+Wire Wire Line
+	14200 13700 14400 13700
+Text GLabel 14400 13700 0    50   Output ~ 0
+GH_3
+$Comp
+L dc-modules:R R3HPD
+U 1 1 5E0001E6
+P 13900 14100
+F 0 "R3HPD" H 13900 13940 50  0000 C CNN
+F 1 "10k" H 13900 14270 50  0000 C CNN
+F 2 "" H 13900 14100 50  0001 C CNN
+F 3 "~" H 13900 14100 50  0001 C CNN
+F 4 "" H 13900 14100 50  0001 C CNN "LCSC"
+	1    13900 14100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13650 14100 13450 14100
+Text GLabel 13450 14100 2    50   Input ~ 0
+PWM_L3H
+Wire Wire Line
+	14150 14100 14350 14100
+Text GLabel 14350 14100 0    50   Output ~ 0
+DGND
+$Comp
+L dc-modules:R R3LGS
+U 1 1 5E0001E7
+P 13800 14500
+F 0 "R3LGS" H 13800 14340 50  0000 C CNN
+F 1 "10k" H 13800 14670 50  0000 C CNN
+F 2 "" H 13800 14500 50  0001 C CNN
+F 3 "~" H 13800 14500 50  0001 C CNN
+F 4 "" H 13800 14500 50  0001 C CNN "LCSC"
+	1    13800 14500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13550 14500 13350 14500
+Text GLabel 13350 14500 2    50   Input ~ 0
+GL_3
+Wire Wire Line
+	14050 14500 14250 14500
+Text GLabel 14250 14500 0    50   Output ~ 0
+KL_3
+$Comp
+L dc-modules:R R3LOFF
+U 1 1 5E0001E8
+P 15850 12100
+F 0 "R3LOFF" H 15850 11940 50  0000 C CNN
+F 1 "2.2" H 15850 12270 50  0000 C CNN
+F 2 "" H 15850 12100 50  0001 C CNN
+F 3 "~" H 15850 12100 50  0001 C CNN
+F 4 "" H 15850 12100 50  0001 C CNN "LCSC"
+	1    15850 12100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15600 12100 15400 12100
+Text GLabel 15400 12100 2    50   Input ~ 0
+N_DCDC_37
+Wire Wire Line
+	16100 12100 16300 12100
+Text GLabel 16300 12100 0    50   Output ~ 0
+GL_3
+$Comp
+L dc-modules:R R3LON
+U 1 1 5E0001E9
+P 15850 12500
+F 0 "R3LON" H 15850 12340 50  0000 C CNN
+F 1 "4.7" H 15850 12670 50  0000 C CNN
+F 2 "" H 15850 12500 50  0001 C CNN
+F 3 "~" H 15850 12500 50  0001 C CNN
+F 4 "" H 15850 12500 50  0001 C CNN "LCSC"
+	1    15850 12500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15600 12500 15400 12500
+Text GLabel 15400 12500 2    50   Input ~ 0
+N_DCDC_38
+Wire Wire Line
+	16100 12500 16300 12500
+Text GLabel 16300 12500 0    50   Output ~ 0
+GL_3
+$Comp
+L dc-modules:R R3LPD
+U 1 1 5E0001EA
+P 15800 12900
+F 0 "R3LPD" H 15800 12740 50  0000 C CNN
+F 1 "10k" H 15800 13070 50  0000 C CNN
+F 2 "" H 15800 12900 50  0001 C CNN
+F 3 "~" H 15800 12900 50  0001 C CNN
+F 4 "" H 15800 12900 50  0001 C CNN "LCSC"
+	1    15800 12900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15550 12900 15350 12900
+Text GLabel 15350 12900 2    50   Input ~ 0
+PWM_L3L
+Wire Wire Line
+	16050 12900 16250 12900
+Text GLabel 16250 12900 0    50   Output ~ 0
+DGND
+$EndSCHEMATC
