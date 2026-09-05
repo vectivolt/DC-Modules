@@ -1,5 +1,10 @@
 # EasyEDA transcription of the 30 kW schematics (status: PARTIAL — do not treat as authoritative)
 
+> **2026-09-06 update.** The presentation-grade drawing set now lives in
+> `docs/schematic-drawing-set.md` (`calculations/schematic-compose.mjs`) — that is the
+> deliverable to look at. The EasyEDA transcription below remains incomplete for the
+> tool reasons documented here; two further findings are recorded at the end.
+
 **The authoritative electrical design remains the tscircuit source** (`packages/`, `boards/`,
 compiled to `dist/boards/*/*/circuit.json`) and the BOM/gate scripts under `calculations/`.
 The EasyEDA project is a *transcription* of that netlist, and as of 2026-09-06 it is **94.08 %
@@ -72,3 +77,28 @@ Either (a) update the EasyEDA Copilot extension to a build that supports `measur
 re-measure, and re-run apply + verify to a clean `PASS`; or (b) import the netlist through a
 file-based path (EasyEDA netlist import) instead of pin-by-pin port placement. Option (b) sidesteps
 blockers 1–3 entirely and is the better bet for a design this size.
+
+
+## 2026-09-06 findings
+
+**One extract call per functional block is the only reliable recipe.** The single page that ever
+came back 100 % correct (`dcdc-LLC-TANKS`) was applied as three calls of exactly one complete
+block each. Mixing two blocks in a call, or splitting one block across calls, corrupts net-port
+placement — and a split block also draws two boxes for one section. `easyeda-apply-gen.mjs` now
+emits one chunk per block (58 blocks over 12 pages, all ≤ 24 components) in signal-flow order.
+
+**Deleting a page does not free its components.** After the 12 pages were deleted and recreated,
+the new pages came up carrying orphaned components from the deleted ones, which EasyEDA then
+auto-renamed on collision (`RV1D8`–`RV1D15`, `UIVV4` — designators that exist nowhere in the
+design). A verify pass measured 139 extra, 170 missing, 154 wrong nets. Treat page deletion as
+unsafe, and always re-verify with `easyeda-verify.mjs` afterwards rather than trusting the tool.
+
+**A fatal DRC error anywhere blocks netlist export for the whole schematic.** The symptom is
+`"Failed export netlist"` on *every* page of that schematic, including reads; `sync_current_document`
+does not clear it. It was located by bisection (deleting one page cleared it) — this build's DRC
+reports counts only, not locations, so bisection is the only tool available.
+
+**Current state.** A clean project `DC Modules Rev D` exists alongside the original. The original
+`DC Modules` project is contaminated (duplicates + auto-renamed designators) and was deliberately
+left untouched rather than deleted. Neither is fabrication-ready. `easyeda-verify.mjs` prints the
+exact outstanding defects and writes machine-readable repair plans.

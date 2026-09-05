@@ -15,19 +15,24 @@ mkdirSync(outDir, { recursive: true });
 
 const uuidMap = JSON.parse(readFileSync(join(srcDir, "part-uuid-map.json"), "utf8"));
 
-const PAGE_UUIDS = {
-  "acdc-INPUT-EMI": "cf3d7bd75151a39a",
-  "acdc-VIENNA-PFC": "2deb511a0a22804b",
-  "acdc-DC-LINK": "6331fb4a14a834b0",
-  "acdc-AC-SENSING": "5968c9bb670d73b9",
-  "acdc-CONTROL": "30f27eae62f152f4",
-  "acdc-AUX-POWER": "877cff6394eeb620",
-  "dcdc-LLC-LEGS": "cd907a8ea53e24b6",
-  "dcdc-LLC-TANKS": "15553b4d850f058f",
-  "dcdc-BANKS-SP": "de257312b7ec5bd4",
-  "dcdc-OUTPUT-SENSING": "3e99a4e01244616b",
-  "dcdc-CONTROL": "22ef90c364d7fd7e",
-  "dcdc-COMMS-HMI": "0d12bfb80ab5e55a",
+// Live page UUIDs. page-uuids-new.json is rewritten whenever the pages are recreated
+// and is the authoritative map (pages rebuilt 2026-09-06 in canonical signal order).
+const PAGE_UUIDS = JSON.parse(readFileSync(join(srcDir, "page-uuids-new.json"), "utf8"));
+
+// Human-facing page titles: SKU, which board of the pair, position in the set, function.
+const PAGE_TITLES = {
+  "acdc-INPUT-EMI": "30kW ACDC 1of6 INPUT-EMI",
+  "acdc-VIENNA-PFC": "30kW ACDC 2of6 VIENNA-PFC",
+  "acdc-DC-LINK": "30kW ACDC 3of6 DC-LINK",
+  "acdc-AC-SENSING": "30kW ACDC 4of6 AC-SENSING",
+  "acdc-CONTROL": "30kW ACDC 5of6 CONTROL",
+  "acdc-AUX-POWER": "30kW ACDC 6of6 AUX-POWER",
+  "dcdc-LLC-LEGS": "30kW DCDC 1of6 LLC-LEGS",
+  "dcdc-LLC-TANKS": "30kW DCDC 2of6 LLC-TANKS",
+  "dcdc-BANKS-SP": "30kW DCDC 3of6 BANKS-SP",
+  "dcdc-OUTPUT-SENSING": "30kW DCDC 4of6 OUTPUT-SENSING",
+  "dcdc-CONTROL": "30kW DCDC 5of6 CONTROL",
+  "dcdc-COMMS-HMI": "30kW DCDC 6of6 COMMS-HMI",
 };
 
 const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SMBJ26A",
@@ -152,32 +157,36 @@ function transform(c, page, all, warn) {
   return out;
 }
 
-const CHUNK = 32;
+// One extract call per functional block. This is the recipe that produced the only
+// fully-correct page (dcdc-LLC-TANKS: 3 calls, one complete block each, 0 wrong nets).
+// Mixing or splitting blocks across calls is what corrupts net-port placement, and a
+// block split across calls also draws two boxes for one section.
 for (const f of readdirSync(srcDir).filter((f) => /^(acdc|dcdc)-.*\.json$/.test(f))) {
   const key = f.replace(/\.json$/, "");
   if (!PAGE_UUIDS[key]) continue;
   const p = JSON.parse(readFileSync(join(srcDir, f), "utf8"));
   const warn = [];
   const comps = p.components.map((c) => transform(c, key, p.components, warn)).filter(Boolean);
-  // chunk on block boundaries, <= CHUNK comps per chunk
-  const chunks = [];
-  let cur = [];
-  let curBlocks = new Set();
+
+  const byBlock = new Map();
   for (const c of comps) {
-    if (cur.length >= CHUNK && !curBlocks.has(c.block_name)) {
-      chunks.push(cur); cur = []; curBlocks = new Set();
-    }
-    cur.push(c); curBlocks.add(c.block_name);
-    if (cur.length >= CHUNK + 16) { chunks.push(cur); cur = []; curBlocks = new Set(); } // hard cap mid-block
+    if (!byBlock.has(c.block_name)) byBlock.set(c.block_name, []);
+    byBlock.get(c.block_name).push(c);
   }
-  if (cur.length) chunks.push(cur);
+  // Emit blocks in the page's declared signal-flow order so the sheet reads left-to-right.
+  const order = [...new Set([...(p.flow || []), ...byBlock.keys()])].filter((b) => byBlock.has(b));
+  const chunks = order.map((b) => byBlock.get(b));
+  const oversize = order.filter((b) => byBlock.get(b).length > 24);
+  if (oversize.length) warn.push(`blocks over 24 comps (split risk): ${oversize.join(", ")}`);
+
   const nc = {};
   for (const c of comps) if (c.nc.length) nc[c.designator] = c.nc;
   const apply = {
-    page: key, page_uuid: PAGE_UUIDS[key],
+    page: key, page_uuid: PAGE_UUIDS[key], title: PAGE_TITLES[key],
+    block_order: order,
     chunks: chunks.map((ch) => ch.map(({ nc, ...rest }) => rest)),
     nc, warnings: warn, total: comps.length,
   };
   writeFileSync(join(outDir, `${key}.json`), JSON.stringify(apply, null, 1));
-  console.log(`${key}: ${comps.length} comps, ${chunks.length} chunk(s), ${Object.keys(nc).length} NC comps${warn.length ? ", WARN: " + warn.join(" | ") : ""}`);
+  console.log(`${key}: ${comps.length} comps in ${chunks.length} blocks [${order.map((b) => `${b}:${byBlock.get(b).length}`).join(" ")}]${warn.length ? "\n   WARN: " + warn.join(" | ") : ""}`);
 }
