@@ -173,6 +173,20 @@ ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin9: "RT"/.test(cells),
     `narrow part classes stay value-consistent — a loose designator regex mis-prices parts${bad.length ? " — " + bad.join("; ") : ""}`);
 }
 
+ck("SYNTAX-DUPKEY", (() => {
+  // A repeated key in an object literal is legal JS: the last one silently wins and the earlier
+  // value is lost. Four lcsc-map entries had TWO note: keys, so each had silently discarded its
+  // original datasheet note. Nothing errors, nothing warns -- the text just disappears.
+  const src = readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8");
+  const re = /"([A-Za-z0-9_.%|+\-]+)":\s*\{([^{}]*)\}/g;
+  let m;
+  while ((m = re.exec(src))) {
+    const keys = [...m[2].matchAll(/(?:^|,)\s*([a-zA-Z_][\w]*)\s*:/g)].map((x) => x[1]);
+    if (keys.some((k, i) => keys.indexOf(k) !== i)) return false;
+  }
+  return true;
+})(), "no lcsc-map entry repeats a key — a duplicate silently discards the earlier value");
+
 ck("SYNTAX-LCSC", (() => { try { new Function(readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8").replace(/^export /gm, "")); return true; } catch { return false; } })(),
   "lcsc-map.mjs parses — a syntax error there silently breaks kicad5-gen AND bom-gen");
 
