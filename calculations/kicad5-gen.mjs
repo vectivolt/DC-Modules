@@ -361,6 +361,17 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   const GRID = 500;
   const gsnap = (v) => Math.ceil(v / GRID) * GRID;
   const widths = blocks.map((b) => b.w).sort((m, n) => m - n);
+  // Rounding UP wastes at most COLW/2 per side, which measures as inner padding spanning
+  // 283..2099 mil across 58 frames (symmetric -- L and R are always equal -- but a 7x spread).
+  // A HALF-column grid was tried to halve that waste, including fixing capFor's unit (the family
+  // cap is a COLUMN count, so halving the unit halves a family's physical width). Padding did
+  // improve, p50 971->627 and max 2099->1183, but the page paid for it:
+  //     30kw-acdc  fill 57.2->50.6  ragged  7450->14600
+  //     60kw-acdc  fill 68.1->54.8  ragged  7350->15700
+  //     60kw-dcdc  fill 71.8->62.8  ragged  4100->11130
+  // A finer grid gives the packer more places to leave a stub of leftover column. Sheet fill and a
+  // level bottom edge are far more visible than 1000 mil of symmetric margin inside a frame, so
+  // the whole-column grid stays. Measured with calculations/frame-padding.mjs -- do not retry.
   const COLW = Math.max(gsnap(widths[Math.floor(widths.length * 0.4)] + SECGAP), 2500);
   for (const b of blocks) {
     b.span = Math.max(1, Math.ceil((b.w + SECGAP) / COLW));
