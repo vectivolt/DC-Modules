@@ -171,8 +171,28 @@ common mode near VDD2/2, so grounding one leg fights the output driver. The two 
    `SNS_IOUT`/`SNS_IOUTN` already do — costs 8 more ADC inputs and a pin-map revision.
 2. Terminate per the datasheet's single-ended application circuit, if that part supports one.
 
-Both are design decisions with MCU pin-allocation consequences, so this is recorded rather than
-guessed at. It is listed with the other open MCU-architecture items in `docs/assumptions.md`.
+**The decision is now costed, so it only needs a yes.** The design's own precedent settles the
+method: `SNS_IOUT` sits on PC0 (`ADC0_IN5`) and `SNS_IOUTN` on PC1 (`ADC0_IN6`) — two ordinary
+single-ended channels on one ADC, subtracted in firmware, not a hardware differential pair. Doing
+the same for the voltage senses costs:
+
+| MCU | senses needing a second leg | extra ADC channels |
+|---|---|---|
+| `UPFC` | `SNS_VAC1/2/3`, `SNS_VBUSP`, `SNS_VMID` | 5 |
+| `ULLC` | `SNS_VOUT`, `SNS_VBKA`, `SNS_VBKB` | 3 |
+
+Both parts have room: `UPFC` has 61 of 100 pins allocated and `ULLC` 77, so 8 more ADC-capable
+pins exist. The work is a pin-map revision plus a firmware subtract per channel — the same code
+path `SNS_IOUT`/`SNS_IOUTN` already uses.
+
+**What happens if it is left as-is:** a floating `VOUTN` is electrically safe — it is an output,
+not an input — so nothing is damaged and nothing is unbound. The cost is measurement quality: the
+ADC reads `VOUTP` against AGND, so it sees the part's ~1.44 V output common mode plus half the
+differential swing, with the common-mode drift uncorrected. That is workable with a calibrated
+offset in firmware, which may well be the right answer for bus and bank voltage. It is a
+deliberate accuracy trade, and the point of R7 is that it should be made deliberately rather than
+inherited from an untraced pin. Listed with the open MCU-architecture items in
+`docs/assumptions.md`.
 
 **The check is now standing.** `unwired-pins.mjs` reports, per SKU, every declared pin no trace
 reaches, minus a KNOWN list where each exclusion carries its reason (explicit NC pins, spare AND
