@@ -153,6 +153,13 @@ export const LCSC_BY_VALUE = {
   "R-small|100":        { lcsc: "C105577", mpn: "RC0805FR-07100RL",  note: "100R 0805 1%" },
   "R-small|100k":       { lcsc: "C96346",  mpn: "RC0805FR-07100KL",  note: "100k 0805 1%" },
   "MLCC-small|10nF":    { lcsc: "C100042", mpn: "CC0603KRX7R9BB103", note: "10nF 0603 X7R 50V" },
+  "MLCC-small|10uF":    { lcsc: "C15850",  mpn: "CL21A106KAYNNNE",   note: "10uF 0805 X5R 25V (JLC Basic) — sits on V15, so 25V class not 6.3/10V" },
+  "MLCC-small|22uF":    { lcsc: "C86817",  mpn: "GRM21BR61C226ME44L", note: "22uF 0805 X5R 16V — V3P3 rail" },
+  "MLCC-small|2.2nF":   { lcsc: "C107146", mpn: "CC0805KRX7R9BB222", note: "2.2nF 0805 X7R 50V" },
+  "MLCC-small|1uF":     { lcsc: "C28323",  mpn: "CL21B105KBFNNNE",   note: "1uF 0805 X7R 50V (JLC Basic) — same part as MLCC-1u-0805" },
+  "R-small|2.2k":       { lcsc: "C114561", mpn: "RC0805FR-072K2L",   note: "2.2k 0805 1%" },
+  "R-small|4.7":        { lcsc: "C137513", mpn: "RC0805FR-074R7L",   note: "4.7R 0805 1% — RAVI, the AVMID buffer's series isolation R, small-signal (NOT a gate resistor)" },
+  "R1206-33R-1%|100k":  { lcsc: "C96346",  mpn: "RC0805FR-07100KL",  note: "100k — these instances are on an 0805 land, same part as R-small|100k" },
   "MLCC-100n-0402|100nF": { lcsc: "C60474", mpn: "CC0402KRX7R7BB104", note: "100nF 0402 X7R 16V — used only on the 3.3 V rail (~5x derating)" },
 };
 

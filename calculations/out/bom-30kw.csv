@@ -76,17 +76,15 @@ CL21B105KBFNNNE,,UNMAPPED,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,18,1.1,
 IND-10u-3A,,CLASS,any shielded,"10 µH 3 A shielded power inductor (3V3 buck)","any",acdc+dcdc,2,8.1,6,5.3,4.8,12,10,LBKA LBKB
 RC1206FR-0710KL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc+dcdc,8,2,1.5,1.3,1.2,12,10,RM24B RM15B RKPUKPARB RKPUKPREB RBKF2B RWPUB RGPDB RRDYB
 PH-4-FAN,C131334,ORDERABLE,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17)","any",acdc,2,8.1,6,5.3,4.8,12,10,JFAN1 JFAN2
-R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,8,2,1.5,1.3,1.2,12,10,RPVLB RPVBB RBKF1B RENRB RENLB RFLTB RAGTB RCGB
 PP-10n-1200,,CLASS,Faratronic,"10 nF 1200 V film (aux RCD clamp)","MLCC 1kV ×2",acdc,1,12.2,9,7.9,7.2,9,7,CCLA
 R2512-2R0-1W-1%,,CLASS,any,"2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)","2× 1206 1R0 series",dcdc,3,4.1,3,2.6,2.4,9,7,R1CT R2CT R3CT
+R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,6,2,1.5,1.3,1.2,9,7,RPVLB RPVBB RBKF1B RFLTB RAGTB RCGB
 CC0603KRX7R9BB104,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,17,0.7,0.5,0.4,0.4,9,7,CAVM CTPFCF CTINLF CPFCA2 CSFA CPFCRST CCOMP CBSTA CAVM CTLLCF CTXFRF CLLCA2
 EL-220u-35,,CLASS,Aishi,"220 µF 35 V","any",acdc,2,5.4,4,3.5,3.2,8,6,CAUX24 CAUX15
 CMC-CAN-51uH,C55213551,ORDERABLE,any,"CAN common-mode choke","any",dcdc,1,10.8,8,7,6.4,8,6,LCAN
 PH-4,C131334,ORDERABLE,JST,"CAN connector 4-way","any",dcdc,1,10.8,8,7,6.4,8,6,JCAN
 CC0603KRX7R9BB102,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,14,0.7,0.5,0.4,0.4,7,6,CA0F CB0F CC0F CBPDF CBMDF CWDA CRSTA CFLTA COADF COBDF COVDF CWDB
 TAB-M4,,CLASS,local,"discharge FET heatsink tab stud","—",acdc,1,8.1,6,5.3,4.8,6,5,QDIS
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,15,0.5,0.4,0.4,0.3,6,5,RAVI RFLTA RAGTA RPET RBR2 RFB1 RBKF1A RM24A RM15A RPVLA RPVBA RAVI
-MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,12,0.7,0.5,0.4,0.4,6,5,CAVF CAVO CPFCA1 CCSF CBKIA CBKOA CAVF CAVO CLLCA1 CBKIB CBKOB CCGB
 US2G,C49263,ORDERABLE,MDD/Yageo,"400 V 2 A ultrafast SMB (aux 15 V / self-supply rectifiers — CB-19: PIV ≈ 157 V + ring)","MURS240",acdc,2,4.1,3,2.6,2.4,6,5,DAUX15 DAUXVC
 FAST-1200-1A,C56792,ORDERABLE,MDD/eq,"1200 V 1 A fast diode SMB (aux RCD clamp)","US1M ×2 series",acdc,1,8.1,6,5.3,4.8,6,5,DCLA
 TACT-6x6,C318884,ORDERABLE,any,"tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)","any",dcdc,2,4.1,3,2.6,2.4,6,5,SW1 SW2
@@ -94,21 +92,30 @@ UF-400V-3A,C3039981,ORDERABLE,onsemi/MDD (MURS340 class),"400 V 3 A ultrafast, S
 1N4148WS,C2128,ORDERABLE,any,"clamp diode SOD-323 (to 3V3)","BAS316",acdc+dcdc,12,0.5,0.4,0.4,0.3,5,4,DA0P DA0N DB0P DB0N DC0P DC0N D1CP D1CN D2CP D2CN D3CP D3CN
 RC0805FR-0710KL,,UNMAPPED,any,"10 kΩ gate-source","any",acdc+dcdc,9,0.7,0.5,0.4,0.4,5,4,RA0GGS RB0GGS RC0GGS R1HGS R1LGS R2HGS R2LGS R3HGS R3LGS
 RC1206FR-0733RL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc,3,2,1.5,1.3,1.2,5,4,RA0B RB0B RC0B
+R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,11,0.5,0.4,0.4,0.3,4,3,RFLTA RAGTA RPET RBR2 RFB1 RBKF1A RM24A RM15A RPVLA RPVBA RTERM
 PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,TVSCAN
 74HC595,C19192516,ORDERABLE,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
 CC0603JRNPO9BN101,,UNMAPPED,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,9,0.5,0.4,0.4,0.3,4,3,CA0GBL CB0GBL CC0GBL C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
+RC0805FR-07100KL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RENRB RENLB
 RC0805FR-071KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,7,0.5,0.4,0.4,0.3,3,2,RA0F RB0F RC0F RCSF R1CF R2CF R3CF
 R1206-R31-1%-0.5W,,CLASS,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
 CC0402KRX7R7BB104,,UNMAPPED,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,0.2,2,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
 RC0603FR-07220RL,,UNMAPPED,any,"220 Ω segment","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 RC0805FR-07100RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,5,0.5,0.4,0.4,0.3,2,2,RQDG RALTS RALRS RBLTS RBLRS
+CL21A106KAYNNNE,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,4,0.7,0.5,0.4,0.4,2,2,CAVO CBKIA CAVO CBKIB
 FB-600R-0805,C1017,ORDERABLE,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",acdc+dcdc,2,1.1,0.8,0.7,0.6,2,1,FBPFCA FBLLCA
 RC0805FR-07100KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,4,0.5,0.4,0.4,0.3,2,1,RENRA RENLA RAUXG RAUXRT
 CC0603KRX7R9BB103,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
 CC0603JRNPO9BN221,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",dcdc,3,0.7,0.5,0.4,0.4,2,1,C1CF C2CF C3CF
+CC0805KRX7R9BB222,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CAVF CAVF
+CL21B105KBFNNNE,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CPFCA1 CLLCA1
+MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CCSF CCGB
+GRM21BR61C226ME44L,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CBKOA CBKOB
+RC0805FR-074R7L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RAVI RAVI
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
+RC0805FR-072K2L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,2,0.5,0.4,0.4,0.3,1,1,RDIG1 RDIG2
 BIAS-XFMR-SET,,CUSTOM,custom,"BIAS-XFMR multi-secondary set (E23) — RETIRED at 10k volume (modules permanent, E23 rev B)","—",acdc+dcdc,2,0,0,0,0,0,0,
 MECH,,MECH,—,"PCB-ACDC 6L 420×300","—",module,1,1380,1200,1116,1044,1200,1044,
 MECH,,MECH,—,"PCB-DCDC 6L 460×320","—",module,1,1610,1400,1302,1218,1400,1218,
