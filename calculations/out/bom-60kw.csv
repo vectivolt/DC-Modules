@@ -9,10 +9,10 @@ PP-46n-1200,,CLASS,Faratronic,"46 nF 1200 V PP pulse film (resonant — CB-22: m
 QA01C,C2757491,REVIEW,MORNSUN,"iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)","domestic iso-module eq (2nd source at RFQ)",acdc+dcdc,17,128.3,95,83.6,55,1615,935,PSA0G PSB0G PSC0G PSA1G PSB1G PSC1G PSQD PS1H PS1L PS2H PS2L PS3H
 NSI6611,C7470934,ORDERABLE,NOVOSENSE,"iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16","NSI6602B",acdc+dcdc,18,114.8,85,74.8,68,1530,1224,UA0G UB0G UC0G UA1G UB1G UC1G U1H U1L U2H U2L U3H U3L
 SICJBS-1200-40,C7435099,ORDERABLE,SiChain,"SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)","BASiC B3D040120H",acdc,12,162,120,105.6,96,1440,1152,DA0T DA0B DB0T DB0B DC0T DC0B DA1T DA1B DB1T DB1B DC1T DC1B
-HFE82V-M-CLASS,C340670,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KSER
-HFE82V-M-CLASS,C340670,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARA
-HFE82V-M-CLASS,C340670,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARB
-HFE82V-M-CLASS,C340670,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KOUT
+HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KSER
+HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARA
+HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KPARB
+HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,1107,820,721.6,656,820,656,KOUT
 ISO5V-RFC-6K,C20613048,REVIEW,MORNSUN QA/URB-grade,"iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / DCN / BKAN / BKBN)","RECOM RxxP-R / certified eq",acdc+dcdc,8,128.3,95,83.6,65,760,520,PS5AC PS5BUS PS5H PS5L PSSH PS5BKA PS5BKB PSCAN
 AMC1311-class,C456277,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)","NSI1311 class",acdc+dcdc,5,155.3,115,101.2,92,575,460,UIVBP UIVBM UIVOA UIVOB UIVOV
 PP-1u-1100,,CLASS,Faratronic,"1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)","Songtian",dcdc,8,91.8,68,59.8,54.4,544,435,CF0 CF1 CF2 CF3 CF4 CF5 CBAF CBBF
@@ -81,7 +81,6 @@ PH-4-FAN,C131334,ORDERABLE,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM 
 RC0805FR-0710KL,,UNMAPPED,any,"10 kΩ gate-source","any",acdc+dcdc,18,0.7,0.5,0.4,0.4,9,7,RA0GGS RB0GGS RC0GGS RA1GGS RB1GGS RC1GGS R1HGS R1LGS R2HGS R2LGS R3HGS R3LGS
 RC1206FR-0733RL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc,6,2,1.5,1.3,1.2,9,7,RA0B RB0B RC0B RA1B RB1B RC1B
 PP-10n-1200,,CLASS,Faratronic,"10 nF 1200 V film (aux RCD clamp)","MLCC 1kV ×2",acdc,1,12.2,9,7.9,7.2,9,7,CCLA
-R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,6,2,1.5,1.3,1.2,9,7,RPVLB RPVBB RBKF1B RFLTB RAGTB RCGB
 CC0603KRX7R9BB102,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,17,0.7,0.5,0.4,0.4,9,7,CA0F CB0F CC0F CA1F CB1F CC1F CBPDF CBMDF CWDA CRSTA CFLTA COADF
 CC0603KRX7R9BB104,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,17,0.7,0.5,0.4,0.4,9,7,CAVM CTPFCF CTINLF CPFCA2 CSFA CPFCRST CCOMP CBSTA CAVM CTLLCF CTXFRF CLLCA2
 EL-220u-35,,CLASS,Aishi,"220 µF 35 V","any",acdc,2,5.4,4,3.5,3.2,8,6,CAUX24 CAUX15
@@ -94,12 +93,13 @@ FAST-1200-1A,C56792,ORDERABLE,MDD/eq,"1200 V 1 A fast diode SMB (aux RCD clamp)"
 TACT-6x6,C318884,ORDERABLE,any,"tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)","any",dcdc,2,4.1,3,2.6,2.4,6,5,SW1 SW2
 RC0805FR-071KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,13,0.5,0.4,0.4,0.3,5,4,RA0F RB0F RC0F RA1F RB1F RC1F RCSF R1CF R2CF R3CF R4CF R5CF
 UF-400V-3A,C3039981,ORDERABLE,onsemi/MDD (MURS340 class),"400 V 3 A ultrafast, SMC pad (aux 24 V rectifier — CB-19: PIV ≈ 176 V + leakage ring; 100 V Schottky avalanched)","ES3 series 400 V",acdc,1,6.8,5,4.4,4,5,4,DAUX24
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,11,0.5,0.4,0.4,0.3,4,3,RFLTA RAGTA RPET RBR2 RFB1 RBKF1A RM24A RM15A RPVLA RPVBA RTERM
 PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,TVSCAN
 74HC595,C19192516,ORDERABLE,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
 CC0603JRNPO9BN221,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",dcdc,6,0.7,0.5,0.4,0.4,3,2,C1CF C2CF C3CF C4CF C5CF C6CF
+RC0805FR-071ML,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RPVBB RCGB
+R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RBKF1B RAGTB
 RC0805FR-07100KL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RENRB RENLB
 R1206-R31-1%-0.5W,,CLASS,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
 CC0402KRX7R7BB104,,UNMAPPED,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,0.2,2,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
@@ -108,14 +108,23 @@ RC0805FR-07100RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters
 CL21A106KAYNNNE,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,4,0.7,0.5,0.4,0.4,2,2,CAVO CBKIA CAVO CBKIB
 FB-600R-0805,C1017,ORDERABLE,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",acdc+dcdc,2,1.1,0.8,0.7,0.6,2,1,FBPFCA FBLLCA
 RC0805FR-07100KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,4,0.5,0.4,0.4,0.3,2,1,RENRA RENLA RAUXG RAUXRT
+R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,RAGTA RFB1 RBKF1A RTERM
 CC0603KRX7R9BB103,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
+RC0805FR-07330RL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,1,2,1.5,1.3,1.2,2,1,RPVLB
+RC0805FR-074K7L,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,1,2,1.5,1.3,1.2,2,1,RFLTB
 CC0805KRX7R9BB222,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CAVF CAVF
 CL21B105KBFNNNE,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CPFCA1 CLLCA1
 MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CCSF CCGB
 GRM21BR61C226ME44L,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CBKOA CBKOB
 RC0805FR-074R7L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RAVI RAVI
+RC0805FR-071ML,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RPET RPVBA
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
 RC0805FR-072K2L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,2,0.5,0.4,0.4,0.3,1,1,RDIG1 RDIG2
+RC0805FR-074K7L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RFLTA
+RC0805FR-0715KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RBR2
+RC0805FR-0768KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM24A
+RC0805FR-0747KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM15A
+RC0805FR-07330RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,1,0.5,0.4,0.4,0.3,0,0,RPVLA
 BIAS-XFMR-SET,,CUSTOM,custom,"BIAS-XFMR multi-secondary set (E23) — RETIRED at 10k volume (modules permanent, E23 rev B)","—",acdc+dcdc,2,0,0,0,0,0,0,
 MECH,,MECH,—,"PCB-ACDC 6L 460×420","—",module,1,2012,1750,1628,1523,1750,1523,
 MECH,,MECH,—,"PCB-DCDC 6L 520×420","—",module,1,2243,1950,1814,1697,1950,1697,

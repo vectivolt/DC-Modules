@@ -49,7 +49,7 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | capacitors | 16287 | 13.9% |
 | drive+control ICs | 8851 | 7.6% |
 | protection | 1582 | 1.3% |
-| resistors/shunts | 1332 | 1.1% |
+| resistors/shunts | 1333 | 1.1% |
 | misc | 440 | 0.4% |
 | connectors | 405 | 0.3% |
 | HMI | 24 | 0% |

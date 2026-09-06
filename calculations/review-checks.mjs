@@ -148,5 +148,8 @@ ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin9: "RT"/.test(cells),
   }
 }
 
+ck("SYNTAX-LCSC", (() => { try { new Function(readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8").replace(/^export /gm, "")); return true; } catch { return false; } })(),
+  "lcsc-map.mjs parses — a syntax error there silently breaks kicad5-gen AND bom-gen");
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);
