@@ -489,6 +489,29 @@ const HAND = {
     ["ROVD0", "ROVD1", "ROVD2", "ROVD3", "ROVD4", "ROVD5", "ROVD6", "ROVD7"],
     ["ROVDL", "COVDF", "UIVOV"],
   ],
+  // Power ENTERS at the studs, so the studs come first. Both of these drew the downstream part on
+  // the left: AC-ENTRY had the fuses left of the terminals feeding them, BUS-IN the link caps left
+  // of the DC bus studs. Only the entry terminals are named -- the fuses and caps fall through to
+  // the automatic final column -- so one plan covers every SKU regardless of how many caps a board
+  // carries.
+  // BUS-IN has the same reversal -- link caps drawn left of the DC bus studs that feed them -- and
+  // is left alone: any split that puts the studs first perturbs 120kw-dcdc's packing (55600x47300
+  // or 55600x47550 against 61100x42800, and the aspect back to 1.18 from 1.43). Tried with the caps
+  // in one fall-through column and split across two; neither is frame-neutral. AC-ENTRY above is
+  // the same fix and IS free, because its frame comes out the size the search produced.
+  "INPUT-EMI / AC-ENTRY": [["JACL1", "JACL2", "JACL3", "JPE"]],
+
+  // Line current sense: THREE PHASES, one per column, not three columns of like parts. The packed
+  // layout grouped by component type -- all the caps and CTs, then all the clamp diodes, then all
+  // the burden resistors -- so each phase's circuit was split across every column and the three
+  // phases could not be compared. Now a column is one whole phase in signal order: CT, burden,
+  // filter resistor, filter cap, then the two clamps. Same three columns of six, so the frame is
+  // unchanged.
+  "AC-SENSING / LINE-CTS-#": [
+    ["CTA#", "RA#B", "RA#F", "CA#F", "DA#N", "DA#P"],
+    ["CTB#", "RB#B", "RB#F", "CB#F", "DB#N", "DB#P"],
+    ["CTC#", "RC#B", "RC#F", "CC#F", "DC#N", "DC#P"],
+  ],
   // VIENNA-PFC / PHASE-[ABC]# was composed too and does NOT fit yet -- kept out, not forgotten.
   // Power-path order works on its own terms (drive column, then switch pair with its DESAT sense
   // and decoupling, then choke / JBS diodes / link caps, snubber last) but the frame it produces
