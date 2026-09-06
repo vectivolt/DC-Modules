@@ -44,8 +44,8 @@ XFMR-AUX-FLY-C,,CUSTOM,custom (D4 rev C),"aux flyback transformer ETD34, 110 W c
 SIC-1700-1R,C5713500,ORDERABLE,CR Micro/BASiC,"SiC FET 1700 V ~1 Ω (aux flyback, full-bus E26 rev C; TO-247 likely package — MR-23, footprint placeholder §40)","G3R1700 class",acdc,1,216,160,140.8,128,160,128,QAUX
 S20K550,C317868,REVIEW,TDK/Songtian,"MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE)","Songtian eq",acdc,6,29.7,22,19.4,17.6,132,106,MOV1 MOV2 MOV3 MOVP1 MOVP2 MOVP3
 WW-470R-10W,,CLASS,local/TE,"470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating)","SQP10",acdc,6,29.7,22,19.4,17.6,132,106,RA0C RB0C RC0C RA1C RB1C RC1C
-FILM-100n-250,,CLASS,Faratronic,"100 nF 250 V film (Vienna RCD clamp)","MLCC 250V",acdc,7,24.3,18,15.8,14.4,126,101,CA0C CB0C CC0C CA1C CB1C CC1C CVCC
 CER-2k2-10W-AX,,CLASS,TE/local,"2.2 kΩ 10 W wirewound axial (bank bleeder chain, HR-15 — ≤65 J/pulse at 120 kW, τ 4–17 s to <60 V)","SQP10",dcdc,8,18.9,14,12.3,11.2,112,90,RBDA0 RBDA1 RBDA2 RBDA3 RBDB0 RBDB1 RBDB2 RBDB3
+FILM-100n-250,,CLASS,Faratronic,"100 nF 250 V film (Vienna RCD clamp)","MLCC 250V",acdc,6,24.3,18,15.8,14.4,108,86,CA0C CB0C CC0C CA1C CB1C CC1C
 Y1-4n7-440,,CLASS,Songtian/Faratronic,"Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)","TDK CD series",acdc+dcdc,6,21.6,16,14.1,12.8,96,77,CY1 CY2 CY3 CPET CYO1 CYO2
 HV73-475k-1%,,CLASS,KOA/UniOhm,"475 kΩ 1206 1% anti-surge (HV divider — MR-3)","any anti-surge 1%",acdc+dcdc,64,1.9,1.4,1.2,1.1,90,70,RV1D0 RV1D1 RV1D2 RV1D3 RV1D4 RV1D5 RV1D6 RV1D7 RV2D0 RV2D1 RV2D2 RV2D3
 R2512-47k-HV-AS,,CLASS,KOA/UniOhm,"47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (R3: 1.04 W worst case; a 1 W 2512 has sqrt(P*R)=217 V < 220 V at +10% bus) (HR-20: halves per-element V and W — ≤208 V / ≤0.92 W continuous)","any HV 2512",acdc+dcdc,22,5.4,4,3.5,3.2,88,70,RBALT0A RBALT0B RBALB0A RBALB0B RBALT1A RBALT1B RBALB1A RBALB1B RNS1A RNS1B RNS2A RNS2B
@@ -54,6 +54,7 @@ R1206-RG-0.5W,,CLASS,any thick-film HP,"gate resistor 1206, 0.5 W-rated (4.7/2.2
 TPS3430-class,C2870545,ORDERABLE,TI/eq,"external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window pins; strap values per datasheet at A6/§K)","MAX6753",acdc+dcdc,2,47.3,35,30.8,28,70,56,USUPA USUPB
 VOM1271T,C146286,ORDERABLE,Vishay/eq,"photovoltaic MOSFET driver w/ integrated turn-off (bank bleeders — ECO-2a/E33 rev B: no floating supply needed, ms-class turn-on is the point)","TLP3906",dcdc,2,47.3,35,30.8,28,70,56,UPVA UPVB
 NSI1200-DSWR,C3029747,ORDERABLE,NOVOSENSE,"iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6)","AMC1200",dcdc,1,94.5,70,61.6,56,70,56,USHO
+FILM-47u-VCC,,REVIEW,any,"aux flyback VCC hold-up 47 uF (declared FilmBoxFP(5) - see R12)","electrolytic",acdc,1,81,60,52.8,48,60,48,CVCC
 NSI1042,C3445856,ORDERABLE,NOVOSENSE,"iso CAN transceiver","NSI1050",dcdc,1,81,60,52.8,48,60,48,UCAN
 GDT-3k5-20kA,C9900081756,REVIEW,Bourns/eq,"gas discharge tube 3.5 kV (L-PE surge path, HR-7)","Littelfuse CG3",acdc,3,24.3,18,15.8,14.4,54,43,GDT1 GDT2 GDT3
 SQP-10R-25W,,CLASS,local,"10 Ω 25 W wirewound pulse, axial (bank pre-insertion — HR-12: 94 J single-fault case)","—",dcdc,2,32.4,24,21.1,19.2,48,38,RPREA RPREB
@@ -63,10 +64,10 @@ TLP152-class,C17255258,ORDERABLE,Toshiba/eq,"opto gate driver (isolated bus-disc
 R2512-10R-2W,,CLASS,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,6,8.1,6,5.3,4.8,36,29,RA0SN RB0SN RC0SN RA1SN RB1SN RC1SN
 TPS54202-class,C191884,ORDERABLE,TI/eq,"15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; one per board)","MP2451/SY8113",acdc+dcdc,2,20.3,15,13.2,12,30,24,UBKA UBKB
 CL21B105KBFNNNE,,UNMAPPED,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,36,1.1,0.8,0.7,0.6,29,22,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 CA1GB1 CA1GB2 CB1GB1 CB1GB2 CC1GB1 CC1GB2
+RC0805FR-0710KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,60,0.5,0.4,0.4,0.3,24,18,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RQDPD RAVH RAVL RAVF RTPFCP
 TLV9061-class,C398358,ORDERABLE,TI/3PEAK,"rail-to-rail op-amp (AVMID buffer, E31)","LMV321",acdc+dcdc,2,16.2,12,10.6,9.6,24,19,UAVB UAVB
 NCP1252A,C80800,ORDERABLE,onsemi,"current-mode flyback controller, fixed 65 kHz, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC; the previously-priced UCC28C43 has no BO pin and needs an RT/CT network the schematic never drew","UCC28C43 + RT/CT & BO rework",acdc,1,32.4,24,21.1,19.2,24,19,UAUX
-R0805-prec-0.1%,,CLASS,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)","any 0.1%",acdc+dcdc,9,3.4,2.5,2.2,2,23,18,RQDL RV1DL RV2DL RV3DL RBPDL RBMDL ROADL ROBDL ROVDL
-RC0805FR-0710KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,52,0.5,0.4,0.4,0.3,21,16,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RQDPD RAVH RAVL RAVF RTPFCP
+R0805-prec-0.1%,,CLASS,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)","any 0.1%",acdc+dcdc,8,3.4,2.5,2.2,2,20,16,RV1DL RV2DL RV3DL RBPDL RBMDL ROADL ROBDL ROVDL
 ULN2803A,C2865085,ORDERABLE,any,"8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)","TBD62083",acdc+dcdc,2,12.2,9,7.9,7.2,18,14,UPA ULB
 R2512-2R0-1W-1%,,CLASS,any,"2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)","2× 1206 1R0 series",dcdc,6,4.1,3,2.6,2.4,18,14,R1CT R2CT R3CT R4CT R5CT R6CT
 LED-2DIG-0.56CC,C9900021773,ORDERABLE,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
@@ -75,7 +76,6 @@ HDR-1x5-2.54,C492404,ORDERABLE,any,"SWD/boot header (EOL programming — CB-13; 
 PH-2,C20504437,ORDERABLE,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,2.4,15,12,JTPFC JTINL JTLLC JTXFR JTERM
 R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
 IND-10u-3A,,CLASS,any shielded,"10 µH 3 A shielded power inductor (3V3 buck)","any",acdc+dcdc,2,8.1,6,5.3,4.8,12,10,LBKA LBKB
-RC1206FR-0710KL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc+dcdc,8,2,1.5,1.3,1.2,12,10,RM24B RM15B RKPUKPARB RKPUKPREB RBKF2B RWPUB RGPDB RRDYB
 PH-4-FAN,C131334,ORDERABLE,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17)","any",acdc,2,8.1,6,5.3,4.8,12,10,JFAN1 JFAN2
 1N4148WS,C2128,ORDERABLE,any,"clamp diode SOD-323 (to 3V3)","BAS316",acdc+dcdc,24,0.5,0.4,0.4,0.3,10,7,DA0P DA0N DB0P DB0N DC0P DC0N DA1P DA1N DB1P DB1N DC1P DC1N
 RC0805FR-0710KL,,UNMAPPED,any,"10 kΩ gate-source","any",acdc+dcdc,18,0.7,0.5,0.4,0.4,9,7,RA0GGS RB0GGS RC0GGS RA1GGS RB1GGS RC1GGS R1HGS R1LGS R2HGS R2LGS R3HGS R3LGS
@@ -98,33 +98,32 @@ PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
 CC0603JRNPO9BN221,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",dcdc,6,0.7,0.5,0.4,0.4,3,2,C1CF C2CF C3CF C4CF C5CF C6CF
-RC0805FR-071ML,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RPVBB RCGB
-R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RBKF1B RAGTB
-RC0805FR-07100KL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,2,2,1.5,1.3,1.2,3,2,RENRB RENLB
 R1206-R31-1%-0.5W,,CLASS,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
+RC0805FR-07100KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,6,0.5,0.4,0.4,0.3,2,2,RENRA RENLA RAUXG RAUXRT RENRB RENLB
 CC0402KRX7R7BB104,,UNMAPPED,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,0.2,2,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
 RC0603FR-07220RL,,UNMAPPED,any,"220 Ω segment","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 RC0805FR-07100RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,5,0.5,0.4,0.4,0.3,2,2,RQDG RALTS RALRS RBLTS RBLRS
 CL21A106KAYNNNE,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,4,0.7,0.5,0.4,0.4,2,2,CAVO CBKIA CAVO CBKIB
 FB-600R-0805,C1017,ORDERABLE,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",acdc+dcdc,2,1.1,0.8,0.7,0.6,2,1,FBPFCA FBLLCA
-RC0805FR-07100KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,4,0.5,0.4,0.4,0.3,2,1,RENRA RENLA RAUXG RAUXRT
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,RAGTA RFB1 RBKF1A RTERM
+RC0805FR-071ML,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,RPET RPVBA RPVBB RCGB
 CC0603KRX7R9BB103,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
-RC0805FR-07330RL,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,1,2,1.5,1.3,1.2,2,1,RPVLB
-RC0805FR-074K7L,,UNMAPPED,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",dcdc,1,2,1.5,1.3,1.2,2,1,RFLTB
+RC0805FR-07330RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,3,0.5,0.4,0.4,0.3,1,1,RQDL RPVLA RPVLB
 CC0805KRX7R9BB222,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CAVF CAVF
 CL21B105KBFNNNE,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CPFCA1 CLLCA1
-MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CCSF CCGB
 GRM21BR61C226ME44L,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,2,0.7,0.5,0.4,0.4,1,1,CBKOA CBKOB
 RC0805FR-074R7L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RAVI RAVI
-RC0805FR-071ML,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RPET RPVBA
+RC0805FR-074K7L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RFLTA RFLTB
+RC0805JR-070RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RAGTA RAGTB
+RC0805FR-0745K3L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RBKF1A RBKF1B
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
 RC0805FR-072K2L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,2,0.5,0.4,0.4,0.3,1,1,RDIG1 RDIG2
-RC0805FR-074K7L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RFLTA
+CC0805KRX7R9BB471,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc,1,0.7,0.5,0.4,0.4,1,0,CCSF
+MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",dcdc,1,0.7,0.5,0.4,0.4,1,0,CCGB
 RC0805FR-0715KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RBR2
+RC0805FR-07118KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RFB1
 RC0805FR-0768KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM24A
 RC0805FR-0747KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM15A
-RC0805FR-07330RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,1,0.5,0.4,0.4,0.3,0,0,RPVLA
+RC1206FR-07120RL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,1,0.5,0.4,0.4,0.3,0,0,RTERM
 BIAS-XFMR-SET,,CUSTOM,custom,"BIAS-XFMR multi-secondary set (E23) — RETIRED at 10k volume (modules permanent, E23 rev B)","—",acdc+dcdc,2,0,0,0,0,0,0,
 MECH,,MECH,—,"PCB-ACDC 6L 460×420","—",module,1,2012,1750,1628,1523,1750,1523,
 MECH,,MECH,—,"PCB-DCDC 6L 520×420","—",module,1,2243,1950,1814,1697,1950,1697,
@@ -135,5 +134,5 @@ MECH,,MECH,—,"Busbars/interconnect + harness (busbar-calc)","—",module,1,189
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,633,550,512,479,550,479,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,2990,2600,2418,2262,2600,2262,
-TOTAL_ELECTRONIC,,,,,,,,,,,,49712,39320,
-TOTAL_MODULE,,,,,,,,,,,,62889,50784,
+TOTAL_ELECTRONIC,,,,,,,,,,,,49734,39337,
+TOTAL_MODULE,,,,,,,,,,,,62911,50801,

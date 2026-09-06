@@ -75,6 +75,7 @@ export const LCSC = {
   "PP-10n-1200":       { status: "CLASS", spec: "10 nF 1200 V film" },
   "X1-2u2-530":        { status: "CLASS", spec: "2.2 µF 530 VAC X1 safety film" },
   "Y1-4n7-440":        { status: "CLASS", spec: "4.7 nF 440 VAC Y1 safety" },
+  "FILM-47u-VCC":      { status: "REVIEW", spec: "47 uF VCC hold-up - declared film, see R12" },
   "FILM-100n-250":     { status: "CLASS", spec: "100 nF 250 V film" },
   "C1812-100p-1k":     { status: "CLASS", spec: "100 pF 1 kV C0G 1812" },
   "EL-47u-35":         { status: "CLASS", spec: "47 µF 35 V electrolytic" },
@@ -170,6 +171,11 @@ export const LCSC_BY_VALUE = {
   "R1206-33R-1%|330":   { lcsc: "C110440", mpn: "RC0805FR-07330RL", note: "330R — 0805 land" },
   "R1206-33R-1%|4.7k":  { lcsc: "C60816",  mpn: "RC0805FR-074K7L",  note: "4.7k — 0805 land, same part as R-small|4.7k" },
   "R-small|4.7k":       { lcsc: "C60816",  mpn: "RC0805FR-074K7L",  note: "4.7k 0805 1%" },
+  "R-small|0R":         { lcsc: "C96345",  mpn: "RC0805JR-070RL",   note: "0R 0805 jumper" },
+  "R-small|45.3k":      { lcsc: "C273885", mpn: "RC0805FR-0745K3L", note: "45.3k 0805 1%" },
+  "R-small|118k":       { lcsc: "C274001", mpn: "RC0805FR-07118KL", note: "118k 0805 1%" },
+  "R-small|120":        { lcsc: "C114928", mpn: "RC1206FR-07120RL", note: "120R 1206 1% 250mW" },
+  "MLCC-small|470pF":   { lcsc: "C107152", mpn: "CC0805KRX7R9BB471", note: "470pF 0805 — CCSF, the aux CS filter; sees only the sense signal" },
   "MLCC-100n-0402|100nF": { lcsc: "C60474", mpn: "CC0402KRX7R7BB104", note: "100nF 0402 X7R 16V — used only on the 3.3 V rail (~5x derating)" },
 };
 

@@ -148,6 +148,31 @@ ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin9: "RT"/.test(cells),
   }
 }
 
+{ // R13 — a designator regex in parts-db that is too loose silently prices and sources unrelated
+  // parts as something they are not. /^R\w+(B|CT)$/ once swept 19 parts per SKU into the 33 R CT
+  // burden class, 1 MOhm bleeders included. ERC cannot see it; only value consistency can.
+  const { DB } = await import("./cost/parts-db.mjs");
+  const { existsSync } = await import("node:fs");
+  const NARROW = { "R1206-33R-1%": 1, "FILM-100n-250": 1, "R0805-prec-0.1%": 2, "FILM-47u-VCC": 1 };
+  const byRule = new Map();
+  for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
+    const f = join(ROOT, "dist/boards", sku, side, "circuit.json");
+    if (!existsSync(f)) continue;
+    for (const c of JSON.parse(readFileSync(f, "utf8"))) {
+      if (c.type !== "source_component") continue;
+      const r = DB.find((x) => x.m.test(c.name)); if (!r || !NARROW[r.mpn]) continue;
+      const v = Number(c.resistance ?? c.capacitance ?? c.inductance);
+      if (!(v > 0)) continue;
+      if (!byRule.has(r.mpn)) byRule.set(r.mpn, new Set());
+      byRule.get(r.mpn).add(v);
+    }
+  }
+  const bad = [...byRule].filter(([mpn, vs]) => vs.size > NARROW[mpn])
+    .map(([mpn, vs]) => `${mpn} holds ${vs.size} values (${[...vs].join("/")})`);
+  ck("R13-CLASS", bad.length === 0,
+    `narrow part classes stay value-consistent — a loose designator regex mis-prices parts${bad.length ? " — " + bad.join("; ") : ""}`);
+}
+
 ck("SYNTAX-LCSC", (() => { try { new Function(readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8").replace(/^export /gm, "")); return true; } catch { return false; } })(),
   "lcsc-map.mjs parses — a syntax error there silently breaks kicad5-gen AND bom-gen");
 

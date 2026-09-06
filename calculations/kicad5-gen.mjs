@@ -129,7 +129,7 @@ const largestVoid = (rects, W, H) => {
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) occ[y][x] = 1;
   }
   const hgt = new Int32Array(NX);
-  let best = 0;
+  let best = 0, bx0 = 0, bx1 = 0, by0 = 0, by1 = 0;
   for (let y = 0; y < NY; y++) {
     for (let x = 0; x < NX; x++) hgt[x] = occ[y][x] ? 0 : hgt[x] + 1;
     const st = [];
@@ -138,13 +138,15 @@ const largestVoid = (rects, W, H) => {
       let start = x;
       while (st.length && st[st.length - 1].h >= h) {
         const t = st.pop();
-        best = Math.max(best, t.h * (x - t.x));
+        const a = t.h * (x - t.x);
+        if (a > best) { best = a; bx0 = t.x; bx1 = x; by0 = y - t.h + 1; by1 = y; }
         start = t.x;
       }
       st.push({ x: start, h });
     }
   }
-  return best / (NX * NY);
+  // the rect too: a hole the search could not remove is a hole to FILL deliberately
+  return { frac: best / (NX * NY), x0: bx0 * cw, y0: by0 * ch, x1: bx1 * cw, y1: (by1 + 1) * ch };
 };
 
 const mirrorLibY = (text) => text.split("\n").map((l) => {
@@ -368,7 +370,8 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   // frames to opposite ends of the sheet — identical repeated circuits that a reader expects to
   // find side by side. So among the positions within one band of the lowest, prefer the one
   // nearest the family's previous frame: sections stay grouped, and the packing stays tight.
-  const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 mil without wrecking the aspect                                  // mil of extra height worth paying to stay grouped
+  const RAGGED_DIV = +(process.env.RAGGED_DIV || 2000);  // swept below; lower = level bottom edge matters more
+const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 mil without wrecking the aspect                                  // mil of extra height worth paying to stay grouped
   const famCount = new Map(), famSpan = new Map();
   for (const b of blocks) {
     const f = String(b.title).split(" / ")[0];
@@ -471,7 +474,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       (hi - lo) / W - (0.35 + 0.9 * (famArea.get(f) / frameArea))));
     const spread = Math.max(...[...famX.values()].map(([lo, hi]) => hi - lo));
     const voidFrac = largestVoid(out.map(({ b: bb, X, Y }) =>
-      ({ x0: X, y0: Y, x1: X + bb.w, y1: Y + bb.h })), W, H + MARGIN + 800);
+      ({ x0: X, y0: Y, x1: X + bb.w, y1: Y + bb.h })), W, H + MARGIN + 800).frac;
     // Gate swept at 0.12 / 0.09 / 0.07 / 0.05: 0.09 is the optimum (worst void 10.4 -> 7.7%, fill
     // unchanged). Tighter is WORSE, because no candidate qualifies and the fallback takes over.
     // The largest empty rectangle is a GATE too, not just a weighted term. As a weighted term the
@@ -485,7 +488,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     // of the sheet contradicts an explicit design instruction ("keep related components tightly
     // grouped"), while a somewhat larger blank block is only untidy. Weight it so a spread
     // violation dominates the density and void terms rather than competing with them.
-    const soft = (sheetArea / frameArea) * 10 + ragged / 2000 + voidFrac * 60
+    const soft = (sheetArea / frameArea) * 10 + ragged / RAGGED_DIV + voidFrac * 60
       + Math.max(0, spreadOver) * 300
       + (aspect >= 1.15 && aspect <= 2.1 ? 0 : 1000);
     const score = usable ? soft : Infinity;
@@ -504,6 +507,13 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     }
   }
   pick = pick ?? fallback;
+  { // layout quality, on stderr: the numbers behind what the eye sees on the rendered sheet
+    const fa = blocks.reduce((a, b) => a + b.w * b.h, 0);
+    const sa = pick.W * (pick.H + MARGIN + 800);
+    console.error(`   [layout] ${page.page.padEnd(11)} NC=${String(pick.NC).padStart(2)} `
+      + `fill=${(100 * fa / sa).toFixed(1)}% ragged=${pick.H - Math.min(...pick.colH)} `
+      + `aspect=${pick.aspect.toFixed(2)} ${pick.score < Infinity ? "gated" : "FALLBACK"}`);
+  }
   const NC = pick.NC;
   for (const { b, X, Y } of pick.out) { b.X = X; b.Y = Y; }
   const sheetW = snap(MARGIN + NC * COLW - SECGAP + MARGIN);
@@ -523,6 +533,44 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     // the 14 cross-board ones, which cross physically on the DCP/DCN/PE studs and harness anyway.
     return `Text Label ${x} ${y} ${dir}    45   ~ 0\n${net}\n`;
   };
+
+  // The biggest remaining hole is not a packing failure to weight away -- family grouping is a hard
+  // gate, so a frame CANNOT move to whichever column is short, and the two goals genuinely conflict
+  // (grouping wins, by the user's instruction). What a draftsman does with the leftover is put the
+  // drawing's index in it. Real content, derived from the sheet, in the space the packer cannot use.
+  {
+    const V = largestVoid(blocks.map((b) => ({ x0: b.X, y0: b.Y, x1: b.X + b.w, y1: b.Y + b.h })),
+      sheetW, sheetH);
+    const PAD = 500, LH = 300, HEAD = 340 + 260 + Math.round(LH * 1.4);
+    const px0 = snap(V.x0 + PAD), py0 = snap(V.y0 + PAD);
+    const px1 = snap(V.x1 - PAD), maxY = snap(V.y1 - PAD);
+    const fams = new Map();
+    for (const b of blocks) {
+      const f = String(b.title).split(" / ")[0];
+      fams.set(f, (fams.get(f) ?? 0) + 1);
+    }
+    const rows = [...fams].sort((a, b2) => b2[1] - a[1] || a[0].localeCompare(b2[0]));
+    const fits = Math.floor((maxY - py0 - HEAD - LH - PAD) / LH);
+    if (px1 - px0 >= 4000 && fits >= 3) {
+      const shown = rows.slice(0, Math.min(rows.length, fits));
+      const rest = rows.length - shown.length;
+      const nLines = shown.length + (rest > 0 ? 1 : 0);
+      // The box hugs its CONTENT, not the hole. Sized to the void it was a framed void -- which
+      // reads worse than the plain gap did, because a drawn border promises something inside it.
+      const py1 = snap(py0 + HEAD + nLines * LH + LH + Math.round(PAD / 2));
+      body += `Wire Notes Line\n\t${px0} ${py0} ${px1} ${py0}\nWire Notes Line\n\t${px1} ${py0} ${px1} ${py1}\n`
+        + `Wire Notes Line\n\t${px1} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
+      body += `Text Notes ${px0 + 200} ${py0 + 340} 0    79   ~ 16\nSHEET INDEX\n`;
+      body += `Text Notes ${px0 + 200} ${py0 + 600} 0    60   ~ 0\n${ident.sku} ${ident.board} - ${ident.sheet}\n`;
+      let ty = py0 + HEAD;
+      for (const [f, n] of shown) {
+        body += `Text Notes ${px0 + 260} ${ty} 0    60   ~ 0\n${f}   -   ${n} section${n > 1 ? "s" : ""}\n`;
+        ty += LH;
+      }
+      if (rest > 0) { body += `Text Notes ${px0 + 260} ${ty} 0    60   ~ 0\n+ ${rest} more\n`; ty += LH; }
+      body += `Text Notes ${px0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\nrev ${REV}   -   ${blocks.length} sections   -   ${page.total} components\n`;
+    }
+  }
 
   for (const b of blocks) {
     const x0 = b.X, y0 = b.Y, x1 = snap(b.X + b.w), y1 = snap(b.Y + b.h);

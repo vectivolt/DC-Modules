@@ -192,6 +192,77 @@ relays (needing the mirror-contact p/ns), the fuse holder, a 6x6 tactile, the CA
 choke and the 2-digit display. Nothing else on any sheet.
 
 
+## R12 — 47 uF in a 5 mm film box is not a buildable part (found 2026-09-06, OPEN)
+
+`CVCC` is declared `capacitance="47uF" footprint={FilmBoxFP(5)}` in
+`packages/power-primitives/cells.tsx:868`. It is the aux flyback's VCC hold-up cap
+(`CVCC.pin1 -> UAUX.VCC`, `pin2 -> DCN`).
+
+A 5 mm-pitch film box tops out around 1-2.2 uF at low voltage. 47 uF of film in that body does not
+exist. The value is almost certainly right for the job -- a flyback controller needs tens of uF to
+hold VCC up through startup before the aux winding takes over -- so it is the *technology* that is
+wrong, not the number: this wants an electrolytic (or a tantalum/polymer), not a film box.
+
+Left as declared rather than silently converted, because changing a part's technology is a design
+decision. Classed as `FILM-47u-VCC` / REVIEW so it cannot quietly inherit a film price or a film
+land pattern while the question is open.
+
+## R13 — over-broad designator regexes mis-classified 57+ parts (found 2026-09-06, FIXED)
+
+Parts are matched to the cost/LCSC database by a first-match-wins list of designator regexes in
+`calculations/cost/parts-db.mjs`. Three of them were written loosely enough to capture parts they
+were never meant to describe:
+
+| rule | intent | also captured |
+|---|---|---|
+| `/^R\w+(B\|CT)$/` -> `R1206-33R-1%` | 33 R CT burden | **every** resistor ending in `B` -- 19 per SKU, of which only `RA0B/RB0B/RC0B` are burdens. The 1 MOhm bleeders `RCGB` and `RPVBB` were priced as 1.5-cent burdens. |
+| `/^R\w+DL$/` -> `R0805-prec-0.1%` | 0.1% divider bottom | `RQDL`, a 330 R opto anode current-limit resistor (`RQDL.pin2 -> UQD.ANO`) |
+| `/^C\w+C$/` -> `FILM-100n-250` | Vienna RCD clamp | `CVCC`, the 47 uF aux VCC hold-up cap (see R12) |
+
+This is invisible to ERC and to the schematic verifier -- the netlist is perfectly correct. It only
+shows up in what the BOM *says* each part is: wrong tolerance, wrong voltage class, wrong price,
+and a wrong land pattern for anything whose footprint is class-derived.
+
+**How it was found:** by grouping every component by the rule that claimed it and flagging any
+narrow class holding values more than a decade apart. Worth keeping as a habit -- a regex bug in a
+lookup table produces a confidently wrong BOM, not an error.
+
+**It also produced a bad fix earlier in the same session.** Two LCSC keys, `R1206-33R-1%|45.3k` and
+`R1206-33R-1%|0R`, were added to satisfy the tail of unassigned parts. Those keys should never have
+existed: a 33 R burden class has no 45.3 k member. The symptom was assigned a part number instead
+of the cause being questioned. Both keys are removed.
+
+**Fixed:** rules tightened to `/^R[ABC]\d+B$/`, `/^R\w{2}DL$/`, `/^C[ABC]\d+C$/`, with `CVCC`
+given its own class. Every designator still matches a rule (checked), and narrow classes are now
+value-consistent. Gate `R13-CLASS` in `calculations/review-checks.mjs` fails the build if any
+narrow class ever holds more distinct values than its spec allows.
+
+## R11 — the CAN barrier-bridging capacitor is not safety-rated (found 2026-09-06, OPEN)
+
+`CCGB` (4.7 nF) and `RCGB` bridge **CGND to DGND**. CGND is a genuinely isolated domain — its only
+other members are `UCAN.GND2` (isolated transceiver secondary), `PSCAN.-Vo` (isolated supply
+output), `JCAN.SGND` and `TVSCAN.C`. So this RC sits **across a galvanic isolation barrier**, which
+is standard practice for common-mode control.
+
+The inconsistency: every other barrier-crossing capacitor in this design is Y1 safety-rated
+(`Y1-4n7-440`) — `CYO1`/`CYO2` (output to PE), `CPET` (DGND to PE), `CY1`/`CY2`/`CY3` (AC to PE).
+`CCGB` alone is classed as a generic `MLCC-small` and would land as an ordinary 50 V X7R.
+
+A generic MLCC across an isolation barrier is not safety-rated: if it fails short — the normal MLCC
+failure mode — the isolation is defeated. Y-class parts are specified precisely because they are
+qualified to fail open.
+
+**Not asserted as a defect, because it depends on what the barrier separates.** If the CAN side is
+SELV-to-SELV the isolation is functional and a generic part may be acceptable; if CGND can sit at a
+different potential (a long bus run to the charger controller, or any fault case that lifts it) then
+it must be Y-rated. The design isolates CAN deliberately and Y-rates everything else that crosses a
+barrier, so the consistent answer is a Y capacitor — `Y1-4n7-440` is already in the BOM at the same
+4.7 nF value, so it costs a line change, not a new part.
+
+No LCSC number assigned to `MLCC-small|4.7nF` for this reason; it stays CLASS until the barrier's
+role is confirmed.
+
+
 ## R9 — the AC input fuse holder is under-rated on every SKU (found 2026-09-06, OPEN)
 
 Same datasheet pass as R8. `F1`/`F2`/`F3` carry footprint `FUSE_holder_RT28-32`. The CHINT
