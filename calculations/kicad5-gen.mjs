@@ -460,6 +460,35 @@ const HAND = {
   //     rule is that gaps inside a run are whole multiples of that run's own base.
   //   * columns stay BALANCED -- running a whole half down one column made the frame ~2x the
   //     height of its passive columns, the short-column dead band the search below exists to fix.
+  // An isolated voltage sense is a divider feeding an amplifier, so draw it that way: the whole
+  // 475k string down the first column in order, then everything that meets at the tap node -- the
+  // bottom leg, the filter cap, and the amplifier itself. The packed version split the string
+  // across both columns and put the amplifier back in the FIRST one, so the chain read
+  // left, right, then back to left. Same 8/3 column split, so the frame is unchanged.
+  "AC-SENSING / SENSE-VAC#": [
+    ["RV#D0", "RV#D1", "RV#D2", "RV#D3", "RV#D4", "RV#D5", "RV#D6", "RV#D7"],
+    ["RV#DL", "CV#DF", "UIVV#"],
+  ],
+  "AC-SENSING / SENSE-VBUS": [
+    ["RBPD0", "RBPD1", "RBPD2", "RBPD3", "RBPD4", "RBPD5", "RBPD6", "RBPD7"],
+    ["RBPDL", "CBPDF", "UIVBP"],
+  ],
+  "AC-SENSING / SENSE-VMID": [
+    ["RBMD0", "RBMD1", "RBMD2", "RBMD3", "RBMD4", "RBMD5", "RBMD6", "RBMD7"],
+    ["RBMDL", "CBMDF", "UIVBM"],
+  ],
+  "OUTPUT-SENSING / SENSE-VBKA": [
+    ["ROAD0", "ROAD1", "ROAD2", "ROAD3", "ROAD4", "ROAD5", "ROAD6", "ROAD7"],
+    ["ROADL", "COADF", "UIVOA"],
+  ],
+  "OUTPUT-SENSING / SENSE-VBKB": [
+    ["ROBD0", "ROBD1", "ROBD2", "ROBD3", "ROBD4", "ROBD5", "ROBD6", "ROBD7"],
+    ["ROBDL", "COBDF", "UIVOB"],
+  ],
+  "OUTPUT-SENSING / SENSE-VOUT": [
+    ["ROVD0", "ROVD1", "ROVD2", "ROVD3", "ROVD4", "ROVD5", "ROVD6", "ROVD7"],
+    ["ROVDL", "COVDF", "UIVOV"],
+  ],
   // VIENNA-PFC / PHASE-[ABC]# was composed too and does NOT fit yet -- kept out, not forgotten.
   // Power-path order works on its own terms (drive column, then switch pair with its DESAT sense
   // and decoupling, then choke / JBS diodes / link caps, snubber last) but the frame it produces
