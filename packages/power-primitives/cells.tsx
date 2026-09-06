@@ -569,13 +569,20 @@ export const CoilDriver = ({ id, ins, outs, sec = "COILS", x = 0, y = 0, sx = 0,
 // (bus/bank/output) use 1 nF (pole ≈ 23 kHz → trip path ≈ 10–20 µs); AC metering keeps 10 nF.
 export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "10nF", sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`ivs${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 18 × 4: divider chain across the top, bottom-leg RC + iso-amp below-right */}
+    {/* The 8-element divider runs as ONE unbroken string and its LENGTH IS ITS INSULATION: each
+        1206 drops about 100 V, and the 6 mm pitch is the working-voltage spacing between elements.
+        It must never be folded into two rows to save width -- a serpentine brings the 800 V end
+        back alongside the low end and puts the full string voltage across one row gap.
+
+        So it stays 69 mm long and runs VERTICALLY instead, 10 mm wide, which is the same string
+        with the same spacing in a shape that fits beside the filter block. High end at the top,
+        iso-amp at the bottom: the descent down the column is the descent in potential. */}
     {Array.from({ length: 8 }, (_, i) => (
-      <resistor layer={lay} key={i} name={`R${id}D${i}`} resistance="475k" footprint="1206" pcbX={i * 6} pcbY={0} schX={i * 1.4} schY={1} schSectionName={sec} />
+      <resistor layer={lay} key={i} name={`R${id}D${i}`} resistance="475k" footprint="1206" pcbX={0} pcbY={-i * 6} schX={i * 1.4} schY={1} schSectionName={sec} />
     ))}
-    <resistor layer={lay} name={`R${id}DL`} resistance={rBot} footprint="0805" pcbX={50} pcbY={5} schX={10.5} schY={-1} schSectionName={sec} />
-    <capacitor layer={lay} name={`C${id}DF`} capacitance={cf} footprint="0805" pcbX={56} pcbY={5} schX={12} schY={-1} schSectionName={sec} />
-    <chip layer={lay} name={`UIV${id}`} footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={64} pcbY={0} schX={15} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}DL`} resistance={rBot} footprint="0805" pcbX={0} pcbY={-50} schX={10.5} schY={-1} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}DF`} capacitance={cf} footprint="0805" pcbX={0} pcbY={-56} schX={12} schY={-1} schSectionName={sec} />
+    <chip layer={lay} name={`UIV${id}`} footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={0} pcbY={-64} schX={15} schY={0} schSectionName={sec} />
     <trace from={hv} to={`.R${id}D0 > .pin1`} schDisplayLabel={hv.replace("net.", "")} />
     {Array.from({ length: 7 }, (_, i) => (
       <trace key={i} from={`.R${id}D${i} > .pin2`} to={`.R${id}D${i + 1} > .pin1`} />

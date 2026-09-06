@@ -70,12 +70,18 @@ const gap = (a, b) => Math.hypot(Math.max(0, Math.max(a.x0, b.x0) - Math.min(a.x
 console.log(`\n== ${SKU}-${SIDE}   EMI / thermal / coupling   (${parts.length} parts)\n`);
 
 // --- EMI-KEEPOUT -------------------------------------------------------------------------------
-const filterParts = parts.filter((p) => /^(CMC\d|CX\d|CY\d|LDM\d)$/.test(p.name));
+const filterParts = parts.filter((p) => /^(CMC\d+|CX\d+|CY\d+|LDM\d+)$/.test(p.name));
 let intruders = [];
 if (filterParts.length) {
   const z = { x0: Math.min(...filterParts.map((p) => p.x0)), x1: Math.max(...filterParts.map((p) => p.x1)),
               y0: Math.min(...filterParts.map((p) => p.y0)), y1: Math.max(...filterParts.map((p) => p.y1)) };
   intruders = parts.filter((p) => isSwitch(p) && p.x1 > z.x0 && p.x0 < z.x1 && p.y1 > z.y0 && p.y0 < z.y1);
+    const fw = z.x1 - z.x0, fh = z.y1 - z.y0;
+  const filterArea = filterParts.reduce((a, p) => a + p.area, 0);
+  const density = filterArea / (fw * fh);
+  line("EMI-BLOCK", density < 0.25 ? 1 : 0, filterParts.length,
+    `input filter occupies ${fw.toFixed(0)} x ${fh.toFixed(0)} mm at ${(density * 100).toFixed(0)} % density `
+    + `(a filter spread thin is not a filter)`);
   line("EMI-KEEPOUT", intruders.length, filterParts.length,
     `switching-node parts inside the filter zone (${z.x0.toFixed(0)}..${z.x1.toFixed(0)}, ${z.y0.toFixed(0)}..${z.y1.toFixed(0)}), any layer`);
   for (const p of intruders.slice(0, 5)) console.log(`         ${p.name} at (${p.x.toFixed(0)}, ${p.y.toFixed(0)}) layer ${p.layer ?? "?"}`);
