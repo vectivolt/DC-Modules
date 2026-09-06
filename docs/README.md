@@ -1,15 +1,16 @@
 # Documentation Index 📚
 
-Nineteen governing documents + generated CSV/plot artifacts. Reading orders below; every claim in
+Thirty governing documents + generated CSV/plot artifacts. Reading orders below; every claim in
 these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces the lot).
 
 ## If you're new, read in this order
 
 1. [`../README.md`](../README.md) — platform overview, results, quickstart
 2. [`architecture.md`](architecture.md) — the frozen system
-3. [`assumptions.md`](assumptions.md) — decision register **E1–E24** (the "why" for everything)
+3. [`assumptions.md`](assumptions.md) — decision register **E1–E34** (the "why" for everything)
 4. [`../boards/README.md`](../boards/README.md) → per-SKU deep dives
 5. [`simulation-report.md`](simulation-report.md) — what was executed, exactly
+6. [`schematic-drawing-set.md`](schematic-drawing-set.md) — the release schematics and how to import them
 
 ## Full index
 
@@ -17,7 +18,7 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 |---|---|
 | [`design-basis-report.md`](design-basis-report.md) | the Phase-1 design basis that started the program (historical baseline) |
 | [`architecture.md`](architecture.md) | frozen power path, control plane, protections map, scaling table |
-| [`assumptions.md`](assumptions.md) | E1–E24 frozen decisions + A1–A9 external assumptions + fidelity policy |
+| [`assumptions.md`](assumptions.md) | E1–E34 frozen decisions + A1–A9 external assumptions + fidelity policy |
 | [`component-selection.md`](component-selection.md) | RFQ-ready candidate table, sourcing policy, rev-B parts deltas |
 | [`interconnect.md`](interconnect.md) | two-board sandwich, stud pillars, 16-way harness, **HMI spec** |
 | [`magnetics.md`](magnetics.md) | manufacturing drawings **D1–D5**: chokes, trim bins, transformer stack, CM chokes, CTs |
@@ -37,6 +38,13 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 | [`evt-plan.md`](evt-plan.md) | the 10-test bench campaign this repo is staged for |
 | [`design-review-production.md`](design-review-production.md) | **adversarial production review R1** — verdict NO at review time; rev C fix log: 15/15 blockers closed (+HR/MR) |
 | [`design-review-production-r2.md`](design-review-production-r2.md) | **adversarial re-audit R2 of rev C** — NO again (7 new CBs incl. defects inside the rev-C fixes); falsification round + rev D fix log; gate = `review-checks.mjs` (60+ asserts incl. class checks) |
+| [`schematic-drawing-set.md`](schematic-drawing-set.md) | **the release drawing set** — `kicad5/DC-Modules-<sku>-SHIP.zip`, per-sheet labelling, the six audits that gate it |
+| [`lcsc-status.md`](lcsc-status.md) | what the LCSC field means on every symbol; why `CLASS` is adjudicated, not unfinished |
+| [`symbol-pin-map.md`](symbol-pin-map.md) | logical pin id → package pin, verified per part (the R3 subject) |
+| [`mcu-pin-allocation-gd32.md`](mcu-pin-allocation-gd32.md) | GD32G553VET6 pin allocation — replaces the STM32-derived symbolic map |
+| [`footprints-to-draw.md`](footprints-to-draw.md) | land patterns named by the `Footprint` field; which ones still need drawing |
+| [`review-response-r3.md`](review-response-r3.md) | **external PDF review R3** — "do not manufacture" on pin numbering; every finding checked against netlist + datasheet |
+| [`easyeda-transcription.md`](easyeda-transcription.md) | the superseded pin-by-pin EasyEDA MCP route and the tool limits that killed it |
 
 ## Generated data & plots
 

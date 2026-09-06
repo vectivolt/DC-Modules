@@ -1,79 +1,109 @@
-# Drawing set — composed schematic sheets (release artefact)
+# Drawing set — the release schematics
 
-One sheet per board, six boards, generated from the built netlists. This is the
-presentation-grade drawing set: `calculations/schematic-compose.mjs`.
+**The deliverable is `kicad5/DC-Modules-<sku>-SHIP.zip`.** Three zips, one per SKU, each holding
+the two board sheets plus the symbol library, description file and project file. They import into
+EasyEDA Pro (and open in KiCad 5.1) as-is.
 
-    node calculations/schematic-compose.mjs            # all six boards
-    node calculations/schematic-compose.mjs 30kw/acdc  # one board
+    node calculations/kicad5-gen.mjs           # all three SKUs, and re-packages the zips
+    node calculations/kicad5-gen.mjs 30kw      # one SKU
 
-Output: `boards/<sku>/out/<side>-sheet.svg`. The command exits non-zero if any check fails, so
-it can gate a release.
+Generation writes `kicad5/dc-modules-<sku>/` **and re-zips the SHIP archive in the same run.**
+That is deliberate: the zips previously drifted a full day behind the sheets while every check on
+the source still passed, because nothing checked the artefact anyone actually imports. Check the
+deliverable, not only what it is built from.
 
-| Sheet | Symbols | Sections | Clusters | Size |
-|---|---|---|---|---|
-| 30 kW AC-DC | 300 | 16 | 77 | 2776 × 3015 |
-| 30 kW DC-DC | 308 | 17 | 99 | 2735 × 2780 |
-| 60 kW AC-DC | 399 | 16 | 102 | 3661 × 3505 |
-| 60 kW DC-DC | 451 | 17 | 154 | 3406 × 3624 |
-| 120 kW AC-DC | 599 | 16 | 158 | 4899 × 5526 |
-| 120 kW DC-DC | 741 | 17 | 262 | 4310 × 4937 |
+`kicad5/archive/` holds 23 superseded zips. **Their names lie** — `-final`, `-r5`…`-r8`, `-v2`…`-v4`
+are all older than the SHIP set. Import nothing from there.
 
-## How the sheet is composed
+## The six sheets
 
-`schematic-export.mjs` (the older exporter, still present) draws a frame around each functional
-section but leaves it wherever the compiler placed it. That reads as ragged: mismatched
-gutters, unaligned tops, large dead zones, and one sparse section dominating the sheet.
+| Sheet | Symbols | Sections | Sheet size (mil) |
+|---|---|---|---|
+| 30 kW AC-DC | 304 | 31 | 42600 × 29050 |
+| 30 kW DC-DC | 311 | 27 | 45600 × 26800 |
+| 60 kW AC-DC | 403 | 36 | 44600 × 37050 |
+| 60 kW DC-DC | 454 | 33 | 45600 × 35300 |
+| 120 kW AC-DC | 603 | 45 | 54600 × 42300 |
+| 120 kW DC-DC | 744 | 45 | 55600 × 47550 |
 
-The composer re-lays the drawing instead. **The movable unit is a wire-connected cluster, not a
-named section.** Components joined by a drawn wire form one rigid body; everything else is
-linked by net label and can move freely.
+2819 symbols and 8049 connected pins over the set.
 
-That distinction is load-bearing, and it is not what E34 implies. Measuring the rendered output
-found **126 wires on the AC-DC board and 142 on the DC-DC board crossing the named section
-boundaries** — so translating whole sections, which was the obvious approach, silently tore
-them. Clusters cannot be torn by construction. Packing at cluster granularity also removes the
-whitespace *inside* a section, which is what made the old sheet look accidental.
+## Every sheet says what it is
 
-Layout: clusters shelf-pack inside their section frame; frames skyline-pack on the sheet in
-signal-flow order with uniform gutters. Sheet-level shelf rows left a tall gap under every short
-section (46 % fill); the skyline packer lifts that to ~60 %.
+A sheet printed alone still identifies itself. The title block carries the SKU, which board of the
+pair, sheet *n* of 2, what the module is, and what that board contains:
 
-## Checks the composer enforces (build fails on any of them)
+    Title    DC-Modules 30 kW — AC-DC board (Vienna PFC)
+    Rev      D.3
+    Comp     DC-Modules 30 kW - board AC-DC (lower), sheet 1 of 2
+    Comment1 Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper),
+             bolted DCP/DCN/PE studs + 16-way control harness
+    Comment2 Content: 1x Vienna PFC cell + 1x 3-ph LLC cell
+    Comment3 31 functional sections - 304 components - cross-section links are global net labels
+    Comment4 Every component carries MPN + LCSC fields
 
-- no two section frames overlap;
-- no two clusters overlap inside a frame;
-- every element is placed — no strays outside a section;
-- every symbol is claimed by a named section;
-- no title-block text crosses the divider or the box edge.
+Each sheet also carries a **SHEET INDEX** panel listing its functional groups and how many
+sections each holds, and a **NET NAMING** panel giving the naming convention. Both sit in
+otherwise-empty space, stacked in one void on the right.
 
-## Title block
+Sections are titled `GROUP / SECTION` (`AC-SENSING / SENSE-VAC1`, `LLC-TANKS / TANK-2`), so the
+group is readable from the title alone. The six groups per board:
 
-Each sheet identifies itself when printed alone: SKU, which board of the pair (AC-DC lower /
-DC-DC upper), sheet *n* of 2, and how that board scales across the set (30 kW = 1× cells,
-60 kW = 2×, 120 kW = 4×), plus rev, date, and where the LCSC numbers live. The block sizes
-itself to its text — a fixed width clipped the longer SKU titles.
+| AC-DC board | DC-DC board |
+|---|---|
+| INPUT-EMI · VIENNA-PFC · DC-LINK · AC-SENSING · CONTROL · AUX-POWER | LLC-LEGS · LLC-TANKS · BANKS-SP · OUTPUT-SENSING · CONTROL · COMMS-HMI |
 
-## LCSC assignment
+Section counts scale with the SKU: the 30 kW AC-DC sheet has 3 VIENNA-PFC sections, the 60 kW has
+6, the 120 kW has 12 — one per cell, so the ×1 / ×2 / ×4 scaling is visible on the drawing.
 
-`calculations/cost/lcsc-map.mjs` covers **all 97 parts-db entries**, and the BOM CSVs carry
-`lcsc` + `lcsc_status` columns. Statuses are kept apart deliberately, because a purchasable part
-number must never be guessed:
+## How the layout is built and held
 
-| Status | Count | Meaning |
+Sections skyline-pack on a quantised column grid in signal-flow order, with frame tops and heights
+snapped to a 250 mil Y grid so vertical gutters stay uniform. Inside a section, symbols align to
+their **column's** widest label rather than their own, which is what stops identical parts
+zig-zagging. Pins are ordered by name family, so a part's related pins are adjacent.
+
+**Wires are pin stubs only.** Every cross-section link is a global net label — no wire leaves its
+section frame anywhere in the set, and the longest wire on any sheet is 200 mil. Nets are named
+for what they join (`UIVOA_VINP`, `RBALTA_M`, `RV1D_01`), not auto-numbered; 1144 `N_<side>_<n>`
+names were eliminated.
+
+## The checks, and what they currently measure
+
+Each tool measures a property of the **emitted `.sch`**, so it audits the deliverable rather than
+the intent. All six sheets currently pass every one:
+
+| Tool | Checks | Current |
 |---|---|---|
-| ORDERABLE | 39 | specific LCSC part meeting the design rating |
-| SECOND-SOURCE | 2 | equivalent found, different die/rating — requalify |
-| REVIEW | 10 | **library part does not yet meet the stated rating** — resolve before release |
-| CLASS | 39 | design specifies a rating, not a part; purchasing selects |
-| CUSTOM | 3 | custom magnetics, no catalogue equivalent |
+| `kicad5-verify.mjs` | every pin against an independently-built netlist | **8049 / 8049 correct, 0 wrong, 0 unconnected** |
+| `kicad5-visual.mjs` | ink collisions: labels vs symbols vs field text | **0 collisions** |
+| `alignment-audit.mjs` | FRAME-X/Y, SYM-X, PITCH, STUB near-misses | **no near-miss anywhere; 1 stub length** |
+| `wiring-audit.mjs` | LONG, ESCAPE, CROSS, FLOW | **longest 200 mil, 0 escapes, 0 crossings, 1999/1999 flow** |
+| `frame-padding.mjs` | inner padding of every section frame | **no overflow; min clearance L/R 221, T 65, B 205** |
+| `review-checks.mjs` | the release gates (incl. LCSC and class rules) | **all pass** |
 
-The ten REVIEW lines are the actionable ones (e.g. the MOV is a 350 VAC part against a 550 VAC
-requirement; the isolated 5 V module is basic-rated where rev D calls for reinforced). They are
-flagged rather than silently accepted.
+Also uniform across the set: one symbol orientation, four text sizes, two frame widths per sheet,
+400/500 mil gaps, and 229/229 titled boxes at a single (60, 160) inset.
 
-## Known cosmetic item
+The generator is deterministic — regenerating from source reproduces the sheets byte for byte, and
+the packaged zips are verified to match the directories they were built from.
 
-Three net labels render as `C1R0_pin2` / `C2R0_pin2` / `C3R0_pin2` — the resonant-cap junction
-in each LLC tank has no explicit net name, so tscircuit falls back to naming it after a pin. The
-fix belongs in `cells.tsx` (name the node), which needs a board rebuild; it is cosmetic only and
-the connectivity is correct.
+## Working on the layout
+
+Two rules, both learned the expensive way:
+
+**Placement edits are safe; geometry and scoring edits cascade.** Changing sheet height, the score
+weights or the void maths reshuffles the whole packing and can wreck two sheets to improve one. If
+you must touch scoring, sweep the weight and read `largest void` per sheet — that number has
+tracked the eye better than fill percentage or raggedness every time.
+
+**Two changes were tested and reverted on the evidence**, and are recorded so they are not retried
+blind: reweighting raggedness (the metric improved 20350 → 8500, the sheet looked visibly worse,
+voids went 8 % → 15 %), and a fixed bottom index strip (perfectly consistent, but it cost two
+sheets their void gate).
+
+## Related
+
+- `docs/lcsc-status.md` — what the LCSC field on every symbol means
+- `docs/easyeda-transcription.md` — the older pin-by-pin EasyEDA path and why it was abandoned
+- `calculations/schematic-compose.mjs` — the earlier SVG composer, superseded by this set

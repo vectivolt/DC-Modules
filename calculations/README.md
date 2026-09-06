@@ -26,3 +26,25 @@ sh calculations/run-all.sh
 | `plot.mjs` | zero-dependency SVG plotter used by everything |
 
 Outputs land in `out/` (CSVs committed — they are deliverables §49-12/21).
+
+## Drawing set — generation and audit
+
+The release schematics are `kicad5/DC-Modules-<sku>-SHIP.zip`; see `docs/schematic-drawing-set.md`.
+
+| Script | Owns |
+|---|---|
+| `kicad5-gen.mjs` | **the release sheets** — packing, framing, labelling; re-zips the SHIP archive in the same run |
+| `kicad5-verify.mjs` | every pin vs an independently-built netlist (**8049/8049**, 0 wrong, 0 unconnected) |
+| `kicad5-visual.mjs` | ink collisions between labels, symbols and field text |
+| `alignment-audit.mjs` | near-miss alignment: FRAME-X/Y, SYM-X, PITCH, STUB |
+| `wiring-audit.mjs` | wiring rules: LONG, ESCAPE (no wire leaves a frame), CROSS, FLOW |
+| `frame-padding.mjs` | inner padding of every section frame — catches content that floats or overflows |
+| `review-checks.mjs` | the release gates, including LCSC class and shadowed-rule checks |
+| `kicad5-preview.mjs` / `kicad5-detail.mjs` | render sheets/tiles for visual inspection |
+
+Each audit reads the **emitted `.sch`**, so it measures the deliverable rather than the intent.
+All six sheets currently pass all of them.
+
+Superseded but kept: `schematic-compose.mjs` (SVG composer), `easyeda-pages.mjs` /
+`easyeda-apply-gen.mjs` / `easyeda-verify.mjs` (the pin-by-pin EasyEDA MCP route — see
+`docs/easyeda-transcription.md` for why it was abandoned).

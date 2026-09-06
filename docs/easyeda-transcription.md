@@ -1,9 +1,13 @@
 # EasyEDA transcription of the 30 kW schematics (status: PARTIAL — do not treat as authoritative)
 
-> **2026-09-06 update.** The presentation-grade drawing set now lives in
-> `docs/schematic-drawing-set.md` (`calculations/schematic-compose.mjs`) — that is the
-> deliverable to look at. The EasyEDA transcription below remains incomplete for the
-> tool reasons documented here; two further findings are recorded at the end.
+> **2026-09-06 update — this path is superseded.** The release drawing set is now the KiCad-5
+> import set, `kicad5/DC-Modules-<sku>-SHIP.zip` (see `docs/schematic-drawing-set.md`). That is
+> **option (b) below realised**: a file-based import instead of pin-by-pin port placement, which
+> sidesteps blockers 1-3 entirely. It lands 8049/8049 pins correct where this pin-by-pin
+> transcription peaked at 94.08 %.
+>
+> Keep this document for the tool limitations it records — they are reproducible, they are why
+> the approach was abandoned, and anyone who tries the MCP route again will hit them.
 
 **The authoritative electrical design remains the tscircuit source** (`packages/`, `boards/`,
 compiled to `dist/boards/*/*/circuit.json`) and the BOM/gate scripts under `calculations/`.
@@ -98,7 +102,9 @@ unsafe, and always re-verify with `easyeda-verify.mjs` afterwards rather than tr
 does not clear it. It was located by bisection (deleting one page cleared it) — this build's DRC
 reports counts only, not locations, so bisection is the only tool available.
 
-**Current state.** A clean project `DC Modules Rev D` exists alongside the original. The original
-`DC Modules` project is contaminated (duplicates + auto-renamed designators) and was deliberately
-left untouched rather than deleted. Neither is fabrication-ready. `easyeda-verify.mjs` prints the
-exact outstanding defects and writes machine-readable repair plans.
+**Current state.** Superseded by the KiCad-5 import path; neither EasyEDA project produced by
+this route was fabrication-ready. The workspace was cleaned on 2026-09-06 from 37 projects to 17:
+the three `SHIP D.3` projects (30 kW fp, 60 kW, 120 kW) imported from the SHIP zips were kept, 20
+superseded DC-Modules revisions were deleted, and `LEV OBC` plus all 13 non-DC-Modules projects
+were left untouched. `easyeda-verify.mjs` still runs if you need the exact outstanding defects of
+the old transcription.

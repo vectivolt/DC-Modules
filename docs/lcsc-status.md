@@ -1,60 +1,93 @@
 # LCSC assignment status
 
-Generated 2026-09-06. Every component on every sheet carries an `LCSC` field. This documents what
-the four possible values mean and, for `CLASS`, **why** — so the remainder reads as adjudicated
-rather than unfinished.
+Every component on every sheet carries an `LCSC` field, and every BOM line carries `lcsc` +
+`lcsc_status`. This documents what the values mean and — for `CLASS` — **why**, so the remainder
+reads as adjudicated rather than unfinished.
 
-| status | components | share |
-|---|---|---|
-| real C-number | 1672 | 59% |
-| `CLASS` | 1113 | 39% |
-| `CUSTOM` | 30 | 1% |
-| `REVIEW` | 4 | 0% |
+Regenerate the counts below from the shipped sheets, never by hand:
 
-Sheet and BOM are cross-checked: 100 distinct MPNs on the 30 kW sheets, **0 mismatches**, and no
-MPN carries two different numbers.
+    node calculations/kicad5-verify.mjs        # sheets
+    node calculations/cost/bom-gen.mjs         # BOM lines
 
-## Why CLASS is not "unfinished"
+## On the sheets — 2819 component instances
 
-For most of these the class **is** the specification, and substituting a generic catalogue part
-would silently drop a rating the design depends on. Two attempts proved the point and were both
-reverted:
+| status | instances | share | meaning |
+|---|---|---|---|
+| real C-number | 2256 | 80 % | orderable LCSC part |
+| `CLASS` | 507 | 18 % | buy to the class spec; the class **is** the specification |
+| `CUSTOM` | 30 | 1 % | made to drawing — no catalogue equivalent exists |
+| `REVIEW` | 26 | 1 % | catalogue part does not yet meet the stated rating |
 
-- gate resistor `R1206-RG-0.5W` -> `RC1206FR-074R7L` (C137258) is **250 mW**, half the specified
+Sheet and BOM are cross-checked: no MPN carries two different numbers.
+
+**The ordinary-value tail is closed.** An earlier revision of this doc listed 157 instances of
+`R-small` / `MLCC-small` / `R1206-33R-1%` as "genuinely just not looked up yet". Those are done —
+14 further parts were read back from EasyEDA's LCSC catalogue via `component_search` and keyed
+into `LCSC_BY_VALUE`, taking real-number coverage from 59 % to 80 %. Every MPN still marked
+`CLASS` below is a deliberate class specification, not a lookup nobody got round to.
+
+## Why CLASS is not "unfinished" — 507 instances, 22 MPNs
+
+Substituting a generic catalogue part would silently drop a rating the design depends on. Two
+attempts proved the point and were both reverted:
+
+- gate resistor `R1206-RG-0.5W` → `RC1206FR-074R7L` (C137258) is **250 mW**, half the specified
   rating, on the resistor that takes the gate-drive pulse.
-- relay `HF167F-80A-M` -> `RELAY-TH_HF167F-24-HF` (C2757422): EasyEDA's DRC rejected it,
+- relay `HF167F-80A-M` → `RELAY-TH_HF167F-24-HF` (C2757422): EasyEDA's DRC rejected it,
   `Pin has no corresponding pad: 5, 6, 8` — the catalogue part is a plain SPST-NO and E30 needs
   the mirror-contact variant.
 
-### Class IS the spec — 866 instances
-Safety-certified (`X1-2u2-530`, `Y1-4n7-440` — must carry the certification, not just the value) ·
-voltage-class film (`PP-46n-1200`, `PP-1u-1100`, `PP-1u-600`, `PP-4u7-1200`, `PP-10n-1200`,
-`FILM-100n-250`, `C1812-100p-1k`) · anti-surge HV (`HV73-475k-1%`, `R2512-47k-HV-AS`,
-`R2512-HV`) · pulse/power resistors (`R1206-RG-0.5W`, `CER-2k2-10W-AX`, `WW-470R-10W`,
-`CER-25W-AX`, `CER-50W-AX`, `SQP-10R-25W`, `R2512-10R-2W`, `R2512-2R0-1W-1%`,
-`R1206-R31-1%-0.5W`) · 0.1% precision dividers (`R0805-prec-0.1%` — a 1% part would drop the
-tolerance the divider exists for) · DC-link electrolytics (`ELH-470u450` — selected by ripple
-current and endurance, not by capacitance).
+| Category | Parts (instances) |
+|---|---|
+| DC-link electrolytics — chosen by ripple current and endurance, not capacitance | `ELH-470u450` (120) |
+| Voltage-class film | `PP-46n-1200` (84) · `PP-1u-600` (42) · `PP-1u-1100` (27) · `FILM-100n-250` (21) · `PP-4u7-1200` (6) · `PP-10n-1200` (3) |
+| Custom magnetics by drawing | `IND-PFC-165u` (21) · `IND-TRIM-BIN4` (21) · `DM-22u-SKU` (9) |
+| Pulse / power resistors | `CER-2k2-10W-AX` (24) · `WW-470R-10W` (21) · `CER-25W-AX` (12) · `CER-50W-AX` (6) · `SQP-10R-25W` (6) |
+| Anti-surge HV | `R2512-HV` (18) |
+| Safety-certified — must carry the certification, not just the value | `X1-2u2-530` (18) |
+| Mechanical terminals | `STUD-M8` (36) · `TAB-M4` (3) |
+| Per-SKU fuse class | `FUSE-gG-690V-63A` / `-125A` / `-250A` (3 each) |
 
-### No catalogue part exists — 90 instances
-Custom magnetics (`IND-PFC-165u`, `IND-TRIM-BIN4`, `DM-22u-SKU`) and mechanical terminals
-(`STUD-M8`, `TAB-M4`).
+## CUSTOM — 30 instances, 3 MPNs
 
-### Genuinely just not looked up yet — 157 instances
-The long tail of ordinary values in `R-small` / `MLCC-small` / `R1206-33R-1%` that no lookup has
-been done for (each is 3-15 instances). Resolve them the same way as the ones already done: read
-the part back from EasyEDA's LCSC catalogue with `component_search` and add a `LCSC_BY_VALUE`
-entry keyed on `family|value`. **This is the only part of the LCSC column that is genuinely
-outstanding work rather than a recorded decision.**
+`XFMR-LLC-10K` (21) · `CMC-3PH-2mH-SKU` (6) · `XFMR-AUX-FLY-C` (3). Made to the drawings in
+`docs/magnetics.md`; there is no catalogue equivalent to look up.
+
+## REVIEW — the actionable list
+
+On the sheets, `REVIEW` is the four relay classes with no acceptable catalogue part yet:
+`HFE82V-M-CLASS` (16) · `HFE82V-20-M-CLASS` (6) · `HF167F-250A-M` (2) · `HF167F-120A-M` (2).
+
+At BOM level the status is wider — 15 lines on 30/60 kW, 19 on 120 kW — because it also covers
+parts that **do** have a C-number but still need requalification before release:
+
+| Part | LCSC | Why it is flagged |
+|---|---|---|
+| `S20K550` | C317868 | MOV rating vs the Δ line-line + GDT-to-PE surge path |
+| `GDT-3k5-20kA` | C9900081756 | 3.5 kV L-PE surge path (HR-7) |
+| `CT-100A-1:2500` | C94571 | 63.95 A rms/cell at 285 V low line — class check |
+| `CT-RES-1:100` | C94571 | resonant CT, same toroid family |
+| `ISO5V-RFC-6K` | C20613048 | reinforced rating required by E25 |
+| `QA01C` | C2757491 | iso gate-bias module, +18/−4 configured (E23 rev B) |
+| `SHUNT-MANG` | C508584 | manganin shunt 50 mV class, per-SKU current |
+| `PS122WF4702T4E` | C2793932 | **zero stock / pre-sale** — sourcing risk, not a rating problem |
+| the four relay classes | — | no catalogue part meets E30's mirror-contact requirement |
+
+`SECOND-SOURCE` (2 lines) are the SiC MOSFETs `SG2M023120LJ` (C5713523) and `B3M010C075Z`
+(C5713521) — equivalent found, different die, requalify before switching.
 
 ## How value-resolution works
 
 A per-MPN map cannot express these: `R-small` covers 10k, 1k, 100R, 100k and more, and
-`MLCC-small` covers 100nF, 10nF, 1nF and 220pF. So `LCSC_BY_VALUE` in `calculations/cost/lcsc-map.mjs`
-is keyed on `family|value` and consulted by BOTH the schematic generator and `bom-gen`, using the
-same engineering-notation formatter on each side so the keys match. `bom-gen` splits a generic
-family into per-value lines wherever a catalogue part exists — `R-small` is genuinely several
-different orderable parts.
+`MLCC-small` covers 100nF, 10nF, 1nF and 220pF. So `LCSC_BY_VALUE` in
+`calculations/cost/lcsc-map.mjs` is keyed on `family|value` and consulted by **both** the schematic
+generator and `bom-gen`, using the same engineering-notation formatter on each side so the keys
+match. `bom-gen` splits a generic family into per-value lines wherever a catalogue part exists —
+`R-small` is genuinely several different orderable parts.
+
+Two failure modes in that map are now gated by `review-checks.mjs`, because both failed silently:
+duplicate object keys (four `note:` entries were being overwritten) and a rule whose regex shadows
+a more specific one further down the first-match-wins table.
 
 Every entry was read back from EasyEDA's own LCSC catalogue via `component_search`. None is from
 memory.

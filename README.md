@@ -22,7 +22,7 @@
 A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging modules** engineered end-to-end in this repository: every number traces to a runnable calculation, every waveform claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated BOM line. One repeatable **~10 kW cell pair** (a Vienna PFC phase + an LLC transformer section) scales 3× / 6× / 12× across the family — same SiC, same magnetics part numbers, same firmware — packaged as a **two-board sandwich** (AC-DC below, DC-DC above) per module.
 
 > **What this repo is:** a complete, simulation-closed, tolerance-hardened electrical design + verified supervisory firmware + manufacturing documentation.
-> **Review status:** TWO adversarial production-readiness audits. R1 ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers** → closed same day as **rev C**. R2 ([docs/design-review-production-r2.md](docs/design-review-production-r2.md)) re-audited rev C and returned **NO again — 7 new criticals** (resonant sensing mis-scale, a board with no 3.3 V source, 100 V aux rectifiers at 160–200 V PIV, 60 W aux vs the 120 kW load, an unread LLC fault net, drawn-vs-frozen tank drift) → every finding falsification-checked, then closed same day as **rev D** (cells v4, boards v4, parts-db rev D, F.21 implemented in firmware, aux rev C re-simulated 9/9 at per-SKU loads, per-SKU protection decks, six boards rebuilt clean, gate extended to 60+ asserts incl. class checks). **Rev D.1**: 10k-volume basis (A7 rev B), ECO-2a/2b executed, E23 retired. Open by nature: the §K datasheet gate and bench EVT (T-01…T-25).
+> **Review status:** TWO adversarial production-readiness audits, plus an external PDF review. R1 ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers** → closed same day as **rev C**. R2 ([docs/design-review-production-r2.md](docs/design-review-production-r2.md)) re-audited rev C and returned **NO again — 7 new criticals** (resonant sensing mis-scale, a board with no 3.3 V source, 100 V aux rectifiers at 160–200 V PIV, 60 W aux vs the 120 kW load, an unread LLC fault net, drawn-vs-frozen tank drift) → every finding falsification-checked, then closed same day as **rev D** (cells v4, boards v4, parts-db rev D, F.21 implemented in firmware, aux rev C re-simulated 9/9 at per-SKU loads, per-SKU protection decks, six boards rebuilt clean, gate extended to 60+ asserts incl. class checks). **Rev D.1**: 10k-volume basis (A7 rev B), ECO-2a/2b executed, E23 retired. **R3** ([docs/review-response-r3.md](docs/review-response-r3.md)) — an external reviewer audited the exported PDFs and returned **do not manufacture**, principally on component pin numbering; every finding was re-checked against the built netlist and the manufacturer datasheets, and the GD32G553 pin allocation that the STM32-derived symbolic map had got wrong was replaced ([docs/mcu-pin-allocation-gd32.md](docs/mcu-pin-allocation-gd32.md)). Open by nature: the §K datasheet gate and bench EVT (T-01…T-25).
 > **What it is not (yet):** bench-validated or certified hardware — see [Honesty boundary](#honesty-boundary-50).
 
 ---
@@ -99,6 +99,9 @@ mindmap
     calculations/
       14 machine-readable modules → out/*.csv
       run-all.sh — one-command reproduction
+    kicad5/
+      DC-Modules-<sku>-SHIP.zip — the release schematics
+      6 sheets · 2819 symbols · 8049 pins verified
     simulation-results/
       metrics CSVs + SVG plots
     docs/
@@ -203,12 +206,13 @@ Guide: [`docs/firmware-guide.md`](docs/firmware-guide.md) · protocol: [`docs/ca
 
 ## Documentation index 📚
 
-Everything lives in [`docs/`](docs/README.md) — the index there describes all nineteen documents. Highlights:
+Everything lives in [`docs/`](docs/README.md) — the index there describes all thirty documents. Highlights:
 
 | Read this… | …to understand |
 |---|---|
 | [`architecture.md`](docs/architecture.md) | the frozen platform, power path, control plane, scaling |
-| [`assumptions.md`](docs/assumptions.md) | **every decision E1–E24** with provenance and its invalidator |
+| [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | **the release schematics** — what to import, how every sheet is labelled, the audits that gate it |
+| [`assumptions.md`](docs/assumptions.md) | **every decision E1–E34** with provenance and its invalidator |
 | [`boards/*/README.md`](boards/) | each board, cell by cell, pin by pin |
 | [`simulation-report.md`](docs/simulation-report.md) | all executed runs in §50 format (solver, netlist, tolerances, pass/fail) |
 | [`magnetics.md`](docs/magnetics.md) | manufacturing drawings D1–D5 with acceptance limits |
@@ -232,7 +236,7 @@ This project runs under a strict **no-fake-verification rule**: nothing is calle
 
 ## Roadmap
 
-- [x] Design basis → frozen decision register E1–E24
+- [x] Design basis → frozen decision register E1–E34
 - [x] Simulation matrix closed (grid · Monte-Carlo · scenarios · aux · EMI estimate)
 - [x] Six schematics ERC-clean · BOM generated · firmware logic verified
 - [ ] RFQ round 1 (5 SiC vendors + magnetics + relays) → cost closure
