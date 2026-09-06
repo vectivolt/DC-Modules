@@ -197,21 +197,27 @@ creepage, busbar, control or sensing copper: 48 / 47 % at 30 kW, 59 / 63 % at 60
 
 | | mm |
 |---|---|
-| heatsink fins + extrusion base (lower) | 26 |
-| device + clamp gap | 8 |
-| AC-DC board | 2.4 |
-| **tunnel — set by the D1 choke** (3 stacked H17 toroids = 51 mm core + winding build) | **62** |
-| DC-DC board | 2.4 |
-| device + clamp gap | 8 |
-| extrusion base + heatsink fins (upper) | 26 |
-| **total** | **134.8** vs 3U = 133.35 |
+| | flat-mounted | **ridge-mounted (§5)** |
+|---|---|---|
+| heatsink fins + extrusion base (lower) | 26 | 26 |
+| device + clamp gap | 8 | **2** |
+| AC-DC board | 2.4 | 2.4 |
+| **tunnel — set by the D1 choke** (3 stacked H17 toroids = 51 mm core + winding build) | **62** | **62** |
+| DC-DC board | 2.4 | 2.4 |
+| device + clamp gap | 8 | **2** |
+| extrusion base + heatsink fins (upper) | 26 | 26 |
+| **total vs 3U = 133.35** | **134.8 — over by 1.5** | **122.8 — 10.5 mm spare** |
 
-**Over by 1.5 mm, before any insertion clearance.** The tunnel is 46 % of the module height, so
-**the PFC choke stack is the part that decides whether this is a 3U product.** Recovering ~5 mm is
-mechanical, not electrical: 18 mm fins instead of 20 (−4 mm) plus 1.6 mm boards instead of 2.4
-(−1.6 mm) closes it at 129.2 mm with insertion clearance. Both cost something — fin area is
-heatsink performance, board thickness is stiffness on a board carrying 0.9 kg chokes — so this is a
-real trade to settle with the mechanical design, not a rounding error to wave through.
+**Flat-mounted devices do not fit 3U.** Lying a TO-247 on the extrusion under the board costs an
+8 mm gap on each side, and the stack lands 1.5 mm over before any insertion clearance.
+
+**Standing the devices on front-to-back ridges fixes it** — the device body rises into the tunnel,
+which already has 62 mm for the chokes, so the board can sit ~2 mm off the extrusion. That is 12 mm
+recovered and 10.5 mm of margin, without touching fin height or board thickness. The architecture is
+in §5; this is one of two problems it closes.
+
+The tunnel is then 50 % of the module height, so **the PFC choke stack is what decides whether this
+is a 3U product** — it is the part to attack if the envelope ever needs to shrink further.
 
 *Width and depth.* Re-proportioned to the rack, with width fixed at ≤440 mm and depth free:
 
@@ -405,38 +411,95 @@ series, not one reinforced gap. Consequences:
 
 ---
 
-## 5. MOSFET and heatsink strategy
+## 5. MOSFET and heatsink strategy — double-sided ridges, front to back
 
-The sketch's note — *"better to place the mosfets in the boundary so that we can attach proper
-heatsink"* — is right, with one qualification the numbers force.
+The instinct to make one heatsink serve devices on **both** of its faces is right, and it is the
+single change that unblocks this floorplan. Running the rails **front to back** is also right — that
+is the airflow direction, so a rail parallel to it is streamlined while a rail across it is a
+blockage standing in the duct. The one part worth changing is *where* the rails go.
 
-**Rail rules (all SKUs)**
+### Why not on the side borders
 
-1. **Devices sit on rails, never in the field.** A rail is a straight run of TO-247 at 20 mm pitch
-   with a continuous clamp bar over the tabs, M4 at 1.2 N·m, phase-change TIM 0.5 K·cm²/W class,
-   torque pattern centre-out ([dfm-production.md](dfm-production.md) step 5).
-2. **A rail segment belongs to one cell.** Vienna phase = 5 devices = 100 mm. LLC leg = 2 devices =
-   40 mm. Secondary bridge = 8 devices = 160 mm. Do not mix cells on a segment; the hot loop must
-   close inside the cell.
-3. **The gate driver is on the board directly behind its rail segment**, within **10 mm** of the gate
-   pins (§7), with its own local bias. Gate and Kelvin-source returns run as a pair, never split.
-4. **Primary and secondary rails on the DC-DC extrusion are ≥20 mm apart**, aligned to the PCB
-   barrier slot (§4).
-5. **Perimeter first, interior rails when perimeter runs out** — 60 and 120 kW need interior rails
-   (windows over machined bosses). Interior rails are *better* electrically: they shorten the path
-   from the device to its DC-link capacitor. They cost a machined heatsink face.
+Side rails give plenty of rail length — two rails × two flanks × the board depth is 1148–1988 mm
+against 320–1200 mm needed. The problem is the fins, not the rails:
 
-**Mounting orientation.** Two options; pick one and hold it family-wide:
+| | top + bottom faces | left + right faces | |
+|---|---|---|---|
+| 30 kW | 2948 cm² | 893 cm² | sides are **30 %** |
+| 60 kW | 4374 cm² | 1325 cm² | sides are **30 %** |
 
-| | tab down on the extrusion, leads bent up | device standing, tab clamped to a vertical wall |
-|---|---|---|
-| board area | window in the PCB per rail | narrow strip at the board edge only |
-| thermal | direct, short path, whole tab on the sink | direct, but the wall must be part of the extrusion |
-| assembly | insert → bend → clamp; loose-fit then clamp per DFM step 2 | insert vertical, clamp bar horizontal |
-| interior rails | **possible** | not possible |
-| verdict | **recommended** — it is the only option that scales to 120 kW | fine at 30 kW only |
+A 3U card is wide and shallow, so its **largest surfaces are the top and bottom**. Moving the
+heatsinks to the borders trades away 70 % of the fin base area to gain rail length that can be had
+another way. And it gets worse than the table says: with no top or bottom extrusion the module
+becomes ~71 mm tall, which shrinks the side faces further — down to roughly **16 %** of the
+top/bottom area, landing on the 0.063 K/W per-face requirement at 30 kW and missing it above that.
 
----
+### The plan: ridges on the extrusions you already have
+
+Keep the two outer extrusions — they own the area — and put the **double-sided front-to-back rails
+on them, as raised ridges reached through slots in the PCB**.
+
+```
+        ─────────────── PCB ───────────────┬─ slot ─┬─────────── PCB ──────────────
+                                     TO-247 │  ▐█▌   │ TO-247
+                                    standing│  ▐█▌   │standing        ← devices on BOTH flanks
+        ════════════════════════════════════╧═ridge══╧══════════════════════════════
+                              extrusion base
+        ║║║║║║║║║║║║║║║║║║║║║║  fins, full width, in the duct  ║║║║║║║║║║║║║║║║║║║║
+```
+
+Devices stand on both flanks of each ridge, tabs against the ridge, leads bent outward into pads on
+either side of the slot. What this buys:
+
+1. **Rail length, solved.** One ridge = 2 flanks × the zone's depth:
+
+   | | need | one ridge | ridges | provided | board cost |
+   |---|---|---|---|---|---|
+   | 30 kW AC-DC | 320 mm | 574 mm | 1 | 574 mm | 10 % of the zone |
+   | 30 kW DC-DC primary | 120 mm | 382 mm | 1 | 382 mm | 10 % |
+   | 30 kW DC-DC **secondary** | 480 mm | 288 mm | **2** | 576 mm | 20 % |
+   | 60 kW AC-DC | 620 mm | 880 mm | 1 | 880 mm | 10 % |
+   | 60 kW DC-DC primary | 240 mm | 567 mm | 1 | 567 mm | 10 % |
+   | 60 kW DC-DC **secondary** | 960 mm | 427 mm | **3** | 1282 mm | 31 % |
+
+   The secondary rail that was at 96 % and 158 % of the perimeter (§2) is comfortably covered by two
+   and three ridges. Cost is board area — 10 % of a zone per ridge, 31 % where three are needed.
+
+2. **The 3U height, solved as a side effect.** Flat-mounted devices need an 8 mm gap under each
+   board and the stack comes to **134.8 mm — 1.5 mm over 3U**. Standing devices on ridges puts the
+   device body up in the tunnel, which already has 62 mm for the chokes, so the board can sit ~2 mm
+   off the extrusion. The stack becomes **122.8 mm, 10.5 mm inside 3U** — enough for insertion
+   clearance. §2's height problem closes here, not in the mechanical budget.
+
+3. **Fin area kept in full** — the fins stay on the outer faces, in their own ducts, running
+   front to back.
+
+4. **Air not blocked.** Ridges and device rows run along the flow. A cross-board rail of standing
+   TO-247s would be a wall across the duct.
+
+### Rules for the ridges
+
+1. **One ridge, one isolation domain.** The ridge metal is shared by the devices on both its flanks,
+   so a ridge must never carry a primary device on one side and a secondary device on the other.
+   Ridges are separate castings/extrusion features, so this is free to enforce — assign each ridge a
+   domain in the mechanical drawing and keep primary and secondary ridges ≥20 mm apart, aligned to
+   the PCB barrier slot (§4).
+2. **A ridge belongs to one cell family.** A Vienna phase's 5 devices, an LLC leg's 2, a secondary
+   bridge's 8 — a ridge carries whole cells, never a cell split across two ridges.
+3. **Extrusion is PE-bonded**, each device pad qualified as a basic barrier to PE (§4).
+4. **The gate driver sits on the board directly beside its ridge**, within **10 mm** of the gate pins
+   (§7), with its own local bias. Gate and Kelvin-source returns run as a pair, never split.
+5. **Slot width is a budget line.** 45 mm per double-sided ridge is the working number above; it is
+   the price of the rail and it comes out of the FILL figure in §2.
+6. **Clamp access.** A clamp bar runs the length of each ridge, so the assembly sequence is insert →
+   stand → clamp, with the bar torqued from above before the second board is mated. Check this
+   against `dfm-production.md` step 5, which currently describes flat clamping.
+
+### What would change if the boards move to single-sided ridges
+
+Halving the flanks doubles the ridge count and roughly halves the slot cost per unit of rail — worth
+having as the fallback for a zone where 45 mm of slot is too much board to give up. The secondary
+zone is the one to watch, since it needs the most rail in the least depth.
 
 ## 6. Magnetics placement
 
@@ -637,11 +700,11 @@ Six viewpoints, each with its own question.
 
 | # | Item | Why it blocks | Owner |
 |---|---|---|---|
-| 1 | **3U height: recover ~5 mm** (fins 20→18 mm, boards 2.4→1.6 mm) (§2) | the stack is 134.8 mm against 133.35 mm before insertion clearance | mechanical |
+| 1 | ~~3U height~~ — **closed by ridge-mounting** (§5): 122.8 mm with 10.5 mm spare, against 134.8 mm flat-mounted | — | closed |
 | 1b | Re-proportion four boards to ≤440 mm wide (§2) | four of six are wider than a 19-inch rack as drawn | electrical + mechanical |
-| 2 | **Secondary rectifier count — 40 A JBS or SR variant?** (§2) | the JBS rail is over budget on EVERY SKU (96/158/234 %); it is also the module's largest loss | electrical |
+| 2 | **Secondary rectifier count — 40 A JBS or SR variant?** (§2) | still worth it on loss and cost even though §5 solves the rail: 1441 W at 120 kW is the module's largest single loss | electrical |
 | 2b | Rear connector zones: 180×60 mm each is the assumption behind the 63 % vent figure (§0) | if the plugs are larger the exhaust tightens fast — 60 kW is already at 4.7 m/s | mechanical |
-| 3 | Interior clamp rails for 120 kW (§2) | 120 kW is still over budget after the device-count fix | mechanical |
+| 3 | **Double-sided front-to-back ridges** — machined/extruded feature + PCB slots (§5) | closes the rail budget on every SKU and the 3U height at once; costs 10–31 % of a zone in slot area | mechanical + electrical |
 | 3b | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
 | 4 | ~~B2B pillar alignment~~ — **closed by the U-fold**: the handoff is at the front of both boards, so the pillars are vertical (§8) | — | closed |
 | 5 | HMI daughter card + isolated-CAN flying lead (§4) | removes the only long SELV run now that CAN exits on the DC output plug | electrical |

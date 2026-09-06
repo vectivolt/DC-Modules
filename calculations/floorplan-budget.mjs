@@ -97,17 +97,24 @@ const HMI_WIDTH = 80;                                // mm for the 2-digit displ
 // Height stack-up of the sandwich, outer face to outer face. The tunnel is set by the TALLEST part
 // standing in it, which is the D1 choke: 3 stacked H17 toroids = 51 mm of core plus the winding
 // build. Everything else here is a mechanical allowance, labelled so it can be argued with.
-const STACK = [
+// Two variants, because the device-mounting choice changes the height.
+//   FLAT   TO-247 lying on the extrusion under the board -> needs an 8 mm gap on each side
+//   RIDGE  TO-247 STANDING on a front-to-back ridge, reached through a slot in the PCB, so the
+//          device body rises into the tunnel (which already has 62 mm for the chokes) and the board
+//          can sit almost on the extrusion. Saves 12 mm, and that is the difference at 3U.
+const STACK_FLAT = [
   ["heatsink fins (lower)",  20],
   ["extrusion base (lower)",  6],
-  ["device + clamp gap",      8],   // TO-247 lying on the extrusion, clamp bar over it
+  ["device + clamp gap",      8],
   ["AC-DC board",           2.4],
-  ["tunnel — D1 choke",      62],   // 51 mm core + winding build + clearance
+  ["tunnel — D1 choke",      62],
   ["DC-DC board",           2.4],
   ["device + clamp gap",      8],
   ["extrusion base (upper)",  6],
   ["heatsink fins (upper)",  20],
 ];
+const STACK_RIDGE = STACK_FLAT.map(([k, v]) => [k, k === "device + clamp gap" ? 2 : v]);
+const STACK = STACK_RIDGE;
 
 // --- the two engineering choices --------------------------------------------------------------
 
@@ -213,12 +220,15 @@ console.log(`worst: ${worst.sku} at ${pct(worst.use)} — ${worst.n} × 20 A JBS
 // --- envelope ------------------------------------------------------------------------------------
 
 const stackH = STACK.reduce((a, [, v]) => a + v, 0);
+const stackFlat = STACK_FLAT.reduce((a, [, v]) => a + v, 0);
 console.log(`\nENVELOPE — 19-inch 3U rack module (${RACK.widthMax} mm usable width, ${RACK.depthMax} mm max depth, ${RACK.heightU} mm high)`);
 console.log(`\nheight stack-up, outer face to outer face:`);
 for (const [k, v] of STACK) console.log(`   ${k.padEnd(26)} ${String(v).padStart(5)} mm`);
-console.log(`   ${"TOTAL".padEnd(26)} ${String(stackH).padStart(5)} mm  vs 3U ${RACK.heightU} mm`
+console.log(`   ${"TOTAL".padEnd(26)} ${stackH.toFixed(1).padStart(5)} mm  vs 3U ${RACK.heightU} mm`
   + `  -> ${stackH <= RACK.heightU ? `ok, ${(RACK.heightU - stackH).toFixed(1)} mm spare` : `OVER by ${(stackH - RACK.heightU).toFixed(1)} mm`}`);
 console.log(`   the tunnel (D1 choke, 3 stacked H17 toroids) is ${Math.round(62 / stackH * 100)} % of the height — it is the driving part`);
+console.log(`   flat-mounted devices instead of ridge-mounted would be ${stackFlat} mm — ${(stackFlat - RACK.heightU).toFixed(1)} mm OVER 3U.`
+  + `\n   Standing the devices on front-to-back ridges is what buys the ${(stackFlat - stackH).toFixed(0)} mm.`);
 
 console.log(`\nboard footprint re-proportioned to the rack: width is FIXED, depth is the free dimension.`);
 console.log(`board          as drawn    area cm²   at <=${RACK.widthMax} mm wide      verdict`);
