@@ -237,6 +237,17 @@ given its own class. Every designator still matches a rule (checked), and narrow
 value-consistent. Gate `R13-CLASS` in `calculations/review-checks.mjs` fails the build if any
 narrow class ever holds more distinct values than its spec allows.
 
+## R11 — partially actioned 2026-09-06
+
+`CCGB` now has its own part class, `MLCC-Y-CGND` (REVIEW), instead of falling under the generic
+`MLCC-small`. That does not answer the question below — it makes it structural, so the part can no
+longer silently inherit a generic 50 V X7R the moment someone assigns that class a number.
+
+Note the fix is not only a class change: `CPET`, the DGND-PE barrier cap, is declared with
+`FilmBoxFP(10)` while `CCGB` is declared `footprint="1206"`. A Y1 4.7 nF 440 VAC part is a
+through-hole film box, not a 1206 SMD, so adopting the Y class means changing the land too.
+
+### the question, unchanged
 ## R11 — the CAN barrier-bridging capacitor is not safety-rated (found 2026-09-06, OPEN)
 
 `CCGB` (4.7 nF) and `RCGB` bridge **CGND to DGND**. CGND is a genuinely isolated domain — its only
@@ -299,6 +310,29 @@ No footprint drawn, for the same reason as R8: a land for a part that cannot be 
 the error rather than surface it.
 
 
+## R8 — RESOLVED 2026-09-06: part number corrected, drawing unchanged
+
+`KPREA`/`KPREB` now carry **`HFE82V-20-M-CLASS`** instead of `HFE9-10A-1kV-M`.
+
+The analysis below stands and is the reason: the drawing wires `COM2`/`NO2` for the
+`RELAY_FB_KPRE*` readback and drives the coil from a ULN2803 as a monostable, and the Hongfa HFE9
+is a miniature LATCHING relay, 250 VAC max, contact form 1A/1B with no auxiliary. It fails all
+three requirements, so **the drawing was right and the part number was wrong** — this is a BOM
+correction, not a design change, and no schematic edit was needed.
+
+The replacement is the HFE82V family already used for `KSER`/`KPARA`/`KPARB`/`KOUT`, at a 20 A
+rating suited to pre-insertion rather than the 200-400 A bank rating. Ordering code follows the
+bank part: `HFE82V-20W/1000-24-HA-C5-1`.
+
+Still to CONFIRM before ordering (kept at REVIEW): that a 20 A rating exists in the HFE82V
+catalogue with the `HA` auxiliary option, and whether it is a PCB or stud/harness part — the bank
+parts are M6 screw terminals with a flying coil/aux harness. Price Rs 300/1k is scaled from the
+Rs 460 bank part, not a quote.
+
+Side effect: `RELAY_HFE9_PCB` is no longer referenced by any sheet, so that undrawn footprint is
+moot rather than blocked.
+
+### original analysis
 ## R8 — KPREA/KPREB specify a part family that cannot meet the requirement (found 2026-09-06, OPEN)
 
 Found by going to the manufacturer datasheets for the footprints that LCSC could not resolve.

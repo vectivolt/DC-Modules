@@ -74,6 +74,7 @@ export const DB = [
   { m: /^C(F\d+|B[AB]F)$/, mpn: "PP-1u-1100", mfr: "Faratronic", desc: "1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)", price1k: 68, alt: "Songtian" },
   { m: /^COF[12]$/, mpn: "PP-4u7-1200", mfr: "Faratronic", desc: "4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)", price1k: 125, alt: "—" },
   { m: /^CX\d+$/, mpn: "X1-2u2-530", mfr: "Faratronic/Songtian", desc: "X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)", price1k: 62, alt: "Vishay 3386 X1" },
+  { m: /^CCGB$/, mpn: "MLCC-Y-CGND", mfr: "any", desc: "4.7 nF bridging CGND-DGND across the CAN isolation barrier (see R11)", price1k: 16, alt: "Y1 if the barrier is safety-rated" },
   { m: /^(CY(O)?[123]?|CPET)$/, mpn: "Y1-4n7-440", mfr: "Songtian/Faratronic", desc: "Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)", price1k: 16, alt: "TDK CD series" },
   { m: /^C\w+SN$/, mpn: "C1812-100p-1k", mfr: "any MLCC", desc: "100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)", price1k: 7, alt: "film 630V" },
   { m: /^CCLA$/, mpn: "PP-10n-1200", mfr: "Faratronic", desc: "10 nF 1200 V film (aux RCD clamp)", price1k: 9, alt: "MLCC 1kV ×2" },
@@ -108,7 +109,7 @@ export const DB = [
   { m: /^FB\w+$/, mpn: "FB-600R-0805", mfr: "any", desc: "ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)", price1k: 0.8, alt: "any" },
   // --- electromech / connectors / HMI / protection
   { m: /^KPRE[12]$/, mpn: "HF167F-80A-M", mfr: "Hongfa", desc: "power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line)", price1k: 260, alt: "TE T9G / contactor option" },
-  { m: /^KPRE[AB]$/, mpn: "HFE9-10A-1kV-M", mfr: "Hongfa", desc: "aux HV relay 10 A 1000 VDC w/ mirror contact (pre-insertion)", price1k: 210, alt: "—" },
+  { m: /^KPRE[AB]$/, mpn: "HFE82V-20-M-CLASS", mfr: "Hongfa", desc: "HV DC relay 20 A 1000 VDC w/ auxiliary contact (pre-insertion) — was HFE9, see R8", price1k: 300, alt: "Panasonic AEV / TE EVC" },
   { m: /^K(SER|PARA|PARB|OUT)2?$/, mpn: "HFE82V-M-CLASS", mfr: "Hongfa", desc: "HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)", price1k: 460, alt: "GIGAVAC eq" },
   { m: /^MOVP?[123]$/, mpn: "S20K550", mfr: "TDK/Songtian", desc: "MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE)", price1k: 22, alt: "Songtian eq" },
   { m: /^GDT[123]$/, mpn: "GDT-3k5-20kA", mfr: "Bourns/eq", desc: "gas discharge tube 3.5 kV (L-PE surge path, HR-7)", price1k: 18, alt: "Littelfuse CG3" },

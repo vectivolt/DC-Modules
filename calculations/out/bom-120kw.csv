@@ -26,6 +26,7 @@ PP-1u-600,,CLASS,Faratronic,"1 µF 600 V film (Vienna per-phase commutation, CB-
 ISO5V-RFC-6K,C20613048,REVIEW,MORNSUN QA/URB-grade,"iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / DCN / BKAN / BKBN)","RECOM RxxP-R / certified eq",acdc+dcdc,8,128.3,95,83.6,65,760,520,PS5AC PS5BUS PS5H PS5L PSSH PS5BKA PS5BKB PSCAN
 SICJBS-1200-10,C7435087,ORDERABLE,SiChain,"SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)","CR Micro 1200V/10A",acdc,12,74.3,55,48.4,44,660,528,DA0C DB0C DC0C DA1C DB1C DC1C DA2C DB2C DC2C DA3C DB3C DC3C
 CT-RES-1:100,C94571,REVIEW,custom,"resonant CT (toroid, 1:100)","—",dcdc,12,74.3,55,48.4,44,660,528,CT1 CT2 CT3 CT4 CT5 CT6 CT7 CT8 CT9 CT10 CT11 CT12
+HFE82V-20-M-CLASS,,REVIEW,Hongfa,"HV DC relay 20 A 1000 VDC w/ auxiliary contact (pre-insertion) — was HFE9, see R8","Panasonic AEV / TE EVC",dcdc,2,405,300,264,240,600,480,KPREA KPREB
 AMC1311-class,C456277,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)","NSI1311 class",acdc+dcdc,5,155.3,115,101.2,92,575,460,UIVBP UIVBM UIVOA UIVOB UIVOV
 HF167F-250A-M,,REVIEW,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line) [250 A class (220 A line)]","TE T9G / contactor option",acdc,1,702,520,457.6,416,520,416,KPRE1
 HF167F-250A-M,,REVIEW,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line)","TE T9G / contactor option",acdc,1,702,520,457.6,416,520,416,KPRE2
@@ -36,7 +37,6 @@ DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-cu
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM2
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM3
 GD32G553VET6,C9900185865,ORDERABLE,GigaDevice,"MCU Cortex-M33 216 MHz LQFP100 (MR-12: V-suffix = 100-pin — the earlier RET6 was the 64-pin part; full pin map regenerates at A6)","GD32G563",acdc+dcdc,2,283.5,210,184.8,168,420,336,UPFC ULLC
-HFE9-10A-1kV-M,C115081,REVIEW,Hongfa,"aux HV relay 10 A 1000 VDC w/ mirror contact (pre-insertion)","—",dcdc,2,283.5,210,184.8,168,420,336,KPREA KPREB
 AMC1350-class,C5214206,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)","NSI1300 class",acdc,3,182.3,135,118.8,108,405,324,UIVV1 UIVV2 UIVV3
 X1-2u2-530,,CLASS,Faratronic/Songtian,"X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)","Vishay 3386 X1",acdc,6,83.7,62,54.6,49.6,372,298,CX11 CX12 CX13 CX21 CX22 CX23
 SIC-1200-5A,C536285,ORDERABLE,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
@@ -86,6 +86,7 @@ ULN2803A,C2865085,ORDERABLE,any,"8-ch relay coil driver SOIC-18 (unused inputs g
 LED-2DIG-0.56CC,C9900021773,ORDERABLE,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
 74HC11,C5524384,ORDERABLE,any,"triple 3-input AND (gate-enable wired-AND, E27)","74LVC1G11 ×1",acdc+dcdc,2,10.8,8,7,6.4,16,13,UANDA UANDB
 HDR-1x5-2.54,C492404,ORDERABLE,any,"SWD/boot header (EOL programming — CB-13; LV-only test state §45)","TC2030 pads",acdc+dcdc,2,10.8,8,7,6.4,16,13,JSWDPFC JSWDLLC
+MLCC-Y-CGND,,REVIEW,any,"4.7 nF bridging CGND-DGND across the CAN isolation barrier (see R11)","Y1 if the barrier is safety-rated",dcdc,1,21.6,16,14.1,12.8,16,13,CCGB
 PH-2,C20504437,ORDERABLE,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,2.4,15,12,JTPFC JTINL JTLLC JTXFR JTERM
 R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
 CC0603JRNPO9BN101,,UNMAPPED,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,36,0.5,0.4,0.4,0.3,14,11,CA0GBL CB0GBL CC0GBL CA1GBL CB1GBL CC1GBL CA2GBL CB2GBL CC2GBL CA3GBL CB3GBL CC3GBL
@@ -127,7 +128,6 @@ RC0805FR-0745K3L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
 RC0805FR-072K2L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,2,0.5,0.4,0.4,0.3,1,1,RDIG1 RDIG2
 CC0805KRX7R9BB471,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc,1,0.7,0.5,0.4,0.4,1,0,CCSF
-MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",dcdc,1,0.7,0.5,0.4,0.4,1,0,CCGB
 RC0805FR-0715KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RBR2
 RC0805FR-07118KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RFB1
 RC0805FR-0768KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM24A
@@ -143,5 +143,5 @@ MECH,,MECH,—,"Busbars/interconnect + harness (busbar-calc)","—",module,1,479
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,1093,950,884,827,950,827,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,4485,3900,3627,3393,3900,3393,
-TOTAL_ELECTRONIC,,,,,,,,,,,,93382,73876,
-TOTAL_MODULE,,,,,,,,,,,,117243,94635,
+TOTAL_ELECTRONIC,,,,,,,,,,,,93577,74032,
+TOTAL_MODULE,,,,,,,,,,,,117438,94791,

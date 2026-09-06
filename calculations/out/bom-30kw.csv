@@ -9,6 +9,7 @@ QA01C,C2757491,REVIEW,MORNSUN,"iso gate-bias module +18/−4-configured (E23 rev
 PP-46n-1200,,CLASS,Faratronic,"46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)","Songtian pulse PP",dcdc,12,91.8,68,59.8,54.4,816,653,C1R0 C1R1 C1R2 C1R3 C2R0 C2R1 C2R2 C2R3 C3R0 C3R1 C3R2 C3R3
 NSI6611,C7470934,ORDERABLE,NOVOSENSE,"iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16","NSI6602B",acdc+dcdc,9,114.8,85,74.8,68,765,612,UA0G UB0G UC0G U1H U1L U2H U2L U3H U3L
 SICJBS-1200-40,C7435099,ORDERABLE,SiChain,"SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)","BASiC B3D040120H",acdc,6,162,120,105.6,96,720,576,DA0T DA0B DB0T DB0B DC0T DC0B
+HFE82V-20-M-CLASS,,REVIEW,Hongfa,"HV DC relay 20 A 1000 VDC w/ auxiliary contact (pre-insertion) — was HFE9, see R8","Panasonic AEV / TE EVC",dcdc,2,405,300,264,240,600,480,KPREA KPREB
 AMC1311-class,C456277,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)","NSI1311 class",acdc+dcdc,5,155.3,115,101.2,92,575,460,UIVBP UIVBM UIVOA UIVOB UIVOV
 ISO5V-RFC-6K,C20613048,REVIEW,MORNSUN QA/URB-grade,"iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / DCN / BKAN / BKBN)","RECOM RxxP-R / certified eq",acdc+dcdc,6,128.3,95,83.6,65,570,390,PS5AC PS5BUS PSSH PS5BKA PS5BKB PSCAN
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KSER
@@ -16,7 +17,6 @@ HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readbac
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KPARB
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KOUT
 GD32G553VET6,C9900185865,ORDERABLE,GigaDevice,"MCU Cortex-M33 216 MHz LQFP100 (MR-12: V-suffix = 100-pin — the earlier RET6 was the 64-pin part; full pin map regenerates at A6)","GD32G563",acdc+dcdc,2,283.5,210,184.8,168,420,336,UPFC ULLC
-HFE9-10A-1kV-M,C115081,REVIEW,Hongfa,"aux HV relay 10 A 1000 VDC w/ mirror contact (pre-insertion)","—",dcdc,2,283.5,210,184.8,168,420,336,KPREA KPREB
 AMC1350-class,C5214206,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)","NSI1300 class",acdc,3,182.3,135,118.8,108,405,324,UIVV1 UIVV2 UIVV3
 X1-2u2-530,,CLASS,Faratronic/Songtian,"X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)","Vishay 3386 X1",acdc,6,83.7,62,54.6,49.6,372,298,CX11 CX12 CX13 CX21 CX22 CX23
 SIC-1200-5A,C536285,ORDERABLE,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
@@ -71,6 +71,7 @@ ULN2803A,C2865085,ORDERABLE,any,"8-ch relay coil driver SOIC-18 (unused inputs g
 LED-2DIG-0.56CC,C9900021773,ORDERABLE,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
 74HC11,C5524384,ORDERABLE,any,"triple 3-input AND (gate-enable wired-AND, E27)","74LVC1G11 ×1",acdc+dcdc,2,10.8,8,7,6.4,16,13,UANDA UANDB
 HDR-1x5-2.54,C492404,ORDERABLE,any,"SWD/boot header (EOL programming — CB-13; LV-only test state §45)","TC2030 pads",acdc+dcdc,2,10.8,8,7,6.4,16,13,JSWDPFC JSWDLLC
+MLCC-Y-CGND,,REVIEW,any,"4.7 nF bridging CGND-DGND across the CAN isolation barrier (see R11)","Y1 if the barrier is safety-rated",dcdc,1,21.6,16,14.1,12.8,16,13,CCGB
 PH-2,C20504437,ORDERABLE,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,2.4,15,12,JTPFC JTINL JTLLC JTXFR JTERM
 R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
 CL21B105KBFNNNE,,UNMAPPED,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,18,1.1,0.8,0.7,0.6,14,11,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 C1HB1 C1HB2 C1LB1 C1LB2 C2HB1 C2HB2
@@ -118,7 +119,6 @@ RC0805FR-0745K3L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
 RC0805FR-072K2L,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",dcdc,2,0.5,0.4,0.4,0.3,1,1,RDIG1 RDIG2
 CC0805KRX7R9BB471,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc,1,0.7,0.5,0.4,0.4,1,0,CCSF
-MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",dcdc,1,0.7,0.5,0.4,0.4,1,0,CCGB
 RC0805FR-0715KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RBR2
 RC0805FR-07118KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RFB1
 RC0805FR-0768KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM24A
@@ -134,5 +134,5 @@ MECH,,MECH,—,"Busbars/interconnect studs + harness (busbar-calc)","—",module
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,402,350,326,305,350,305,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,2185,1900,1767,1653,1900,1653,
-TOTAL_ELECTRONIC,,,,,,,,,,,,28355,22403,
-TOTAL_MODULE,,,,,,,,,,,,37061,29978,
+TOTAL_ELECTRONIC,,,,,,,,,,,,28550,22560,
+TOTAL_MODULE,,,,,,,,,,,,37256,30134,
