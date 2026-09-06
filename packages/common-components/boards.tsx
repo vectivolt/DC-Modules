@@ -407,7 +407,7 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
           HR-19: at 120 kW the paralleled second relay per HV function is a real schematic
           instance (contacts + coil + series mirror), not a BOM multiplier. */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
-        outp="net.OUTP" outn="net.OUTN_SH" dual={channels === 4} x={w / 2 - 220} y={-h / 2 + 100} sx={58} sy={4} />
+        outp="net.OUTP" dual={channels === 4} x={w / 2 - 220} y={-h / 2 + 100} sx={58} sy={4} />
       {/* HR-15: commanded bank bleeders — banks otherwise hold ≤525 V for 3–14 min on the balance
           chains alone (bus discharge never touches them). One GPIO drives both optos; default-OFF
           like the bus chain (E19 rev B pattern). 4× 2.2 k 10 W axial per bank: τ ≈ 4–17 s,
@@ -443,7 +443,7 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
         x={w / 2 - 260} y={-h / 2 + 40} sx={42} sy={cYd} />
 
       {/* output: shunt in negative, filter, studs, Y caps */}
-      <OutputShunt inn="net.OUTN_SH" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={w / 2 - 120} y={-h / 2 + 60} sx={86} sy={27} />
+      <OutputShunt inn="net.BKBN" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={w / 2 - 120} y={-h / 2 + 60} sx={86} sy={27} />
       <capacitor name="COF1" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 40} schX={86} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 30} schX={88.5} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="CYO1" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 40} schX={91} schY={21.5} schSectionName="OUTPUT" />

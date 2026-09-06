@@ -95,5 +95,30 @@ ck("ECO-2b", /p10k: 65/.test(db) && /p10k: 55/.test(db), "volume-quote p10k pric
 ck("E23-revB", /RETIRED/.test(db.split("biasCommon")[1] ?? "") && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "E23 custom bias transformer retired (modules permanent at 10k volume)");
 ck("A7-revB", /p10k/.test(readFileSync(join(ROOT, "calculations/cost/bom-gen.mjs"), "utf8")), "BOM machinery carries the 10k tier");
 
+// ===== R4 (2026-09-06): output return path =====
+// A tscircuit <trace> joins ports, not nets, so a net-to-net trace binds nothing and ERC stays
+// clean — that is how BKBN never reached the output shunt. Two checks: the shape can't come
+// back, and no net may end up with fewer than two pins.
+ck("R4-1", ![...cells.matchAll(/<trace [^>]*from=\{[A-Za-z_]\w*\} to=\{[A-Za-z_]\w*\}/g)].length &&
+  ![...boards.matchAll(/<trace [^>]*from=\{[A-Za-z_]\w*\} to=\{[A-Za-z_]\w*\}/g)].length,
+  "no net-to-net <trace> (both endpoints bare net vars bind nothing — R4)");
+ck("R4-2", /<OutputShunt inn="net\.BKBN"/.test(boards) && !/outn="net\.OUTN_SH"/.test(boards),
+  "output shunt sits in the bank-negative return path (BKBN -> RSHO -> OUTN)");
+{ // every net must have >= 2 pins, on whichever SKUs have been built
+  const { readdirSync, existsSync } = await import("node:fs");
+  for (const sku of ["30kw", "60kw", "120kw"]) {
+    const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda/apply")
+                               : join(ROOT, "calculations/out/easyeda", sku, "apply");
+    if (!existsSync(dir)) continue;
+    const pins = new Map();
+    for (const f of readdirSync(dir).filter(x => x.endsWith(".json")))
+      for (const c of JSON.parse(readFileSync(join(dir, f), "utf8")).chunks.flat())
+        for (const pin of c.pins)
+          if (pin.signal_name) pins.set(pin.signal_name, (pins.get(pin.signal_name) ?? 0) + 1);
+    const singles = [...pins].filter(([, n]) => n < 2).map(([n]) => n);
+    ck(`R4-3-${sku}`, singles.length === 0, `${sku}: no single-pin nets${singles.length ? " — " + singles.join(", ") : ""}`);
+  }
+}
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

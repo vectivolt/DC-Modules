@@ -39,7 +39,7 @@ const SECPAD = 200;
 const SECTITLE = 250;
 const SECGAP = 400;
 const MARGIN = 500;
-const CHW = 33;               // label glyph advance at 50 mil text size
+const CHW = 27;               // label glyph advance at 40 mil text size
 
 let tsid = 0x5E000000;
 const nextId = () => (++tsid).toString(16).toUpperCase().padStart(8, "0");
@@ -243,7 +243,10 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   let body = "", nLabels = 0, nNC = 0;
   const GL = (net, x, y, dir) => {                     // dir: 0 right, 2 left, 1 up, 3 down
     nLabels++;
-    return `Text GLabel ${x} ${y} ${dir}    50   ${dir === 2 ? "Input" : "Output"} ~ 0\n${net}\n`;
+    // 40 mil, not 50: EasyEDA's importer substitutes its own font ("the text maybe will appear
+    // a little excursion" per its own notice) and gives the net-port chevron a fixed width, so a
+    // long name like RELAY_FB_KPRE spills past the outline. Smaller text keeps it inside.
+    return `Text GLabel ${x} ${y} ${dir}    40   ${dir === 2 ? "Input" : "Output"} ~ 0\n${net}\n`;
   };
 
   for (const b of blocks) {

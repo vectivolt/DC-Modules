@@ -389,7 +389,7 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
 // (2× ~70 mA on one ULN channel), mirrors in SERIES with the primary's → RELAY_FB reads
 // "both mains open" (same semantics as the KPRE chain). Sharing note: contact-R-matched pairs
 // or 250 A-class contacts — §K; symmetric busbar per layout note P-16.
-export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, dual = false, sec = "SPMATRIX", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual = false, sec = "SPMATRIX", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
   const HV = ["KSER", "KPARA", "KPARB", "KOUT"];
   const contacts: Record<string, [string, string]> = { KSER: [bkAn, bkBp], KPARA: [bkAp, bkBp], KPARB: [bkAn, bkBn], KOUT: [bkAp, outp] };
   return (
@@ -442,7 +442,6 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, outn, 
     <trace from=".RPREB > .B" to={bkBn} schDisplayLabel={bkBn.replace("net.", "")} />
     <trace from=".KOUT > .A" to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
     <trace from=".KOUT > .B" to={outp} schDisplayLabel={outp.replace("net.", "")} />
-    <trace from={bkBn} to={outn} schDisplayLabel={bkBn.replace("net.", "")} />
   </group>
   );
 };

@@ -28,6 +28,40 @@ caveat stands, twice-proven now: ERC proves connectivity, not electrical sense �
 electrical-sense gate is `calculations/review-checks.mjs` (R1 31 + R2 set, ALL PASS incl. class
 asserts) + the simulation set (incl. aux rev C 9/9) + the §K datasheet gate (open by nature).
 
+## R4 — output return path broken (found 2026-09-06, FIXED)
+
+Found by an EasyEDA schematic-DRC warning ("single network connected to only one component pin")
+while inspecting the imported 30 kW sheets, then confirmed against the netlist.
+
+**Defect.** `SeriesParallelRelayMatrix` closed the output negative with
+
+    <trace from={bkBn} to={outn} ... />        // packages/power-primitives/cells.tsx
+
+Both endpoints are `net.*` selectors. A tscircuit `<trace>` joins **ports**, not nets, so a
+net-to-net trace binds nothing and fails silently — no ERC error, because no port is left
+unbound. Result: `OUTN_SH` carried exactly one pin (`RSHO.1`, the output shunt's A terminal) and
+the bank-negative rail `BKBN` never reached it. The DC output return path dead-ended at the
+shunt, and the output current sense read a node with no current in it.
+
+Every other board built ERC-clean because ERC checks port binding, not whether a net has ≥2 pins.
+
+**Fix.** The bond is plain copper, not a switched contact, so the shunt input simply *is* the
+bank-negative rail: `OutputShunt inn="net.BKBN"` (was `net.OUTN_SH`); the no-op trace and the
+now-dead `outn` prop are removed. Path is now `BKBN → RSHO.1 → RSHO.2 → OUTN → JOUTN` with the
+Kelvin taps `RSHO.3/.4` feeding `USHO`, unchanged.
+
+**Sweep.** `cells.tsx:445` was the only net-to-net trace in the codebase — every other
+`from={net}` pairs with a real port. Single bug, not a pattern. Shared cell, so all three SKUs
+were affected and all three are fixed by the one change.
+
+**New standing check.** Single-pin nets are now a gate, not a coincidence: the design must have
+**zero** nets with fewer than two pins. 30 kW: was 1, now **0**.
+
+| Board | single-pin nets before | after |
+|---|---|---|
+| 30kw acdc+dcdc | 1 (`OUTN_SH`) | **0** |
+
+
 ## Schematic-layout gate (rev D.2, E34 — 2026-09-05)
 
 The sheets themselves are now a verified artifact:
