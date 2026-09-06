@@ -460,6 +460,23 @@ const HAND = {
   //     rule is that gaps inside a run are whole multiples of that run's own base.
   //   * columns stay BALANCED -- running a whole half down one column made the frame ~2x the
   //     height of its passive columns, the short-column dead band the search below exists to fix.
+  // VIENNA-PFC / PHASE-[ABC]# was composed too and does NOT fit yet -- kept out, not forgotten.
+  // Power-path order works on its own terms (drive column, then switch pair with its DESAT sense
+  // and decoupling, then choke / JBS diodes / link caps, snubber last) but the frame it produces
+  // perturbs the AC-DC packing: as FOUR columns it grew 30kw-acdc 28% in area (42600x29050 ->
+  // 56600x28050), and rebalanced to THREE it pushed 60kw-acdc's largest empty rectangle to 10%,
+  // over the 9% gate. The DC-DC families below cost nothing because their frames come out the same
+  // size as the search's; the Vienna frame does not. Retry by matching the packed frame's aspect,
+  // not just its area, and re-run the layout gate on all six.
+  //
+  // A resonant tank, in energy order: the transformer with the tank that feeds it, then the eight
+  // secondary rectifiers as one block, then the resonant-current sense chain (CT, burden, filter,
+  // clamps). Grouping T with the tank rather than alone keeps the columns from going lopsided.
+  "LLC-TANKS / TANK-#": [
+    ["T#", "C#R0", "C#R1", "C#R2", "C#R3", "L#T"],
+    ["D#A1", "D#A2", "D#A3", "D#A4", "D#B1", "D#B2", "D#B3", "D#B4"],
+    ["CT#", "R#CF", "R#CT", "C#CF", "D#CN", "D#CP"],
+  ],
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
