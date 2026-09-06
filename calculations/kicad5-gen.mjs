@@ -425,8 +425,22 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
 // intra-section composition is not worth losing it.
 //
 // So: intra-section packing and sheet-level annotation COMPETE FOR THE SAME SPACE. A tighter
-// section is not free. If this is retried, reserve the notes area before packing rather than
-// filling leftovers afterwards -- then the composition above is worth having.
+// section is not free.
+//
+// The obvious remedy -- reserve the notes area before packing instead of filling leftovers -- was
+// then BUILT AND ALSO REJECTED. As a first-class block (4450+2*500 wide, the stack height snapped
+// to YGRID) the notes are guaranteed their space and land on the column grid, and all six sheets
+// kept both panels. But a rigid rectangle is the wrong shape of thing to hand a skyline packer:
+// worst enclosed void went 4.9% -> 8.7%, several sheets grew, and 60kw-dcdc FAILED the layout gate
+// outright (largest empty rectangle 10%, cap 9%). The notes are ELASTIC -- drawPanel fits its
+// columns to whatever slot it gets -- and elastic content belongs in the leftovers. Making it rigid
+// costs more than it saves.
+//
+// What would actually work is a CONSTRAINT rather than a block: require every candidate packing in
+// the NC search to leave at least one void that passes pickVoid's filter (>5200 x >2200 in the
+// lower 60%), so a denser sheet is only chosen when the notes still fit. That lives in the search's
+// hot loop, where a change reshuffles the packing lottery across all six sheets, so it is worth
+// doing deliberately with a full sweep -- not as a rider on this experiment.
 //
 // Two intermediate findings kept: interleaving symbol types down a column (Q,D,D,Q,D,D) breaks
 // PITCH, since a run's gaps must be whole multiples of its own base -- keep same-type runs
