@@ -703,12 +703,23 @@ const HAND = {
     ["JTLLC", "RTLLCP", "CTLLCF", "JTXFR", "RTXFRP", "CTXFRF"],
   ],
 
-  // AUX-POWER / FANS and AUX-POWER / INTERCONNECT were probed and left packed. Both draw their
-  // harness connector AFTER the passives that hang off it, which is backwards, but neither is free:
-  // connectors-first FANS is span 1 and SHORTER than packed (h 3500/6250 against 4250/7750) and
-  // still sent the worst enclosed void from 4.6% to 10.2% while widening 30kw-acdc; INTERCONNECT
-  // goes span 2 on 30 kW. FANS is the cleanest demonstration of the rule above -- a smaller frame
-  // is not a safer one.
+  // Each fan with its OWN tach pull-up, and the harness connector leading its own resistors. All
+  // three of these drew the connector after the passives hanging off it, and FANS additionally
+  // grouped by type -- both fan headers, then both pull-ups -- so neither fan read as a fan.
+  //
+  // One column each, and that is what makes them free. An earlier FANS attempt used two columns
+  // (connectors, then pull-ups): span 1 and SHORTER than packed, yet it sent the worst enclosed
+  // void from 4.6% to 10.2% and widened 30kw-acdc. These single-column versions match the packed
+  // frame EXACTLY on every SKU -- FANS 4250/4250/7750, both interconnects 4250 -- and nothing moves.
+  "AUX-POWER / FANS": [
+    ["JFAN1", "RFT1", "JFAN2", "RFT2", "JFAN3", "RFT3", "JFAN4", "RFT4"],
+  ],
+  "AUX-POWER / INTERCONNECT": [
+    ["JICA", "RALRS", "RALRX", "RALTS", "RALTX"],
+  ],
+  "CONTROL / INTERCONNECT": [
+    ["JICB", "RBLRS", "RBLRX", "RBLTS", "RBLTX"],
+  ],
 
   // Three aux rails, each read in its own order -- rectifier, reservoir cap, TVS clamp. Packed,
   // these were alphabetical too: all three rectifiers, then all three caps, then both TVS, so no
