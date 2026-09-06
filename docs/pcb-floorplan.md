@@ -70,6 +70,13 @@ positive pressure so dust enters only through the filter.
 > air. At 120 kW this matters: 4× 120 mm fans is 480 mm of face width. Recommendation is **pull at
 > the rear**, front panel = filter grille + connectors + HMI. Confirm before the enclosure drawing.
 
+<p align="center"><img src="assets/floorplan-30kw.svg" width="100%" alt="30 kW zone plan"/></p>
+
+Drawn to board scale by `node calculations/floorplan-svg.mjs <sku>` from the same zone table as §3–§4.
+The bar above each board is its device-rail budget against usable perimeter — green inside the
+track, red overrunning it. `floorplan-120kw.svg` shows the 136 % overrun that §2 quantifies;
+`floorplan-60kw.svg` shows the 91 % case.
+
 ---
 
 ## 1. What the floorplan may not violate
@@ -107,6 +114,8 @@ clamp-bar rail. Perimeter is a consumable resource:
 | 60kw-dcdc | 520×420 | 60 | 1200 mm | 1316 mm | **91 %** |
 | 120kw-acdc | 560×600 | 61 | 1220 mm | 1624 mm | 75 % |
 | 120kw-dcdc | 640×620 | **120** | 2400 mm | 1764 mm | **136 % — impossible** |
+
+<p align="center"><img src="assets/floorplan-120kw.svg" width="100%" alt="120 kW zone plan — the DC-DC rail overruns"/></p>
 
 **FILL.** Dominant parts only — magnetics, electrolytics, TO-247 rails, relays, shunt — before any
 creepage, busbar, control or sensing copper: 48 / 47 % at 30 kW, 59 / 63 % at 60 kW, 68 / 70 % at
