@@ -82,6 +82,15 @@ const RACK = {
 // DC out + CAN at diagonally opposite corners. So the front face is a width budget of its own, and
 // it is an independent check on whether a rating fits one module.
 const FANS = { "30kw": 2, "60kw": 2, "120kw": 4 };   // thermal-report.md
+const LOSS = { "30kw": 844, "60kw": 1684, "120kw": 3347 };  // W total, thermal-report.md rev D
+
+// Rear-face air budget. Both HV connectors now sit on the REAR face, which is also the exhaust, so
+// they take vent area away from the air. Two corners of four: the connectors occupy roughly one
+// quarter of the face each, leaving half for venting.
+const CONN_FACE = [180, 60];   // mm each connector zone (AC studs / DC+CAN plug) on a 3U face
+const GRILLE_OPEN = 0.40;      // perforated grille open-area fraction
+const AIR_DT = 20;             // K rise inlet-to-exhaust; 55 C ambient in, ~75 C out
+const CP = 1005, RHO = 1.2;    // J/kg.K, kg/m^3
 const FAN_SIZE = 120;                                // mm; 120 is the largest that fits a 3U face
 const HMI_WIDTH = 80;                                // mm for the 2-digit display + switch cluster
 
@@ -233,6 +242,22 @@ for (const sku of Object.keys(BOARDS)) {
     + ` = ${String(need).padStart(4)} mm   ${ok ? "ok" : `FAIL — ${need - RACK.widthMax} mm over a ${RACK.widthMax} mm face`}`);
 }
 console.log(`   (a 120 mm fan is the largest that clears a ${RACK.heightU} mm 3U opening)`);
+
+console.log(`\nREAR FACE — the exhaust, minus the two corner connectors (${CONN_FACE[0]}×${CONN_FACE[1]} mm each):`);
+const faceArea = RACK.widthMax * RACK.heightU;
+const ventArea = faceArea - 2 * CONN_FACE[0] * CONN_FACE[1];
+for (const sku of Object.keys(BOARDS)) {
+  const mdot = LOSS[sku] / (CP * AIR_DT);            // kg/s
+  const q = mdot / RHO;                              // m^3/s
+  const cfm = q * 2118.88;
+  const vel = q / (ventArea * GRILLE_OPEN / 1e6);    // m/s through the open grille area
+  const ok = vel <= 6;                               // above ~6 m/s the grille dominates the loss
+  if (!ok) envFail++;
+  console.log(`   ${sku.padEnd(6)} ${String(LOSS[sku]).padStart(4)} W at ΔT ${AIR_DT} K -> ${cfm.toFixed(0).padStart(3)} CFM`
+    + `   through ${Math.round(ventArea * GRILLE_OPEN)} mm² open  =  ${vel.toFixed(1)} m/s   ${ok ? "ok" : "FAIL — grille too restrictive"}`);
+}
+console.log(`   vent area ${Math.round(ventArea)} mm² of a ${Math.round(faceArea)} mm² face`
+  + ` (${Math.round(ventArea / faceArea * 100)} % free after the connectors), ${Math.round(GRILLE_OPEN * 100)} % grille open area`);
 
 console.log(`\nWidth is the binding dimension and depth is nearly free, so a board that does not fit should`
   + `\nbe made NARROWER AND DEEPER before it is made bigger. ${envFail} board(s) cannot be made to fit at all.`);

@@ -37,20 +37,26 @@ All power and comms leave at the back; the front is the service face and the air
 ```
         FRONT FACE (service + intake)                     REAR FACE (all connectors + exhaust)
    ┌───────────────────────────────┐                 ┌───────────────────────────────┐
-   │  ▣ FAN   ▣ FAN     ░display░  │                 │  ▓▓ DC± OUT + CAN H/L ▓▓  ░░░ │
-   │  120 mm  120 mm    ░switch ░  │                 │  (upper-right corner)     ░░░ │
+   │  ▣ FAN   ▣ FAN     ░display░  │                 │  ▓▓ DC± OUT + CAN H/L ▓▓  ░░░ │  ← upper board
+   │  120 mm  120 mm    ░switch ░  │                 │  (upper-RIGHT)            ░░░ │    (DC-DC)
    │                               │                 │ ░░░                           │
-   │  2× 120 + 80 mm HMI = 320 mm  │                 │ ░░░   ▓▓ 3φ AC IN + PE ▓▓     │
-   │  of 440 mm usable             │                 │       (lower-left corner)     │
+   │  2× 120 + 80 mm HMI = 320 mm  │                 │ ░░░   ▓▓ 3φ AC IN + PE ▓▓     │  ← lower board
+   │  of 440 mm usable             │                 │       (lower-LEFT)            │    (AC-DC)
    └───────────────────────────────┘                 └───────────────────────────────┘
                                                        ░░░ = exhaust vent area
 ```
 
-- **The two HV connectors are diagonally opposite on the rear face** — AC at one corner, DC + CAN at
-  the far one. That is the maximum separation the face allows, so the input and output harnesses
-  leave in different directions and never run parallel in the cabinet. That parallel run is the
+- **The two HV cables are diagonally opposite on the rear face** — AC at one corner, DC + CAN at the
+  far one. That is the maximum separation the face allows, so the input and output harnesses leave in
+  different directions and never run parallel in the cabinet. That parallel run is the
   input-to-output conducted-coupling path no amount of on-board filtering fixes once the cables are
-  bundled.
+  bundled together.
+
+  **Half of that diagonal is free.** The sandwich already puts the AC-DC board low and the DC-DC
+  board high, so the AC entry is at the bottom of the rear face and the DC output at the top **by
+  construction** — the two are separated in Z whatever else happens. Only the lateral half is a
+  placement choice: put the AC studs at one Y end and the DC plug at the other, and the two cables
+  are separated on both axes at once.
 - **CAN H/L rides on the DC output connector plug**, on its side — one plug carries power and comms,
   so the cabinet harness is one assembly.
 - **Fans at the front, pushing.** They run in the coldest, densest air (best mass flow, best fan
@@ -58,7 +64,20 @@ All power and comms leave at the back; the front is the service face and the air
   the fan noise and the filter are both at the face a technician stands at. Exhaust leaves through
   the rear vent area around the two corner connectors.
 - **Front face budget:** 2× 120 mm fans + 80 mm of display/switch = **320 mm of 440 mm usable**. At
-  120 kW, 4 fans + HMI = **560 mm and does not fit** — an independent confirmation of §2.
+  120 kW, 4 fans + HMI = **560 mm and does not fit** — an independent confirmation of §2. (120 mm is
+  the largest fan that clears a 133.35 mm opening.)
+- **Rear face budget — the connectors must not choke the exhaust.** They occupy two corners of the
+  face the air has to leave through, so the vent area is a computed quantity, not a leftover:
+
+  | | loss | air at ΔT 20 K | through the grille | |
+  |---|---|---|---|---|
+  | 30 kW | 844 W | 74 CFM | 2.4 m/s | comfortable |
+  | 60 kW | 1684 W | 148 CFM | 4.7 m/s | acceptable |
+  | 120 kW | 3347 W | 294 CFM | **9.4 m/s** | **too restrictive** |
+
+  Two 180×60 mm connector zones leave **63 % of the rear face free**, which at a 40 % open-area
+  grille is 14 830 mm² of actual opening. That carries 30 and 60 kW with margin. 120 kW does not
+  pass it — the fifth independent measurement in this document saying 120 kW is not one 3U module.
 
 ### The power path is a U-fold
 
@@ -621,6 +640,7 @@ Six viewpoints, each with its own question.
 | 1 | **3U height: recover ~5 mm** (fins 20→18 mm, boards 2.4→1.6 mm) (§2) | the stack is 134.8 mm against 133.35 mm before insertion clearance | mechanical |
 | 1b | Re-proportion four boards to ≤440 mm wide (§2) | four of six are wider than a 19-inch rack as drawn | electrical + mechanical |
 | 2 | **Secondary rectifier count — 40 A JBS or SR variant?** (§2) | the JBS rail is over budget on EVERY SKU (96/158/234 %); it is also the module's largest loss | electrical |
+| 2b | Rear connector zones: 180×60 mm each is the assumption behind the 63 % vent figure (§0) | if the plugs are larger the exhaust tightens fast — 60 kW is already at 4.7 m/s | mechanical |
 | 3 | Interior clamp rails for 120 kW (§2) | 120 kW is still over budget after the device-count fix | mechanical |
 | 3b | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
 | 4 | ~~B2B pillar alignment~~ — **closed by the U-fold**: the handoff is at the front of both boards, so the pillars are vertical (§8) | — | closed |
