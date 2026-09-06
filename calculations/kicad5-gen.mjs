@@ -57,6 +57,7 @@ if (existsSync(OUT)) {
 mkdirSync(OUT, { recursive: true });
 
 // ---- geometry in mils (50 mil grid) ------------------------------------------------------
+const YGRID = 250;            // frame tops AND frame heights land on this grid
 const G = 50;                 // 1.27 mm
 const snap = (v) => Math.round(v / G) * G;
 const PITCH = 100;            // pin pitch (2.54 mm)
@@ -361,7 +362,13 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       if (!bestL || score < bestL.score) bestL = { placed, w, h: hh, score };
     }
     for (const { it, x, y, clw } of bestL.placed) { it.x = x; it.y = y; it.clw = clw; }
-    b.w = bestL.w; b.h = bestL.h;
+    // Height rounded UP to the Y grid. Frame TOPS were already snapped to YGRID, which fixed the
+    // 10-30 mil near-misses -- but snapping added 0..249 mil to whatever gap sat above, so the
+    // vertical gaps between stacked sections came out 400/450/500/550/600/650/700 while the
+    // horizontal gaps were a uniform 400. Inconsistent breathing room between sections is exactly
+    // the "spacing" half of visual rhythm. With h ALSO on the grid, y + h + SECGAP snaps to a
+    // constant +500 every time: grid-aligned tops AND one uniform vertical gap, not a trade.
+    b.w = bestL.w; b.h = Math.ceil(bestL.h / YGRID) * YGRID;
   }
 
   // Shelf rows set a row's height from its tallest frame, so every shorter frame in that row left
@@ -379,7 +386,6 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   // the sheet has real columns and a visible rhythm. The width a frame gains becomes symmetric
   // padding inside it (content is centred), which reads as margin rather than as a gap.
   const GRID = 500;
-  const YGRID = 250;    // frame tops land on this, so 'almost aligned' cannot happen vertically
   const gsnap = (v) => Math.ceil(v / GRID) * GRID;
   const widths = blocks.map((b) => b.w).sort((m, n) => m - n);
   // Rounding UP wastes at most COLW/2 per side, which measures as inner padding spanning
