@@ -13,6 +13,39 @@ const OUT = join(ROOT, "calculations", "out", "easyeda");
 mkdirSync(OUT, { recursive: true });
 
 // ---- functional pages: page → ordered blocks → designator regexes (first match wins) ----
+// SKU under generation. 30 kW has one Vienna lane and three LLC legs; 60/120 kW replicate the
+// same cells x2/x4, so the lane- and leg-indexed blocks must be discovered from the netlist
+// rather than hard-coded, or every lane above 0 silently vanishes from the drawing.
+const SKU = process.argv[2] || "30kw";
+
+/** sorted unique capture-group values present in the design, e.g. Vienna lanes or LLC legs */
+const idxOf = (names, re) => [...new Set(names.map((n) => n.match(re)?.[1]).filter((x) => x != null))]
+  .sort((a, b) => Number(a) - Number(b));
+
+/** Vienna: one block per (phase, lane) — 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
+const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
+  ["A", "B", "C"].map((ph) => [`PHASE-${ph}${n}`, [
+    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]$`), new RegExp(`^D${ph}${n}[TBC]$`),
+    new RegExp(`^C${ph}${n}(FP|FN|SN|C)$`), new RegExp(`^R${ph}${n}(SN|C)$`),
+    new RegExp(`^U${ph}${n}G$`), new RegExp(`^PS${ph}${n}G$`),
+    new RegExp(`^R${ph}${n}G(ON|OFF|GS|PD)$`), new RegExp(`^D${ph}${n}GS[12]$`),
+    new RegExp(`^C${ph}${n}G(BL|B1|B2)$`)]]));
+
+/** line CTs: one block per lane */
+const lineCtBlocks = (names) => idxOf(names, /^CTA(\d)$/).map((n) =>
+  [`LINE-CTS-${n}`, [new RegExp(`^CT[ABC]${n}$`), new RegExp(`^R[ABC]${n}[BF]$`),
+    new RegExp(`^C[ABC]${n}F$`), new RegExp(`^D[ABC]${n}[PN]$`)]]);
+
+/** LLC half-bridge legs: 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
+const legBlocks = (names) => idxOf(names, /^Q(\d+)H$/).map((n) =>
+  [`LEG-${n}`, [new RegExp(`^(Q|U|PS|R|D|C)${n}[HL]`)]]);
+
+/** LLC resonant tanks + rectifiers, one per leg */
+const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
+  [`TANK-${n}`, [new RegExp(`^C${n}R\\d$`), new RegExp(`^L${n}T$`), new RegExp(`^T${n}$`),
+    new RegExp(`^D${n}[AB][1-4]$`), new RegExp(`^CT${n}$`), new RegExp(`^R${n}C[TF]$`),
+    new RegExp(`^C${n}CF$`), new RegExp(`^D${n}C[PN]$`)]]);
+
 const PAGES = {
   acdc: [
     ["INPUT-EMI", [
@@ -108,7 +141,7 @@ const RAILS = ["V3P3", "V15", "V24", "DGND", "AGND", "PE", "DCP", "DCN", "MID", 
 
 const f2 = (x) => JSON.stringify(x);
 for (const side of ["acdc", "dcdc"]) {
-  const j = JSON.parse(readFileSync(join(ROOT, "dist", "boards", "30kw", side, "circuit.json"), "utf8"));
+  const j = JSON.parse(readFileSync(join(ROOT, "dist", "boards", SKU, side, "circuit.json"), "utf8"));
   const comps = j.filter(e => e.type === "source_component");
   const ports = j.filter(e => e.type === "source_port");
   const nets = new Map(j.filter(e => e.type === "source_net").map(n => [n.source_net_id, n.name]));

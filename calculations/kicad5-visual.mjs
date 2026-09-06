@@ -52,7 +52,7 @@ for (const blk of readFileSync(join(SCH, "dc-modules.lib"), "utf8").split(/^DEF 
 }
 
 let pages = 0, problems = [], nLab = 0, nSym = 0;
-for (const f of readdirSync(SCH).filter((x) => x.endsWith(".sch") && x !== "dc-modules-30kw.sch").sort()) {
+for (const f of ["30kw-acdc.sch", "30kw-dcdc.sch"]) {
   const lines = readFileSync(join(SCH, f), "utf8").split("\n");
   const labels = [], syms = [], texts = [];
   for (let i = 0; i < lines.length; i++) {

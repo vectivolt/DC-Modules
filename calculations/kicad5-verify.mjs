@@ -47,12 +47,15 @@ class DSU {
 }
 
 let totPins = 0, totOk = 0, totWrong = 0, totAbsent = 0, sheets = 0;
+const cache = new Map();
 let totLabels = 0, floating = 0, overlaps = 0, openFrames = 0;
 const problems = [];
 
 for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
   const page = JSON.parse(readFileSync(join(SRC, f), "utf8"));
-  const text = readFileSync(join(SCH, `${page.page}.sch`), "utf8");
+  const board = page.page.startsWith("acdc") ? "30kw-acdc" : "30kw-dcdc";
+  if (!cache.has(board)) cache.set(board, readFileSync(join(SCH, `${board}.sch`), "utf8"));
+  const text = cache.get(board);
   const lines = text.split("\n");
 
   // --- parse ---

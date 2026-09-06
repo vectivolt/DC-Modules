@@ -18,6 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LCSC } from "./cost/lcsc-map.mjs";
+import { footprintForRef } from "./footprint-map.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(ROOT, "calculations/out/easyeda/apply");
@@ -179,9 +180,23 @@ function shapeOf(c) {
 const files = [];
 let totalComps = 0, totalLabels = 0;
 
+const BOARDS = { acdc: [], dcdc: [] };
 for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
-  const page = JSON.parse(readFileSync(join(SRC, file), "utf8"));
-  const blocks = page.block_order.map((b, i) => ({ title: b, comps: page.chunks[i] }));
+  const pg = JSON.parse(readFileSync(join(SRC, file), "utf8"));
+  const side = pg.page.startsWith("acdc") ? "acdc" : "dcdc";
+  BOARDS[side].push(pg);
+}
+const SIDE_TITLE = {
+  acdc: "30kW ACDC board 1of2 - Vienna PFC",
+  dcdc: "30kW DCDC board 2of2 - 3-phase LLC",
+};
+for (const [side, pgs] of Object.entries(BOARDS)) {
+  const page = { page: `30kw-${side}`, title: SIDE_TITLE[side],
+    total: pgs.reduce((a, p) => a + p.total, 0),
+    nc: Object.assign({}, ...pgs.map((p) => p.nc)) };
+  // every functional page contributes its blocks, prefixed so the section reads "PAGE / BLOCK"
+  const blocks = pgs.flatMap((p) => p.block_order.map((b, i) => ({
+    title: `${p.page.replace(/^(acdc|dcdc)-/, "")} / ${b}`, comps: p.chunks[i] })));
 
   for (const b of blocks) {
     b.items = b.comps.map((c) => ({ c, s: shapeOf(c) }));
@@ -244,7 +259,7 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
         body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
-          + `F 2 "" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         if (p0.signal_name) {
@@ -257,7 +272,7 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
         body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
-          + `F 2 "" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         const sides = [[s.nums[0], snap(cx - 250), -1], [s.nums[1], snap(cx + 250), 1]];
@@ -274,7 +289,7 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
         body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
           + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
-          + `F 2 "" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         const bound = new Map(c.pins.map((p) => [String(p.pin_number), p.signal_name]));
@@ -326,10 +341,10 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
 {
   let root = "", sx = 1000, sy = 1000;
   files.forEach((name, i) => {
-    const col = i % 3, rowi = Math.floor(i / 3);
-    const X = sx + col * 3200, Y = sy + rowi * 1600;
-    root += `$Sheet\nS ${X} ${Y} 2600 900\nU ${nextId()}\n`
-      + `F0 "${name}" 60\nF1 "${name}.sch" 60\n$EndSheet\n`;
+    const col = i % 2, rowi = Math.floor(i / 2);
+    const X = sx + col * 5200, Y = sy + rowi * 2200;
+    root += `$Sheet\nS ${X} ${Y} 4200 1400\nU ${nextId()}\n`
+      + `F0 "${SIDE_TITLE[name.replace("30kw-", "")] ?? name}" 70\nF1 "${name}.sch" 70\n$EndSheet\n`;
   });
   const rootSch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User 12000 8000\nencoding utf-8\nSheet 1 1\n`
