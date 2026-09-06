@@ -53,7 +53,8 @@ const groups = (by.pcb_group ?? []).map((g) => {
     ? { x0: Math.min(...mem.map((m) => m.x0)), x1: Math.max(...mem.map((m) => m.x1)),
         y0: Math.min(...mem.map((m) => m.y0)), y1: Math.max(...mem.map((m) => m.y1)) }
     : { x0: g.center.x, x1: g.center.x, y0: g.center.y, y1: g.center.y };
-  return { name: g.name, x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2,
+  const lay = mem.length && mem.every((m) => m.layer === mem[0].layer) ? mem[0].layer : null;
+  return { name: g.name, layer: lay, x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2,
            w: bb.x1 - bb.x0, h: bb.y1 - bb.y0, n: mem.length,
            id: g.source_group_id, parent: srcGrp.get(g.source_group_id)?.parent_source_group_id };
 });
@@ -74,12 +75,13 @@ for (const k of ["pcb_courtyard_overlap_error", "pcb_footprint_overlap_error",
   line(k.replace(/^pcb_|_error$|_warning$/g, "").slice(0, 9), (by[k] ?? []).length, null, k);
 
 console.log(`\n  floorplan rules:`);
-const off = groups.filter((g) => g.w > 0 &&
-  (g.x - g.w / 2 < -W / 2 + EDGE || g.x + g.w / 2 > W / 2 - EDGE ||
-   g.y - g.h / 2 < -H / 2 + EDGE || g.y + g.h / 2 > H / 2 - EDGE));
-line("OFFBOARD", off.length, groups.length, `cells crossing the outline (${EDGE} mm clearance)`);
-for (const g of off.slice(0, 6))
-  console.log(`         ${g.name.padEnd(12)} x ${(g.x - g.w / 2).toFixed(0)}..${(g.x + g.w / 2).toFixed(0)}  y ${(g.y - g.h / 2).toFixed(0)}..${(g.y + g.h / 2).toFixed(0)}`);
+// Check every PART, not just cells: loose components placed directly on the board belong to no
+// cell, so a cells-only test walked straight past five of them sitting 4 mm off the bottom edge.
+const off = parts.filter((p) =>
+  p.x0 < -W / 2 + EDGE || p.x1 > W / 2 - EDGE || p.y0 < -H / 2 + EDGE || p.y1 > H / 2 - EDGE);
+line("OFFBOARD", off.length, parts.length, `parts crossing the outline (${EDGE} mm clearance)`);
+for (const p of off.slice(0, 6))
+  console.log(`         ${p.name.padEnd(12)} x ${p.x0.toFixed(0)}..${p.x1.toFixed(0)}  y ${p.y0.toFixed(0)}..${p.y1.toFixed(0)}`);
 
 const ov = [];
 for (let i = 0; i < groups.length; i++)
@@ -87,6 +89,7 @@ for (let i = 0; i < groups.length; i++)
     const a = groups[i], b = groups[k];
     if (!a.w || !b.w) continue;
     if (ancestors(a).has(b.id) || ancestors(b).has(a.id)) continue;   // nested: not an overlap
+    if (a.layer && b.layer && a.layer !== b.layer) continue;         // opposite sides of the board
     const ox = Math.min(a.x + a.w / 2, b.x + b.w / 2) - Math.max(a.x - a.w / 2, b.x - b.w / 2);
     const oy = Math.min(a.y + a.h / 2, b.y + b.h / 2) - Math.max(a.y - a.h / 2, b.y - b.h / 2);
     if (ox > 0.01 && oy > 0.01) ov.push([a.name, b.name, Math.min(ox, oy)]);

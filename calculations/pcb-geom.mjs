@@ -29,7 +29,7 @@ export const extents = (j) => {
       x1: p.center.x + p.width / 2, y1: p.center.y + p.height / 2,
     };
     return {
-      id: p.pcb_component_id, name: src.get(p.source_component_id)?.name ?? "?",
+      id: p.pcb_component_id, name: src.get(p.source_component_id)?.name ?? "?", layer: p.layer,
       sourceId: p.source_component_id, groupId: src.get(p.source_component_id)?.source_group_id,
       x: p.center.x, y: p.center.y, hasCourtyard: box.has(p.pcb_component_id),
       ...b, w: b.x1 - b.x0, h: b.y1 - b.y0, area: (b.x1 - b.x0) * (b.y1 - b.y0),

@@ -197,14 +197,19 @@ export const Lqfp100 = () => (
         : side === 2 ? { x: 7.6, y: -off, w: 1.2, h: 0.3 } : { x: -off, y: 7.6, w: 0.3, h: 1.2 };
       return <smtpad key={i} portHints={[`pin${i + 1}`]} pcbX={pos.x} pcbY={pos.y} width={`${pos.w}mm`} height={`${pos.h}mm`} shape="rect" />;
     })}
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="16mm" height="16mm" />
+    </footprint>
 );
 export const XfmrAuxFP = () => (
   <footprint>
     {Array.from({ length: 8 }, (_, i) => (
       <platedhole key={i} portHints={[`pin${i + 1}`]} pcbX={-9 + (i % 4) * 6} pcbY={i < 4 ? -6 : 6} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
     ))}
-  </footprint>
+  
+    {/* ETD34 aux flyback: 35 x 30 body incl. bobbin and clip */}
+    <courtyardrect pcbX={0} pcbY={0} width="35mm" height="30mm" />
+    </footprint>
 );
 
 const DRV_PINS = { pin1: "VIA", pin2: "GNDA", pin3: "PWM", pin4: "EN", pin5: "FLT", pin6: "RDY", pin7: "NC1", pin8: "NC2", pin9: "CLAMP", pin10: "VEE", pin11: "OUTL", pin12: "OUTH", pin13: "VCC2", pin14: "KSRC", pin15: "DST", pin16: "GND2" };
@@ -216,9 +221,9 @@ export const BiasModule = ({ id, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0 }: 
   <chip name={`PS${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P18", pin4: "COM", pin5: "N4" }} pcbX={x} pcbY={y} schX={sx} schY={sy} schSectionName={sec} />
 );
 // 5 V isolated bias module (iso-amp primary-side supplies; PSCAN/PSSH pattern)
-export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`b5${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name={`PS5${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P5", pin4: "COM", pin5: "NC" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <chip layer={lay} name={`PS5${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P5", pin4: "COM", pin5: "NC" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <trace from={`.PS5${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.PS5${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.PS5${id} > .P5`} to={p5} schDisplayLabel={p5.replace("net.", "")} />
@@ -238,7 +243,7 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <BiasModule id={id} sec={sec} x={-4} y={-14} sx={-0.6} sy={-2.6} />
     <resistor name={`R${id}ON`} resistance={rgOn} footprint="1206" pcbX={16} pcbY={0} schX={2.6} schY={0.9} schSectionName={sec} />
     <resistor name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={16} pcbY={-5} schX={2.6} schY={-0.4} schSectionName={sec} />
-    <resistor name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={16} pcbY={-10} schX={4.2} schY={-0.4} schSectionName={sec} />
+    <resistor name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={26} pcbY={-10} schX={4.2} schY={-0.4} schSectionName={sec} />
     <resistor name={`R${id}PD`} resistance="10k" footprint="0603" pcbX={-10} pcbY={-6} schX={-2.6} schY={-1.2} schSectionName={sec} />
     <diode name={`D${id}S1`} footprint="sma" pcbX={28} pcbY={0} schX={2.7} schY={2.2} schSectionName={sec} />
     <diode name={`D${id}S2`} footprint="sma" pcbX={34} pcbY={-6} schX={4.7} schY={2.2} schSectionName={sec} />
@@ -307,13 +312,13 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", 
     <DriverCh id={`${id}G`} pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
     <diode name={`D${id}T`} footprint={<TO247_2 />} pcbX={0} pcbY={-14} schX={9.5} schY={1.4} schSectionName={sec} />
     <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={18} pcbY={-14} schX={9.5} schY={-1.4} schSectionName={sec} />
-    <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={-30} pcbY={-48} schX={12.5} schY={1.4} schSectionName={sec} />
-    <capacitor name={`C${id}FN`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={0} pcbY={-48} schX={12.5} schY={-1.4} schSectionName={sec} />
-    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={30} pcbY={-44} schX={15.5} schY={0.7} schSectionName={sec} />
-    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={30} pcbY={-51} schX={15.5} schY={-0.7} schSectionName={sec} />
+    <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={-30} pcbY={-2} schX={12.5} schY={1.4} schSectionName={sec} />
+    <capacitor name={`C${id}FN`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={2} pcbY={-2} schX={12.5} schY={-1.4} schSectionName={sec} />
+    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={30} pcbY={-56} schX={15.5} schY={0.7} schSectionName={sec} />
+    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={30} pcbY={-64} schX={15.5} schY={-0.7} schSectionName={sec} />
     <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={36} pcbY={-14} schX={18.5} schY={1.4} schSectionName={sec} />
-    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={22} pcbY={-60} schX={18.5} schY={-1.4} schSectionName={sec} />
-    <chip name={`R${id}C`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-8} pcbY={-62} schX={21.5} schY={0} schSectionName={sec} />
+    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={34} pcbY={-74} schX={18.5} schY={-1.4} schSectionName={sec} />
+    <chip name={`R${id}C`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-8} pcbY={-76} schX={21.5} schY={0} schSectionName={sec} />
     <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
     <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
@@ -440,10 +445,10 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
       <capacitor key={`b${i}`} name={`CDB${id}${i}`} capacitance="470uF" footprint={<SnapInFP />} pcbX={i * 40} pcbY={-45} schX={i * 2} schY={-1.4} schSectionName={sec} />
     ))}
     {/* HR-20: 2-series 47 k HV per half — halves per-element V (≈208 V) and W (≈0.92 W on 3 W) */}
-    <resistor name={`RBALT${id}A`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40} pcbY={0} schX={nPerHalf * 2 + 1} schY={2.1} schSectionName={sec} />
-    <resistor name={`RBALT${id}B`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40 + 8} pcbY={0} schX={nPerHalf * 2 + 1} schY={0.7} schSectionName={sec} />
-    <resistor name={`RBALB${id}A`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40} pcbY={-45} schX={nPerHalf * 2 + 1} schY={-0.7} schSectionName={sec} />
-    <resistor name={`RBALB${id}B`} resistance="47k" footprint="2512" pcbX={nPerHalf * 40 + 8} pcbY={-45} schX={nPerHalf * 2 + 1} schY={-2.1} schSectionName={sec} />
+    <resistor name={`RBALT${id}A`} resistance="47k" footprint="2512" pcbX={0} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={2.1} schSectionName={sec} />
+    <resistor name={`RBALT${id}B`} resistance="47k" footprint="2512" pcbX={24} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={0.7} schSectionName={sec} />
+    <resistor name={`RBALB${id}A`} resistance="47k" footprint="2512" pcbX={56} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-0.7} schSectionName={sec} />
+    <resistor name={`RBALB${id}B`} resistance="47k" footprint="2512" pcbX={80} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-2.1} schSectionName={sec} />
     {Array.from({ length: nPerHalf }, (_, i) => [
       <trace key={`tt${i}`} from={`.CDT${id}${i} > .pin1`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />,
       <trace key={`tm${i}`} from={`.CDT${id}${i} > .pin2`} to={mid} schDisplayLabel={mid.replace("net.", "")} />,
@@ -525,9 +530,9 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual =
 };
 
 // ---------- relay-coil driver (8-ch darlington array, COM clamp to 24 V). Unused inputs to DGND (MR-8).
-export const CoilDriver = ({ id, ins, outs, sec = "COILS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const CoilDriver = ({ id, ins, outs, sec = "COILS", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`uln${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name={`U${id}`} footprint="soic18" pinLabels={{ pin1: "IN1", pin2: "IN2", pin3: "IN3", pin4: "IN4", pin5: "IN5", pin6: "IN6", pin7: "IN7", pin8: "IN8", pin9: "GND", pin10: "COM", pin11: "OUT8", pin12: "OUT7", pin13: "OUT6", pin14: "OUT5", pin15: "OUT4", pin16: "OUT3", pin17: "OUT2", pin18: "OUT1" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <chip layer={lay} name={`U${id}`} footprint="soic18" pinLabels={{ pin1: "IN1", pin2: "IN2", pin3: "IN3", pin4: "IN4", pin5: "IN5", pin6: "IN6", pin7: "IN7", pin8: "IN8", pin9: "GND", pin10: "COM", pin11: "OUT8", pin12: "OUT7", pin13: "OUT6", pin14: "OUT5", pin15: "OUT4", pin16: "OUT3", pin17: "OUT2", pin18: "OUT1" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     {ins.map((n, i) => <trace key={`i${i}`} from={`.U${id} > .IN${i + 1}`} to={n} />)}
     {outs.map((n, i) => <trace key={`o${i}`} from={`.U${id} > .OUT${i + 1}`} to={n} />)}
     <trace from={`.U${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
@@ -541,15 +546,15 @@ export const CoilDriver = ({ id, ins, outs, sec = "COILS", x = 0, y = 0, sx = 0,
 // biasP/biasG: floating-side rail nodes (share one Bias5Module per domain). outN optional.
 // v4/MR-18: `cf` parameterizes the input filter — channels that feed a hardware OVP comparator
 // (bus/bank/output) use 1 nF (pole ≈ 23 kHz → trip path ≈ 10–20 µs); AC metering keeps 10 nF.
-export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "10nF", sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "10nF", sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`ivs${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 18 × 4: divider chain across the top, bottom-leg RC + iso-amp below-right */}
     {Array.from({ length: 8 }, (_, i) => (
-      <resistor key={i} name={`R${id}D${i}`} resistance="475k" footprint="1206" pcbX={i * 6} pcbY={0} schX={i * 1.4} schY={1} schSectionName={sec} />
+      <resistor layer={lay} key={i} name={`R${id}D${i}`} resistance="475k" footprint="1206" pcbX={i * 6} pcbY={0} schX={i * 1.4} schY={1} schSectionName={sec} />
     ))}
-    <resistor name={`R${id}DL`} resistance={rBot} footprint="0805" pcbX={50} pcbY={5} schX={10.5} schY={-1} schSectionName={sec} />
-    <capacitor name={`C${id}DF`} capacitance={cf} footprint="0805" pcbX={56} pcbY={5} schX={12} schY={-1} schSectionName={sec} />
-    <chip name={`UIV${id}`} footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={64} pcbY={0} schX={15} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}DL`} resistance={rBot} footprint="0805" pcbX={50} pcbY={5} schX={10.5} schY={-1} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}DF`} capacitance={cf} footprint="0805" pcbX={56} pcbY={5} schX={12} schY={-1} schSectionName={sec} />
+    <chip layer={lay} name={`UIV${id}`} footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={64} pcbY={0} schX={15} schY={0} schSectionName={sec} />
     <trace from={hv} to={`.R${id}D0 > .pin1`} schDisplayLabel={hv.replace("net.", "")} />
     {Array.from({ length: 7 }, (_, i) => (
       <trace key={i} from={`.R${id}D${i} > .pin2`} to={`.R${id}D${i + 1} > .pin1`} />
@@ -573,19 +578,19 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
 // v4/MR-11: dual-feedback buffer — 4.7 Ω isolates the 10 µF reservoir from the op-amp (no bare
 // op-amp is stable into 10 µF); DC feedback via 10 k from AVMID (accuracy), AC feedback via
 // 100 pF local (stability). Standard cap-load topology, layout note P-12.
-export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name="avmid" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 12 × 5. CAVF 2.2 nF: its corner (≈7 kHz) must sit BELOW the outer-loop
         crossover (~30 kHz with a 10 MHz op-amp into 10 µF) or the buffer still rings — found
         by the ct-frontend.mjs deck, which runs both topologies as regression evidence. */}
-    <resistor name="RAVH" resistance="10k" footprint="0603" pcbX={0} pcbY={0} schX={0} schY={1.2} schSectionName={sec} />
-    <resistor name="RAVL" resistance="10k" footprint="0603" pcbX={0} pcbY={5} schX={0} schY={-1.2} schSectionName={sec} />
-    <capacitor name="CAVM" capacitance="100nF" footprint="0603" pcbX={6} pcbY={5} schX={1.6} schY={0} schSectionName={sec} />
-    <chip name="UAVB" footprint="soic8" pinLabels={{ pin1: "OUT", pin2: "INN", pin3: "INP", pin4: "VN", pin5: "NC1", pin6: "NC2", pin7: "NC3", pin8: "VP" }} pcbX={12} pcbY={0} schX={4} schY={0.4} schSectionName={sec} />
-    <resistor name="RAVI" resistance="4.7" footprint="0603" pcbX={18} pcbY={0} schX={7} schY={0.4} schSectionName={sec} />
-    <resistor name="RAVF" resistance="10k" footprint="0603" pcbX={18} pcbY={6} schX={7} schY={-1.4} schSectionName={sec} />
-    <capacitor name="CAVF" capacitance="2.2nF" footprint="0603" pcbX={12} pcbY={6} schX={5.5} schY={2.2} schSectionName={sec} />
-    <capacitor name="CAVO" capacitance="10uF" footprint="0805" pcbX={24} pcbY={5} schX={9} schY={-0.8} schSectionName={sec} />
+    <resistor layer={lay} name="RAVH" resistance="10k" footprint="0603" pcbX={0} pcbY={0} schX={0} schY={1.2} schSectionName={sec} />
+    <resistor layer={lay} name="RAVL" resistance="10k" footprint="0603" pcbX={0} pcbY={5} schX={0} schY={-1.2} schSectionName={sec} />
+    <capacitor layer={lay} name="CAVM" capacitance="100nF" footprint="0603" pcbX={6} pcbY={5} schX={1.6} schY={0} schSectionName={sec} />
+    <chip layer={lay} name="UAVB" footprint="soic8" pinLabels={{ pin1: "OUT", pin2: "INN", pin3: "INP", pin4: "VN", pin5: "NC1", pin6: "NC2", pin7: "NC3", pin8: "VP" }} pcbX={12} pcbY={0} schX={4} schY={0.4} schSectionName={sec} />
+    <resistor layer={lay} name="RAVI" resistance="4.7" footprint="0603" pcbX={18} pcbY={0} schX={7} schY={0.4} schSectionName={sec} />
+    <resistor layer={lay} name="RAVF" resistance="10k" footprint="0603" pcbX={18} pcbY={6} schX={7} schY={-1.4} schSectionName={sec} />
+    <capacitor layer={lay} name="CAVF" capacitance="2.2nF" footprint="0603" pcbX={12} pcbY={6} schX={5.5} schY={2.2} schSectionName={sec} />
+    <capacitor layer={lay} name="CAVO" capacitance="10uF" footprint="0805" pcbX={24} pcbY={5} schX={9} schY={-0.8} schSectionName={sec} />
     <trace from=".RAVH > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from=".RAVH > .pin2" to="net.AVREF_MID" />
     <trace from=".RAVL > .pin1" to="net.AVREF_MID" />
@@ -607,16 +612,16 @@ export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 }: any) 
 );
 
 // ---------- line/lane CT sensor (E18) — v3/CB-15: burden + return biased to AVMID, dual clamps
-export const CtSensor = ({ id, out, sec = "CT", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const CtSensor = ({ id, out, sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`cts${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB: the CT body is 25 mm across, so the burden and clamps sit to its RIGHT, not on top
         of it. Envelope 57 × 25, one measurement row per phase. */}
-    <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}B`} resistance="33" footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
-    <capacitor name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
-    <diode name={`D${id}P`} footprint="sod323" pcbX={24} pcbY={9} schX={6.6} schY={1.2} schSectionName={sec} />
-    <diode name={`D${id}N`} footprint="sod323" pcbX={34} pcbY={9} schX={9} schY={1.2} schSectionName={sec} />
+    <chip layer={lay} name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}B`} resistance="33" footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
+    <diode layer={lay} name={`D${id}P`} footprint="sod323" pcbX={24} pcbY={9} schX={6.6} schY={1.2} schSectionName={sec} />
+    <diode layer={lay} name={`D${id}N`} footprint="sod323" pcbX={34} pcbY={9} schX={9} schY={1.2} schSectionName={sec} />
     <trace from={`.CT${id} > .S1`} to={`.R${id}B > .pin1`} />
     <trace from={`.CT${id} > .S2`} to="net.AVMID" schDisplayLabel="AVMID" />
     <trace from={`.R${id}B > .pin2`} to="net.AVMID" schDisplayLabel="AVMID" />
@@ -632,12 +637,12 @@ export const CtSensor = ({ id, out, sec = "CT", x = 0, y = 0, sx = 0, sy = 0 }: 
 );
 
 // ---------- NTC input (remote sensor header + bias + filter; unipolar — no mid-rail needed)
-export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`ntc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 8 × 3 */}
-    <chip name={`J${id}`} footprint="pinrow2" pinLabels={{ pin1: "P1", pin2: "P2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}P`} resistance="10k" footprint="0603" pcbX={8} pcbY={0} schX={2.4} schY={1.2} schSectionName={sec} />
-    <capacitor name={`C${id}F`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={0} schX={4.4} schY={-0.6} schSectionName={sec} />
+    <chip layer={lay} name={`J${id}`} footprint="pinrow2" pinLabels={{ pin1: "P1", pin2: "P2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}P`} resistance="10k" footprint="0603" pcbX={8} pcbY={0} schX={2.4} schY={1.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}F`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={0} schX={4.4} schY={-0.6} schSectionName={sec} />
     <trace from={`.J${id} > .P1`} to={out} schDisplayLabel={out.replace("net.", "")} />
     <trace from={`.J${id} > .P2`} to="net.AGND" schDisplayLabel="AGND" />
     <trace from={`.R${id}P > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
@@ -655,23 +660,23 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 // window-set straps) — the v3 3-pin symbol had no supply. SET straps to DGND = datasheet default
 // window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
 // input on the safety AND while the local MCU is in reset).
-export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
-    <chip name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
-    <chip name={`UAND${id}`} footprint="soic14" pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "C2", pin6: "Y2", pin7: "GND", pin8: "Y3", pin9: "A3", pin10: "B3", pin11: "C3", pin12: "Y1", pin13: "C1", pin14: "VCC" }} pcbX={14} pcbY={0} schX={4.5} schY={0.6} schSectionName={sec} />
-    <resistor name={`RWPU${id}`} resistance="10k" footprint="0603" pcbX={0} pcbY={8} schX={0} schY={-2} schSectionName={sec} />
-    <resistor name={`RENR${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={8} schX={1.6} schY={-2} schSectionName={sec} />
-    <resistor name={`RENL${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={13} schX={3.2} schY={-2} schSectionName={sec} />
-    <resistor name={`RGPD${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={8} schX={7.5} schY={-2} schSectionName={sec} />
-    <capacitor name={`CSF${id}`} capacitance="100nF" footprint="0603" pcbX={20} pcbY={8} schX={6} schY={-2} schSectionName={sec} />
+    <chip layer={lay} name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
+    <chip layer={lay} name={`UAND${id}`} footprint="soic14" pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "C2", pin6: "Y2", pin7: "GND", pin8: "Y3", pin9: "A3", pin10: "B3", pin11: "C3", pin12: "Y1", pin13: "C1", pin14: "VCC" }} pcbX={14} pcbY={0} schX={4.5} schY={0.6} schSectionName={sec} />
+    <resistor layer={lay} name={`RWPU${id}`} resistance="10k" footprint="0603" pcbX={0} pcbY={8} schX={0} schY={-2} schSectionName={sec} />
+    <resistor layer={lay} name={`RENR${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={8} schX={1.6} schY={-2} schSectionName={sec} />
+    <resistor layer={lay} name={`RENL${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={13} schX={3.2} schY={-2} schSectionName={sec} />
+    <resistor layer={lay} name={`RGPD${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={8} schX={7.5} schY={-2} schSectionName={sec} />
+    <capacitor layer={lay} name={`CSF${id}`} capacitance="100nF" footprint="0603" pcbX={20} pcbY={8} schX={6} schY={-2} schSectionName={sec} />
     {/* R3: CWD (physical 2) programs the watchdog timeout and CRST (physical 4) the reset delay.
         Both were floating, which leaves the window UNDEFINED — the safety chain's centerpiece
         would not have had a defined timeout. Sized for the 10 ms window of E27/F.32.
         VALUE REVIEW: the C-per-ms constant comes from the final TPS3430 datasheet (§K); the
         components and their nets are correct regardless of the final capacitance. */}
-    <capacitor name={`CWD${id}`} capacitance="1nF" footprint="0603" pcbX={20} pcbY={13} schX={6} schY={-3.2} schSectionName={sec} />
-    <capacitor name={`CRST${id}`} capacitance="1nF" footprint="0603" pcbX={24} pcbY={13} schX={7.5} schY={-3.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`CWD${id}`} capacitance="1nF" footprint="0603" pcbX={20} pcbY={13} schX={6} schY={-3.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`CRST${id}`} capacitance="1nF" footprint="0603" pcbX={24} pcbY={13} schX={7.5} schY={-3.2} schSectionName={sec} />
     <trace from={`.CWD${id} > .pin1`} to={`.USUP${id} > .CWD`} />
     <trace from={`.CWD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CRST${id} > .pin1`} to={`.USUP${id} > .CRST`} />
@@ -709,12 +714,12 @@ export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY"
 );
 
 // ---------- SWD/boot provisioning per MCU (CB-13/HR-11): 5-pin header + BOOT0 strap + NRST cap
-export const SwdPort = ({ id, sec = "SWD", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const SwdPort = ({ id, sec = "SWD", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`swd${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 7 × 3 */}
-    <chip name={`JSWD${id}`} footprint="pinrow5" pinLabels={{ pin1: "VCC", pin2: "DIO", pin3: "CLK", pin4: "RST", pin5: "GND" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}BOOT`} resistance="10k" footprint="0603" pcbX={14} pcbY={0} schX={2.6} schY={0.7} schSectionName={sec} />
-    <capacitor name={`C${id}RST`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={6} schX={2.6} schY={-0.7} schSectionName={sec} />
+    <chip layer={lay} name={`JSWD${id}`} footprint="pinrow5" pinLabels={{ pin1: "VCC", pin2: "DIO", pin3: "CLK", pin4: "RST", pin5: "GND" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}BOOT`} resistance="10k" footprint="0603" pcbX={14} pcbY={0} schX={2.6} schY={0.7} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}RST`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={6} schX={2.6} schY={-0.7} schSectionName={sec} />
     <trace from={`.JSWD${id} > .VCC`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.JSWD${id} > .DIO`} to={`net.SWDIO_${id}`} schDisplayLabel={`SWDIO_${id}`} />
     <trace from={`.JSWD${id} > .CLK`} to={`net.SWCLK_${id}`} schDisplayLabel={`SWCLK_${id}`} />
@@ -844,18 +849,18 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
 
 // ---------- MCU + decoupling + reset — v3: VDDA/VREF+ fed via ferrite + local caps (MR-7);
 // BOOT0/SWD nets bound at board level (CB-13). Pin numbers symbolic pending A6 datasheet closure.
-export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`mcu${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 10 × 16: the LQFP100 symbol is 0.4×10.2 with pins fanning both sides — give it
         a full column; decoupling + reset + VDDA filter parts in a tidy row beneath it */}
-    <chip name={`U${id}`} footprint={<Lqfp100 />} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <chip layer={lay} name={`U${id}`} footprint={<Lqfp100 />} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     {[0, 1, 2, 3].map(i => (
-      <capacitor key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 6} pcbY={11} schX={-3 + i * 1.6} schY={-6.6} schSectionName={sec} />
+      <capacitor layer={lay} key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 6} pcbY={11} schX={-3 + i * 1.6} schY={-6.6} schSectionName={sec} />
     ))}
-    <resistor name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={15} pcbY={11} schX={3.6} schY={-6.6} schSectionName={sec} />
-    <resistor name={`FB${id}A`} resistance="0" footprint="0805" pcbX={-15} pcbY={11} schX={-3} schY={-8} schSectionName={sec} />
-    <capacitor name={`C${id}A1`} capacitance="1uF" footprint="0603" pcbX={-15} pcbY={16} schX={-1.4} schY={-8} schSectionName={sec} />
-    <capacitor name={`C${id}A2`} capacitance="100nF" footprint="0402" pcbX={-10} pcbY={16} schX={0.2} schY={-8} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={15} pcbY={11} schX={3.6} schY={-6.6} schSectionName={sec} />
+    <resistor layer={lay} name={`FB${id}A`} resistance="0" footprint="0805" pcbX={-15} pcbY={11} schX={-3} schY={-8} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}A1`} capacitance="1uF" footprint="0603" pcbX={-15} pcbY={16} schX={-1.4} schY={-8} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}A2`} capacitance="100nF" footprint="0402" pcbX={-10} pcbY={16} schX={0.2} schY={-8} schSectionName={sec} />
     {[0, 1, 2, 3].map(i => [
       <trace key={`p${i}`} from={`.C${id}D${i} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />,
       <trace key={`g${i}`} from={`.C${id}D${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
@@ -881,15 +886,15 @@ export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 }
 // ---------- board-to-board signal harness (16-way) — power goes via DCP/DCN/PE studs.
 // v3: link/enable nets are parameters so the DC-DC side CROSSES TX↔RX (CB-14) and each board
 // exports its own MCU enable while receiving the other's (E27). Shield bonded to PE.
-export const InterconnectSignals = ({ id, ltx, lrx, enA, enB, sec = "HARNESS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const InterconnectSignals = ({ id, ltx, lrx, enA, enB, sec = "HARNESS", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`ic${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 9 × 5: header left, link series/pull network in two rows at right */}
-    <chip name={`JIC${id}`} footprint="pinrow16" pinLabels={{ pin1: "V24A", pin2: "V24B", pin3: "GNDA", pin4: "GNDB", pin5: "V15A", pin6: "V15B", pin7: "LTX", pin8: "LRX", pin9: "EN", pin10: "KILL", pin11: "FPWM", pin12: "FTACH", pin13: "TINL", pin14: "SP1", pin15: "SP2", pin16: "SHLD" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}LTX`} resistance="10k" footprint="0603" pcbX={20} pcbY={0} schX={5.4} schY={1.4} schSectionName={sec} />
-    <resistor name={`R${id}LRX`} resistance="10k" footprint="0603" pcbX={20} pcbY={5} schX={5.4} schY={-1.4} schSectionName={sec} />
+    <chip layer={lay} name={`JIC${id}`} footprint="pinrow16" pinLabels={{ pin1: "V24A", pin2: "V24B", pin3: "GNDA", pin4: "GNDB", pin5: "V15A", pin6: "V15B", pin7: "LTX", pin8: "LRX", pin9: "EN", pin10: "KILL", pin11: "FPWM", pin12: "FTACH", pin13: "TINL", pin14: "SP1", pin15: "SP2", pin16: "SHLD" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}LTX`} resistance="10k" footprint="0603" pcbX={30} pcbY={0} schX={5.4} schY={1.4} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}LRX`} resistance="10k" footprint="0603" pcbX={30} pcbY={5} schX={5.4} schY={-1.4} schSectionName={sec} />
     {/* v4: the CB-14 fix note promised series 100 Ω on both link lines — now fitted */}
-    <resistor name={`R${id}LTS`} resistance="100" footprint="0603" pcbX={26} pcbY={0} schX={3.4} schY={1.4} schSectionName={sec} />
-    <resistor name={`R${id}LRS`} resistance="100" footprint="0603" pcbX={26} pcbY={5} schX={3.4} schY={-1.4} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}LTS`} resistance="100" footprint="0603" pcbX={38} pcbY={0} schX={3.4} schY={1.4} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}LRS`} resistance="100" footprint="0603" pcbX={38} pcbY={5} schX={3.4} schY={-1.4} schSectionName={sec} />
     <trace from={`.JIC${id} > .V24A`} to="net.V24" schDisplayLabel="V24" />
     <trace from={`.JIC${id} > .V24B`} to="net.V24" schDisplayLabel="V24" />
     <trace from={`.JIC${id} > .GNDA`} to="net.DGND" schDisplayLabel="DGND" />
@@ -943,18 +948,18 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <diode name="DTVS24" footprint="smb" pcbX={98} pcbY={0} schX={15.8} schY={2.4} schSectionName={sec} />
     <diode name="DTVS15" footprint="smb" pcbX={108} pcbY={0} schX={15.8} schY={0.8} schSectionName={sec} />
     <resistor name="RAUXST1" resistance="470k" footprint="2512" pcbX={0} pcbY={10} schX={-0.9} schY={3.4} schSectionName={sec} />
-    <resistor name="RAUXST2" resistance="470k" footprint="2512" pcbX={6} pcbY={10} schX={0.9} schY={3.4} schSectionName={sec} />
+    <resistor name="RAUXST2" resistance="470k" footprint="2512" pcbX={10} pcbY={10} schX={0.9} schY={3.4} schSectionName={sec} />
     <resistor name="RBR1A" resistance="2.4M" footprint="2512" pcbX={0} pcbY={16} schX={-0.9} schY={-3.4} schSectionName={sec} />
-    <resistor name="RBR1B" resistance="2.4M" footprint="2512" pcbX={6} pcbY={16} schX={0.9} schY={-3.4} schSectionName={sec} />
-    <resistor name="RBR2" resistance="15k" footprint="0603" pcbX={12} pcbY={16} schX={2.7} schY={-3.4} schSectionName={sec} />
+    <resistor name="RBR1B" resistance="2.4M" footprint="2512" pcbX={10} pcbY={16} schX={0.9} schY={-3.4} schSectionName={sec} />
+    <resistor name="RBR2" resistance="15k" footprint="0603" pcbX={22} pcbY={16} schX={2.7} schY={-3.4} schSectionName={sec} />
     <resistor name="RFB1" resistance="118k" footprint="0603" pcbX={-10} pcbY={0} schX={-3} schY={1.2} schSectionName={sec} />
     <resistor name="RFB2" resistance="10k" footprint="0603" pcbX={-10} pcbY={5} schX={-3} schY={0} schSectionName={sec} />
     <resistor name="RCOMP" resistance="10k" footprint="0603" pcbX={-10} pcbY={10} schX={-3} schY={-1.2} schSectionName={sec} />
     <capacitor name="CCOMP" capacitance="100nF" footprint="0603" pcbX={-10} pcbY={15} schX={-4.6} schY={-1.2} schSectionName={sec} />
-    <diode name="DCLA" footprint="smb" pcbX={34} pcbY={-8} schX={4.5} schY={3.4} schSectionName={sec} />
-    <capacitor name="CCLA" capacitance="10nF" footprint={FilmBoxFP(15)} pcbX={44} pcbY={-8} schX={6.3} schY={3.4} schSectionName={sec} />
-    <resistor name="RCLA1" resistance="47k" footprint="2512" pcbX={54} pcbY={-8} schX={8.1} schY={3.4} schSectionName={sec} />
-    <resistor name="RCLA2" resistance="47k" footprint="2512" pcbX={60} pcbY={-8} schX={9.9} schY={3.4} schSectionName={sec} />
+    <diode name="DCLA" footprint="smb" pcbX={76} pcbY={-8} schX={4.5} schY={3.4} schSectionName={sec} />
+    <capacitor name="CCLA" capacitance="10nF" footprint={FilmBoxFP(15)} pcbX={94} pcbY={-8} schX={6.3} schY={3.4} schSectionName={sec} />
+    <resistor name="RCLA1" resistance="47k" footprint="2512" pcbX={114} pcbY={-8} schX={8.1} schY={3.4} schSectionName={sec} />
+    <resistor name="RCLA2" resistance="47k" footprint="2512" pcbX={126} pcbY={-8} schX={9.9} schY={3.4} schSectionName={sec} />
     {/* HV startup: DCP → 2× 470 k → VCC reservoir; aux winding takes over via DAUXVC */}
     <trace from=".RAUXST1 > .pin1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RAUXST1 > .pin2" to=".RAUXST2 > .pin1" />
@@ -971,7 +976,7 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
         element was simply absent — the stage had no defined Fsw. Sized for the 65 kHz DCM design
         point of E26/D4 rev C. VALUE REVIEW: the exact RT for 65 kHz comes off the NCP1252A
         RT-vs-Fsw curve (§K); the component and its net are correct regardless. */}
-    <resistor name="RAUXRT" resistance="100k" footprint="0603" pcbX={8} pcbY={14} schX={2} schY={-3} schSectionName={sec} />
+    <resistor name="RAUXRT" resistance="100k" footprint="0603" pcbX={4} pcbY={22} schX={2} schY={-3} schSectionName={sec} />
     <trace from=".RAUXRT > .pin1" to=".UAUX > .RT" />
     <trace from=".RAUXRT > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* brown-in program: full-bus divider → BR (start ≈ 330 V, hysteresis per IC) */}
@@ -1031,15 +1036,15 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
 // Replaces the v3 SOT-223 LDO (2.9–4.1 W linear loss = thermal shutdown; AMS1117 Vin max = 15 V
 // was also at/over its operating limit on a 15 V rail). TPS54202-class: FB 0.596 V ref →
 // 45.3 k / 10 k = 3.296 V. The DC-DC board previously had NO 3.3 V source at all (CB-17).
-export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`r3v3${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name={`UBK${id}`} footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "SW", pin4: "FB", pin5: "EN", pin6: "BST", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <inductor name={`LBK${id}`} inductance="10uH" footprint={FilmBoxFP(10)} pcbX={14} pcbY={0} schX={3} schY={0.6} schSectionName={sec} />
-    <capacitor name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-2.6} schY={0.8} schSectionName={sec} />
-    <capacitor name={`CBKO${id}`} capacitance="22uF" footprint="0805" pcbX={22} pcbY={4} schX={5.4} schY={0.6} schSectionName={sec} />
-    <capacitor name={`CBST${id}`} capacitance="100nF" footprint="0603" pcbX={8} pcbY={-6} schX={1.8} schY={1.9} schSectionName={sec} />
-    <resistor name={`RBKF1${id}`} resistance="45.3k" footprint="0603" pcbX={14} pcbY={8} schX={3} schY={-1.2} schSectionName={sec} />
-    <resistor name={`RBKF2${id}`} resistance="10k" footprint="0603" pcbX={20} pcbY={8} schX={4.6} schY={-1.2} schSectionName={sec} />
+    <chip layer={lay} name={`UBK${id}`} footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "SW", pin4: "FB", pin5: "EN", pin6: "BST", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <inductor layer={lay} name={`LBK${id}`} inductance="10uH" footprint={FilmBoxFP(10)} pcbX={14} pcbY={0} schX={3} schY={0.6} schSectionName={sec} />
+    <capacitor layer={lay} name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-2.6} schY={0.8} schSectionName={sec} />
+    <capacitor layer={lay} name={`CBKO${id}`} capacitance="22uF" footprint="0805" pcbX={22} pcbY={4} schX={5.4} schY={0.6} schSectionName={sec} />
+    <capacitor layer={lay} name={`CBST${id}`} capacitance="100nF" footprint="0603" pcbX={8} pcbY={-6} schX={1.8} schY={1.9} schSectionName={sec} />
+    <resistor layer={lay} name={`RBKF1${id}`} resistance="45.3k" footprint="0603" pcbX={14} pcbY={8} schX={3} schY={-1.2} schSectionName={sec} />
+    <resistor layer={lay} name={`RBKF2${id}`} resistance="10k" footprint="0603" pcbX={20} pcbY={8} schX={4.6} schY={-1.2} schSectionName={sec} />
     <trace from={`.UBK${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.UBK${id} > .EN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.UBK${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
