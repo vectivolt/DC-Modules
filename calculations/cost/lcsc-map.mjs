@@ -54,7 +54,7 @@ export const LCSC = {
   "HDR-1x5-2.54":      { lcsc: "C492404",    status: "ORDERABLE", note: "PZ254V-11-05P" },
   "TACT-6x6":          { lcsc: "C318884",    status: "ORDERABLE", note: "TS-1187A, JLCPCB Basic" },
   "LED-2DIG-0.56CC":   { lcsc: "C9900021773", status: "ORDERABLE", note: "05621G 2-digit 0.56in CC" },
-  "CMC-CAN-51uH":      { lcsc: "C55213551",  status: "ORDERABLE", note: "ACT45B-510-2P 51 µH" },
+  "CMC-CAN-51uH":      { lcsc: "C55213551",  status: "ORDERABLE", note: "ACT45B-510-2P 51 µH" , note: "2026-09-06 RESOLVED from the TDK ACT45B datasheet: ACT45B-510-2P-TL003 — 51 uH common-mode, 200 mA, 50 V DC, Rmax 1.0 ohm, EIA 1812 (4.5x3.2x2.8), AEC-Q200, purpose-built for CAN bus. Land from TDK layout recommendation. NOTE: cells.tsx declares footprint=\"soic8\" for LCAN, which is wrong for a 4-terminal 1812 part — harmless for the schematic (the F2 name comes from footprint-map) but should be corrected if the tscircuit PCB is ever used." },
   "FB-600R-0805":      { lcsc: "C1017",      status: "ORDERABLE", note: "GZ2012D601TF, JLCPCB Basic" },
   "S20K550":           { lcsc: "C317868",    status: "REVIEW", note: "20D561K is 350 VAC/460 VDC — S20K550 needs 550 VAC; size up before release" },
   "GDT-3k5-20kA":      { lcsc: "C9900081756", status: "REVIEW", note: "BGO6000A10-LC2 — confirm 3.5 kV / 20 kA rating" },
