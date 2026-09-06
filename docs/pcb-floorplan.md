@@ -104,16 +104,30 @@ These are frozen; the zones are built around them, not negotiated with them.
 `calculations/floorplan-budget.mjs` asks two questions the outline alone cannot answer.
 
 **EDGE.** Every power semiconductor is a TO-247 that must reach an outer extrusion, so it needs a
-clamp-bar rail. Perimeter is a consumable resource:
+clamp-bar rail. Perimeter is a consumable resource — and on the DC-DC board it is **two** resources,
+because primary FETs and secondary JBS sit on opposite sides of the reinforced barrier and cannot
+share a rail. Pooling them across the barrier compares unlike with unlike and flatters the answer;
+the first version of this analysis did exactly that and reported the 30 kW DC-DC board as a
+comfortable 55 % when its secondary rail alone is at 96 %.
 
-| board | outline | TO-247 | rail needed | usable perimeter (70 %) | use |
+| board | outline | TO-247 | rail needed | usable perimeter | use |
 |---|---|---|---|---|---|
 | 30kw-acdc | 420×300 | 16 | 320 mm | 1008 mm | 32 % |
 | 30kw-dcdc | 460×320 | 30 | 600 mm | 1092 mm | 55 % |
+| └ primary (SiC FET) | | 6 | 120 mm | 591 mm | 20 % |
+| └ **secondary (JBS)** | | **24** | **480 mm** | **501 mm** | **96 %** |
 | 60kw-acdc | 460×420 | 31 | 620 mm | 1232 mm | 50 % |
-| 60kw-dcdc | 520×420 | 60 | 1200 mm | 1316 mm | **91 %** |
+| 60kw-dcdc | 520×420 | 60 | 1200 mm | 1316 mm | 91 % |
+| └ primary | | 12 | 240 mm | 709 mm | 34 % |
+| └ **secondary** | | **48** | **960 mm** | **607 mm** | **158 %** |
 | 120kw-acdc | 560×600 | 61 | 1220 mm | 1624 mm | 75 % |
-| 120kw-dcdc | 640×620 | **120** | 2400 mm | 1764 mm | **136 % — impossible** |
+| 120kw-dcdc | 640×620 | 120 | 2400 mm | 1764 mm | 136 % |
+| └ primary | | 24 | 480 mm | 945 mm | 51 % |
+| └ **secondary** | | **96** | **1920 mm** | **819 mm** | **234 %** |
+
+**The binding constraint is the secondary rectifier rail, and it binds on every SKU — 96 % at
+30 kW, 158 % at 60 kW, 234 % at 120 kW.** Nothing else on either board is close. The AC-DC board,
+which has no reinforced barrier and therefore one pooled perimeter, is comfortable everywhere.
 
 <p align="center"><img src="assets/floorplan-120kw.svg" width="100%" alt="120 kW zone plan — the DC-DC rail overruns"/></p>
 
@@ -123,25 +137,32 @@ creepage, busbar, control or sensing copper: 48 / 47 % at 30 kW, 59 / 63 % at 60
 
 ### What this means
 
-**A perimeter-only device rail is a 30 kW strategy.** It is marginal at 60 kW and arithmetically
-impossible at 120 kW. Three ways out, in order of preference:
+**The 20 A secondary JBS count is the problem, at every rating.** 24 / 48 / 96 diodes are
+simultaneously the rail that does not fit, the largest single loss in the module (360 / 721 /
+1441 W — [thermal-report.md](thermal-report.md)), and a large share of the 120 kW semiconductor
+cost. One change addresses all three. Three ways out, in order of preference:
 
-1. **Interior clamp rails.** Cut windows in the PCB over raised bosses on the extrusion; devices lie
-   flat on the boss with leads bent up into the board at the window edge. This turns "edge" into "any
-   straight run", and is what the density actually requires above 60 kW. Costs a machined (not plain
-   extruded) heatsink face.
-2. **Cut the device count.** 96 of the 120 devices on the 120 kW DC-DC board are 20 A secondary JBS,
-   which are also the single largest loss in the module (1441 W). A 40 A-class part halves the count
-   to 48 and the rail to 960 mm — inside the perimeter budget. The SR variant already costed in
-   [thermal-report.md](thermal-report.md) (−854 W at 120 kW) does better still.
+1. **Cut the secondary device count.** A 1200 V **40 A**-class JBS halves it to 12 / 24 / 48, which
+   takes the rail to 48 % / 79 % / 117 % — 30 and 60 kW fit outright. The **SR variant** already
+   costed in [thermal-report.md](thermal-report.md) (−214 / −427 / −854 W) does better on loss and
+   better still on count. This is the change to make first because it is electrical, not mechanical.
+2. **Interior clamp rails.** Cut windows in the PCB over raised bosses on the extrusion; devices lie
+   flat on the boss with leads bent up into the board at the window edge. This turns "perimeter" into
+   "any straight run on the correct side of the barrier". **120 kW needs this even after (1)** — the
+   secondary budget is 819 mm, i.e. 41 devices, and 48 is still over. Costs a machined rather than a
+   plain extruded heatsink face.
 3. **Split the DC-DC board per cell.** 4× ~10 kW cards on a common output bus instead of one
-   640×620 mm board. This also removes a separate problem: **640×620 mm exceeds the usable area of a
-   standard 457×610 mm (18″×24″) production panel**, so the 120 kW pair as drawn is not a normal
-   fab item. Worth confirming against a real fab quote before the outline is trusted.
+   640×620 mm board. Each card carries its own barrier and its own short rails, and the 234 %
+   problem disappears because it was an artefact of one very large board. This also removes a
+   separate problem: **640×620 mm exceeds the usable area of a standard 457×610 mm (18″×24″)
+   production panel**, so the 120 kW pair as drawn is not a normal fab item. Worth confirming
+   against a real fab quote before the outline is trusted.
 
-> Recommendation: adopt **(1) interior rails** as the mechanical baseline for 60 and 120 kW, and
-> raise **(2) the secondary rectifier count** as an electrical trade — it improves floorplan, loss
-> and cost simultaneously. Treat **(3)** as the fallback if the fab panel check fails.
+> Recommendation: make **(1) the secondary rectifier trade** the first decision — it is the only
+> change that improves floorplan, loss and cost at once, and it is the difference between 30 and
+> 60 kW fitting and not fitting. Then adopt **(2) interior rails** as the mechanical baseline for
+> 120 kW, which needs them regardless. Hold **(3)** for the case where the fab panel check on
+> 640×620 mm fails, in which case it becomes the answer rather than the fallback.
 
 ---
 
@@ -494,8 +515,9 @@ Six viewpoints, each with its own question.
 | # | Item | Why it blocks | Owner |
 |---|---|---|---|
 | 1 | Fan push-vs-pull and front-panel budget (§0) | sets the front face and the 120 kW fan/connector clash | mechanical |
-| 2 | Interior clamp rails vs secondary device-count reduction (§2) | 120 kW DC-DC is impossible without one of them | electrical + mechanical |
-| 3 | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
+| 2 | **Secondary rectifier count — 40 A JBS or SR variant?** (§2) | the JBS rail is over budget on EVERY SKU (96/158/234 %); it is also the module's largest loss | electrical |
+| 3 | Interior clamp rails for 120 kW (§2) | 120 kW is still over budget after the device-count fix | mechanical |
+| 3b | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
 | 4 | B2B pillar alignment — change an outline to make the pillars vertical? (§8) | bolted-joint verifiability | mechanical |
 | 5 | HMI/CAN daughter card (§4) | removes the only long SELV run; needs a part number | electrical |
 | 6 | **Reinforced creepage: 12.6 mm or 25 mm?** (§7) | sets the barrier band width on the most area-constrained board | insulation / DQ |

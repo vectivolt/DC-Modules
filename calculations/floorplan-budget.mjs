@@ -26,12 +26,21 @@ const BOARDS = {
   "120kw": { acdc: [560, 600], dcdc: [640, 620] },
 };
 
-// TO-247 counts from calculations/out/bom-<sku>.csv (every line whose description says TO-247)
+// TO-247 counts from calculations/out/bom-<sku>.csv (every line whose description says TO-247).
+//
+// The DC-DC count is SPLIT, and that split is the whole point. Primary FETs and secondary JBS sit on
+// opposite sides of a reinforced barrier, so they cannot share a rail: their perimeters are two
+// separate resources. Pooling them is a like-with-unlike comparison and it flatters the result --
+// the first version of this script reported 30kw-dcdc at a comfortable 55 % when its secondary rail
+// alone is at 96 %, and 60kw-dcdc at 91 % when its secondary is at 158 %.
 const TO247 = {
-  "30kw":  { acdc: 16, dcdc: 30 },
-  "60kw":  { acdc: 31, dcdc: 60 },
-  "120kw": { acdc: 61, dcdc: 120 },
+  "30kw":  { acdc: 16, dcdc: 30,  dcdcPri: 6,  dcdcSec: 24 },   // 6 SG2M023120LJ + 24 C4D20120D
+  "60kw":  { acdc: 31, dcdc: 60,  dcdcPri: 12, dcdcSec: 48 },
+  "120kw": { acdc: 61, dcdc: 120, dcdcPri: 24, dcdcSec: 96 },
 };
+// Barrier position along X, from the zone plan in docs/pcb-floorplan.md §4 (bus .09 + legs .20 +
+// tanks .14 + xfmr .14). Everything before it is primary, everything after it is secondary.
+const BARRIER_X = 0.57;
 
 // Dominant-area parts. Footprint envelopes from docs/footprints-to-draw.md (which states the build
 // rule: a toroid's finished OD is core OD + 2×4 mm winding, courtyard = OD + 2 mm) and from
@@ -91,6 +100,20 @@ for (const sku of Object.keys(BOARDS)) {
     const railNeed = n * RAIL_PITCH;
     const railHave = perim * USABLE_EDGE;
 
+    // Per-domain rail budget on the DC-DC board. Each side of the barrier owns the two long-edge
+    // runs within its own X span, plus its one end face.
+    let dom = null;
+    if (side === "dcdc") {
+      const priHave = (2 * W * BARRIER_X + H) * USABLE_EDGE;
+      const secHave = (2 * W * (1 - BARRIER_X) + H) * USABLE_EDGE;
+      dom = {
+        pri: { n: TO247[sku].dcdcPri, need: TO247[sku].dcdcPri * RAIL_PITCH, have: priHave },
+        sec: { n: TO247[sku].dcdcSec, need: TO247[sku].dcdcSec * RAIL_PITCH, have: secHave },
+      };
+      dom.pri.use = dom.pri.need / dom.pri.have;
+      dom.sec.use = dom.sec.need / dom.sec.have;
+    }
+
     const parts = partsFor(sku, side);
     let partArea = 0;
     for (const [, qty, w, h] of parts) partArea += qty * w * h;
@@ -98,7 +121,7 @@ for (const sku of Object.keys(BOARDS)) {
 
     rows.push({
       sku, side, W, H, area, perim, n, railNeed, railHave,
-      edgeUse: railNeed / railHave, partArea, fill: partArea / area,
+      edgeUse: railNeed / railHave, partArea, fill: partArea / area, dom,
     });
   }
 }
@@ -118,6 +141,15 @@ for (const r of rows) {
     + ` ${String(r.railNeed).padStart(9)} /${String(Math.round(r.railHave)).padStart(6)}`
     + ` ${(edgeBad ? "FAIL " : "ok   ") + pct(r.edgeUse).padStart(5)}`
     + ` ${(fillBad ? "FAIL " : "ok   ") + pct(r.fill).padStart(5)}`);
+  if (r.dom) {
+    for (const [k, d] of [["primary", r.dom.pri], ["secondary", r.dom.sec]]) {
+      const bad = d.use > 1;
+      if (bad) fail++;
+      console.log(`   └ ${k.padEnd(10)} ${String(d.n).padStart(3)} devices`
+        + ` ${String(d.need).padStart(6)} mm /${String(Math.round(d.have)).padStart(6)} mm`
+        + `   ${bad ? "FAIL " : "ok   "}${pct(d.use).padStart(5)}   (cannot share a rail across the barrier)`);
+    }
+  }
 }
 
 console.log(`\nEDGE: TO-247 need ${RAIL_PITCH} mm of clamp-bar pitch each and must reach an outer`
@@ -126,11 +158,14 @@ console.log(`FILL: dominant parts only (magnetics, electrolytics, TO-247 rails, 
   + `\n      Gate ${pct(FILL_LIMIT)} — above it there is no area left for creepage, busbar and control.`);
 
 // one runnable check: the resource that breaks first must be the one the plan calls out
-const worstEdge = rows.reduce((a, b) => (b.edgeUse > a.edgeUse ? b : a));
-console.assert(worstEdge.sku === "120kw" && worstEdge.side === "dcdc",
-  "expected the 120 kW DC-DC board to be the binding edge constraint");
-console.log(`\nbinding edge constraint: ${worstEdge.sku}-${worstEdge.side} at ${pct(worstEdge.edgeUse)}`
-  + ` of usable perimeter (${worstEdge.n} devices)`);
+const secs = rows.filter((r) => r.dom).map((r) => ({ sku: r.sku, ...r.dom.sec }));
+const worst = secs.reduce((a, b) => (b.use > a.use ? b : a));
+console.assert(secs.every((x) => x.use > 0.9),
+  "expected the secondary rectifier rail to be at or over budget on EVERY SKU");
+console.log(`\nbinding constraint is the SECONDARY RECTIFIER RAIL, on every SKU:`);
+for (const x of secs) console.log(`   ${x.sku.padEnd(6)} ${String(x.n).padStart(3)} JBS  ${pct(x.use)}`);
+console.log(`worst: ${worst.sku} at ${pct(worst.use)} — ${worst.n} × 20 A JBS is the part count that`
+  + ` breaks the floorplan,\nand it is also the largest single loss in the module.`);
 
 console.log(fail ? `\n${fail} board(s) over a planning gate — see docs/pcb-floorplan.md` : `\nall boards within gates`);
 process.exit(0);
