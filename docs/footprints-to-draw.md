@@ -7,7 +7,7 @@ in the EasyEDA library, EasyEDA's schematic DRC raises `lacks property Footprint
 library gap, **not** a connectivity or schematic defect — the sheets themselves report 0 errors
 and 0 warnings.
 
-## Drawn — 18 footprints, 521 of 696 instances
+## Drawn — 27 footprints, 647 of 696 instances
 
 Emitted as KiCad `.kicad_mod` (a format EasyEDA Pro imports), packaged as
 `kicad5/DC-Modules-footprints.zip`.
@@ -31,7 +31,39 @@ is the single value to correct if a datasheet disagrees.
 `KEY-SMD_4P-L6.0-W6.0` was deliberately NOT generated: "6.0 x 6.0" gives the body but a tactile
 switch's four-pad layout varies by series, so the name does not determine the land.
 
-## Remaining A — catalogue parts: 7 footprints, 49 instances
+## Magnetics and the shunt — 9 footprints x 3 SKUs, 126 instances (2026-09-06)
+
+Approximate envelopes so the PCB can be laid out now, with the real parts wound/made to that size
+later. **The schematics do not move**: the footprint NAME is identical on every SKU, and each SKU's
+file simply carries that SKU's geometry, so `kicad5/DC-Modules-footprints-<sku>.zip` is imported
+alongside that SKU's schematic bundle.
+
+Every core dimension is quoted from the design's own drawings — `docs/magnetics.md` D1/D2/D3/D4/D6/D7
+and its CT section, plus `architecture.md` for the shunt current and `parts-db` for its 50 mV class.
+Nothing here is invented; what is approximate is only the winding build and the lead exits:
+
+* winding build adds 2 x 4 mm to a toroid OD
+* lead hole = sqrt(4A/pi) + 1.2 mm from the conductor CSA in the drawing
+* a toroid wound >= 300 deg has its start and end leads close together, so both leads of a winding
+  sit at one angular position rather than diametrically opposite
+* courtyard = finished OD + 2 mm
+
+| footprint | 30 kW | 60 kW | 120 kW | pads |
+|---|---|---|---|---|
+| `L_Toroid_3xT79_26u_custom` (D1 PFC choke) | 3x OD79/ID49/H17, M6 bolt | same | same | 2 + bolt |
+| `L_Toroid_trim_bin_custom` (D2 trim) | OD33 | same | same | 2 |
+| `L_Toroid_sendust_per-SKU` (D6 DM choke) | OD47x24x18, 14 T | OD57x26x20, 11 T | 2x OD79x40x17, 8 T | 2 |
+| `L_CMC_3ph_nanocryst_per-SKU` (D7 CM choke) | OD62, 3x 8 T, 10 mm² | OD80, 3x 7 T, 25 mm² | OD102, 3x 6 T, 50 mm² | 6 |
+| `XFMR_3xPQ50-50_custom` (D3 LLC xfmr) | 3x PQ50/50, 4x M4 clamp | same | same | 7 |
+| `XFMR_ETD34_custom` (D4 aux) | ETD34, 5.08 mm pins | same | same | 8 |
+| `CT_window_100A_1-2500` | >= 9 mm busbar window | same | same | 2 |
+| `CT_window_res_1-100` | 10 mm toroid | same | same | 2 |
+| `SHUNT_4-terminal_manganin` | 100 A / 0.5 mΩ, 40x15, M5 | 200 A / 0.25 mΩ, 55x20, M6 | 400 A / 0.125 mΩ, 75x25, M8 | 4 |
+
+**Pad count was checked against every symbol's pin count** — all nine match. That check exists
+because the HF167F relay attempt failed exactly there: `Pin has no corresponding pad: 5, 6, 8`.
+
+## Remaining — catalogue parts: 7 footprints, 49 instances
 
 These exist in the LCSC catalogue; resolve each with `component_search` the way `QA01C` ->
 `PWRM-TH_QA01C` (C2757491) was resolved. **A name match is not sufficient** — check pin/pad
@@ -56,11 +88,3 @@ Both would have silently substituted a different part. The three relays are the 
 the same reason: E30 needs mirror-contact variants and the plain catalogue parts of the family
 have a different pad count. Confirm the p/ns, then the lands follow.
 
-## Remaining B — genuinely custom: 9 footprints, 126 instances
-
-No standard land exists. Pad geometry comes from the winder's or maker's drawing, and guessing it
-would be fabricating manufacturing data. **This is the only group blocked on someone else.**
-
-`CT_window_100A_1-2500` (21) · `CT_window_res_1-100` (21) · `L_Toroid_3xT79_26u_custom` (21) ·
-`L_Toroid_trim_bin_custom` (21) · `XFMR_3xPQ50-50_custom` (21) · `L_Toroid_sendust_per-SKU` (9) ·
-`L_CMC_3ph_nanocryst_per-SKU` (6) · `SHUNT_4-terminal_manganin` (3) · `XFMR_ETD34_custom` (3)

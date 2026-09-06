@@ -1,3 +1,7 @@
+import { readFileSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // footprint-map.mjs — intended package per part family.
 //
 // EasyEDA raises a FATAL DRC error for any component without a Footprint property (44 per page
@@ -81,4 +85,34 @@ export const footprintForRef = (designator, mpnHint) => {
   if (mpnHint && FOOTPRINT[mpnHint]) return FOOTPRINT[mpnHint];
   const rule = DB.find((r) => r.m.test(designator));
   return (rule && FOOTPRINT[rule.mpn]) || "";
+};
+
+// ---- real chip package, read off the BUILT land ---------------------------------------------
+// footprintForRef resolves by MPN class, which is wrong whenever a part's declared footprint
+// differs from its class default: CAVO and CBKIA are declared 0805 in cells.tsx but their class
+// "MLCC-small" defaults to C0603, so the sheet named a land the part does not fit. Measured
+// across all six boards, 309 of 1325 chip-package components (23%) carried the wrong package.
+// The built circuit knows the truth — pcb_component gives each part's actual land size — so use
+// that for chip packages and keep the class map for everything else.
+const LAND_MM = { "0402": 1.55, "0603": 2.0, "0805": 2.85, "1206": 4.0, "1210": 4.3, "1812": 5.5, "2512": 7.0 };
+
+export const realPackages = (sku) => {
+  const out = new Map();
+  for (const side of ["acdc", "dcdc"]) {
+    const p = join(ROOT, "dist/boards", sku, side, "circuit.json");
+    if (!existsSync(p)) continue;
+    const j = JSON.parse(readFileSync(p, "utf8"));
+    const name = new Map();
+    for (const e of j) if (e.type === "source_component") name.set(e.source_component_id, e.name);
+    for (const e of j) {
+      if (e.type !== "pcb_component" || !name.has(e.source_component_id)) continue;
+      const w = e.width;
+      let best = null;
+      for (const [code, mm] of Object.entries(LAND_MM))
+        if (!best || Math.abs(mm - w) < Math.abs(LAND_MM[best] - w)) best = code;
+      // only trust it when the match is close; odd-shaped parts are not chip packages
+      if (best && Math.abs(LAND_MM[best] - w) / LAND_MM[best] <= 0.15) out.set(name.get(e.source_component_id), best);
+    }
+  }
+  return out;
 };

@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import { lcscFor, lcscForPart } from "./cost/lcsc-map.mjs";
 import { SHEET_TITLES, SHEET_IDENT } from "./schematic-sections.mjs";
 import { DB, skuOverrides } from "./cost/parts-db.mjs";
-import { footprintForRef } from "./footprint-map.mjs";
+import { footprintForRef, realPackages } from "./footprint-map.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKU = process.argv[2] || "30kw";
@@ -32,6 +32,16 @@ const OUT = join(ROOT, `kicad5/dc-modules-${SKU}`);
 // name (it reports "A library with the same name already exists" and keeps the old symbols),
 // so a re-import would silently mix new sheets with stale pin geometry. Bump on any symbol change.
 const LIB_NAME = `dcmod-r4`;
+// The class map is right about WHICH family a part belongs to but not always about its package,
+// because a cell may declare a footprint that differs from its family default. The built land is
+// the authority for chip packages; see realPackages().
+const REAL_PKG = realPackages(SKU);
+const fpFor = (designator, mpn) => {
+  const cls = footprintForRef(designator, mpn);
+  const pkg = REAL_PKG.get(designator);
+  const m = cls.match(/^([RCL])(\d{4})$/);
+  return (m && pkg && pkg !== m[2]) ? `${m[1]}${pkg}` : cls;
+};
 const REV = "D.3";   // D.1 -> D.2 output-return fix (R4) -> D.3 importer-mirror fix (R5)
 // An early run wrote 30 kW sheets into the 60/120 kW directories and they sat there for days.
 // Packaging lists files explicitly so nothing shipped, but a stale foreign-SKU sheet in an output
@@ -532,7 +542,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
-          + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${fpFor(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
@@ -546,7 +556,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
-          + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${fpFor(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
@@ -564,7 +574,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
           + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
-          + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${fpFor(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
