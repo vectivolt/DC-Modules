@@ -46,7 +46,9 @@ ck("HR-6", /R\$\{id\}PD/.test(cells), "PWM pulldowns per channel");
 ck("HR-7", /GDT[123]?/.test(boards) && /MOVP/.test(boards), "L-PE MOV+GDT surge path");
 ck("HR-8", /PP-4u7-1200/.test(db), "output film 1200 V");
 ck("HR-9", /DM-22u-SKU/.test(db) && /LDM1: \{ price1k: 480/.test(db), "DM chokes per-SKU rated (D6)");
-ck("HR-10", /QA01C-15S18/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0)");
+// R3: the assertion previously grepped "QA01C-15S18" — a part number that does not exist at
+// MORNSUN (real variants: QA01C = +20/-4 V, QA01C-18 = +18/-3 V). The gate was pinning a typo.
+ck("HR-10", /QA01C\b/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0)");
 ck("HR-11", /C\$\{id\}RST/.test(cells) && /R\$\{id\}BOOT/.test(cells), "NRST cap + BOOT0 strap");
 ck("HR-12", /SQP-10R-25W/.test(db), "pre-insertion pulse resistors");
 
