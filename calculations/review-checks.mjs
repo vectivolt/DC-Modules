@@ -281,5 +281,17 @@ ck("SYNTAX-FPDUP", (() => {
 ck("SYNTAX-LCSC", (() => { try { new Function(readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8").replace(/^export /gm, "")); return true; } catch { return false; } })(),
   "lcsc-map.mjs parses — a syntax error there silently breaks kicad5-gen AND bom-gen");
 
+// ORDERABLE means a specific part WAS chosen, so the sheet must name that part rather than the
+// class it was chosen from. 19 entries showed a class label as their MPN while their C-number
+// resolved to a different real part named only in a source note -- a reader looking up
+// "SICJBS-1200-40" finds nothing, and the aux 15 V / 24 V rectifiers read as unrelated parts.
+// Caught by reading a rendered sheet at working zoom, not by any existing check.
+ck("LCSC-CLASS-MPN", (() => {
+  const src = readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8");
+  for (const m of src.matchAll(/"([^"]*-class)":\s*\{([^}]*)\}/g))
+    if (/status:\s*"ORDERABLE"/.test(m[2]) && !/\bmpn:/.test(m[2])) return false;
+  return true;
+})(), "every ORDERABLE -class entry names its real manufacturer part via mpn:, so the sheet does not show a class label as a part number");
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

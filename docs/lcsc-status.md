@@ -58,7 +58,7 @@ attempts proved the point and were both reverted:
 On the sheets, `REVIEW` is the four relay classes with no acceptable catalogue part yet:
 `HFE82V-M-CLASS` (16) · `HFE82V-20-M-CLASS` (6) · `HF167F-250A-M` (2) · `HF167F-120A-M` (2).
 
-At BOM level the status is wider — 15 lines on 30/60 kW, 19 on 120 kW — because it also covers
+At BOM level the status is wider — 17 lines on 30/60 kW, 21 on 120 kW — because it also covers
 parts that **do** have a C-number but still need requalification before release:
 
 | Part | LCSC | Why it is flagged |
@@ -71,10 +71,40 @@ parts that **do** have a C-number but still need requalification before release:
 | `QA01C` | C2757491 | iso gate-bias module, +18/−4 configured (E23 rev B) |
 | `SHUNT-MANG` | C508584 | manganin shunt 50 mV class, per-SKU current |
 | `PS122WF4702T4E` | C2793932 | **zero stock / pre-sale** — sourcing risk, not a rating problem |
+| `TACT-6x6` | C318884 | body size unresolved — candidates rejected at 3.9×3.0 and 5.2×5.2 mm |
+| `LED-2DIG-0.56CC` | C9900021773 | segment pin map not validated against a chosen part |
 | the four relay classes | — | no catalogue part meets E30's mirror-contact requirement |
 
 `SECOND-SOURCE` (2 lines) are the SiC MOSFETs `SG2M023120LJ` (C5713523) and `B3M010C075Z`
 (C5713521) — equivalent found, different die, requalify before switching.
+
+## ORDERABLE must name the part, not the class
+
+`ORDERABLE` means a specific part **was** chosen. Nineteen entries still showed the *class* as
+their MPN while their C-number resolved to a different, real part named only in a source note — so
+the sheet read `SICJBS-1200-40` / `C7435099` where the thing actually purchased is a
+**GC4D20120D**, and the aux 15 V and 24 V rectifiers looked like unrelated parts (`US2G` vs
+`UF-400V-3A`) when they are a matched pair, `US2G` and `US3M`.
+
+Found by reading a rendered sheet at working zoom; no existing check compared the MPN field against
+what its own LCSC number resolves to. The convention was already established — 51 entries carried
+`mpn:` — these had simply been missed. All nineteen now name the real part on the sheet and in the
+BOM: `US3M` · `STTH112U` · `GC4D10120H` · `C4D20120D` · `GC4D20120D` · `C2M1000170D` ·
+`IMW120R350M1H` · `B2B-PH-K-S` · `B4B-PH-K-S` · `PZ254V-11-05P` · `ACT45B-510-2P-TL003` ·
+`GZ2012D601TF` · `TPS54202DDCR` · `TPS3430WDRCR` · `TLV9061IDBVR` · `AMC1311DWVR` ·
+`AMC1350QDWVRQ1` · `TLP152`.
+
+No footprint changed — all 2819 verified identical before and after, because `footprintForRef`
+falls back to the class when the real MPN has no land of its own. Gated as `LCSC-CLASS-MPN` in
+`review-checks.mjs`, negative-tested both ways.
+
+**Two entries were mis-statused and are now REVIEW**, because each carried `ORDERABLE` over a note
+describing an unresolved problem:
+
+- `TACT-6x6` (C318884) — two candidate series were checked and **both rejected on body size**; the
+  design specifies 6.0 × 6.0 mm. Calling that orderable hid an open selection.
+- `LED-2DIG-0.56CC` (C9900021773) — the segment pin map has never been validated against a chosen
+  part; only 3 of 10 pins agree with the industry-standard 5621AS pinout.
 
 ## How value-resolution works
 
