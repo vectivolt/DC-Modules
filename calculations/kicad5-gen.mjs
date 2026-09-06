@@ -642,6 +642,26 @@ const HAND = {
     ["PSC#G", "UC#G", "DC#GS1", "DC#GS2", "RC#GON", "RC#GOFF", "RC#GGS", "RC#GPD"],
     ["QC#A", "QC#B", "CC#GB1", "CC#GB2", "CC#GBL", "LC#", "DC#B", "DC#C", "DC#T", "CC#FN", "CC#FP", "RC#C", "RC#SN", "CC#SN", "CC#C"],
   ],
+  // Isolated CAN, read from the MCU outward: isolated bias, the transceiver and the ground-bridge
+  // pair on the logic side, then the bus side -- common-mode choke, PESD clamp, connector, and the
+  // termination jumper with its resistor. Packed, the CONNECTOR led the section and the transceiver
+  // driving it came last: the flow exactly backwards.
+  //
+  // Two columns, chosen by probe. A three-column split reads the same and is 750 SHORTER on
+  // 30/60 kW, but it turns 120 kW's span-1 frame into span 2 and cost that sheet 10% in area
+  // (54600x41800 -> 60600x41550). This split matches the packed frame exactly on all three SKUs
+  // (span 2/2/1, h 5250), so the ordering is fixed for nothing.
+  "COMMS-HMI / CAN": [
+    ["PSCAN", "UCAN", "CCGB", "RCGB"],
+    ["LCAN", "TVSCAN", "JCAN", "JTERM", "RTERM"],
+  ],
+
+  // DC-LINK / DISCHARGE could not be matched and is left packed. Work order is bias, opto, its gate
+  // network, then the switch with the discharge string and the tab. Packed is 4 columns at span 2 /
+  // h 3500; probed 2 columns 5/6 (span 2, 5500), 6/5 (span 2, 6250), 3 columns (span 2, 4750) and
+  // 4 columns (span 3, 4250). Nothing reaches 3500 -- the packed split interleaves the three tall
+  // parts (PSQD, UQD, QDISF) that work order keeps together, the same reason AUX-POWER / FLYBACK
+  // is closed above.
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
