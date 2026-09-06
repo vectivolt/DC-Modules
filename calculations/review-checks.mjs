@@ -187,6 +187,34 @@ ck("SYNTAX-DUPKEY", (() => {
   return true;
 })(), "no lcsc-map entry repeats a key — a duplicate silently discards the earlier value");
 
+{ // R12/R9 — parts-db is FIRST-MATCH-WINS, so a broad rule can make a correct specific rule
+  // unreachable. That is exactly what hid both: /^C\w+C$/ shadowed /^CVCC$/ -> EL-47u-35, and a
+  // per-SKU fuse class existed but nothing routed to it. Neither errors; the BOM just quietly
+  // states the wrong part. Two checks: no rule may be fully unreachable, and no narrow rule may
+  // lose designators to a BROADER rule placed earlier (an ordering inversion).
+  const { DB } = await import("./cost/parts-db.mjs");
+  const { existsSync } = await import("node:fs");
+  const des = new Set();
+  for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
+    const f = join(ROOT, "dist/boards", sku, side, "circuit.json");
+    if (!existsSync(f)) continue;
+    for (const c of JSON.parse(readFileSync(f, "utf8"))) if (c.type === "source_component") des.add(c.name);
+  }
+  const D = [...des];
+  const breadth = DB.map((r) => D.filter((d) => r.m.test(d)).length);
+  const dead = [], inverted = [];
+  for (let i = 0; i < DB.length; i++) {
+    const mine = D.filter((d) => DB[i].m.test(d));
+    if (!mine.length) continue;
+    if (!mine.some((d) => DB.findIndex((r) => r.m.test(d)) === i)) { dead.push(DB[i].mpn); continue; }
+    const lost = mine.filter((d) => DB.findIndex((r) => r.m.test(d)) < i);
+    if (lost.some((d) => breadth[DB.findIndex((r) => r.m.test(d))] > breadth[i])) inverted.push(DB[i].mpn);
+  }
+  const msg = [dead.length ? `UNREACHABLE: ${dead.join(", ")}` : "", inverted.length ? `ORDER-INVERTED: ${inverted.join(", ")}` : ""].filter(Boolean).join(" | ");
+  ck("R12-SHADOW", !dead.length && !inverted.length,
+    `no parts-db rule is shadowed by an earlier, broader one${msg ? " — " + msg : ""}`);
+}
+
 ck("SYNTAX-FPDUP", (() => {
   // Same failure mode as SYNTAX-DUPKEY, one file over: footprint-map is a flat object, so a
   // repeated key silently keeps the LAST mapping. Keys are not always line-initial, so match them
