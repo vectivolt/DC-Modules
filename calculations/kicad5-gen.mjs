@@ -872,4 +872,17 @@ writeFileSync(join(OUT, `${LIB_NAME}.lib`),
 writeFileSync(join(OUT, `${LIB_NAME}.dcm`), `EESchema-DOCLIB  Version 2.0\n#\n#End Doc Library\n`);
 writeFileSync(join(OUT, `dc-modules-${SKU}.pro`),
   `update=Date\nversion=1\nlast_client=eeschema\n[general]\nversion=1\n[eeschema]\nversion=1\nLibDir=\n[eeschema/libraries]\nLibName1=${LIB_NAME}\n`);
+// Package for EasyEDA import as part of GENERATING, not as a separate manual step. The zips had
+// drifted a full day behind the sheets -- the deliverable a person actually imports was stale
+// while every check on the source passed. Packaging here means it cannot go stale again.
+{
+  const { execFileSync } = await import("node:child_process");
+  const zip = join(ROOT, "kicad5", `DC-Modules-${SKU}-SHIP.zip`);
+  try { unlinkSync(zip); } catch {}
+  execFileSync("zip", ["-q", "-j", zip,
+    ...files.map((f) => join(OUT, `${f}.sch`)),
+    join(OUT, `${LIB_NAME}.lib`), join(OUT, `${LIB_NAME}.dcm`),
+    join(OUT, `dc-modules-${SKU}.pro`), join(OUT, `dc-modules-${SKU}.sch`)]);
+  console.log(`   packaged → kicad5/DC-Modules-${SKU}-SHIP.zip`);
+}
 console.log(`\n${files.length} sheets · ${totalComps} components · ${totalLabels} labels · ${lib.size} symbols → kicad5/dc-modules-${SKU}/`);
