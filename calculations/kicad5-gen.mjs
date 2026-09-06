@@ -512,12 +512,19 @@ const HAND = {
     ["QDISB", "UPVB", "RBDB0", "RBDB1", "RBDB2", "RBDB3", "RPVBB", "RPVLB"],
   ],
 
-  // OUTPUT-SENSING / OUTPUT was composed too and REJECTED. Its studs lead the section although the
-  // current LEAVES there, ahead of the shunt and amplifier that measure it -- a genuine reversal --
-  // but moving them last reshapes the frame and perturbs both larger DC-DC sheets: 60kw-dcdc
-  // 45600x35300 -> 54600x29050 (aspect 1.29 -> 1.90) and 120kw-dcdc 61100x42800 -> 55600x46050,
-  // with worst void 4.6% -> 5.8%. Bisected against BLEEDERS and LINK-BANK, which are both free.
+  // Output sensing, read top to bottom in the order the current takes: isolated bias, the shunt it
+  // measures across, the isolated amplifier, the output filter, the Y caps to PE, and last the
+  // studs where the current leaves. Packed, the studs LED the section, ahead of the shunt and
+  // amplifier that measure what flows through them.
   //
+  // ONE column, deliberately. A first attempt split it 3/4/2 and made a span-2 frame where the
+  // packed one is span 1, which perturbed both larger DC-DC sheets. Probing candidate splits
+  // against the packed frame's SPAN and grid height -- not its raw width -- showed a single column
+  // matches exactly (span 1, h 7500). Top-to-bottom is a signal-flow direction too.
+  "OUTPUT-SENSING / OUTPUT": [
+    ["PSSH", "RSHO", "USHO", "COF1", "COF2", "CYO1", "CYO2", "JOUTN", "JOUTP"],
+  ],
+
   // Composed and REJECTED, both for the same reason -- their hand frame is a different SHAPE from
   // the one the column search produces, and on these sheets that costs more than the reading order
   // gains. Recorded so they are not retried blind:
@@ -543,11 +550,16 @@ const HAND = {
   // of the DC bus studs. Only the entry terminals are named -- the fuses and caps fall through to
   // the automatic final column -- so one plan covers every SKU regardless of how many caps a board
   // carries.
-  // BUS-IN has the same reversal -- link caps drawn left of the DC bus studs that feed them -- and
-  // is left alone: any split that puts the studs first perturbs 120kw-dcdc's packing (55600x47300
-  // or 55600x47550 against 61100x42800, and the aspect back to 1.18 from 1.43). Tried with the caps
-  // in one fall-through column and split across two; neither is frame-neutral. AC-ENTRY above is
-  // the same fix and IS free, because its frame comes out the size the search produced.
+  // The DC bus studs are where power enters the board, so they lead. Packed, the link caps came
+  // first. Split found by probing candidates against the packed frame's SPAN and grid height rather
+  // than guessing: three columns match on 30 kW and 120 kW exactly and come out SHORTER on 60 kW
+  // (2750 against 4250) at the same span. Naming caps beyond a board's count is harmless -- they
+  // simply do not match.
+  "LLC-LEGS / BUS-IN": [
+    ["JDCN", "JDCP", "JPEB"],
+    ["CF0", "CF1", "CF2", "CF3", "CF4"],
+    ["CF5", "CF6", "CF7", "CF8"],
+  ],
   "INPUT-EMI / AC-ENTRY": [["JACL1", "JACL2", "JACL3", "JPE"]],
 
   // Line current sense: THREE PHASES, one per column, not three columns of like parts. The packed

@@ -129,7 +129,14 @@ for (const SKU of SKUS) {
       // a deliberate notes block; only accepting the stacked form flagged a correct side-by-side
       // pair on 30kw-dcdc. Either way an edge that is NEARLY but not exactly shared still fails,
       // which is the defect this exists to catch.
-      const ok = a2 && b2 && ((a2.x0 === b2.x0 && a2.x1 === b2.x1) || (a2.y0 === b2.y0 && a2.y1 === b2.y1));
+      // STACKED: identical left AND right edges -- they are the same width by construction, so any
+      // difference is the 200 mil near-miss this exists to catch.
+      // ABREAST: identical TOP edge and actually adjacent. Their heights legitimately differ because
+      // their content does, so requiring equal bottoms would be demanding two side-by-side columns
+      // of text end on the same line. Adjacency is what stops the pair drifting to opposite corners.
+      const gap = Math.max(a2 && b2 ? b2.x0 - a2.x1 : 0, a2 && b2 ? a2.x0 - b2.x1 : 0);
+      const ok = a2 && b2 && ((a2.x0 === b2.x0 && a2.x1 === b2.x1)
+                           || (a2.y0 === b2.y0 && gap >= 0 && gap < 2000));
       out.push(["PANEL", 2, { distinct: ok ? 1 : 2, bad: ok ? [] : [[a2 ? a2.x0 : 0, b2 ? b2.x0 : 0]] }]);
     }
 
