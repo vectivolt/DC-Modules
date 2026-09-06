@@ -662,6 +662,20 @@ const HAND = {
   // 4 columns (span 3, 4250). Nothing reaches 3500 -- the packed split interleaves the three tall
   // parts (PSQD, UQD, QDISF) that work order keeps together, the same reason AUX-POWER / FLYBACK
   // is closed above.
+  // The HMI in drive order: the shift register with the eight segment resistors it drives, then the
+  // display those segments feed, the two digit transistors, the buttons with their debounce caps,
+  // and the remaining resistors. Packed, all four active devices sat in column one and every one of
+  // the sixteen passives in column two, so nothing sat next to what it connects to.
+  //
+  // Two columns, break after the segment resistors: span 1 / h 7250 on all three SKUs, identical to
+  // packed. Column two is ordered by symbol type rather than strictly by function -- interleaving
+  // the digit-drive and button resistors split them into two runs with taller parts between, which
+  // breaks PITCH, since gaps inside a run must be whole multiples of that run's own base. Three
+  // columns would allow the functional order but turn 30 and 60 kW into span-2 frames.
+  "COMMS-HMI / HMI": [
+    ["USR1", "RSEG0", "RSEG1", "RSEG2", "RSEG3", "RSEG4", "RSEG5", "RSEG6", "RSEG7"],
+    ["DISP1", "QDIG1", "QDIG2", "SW1", "SW2", "CSW1", "CSW2", "RDIG1", "RDIG2", "RSW1", "RSW2"],
+  ],
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
