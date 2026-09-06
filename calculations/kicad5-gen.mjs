@@ -247,6 +247,22 @@ const partOf = (designator, value) => {
   return { mpn: hit.mpn ?? mpn, lc: hit };
 };
 
+// What gets PRINTED under a symbol. Deliberately separate from c.value, which is the key into the
+// value-addressed LCSC map -- rewriting that would silently break every LCSC_BY_VALUE lookup, and
+// the value map is consulted by bom-gen too.
+//
+// Both rules come from reading a rendered sheet at working zoom, where the value text is legible
+// for the first time:
+//   * internal taxonomy must not leak onto the drawing. "AMC1311-class" printed under an IC reads
+//     as a placeholder nobody finished, and contradicts the specific C-number in the same symbol.
+//   * a bare number on a resistor is ambiguous. 246 positions printed "4.7", "220", "33" on sheets
+//     whose other resistors read "10k" and "475k" -- 4.7 ohm and 4.7 k are one glance apart. Ohms
+//     take the same trailing-suffix style the k values already use.
+const valueText = (designator, value) => {
+  const v = String(value).replace(/-class$/i, "");
+  return (/^R/.test(designator) && /^\d+(\.\d+)?$/.test(v)) ? `${v}R` : v;
+};
+
 function termLib(pinNum, pinName) {
   const nm = `TERM_${pinNum}`;
   if (lib.has(nm)) return nm;
@@ -780,7 +796,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         const nm = termLib(p0.pin_number, p0.name);
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
-          + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
+          + `F 1 "${valueText(c.designator, c.value)}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
           + `F 2 "${fpFor(c.designator, mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
@@ -794,7 +810,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         const nm = passiveLib(s.cat, s.nums[0] ?? "1", s.nums[1] ?? "2");
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
-          + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
+          + `F 1 "${valueText(c.designator, c.value)}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
           + `F 2 "${fpFor(c.designator, mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
@@ -812,7 +828,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         const nm = icLib(c.mpn || c.value, unionPins(c));
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
-          + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
+          + `F 1 "${valueText(c.designator, c.value)}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
           + `F 2 "${fpFor(c.designator, mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`

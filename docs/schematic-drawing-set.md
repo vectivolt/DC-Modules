@@ -81,12 +81,34 @@ the intent. All six sheets currently pass every one:
 | `wiring-audit.mjs` | LONG, ESCAPE, CROSS, FLOW | **longest 200 mil, 0 escapes, 0 crossings, 1999/1999 flow** |
 | `frame-padding.mjs` | inner padding of every section frame | **no overflow; min clearance L/R 221, T 65, B 205** |
 | `void-audit.mjs` | worst **enclosed** hole per sheet (whitespace with drawing on both sides) | **worst 8.2 %** (limit 12 %) |
-| `review-checks.mjs` | the release gates (incl. LCSC and class rules) | **all pass** |
+| `review-checks.mjs` | the release gates (incl. LCSC, class and printed-value rules) | **all pass** |
 
 Also uniform across the set: one symbol orientation, four text sizes, two frame widths per sheet,
 400/500 mil gaps, and 229/229 titled boxes at a single (60, 160) inset. The two notes panels on
 each sheet share an exact left and right edge with a uniform 750 mil gap, so they read as one
 block rather than two strays.
+
+### What working-zoom inspection changed
+
+Sheet-zoom review cannot read a value field — a symbol is a few pixels wide. Rendering tiles with
+`kicad5-detail.mjs` and reading them found three things no metric had:
+
+- **67 symbols printed an internal `-class` suffix.** `AMC1311-class` under an IC reads as a
+  placeholder nobody finished, and contradicts the specific C-number in the same symbol.
+- **246 resistors printed a unitless number** — `4.7`, `220`, `33` — on sheets whose other
+  resistors read `10k` and `475k`. 4.7 Ω and 4.7 kΩ were one glance apart. Ohms now take the same
+  trailing-suffix style: `4.7R`, `220R`, `2R`.
+- **19 ORDERABLE parts named a class instead of the part** in their MPN field (see
+  `docs/lcsc-status.md`).
+
+Both printed-text rules are gated as `SHEET-VALUE-TEXT`. The formatter is display-only and
+deliberately separate from `c.value`, which is the key into the value-addressed LCSC map.
+
+One inconsistency is knowingly left: `DAUX15` prints `US2G` while `DAUX24` prints `UF-400V-3A`.
+The value field carries a class descriptor wherever the design specifies by class, and that is
+usually the more informative thing to print — `PP-46n-1200` says more than a part code. Making the
+two diodes match would mean editing the cell source and rebuilding the boards for a cosmetic gain;
+their MPN and BOM lines already agree (`US2G` / `US3M`).
 
 ### The one thing a look still finds, and why it is left alone
 

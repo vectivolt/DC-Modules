@@ -5,7 +5,7 @@
 // R2 lesson: the gate also carries CLASS checks (rail sourcing, FLT/CTL nets reaching pin maps)
 // so whole categories can't regress, not just the specific instances that were caught.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -292,6 +292,29 @@ ck("LCSC-CLASS-MPN", (() => {
     if (/status:\s*"ORDERABLE"/.test(m[2]) && !/\bmpn:/.test(m[2])) return false;
   return true;
 })(), "every ORDERABLE -class entry names its real manufacturer part via mpn:, so the sheet does not show a class label as a part number");
+
+// What is PRINTED on the sheet, checked on the sheet. Both of these were invisible at whole-sheet
+// zoom and obvious the moment a tile was rendered at working zoom: 67 symbols printed an internal
+// "-class" suffix, and 246 resistors printed a bare number ("4.7", "220") on drawings whose other
+// resistors read "10k" and "475k".
+ck("SHEET-VALUE-TEXT", (() => {
+  for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
+    const f = join(ROOT, `kicad5/dc-modules-${sku}/${sku}-${side}.sch`);
+    if (!existsSync(f)) continue;
+    const L = readFileSync(f, "utf8").split("\n");
+    for (let i = 0; i < L.length; i++) {
+      if (L[i] !== "$Comp") continue;
+      let ref = "", val = "";
+      for (let k = i + 1; L[k] !== "$EndComp"; k++) {
+        if (L[k].startsWith('F 0 "')) ref = L[k].split('"')[1];
+        else if (L[k].startsWith('F 1 "')) val = L[k].split('"')[1];
+      }
+      if (/-class$/i.test(val)) return false;                        // internal taxonomy on the drawing
+      if (/^R/.test(ref) && /^\d+(\.\d+)?$/.test(val)) return false;  // unitless ohms
+    }
+  }
+  return true;
+})(), "no sheet prints an internal -class suffix, and no resistor prints a unitless value");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);
