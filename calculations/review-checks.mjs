@@ -239,6 +239,33 @@ ck("SYNTAX-DUPKEY", (() => {
   }
 }
 
+{ // HR-6 / E31 (FROZEN): "driver PWM inputs 10 k pulldown". Every NSI6611 PWM input needs one, or
+  // its state during MCU reset depends on undocumented internal termination. DriverCh emits
+  // R<id>PD for each channel, so today all 63 nets are covered — but a leg added without going
+  // through DriverCh would silently float. Match on the PD SUFFIX, not on "GPD": the Vienna phases
+  // name theirs RA0GPD while the half-bridges name theirs R1HPD/R1LPD, and a GPD-only filter
+  // reports 24 of 36 nets "unprotected" when every one of them is fine.
+  const { existsSync, readdirSync } = await import("node:fs");
+  for (const sku of ["30kw", "60kw", "120kw"]) {
+    const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda")
+                               : join(ROOT, "calculations/out/easyeda", sku);
+    if (!existsSync(dir)) continue;
+    const nets = new Map();
+    for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+      let j; try { j = JSON.parse(readFileSync(join(dir, f), "utf8")); } catch { continue; }
+      for (const c of j.components ?? []) for (const p of c.pins ?? []) {
+        if (!/^PWM_/.test(p.signal_name ?? "")) continue;
+        if (!nets.has(p.signal_name)) nets.set(p.signal_name, []);
+        nets.get(p.signal_name).push(c.designator);
+      }
+    }
+    if (!nets.size) continue;
+    const bare = [...nets].filter(([, ds]) => !ds.some((d) => /PD$/.test(d))).map(([n]) => n);
+    ck(`HR-6-${sku}`, bare.length === 0,
+      `${sku}: all ${nets.size} driver PWM nets carry a 10k pull-down${bare.length ? " — BARE: " + bare.slice(0, 8).join(", ") : ""}`);
+  }
+}
+
 ck("SYNTAX-FPDUP", (() => {
   // Same failure mode as SYNTAX-DUPKEY, one file over: footprint-map is a flat object, so a
   // repeated key silently keeps the LAST mapping. Keys are not always line-initial, so match them
