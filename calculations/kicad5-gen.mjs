@@ -478,6 +478,14 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   for (const b of blocks) {
     b.span = Math.max(1, Math.ceil((b.w + SECGAP) / COLW));
     const full = b.span * COLW - SECGAP;
+    // Centred, NOT left-aligned. Tested 2026-09-06 by setting pad to 0 and rendering: content in a
+    // column does gain a common left edge (29 of 60 same-column/same-width groups differ by
+    // >400 mil when centred), but every box then reads right-heavy -- GROUNDING, RAIL-MON,
+    // BUS-STUDS, NTC, RAILS and AC-ENTRY all become visibly half-empty, and the MCU floats left
+    // with dead space beside it. The FRAMES already align exactly (FRAME-X has no near-miss), so
+    // the column rhythm is carried by the boxes; the inset variation is second-order and inside
+    // them. Left-aligning turns symmetric margin into a one-sided gap, which is what this centring
+    // exists to avoid. Rejected -- do not retry.
     b.pad = Math.round((full - b.w) / 2);          // centre the content in its widened frame
     b.w = full;
   }
