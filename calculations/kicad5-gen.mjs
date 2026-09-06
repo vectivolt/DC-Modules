@@ -704,21 +704,28 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       return (right.length ? right : cands).sort((a, b) =>
         (b.x1 / sheetW + b.y1 / sheetH) - (a.x1 / sheetW + a.y1 / sheetH))[0];
     };
-    const p1 = drawPanel(pickVoid(used), "SHEET INDEX",
+    const v1 = pickVoid(used);
+    const p1 = drawPanel(v1, "SHEET INDEX",
       `${ident.sku} ${ident.board} - ${ident.sheet}`, famRows,
       `rev ${REV}   -   ${blocks.length} sections   -   ${page.total} components`);
     if (p1) {
       used.push(p1);
+      // Try to stack the legend directly UNDER the index, in the same void. When the slot is tall
+      // enough this keeps the two notes blocks together on a shared left edge -- a notes stack --
+      // instead of the legend drifting to whatever hole is left over, which is how it ended up at
+      // x=22% on one sheet while its own index sat at 72%.
+      const below = { x0: p1.x0 - PAD, y0: p1.y1 + Math.round(PAD / 2), x1: p1.x1 + PAD, y1: v1.y1 };
       // Second hole gets a legend for the net names. Worth the space: every internal junction on
       // this drawing is named for what it JOINS rather than by an ordinal, and that convention is
       // invisible unless it is written down somewhere on the sheet.
-      drawPanel(pickVoid(used), "NET NAMING",
+      const legend = (V) => drawPanel(V, "NET NAMING",
         "internal junctions are named for what they join", [
           "U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP",
           "R<stem>_M        midpoint of a series pair  e.g. RBALTA_M",
           "R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01",
           "all others are explicit design nets",
         ], "");
+      if (!legend(below)) legend(pickVoid(used));
     }
   }
 
