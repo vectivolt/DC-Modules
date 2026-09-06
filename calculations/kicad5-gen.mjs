@@ -273,10 +273,17 @@ function shapeOf(c) {
   const halfW = Math.max(snap(nameW + 150), 300);
   const lw = Math.max(0, ...g.left.map((p) => (p.signal_name || "").length)) * CHW;
   const rw = Math.max(0, ...g.right.map((p) => (p.signal_name || "").length)) * CHW;
-  const topExtra = g.top.length ? 150 + STUB + 120 : 0;
-  const bottomExtra = g.bottom.length ? 150 + STUB + 120 : 0;
-  const TEXT = 120;
+  const topExtra = g.top.length ? 150 + STUB + 150 : 0;    // 500: on the G grid
+  const bottomExtra = g.bottom.length ? 150 + STUB + 150 : 0;
+  const TEXT = 125;                                        // 2*TEXT + PITCH = 350: on the G grid
   return { cat, w: halfW * 2 + (150 + STUB) * 2 + lw + rw,
+    // halfH is always a multiple of G, so h lands on the grid iff the CONSTANT terms do.
+    // They did not: 2*TEXT + PITCH = 340 and topExtra = 470, so an odd pin count produced a height
+    // off-grid, and because each row's cumulative y is snapped independently the gaps in a column
+    // of identical parts came out 1150, 1150, 1100 (relays) / 1300, 1300, 1350 (fan headers).
+    // Uniform-looking, 50 mil wrong. TEXT 120->125 and the extras' 120->150 fix it by moving each
+    // symbol at most 60 mil, where rounding h to G moved sections enough to repack the sheet from
+    // 55.3% fill to 44.8%.
     h: TEXT + topExtra + halfH * 2 + bottomExtra + TEXT + PITCH,
     halfW, halfH, topExtra, TEXT, lw, rw, groups: g };
 }
@@ -359,6 +366,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   // the sheet has real columns and a visible rhythm. The width a frame gains becomes symmetric
   // padding inside it (content is centred), which reads as margin rather than as a gap.
   const GRID = 500;
+  const YGRID = 250;    // frame tops land on this, so 'almost aligned' cannot happen vertically
   const gsnap = (v) => Math.ceil(v / GRID) * GRID;
   const widths = blocks.map((b) => b.w).sort((m, n) => m - n);
   // Rounding UP wastes at most COLW/2 per side, which measures as inner padding spanning
@@ -458,8 +466,13 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       famAt.set(fam, seen
         ? { lo: Math.min(seen.lo, best.c), hi: Math.max(seen.hi, best.c + b.span - 1) }
         : { lo: best.c, hi: best.c + b.span - 1 });
-      out.push({ b, X: MARGIN + best.c * COLW, Y: best.y });
-      for (let k = best.c; k < best.c + b.span; k++) colH[k] = best.y + b.h + SECGAP;
+      // Frame X is quantised to the column grid but Y never was, so tops landed wherever a column
+      // happened to finish: the audit found pairs 10, 20 and 30 mil apart (8350 vs 8360, 22290 vs
+      // 22300). At that distance the eye reads them as one line and sees the miss as sloppiness.
+      // Snapping DOWN to a grid can only increase clearance from the frame above, never overlap.
+      const Y = Math.ceil(best.y / YGRID) * YGRID;
+      out.push({ b, X: MARGIN + best.c * COLW, Y });
+      for (let k = best.c; k < best.c + b.span; k++) colH[k] = Y + b.h + SECGAP;
     }
     const H = Math.max(...colH), W = MARGIN + NC * COLW - SECGAP + MARGIN;
     const ragged = H - Math.min(...colH);            // how uneven the bottom edge finishes
@@ -516,7 +529,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   for (const order of orderings) {
     for (const mul of [1.0, 1.3, 1.6, 2.0, 2.5, 3.0, 4.0]) {
       const famCap = capFor(mul);
-      for (let NC = minNC; NC <= minNC + 32; NC++) {
+      for (let NC = minNC; NC <= minNC + 32; NC++) {   // swept to +64: saturates at +32, no candidate improves
         const r = runPack(NC, famCap, order);
         if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
         if (!fallback || r.soft < fallback.soft) fallback = r;
