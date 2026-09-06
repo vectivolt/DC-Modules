@@ -67,6 +67,32 @@ const PARTS = {
 const SCALE = { "30kw": 1, "60kw": 2, "120kw": 4 };
 const FILTER_OD = { "30kw": [57, 72], "60kw": [67, 90], "120kw": [2, 112] }; // [DM, CM] finished dia
 
+// --- target envelope: a 19-inch rack module, because that is what the market ships ---------------
+//
+// Commercial EV fast-charge power modules are 19-inch rack cards. That fixes WIDTH and HEIGHT and
+// leaves DEPTH as the only free dimension -- which inverts the usual instinct to draw a wide, shallow
+// board. A board wider than the rack does not become a product no matter how well it is laid out.
+const RACK = {
+  widthMax: 440,     // mm usable between 19-inch rails for a 3U chassis (482.6 mm nominal face)
+  depthMax: 560,     // mm typical maximum module depth in this class
+  heightU: 133.35,   // mm 3U
+};
+
+// Height stack-up of the sandwich, outer face to outer face. The tunnel is set by the TALLEST part
+// standing in it, which is the D1 choke: 3 stacked H17 toroids = 51 mm of core plus the winding
+// build. Everything else here is a mechanical allowance, labelled so it can be argued with.
+const STACK = [
+  ["heatsink fins (lower)",  20],
+  ["extrusion base (lower)",  6],
+  ["device + clamp gap",      8],   // TO-247 lying on the extrusion, clamp bar over it
+  ["AC-DC board",           2.4],
+  ["tunnel — D1 choke",      62],   // 51 mm core + winding build + clearance
+  ["DC-DC board",           2.4],
+  ["device + clamp gap",      8],
+  ["extrusion base (upper)",  6],
+  ["heatsink fins (upper)",  20],
+];
+
 // --- the two engineering choices --------------------------------------------------------------
 
 const RAIL_PITCH = 20;   // mm between TO-247 centres on a clamp bar. Body is 15.9 mm wide; 20 mm is
@@ -166,6 +192,33 @@ console.log(`\nbinding constraint is the SECONDARY RECTIFIER RAIL, on every SKU:
 for (const x of secs) console.log(`   ${x.sku.padEnd(6)} ${String(x.n).padStart(3)} JBS  ${pct(x.use)}`);
 console.log(`worst: ${worst.sku} at ${pct(worst.use)} — ${worst.n} × 20 A JBS is the part count that`
   + ` breaks the floorplan,\nand it is also the largest single loss in the module.`);
+
+
+// --- envelope ------------------------------------------------------------------------------------
+
+const stackH = STACK.reduce((a, [, v]) => a + v, 0);
+console.log(`\nENVELOPE — 19-inch 3U rack module (${RACK.widthMax} mm usable width, ${RACK.depthMax} mm max depth, ${RACK.heightU} mm high)`);
+console.log(`\nheight stack-up, outer face to outer face:`);
+for (const [k, v] of STACK) console.log(`   ${k.padEnd(26)} ${String(v).padStart(5)} mm`);
+console.log(`   ${"TOTAL".padEnd(26)} ${String(stackH).padStart(5)} mm  vs 3U ${RACK.heightU} mm`
+  + `  -> ${stackH <= RACK.heightU ? `ok, ${(RACK.heightU - stackH).toFixed(1)} mm spare` : `OVER by ${(stackH - RACK.heightU).toFixed(1)} mm`}`);
+console.log(`   the tunnel (D1 choke, 3 stacked H17 toroids) is ${Math.round(62 / stackH * 100)} % of the height — it is the driving part`);
+
+console.log(`\nboard footprint re-proportioned to the rack: width is FIXED, depth is the free dimension.`);
+console.log(`board          as drawn    area cm²   at <=${RACK.widthMax} mm wide      verdict`);
+let envFail = 0;
+for (const r of rows) {
+  const depthNeeded = r.area / RACK.widthMax;
+  const ok = depthNeeded <= RACK.depthMax;
+  if (!ok) envFail++;
+  console.log(`${(r.sku + "-" + r.side).padEnd(14)} ${String(r.W).padStart(3)}×${String(r.H).padEnd(3)}`
+    + ` ${String(Math.round(r.area / 100)).padStart(9)}`
+    + `   ${RACK.widthMax}×${String(Math.ceil(depthNeeded)).padEnd(4)}`
+    + `   ${r.W > RACK.widthMax ? "as drawn TOO WIDE" : "width ok        "}`
+    + `   ${ok ? "fits 3U rack" : `DOES NOT FIT — needs ${Math.ceil(depthNeeded)} mm depth`}`);
+}
+console.log(`\nWidth is the binding dimension and depth is nearly free, so a board that does not fit should`
+  + `\nbe made NARROWER AND DEEPER before it is made bigger. ${envFail} board(s) cannot be made to fit at all.`);
 
 console.log(fail ? `\n${fail} board(s) over a planning gate — see docs/pcb-floorplan.md` : `\nall boards within gates`);
 process.exit(0);

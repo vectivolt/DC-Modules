@@ -63,10 +63,10 @@ const barEnd = Math.max(
   wA - 8 + 8, wD - 8 + 8,
   (wA - 8) * railUse(wA, hA, TO247[SKU][0]) + 8,
   (wD - 8) * railUse(wD, hD, TO247[SKU][1]) + 8);
-const W = PAD * 2 + Math.max(wA, wD, barEnd);
+const W = PAD * 2 + 110 + Math.max(wA, wD, barEnd);   // +110 for the connector side labels
 const H = TOP + hD + GAP + hA + 132;
 
-const board = (x, y, w, h, zones, title, sub, nTO, barrierAfter) => {
+const board = (x, y, w, h, zones, title, sub, nTO, barrierAfter, inConn, outConn) => {
   let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="board"/>`;
   out += `<text x="${x}" y="${y - 58}" class="btitle">${esc(title)}</text>`;
   out += `<text x="${x}" y="${y - 42}" class="bsub">${esc(sub)}</text>`;
@@ -111,16 +111,28 @@ const board = (x, y, w, h, zones, title, sub, nTO, barrierAfter) => {
   out += `<text x="${x + 4}" y="${y - 24}" class="${use > 1 ? "rlbad" : "rl"}">`
        + `device rail — ${nTO}× TO-247 @20 mm = ${need} mm vs ${have} mm usable perimeter`
        + ` = ${(use * 100).toFixed(0)}%${use > 1 ? "  ✗ DOES NOT FIT — needs interior rails or fewer devices" : ""}</text>`;
+  // Connector blocks at the diagonal corners (§0). AC enters rear-LEFT, DC leaves front-RIGHT, and
+  // in this plan view "left/right of the rack" is the vertical axis, so the diagonal shows as one
+  // block high on the rear edge and one low on the front edge.
+  const conn = (cxp, cyp, w2, h2, label, col) =>
+    `<rect x="${cxp}" y="${cyp}" width="${w2}" height="${h2}" fill="${col}" fill-opacity="0.85" stroke="${col}" stroke-width="1.5"/>`
+    + `<text x="${cxp + w2 / 2}" y="${cyp + h2 / 2}" style="font-size:9px;font-weight:700;fill:#fff;text-anchor:middle">${esc(label)}</text>`;
+  if (inConn) out += conn(x - 14, y + zoneH * 0.10, 14, zoneH * 0.26, "", "#c05621")
+                  + `<text x="${x - 20}" y="${y + zoneH * 0.23}" style="font-size:9.5px;font-weight:700;fill:#c05621;text-anchor:end">${esc(inConn)}</text>`;
+  if (outConn) out += conn(x + w, y + zoneH * 0.64, 14, zoneH * 0.26, "", "#a03030")
+                  + lines(outConn, x + w + 20, y + zoneH * 0.72, 12, "oc");
   return { svg: out, bx, zoneH, ctrlH };
 };
 
 const yD = TOP, yA = TOP + hD + GAP;
-const xD = PAD + (Math.max(wA, wD) - wD) / 2, xA = PAD + (Math.max(wA, wD) - wA) / 2;
+const xD = PAD + 62 + (Math.max(wA, wD) - wD) / 2, xA = PAD + 62 + (Math.max(wA, wD) - wA) / 2;
 
 const D = board(xD, yD, wD, hD, DCDC, "DC-DC BOARD (upper)  ·  semis → upper extrusion",
-  `${b.dcdc[0]}×${b.dcdc[1]} mm · ${DCDC.length} zones · barrier at the transformer row`, TO247[SKU][1], "xfmr");
+  `${b.dcdc[0]}×${b.dcdc[1]} mm · ${DCDC.length} zones · barrier at the transformer row`, TO247[SKU][1], "xfmr",
+  null, "DC± OUT\n+ CAN H/L");
 const A = board(xA, yA, wA, hA, ACDC, "AC-DC BOARD (lower)  ·  semis → lower extrusion",
-  `${b.acdc[0]}×${b.acdc[1]} mm · ${ACDC.length} zones · single-point control ground lives here`, TO247[SKU][0], null);
+  `${b.acdc[0]}×${b.acdc[1]} mm · ${ACDC.length} zones · single-point control ground lives here`, TO247[SKU][0], null,
+  "3φ AC IN", null);
 
 // reinforced barrier on the DC-DC board
 const barrier = `<line x1="${D.bx}" y1="${yD - 4}" x2="${D.bx}" y2="${yD + hD + 4}" class="barrier"/>`
@@ -145,16 +157,17 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" wid
   .fd{font-size:9.5px;fill:#555}                       /* no text-anchor: set per element */
   .flow{font-size:10.5px;font-weight:600}
   .cap{font-size:10px;fill:#666}
+  .oc{font-size:9.5px;font-weight:700;fill:#a03030;text-anchor:start}
   text{dominant-baseline:middle}
 </style>
 <rect width="${W}" height="${H}" fill="#fff"/>
 <text x="${PAD}" y="30" style="font-size:17px;font-weight:700">PCB floorplan — zone plan, ${SKU.replace("kw", " kW")} (drawn to board scale)</text>
-<text x="${PAD}" y="50" class="cap">Power flows rear → front on both boards. Air flows front → rear. Zones from docs/pcb-floorplan.md §3–§4.</text>
+<text x="${PAD}" y="50" class="cap">AC in and DC out DIAGONALLY OPPOSITE · power rear→front · air front→rear · 19-inch 3U card</text>
 
 <text x="${PAD}" y="98" class="face" text-anchor="start">◀ REAR FACE</text>
-<text x="${PAD}" y="116" class="fd" text-anchor="start">3φ AC studs · PE · fans · air EXHAUST</text>
+<text x="${PAD}" y="116" class="fd" text-anchor="start">AC IN + PE (left quarter) · fans + EXHAUST</text>
 <text x="${W - PAD}" y="98" class="face" text-anchor="end">FRONT FACE ▶</text>
-<text x="${W - PAD}" y="116" class="fd" text-anchor="end">DC± studs · CAN · display · buttons · air INLET</text>
+<text x="${W - PAD}" y="116" class="fd" text-anchor="end">air INLET · display · DC± OUT + CAN (right quarter)</text>
 
 ${D.svg}
 ${barrier}

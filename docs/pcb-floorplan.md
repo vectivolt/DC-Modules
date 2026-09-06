@@ -14,43 +14,79 @@ Related: [interconnect.md](interconnect.md) (E17 sandwich), [insulation-coordina
 
 ---
 
-## 0. Axis convention (from the hand sketch)
+## 0. Envelope and axis convention
 
-The sketch shows two boards, power entering one end of the AC-DC board and leaving the far end of
-the DC-DC board, with the DC output, CAN and the display/buttons grouped on that far face. That
-fixes a **straight-through module**, not a U-turn:
+### The module is a 19-inch rack card
+
+The product has to drop into the same cabinets as everything else in this class, so **width and
+height are fixed by the rack and depth is the only free dimension**. That inverts the usual instinct
+to draw a wide, shallow board: a board wider than the rack does not become a product no matter how
+well it is laid out.
+
+| | target | source |
+|---|---|---|
+| Face width | 482.6 mm nominal, **≤440 mm usable** between the rails | 19-inch rack |
+| Height | **133.35 mm (3U)** | 3U is the dominant module height in this class |
+| Depth | 400–560 mm, free to use | class-typical |
+
+### Connector faces — diagonally opposite
+
+**AC input and DC output sit at diagonally opposite corners**, which is the maximum separation the
+box allows. That keeps the two HV harnesses from ever running parallel inside the cabinet — the
+input-to-output conducted-coupling path that no amount of filtering fixes once the cables are
+bundled together — and it keeps the AC entry away from the output sensing.
 
 ```
-        REAR FACE                                                    FRONT FACE
-   ┌───────────────┐                                            ┌───────────────┐
-   │ 3φ AC studs   │                                            │ DC+ / DC− studs│
-   │ PE stud       │                                            │ CAN H/L (iso)  │
-   │ air EXHAUST   │                                            │ 2-digit display│
-   │ fans          │                                            │ SET / ▲▼ buttons│
-   └───────────────┘                                            │ air INLET+filter│
-                                                                └───────────────┘
+        REAR FACE                                            FRONT FACE (service)
+   ┌─────────────────────────┐                        ┌─────────────────────────┐
+   │ ▓▓ 3φ AC + PE ▓▓        │                        │        air INLET + filter│
+   │ (LEFT quarter)          │                        │        display · buttons │
+   │        fans / EXHAUST   │                        │        ▓▓ DC± OUT ▓▓     │
+   │        (centre + right) │                        │        + CAN H/L on the  │
+   │                         │                        │          plug side       │
+   └─────────────────────────┘                        │          (RIGHT quarter) │
+                                                      └─────────────────────────┘
 
-   X = 0 (rear) ────────────── power flow ──────────────────► X = L (front)
-                              ◄───────── airflow ──────────────
-
-   UPPER BOARD (DC-DC)   bus in → LLC legs → tanks → XFMR ║ JBS → banks → S/P → out
-   ═══════════════════════════════════════════════════════════════════════════════
-   inter-board TUNNEL    magnetics stand here, in the airstream
-   ═══════════════════════════════════════════════════════════════════════════════
-   LOWER BOARD (AC-DC)   AC entry → EMI → precharge → Vienna PFC → DC link → B2B studs
+   power:  rear-LEFT ──────────────────────────────────────────► front-RIGHT
+   air:    rear-RIGHT ◄─────────────────────────────────────────  front-LEFT
 ```
 
-- **X** runs rear→front: the power-flow axis on both boards, and the airflow axis reversed.
-- **Y** is board width, used for the lateral control/sensing strip.
+- **CAN H/L is carried on the DC output connector plug, on its side** — not a separate front-panel
+  connector. One plug leaves the module with power and comms together, so the cabinet harness is one
+  assembly. Consequences for the layout are in §4: the CAN isolator and its floating CGND domain
+  must reach the DC output connector, which sits on the **secondary** side of the barrier.
+- Neither connector blocks the air path, because each face is split — the connector takes one
+  quarter and the air takes the rest, on opposite sides.
+- Power and air therefore cross diagonally rather than running down one lane, which sweeps the whole
+  board instead of a single channel.
+
+> The alternative worth knowing: most cabinet modules blind-mate **all** power at the rear and keep
+> the front for air, handle and display only. That is easier to service and safer to hot-swap. This
+> plan follows the directive to put the DC output (with CAN on its plug) on the front-right; if the
+> module is ever cabinet-mounted rather than standalone, moving the DC output to the rear-right
+> keeps the diagonal and gains blind-mating.
+
+### Axes
+
+- **X** runs rear→front: the dominant power-flow axis on both boards.
+- **Y** is board width across the rack (≤440 mm), carrying the diagonal offset: the AC entry sits at
+  low Y, the DC output at high Y.
 - **Z** is the sandwich stack: lower extrusion / AC-DC board / tunnel / DC-DC board / upper extrusion.
-- Power flows **rear→front on both boards**. The board-to-board handoff (DCP/DCN/PE M8 pillars) is
-  therefore at the **front** of the AC-DC board and the **rear** of the DC-DC board — the two studs
-  sets are at *different* X, connected by the pillar height, not stacked over each other. See §8.
+
+```
+   UPPER BOARD (DC-DC)   bus in → LLC legs → tanks → XFMR ║ JBS → banks → S/P → out (front-right)
+   ═══════════════════════════════════════════════════════════════════════════════
+   inter-board TUNNEL    magnetics stand here, in the airstream — and set the module height
+   ═══════════════════════════════════════════════════════════════════════════════
+   LOWER BOARD (AC-DC)   AC entry (rear-left) → EMI → precharge → Vienna PFC → DC link → B2B studs
+```
+
+The board-to-board handoff (DCP/DCN/PE M8 pillars) is at the **front** of the AC-DC board and the
+**rear** of the DC-DC board. See §8.
 
 ### Why airflow opposes power flow
 
-Air enters at the front (output/HMI face) and exhausts at the rear (AC face). Two reasons, both
-measurable:
+Air enters at the front (service face) and exhausts at the rear. Two reasons, both measurable:
 
 1. **Nothing downstream of the exhaust gets preheated.** The EMI filter dissipates 49 / 132 / 248 W
    ([thermal-report.md](thermal-report.md)) — the largest single airstream load on the AC-DC board.
@@ -61,14 +97,10 @@ measurable:
    DC-DC board; the DC-link bank sits mid-board on the AC-DC board. Both are ahead of the EMI filter
    and the PFC chokes in the airstream.
 
-Front inlet also means the **filter and fans are at the service face**, and the enclosure runs at
-positive pressure so dust enters only through the filter.
-
-> **Open — needs a mechanical decision.** Push (fans at the front inlet) gives the fans the coldest,
-> densest air and positive pressure, but costs front-panel area that the DC studs, CAN, display and
-> buttons also want. Pull (fans at the rear) frees the front panel but runs the fans in the hottest
-> air. At 120 kW this matters: 4× 120 mm fans is 480 mm of face width. Recommendation is **pull at
-> the rear**, front panel = filter grille + connectors + HMI. Confirm before the enclosure drawing.
+Front inlet also puts the **filter at the service face** and runs the enclosure at positive pressure
+so dust enters only through the filter. Fans stay at the rear, in the exhaust, off the service face —
+at 120 kW four 120 mm fans would otherwise consume 480 mm of a 440 mm-wide front panel, which is by
+itself a reason the 120 kW single-module form does not close (§2).
 
 <p align="center"><img src="assets/floorplan-30kw.svg" width="100%" alt="30 kW zone plan"/></p>
 
@@ -101,7 +133,7 @@ These are frozen; the zones are built around them, not negotiated with them.
 
 ## 2. Feasibility of the frozen outlines — run before trusting them
 
-`calculations/floorplan-budget.mjs` asks two questions the outline alone cannot answer.
+`calculations/floorplan-budget.mjs` asks three questions the outline alone cannot answer.
 
 **EDGE.** Every power semiconductor is a TO-247 that must reach an outer extrusion, so it needs a
 clamp-bar rail. Perimeter is a consumable resource — and on the DC-DC board it is **two** resources,
@@ -135,6 +167,44 @@ which has no reinforced barrier and therefore one pooled perimeter, is comfortab
 creepage, busbar, control or sensing copper: 48 / 47 % at 30 kW, 59 / 63 % at 60 kW, 68 / 70 % at
 120 kW. The 55 % planning gate is exceeded on four of six boards.
 
+**ENVELOPE.** Does the module fit a 19-inch 3U rack card at all? Two dimensions decide it.
+
+*Height.* The sandwich stacks outer face to outer face:
+
+| | mm |
+|---|---|
+| heatsink fins + extrusion base (lower) | 26 |
+| device + clamp gap | 8 |
+| AC-DC board | 2.4 |
+| **tunnel — set by the D1 choke** (3 stacked H17 toroids = 51 mm core + winding build) | **62** |
+| DC-DC board | 2.4 |
+| device + clamp gap | 8 |
+| extrusion base + heatsink fins (upper) | 26 |
+| **total** | **134.8** vs 3U = 133.35 |
+
+**Over by 1.5 mm, before any insertion clearance.** The tunnel is 46 % of the module height, so
+**the PFC choke stack is the part that decides whether this is a 3U product.** Recovering ~5 mm is
+mechanical, not electrical: 18 mm fins instead of 20 (−4 mm) plus 1.6 mm boards instead of 2.4
+(−1.6 mm) closes it at 129.2 mm with insertion clearance. Both cost something — fin area is
+heatsink performance, board thickness is stiffness on a board carrying 0.9 kg chokes — so this is a
+real trade to settle with the mechanical design, not a rounding error to wave through.
+
+*Width and depth.* Re-proportioned to the rack, with width fixed at ≤440 mm and depth free:
+
+| board | as drawn | area | at ≤440 mm wide | verdict |
+|---|---|---|---|---|
+| 30kw-acdc | 420×300 | 1260 cm² | 440×287 | width ok · **fits** |
+| 30kw-dcdc | 460×320 | 1472 cm² | 440×335 | too wide as drawn · **fits re-proportioned** |
+| 60kw-acdc | 460×420 | 1932 cm² | 440×440 | too wide as drawn · **fits re-proportioned** |
+| 60kw-dcdc | 520×420 | 2184 cm² | 440×497 | too wide as drawn · **fits re-proportioned** |
+| 120kw-acdc | 560×600 | 3360 cm² | 440×**764** | **does not fit — 764 mm deep** |
+| 120kw-dcdc | 640×620 | 3968 cm² | 440×**902** | **does not fit — 902 mm deep** |
+
+**Four of the six boards are wider than a 19-inch rack as drawn.** Four of them fix by
+re-proportioning — narrower and deeper, same area, no electrical change. **The two 120 kW boards
+cannot be made to fit at any proportion**: they need 764 and 902 mm of depth against a class maximum
+around 560.
+
 ### What this means
 
 **The 20 A secondary JBS count is the problem, at every rating.** 24 / 48 / 96 diodes are
@@ -151,18 +221,31 @@ cost. One change addresses all three. Three ways out, in order of preference:
    "any straight run on the correct side of the barrier". **120 kW needs this even after (1)** — the
    secondary budget is 819 mm, i.e. 41 devices, and 48 is still over. Costs a machined rather than a
    plain extruded heatsink face.
-3. **Split the DC-DC board per cell.** 4× ~10 kW cards on a common output bus instead of one
-   640×620 mm board. Each card carries its own barrier and its own short rails, and the 234 %
-   problem disappears because it was an artefact of one very large board. This also removes a
-   separate problem: **640×620 mm exceeds the usable area of a standard 457×610 mm (18″×24″)
-   production panel**, so the 120 kW pair as drawn is not a normal fab item. Worth confirming
-   against a real fab quote before the outline is trusted.
+3. **Stop building 120 kW as one module.** Three independent measurements now say the same thing:
+   the secondary rail is at 234 %, the boards need 764 and 902 mm of depth in a 560 mm class, and
+   640×620 mm exceeds the usable area of a standard 457×610 mm (18″×24″) production panel. This is
+   not a layout problem to solve; it is the wrong unit of product.
 
-> Recommendation: make **(1) the secondary rectifier trade** the first decision — it is the only
-> change that improves floorplan, loss and cost at once, and it is the difference between 30 and
-> 60 kW fitting and not fitting. Then adopt **(2) interior rails** as the mechanical baseline for
-> 120 kW, which needs them regardless. Hold **(3)** for the case where the fab panel check on
-> 640×620 mm fails, in which case it becomes the answer rather than the fallback.
+   The platform is already built for the alternative — the repo's own architecture is *"one
+   repeatable ~10 kW cell pair instantiated 3/6/12×"* — so **120 kW becomes 4× 30 kW or 2× 60 kW
+   rack modules in one cabinet**, which is how this class is actually shipped. Every number in this
+   section then closes: one board set, one extrusion, one fan count, one fab panel, and a 60 kW
+   module that fits a 3U card at 440×497 mm.
+
+   It also collapses the family. Instead of three board pairs, three extrusion lengths, three fan
+   counts and three busbar sets, there is **one 30 kW module (or one 30 and one 60)** and the SKU
+   becomes how many go in the rack. That is a large reduction in NRE, qualification and inventory,
+   and it removes the 120 kW front-panel clash (four 120 mm fans in a 440 mm face) outright.
+
+> **Recommendation, in order.** Take **(3)** first — make the rack module the product and 120 kW a
+> multi-module cabinet. It is the only change that resolves the rail budget, the envelope and the
+> fab panel together, and it is what the market form factor already assumes. Then take **(1)**, the
+> secondary rectifier trade, which is still worth making on its own: it is the module's largest loss
+> and it moves the 30 kW secondary rail from 96 % to 48 %. **(2)** interior rails then becomes an
+> option for density rather than a necessity.
+>
+> If the three-SKU family must be kept as single modules, the order reverses and 120 kW needs (1)
+> *and* (2) *and* an envelope larger than 3U — that path should be costed before it is chosen.
 
 ---
 
@@ -240,31 +323,43 @@ clearance / 12.6 mm creepage + routed slots). Everything else is secondary to th
 | **Y4 TRANSFORMER ROW** | (D3 ×3 per channel) | 3× PQ50/50 stacked, TIW secondaries, 1-turn Cu shield to primary star | **This row *is* the barrier.** Cores straddle the routed slot; primary pins on the primary side, secondary pins on the secondary side, nothing crossing. Shield lead returns to the primary star only. |
 | **Y5 SECONDARY RECTIFIERS + BANKS** | `BANKS-SP / BANK-A`, `BANK-B` | 2× JBS bridge per section, bank electrolytics + film | Secondary side. Bridges on the secondary device rail; bank caps in the coolest air (front-ward). Banks A and B float — treat **both** at 1000 V class to PE and to each other. |
 | **Y6 S/P MATRIX** | `BANKS-SP / SP-MATRIX`, `BLEEDERS` | K_PAR_A/B + 10 Ω pre-insertion, K_SER, K_OUT, commanded bleeders | Guarded island — insulation-coordination.md calls this out explicitly. Relay lugs are M6 busbar joints, not PCB pads. Mirror contacts routed as a separate readback group. |
-| **Y7 OUTPUT** | `OUTPUT-SENSING / OUTPUT` | output filter, 4-terminal manganin shunt, DC± studs | Front face. **Kelvin taps on the shunt are untouchable** — no other copper in their loop. OUT± keeps 6.3 mm to chassis everywhere. |
+| **Y7 OUTPUT** | `OUTPUT-SENSING / OUTPUT` | output filter, 4-terminal manganin shunt, DC± studs, **CAN contacts on the same plug** | Front face, **right quarter** (§0 diagonal). **Kelvin taps on the shunt are untouchable** — no other copper in their loop. OUT± keeps 6.3 mm to chassis everywhere. |
 | **Y8 CONTROL** | `CONTROL / MCU`, `SAFETY`, `SWD`, `COIL-DRIVER`, `GROUNDING`, `BUCK-3V3`, `INTERCONNECT` | MCU-LLC, interlock, relay coil driver, 15→3.3 V buck, JICB | Strip along one long edge, **primary side only, stopping at the barrier**. Primary-referenced because its rails arrive over the harness from the AC-DC board's single-point ground. Relay *coils* are driven from here; relay *contacts* are secondary — the relay body is itself a barrier component. |
 | **Y9 SECONDARY SENSE** | `OUTPUT-SENSING / SENSE-VBKA/VBKB/VOUT`, `ANALOG-MID`, `ISO-BIAS`, `NTC` | bank/output dividers, iso-shunt amp, isolated bias | Pods on the **secondary** side at their measured nodes, each with its own isolated bias, each crossing the barrier once through its isolator. No secondary-referenced signal reaches the MCU un-isolated. |
-| **Y10 HMI + CAN** | `COMMS-HMI / HMI`, `COMMS-HMI / CAN` | 2-digit display, 74HC595 + digit mux, 2 buttons, isolated CAN + floating CGND | **Front-panel daughter card — see below.** |
+| **Y10 HMI + CAN** | `COMMS-HMI / HMI`, `COMMS-HMI / CAN` | 2-digit display, 74HC595 + digit mux, 2 buttons, isolated CAN + floating CGND | **Split — see below.** CAN isolator stays on the control strip and only the isolated pair flies to the DC output plug; display and buttons go on a front-panel daughter card. |
 
-### The HMI/CAN problem, and the fix
+### The HMI and CAN problem, and the fix
 
-The control strip is primary-referenced and stops at the barrier. The display, buttons and CAN
-connector are on the **front** face, which is past the secondary zone. Running primary-referenced
-logic the length of the board, over or beside the floating banks and the 1000 V output, is the
-worst wire in the module.
+The control strip is primary-referenced and stops at the barrier. The display and buttons are on the
+**front** face, and **CAN H/L now leaves on the DC output connector plug** — which sits at the
+front-**right**, on the *secondary* side of the barrier and at the far diagonal corner from the AC
+entry. Running primary-referenced logic that distance, over or beside the floating banks and the
+1000 V output, is the worst wire in the module. Two different fixes, because they are two different
+problems:
 
-**Put the HMI and the isolated CAN transceiver on a small front-panel daughter card**, joined to the
-main board by a shielded ribbon routed in the tunnel along the board edge — above copper, not across
-it — entering the main board on the primary side at the control strip. Then:
+**CAN — isolate early, then fly the isolated pair.** The CAN transceiver and its isolator stay on
+the **main board at the control strip**, on the primary side where the MCU is. Only the already-
+isolated `CANH / CANL / CGND` group leaves, as a short **shielded twisted lead routed through the
+tunnel** to the CAN contacts on the DC output plug. Nothing crosses the secondary zone on copper.
 
-- no SELV logic exists anywhere past the barrier on the main board;
-- the CAN isolator sits on the daughter card, so the floating CGND domain and its 4 mm keep-out are
-  contained to that card and its connector;
-- the display window, button actuators and CAN access are all on one part that the enclosure already
-  has to align ([dfm-production.md](dfm-production.md) step 7);
-- the ribbon is a defined, testable crossing instead of a long uncontrolled one.
+- The floating CGND domain and its 4 mm keep-out then exist in exactly two places — a small island
+  at the control strip, and the connector contacts — instead of along a board-length trace.
+- Where the lead passes over secondary copper it is in air, in the tunnel, not on a layer, so the
+  clearance question is a harness-routing one with a defined path rather than a creepage question on
+  every layer it would otherwise cross.
+- The 1 MΩ ∥ 4.7 nF bleed to DGND ([insulation-coordination.md](insulation-coordination.md)) stays
+  with the isolator on the main board.
+- Putting the isolator at the connector instead would mean running primary-referenced SELV logic the
+  full diagonal — the exact thing being avoided.
 
-Cost: one extra small PCB and one connector pair. It is the cheapest item in this document and it
-removes the hardest routing problem on the board.
+**HMI — a front-panel daughter card.** Display, digit mux, 74HC595 and the two buttons go on a small
+card behind the front panel, joined to the control strip by a shielded ribbon routed along the board
+edge in the tunnel. The enclosure already has to align a display window and button actuators
+([dfm-production.md](dfm-production.md) step 7), so the card is the part that carries that alignment.
+
+Together these mean **no SELV logic exists anywhere past the barrier on the main board**, and both
+crossings are defined, short and testable. Cost: one small PCB, one connector pair and one shielded
+lead — the cheapest items in this document, removing the hardest routing problem on the board.
 
 ### The shared extrusion is an isolation path
 
@@ -514,12 +609,13 @@ Six viewpoints, each with its own question.
 
 | # | Item | Why it blocks | Owner |
 |---|---|---|---|
-| 1 | Fan push-vs-pull and front-panel budget (§0) | sets the front face and the 120 kW fan/connector clash | mechanical |
+| 1 | **3U height: recover ~5 mm** (fins 20→18 mm, boards 2.4→1.6 mm) (§2) | the stack is 134.8 mm against 133.35 mm before insertion clearance | mechanical |
+| 1b | Re-proportion four boards to ≤440 mm wide (§2) | four of six are wider than a 19-inch rack as drawn | electrical + mechanical |
 | 2 | **Secondary rectifier count — 40 A JBS or SR variant?** (§2) | the JBS rail is over budget on EVERY SKU (96/158/234 %); it is also the module's largest loss | electrical |
 | 3 | Interior clamp rails for 120 kW (§2) | 120 kW is still over budget after the device-count fix | mechanical |
 | 3b | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
 | 4 | B2B pillar alignment — change an outline to make the pillars vertical? (§8) | bolted-joint verifiability | mechanical |
-| 5 | HMI/CAN daughter card (§4) | removes the only long SELV run; needs a part number | electrical |
+| 5 | HMI daughter card + isolated-CAN flying lead (§4) | removes the only long SELV run now that CAN exits on the DC output plug | electrical |
 | 6 | **Reinforced creepage: 12.6 mm or 25 mm?** (§7) | sets the barrier band width on the most area-constrained board | insulation / DQ |
 | 7 | Record datasheet Tj(max) per device (§7) | 138 °C is 92 % of 150 but 79 % of 175 — the guideline verdict flips | thermal / §K gate |
 | 8 | Copper weight: 2 oz throughout, or 3–4 oz on the bus and output pours? (§7) | 39–156 A on 2 oz is under-specified | fab RFQ |
