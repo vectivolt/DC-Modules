@@ -14,59 +14,59 @@
   "LINE-CTS-1"
  ],
  "net_style_overrides": {
-  "N_ACDC_68": "wire",
-  "N_ACDC_69": "wire",
-  "N_ACDC_70": "wire",
-  "N_ACDC_71": "wire",
-  "N_ACDC_72": "wire",
-  "N_ACDC_73": "wire",
-  "N_ACDC_85": "wire",
+  "CTA0_RA0B": "wire",
+  "CTB0_RB0B": "wire",
+  "CTC0_RC0B": "wire",
+  "CTA1_RA1B": "wire",
+  "CTB1_RB1B": "wire",
+  "CTC1_RC1B": "wire",
+  "RNS1_M": "wire",
   "NSTAR": "wire",
-  "N_ACDC_86": "wire",
-  "N_ACDC_87": "wire",
-  "N_ACDC_88": "wire",
-  "N_ACDC_89": "wire",
-  "N_ACDC_90": "wire",
-  "N_ACDC_91": "wire",
-  "N_ACDC_92": "wire",
-  "N_ACDC_93": "wire",
-  "N_ACDC_94": "wire",
-  "N_ACDC_95": "wire",
-  "N_ACDC_96": "wire",
-  "N_ACDC_97": "wire",
-  "N_ACDC_98": "wire",
-  "N_ACDC_99": "wire",
-  "N_ACDC_100": "wire",
-  "N_ACDC_101": "wire",
-  "N_ACDC_102": "wire",
-  "N_ACDC_103": "wire",
-  "N_ACDC_104": "wire",
-  "N_ACDC_105": "wire",
-  "N_ACDC_106": "wire",
-  "N_ACDC_107": "wire",
-  "N_ACDC_108": "wire",
-  "N_ACDC_109": "wire",
-  "N_ACDC_110": "wire",
-  "N_ACDC_111": "wire",
-  "N_ACDC_112": "wire",
-  "N_ACDC_113": "wire",
-  "N_ACDC_114": "wire",
-  "N_ACDC_115": "wire",
-  "N_ACDC_116": "wire",
-  "N_ACDC_117": "wire",
-  "N_ACDC_118": "wire",
-  "N_ACDC_119": "wire",
-  "N_ACDC_120": "wire",
-  "N_ACDC_121": "wire",
-  "N_ACDC_122": "wire",
-  "N_ACDC_123": "wire",
-  "N_ACDC_124": "wire",
-  "N_ACDC_125": "wire",
-  "N_ACDC_126": "wire",
-  "N_ACDC_127": "wire",
+  "RNS2_M": "wire",
+  "RNS3_M": "wire",
+  "RV1D_M": "wire",
+  "RV1D_12": "wire",
+  "RV1D_23": "wire",
+  "RV1D_34": "wire",
+  "RV1D_45": "wire",
+  "RV1D_56": "wire",
+  "RV1D_67": "wire",
+  "UIVV1_VINP": "wire",
+  "RV2D_M": "wire",
+  "RV2D_12": "wire",
+  "RV2D_23": "wire",
+  "RV2D_34": "wire",
+  "RV2D_45": "wire",
+  "RV2D_56": "wire",
+  "RV2D_67": "wire",
+  "UIVV2_VINP": "wire",
+  "RV3D_M": "wire",
+  "RV3D_12": "wire",
+  "RV3D_23": "wire",
+  "RV3D_34": "wire",
+  "RV3D_45": "wire",
+  "RV3D_56": "wire",
+  "RV3D_67": "wire",
+  "UIVV3_VINP": "wire",
+  "RBPD_M": "wire",
+  "RBPD_12": "wire",
+  "RBPD_23": "wire",
+  "RBPD_34": "wire",
+  "RBPD_45": "wire",
+  "RBPD_56": "wire",
+  "RBPD_67": "wire",
+  "UIVBP_VINP": "wire",
+  "RBMD_M": "wire",
+  "RBMD_12": "wire",
+  "RBMD_23": "wire",
+  "RBMD_34": "wire",
+  "RBMD_45": "wire",
+  "RBMD_56": "wire",
+  "RBMD_67": "wire",
+  "UIVBM_VINP": "wire",
   "AVREF_MID": "wire",
-  "N_ACDC_128": "wire",
-  "N_ACDC_129": "wire"
+  "UAVB_OUT": "wire",
+  "UAVB_INN": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -77,7 +77,7 @@
     {
      "pin_number": 1,
      "name": "S1",
-     "signal_name": "N_ACDC_68"
+     "signal_name": "CTA0_RA0B"
     },
     {
      "pin_number": 2,
@@ -97,7 +97,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_68"
+     "signal_name": "CTA0_RA0B"
     },
     {
      "pin_number": 2,
@@ -117,7 +117,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_68"
+     "signal_name": "CTA0_RA0B"
     },
     {
      "pin_number": 2,
@@ -197,7 +197,7 @@
     {
      "pin_number": 1,
      "name": "S1",
-     "signal_name": "N_ACDC_69"
+     "signal_name": "CTB0_RB0B"
     },
     {
      "pin_number": 2,
@@ -217,7 +217,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_69"
+     "signal_name": "CTB0_RB0B"
     },
     {
      "pin_number": 2,
@@ -237,7 +237,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_69"
+     "signal_name": "CTB0_RB0B"
     },
     {
      "pin_number": 2,
@@ -317,7 +317,7 @@
     {
      "pin_number": 1,
      "name": "S1",
-     "signal_name": "N_ACDC_70"
+     "signal_name": "CTC0_RC0B"
     },
     {
      "pin_number": 2,
@@ -337,7 +337,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_70"
+     "signal_name": "CTC0_RC0B"
     },
     {
      "pin_number": 2,
@@ -357,7 +357,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_70"
+     "signal_name": "CTC0_RC0B"
     },
     {
      "pin_number": 2,
@@ -437,7 +437,7 @@
     {
      "pin_number": 1,
      "name": "S1",
-     "signal_name": "N_ACDC_71"
+     "signal_name": "CTA1_RA1B"
     },
     {
      "pin_number": 2,
@@ -457,7 +457,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_71"
+     "signal_name": "CTA1_RA1B"
     },
     {
      "pin_number": 2,
@@ -477,7 +477,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_71"
+     "signal_name": "CTA1_RA1B"
     },
     {
      "pin_number": 2,
@@ -557,7 +557,7 @@
     {
      "pin_number": 1,
      "name": "S1",
-     "signal_name": "N_ACDC_72"
+     "signal_name": "CTB1_RB1B"
     },
     {
      "pin_number": 2,
@@ -577,7 +577,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_72"
+     "signal_name": "CTB1_RB1B"
     },
     {
      "pin_number": 2,
@@ -597,7 +597,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_72"
+     "signal_name": "CTB1_RB1B"
     },
     {
      "pin_number": 2,
@@ -677,7 +677,7 @@
     {
      "pin_number": 1,
      "name": "S1",
-     "signal_name": "N_ACDC_73"
+     "signal_name": "CTC1_RC1B"
     },
     {
      "pin_number": 2,
@@ -697,7 +697,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_73"
+     "signal_name": "CTC1_RC1B"
     },
     {
      "pin_number": 2,
@@ -717,7 +717,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_73"
+     "signal_name": "CTC1_RC1B"
     },
     {
      "pin_number": 2,
@@ -802,7 +802,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_85"
+     "signal_name": "RNS1_M"
     }
    ],
    "nc_pins": [],
@@ -817,7 +817,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_85"
+     "signal_name": "RNS1_M"
     },
     {
      "pin_number": 2,
@@ -842,7 +842,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_86"
+     "signal_name": "RNS2_M"
     }
    ],
    "nc_pins": [],
@@ -857,7 +857,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_86"
+     "signal_name": "RNS2_M"
     },
     {
      "pin_number": 2,
@@ -882,7 +882,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_87"
+     "signal_name": "RNS3_M"
     }
    ],
    "nc_pins": [],
@@ -897,7 +897,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_87"
+     "signal_name": "RNS3_M"
     },
     {
      "pin_number": 2,
@@ -986,7 +986,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_88"
+     "signal_name": "RV1D_M"
     }
    ],
    "nc_pins": [],
@@ -1001,12 +1001,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_88"
+     "signal_name": "RV1D_M"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_89"
+     "signal_name": "RV1D_12"
     }
    ],
    "nc_pins": [],
@@ -1021,12 +1021,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_89"
+     "signal_name": "RV1D_12"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_90"
+     "signal_name": "RV1D_23"
     }
    ],
    "nc_pins": [],
@@ -1041,12 +1041,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_90"
+     "signal_name": "RV1D_23"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_91"
+     "signal_name": "RV1D_34"
     }
    ],
    "nc_pins": [],
@@ -1061,12 +1061,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_91"
+     "signal_name": "RV1D_34"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_92"
+     "signal_name": "RV1D_45"
     }
    ],
    "nc_pins": [],
@@ -1081,12 +1081,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_92"
+     "signal_name": "RV1D_45"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_93"
+     "signal_name": "RV1D_56"
     }
    ],
    "nc_pins": [],
@@ -1101,12 +1101,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_93"
+     "signal_name": "RV1D_56"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_94"
+     "signal_name": "RV1D_67"
     }
    ],
    "nc_pins": [],
@@ -1121,12 +1121,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_94"
+     "signal_name": "RV1D_67"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_95"
+     "signal_name": "UIVV1_VINP"
     }
    ],
    "nc_pins": [],
@@ -1141,7 +1141,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_95"
+     "signal_name": "UIVV1_VINP"
     },
     {
      "pin_number": 2,
@@ -1161,7 +1161,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_95"
+     "signal_name": "UIVV1_VINP"
     },
     {
      "pin_number": 2,
@@ -1186,7 +1186,7 @@
     {
      "pin_number": 2,
      "name": "VINP",
-     "signal_name": "N_ACDC_95"
+     "signal_name": "UIVV1_VINP"
     },
     {
      "pin_number": 3,
@@ -1233,7 +1233,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_96"
+     "signal_name": "RV2D_M"
     }
    ],
    "nc_pins": [],
@@ -1248,12 +1248,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_96"
+     "signal_name": "RV2D_M"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_97"
+     "signal_name": "RV2D_12"
     }
    ],
    "nc_pins": [],
@@ -1268,12 +1268,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_97"
+     "signal_name": "RV2D_12"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_98"
+     "signal_name": "RV2D_23"
     }
    ],
    "nc_pins": [],
@@ -1288,12 +1288,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_98"
+     "signal_name": "RV2D_23"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_99"
+     "signal_name": "RV2D_34"
     }
    ],
    "nc_pins": [],
@@ -1308,12 +1308,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_99"
+     "signal_name": "RV2D_34"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_100"
+     "signal_name": "RV2D_45"
     }
    ],
    "nc_pins": [],
@@ -1328,12 +1328,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_100"
+     "signal_name": "RV2D_45"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_101"
+     "signal_name": "RV2D_56"
     }
    ],
    "nc_pins": [],
@@ -1348,12 +1348,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_101"
+     "signal_name": "RV2D_56"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_102"
+     "signal_name": "RV2D_67"
     }
    ],
    "nc_pins": [],
@@ -1368,12 +1368,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_102"
+     "signal_name": "RV2D_67"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_103"
+     "signal_name": "UIVV2_VINP"
     }
    ],
    "nc_pins": [],
@@ -1388,7 +1388,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_103"
+     "signal_name": "UIVV2_VINP"
     },
     {
      "pin_number": 2,
@@ -1408,7 +1408,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_103"
+     "signal_name": "UIVV2_VINP"
     },
     {
      "pin_number": 2,
@@ -1433,7 +1433,7 @@
     {
      "pin_number": 2,
      "name": "VINP",
-     "signal_name": "N_ACDC_103"
+     "signal_name": "UIVV2_VINP"
     },
     {
      "pin_number": 3,
@@ -1480,7 +1480,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_104"
+     "signal_name": "RV3D_M"
     }
    ],
    "nc_pins": [],
@@ -1495,12 +1495,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_104"
+     "signal_name": "RV3D_M"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_105"
+     "signal_name": "RV3D_12"
     }
    ],
    "nc_pins": [],
@@ -1515,12 +1515,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_105"
+     "signal_name": "RV3D_12"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_106"
+     "signal_name": "RV3D_23"
     }
    ],
    "nc_pins": [],
@@ -1535,12 +1535,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_106"
+     "signal_name": "RV3D_23"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_107"
+     "signal_name": "RV3D_34"
     }
    ],
    "nc_pins": [],
@@ -1555,12 +1555,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_107"
+     "signal_name": "RV3D_34"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_108"
+     "signal_name": "RV3D_45"
     }
    ],
    "nc_pins": [],
@@ -1575,12 +1575,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_108"
+     "signal_name": "RV3D_45"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_109"
+     "signal_name": "RV3D_56"
     }
    ],
    "nc_pins": [],
@@ -1595,12 +1595,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_109"
+     "signal_name": "RV3D_56"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_110"
+     "signal_name": "RV3D_67"
     }
    ],
    "nc_pins": [],
@@ -1615,12 +1615,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_110"
+     "signal_name": "RV3D_67"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_111"
+     "signal_name": "UIVV3_VINP"
     }
    ],
    "nc_pins": [],
@@ -1635,7 +1635,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_111"
+     "signal_name": "UIVV3_VINP"
     },
     {
      "pin_number": 2,
@@ -1655,7 +1655,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_111"
+     "signal_name": "UIVV3_VINP"
     },
     {
      "pin_number": 2,
@@ -1680,7 +1680,7 @@
     {
      "pin_number": 2,
      "name": "VINP",
-     "signal_name": "N_ACDC_111"
+     "signal_name": "UIVV3_VINP"
     },
     {
      "pin_number": 3,
@@ -1727,7 +1727,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_112"
+     "signal_name": "RBPD_M"
     }
    ],
    "nc_pins": [],
@@ -1742,12 +1742,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_112"
+     "signal_name": "RBPD_M"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_113"
+     "signal_name": "RBPD_12"
     }
    ],
    "nc_pins": [],
@@ -1762,12 +1762,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_113"
+     "signal_name": "RBPD_12"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_114"
+     "signal_name": "RBPD_23"
     }
    ],
    "nc_pins": [],
@@ -1782,12 +1782,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_114"
+     "signal_name": "RBPD_23"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_115"
+     "signal_name": "RBPD_34"
     }
    ],
    "nc_pins": [],
@@ -1802,12 +1802,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_115"
+     "signal_name": "RBPD_34"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_116"
+     "signal_name": "RBPD_45"
     }
    ],
    "nc_pins": [],
@@ -1822,12 +1822,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_116"
+     "signal_name": "RBPD_45"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_117"
+     "signal_name": "RBPD_56"
     }
    ],
    "nc_pins": [],
@@ -1842,12 +1842,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_117"
+     "signal_name": "RBPD_56"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_118"
+     "signal_name": "RBPD_67"
     }
    ],
    "nc_pins": [],
@@ -1862,12 +1862,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_118"
+     "signal_name": "RBPD_67"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_119"
+     "signal_name": "UIVBP_VINP"
     }
    ],
    "nc_pins": [],
@@ -1882,7 +1882,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_119"
+     "signal_name": "UIVBP_VINP"
     },
     {
      "pin_number": 2,
@@ -1902,7 +1902,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_119"
+     "signal_name": "UIVBP_VINP"
     },
     {
      "pin_number": 2,
@@ -1927,7 +1927,7 @@
     {
      "pin_number": 2,
      "name": "VINP",
-     "signal_name": "N_ACDC_119"
+     "signal_name": "UIVBP_VINP"
     },
     {
      "pin_number": 3,
@@ -1974,7 +1974,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_120"
+     "signal_name": "RBMD_M"
     }
    ],
    "nc_pins": [],
@@ -1989,12 +1989,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_120"
+     "signal_name": "RBMD_M"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_121"
+     "signal_name": "RBMD_12"
     }
    ],
    "nc_pins": [],
@@ -2009,12 +2009,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_121"
+     "signal_name": "RBMD_12"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_122"
+     "signal_name": "RBMD_23"
     }
    ],
    "nc_pins": [],
@@ -2029,12 +2029,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_122"
+     "signal_name": "RBMD_23"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_123"
+     "signal_name": "RBMD_34"
     }
    ],
    "nc_pins": [],
@@ -2049,12 +2049,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_123"
+     "signal_name": "RBMD_34"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_124"
+     "signal_name": "RBMD_45"
     }
    ],
    "nc_pins": [],
@@ -2069,12 +2069,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_124"
+     "signal_name": "RBMD_45"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_125"
+     "signal_name": "RBMD_56"
     }
    ],
    "nc_pins": [],
@@ -2089,12 +2089,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_125"
+     "signal_name": "RBMD_56"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_126"
+     "signal_name": "RBMD_67"
     }
    ],
    "nc_pins": [],
@@ -2109,12 +2109,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_126"
+     "signal_name": "RBMD_67"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_127"
+     "signal_name": "UIVBM_VINP"
     }
    ],
    "nc_pins": [],
@@ -2129,7 +2129,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_127"
+     "signal_name": "UIVBM_VINP"
     },
     {
      "pin_number": 2,
@@ -2149,7 +2149,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_127"
+     "signal_name": "UIVBM_VINP"
     },
     {
      "pin_number": 2,
@@ -2174,7 +2174,7 @@
     {
      "pin_number": 2,
      "name": "VINP",
-     "signal_name": "N_ACDC_127"
+     "signal_name": "UIVBM_VINP"
     },
     {
      "pin_number": 3,
@@ -2276,12 +2276,12 @@
     {
      "pin_number": 1,
      "name": "OUT",
-     "signal_name": "N_ACDC_128"
+     "signal_name": "UAVB_OUT"
     },
     {
      "pin_number": 2,
      "name": "INN",
-     "signal_name": "N_ACDC_129"
+     "signal_name": "UAVB_INN"
     },
     {
      "pin_number": 3,
@@ -2315,7 +2315,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_128"
+     "signal_name": "UAVB_OUT"
     },
     {
      "pin_number": 2,
@@ -2340,7 +2340,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_129"
+     "signal_name": "UAVB_INN"
     }
    ],
    "nc_pins": [],
@@ -2355,12 +2355,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_128"
+     "signal_name": "UAVB_OUT"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_129"
+     "signal_name": "UAVB_INN"
     }
    ],
    "nc_pins": [],

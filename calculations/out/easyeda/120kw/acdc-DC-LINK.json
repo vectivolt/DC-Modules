@@ -8,20 +8,20 @@
   "LINK-BANK-2"
  ],
  "net_style_overrides": {
-  "N_ACDC_140": "wire",
-  "N_ACDC_141": "wire",
-  "N_ACDC_142": "wire",
-  "N_ACDC_143": "wire",
-  "N_ACDC_144": "wire",
-  "N_ACDC_145": "wire",
-  "N_ACDC_146": "wire",
-  "N_ACDC_147": "wire",
-  "N_ACDC_148": "wire",
-  "N_ACDC_149": "wire",
+  "RBALT0_M": "wire",
+  "RBALB0_M": "wire",
+  "RBALT1_M": "wire",
+  "RBALB1_M": "wire",
+  "RBALT2_M": "wire",
+  "RBALB2_M": "wire",
+  "RDIS_M": "wire",
+  "RDIS_12": "wire",
+  "RDIS_23": "wire",
+  "QDISF_D": "wire",
   "G_QDIS": "wire",
-  "N_ACDC_150": "wire",
-  "N_ACDC_151": "wire",
-  "N_ACDC_152": "wire"
+  "UQD_ANO": "wire",
+  "UQD_OUT": "wire",
+  "UQD_VCC": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -279,7 +279,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_140"
+     "signal_name": "RBALT0_M"
     }
    ],
    "nc_pins": [],
@@ -294,7 +294,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_140"
+     "signal_name": "RBALT0_M"
     },
     {
      "pin_number": 2,
@@ -319,7 +319,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_141"
+     "signal_name": "RBALB0_M"
     }
    ],
    "nc_pins": [],
@@ -334,7 +334,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_141"
+     "signal_name": "RBALB0_M"
     },
     {
      "pin_number": 2,
@@ -599,7 +599,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_142"
+     "signal_name": "RBALT1_M"
     }
    ],
    "nc_pins": [],
@@ -614,7 +614,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_142"
+     "signal_name": "RBALT1_M"
     },
     {
      "pin_number": 2,
@@ -639,7 +639,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_143"
+     "signal_name": "RBALB1_M"
     }
    ],
    "nc_pins": [],
@@ -654,7 +654,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_143"
+     "signal_name": "RBALB1_M"
     },
     {
      "pin_number": 2,
@@ -919,7 +919,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_144"
+     "signal_name": "RBALT2_M"
     }
    ],
    "nc_pins": [],
@@ -934,7 +934,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_144"
+     "signal_name": "RBALT2_M"
     },
     {
      "pin_number": 2,
@@ -959,7 +959,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_145"
+     "signal_name": "RBALB2_M"
     }
    ],
    "nc_pins": [],
@@ -974,7 +974,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_145"
+     "signal_name": "RBALB2_M"
     },
     {
      "pin_number": 2,
@@ -999,7 +999,7 @@
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_146"
+     "signal_name": "RDIS_M"
     }
    ],
    "nc_pins": [],
@@ -1014,12 +1014,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_146"
+     "signal_name": "RDIS_M"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_147"
+     "signal_name": "RDIS_12"
     }
    ],
    "nc_pins": [],
@@ -1034,12 +1034,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_147"
+     "signal_name": "RDIS_12"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_148"
+     "signal_name": "RDIS_23"
     }
    ],
    "nc_pins": [],
@@ -1054,12 +1054,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_148"
+     "signal_name": "RDIS_23"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_149"
+     "signal_name": "QDISF_D"
     }
    ],
    "nc_pins": [],
@@ -1090,7 +1090,7 @@
     {
      "pin_number": 2,
      "name": "D",
-     "signal_name": "N_ACDC_149"
+     "signal_name": "QDISF_D"
     },
     {
      "pin_number": 3,
@@ -1110,7 +1110,7 @@
     {
      "pin_number": 1,
      "name": "ANO",
-     "signal_name": "N_ACDC_150"
+     "signal_name": "UQD_ANO"
     },
     {
      "pin_number": 2,
@@ -1125,12 +1125,12 @@
     {
      "pin_number": 6,
      "name": "OUT",
-     "signal_name": "N_ACDC_151"
+     "signal_name": "UQD_OUT"
     },
     {
      "pin_number": 8,
      "name": "VCC",
-     "signal_name": "N_ACDC_152"
+     "signal_name": "UQD_VCC"
     }
    ],
    "nc_pins": [
@@ -1159,7 +1159,7 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_ACDC_152"
+     "signal_name": "UQD_VCC"
     },
     {
      "pin_number": 4,
@@ -1186,13 +1186,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_ACDC_150"
+     "signal_name": "UQD_ANO"
     }
    ],
    "nc_pins": [],
    "value": "330",
-   "query": "R0805-prec-0.1% divider bottom 0.1% ",
-   "mpn": "R0805-prec-0.1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RQDG",
@@ -1201,7 +1201,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_151"
+     "signal_name": "UQD_OUT"
     },
     {
      "pin_number": 2,

@@ -20,7 +20,7 @@
      {
       "pin_number": 1,
       "name": "P",
-      "signal_name": "N_ACDC_1"
+      "signal_name": "F1_JACL1"
      }
     ]
    },
@@ -34,7 +34,7 @@
      {
       "pin_number": 1,
       "name": "P",
-      "signal_name": "N_ACDC_2"
+      "signal_name": "F2_JACL2"
      }
     ]
    },
@@ -48,7 +48,7 @@
      {
       "pin_number": 1,
       "name": "P",
-      "signal_name": "N_ACDC_3"
+      "signal_name": "F3_JACL3"
      }
     ]
    },
@@ -76,7 +76,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_ACDC_1"
+      "signal_name": "F1_JACL1"
      },
      {
       "pin_number": 2,
@@ -95,7 +95,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_ACDC_2"
+      "signal_name": "F2_JACL2"
      },
      {
       "pin_number": 2,
@@ -114,7 +114,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_ACDC_3"
+      "signal_name": "F3_JACL3"
      },
      {
       "pin_number": 2,
@@ -197,7 +197,7 @@
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_ACDC_4"
+      "signal_name": "GDT1_MOVP1"
      }
     ]
    },
@@ -216,7 +216,7 @@
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_ACDC_5"
+      "signal_name": "GDT2_MOVP2"
      }
     ]
    },
@@ -235,7 +235,7 @@
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_ACDC_6"
+      "signal_name": "GDT3_MOVP3"
      }
     ]
    },
@@ -249,7 +249,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_ACDC_4"
+      "signal_name": "GDT1_MOVP1"
      },
      {
       "pin_number": 2,
@@ -268,7 +268,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_ACDC_5"
+      "signal_name": "GDT2_MOVP2"
      },
      {
       "pin_number": 2,
@@ -287,7 +287,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_ACDC_6"
+      "signal_name": "GDT3_MOVP3"
      },
      {
       "pin_number": 2,
@@ -641,7 +641,7 @@
      {
       "pin_number": 3,
       "name": "NO2",
-      "signal_name": "N_ACDC_7"
+      "signal_name": "KPRE1_M2"
      }
     ]
    },
@@ -675,7 +675,7 @@
      {
       "pin_number": 5,
       "name": "COM2",
-      "signal_name": "N_ACDC_7"
+      "signal_name": "KPRE1_M2"
      },
      {
       "pin_number": 3,

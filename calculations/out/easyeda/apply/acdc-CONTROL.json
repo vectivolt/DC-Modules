@@ -509,12 +509,12 @@
      {
       "pin_number": 2,
       "name": "CWD",
-      "signal_name": "N_ACDC_95"
+      "signal_name": "USUPA_CWD"
      },
      {
       "pin_number": 4,
       "name": "CRST",
-      "signal_name": "N_ACDC_96"
+      "signal_name": "USUPA_CRST"
      }
     ]
    },
@@ -692,7 +692,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_95"
+      "signal_name": "USUPA_CWD"
      },
      {
       "pin_number": 2,
@@ -711,7 +711,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_96"
+      "signal_name": "USUPA_CRST"
      },
      {
       "pin_number": 2,
@@ -927,7 +927,7 @@
     "designator": "RM24B",
     "value": "10k",
     "block_name": "RAIL-MON",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -965,7 +965,7 @@
     "designator": "RM15B",
     "value": "10k",
     "block_name": "RAIL-MON",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {

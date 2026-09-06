@@ -10,13 +10,13 @@
   "INTERCONNECT"
  ],
  "net_style_overrides": {
-  "N_DCDC_105": "wire",
-  "N_DCDC_106": "wire",
-  "N_DCDC_107": "wire",
-  "N_DCDC_108": "wire",
-  "N_DCDC_109": "wire",
-  "N_DCDC_136": "wire",
-  "N_DCDC_137": "wire"
+  "UBKB_SW": "wire",
+  "UBKB_FB": "wire",
+  "UBKB_BST": "wire",
+  "USUPB_CWD": "wire",
+  "USUPB_CRST": "wire",
+  "JICB_LTX": "wire",
+  "JICB_LRX": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -615,12 +615,12 @@
     {
      "pin_number": 3,
      "name": "SW",
-     "signal_name": "N_DCDC_105"
+     "signal_name": "UBKB_SW"
     },
     {
      "pin_number": 4,
      "name": "FB",
-     "signal_name": "N_DCDC_106"
+     "signal_name": "UBKB_FB"
     },
     {
      "pin_number": 5,
@@ -630,7 +630,7 @@
     {
      "pin_number": 6,
      "name": "BST",
-     "signal_name": "N_DCDC_107"
+     "signal_name": "UBKB_BST"
     }
    ],
    "nc_pins": [
@@ -648,7 +648,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_105"
+     "signal_name": "UBKB_SW"
     },
     {
      "pin_number": 2,
@@ -708,12 +708,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_107"
+     "signal_name": "UBKB_BST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_105"
+     "signal_name": "UBKB_SW"
     }
    ],
    "nc_pins": [],
@@ -733,13 +733,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_106"
+     "signal_name": "UBKB_FB"
     }
    ],
    "nc_pins": [],
    "value": "45.3k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RBKF2B",
@@ -748,7 +748,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_106"
+     "signal_name": "UBKB_FB"
     },
     {
      "pin_number": 2,
@@ -758,8 +758,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "USUPB",
@@ -798,12 +798,12 @@
     {
      "pin_number": 7,
      "name": "CWD",
-     "signal_name": "N_DCDC_108"
+     "signal_name": "USUPB_CWD"
     },
     {
      "pin_number": 8,
      "name": "CRST",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "USUPB_CRST"
     }
    ],
    "nc_pins": [],
@@ -901,8 +901,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RENRB",
@@ -921,8 +921,8 @@
    ],
    "nc_pins": [],
    "value": "100k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RENLB",
@@ -941,8 +941,8 @@
    ],
    "nc_pins": [],
    "value": "100k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RGPDB",
@@ -961,8 +961,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "CSFB",
@@ -991,7 +991,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_108"
+     "signal_name": "USUPB_CWD"
     },
     {
      "pin_number": 2,
@@ -1011,7 +1011,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "USUPB_CRST"
     },
     {
      "pin_number": 2,
@@ -1041,8 +1041,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "JSWDLLC",
@@ -1136,8 +1136,8 @@
    ],
    "nc_pins": [],
    "value": "4.7k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "CFLTB",
@@ -1176,8 +1176,8 @@
    ],
    "nc_pins": [],
    "value": "0R",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "JICB",
@@ -1216,12 +1216,12 @@
     {
      "pin_number": 7,
      "name": "LTX",
-     "signal_name": "N_DCDC_136"
+     "signal_name": "JICB_LTX"
     },
     {
      "pin_number": 8,
      "name": "LRX",
-     "signal_name": "N_DCDC_137"
+     "signal_name": "JICB_LRX"
     },
     {
      "pin_number": 9,
@@ -1305,7 +1305,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_136"
+     "signal_name": "JICB_LTX"
     },
     {
      "pin_number": 2,
@@ -1325,7 +1325,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_137"
+     "signal_name": "JICB_LRX"
     },
     {
      "pin_number": 2,

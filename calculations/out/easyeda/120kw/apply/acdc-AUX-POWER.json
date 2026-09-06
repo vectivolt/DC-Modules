@@ -21,17 +21,17 @@
      {
       "pin_number": 1,
       "name": "FB",
-      "signal_name": "N_ACDC_201"
+      "signal_name": "UAUX_FB"
      },
      {
       "pin_number": 2,
       "name": "BO",
-      "signal_name": "N_ACDC_205"
+      "signal_name": "UAUX_BR"
      },
      {
       "pin_number": 3,
       "name": "CS",
-      "signal_name": "N_ACDC_203"
+      "signal_name": "UAUX_CS"
      },
      {
       "pin_number": 5,
@@ -41,22 +41,22 @@
      {
       "pin_number": 6,
       "name": "DRV",
-      "signal_name": "N_ACDC_204"
+      "signal_name": "UAUX_GATE"
      },
      {
       "pin_number": 7,
       "name": "VCC",
-      "signal_name": "N_ACDC_200"
+      "signal_name": "UAUX_VIN"
      },
      {
       "pin_number": 8,
       "name": "SS",
-      "signal_name": "N_ACDC_202"
+      "signal_name": "UAUX_COMP"
      },
      {
       "pin_number": 4,
       "name": "RT",
-      "signal_name": "N_ACDC_206"
+      "signal_name": "UAUX_RT"
      }
     ]
    },
@@ -70,17 +70,17 @@
      {
       "pin_number": 1,
       "name": "G",
-      "signal_name": "N_ACDC_204"
+      "signal_name": "UAUX_GATE"
      },
      {
       "pin_number": 2,
       "name": "D",
-      "signal_name": "N_ACDC_207"
+      "signal_name": "QAUX_D"
      },
      {
       "pin_number": 3,
       "name": "S",
-      "signal_name": "N_ACDC_208"
+      "signal_name": "QAUX_S"
      }
     ]
    },
@@ -94,7 +94,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_208"
+      "signal_name": "QAUX_S"
      },
      {
       "pin_number": 2,
@@ -113,7 +113,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_204"
+      "signal_name": "UAUX_GATE"
      },
      {
       "pin_number": 2,
@@ -132,12 +132,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_208"
+      "signal_name": "QAUX_S"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_203"
+      "signal_name": "UAUX_CS"
      }
     ]
    },
@@ -151,7 +151,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_203"
+      "signal_name": "UAUX_CS"
      },
      {
       "pin_number": 2,
@@ -175,12 +175,12 @@
      {
       "pin_number": 2,
       "name": "P2",
-      "signal_name": "N_ACDC_207"
+      "signal_name": "QAUX_D"
      },
      {
       "pin_number": 3,
       "name": "S24A",
-      "signal_name": "N_ACDC_209"
+      "signal_name": "TAUX_S24A"
      },
      {
       "pin_number": 4,
@@ -190,7 +190,7 @@
      {
       "pin_number": 5,
       "name": "S15A",
-      "signal_name": "N_ACDC_210"
+      "signal_name": "TAUX_S15A"
      },
      {
       "pin_number": 6,
@@ -200,7 +200,7 @@
      {
       "pin_number": 7,
       "name": "AXA",
-      "signal_name": "N_ACDC_211"
+      "signal_name": "TAUX_AXA"
      },
      {
       "pin_number": 8,
@@ -224,7 +224,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_212"
+      "signal_name": "RAUXST_M"
      }
     ]
    },
@@ -238,12 +238,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_212"
+      "signal_name": "RAUXST_M"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_200"
+      "signal_name": "UAUX_VIN"
      }
     ]
    },
@@ -262,7 +262,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_213"
+      "signal_name": "RBR1_M"
      }
     ]
    },
@@ -276,12 +276,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_213"
+      "signal_name": "RBR1_M"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_205"
+      "signal_name": "UAUX_BR"
      }
     ]
    },
@@ -295,7 +295,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_205"
+      "signal_name": "UAUX_BR"
      },
      {
       "pin_number": 2,
@@ -314,12 +314,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_200"
+      "signal_name": "UAUX_VIN"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_201"
+      "signal_name": "UAUX_FB"
      }
     ]
    },
@@ -333,7 +333,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_201"
+      "signal_name": "UAUX_FB"
      },
      {
       "pin_number": 2,
@@ -352,12 +352,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_202"
+      "signal_name": "UAUX_COMP"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_201"
+      "signal_name": "UAUX_FB"
      }
     ]
    },
@@ -371,7 +371,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_202"
+      "signal_name": "UAUX_COMP"
      },
      {
       "pin_number": 2,
@@ -390,12 +390,12 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "N_ACDC_207"
+      "signal_name": "QAUX_D"
      },
      {
       "pin_number": 1,
       "name": "C",
-      "signal_name": "N_ACDC_214"
+      "signal_name": "CCLA_DCLA"
      }
     ]
    },
@@ -409,7 +409,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_214"
+      "signal_name": "CCLA_DCLA"
      },
      {
       "pin_number": 2,
@@ -428,12 +428,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_214"
+      "signal_name": "CCLA_DCLA"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_215"
+      "signal_name": "RCLA_M"
      }
     ]
    },
@@ -447,7 +447,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_215"
+      "signal_name": "RCLA_M"
      },
      {
       "pin_number": 2,
@@ -466,7 +466,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_206"
+      "signal_name": "UAUX_RT"
      },
      {
       "pin_number": 2,
@@ -487,7 +487,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "N_ACDC_209"
+      "signal_name": "TAUX_S24A"
      },
      {
       "pin_number": 1,
@@ -506,7 +506,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "N_ACDC_210"
+      "signal_name": "TAUX_S15A"
      },
      {
       "pin_number": 1,
@@ -525,12 +525,12 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "N_ACDC_211"
+      "signal_name": "TAUX_AXA"
      },
      {
       "pin_number": 1,
       "name": "C",
-      "signal_name": "N_ACDC_200"
+      "signal_name": "UAUX_VIN"
      }
     ]
    },
@@ -576,13 +576,13 @@
     "designator": "CVCC",
     "value": "47uF",
     "block_name": "RAILS",
-    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "search_query": "FILM-47u-VCC aux flyback VCC hold-up 47 uF",
     "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_200"
+      "signal_name": "UAUX_VIN"
      },
      {
       "pin_number": 2,
@@ -651,12 +651,12 @@
      {
       "pin_number": 2,
       "name": "SW",
-      "signal_name": "N_ACDC_216"
+      "signal_name": "UBKA_SW"
      },
      {
       "pin_number": 4,
       "name": "FB",
-      "signal_name": "N_ACDC_217"
+      "signal_name": "UBKA_FB"
      },
      {
       "pin_number": 5,
@@ -666,7 +666,7 @@
      {
       "pin_number": 6,
       "name": "BOOT",
-      "signal_name": "N_ACDC_218"
+      "signal_name": "UBKA_BST"
      }
     ]
    },
@@ -680,7 +680,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_216"
+      "signal_name": "UBKA_SW"
      },
      {
       "pin_number": 2,
@@ -737,12 +737,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_218"
+      "signal_name": "UBKA_BST"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_216"
+      "signal_name": "UBKA_SW"
      }
     ]
    },
@@ -761,7 +761,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_ACDC_217"
+      "signal_name": "UBKA_FB"
      }
     ]
    },
@@ -775,7 +775,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_217"
+      "signal_name": "UBKA_FB"
      },
      {
       "pin_number": 2,
@@ -1020,12 +1020,12 @@
      {
       "pin_number": 7,
       "name": "LTX",
-      "signal_name": "N_ACDC_219"
+      "signal_name": "JICA_LTX"
      },
      {
       "pin_number": 8,
       "name": "LRX",
-      "signal_name": "N_ACDC_220"
+      "signal_name": "JICA_LRX"
      },
      {
       "pin_number": 9,
@@ -1102,7 +1102,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_219"
+      "signal_name": "JICA_LTX"
      },
      {
       "pin_number": 2,
@@ -1121,7 +1121,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_ACDC_220"
+      "signal_name": "JICA_LRX"
      },
      {
       "pin_number": 2,

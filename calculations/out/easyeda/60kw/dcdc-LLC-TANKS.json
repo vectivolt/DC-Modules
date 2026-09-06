@@ -10,54 +10,54 @@
  ],
  "net_style_overrides": {
   "SW1": "wire",
-  "N_DCDC_85": "wire",
-  "N_DCDC_86": "wire",
+  "C1R0_C1R1": "wire",
+  "T1_P1": "wire",
   "STAR0": "wire",
-  "N_DCDC_87": "wire",
-  "N_DCDC_88": "wire",
-  "N_DCDC_89": "wire",
-  "N_DCDC_90": "wire",
+  "T1_S1A": "wire",
+  "T1_S1B": "wire",
+  "T1_S2A": "wire",
+  "T1_S2B": "wire",
   "CTB1": "wire",
   "SW2": "wire",
-  "N_DCDC_91": "wire",
-  "N_DCDC_92": "wire",
-  "N_DCDC_93": "wire",
-  "N_DCDC_94": "wire",
-  "N_DCDC_95": "wire",
-  "N_DCDC_96": "wire",
+  "C2R0_C2R1": "wire",
+  "T2_P1": "wire",
+  "T2_S1A": "wire",
+  "T2_S1B": "wire",
+  "T2_S2A": "wire",
+  "T2_S2B": "wire",
   "CTB2": "wire",
   "SW3": "wire",
-  "N_DCDC_97": "wire",
-  "N_DCDC_98": "wire",
-  "N_DCDC_99": "wire",
-  "N_DCDC_100": "wire",
-  "N_DCDC_101": "wire",
-  "N_DCDC_102": "wire",
+  "C3R0_C3R1": "wire",
+  "T3_P1": "wire",
+  "T3_S1A": "wire",
+  "T3_S1B": "wire",
+  "T3_S2A": "wire",
+  "T3_S2B": "wire",
   "CTB3": "wire",
   "SW4": "wire",
-  "N_DCDC_103": "wire",
-  "N_DCDC_104": "wire",
+  "C4R0_C4R1": "wire",
+  "T4_P1": "wire",
   "STAR1": "wire",
-  "N_DCDC_105": "wire",
-  "N_DCDC_106": "wire",
-  "N_DCDC_107": "wire",
-  "N_DCDC_108": "wire",
+  "T4_S1A": "wire",
+  "T4_S1B": "wire",
+  "T4_S2A": "wire",
+  "T4_S2B": "wire",
   "CTB4": "wire",
   "SW5": "wire",
-  "N_DCDC_109": "wire",
-  "N_DCDC_110": "wire",
-  "N_DCDC_111": "wire",
-  "N_DCDC_112": "wire",
-  "N_DCDC_113": "wire",
-  "N_DCDC_114": "wire",
+  "C5R0_C5R1": "wire",
+  "T5_P1": "wire",
+  "T5_S1A": "wire",
+  "T5_S1B": "wire",
+  "T5_S2A": "wire",
+  "T5_S2B": "wire",
   "CTB5": "wire",
   "SW6": "wire",
-  "N_DCDC_115": "wire",
-  "N_DCDC_116": "wire",
-  "N_DCDC_117": "wire",
-  "N_DCDC_118": "wire",
-  "N_DCDC_119": "wire",
-  "N_DCDC_120": "wire",
+  "C6R0_C6R1": "wire",
+  "T6_P1": "wire",
+  "T6_S1A": "wire",
+  "T6_S1B": "wire",
+  "T6_S2A": "wire",
+  "T6_S2B": "wire",
   "CTB6": "wire"
  },
  "net_class_overrides": {},
@@ -74,7 +74,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_85"
+     "signal_name": "C1R0_C1R1"
     }
    ],
    "nc_pins": [],
@@ -94,7 +94,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_85"
+     "signal_name": "C1R0_C1R1"
     }
    ],
    "nc_pins": [],
@@ -114,7 +114,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_85"
+     "signal_name": "C1R0_C1R1"
     }
    ],
    "nc_pins": [],
@@ -134,7 +134,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_85"
+     "signal_name": "C1R0_C1R1"
     }
    ],
    "nc_pins": [],
@@ -149,12 +149,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_85"
+     "signal_name": "C1R0_C1R1"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_86"
+     "signal_name": "T1_P1"
     }
    ],
    "nc_pins": [],
@@ -169,7 +169,7 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_86"
+     "signal_name": "T1_P1"
     },
     {
      "pin_number": 2,
@@ -184,22 +184,22 @@
     {
      "pin_number": 4,
      "name": "S1A",
-     "signal_name": "N_DCDC_87"
+     "signal_name": "T1_S1A"
     },
     {
      "pin_number": 5,
      "name": "S1B",
-     "signal_name": "N_DCDC_88"
+     "signal_name": "T1_S1B"
     },
     {
      "pin_number": 6,
      "name": "S2A",
-     "signal_name": "N_DCDC_89"
+     "signal_name": "T1_S2A"
     },
     {
      "pin_number": 7,
      "name": "S2B",
-     "signal_name": "N_DCDC_90"
+     "signal_name": "T1_S2B"
     }
    ],
    "nc_pins": [],
@@ -214,7 +214,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_87"
+     "signal_name": "T1_S1A"
     },
     {
      "pin_number": 2,
@@ -239,7 +239,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_87"
+     "signal_name": "T1_S1A"
     }
    ],
    "nc_pins": [],
@@ -254,7 +254,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_88"
+     "signal_name": "T1_S1B"
     },
     {
      "pin_number": 2,
@@ -279,7 +279,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_88"
+     "signal_name": "T1_S1B"
     }
    ],
    "nc_pins": [],
@@ -294,7 +294,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_89"
+     "signal_name": "T1_S2A"
     },
     {
      "pin_number": 2,
@@ -319,7 +319,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_89"
+     "signal_name": "T1_S2A"
     }
    ],
    "nc_pins": [],
@@ -334,7 +334,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_90"
+     "signal_name": "T1_S2B"
     },
     {
      "pin_number": 2,
@@ -359,7 +359,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_90"
+     "signal_name": "T1_S2B"
     }
    ],
    "nc_pins": [],
@@ -499,7 +499,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_91"
+     "signal_name": "C2R0_C2R1"
     }
    ],
    "nc_pins": [],
@@ -519,7 +519,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_91"
+     "signal_name": "C2R0_C2R1"
     }
    ],
    "nc_pins": [],
@@ -539,7 +539,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_91"
+     "signal_name": "C2R0_C2R1"
     }
    ],
    "nc_pins": [],
@@ -559,7 +559,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_91"
+     "signal_name": "C2R0_C2R1"
     }
    ],
    "nc_pins": [],
@@ -574,12 +574,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_91"
+     "signal_name": "C2R0_C2R1"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_92"
+     "signal_name": "T2_P1"
     }
    ],
    "nc_pins": [],
@@ -594,7 +594,7 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_92"
+     "signal_name": "T2_P1"
     },
     {
      "pin_number": 2,
@@ -609,22 +609,22 @@
     {
      "pin_number": 4,
      "name": "S1A",
-     "signal_name": "N_DCDC_93"
+     "signal_name": "T2_S1A"
     },
     {
      "pin_number": 5,
      "name": "S1B",
-     "signal_name": "N_DCDC_94"
+     "signal_name": "T2_S1B"
     },
     {
      "pin_number": 6,
      "name": "S2A",
-     "signal_name": "N_DCDC_95"
+     "signal_name": "T2_S2A"
     },
     {
      "pin_number": 7,
      "name": "S2B",
-     "signal_name": "N_DCDC_96"
+     "signal_name": "T2_S2B"
     }
    ],
    "nc_pins": [],
@@ -639,7 +639,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_93"
+     "signal_name": "T2_S1A"
     },
     {
      "pin_number": 2,
@@ -664,7 +664,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_93"
+     "signal_name": "T2_S1A"
     }
    ],
    "nc_pins": [],
@@ -679,7 +679,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_94"
+     "signal_name": "T2_S1B"
     },
     {
      "pin_number": 2,
@@ -704,7 +704,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_94"
+     "signal_name": "T2_S1B"
     }
    ],
    "nc_pins": [],
@@ -719,7 +719,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_95"
+     "signal_name": "T2_S2A"
     },
     {
      "pin_number": 2,
@@ -744,7 +744,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_95"
+     "signal_name": "T2_S2A"
     }
    ],
    "nc_pins": [],
@@ -759,7 +759,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_96"
+     "signal_name": "T2_S2B"
     },
     {
      "pin_number": 2,
@@ -784,7 +784,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_96"
+     "signal_name": "T2_S2B"
     }
    ],
    "nc_pins": [],
@@ -924,7 +924,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_97"
+     "signal_name": "C3R0_C3R1"
     }
    ],
    "nc_pins": [],
@@ -944,7 +944,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_97"
+     "signal_name": "C3R0_C3R1"
     }
    ],
    "nc_pins": [],
@@ -964,7 +964,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_97"
+     "signal_name": "C3R0_C3R1"
     }
    ],
    "nc_pins": [],
@@ -984,7 +984,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_97"
+     "signal_name": "C3R0_C3R1"
     }
    ],
    "nc_pins": [],
@@ -999,12 +999,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_97"
+     "signal_name": "C3R0_C3R1"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_98"
+     "signal_name": "T3_P1"
     }
    ],
    "nc_pins": [],
@@ -1019,7 +1019,7 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_98"
+     "signal_name": "T3_P1"
     },
     {
      "pin_number": 2,
@@ -1034,22 +1034,22 @@
     {
      "pin_number": 4,
      "name": "S1A",
-     "signal_name": "N_DCDC_99"
+     "signal_name": "T3_S1A"
     },
     {
      "pin_number": 5,
      "name": "S1B",
-     "signal_name": "N_DCDC_100"
+     "signal_name": "T3_S1B"
     },
     {
      "pin_number": 6,
      "name": "S2A",
-     "signal_name": "N_DCDC_101"
+     "signal_name": "T3_S2A"
     },
     {
      "pin_number": 7,
      "name": "S2B",
-     "signal_name": "N_DCDC_102"
+     "signal_name": "T3_S2B"
     }
    ],
    "nc_pins": [],
@@ -1064,7 +1064,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_99"
+     "signal_name": "T3_S1A"
     },
     {
      "pin_number": 2,
@@ -1089,7 +1089,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_99"
+     "signal_name": "T3_S1A"
     }
    ],
    "nc_pins": [],
@@ -1104,7 +1104,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_100"
+     "signal_name": "T3_S1B"
     },
     {
      "pin_number": 2,
@@ -1129,7 +1129,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_100"
+     "signal_name": "T3_S1B"
     }
    ],
    "nc_pins": [],
@@ -1144,7 +1144,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_101"
+     "signal_name": "T3_S2A"
     },
     {
      "pin_number": 2,
@@ -1169,7 +1169,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_101"
+     "signal_name": "T3_S2A"
     }
    ],
    "nc_pins": [],
@@ -1184,7 +1184,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_102"
+     "signal_name": "T3_S2B"
     },
     {
      "pin_number": 2,
@@ -1209,7 +1209,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_102"
+     "signal_name": "T3_S2B"
     }
    ],
    "nc_pins": [],
@@ -1349,7 +1349,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_103"
+     "signal_name": "C4R0_C4R1"
     }
    ],
    "nc_pins": [],
@@ -1369,7 +1369,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_103"
+     "signal_name": "C4R0_C4R1"
     }
    ],
    "nc_pins": [],
@@ -1389,7 +1389,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_103"
+     "signal_name": "C4R0_C4R1"
     }
    ],
    "nc_pins": [],
@@ -1409,7 +1409,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_103"
+     "signal_name": "C4R0_C4R1"
     }
    ],
    "nc_pins": [],
@@ -1424,12 +1424,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_103"
+     "signal_name": "C4R0_C4R1"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_104"
+     "signal_name": "T4_P1"
     }
    ],
    "nc_pins": [],
@@ -1444,7 +1444,7 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_104"
+     "signal_name": "T4_P1"
     },
     {
      "pin_number": 2,
@@ -1459,22 +1459,22 @@
     {
      "pin_number": 4,
      "name": "S1A",
-     "signal_name": "N_DCDC_105"
+     "signal_name": "T4_S1A"
     },
     {
      "pin_number": 5,
      "name": "S1B",
-     "signal_name": "N_DCDC_106"
+     "signal_name": "T4_S1B"
     },
     {
      "pin_number": 6,
      "name": "S2A",
-     "signal_name": "N_DCDC_107"
+     "signal_name": "T4_S2A"
     },
     {
      "pin_number": 7,
      "name": "S2B",
-     "signal_name": "N_DCDC_108"
+     "signal_name": "T4_S2B"
     }
    ],
    "nc_pins": [],
@@ -1489,7 +1489,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_105"
+     "signal_name": "T4_S1A"
     },
     {
      "pin_number": 2,
@@ -1514,7 +1514,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_105"
+     "signal_name": "T4_S1A"
     }
    ],
    "nc_pins": [],
@@ -1529,7 +1529,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_106"
+     "signal_name": "T4_S1B"
     },
     {
      "pin_number": 2,
@@ -1554,7 +1554,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_106"
+     "signal_name": "T4_S1B"
     }
    ],
    "nc_pins": [],
@@ -1569,7 +1569,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_107"
+     "signal_name": "T4_S2A"
     },
     {
      "pin_number": 2,
@@ -1594,7 +1594,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_107"
+     "signal_name": "T4_S2A"
     }
    ],
    "nc_pins": [],
@@ -1609,7 +1609,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_108"
+     "signal_name": "T4_S2B"
     },
     {
      "pin_number": 2,
@@ -1634,7 +1634,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_108"
+     "signal_name": "T4_S2B"
     }
    ],
    "nc_pins": [],
@@ -1774,7 +1774,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "C5R0_C5R1"
     }
    ],
    "nc_pins": [],
@@ -1794,7 +1794,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "C5R0_C5R1"
     }
    ],
    "nc_pins": [],
@@ -1814,7 +1814,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "C5R0_C5R1"
     }
    ],
    "nc_pins": [],
@@ -1834,7 +1834,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "C5R0_C5R1"
     }
    ],
    "nc_pins": [],
@@ -1849,12 +1849,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_109"
+     "signal_name": "C5R0_C5R1"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_110"
+     "signal_name": "T5_P1"
     }
    ],
    "nc_pins": [],
@@ -1869,7 +1869,7 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_110"
+     "signal_name": "T5_P1"
     },
     {
      "pin_number": 2,
@@ -1884,22 +1884,22 @@
     {
      "pin_number": 4,
      "name": "S1A",
-     "signal_name": "N_DCDC_111"
+     "signal_name": "T5_S1A"
     },
     {
      "pin_number": 5,
      "name": "S1B",
-     "signal_name": "N_DCDC_112"
+     "signal_name": "T5_S1B"
     },
     {
      "pin_number": 6,
      "name": "S2A",
-     "signal_name": "N_DCDC_113"
+     "signal_name": "T5_S2A"
     },
     {
      "pin_number": 7,
      "name": "S2B",
-     "signal_name": "N_DCDC_114"
+     "signal_name": "T5_S2B"
     }
    ],
    "nc_pins": [],
@@ -1914,7 +1914,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_111"
+     "signal_name": "T5_S1A"
     },
     {
      "pin_number": 2,
@@ -1939,7 +1939,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_111"
+     "signal_name": "T5_S1A"
     }
    ],
    "nc_pins": [],
@@ -1954,7 +1954,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_112"
+     "signal_name": "T5_S1B"
     },
     {
      "pin_number": 2,
@@ -1979,7 +1979,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_112"
+     "signal_name": "T5_S1B"
     }
    ],
    "nc_pins": [],
@@ -1994,7 +1994,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_113"
+     "signal_name": "T5_S2A"
     },
     {
      "pin_number": 2,
@@ -2019,7 +2019,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_113"
+     "signal_name": "T5_S2A"
     }
    ],
    "nc_pins": [],
@@ -2034,7 +2034,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_114"
+     "signal_name": "T5_S2B"
     },
     {
      "pin_number": 2,
@@ -2059,7 +2059,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_114"
+     "signal_name": "T5_S2B"
     }
    ],
    "nc_pins": [],
@@ -2199,7 +2199,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_115"
+     "signal_name": "C6R0_C6R1"
     }
    ],
    "nc_pins": [],
@@ -2219,7 +2219,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_115"
+     "signal_name": "C6R0_C6R1"
     }
    ],
    "nc_pins": [],
@@ -2239,7 +2239,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_115"
+     "signal_name": "C6R0_C6R1"
     }
    ],
    "nc_pins": [],
@@ -2259,7 +2259,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_115"
+     "signal_name": "C6R0_C6R1"
     }
    ],
    "nc_pins": [],
@@ -2274,12 +2274,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_115"
+     "signal_name": "C6R0_C6R1"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_116"
+     "signal_name": "T6_P1"
     }
    ],
    "nc_pins": [],
@@ -2294,7 +2294,7 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_116"
+     "signal_name": "T6_P1"
     },
     {
      "pin_number": 2,
@@ -2309,22 +2309,22 @@
     {
      "pin_number": 4,
      "name": "S1A",
-     "signal_name": "N_DCDC_117"
+     "signal_name": "T6_S1A"
     },
     {
      "pin_number": 5,
      "name": "S1B",
-     "signal_name": "N_DCDC_118"
+     "signal_name": "T6_S1B"
     },
     {
      "pin_number": 6,
      "name": "S2A",
-     "signal_name": "N_DCDC_119"
+     "signal_name": "T6_S2A"
     },
     {
      "pin_number": 7,
      "name": "S2B",
-     "signal_name": "N_DCDC_120"
+     "signal_name": "T6_S2B"
     }
    ],
    "nc_pins": [],
@@ -2339,7 +2339,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_117"
+     "signal_name": "T6_S1A"
     },
     {
      "pin_number": 2,
@@ -2364,7 +2364,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_117"
+     "signal_name": "T6_S1A"
     }
    ],
    "nc_pins": [],
@@ -2379,7 +2379,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_118"
+     "signal_name": "T6_S1B"
     },
     {
      "pin_number": 2,
@@ -2404,7 +2404,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_118"
+     "signal_name": "T6_S1B"
     }
    ],
    "nc_pins": [],
@@ -2419,7 +2419,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_119"
+     "signal_name": "T6_S2A"
     },
     {
      "pin_number": 2,
@@ -2444,7 +2444,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_119"
+     "signal_name": "T6_S2A"
     }
    ],
    "nc_pins": [],
@@ -2459,7 +2459,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_120"
+     "signal_name": "T6_S2B"
     },
     {
      "pin_number": 2,
@@ -2484,7 +2484,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_120"
+     "signal_name": "T6_S2B"
     }
    ],
    "nc_pins": [],

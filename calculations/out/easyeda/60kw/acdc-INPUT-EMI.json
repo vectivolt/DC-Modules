@@ -7,13 +7,13 @@
   "PRECHARGE"
  ],
  "net_style_overrides": {
-  "N_ACDC_1": "wire",
-  "N_ACDC_2": "wire",
-  "N_ACDC_3": "wire",
-  "N_ACDC_4": "wire",
-  "N_ACDC_5": "wire",
-  "N_ACDC_6": "wire",
-  "N_ACDC_7": "wire"
+  "F1_JACL1": "wire",
+  "F2_JACL2": "wire",
+  "F3_JACL3": "wire",
+  "GDT1_MOVP1": "wire",
+  "GDT2_MOVP2": "wire",
+  "GDT3_MOVP3": "wire",
+  "KPRE1_M2": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -26,7 +26,7 @@
     {
      "pin_number": 1,
      "name": "P",
-     "signal_name": "N_ACDC_1"
+     "signal_name": "F1_JACL1"
     }
    ],
    "nc_pins": [],
@@ -41,7 +41,7 @@
     {
      "pin_number": 1,
      "name": "P",
-     "signal_name": "N_ACDC_2"
+     "signal_name": "F2_JACL2"
     }
    ],
    "nc_pins": [],
@@ -56,7 +56,7 @@
     {
      "pin_number": 1,
      "name": "P",
-     "signal_name": "N_ACDC_3"
+     "signal_name": "F3_JACL3"
     }
    ],
    "nc_pins": [],
@@ -86,7 +86,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_1"
+     "signal_name": "F1_JACL1"
     },
     {
      "pin_number": 2,
@@ -106,7 +106,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_2"
+     "signal_name": "F2_JACL2"
     },
     {
      "pin_number": 2,
@@ -126,7 +126,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_3"
+     "signal_name": "F3_JACL3"
     },
     {
      "pin_number": 2,
@@ -211,7 +211,7 @@
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_4"
+     "signal_name": "GDT1_MOVP1"
     }
    ],
    "nc_pins": [],
@@ -231,7 +231,7 @@
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_5"
+     "signal_name": "GDT2_MOVP2"
     }
    ],
    "nc_pins": [],
@@ -251,7 +251,7 @@
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_ACDC_6"
+     "signal_name": "GDT3_MOVP3"
     }
    ],
    "nc_pins": [],
@@ -266,7 +266,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_4"
+     "signal_name": "GDT1_MOVP1"
     },
     {
      "pin_number": 2,
@@ -286,7 +286,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_5"
+     "signal_name": "GDT2_MOVP2"
     },
     {
      "pin_number": 2,
@@ -306,7 +306,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_ACDC_6"
+     "signal_name": "GDT3_MOVP3"
     },
     {
      "pin_number": 2,
@@ -671,7 +671,7 @@
     {
      "pin_number": 6,
      "name": "M2",
-     "signal_name": "N_ACDC_7"
+     "signal_name": "KPRE1_M2"
     }
    ],
    "nc_pins": [],
@@ -706,7 +706,7 @@
     {
      "pin_number": 5,
      "name": "M1",
-     "signal_name": "N_ACDC_7"
+     "signal_name": "KPRE1_M2"
     },
     {
      "pin_number": 6,

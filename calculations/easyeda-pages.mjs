@@ -170,10 +170,57 @@ for (const side of ["acdc", "dcdc"]) {
   // synthesize stable names for anonymous local junctions (≥2 ports, no explicit net)
   const groupSize = new Map();
   for (const p of ports) { const r = find(p.source_port_id); groupSize.set(r, (groupSize.get(r) ?? 0) + 1); }
-  let anon = 0;
+  // These used to be numbered N_ACDC_1..n. A global ordinal tells the reader nothing, and they are
+  // 62% of every net on the board (1144 of 1848), so most of the drawing's labels said nothing at
+  // all. Name each junction after what it actually joins: an IC pin if it touches one (UAUX_VCC),
+  // otherwise the shared stem of the parts in series (RBALTA1+RBALTA2 -> RBALTA_M).
+  // Names must be board-wide and unique: EasyEDA merges net labels BY NAME, so a collision would
+  // silently short two nets. Seeded with every explicit net name and uniquified on write.
+  const compName = new Map(comps.map((c) => [c.source_component_id, c.name]));
+  const pinCount = new Map();
+  for (const p of ports) pinCount.set(p.source_component_id, (pinCount.get(p.source_component_id) ?? 0) + 1);
+  const groupPorts = new Map();
   for (const p of ports) {
     const r = find(p.source_port_id);
-    if (!groupNet.has(r) && (groupSize.get(r) ?? 0) >= 2) groupNet.set(r, `N_${side.toUpperCase()}_${++anon}`);
+    if (!groupPorts.has(r)) groupPorts.set(r, []);
+    groupPorts.get(r).push(p);
+  }
+  const used = new Set([...nets.values()].filter(Boolean));
+  const clean = (t) => String(t).replace(/[^A-Za-z0-9_]/g, "").slice(0, 22);
+  const uniq = (base) => {
+    const b = base || "NET";
+    let n = b, i = 1;
+    while (used.has(n)) n = `${b}_${++i}`;
+    used.add(n);
+    return n;
+  };
+  const anonNets = new Set();
+  for (const [r, ps] of groupPorts) {
+    if (groupNet.has(r) || ps.length < 2) continue;
+    const ds = [...new Set(ps.map((p) => compName.get(p.source_component_id)).filter(Boolean))].sort();
+    if (!ds.length) continue;
+    const icPort = ps.find((p) => (pinCount.get(p.source_component_id) ?? 0) >= 3 && p.name);
+    let base;
+    if (icPort) base = `${compName.get(icPort.source_component_id)}_${clean(icPort.name)}`;
+    else {
+      const pref = ds.reduce((a, b) => {
+        let i = 0;
+        while (i < a.length && i < b.length && a[i] === b[i]) i++;
+        return a.slice(0, i);
+      });
+      base = pref.length >= 3 ? `${pref}_M` : ds.slice(0, 2).join("_");
+      // A SERIES CHAIN shares one stem across every tap: RV1D0..RV1D7 gave seven junctions all
+      // called RV1D_M, uniquified to RV1D_M_2..RV1D_M_7 -- a counter that hides the one fact worth
+      // knowing. When the plain stem is taken, name the tap after the two parts it sits between,
+      // so RV1D_01 is unmistakably the node joining RV1D0 to RV1D1.
+      if (pref.length >= 3 && used.has(clean(base)) && ds.length === 2) {
+        const tails = ds.map((d) => d.slice(pref.length)).filter(Boolean);
+        if (tails.length === 2) base = `${pref}_${tails.join("")}`;
+      }
+    }
+    const nm = uniq(clean(base));
+    groupNet.set(r, nm);
+    anonNets.add(nm);
   }
   for (const p of ports) {
     const n = groupNet.get(find(p.source_port_id));
@@ -239,7 +286,7 @@ for (const side of ["acdc", "dcdc"]) {
     // suggested planner overrides: anonymous junctions and known-local nets are wires; PE is ground-class
     const pageNets = new Set(members.flatMap(m => m.pins.map(p => p.signal_name)).filter(Boolean));
     const styleOv = {};
-    for (const n of pageNets) if (/^N_/.test(n) || WIRE_NETS.some(r => r.test(n))) styleOv[n] = "wire";
+    for (const n of pageNets) if (anonNets.has(n) || WIRE_NETS.some(r => r.test(n))) styleOv[n] = "wire";
     const classOv = pageNets.has("PE") ? { PE: "ground" } : {};
     const perBlock = {};
     for (const m of members) perBlock[m.block_name] = (perBlock[m.block_name] ?? 0) + 1;

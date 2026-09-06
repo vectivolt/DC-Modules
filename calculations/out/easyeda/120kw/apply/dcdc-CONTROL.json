@@ -735,12 +735,12 @@
      {
       "pin_number": 2,
       "name": "CWD",
-      "signal_name": "N_DCDC_292"
+      "signal_name": "USUPB_CWD"
      },
      {
       "pin_number": 4,
       "name": "CRST",
-      "signal_name": "N_DCDC_293"
+      "signal_name": "USUPB_CRST"
      }
     ]
    },
@@ -817,7 +817,7 @@
     "designator": "RWPUB",
     "value": "10k",
     "block_name": "SAFETY",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -836,7 +836,7 @@
     "designator": "RENRB",
     "value": "100k",
     "block_name": "SAFETY",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -855,7 +855,7 @@
     "designator": "RENLB",
     "value": "100k",
     "block_name": "SAFETY",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -874,7 +874,7 @@
     "designator": "RGPDB",
     "value": "10k",
     "block_name": "SAFETY",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -918,7 +918,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_292"
+      "signal_name": "USUPB_CWD"
      },
      {
       "pin_number": 2,
@@ -937,7 +937,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_293"
+      "signal_name": "USUPB_CRST"
      },
      {
       "pin_number": 2,
@@ -950,7 +950,7 @@
     "designator": "RRDYB",
     "value": "10k",
     "block_name": "SAFETY",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -969,7 +969,7 @@
     "designator": "RFLTB",
     "value": "4.7k",
     "block_name": "SAFETY",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1009,7 +1009,7 @@
     "designator": "RAGTB",
     "value": "0R",
     "block_name": "GROUNDING",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1046,12 +1046,12 @@
      {
       "pin_number": 2,
       "name": "SW",
-      "signal_name": "N_DCDC_289"
+      "signal_name": "UBKB_SW"
      },
      {
       "pin_number": 4,
       "name": "FB",
-      "signal_name": "N_DCDC_290"
+      "signal_name": "UBKB_FB"
      },
      {
       "pin_number": 5,
@@ -1061,7 +1061,7 @@
      {
       "pin_number": 6,
       "name": "BOOT",
-      "signal_name": "N_DCDC_291"
+      "signal_name": "UBKB_BST"
      }
     ]
    },
@@ -1075,7 +1075,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_289"
+      "signal_name": "UBKB_SW"
      },
      {
       "pin_number": 2,
@@ -1132,12 +1132,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_291"
+      "signal_name": "UBKB_BST"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_289"
+      "signal_name": "UBKB_SW"
      }
     ]
    },
@@ -1145,7 +1145,7 @@
     "designator": "RBKF1B",
     "value": "45.3k",
     "block_name": "BUCK-3V3",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1156,7 +1156,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_290"
+      "signal_name": "UBKB_FB"
      }
     ]
    },
@@ -1164,13 +1164,13 @@
     "designator": "RBKF2B",
     "value": "10k",
     "block_name": "BUCK-3V3",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_290"
+      "signal_name": "UBKB_FB"
      },
      {
       "pin_number": 2,
@@ -1312,12 +1312,12 @@
      {
       "pin_number": 7,
       "name": "LTX",
-      "signal_name": "N_DCDC_320"
+      "signal_name": "JICB_LTX"
      },
      {
       "pin_number": 8,
       "name": "LRX",
-      "signal_name": "N_DCDC_321"
+      "signal_name": "JICB_LRX"
      },
      {
       "pin_number": 9,
@@ -1394,7 +1394,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_320"
+      "signal_name": "JICB_LTX"
      },
      {
       "pin_number": 2,
@@ -1413,7 +1413,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_321"
+      "signal_name": "JICB_LRX"
      },
      {
       "pin_number": 2,

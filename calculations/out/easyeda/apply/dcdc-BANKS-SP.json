@@ -101,7 +101,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_61"
+      "signal_name": "RBALTA_M"
      }
     ]
    },
@@ -115,7 +115,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_61"
+      "signal_name": "RBALTA_M"
      },
      {
       "pin_number": 2,
@@ -139,7 +139,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_62"
+      "signal_name": "RBALBA_M"
      }
     ]
    },
@@ -153,7 +153,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_62"
+      "signal_name": "RBALBA_M"
      },
      {
       "pin_number": 2,
@@ -274,7 +274,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_63"
+      "signal_name": "RBALTB_M"
      }
     ]
    },
@@ -288,7 +288,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_63"
+      "signal_name": "RBALTB_M"
      },
      {
       "pin_number": 2,
@@ -312,7 +312,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_64"
+      "signal_name": "RBALBB_M"
      }
     ]
    },
@@ -326,7 +326,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_64"
+      "signal_name": "RBALBB_M"
      },
      {
       "pin_number": 2,
@@ -537,7 +537,7 @@
      {
       "pin_number": 6,
       "name": "NO1",
-      "signal_name": "N_DCDC_65"
+      "signal_name": "KPREA_B"
      },
      {
       "pin_number": 5,
@@ -576,7 +576,7 @@
      {
       "pin_number": 6,
       "name": "NO1",
-      "signal_name": "N_DCDC_66"
+      "signal_name": "KPREB_B"
      },
      {
       "pin_number": 5,
@@ -632,7 +632,7 @@
     "designator": "RKPUKPARB",
     "value": "10k",
     "block_name": "SP-MATRIX",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -689,7 +689,7 @@
     "designator": "RKPUKPREB",
     "value": "10k",
     "block_name": "SP-MATRIX",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -714,7 +714,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_65"
+      "signal_name": "KPREA_B"
      },
      {
       "pin_number": 2,
@@ -733,7 +733,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_66"
+      "signal_name": "KPREB_B"
      },
      {
       "pin_number": 2,
@@ -759,7 +759,7 @@
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_67"
+      "signal_name": "RBDA_M"
      }
     ]
    },
@@ -773,12 +773,12 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_67"
+      "signal_name": "RBDA_M"
      },
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_68"
+      "signal_name": "RBDA_12"
      }
     ]
    },
@@ -792,12 +792,12 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_68"
+      "signal_name": "RBDA_12"
      },
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_69"
+      "signal_name": "RBDA_23"
      }
     ]
    },
@@ -811,12 +811,12 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_69"
+      "signal_name": "RBDA_23"
      },
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_70"
+      "signal_name": "QDISA_D"
      }
     ]
    },
@@ -835,7 +835,7 @@
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_71"
+      "signal_name": "RBDB_M"
      }
     ]
    },
@@ -849,12 +849,12 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_71"
+      "signal_name": "RBDB_M"
      },
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_72"
+      "signal_name": "RBDB_12"
      }
     ]
    },
@@ -868,12 +868,12 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_72"
+      "signal_name": "RBDB_12"
      },
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_73"
+      "signal_name": "RBDB_23"
      }
     ]
    },
@@ -887,12 +887,12 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "N_DCDC_73"
+      "signal_name": "RBDB_23"
      },
      {
       "pin_number": 2,
       "name": "B",
-      "signal_name": "N_DCDC_74"
+      "signal_name": "QDISB_D"
      }
     ]
    },
@@ -911,7 +911,7 @@
      {
       "pin_number": 2,
       "name": "D",
-      "signal_name": "N_DCDC_70"
+      "signal_name": "QDISA_D"
      },
      {
       "pin_number": 3,
@@ -935,7 +935,7 @@
      {
       "pin_number": 2,
       "name": "D",
-      "signal_name": "N_DCDC_74"
+      "signal_name": "QDISB_D"
      },
      {
       "pin_number": 3,
@@ -954,7 +954,7 @@
      {
       "pin_number": 1,
       "name": "A1",
-      "signal_name": "N_DCDC_75"
+      "signal_name": "UPVA_ANO"
      },
      {
       "pin_number": 2,
@@ -988,7 +988,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_75"
+      "signal_name": "UPVA_ANO"
      }
     ]
    },
@@ -1021,7 +1021,7 @@
      {
       "pin_number": 1,
       "name": "A1",
-      "signal_name": "N_DCDC_76"
+      "signal_name": "UPVB_ANO"
      },
      {
       "pin_number": 2,
@@ -1044,7 +1044,7 @@
     "designator": "RPVLB",
     "value": "330",
     "block_name": "BLEEDERS",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1055,7 +1055,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_76"
+      "signal_name": "UPVB_ANO"
      }
     ]
    },
@@ -1063,7 +1063,7 @@
     "designator": "RPVBB",
     "value": "1M",
     "block_name": "BLEEDERS",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {

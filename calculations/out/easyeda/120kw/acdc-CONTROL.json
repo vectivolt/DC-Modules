@@ -9,8 +9,8 @@
   "RAIL-MON"
  ],
  "net_style_overrides": {
-  "N_ACDC_198": "wire",
-  "N_ACDC_199": "wire"
+  "USUPA_CWD": "wire",
+  "USUPA_CRST": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -560,12 +560,12 @@
     {
      "pin_number": 7,
      "name": "CWD",
-     "signal_name": "N_ACDC_198"
+     "signal_name": "USUPA_CWD"
     },
     {
      "pin_number": 8,
      "name": "CRST",
-     "signal_name": "N_ACDC_199"
+     "signal_name": "USUPA_CRST"
     }
    ],
    "nc_pins": [],
@@ -753,7 +753,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_198"
+     "signal_name": "USUPA_CWD"
     },
     {
      "pin_number": 2,
@@ -773,7 +773,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_ACDC_199"
+     "signal_name": "USUPA_CRST"
     },
     {
      "pin_number": 2,
@@ -1091,8 +1091,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RM15A",
@@ -1131,8 +1131,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   }
  ]
 }

@@ -5,32 +5,32 @@
   "HMI"
  ],
  "net_style_overrides": {
-  "N_DCDC_170": "wire",
-  "N_DCDC_171": "wire",
-  "N_DCDC_172": "wire",
-  "N_DCDC_173": "wire",
-  "N_DCDC_174": "wire",
-  "N_DCDC_175": "wire",
-  "N_DCDC_176": "wire",
-  "N_DCDC_177": "wire",
-  "N_DCDC_178": "wire",
-  "N_DCDC_179": "wire",
-  "N_DCDC_180": "wire",
-  "N_DCDC_181": "wire",
-  "N_DCDC_182": "wire",
-  "N_DCDC_183": "wire",
-  "N_DCDC_184": "wire",
-  "N_DCDC_185": "wire",
-  "N_DCDC_186": "wire",
-  "N_DCDC_187": "wire",
-  "N_DCDC_188": "wire",
-  "N_DCDC_189": "wire",
-  "N_DCDC_190": "wire",
-  "N_DCDC_191": "wire",
-  "N_DCDC_192": "wire",
-  "N_DCDC_193": "wire",
-  "N_DCDC_194": "wire",
-  "N_DCDC_195": "wire"
+  "UCAN_VDD2": "wire",
+  "UCAN_CANL": "wire",
+  "UCAN_CANH": "wire",
+  "LCAN_B2": "wire",
+  "LCAN_B1": "wire",
+  "JTERM_RTERM": "wire",
+  "DISP1_SA": "wire",
+  "DISP1_SB": "wire",
+  "DISP1_SC": "wire",
+  "DISP1_SD": "wire",
+  "DISP1_SE": "wire",
+  "DISP1_SF": "wire",
+  "DISP1_SG": "wire",
+  "DISP1_DP": "wire",
+  "DISP1_DIG1": "wire",
+  "DISP1_DIG2": "wire",
+  "USR1_QB": "wire",
+  "USR1_QC": "wire",
+  "USR1_QD": "wire",
+  "USR1_QE": "wire",
+  "USR1_QF": "wire",
+  "USR1_QG": "wire",
+  "USR1_QH": "wire",
+  "USR1_QA": "wire",
+  "QDIG1_B": "wire",
+  "QDIG2_B": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -61,17 +61,17 @@
     {
      "pin_number": 5,
      "name": "VDD2",
-     "signal_name": "N_DCDC_170"
+     "signal_name": "UCAN_VDD2"
     },
     {
      "pin_number": 6,
      "name": "CANL",
-     "signal_name": "N_DCDC_171"
+     "signal_name": "UCAN_CANL"
     },
     {
      "pin_number": 7,
      "name": "CANH",
-     "signal_name": "N_DCDC_172"
+     "signal_name": "UCAN_CANH"
     },
     {
      "pin_number": 8,
@@ -101,7 +101,7 @@
     {
      "pin_number": 3,
      "name": "P5",
-     "signal_name": "N_DCDC_170"
+     "signal_name": "UCAN_VDD2"
     },
     {
      "pin_number": 4,
@@ -123,22 +123,22 @@
     {
      "pin_number": 1,
      "name": "A1",
-     "signal_name": "N_DCDC_172"
+     "signal_name": "UCAN_CANH"
     },
     {
      "pin_number": 2,
      "name": "A2",
-     "signal_name": "N_DCDC_171"
+     "signal_name": "UCAN_CANL"
     },
     {
      "pin_number": 7,
      "name": "B2",
-     "signal_name": "N_DCDC_173"
+     "signal_name": "LCAN_B2"
     },
     {
      "pin_number": 8,
      "name": "B1",
-     "signal_name": "N_DCDC_174"
+     "signal_name": "LCAN_B1"
     }
    ],
    "nc_pins": [
@@ -158,12 +158,12 @@
     {
      "pin_number": 1,
      "name": "CANH",
-     "signal_name": "N_DCDC_174"
+     "signal_name": "LCAN_B1"
     },
     {
      "pin_number": 2,
      "name": "CANL",
-     "signal_name": "N_DCDC_173"
+     "signal_name": "LCAN_B2"
     },
     {
      "pin_number": 3,
@@ -185,12 +185,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_175"
+     "signal_name": "JTERM_RTERM"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_173"
+     "signal_name": "LCAN_B2"
     }
    ],
    "nc_pins": [],
@@ -205,12 +205,12 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_175"
+     "signal_name": "JTERM_RTERM"
     },
     {
      "pin_number": 2,
      "name": "P2",
-     "signal_name": "N_DCDC_174"
+     "signal_name": "LCAN_B1"
     }
    ],
    "nc_pins": [],
@@ -225,12 +225,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_174"
+     "signal_name": "LCAN_B1"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_173"
+     "signal_name": "LCAN_B2"
     },
     {
      "pin_number": 3,
@@ -260,8 +260,8 @@
    ],
    "nc_pins": [],
    "value": "1M",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "CCGB",
@@ -290,52 +290,52 @@
     {
      "pin_number": 1,
      "name": "SA",
-     "signal_name": "N_DCDC_176"
+     "signal_name": "DISP1_SA"
     },
     {
      "pin_number": 2,
      "name": "SB",
-     "signal_name": "N_DCDC_177"
+     "signal_name": "DISP1_SB"
     },
     {
      "pin_number": 3,
      "name": "SC",
-     "signal_name": "N_DCDC_178"
+     "signal_name": "DISP1_SC"
     },
     {
      "pin_number": 4,
      "name": "SD",
-     "signal_name": "N_DCDC_179"
+     "signal_name": "DISP1_SD"
     },
     {
      "pin_number": 5,
      "name": "SE",
-     "signal_name": "N_DCDC_180"
+     "signal_name": "DISP1_SE"
     },
     {
      "pin_number": 6,
      "name": "SF",
-     "signal_name": "N_DCDC_181"
+     "signal_name": "DISP1_SF"
     },
     {
      "pin_number": 7,
      "name": "SG",
-     "signal_name": "N_DCDC_182"
+     "signal_name": "DISP1_SG"
     },
     {
      "pin_number": 8,
      "name": "DP",
-     "signal_name": "N_DCDC_183"
+     "signal_name": "DISP1_DP"
     },
     {
      "pin_number": 9,
      "name": "DIG1",
-     "signal_name": "N_DCDC_184"
+     "signal_name": "DISP1_DIG1"
     },
     {
      "pin_number": 10,
      "name": "DIG2",
-     "signal_name": "N_DCDC_185"
+     "signal_name": "DISP1_DIG2"
     }
    ],
    "nc_pins": [],
@@ -350,37 +350,37 @@
     {
      "pin_number": 1,
      "name": "QB",
-     "signal_name": "N_DCDC_186"
+     "signal_name": "USR1_QB"
     },
     {
      "pin_number": 2,
      "name": "QC",
-     "signal_name": "N_DCDC_187"
+     "signal_name": "USR1_QC"
     },
     {
      "pin_number": 3,
      "name": "QD",
-     "signal_name": "N_DCDC_188"
+     "signal_name": "USR1_QD"
     },
     {
      "pin_number": 4,
      "name": "QE",
-     "signal_name": "N_DCDC_189"
+     "signal_name": "USR1_QE"
     },
     {
      "pin_number": 5,
      "name": "QF",
-     "signal_name": "N_DCDC_190"
+     "signal_name": "USR1_QF"
     },
     {
      "pin_number": 6,
      "name": "QG",
-     "signal_name": "N_DCDC_191"
+     "signal_name": "USR1_QG"
     },
     {
      "pin_number": 7,
      "name": "QH",
-     "signal_name": "N_DCDC_192"
+     "signal_name": "USR1_QH"
     },
     {
      "pin_number": 8,
@@ -415,7 +415,7 @@
     {
      "pin_number": 15,
      "name": "QA",
-     "signal_name": "N_DCDC_193"
+     "signal_name": "USR1_QA"
     },
     {
      "pin_number": 16,
@@ -437,12 +437,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_193"
+     "signal_name": "USR1_QA"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_176"
+     "signal_name": "DISP1_SA"
     }
    ],
    "nc_pins": [],
@@ -457,12 +457,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_186"
+     "signal_name": "USR1_QB"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_177"
+     "signal_name": "DISP1_SB"
     }
    ],
    "nc_pins": [],
@@ -477,12 +477,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_187"
+     "signal_name": "USR1_QC"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_178"
+     "signal_name": "DISP1_SC"
     }
    ],
    "nc_pins": [],
@@ -497,12 +497,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_188"
+     "signal_name": "USR1_QD"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_179"
+     "signal_name": "DISP1_SD"
     }
    ],
    "nc_pins": [],
@@ -517,12 +517,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_189"
+     "signal_name": "USR1_QE"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_180"
+     "signal_name": "DISP1_SE"
     }
    ],
    "nc_pins": [],
@@ -537,12 +537,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_190"
+     "signal_name": "USR1_QF"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_181"
+     "signal_name": "DISP1_SF"
     }
    ],
    "nc_pins": [],
@@ -557,12 +557,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_191"
+     "signal_name": "USR1_QG"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_182"
+     "signal_name": "DISP1_SG"
     }
    ],
    "nc_pins": [],
@@ -577,12 +577,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_192"
+     "signal_name": "USR1_QH"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_183"
+     "signal_name": "DISP1_DP"
     }
    ],
    "nc_pins": [],
@@ -597,7 +597,7 @@
     {
      "pin_number": 1,
      "name": "B",
-     "signal_name": "N_DCDC_194"
+     "signal_name": "QDIG1_B"
     },
     {
      "pin_number": 2,
@@ -607,7 +607,7 @@
     {
      "pin_number": 3,
      "name": "C",
-     "signal_name": "N_DCDC_184"
+     "signal_name": "DISP1_DIG1"
     }
    ],
    "nc_pins": [],
@@ -622,7 +622,7 @@
     {
      "pin_number": 1,
      "name": "B",
-     "signal_name": "N_DCDC_195"
+     "signal_name": "QDIG2_B"
     },
     {
      "pin_number": 2,
@@ -632,7 +632,7 @@
     {
      "pin_number": 3,
      "name": "C",
-     "signal_name": "N_DCDC_185"
+     "signal_name": "DISP1_DIG2"
     }
    ],
    "nc_pins": [],
@@ -652,7 +652,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_194"
+     "signal_name": "QDIG1_B"
     }
    ],
    "nc_pins": [],
@@ -672,7 +672,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_195"
+     "signal_name": "QDIG2_B"
     }
    ],
    "nc_pins": [],

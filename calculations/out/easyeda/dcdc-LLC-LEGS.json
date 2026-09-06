@@ -12,58 +12,58 @@
   "KH_1": "wire",
   "GL_1": "wire",
   "KL_1": "wire",
-  "N_DCDC_1": "wire",
-  "N_DCDC_2": "wire",
-  "N_DCDC_3": "wire",
-  "N_DCDC_4": "wire",
-  "N_DCDC_5": "wire",
-  "N_DCDC_6": "wire",
-  "N_DCDC_7": "wire",
-  "N_DCDC_8": "wire",
-  "N_DCDC_9": "wire",
-  "N_DCDC_10": "wire",
-  "N_DCDC_11": "wire",
-  "N_DCDC_12": "wire",
-  "N_DCDC_13": "wire",
-  "N_DCDC_14": "wire",
+  "U1H_VEE": "wire",
+  "U1H_OUTL": "wire",
+  "U1H_OUTH": "wire",
+  "U1H_VCC2": "wire",
+  "U1H_DST": "wire",
+  "U1H_GND2": "wire",
+  "D1HS_M": "wire",
+  "U1L_VEE": "wire",
+  "U1L_OUTL": "wire",
+  "U1L_OUTH": "wire",
+  "U1L_VCC2": "wire",
+  "U1L_DST": "wire",
+  "U1L_GND2": "wire",
+  "D1LS_M": "wire",
   "GH_2": "wire",
   "SW2": "wire",
   "KH_2": "wire",
   "GL_2": "wire",
   "KL_2": "wire",
-  "N_DCDC_15": "wire",
-  "N_DCDC_16": "wire",
-  "N_DCDC_17": "wire",
-  "N_DCDC_18": "wire",
-  "N_DCDC_19": "wire",
-  "N_DCDC_20": "wire",
-  "N_DCDC_21": "wire",
-  "N_DCDC_22": "wire",
-  "N_DCDC_23": "wire",
-  "N_DCDC_24": "wire",
-  "N_DCDC_25": "wire",
-  "N_DCDC_26": "wire",
-  "N_DCDC_27": "wire",
-  "N_DCDC_28": "wire",
+  "U2H_VEE": "wire",
+  "U2H_OUTL": "wire",
+  "U2H_OUTH": "wire",
+  "U2H_VCC2": "wire",
+  "U2H_DST": "wire",
+  "U2H_GND2": "wire",
+  "D2HS_M": "wire",
+  "U2L_VEE": "wire",
+  "U2L_OUTL": "wire",
+  "U2L_OUTH": "wire",
+  "U2L_VCC2": "wire",
+  "U2L_DST": "wire",
+  "U2L_GND2": "wire",
+  "D2LS_M": "wire",
   "GH_3": "wire",
   "SW3": "wire",
   "KH_3": "wire",
   "GL_3": "wire",
   "KL_3": "wire",
-  "N_DCDC_29": "wire",
-  "N_DCDC_30": "wire",
-  "N_DCDC_31": "wire",
-  "N_DCDC_32": "wire",
-  "N_DCDC_33": "wire",
-  "N_DCDC_34": "wire",
-  "N_DCDC_35": "wire",
-  "N_DCDC_36": "wire",
-  "N_DCDC_37": "wire",
-  "N_DCDC_38": "wire",
-  "N_DCDC_39": "wire",
-  "N_DCDC_40": "wire",
-  "N_DCDC_41": "wire",
-  "N_DCDC_42": "wire"
+  "U3H_VEE": "wire",
+  "U3H_OUTL": "wire",
+  "U3H_OUTH": "wire",
+  "U3H_VCC2": "wire",
+  "U3H_DST": "wire",
+  "U3H_GND2": "wire",
+  "D3HS_M": "wire",
+  "U3L_VEE": "wire",
+  "U3L_OUTL": "wire",
+  "U3L_OUTH": "wire",
+  "U3L_VCC2": "wire",
+  "U3L_DST": "wire",
+  "U3L_GND2": "wire",
+  "D3LS_M": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -276,22 +276,22 @@
     {
      "pin_number": 10,
      "name": "VEE",
-     "signal_name": "N_DCDC_1"
+     "signal_name": "U1H_VEE"
     },
     {
      "pin_number": 11,
      "name": "OUTL",
-     "signal_name": "N_DCDC_2"
+     "signal_name": "U1H_OUTL"
     },
     {
      "pin_number": 12,
      "name": "OUTH",
-     "signal_name": "N_DCDC_3"
+     "signal_name": "U1H_OUTH"
     },
     {
      "pin_number": 13,
      "name": "VCC2",
-     "signal_name": "N_DCDC_4"
+     "signal_name": "U1H_VCC2"
     },
     {
      "pin_number": 14,
@@ -301,12 +301,12 @@
     {
      "pin_number": 15,
      "name": "DST",
-     "signal_name": "N_DCDC_5"
+     "signal_name": "U1H_DST"
     },
     {
      "pin_number": 16,
      "name": "GND2",
-     "signal_name": "N_DCDC_6"
+     "signal_name": "U1H_GND2"
     }
    ],
    "nc_pins": [
@@ -334,17 +334,17 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_DCDC_4"
+     "signal_name": "U1H_VCC2"
     },
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "N_DCDC_6"
+     "signal_name": "U1H_GND2"
     },
     {
      "pin_number": 5,
      "name": "N4",
-     "signal_name": "N_DCDC_1"
+     "signal_name": "U1H_VEE"
     }
    ],
    "nc_pins": [],
@@ -359,7 +359,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_3"
+     "signal_name": "U1H_OUTH"
     },
     {
      "pin_number": 2,
@@ -379,7 +379,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_2"
+     "signal_name": "U1H_OUTL"
     },
     {
      "pin_number": 2,
@@ -439,12 +439,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_5"
+     "signal_name": "U1H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_7"
+     "signal_name": "D1HS_M"
     }
    ],
    "nc_pins": [],
@@ -459,7 +459,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_7"
+     "signal_name": "D1HS_M"
     },
     {
      "pin_number": 2,
@@ -479,12 +479,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_5"
+     "signal_name": "U1H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_6"
+     "signal_name": "U1H_GND2"
     }
    ],
    "nc_pins": [],
@@ -499,12 +499,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_4"
+     "signal_name": "U1H_VCC2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_6"
+     "signal_name": "U1H_GND2"
     }
    ],
    "nc_pins": [],
@@ -519,12 +519,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_6"
+     "signal_name": "U1H_GND2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_1"
+     "signal_name": "U1H_VEE"
     }
    ],
    "nc_pins": [],
@@ -574,22 +574,22 @@
     {
      "pin_number": 10,
      "name": "VEE",
-     "signal_name": "N_DCDC_8"
+     "signal_name": "U1L_VEE"
     },
     {
      "pin_number": 11,
      "name": "OUTL",
-     "signal_name": "N_DCDC_9"
+     "signal_name": "U1L_OUTL"
     },
     {
      "pin_number": 12,
      "name": "OUTH",
-     "signal_name": "N_DCDC_10"
+     "signal_name": "U1L_OUTH"
     },
     {
      "pin_number": 13,
      "name": "VCC2",
-     "signal_name": "N_DCDC_11"
+     "signal_name": "U1L_VCC2"
     },
     {
      "pin_number": 14,
@@ -599,12 +599,12 @@
     {
      "pin_number": 15,
      "name": "DST",
-     "signal_name": "N_DCDC_12"
+     "signal_name": "U1L_DST"
     },
     {
      "pin_number": 16,
      "name": "GND2",
-     "signal_name": "N_DCDC_13"
+     "signal_name": "U1L_GND2"
     }
    ],
    "nc_pins": [
@@ -632,17 +632,17 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_DCDC_11"
+     "signal_name": "U1L_VCC2"
     },
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "N_DCDC_13"
+     "signal_name": "U1L_GND2"
     },
     {
      "pin_number": 5,
      "name": "N4",
-     "signal_name": "N_DCDC_8"
+     "signal_name": "U1L_VEE"
     }
    ],
    "nc_pins": [],
@@ -657,7 +657,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_10"
+     "signal_name": "U1L_OUTH"
     },
     {
      "pin_number": 2,
@@ -677,7 +677,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_9"
+     "signal_name": "U1L_OUTL"
     },
     {
      "pin_number": 2,
@@ -737,12 +737,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_12"
+     "signal_name": "U1L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_14"
+     "signal_name": "D1LS_M"
     }
    ],
    "nc_pins": [],
@@ -757,7 +757,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_14"
+     "signal_name": "D1LS_M"
     },
     {
      "pin_number": 2,
@@ -777,12 +777,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_12"
+     "signal_name": "U1L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_13"
+     "signal_name": "U1L_GND2"
     }
    ],
    "nc_pins": [],
@@ -797,12 +797,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_11"
+     "signal_name": "U1L_VCC2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_13"
+     "signal_name": "U1L_GND2"
     }
    ],
    "nc_pins": [],
@@ -817,12 +817,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_13"
+     "signal_name": "U1L_GND2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_8"
+     "signal_name": "U1L_VEE"
     }
    ],
    "nc_pins": [],
@@ -932,22 +932,22 @@
     {
      "pin_number": 10,
      "name": "VEE",
-     "signal_name": "N_DCDC_15"
+     "signal_name": "U2H_VEE"
     },
     {
      "pin_number": 11,
      "name": "OUTL",
-     "signal_name": "N_DCDC_16"
+     "signal_name": "U2H_OUTL"
     },
     {
      "pin_number": 12,
      "name": "OUTH",
-     "signal_name": "N_DCDC_17"
+     "signal_name": "U2H_OUTH"
     },
     {
      "pin_number": 13,
      "name": "VCC2",
-     "signal_name": "N_DCDC_18"
+     "signal_name": "U2H_VCC2"
     },
     {
      "pin_number": 14,
@@ -957,12 +957,12 @@
     {
      "pin_number": 15,
      "name": "DST",
-     "signal_name": "N_DCDC_19"
+     "signal_name": "U2H_DST"
     },
     {
      "pin_number": 16,
      "name": "GND2",
-     "signal_name": "N_DCDC_20"
+     "signal_name": "U2H_GND2"
     }
    ],
    "nc_pins": [
@@ -990,17 +990,17 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_DCDC_18"
+     "signal_name": "U2H_VCC2"
     },
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "N_DCDC_20"
+     "signal_name": "U2H_GND2"
     },
     {
      "pin_number": 5,
      "name": "N4",
-     "signal_name": "N_DCDC_15"
+     "signal_name": "U2H_VEE"
     }
    ],
    "nc_pins": [],
@@ -1015,7 +1015,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_17"
+     "signal_name": "U2H_OUTH"
     },
     {
      "pin_number": 2,
@@ -1035,7 +1035,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_16"
+     "signal_name": "U2H_OUTL"
     },
     {
      "pin_number": 2,
@@ -1095,12 +1095,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_19"
+     "signal_name": "U2H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_21"
+     "signal_name": "D2HS_M"
     }
    ],
    "nc_pins": [],
@@ -1115,7 +1115,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_21"
+     "signal_name": "D2HS_M"
     },
     {
      "pin_number": 2,
@@ -1135,12 +1135,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_19"
+     "signal_name": "U2H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_20"
+     "signal_name": "U2H_GND2"
     }
    ],
    "nc_pins": [],
@@ -1155,12 +1155,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_18"
+     "signal_name": "U2H_VCC2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_20"
+     "signal_name": "U2H_GND2"
     }
    ],
    "nc_pins": [],
@@ -1175,12 +1175,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_20"
+     "signal_name": "U2H_GND2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_15"
+     "signal_name": "U2H_VEE"
     }
    ],
    "nc_pins": [],
@@ -1230,22 +1230,22 @@
     {
      "pin_number": 10,
      "name": "VEE",
-     "signal_name": "N_DCDC_22"
+     "signal_name": "U2L_VEE"
     },
     {
      "pin_number": 11,
      "name": "OUTL",
-     "signal_name": "N_DCDC_23"
+     "signal_name": "U2L_OUTL"
     },
     {
      "pin_number": 12,
      "name": "OUTH",
-     "signal_name": "N_DCDC_24"
+     "signal_name": "U2L_OUTH"
     },
     {
      "pin_number": 13,
      "name": "VCC2",
-     "signal_name": "N_DCDC_25"
+     "signal_name": "U2L_VCC2"
     },
     {
      "pin_number": 14,
@@ -1255,12 +1255,12 @@
     {
      "pin_number": 15,
      "name": "DST",
-     "signal_name": "N_DCDC_26"
+     "signal_name": "U2L_DST"
     },
     {
      "pin_number": 16,
      "name": "GND2",
-     "signal_name": "N_DCDC_27"
+     "signal_name": "U2L_GND2"
     }
    ],
    "nc_pins": [
@@ -1288,17 +1288,17 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_DCDC_25"
+     "signal_name": "U2L_VCC2"
     },
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "N_DCDC_27"
+     "signal_name": "U2L_GND2"
     },
     {
      "pin_number": 5,
      "name": "N4",
-     "signal_name": "N_DCDC_22"
+     "signal_name": "U2L_VEE"
     }
    ],
    "nc_pins": [],
@@ -1313,7 +1313,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_24"
+     "signal_name": "U2L_OUTH"
     },
     {
      "pin_number": 2,
@@ -1333,7 +1333,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_23"
+     "signal_name": "U2L_OUTL"
     },
     {
      "pin_number": 2,
@@ -1393,12 +1393,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_26"
+     "signal_name": "U2L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_28"
+     "signal_name": "D2LS_M"
     }
    ],
    "nc_pins": [],
@@ -1413,7 +1413,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_28"
+     "signal_name": "D2LS_M"
     },
     {
      "pin_number": 2,
@@ -1433,12 +1433,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_26"
+     "signal_name": "U2L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_27"
+     "signal_name": "U2L_GND2"
     }
    ],
    "nc_pins": [],
@@ -1453,12 +1453,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_25"
+     "signal_name": "U2L_VCC2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_27"
+     "signal_name": "U2L_GND2"
     }
    ],
    "nc_pins": [],
@@ -1473,12 +1473,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_27"
+     "signal_name": "U2L_GND2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_22"
+     "signal_name": "U2L_VEE"
     }
    ],
    "nc_pins": [],
@@ -1588,22 +1588,22 @@
     {
      "pin_number": 10,
      "name": "VEE",
-     "signal_name": "N_DCDC_29"
+     "signal_name": "U3H_VEE"
     },
     {
      "pin_number": 11,
      "name": "OUTL",
-     "signal_name": "N_DCDC_30"
+     "signal_name": "U3H_OUTL"
     },
     {
      "pin_number": 12,
      "name": "OUTH",
-     "signal_name": "N_DCDC_31"
+     "signal_name": "U3H_OUTH"
     },
     {
      "pin_number": 13,
      "name": "VCC2",
-     "signal_name": "N_DCDC_32"
+     "signal_name": "U3H_VCC2"
     },
     {
      "pin_number": 14,
@@ -1613,12 +1613,12 @@
     {
      "pin_number": 15,
      "name": "DST",
-     "signal_name": "N_DCDC_33"
+     "signal_name": "U3H_DST"
     },
     {
      "pin_number": 16,
      "name": "GND2",
-     "signal_name": "N_DCDC_34"
+     "signal_name": "U3H_GND2"
     }
    ],
    "nc_pins": [
@@ -1646,17 +1646,17 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_DCDC_32"
+     "signal_name": "U3H_VCC2"
     },
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "N_DCDC_34"
+     "signal_name": "U3H_GND2"
     },
     {
      "pin_number": 5,
      "name": "N4",
-     "signal_name": "N_DCDC_29"
+     "signal_name": "U3H_VEE"
     }
    ],
    "nc_pins": [],
@@ -1671,7 +1671,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_31"
+     "signal_name": "U3H_OUTH"
     },
     {
      "pin_number": 2,
@@ -1691,7 +1691,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_30"
+     "signal_name": "U3H_OUTL"
     },
     {
      "pin_number": 2,
@@ -1751,12 +1751,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_33"
+     "signal_name": "U3H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_35"
+     "signal_name": "D3HS_M"
     }
    ],
    "nc_pins": [],
@@ -1771,7 +1771,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_35"
+     "signal_name": "D3HS_M"
     },
     {
      "pin_number": 2,
@@ -1791,12 +1791,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_33"
+     "signal_name": "U3H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_34"
+     "signal_name": "U3H_GND2"
     }
    ],
    "nc_pins": [],
@@ -1811,12 +1811,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_32"
+     "signal_name": "U3H_VCC2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_34"
+     "signal_name": "U3H_GND2"
     }
    ],
    "nc_pins": [],
@@ -1831,12 +1831,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_34"
+     "signal_name": "U3H_GND2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_29"
+     "signal_name": "U3H_VEE"
     }
    ],
    "nc_pins": [],
@@ -1886,22 +1886,22 @@
     {
      "pin_number": 10,
      "name": "VEE",
-     "signal_name": "N_DCDC_36"
+     "signal_name": "U3L_VEE"
     },
     {
      "pin_number": 11,
      "name": "OUTL",
-     "signal_name": "N_DCDC_37"
+     "signal_name": "U3L_OUTL"
     },
     {
      "pin_number": 12,
      "name": "OUTH",
-     "signal_name": "N_DCDC_38"
+     "signal_name": "U3L_OUTH"
     },
     {
      "pin_number": 13,
      "name": "VCC2",
-     "signal_name": "N_DCDC_39"
+     "signal_name": "U3L_VCC2"
     },
     {
      "pin_number": 14,
@@ -1911,12 +1911,12 @@
     {
      "pin_number": 15,
      "name": "DST",
-     "signal_name": "N_DCDC_40"
+     "signal_name": "U3L_DST"
     },
     {
      "pin_number": 16,
      "name": "GND2",
-     "signal_name": "N_DCDC_41"
+     "signal_name": "U3L_GND2"
     }
    ],
    "nc_pins": [
@@ -1944,17 +1944,17 @@
     {
      "pin_number": 3,
      "name": "P18",
-     "signal_name": "N_DCDC_39"
+     "signal_name": "U3L_VCC2"
     },
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "N_DCDC_41"
+     "signal_name": "U3L_GND2"
     },
     {
      "pin_number": 5,
      "name": "N4",
-     "signal_name": "N_DCDC_36"
+     "signal_name": "U3L_VEE"
     }
    ],
    "nc_pins": [],
@@ -1969,7 +1969,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_38"
+     "signal_name": "U3L_OUTH"
     },
     {
      "pin_number": 2,
@@ -1989,7 +1989,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_37"
+     "signal_name": "U3L_OUTL"
     },
     {
      "pin_number": 2,
@@ -2049,12 +2049,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_40"
+     "signal_name": "U3L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_42"
+     "signal_name": "D3LS_M"
     }
    ],
    "nc_pins": [],
@@ -2069,7 +2069,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_42"
+     "signal_name": "D3LS_M"
     },
     {
      "pin_number": 2,
@@ -2089,12 +2089,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_40"
+     "signal_name": "U3L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_41"
+     "signal_name": "U3L_GND2"
     }
    ],
    "nc_pins": [],
@@ -2109,12 +2109,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_39"
+     "signal_name": "U3L_VCC2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_41"
+     "signal_name": "U3L_GND2"
     }
    ],
    "nc_pins": [],
@@ -2129,12 +2129,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_41"
+     "signal_name": "U3L_GND2"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_36"
+     "signal_name": "U3L_VEE"
     }
    ],
    "nc_pins": [],

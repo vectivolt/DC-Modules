@@ -9,24 +9,24 @@
  "net_style_overrides": {
   "BKAM": "wire",
   "BKBM": "wire",
-  "N_DCDC_121": "wire",
-  "N_DCDC_122": "wire",
-  "N_DCDC_123": "wire",
-  "N_DCDC_124": "wire",
-  "N_DCDC_125": "wire",
-  "N_DCDC_126": "wire",
-  "N_DCDC_127": "wire",
-  "N_DCDC_128": "wire",
-  "N_DCDC_129": "wire",
-  "N_DCDC_130": "wire",
-  "N_DCDC_131": "wire",
-  "N_DCDC_132": "wire",
-  "N_DCDC_133": "wire",
-  "N_DCDC_134": "wire",
+  "RBALTA_M": "wire",
+  "RBALBA_M": "wire",
+  "RBALTB_M": "wire",
+  "RBALBB_M": "wire",
+  "KPREA_B": "wire",
+  "KPREB_B": "wire",
+  "RBDA_M": "wire",
+  "RBDA_12": "wire",
+  "RBDA_23": "wire",
+  "QDISA_D": "wire",
+  "RBDB_M": "wire",
+  "RBDB_12": "wire",
+  "RBDB_23": "wire",
+  "QDISB_D": "wire",
   "G_QDISA": "wire",
   "G_QDISB": "wire",
-  "N_DCDC_135": "wire",
-  "N_DCDC_136": "wire"
+  "UPVA_ANO": "wire",
+  "UPVB_ANO": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -362,7 +362,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_121"
+     "signal_name": "RBALTA_M"
     }
    ],
    "nc_pins": [],
@@ -377,7 +377,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_121"
+     "signal_name": "RBALTA_M"
     },
     {
      "pin_number": 2,
@@ -402,7 +402,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_122"
+     "signal_name": "RBALBA_M"
     }
    ],
    "nc_pins": [],
@@ -417,7 +417,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_122"
+     "signal_name": "RBALBA_M"
     },
     {
      "pin_number": 2,
@@ -442,7 +442,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_123"
+     "signal_name": "RBALTB_M"
     }
    ],
    "nc_pins": [],
@@ -457,7 +457,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_123"
+     "signal_name": "RBALTB_M"
     },
     {
      "pin_number": 2,
@@ -482,7 +482,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_124"
+     "signal_name": "RBALBB_M"
     }
    ],
    "nc_pins": [],
@@ -497,7 +497,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_124"
+     "signal_name": "RBALBB_M"
     },
     {
      "pin_number": 2,
@@ -732,7 +732,7 @@
     {
      "pin_number": 4,
      "name": "B",
-     "signal_name": "N_DCDC_125"
+     "signal_name": "KPREA_B"
     },
     {
      "pin_number": 5,
@@ -772,7 +772,7 @@
     {
      "pin_number": 4,
      "name": "B",
-     "signal_name": "N_DCDC_126"
+     "signal_name": "KPREB_B"
     },
     {
      "pin_number": 5,
@@ -847,8 +847,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RKPUKOUT",
@@ -907,8 +907,8 @@
    ],
    "nc_pins": [],
    "value": "10k",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RPREA",
@@ -917,7 +917,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_125"
+     "signal_name": "KPREA_B"
     },
     {
      "pin_number": 2,
@@ -937,7 +937,7 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_126"
+     "signal_name": "KPREB_B"
     },
     {
      "pin_number": 2,
@@ -962,7 +962,7 @@
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_127"
+     "signal_name": "RBDA_M"
     }
    ],
    "nc_pins": [],
@@ -977,12 +977,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_127"
+     "signal_name": "RBDA_M"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_128"
+     "signal_name": "RBDA_12"
     }
    ],
    "nc_pins": [],
@@ -997,12 +997,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_128"
+     "signal_name": "RBDA_12"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_129"
+     "signal_name": "RBDA_23"
     }
    ],
    "nc_pins": [],
@@ -1017,12 +1017,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_129"
+     "signal_name": "RBDA_23"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_130"
+     "signal_name": "QDISA_D"
     }
    ],
    "nc_pins": [],
@@ -1042,7 +1042,7 @@
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_131"
+     "signal_name": "RBDB_M"
     }
    ],
    "nc_pins": [],
@@ -1057,12 +1057,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_131"
+     "signal_name": "RBDB_M"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_132"
+     "signal_name": "RBDB_12"
     }
    ],
    "nc_pins": [],
@@ -1077,12 +1077,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_132"
+     "signal_name": "RBDB_12"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_133"
+     "signal_name": "RBDB_23"
     }
    ],
    "nc_pins": [],
@@ -1097,12 +1097,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_133"
+     "signal_name": "RBDB_23"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_134"
+     "signal_name": "QDISB_D"
     }
    ],
    "nc_pins": [],
@@ -1122,7 +1122,7 @@
     {
      "pin_number": 2,
      "name": "D",
-     "signal_name": "N_DCDC_130"
+     "signal_name": "QDISA_D"
     },
     {
      "pin_number": 3,
@@ -1147,7 +1147,7 @@
     {
      "pin_number": 2,
      "name": "D",
-     "signal_name": "N_DCDC_134"
+     "signal_name": "QDISB_D"
     },
     {
      "pin_number": 3,
@@ -1167,7 +1167,7 @@
     {
      "pin_number": 1,
      "name": "ANO",
-     "signal_name": "N_DCDC_135"
+     "signal_name": "UPVA_ANO"
     },
     {
      "pin_number": 2,
@@ -1207,7 +1207,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_135"
+     "signal_name": "UPVA_ANO"
     }
    ],
    "nc_pins": [],
@@ -1242,7 +1242,7 @@
     {
      "pin_number": 1,
      "name": "ANO",
-     "signal_name": "N_DCDC_136"
+     "signal_name": "UPVB_ANO"
     },
     {
      "pin_number": 2,
@@ -1282,13 +1282,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_136"
+     "signal_name": "UPVB_ANO"
     }
    ],
    "nc_pins": [],
    "value": "330",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RPVBB",
@@ -1307,8 +1307,8 @@
    ],
    "nc_pins": [],
    "value": "1M",
-   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
-   "mpn": "R1206-33R-1%"
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   }
  ]
 }

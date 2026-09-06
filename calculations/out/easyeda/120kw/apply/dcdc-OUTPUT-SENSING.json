@@ -33,12 +33,12 @@
      {
       "pin_number": 3,
       "name": "KA",
-      "signal_name": "N_DCDC_261"
+      "signal_name": "RSHO_KA"
      },
      {
       "pin_number": 4,
       "name": "KB",
-      "signal_name": "N_DCDC_262"
+      "signal_name": "RSHO_KB"
      }
     ]
    },
@@ -57,17 +57,17 @@
      {
       "pin_number": 2,
       "name": "VINP",
-      "signal_name": "N_DCDC_261"
+      "signal_name": "RSHO_KA"
      },
      {
       "pin_number": 3,
       "name": "VINN",
-      "signal_name": "N_DCDC_262"
+      "signal_name": "RSHO_KB"
      },
      {
       "pin_number": 4,
       "name": "GND1",
-      "signal_name": "N_DCDC_262"
+      "signal_name": "RSHO_KB"
      },
      {
       "pin_number": 5,
@@ -116,7 +116,7 @@
      {
       "pin_number": 3,
       "name": "-Vo",
-      "signal_name": "N_DCDC_262"
+      "signal_name": "RSHO_KB"
      }
     ]
    },
@@ -241,7 +241,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_263"
+      "signal_name": "ROAD_M"
      }
     ]
    },
@@ -255,12 +255,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_263"
+      "signal_name": "ROAD_M"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_264"
+      "signal_name": "ROAD_12"
      }
     ]
    },
@@ -274,12 +274,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_264"
+      "signal_name": "ROAD_12"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_265"
+      "signal_name": "ROAD_23"
      }
     ]
    },
@@ -293,12 +293,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_265"
+      "signal_name": "ROAD_23"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_266"
+      "signal_name": "ROAD_34"
      }
     ]
    },
@@ -312,12 +312,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_266"
+      "signal_name": "ROAD_34"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_267"
+      "signal_name": "ROAD_45"
      }
     ]
    },
@@ -331,12 +331,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_267"
+      "signal_name": "ROAD_45"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_268"
+      "signal_name": "ROAD_56"
      }
     ]
    },
@@ -350,12 +350,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_268"
+      "signal_name": "ROAD_56"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_269"
+      "signal_name": "ROAD_67"
      }
     ]
    },
@@ -369,12 +369,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_269"
+      "signal_name": "ROAD_67"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_270"
+      "signal_name": "UIVOA_VINP"
      }
     ]
    },
@@ -388,7 +388,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_270"
+      "signal_name": "UIVOA_VINP"
      },
      {
       "pin_number": 2,
@@ -407,7 +407,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_270"
+      "signal_name": "UIVOA_VINP"
      },
      {
       "pin_number": 2,
@@ -431,7 +431,7 @@
      {
       "pin_number": 2,
       "name": "VINP",
-      "signal_name": "N_DCDC_270"
+      "signal_name": "UIVOA_VINP"
      },
      {
       "pin_number": 3,
@@ -477,7 +477,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_271"
+      "signal_name": "ROBD_M"
      }
     ]
    },
@@ -491,12 +491,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_271"
+      "signal_name": "ROBD_M"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_272"
+      "signal_name": "ROBD_12"
      }
     ]
    },
@@ -510,12 +510,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_272"
+      "signal_name": "ROBD_12"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_273"
+      "signal_name": "ROBD_23"
      }
     ]
    },
@@ -529,12 +529,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_273"
+      "signal_name": "ROBD_23"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_274"
+      "signal_name": "ROBD_34"
      }
     ]
    },
@@ -548,12 +548,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_274"
+      "signal_name": "ROBD_34"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_275"
+      "signal_name": "ROBD_45"
      }
     ]
    },
@@ -567,12 +567,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_275"
+      "signal_name": "ROBD_45"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_276"
+      "signal_name": "ROBD_56"
      }
     ]
    },
@@ -586,12 +586,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_276"
+      "signal_name": "ROBD_56"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_277"
+      "signal_name": "ROBD_67"
      }
     ]
    },
@@ -605,12 +605,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_277"
+      "signal_name": "ROBD_67"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_278"
+      "signal_name": "UIVOB_VINP"
      }
     ]
    },
@@ -624,7 +624,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_278"
+      "signal_name": "UIVOB_VINP"
      },
      {
       "pin_number": 2,
@@ -643,7 +643,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_278"
+      "signal_name": "UIVOB_VINP"
      },
      {
       "pin_number": 2,
@@ -667,7 +667,7 @@
      {
       "pin_number": 2,
       "name": "VINP",
-      "signal_name": "N_DCDC_278"
+      "signal_name": "UIVOB_VINP"
      },
      {
       "pin_number": 3,
@@ -713,7 +713,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_279"
+      "signal_name": "ROVD_M"
      }
     ]
    },
@@ -727,12 +727,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_279"
+      "signal_name": "ROVD_M"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_280"
+      "signal_name": "ROVD_12"
      }
     ]
    },
@@ -746,12 +746,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_280"
+      "signal_name": "ROVD_12"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_281"
+      "signal_name": "ROVD_23"
      }
     ]
    },
@@ -765,12 +765,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_281"
+      "signal_name": "ROVD_23"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_282"
+      "signal_name": "ROVD_34"
      }
     ]
    },
@@ -784,12 +784,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_282"
+      "signal_name": "ROVD_34"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_283"
+      "signal_name": "ROVD_45"
      }
     ]
    },
@@ -803,12 +803,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_283"
+      "signal_name": "ROVD_45"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_284"
+      "signal_name": "ROVD_56"
      }
     ]
    },
@@ -822,12 +822,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_284"
+      "signal_name": "ROVD_56"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_285"
+      "signal_name": "ROVD_67"
      }
     ]
    },
@@ -841,12 +841,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_285"
+      "signal_name": "ROVD_67"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_286"
+      "signal_name": "UIVOV_VINP"
      }
     ]
    },
@@ -860,7 +860,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_286"
+      "signal_name": "UIVOV_VINP"
      },
      {
       "pin_number": 2,
@@ -879,7 +879,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_286"
+      "signal_name": "UIVOV_VINP"
      },
      {
       "pin_number": 2,
@@ -903,7 +903,7 @@
      {
       "pin_number": 2,
       "name": "VINP",
-      "signal_name": "N_DCDC_286"
+      "signal_name": "UIVOV_VINP"
      },
      {
       "pin_number": 3,
@@ -1061,12 +1061,12 @@
      {
       "pin_number": 1,
       "name": "OUT",
-      "signal_name": "N_DCDC_287"
+      "signal_name": "UAVB_OUT"
      },
      {
       "pin_number": 4,
       "name": "IN-",
-      "signal_name": "N_DCDC_288"
+      "signal_name": "UAVB_INN"
      },
      {
       "pin_number": 3,
@@ -1095,7 +1095,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_287"
+      "signal_name": "UAVB_OUT"
      },
      {
       "pin_number": 2,
@@ -1119,7 +1119,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_288"
+      "signal_name": "UAVB_INN"
      }
     ]
    },
@@ -1133,12 +1133,12 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_287"
+      "signal_name": "UAVB_OUT"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "N_DCDC_288"
+      "signal_name": "UAVB_INN"
      }
     ]
    },
