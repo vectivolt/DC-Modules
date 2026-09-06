@@ -61,14 +61,13 @@ US1M,C412437,ORDERABLE,Yageo/MDD,"1 kV 1 A fast diode SMA (DESAT chain)","M7/US1
 C1812-100p-1k,,CLASS,any MLCC,"100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)","film 630V",acdc,6,9.5,7,6.2,5.6,42,34,CA0SN CB0SN CC0SN CA1SN CB1SN CC1SN
 TLP152-class,C17255258,ORDERABLE,Toshiba/eq,"opto gate driver (isolated bus-discharge control, default-OFF — CB-11)","1ED31xx lite",acdc,1,56.7,42,37,33.6,42,34,UQD
 R2512-10R-2W,,CLASS,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,6,8.1,6,5.3,4.8,36,29,RA0SN RB0SN RC0SN RA1SN RB1SN RC1SN
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,87,0.5,0.4,0.4,0.3,35,26,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RA0F RB0F RC0F RA1F RB1F
 R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc+dcdc,21,2,1.5,1.3,1.2,32,25,RA0B RB0B RC0B RA1B RB1B RC1B RM24B RM15B RKPUKPARB RKPUKPREB RPVLB RPVBB
 TPS54202-class,C191884,ORDERABLE,TI/eq,"15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; one per board)","MP2451/SY8113",acdc+dcdc,2,20.3,15,13.2,12,30,24,UBKA UBKB
-MLCC-1u-0805,,CLASS,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,36,1.1,0.8,0.7,0.6,29,22,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 CA1GB1 CA1GB2 CB1GB1 CB1GB2 CC1GB1 CC1GB2
-MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,51,0.7,0.5,0.4,0.4,26,20,CA0F CB0F CC0F CA1F CB1F CC1F CV1DF CV2DF CV3DF CBPDF CBMDF CAVM
+CL21B105KBFNNNE,,UNMAPPED,any,"1 µF 0805 (driver bias)","any",acdc+dcdc,36,1.1,0.8,0.7,0.6,29,22,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 CA1GB1 CA1GB2 CB1GB1 CB1GB2 CC1GB1 CC1GB2
 TLV9061-class,C398358,ORDERABLE,TI/3PEAK,"rail-to-rail op-amp (AVMID buffer, E31)","LMV321",acdc+dcdc,2,16.2,12,10.6,9.6,24,19,UAVB UAVB
 NCP1252A,C80800,ORDERABLE,onsemi,"current-mode flyback controller, fixed 65 kHz, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC; the previously-priced UCC28C43 has no BO pin and needs an RT/CT network the schematic never drew","UCC28C43 + RT/CT & BO rework",acdc,1,32.4,24,21.1,19.2,24,19,UAUX
 R0805-prec-0.1%,,CLASS,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)","any 0.1%",acdc+dcdc,9,3.4,2.5,2.2,2,23,18,RQDL RV1DL RV2DL RV3DL RBPDL RBMDL ROADL ROBDL ROVDL
+RC0805FR-0710KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,51,0.5,0.4,0.4,0.3,20,15,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RQDPD RAVH RAVL RAVF RTPFCP
 ULN2803A,C2865085,ORDERABLE,any,"8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)","TBD62083",acdc+dcdc,2,12.2,9,7.9,7.2,18,14,UPA ULB
 R2512-2R0-1W-1%,,CLASS,any,"2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)","2× 1206 1R0 series",dcdc,6,4.1,3,2.6,2.4,18,14,R1CT R2CT R3CT R4CT R5CT R6CT
 LED-2DIG-0.56CC,C9900021773,ORDERABLE,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
@@ -79,24 +78,30 @@ R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series p
 IND-10u-3A,,CLASS,any shielded,"10 µH 3 A shielded power inductor (3V3 buck)","any",acdc+dcdc,2,8.1,6,5.3,4.8,12,10,LBKA LBKB
 PH-4-FAN,C131334,ORDERABLE,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17)","any",acdc,2,8.1,6,5.3,4.8,12,10,JFAN1 JFAN2
 1N4148WS,C2128,ORDERABLE,any,"clamp diode SOD-323 (to 3V3)","BAS316",acdc+dcdc,24,0.5,0.4,0.4,0.3,10,7,DA0P DA0N DB0P DB0N DC0P DC0N DA1P DA1N DB1P DB1N DC1P DC1N
-R0805-10k,,CLASS,any,"10 kΩ gate-source","any",acdc+dcdc,18,0.7,0.5,0.4,0.4,9,7,RA0GGS RB0GGS RC0GGS RA1GGS RB1GGS RC1GGS R1HGS R1LGS R2HGS R2LGS R3HGS R3LGS
+R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,23,0.5,0.4,0.4,0.3,9,7,RQDG RAVI RENRA RENLA RFLTA RAGTA RPET RAUXG RBR2 RFB1 RBKF1A RM24A
+RC0805FR-0710KL,,UNMAPPED,any,"10 kΩ gate-source","any",acdc+dcdc,18,0.7,0.5,0.4,0.4,9,7,RA0GGS RB0GGS RC0GGS RA1GGS RB1GGS RC1GGS R1HGS R1LGS R2HGS R2LGS R3HGS R3LGS
 PP-10n-1200,,CLASS,Faratronic,"10 nF 1200 V film (aux RCD clamp)","MLCC 1kV ×2",acdc,1,12.2,9,7.9,7.2,9,7,CCLA
+CC0603KRX7R9BB104,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,17,0.7,0.5,0.4,0.4,9,7,CAVM CTPFCF CTINLF CPFCA2 CSFA CPFCRST CCOMP CBSTA CAVM CTLLCF CTXFRF CLLCA2
 EL-220u-35,,CLASS,Aishi,"220 µF 35 V","any",acdc,2,5.4,4,3.5,3.2,8,6,CAUX24 CAUX15
 CMC-CAN-51uH,C55213551,ORDERABLE,any,"CAN common-mode choke","any",dcdc,1,10.8,8,7,6.4,8,6,LCAN
 PH-4,C131334,ORDERABLE,JST,"CAN connector 4-way","any",dcdc,1,10.8,8,7,6.4,8,6,JCAN
-MLCC-100p-0603,,CLASS,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,18,0.5,0.4,0.4,0.3,7,5,CA0GBL CB0GBL CC0GBL CA1GBL CB1GBL CC1GBL C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
+MLCC-small,,CLASS,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,15,0.7,0.5,0.4,0.4,8,6,CV1DF CV2DF CV3DF CAVF CAVO CPFCA1 CCSF CBKIA CBKOA CAVF CAVO CLLCA1
+CC0603JRNPO9BN101,,UNMAPPED,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,18,0.5,0.4,0.4,0.3,7,5,CA0GBL CB0GBL CC0GBL CA1GBL CB1GBL CC1GBL C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
+CC0603KRX7R9BB102,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,13,0.7,0.5,0.4,0.4,7,5,CA0F CB0F CC0F CA1F CB1F CC1F CBPDF CBMDF CFLTA COADF COBDF COVDF
 TAB-M4,,CLASS,local,"discharge FET heatsink tab stud","—",acdc,1,8.1,6,5.3,4.8,6,5,QDIS
 US2G,C49263,ORDERABLE,MDD/Yageo,"400 V 2 A ultrafast SMB (aux 15 V / self-supply rectifiers — CB-19: PIV ≈ 157 V + ring)","MURS240",acdc,2,4.1,3,2.6,2.4,6,5,DAUX15 DAUXVC
 FAST-1200-1A,C56792,ORDERABLE,MDD/eq,"1200 V 1 A fast diode SMB (aux RCD clamp)","US1M ×2 series",acdc,1,8.1,6,5.3,4.8,6,5,DCLA
 TACT-6x6,C318884,ORDERABLE,any,"tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)","any",dcdc,2,4.1,3,2.6,2.4,6,5,SW1 SW2
+RC0805FR-071KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,13,0.5,0.4,0.4,0.3,5,4,RA0F RB0F RC0F RA1F RB1F RC1F RCSF R1CF R2CF R3CF R4CF R5CF
 UF-400V-3A,C3039981,ORDERABLE,onsemi/MDD (MURS340 class),"400 V 3 A ultrafast, SMC pad (aux 24 V rectifier — CB-19: PIV ≈ 176 V + leakage ring; 100 V Schottky avalanched)","ES3 series 400 V",acdc,1,6.8,5,4.4,4,5,4,DAUX24
 PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,TVSCAN
 74HC595,C19192516,ORDERABLE,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
+CC0603JRNPO9BN221,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",dcdc,6,0.7,0.5,0.4,0.4,3,2,C1CF C2CF C3CF C4CF C5CF C6CF
 R1206-R31-1%-0.5W,,CLASS,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
-MLCC-100n-0402,,CLASS,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,0.2,2,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
-R0603-220,,CLASS,any,"220 Ω segment","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
+CC0402KRX7R7BB104,,UNMAPPED,any,"100 nF 0402 decoupling","any",acdc+dcdc,8,0.4,0.3,0.3,0.2,2,2,CPFCD0 CPFCD1 CPFCD2 CPFCD3 CLLCD0 CLLCD1 CLLCD2 CLLCD3
+RC0603FR-07220RL,,UNMAPPED,any,"220 Ω segment","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 FB-600R-0805,C1017,ORDERABLE,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",acdc+dcdc,2,1.1,0.8,0.7,0.6,2,1,FBPFCA FBLLCA
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (display digit driver)","MMBT2222",dcdc,2,0.5,0.4,0.4,0.3,1,1,QDIG1 QDIG2
 BIAS-XFMR-SET,,CUSTOM,custom,"BIAS-XFMR multi-secondary set (E23) — RETIRED at 10k volume (modules permanent, E23 rev B)","—",acdc+dcdc,2,0,0,0,0,0,0,

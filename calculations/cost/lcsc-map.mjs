@@ -129,3 +129,28 @@ export const lcscSummary = () => {
   for (const v of Object.values(LCSC)) c[v.status] = (c[v.status] ?? 0) + 1;
   return c;
 };
+
+// ---- value-resolved ordinary passives ----------------------------------------------------
+// Generic families like `R-small` / `MLCC-small` cover several values, so a per-MPN LCSC number
+// cannot express them — the part depends on (family, value). Every entry below was read back
+// from EasyEDA's own LCSC catalogue via component_search; none is from memory.
+// Deliberately NOT resolved: anything whose CLASS *is* the specification — HV73 high-voltage
+// dividers, PP film caps rated by voltage class, WW/CER power resistors, custom magnetics.
+// Substituting a generic part there would silently drop a rating the design depends on.
+export const LCSC_BY_VALUE = {
+  "R-small|10k":        { lcsc: "C84376",  mpn: "RC0805FR-0710KL",   note: "10k 0805 1% 125mW" },
+  "R0805-10k|10k":      { lcsc: "C84376",  mpn: "RC0805FR-0710KL",   note: "10k 0805 1% 125mW" },
+  "R-small|1k":         { lcsc: "C95781",  mpn: "RC0805FR-071KL",    note: "1k 0805 1%" },
+  "R0603-220|220":      { lcsc: "C107696", mpn: "RC0603FR-07220RL",  note: "220R 0603 1% 100mW" },
+  "MLCC-small|100nF":   { lcsc: "C14663",  mpn: "CC0603KRX7R9BB104", note: "100nF 0603 X7R 50V (JLC Basic)" },
+  "MLCC-small|1nF":     { lcsc: "C100040", mpn: "CC0603KRX7R9BB102", note: "1nF 0603 X7R" },
+  "MLCC-small|220pF":   { lcsc: "C106210", mpn: "CC0603JRNPO9BN221", note: "220pF 0603 NP0 50V" },
+  "MLCC-1u-0805|1uF":   { lcsc: "C28323",  mpn: "CL21B105KBFNNNE",   note: "1uF 0805 X7R 50V (JLC Basic)" },
+  "MLCC-100p-0603|100pF": { lcsc: "C14665", mpn: "CC0603JRNPO9BN101", note: "100pF 0603 NP0 50V" },
+  "MLCC-100n-0402|100nF": { lcsc: "C60474", mpn: "CC0402KRX7R7BB104", note: "100nF 0402 X7R 16V — used only on the 3.3 V rail (~5x derating)" },
+};
+
+// Resolve by family AND value where we have a real catalogue part, else fall back to the
+// per-MPN map (which is where the class-specified parts correctly stay).
+export const lcscForPart = (mpn, value) =>
+  LCSC_BY_VALUE[`${mpn}|${value}`] ?? lcscFor(mpn);

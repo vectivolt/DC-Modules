@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { lcscFor } from "./cost/lcsc-map.mjs";
+import { lcscFor, lcscForPart } from "./cost/lcsc-map.mjs";
 import { SHEET_TITLES, SHEET_IDENT } from "./schematic-sections.mjs";
 import { DB, skuOverrides } from "./cost/parts-db.mjs";
 import { footprintForRef } from "./footprint-map.mjs";
@@ -159,11 +159,13 @@ const mirrorLibY = (text) => text.split("\n").map((l) => {
 // Components in the apply payload carry no MPN — the BOM resolves it by matching the designator
 // against parts-db (with per-SKU overrides for the relays/fuses/CT that change rating by power
 // class). Do exactly the same here so the sheet, the BOM and the LCSC map can never disagree.
-const partOf = (designator) => {
+const partOf = (designator, value) => {
   const rule = DB.find((r) => r.m.test(designator));
   const ov = (skuOverrides[SKU] ?? {})[designator] ?? {};
   const mpn = ov.mpn ?? rule?.mpn ?? "";
-  return { mpn, lc: mpn ? lcscFor(mpn) : { status: "UNMAPPED" } };
+  if (!mpn) return { mpn: "", lc: { status: "UNMAPPED" } };
+  const hit = lcscForPart(mpn, value);          // family+value first, then the per-MPN map
+  return { mpn: hit.mpn ?? mpn, lc: hit };
 };
 
 function termLib(pinNum, pinName) {
@@ -520,7 +522,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       const { c, s } = it;
       const ox = snap(b.X + SECPAD + (b.pad ?? 0) + it.x + s.lw + STUB);
       const oy = snap(b.Y + SECTITLE + SECPAD + it.y);
-      const { mpn, lc } = partOf(c.designator);
+      const { mpn, lc } = partOf(c.designator, c.value);
       if (s.cat === "TERM") {
         const p0 = c.pins[0];
         const cx = snap(ox + 100), cyy = snap(oy + ROW / 2);

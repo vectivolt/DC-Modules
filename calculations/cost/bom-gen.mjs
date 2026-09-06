@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DB, skuOverrides, mechLines, biasCommon } from "./parts-db.mjs";
-import { lcscFor, lcscSummary } from "./lcsc-map.mjs";
+import { lcscFor, lcscForPart, lcscSummary, LCSC_BY_VALUE } from "./lcsc-map.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 0) => Number(x.toFixed(d));
 
@@ -30,6 +30,18 @@ const CAT = (mpn, desc) =>
     : /7-seg|tactile/.test(desc) ? "HMI"
     : "misc";
 
+// Same engineering-notation formatter the schematic uses, so a (family|value) key formed here
+// matches the one formed there — the sheet and the BOM must not disagree about a part number.
+const eng = (x, unit) => {
+  if (!(x > 0)) return "";
+  const p = [[1e6, "M"], [1e3, "k"], [1, ""], [1e-3, "m"], [1e-6, "u"], [1e-9, "n"], [1e-12, "p"]];
+  for (const [m, sfx] of p) if (x >= m * 0.9999) return `${Number((x / m).toPrecision(3))}${sfx}${unit}`;
+  return `${x}${unit}`;
+};
+const valueOf = (c) => c.ftype === "simple_resistor"
+  ? (Number(c.resistance) === 0 ? "0R" : eng(Number(c.resistance), ""))
+  : c.ftype === "simple_capacitor" ? eng(Number(c.capacitance), "F") : "";
+
 const summary = {};
 let anyUnmatched = false;
 for (const sku of SKUS) {
@@ -45,8 +57,13 @@ for (const sku of SKUS) {
       const rule = DB.find(r => r.m.test(name));
       if (!rule) { unmatched.add(`${side}:${name} (${c.ftype ?? "?"})`); anyUnmatched = true; continue; }
       const ov = (skuOverrides[sku] ?? {})[name] ?? {};
-      const key = (ov.price1k || ov.mpn) ? `${ov.mpn ?? rule.mpn}@${name}` : rule.mpn;
-      const rec = parts.get(key) ?? { mpn: ov.mpn ?? rule.mpn, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
+      // Split a generic family into per-value lines where a real catalogue part exists for that
+      // value (LCSC_BY_VALUE) — "R-small" is two different orderable parts at 10k and at 1k.
+      const val = valueOf(c);
+      const vKey = LCSC_BY_VALUE[`${ov.mpn ?? rule.mpn}|${val}`] ? `#${val}` : "";
+      const key = ((ov.price1k || ov.mpn) ? `${ov.mpn ?? rule.mpn}@${name}` : rule.mpn) + vKey;
+      const resolved = lcscForPart(ov.mpn ?? rule.mpn, val);
+      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, val, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
       rec.qty += ov.qtyMul ?? 1;
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);
@@ -63,8 +80,8 @@ for (const sku of SKUS) {
     totE += ext; totE10 += ext10;
     const cat = CAT(r.mpn, r.desc);
     cats[cat] = (cats[cat] ?? 0) + ext;
-    const lc = lcscFor(r.mpn);
-    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
+    const lc = lcscForPart(r.mpn, r.val ?? "");
+    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && LCSC_BY_VALUE[`${r.mpn}|${r.val}`] ? ` ${r.val}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
   csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
