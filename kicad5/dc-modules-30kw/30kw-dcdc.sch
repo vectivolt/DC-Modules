@@ -1935,6 +1935,7 @@ Wire Wire Line
 	23650 5700 23450 5700
 Text GLabel 23450 5700 2    50   Input ~ 0
 SNS_VOUT
+NoConn ~ 23650 5800
 Wire Wire Line
 	23650 5900 23450 5900
 Text GLabel 23450 5900 2    50   Input ~ 0
@@ -1947,6 +1948,7 @@ Wire Wire Line
 	23650 6100 23450 6100
 Text GLabel 23450 6100 2    50   Input ~ 0
 I_RES3
+NoConn ~ 23650 6200
 Wire Wire Line
 	23650 6300 23450 6300
 Text GLabel 23450 6300 2    50   Input ~ 0
@@ -1991,6 +1993,7 @@ Wire Wire Line
 	23650 7300 23450 7300
 Text GLabel 23450 7300 2    50   Input ~ 0
 PWM_L3H
+NoConn ~ 23650 7400
 Wire Wire Line
 	23650 7500 23450 7500
 Text GLabel 23450 7500 2    50   Input ~ 0
@@ -2023,6 +2026,8 @@ Wire Wire Line
 	24750 5200 24950 5200
 Text GLabel 24950 5200 0    50   Output ~ 0
 SNS_VBKA
+NoConn ~ 24750 5300
+NoConn ~ 24750 5400
 Wire Wire Line
 	24750 5500 24950 5500
 Text GLabel 24950 5500 0    50   Output ~ 0
@@ -2059,6 +2064,10 @@ Wire Wire Line
 	24750 6300 24950 6300
 Text GLabel 24950 6300 0    50   Output ~ 0
 RELAY_FB_KPREB
+NoConn ~ 24750 6400
+NoConn ~ 24750 6500
+NoConn ~ 24750 6600
+NoConn ~ 24750 6700
 Wire Wire Line
 	24750 6800 24950 6800
 Text GLabel 24950 6800 0    50   Output ~ 0

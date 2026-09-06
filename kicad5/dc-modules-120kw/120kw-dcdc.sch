@@ -2579,6 +2579,7 @@ Wire Wire Line
 	13150 6600 12950 6600
 Text GLabel 12950 6600 2    50   Input ~ 0
 SNS_VOUT
+NoConn ~ 13150 6700
 Wire Wire Line
 	13150 6800 12950 6800
 Text GLabel 12950 6800 2    50   Input ~ 0
@@ -2595,6 +2596,8 @@ Wire Wire Line
 	13150 7100 12950 7100
 Text GLabel 12950 7100 2    50   Input ~ 0
 I_RES3
+NoConn ~ 13150 7200
+NoConn ~ 13150 7300
 Wire Wire Line
 	13150 7400 12950 7400
 Text GLabel 12950 7400 2    50   Input ~ 0
@@ -6639,6 +6642,7 @@ Wire Wire Line
 	1800 19750 2000 19750
 Text GLabel 2000 19750 0    50   Output ~ 0
 N_DCDC_62
+NoConn ~ 1800 19850
 Wire Wire Line
 	1150 19500 1150 19300
 Text GLabel 1150 19300 1    50   Output ~ 0
@@ -6663,6 +6667,7 @@ Wire Wire Line
 	3650 19750 3850 19750
 Text GLabel 3850 19750 0    50   Output ~ 0
 N_DCDC_69
+NoConn ~ 3650 19850
 Wire Wire Line
 	3000 19500 3000 19300
 Text GLabel 3000 19300 1    50   Output ~ 0

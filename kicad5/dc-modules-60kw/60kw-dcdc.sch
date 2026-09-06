@@ -2095,6 +2095,7 @@ Wire Wire Line
 	23600 5700 23400 5700
 Text GLabel 23400 5700 2    50   Input ~ 0
 SNS_VOUT
+NoConn ~ 23600 5800
 Wire Wire Line
 	23600 5900 23400 5900
 Text GLabel 23400 5900 2    50   Input ~ 0
@@ -2203,6 +2204,8 @@ Wire Wire Line
 	24700 5300 24900 5300
 Text GLabel 24900 5300 0    50   Output ~ 0
 SNS_VBKA
+NoConn ~ 24700 5400
+NoConn ~ 24700 5500
 Wire Wire Line
 	24700 5600 24900 5600
 Text GLabel 24900 5600 0    50   Output ~ 0
@@ -2255,6 +2258,8 @@ Wire Wire Line
 	24700 6800 24900 6800
 Text GLabel 24900 6800 0    50   Output ~ 0
 PWM_L6L
+NoConn ~ 24700 6900
+NoConn ~ 24700 7000
 Wire Wire Line
 	24700 7100 24900 7100
 Text GLabel 24900 7100 0    50   Output ~ 0
@@ -5983,6 +5988,7 @@ Wire Wire Line
 	1800 22000 2000 22000
 Text GLabel 2000 22000 0    50   Output ~ 0
 N_DCDC_62
+NoConn ~ 1800 22100
 Wire Wire Line
 	1150 21750 1150 21550
 Text GLabel 1150 21550 1    50   Output ~ 0
@@ -6007,6 +6013,7 @@ Wire Wire Line
 	3650 22000 3850 22000
 Text GLabel 3850 22000 0    50   Output ~ 0
 N_DCDC_69
+NoConn ~ 3650 22100
 Wire Wire Line
 	3000 21750 3000 21550
 Text GLabel 3000 21550 1    50   Output ~ 0

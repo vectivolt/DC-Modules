@@ -4427,6 +4427,13 @@ Wire Wire Line
 	24200 8700 24000 8700
 Text GLabel 24000 8700 2    50   Input ~ 0
 PWM_C3
+NoConn ~ 24200 8800
+NoConn ~ 24200 8900
+NoConn ~ 24200 9000
+NoConn ~ 24200 9100
+NoConn ~ 24200 9200
+NoConn ~ 24200 9300
+NoConn ~ 24200 9400
 Wire Wire Line
 	24200 9500 24000 9500
 Text GLabel 24000 9500 2    50   Input ~ 0
@@ -4447,6 +4454,7 @@ Wire Wire Line
 	24200 9900 24000 9900
 Text GLabel 24000 9900 2    50   Input ~ 0
 T_INLET
+NoConn ~ 24200 10000
 Wire Wire Line
 	24200 10100 24000 10100
 Text GLabel 24000 10100 2    50   Input ~ 0
@@ -4471,6 +4479,9 @@ Wire Wire Line
 	24200 10600 24000 10600
 Text GLabel 24000 10600 2    50   Input ~ 0
 SNS_V24
+NoConn ~ 24200 10700
+NoConn ~ 24200 10800
+NoConn ~ 24200 10900
 Wire Wire Line
 	24200 11000 24000 11000
 Text GLabel 24000 11000 2    50   Input ~ 0
@@ -4495,6 +4506,7 @@ Wire Wire Line
 	24200 11500 24000 11500
 Text GLabel 24000 11500 2    50   Input ~ 0
 SNS_VAC2
+NoConn ~ 24200 11600
 Wire Wire Line
 	24200 11700 24000 11700
 Text GLabel 24000 11700 2    50   Input ~ 0
@@ -4523,6 +4535,7 @@ Wire Wire Line
 	24200 12300 24000 12300
 Text GLabel 24000 12300 2    50   Input ~ 0
 FLT_PFC
+NoConn ~ 24200 12400
 Wire Wire Line
 	24200 12500 24000 12500
 Text GLabel 24000 12500 2    50   Input ~ 0
@@ -4535,6 +4548,11 @@ Wire Wire Line
 	25300 8700 25500 8700
 Text GLabel 25500 8700 0    50   Output ~ 0
 PWM_C1
+NoConn ~ 25300 8800
+NoConn ~ 25300 8900
+NoConn ~ 25300 9000
+NoConn ~ 25300 9100
+NoConn ~ 25300 9200
 Wire Wire Line
 	25300 9300 25500 9300
 Text GLabel 25500 9300 0    50   Output ~ 0
@@ -4555,6 +4573,7 @@ Wire Wire Line
 	25300 9700 25500 9700
 Text GLabel 25500 9700 0    50   Output ~ 0
 PWM_C2
+NoConn ~ 25300 9800
 Wire Wire Line
 	25300 9900 25500 9900
 Text GLabel 25500 9900 0    50   Output ~ 0
@@ -4575,6 +4594,8 @@ Wire Wire Line
 	25300 10300 25500 10300
 Text GLabel 25500 10300 0    50   Output ~ 0
 PWM_C0
+NoConn ~ 25300 10400
+NoConn ~ 25300 10500
 Wire Wire Line
 	25300 10600 25500 10600
 Text GLabel 25500 10600 0    50   Output ~ 0
@@ -4583,6 +4604,7 @@ Wire Wire Line
 	25300 10700 25500 10700
 Text GLabel 25500 10700 0    50   Output ~ 0
 SWCLK_PFC
+NoConn ~ 25300 10800
 Wire Wire Line
 	25300 10900 25500 10900
 Text GLabel 25500 10900 0    50   Output ~ 0
@@ -4627,10 +4649,14 @@ Wire Wire Line
 	25300 11900 25500 11900
 Text GLabel 25500 11900 0    50   Output ~ 0
 FAN_TACH3
+NoConn ~ 25300 12000
+NoConn ~ 25300 12100
+NoConn ~ 25300 12200
 Wire Wire Line
 	25300 12300 25500 12300
 Text GLabel 25500 12300 0    50   Output ~ 0
 BOOT0_PFC
+NoConn ~ 25300 12400
 Wire Wire Line
 	25300 12500 25500 12500
 Text GLabel 25500 12500 0    50   Output ~ 0
@@ -5299,6 +5325,11 @@ Wire Wire Line
 	3100 15950 2900 15950
 Text GLabel 2900 15950 2    50   Input ~ 0
 DGND
+NoConn ~ 4000 15250
+NoConn ~ 4000 15350
+NoConn ~ 4000 15450
+NoConn ~ 4000 15550
+NoConn ~ 4000 15650
 Wire Wire Line
 	4000 15750 4200 15750
 Text GLabel 4200 15750 0    50   Output ~ 0

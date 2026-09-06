@@ -240,7 +240,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   const sheetW = snap(Math.max(...rows.map((r) => r.reduce((a, b, i) => a + b.w + (i ? SECGAP : 0), 0))) + 2 * MARGIN);
   const sheetH = snap(cy - SECGAP + MARGIN + 800);
 
-  let body = "", nLabels = 0;
+  let body = "", nLabels = 0, nNC = 0;
   const GL = (net, x, y, dir) => {                     // dir: 0 right, 2 left, 1 up, 3 down
     nLabels++;
     return `Text GLabel ${x} ${y} ${dir}    50   ${dir === 2 ? "Input" : "Output"} ~ 0\n${net}\n`;
@@ -299,15 +299,18 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         const bound = new Map(c.pins.map((p) => [String(p.pin_number), p.signal_name]));
         const g = s.groups;
+        const noConn = (x, y) => { body += `NoConn ~ ${x} ${y}\n`; nNC++; };
         g.left.forEach((p, i) => {
-          const sig = bound.get(String(p.pin_number)); if (!sig) return;
           const pxx = snap(cx - s.halfW - 150), py = snap(cyy - s.halfH + PITCH + i * PITCH);
+          const sig = bound.get(String(p.pin_number));
+          if (!sig) return noConn(pxx, py);
           const ex = snap(pxx - STUB);
           body += `Wire Wire Line\n\t${pxx} ${py} ${ex} ${py}\n` + GL(sig, ex, py, 2);
         });
         g.right.forEach((p, i) => {
-          const sig = bound.get(String(p.pin_number)); if (!sig) return;
           const pxx = snap(cx + s.halfW + 150), py = snap(cyy - s.halfH + PITCH + i * PITCH);
+          const sig = bound.get(String(p.pin_number));
+          if (!sig) return noConn(pxx, py);
           const ex = snap(pxx + STUB);
           body += `Wire Wire Line\n\t${pxx} ${py} ${ex} ${py}\n` + GL(sig, ex, py, 0);
         });
@@ -338,7 +341,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     + `Comment3 ""\nComment4 ""\n$EndDescr\n${body}$EndSCHEMATC\n`;
   writeFileSync(join(OUT, `${page.page}.sch`), sch);
   files.push(page.page);
-  console.log(`${page.page.padEnd(22)} ${String(page.total).padStart(3)} comps · ${blocks.length} sections · ${nLabels} labels · ${sheetW}×${sheetH} mil`);
+  console.log(`${page.page.padEnd(22)} ${String(page.total).padStart(3)} comps · ${blocks.length} sections · ${nLabels} labels · ${nNC} no-connects · ${sheetW}×${sheetH} mil`);
 }
 
 // Root sheet referencing all twelve pages, so EasyEDA imports the whole board set in one go
