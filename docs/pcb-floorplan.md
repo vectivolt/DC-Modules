@@ -481,17 +481,29 @@ either side of the slot. What this buys:
 
 1. **One ridge, one isolation domain.** The ridge metal is shared by the devices on both its flanks,
    so a ridge must never carry a primary device on one side and a secondary device on the other.
-   Ridges are separate castings/extrusion features, so this is free to enforce — assign each ridge a
-   domain in the mechanical drawing and keep primary and secondary ridges ≥20 mm apart, aligned to
-   the PCB barrier slot (§4).
+   Assign each ridge a domain in the mechanical drawing and keep primary and secondary ridges ≥20 mm
+   apart, aligned to the PCB barrier slot (§4).
+
+   **The ridge does not have to be machined into the extrusion.** Two vendors ship the same idea as
+   a cut length of standard extrusion per cell — Microchip a 50 × 50 × 150 mm fan-integrated
+   Fischer LAM5 K 150 12 per PFC phase, ST a plain 130 × 50 × 18 mm bar per phase (§12.1). A bolted
+   per-cell bar is cheaper than a custom machined face and makes the one-domain rule physical rather
+   than administrative. Use integral ridges where the outer extrusion is there anyway, bolted bars
+   where it is not.
 2. **A ridge belongs to one cell family.** A Vienna phase's 5 devices, an LLC leg's 2, a secondary
    bridge's 8 — a ridge carries whole cells, never a cell split across two ridges.
 3. **Extrusion is PE-bonded**, each device pad qualified as a basic barrier to PE (§4).
-4. **The gate driver sits on the board directly beside its ridge**, within **10 mm** of the gate pins
+4. **The insulator under the device is an EMI part, not just a thermal one.** Specify **aluminium
+   nitride** (or an equivalently low-capacitance insulator) with phase-change TIM on both faces.
+   Microchip chooses AlN explicitly to cut parasitic capacitance from the device tab to the earthed
+   heatsink and therefore common-mode noise (§12.2) — that capacitance injects straight into the
+   CISPR conducted limit. A cheaper high-permittivity pad is a thermally equivalent, electrically
+   worse part, and the difference does not show up until pre-compliance.
+5. **The gate driver sits on the board directly beside its ridge**, within **10 mm** of the gate pins
    (§7), with its own local bias. Gate and Kelvin-source returns run as a pair, never split.
-5. **Slot width is a budget line.** 45 mm per double-sided ridge is the working number above; it is
+6. **Slot width is a budget line.** 45 mm per double-sided ridge is the working number above; it is
    the price of the rail and it comes out of the FILL figure in §2.
-6. **Clamp access.** A clamp bar runs the length of each ridge, so the assembly sequence is insert →
+7. **Clamp access.** A clamp bar runs the length of each ridge, so the assembly sequence is insert →
    stand → clamp, with the bar torqued from above before the second board is mated. Check this
    against `dfm-production.md` step 5, which currently describes flat clamping.
 
@@ -708,8 +720,91 @@ Six viewpoints, each with its own question.
 | 3b | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
 | 4 | ~~B2B pillar alignment~~ — **closed by the U-fold**: the handoff is at the front of both boards, so the pillars are vertical (§8) | — | closed |
 | 5 | HMI daughter card + isolated-CAN flying lead (§4) | removes the only long SELV run now that CAN exits on the DC output plug | electrical |
-| 6 | **Reinforced creepage: 12.6 mm or 25 mm?** (§7) | sets the barrier band width on the most area-constrained board | insulation / DQ |
+| 6 | Reinforced creepage — **direction closed** (§12.4): certified parts use 8.1 mm at 1.3 kVDC, so our 12.6 mm is conservative, not optimistic. Remaining work is confirming edition + material group | lower | DQ |
 | 7 | Record datasheet Tj(max) per device (§7) | 138 °C is 92 % of 150 but 79 % of 175 — the guideline verdict flips | thermal / §K gate |
 | 8 | Copper weight: 2 oz throughout, or 3–4 oz on the bus and output pours? (§7) | 39–156 A on 2 oz is under-specified | fab RFQ |
 | 9 | D3 transformer finished envelope (VERIFY in `floorplan-budget.mjs`) | the fill numbers move with it | magnetics vendor |
-| 10 | Commercial reference dimensions — module envelope, power density, airflow | tells us whether these outlines are competitive or oversized | research (in progress) |
+| 10 | ~~Commercial reference dimensions~~ — **closed**, see §12. The 3U target, the narrow-and-deep re-proportioning and the standing-device rail are all confirmed against shipping hardware | — | closed |
+| 11 | **D3 transformer hotspot vs its LOCAL inlet temperature** (§12.3) | magnetics, not semis, are the thermal ceiling in a forced-air LLC — 18.7 K of margin vs 63.8 K | thermal |
+| 12 | **AlN (low-capacitance) insulator under the devices** (§12.2) | device-to-PE capacitance feeds the CISPR conducted limit; currently only a TIM class is specified | electrical + mechanical |
+
+---
+
+## 12. Measured against commercial practice
+
+Sourced from manufacturer reference designs and user guides (Wolfspeed CRD-30DD12N-K / CRD-60DD12N-K,
+Microchip 30 kW Vienna PFC DS50002952, ST STDES-30KWVRECT UM3011, TI TIDA-010257 TIDUFB1, Infypower
+REG1K0100G2). Each row says what it confirms or changes in this plan.
+
+### What it confirms
+
+| Finding | Source | Effect here |
+|---|---|---|
+| **60 kW LLC PCBA is 490 × 390 mm, and 490 mm exceeds the ~448 mm usable 19-inch interior — so above 30 kW the long axis must run front-to-back**, needing ≥490 mm chassis depth | Wolfspeed PRD-07229 | **Independently confirms §2.** This plan re-proportioned the 60 kW DC-DC board to 440 × **497 mm** on exactly that reasoning, before this source was read. Two different routes to within 7 mm. |
+| A real 3U 30 kW module is ~483 × 430 × 133 mm = 27.6 L ≈ **1.1 kW/L**; vendor "6.5 kW/L" is a bare-PCBA figure excluding enclosure, EMI filter, PFC front end and protection — about **6× optimistic** for chassis sizing | Wolfspeed PRD-05777 + verifier | Confirms the 3U target and warns against sizing from PCBA density. Our 30 kW depth (287 / 335 mm) sits inside the 430 mm class depth. |
+| Devices are **vertical TO-247 at the sink, not SMD on a cold plate** — ST counts 18 vertical through-hole devices on three bars | ST UM3011 + BOM | Confirms §5's standing-device ridge. This is the shipped practice, not a novelty. |
+| Straight-line power flow, AC and DC terminals on **opposite edges**, EMI filter and connectors kept away from high-dv/dt nodes | Wolfspeed SiC layout rules; TI TIDA-010257 | Confirms §3/§4 banding. **One deviation to note:** the vendor pattern is opposite *edges*; this module puts both connectors on the rear face at diagonally opposite *corners* (§0, per directive). The diagonal preserves the separation distance but both harnesses exit one face — worth watching at EMC pre-compliance. |
+| Control as a **side column off the power path**, on the low-voltage "cold" side, with every sense chain crossing through isolated parts | TI TIDUFB1 | Confirms the control strip and the sense-pod rule in §3/§4. |
+| Control and gate-drive signals **routed along the board edge specifically to escape the magnetics** — away from the PFC choke and away from the transformers, chokes and resonant caps | Wolfspeed OBC layouts | Confirms §6 rule 2 and §7. Direct precedent. |
+
+### What it changes
+
+**1. The ridges can be separate standard bars, not a machined feature.** Two independent vendors
+partition the Vienna PFC **thermally per phase**: Microchip bolts each phase's 4 SiC MOSFETs +
+2 SiC diodes to its own **Fischer LAM5 K 150 12** fan-integrated extrusion (50 × 50 × 150 mm, internal
+fin channel, **one fan per phase**); ST uses three plain **130 × 50 × 18 mm TO-247 bars** with two
+fans. Neither uses a common cold plate.
+
+That is §5's "one ridge, one cell family" rule already — but it says the rail does not have to be
+machined into a large extrusion. **A cut length of standard extrusion per cell is cheaper and is what
+ships.** Revise §5 to allow either: integral ridges where the outer extrusion is already there, or
+bolted per-cell bars where it is not. The per-cell bar also makes the "one ridge, one isolation
+domain" rule physical rather than administrative.
+
+**2. The insulator under the device is an EMI decision, not only a thermal one.** Microchip specifies
+an **aluminium nitride sheet with phase-change TIM on both faces**, chosen explicitly to cut parasitic
+capacitance to the earthed heatsink and therefore common-mode noise (diodes get graphite sheet plus
+insulating grommets). Case temperature held ~80 °C at 400 VAC / 27 kW. Our §7 and
+[dfm-production.md](dfm-production.md) specify a phase-change TIM class but say nothing about the
+insulator's capacitance. **Add AlN (or an equivalently low-capacitance insulator) as a requirement,
+with the CM-current reason recorded** — this is a device-to-PE capacitance that feeds straight into
+the CISPR conducted limit.
+
+**3. The magnetics, not the semiconductors, are the thermal ceiling.** In Wolfspeed's forced-air
+30 kW LLC, transformer coils reached **136–141 °C against a 160 °C derating limit — 18.7 K of margin**
+— while the hottest MOSFET junction was **111 °C of 175 °C, 63.8 K of margin**. The magnetics carry no
+heatsink at all.
+
+This reorders the thermal priorities in §0. Our airflow argument ranked the DC-link electrolytics
+(life) and the EMI filter (largest load) first; **the LLC transformer deserves at least equal
+standing**, and on the DC-DC board it currently sits mid-stream at ~57 % of the flow path, behind the
+legs and tanks. Two actions:
+
+- **Check D3's hotspot against the inlet temperature it actually sees**, not against ambient. Our
+  acceptance is ΔT ≤ 55 K at the hotspot; if it sits behind the legs and tanks in a 55 °C-ambient
+  module, its local inlet is already above ambient and the margin is smaller than the drawing implies.
+- **Treat the transformer row's position as a thermal decision as well as an isolation one.** Moving
+  the barrier forward compresses the primary zone and gives the transformers cooler air; that trade
+  is now on the table where before it looked purely geometric.
+
+**4. Reinforced creepage — the conservative 25 mm figure is not what certified parts use.** TI's
+TMCS1123 provides **1.3 kVDC reinforced working voltage with a minimum 8.1 mm creepage and clearance**
+(5 kVrms insulation). That is a *higher* working voltage than our output rail at a *smaller* spacing
+than our table's 12.6 mm. It does not by itself certify our number, but it closes the direction of
+the question: **our 8.0 / 12.6 mm is conservative relative to shipping certified hardware, not
+optimistic**, and the 25 mm rule-of-thumb is the outlier. Open item 6 downgrades from "resolve before
+committing the outline" to "confirm the edition and material group at DQ".
+
+Note the terminology, which TI is careful about and we should be too: a Vienna PFC is **not
+isolated**, so on the AC-DC board there is no primary/secondary — it is a functional/reinforced
+barrier between the **mains-referenced power domain and the controller domain** (hot side / cold
+side). Only the DC-DC board has a true primary↔secondary barrier.
+
+**5. Competitive envelope — two of our claims are ahead of the shipping part, and should be treated
+as claims until bench data exists.** Infypower's REG1K0100G2 delivers 30 kW only **above 300 VDC**
+(150–1000 VDC / 0–100 A, current-limited below 300 V, derating to ~15 kW at 150 V), at **≥95.5 %
+full-load / ≥96 % peak efficiency**, and its 100 A envelope is bounded to **≤45 °C ambient**. This
+design claims **97.26–97.29 %** and **full power to +55 °C**. Both are better than the shipping
+competitor on paper; both are calculated, not measured
+([README honesty boundary](../README.md)). Worth flagging to whoever writes the datasheet.
+
