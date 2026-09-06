@@ -45,7 +45,7 @@ fixes a **straight-through module**, not a U-turn:
 - **Z** is the sandwich stack: lower extrusion / AC-DC board / tunnel / DC-DC board / upper extrusion.
 - Power flows **rear→front on both boards**. The board-to-board handoff (DCP/DCN/PE M8 pillars) is
   therefore at the **front** of the AC-DC board and the **rear** of the DC-DC board — the two studs
-  sets are at *different* X, connected by the pillar height, not stacked over each other. See §7.
+  sets are at *different* X, connected by the pillar height, not stacked over each other. See §8.
 
 ### Why airflow opposes power flow
 
@@ -274,8 +274,8 @@ heatsink"* — is right, with one qualification the numbers force.
 2. **A rail segment belongs to one cell.** Vienna phase = 5 devices = 100 mm. LLC leg = 2 devices =
    40 mm. Secondary bridge = 8 devices = 160 mm. Do not mix cells on a segment; the hot loop must
    close inside the cell.
-3. **The gate driver is on the board directly behind its rail segment**, within 15 mm of the gate
-   pins, with its own local bias. Gate and Kelvin-source returns run as a pair, never split.
+3. **The gate driver is on the board directly behind its rail segment**, within **10 mm** of the gate
+   pins (§7), with its own local bias. Gate and Kelvin-source returns run as a pair, never split.
 4. **Primary and secondary rails on the DC-DC extrusion are ≥20 mm apart**, aligned to the PCB
    barrier slot (§4).
 5. **Perimeter first, interior rails when perimeter runs out** — 60 and 120 kW need interior rails
@@ -329,7 +329,98 @@ tallest parts and they set the sandwich height.
 
 ---
 
-## 7. Board-to-board interface
+## 7. Component rules carried into placement
+
+The zones say where a section goes. These say what placement inside a zone must satisfy. They are
+the rules that a section-level plan cannot express but a placement will be judged against, so they
+are written down now rather than discovered during routing.
+
+### Switching cells
+
+| Rule | Value | Applies to |
+|---|---|---|
+| Hot loop area | **≤ 5 mm²** — device pair + local film cap + return | every Vienna phase, every LLC leg |
+| Gate driver to gate pin | **≤ 10 mm** | all 46 / 91 / 181 devices |
+| Gate + Kelvin-source return | routed as a **pair**, never split, never sharing power return | all driven devices |
+| Switch-node copper | **minimum area that carries the current** — it is an antenna, not a pour | SW nodes, Vienna mid-nodes, LLC half-bridge outputs |
+| Under a switch node | **no traces on any layer**, and no sense or gate routing on the layer below | all switching zones |
+| Snubber | RC / RCD placed across the device pads, not a detour | already specified per node in the schematic |
+| Isolated bias | the QA01C-class module sits with its driver, not on the control strip | all isolated gate supplies |
+
+Bootstrap rules do not apply — every driver here takes an isolated bias module, so there is no
+bootstrap loop to keep short. That is a deliberate architecture choice worth not undoing.
+
+### High-current copper
+
+| Rule | Value |
+|---|---|
+| Above 10 A | **copper polygons, not traces** |
+| Layer transitions | **≥1 via per 1 A**, 0.3 mm drill class, and the via field spread over the pour, not clustered at one corner |
+| Power pads | **no thermal relief** — full connection; the pad is a conductor, not a soldering convenience |
+| Copper weight | 2 oz signal/sense layers; **the bus and output pours want 3–4 oz** or an inlay. 2 oz everywhere is under-specified for a board carrying 39–156 A — settle this with the fab quote |
+| Connectors | rated **≥2× operating current** |
+| Fuse coordination | fuse I²t below the trace's failure point, not merely below its rating |
+| Kelvin taps | shunt, midpoint, and every source-sense — unbroken, unshared, and not carrying load current |
+
+### Isolation, as a component property
+
+The barrier is not only a gap in copper; each part sitting on it is part of the barrier.
+
+- **Solder mask is not insulation.** Every creepage figure is a **bare-board** distance. Do not let
+  a mask-over-gap count.
+- **Every layer respects the barrier**, and the routed slot goes through all six.
+- **Mounting holes, test pads, fiducials and tooling holes stay outside the barrier.** A test pad
+  dropped inside it is the classic way a compliant layout becomes non-compliant late.
+- **A component's own pin-to-pin spacing must meet the barrier it straddles** — the D3 transformer,
+  every isolator, every Y1 cap, and the HV relays. A 12.6 mm PCB barrier bridged by an 8 mm-pitch
+  part is an 8 mm barrier.
+- **Altitude** > 2000 m derates clearance; the manual note already exists, the layout should carry
+  the margin rather than sit exactly on the limit.
+
+> **DQ item — reconcile the reinforced figure before the barrier width is frozen.**
+> [insulation-coordination.md](insulation-coordination.md) uses **8.0 mm clearance / 12.6 mm
+> creepage** for the reinforced primary↔secondary barrier at 1000 VDC working, which is the standard
+> doubling of its own 4.5 / 6.3 mm basic row (PD2, material group IIIa, CTI ≥175) and is internally
+> consistent. A common conservative figure for reinforced insulation around 800 VDC is **11 mm
+> clearance / 25 mm creepage** — roughly double the creepage. The difference is not academic: it
+> sets the width of the barrier band on the DC-DC board, which is already the most area-constrained
+> board in the family (§2). Resolve it against the purchased edition of IEC 62477-1 / 60664-1 at DQ,
+> with the pollution degree and material group stated, **before** the DC-DC outline is committed.
+
+### EMI, at component level
+
+- **Filter at every external port** — AC in, DC out, CAN, and the fan/HMI harnesses. The AC port is
+  already a two-stage CM + DM design; the others need at least a CM bead and a defined return.
+- **Stitching vias along board edges and around every connector**, spaced ≤ λ/20 at the highest
+  frequency of concern.
+- **No signal crosses a plane split.** This is the converse of the barrier rule and is violated more
+  often: the barrier makes splits legitimate, so every net that approaches one must be checked.
+- **Edge rate is a design variable.** SiC turn-on speed trades switching loss against radiated
+  emissions; the gate resistors are already differentiated by topology (Vienna 4.7/4.7 Ω, LLC
+  2.2 Ω off / 4.7 Ω on). Treat them as the EMI adjustment of last resort at pre-compliance, and
+  record the loss cost when they change.
+- Loop area is the term that squares in the radiated-field estimate ($E \propto f^2 A I / d$), so
+  the hot-loop rule above is an EMI rule, not only an efficiency one.
+
+### Thermal, at component level
+
+- **Heat sources separated from sensitive parts**: no sense front end, reference, or electrolytic in
+  the immediate wake of a magnetic or a device rail.
+- **Thermal vias under every dissipating pad**, and copper spreading area that has somewhere to go —
+  a pour that dead-ends spreads nothing.
+- **Junction-temperature headroom, and a number the documentation should stop leaving ambiguous.**
+  The worst case is **Tj 138–139 °C against a "ceiling 150"** ([thermal-report.md](thermal-report.md)),
+  and 150 °C is used throughout the repo as a *design* limit — E3 rejected 70 and 100 kHz on
+  "Tj > 150 °C". The common reliability guideline is Tj ≤ 80 % of the **device maximum**, and the
+  two readings are far apart: against a 150 °C maximum this design sits at 92 % and misses the
+  guideline; against the 175 °C maximum typical of SiC parts in this class it sits at **79 % and
+  meets it**. Nothing in the repo states the device figure. **Record the datasheet Tj(max) per part
+  in the thermal report** so the ratio is unambiguous — it is a documentation fix, not a redesign,
+  and the §K datasheet gate already has to open the same pages.
+- IR-camera validation at the high-current production test is already in the EVT plan (T-04/T-23);
+  the placement should leave the rails and magnetics visible to a camera with the sandwich open.
+
+## 8. Board-to-board interface
 
 - **Power:** DCP / DCN / PE M8 stud pairs on pillars. They are at the **front of the AC-DC board**
   and the **rear of the DC-DC board**, so the pillars are not vertical — the pair is offset in X by
@@ -348,7 +439,7 @@ tallest parts and they set the sandwich height.
 
 ---
 
-## 8. Stackup and copper plan (6 layers, both boards)
+## 9. Stackup and copper plan (6 layers, both boards)
 
 | Layer | Function | Notes |
 |---|---|---|
@@ -371,7 +462,7 @@ GND, and the floating CGND.
 
 ---
 
-## 9. Verify from each side
+## 10. Verify from each side
 
 The check that finds the defect is the one performed from the viewpoint where the defect is visible.
 Six viewpoints, each with its own question.
@@ -390,7 +481,7 @@ Six viewpoints, each with its own question.
 1. no switching-node copper within the EMI filter's footprint on any layer — geometric check
 2. barrier slot continuous through all 6 layers, ≥8.0 mm clearance / ≥12.6 mm creepage — DRC rule
 3. every creepage class from [insulation-coordination.md](insulation-coordination.md) as its own net-class rule
-4. every TO-247 on a rail; every rail segment single-cell; every driver ≤15 mm from its gate pins
+4. every TO-247 on a rail; every rail segment single-cell; every driver ≤10 mm from its gate pins
 5. every gapped-core keep-out honoured against small-signal nets
 6. Kelvin pairs (shunt, midpoint, source-sense) unbroken and un-shared
 7. dominant-part fill and edge use inside the §2 gates — `floorplan-budget.mjs`
@@ -398,14 +489,17 @@ Six viewpoints, each with its own question.
 
 ---
 
-## 10. Open items
+## 11. Open items
 
 | # | Item | Why it blocks | Owner |
 |---|---|---|---|
 | 1 | Fan push-vs-pull and front-panel budget (§0) | sets the front face and the 120 kW fan/connector clash | mechanical |
 | 2 | Interior clamp rails vs secondary device-count reduction (§2) | 120 kW DC-DC is impossible without one of them | electrical + mechanical |
 | 3 | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
-| 4 | B2B pillar alignment — change an outline to make the pillars vertical? (§7) | bolted-joint verifiability | mechanical |
+| 4 | B2B pillar alignment — change an outline to make the pillars vertical? (§8) | bolted-joint verifiability | mechanical |
 | 5 | HMI/CAN daughter card (§4) | removes the only long SELV run; needs a part number | electrical |
-| 6 | D3 transformer finished envelope (VERIFY in `floorplan-budget.mjs`) | the fill numbers move with it | magnetics vendor |
-| 7 | Commercial reference dimensions — module envelope, power density, airflow | tells us whether these outlines are competitive or oversized | research (in progress) |
+| 6 | **Reinforced creepage: 12.6 mm or 25 mm?** (§7) | sets the barrier band width on the most area-constrained board | insulation / DQ |
+| 7 | Record datasheet Tj(max) per device (§7) | 138 °C is 92 % of 150 but 79 % of 175 — the guideline verdict flips | thermal / §K gate |
+| 8 | Copper weight: 2 oz throughout, or 3–4 oz on the bus and output pours? (§7) | 39–156 A on 2 oz is under-specified | fab RFQ |
+| 9 | D3 transformer finished envelope (VERIFY in `floorplan-budget.mjs`) | the fill numbers move with it | magnetics vendor |
+| 10 | Commercial reference dimensions — module envelope, power density, airflow | tells us whether these outlines are competitive or oversized | research (in progress) |
