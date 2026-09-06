@@ -207,8 +207,14 @@ ck("SYNTAX-DUPKEY", (() => {
     const mine = D.filter((d) => DB[i].m.test(d));
     if (!mine.length) continue;
     if (!mine.some((d) => DB.findIndex((r) => r.m.test(d)) === i)) { dead.push(DB[i].mpn); continue; }
+    // `breadth` counts how many designators a regex happens to match, which is a proxy for
+    // "broader" and not always the right one: /^PS\d+[HL]$/ matches more designators than
+    // /^PS5\w+$/ yet is the CORRECT owner of PS5H/PS5L (there the 5 is a leg index, not 5 volts).
+    // No regex comparison can settle that -- it is the author's call -- so a rule may declare the
+    // mpn it deliberately takes designators from. Undeclared inversions still fail.
     const lost = mine.filter((d) => DB.findIndex((r) => r.m.test(d)) < i);
-    if (lost.some((d) => breadth[DB.findIndex((r) => r.m.test(d))] > breadth[i])) inverted.push(DB[i].mpn);
+    const claimed = (d) => (DB[DB.findIndex((r) => r.m.test(d))].overrides ?? []).includes(DB[i].mpn);
+    if (lost.some((d) => !claimed(d) && breadth[DB.findIndex((r) => r.m.test(d))] > breadth[i])) inverted.push(DB[i].mpn);
   }
   const msg = [dead.length ? `UNREACHABLE: ${dead.join(", ")}` : "", inverted.length ? `ORDER-INVERTED: ${inverted.join(", ")}` : ""].filter(Boolean).join(" | ");
   ck("R12-SHADOW", !dead.length && !inverted.length,

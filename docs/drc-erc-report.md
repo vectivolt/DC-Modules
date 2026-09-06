@@ -234,6 +234,40 @@ Left as declared rather than silently converted, because changing a part's techn
 decision. Classed as `FILM-47u-VCC` / REVIEW so it cannot quietly inherit a film price or a film
 land pattern while the question is open.
 
+## R14 — LLC leg 5 had 5 V sense modules where its gate drivers needed +18/−4 (found 2026-09-06, FIXED)
+
+**Severity: would not have worked.** On the 60 kW and 120 kW DC-DC boards, the two isolated
+gate-bias modules of **LLC leg 5** (`PS5H`, `PS5L`) were specified as `ISO5V-RFC-6K` — the isolated
+15→5 V *sense* module — instead of `QA01C`, the +18/−4 gate-bias module every other leg uses. A SiC
+gate driver biased from 5 V cannot enhance the device. The two parts also have different pin counts,
+so leg 5 was drawn with the wrong symbol and **two connections short**.
+
+Root cause is the same first-match-wins hazard as R12/R13, with a twist that made it invisible:
+
+    { m: /^PS5\w+$/, mpn: "ISO5V-RFC-6K", ... }   // "PS5AC", "PS5BUS": the 5 means 5 VOLTS
+    { m: /^PS\w+$/,  mpn: "QA01C", ... }          // every other iso-bias module
+
+In `PS5AC` the 5 is a voltage. In `PS5H` the 5 is the **leg index**. The 5 V rule matched both.
+Legs 1–4 and 6–12 were unaffected, so the defect only existed on a sheet large enough to have a
+leg 5 — the 30 kW board has three legs and was always correct.
+
+**Fix:** a specific `/^PS\d+[HL]$/ → QA01C` rule placed ahead of it, declaring
+`overrides: ["ISO5V-RFC-6K"]` so the R12-SHADOW gate accepts the deliberate ordering (an
+undeclared inversion still fails — negative-tested). Pin counts went 2443 → 2445 (60 kW) and
+3843 → 3845 (120 kW): the two recovered connections per board. BOM `QA01C` 15 → 17 and 33 → 35,
+`ISO5V-RFC-6K` 10 → 8 on both.
+
+**How it was found, and the new gate.** Not by any existing check — all of them passed. The
+platform is one cell repeated 3× / 6× / 12×, which makes a strong claim testable: every LLC leg
+must be *identical* to every other LLC leg. `calculations/cell-uniformity.mjs` signs each replicated
+section (symbols + values + net names, instance index digit-stripped) and compares. It reported 20
+legs sharing one signature and LEG-5 alone with another, on both affected SKUs. It now gates
+`LLC-LEGS / LEG-#`, `LLC-TANKS / TANK-#` and `VIENNA-PFC / PHASE-[ABC]#` — 21, 21 and 7+7+7
+instances, all currently identical.
+
+This also makes visual inspection tractable rather than statistical: with 21 legs proven identical,
+reading one at working zoom covers all 21.
+
 ## R13 — over-broad designator regexes mis-classified 57+ parts (found 2026-09-06, FIXED)
 
 Parts are matched to the cost/LCSC database by a first-match-wins list of designator regexes in

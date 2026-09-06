@@ -3329,9 +3329,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
-   "mpn": "ISO5V-RFC-6K"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R5HON",
@@ -3627,9 +3627,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
-   "mpn": "ISO5V-RFC-6K"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R5LON",

@@ -2992,29 +2992,29 @@
    },
    {
     "designator": "PS5H",
-    "value": "ISO5V-RFC-6K",
+    "value": "QA01C",
     "block_name": "LEG-5",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
     "pins": [
      {
-      "pin_number": 2,
-      "name": "Vin",
+      "pin_number": 1,
+      "name": "VIN",
       "signal_name": "V15"
      },
      {
-      "pin_number": 1,
+      "pin_number": 2,
       "name": "GND",
       "signal_name": "DGND"
      },
      {
-      "pin_number": 4,
-      "name": "+Vo",
-      "signal_name": ""
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "U5H_VCC2"
      },
      {
-      "pin_number": 3,
-      "name": "-Vo",
+      "pin_number": 6,
+      "name": "0V",
       "signal_name": "U5H_GND2"
      }
     ]
@@ -3281,29 +3281,29 @@
    },
    {
     "designator": "PS5L",
-    "value": "ISO5V-RFC-6K",
+    "value": "QA01C",
     "block_name": "LEG-5",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
-    "part_uuid": "320e0dabe3c645ddae543e9d750a3480",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
     "pins": [
      {
-      "pin_number": 2,
-      "name": "Vin",
+      "pin_number": 1,
+      "name": "VIN",
       "signal_name": "V15"
      },
      {
-      "pin_number": 1,
+      "pin_number": 2,
       "name": "GND",
       "signal_name": "DGND"
      },
      {
-      "pin_number": 4,
-      "name": "+Vo",
-      "signal_name": ""
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "U5L_VCC2"
      },
      {
-      "pin_number": 3,
-      "name": "-Vo",
+      "pin_number": 6,
+      "name": "0V",
       "signal_name": "U5L_GND2"
      }
     ]
@@ -7970,6 +7970,12 @@
    5
   ],
   "PS4L": [
+   5
+  ],
+  "PS5H": [
+   5
+  ],
+  "PS5L": [
    5
   ],
   "PS6H": [

@@ -23,7 +23,7 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
-## 60KW — module COGS **₹50900 @10k** (1k ₹63034, 5k ₹56129, 100 pc ₹82461) vs red-line ₹42000 / stretch ₹36000 → **@10k OVER red-line by ₹8900**
+## 60KW — module COGS **₹50880 @10k** (1k ₹63034, 5k ₹56129, 100 pc ₹82461) vs red-line ₹42000 / stretch ₹36000 → **@10k OVER red-line by ₹8880**
 
 | Category | ₹ @1k | share |
 |---|---|---|
@@ -39,7 +39,7 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0% |
 | bias/iso modules | 0 | 0% |
 
-## 120KW — module COGS **₹94733 @10k** (1k ₹117366, 5k ₹104475, 100 pc ₹153671) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹16733**
+## 120KW — module COGS **₹94713 @10k** (1k ₹117366, 5k ₹104475, 100 pc ₹153671) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹16713**
 
 | Category | ₹ @1k | share |
 |---|---|---|

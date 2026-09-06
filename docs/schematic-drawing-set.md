@@ -81,6 +81,7 @@ the intent. All six sheets currently pass every one:
 | `wiring-audit.mjs` | LONG, ESCAPE, CROSS, FLOW | **longest 200 mil, 0 escapes, 0 crossings, 1999/1999 flow** |
 | `frame-padding.mjs` | inner padding of every section frame | **no overflow; min clearance L/R 221, T 65, B 205** |
 | `void-audit.mjs` | worst **enclosed** hole per sheet (whitespace with drawing on both sides) | **worst 8.2 %** (limit 12 %) |
+| `cell-uniformity.mjs` | every replicated cell identical to its twins | **21 legs, 21 tanks, 7+7+7 phases** |
 | `review-checks.mjs` | the release gates (incl. LCSC, class and printed-value rules) | **all pass** |
 
 Also uniform across the set: one symbol orientation, four text sizes, two frame widths per sheet,
