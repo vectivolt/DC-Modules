@@ -14,50 +14,50 @@ Comment3 "45 functional sections - 603 components - cross-section links are glob
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Wire Notes Line
-	45700 26450 50350 26450
-Wire Notes Line
-	50350 26450 50350 29800
-Wire Notes Line
-	50350 29800 45700 29800
-Wire Notes Line
-	45700 29800 45700 26450
-Text Notes 45900 26790 0    79   ~ 16
-SHEET INDEX
-Text Notes 45900 27050 0    60   ~ 0
-120 kW AC-DC (lower) - 1 of 2
-Text Notes 45950 27450 0    60   ~ 0
-AC-SENSING   -   13 sections
-Text Notes 45950 27750 0    60   ~ 0
-VIENNA-PFC   -   12 sections
-Text Notes 45950 28050 0    60   ~ 0
-CONTROL   -   6 sections
-Text Notes 45950 28350 0    60   ~ 0
-AUX-POWER   -   5 sections
-Text Notes 45950 28650 0    60   ~ 0
-DC-LINK   -   5 sections
-Text Notes 45950 28950 0    60   ~ 0
-INPUT-EMI   -   4 sections
-Text Notes 45960 29600 0    60   ~ 0
-rev D.3   -   45 sections   -   603 components
-Wire Notes Line
 	27800 37050 32450 37050
 Wire Notes Line
-	32450 37050 32450 39800
+	32450 37050 32450 40400
 Wire Notes Line
-	32450 39800 27800 39800
+	32450 40400 27800 40400
 Wire Notes Line
-	27800 39800 27800 37050
+	27800 40400 27800 37050
 Text Notes 28000 37390 0    79   ~ 16
-NET NAMING
+SHEET INDEX
 Text Notes 28000 37650 0    60   ~ 0
-internal junctions are named for what they join
+120 kW AC-DC (lower) - 1 of 2
 Text Notes 28050 38050 0    60   ~ 0
-U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
+AC-SENSING   -   13 sections
 Text Notes 28050 38350 0    60   ~ 0
-R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
+VIENNA-PFC   -   12 sections
 Text Notes 28050 38650 0    60   ~ 0
-R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
+CONTROL   -   6 sections
 Text Notes 28050 38950 0    60   ~ 0
+AUX-POWER   -   5 sections
+Text Notes 28050 39250 0    60   ~ 0
+DC-LINK   -   5 sections
+Text Notes 28050 39550 0    60   ~ 0
+INPUT-EMI   -   4 sections
+Text Notes 28060 40200 0    60   ~ 0
+rev D.3   -   45 sections   -   603 components
+Wire Notes Line
+	45700 26450 50350 26450
+Wire Notes Line
+	50350 26450 50350 29200
+Wire Notes Line
+	50350 29200 45700 29200
+Wire Notes Line
+	45700 29200 45700 26450
+Text Notes 45900 26790 0    79   ~ 16
+NET NAMING
+Text Notes 45900 27050 0    60   ~ 0
+internal junctions are named for what they join
+Text Notes 45950 27450 0    60   ~ 0
+U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
+Text Notes 45950 27750 0    60   ~ 0
+R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
+Text Notes 45950 28050 0    60   ~ 0
+R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
+Text Notes 45950 28350 0    60   ~ 0
 all others are explicit design nets
 Wire Notes Line
 	500 500 4600 500

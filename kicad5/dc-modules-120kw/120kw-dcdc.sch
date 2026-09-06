@@ -14,30 +14,30 @@ Comment3 "45 functional sections - 744 components - cross-section links are glob
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Wire Notes Line
-	39650 8850 44300 8850
+	55850 34850 60500 34850
 Wire Notes Line
-	44300 8850 44300 12200
+	60500 34850 60500 38200
 Wire Notes Line
-	44300 12200 39650 12200
+	60500 38200 55850 38200
 Wire Notes Line
-	39650 12200 39650 8850
-Text Notes 39850 9190 0    79   ~ 16
+	55850 38200 55850 34850
+Text Notes 56050 35190 0    79   ~ 16
 SHEET INDEX
-Text Notes 39850 9450 0    60   ~ 0
+Text Notes 56050 35450 0    60   ~ 0
 120 kW DC-DC (upper) - 2 of 2
-Text Notes 39900 9850 0    60   ~ 0
+Text Notes 56100 35850 0    60   ~ 0
 LLC-LEGS   -   13 sections
-Text Notes 39900 10150 0    60   ~ 0
+Text Notes 56100 36150 0    60   ~ 0
 LLC-TANKS   -   12 sections
-Text Notes 39900 10450 0    60   ~ 0
+Text Notes 56100 36450 0    60   ~ 0
 CONTROL   -   7 sections
-Text Notes 39900 10750 0    60   ~ 0
+Text Notes 56100 36750 0    60   ~ 0
 OUTPUT-SENSING   -   7 sections
-Text Notes 39900 11050 0    60   ~ 0
+Text Notes 56100 37050 0    60   ~ 0
 BANKS-SP   -   4 sections
-Text Notes 39900 11350 0    60   ~ 0
+Text Notes 56100 37350 0    60   ~ 0
 COMMS-HMI   -   2 sections
-Text Notes 39910 12000 0    60   ~ 0
+Text Notes 56110 38000 0    60   ~ 0
 rev D.3   -   45 sections   -   744 components
 Wire Notes Line
 	17000 500 22100 500

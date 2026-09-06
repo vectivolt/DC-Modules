@@ -163,6 +163,44 @@ const largestVoid = (rects, W, H) => {
   return { frac: best / (NX * NY), x0: bx0 * cw, y0: by0 * ch, x1: bx1 * cw, y1: (by1 + 1) * ch };
 };
 
+// Top-N empty rectangles, greedily: find the biggest, mark it used, repeat. The gate only cares
+// about the largest, but PLACEMENT wants a choice -- a notes block belongs in a consistent corner
+// across a drawing set, not wherever the biggest hole happens to fall on each sheet.
+const voidCandidates = (rects, W, H, n) => {
+  const NX = 64, NY = 44, cw = W / NX, ch = H / NY;
+  const occ = Array.from({ length: NY }, () => new Uint8Array(NX));
+  const mark = (r) => {
+    const x0 = Math.max(0, Math.floor(r.x0 / cw)), x1 = Math.min(NX - 1, Math.ceil(r.x1 / cw) - 1);
+    const y0 = Math.max(0, Math.floor(r.y0 / ch)), y1 = Math.min(NY - 1, Math.ceil(r.y1 / ch) - 1);
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) occ[y][x] = 1;
+  };
+  rects.forEach(mark);
+  const out = [];
+  for (let k = 0; k < n; k++) {
+    const hgt = new Int32Array(NX);
+    let best = 0, bx0 = 0, bx1 = 0, by0 = 0, by1 = 0;
+    for (let y = 0; y < NY; y++) {
+      for (let x = 0; x < NX; x++) hgt[x] = occ[y][x] ? 0 : hgt[x] + 1;
+      const st = [];
+      for (let x = 0; x <= NX; x++) {
+        const h = x === NX ? 0 : hgt[x];
+        let start = x;
+        while (st.length && st[st.length - 1].h >= h) {
+          const t = st.pop(), a = t.h * (x - t.x);
+          if (a > best) { best = a; bx0 = t.x; bx1 = x; by0 = y - t.h + 1; by1 = y; }
+          start = t.x;
+        }
+        st.push({ x: start, h });
+      }
+    }
+    if (!best) break;
+    const r = { x0: bx0 * cw, y0: by0 * ch, x1: bx1 * cw, y1: (by1 + 1) * ch, frac: best / (NX * NY) };
+    out.push(r);
+    mark(r);
+  }
+  return out;
+};
+
 const mirrorLibY = (text) => text.split("\n").map((l) => {
   const t = l.split(" ");
   const neg = (i) => { t[i] = String(-Number(t[i])); };
@@ -625,7 +663,23 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     }
     const famRows = [...fams].sort((a, b2) => b2[1] - a[1] || a[0].localeCompare(b2[0]))
       .map(([f, n]) => `${f}   -   ${n} section${n > 1 ? "s" : ""}`);
-    const p1 = drawPanel(largestVoid(used, sheetW, sheetH), "SHEET INDEX",
+    // Pick WHERE from a shortlist, not just the biggest hole. Measured across the six sheets, the
+    // largest-hole rule scattered the blocks: index at top-right on one sheet and top-centre on
+    // another, with the naming legend at bottom-LEFT while its own index sat at 85% right. A
+    // drawing set puts its notes in the same corner on every sheet, so among candidate voids that
+    // can actually hold the panel, prefer the one nearest the bottom-right -- beside the title
+    // block, where a reader already looks.
+    const pickVoid = (occupied) => {
+      const cands = voidCandidates(occupied, sheetW, sheetH, 4)
+        // must be big enough to hold a panel AND sit in the lower part of the sheet: a notes
+        // block in the top strip reads as an accident. Without this the shortlist put the naming
+        // legend in 120kw-dcdc's top-right CORNER, on a sheet that had correctly had none before.
+        .filter((v) => v.x1 - v.x0 > 5200 && v.y1 - v.y0 > 2200 && v.y1 > sheetH * 0.4);
+      if (!cands.length) return { x0: 0, y0: 0, x1: 0, y1: 0 };
+      return cands.sort((a, b) =>
+        (b.x1 / sheetW + b.y1 / sheetH) - (a.x1 / sheetW + a.y1 / sheetH))[0];
+    };
+    const p1 = drawPanel(pickVoid(used), "SHEET INDEX",
       `${ident.sku} ${ident.board} - ${ident.sheet}`, famRows,
       `rev ${REV}   -   ${blocks.length} sections   -   ${page.total} components`);
     if (p1) {
@@ -633,7 +687,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // Second hole gets a legend for the net names. Worth the space: every internal junction on
       // this drawing is named for what it JOINS rather than by an ordinal, and that convention is
       // invisible unless it is written down somewhere on the sheet.
-      drawPanel(largestVoid(used, sheetW, sheetH), "NET NAMING",
+      drawPanel(pickVoid(used), "NET NAMING",
         "internal junctions are named for what they join", [
           "U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP",
           "R<stem>_M        midpoint of a series pair  e.g. RBALTA_M",

@@ -14,13 +14,13 @@ Comment3 "33 functional sections - 454 components - cross-section links are glob
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Wire Notes Line
-	32600 24200 45650 24200
+	32600 24200 37250 24200
 Wire Notes Line
-	45650 24200 45650 26350
+	37250 24200 37250 27550
 Wire Notes Line
-	45650 26350 32600 26350
+	37250 27550 32600 27550
 Wire Notes Line
-	32600 26350 32600 24200
+	32600 27550 32600 24200
 Text Notes 32800 24540 0    79   ~ 16
 SHEET INDEX
 Text Notes 32800 24800 0    60   ~ 0
@@ -29,35 +29,35 @@ Text Notes 32850 25200 0    60   ~ 0
 CONTROL   -   7 sections
 Text Notes 32850 25500 0    60   ~ 0
 LLC-LEGS   -   7 sections
-Text Notes 37050 25200 0    60   ~ 0
+Text Notes 32850 25800 0    60   ~ 0
 OUTPUT-SENSING   -   7 sections
-Text Notes 37050 25500 0    60   ~ 0
+Text Notes 32850 26100 0    60   ~ 0
 LLC-TANKS   -   6 sections
-Text Notes 41250 25200 0    60   ~ 0
+Text Notes 32850 26400 0    60   ~ 0
 BANKS-SP   -   4 sections
-Text Notes 41250 25500 0    60   ~ 0
+Text Notes 32850 26700 0    60   ~ 0
 COMMS-HMI   -   2 sections
-Text Notes 32860 26150 0    60   ~ 0
+Text Notes 32860 27350 0    60   ~ 0
 rev D.3   -   33 sections   -   454 components
 Wire Notes Line
-	23200 26900 32050 26900
+	38100 24200 42750 24200
 Wire Notes Line
-	32050 26900 32050 29050
+	42750 24200 42750 26950
 Wire Notes Line
-	32050 29050 23200 29050
+	42750 26950 38100 26950
 Wire Notes Line
-	23200 29050 23200 26900
-Text Notes 23400 27240 0    79   ~ 16
+	38100 26950 38100 24200
+Text Notes 38300 24540 0    79   ~ 16
 NET NAMING
-Text Notes 23400 27500 0    60   ~ 0
+Text Notes 38300 24800 0    60   ~ 0
 internal junctions are named for what they join
-Text Notes 23450 27900 0    60   ~ 0
+Text Notes 38350 25200 0    60   ~ 0
 U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
-Text Notes 23450 28200 0    60   ~ 0
+Text Notes 38350 25500 0    60   ~ 0
 R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
-Text Notes 27650 27900 0    60   ~ 0
+Text Notes 38350 25800 0    60   ~ 0
 R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
-Text Notes 27650 28200 0    60   ~ 0
+Text Notes 38350 26100 0    60   ~ 0
 all others are explicit design nets
 Wire Notes Line
 	500 500 4600 500
