@@ -401,6 +401,38 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   const blocks = pgs.flatMap((p) => p.block_order.map((b, i) => ({
     title: `${p.page.replace(/^(acdc|dcdc)-/, "")} / ${b}`, comps: p.chunks[i] })));
 
+// HAND-PLACED SECTIONS: built, measured, and REJECTED on 2026-09-06. Recorded because the result
+// was not what I expected and the reason generalises.
+//
+// The column search below minimises frame AREA -- a packing goal, not a reading goal. It sorts
+// alphabetically and balances columns by height, so an LLC half-bridge lists its two switches
+// wherever the alphabet drops them. I added a per-section override keyed on the section title with
+// the instance index stripped (so all 21 legs share one hand composition and cell-uniformity still
+// holds) and composed the leg by function instead:
+//
+//   ["PS#H","U#H","R#HON","R#HOFF","R#HGS","R#HPD"], ["Q#H","D#HS1","D#HS2","C#HB1","C#HB2","C#HBL"],
+//   ["PS#L","U#L","R#LON","R#LOFF","R#LGS","R#LPD"], ["Q#L","D#LS1","D#LS2","C#LB1","C#LB2","C#LBL"]
+//
+// -- each half its own pair of columns, reading bias -> driver -> gate network -> switch, high side
+// beside low side so a reader compares them directly. It genuinely reads better as a circuit, and
+// it packed BETTER than the search: 120kw-dcdc 55600x47550 -> 55600x43050, fill 74% -> 77%, and
+// 60kw-dcdc smaller in both dimensions. Pins, collisions, PITCH, SYM-X and uniformity all held.
+//
+// It was still reverted, for a reason that only shows up two levels up: a denser sheet has smaller
+// VOIDS, and the sheet-level notes live in those voids. At 77% fill, 120kw-dcdc had no hole left
+// that could hold the SHEET INDEX or the NET NAMING legend, and both vanished from the sheet --
+// relaxing the void filter did not bring them back. Per-sheet labelling is an explicit requirement;
+// intra-section composition is not worth losing it.
+//
+// So: intra-section packing and sheet-level annotation COMPETE FOR THE SAME SPACE. A tighter
+// section is not free. If this is retried, reserve the notes area before packing rather than
+// filling leftovers afterwards -- then the composition above is worth having.
+//
+// Two intermediate findings kept: interleaving symbol types down a column (Q,D,D,Q,D,D) breaks
+// PITCH, since a run's gaps must be whole multiples of its own base -- keep same-type runs
+// contiguous. And running a whole half down one column made frame height ~2x the passive columns,
+// the same short-column dead band this search exists to prevent.
+
   for (const b of blocks) {
     b.items = b.comps.map((c) => ({ c, s: shapeOf(c) }));
     b.items.sort((a, z) => (z.s.cat === "IC") - (a.s.cat === "IC") || a.c.designator.localeCompare(z.c.designator));
