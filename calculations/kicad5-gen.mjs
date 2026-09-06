@@ -560,6 +560,18 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     const spreadOver = Math.max(...[...famX].map(([f, [lo, hi]]) =>
       (hi - lo) / W - (0.35 + 0.9 * (famArea.get(f) / frameArea))));
     const spread = Math.max(...[...famX.values()].map(([lo, hi]) => hi - lo));
+    // Bounding-box spread says nothing about the order a READER meets a family in. Scanning
+    // column-major, 120kw-acdc's 12 VIENNA-PFC sections arrived in 6 separate bursts and
+    // 60kw-dcdc's 4 BANKS-SP sections in 4 — related work encountered scattered, even though the
+    // spread gate passed. Count contiguous runs per family and penalise fragmentation.
+    const seq = [...out].sort((a, b) => (a.X - b.X) || (a.Y - b.Y));
+    let runs = 0, prevFam = null;
+    for (const { b: bb } of seq) {
+      const f = String(bb.title).split(" / ")[0];
+      if (f !== prevFam) runs++;
+      prevFam = f;
+    }
+    const frag = runs - famX.size;          // 0 when every family is one contiguous run
     const voidFrac = largestVoid(out.map(({ b: bb, X, Y }) =>
       ({ x0: X, y0: Y, x1: X + bb.w, y1: Y + bb.h })), W, H + MARGIN + 800).frac;
     // Gate swept at 0.12 / 0.09 / 0.07 / 0.05: 0.09 is the optimum (worst void 10.4 -> 7.7%, fill
@@ -576,6 +588,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     // grouped"), while a somewhat larger blank block is only untidy. Weight it so a spread
     // violation dominates the density and void terms rather than competing with them.
     const soft = (sheetArea / frameArea) * 10 + ragged / RAGGED_DIV + voidFrac * 60
+      // Swept 0/1/3/8. At 1 the excess runs drop 67 -> 45 across the six sheets with the void
+      // metric essentially unchanged (max stays 7%). At 3 fragmentation only improves to 38 but a
+      // sheet's largest hole blows out to 23%, and the void metric has tracked the eye better than
+      // any other number here. So: 1.
+      + frag * 1
       + Math.max(0, spreadOver) * 300
       + (aspect >= 1.15 && aspect <= 2.1 ? 0 : 1000);
     const score = usable ? soft : Infinity;
