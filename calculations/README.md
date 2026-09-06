@@ -41,6 +41,7 @@ The release schematics are `kicad5/DC-Modules-<sku>-SHIP.zip`; see `docs/schemat
 | `frame-padding.mjs` | inner padding of every section frame — catches content that floats or overflows |
 | `void-audit.mjs` | worst **enclosed** hole per sheet — whitespace with drawing on both sides, which is what reads as a hole rather than a margin |
 | `cell-uniformity.mjs` | proves every replicated cell (LLC leg, tank, Vienna phase) is identical to its twins — found R14 |
+| `floorplan-budget.mjs` | **PCB feasibility** — TO-247 edge-rail demand vs usable perimeter, and dominant-part area fill vs board outline, per board per SKU |
 | `review-checks.mjs` | the release gates, including LCSC class and shadowed-rule checks |
 | `kicad5-preview.mjs` / `kicad5-detail.mjs` | render sheets/tiles for visual inspection |
 

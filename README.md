@@ -105,7 +105,7 @@ mindmap
     simulation-results/
       metrics CSVs + SVG plots
     docs/
-      19 governing documents — start at docs/README.md
+      31 governing documents — start at docs/README.md
 ```
 
 ---
@@ -212,6 +212,7 @@ Everything lives in [`docs/`](docs/README.md) — the index there describes all 
 |---|---|
 | [`architecture.md`](docs/architecture.md) | the frozen platform, power path, control plane, scaling |
 | [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | **the release schematics** — what to import, how every sheet is labelled, the audits that gate it |
+| [`pcb-floorplan.md`](docs/pcb-floorplan.md) | **the PCB zone plan** — where every schematic section lands on each board, and what the frozen outlines can and cannot hold |
 | [`assumptions.md`](docs/assumptions.md) | **every decision E1–E34** with provenance and its invalidator |
 | [`boards/*/README.md`](boards/) | each board, cell by cell, pin by pin |
 | [`simulation-report.md`](docs/simulation-report.md) | all executed runs in §50 format (solver, netlist, tolerances, pass/fail) |

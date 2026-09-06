@@ -39,6 +39,7 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 | [`design-review-production.md`](design-review-production.md) | **adversarial production review R1** — verdict NO at review time; rev C fix log: 15/15 blockers closed (+HR/MR) |
 | [`design-review-production-r2.md`](design-review-production-r2.md) | **adversarial re-audit R2 of rev C** — NO again (7 new CBs incl. defects inside the rev-C fixes); falsification round + rev D fix log; gate = `review-checks.mjs` (60+ asserts incl. class checks) |
 | [`schematic-drawing-set.md`](schematic-drawing-set.md) | **the release drawing set** — `kicad5/DC-Modules-<sku>-SHIP.zip`, per-sheet labelling, the eight audits that gate it |
+| [`pcb-floorplan.md`](pcb-floorplan.md) | **the PCB zone plan** — section-to-zone map for both boards, isolation barriers, device rails, airflow axis, and the feasibility budget that says which outlines fit |
 | [`lcsc-status.md`](lcsc-status.md) | what the LCSC field means on every symbol; why `CLASS` is adjudicated, not unfinished |
 | [`symbol-pin-map.md`](symbol-pin-map.md) | logical pin id → package pin, verified per part (the R3 subject) |
 | [`mcu-pin-allocation-gd32.md`](mcu-pin-allocation-gd32.md) | GD32G553VET6 pin allocation — replaces the STM32-derived symbolic map |
