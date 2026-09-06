@@ -1,9 +1,9 @@
 {
  "page": "DC-LINK",
  "flow": [
-  "LINK-BANK",
   "DISCHARGE",
-  "BUS-STUDS"
+  "BUS-STUDS",
+  "LINK-BANK-0"
  ],
  "net_style_overrides": {
   "N_ACDC_41": "wire",
@@ -23,7 +23,7 @@
  "components": [
   {
    "designator": "CDT00",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -43,7 +43,7 @@
   },
   {
    "designator": "CDT01",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -63,7 +63,7 @@
   },
   {
    "designator": "CDT02",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -83,7 +83,7 @@
   },
   {
    "designator": "CDT03",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -103,7 +103,7 @@
   },
   {
    "designator": "CDT04",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -123,7 +123,7 @@
   },
   {
    "designator": "CDB00",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -143,7 +143,7 @@
   },
   {
    "designator": "CDB01",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -163,7 +163,7 @@
   },
   {
    "designator": "CDB02",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -183,7 +183,7 @@
   },
   {
    "designator": "CDB03",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -203,7 +203,7 @@
   },
   {
    "designator": "CDB04",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -223,7 +223,7 @@
   },
   {
    "designator": "RBALT0A",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -238,12 +238,12 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RBALT0B",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -258,12 +258,12 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RBALB0A",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -278,12 +278,12 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RBALB0B",
-   "block_name": "LINK-BANK",
+   "block_name": "LINK-BANK-0",
    "pins": [
     {
      "pin_number": 1,
@@ -298,7 +298,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -484,9 +484,9 @@
    "nc_pins": [
     5
    ],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso 15→18 V module ≥6 kVDC ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso 15→18 V module ≥6 kVDC ",
+   "mpn": "QA01C"
   },
   {
    "designator": "RQDL",

@@ -1,0 +1,3240 @@
+{
+ "page": "AC-SENSING",
+ "flow": [
+  "STAR",
+  "SENSE-VAC1",
+  "SENSE-VAC2",
+  "SENSE-VAC3",
+  "SENSE-VBUS",
+  "SENSE-VMID",
+  "ISO-BIAS",
+  "ANALOG-MID",
+  "NTC",
+  "LINE-CTS-0",
+  "LINE-CTS-1",
+  "LINE-CTS-2",
+  "LINE-CTS-3"
+ ],
+ "net_style_overrides": {
+  "N_ACDC_128": "wire",
+  "N_ACDC_129": "wire",
+  "N_ACDC_130": "wire",
+  "N_ACDC_131": "wire",
+  "N_ACDC_132": "wire",
+  "N_ACDC_133": "wire",
+  "N_ACDC_134": "wire",
+  "N_ACDC_135": "wire",
+  "N_ACDC_136": "wire",
+  "N_ACDC_137": "wire",
+  "N_ACDC_138": "wire",
+  "N_ACDC_139": "wire",
+  "N_ACDC_153": "wire",
+  "NSTAR": "wire",
+  "N_ACDC_154": "wire",
+  "N_ACDC_155": "wire",
+  "N_ACDC_156": "wire",
+  "N_ACDC_157": "wire",
+  "N_ACDC_158": "wire",
+  "N_ACDC_159": "wire",
+  "N_ACDC_160": "wire",
+  "N_ACDC_161": "wire",
+  "N_ACDC_162": "wire",
+  "N_ACDC_163": "wire",
+  "N_ACDC_164": "wire",
+  "N_ACDC_165": "wire",
+  "N_ACDC_166": "wire",
+  "N_ACDC_167": "wire",
+  "N_ACDC_168": "wire",
+  "N_ACDC_169": "wire",
+  "N_ACDC_170": "wire",
+  "N_ACDC_171": "wire",
+  "N_ACDC_172": "wire",
+  "N_ACDC_173": "wire",
+  "N_ACDC_174": "wire",
+  "N_ACDC_175": "wire",
+  "N_ACDC_176": "wire",
+  "N_ACDC_177": "wire",
+  "N_ACDC_178": "wire",
+  "N_ACDC_179": "wire",
+  "N_ACDC_180": "wire",
+  "N_ACDC_181": "wire",
+  "N_ACDC_182": "wire",
+  "N_ACDC_183": "wire",
+  "N_ACDC_184": "wire",
+  "N_ACDC_185": "wire",
+  "N_ACDC_186": "wire",
+  "N_ACDC_187": "wire",
+  "N_ACDC_188": "wire",
+  "N_ACDC_189": "wire",
+  "N_ACDC_190": "wire",
+  "N_ACDC_191": "wire",
+  "N_ACDC_192": "wire",
+  "N_ACDC_193": "wire",
+  "N_ACDC_194": "wire",
+  "N_ACDC_195": "wire",
+  "AVREF_MID": "wire",
+  "N_ACDC_196": "wire",
+  "N_ACDC_197": "wire"
+ },
+ "net_class_overrides": {},
+ "components": [
+  {
+   "designator": "CTA0",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_128"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RA0B",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_128"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RA0F",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_128"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CA0F",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DA0P",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DA0N",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTB0",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_129"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RB0B",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_129"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RB0F",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_129"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CB0F",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DB0P",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DB0N",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTC0",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_130"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RC0B",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_130"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RC0F",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_130"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CC0F",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DC0P",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DC0N",
+   "block_name": "LINE-CTS-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTA1",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_131"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RA1B",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_131"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RA1F",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_131"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CA1F",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DA1P",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DA1N",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTB1",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_132"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RB1B",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_132"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RB1F",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_132"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CB1F",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DB1P",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DB1N",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTC1",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_133"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RC1B",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_133"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RC1F",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_133"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CC1F",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DC1P",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DC1N",
+   "block_name": "LINE-CTS-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTA2",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_134"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RA2B",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_134"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RA2F",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_134"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CA2F",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DA2P",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DA2N",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTB2",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_135"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RB2B",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_135"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RB2F",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_135"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CB2F",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DB2P",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DB2N",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTC2",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_136"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RC2B",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_136"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RC2F",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_136"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CC2F",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DC2P",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DC2N",
+   "block_name": "LINE-CTS-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTA3",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_137"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RA3B",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_137"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RA3F",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_137"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CA3F",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DA3P",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_A3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DA3N",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_A3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTB3",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_138"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RB3B",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_138"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RB3F",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_138"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CB3F",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DB3P",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_B3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DB3N",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_B3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "CTC3",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "N_ACDC_139"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
+  },
+  {
+   "designator": "RC3B",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_139"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "33",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
+   "designator": "RC3F",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_139"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CC3F",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "DC3P",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_C3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "DC3N",
+   "block_name": "LINE-CTS-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_C3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "RNS1A",
+   "block_name": "STAR",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_153"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RNS1B",
+   "block_name": "STAR",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_153"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RNS2A",
+   "block_name": "STAR",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_154"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RNS2B",
+   "block_name": "STAR",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_154"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RNS3A",
+   "block_name": "STAR",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_155"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RNS3B",
+   "block_name": "STAR",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_155"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "PS5AC",
+   "block_name": "ISO-BIAS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P5",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "PS5BUS",
+   "block_name": "ISO-BIAS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P5",
+     "signal_name": "B5BUS"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "RV1D0",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_156"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D1",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_156"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_157"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D2",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_157"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_158"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D3",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_158"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_159"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D4",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_159"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_160"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D5",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_160"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_161"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D6",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_161"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_162"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1D7",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_162"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_163"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV1DL",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_163"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "11.5k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "CV1DF",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_163"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVV1",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_ACDC_163"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "NSTAR"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "NSTAR"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VAC1"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1350-class",
+   "query": "AMC1350-class iso voltage-sense amp ±5 V input ",
+   "mpn": "AMC1350-class"
+  },
+  {
+   "designator": "RV2D0",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_164"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D1",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_164"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_165"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D2",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_165"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_166"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D3",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_166"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_167"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D4",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_167"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_168"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D5",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_168"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_169"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D6",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_169"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_170"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2D7",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_170"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_171"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV2DL",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_171"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "11.5k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "CV2DF",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_171"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVV2",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_ACDC_171"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "NSTAR"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "NSTAR"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VAC2"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1350-class",
+   "query": "AMC1350-class iso voltage-sense amp ±5 V input ",
+   "mpn": "AMC1350-class"
+  },
+  {
+   "designator": "RV3D0",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_172"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D1",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_172"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_173"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D2",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_173"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_174"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D3",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_174"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_175"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D4",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_175"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_176"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D5",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_176"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_177"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D6",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_177"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_178"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3D7",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_178"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_179"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RV3DL",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_179"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "11.5k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "CV3DF",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_179"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVV3",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_ACDC_179"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "NSTAR"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "NSTAR"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VAC3"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1350-class",
+   "query": "AMC1350-class iso voltage-sense amp ±5 V input ",
+   "mpn": "AMC1350-class"
+  },
+  {
+   "designator": "RBPD0",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_180"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD1",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_180"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_181"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD2",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_181"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_182"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD3",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_182"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_183"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD4",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_183"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_184"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD5",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_184"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_185"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD6",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_185"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_186"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPD7",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_186"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_187"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBPDL",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_187"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "6.8k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "CBPDF",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_187"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVBP",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5BUS"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_ACDC_187"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VBUSP"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1311-class",
+   "query": "AMC1311-class iso voltage-sense amp 0–2 V input ",
+   "mpn": "AMC1311-class"
+  },
+  {
+   "designator": "RBMD0",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_188"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD1",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_188"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_189"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD2",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_189"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_190"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD3",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_190"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_191"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD4",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_191"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_192"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD5",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_192"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_193"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD6",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_193"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_194"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMD7",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_194"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_195"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RBMDL",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_195"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "6.8k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "CBMDF",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_195"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVBM",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5BUS"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_ACDC_195"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VMID"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1311-class",
+   "query": "AMC1311-class iso voltage-sense amp 0–2 V input ",
+   "mpn": "AMC1311-class"
+  },
+  {
+   "designator": "RAVH",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVREF_MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RAVL",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVREF_MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CAVM",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVREF_MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UAVB",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "OUT",
+     "signal_name": "N_ACDC_196"
+    },
+    {
+     "pin_number": 2,
+     "name": "INN",
+     "signal_name": "N_ACDC_197"
+    },
+    {
+     "pin_number": 3,
+     "name": "INP",
+     "signal_name": "AVREF_MID"
+    },
+    {
+     "pin_number": 4,
+     "name": "VN",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 8,
+     "name": "VP",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    5,
+    6,
+    7
+   ],
+   "value": "TLV9061-class",
+   "query": "TLV9061-class rail-to-rail op-amp ",
+   "mpn": "TLV9061-class"
+  },
+  {
+   "designator": "RAVI",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_196"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RAVF",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVMID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_197"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CAVF",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_196"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_ACDC_197"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CAVO",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVMID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10uF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "JTPFC",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "T_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PH-2",
+   "query": "PH-2 2-way header ",
+   "mpn": "PH-2"
+  },
+  {
+   "designator": "RTPFCP",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "T_PFC"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CTPFCF",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "T_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "JTINL",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "T_INLET"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PH-2",
+   "query": "PH-2 2-way header ",
+   "mpn": "PH-2"
+  },
+  {
+   "designator": "RTINLP",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "T_INLET"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CTINLF",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "T_INLET"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  }
+ ]
+}

@@ -18,7 +18,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SCH = join(ROOT, "kicad5/dc-modules-30kw");
+const SKU = process.argv[2] || "30kw";
+const SCH = join(ROOT, `kicad5/dc-modules-${SKU}`);
 
 // legacy text metrics: size 50 => ~33 mil advance, ~50 mil cap height
 const GLYPH = 33, CAPH = 50;
@@ -52,7 +53,7 @@ for (const blk of readFileSync(join(SCH, "dc-modules.lib"), "utf8").split(/^DEF 
 }
 
 let pages = 0, problems = [], nLab = 0, nSym = 0;
-for (const f of ["30kw-acdc.sch", "30kw-dcdc.sch"]) {
+for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
   const lines = readFileSync(join(SCH, f), "utf8").split("\n");
   const labels = [], syms = [], texts = [];
   for (let i = 0; i < lines.length; i++) {

@@ -327,5 +327,10 @@
   "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
   "lcsc": "C2757491",
   "note": "Mornsun QA01C - PROBE | alias: schematic value is QA01C-15S18, canonical MPN is QA01C (R3: the -15S18 suffix does not exist at MORNSUN)"
+ },
+ "CT-100A-1:2500": {
+  "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
+  "lcsc": "C94571",
+  "note": "ZMCT103C CT symbol - PROBE pin count | R3: sized up from 60 A (63.95 A rms/cell at 285 V low line)"
  }
 }

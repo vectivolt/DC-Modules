@@ -21,8 +21,11 @@ import { LCSC } from "./cost/lcsc-map.mjs";
 import { footprintForRef } from "./footprint-map.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SRC = join(ROOT, "calculations/out/easyeda/apply");
-const OUT = join(ROOT, "kicad5/dc-modules-30kw");
+const SKU = process.argv[2] || "30kw";
+const SRC = SKU === "30kw"
+  ? join(ROOT, "calculations/out/easyeda/apply")
+  : join(ROOT, "calculations/out/easyeda", SKU, "apply");
+const OUT = join(ROOT, `kicad5/dc-modules-${SKU}`);
 mkdirSync(OUT, { recursive: true });
 
 // ---- geometry in mils (50 mil grid) ------------------------------------------------------
@@ -186,12 +189,14 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
   const side = pg.page.startsWith("acdc") ? "acdc" : "dcdc";
   BOARDS[side].push(pg);
 }
+const KW = SKU.replace("kw", "").toUpperCase();
+const CELLS = { "30kw": "1x", "60kw": "2x", "120kw": "4x" }[SKU] ?? "?";
 const SIDE_TITLE = {
-  acdc: "30kW ACDC board 1of2 - Vienna PFC",
-  dcdc: "30kW DCDC board 2of2 - 3-phase LLC",
+  acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
+  dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {
-  const page = { page: `30kw-${side}`, title: SIDE_TITLE[side],
+  const page = { page: `${SKU}-${side}`, title: SIDE_TITLE[side],
     total: pgs.reduce((a, p) => a + p.total, 0),
     nc: Object.assign({}, ...pgs.map((p) => p.nc)) };
   // every functional page contributes its blocks, prefixed so the section reads "PAGE / BLOCK"
@@ -327,7 +332,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   const sch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User ${sheetW} ${sheetH}\nencoding utf-8\nSheet 1 1\n`
     + `Title "${page.title ?? page.page}"\nDate "${new Date().toISOString().slice(0, 10)}"\nRev "D.1"\n`
-    + `Comp "DC-Modules - 30 kW module"\n`
+    + `Comp "DC-Modules - ${KW} kW module"\n`
     + `Comment1 "${page.page} - ${blocks.length} sections - ${page.total} components"\n`
     + `Comment2 "Cross-section links are global net labels; wires are pin stubs only"\n`
     + `Comment3 ""\nComment4 ""\n$EndDescr\n${body}$EndSCHEMATC\n`;
@@ -344,20 +349,20 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     const col = i % 2, rowi = Math.floor(i / 2);
     const X = sx + col * 5200, Y = sy + rowi * 2200;
     root += `$Sheet\nS ${X} ${Y} 4200 1400\nU ${nextId()}\n`
-      + `F0 "${SIDE_TITLE[name.replace("30kw-", "")] ?? name}" 70\nF1 "${name}.sch" 70\n$EndSheet\n`;
+      + `F0 "${SIDE_TITLE[name.replace(`${SKU}-`, "")] ?? name}" 70\nF1 "${name}.sch" 70\n$EndSheet\n`;
   });
   const rootSch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User 12000 8000\nencoding utf-8\nSheet 1 1\n`
-    + `Title "DC-Modules 30 kW module - schematic set"\nDate "${new Date().toISOString().slice(0, 10)}"\nRev "D.1"\n`
+    + `Title "DC-Modules ${KW} kW module - schematic set"\nDate "${new Date().toISOString().slice(0, 10)}"\nRev "D.1"\n`
     + `Comp "DC-Modules"\nComment1 "AC-DC (Vienna PFC) sheets 1-6 - DC-DC (3-phase LLC) sheets 7-12"\n`
-    + `Comment2 "60 kW = 2x these cells - 120 kW = 4x"\nComment3 ""\nComment4 ""\n$EndDescr\n`
+    + `Comment2 "${CELLS} Vienna PFC cells + ${CELLS} 3-phase LLC cells per module"\nComment3 ""\nComment4 ""\n$EndDescr\n`
     + `${root}$EndSCHEMATC\n`;
-  writeFileSync(join(OUT, "dc-modules-30kw.sch"), rootSch);
+  writeFileSync(join(OUT, `dc-modules-${SKU}.sch`), rootSch);
 }
 
 writeFileSync(join(OUT, "dc-modules.lib"),
   `EESchema-LIBRARY Version 2.4\n#encoding utf-8\n${[...lib.values()].join("")}#\n#End Library\n`);
 writeFileSync(join(OUT, "dc-modules.dcm"), `EESchema-DOCLIB  Version 2.0\n#\n#End Doc Library\n`);
-writeFileSync(join(OUT, "dc-modules-30kw.pro"),
+writeFileSync(join(OUT, `dc-modules-${SKU}.pro`),
   `update=Date\nversion=1\nlast_client=eeschema\n[general]\nversion=1\n[eeschema]\nversion=1\nLibDir=\n[eeschema/libraries]\nLibName1=dc-modules\n`);
-console.log(`\n${files.length} sheets · ${totalComps} components · ${totalLabels} labels · ${lib.size} symbols → kicad5/dc-modules-30kw/`);
+console.log(`\n${files.length} sheets · ${totalComps} components · ${totalLabels} labels · ${lib.size} symbols → kicad5/dc-modules-${SKU}/`);

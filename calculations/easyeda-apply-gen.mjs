@@ -9,11 +9,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const srcDir = join(here, "out/easyeda");
+const SKU = process.argv[2] || "30kw";
+const srcDir = SKU === "30kw" ? join(here, "out/easyeda") : join(here, "out/easyeda", SKU);
 const outDir = join(srcDir, "apply");
 mkdirSync(outDir, { recursive: true });
 
-const uuidMap = JSON.parse(readFileSync(join(srcDir, "part-uuid-map.json"), "utf8"));
+const uuidMap = JSON.parse(readFileSync(join(here, "out/easyeda", "part-uuid-map.json"), "utf8"));
 
 // GD32G553VET6 LQFP100 physical pin allocation (R3). The previous map was STM32G474-derived and
 // symbolic: it put a fault output on pin 74 (VSS) and BOOT0 on pin 100 (VDD) — two hard shorts —
@@ -24,7 +25,10 @@ const MCU_REF = { UPFC: "UPFC", ULLC: "ULLC" };
 
 // Live page UUIDs. page-uuids-new.json is rewritten whenever the pages are recreated
 // and is the authoritative map (pages rebuilt 2026-09-06 in canonical signal order).
-const PAGE_UUIDS = JSON.parse(readFileSync(join(srcDir, "page-uuids-new.json"), "utf8"));
+// page UUIDs only exist for the 30 kW EasyEDA project; other SKUs emit KiCad only
+const PAGE_UUIDS = SKU === "30kw"
+  ? JSON.parse(readFileSync(join(srcDir, "page-uuids-new.json"), "utf8"))
+  : new Proxy({}, { get: (_, k) => `sku-${SKU}-${String(k)}`, has: () => true });
 
 // Human-facing page titles: SKU, which board of the pair, position in the set, function.
 const PAGE_TITLES = {

@@ -1,0 +1,6518 @@
+{
+ "page": "acdc-VIENNA-PFC",
+ "page_uuid": "sku-120kw-acdc-VIENNA-PFC",
+ "title": "30kW ACDC 2of6 VIENNA-PFC",
+ "block_order": [
+  "PHASE-A0",
+  "PHASE-B0",
+  "PHASE-C0",
+  "PHASE-A1",
+  "PHASE-B1",
+  "PHASE-C1",
+  "PHASE-A2",
+  "PHASE-B2",
+  "PHASE-C2",
+  "PHASE-A3",
+  "PHASE-B3",
+  "PHASE-C3"
+ ],
+ "chunks": [
+  [
+   {
+    "designator": "LA0",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-A0",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHA0"
+     }
+    ]
+   },
+   {
+    "designator": "QA0A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A0",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHA0"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_8"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A0"
+     }
+    ]
+   },
+   {
+    "designator": "QA0B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A0",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_8"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A0"
+     }
+    ]
+   },
+   {
+    "designator": "UA0G",
+    "value": "NSI6611",
+    "block_name": "PHASE-A0",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_A0"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_13"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_A0"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_A0"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_A0"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_12"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_11"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_10"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_9"
+     }
+    ]
+   },
+   {
+    "designator": "PSA0G",
+    "value": "QA01C",
+    "block_name": "PHASE-A0",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_12"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_14"
+     }
+    ]
+   },
+   {
+    "designator": "RA0GON",
+    "value": "4.7",
+    "block_name": "PHASE-A0",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_11"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A0"
+     }
+    ]
+   },
+   {
+    "designator": "RA0GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-A0",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_10"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A0"
+     }
+    ]
+   },
+   {
+    "designator": "RA0GGS",
+    "value": "10k",
+    "block_name": "PHASE-A0",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_A0"
+     }
+    ]
+   },
+   {
+    "designator": "RA0GPD",
+    "value": "10k",
+    "block_name": "PHASE-A0",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DA0GS1",
+    "value": "US1M",
+    "block_name": "PHASE-A0",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_13"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_15"
+     }
+    ]
+   },
+   {
+    "designator": "DA0GS2",
+    "value": "US1M",
+    "block_name": "PHASE-A0",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_15"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA0"
+     }
+    ]
+   },
+   {
+    "designator": "CA0GBL",
+    "value": "100pF",
+    "block_name": "PHASE-A0",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_13"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_14"
+     }
+    ]
+   },
+   {
+    "designator": "CA0GB1",
+    "value": "1uF",
+    "block_name": "PHASE-A0",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_12"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_14"
+     }
+    ]
+   },
+   {
+    "designator": "CA0GB2",
+    "value": "1uF",
+    "block_name": "PHASE-A0",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_14"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_9"
+     }
+    ]
+   },
+   {
+    "designator": "DA0T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A0",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DA0B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A0",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA0"
+     }
+    ]
+   },
+   {
+    "designator": "CA0FP",
+    "value": "1uF",
+    "block_name": "PHASE-A0",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CA0FN",
+    "value": "1uF",
+    "block_name": "PHASE-A0",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RA0SN",
+    "value": "10",
+    "block_name": "PHASE-A0",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHA0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_16"
+     }
+    ]
+   },
+   {
+    "designator": "CA0SN",
+    "value": "100pF",
+    "block_name": "PHASE-A0",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_16"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DA0C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-A0",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_17"
+     }
+    ]
+   },
+   {
+    "designator": "CA0C",
+    "value": "100nF",
+    "block_name": "PHASE-A0",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_17"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RA0C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-A0",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_17"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LB0",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-B0",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHB0"
+     }
+    ]
+   },
+   {
+    "designator": "QB0A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B0",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHB0"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_18"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B0"
+     }
+    ]
+   },
+   {
+    "designator": "QB0B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B0",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_18"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B0"
+     }
+    ]
+   },
+   {
+    "designator": "UB0G",
+    "value": "NSI6611",
+    "block_name": "PHASE-B0",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_B0"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_23"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_B0"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_B0"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_B0"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_22"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_21"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_20"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_19"
+     }
+    ]
+   },
+   {
+    "designator": "PSB0G",
+    "value": "QA01C",
+    "block_name": "PHASE-B0",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_22"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_24"
+     }
+    ]
+   },
+   {
+    "designator": "RB0GON",
+    "value": "4.7",
+    "block_name": "PHASE-B0",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_21"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B0"
+     }
+    ]
+   },
+   {
+    "designator": "RB0GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-B0",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_20"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B0"
+     }
+    ]
+   },
+   {
+    "designator": "RB0GGS",
+    "value": "10k",
+    "block_name": "PHASE-B0",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_B0"
+     }
+    ]
+   },
+   {
+    "designator": "RB0GPD",
+    "value": "10k",
+    "block_name": "PHASE-B0",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DB0GS1",
+    "value": "US1M",
+    "block_name": "PHASE-B0",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_23"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_25"
+     }
+    ]
+   },
+   {
+    "designator": "DB0GS2",
+    "value": "US1M",
+    "block_name": "PHASE-B0",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_25"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB0"
+     }
+    ]
+   },
+   {
+    "designator": "CB0GBL",
+    "value": "100pF",
+    "block_name": "PHASE-B0",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_23"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_24"
+     }
+    ]
+   },
+   {
+    "designator": "CB0GB1",
+    "value": "1uF",
+    "block_name": "PHASE-B0",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_22"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_24"
+     }
+    ]
+   },
+   {
+    "designator": "CB0GB2",
+    "value": "1uF",
+    "block_name": "PHASE-B0",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_24"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_19"
+     }
+    ]
+   },
+   {
+    "designator": "DB0T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B0",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DB0B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B0",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB0"
+     }
+    ]
+   },
+   {
+    "designator": "CB0FP",
+    "value": "1uF",
+    "block_name": "PHASE-B0",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CB0FN",
+    "value": "1uF",
+    "block_name": "PHASE-B0",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RB0SN",
+    "value": "10",
+    "block_name": "PHASE-B0",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHB0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_26"
+     }
+    ]
+   },
+   {
+    "designator": "CB0SN",
+    "value": "100pF",
+    "block_name": "PHASE-B0",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_26"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DB0C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-B0",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_27"
+     }
+    ]
+   },
+   {
+    "designator": "CB0C",
+    "value": "100nF",
+    "block_name": "PHASE-B0",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_27"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RB0C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-B0",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_27"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LC0",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-C0",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHC0"
+     }
+    ]
+   },
+   {
+    "designator": "QC0A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C0",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHC0"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_28"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C0"
+     }
+    ]
+   },
+   {
+    "designator": "QC0B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C0",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_28"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C0"
+     }
+    ]
+   },
+   {
+    "designator": "UC0G",
+    "value": "NSI6611",
+    "block_name": "PHASE-C0",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_C0"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_33"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_C0"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_C0"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_C0"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_32"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_31"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_30"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_29"
+     }
+    ]
+   },
+   {
+    "designator": "PSC0G",
+    "value": "QA01C",
+    "block_name": "PHASE-C0",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_32"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_34"
+     }
+    ]
+   },
+   {
+    "designator": "RC0GON",
+    "value": "4.7",
+    "block_name": "PHASE-C0",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_31"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C0"
+     }
+    ]
+   },
+   {
+    "designator": "RC0GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-C0",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_30"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C0"
+     }
+    ]
+   },
+   {
+    "designator": "RC0GGS",
+    "value": "10k",
+    "block_name": "PHASE-C0",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_C0"
+     }
+    ]
+   },
+   {
+    "designator": "RC0GPD",
+    "value": "10k",
+    "block_name": "PHASE-C0",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DC0GS1",
+    "value": "US1M",
+    "block_name": "PHASE-C0",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_33"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_35"
+     }
+    ]
+   },
+   {
+    "designator": "DC0GS2",
+    "value": "US1M",
+    "block_name": "PHASE-C0",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_35"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC0"
+     }
+    ]
+   },
+   {
+    "designator": "CC0GBL",
+    "value": "100pF",
+    "block_name": "PHASE-C0",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_33"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_34"
+     }
+    ]
+   },
+   {
+    "designator": "CC0GB1",
+    "value": "1uF",
+    "block_name": "PHASE-C0",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_32"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_34"
+     }
+    ]
+   },
+   {
+    "designator": "CC0GB2",
+    "value": "1uF",
+    "block_name": "PHASE-C0",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_34"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_29"
+     }
+    ]
+   },
+   {
+    "designator": "DC0T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C0",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DC0B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C0",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC0"
+     }
+    ]
+   },
+   {
+    "designator": "CC0FP",
+    "value": "1uF",
+    "block_name": "PHASE-C0",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CC0FN",
+    "value": "1uF",
+    "block_name": "PHASE-C0",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RC0SN",
+    "value": "10",
+    "block_name": "PHASE-C0",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHC0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_36"
+     }
+    ]
+   },
+   {
+    "designator": "CC0SN",
+    "value": "100pF",
+    "block_name": "PHASE-C0",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_36"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DC0C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-C0",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC0"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_37"
+     }
+    ]
+   },
+   {
+    "designator": "CC0C",
+    "value": "100nF",
+    "block_name": "PHASE-C0",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_37"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RC0C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-C0",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_37"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LA1",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-A1",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHA1"
+     }
+    ]
+   },
+   {
+    "designator": "QA1A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A1",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A1"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHA1"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_38"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A1"
+     }
+    ]
+   },
+   {
+    "designator": "QA1B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A1",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A1"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_38"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A1"
+     }
+    ]
+   },
+   {
+    "designator": "UA1G",
+    "value": "NSI6611",
+    "block_name": "PHASE-A1",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_A1"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_43"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_A1"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_A1"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_A1"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_42"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_41"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_40"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_A1"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_39"
+     }
+    ]
+   },
+   {
+    "designator": "PSA1G",
+    "value": "QA01C",
+    "block_name": "PHASE-A1",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_42"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_44"
+     }
+    ]
+   },
+   {
+    "designator": "RA1GON",
+    "value": "4.7",
+    "block_name": "PHASE-A1",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_41"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A1"
+     }
+    ]
+   },
+   {
+    "designator": "RA1GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-A1",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_40"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A1"
+     }
+    ]
+   },
+   {
+    "designator": "RA1GGS",
+    "value": "10k",
+    "block_name": "PHASE-A1",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_A1"
+     }
+    ]
+   },
+   {
+    "designator": "RA1GPD",
+    "value": "10k",
+    "block_name": "PHASE-A1",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_A1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DA1GS1",
+    "value": "US1M",
+    "block_name": "PHASE-A1",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_43"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_45"
+     }
+    ]
+   },
+   {
+    "designator": "DA1GS2",
+    "value": "US1M",
+    "block_name": "PHASE-A1",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_45"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA1"
+     }
+    ]
+   },
+   {
+    "designator": "CA1GBL",
+    "value": "100pF",
+    "block_name": "PHASE-A1",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_43"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_44"
+     }
+    ]
+   },
+   {
+    "designator": "CA1GB1",
+    "value": "1uF",
+    "block_name": "PHASE-A1",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_42"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_44"
+     }
+    ]
+   },
+   {
+    "designator": "CA1GB2",
+    "value": "1uF",
+    "block_name": "PHASE-A1",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_44"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_39"
+     }
+    ]
+   },
+   {
+    "designator": "DA1T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A1",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA1"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DA1B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A1",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA1"
+     }
+    ]
+   },
+   {
+    "designator": "CA1FP",
+    "value": "1uF",
+    "block_name": "PHASE-A1",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CA1FN",
+    "value": "1uF",
+    "block_name": "PHASE-A1",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RA1SN",
+    "value": "10",
+    "block_name": "PHASE-A1",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHA1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_46"
+     }
+    ]
+   },
+   {
+    "designator": "CA1SN",
+    "value": "100pF",
+    "block_name": "PHASE-A1",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_46"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DA1C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-A1",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA1"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_47"
+     }
+    ]
+   },
+   {
+    "designator": "CA1C",
+    "value": "100nF",
+    "block_name": "PHASE-A1",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_47"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RA1C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-A1",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_47"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LB1",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-B1",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHB1"
+     }
+    ]
+   },
+   {
+    "designator": "QB1A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B1",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B1"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHB1"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_48"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B1"
+     }
+    ]
+   },
+   {
+    "designator": "QB1B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B1",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B1"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_48"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B1"
+     }
+    ]
+   },
+   {
+    "designator": "UB1G",
+    "value": "NSI6611",
+    "block_name": "PHASE-B1",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_B1"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_53"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_B1"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_B1"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_B1"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_52"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_51"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_50"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_B1"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_49"
+     }
+    ]
+   },
+   {
+    "designator": "PSB1G",
+    "value": "QA01C",
+    "block_name": "PHASE-B1",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_52"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_54"
+     }
+    ]
+   },
+   {
+    "designator": "RB1GON",
+    "value": "4.7",
+    "block_name": "PHASE-B1",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_51"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B1"
+     }
+    ]
+   },
+   {
+    "designator": "RB1GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-B1",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_50"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B1"
+     }
+    ]
+   },
+   {
+    "designator": "RB1GGS",
+    "value": "10k",
+    "block_name": "PHASE-B1",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_B1"
+     }
+    ]
+   },
+   {
+    "designator": "RB1GPD",
+    "value": "10k",
+    "block_name": "PHASE-B1",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_B1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DB1GS1",
+    "value": "US1M",
+    "block_name": "PHASE-B1",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_53"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_55"
+     }
+    ]
+   },
+   {
+    "designator": "DB1GS2",
+    "value": "US1M",
+    "block_name": "PHASE-B1",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_55"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB1"
+     }
+    ]
+   },
+   {
+    "designator": "CB1GBL",
+    "value": "100pF",
+    "block_name": "PHASE-B1",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_53"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_54"
+     }
+    ]
+   },
+   {
+    "designator": "CB1GB1",
+    "value": "1uF",
+    "block_name": "PHASE-B1",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_52"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_54"
+     }
+    ]
+   },
+   {
+    "designator": "CB1GB2",
+    "value": "1uF",
+    "block_name": "PHASE-B1",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_54"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_49"
+     }
+    ]
+   },
+   {
+    "designator": "DB1T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B1",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB1"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DB1B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B1",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB1"
+     }
+    ]
+   },
+   {
+    "designator": "CB1FP",
+    "value": "1uF",
+    "block_name": "PHASE-B1",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CB1FN",
+    "value": "1uF",
+    "block_name": "PHASE-B1",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RB1SN",
+    "value": "10",
+    "block_name": "PHASE-B1",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHB1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_56"
+     }
+    ]
+   },
+   {
+    "designator": "CB1SN",
+    "value": "100pF",
+    "block_name": "PHASE-B1",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_56"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DB1C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-B1",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB1"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_57"
+     }
+    ]
+   },
+   {
+    "designator": "CB1C",
+    "value": "100nF",
+    "block_name": "PHASE-B1",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_57"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RB1C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-B1",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_57"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LC1",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-C1",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHC1"
+     }
+    ]
+   },
+   {
+    "designator": "QC1A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C1",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C1"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHC1"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_58"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C1"
+     }
+    ]
+   },
+   {
+    "designator": "QC1B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C1",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C1"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_58"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C1"
+     }
+    ]
+   },
+   {
+    "designator": "UC1G",
+    "value": "NSI6611",
+    "block_name": "PHASE-C1",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_C1"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_63"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_C1"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_C1"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_C1"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_62"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_61"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_60"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_C1"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_59"
+     }
+    ]
+   },
+   {
+    "designator": "PSC1G",
+    "value": "QA01C",
+    "block_name": "PHASE-C1",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_62"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_64"
+     }
+    ]
+   },
+   {
+    "designator": "RC1GON",
+    "value": "4.7",
+    "block_name": "PHASE-C1",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_61"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C1"
+     }
+    ]
+   },
+   {
+    "designator": "RC1GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-C1",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_60"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C1"
+     }
+    ]
+   },
+   {
+    "designator": "RC1GGS",
+    "value": "10k",
+    "block_name": "PHASE-C1",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_C1"
+     }
+    ]
+   },
+   {
+    "designator": "RC1GPD",
+    "value": "10k",
+    "block_name": "PHASE-C1",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_C1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DC1GS1",
+    "value": "US1M",
+    "block_name": "PHASE-C1",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_63"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_65"
+     }
+    ]
+   },
+   {
+    "designator": "DC1GS2",
+    "value": "US1M",
+    "block_name": "PHASE-C1",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_65"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC1"
+     }
+    ]
+   },
+   {
+    "designator": "CC1GBL",
+    "value": "100pF",
+    "block_name": "PHASE-C1",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_63"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_64"
+     }
+    ]
+   },
+   {
+    "designator": "CC1GB1",
+    "value": "1uF",
+    "block_name": "PHASE-C1",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_62"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_64"
+     }
+    ]
+   },
+   {
+    "designator": "CC1GB2",
+    "value": "1uF",
+    "block_name": "PHASE-C1",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_64"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_59"
+     }
+    ]
+   },
+   {
+    "designator": "DC1T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C1",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC1"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DC1B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C1",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC1"
+     }
+    ]
+   },
+   {
+    "designator": "CC1FP",
+    "value": "1uF",
+    "block_name": "PHASE-C1",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CC1FN",
+    "value": "1uF",
+    "block_name": "PHASE-C1",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RC1SN",
+    "value": "10",
+    "block_name": "PHASE-C1",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHC1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_66"
+     }
+    ]
+   },
+   {
+    "designator": "CC1SN",
+    "value": "100pF",
+    "block_name": "PHASE-C1",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_66"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DC1C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-C1",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC1"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_67"
+     }
+    ]
+   },
+   {
+    "designator": "CC1C",
+    "value": "100nF",
+    "block_name": "PHASE-C1",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_67"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RC1C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-C1",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_67"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LA2",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-A2",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHA2"
+     }
+    ]
+   },
+   {
+    "designator": "QA2A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A2",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A2"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHA2"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_68"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A2"
+     }
+    ]
+   },
+   {
+    "designator": "QA2B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A2",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A2"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_68"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A2"
+     }
+    ]
+   },
+   {
+    "designator": "UA2G",
+    "value": "NSI6611",
+    "block_name": "PHASE-A2",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_A2"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_73"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_A2"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_A2"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_A2"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_72"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_71"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_70"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_A2"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_69"
+     }
+    ]
+   },
+   {
+    "designator": "PSA2G",
+    "value": "QA01C",
+    "block_name": "PHASE-A2",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_72"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_74"
+     }
+    ]
+   },
+   {
+    "designator": "RA2GON",
+    "value": "4.7",
+    "block_name": "PHASE-A2",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_71"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A2"
+     }
+    ]
+   },
+   {
+    "designator": "RA2GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-A2",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_70"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A2"
+     }
+    ]
+   },
+   {
+    "designator": "RA2GGS",
+    "value": "10k",
+    "block_name": "PHASE-A2",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_A2"
+     }
+    ]
+   },
+   {
+    "designator": "RA2GPD",
+    "value": "10k",
+    "block_name": "PHASE-A2",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_A2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DA2GS1",
+    "value": "US1M",
+    "block_name": "PHASE-A2",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_73"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_75"
+     }
+    ]
+   },
+   {
+    "designator": "DA2GS2",
+    "value": "US1M",
+    "block_name": "PHASE-A2",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_75"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA2"
+     }
+    ]
+   },
+   {
+    "designator": "CA2GBL",
+    "value": "100pF",
+    "block_name": "PHASE-A2",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_73"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_74"
+     }
+    ]
+   },
+   {
+    "designator": "CA2GB1",
+    "value": "1uF",
+    "block_name": "PHASE-A2",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_72"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_74"
+     }
+    ]
+   },
+   {
+    "designator": "CA2GB2",
+    "value": "1uF",
+    "block_name": "PHASE-A2",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_74"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_69"
+     }
+    ]
+   },
+   {
+    "designator": "DA2T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A2",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA2"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DA2B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A2",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA2"
+     }
+    ]
+   },
+   {
+    "designator": "CA2FP",
+    "value": "1uF",
+    "block_name": "PHASE-A2",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CA2FN",
+    "value": "1uF",
+    "block_name": "PHASE-A2",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RA2SN",
+    "value": "10",
+    "block_name": "PHASE-A2",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHA2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_76"
+     }
+    ]
+   },
+   {
+    "designator": "CA2SN",
+    "value": "100pF",
+    "block_name": "PHASE-A2",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_76"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DA2C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-A2",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA2"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_77"
+     }
+    ]
+   },
+   {
+    "designator": "CA2C",
+    "value": "100nF",
+    "block_name": "PHASE-A2",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_77"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RA2C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-A2",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_77"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LB2",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-B2",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHB2"
+     }
+    ]
+   },
+   {
+    "designator": "QB2A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B2",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B2"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHB2"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_78"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B2"
+     }
+    ]
+   },
+   {
+    "designator": "QB2B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B2",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B2"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_78"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B2"
+     }
+    ]
+   },
+   {
+    "designator": "UB2G",
+    "value": "NSI6611",
+    "block_name": "PHASE-B2",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_B2"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_83"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_B2"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_B2"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_B2"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_82"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_81"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_80"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_B2"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_79"
+     }
+    ]
+   },
+   {
+    "designator": "PSB2G",
+    "value": "QA01C",
+    "block_name": "PHASE-B2",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_82"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_84"
+     }
+    ]
+   },
+   {
+    "designator": "RB2GON",
+    "value": "4.7",
+    "block_name": "PHASE-B2",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_81"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B2"
+     }
+    ]
+   },
+   {
+    "designator": "RB2GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-B2",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_80"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B2"
+     }
+    ]
+   },
+   {
+    "designator": "RB2GGS",
+    "value": "10k",
+    "block_name": "PHASE-B2",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_B2"
+     }
+    ]
+   },
+   {
+    "designator": "RB2GPD",
+    "value": "10k",
+    "block_name": "PHASE-B2",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_B2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DB2GS1",
+    "value": "US1M",
+    "block_name": "PHASE-B2",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_83"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_85"
+     }
+    ]
+   },
+   {
+    "designator": "DB2GS2",
+    "value": "US1M",
+    "block_name": "PHASE-B2",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_85"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB2"
+     }
+    ]
+   },
+   {
+    "designator": "CB2GBL",
+    "value": "100pF",
+    "block_name": "PHASE-B2",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_83"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_84"
+     }
+    ]
+   },
+   {
+    "designator": "CB2GB1",
+    "value": "1uF",
+    "block_name": "PHASE-B2",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_82"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_84"
+     }
+    ]
+   },
+   {
+    "designator": "CB2GB2",
+    "value": "1uF",
+    "block_name": "PHASE-B2",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_84"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_79"
+     }
+    ]
+   },
+   {
+    "designator": "DB2T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B2",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB2"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DB2B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B2",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB2"
+     }
+    ]
+   },
+   {
+    "designator": "CB2FP",
+    "value": "1uF",
+    "block_name": "PHASE-B2",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CB2FN",
+    "value": "1uF",
+    "block_name": "PHASE-B2",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RB2SN",
+    "value": "10",
+    "block_name": "PHASE-B2",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHB2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_86"
+     }
+    ]
+   },
+   {
+    "designator": "CB2SN",
+    "value": "100pF",
+    "block_name": "PHASE-B2",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_86"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DB2C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-B2",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB2"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_87"
+     }
+    ]
+   },
+   {
+    "designator": "CB2C",
+    "value": "100nF",
+    "block_name": "PHASE-B2",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_87"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RB2C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-B2",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_87"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LC2",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-C2",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHC2"
+     }
+    ]
+   },
+   {
+    "designator": "QC2A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C2",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C2"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHC2"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_88"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C2"
+     }
+    ]
+   },
+   {
+    "designator": "QC2B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C2",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C2"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_88"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C2"
+     }
+    ]
+   },
+   {
+    "designator": "UC2G",
+    "value": "NSI6611",
+    "block_name": "PHASE-C2",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_C2"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_93"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_C2"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_C2"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_C2"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_92"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_91"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_90"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_C2"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_89"
+     }
+    ]
+   },
+   {
+    "designator": "PSC2G",
+    "value": "QA01C",
+    "block_name": "PHASE-C2",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_92"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_94"
+     }
+    ]
+   },
+   {
+    "designator": "RC2GON",
+    "value": "4.7",
+    "block_name": "PHASE-C2",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_91"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C2"
+     }
+    ]
+   },
+   {
+    "designator": "RC2GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-C2",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_90"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C2"
+     }
+    ]
+   },
+   {
+    "designator": "RC2GGS",
+    "value": "10k",
+    "block_name": "PHASE-C2",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_C2"
+     }
+    ]
+   },
+   {
+    "designator": "RC2GPD",
+    "value": "10k",
+    "block_name": "PHASE-C2",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_C2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DC2GS1",
+    "value": "US1M",
+    "block_name": "PHASE-C2",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_93"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_95"
+     }
+    ]
+   },
+   {
+    "designator": "DC2GS2",
+    "value": "US1M",
+    "block_name": "PHASE-C2",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_95"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC2"
+     }
+    ]
+   },
+   {
+    "designator": "CC2GBL",
+    "value": "100pF",
+    "block_name": "PHASE-C2",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_93"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_94"
+     }
+    ]
+   },
+   {
+    "designator": "CC2GB1",
+    "value": "1uF",
+    "block_name": "PHASE-C2",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_92"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_94"
+     }
+    ]
+   },
+   {
+    "designator": "CC2GB2",
+    "value": "1uF",
+    "block_name": "PHASE-C2",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_94"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_89"
+     }
+    ]
+   },
+   {
+    "designator": "DC2T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C2",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC2"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DC2B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C2",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC2"
+     }
+    ]
+   },
+   {
+    "designator": "CC2FP",
+    "value": "1uF",
+    "block_name": "PHASE-C2",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CC2FN",
+    "value": "1uF",
+    "block_name": "PHASE-C2",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RC2SN",
+    "value": "10",
+    "block_name": "PHASE-C2",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHC2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_96"
+     }
+    ]
+   },
+   {
+    "designator": "CC2SN",
+    "value": "100pF",
+    "block_name": "PHASE-C2",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_96"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DC2C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-C2",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC2"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_97"
+     }
+    ]
+   },
+   {
+    "designator": "CC2C",
+    "value": "100nF",
+    "block_name": "PHASE-C2",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_97"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RC2C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-C2",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_97"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LA3",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-A3",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHA3"
+     }
+    ]
+   },
+   {
+    "designator": "QA3A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A3",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A3"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHA3"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_98"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A3"
+     }
+    ]
+   },
+   {
+    "designator": "QA3B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-A3",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_A3"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_98"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_A3"
+     }
+    ]
+   },
+   {
+    "designator": "UA3G",
+    "value": "NSI6611",
+    "block_name": "PHASE-A3",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_A3"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_103"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_A3"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_A3"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_A3"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_102"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_101"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_100"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_A3"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_99"
+     }
+    ]
+   },
+   {
+    "designator": "PSA3G",
+    "value": "QA01C",
+    "block_name": "PHASE-A3",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_102"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_104"
+     }
+    ]
+   },
+   {
+    "designator": "RA3GON",
+    "value": "4.7",
+    "block_name": "PHASE-A3",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_101"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A3"
+     }
+    ]
+   },
+   {
+    "designator": "RA3GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-A3",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_100"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_A3"
+     }
+    ]
+   },
+   {
+    "designator": "RA3GGS",
+    "value": "10k",
+    "block_name": "PHASE-A3",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_A3"
+     }
+    ]
+   },
+   {
+    "designator": "RA3GPD",
+    "value": "10k",
+    "block_name": "PHASE-A3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_A3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DA3GS1",
+    "value": "US1M",
+    "block_name": "PHASE-A3",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_103"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_105"
+     }
+    ]
+   },
+   {
+    "designator": "DA3GS2",
+    "value": "US1M",
+    "block_name": "PHASE-A3",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_105"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA3"
+     }
+    ]
+   },
+   {
+    "designator": "CA3GBL",
+    "value": "100pF",
+    "block_name": "PHASE-A3",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_103"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_104"
+     }
+    ]
+   },
+   {
+    "designator": "CA3GB1",
+    "value": "1uF",
+    "block_name": "PHASE-A3",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_102"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_104"
+     }
+    ]
+   },
+   {
+    "designator": "CA3GB2",
+    "value": "1uF",
+    "block_name": "PHASE-A3",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_104"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_99"
+     }
+    ]
+   },
+   {
+    "designator": "DA3T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A3",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA3"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DA3B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-A3",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA3"
+     }
+    ]
+   },
+   {
+    "designator": "CA3FP",
+    "value": "1uF",
+    "block_name": "PHASE-A3",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CA3FN",
+    "value": "1uF",
+    "block_name": "PHASE-A3",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RA3SN",
+    "value": "10",
+    "block_name": "PHASE-A3",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHA3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_106"
+     }
+    ]
+   },
+   {
+    "designator": "CA3SN",
+    "value": "100pF",
+    "block_name": "PHASE-A3",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_106"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DA3C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-A3",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHA3"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_107"
+     }
+    ]
+   },
+   {
+    "designator": "CA3C",
+    "value": "100nF",
+    "block_name": "PHASE-A3",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_107"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RA3C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-A3",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_107"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LB3",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-B3",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2F"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHB3"
+     }
+    ]
+   },
+   {
+    "designator": "QB3A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B3",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B3"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHB3"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_108"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B3"
+     }
+    ]
+   },
+   {
+    "designator": "QB3B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-B3",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_B3"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_108"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_B3"
+     }
+    ]
+   },
+   {
+    "designator": "UB3G",
+    "value": "NSI6611",
+    "block_name": "PHASE-B3",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_B3"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_113"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_B3"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_B3"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_B3"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_112"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_111"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_110"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_B3"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_109"
+     }
+    ]
+   },
+   {
+    "designator": "PSB3G",
+    "value": "QA01C",
+    "block_name": "PHASE-B3",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_112"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_114"
+     }
+    ]
+   },
+   {
+    "designator": "RB3GON",
+    "value": "4.7",
+    "block_name": "PHASE-B3",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_111"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B3"
+     }
+    ]
+   },
+   {
+    "designator": "RB3GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-B3",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_110"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_B3"
+     }
+    ]
+   },
+   {
+    "designator": "RB3GGS",
+    "value": "10k",
+    "block_name": "PHASE-B3",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_B3"
+     }
+    ]
+   },
+   {
+    "designator": "RB3GPD",
+    "value": "10k",
+    "block_name": "PHASE-B3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_B3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DB3GS1",
+    "value": "US1M",
+    "block_name": "PHASE-B3",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_113"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_115"
+     }
+    ]
+   },
+   {
+    "designator": "DB3GS2",
+    "value": "US1M",
+    "block_name": "PHASE-B3",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_115"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB3"
+     }
+    ]
+   },
+   {
+    "designator": "CB3GBL",
+    "value": "100pF",
+    "block_name": "PHASE-B3",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_113"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_114"
+     }
+    ]
+   },
+   {
+    "designator": "CB3GB1",
+    "value": "1uF",
+    "block_name": "PHASE-B3",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_112"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_114"
+     }
+    ]
+   },
+   {
+    "designator": "CB3GB2",
+    "value": "1uF",
+    "block_name": "PHASE-B3",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_114"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_109"
+     }
+    ]
+   },
+   {
+    "designator": "DB3T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B3",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB3"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DB3B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-B3",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB3"
+     }
+    ]
+   },
+   {
+    "designator": "CB3FP",
+    "value": "1uF",
+    "block_name": "PHASE-B3",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CB3FN",
+    "value": "1uF",
+    "block_name": "PHASE-B3",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RB3SN",
+    "value": "10",
+    "block_name": "PHASE-B3",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHB3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_116"
+     }
+    ]
+   },
+   {
+    "designator": "CB3SN",
+    "value": "100pF",
+    "block_name": "PHASE-B3",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_116"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DB3C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-B3",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHB3"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_117"
+     }
+    ]
+   },
+   {
+    "designator": "CB3C",
+    "value": "100nF",
+    "block_name": "PHASE-B3",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_117"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RB3C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-B3",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_117"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "LC3",
+    "value": "IND-PFC-165u",
+    "block_name": "PHASE-C3",
+    "search_query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PHC3"
+     }
+    ]
+   },
+   {
+    "designator": "QC3A",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C3",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C3"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "PHC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_118"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C3"
+     }
+    ]
+   },
+   {
+    "designator": "QC3B",
+    "value": "B3M010C075Z",
+    "block_name": "PHASE-C3",
+    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
+    "part_uuid": "9df905c9f6a84349bc295d533be0b560",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "G_C3"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "N_ACDC_118"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KS_C3"
+     }
+    ]
+   },
+   {
+    "designator": "UC3G",
+    "value": "NSI6611",
+    "block_name": "PHASE-C3",
+    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+    "part_uuid": "fede23c24c52400fa83dab0527c618ae",
+    "pins": [
+     {
+      "pin_number": 15,
+      "name": "VCC1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 9,
+      "name": "GND1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "IN+",
+      "signal_name": "PWM_C3"
+     },
+     {
+      "pin_number": 11,
+      "name": "IN-",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 14,
+      "name": "RST#/EN",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 13,
+      "name": "FLT#",
+      "signal_name": "FLT_PFC"
+     },
+     {
+      "pin_number": 2,
+      "name": "DESAT",
+      "signal_name": "N_ACDC_123"
+     },
+     {
+      "pin_number": 3,
+      "name": "GND2",
+      "signal_name": "KS_C3"
+     },
+     {
+      "pin_number": 1,
+      "name": "ASC",
+      "signal_name": "KS_C3"
+     },
+     {
+      "pin_number": 16,
+      "name": "TEST",
+      "signal_name": "KS_C3"
+     },
+     {
+      "pin_number": 5,
+      "name": "VCC2",
+      "signal_name": "N_ACDC_122"
+     },
+     {
+      "pin_number": 4,
+      "name": "OUTH",
+      "signal_name": "N_ACDC_121"
+     },
+     {
+      "pin_number": 6,
+      "name": "OUTL",
+      "signal_name": "N_ACDC_120"
+     },
+     {
+      "pin_number": 7,
+      "name": "CLAMP",
+      "signal_name": "G_C3"
+     },
+     {
+      "pin_number": 8,
+      "name": "VEE2",
+      "signal_name": "N_ACDC_119"
+     }
+    ]
+   },
+   {
+    "designator": "PSC3G",
+    "value": "QA01C",
+    "block_name": "PHASE-C3",
+    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "+VO",
+      "signal_name": "N_ACDC_122"
+     },
+     {
+      "pin_number": 6,
+      "name": "0V",
+      "signal_name": "N_ACDC_124"
+     }
+    ]
+   },
+   {
+    "designator": "RC3GON",
+    "value": "4.7",
+    "block_name": "PHASE-C3",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_121"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C3"
+     }
+    ]
+   },
+   {
+    "designator": "RC3GOFF",
+    "value": "4.7",
+    "block_name": "PHASE-C3",
+    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_120"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "G_C3"
+     }
+    ]
+   },
+   {
+    "designator": "RC3GGS",
+    "value": "10k",
+    "block_name": "PHASE-C3",
+    "search_query": "R0805-10k 10 kΩ gate-source",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "KS_C3"
+     }
+    ]
+   },
+   {
+    "designator": "RC3GPD",
+    "value": "10k",
+    "block_name": "PHASE-C3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PWM_C3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "DC3GS1",
+    "value": "US1M",
+    "block_name": "PHASE-C3",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_123"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_125"
+     }
+    ]
+   },
+   {
+    "designator": "DC3GS2",
+    "value": "US1M",
+    "block_name": "PHASE-C3",
+    "search_query": "US1M 1 kV 1 A fast diode SMA",
+    "part_uuid": "3fe627123a854e51885775982252dfbe",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "N_ACDC_125"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC3"
+     }
+    ]
+   },
+   {
+    "designator": "CC3GBL",
+    "value": "100pF",
+    "block_name": "PHASE-C3",
+    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_123"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_124"
+     }
+    ]
+   },
+   {
+    "designator": "CC3GB1",
+    "value": "1uF",
+    "block_name": "PHASE-C3",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_122"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_124"
+     }
+    ]
+   },
+   {
+    "designator": "CC3GB2",
+    "value": "1uF",
+    "block_name": "PHASE-C3",
+    "search_query": "MLCC-1u-0805 1 µF 0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_124"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_119"
+     }
+    ]
+   },
+   {
+    "designator": "DC3T",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C3",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC3"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "DC3B",
+    "value": "SICJBS-1200-40",
+    "block_name": "PHASE-C3",
+    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC3"
+     }
+    ]
+   },
+   {
+    "designator": "CC3FP",
+    "value": "1uF",
+    "block_name": "PHASE-C3",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "CC3FN",
+    "value": "1uF",
+    "block_name": "PHASE-C3",
+    "search_query": "PP-1u-600 1 µF 600 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "MID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RC3SN",
+    "value": "10",
+    "block_name": "PHASE-C3",
+    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "PHC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "N_ACDC_126"
+     }
+    ]
+   },
+   {
+    "designator": "CC3SN",
+    "value": "100pF",
+    "block_name": "PHASE-C3",
+    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_126"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "MID"
+     }
+    ]
+   },
+   {
+    "designator": "DC3C",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-C3",
+    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
+    "part_uuid": "27cb810ca35d4790a232e3fd07a3dcce",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "PHC3"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "N_ACDC_127"
+     }
+    ]
+   },
+   {
+    "designator": "CC3C",
+    "value": "100nF",
+    "block_name": "PHASE-C3",
+    "search_query": "FILM-100n-250 100 nF 250 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_127"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RC3C",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-C3",
+    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "N_ACDC_127"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCP"
+     }
+    ]
+   }
+  ]
+ ],
+ "nc": {
+  "UA0G": [
+   12
+  ],
+  "PSA0G": [
+   5
+  ],
+  "UB0G": [
+   12
+  ],
+  "PSB0G": [
+   5
+  ],
+  "UC0G": [
+   12
+  ],
+  "PSC0G": [
+   5
+  ],
+  "UA1G": [
+   12
+  ],
+  "PSA1G": [
+   5
+  ],
+  "UB1G": [
+   12
+  ],
+  "PSB1G": [
+   5
+  ],
+  "UC1G": [
+   12
+  ],
+  "PSC1G": [
+   5
+  ],
+  "UA2G": [
+   12
+  ],
+  "PSA2G": [
+   5
+  ],
+  "UB2G": [
+   12
+  ],
+  "PSB2G": [
+   5
+  ],
+  "UC2G": [
+   12
+  ],
+  "PSC2G": [
+   5
+  ],
+  "UA3G": [
+   12
+  ],
+  "PSA3G": [
+   5
+  ],
+  "UB3G": [
+   12
+  ],
+  "PSB3G": [
+   5
+  ],
+  "UC3G": [
+   12
+  ],
+  "PSC3G": [
+   5
+  ]
+ },
+ "warnings": [
+  "UA0G: KSRC(KS_A0) != GND2(N_ACDC_14); GND2 pin3 uses KSRC",
+  "UB0G: KSRC(KS_B0) != GND2(N_ACDC_24); GND2 pin3 uses KSRC",
+  "UC0G: KSRC(KS_C0) != GND2(N_ACDC_34); GND2 pin3 uses KSRC",
+  "UA1G: KSRC(KS_A1) != GND2(N_ACDC_44); GND2 pin3 uses KSRC",
+  "UB1G: KSRC(KS_B1) != GND2(N_ACDC_54); GND2 pin3 uses KSRC",
+  "UC1G: KSRC(KS_C1) != GND2(N_ACDC_64); GND2 pin3 uses KSRC",
+  "UA2G: KSRC(KS_A2) != GND2(N_ACDC_74); GND2 pin3 uses KSRC",
+  "UB2G: KSRC(KS_B2) != GND2(N_ACDC_84); GND2 pin3 uses KSRC",
+  "UC2G: KSRC(KS_C2) != GND2(N_ACDC_94); GND2 pin3 uses KSRC",
+  "UA3G: KSRC(KS_A3) != GND2(N_ACDC_104); GND2 pin3 uses KSRC",
+  "UB3G: KSRC(KS_B3) != GND2(N_ACDC_114); GND2 pin3 uses KSRC",
+  "UC3G: KSRC(KS_C3) != GND2(N_ACDC_124); GND2 pin3 uses KSRC"
+ ],
+ "total": 276
+}

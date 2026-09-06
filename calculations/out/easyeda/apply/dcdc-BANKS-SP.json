@@ -90,7 +90,7 @@
     "designator": "RBALTA1",
     "value": "47k",
     "block_name": "BANK-A",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -109,7 +109,7 @@
     "designator": "RBALTA2",
     "value": "47k",
     "block_name": "BANK-A",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -128,7 +128,7 @@
     "designator": "RBALBA1",
     "value": "47k",
     "block_name": "BANK-A",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -147,7 +147,7 @@
     "designator": "RBALBA2",
     "value": "47k",
     "block_name": "BANK-A",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -263,7 +263,7 @@
     "designator": "RBALTB1",
     "value": "47k",
     "block_name": "BANK-B",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -282,7 +282,7 @@
     "designator": "RBALTB2",
     "value": "47k",
     "block_name": "BANK-B",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -301,7 +301,7 @@
     "designator": "RBALBB1",
     "value": "47k",
     "block_name": "BANK-B",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -320,7 +320,7 @@
     "designator": "RBALBB2",
     "value": "47k",
     "block_name": "BANK-B",
-    "search_query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {

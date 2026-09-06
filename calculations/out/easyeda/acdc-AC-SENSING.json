@@ -8,9 +8,9 @@
   "SENSE-VBUS",
   "SENSE-VMID",
   "ISO-BIAS",
-  "LINE-CTS",
   "ANALOG-MID",
-  "NTC"
+  "NTC",
+  "LINE-CTS-0"
  ],
  "net_style_overrides": {
   "N_ACDC_38": "wire",
@@ -68,7 +68,7 @@
  "components": [
   {
    "designator": "CTA0",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -82,13 +82,13 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-60A-1:2500",
-   "query": "CT-60A-1:2500 line CT 60 A class ",
-   "mpn": "CT-60A-1:2500"
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
   },
   {
    "designator": "RA0B",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -108,7 +108,7 @@
   },
   {
    "designator": "RA0F",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -128,7 +128,7 @@
   },
   {
    "designator": "CA0F",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -148,7 +148,7 @@
   },
   {
    "designator": "DA0P",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -168,7 +168,7 @@
   },
   {
    "designator": "DA0N",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -188,7 +188,7 @@
   },
   {
    "designator": "CTB0",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -202,13 +202,13 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-60A-1:2500",
-   "query": "CT-60A-1:2500 line CT 60 A class ",
-   "mpn": "CT-60A-1:2500"
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
   },
   {
    "designator": "RB0B",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -228,7 +228,7 @@
   },
   {
    "designator": "RB0F",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -248,7 +248,7 @@
   },
   {
    "designator": "CB0F",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -268,7 +268,7 @@
   },
   {
    "designator": "DB0P",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -288,7 +288,7 @@
   },
   {
    "designator": "DB0N",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -308,7 +308,7 @@
   },
   {
    "designator": "CTC0",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -322,13 +322,13 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-60A-1:2500",
-   "query": "CT-60A-1:2500 line CT 60 A class ",
-   "mpn": "CT-60A-1:2500"
+   "value": "CT-100A-1:2500",
+   "query": "CT-100A-1:2500 line CT 100 A class ",
+   "mpn": "CT-100A-1:2500"
   },
   {
    "designator": "RC0B",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -348,7 +348,7 @@
   },
   {
    "designator": "RC0F",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -368,7 +368,7 @@
   },
   {
    "designator": "CC0F",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -388,7 +388,7 @@
   },
   {
    "designator": "DC0P",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -408,7 +408,7 @@
   },
   {
    "designator": "DC0N",
-   "block_name": "LINE-CTS",
+   "block_name": "LINE-CTS-0",
    "pins": [
     {
      "pin_number": 1,
@@ -443,7 +443,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -463,7 +463,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -483,7 +483,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -503,7 +503,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -523,7 +523,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -543,7 +543,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {

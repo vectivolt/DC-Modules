@@ -344,9 +344,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R1HON",
@@ -638,9 +638,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R1LON",
@@ -992,9 +992,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R2HON",
@@ -1286,9 +1286,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R2LON",
@@ -1640,9 +1640,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R3HON",
@@ -1934,9 +1934,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "R3LON",

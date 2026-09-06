@@ -1,0 +1,4186 @@
+{
+ "page": "LLC-LEGS",
+ "flow": [
+  "BUS-IN",
+  "LEG-1",
+  "LEG-2",
+  "LEG-3",
+  "LEG-4",
+  "LEG-5",
+  "LEG-6"
+ ],
+ "net_style_overrides": {
+  "GH_1": "wire",
+  "SW1": "wire",
+  "KH_1": "wire",
+  "GL_1": "wire",
+  "KL_1": "wire",
+  "N_DCDC_1": "wire",
+  "N_DCDC_2": "wire",
+  "N_DCDC_3": "wire",
+  "N_DCDC_4": "wire",
+  "N_DCDC_5": "wire",
+  "N_DCDC_6": "wire",
+  "N_DCDC_7": "wire",
+  "N_DCDC_8": "wire",
+  "N_DCDC_9": "wire",
+  "N_DCDC_10": "wire",
+  "N_DCDC_11": "wire",
+  "N_DCDC_12": "wire",
+  "N_DCDC_13": "wire",
+  "N_DCDC_14": "wire",
+  "GH_2": "wire",
+  "SW2": "wire",
+  "KH_2": "wire",
+  "GL_2": "wire",
+  "KL_2": "wire",
+  "N_DCDC_15": "wire",
+  "N_DCDC_16": "wire",
+  "N_DCDC_17": "wire",
+  "N_DCDC_18": "wire",
+  "N_DCDC_19": "wire",
+  "N_DCDC_20": "wire",
+  "N_DCDC_21": "wire",
+  "N_DCDC_22": "wire",
+  "N_DCDC_23": "wire",
+  "N_DCDC_24": "wire",
+  "N_DCDC_25": "wire",
+  "N_DCDC_26": "wire",
+  "N_DCDC_27": "wire",
+  "N_DCDC_28": "wire",
+  "GH_3": "wire",
+  "SW3": "wire",
+  "KH_3": "wire",
+  "GL_3": "wire",
+  "KL_3": "wire",
+  "N_DCDC_29": "wire",
+  "N_DCDC_30": "wire",
+  "N_DCDC_31": "wire",
+  "N_DCDC_32": "wire",
+  "N_DCDC_33": "wire",
+  "N_DCDC_34": "wire",
+  "N_DCDC_35": "wire",
+  "N_DCDC_36": "wire",
+  "N_DCDC_37": "wire",
+  "N_DCDC_38": "wire",
+  "N_DCDC_39": "wire",
+  "N_DCDC_40": "wire",
+  "N_DCDC_41": "wire",
+  "N_DCDC_42": "wire",
+  "GH_4": "wire",
+  "SW4": "wire",
+  "KH_4": "wire",
+  "GL_4": "wire",
+  "KL_4": "wire",
+  "N_DCDC_43": "wire",
+  "N_DCDC_44": "wire",
+  "N_DCDC_45": "wire",
+  "N_DCDC_46": "wire",
+  "N_DCDC_47": "wire",
+  "N_DCDC_48": "wire",
+  "N_DCDC_49": "wire",
+  "N_DCDC_50": "wire",
+  "N_DCDC_51": "wire",
+  "N_DCDC_52": "wire",
+  "N_DCDC_53": "wire",
+  "N_DCDC_54": "wire",
+  "N_DCDC_55": "wire",
+  "N_DCDC_56": "wire",
+  "GH_5": "wire",
+  "SW5": "wire",
+  "KH_5": "wire",
+  "GL_5": "wire",
+  "KL_5": "wire",
+  "N_DCDC_57": "wire",
+  "N_DCDC_58": "wire",
+  "N_DCDC_59": "wire",
+  "N_DCDC_60": "wire",
+  "N_DCDC_61": "wire",
+  "N_DCDC_62": "wire",
+  "N_DCDC_63": "wire",
+  "N_DCDC_64": "wire",
+  "N_DCDC_65": "wire",
+  "N_DCDC_66": "wire",
+  "N_DCDC_67": "wire",
+  "N_DCDC_68": "wire",
+  "N_DCDC_69": "wire",
+  "N_DCDC_70": "wire",
+  "GH_6": "wire",
+  "SW6": "wire",
+  "KH_6": "wire",
+  "GL_6": "wire",
+  "KL_6": "wire",
+  "N_DCDC_71": "wire",
+  "N_DCDC_72": "wire",
+  "N_DCDC_73": "wire",
+  "N_DCDC_74": "wire",
+  "N_DCDC_75": "wire",
+  "N_DCDC_76": "wire",
+  "N_DCDC_77": "wire",
+  "N_DCDC_78": "wire",
+  "N_DCDC_79": "wire",
+  "N_DCDC_80": "wire",
+  "N_DCDC_81": "wire",
+  "N_DCDC_82": "wire",
+  "N_DCDC_83": "wire",
+  "N_DCDC_84": "wire"
+ },
+ "net_class_overrides": {
+  "PE": "ground"
+ },
+ "components": [
+  {
+   "designator": "JDCP",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JDCN",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JPEB",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "CF0",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF1",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF2",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF3",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF4",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF5",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "Q1H",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GH_1"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "SW1"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KH_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "Q1L",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GL_1"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "SW1"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KL_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "U1H",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L1H"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GH_1"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_1"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_2"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_3"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_4"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KH_1"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_5"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_6"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS1H",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_4"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_6"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R1HON",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R1HOFF",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R1HGS",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GH_1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KH_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R1HPD",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L1H"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D1HS1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_7"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D1HS2",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_7"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C1HBL",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C1HB1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C1HB2",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "U1L",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L1L"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GL_1"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_8"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_9"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_10"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_11"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KL_1"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_12"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_13"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS1L",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_11"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_13"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_8"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R1LON",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_10"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R1LOFF",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_9"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R1LGS",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GL_1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KL_1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R1LPD",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L1L"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D1LS1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_12"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_14"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D1LS2",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_14"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SW1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C1LBL",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_12"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_13"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C1LB1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_11"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_13"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C1LB2",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_13"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_8"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "Q2H",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GH_2"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "SW2"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KH_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "Q2L",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GL_2"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "SW2"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KL_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "U2H",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L2H"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GH_2"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_15"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_16"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_17"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_18"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KH_2"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_19"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_20"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS2H",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_18"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_20"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_15"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R2HON",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_17"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R2HOFF",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_16"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R2HGS",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GH_2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KH_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R2HPD",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L2H"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D2HS1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_19"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_21"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D2HS2",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_21"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C2HBL",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_19"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_20"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C2HB1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_18"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_20"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C2HB2",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_20"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_15"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "U2L",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L2L"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GL_2"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_22"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_23"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_24"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_25"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KL_2"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_26"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_27"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS2L",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_25"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_27"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_22"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R2LON",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R2LOFF",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_23"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R2LGS",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GL_2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KL_2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R2LPD",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L2L"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D2LS1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_26"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_28"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D2LS2",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_28"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SW2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C2LBL",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_26"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_27"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C2LB1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_25"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_27"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C2LB2",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_27"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_22"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "Q3H",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GH_3"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "SW3"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KH_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "Q3L",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GL_3"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "SW3"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KL_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "U3H",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L3H"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GH_3"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_29"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_30"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_31"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_32"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KH_3"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_33"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_34"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS3H",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_32"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_34"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_29"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R3HON",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_31"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R3HOFF",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_30"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R3HGS",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GH_3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KH_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R3HPD",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L3H"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D3HS1",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_33"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_35"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D3HS2",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_35"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C3HBL",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_33"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_34"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C3HB1",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_32"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_34"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C3HB2",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_34"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_29"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "U3L",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L3L"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GL_3"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_36"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_37"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_38"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_39"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KL_3"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_40"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_41"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS3L",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_39"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_41"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_36"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R3LON",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_38"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R3LOFF",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_37"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R3LGS",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GL_3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KL_3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R3LPD",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L3L"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D3LS1",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_40"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_42"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D3LS2",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_42"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SW3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C3LBL",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_40"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_41"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C3LB1",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_39"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_41"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C3LB2",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_41"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_36"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "Q4H",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GH_4"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "SW4"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KH_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "Q4L",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GL_4"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "SW4"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KL_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "U4H",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L4H"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GH_4"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_43"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_44"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_45"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_46"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KH_4"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_47"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_48"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS4H",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_46"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_48"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_43"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R4HON",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_45"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R4HOFF",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_44"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R4HGS",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GH_4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KH_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R4HPD",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L4H"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D4HS1",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_47"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_49"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D4HS2",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_49"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C4HBL",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_47"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_48"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C4HB1",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_46"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_48"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C4HB2",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_48"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_43"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "U4L",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L4L"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GL_4"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_50"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_51"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_52"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_53"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KL_4"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_54"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_55"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS4L",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_53"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_55"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_50"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R4LON",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_52"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R4LOFF",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_51"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R4LGS",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GL_4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KL_4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R4LPD",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L4L"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D4LS1",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_54"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_56"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D4LS2",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_56"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SW4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C4LBL",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_54"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_55"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C4LB1",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_53"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_55"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C4LB2",
+   "block_name": "LEG-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_55"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_50"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "Q5H",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GH_5"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "SW5"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KH_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "Q5L",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GL_5"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "SW5"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KL_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "U5H",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L5H"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GH_5"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_57"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_58"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_59"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_60"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KH_5"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_61"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_62"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS5H",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_60"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_62"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_57"
+    }
+   ],
+   "nc_pins": [],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "R5HON",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_59"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R5HOFF",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_58"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R5HGS",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GH_5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KH_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R5HPD",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L5H"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D5HS1",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_61"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_63"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D5HS2",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_63"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C5HBL",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_61"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_62"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C5HB1",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_60"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_62"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C5HB2",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_62"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_57"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "U5L",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L5L"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GL_5"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_64"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_65"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_66"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_67"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KL_5"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_68"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_69"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS5L",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_67"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_69"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_64"
+    }
+   ],
+   "nc_pins": [],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "R5LON",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_66"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R5LOFF",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_65"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R5LGS",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GL_5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KL_5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R5LPD",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L5L"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D5LS1",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_68"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_70"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D5LS2",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_70"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SW5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C5LBL",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_68"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_69"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C5LB1",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_67"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_69"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C5LB2",
+   "block_name": "LEG-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_69"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_64"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "Q6H",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GH_6"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "SW6"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KH_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "Q6L",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "GL_6"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "SW6"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 4,
+     "name": "KS",
+     "signal_name": "KL_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SG2M023120LJ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "U6H",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L6H"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GH_6"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_71"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_72"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_73"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_74"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KH_6"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_75"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_76"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS6H",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_74"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_76"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_71"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R6HON",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_73"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R6HOFF",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_72"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GH_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R6HGS",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GH_6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KH_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R6HPD",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L6H"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D6HS1",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_75"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_77"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D6HS2",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_77"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C6HBL",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_75"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_76"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C6HB1",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_74"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_76"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C6HB2",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_76"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_71"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "U6L",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIA",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "PWM",
+     "signal_name": "PWM_L6L"
+    },
+    {
+     "pin_number": 4,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 5,
+     "name": "FLT",
+     "signal_name": "FLT_LLC"
+    },
+    {
+     "pin_number": 9,
+     "name": "CLAMP",
+     "signal_name": "GL_6"
+    },
+    {
+     "pin_number": 10,
+     "name": "VEE",
+     "signal_name": "N_DCDC_78"
+    },
+    {
+     "pin_number": 11,
+     "name": "OUTL",
+     "signal_name": "N_DCDC_79"
+    },
+    {
+     "pin_number": 12,
+     "name": "OUTH",
+     "signal_name": "N_DCDC_80"
+    },
+    {
+     "pin_number": 13,
+     "name": "VCC2",
+     "signal_name": "N_DCDC_81"
+    },
+    {
+     "pin_number": 14,
+     "name": "KSRC",
+     "signal_name": "KL_6"
+    },
+    {
+     "pin_number": 15,
+     "name": "DST",
+     "signal_name": "N_DCDC_82"
+    },
+    {
+     "pin_number": 16,
+     "name": "GND2",
+     "signal_name": "N_DCDC_83"
+    }
+   ],
+   "nc_pins": [
+    6,
+    7,
+    8
+   ],
+   "value": "NSI6611",
+   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "mpn": "NSI6611"
+  },
+  {
+   "designator": "PS6L",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "N_DCDC_81"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_83"
+    },
+    {
+     "pin_number": 5,
+     "name": "N4",
+     "signal_name": "N_DCDC_78"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "R6LON",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_80"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R6LOFF",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_79"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "GL_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2",
+   "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
+   "mpn": "R1206-RG-0.5W"
+  },
+  {
+   "designator": "R6LGS",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GL_6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "KL_6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0805-10k 10 kΩ gate-source",
+   "mpn": "R0805-10k"
+  },
+  {
+   "designator": "R6LPD",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_L6L"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D6LS1",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_82"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_84"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "D6LS2",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_84"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SW6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "US1M",
+   "query": "US1M 1 kV 1 A fast diode SMA ",
+   "mpn": "US1M"
+  },
+  {
+   "designator": "C6LBL",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_82"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_83"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
+  },
+  {
+   "designator": "C6LB1",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_81"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_83"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C6LB2",
+   "block_name": "LEG-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_83"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_78"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  }
+ ]
+}

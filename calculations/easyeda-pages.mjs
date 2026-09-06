@@ -17,6 +17,10 @@ mkdirSync(OUT, { recursive: true });
 // same cells x2/x4, so the lane- and leg-indexed blocks must be discovered from the netlist
 // rather than hard-coded, or every lane above 0 silently vanishes from the drawing.
 const SKU = process.argv[2] || "30kw";
+// 30 kW keeps the historical path so nothing downstream breaks; new SKUs get their own dir
+const OUT_SKU = SKU === "30kw" ? OUT : join(OUT, SKU);
+mkdirSync(OUT_SKU, { recursive: true });
+
 
 /** sorted unique capture-group values present in the design, e.g. Vienna lanes or LLC legs */
 const idxOf = (names, re) => [...new Set(names.map((n) => n.match(re)?.[1]).filter((x) => x != null))]
@@ -35,6 +39,10 @@ const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
 const lineCtBlocks = (names) => idxOf(names, /^CTA(\d)$/).map((n) =>
   [`LINE-CTS-${n}`, [new RegExp(`^CT[ABC]${n}$`), new RegExp(`^R[ABC]${n}[BF]$`),
     new RegExp(`^C[ABC]${n}F$`), new RegExp(`^D[ABC]${n}[PN]$`)]]);
+
+/** DC-link capacitor banks: one block per lane (CDT0x/CDB0x + its balance resistors) */
+const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
+  [`LINK-BANK-${n}`, [new RegExp(`^CD[TB]${n}\\d$`), new RegExp(`^RBAL[TB]${n}[AB]$`)]]);
 
 /** LLC half-bridge legs: 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
 const legBlocks = (names) => idxOf(names, /^Q(\d+)H$/).map((n) =>
@@ -94,7 +102,7 @@ const PAGES = {
   ],
   dcdc: [
     ["LLC-LEGS", [
-      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d$/]],
+      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/]],
       ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/]],
       ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/]],
       ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/]],
@@ -190,7 +198,27 @@ for (const side of ["acdc", "dcdc"]) {
   };
   const seen = new Set();
   const pagesOut = [];
-  for (const [page, blocks, flow] of PAGES[side]) {
+  // 30 kW has one Vienna lane and three LLC legs; 60/120 kW replicate them x2/x4. Expand the
+  // indexed blocks from the netlist so no lane above 0 is silently dropped on the bigger SKUs.
+  const names = comps.map((c) => c.name);
+  const pagesForSide = PAGES[side].map(([page, blocks, flow]) => {
+    let bl = blocks, fl = flow;
+    const swap = (title, gen) => {
+      const made = gen(names);
+      if (!made.length) return;
+      const at = bl.findIndex(([b]) => b === title || b.startsWith(title));
+      const keep = bl.filter(([b]) => !(b === title || b.startsWith(title)));
+      bl = at < 0 ? [...keep, ...made] : [...keep.slice(0, at), ...made, ...keep.slice(at)];
+      fl = [...fl.filter((b) => !(b === title || b.startsWith(title))), ...made.map(([b]) => b)];
+    };
+    if (page === "VIENNA-PFC") { bl = []; fl = []; swap("PHASE", viennaBlocks); }
+    if (page === "AC-SENSING") swap("LINE-CTS", lineCtBlocks);
+    if (page === "DC-LINK") swap("LINK-BANK", dcLinkBlocks);
+    if (page === "LLC-LEGS") swap("LEG-", legBlocks);
+    if (page === "LLC-TANKS") { bl = []; fl = []; swap("TANK-", tankBlocks); }
+    return [page, bl, fl];
+  });
+  for (const [page, blocks, flow] of pagesForSide) {
     const members = [];
     for (const c of comps) {
       if (seen.has(c.name) || /^NC_/.test(c.name)) continue;
@@ -216,7 +244,7 @@ for (const side of ["acdc", "dcdc"]) {
     const perBlock = {};
     for (const m of members) perBlock[m.block_name] = (perBlock[m.block_name] ?? 0) + 1;
     pagesOut.push({ page, flow, count: members.length, perBlock, components: members });
-    writeFileSync(join(OUT, `${side}-${page}.json`), JSON.stringify({ page, flow, net_style_overrides: styleOv, net_class_overrides: classOv, components: members }, null, 1));
+    writeFileSync(join(OUT_SKU, `${side}-${page}.json`), JSON.stringify({ page, flow, net_style_overrides: styleOv, net_class_overrides: classOv, components: members }, null, 1));
   }
   const missed = comps.filter(c => !seen.has(c.name) && !/^NC_/.test(c.name)).map(c => c.name);
   for (const p of pagesOut) console.log(`${side}/${p.page} (${p.count}): ${Object.entries(p.perBlock).map(([b, n]) => `${b}=${n}`).join(" ")}`);

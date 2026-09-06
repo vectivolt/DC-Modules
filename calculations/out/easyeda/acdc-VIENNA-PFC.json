@@ -1,9 +1,9 @@
 {
  "page": "VIENNA-PFC",
  "flow": [
-  "PHASE-A",
-  "PHASE-B",
-  "PHASE-C"
+  "PHASE-A0",
+  "PHASE-B0",
+  "PHASE-C0"
  ],
  "net_style_overrides": {
   "PHA0": "wire",
@@ -50,7 +50,7 @@
  "components": [
   {
    "designator": "LA0",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -70,7 +70,7 @@
   },
   {
    "designator": "QA0A",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -100,7 +100,7 @@
   },
   {
    "designator": "QA0B",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -130,7 +130,7 @@
   },
   {
    "designator": "UA0G",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -209,7 +209,7 @@
   },
   {
    "designator": "PSA0G",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -238,13 +238,13 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "RA0GON",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -264,7 +264,7 @@
   },
   {
    "designator": "RA0GOFF",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -284,7 +284,7 @@
   },
   {
    "designator": "RA0GGS",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -304,7 +304,7 @@
   },
   {
    "designator": "RA0GPD",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -324,7 +324,7 @@
   },
   {
    "designator": "DA0GS1",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -344,7 +344,7 @@
   },
   {
    "designator": "DA0GS2",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -364,7 +364,7 @@
   },
   {
    "designator": "CA0GBL",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -384,7 +384,7 @@
   },
   {
    "designator": "CA0GB1",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -404,7 +404,7 @@
   },
   {
    "designator": "CA0GB2",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -424,7 +424,7 @@
   },
   {
    "designator": "DA0T",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -444,7 +444,7 @@
   },
   {
    "designator": "DA0B",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -464,7 +464,7 @@
   },
   {
    "designator": "CA0FP",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -484,7 +484,7 @@
   },
   {
    "designator": "CA0FN",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -504,7 +504,7 @@
   },
   {
    "designator": "RA0SN",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -524,7 +524,7 @@
   },
   {
    "designator": "CA0SN",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -544,7 +544,7 @@
   },
   {
    "designator": "DA0C",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -564,7 +564,7 @@
   },
   {
    "designator": "CA0C",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -584,7 +584,7 @@
   },
   {
    "designator": "RA0C",
-   "block_name": "PHASE-A",
+   "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
@@ -604,7 +604,7 @@
   },
   {
    "designator": "LB0",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -624,7 +624,7 @@
   },
   {
    "designator": "QB0A",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -654,7 +654,7 @@
   },
   {
    "designator": "QB0B",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -684,7 +684,7 @@
   },
   {
    "designator": "UB0G",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -763,7 +763,7 @@
   },
   {
    "designator": "PSB0G",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -792,13 +792,13 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "RB0GON",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -818,7 +818,7 @@
   },
   {
    "designator": "RB0GOFF",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -838,7 +838,7 @@
   },
   {
    "designator": "RB0GGS",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -858,7 +858,7 @@
   },
   {
    "designator": "RB0GPD",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -878,7 +878,7 @@
   },
   {
    "designator": "DB0GS1",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -898,7 +898,7 @@
   },
   {
    "designator": "DB0GS2",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -918,7 +918,7 @@
   },
   {
    "designator": "CB0GBL",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -938,7 +938,7 @@
   },
   {
    "designator": "CB0GB1",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -958,7 +958,7 @@
   },
   {
    "designator": "CB0GB2",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -978,7 +978,7 @@
   },
   {
    "designator": "DB0T",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -998,7 +998,7 @@
   },
   {
    "designator": "DB0B",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1018,7 +1018,7 @@
   },
   {
    "designator": "CB0FP",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1038,7 +1038,7 @@
   },
   {
    "designator": "CB0FN",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1058,7 +1058,7 @@
   },
   {
    "designator": "RB0SN",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1078,7 +1078,7 @@
   },
   {
    "designator": "CB0SN",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1098,7 +1098,7 @@
   },
   {
    "designator": "DB0C",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1118,7 +1118,7 @@
   },
   {
    "designator": "CB0C",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1138,7 +1138,7 @@
   },
   {
    "designator": "RB0C",
-   "block_name": "PHASE-B",
+   "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
@@ -1158,7 +1158,7 @@
   },
   {
    "designator": "LC0",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1178,7 +1178,7 @@
   },
   {
    "designator": "QC0A",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1208,7 +1208,7 @@
   },
   {
    "designator": "QC0B",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1238,7 +1238,7 @@
   },
   {
    "designator": "UC0G",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1317,7 +1317,7 @@
   },
   {
    "designator": "PSC0G",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1346,13 +1346,13 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15S18",
-   "query": "QA01C-15S18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-15S18"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "RC0GON",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1372,7 +1372,7 @@
   },
   {
    "designator": "RC0GOFF",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1392,7 +1392,7 @@
   },
   {
    "designator": "RC0GGS",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1412,7 +1412,7 @@
   },
   {
    "designator": "RC0GPD",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1432,7 +1432,7 @@
   },
   {
    "designator": "DC0GS1",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1452,7 +1452,7 @@
   },
   {
    "designator": "DC0GS2",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1472,7 +1472,7 @@
   },
   {
    "designator": "CC0GBL",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1492,7 +1492,7 @@
   },
   {
    "designator": "CC0GB1",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1512,7 +1512,7 @@
   },
   {
    "designator": "CC0GB2",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1532,7 +1532,7 @@
   },
   {
    "designator": "DC0T",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1552,7 +1552,7 @@
   },
   {
    "designator": "DC0B",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1572,7 +1572,7 @@
   },
   {
    "designator": "CC0FP",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1592,7 +1592,7 @@
   },
   {
    "designator": "CC0FN",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1612,7 +1612,7 @@
   },
   {
    "designator": "RC0SN",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1632,7 +1632,7 @@
   },
   {
    "designator": "CC0SN",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1652,7 +1652,7 @@
   },
   {
    "designator": "DC0C",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1672,7 +1672,7 @@
   },
   {
    "designator": "CC0C",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
@@ -1692,7 +1692,7 @@
   },
   {
    "designator": "RC0C",
-   "block_name": "PHASE-C",
+   "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,

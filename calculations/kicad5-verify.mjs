@@ -17,8 +17,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SRC = join(ROOT, "calculations/out/easyeda/apply");
-const SCH = join(ROOT, "kicad5/dc-modules-30kw");
+const SKU = process.argv[2] || "30kw";
+const SRC = SKU === "30kw" ? join(ROOT, "calculations/out/easyeda/apply") : join(ROOT, "calculations/out/easyeda", SKU, "apply");
+const SCH = join(ROOT, `kicad5/dc-modules-${SKU}`);
 
 // ---- library: symbol -> pins {num, x, y} and body extent -------------------------------
 const libText = readFileSync(join(SCH, "dc-modules.lib"), "utf8");
@@ -53,7 +54,7 @@ const problems = [];
 
 for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
   const page = JSON.parse(readFileSync(join(SRC, f), "utf8"));
-  const board = page.page.startsWith("acdc") ? "30kw-acdc" : "30kw-dcdc";
+  const board = `${SKU}-${page.page.startsWith("acdc") ? "acdc" : "dcdc"}`;
   if (!cache.has(board)) cache.set(board, readFileSync(join(SCH, `${board}.sch`), "utf8"));
   const text = cache.get(board);
   const lines = text.split("\n");

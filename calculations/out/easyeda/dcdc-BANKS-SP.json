@@ -207,7 +207,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -227,7 +227,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -247,7 +247,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -267,7 +267,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -287,7 +287,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -307,7 +307,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -327,7 +327,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {
@@ -347,7 +347,7 @@
    ],
    "nc_pins": [],
    "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kΩ 2512 anti-surge HV type, used 2-series per position ",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
    "mpn": "R2512-47k-HV-AS"
   },
   {

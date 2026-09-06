@@ -1,0 +1,2616 @@
+{
+ "page": "LLC-TANKS",
+ "flow": [
+  "TANK-1",
+  "TANK-2",
+  "TANK-3",
+  "TANK-4",
+  "TANK-5",
+  "TANK-6"
+ ],
+ "net_style_overrides": {
+  "SW1": "wire",
+  "N_DCDC_85": "wire",
+  "N_DCDC_86": "wire",
+  "STAR0": "wire",
+  "N_DCDC_87": "wire",
+  "N_DCDC_88": "wire",
+  "N_DCDC_89": "wire",
+  "N_DCDC_90": "wire",
+  "CTB1": "wire",
+  "SW2": "wire",
+  "N_DCDC_91": "wire",
+  "N_DCDC_92": "wire",
+  "N_DCDC_93": "wire",
+  "N_DCDC_94": "wire",
+  "N_DCDC_95": "wire",
+  "N_DCDC_96": "wire",
+  "CTB2": "wire",
+  "SW3": "wire",
+  "N_DCDC_97": "wire",
+  "N_DCDC_98": "wire",
+  "N_DCDC_99": "wire",
+  "N_DCDC_100": "wire",
+  "N_DCDC_101": "wire",
+  "N_DCDC_102": "wire",
+  "CTB3": "wire",
+  "SW4": "wire",
+  "N_DCDC_103": "wire",
+  "N_DCDC_104": "wire",
+  "STAR1": "wire",
+  "N_DCDC_105": "wire",
+  "N_DCDC_106": "wire",
+  "N_DCDC_107": "wire",
+  "N_DCDC_108": "wire",
+  "CTB4": "wire",
+  "SW5": "wire",
+  "N_DCDC_109": "wire",
+  "N_DCDC_110": "wire",
+  "N_DCDC_111": "wire",
+  "N_DCDC_112": "wire",
+  "N_DCDC_113": "wire",
+  "N_DCDC_114": "wire",
+  "CTB5": "wire",
+  "SW6": "wire",
+  "N_DCDC_115": "wire",
+  "N_DCDC_116": "wire",
+  "N_DCDC_117": "wire",
+  "N_DCDC_118": "wire",
+  "N_DCDC_119": "wire",
+  "N_DCDC_120": "wire",
+  "CTB6": "wire"
+ },
+ "net_class_overrides": {},
+ "components": [
+  {
+   "designator": "C1R0",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_85"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C1R1",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_85"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C1R2",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_85"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C1R3",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_85"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "L1T",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_85"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_86"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-TRIM-BIN4",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "mpn": "IND-TRIM-BIN4"
+  },
+  {
+   "designator": "T1",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_86"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "STAR0"
+    },
+    {
+     "pin_number": 3,
+     "name": "SH",
+     "signal_name": "STAR0"
+    },
+    {
+     "pin_number": 4,
+     "name": "S1A",
+     "signal_name": "N_DCDC_87"
+    },
+    {
+     "pin_number": 5,
+     "name": "S1B",
+     "signal_name": "N_DCDC_88"
+    },
+    {
+     "pin_number": 6,
+     "name": "S2A",
+     "signal_name": "N_DCDC_89"
+    },
+    {
+     "pin_number": 7,
+     "name": "S2B",
+     "signal_name": "N_DCDC_90"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XFMR-LLC-10K",
+   "query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% ",
+   "mpn": "XFMR-LLC-10K"
+  },
+  {
+   "designator": "D1A1",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_87"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1A2",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_87"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1A3",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_88"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1A4",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_88"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1B1",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_89"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1B2",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_89"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1B3",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_90"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D1B4",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_90"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "CT1",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "CTB1"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-RES-1:100",
+   "query": "CT-RES-1:100 resonant CT ",
+   "mpn": "CT-RES-1:100"
+  },
+  {
+   "designator": "R1CT",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2",
+   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-2R0-1W-1%"
+  },
+  {
+   "designator": "R1CF",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C1CF",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "D1CP",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "D1CN",
+   "block_name": "TANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "C2R0",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_91"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C2R1",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_91"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C2R2",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_91"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C2R3",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_91"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "L2T",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_91"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_92"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-TRIM-BIN4",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "mpn": "IND-TRIM-BIN4"
+  },
+  {
+   "designator": "T2",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_92"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "STAR0"
+    },
+    {
+     "pin_number": 3,
+     "name": "SH",
+     "signal_name": "STAR0"
+    },
+    {
+     "pin_number": 4,
+     "name": "S1A",
+     "signal_name": "N_DCDC_93"
+    },
+    {
+     "pin_number": 5,
+     "name": "S1B",
+     "signal_name": "N_DCDC_94"
+    },
+    {
+     "pin_number": 6,
+     "name": "S2A",
+     "signal_name": "N_DCDC_95"
+    },
+    {
+     "pin_number": 7,
+     "name": "S2B",
+     "signal_name": "N_DCDC_96"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XFMR-LLC-10K",
+   "query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% ",
+   "mpn": "XFMR-LLC-10K"
+  },
+  {
+   "designator": "D2A1",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_93"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2A2",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_93"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2A3",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_94"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2A4",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_94"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2B1",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_95"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2B2",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_95"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2B3",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_96"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D2B4",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_96"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "CT2",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "CTB2"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-RES-1:100",
+   "query": "CT-RES-1:100 resonant CT ",
+   "mpn": "CT-RES-1:100"
+  },
+  {
+   "designator": "R2CT",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2",
+   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-2R0-1W-1%"
+  },
+  {
+   "designator": "R2CF",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C2CF",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "D2CP",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "D2CN",
+   "block_name": "TANK-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "C3R0",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_97"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C3R1",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_97"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C3R2",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_97"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C3R3",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_97"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "L3T",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_97"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_98"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-TRIM-BIN4",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "mpn": "IND-TRIM-BIN4"
+  },
+  {
+   "designator": "T3",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_98"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "STAR0"
+    },
+    {
+     "pin_number": 3,
+     "name": "SH",
+     "signal_name": "STAR0"
+    },
+    {
+     "pin_number": 4,
+     "name": "S1A",
+     "signal_name": "N_DCDC_99"
+    },
+    {
+     "pin_number": 5,
+     "name": "S1B",
+     "signal_name": "N_DCDC_100"
+    },
+    {
+     "pin_number": 6,
+     "name": "S2A",
+     "signal_name": "N_DCDC_101"
+    },
+    {
+     "pin_number": 7,
+     "name": "S2B",
+     "signal_name": "N_DCDC_102"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XFMR-LLC-10K",
+   "query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% ",
+   "mpn": "XFMR-LLC-10K"
+  },
+  {
+   "designator": "D3A1",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_99"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3A2",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_99"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3A3",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_100"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3A4",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_100"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3B1",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_101"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3B2",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_101"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3B3",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_102"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D3B4",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_102"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "CT3",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "CTB3"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-RES-1:100",
+   "query": "CT-RES-1:100 resonant CT ",
+   "mpn": "CT-RES-1:100"
+  },
+  {
+   "designator": "R3CT",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2",
+   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-2R0-1W-1%"
+  },
+  {
+   "designator": "R3CF",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C3CF",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "D3CP",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "D3CN",
+   "block_name": "TANK-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "C4R0",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_103"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C4R1",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_103"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C4R2",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_103"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C4R3",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_103"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "L4T",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_103"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_104"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-TRIM-BIN4",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "mpn": "IND-TRIM-BIN4"
+  },
+  {
+   "designator": "T4",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_104"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "STAR1"
+    },
+    {
+     "pin_number": 3,
+     "name": "SH",
+     "signal_name": "STAR1"
+    },
+    {
+     "pin_number": 4,
+     "name": "S1A",
+     "signal_name": "N_DCDC_105"
+    },
+    {
+     "pin_number": 5,
+     "name": "S1B",
+     "signal_name": "N_DCDC_106"
+    },
+    {
+     "pin_number": 6,
+     "name": "S2A",
+     "signal_name": "N_DCDC_107"
+    },
+    {
+     "pin_number": 7,
+     "name": "S2B",
+     "signal_name": "N_DCDC_108"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XFMR-LLC-10K",
+   "query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% ",
+   "mpn": "XFMR-LLC-10K"
+  },
+  {
+   "designator": "D4A1",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_105"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4A2",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_105"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4A3",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_106"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4A4",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_106"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4B1",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_107"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4B2",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_107"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4B3",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_108"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D4B4",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_108"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "CT4",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "CTB4"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-RES-1:100",
+   "query": "CT-RES-1:100 resonant CT ",
+   "mpn": "CT-RES-1:100"
+  },
+  {
+   "designator": "R4CT",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2",
+   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-2R0-1W-1%"
+  },
+  {
+   "designator": "R4CF",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C4CF",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "D4CP",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "D4CN",
+   "block_name": "TANK-4",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES4"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "C5R0",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_109"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C5R1",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_109"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C5R2",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_109"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C5R3",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_109"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "L5T",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_109"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_110"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-TRIM-BIN4",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "mpn": "IND-TRIM-BIN4"
+  },
+  {
+   "designator": "T5",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_110"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "STAR1"
+    },
+    {
+     "pin_number": 3,
+     "name": "SH",
+     "signal_name": "STAR1"
+    },
+    {
+     "pin_number": 4,
+     "name": "S1A",
+     "signal_name": "N_DCDC_111"
+    },
+    {
+     "pin_number": 5,
+     "name": "S1B",
+     "signal_name": "N_DCDC_112"
+    },
+    {
+     "pin_number": 6,
+     "name": "S2A",
+     "signal_name": "N_DCDC_113"
+    },
+    {
+     "pin_number": 7,
+     "name": "S2B",
+     "signal_name": "N_DCDC_114"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XFMR-LLC-10K",
+   "query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% ",
+   "mpn": "XFMR-LLC-10K"
+  },
+  {
+   "designator": "D5A1",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_111"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5A2",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_111"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5A3",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_112"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5A4",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_112"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5B1",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_113"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5B2",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_113"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5B3",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_114"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D5B4",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_114"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "CT5",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "CTB5"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-RES-1:100",
+   "query": "CT-RES-1:100 resonant CT ",
+   "mpn": "CT-RES-1:100"
+  },
+  {
+   "designator": "R5CT",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2",
+   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-2R0-1W-1%"
+  },
+  {
+   "designator": "R5CF",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C5CF",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "D5CP",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "D5CN",
+   "block_name": "TANK-5",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES5"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "C6R0",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_115"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C6R1",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_115"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C6R2",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_115"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "C6R3",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SW6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_115"
+    }
+   ],
+   "nc_pins": [],
+   "value": "46nF",
+   "query": "PP-46n-1200 46 nF 1200 V PP pulse film ",
+   "mpn": "PP-46n-1200"
+  },
+  {
+   "designator": "L6T",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_115"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_116"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-TRIM-BIN4",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "mpn": "IND-TRIM-BIN4"
+  },
+  {
+   "designator": "T6",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "N_DCDC_116"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "STAR1"
+    },
+    {
+     "pin_number": 3,
+     "name": "SH",
+     "signal_name": "STAR1"
+    },
+    {
+     "pin_number": 4,
+     "name": "S1A",
+     "signal_name": "N_DCDC_117"
+    },
+    {
+     "pin_number": 5,
+     "name": "S1B",
+     "signal_name": "N_DCDC_118"
+    },
+    {
+     "pin_number": 6,
+     "name": "S2A",
+     "signal_name": "N_DCDC_119"
+    },
+    {
+     "pin_number": 7,
+     "name": "S2B",
+     "signal_name": "N_DCDC_120"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XFMR-LLC-10K",
+   "query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% ",
+   "mpn": "XFMR-LLC-10K"
+  },
+  {
+   "designator": "D6A1",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_117"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6A2",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_117"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6A3",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_118"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6A4",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_118"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6B1",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_119"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6B2",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_119"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6B3",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_120"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "D6B4",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_120"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-20",
+   "query": "SICJBS-1200-20 SiC JBS 1200 V 20 A TO-247-2 ",
+   "mpn": "SICJBS-1200-20"
+  },
+  {
+   "designator": "CT6",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "S1",
+     "signal_name": "CTB6"
+    },
+    {
+     "pin_number": 2,
+     "name": "S2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CT-RES-1:100",
+   "query": "CT-RES-1:100 resonant CT ",
+   "mpn": "CT-RES-1:100"
+  },
+  {
+   "designator": "R6CT",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2",
+   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-2R0-1W-1%"
+  },
+  {
+   "designator": "R6CF",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTB6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C6CF",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "D6CP",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "I_RES6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  },
+  {
+   "designator": "D6CN",
+   "block_name": "TANK-6",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES6"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1N4148WS",
+   "query": "1N4148WS clamp diode SOD-323 ",
+   "mpn": "1N4148WS"
+  }
+ ]
+}

@@ -1,0 +1,1374 @@
+{
+ "page": "OUTPUT-SENSING",
+ "flow": [
+  "OUTPUT",
+  "SENSE-VBKA",
+  "SENSE-VBKB",
+  "SENSE-VOUT",
+  "ISO-BIAS",
+  "ANALOG-MID",
+  "NTC"
+ ],
+ "net_style_overrides": {
+  "N_DCDC_137": "wire",
+  "N_DCDC_138": "wire",
+  "N_DCDC_139": "wire",
+  "N_DCDC_140": "wire",
+  "N_DCDC_141": "wire",
+  "N_DCDC_142": "wire",
+  "N_DCDC_143": "wire",
+  "N_DCDC_144": "wire",
+  "N_DCDC_145": "wire",
+  "N_DCDC_146": "wire",
+  "N_DCDC_147": "wire",
+  "N_DCDC_148": "wire",
+  "N_DCDC_149": "wire",
+  "N_DCDC_150": "wire",
+  "N_DCDC_151": "wire",
+  "N_DCDC_152": "wire",
+  "N_DCDC_153": "wire",
+  "N_DCDC_154": "wire",
+  "N_DCDC_155": "wire",
+  "N_DCDC_156": "wire",
+  "N_DCDC_157": "wire",
+  "N_DCDC_158": "wire",
+  "N_DCDC_159": "wire",
+  "N_DCDC_160": "wire",
+  "N_DCDC_161": "wire",
+  "N_DCDC_162": "wire",
+  "AVREF_MID": "wire",
+  "N_DCDC_163": "wire",
+  "N_DCDC_164": "wire"
+ },
+ "net_class_overrides": {
+  "PE": "ground"
+ },
+ "components": [
+  {
+   "designator": "RSHO",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "OUTN_SH"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "OUTN"
+    },
+    {
+     "pin_number": 3,
+     "name": "KA",
+     "signal_name": "N_DCDC_137"
+    },
+    {
+     "pin_number": 4,
+     "name": "KB",
+     "signal_name": "N_DCDC_138"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SHUNT-MANG",
+   "query": "SHUNT-MANG manganin shunt 50 mV class ",
+   "mpn": "SHUNT-MANG"
+  },
+  {
+   "designator": "USHO",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5OUT"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_DCDC_137"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "N_DCDC_138"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "N_DCDC_138"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTN",
+     "signal_name": "SNS_IOUTN"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_IOUT"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "NSI1200-DSWR",
+   "query": "NSI1200-DSWR iso shunt amplifier SOIC-8 ",
+   "mpn": "NSI1200-DSWR"
+  },
+  {
+   "designator": "PSSH",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P5",
+     "signal_name": "B5OUT"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "N_DCDC_138"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "COF1",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "OUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "PP-4u7-1200 4.7 µF 1200 V film ",
+   "mpn": "PP-4u7-1200"
+  },
+  {
+   "designator": "COF2",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "OUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "PP-4u7-1200 4.7 µF 1200 V film ",
+   "mpn": "PP-4u7-1200"
+  },
+  {
+   "designator": "CYO1",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7nF",
+   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
+   "mpn": "Y1-4n7-440"
+  },
+  {
+   "designator": "CYO2",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OUTN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7nF",
+   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
+   "mpn": "Y1-4n7-440"
+  },
+  {
+   "designator": "JOUTP",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "OUTP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JOUTN",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "OUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "PS5BKA",
+   "block_name": "ISO-BIAS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P5",
+     "signal_name": "B5BKA"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "PS5BKB",
+   "block_name": "ISO-BIAS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P5",
+     "signal_name": "B5BKB"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "ISO5V-RFC-6K",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "ROAD0",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_139"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD1",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_139"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_140"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD2",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_140"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_141"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD3",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_141"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_142"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD4",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_142"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_143"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD5",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_143"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_144"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD6",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_144"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_145"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROAD7",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_145"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_146"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROADL",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_146"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "6.8k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "COADF",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_146"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVOA",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5BKA"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_DCDC_146"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "BKAN"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VBKA"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1311-class",
+   "query": "AMC1311-class iso voltage-sense amp 0–2 V input ",
+   "mpn": "AMC1311-class"
+  },
+  {
+   "designator": "ROBD0",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_147"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD1",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_147"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_148"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD2",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_148"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_149"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD3",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_149"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_150"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD4",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_150"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_151"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD5",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_151"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_152"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD6",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_152"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_153"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBD7",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_153"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_154"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROBDL",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_154"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "6.8k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "COBDF",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_154"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVOB",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5BKB"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_DCDC_154"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "BKBN"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VBKB"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1311-class",
+   "query": "AMC1311-class iso voltage-sense amp 0–2 V input ",
+   "mpn": "AMC1311-class"
+  },
+  {
+   "designator": "ROVD0",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_155"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD1",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_155"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_156"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD2",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_156"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_157"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD3",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_157"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_158"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD4",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_158"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_159"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD5",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_159"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_160"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD6",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_160"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_161"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVD7",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_161"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_162"
+    }
+   ],
+   "nc_pins": [],
+   "value": "475k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "ROVDL",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_162"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "OUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "6.8k",
+   "query": "R0805-prec-0.1% divider bottom 0.1% ",
+   "mpn": "R0805-prec-0.1%"
+  },
+  {
+   "designator": "COVDF",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_162"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "OUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UIVOV",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VDD1",
+     "signal_name": "B5OUT"
+    },
+    {
+     "pin_number": 2,
+     "name": "VINP",
+     "signal_name": "N_DCDC_162"
+    },
+    {
+     "pin_number": 3,
+     "name": "VINN",
+     "signal_name": "OUTN"
+    },
+    {
+     "pin_number": 4,
+     "name": "GND1",
+     "signal_name": "OUTN"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND2",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "OUTP",
+     "signal_name": "SNS_VOUT"
+    },
+    {
+     "pin_number": 8,
+     "name": "VDD2",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "AMC1311-class",
+   "query": "AMC1311-class iso voltage-sense amp 0–2 V input ",
+   "mpn": "AMC1311-class"
+  },
+  {
+   "designator": "RAVH",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVREF_MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RAVL",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVREF_MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CAVM",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVREF_MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "UAVB",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "OUT",
+     "signal_name": "N_DCDC_163"
+    },
+    {
+     "pin_number": 2,
+     "name": "INN",
+     "signal_name": "N_DCDC_164"
+    },
+    {
+     "pin_number": 3,
+     "name": "INP",
+     "signal_name": "AVREF_MID"
+    },
+    {
+     "pin_number": 4,
+     "name": "VN",
+     "signal_name": "AGND"
+    },
+    {
+     "pin_number": 8,
+     "name": "VP",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [
+    5,
+    6,
+    7
+   ],
+   "value": "TLV9061-class",
+   "query": "TLV9061-class rail-to-rail op-amp ",
+   "mpn": "TLV9061-class"
+  },
+  {
+   "designator": "RAVI",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_163"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AVMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RAVF",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVMID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_164"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CAVF",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_163"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_164"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CAVO",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVMID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10uF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "JTLLC",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "T_LLC"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PH-2",
+   "query": "PH-2 2-way header ",
+   "mpn": "PH-2"
+  },
+  {
+   "designator": "RTLLCP",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "T_LLC"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CTLLCF",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "T_LLC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "JTXFR",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P1",
+     "signal_name": "T_XFMR"
+    },
+    {
+     "pin_number": 2,
+     "name": "P2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PH-2",
+   "query": "PH-2 2-way header ",
+   "mpn": "PH-2"
+  },
+  {
+   "designator": "RTXFRP",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "T_XFMR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CTXFRF",
+   "block_name": "NTC",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "T_XFMR"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  }
+ ]
+}
