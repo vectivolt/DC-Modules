@@ -697,7 +697,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     // can actually hold the panel, prefer the one nearest the bottom-right -- beside the title
     // block, where a reader already looks.
     const pickVoid = (occupied) => {
-      const cands = voidCandidates(occupied, sheetW, sheetH, 4)
+      let cands = voidCandidates(occupied, sheetW, sheetH, 4)
         // must be big enough to hold a panel AND sit in the lower part of the sheet: a notes
         // block in the top strip reads as an accident. Without this the shortlist put the naming
         // legend in 120kw-dcdc's top-right CORNER, on a sheet that had correctly had none before.
@@ -705,6 +705,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       if (!cands.length) return { x0: 0, y0: 0, x1: 0, y1: 0 };
       // Right side wins outright when one is available: with the index taking the best slot, the
       // legend was landing at x=22% on 60kw-dcdc while every other sheet had it at 72-85%.
+      // Prefer a slot tall enough for BOTH panels so they can stack. Picking the index's slot on
+      // its own merits left 120kw-acdc with the two blocks 25% of the sheet apart in the same
+      // column -- same margin, but reading as two strays rather than one notes block.
+      const tall = cands.filter((v) => v.y1 - v.y0 > 6400);
+      cands = tall.length ? tall : cands;
       const right = cands.filter((v) => v.x1 > sheetW * 0.55);
       // RIGHT outweighs LOW. Scoring them equally let a very-low centre void beat a right-side one
       // and put 120kw-acdc's index at x=51%, where nothing could stack beneath it. A notes block
