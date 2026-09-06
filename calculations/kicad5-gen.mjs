@@ -259,7 +259,13 @@ const partOf = (designator, value) => {
 //     whose other resistors read "10k" and "475k" -- 4.7 ohm and 4.7 k are one glance apart. Ohms
 //     take the same trailing-suffix style the k values already use.
 const valueText = (designator, value) => {
-  const v = String(value).replace(/-class$/i, "");
+  // A per-SKU override changes the PART, so it must change what the sheet SAYS. F1 printed
+  // "FUSE-gG-690V" on all three SKUs though it is 63 A / 125 A / 250 A; worse, the 120 kW sheet
+  // printed "HF167F-80A-M" on a 250 A relay and "CER-25W-AX" on a 50 W resistor -- a specific
+  // WRONG rating, not merely a missing one. The override names are themselves descriptive
+  // (FUSE-gG-690V-250A, CER-50W-AX), so printing them is both correct and more readable.
+  const ov = (skuOverrides[SKU] ?? {})[designator]?.mpn;
+  const v = String(ov ?? value).replace(/-class$/i, "");
   return (/^R/.test(designator) && /^\d+(\.\d+)?$/.test(v)) ? `${v}R` : v;
 };
 

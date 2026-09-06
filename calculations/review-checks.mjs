@@ -6,6 +6,7 @@
 // so whole categories can't regress, not just the specific instances that were caught.
 
 import { readFileSync, existsSync } from "node:fs";
+const { skuOverrides: skuOverridesForCheck } = await import("./cost/parts-db.mjs");
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -303,6 +304,33 @@ ck("LCSC-CLASS-MPN", (() => {
 // zoom and obvious the moment a tile was rendered at working zoom: 67 symbols printed an internal
 // "-class" suffix, and 246 resistors printed a bare number ("4.7", "220") on drawings whose other
 // resistors read "10k" and "475k".
+// A per-SKU override changes the PART, so the sheet must say so. F1/F2/F3 printed the same
+// "FUSE-gG-690V" on 63 A, 125 A and 250 A boards, and the 120 kW sheet printed "HF167F-80A-M" on
+// a 250 A relay and "CER-25W-AX" on a 50 W resistor -- a specific WRONG rating, and precisely the
+// per-SKU difference a reader needs to tell the three boards apart.
+ck("SKU-VALUE-MATCHES-PART", (() => {
+  const ov = skuOverridesForCheck;
+  for (const sku of ["30kw", "60kw", "120kw"]) {
+    const want = ov[sku] ?? {};
+    for (const side of ["acdc", "dcdc"]) {
+      const f = join(ROOT, `kicad5/dc-modules-${sku}/${sku}-${side}.sch`);
+      if (!existsSync(f)) continue;
+      const L = readFileSync(f, "utf8").split("\n");
+      for (let i = 0; i < L.length; i++) {
+        if (L[i] !== "$Comp") continue;
+        let ref = "", val = "";
+        for (let k = i + 1; L[k] !== "$EndComp"; k++) {
+          if (L[k].startsWith('F 0 "')) ref = L[k].split('"')[1];
+          else if (L[k].startsWith('F 1 "')) val = L[k].split('"')[1];
+        }
+        const m = want[ref]?.mpn;
+        if (m && val !== m) return false;
+      }
+    }
+  }
+  return true;
+})(), "every per-SKU part override is visible on the sheet, so 30/60/120 kW boards state their own ratings");
+
 ck("SHEET-VALUE-TEXT", (() => {
   for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
     const f = join(ROOT, `kicad5/dc-modules-${sku}/${sku}-${side}.sch`);

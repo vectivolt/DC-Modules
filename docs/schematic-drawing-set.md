@@ -101,6 +101,11 @@ Sheet-zoom review cannot read a value field — a symbol is a few pixels wide. R
   trailing-suffix style: `4.7R`, `220R`, `2R`.
 - **19 ORDERABLE parts named a class instead of the part** in their MPN field (see
   `docs/lcsc-status.md`).
+- **11 designators hid their per-SKU rating.** F1/F2/F3 printed the same `FUSE-gG-690V` on the
+  63 A, 125 A and 250 A boards; worse, the 120 kW sheet printed `HF167F-80A-M` on a **250 A** relay
+  and `CER-25W-AX` on a **50 W** resistor — a specific wrong rating, and exactly the per-SKU
+  difference a reader needs to tell the three boards apart. A per-SKU override now changes what the
+  sheet says, gated as `SKU-VALUE-MATCHES-PART`.
 
 Both printed-text rules are gated as `SHEET-VALUE-TEXT`. The formatter is display-only and
 deliberately separate from `c.value`, which is the key into the value-addressed LCSC map.
