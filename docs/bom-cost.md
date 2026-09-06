@@ -7,14 +7,14 @@ Price breaks: 100 pc = ×1.35 electronics / ×1.15 mech; 5000 pc = ×0.88 / ×0.
 2026-09-05 (≥10k units/yr): the 10k column is the planning basis; heuristics resolve at RFQ round 1.
 Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k columns included).
 
-## 30KW — module COGS **₹30134 @10k** (1k ₹37256, 5k ₹33221, 100 pc ₹48555) vs red-line ₹25000 / stretch ₹22000 → **@10k OVER red-line by ₹5134**
+## 30KW — module COGS **₹30088 @10k** (1k ₹37199, 5k ₹33171, 100 pc ₹48478) vs red-line ₹25000 / stretch ₹22000 → **@10k OVER red-line by ₹5088**
 
 | Category | ₹ @1k | share |
 |---|---|---|
 | magnetics | 9823 | 26.4% |
 | mechanical/assembly | 8706 | 23.4% |
 | semiconductors | 7955 | 21.4% |
-| capacitors | 4964 | 13.3% |
+| capacitors | 4907 | 13.2% |
 | drive+control ICs | 3948 | 10.6% |
 | resistors/shunts | 705 | 1.9% |
 | protection | 412 | 1.1% |
@@ -23,15 +23,15 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
-## 60KW — module COGS **₹50958 @10k** (1k ₹63107, 5k ₹56193, 100 pc ₹82558) vs red-line ₹42000 / stretch ₹36000 → **@10k OVER red-line by ₹8958**
+## 60KW — module COGS **₹50912 @10k** (1k ₹63050, 5k ₹56142, 100 pc ₹82481) vs red-line ₹42000 / stretch ₹36000 → **@10k OVER red-line by ₹8912**
 
 | Category | ₹ @1k | share |
 |---|---|---|
 | magnetics | 17916 | 28.4% |
 | semiconductors | 15320 | 24.3% |
 | mechanical/assembly | 13177 | 20.9% |
-| capacitors | 8658 | 13.7% |
-| drive+control ICs | 5583 | 8.8% |
+| capacitors | 8601 | 13.6% |
+| drive+control ICs | 5583 | 8.9% |
 | resistors/shunts | 895 | 1.4% |
 | protection | 772 | 1.2% |
 | connectors | 393 | 0.6% |
@@ -39,14 +39,14 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0% |
 | bias/iso modules | 0 | 0% |
 
-## 120KW — module COGS **₹94791 @10k** (1k ₹117438, 5k ₹104539, 100 pc ₹153769) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹16791**
+## 120KW — module COGS **₹94746 @10k** (1k ₹117381, 5k ₹104488, 100 pc ₹153692) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹16746**
 
 | Category | ₹ @1k | share |
 |---|---|---|
 | magnetics | 34543 | 29.4% |
 | semiconductors | 30050 | 25.6% |
 | mechanical/assembly | 23861 | 20.3% |
-| capacitors | 16345 | 13.9% |
+| capacitors | 16288 | 13.9% |
 | drive+control ICs | 8851 | 7.5% |
 | protection | 1582 | 1.3% |
 | resistors/shunts | 1339 | 1.1% |

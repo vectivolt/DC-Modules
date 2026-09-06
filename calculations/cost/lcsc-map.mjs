@@ -77,7 +77,6 @@ export const LCSC = {
   "X1-2u2-530":        { status: "CLASS", spec: "2.2 µF 530 VAC X1 safety film" },
   "Y1-4n7-440":        { status: "CLASS", spec: "4.7 nF 440 VAC Y1 safety" },
   "MLCC-Y-CGND":       { status: "REVIEW", spec: "4.7 nF across the CAN isolation barrier — see R11" },
-  "FILM-47u-VCC":      { status: "REVIEW", spec: "47 uF VCC hold-up - declared film, see R12" },
   "FILM-100n-250":     { status: "CLASS", spec: "100 nF 250 V film" },
   "C1812-100p-1k":     { status: "CLASS", spec: "100 pF 1 kV C0G 1812" },
   "EL-47u-35":         { status: "CLASS", spec: "47 µF 35 V electrolytic" },

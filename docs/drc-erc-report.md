@@ -192,6 +192,33 @@ relays (needing the mirror-contact p/ns), the fuse holder, a 6x6 tactile, the CA
 choke and the 2-digit display. Nothing else on any sheet.
 
 
+## R12 — RESOLVED 2026-09-06, and the residue was my own doing
+
+`CVCC` resolves to **`EL-47u-35`**, land `CAP-TH_L6.3-W6.3-P2.50` — a 6.3 x 6.3 mm through-hole
+electrolytic, which is the right part for a 47 uF 35 V flyback VCC reservoir.
+
+That rule, `/^CVCC$/ -> EL-47u-35`, was **already in parts-db**, with its land already in
+footprint-map. The original symptom was R13: the greedy `/^C\w+C$/` Vienna-clamp regex sat earlier
+in a first-match-wins list and shadowed it, so CVCC was priced and landed as a 100 nF 250 V film
+cap. Tightening that regex to `/^C[ABC]\d+C$/` was sufficient on its own — CVCC would have fallen
+straight through to the correct rule.
+
+**It did not, because I inserted a second `/^CVCC$/` rule ahead of it** pointing at a new
+`FILM-47u-VCC` class, on the reasoning that a 47 uF film box is unbuildable and should be flagged
+rather than silently priced. The observation was right; the action was wrong twice over. It
+shadowed a correct pre-existing rule, and it replaced a sourceable classification with one that by
+its own argument can never be sourced. Removed, along with the `FILM-47u-VCC` lcsc entry.
+
+The lesson is the same one R9 taught an hour earlier: **before adding a rule, check whether the
+repo already has one.** Both times the answer was already present and merely unreachable, and both
+times adding something new made it worse rather than better.
+
+Remaining, and genuinely open: `packages/power-primitives/cells.tsx:868` still declares
+`footprint={FilmBoxFP(5)}` for CVCC. That does not affect the emitted schematic — footprint-map
+governs the F2 field — but it is a source-level inconsistency of the same kind already recorded for
+`LCAN`'s `soic8`, and should be corrected if the tscircuit PCB is ever used.
+
+### original analysis
 ## R12 — 47 uF in a 5 mm film box is not a buildable part (found 2026-09-06, OPEN)
 
 `CVCC` is declared `capacitance="47uF" footprint={FilmBoxFP(5)}` in

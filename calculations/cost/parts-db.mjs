@@ -78,7 +78,6 @@ export const DB = [
   { m: /^(CY(O)?[123]?|CPET)$/, mpn: "Y1-4n7-440", mfr: "Songtian/Faratronic", desc: "Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)", price1k: 16, alt: "TDK CD series" },
   { m: /^C\w+SN$/, mpn: "C1812-100p-1k", mfr: "any MLCC", desc: "100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)", price1k: 7, alt: "film 630V" },
   { m: /^CCLA$/, mpn: "PP-10n-1200", mfr: "Faratronic", desc: "10 nF 1200 V film (aux RCD clamp)", price1k: 9, alt: "MLCC 1kV ×2" },
-  { m: /^CVCC$/, mpn: "FILM-47u-VCC", mfr: "any", desc: "aux flyback VCC hold-up 47 uF (declared FilmBoxFP(5) - see R12)", price1k: 60, alt: "electrolytic" },
   { m: /^C[ABC]\d+C$/, mpn: "FILM-100n-250", mfr: "Faratronic", desc: "100 nF 250 V film (Vienna RCD clamp)", price1k: 18, alt: "MLCC 250V" },
   { m: /^CAUX(24|15)$/, mpn: "EL-220u-35", mfr: "Aishi", desc: "220 µF 35 V", price1k: 4, alt: "any" },
   { m: /^CVCC$/, mpn: "EL-47u-35", mfr: "Aishi", desc: "47 µF 35 V (controller VCC reservoir — CB-5)", price1k: 3, alt: "any" },
