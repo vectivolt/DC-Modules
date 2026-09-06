@@ -98,6 +98,33 @@ Fits with spare I/O. 61 signals over 69 pin landings.
 | `VSSA_PFC` | 35 | VSSA | VSSA - analog return, star-tied to DGND (no VREFN pin exists) |
 | `WDI_PFC` | 84 | PD2 | GPIO output (external watchdog kick) |
 
+### Status 2026-09-06 — 2 of the 10 closed against the actual circuit
+
+The findings below were raised against the ALLOCATION alone, several of them conditionally
+("harmless if X", "keep it only if Y"). Two of those conditions can be settled from the design as
+drawn rather than left hanging.
+
+**FLT_PFC on PB10 (not 5 V tolerant) — CLOSED.** The condition was "keep PB10 only if the fault
+source is confirmed 3.3 V push-pull". The fault net is a wired-OR of three NSI6611 `FLT#` pins,
+which are OPEN-DRAIN and can only pull low, with the sole pull-up `RFLTA` going to **V3P3** and
+`CFLTA` filtering to DGND. `FLT_PFC` therefore cannot exceed 3.3 V under any condition, so PB10's
+lack of 5 V tolerance is not reachable. Identical on the DC-DC board via `RFLTB` / `CFLTB` on
+`FLT_LLC`. No pin move needed.
+
+**Lane-1 PWM on PB12/PB13/PB14 (not 5 V tolerant) — CLOSED.** The condition was "harmless if every
+gate driver input is 3.3 V CMOS with no pull-up above 3.3 V". On 120 kW, `PWM_A1`/`B1`/`C1` carry
+exactly three things: the MCU output, the NSI6611 `PWM` input, and `RA1GPD`/`RB1GPD`/`RC1GPD` —
+which are pull-DOWNS to DGND, not pull-ups. Nothing on the net can rise above the MCU's own 3.3 V
+drive. The asymmetry with the other three lanes is real but electrically inert.
+
+**FAN_PWM1 / FAN_PWM3 on non-5VT pins — STILL OPEN**, and the check above shows why: `FAN_PWM1`
+runs straight from the MCU to `JFAN1.PWM` with no buffer, so the fan's own internal pull-up is the
+deciding factor and no fan part has been selected yet. This one genuinely needs the fan datasheet.
+
+The remaining seven are architecture and firmware decisions (injected ADC groups for the 4-way
+interleave, HRTIMER slave-unit pairing and dead-time, per-lane fault channels, CAN-FD instead of
+bare USART for the inter-board link, the VREFP ramp and the VREF-disable rule) and are unchanged.
+
 ### Audit findings — 10 raised
 
 - **PWM_A3 / PWM_B3 / PWM_C3 (brief premise, not the allocation)** — The brief's VERIFIED FACT "HRTIMER present (6 slave timing units ST0..ST5, 2 channels each = 12 outputs)" is FALSE. Datasheet Rev2.0 sec.3.22 p.102: "High-resolution timing units: Master_TIMER, Slave_TIMERx (x=0..7)" and "16 digital signals outputs channels: they can be controlled by any timing unit and output independently or coupled into 8 pairs." Eight slave units, sixteen outputs. Table 2-4 co

@@ -470,7 +470,8 @@
    ]
   },
   "fits": true,
-  "audit_errors": 10
+  "audit_errors": 8,
+  "audit_note": "10 raised; FLT (PB10) and lane-1 PWM (PB12-14) closed 2026-09-06 against the drawn circuit \u2014 see docs/mcu-pin-allocation-gd32.md"
  },
  "ULLC": {
   "map": {
@@ -1065,6 +1066,7 @@
    ]
   },
   "fits": true,
-  "audit_errors": 10
+  "audit_errors": 8,
+  "audit_note": "10 raised; FLT (PB10) and lane-1 PWM (PB12-14) closed 2026-09-06 against the drawn circuit \u2014 see docs/mcu-pin-allocation-gd32.md"
  }
 }
