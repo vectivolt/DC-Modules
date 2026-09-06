@@ -619,6 +619,29 @@ const HAND = {
     ["D#A1", "D#A2", "D#A3", "D#A4", "D#B1", "D#B2", "D#B3", "D#B4"],
     ["CT#", "R#CF", "R#CT", "C#CF", "D#CN", "D#CP"],
   ],
+  // A Vienna phase: the complete DRIVE block on the left -- isolated bias, the gate driver, the two
+  // DESAT sense diodes that belong to it and its four gate resistors -- then the POWER side: the
+  // back-to-back switch pair, the driver's bias decoupling, the boost choke with the three SiC JBS
+  // diodes and the film link caps, and the snubber last.
+  //
+  // Held back through three earlier attempts because the frame came out the wrong shape (4 columns
+  // grew 30kw-acdc 28%; 3 columns pushed 60kw-acdc past the void gate). Settled by probing splits
+  // against the packed frame instead of guessing: two columns give the exact packed width, and
+  // breaking after the drive block lands on span 2 / h 7750 against a packed span 2 / h 8000 --
+  // same span, 250 SHORTER. Ordering the DESAT diodes next to the driver they serve is what puts a
+  // natural boundary at that split; the earlier order broke between the two series switches.
+  "VIENNA-PFC / PHASE-A#": [
+    ["PSA#G", "UA#G", "DA#GS1", "DA#GS2", "RA#GON", "RA#GOFF", "RA#GGS", "RA#GPD"],
+    ["QA#A", "QA#B", "CA#GB1", "CA#GB2", "CA#GBL", "LA#", "DA#B", "DA#C", "DA#T", "CA#FN", "CA#FP", "RA#C", "RA#SN", "CA#SN", "CA#C"],
+  ],
+  "VIENNA-PFC / PHASE-B#": [
+    ["PSB#G", "UB#G", "DB#GS1", "DB#GS2", "RB#GON", "RB#GOFF", "RB#GGS", "RB#GPD"],
+    ["QB#A", "QB#B", "CB#GB1", "CB#GB2", "CB#GBL", "LB#", "DB#B", "DB#C", "DB#T", "CB#FN", "CB#FP", "RB#C", "RB#SN", "CB#SN", "CB#C"],
+  ],
+  "VIENNA-PFC / PHASE-C#": [
+    ["PSC#G", "UC#G", "DC#GS1", "DC#GS2", "RC#GON", "RC#GOFF", "RC#GGS", "RC#GPD"],
+    ["QC#A", "QC#B", "CC#GB1", "CC#GB2", "CC#GBL", "LC#", "DC#B", "DC#C", "DC#T", "CC#FN", "CC#FP", "RC#C", "RC#SN", "CC#SN", "CC#C"],
+  ],
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
