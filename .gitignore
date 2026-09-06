@@ -4,3 +4,5 @@ spice/generated/*.out
 *.log
 .DS_Store
 .tscircuit/
+calculations/out/detail/
+calculations/out/preview/
