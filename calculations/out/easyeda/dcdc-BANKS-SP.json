@@ -586,9 +586,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "HFE9-10A-1kV-M",
-   "query": "HFE9-10A-1kV-M aux HV relay 10 A 1000 VDC w/ mirror contact ",
-   "mpn": "HFE9-10A-1kV-M"
+   "value": "HFE82V-20-M-CLASS",
+   "query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact ",
+   "mpn": "HFE82V-20-M-CLASS"
   },
   {
    "designator": "KPREB",
@@ -626,9 +626,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "HFE9-10A-1kV-M",
-   "query": "HFE9-10A-1kV-M aux HV relay 10 A 1000 VDC w/ mirror contact ",
-   "mpn": "HFE9-10A-1kV-M"
+   "value": "HFE82V-20-M-CLASS",
+   "query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact ",
+   "mpn": "HFE82V-20-M-CLASS"
   },
   {
    "designator": "RKPUKSER",

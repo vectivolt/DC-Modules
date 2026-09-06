@@ -215,6 +215,30 @@ ck("SYNTAX-DUPKEY", (() => {
     `no parts-db rule is shadowed by an earlier, broader one${msg ? " — " + msg : ""}`);
 }
 
+{ // A component with no part_uuid is SKIPPED silently by easyeda-apply-gen — it simply does not
+  // appear downstream, and its nets lose an end. Renaming KPREA/KPREB for R8 did exactly that and
+  // nothing failed until a full rebuild from source: the committed sheets were right but no longer
+  // reproducible, because the intermediate apply files were stale. Compare the two stages directly.
+  const { existsSync, readdirSync } = await import("node:fs");
+  for (const sku of ["30kw", "60kw", "120kw"]) {
+    const pagesDir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda")
+                                    : join(ROOT, "calculations/out/easyeda", sku);
+    const applyDir = join(pagesDir, "apply");
+    if (!existsSync(applyDir)) continue;
+    const want = new Set(), got = new Set();
+    for (const f of readdirSync(pagesDir).filter((x) => x.endsWith(".json"))) {
+      let j; try { j = JSON.parse(readFileSync(join(pagesDir, f), "utf8")); } catch { continue; }
+      for (const c of j.components ?? []) want.add(c.designator);
+    }
+    for (const f of readdirSync(applyDir).filter((x) => x.endsWith(".json")))
+      for (const c of (JSON.parse(readFileSync(join(applyDir, f), "utf8")).chunks ?? []).flat())
+        got.add(c.designator);
+    const missing = [...want].filter((d) => !got.has(d));
+    ck(`APPLY-COMPLETE-${sku}`, missing.length === 0,
+      `${sku}: every page component reaches the apply output${missing.length ? " — DROPPED " + missing.slice(0, 8).join(", ") : ""}`);
+  }
+}
+
 ck("SYNTAX-FPDUP", (() => {
   // Same failure mode as SYNTAX-DUPKEY, one file over: footprint-map is a flat object, so a
   // repeated key silently keeps the LAST mapping. Keys are not always line-initial, so match them

@@ -970,9 +970,9 @@
    },
    {
     "designator": "KPREA",
-    "value": "HFE9-10A-1kV-M",
+    "value": "HFE82V-20-M-CLASS",
     "block_name": "SP-MATRIX",
-    "search_query": "HFE9-10A-1kV-M aux HV relay 10 A 1000 VDC w/ mirror contact",
+    "search_query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact",
     "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
     "pins": [
      {
@@ -1009,9 +1009,9 @@
    },
    {
     "designator": "KPREB",
-    "value": "HFE9-10A-1kV-M",
+    "value": "HFE82V-20-M-CLASS",
     "block_name": "SP-MATRIX",
-    "search_query": "HFE9-10A-1kV-M aux HV relay 10 A 1000 VDC w/ mirror contact",
+    "search_query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact",
     "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
     "pins": [
      {

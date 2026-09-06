@@ -361,8 +361,8 @@
    ],
    "nc_pins": [],
    "value": "47uF",
-   "query": "FILM-47u-VCC aux flyback VCC hold-up 47 uF ",
-   "mpn": "FILM-47u-VCC"
+   "query": "EL-47u-35 47 µF 35 V ",
+   "mpn": "EL-47u-35"
   },
   {
    "designator": "DTVS24",

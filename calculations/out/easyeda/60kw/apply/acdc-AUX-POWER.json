@@ -576,8 +576,8 @@
     "designator": "CVCC",
     "value": "47uF",
     "block_name": "RAILS",
-    "search_query": "FILM-47u-VCC aux flyback VCC hold-up 47 uF",
-    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "search_query": "EL-47u-35 47 µF 35 V",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
     "pins": [
      {
       "pin_number": 1,

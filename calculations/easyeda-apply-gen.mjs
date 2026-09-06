@@ -55,6 +55,11 @@ const uuidOf = (mpn) => {
   if (/^(MLCC|C1812)/.test(mpn)) return uuidMap["MLCC-ALL"].part_uuid;
   if (/^(PP-|FILM-|X1-|Y1-)/.test(mpn)) return uuidMap["FILM-ALL"].part_uuid;
   if (/^(ELH-|EL-)/.test(mpn)) return uuidMap["ELCAP-ALL"].part_uuid;
+  // Relay families share one placeholder part. Without this fallback a per-SKU or re-specified
+  // variant has no uuid and the component is SKIPPED ENTIRELY from the apply output — which is how
+  // renaming KPREA/KPREB to HFE82V-20-M-CLASS for R8 silently dropped both relays and left
+  // COIL_KPREA/B and KPREA/B_B as single-pin nets. Only a full rebuild from source surfaced it.
+  if (/^(HFE\d|HFE82V|HF167F)/.test(mpn)) return uuidMap["HFE82V-M-CLASS"].part_uuid;
   if (/^(IND-|DM-)/.test(mpn)) return uuidMap["IND-ALL-2P"].part_uuid;
   return null;
 };
@@ -132,7 +137,11 @@ function transform(c, page, all, warn) {
   } else if (m === "ISO5V-RFC-6K") {
     out.pins = [P(2, "Vin", sig(c, "VIN")), P(1, "GND", sig(c, "GND")),
       P(4, "+Vo", sig(c, "P5")), P(3, "-Vo", sig(c, "COM"))];
-  } else if (["HF167F-80A-M", "HFE82V-M-CLASS", "HFE9-10A-1kV-M"].includes(m)) {
+  // Match the relay FAMILY, not an exact MPN list. These share one 6-pin arrangement (main +
+  // mirror + coil), and the list silently excluded every per-SKU variant: renaming KPREA/KPREB to
+  // HFE82V-20-M-CLASS for R8 dropped them out of the branch entirely, leaving COIL_KPREA/B and
+  // KPREA/B_B as single-pin nets. HF167F-120A-M and -250A-M were the same trap waiting to fire.
+  } else if (/^(HF167F-|HFE82V-|HFE9-)/.test(m)) {
     out.pins = [P(1, "COIL1", sig(c, "C1")), P(8, "COIL2", sig(c, "C2")),
       P(4, "COM1", sig(c, "A")), P(6, "NO1", sig(c, "B")),
       P(5, "COM2", sig(c, "M1")), P(3, "NO2", sig(c, "M2"))];
