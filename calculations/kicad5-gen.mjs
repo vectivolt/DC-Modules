@@ -447,6 +447,27 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
 // contiguous. And running a whole half down one column made frame height ~2x the passive columns,
 // the same short-column dead band this search exists to prevent.
 
+const HAND = {
+  // Composed by hand, by FUNCTION rather than by the alphabet. Each half of the half-bridge gets
+  // its own pair of columns, so the leg reads as two twin sub-blocks a reader can compare directly:
+  // bias, driver and its gate network, then the switch it drives with its DESAT sense and
+  // decoupling. Keyed on the section title with the instance index stripped, so all 21 legs share
+  // one composition and cell-uniformity still holds. "#" is that instance's index; anything not
+  // named falls into a final column, so a plan can never silently drop a part.
+  //
+  // Two constraints this plan has to respect, both learned by breaking them:
+  //   * same-symbol runs stay CONTIGUOUS -- interleaving types (Q,D,D,Q,D,D) breaks PITCH, whose
+  //     rule is that gaps inside a run are whole multiples of that run's own base.
+  //   * columns stay BALANCED -- running a whole half down one column made the frame ~2x the
+  //     height of its passive columns, the short-column dead band the search below exists to fix.
+  "LLC-LEGS / LEG-#": [
+    ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
+    ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
+    ["PS#L", "U#L", "R#LON", "R#LOFF", "R#LGS", "R#LPD"],
+    ["Q#L", "D#LS1", "D#LS2", "C#LB1", "C#LB2", "C#LBL"],
+  ],
+};
+
   for (const b of blocks) {
     b.items = b.comps.map((c) => ({ c, s: shapeOf(c) }));
     b.items.sort((a, z) => (z.s.cat === "IC") - (a.s.cat === "IC") || a.c.designator.localeCompare(z.c.designator));
@@ -482,6 +503,26 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       const score = w * hh * (1 + Math.abs(Math.log((w / hh) / 1.3)) * 0.15);
       if (!bestL || score < bestL.score) bestL = { placed, w, h: hh, score };
     }
+    // A hand plan replaces the column search outright but reuses the SAME column geometry (one x
+    // per column, set by that column's widest left label) so every alignment rule still holds.
+    const plan = HAND[b.title.replace(/\d+/g, "#")];
+    if (plan) {
+      const idx = (b.title.match(/(\d+)\s*$/) || [])[1] ?? "";
+      const left = new Map(b.items.map((i) => [i.c.designator, i]));
+      const cols = plan.map((col) => col.map((pat) => left.get(pat.replace(/#/g, idx))).filter(Boolean));
+      for (const col of cols) for (const it of col) left.delete(it.c.designator);
+      if (left.size) cols.push([...left.values()]);          // never drop a part
+      let x = 0, maxH = 0;
+      for (const c of cols) {
+        if (!c.length) continue;
+        const mlw = Math.max(...c.map((i) => i.s.lw));
+        const cw = mlw + Math.max(...c.map((i) => i.s.w - i.s.lw));
+        let y = 0;
+        for (const it of c) { it.x = x; it.y = y; it.clw = mlw; y += it.s.h; }
+        maxH = Math.max(maxH, y); x += cw + COLGAP;
+      }
+      bestL = { w: x - COLGAP + 2 * SECPAD, h: maxH + 2 * SECPAD + SECTITLE };
+    } else
     for (const { it, x, y, clw } of bestL.placed) { it.x = x; it.y = y; it.clw = clw; }
     // Height rounded UP to the Y grid. Frame TOPS were already snapped to YGRID, which fixed the
     // 10-30 mil near-misses -- but snapping added 0..249 mil to whatever gap sat above, so the
@@ -670,7 +711,20 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     // The largest empty rectangle is a GATE too, not just a weighted term. As a weighted term the
     // density objective outvoted it and sheets still came out with a 20-23% blank block in them,
     // which is the first thing the eye lands on.
-    const usable = aspect >= 1.15 && aspect <= 2.1 && spreadOver <= 0 && voidFrac <= 0.09;
+    // The sheet's own notes have to FIT. Packing tighter is only an improvement while a slot big
+    // enough for the SHEET INDEX and the NET NAMING legend survives -- at 77% fill on 120kw-dcdc
+    // none did and both vanished from the drawing. Reserving a rigid block for them was tried and
+    // was worse (it is the wrong shape of thing to hand a skyline packer). This is the constraint
+    // form: a denser candidate is only admissible if it still leaves the notes somewhere to go, so
+    // section density can never silently cost the sheet its labelling.
+    const notesFits = voidCandidates(out.map(({ b: bb, X, Y }) =>
+      ({ x0: X, y0: Y, x1: X + bb.w, y1: Y + bb.h })), W, H + MARGIN + 800, 4)
+      // Sized to what drawPanel ACTUALLY needs, not to pickVoid's looser shortlist filter. Copying that
+      // filter (>2200 tall) made the constraint pass on slots drawPanel then refused -- it needs room
+      // for a heading plus two text rows and returns null below ~4200 -- so 663 of 693 candidates
+      // "fitted" and the sheet still lost both panels. Match the consumer, not the shortlist.
+      .some((v) => v.x1 - v.x0 > 5200 && v.y1 - v.y0 > 4200 && v.y1 > (H + MARGIN + 800) * 0.4);
+    const usable = aspect >= 1.15 && aspect <= 1.95 && spreadOver <= 0 && voidFrac <= 0.09 && notesFits;
     // soft score is always computed: when no candidate clears every gate we still want the best
     // layout by the same objective, not whatever happens to be closest to a target aspect.
     // On the bigger sheets no configuration satisfies aspect AND grouping AND void at once, so the
@@ -685,7 +739,9 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // any other number here. So: 1.
       + frag * 1
       + Math.max(0, spreadOver) * 300
+      + (notesFits ? 0 : 500)          // keep the fallback preferring layouts the notes fit in
       + (aspect >= 1.15 && aspect <= 2.1 ? 0 : 1000);
+    if (process.env.DIAG) { globalThis.__d = globalThis.__d || {fit:0,tot:0}; globalThis.__d.tot++; if (notesFits) globalThis.__d.fit++; }
     const score = usable ? soft : Infinity;
     return { NC, out, colH, W, H, score, soft, aspect };
   };
@@ -947,6 +1003,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     + `Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"\n$EndDescr\n${body}$EndSCHEMATC\n`;
   writeFileSync(join(OUT, `${page.page}.sch`), sch);
   files.push(page.page);
+  if (process.env.DIAG && globalThis.__d) { console.log(`   [diag] candidates ${globalThis.__d.tot}, notesFits ${globalThis.__d.fit}`); globalThis.__d = {fit:0,tot:0}; }
   console.log(`${page.page.padEnd(22)} ${String(page.total).padStart(3)} comps · ${blocks.length} sections · ${nLabels} labels · ${nNC} no-connects · ${sheetW}×${sheetH} mil`);
 }
 

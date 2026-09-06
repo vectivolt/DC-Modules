@@ -125,7 +125,11 @@ for (const SKU of SKUS) {
     if (panels.length === 2) {
       const box = (p) => frameAll.find((r) => Math.abs(r.x0 - (p[0] - 60)) < 2 && Math.abs(r.y0 - (p[1] - 160)) < 2);
       const a2 = box(panels[0]), b2 = box(panels[1]);
-      const ok = a2 && b2 && a2.x0 === b2.x0 && a2.x1 === b2.x1;
+      // The pair may be STACKED (shares left+right edges) or ABREAST (shares top+bottom). Both are
+      // a deliberate notes block; only accepting the stacked form flagged a correct side-by-side
+      // pair on 30kw-dcdc. Either way an edge that is NEARLY but not exactly shared still fails,
+      // which is the defect this exists to catch.
+      const ok = a2 && b2 && ((a2.x0 === b2.x0 && a2.x1 === b2.x1) || (a2.y0 === b2.y0 && a2.y1 === b2.y1));
       out.push(["PANEL", 2, { distinct: ok ? 1 : 2, bad: ok ? [] : [[a2 ? a2.x0 : 0, b2 ? b2.x0 : 0]] }]);
     }
 
