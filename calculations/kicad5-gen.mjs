@@ -81,12 +81,25 @@ function pinSide(name) {
   return "left";
 }
 function groupPins(pins) {
+// Pins are ordered by NAME FAMILY, not by pin number. Numeric order scattered related pins: the
+// relays read COIL1, NO2, COM1, COM2, NO1, COIL2, so COM1 sat three rows from its own NO1, and the
+// MCU read PC13, PF9, PF10, PC0, PC1 with every port interleaved. Grouping by the alphabetic stem
+// and then the numeric suffix puts COIL1/COIL2, COM1/COM2, NO1/NO2 and PA0..PA15 together. Pin
+// NUMBERS are still printed on every pin, so nothing is lost for tracing back to the datasheet.
+const famKey = (p) => {
+  const m = String(p.name ?? "").match(/^(.*?)(\d*)$/);
+  return [m ? m[1] : "", m && m[2] ? +m[2] : -1];
+};
+const byFamily = (a, b) => {
+  const [af, an] = famKey(a), [bf, bn] = famKey(b);
+  return af.localeCompare(bf) || an - bn || Number(a.pin_number) - Number(b.pin_number);
+};
   const g = { left: [], right: [], top: [], bottom: [] };
   for (const p of pins) g[pinSide(p.name)].push(p);
-  for (const k of Object.keys(g)) g[k].sort((a, b) => Number(a.pin_number) - Number(b.pin_number));
+  for (const k of Object.keys(g)) g[k].sort(byFamily);
   if (g.left.length > 16 && g.right.length * 2 < g.left.length) {
     const half = Math.ceil(g.left.length / 2);
-    g.right = g.left.slice(half).concat(g.right).sort((a, b) => Number(a.pin_number) - Number(b.pin_number));
+    g.right = g.left.slice(half).concat(g.right).sort(byFamily);
     g.left = g.left.slice(0, half);
   }
   return g;
