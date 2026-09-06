@@ -653,21 +653,26 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // The hole is whatever shape the packer leaves -- a tall slot on one sheet, a wide low band
       // on another -- so the panel lays itself out in as many columns as the space affords.
       const perCol = Math.floor((maxY - py0 - HEAD - LH - Math.round(PAD / 2)) / LH);
-      const maxCols = Math.floor((px1 - px0 - 400) / CW);
+      // Column width ADAPTS to the slot. Fixed at 4200 it rejected 120kw-dcdc's 5213x20533
+      // right-edge void -- 5213 less padding is 3813, which floors to zero columns -- so the
+      // densest sheet ended up with no panel at all despite having a tall slot exactly where a
+      // notes block belongs. 2600 still fits the longest row (~55 chars at 60 mil).
+      const cw = Math.max(2600, Math.min(CW, px1 - px0 - 460));
+      const maxCols = Math.floor((px1 - px0 - 400) / cw);
       if (perCol < 2 || maxCols < 1) return null;
       const ncols = Math.min(maxCols, Math.ceil(rows.length / perCol));
       const cap = ncols * perCol, over = rows.length > cap;
       const shown = rows.slice(0, over ? cap - 1 : rows.length);
       const cell = [...shown, ...(over ? [`+ ${rows.length - shown.length} more`] : [])];
       const nRow = Math.min(perCol, Math.max(1, Math.ceil(cell.length / ncols)));
-      const px1b = snap(Math.min(px1, px0 + 260 + ncols * CW + 200));
+      const px1b = snap(Math.min(px1, px0 + 260 + ncols * cw + 200));
       const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
       body += `Wire Notes Line\n\t${px0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
         + `Wire Notes Line\n\t${px1b} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
       body += `Text Notes ${px0 + 200} ${py0 + 340} 0    79   ~ 16\n${title}\n`;
       body += `Text Notes ${px0 + 200} ${py0 + 600} 0    60   ~ 0\n${sub}\n`;
       cell.forEach((t, i) => {
-        const cx = px0 + 260 + Math.floor(i / nRow) * CW, cy = py0 + HEAD + (i % nRow) * LH;
+        const cx = px0 + 260 + Math.floor(i / nRow) * cw, cy = py0 + HEAD + (i % nRow) * LH;
         body += `Text Notes ${snap(cx)} ${snap(cy)} 0    60   ~ 0\n${t}\n`;
       });
       if (footer) body += `Text Notes ${px0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\n${footer}\n`;
@@ -693,7 +698,10 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         // legend in 120kw-dcdc's top-right CORNER, on a sheet that had correctly had none before.
         .filter((v) => v.x1 - v.x0 > 5200 && v.y1 - v.y0 > 2200 && v.y1 > sheetH * 0.4);
       if (!cands.length) return { x0: 0, y0: 0, x1: 0, y1: 0 };
-      return cands.sort((a, b) =>
+      // Right side wins outright when one is available: with the index taking the best slot, the
+      // legend was landing at x=22% on 60kw-dcdc while every other sheet had it at 72-85%.
+      const right = cands.filter((v) => v.x1 > sheetW * 0.55);
+      return (right.length ? right : cands).sort((a, b) =>
         (b.x1 / sheetW + b.y1 / sheetH) - (a.x1 / sheetW + a.y1 / sheetH))[0];
     };
     const p1 = drawPanel(pickVoid(used), "SHEET INDEX",

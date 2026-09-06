@@ -14,6 +14,52 @@ Comment3 "45 functional sections - 744 components - cross-section links are glob
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Wire Notes Line
+	50900 24300 55100 24300
+Wire Notes Line
+	55100 24300 55100 27650
+Wire Notes Line
+	55100 27650 50900 27650
+Wire Notes Line
+	50900 27650 50900 24300
+Text Notes 51100 24640 0    79   ~ 16
+SHEET INDEX
+Text Notes 51100 24900 0    60   ~ 0
+120 kW DC-DC (upper) - 2 of 2
+Text Notes 51150 25300 0    60   ~ 0
+LLC-LEGS   -   13 sections
+Text Notes 51150 25600 0    60   ~ 0
+LLC-TANKS   -   12 sections
+Text Notes 51150 25900 0    60   ~ 0
+CONTROL   -   7 sections
+Text Notes 51150 26200 0    60   ~ 0
+OUTPUT-SENSING   -   7 sections
+Text Notes 51150 26500 0    60   ~ 0
+BANKS-SP   -   4 sections
+Text Notes 51150 26800 0    60   ~ 0
+COMMS-HMI   -   2 sections
+Text Notes 51160 27450 0    60   ~ 0
+rev D.3   -   45 sections   -   744 components
+Wire Notes Line
+	23100 44800 31950 44800
+Wire Notes Line
+	31950 44800 31950 46950
+Wire Notes Line
+	31950 46950 23100 46950
+Wire Notes Line
+	23100 46950 23100 44800
+Text Notes 23300 45140 0    79   ~ 16
+NET NAMING
+Text Notes 23300 45400 0    60   ~ 0
+internal junctions are named for what they join
+Text Notes 23350 45800 0    60   ~ 0
+U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
+Text Notes 23350 46100 0    60   ~ 0
+R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
+Text Notes 27550 45800 0    60   ~ 0
+R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
+Text Notes 27550 46100 0    60   ~ 0
+all others are explicit design nets
+Wire Notes Line
 	11500 6250 16600 6250
 Wire Notes Line
 	16600 6250 16600 9750
