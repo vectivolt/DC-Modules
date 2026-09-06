@@ -96,12 +96,37 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
     dschX: 172, dschY: 76, ctsX: 158, ctsY: [44, 10, -24] as const,
     fanX: 198, fanY: -140, ntcX: 190, ntcY: -145,
     // control strip along the bottom edge, end to end by real width
-    ctlY: -172, mcuX: -123, swdX: -96, sfcX: -74, r3v3X: -31, auxX: 7,
+    ctlY: -172, mcuX: -123, swdX: -94, sfcX: -65, r3v3X: -20, auxX: 20,
     avmidX: 40, icX: 120, auxRowY: -148,
   };
 
 return (
-    <board width={`${w}mm`} height={`${h}mm`} routingDisabled schTraceAutoLabelEnabled schMaxTraceDistance={0}>
+    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" routingDisabled
+      schTraceAutoLabelEnabled schMaxTraceDistance={0}
+      minTraceWidth="0.25mm" minViaHoleDiameter="0.4mm" minViaPadDiameter="0.7mm"
+      minTraceToPadEdgeClearance="0.2mm" minPadEdgeToPadEdgeClearance="0.12mm"
+      minBoardEdgeClearance="1mm">
+      {/* STACKUP (§7). 6 layers, 2.4 mm, 2 oz outers. The board carries 39-156 A, so the power
+          nets are POURS, never traces: L2 is the mains-referenced return and PE reference, L3/L4
+          are the DC-link rails, and the two outers carry the local power geometry plus signal.
+          Clearances are set well above the fab minimum because creepage, not etch capability, is
+          what sets spacing on a 1000 V board -- the reinforced barrier is enforced separately. */}
+      <net name="DCP" isForPower />
+      <net name="DCN" isForPower />
+      <net name="MID" isForPower />
+      <net name="PE" isGround />
+      <net name="DGND" isGround />
+      <net name="AGND" isGround />
+      <net name="V24" isForPower />
+      <net name="V15" isForPower />
+      <net name="V3P3" isForPower />
+      {/* PLANES carry the power. inner1/inner2 are the DC-link rails (the 39-156 A paths),
+          inner3 is the control return, inner4 is PE and the chassis reference. The two outer
+          layers keep local geometry and signal only. Nothing high-current is ever a "trace". */}
+      <copperpour connectsTo="net.DCP" layer="inner1" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.DCN" layer="inner2" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.DGND" layer="inner3" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.PE" layer="inner4" boardEdgeMargin="1.2mm" />
       {/* AC entry, protection, EMI (§26/§27): fuses → MOV Δ + MOV/GDT L-PE → CM1 → X → CM2 → X → Y */}
       {["ACL1", "ACL2", "ACL3", "PE"].map((n, i) => (
         <chip key={n} name={`J${n}`} footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={P.jaclX} pcbY={i < 3 ? P.jacl[i] : P.jpeY} schX={i < 3 ? 0 : 20} schY={i < 3 ? 46 - i * 3 : 37} />

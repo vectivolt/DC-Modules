@@ -237,19 +237,40 @@ export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, 
 // 10 k PWM pulldown (HR-6, defined low during MCU reset), en parameterized (CB-10 per-board chain).
 // Schematic envelope (layout-polish rev): 13 wide × 6 tall, origin = driver IC center.
 // Logic/PWM enters left, gate network exits right, DESAT chain top-right, bias row below.
-export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, en, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, en, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0, lay = "top" }: any) => (
   <group name={`drv${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name={`U${id}`} footprint="soic16" pinLabels={DRV_PINS} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <BiasModule id={id} sec={sec} x={-4} y={-14} sx={-0.6} sy={-2.6} />
-    <resistor name={`R${id}ON`} resistance={rgOn} footprint="1206" pcbX={16} pcbY={0} schX={2.6} schY={0.9} schSectionName={sec} />
-    <resistor name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={16} pcbY={-5} schX={2.6} schY={-0.4} schSectionName={sec} />
-    <resistor name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={26} pcbY={-10} schX={4.2} schY={-0.4} schSectionName={sec} />
-    <resistor name={`R${id}PD`} resistance="10k" footprint="0603" pcbX={-10} pcbY={-6} schX={-2.6} schY={-1.2} schSectionName={sec} />
-    <diode name={`D${id}S1`} footprint="sma" pcbX={28} pcbY={0} schX={2.7} schY={2.2} schSectionName={sec} />
-    <diode name={`D${id}S2`} footprint="sma" pcbX={34} pcbY={-6} schX={4.7} schY={2.2} schSectionName={sec} />
-    <capacitor name={`C${id}BL`} capacitance="100pF" footprint="0603" pcbX={28} pcbY={-6} schX={1.4} schY={1.9} schSectionName={sec} />
-    <capacitor name={`C${id}B1`} capacitance="1uF" footprint="0805" pcbX={14} pcbY={-11} schX={1.2} schY={-2.5} schSectionName={sec} />
-    <capacitor name={`C${id}B2`} capacitance="1uF" footprint="0805" pcbX={14} pcbY={-15} schX={2.5} schY={-2.5} schSectionName={sec} />
+    {/* PCB, ordered by the driver's OWN pin geometry (SOIC-16W, body 7.5 x 10.3, pins at x +/-2.15):
+        primary pins face LEFT, secondary pins face RIGHT, and everything is placed by which pin it
+        serves rather than by what fits.
+
+          x  -8   RGPD    input pull-down, on the primary side with the PWM pin
+          x  +6   CB1/CB2 bias decoupling -- 2.9 mm from VCC2/GND2/VEE2. These were 16 mm away,
+                  which for a SiC gate driver's bias rail is the same as not fitting them: the
+                  loop that supplies the gate charge is this loop.
+          x +12   RGON/RGOFF gate resistors, immediately after OUTH/OUTL
+          x +18   DESAT blanking cap and its series diodes
+          x +30   isolated bias module, the only bulky part, pushed to the far end
+        The whole channel is 50 x 16 and sits directly behind its own two switches. */}
+    <chip layer={lay} name={`U${id}`} footprint="soic16" pinLabels={DRV_PINS} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}PD`} resistance="10k" footprint="0603" pcbX={-8} pcbY={0} schX={-2.6} schY={-1.2} schSectionName={sec} />
+    {/* Bias decoupling goes on the OPPOSITE side, directly beneath the driver's secondary pin row
+        (pins sit at x +2.15), sized and rotated to STRADDLE the pins they decouple.
+
+        VCC2 and GND2 are 3.81 mm apart, which an 0805's 1.9 mm pad span cannot reach but a 1206's
+        2.6 mm span does: rotated 90 deg and centred between them, CB1 lands 0.6 mm from each pad.
+        GND2 to VEE is 7.61 mm -- no chip capacitor bridges that -- so CB2 is placed tight to VEE,
+        the pin whose loop carries the turn-off current, and its GND2 return goes through copper
+        rather than a long trace. Side by side on the top layer these were 16 mm out, which for a
+        SiC driver's bias rail is the same as not fitting them at all. */}
+    <capacitor layer="bottom" name={`C${id}B1`} capacitance="1uF" footprint="1206" pcbRotation={270} pcbX={2.6} pcbY={2.54} schX={1.2} schY={-2.5} schSectionName={sec} />
+    <capacitor layer="bottom" name={`C${id}B2`} capacitance="1uF" footprint="1206" pcbRotation={270} pcbX={2.6} pcbY={-4.47} schX={2.5} schY={-2.5} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}ON`} resistance={rgOn} footprint="1206" pcbX={7.5} pcbY={1.6} schX={2.6} schY={0.9} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={7.5} pcbY={-1.6} schX={2.6} schY={-0.4} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={8} pcbY={-5.5} schX={4.2} schY={-0.4} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}BL`} capacitance="100pF" footprint="0603" pcbX={14} pcbY={-4.5} schX={1.4} schY={1.9} schSectionName={sec} />
+    <diode layer={lay} name={`D${id}S1`} footprint="sma" pcbX={16} pcbY={4.5} schX={2.7} schY={2.2} schSectionName={sec} />
+    <diode layer={lay} name={`D${id}S2`} footprint="sma" pcbX={24} pcbY={4.5} schX={4.7} schY={2.2} schSectionName={sec} />
+    <BiasModule id={id} sec={sec} x={31} y={0} sx={-0.6} sy={-2.6} />
     <trace from={`.U${id} > .VIA`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.U${id} > .GNDA`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.U${id} > .PWM`} to={pwm} schDisplayLabel={pwm.replace("net.", "")} />
@@ -269,7 +290,7 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <trace from={`.PS${id} > .N4`} to={`.U${id} > .VEE`} />
     <trace from={`.C${id}B1 > .pin1`} to={`.U${id} > .VCC2`} />
     <trace from={`.C${id}B1 > .pin2`} to={`.U${id} > .GND2`} />
-    <trace from={`.C${id}B2 > .pin1`} to={`.U${id} > .GND2`} />
+    <trace from={`.C${id}B2 > .pin1`} to={`.U${id} > .GND2`} maxLength="12mm" />
     <trace from={`.C${id}B2 > .pin2`} to={`.U${id} > .VEE`} />
     <trace from={`.U${id} > .OUTH`} to={`.R${id}ON > .pin1`} />
     <trace from={`.R${id}ON > .pin2`} to={gate} />
@@ -669,14 +690,18 @@ export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY"
     <resistor layer={lay} name={`RENR${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={8} schX={1.6} schY={-2} schSectionName={sec} />
     <resistor layer={lay} name={`RENL${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={13} schX={3.2} schY={-2} schSectionName={sec} />
     <resistor layer={lay} name={`RGPD${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={8} schX={7.5} schY={-2} schSectionName={sec} />
-    <capacitor layer={lay} name={`CSF${id}`} capacitance="100nF" footprint="0603" pcbX={20} pcbY={8} schX={6} schY={-2} schSectionName={sec} />
+    {/* VDD (-2.15, -0.63) and GND (+2.15, +0.63) sit on OPPOSITE sides of this package, 4.48 mm
+        apart, so no chip capacitor reaches both from beside it. On the OTHER LAYER, centred on the
+        package, a 1206's pads land 1.06 mm from each -- against 24.5 mm where this cap started,
+        which for a supervisor's rail is a cap that is not there. */}
+    <capacitor layer={lay === "bottom" ? "top" : "bottom"} name={`CSF${id}`} capacitance="100nF" footprint="1206" pcbX={0} pcbY={0} schX={6} schY={-2} schSectionName={sec} />
     {/* R3: CWD (physical 2) programs the watchdog timeout and CRST (physical 4) the reset delay.
         Both were floating, which leaves the window UNDEFINED — the safety chain's centerpiece
         would not have had a defined timeout. Sized for the 10 ms window of E27/F.32.
         VALUE REVIEW: the C-per-ms constant comes from the final TPS3430 datasheet (§K); the
         components and their nets are correct regardless of the final capacitance. */}
-    <capacitor layer={lay} name={`CWD${id}`} capacitance="1nF" footprint="0603" pcbX={20} pcbY={13} schX={6} schY={-3.2} schSectionName={sec} />
-    <capacitor layer={lay} name={`CRST${id}`} capacitance="1nF" footprint="0603" pcbX={24} pcbY={13} schX={7.5} schY={-3.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`CWD${id}`} capacitance="1nF" footprint="0603" pcbX={-6} pcbY={0.6} schX={6} schY={-3.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`CRST${id}`} capacitance="1nF" footprint="0603" pcbX={-6} pcbY={3.4} schX={7.5} schY={-3.2} schSectionName={sec} />
     <trace from={`.CWD${id} > .pin1`} to={`.USUP${id} > .CWD`} />
     <trace from={`.CWD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CRST${id} > .pin1`} to={`.USUP${id} > .CRST`} />
