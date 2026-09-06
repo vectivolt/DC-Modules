@@ -41,7 +41,12 @@ const libFile = readdirSync(SCH).find((f) => f.endsWith(".lib"));
 for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice(1)) {
   const name = blk.split(/\s+/)[0];
   let box = null;
+  const pins = [];
   for (const l of blk.split("\n")) {
+    if (l.startsWith("X ")) {
+      const t = l.split(/\s+/);
+      pins.push({ name: t[1], num: t[2], x: +t[3], y: +t[4], len: +t[5], o: t[6] });
+    }
     if (l.startsWith("S ")) {
       const t = l.split(/\s+/).map(Number);
       box = { x0: Math.min(t[1], t[3]), y0: Math.min(t[2], t[4]), x1: Math.max(t[1], t[3]), y1: Math.max(t[2], t[4]) };
@@ -50,13 +55,14 @@ for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice
       box = { x0: t[1] - t[3], y0: t[2] - t[3], x1: t[1] + t[3], y1: t[2] + t[3] };
     }
   }
-  LIB.set(name, box ?? { x0: -40, y0: -100, x1: 40, y1: 100 });
+  LIB.set(name, { box: box ?? { x0: -40, y0: -100, x1: 40, y1: 100 }, pins });
 }
 
-let pages = 0, problems = [], nLab = 0, nSym = 0;
+let pages = 0, problems = [], nLab = 0, nSym = 0, nPin = 0;
 for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
   const lines = readFileSync(join(SCH, f), "utf8").split("\n");
   const labels = [], syms = [], texts = [];
+  const pinText = [];
   for (let i = 0; i < lines.length; i++) {
     const L = lines[i];
     if (L.startsWith("Text Label ") || L.startsWith("Text GLabel ")) {
@@ -77,12 +83,24 @@ for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
           if (m && m[1]) fields.push({ txt: m[1], box: boxOf(m[1], +m[2], +m[3], m[4]) });
         }
       }
-      const b = LIB.get(libn) ?? { x0: -40, y0: -100, x1: 40, y1: 100 };
-      // lib Y is up, sheet Y is down
+      const entry = LIB.get(libn) ?? {};
+      const b = entry.box ?? { x0: -40, y0: -100, x1: 40, y1: 100 };
+      // Pin NAME text (drawn inside the body, against the body edge). A detail-zoom pass showed
+      // this text existed and was never being checked — on a dense IC it is the text most likely
+      // to collide, because the body width is derived from the longest name.
+      for (const pn of entry.pins ?? []) {
+        if (!pn.name || pn.name === "~") continue;
+        const px = x + pn.x, py = y + pn.y;          // lib is pre-mirrored for EasyEDA
+        const inward = pn.o === "R" ? 1 : pn.o === "L" ? -1 : 0;
+        const inwardY = pn.o === "U" ? -1 : pn.o === "D" ? 1 : 0;
+        const tx = px + inward * (pn.len + 20), ty = py + inwardY * (pn.len + 20);
+        pinText.push({ ref, txt: pn.name,
+          box: boxOf(pn.name, tx, ty, inward > 0 ? "L" : inward < 0 ? "R" : "C", inward === 0) });
+      }
       syms.push({ ref, box: { x0: x + b.x0, y0: y - b.y1, x1: x + b.x1, y1: y - b.y0 }, fields });
     }
   }
-  nLab += labels.length; nSym += syms.length;
+  nLab += labels.length; nSym += syms.length; nPin += pinText.length;
 
   const add = (m) => { if (problems.length < 40) problems.push(`${f.replace(".sch", "")}: ${m}`); };
   for (let a = 0; a < labels.length; a++)
@@ -91,6 +109,15 @@ for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
   for (const l of labels)
     for (const s of syms)
       if (hit(l.box, s.box)) add(`label "${l.net}" sits on symbol ${s.ref}`);
+  // pin-name text must not collide with a net label or with another pin's name
+  for (const pt of pinText) {
+    for (const l of labels)
+      if (hit(pt.box, l.box)) add(`pin name "${pt.txt}" on ${pt.ref} collides with label "${l.net}"`);
+  }
+  for (let a = 0; a < pinText.length; a++)
+    for (let b = a + 1; b < pinText.length; b++)
+      if (pinText[a].ref === pinText[b].ref && hit(pinText[a].box, pinText[b].box))
+        add(`pin names collide on ${pinText[a].ref}: "${pinText[a].txt}" x "${pinText[b].txt}"`);
   const allFields = syms.flatMap((s) => s.fields.map((fl) => ({ ...fl, ref: s.ref })));
   for (let a = 0; a < allFields.length; a++)
     for (let b = a + 1; b < allFields.length; b++)
@@ -101,7 +128,7 @@ for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
   pages++;
 }
 
-console.log(`${pages} sheets · ${nSym} symbols · ${nLab} labels checked`);
+console.log(`${pages} sheets · ${nSym} symbols · ${nLab} labels · ${nPin} pin-name texts checked`);
 console.log(problems.length ? `${problems.length}+ collisions:` : "no ink collisions: labels, symbols and field text are all clear");
 problems.slice(0, 25).forEach((p) => console.log("  " + p));
 process.exit(problems.length ? 1 : 0);
