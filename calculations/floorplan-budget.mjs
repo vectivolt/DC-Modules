@@ -78,6 +78,13 @@ const RACK = {
   heightU: 133.35,   // mm 3U
 };
 
+// The FRONT face carries the fans plus the display and switch; the REAR face carries AC in and
+// DC out + CAN at diagonally opposite corners. So the front face is a width budget of its own, and
+// it is an independent check on whether a rating fits one module.
+const FANS = { "30kw": 2, "60kw": 2, "120kw": 4 };   // thermal-report.md
+const FAN_SIZE = 120;                                // mm; 120 is the largest that fits a 3U face
+const HMI_WIDTH = 80;                                // mm for the 2-digit display + switch cluster
+
 // Height stack-up of the sandwich, outer face to outer face. The tunnel is set by the TALLEST part
 // standing in it, which is the D1 choke: 3 stacked H17 toroids = 51 mm of core plus the winding
 // build. Everything else here is a mechanical allowance, labelled so it can be argued with.
@@ -217,6 +224,16 @@ for (const r of rows) {
     + `   ${r.W > RACK.widthMax ? "as drawn TOO WIDE" : "width ok        "}`
     + `   ${ok ? "fits 3U rack" : `DOES NOT FIT — needs ${Math.ceil(depthNeeded)} mm depth`}`);
 }
+console.log(`\nFRONT FACE — fans + display + switch, in ${RACK.widthMax} mm of usable width:`);
+for (const sku of Object.keys(BOARDS)) {
+  const need = FANS[sku] * FAN_SIZE + HMI_WIDTH;
+  const ok = need <= RACK.widthMax;
+  if (!ok) envFail++;
+  console.log(`   ${sku.padEnd(6)} ${FANS[sku]}× ${FAN_SIZE} mm fan + ${HMI_WIDTH} mm HMI`
+    + ` = ${String(need).padStart(4)} mm   ${ok ? "ok" : `FAIL — ${need - RACK.widthMax} mm over a ${RACK.widthMax} mm face`}`);
+}
+console.log(`   (a 120 mm fan is the largest that clears a ${RACK.heightU} mm 3U opening)`);
+
 console.log(`\nWidth is the binding dimension and depth is nearly free, so a board that does not fit should`
   + `\nbe made NARROWER AND DEEPER before it is made bigger. ${envFail} board(s) cannot be made to fit at all.`);
 

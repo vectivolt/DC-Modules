@@ -29,87 +29,92 @@ well it is laid out.
 | Height | **133.35 mm (3U)** | 3U is the dominant module height in this class |
 | Depth | 400–560 mm, free to use | class-typical |
 
-### Connector faces — diagonally opposite
+### Faces
 
-**AC input and DC output sit at diagonally opposite corners**, which is the maximum separation the
-box allows. That keeps the two HV harnesses from ever running parallel inside the cabinet — the
-input-to-output conducted-coupling path that no amount of filtering fixes once the cables are
-bundled together — and it keeps the AC entry away from the output sensing.
+**Front — fans, display, switch. Rear — AC in, DC out + CAN, at diagonally opposite corners.**
+All power and comms leave at the back; the front is the service face and the air intake.
 
 ```
-        REAR FACE                                            FRONT FACE (service)
-   ┌─────────────────────────┐                        ┌─────────────────────────┐
-   │ ▓▓ 3φ AC + PE ▓▓        │                        │        air INLET + filter│
-   │ (LEFT quarter)          │                        │        display · buttons │
-   │        fans / EXHAUST   │                        │        ▓▓ DC± OUT ▓▓     │
-   │        (centre + right) │                        │        + CAN H/L on the  │
-   │                         │                        │          plug side       │
-   └─────────────────────────┘                        │          (RIGHT quarter) │
-                                                      └─────────────────────────┘
-
-   power:  rear-LEFT ──────────────────────────────────────────► front-RIGHT
-   air:    rear-RIGHT ◄─────────────────────────────────────────  front-LEFT
+        FRONT FACE (service + intake)                     REAR FACE (all connectors + exhaust)
+   ┌───────────────────────────────┐                 ┌───────────────────────────────┐
+   │  ▣ FAN   ▣ FAN     ░display░  │                 │  ▓▓ DC± OUT + CAN H/L ▓▓  ░░░ │
+   │  120 mm  120 mm    ░switch ░  │                 │  (upper-right corner)     ░░░ │
+   │                               │                 │ ░░░                           │
+   │  2× 120 + 80 mm HMI = 320 mm  │                 │ ░░░   ▓▓ 3φ AC IN + PE ▓▓     │
+   │  of 440 mm usable             │                 │       (lower-left corner)     │
+   └───────────────────────────────┘                 └───────────────────────────────┘
+                                                       ░░░ = exhaust vent area
 ```
 
-- **CAN H/L is carried on the DC output connector plug, on its side** — not a separate front-panel
-  connector. One plug leaves the module with power and comms together, so the cabinet harness is one
-  assembly. Consequences for the layout are in §4: the CAN isolator and its floating CGND domain
-  must reach the DC output connector, which sits on the **secondary** side of the barrier.
-- Neither connector blocks the air path, because each face is split — the connector takes one
-  quarter and the air takes the rest, on opposite sides.
-- Power and air therefore cross diagonally rather than running down one lane, which sweeps the whole
-  board instead of a single channel.
+- **The two HV connectors are diagonally opposite on the rear face** — AC at one corner, DC + CAN at
+  the far one. That is the maximum separation the face allows, so the input and output harnesses
+  leave in different directions and never run parallel in the cabinet. That parallel run is the
+  input-to-output conducted-coupling path no amount of on-board filtering fixes once the cables are
+  bundled.
+- **CAN H/L rides on the DC output connector plug**, on its side — one plug carries power and comms,
+  so the cabinet harness is one assembly.
+- **Fans at the front, pushing.** They run in the coldest, densest air (best mass flow, best fan
+  life), the enclosure is positively pressurised so dust enters only through the front filter, and
+  the fan noise and the filter are both at the face a technician stands at. Exhaust leaves through
+  the rear vent area around the two corner connectors.
+- **Front face budget:** 2× 120 mm fans + 80 mm of display/switch = **320 mm of 440 mm usable**. At
+  120 kW, 4 fans + HMI = **560 mm and does not fit** — an independent confirmation of §2.
 
-> The alternative worth knowing: most cabinet modules blind-mate **all** power at the rear and keep
-> the front for air, handle and display only. That is easier to service and safer to hot-swap. This
-> plan follows the directive to put the DC output (with CAN on its plug) on the front-right; if the
-> module is ever cabinet-mounted rather than standalone, moving the DC output to the rear-right
-> keeps the diagonal and gains blind-mating.
+### The power path is a U-fold
 
-### Axes
-
-- **X** runs rear→front: the dominant power-flow axis on both boards.
-- **Y** is board width across the rack (≤440 mm), carrying the diagonal offset: the AC entry sits at
-  low Y, the DC output at high Y.
-- **Z** is the sandwich stack: lower extrusion / AC-DC board / tunnel / DC-DC board / upper extrusion.
+With AC in and DC out both at the rear, power cannot run straight through. It folds at the front:
 
 ```
-   UPPER BOARD (DC-DC)   bus in → LLC legs → tanks → XFMR ║ JBS → banks → S/P → out (front-right)
-   ═══════════════════════════════════════════════════════════════════════════════
-   inter-board TUNNEL    magnetics stand here, in the airstream — and set the module height
-   ═══════════════════════════════════════════════════════════════════════════════
-   LOWER BOARD (AC-DC)   AC entry (rear-left) → EMI → precharge → Vienna PFC → DC link → B2B studs
+   UPPER BOARD (DC-DC)   out ◄── S/P ◄── banks ◄── JBS ║ XFMR ◄── tanks ◄── legs ◄── bus in
+   ═══════════════════════════════════════════════════════════════════════════════════╗
+   inter-board TUNNEL    magnetics stand here — and set the module height             ║ B2B
+   ═══════════════════════════════════════════════════════════════════════════════════╝ studs
+   LOWER BOARD (AC-DC)   AC in ──► EMI ──► precharge ──► Vienna PFC ──► DC link ──► studs
+
+   REAR ◄─────────────────────────────────────────────────────────────────────────► FRONT
+   AC in (lower-left)                                                    fans · display · switch
+   DC out + CAN (upper-right)                                            air INLET
 ```
 
-The board-to-board handoff (DCP/DCN/PE M8 pillars) is at the **front** of the AC-DC board and the
-**rear** of the DC-DC board. See §8.
+- **AC-DC board flows rear → front.** **DC-DC board flows front → rear.** The B2B pillars are the
+  fold, at the front of both boards — which also makes them **vertically aligned**, resolving the
+  offset-pillar problem §8 previously had to work around. That is a real gain from this arrangement.
+- **X** runs rear→front; **Y** is board width across the rack (≤440 mm) and carries the diagonal
+  offset of the two rear connectors; **Z** is the sandwich stack.
 
-### Why airflow opposes power flow
+### What the airflow direction buys, and what it costs
 
-Air enters at the front (service face) and exhausts at the rear. Two reasons, both measurable:
+Air runs **front → rear**. Because the power path folds, that means it **opposes** the AC-DC board
+and **follows** the DC-DC board. The two boards therefore have to be judged separately.
 
-1. **Nothing downstream of the exhaust gets preheated.** The EMI filter dissipates 49 / 132 / 248 W
-   ([thermal-report.md](thermal-report.md)) — the largest single airstream load on the AC-DC board.
-   Placed at the exhaust it heats only the air leaving the box. Placed at the inlet it raises the
-   inlet temperature of *every* magnetic and every electrolytic behind it.
-2. **The life-limiting parts get the coldest air.** The 470 µF/450 V electrolytics set the module's
-   service life (Arrhenius: ~2× life per 10 K cooler). The bank capacitors sit near the front on the
-   DC-DC board; the DC-link bank sits mid-board on the AC-DC board. Both are ahead of the EMI filter
-   and the PFC chokes in the airstream.
+**AC-DC board — the arrangement is ideal, and it is worth stating why.**
 
-Front inlet also puts the **filter at the service face** and runs the enclosure at positive pressure
-so dust enters only through the filter. Fans stay at the rear, in the exhaust, off the service face —
-at 120 kW four 120 mm fans would otherwise consume 480 mm of a 440 mm-wide front panel, which is by
-itself a reason the 120 kW single-module form does not close (§2).
+1. *The largest airstream load is last.* The EMI filter dissipates 49 / 132 / 248 W
+   ([thermal-report.md](thermal-report.md)) — more than any other tunnel item on this board. It sits
+   at the AC entry, which is the rear, which is the exhaust. Heat added at the exhaust preheats
+   nothing. Had the AC entry been at the intake, that 248 W would raise the inlet temperature of
+   every magnetic and every electrolytic behind it.
+2. *The life-limiting parts are first.* The 470 µF/450 V DC-link electrolytics set the module's
+   service life (roughly 2× life per 10 K cooler) and they sit at the front, next to the B2B studs —
+   the coldest air in the box.
 
-<p align="center"><img src="assets/floorplan-30kw.svg" width="100%" alt="30 kW zone plan"/></p>
+**DC-DC board — one conflict, and it needs a deliberate answer.** Flow follows air here, so the
+sequence ends at the exhaust with **the bank electrolytics, S/P matrix and output** in the hottest
+air. The bank caps are life-limiting exactly like the DC-link caps, so leaving them there trades
+service life for connector convenience.
 
-Drawn to board scale by `node calculations/floorplan-svg.mjs <sku>` from the same zone table as §3–§4.
-The bar above each board is its device-rail budget against usable perimeter — green inside the
-track, red overrunning it. `floorplan-120kw.svg` shows the 136 % overrun that §2 quantifies;
-`floorplan-60kw.svg` shows the 91 % case.
+> **Rule: the connector face is fixed by the enclosure; the section order is fixed by power flow;
+> where the two collide over a thermally critical part, move the part and run copper — never move
+> the air.**
+>
+> Concretely: pull the **bank capacitors forward** to sit immediately behind the rectifiers at the
+> front edge of the secondary zone, and let the **output filter, shunt and studs** occupy the rear.
+> The banks are then in the cooler half of the secondary zone while the connector stays at the rear
+> corner. The cost is a short busbar run, which this design already has a joint schedule for
+> ([busbar-drawings.md](busbar-drawings.md)) — a far cheaper price than capacitor life.
 
----
+This is the one place where the enclosure directive and the thermal optimum disagree, and it is
+recorded here so the placement does not silently resolve it the easy way.
 
 ## 1. What the floorplan may not violate
 
@@ -299,6 +304,10 @@ long edge in Y.
 28 sections at 30 kW. **This board is cut in two by a reinforced isolation barrier** (8.0 mm
 clearance / 12.6 mm creepage + routed slots). Everything else is secondary to that line.
 
+**Flow on this board runs FRONT → REAR** (§0 U-fold): bus in at the front from the B2B pillars,
+DC output at the rear corner. The zone order below is written in power order; on the module it
+runs from the front face towards the rear face, which is also the airflow direction.
+
 ```
  REAR ═══════════════════════════════ DC-DC BOARD ══════════════════════════════ FRONT
  (from B2B pillars)                                                   (DC out, CAN, HMI, inlet)
@@ -317,13 +326,13 @@ clearance / 12.6 mm creepage + routed slots). Everything else is secondary to th
 
 | Zone | Sections | Contents | Placement rule |
 |---|---|---|---|
-| **Y1 BUS IN** | `LLC-LEGS / BUS-IN` | film commutation caps, B2B stud landing | Rear edge, directly at the pillars. Film caps between the pillars and the first leg — the bus loop starts here. |
+| **Y1 BUS IN** | `LLC-LEGS / BUS-IN` | film commutation caps, B2B stud landing | **Front edge**, directly at the pillars. Film caps between the pillars and the first leg — the bus loop starts here. |
 | **Y2 LLC LEGS** | `LLC-LEGS / LEG-n` (3 per channel) | SiC half-bridge pairs + NSI6611 drivers + DESAT | **One leg = one cell**: 2 TO-247 on the rail, driver within 15 mm of the gate pins, bootstrap/iso bias local. Legs repeat along Y for the 3 phases, along X for the N channels. Gate loop and power loop both closed inside the cell. |
 | **Y3 TANKS** | `LLC-TANKS / TANK-n` | 4× 46 nF 1200 V PP + D2 trim inductor | Immediately after its leg. The tank carries the full resonant current — it is a *power* zone, not a passive one. Trim inductor is a gapped toroid: see §6. |
 | **Y4 TRANSFORMER ROW** | (D3 ×3 per channel) | 3× PQ50/50 stacked, TIW secondaries, 1-turn Cu shield to primary star | **This row *is* the barrier.** Cores straddle the routed slot; primary pins on the primary side, secondary pins on the secondary side, nothing crossing. Shield lead returns to the primary star only. |
-| **Y5 SECONDARY RECTIFIERS + BANKS** | `BANKS-SP / BANK-A`, `BANK-B` | 2× JBS bridge per section, bank electrolytics + film | Secondary side. Bridges on the secondary device rail; bank caps in the coolest air (front-ward). Banks A and B float — treat **both** at 1000 V class to PE and to each other. |
+| **Y5 SECONDARY RECTIFIERS + BANKS** | `BANKS-SP / BANK-A`, `BANK-B` | 2× JBS bridge per section, bank electrolytics + film | Secondary side. Bridges on the secondary device rail, as far forward as the barrier allows; **bank caps immediately behind them, at the front edge of the secondary zone** (§0 — they are life-limiting and must not sit at the exhaust). Banks A and B float — treat **both** at 1000 V class to PE and to each other. |
 | **Y6 S/P MATRIX** | `BANKS-SP / SP-MATRIX`, `BLEEDERS` | K_PAR_A/B + 10 Ω pre-insertion, K_SER, K_OUT, commanded bleeders | Guarded island — insulation-coordination.md calls this out explicitly. Relay lugs are M6 busbar joints, not PCB pads. Mirror contacts routed as a separate readback group. |
-| **Y7 OUTPUT** | `OUTPUT-SENSING / OUTPUT` | output filter, 4-terminal manganin shunt, DC± studs, **CAN contacts on the same plug** | Front face, **right quarter** (§0 diagonal). **Kelvin taps on the shunt are untouchable** — no other copper in their loop. OUT± keeps 6.3 mm to chassis everywhere. |
+| **Y7 OUTPUT** | `OUTPUT-SENSING / OUTPUT` | output filter, 4-terminal manganin shunt, DC± studs, **CAN contacts on the same plug** | **Rear face, far corner from the AC entry** (§0 diagonal). Reached by a short busbar from the banks, which stay forward. **Kelvin taps on the shunt are untouchable** — no other copper in their loop. OUT± keeps 6.3 mm to chassis everywhere. |
 | **Y8 CONTROL** | `CONTROL / MCU`, `SAFETY`, `SWD`, `COIL-DRIVER`, `GROUNDING`, `BUCK-3V3`, `INTERCONNECT` | MCU-LLC, interlock, relay coil driver, 15→3.3 V buck, JICB | Strip along one long edge, **primary side only, stopping at the barrier**. Primary-referenced because its rails arrive over the harness from the AC-DC board's single-point ground. Relay *coils* are driven from here; relay *contacts* are secondary — the relay body is itself a barrier component. |
 | **Y9 SECONDARY SENSE** | `OUTPUT-SENSING / SENSE-VBKA/VBKB/VOUT`, `ANALOG-MID`, `ISO-BIAS`, `NTC` | bank/output dividers, iso-shunt amp, isolated bias | Pods on the **secondary** side at their measured nodes, each with its own isolated bias, each crossing the barrier once through its isolator. No secondary-referenced signal reaches the MCU un-isolated. |
 | **Y10 HMI + CAN** | `COMMS-HMI / HMI`, `COMMS-HMI / CAN` | 2-digit display, 74HC595 + digit mux, 2 buttons, isolated CAN + floating CGND | **Split — see below.** CAN isolator stays on the control strip and only the isolated pair flies to the DC output plug; display and buttons go on a front-panel daughter card. |
@@ -538,11 +547,11 @@ The barrier is not only a gap in copper; each part sitting on it is part of the 
 
 ## 8. Board-to-board interface
 
-- **Power:** DCP / DCN / PE M8 stud pairs on pillars. They are at the **front of the AC-DC board**
-  and the **rear of the DC-DC board**, so the pillars are not vertical — the pair is offset in X by
-  the difference in board length. Either accept an angled/stepped pillar, or set the boards' X
-  origins so the two stud sets align vertically. **Aligning them is worth the outline change**:
-  vertical M8 pillars are a bolted joint the EOL milliohm test can verify, an angled one is not.
+- **Power:** DCP / DCN / PE M8 stud pairs on pillars, at the **front of both boards** — the U-fold
+  puts the handoff at the same end of each board, so **the pillars are vertical by construction**.
+  That removes the offset-pillar problem an earlier straight-through arrangement had: a vertical M8
+  pillar is a bolted joint the EOL milliohm test can verify, an angled or stepped one is not. This
+  is a direct benefit of putting both connectors on the rear face.
 - **Loop area:** DCP and DCN pillars adjacent and as close as ≥14 mm stud-stud creepage allows, so
   the board-to-board bus is a laminated pair, not a loop. Target ≤40 nH per 300 mm carries over from
   [busbar-drawings.md](busbar-drawings.md).
@@ -614,7 +623,7 @@ Six viewpoints, each with its own question.
 | 2 | **Secondary rectifier count — 40 A JBS or SR variant?** (§2) | the JBS rail is over budget on EVERY SKU (96/158/234 %); it is also the module's largest loss | electrical |
 | 3 | Interior clamp rails for 120 kW (§2) | 120 kW is still over budget after the device-count fix | mechanical |
 | 3b | 640×620 mm vs fab panel limit (§2) | the 120 kW pair may not be a standard fab item | fab RFQ |
-| 4 | B2B pillar alignment — change an outline to make the pillars vertical? (§8) | bolted-joint verifiability | mechanical |
+| 4 | ~~B2B pillar alignment~~ — **closed by the U-fold**: the handoff is at the front of both boards, so the pillars are vertical (§8) | — | closed |
 | 5 | HMI daughter card + isolated-CAN flying lead (§4) | removes the only long SELV run now that CAN exits on the DC output plug | electrical |
 | 6 | **Reinforced creepage: 12.6 mm or 25 mm?** (§7) | sets the barrier band width on the most area-constrained board | insulation / DQ |
 | 7 | Record datasheet Tj(max) per device (§7) | 138 °C is 92 % of 150 but 79 % of 175 — the guideline verdict flips | thermal / §K gate |

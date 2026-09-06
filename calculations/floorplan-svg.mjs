@@ -66,7 +66,9 @@ const barEnd = Math.max(
 const W = PAD * 2 + 110 + Math.max(wA, wD, barEnd);   // +110 for the connector side labels
 const H = TOP + hD + GAP + hA + 132;
 
-const board = (x, y, w, h, zones, title, sub, nTO, barrierAfter, inConn, outConn) => {
+const board = (x, y, w, h, zones0, title, sub, nTO, barrierAfter, conn, reverse) => {
+  // The DC-DC board flows FRONT -> REAR (the U-fold, §0), so its zones are drawn right-to-left.
+  const zones = reverse ? [...zones0].reverse() : zones0;
   let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="board"/>`;
   out += `<text x="${x}" y="${y - 58}" class="btitle">${esc(title)}</text>`;
   out += `<text x="${x}" y="${y - 42}" class="bsub">${esc(sub)}</text>`;
@@ -93,8 +95,9 @@ const board = (x, y, w, h, zones, title, sub, nTO, barrierAfter, inConn, outConn
            + lines(label.replace(/\n/g, " "), 0, -7, 15, "zl")
            + lines(detail.replace(/\n/g, " · "), 0, 9, 12, "zd") + `</g>`;
     }
+    if (k === barrierAfter && reverse) bx = cx;      // reversed: secondary is to the LEFT of the row
     cx += zw;
-    if (k === barrierAfter) bx = cx;
+    if (k === barrierAfter && !reverse) bx = cx;     // forward: secondary is to the RIGHT
   }
   // control strip
   out += `<rect x="${x}" y="${y + zoneH}" width="${w}" height="${ctrlH}" fill="#455" fill-opacity="0.13" stroke="#455" stroke-width="1.4"/>`;
@@ -114,13 +117,15 @@ const board = (x, y, w, h, zones, title, sub, nTO, barrierAfter, inConn, outConn
   // Connector blocks at the diagonal corners (§0). AC enters rear-LEFT, DC leaves front-RIGHT, and
   // in this plan view "left/right of the rack" is the vertical axis, so the diagonal shows as one
   // block high on the rear edge and one low on the front edge.
-  const conn = (cxp, cyp, w2, h2, label, col) =>
-    `<rect x="${cxp}" y="${cyp}" width="${w2}" height="${h2}" fill="${col}" fill-opacity="0.85" stroke="${col}" stroke-width="1.5"/>`
-    + `<text x="${cxp + w2 / 2}" y="${cyp + h2 / 2}" style="font-size:9px;font-weight:700;fill:#fff;text-anchor:middle">${esc(label)}</text>`;
-  if (inConn) out += conn(x - 14, y + zoneH * 0.10, 14, zoneH * 0.26, "", "#c05621")
-                  + `<text x="${x - 20}" y="${y + zoneH * 0.23}" style="font-size:9.5px;font-weight:700;fill:#c05621;text-anchor:end">${esc(inConn)}</text>`;
-  if (outConn) out += conn(x + w, y + zoneH * 0.64, 14, zoneH * 0.26, "", "#a03030")
-                  + lines(outConn, x + w + 20, y + zoneH * 0.72, 12, "oc");
+  const connBlock = (cxp, cyp, w2, h2, col) =>
+    `<rect x="${cxp}" y="${cyp}" width="${w2}" height="${h2}" fill="${col}" fill-opacity="0.85" stroke="${col}" stroke-width="1.5"/>`;
+  // Both HV connectors are on the REAR face (left in this view), at diagonally opposite corners of
+  // that face — so they are drawn at different Y on their own boards, which is what the diagonal is.
+  if (conn) {
+    const [label, col, yf] = conn;
+    out += connBlock(x - 15, y + zoneH * yf, 15, zoneH * 0.24, col)
+         + lines(label, x - 22, y + zoneH * (yf + 0.08), 12, col === "#c05621" ? "ic" : "oc");
+  }
   return { svg: out, bx, zoneH, ctrlH };
 };
 
@@ -129,10 +134,10 @@ const xD = PAD + 62 + (Math.max(wA, wD) - wD) / 2, xA = PAD + 62 + (Math.max(wA,
 
 const D = board(xD, yD, wD, hD, DCDC, "DC-DC BOARD (upper)  ·  semis → upper extrusion",
   `${b.dcdc[0]}×${b.dcdc[1]} mm · ${DCDC.length} zones · barrier at the transformer row`, TO247[SKU][1], "xfmr",
-  null, "DC± OUT\n+ CAN H/L");
+  ["DC± OUT\n+ CAN H/L", "#a03030", 0.62], true);
 const A = board(xA, yA, wA, hA, ACDC, "AC-DC BOARD (lower)  ·  semis → lower extrusion",
   `${b.acdc[0]}×${b.acdc[1]} mm · ${ACDC.length} zones · single-point control ground lives here`, TO247[SKU][0], null,
-  "3φ AC IN", null);
+  ["3φ AC IN\n+ PE", "#c05621", 0.10], false);
 
 // reinforced barrier on the DC-DC board
 const barrier = `<line x1="${D.bx}" y1="${yD - 4}" x2="${D.bx}" y2="${yD + hD + 4}" class="barrier"/>`
@@ -157,27 +162,35 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" wid
   .fd{font-size:9.5px;fill:#555}                       /* no text-anchor: set per element */
   .flow{font-size:10.5px;font-weight:600}
   .cap{font-size:10px;fill:#666}
-  .oc{font-size:9.5px;font-weight:700;fill:#a03030;text-anchor:start}
+  .oc{font-size:9.5px;font-weight:700;fill:#a03030;text-anchor:end}
+  .ic{font-size:9.5px;font-weight:700;fill:#c05621;text-anchor:end}
+  .fan{fill:none;stroke:#2c5f8a;stroke-width:2}
   text{dominant-baseline:middle}
 </style>
 <rect width="${W}" height="${H}" fill="#fff"/>
 <text x="${PAD}" y="30" style="font-size:17px;font-weight:700">PCB floorplan — zone plan, ${SKU.replace("kw", " kW")} (drawn to board scale)</text>
-<text x="${PAD}" y="50" class="cap">AC in and DC out DIAGONALLY OPPOSITE · power rear→front · air front→rear · 19-inch 3U card</text>
+<text x="${PAD}" y="50" class="cap">AC in + DC out on the REAR face, diagonally opposite · power folds at the front · air front→rear · 19-inch 3U</text>
 
-<text x="${PAD}" y="98" class="face" text-anchor="start">◀ REAR FACE</text>
-<text x="${PAD}" y="116" class="fd" text-anchor="start">AC IN + PE (left quarter) · fans + EXHAUST</text>
-<text x="${W - PAD}" y="98" class="face" text-anchor="end">FRONT FACE ▶</text>
-<text x="${W - PAD}" y="116" class="fd" text-anchor="end">air INLET · display · DC± OUT + CAN (right quarter)</text>
+<text x="${PAD}" y="98" class="face" text-anchor="start">◀ REAR FACE  ·  all connectors + exhaust</text>
+<text x="${PAD}" y="116" class="fd" text-anchor="start">AC IN + PE and DC± OUT + CAN at diagonally opposite corners</text>
+
 
 ${D.svg}
 ${barrier}
 ${A.svg}
 
+<g>
+  <text x="${W - PAD}" y="98" class="face" text-anchor="end">FRONT FACE ▶  fans · display · switch</text>
+  ${[0, 1].map((i) => `<rect x="${W - PAD - 150 + i * 56}" y="108" width="48" height="24" class="fan" rx="4"/>`
+      + `<text x="${W - PAD - 150 + i * 56 + 24}" y="120" style="font-size:8px;fill:#2c5f8a;text-anchor:middle">FAN</text>`).join("")}
+  <rect x="${W - PAD - 34}" y="108" width="34" height="24" fill="#455" fill-opacity="0.2" stroke="#455" rx="4"/>
+  <text x="${W - PAD - 17}" y="120" style="font-size:7.5px;fill:#333;text-anchor:middle">HMI</text>
+</g>
 <line x1="${PAD}" y1="${H - 74}" x2="${W - PAD}" y2="${H - 74}" stroke="#b8860b" stroke-width="2.5" marker-end="url(#ap)"/>
 <text x="${PAD}" y="${H - 88}" class="flow" fill="#b8860b">power flow  ▶</text>
 <line x1="${W - PAD}" y1="${H - 50}" x2="${PAD}" y2="${H - 50}" stroke="#2c5f8a" stroke-width="2.5" marker-end="url(#af)"/>
 <text x="${W - PAD}" y="${H - 64}" class="flow" fill="#2c5f8a" text-anchor="end">◀  airflow (opposes power: EMI filter at the exhaust preheats nothing)</text>
-<text x="${PAD}" y="${H - 24}" class="cap">Grey strip on each board = control + sensing, one long edge. On the DC-DC board it is primary-referenced and STOPS at the barrier — HMI and isolated CAN move to a front-panel daughter card.</text>
+<text x="${PAD}" y="${H - 24}" class="cap">U-fold: the AC-DC board runs rear→front, the DC-DC board front→rear, so the B2B pillars meet at the front of both and are vertical. Grey strip = control + sensing.</text>
 <defs>
   <marker id="ap" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#b8860b"/></marker>
   <marker id="af" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><polygon points="0 0,9 3.5,0 7" fill="#2c5f8a"/></marker>
