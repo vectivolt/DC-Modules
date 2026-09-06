@@ -711,7 +711,13 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // "shared left edge" this stack is built around never actually held. Almost-aligned reads
       // as careless; 200 mil is invisible at sheet zoom and obvious at working zoom.
       const pw = 60 + ncols * cw + 200;
-      const bx0 = fixed ? fixed.x0 : snap(Math.max(px0, px1 - pw));
+      // ABUT the notes to the CONTENT side of their void, not the sheet edge. Right-aligning was
+      // chosen so a wide bottom-right void would not leave the panel stranded mid-sheet -- but on a
+      // void much wider than the panel it opens a hole BETWEEN the last circuit column and the
+      // notes, and a hole with drawing on both sides reads far worse than the same whitespace at
+      // the paper edge, where it is just margin. Abutting pushes the slack outward: worst enclosed
+      // hole across the set went 8.2% -> 4.9%, every sheet improved or held, no sheet regressed.
+      const bx0 = fixed ? fixed.x0 : px0;
       const px1b = fixed ? fixed.x1 : snap(Math.min(px1, bx0 + pw));
       const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
       body += `Wire Notes Line\n\t${bx0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`

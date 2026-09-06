@@ -116,37 +116,28 @@ usually the more informative thing to print — `PP-46n-1200` says more than a p
 two diodes match would mean editing the cell source and rebuilding the boards for a cosmetic gain;
 their MPN and BOM lines already agree (`US2G` / `US3M`).
 
-### The one thing a look still finds, and why it is left alone
+### The whitespace, and what fixed it
 
-A full visual pass over all six sheets finds no misalignment, collision or stray, but it does find
-**whitespace where a short column ends early**. `void-audit.mjs` measures it. The worst is
-60 kW AC-DC at **8.2 %** of the sheet — a 7550 × 18000 mil gap between the last circuit column and
-the notes stack.
+A full visual pass finds no misalignment, collision or stray. What it did find was **whitespace
+where a short column ends early** — measured by `void-audit.mjs`, which scores the worst *enclosed*
+hole rather than the largest empty rectangle. That distinction is the point: a sheet's single
+biggest empty area is usually at the paper edge, where it reads as margin. The hole that looks
+wrong is the narrower one with drawing on **both** sides.
 
-Ranking by raw empty area got this wrong, which is why the metric measures *enclosure* instead:
-that sheet's single largest empty rectangle is at the paper edge, where it reads as margin. The
-hole that actually looks wrong is the narrower one with drawing on both sides.
+The cause was the notes panels. They were right-aligned inside their void so a wide bottom-right
+slot would not strand them mid-sheet — but on a void much wider than the panel that opens a gap
+between the last circuit column and the notes. Abutting them to the *content* side instead pushes
+the slack outward to the paper edge:
 
-It is left as-is deliberately. Sheet width is `MARGIN + columns × COLW + MARGIN` — a whole number
-of columns, fixed before the panels are placed — so moving the notes leftward to close the gap only
-moves the same whitespace to the right margin and makes the sheet visibly lopsided, and closing it
-properly means changing sheet geometry, which is the change that cascades. Two previous attempts to
-improve raggedness both made the set worse and were reverted. The gate is set at 12 % so a future
-packing change that opens a real hole fails, without churning the ones already judged acceptable.
+| | 30 kW AC | 30 kW DC | 60 kW AC | 60 kW DC | 120 kW AC | 120 kW DC |
+|---|---|---|---|---|---|---|
+| before | 4.6 % | 5.4 % | **8.2 %** | 5.6 % | 3.2 % | 1.3 % |
+| after | 4.6 % | 4.0 % | **4.6 %** | 4.9 % | 3.2 % | 1.2 % |
 
-**The whole output is a pure function of the source.** Regenerating reproduces the sheets *and the
-zips* byte for byte, so `git status` after a rebuild is a real staleness gate — if nothing is
-modified, the committed deliverable is current. Two things had to be pinned to get there, and both
-were previously blind spots rather than cosmetic:
-
-- the sheet `Date` came from `new Date()`, so every regeneration rewrote all six sheets and real
-  drift could not be told from date churn. It is now pinned to `DATE` alongside `REV`; bump it with
-  the revision.
-- a zip stores each member's mtime, so an identical-content rebuild still produced different bytes.
-  Member times are pinned and platform extra-fields dropped (`zip -qX`).
-
-Running `kicad5-gen.mjs` with no argument also used to build **only 30 kW** while printing a
-confident success line, leaving the other two SKUs stale. No argument now means all three.
+Worst across the set **8.2 % → 4.9 %**; every sheet improved or held and none regressed, which was
+the condition for keeping it. Confirmed by eye as well as by the metric: the notes now continue the
+last column instead of floating alone with a hole beside them. The gate stays at 12 % so a future
+packing change that opens a real hole still fails.
 
 ## Working on the layout
 
