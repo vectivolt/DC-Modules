@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/design-E1–E24_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
+  <img src="https://img.shields.io/badge/design-E1–E34_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
   <img src="https://img.shields.io/badge/envelope_grid-3024_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
   <img src="https://img.shields.io/badge/fault_scenarios-26%2F26-2ea44f?style=for-the-badge" alt="scenarios"/>
   <img src="https://img.shields.io/badge/firmware_logic-33%2F33_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
