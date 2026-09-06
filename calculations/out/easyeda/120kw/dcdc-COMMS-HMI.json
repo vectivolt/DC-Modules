@@ -5,8 +5,6 @@
   "HMI"
  ],
  "net_style_overrides": {
-  "N_DCDC_292": "wire",
-  "N_DCDC_293": "wire",
   "N_DCDC_294": "wire",
   "N_DCDC_295": "wire",
   "N_DCDC_296": "wire",
@@ -30,7 +28,9 @@
   "N_DCDC_314": "wire",
   "N_DCDC_315": "wire",
   "N_DCDC_316": "wire",
-  "N_DCDC_317": "wire"
+  "N_DCDC_317": "wire",
+  "N_DCDC_318": "wire",
+  "N_DCDC_319": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -61,17 +61,17 @@
     {
      "pin_number": 5,
      "name": "VDD2",
-     "signal_name": "N_DCDC_292"
+     "signal_name": "N_DCDC_294"
     },
     {
      "pin_number": 6,
      "name": "CANL",
-     "signal_name": "N_DCDC_293"
+     "signal_name": "N_DCDC_295"
     },
     {
      "pin_number": 7,
      "name": "CANH",
-     "signal_name": "N_DCDC_294"
+     "signal_name": "N_DCDC_296"
     },
     {
      "pin_number": 8,
@@ -101,7 +101,7 @@
     {
      "pin_number": 3,
      "name": "P5",
-     "signal_name": "N_DCDC_292"
+     "signal_name": "N_DCDC_294"
     },
     {
      "pin_number": 4,
@@ -123,22 +123,22 @@
     {
      "pin_number": 1,
      "name": "A1",
-     "signal_name": "N_DCDC_294"
+     "signal_name": "N_DCDC_296"
     },
     {
      "pin_number": 2,
      "name": "A2",
-     "signal_name": "N_DCDC_293"
+     "signal_name": "N_DCDC_295"
     },
     {
      "pin_number": 7,
      "name": "B2",
-     "signal_name": "N_DCDC_295"
+     "signal_name": "N_DCDC_297"
     },
     {
      "pin_number": 8,
      "name": "B1",
-     "signal_name": "N_DCDC_296"
+     "signal_name": "N_DCDC_298"
     }
    ],
    "nc_pins": [
@@ -158,12 +158,12 @@
     {
      "pin_number": 1,
      "name": "CANH",
-     "signal_name": "N_DCDC_296"
+     "signal_name": "N_DCDC_298"
     },
     {
      "pin_number": 2,
      "name": "CANL",
-     "signal_name": "N_DCDC_295"
+     "signal_name": "N_DCDC_297"
     },
     {
      "pin_number": 3,
@@ -185,12 +185,12 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_297"
+     "signal_name": "N_DCDC_299"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_295"
+     "signal_name": "N_DCDC_297"
     }
    ],
    "nc_pins": [],
@@ -205,12 +205,12 @@
     {
      "pin_number": 1,
      "name": "P1",
-     "signal_name": "N_DCDC_297"
+     "signal_name": "N_DCDC_299"
     },
     {
      "pin_number": 2,
      "name": "P2",
-     "signal_name": "N_DCDC_296"
+     "signal_name": "N_DCDC_298"
     }
    ],
    "nc_pins": [],
@@ -225,12 +225,12 @@
     {
      "pin_number": 1,
      "name": "A",
-     "signal_name": "N_DCDC_296"
+     "signal_name": "N_DCDC_298"
     },
     {
      "pin_number": 2,
      "name": "B",
-     "signal_name": "N_DCDC_295"
+     "signal_name": "N_DCDC_297"
     },
     {
      "pin_number": 3,
@@ -290,52 +290,52 @@
     {
      "pin_number": 1,
      "name": "SA",
-     "signal_name": "N_DCDC_298"
+     "signal_name": "N_DCDC_300"
     },
     {
      "pin_number": 2,
      "name": "SB",
-     "signal_name": "N_DCDC_299"
+     "signal_name": "N_DCDC_301"
     },
     {
      "pin_number": 3,
      "name": "SC",
-     "signal_name": "N_DCDC_300"
+     "signal_name": "N_DCDC_302"
     },
     {
      "pin_number": 4,
      "name": "SD",
-     "signal_name": "N_DCDC_301"
+     "signal_name": "N_DCDC_303"
     },
     {
      "pin_number": 5,
      "name": "SE",
-     "signal_name": "N_DCDC_302"
+     "signal_name": "N_DCDC_304"
     },
     {
      "pin_number": 6,
      "name": "SF",
-     "signal_name": "N_DCDC_303"
+     "signal_name": "N_DCDC_305"
     },
     {
      "pin_number": 7,
      "name": "SG",
-     "signal_name": "N_DCDC_304"
+     "signal_name": "N_DCDC_306"
     },
     {
      "pin_number": 8,
      "name": "DP",
-     "signal_name": "N_DCDC_305"
+     "signal_name": "N_DCDC_307"
     },
     {
      "pin_number": 9,
      "name": "DIG1",
-     "signal_name": "N_DCDC_306"
+     "signal_name": "N_DCDC_308"
     },
     {
      "pin_number": 10,
      "name": "DIG2",
-     "signal_name": "N_DCDC_307"
+     "signal_name": "N_DCDC_309"
     }
    ],
    "nc_pins": [],
@@ -350,37 +350,37 @@
     {
      "pin_number": 1,
      "name": "QB",
-     "signal_name": "N_DCDC_308"
+     "signal_name": "N_DCDC_310"
     },
     {
      "pin_number": 2,
      "name": "QC",
-     "signal_name": "N_DCDC_309"
+     "signal_name": "N_DCDC_311"
     },
     {
      "pin_number": 3,
      "name": "QD",
-     "signal_name": "N_DCDC_310"
+     "signal_name": "N_DCDC_312"
     },
     {
      "pin_number": 4,
      "name": "QE",
-     "signal_name": "N_DCDC_311"
+     "signal_name": "N_DCDC_313"
     },
     {
      "pin_number": 5,
      "name": "QF",
-     "signal_name": "N_DCDC_312"
+     "signal_name": "N_DCDC_314"
     },
     {
      "pin_number": 6,
      "name": "QG",
-     "signal_name": "N_DCDC_313"
+     "signal_name": "N_DCDC_315"
     },
     {
      "pin_number": 7,
      "name": "QH",
-     "signal_name": "N_DCDC_314"
+     "signal_name": "N_DCDC_316"
     },
     {
      "pin_number": 8,
@@ -415,7 +415,7 @@
     {
      "pin_number": 15,
      "name": "QA",
-     "signal_name": "N_DCDC_315"
+     "signal_name": "N_DCDC_317"
     },
     {
      "pin_number": 16,
@@ -437,47 +437,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_315"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "N_DCDC_298"
-    }
-   ],
-   "nc_pins": [],
-   "value": "220",
-   "query": "R0603-220 220 Ω segment",
-   "mpn": "R0603-220"
-  },
-  {
-   "designator": "RSEG1",
-   "block_name": "HMI",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "N_DCDC_308"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "N_DCDC_299"
-    }
-   ],
-   "nc_pins": [],
-   "value": "220",
-   "query": "R0603-220 220 Ω segment",
-   "mpn": "R0603-220"
-  },
-  {
-   "designator": "RSEG2",
-   "block_name": "HMI",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "N_DCDC_309"
+     "signal_name": "N_DCDC_317"
     },
     {
      "pin_number": 2,
@@ -491,7 +451,7 @@
    "mpn": "R0603-220"
   },
   {
-   "designator": "RSEG3",
+   "designator": "RSEG1",
    "block_name": "HMI",
    "pins": [
     {
@@ -511,7 +471,7 @@
    "mpn": "R0603-220"
   },
   {
-   "designator": "RSEG4",
+   "designator": "RSEG2",
    "block_name": "HMI",
    "pins": [
     {
@@ -531,7 +491,7 @@
    "mpn": "R0603-220"
   },
   {
-   "designator": "RSEG5",
+   "designator": "RSEG3",
    "block_name": "HMI",
    "pins": [
     {
@@ -551,7 +511,7 @@
    "mpn": "R0603-220"
   },
   {
-   "designator": "RSEG6",
+   "designator": "RSEG4",
    "block_name": "HMI",
    "pins": [
     {
@@ -571,7 +531,7 @@
    "mpn": "R0603-220"
   },
   {
-   "designator": "RSEG7",
+   "designator": "RSEG5",
    "block_name": "HMI",
    "pins": [
     {
@@ -591,13 +551,53 @@
    "mpn": "R0603-220"
   },
   {
+   "designator": "RSEG6",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_315"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_306"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
+   "designator": "RSEG7",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_316"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "N_DCDC_307"
+    }
+   ],
+   "nc_pins": [],
+   "value": "220",
+   "query": "R0603-220 220 Ω segment",
+   "mpn": "R0603-220"
+  },
+  {
    "designator": "QDIG1",
    "block_name": "HMI",
    "pins": [
     {
      "pin_number": 1,
      "name": "B",
-     "signal_name": "N_DCDC_316"
+     "signal_name": "N_DCDC_318"
     },
     {
      "pin_number": 2,
@@ -607,7 +607,7 @@
     {
      "pin_number": 3,
      "name": "C",
-     "signal_name": "N_DCDC_306"
+     "signal_name": "N_DCDC_308"
     }
    ],
    "nc_pins": [],
@@ -622,7 +622,7 @@
     {
      "pin_number": 1,
      "name": "B",
-     "signal_name": "N_DCDC_317"
+     "signal_name": "N_DCDC_319"
     },
     {
      "pin_number": 2,
@@ -632,7 +632,7 @@
     {
      "pin_number": 3,
      "name": "C",
-     "signal_name": "N_DCDC_307"
+     "signal_name": "N_DCDC_309"
     }
    ],
    "nc_pins": [],
@@ -652,7 +652,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_316"
+     "signal_name": "N_DCDC_318"
     }
    ],
    "nc_pins": [],
@@ -672,7 +672,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "N_DCDC_317"
+     "signal_name": "N_DCDC_319"
     }
    ],
    "nc_pins": [],

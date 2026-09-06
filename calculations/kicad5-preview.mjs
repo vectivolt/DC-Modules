@@ -148,7 +148,7 @@ for (const r of stats) {
   if (r.aspect < 1.1 || r.aspect > 2.2) fails.push(`aspect ${r.aspect.toFixed(2)} outside 1.10-2.20`);
   if (r.fill < 40) fails.push(`frame fill ${r.fill.toFixed(0)}% below 40%`);
   if (r.overlaps) fails.push(`${r.overlaps} frame overlaps`);
-  if (r.vd > 12) fails.push(`largest empty rectangle ${r.vd.toFixed(0)}% of sheet, above 12%`);
+  if (r.vd > 9) fails.push(`largest empty rectangle ${r.vd.toFixed(0)}% of sheet, above 9%`);
   // relative, not absolute: a 12-frame family legitimately spans more columns on a bigger sheet
   if (r.spreadPct > 45) fails.push(`family spread ${r.spread} mil = ${r.spreadPct.toFixed(0)}% of sheet width, above 45%`);
   if (fails.length) { bad++; console.log(`FAIL ${r.name}: ${fails.join("; ")}`); }

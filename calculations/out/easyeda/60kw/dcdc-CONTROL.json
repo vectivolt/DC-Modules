@@ -13,8 +13,10 @@
   "N_DCDC_165": "wire",
   "N_DCDC_166": "wire",
   "N_DCDC_167": "wire",
-  "N_DCDC_194": "wire",
-  "N_DCDC_195": "wire"
+  "N_DCDC_168": "wire",
+  "N_DCDC_169": "wire",
+  "N_DCDC_196": "wire",
+  "N_DCDC_197": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -828,12 +830,19 @@
      "pin_number": 6,
      "name": "VDD",
      "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 7,
+     "name": "CWD",
+     "signal_name": "N_DCDC_168"
+    },
+    {
+     "pin_number": 8,
+     "name": "CRST",
+     "signal_name": "N_DCDC_169"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "TPS3430-class",
    "query": "TPS3430-class external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps ",
    "mpn": "TPS3430-class"
@@ -1012,6 +1021,66 @@
    "mpn": "MLCC-small"
   },
   {
+   "designator": "CWDB",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_168"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CRSTB",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_DCDC_169"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RRDYB",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DRV_RDY"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R1206-33R-1% 33 Ω CT burden 1% ",
+   "mpn": "R1206-33R-1%"
+  },
+  {
    "designator": "JSWDLLC",
    "block_name": "SWD",
    "pins": [
@@ -1183,12 +1252,12 @@
     {
      "pin_number": 7,
      "name": "LTX",
-     "signal_name": "N_DCDC_194"
+     "signal_name": "N_DCDC_196"
     },
     {
      "pin_number": 8,
      "name": "LRX",
-     "signal_name": "N_DCDC_195"
+     "signal_name": "N_DCDC_197"
     },
     {
      "pin_number": 9,
@@ -1272,7 +1341,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_194"
+     "signal_name": "N_DCDC_196"
     },
     {
      "pin_number": 2,
@@ -1292,7 +1361,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "N_DCDC_195"
+     "signal_name": "N_DCDC_197"
     },
     {
      "pin_number": 2,

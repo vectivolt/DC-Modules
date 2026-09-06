@@ -190,6 +190,11 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <trace from={`.R${id}PD > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.U${id} > .EN`} to={en} schDisplayLabel={en.replace("net.", "")} />
     <trace from={`.U${id} > .FLT`} to={flt} schDisplayLabel={flt.replace("net.", "")} />
+    {/* R3: RDY (physical pin 12) is an active-low OPEN-DRAIN power-good and was left floating, so
+        it could neither pull low nor be read. All channels wired-OR onto one per-board DRV_RDY
+        net (the conventional use: the net is low unless EVERY driver's secondary bias is up); the
+        single 10 k pull-up lives in SafetyChain, one per board, not one per channel. */}
+    <trace from={`.U${id} > .RDY`} to="net.DRV_RDY" schDisplayLabel="DRV_RDY" />
     <trace from={`.PS${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.PS${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.PS${id} > .P18`} to={`.U${id} > .VCC2`} />
@@ -579,13 +584,28 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
-    <chip name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
+    <chip name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
     <chip name={`UAND${id}`} footprint="soic14" pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "C2", pin6: "Y2", pin7: "GND", pin8: "Y3", pin9: "A3", pin10: "B3", pin11: "C3", pin12: "Y1", pin13: "C1", pin14: "VCC" }} pcbX={14} pcbY={0} schX={4.5} schY={0.6} schSectionName={sec} />
     <resistor name={`RWPU${id}`} resistance="10k" footprint="0603" pcbX={0} pcbY={8} schX={0} schY={-2} schSectionName={sec} />
     <resistor name={`RENR${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={8} schX={1.6} schY={-2} schSectionName={sec} />
     <resistor name={`RENL${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={13} schX={3.2} schY={-2} schSectionName={sec} />
     <resistor name={`RGPD${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={8} schX={7.5} schY={-2} schSectionName={sec} />
     <capacitor name={`CSF${id}`} capacitance="100nF" footprint="0603" pcbX={20} pcbY={8} schX={6} schY={-2} schSectionName={sec} />
+    {/* R3: CWD (physical 2) programs the watchdog timeout and CRST (physical 4) the reset delay.
+        Both were floating, which leaves the window UNDEFINED — the safety chain's centerpiece
+        would not have had a defined timeout. Sized for the 10 ms window of E27/F.32.
+        VALUE REVIEW: the C-per-ms constant comes from the final TPS3430 datasheet (§K); the
+        components and their nets are correct regardless of the final capacitance. */}
+    <capacitor name={`CWD${id}`} capacitance="1nF" footprint="0603" pcbX={20} pcbY={13} schX={6} schY={-3.2} schSectionName={sec} />
+    <capacitor name={`CRST${id}`} capacitance="1nF" footprint="0603" pcbX={24} pcbY={13} schX={7.5} schY={-3.2} schSectionName={sec} />
+    <trace from={`.CWD${id} > .pin1`} to={`.USUP${id} > .CWD`} />
+    <trace from={`.CWD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.CRST${id} > .pin1`} to={`.USUP${id} > .CRST`} />
+    <trace from={`.CRST${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    {/* the single per-board pull-up for the wired-OR driver power-good chain (see DriverCh) */}
+    <resistor name={`RRDY${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={13} schX={9} schY={-3.2} schSectionName={sec} />
+    <trace from={`.RRDY${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.RRDY${id} > .pin2`} to="net.DRV_RDY" schDisplayLabel="DRV_RDY" />
     <trace from={`.USUP${id} > .WDI`} to={wdi} schDisplayLabel={wdi.replace("net.", "")} />
     <trace from={`.USUP${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.USUP${id} > .VDD`} to="net.V3P3" schDisplayLabel="V3P3" />
@@ -833,7 +853,7 @@ export const InterconnectSignals = ({ id, ltx, lrx, enA, enB, sec = "HARNESS", x
 //  · relay-coil PWM hold economization is firmware (halves 24 V steady demand — E26).
 export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="aux" pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "FB", pin4: "COMP", pin5: "CS", pin6: "GATE", pin7: "VCC", pin8: "BR" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "FB", pin4: "COMP", pin5: "CS", pin6: "GATE", pin7: "VCC", pin8: "BR", pin9: "RT" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <chip name="QAUX" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={22} pcbY={0} schX={5} schY={-1.2} schSectionName={sec} />
     <resistor name="RAUXCS" resistance="0.31" footprint="1206" pcbX={22} pcbY={8} schX={5} schY={-2.8} schSectionName={sec} />
     <resistor name="RAUXG" resistance="100k" footprint="0603" pcbX={28} pcbY={4} schX={3.2} schY={-2.2} schSectionName={sec} />
@@ -873,6 +893,13 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     {/* controller ground/reference + VIN sense pin parked on VCC rail (IC-internal HV sense unused) */}
     <trace from=".UAUX > .GND" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     <trace from=".UAUX > .VIN" to=".UAUX > .VCC" />
+    {/* R3: RT (physical 4) sets the switching frequency and was floating, so the frequency-setting
+        element was simply absent — the stage had no defined Fsw. Sized for the 65 kHz DCM design
+        point of E26/D4 rev C. VALUE REVIEW: the exact RT for 65 kHz comes off the NCP1252A
+        RT-vs-Fsw curve (§K); the component and its net are correct regardless. */}
+    <resistor name="RAUXRT" resistance="100k" footprint="0603" pcbX={8} pcbY={14} schX={2} schY={-3} schSectionName={sec} />
+    <trace from=".RAUXRT > .pin1" to=".UAUX > .RT" />
+    <trace from=".RAUXRT > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* brown-in program: full-bus divider → BR (start ≈ 330 V, hysteresis per IC) */}
     <trace from=".RBR1A > .pin1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RBR1A > .pin2" to=".RBR1B > .pin1" />

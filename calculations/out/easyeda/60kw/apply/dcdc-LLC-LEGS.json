@@ -310,6 +310,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_1"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -594,6 +599,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_8"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -938,6 +948,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_15"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -1222,6 +1237,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_22"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -1566,6 +1586,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_29"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -1850,6 +1875,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_36"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -2194,6 +2224,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_43"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -2478,6 +2513,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_50"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -2822,6 +2862,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_57"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -3106,6 +3151,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_64"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -3450,6 +3500,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_71"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -3734,6 +3789,11 @@
       "pin_number": 8,
       "name": "VEE2",
       "signal_name": "N_DCDC_78"
+     },
+     {
+      "pin_number": 12,
+      "name": "RDY",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -3940,68 +4000,32 @@
   ]
  ],
  "nc": {
-  "U1H": [
-   12
-  ],
   "PS1H": [
    5
-  ],
-  "U1L": [
-   12
   ],
   "PS1L": [
    5
   ],
-  "U2H": [
-   12
-  ],
   "PS2H": [
    5
-  ],
-  "U2L": [
-   12
   ],
   "PS2L": [
    5
   ],
-  "U3H": [
-   12
-  ],
   "PS3H": [
    5
-  ],
-  "U3L": [
-   12
   ],
   "PS3L": [
    5
   ],
-  "U4H": [
-   12
-  ],
   "PS4H": [
    5
-  ],
-  "U4L": [
-   12
   ],
   "PS4L": [
    5
   ],
-  "U5H": [
-   12
-  ],
-  "U5L": [
-   12
-  ],
-  "U6H": [
-   12
-  ],
   "PS6H": [
    5
-  ],
-  "U6L": [
-   12
   ],
   "PS6L": [
    5

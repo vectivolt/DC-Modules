@@ -596,6 +596,16 @@
       "pin_number": 1,
       "name": "VDD1",
       "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "CWD",
+      "signal_name": "N_DCDC_108"
+     },
+     {
+      "pin_number": 4,
+      "name": "CRST",
+      "signal_name": "N_DCDC_109"
      }
     ]
    },
@@ -760,6 +770,63 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CWDB",
+    "value": "1nF",
+    "block_name": "SAFETY",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_DCDC_108"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CRSTB",
+    "value": "1nF",
+    "block_name": "SAFETY",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_DCDC_109"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RRDYB",
+    "value": "10k",
+    "block_name": "SAFETY",
+    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -1110,12 +1177,12 @@
      {
       "pin_number": 7,
       "name": "LTX",
-      "signal_name": "N_DCDC_134"
+      "signal_name": "N_DCDC_136"
      },
      {
       "pin_number": 8,
       "name": "LRX",
-      "signal_name": "N_DCDC_135"
+      "signal_name": "N_DCDC_137"
      },
      {
       "pin_number": 9,
@@ -1192,7 +1259,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_134"
+      "signal_name": "N_DCDC_136"
      },
      {
       "pin_number": 2,
@@ -1211,7 +1278,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "N_DCDC_135"
+      "signal_name": "N_DCDC_137"
      },
      {
       "pin_number": 2,
@@ -1270,8 +1337,6 @@
    98
   ],
   "USUPB": [
-   2,
-   4,
    9
   ],
   "UANDB": [
@@ -1285,5 +1350,5 @@
   ]
  },
  "warnings": [],
- "total": 35
+ "total": 38
 }

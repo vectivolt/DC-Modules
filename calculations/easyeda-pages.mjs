@@ -87,13 +87,13 @@ const PAGES = {
     ["CONTROL", [
       ["MCU", [/^UPFC$/, /^CPFCD\d$/, /^RPFCRST$/, /^FBPFCA$/, /^CPFCA[12]$/]],
       ["SWD", [/^JSWDPFC$/, /^RPFCBOOT$/, /^CPFCRST$/]],
-      ["SAFETY", [/^USUPA$/, /^UANDA$/, /^R(WPU|ENR|ENL|GPD)A$/, /^CSFA$/, /^RFLTA$/, /^CFLTA$/]],
+      ["SAFETY", [/^USUPA$/, /^UANDA$/, /^R(WPU|ENR|ENL|GPD|RDY)A$/, /^CSFA$/, /^RFLTA$/, /^CFLTA$/, /^CWDA$/, /^CRSTA$/]],
       ["GROUNDING", [/^RAGTA$/, /^RPET$/, /^CPET$/]],
       ["COIL-DRIVER", [/^UPA$/]],
       ["RAIL-MON", [/^RM(24|15)[AB]$/]],
     ], ["MCU", "SWD", "SAFETY", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
     ["AUX-POWER", [
-      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^RFB[12]$/, /^RCOMP$/, /^CCOMP$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],
+      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^RFB[12]$/, /^RCOMP$/, /^CCOMP$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],
       ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^CVCC$/, /^DTVS(24|15)$/]],
       ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/]],
       ["FANS", [/^JFAN\d$/, /^RFT\d$/]],
@@ -130,7 +130,7 @@ const PAGES = {
     ["CONTROL", [
       ["MCU", [/^ULLC$/, /^CLLCD\d$/, /^RLLCRST$/, /^FBLLCA$/, /^CLLCA[12]$/]],
       ["SWD", [/^JSWDLLC$/, /^RLLCBOOT$/, /^CLLCRST$/]],
-      ["SAFETY", [/^USUPB$/, /^UANDB$/, /^R(WPU|ENR|ENL|GPD)B$/, /^CSFB$/, /^RFLTB$/, /^CFLTB$/]],
+      ["SAFETY", [/^USUPB$/, /^UANDB$/, /^R(WPU|ENR|ENL|GPD|RDY)B$/, /^CSFB$/, /^RFLTB$/, /^CFLTB$/, /^CWDB$/, /^CRSTB$/]],
       ["GROUNDING", [/^RAGTB$/]],
       ["BUCK-3V3", [/^UBKB$/, /^LBKB$/, /^CBK[IO]B$/, /^CBSTB$/, /^RBKF[12]B$/]],
       ["COIL-DRIVER", [/^ULB$/]],

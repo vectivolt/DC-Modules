@@ -462,10 +462,12 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     const spread = Math.max(...[...famX.values()].map(([lo, hi]) => hi - lo));
     const voidFrac = largestVoid(out.map(({ b: bb, X, Y }) =>
       ({ x0: X, y0: Y, x1: X + bb.w, y1: Y + bb.h })), W, H + MARGIN + 800);
+    // Gate swept at 0.12 / 0.09 / 0.07 / 0.05: 0.09 is the optimum (worst void 10.4 -> 7.7%, fill
+    // unchanged). Tighter is WORSE, because no candidate qualifies and the fallback takes over.
     // The largest empty rectangle is a GATE too, not just a weighted term. As a weighted term the
     // density objective outvoted it and sheets still came out with a 20-23% blank block in them,
     // which is the first thing the eye lands on.
-    const usable = aspect >= 1.15 && aspect <= 2.1 && spreadOver <= 0 && voidFrac <= 0.12;
+    const usable = aspect >= 1.15 && aspect <= 2.1 && spreadOver <= 0 && voidFrac <= 0.09;
     // soft score is always computed: when no candidate clears every gate we still want the best
     // layout by the same objective, not whatever happens to be closest to a target aspect.
     // On the bigger sheets no configuration satisfies aspect AND grouping AND void at once, so the

@@ -621,6 +621,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_1"
@@ -662,7 +667,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -915,6 +919,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_1"
@@ -956,7 +965,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -1269,6 +1277,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_2"
@@ -1310,7 +1323,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -1563,6 +1575,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_2"
@@ -1604,7 +1621,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -1917,6 +1933,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_3"
@@ -1958,7 +1979,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -2211,6 +2231,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_3"
@@ -2252,7 +2277,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -2565,6 +2589,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_4"
@@ -2606,7 +2635,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -2859,6 +2887,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_4"
@@ -2900,7 +2933,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -3213,6 +3245,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_5"
@@ -3254,7 +3291,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -3507,6 +3543,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_5"
@@ -3548,7 +3589,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -3861,6 +3901,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_6"
@@ -3902,7 +3947,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -4155,6 +4199,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_6"
@@ -4196,7 +4245,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -4509,6 +4557,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_7"
@@ -4550,7 +4603,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -4803,6 +4855,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_7"
@@ -4844,7 +4901,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -5157,6 +5213,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_8"
@@ -5198,7 +5259,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -5451,6 +5511,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_8"
@@ -5492,7 +5557,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -5805,6 +5869,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_9"
@@ -5846,7 +5915,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -6099,6 +6167,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_9"
@@ -6140,7 +6213,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -6453,6 +6525,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_10"
@@ -6494,7 +6571,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -6747,6 +6823,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_10"
@@ -6788,7 +6869,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -7101,6 +7181,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_11"
@@ -7142,7 +7227,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -7395,6 +7479,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_11"
@@ -7436,7 +7525,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -7749,6 +7837,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GH_12"
@@ -7790,7 +7883,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -8043,6 +8135,11 @@
      "signal_name": "FLT_LLC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "GL_12"
@@ -8084,7 +8181,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],

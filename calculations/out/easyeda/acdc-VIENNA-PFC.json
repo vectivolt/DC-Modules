@@ -158,6 +158,11 @@
      "signal_name": "FLT_PFC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "G_A0"
@@ -199,7 +204,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -712,6 +716,11 @@
      "signal_name": "FLT_PFC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "G_B0"
@@ -753,7 +762,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],
@@ -1266,6 +1274,11 @@
      "signal_name": "FLT_PFC"
     },
     {
+     "pin_number": 6,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
      "pin_number": 9,
      "name": "CLAMP",
      "signal_name": "G_C0"
@@ -1307,7 +1320,6 @@
     }
    ],
    "nc_pins": [
-    6,
     7,
     8
    ],

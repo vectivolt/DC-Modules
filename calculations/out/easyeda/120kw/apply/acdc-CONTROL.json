@@ -615,6 +615,16 @@
       "pin_number": 1,
       "name": "VDD1",
       "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "CWD",
+      "signal_name": "N_ACDC_198"
+     },
+     {
+      "pin_number": 4,
+      "name": "CRST",
+      "signal_name": "N_ACDC_199"
      }
     ]
    },
@@ -779,6 +789,63 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CWDA",
+    "value": "1nF",
+    "block_name": "SAFETY",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_198"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CRSTA",
+    "value": "1nF",
+    "block_name": "SAFETY",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "N_ACDC_199"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RRDYA",
+    "value": "10k",
+    "block_name": "SAFETY",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DRV_RDY"
      }
     ]
    },
@@ -1065,8 +1132,6 @@
    96
   ],
   "USUPA": [
-   2,
-   4,
    9
   ],
   "UANDA": [
@@ -1084,5 +1149,5 @@
   ]
  },
  "warnings": [],
- "total": 29
+ "total": 32
 }

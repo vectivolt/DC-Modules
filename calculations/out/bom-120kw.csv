@@ -70,11 +70,11 @@ CER-50W-AX,,CLASS,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω 
 CER-50W-AX,,CLASS,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS1
 CER-50W-AX,,CLASS,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS2
 CER-50W-AX,,CLASS,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,1,60.8,45,39.6,36,45,36,RDIS3
+R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc+dcdc,28,2,1.5,1.3,1.2,42,34,RA0B RB0B RC0B RA1B RB1B RC1B RA2B RB2B RC2B RA3B RB3B RC3B
 TLP152-class,C17255258,ORDERABLE,Toshiba/eq,"opto gate driver (isolated bus-discharge control, default-OFF — CB-11)","1ED31xx lite",acdc,1,56.7,42,37,33.6,42,34,UQD
-R1206-33R-1%,,CLASS,any,"33 Ω CT burden 1% (line CTs 1:2500 → 0.79 V/55 A)","any",acdc+dcdc,27,2,1.5,1.3,1.2,41,32,RA0B RB0B RC0B RA1B RB1B RC1B RA2B RB2B RC2B RA3B RB3B RC3B
 R2512-2R0-1W-1%,,CLASS,any,"2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)","2× 1206 1R0 series",dcdc,12,4.1,3,2.6,2.4,36,29,R1CT R2CT R3CT R4CT R5CT R6CT R7CT R8CT R9CT R10CT R11CT R12CT
 TPS54202-class,C191884,ORDERABLE,TI/eq,"15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; one per board)","MP2451/SY8113",acdc+dcdc,2,20.3,15,13.2,12,30,24,UBKA UBKB
-RC0805FR-0710KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,71,0.5,0.4,0.4,0.3,28,21,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RA2GPD RB2GPD RC2GPD RA3GPD RB3GPD
+RC0805FR-0710KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,72,0.5,0.4,0.4,0.3,29,22,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RA2GPD RB2GPD RC2GPD RA3GPD RB3GPD
 TLV9061-class,C398358,ORDERABLE,TI/3PEAK,"rail-to-rail op-amp (AVMID buffer, E31)","LMV321",acdc+dcdc,2,16.2,12,10.6,9.6,24,19,UAVB UAVB
 NCP1252A,C80800,ORDERABLE,onsemi,"current-mode flyback controller, fixed 65 kHz, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC; the previously-priced UCC28C43 has no BO pin and needs an RT/CT network the schematic never drew","UCC28C43 + RT/CT & BO rework",acdc,1,32.4,24,21.1,19.2,24,19,UAUX
 PH-4-FAN,C131334,ORDERABLE,JST,"fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17)","any",acdc,4,8.1,6,5.3,4.8,24,19,JFAN1 JFAN2 JFAN3 JFAN4
@@ -89,9 +89,9 @@ PH-2,C20504437,ORDERABLE,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2
 R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
 CC0603JRNPO9BN101,,UNMAPPED,any,"100 pF 0603 (DESAT blank)","any",acdc+dcdc,36,0.5,0.4,0.4,0.3,14,11,CA0GBL CB0GBL CC0GBL CA1GBL CB1GBL CC1GBL CA2GBL CB2GBL CC2GBL CA3GBL CB3GBL CC3GBL
 IND-10u-3A,,CLASS,any shielded,"10 µH 3 A shielded power inductor (3V3 buck)","any",acdc+dcdc,2,8.1,6,5.3,4.8,12,10,LBKA LBKB
+CC0603KRX7R9BB102,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,23,0.7,0.5,0.4,0.4,12,9,CA0F CB0F CC0F CA1F CB1F CC1F CA2F CB2F CC2F CA3F CB3F CC3F
 RC0805FR-071KL,,UNMAPPED,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,25,0.5,0.4,0.4,0.3,10,8,RA0F RB0F RC0F RA1F RB1F RC1F RA2F RB2F RC2F RA3F RB3F RC3F
-CC0603KRX7R9BB102,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,19,0.7,0.5,0.4,0.4,10,8,CA0F CB0F CC0F CA1F CB1F CC1F CA2F CB2F CC2F CA3F CB3F CC3F
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,23,0.5,0.4,0.4,0.3,9,7,RQDG RAVI RENRA RENLA RFLTA RAGTA RPET RAUXG RBR2 RFB1 RBKF1A RM24A
+R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc,24,0.5,0.4,0.4,0.3,10,7,RQDG RAVI RENRA RENLA RFLTA RAGTA RPET RAUXG RBR2 RFB1 RAUXRT RBKF1A
 PP-10n-1200,,CLASS,Faratronic,"10 nF 1200 V film (aux RCD clamp)","MLCC 1kV ×2",acdc,1,12.2,9,7.9,7.2,9,7,CCLA
 CC0603KRX7R9BB104,,UNMAPPED,any,"filter/decoupling MLCC 0402–0805","any",acdc+dcdc,17,0.7,0.5,0.4,0.4,9,7,CAVM CTPFCF CTINLF CPFCA2 CSFA CPFCRST CCOMP CBSTA CAVM CTLLCF CTXFRF CLLCA2
 EL-220u-35,,CLASS,Aishi,"220 µF 35 V","any",acdc,2,5.4,4,3.5,3.2,8,6,CAUX24 CAUX15
@@ -123,5 +123,5 @@ MECH,,MECH,—,"Busbars/interconnect + harness (busbar-calc)","—",module,1,479
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,1093,950,884,827,950,827,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,4485,3900,3627,3393,3900,3393,
-TOTAL_ELECTRONIC,,,,,,,,,,,,93355,73855,
-TOTAL_MODULE,,,,,,,,,,,,117216,94614,
+TOTAL_ELECTRONIC,,,,,,,,,,,,93359,73858,
+TOTAL_MODULE,,,,,,,,,,,,117220,94617,

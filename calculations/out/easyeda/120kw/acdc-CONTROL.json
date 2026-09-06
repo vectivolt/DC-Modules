@@ -8,7 +8,10 @@
   "COIL-DRIVER",
   "RAIL-MON"
  ],
- "net_style_overrides": {},
+ "net_style_overrides": {
+  "N_ACDC_198": "wire",
+  "N_ACDC_199": "wire"
+ },
  "net_class_overrides": {
   "PE": "ground"
  },
@@ -553,12 +556,19 @@
      "pin_number": 6,
      "name": "VDD",
      "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 7,
+     "name": "CWD",
+     "signal_name": "N_ACDC_198"
+    },
+    {
+     "pin_number": 8,
+     "name": "CRST",
+     "signal_name": "N_ACDC_199"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "TPS3430-class",
    "query": "TPS3430-class external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps ",
    "mpn": "TPS3430-class"
@@ -735,6 +745,66 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CWDA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_198"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CRSTA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "N_ACDC_199"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RRDYA",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DRV_RDY"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "JSWDPFC",

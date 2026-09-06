@@ -83,10 +83,11 @@ function transform(c, page, all, warn) {
       P(2, "DESAT", sig(c, "DST")), P(3, "GND2", ks), P(1, "ASC", ks), P(16, "TEST", ks),
       P(5, "VCC2", sig(c, "VCC2")), P(4, "OUTH", sig(c, "OUTH")), P(6, "OUTL", sig(c, "OUTL")),
       P(7, "CLAMP", sig(c, "CLAMP")), P(8, "VEE2", sig(c, "VEE")),
+      // R3 CLOSED: pin 12 is RDY, an active-low open-drain power-good. It is now wired-OR onto the
+      // per-board DRV_RDY net with a single 10 k pull-up in SafetyChain, so it can actually pull.
+      P(12, "RDY", sig(c, "RDY")),
     ];
-    // R3 DEFECT: pin 12 is RDY (active-low open-drain power-good), NOT a no-connect. It needs a
-    // pull-up (~5k to VCC1) to function. Left NC here until the pull-up exists in cells.tsx.
-    out.nc = [12];
+    out.nc = [];
   } else if (m === "TLP152-class") {
     out.pins = [P(1, "Anode", sig(c, "ANO")), P(3, "Cathode", sig(c, "CAT")),
       P(4, "GND", sig(c, "VEE")), P(5, "VO", sig(c, "OUT")), P(6, "VCC", sig(c, "VCC"))];
@@ -97,10 +98,11 @@ function transform(c, page, all, warn) {
     const gnd = sig(c, "GND"), vdd = sig(c, "VDD");
     out.pins = [P(7, "WDI", sig(c, "WDI")), P(5, "GND", gnd), P(11, "EP", gnd),
       P(3, "SET0", sig(c, "SET0")), P(6, "SET1", sig(c, "SET1")), P(8, "WDO#", sig(c, "WDO")),
-      P(10, "VDD2", vdd), P(1, "VDD1", vdd)];
-    // R3 DEFECT: pin 2 is CWD (watchdog timeout program) and pin 4 is CRST (reset-delay
-    // program) — both need a cap/strap. Floating leaves the watchdog window undefined.
-    out.nc = [2, 4, 9];
+      P(10, "VDD2", vdd), P(1, "VDD1", vdd),
+      // R3 CLOSED: pin 2 CWD programs the watchdog timeout, pin 4 CRST the reset delay. Both now
+      // carry their timing cap to GND, so the window is defined rather than floating.
+      P(2, "CWD", sig(c, "CWD")), P(4, "CRST", sig(c, "CRST"))];
+    out.nc = [9];
   } else if (m === "TPS54202-class") {
     out.pins = [P(3, "VIN", sig(c, "VIN")), P(1, "GND", sig(c, "GND")), P(2, "SW", sig(c, "SW")),
       P(4, "FB", sig(c, "FB")), P(5, "EN", sig(c, "EN")), P(6, "BOOT", sig(c, "BST"))];
@@ -110,10 +112,10 @@ function transform(c, page, all, warn) {
   } else if (m === "NCP1252A") {
     out.pins = [P(1, "FB", sig(c, "FB")), P(2, "BO", sig(c, "BR")), P(3, "CS", sig(c, "CS")),
       P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "GATE")), P(7, "VCC", sig(c, "VCC")),
-      P(8, "SS", sig(c, "COMP"))];
-    // R3 DEFECT: pin 4 is RT — a resistor to GND sets the switching frequency (50-500 kHz).
-    // Marked NC here, so the frequency-setting element is missing from the netlist.
-    out.nc = [4];
+      P(8, "SS", sig(c, "COMP")),
+      // R3 CLOSED: pin 4 is RT — the resistor to GND that sets Fsw. RAUXRT now provides it.
+      P(4, "RT", sig(c, "RT"))];
+    out.nc = [];
   } else if (m === "QA01C" || m === "QA01C-15S18") {
     // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. If COM net == paired driver VEE net, COM is the -4V
     // rail: COM->5 and 0V->driver KSRC net. Else unipolar: COM->6, NC 5.

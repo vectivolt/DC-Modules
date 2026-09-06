@@ -38,6 +38,9 @@ for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice
       for (let i = 0; i < n; i++) pts.push([+t[5 + 2 * i], +t[6 + 2 * i]]);
       shapes.push({ k: "P", pts });
     }
+    // A posx posy radius startAngle endAngle unit convert thickness fill sx sy ex ey
+    // Inductors are drawn purely from arcs, so without this they rendered as bare pin numbers.
+    else if (l.startsWith("A ")) shapes.push({ k: "A", r: +t[3], sx: +t[10], sy: +t[11], ex: +t[12], ey: +t[13] });
   }
   LIB.set(name, { pins, shapes });
 }
@@ -108,6 +111,7 @@ for (let r = 0; r < ROWS; r++) for (let cIdx = 0; cIdx < COLS; cIdx++) {
       if (sh.k === "S") g += `<rect x="${c.x + Math.min(sh.x0, sh.x1)}" y="${c.y + Math.min(sh.y0, sh.y1)}" width="${Math.abs(sh.x1 - sh.x0)}" height="${Math.abs(sh.y1 - sh.y0)}" fill="#fff" stroke="#1a237e" stroke-width="8"/>`;
       else if (sh.k === "C") g += `<circle cx="${c.x + sh.x}" cy="${c.y + sh.y}" r="${sh.r}" fill="#fff" stroke="#1a237e" stroke-width="8"/>`;
       else if (sh.k === "P") g += `<polyline points="${sh.pts.map(([a, b]) => `${c.x + a},${c.y + b}`).join(" ")}" fill="none" stroke="#1a237e" stroke-width="8"/>`;
+      else if (sh.k === "A") g += `<path d="M ${c.x + sh.sx} ${c.y + sh.sy} A ${sh.r} ${sh.r} 0 0 1 ${c.x + sh.ex} ${c.y + sh.ey}" fill="none" stroke="#1a237e" stroke-width="8"/>`;
     }
     for (const p of s.pins) {
       const [px, py] = P(c, p);

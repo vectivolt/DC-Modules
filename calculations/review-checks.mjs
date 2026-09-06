@@ -120,5 +120,33 @@ ck("R4-2", /<OutputShunt inn="net\.BKBN"/.test(boards) && !/outn="net\.OUTN_SH"/
   }
 }
 
+// ===== R3 closures (2026-09-06): program/status pins that were left floating =====
+// Each of these was found by reading the netlist back, not by ERC — ERC is happy with an
+// unbound pin. The check is that the pin is BOUND and that the part driving it exists.
+ck("R3-RDY", /\.U\$\{id\} > \.RDY`\} to="net\.DRV_RDY"/.test(cells) && /RRDY\$\{id\}/.test(cells),
+  "NSI6611 RDY wired-OR to DRV_RDY with a per-board pull-up (was floating open-drain)");
+ck("R3-WDT", /CWD\$\{id\}/.test(cells) && /CRST\$\{id\}/.test(cells) &&
+  /pin7: "CWD", pin8: "CRST"/.test(cells),
+  "TPS3430 CWD/CRST carry their timing caps (window was undefined)");
+ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin9: "RT"/.test(cells),
+  "NCP1252A RT has its frequency-setting resistor (stage had no defined Fsw)");
+{ // and the pins must actually be bound in the emitted netlist, not merely present in the source
+  const { existsSync, readdirSync } = await import("node:fs");
+  for (const sku of ["30kw", "60kw", "120kw"]) {
+    const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda/apply")
+                               : join(ROOT, "calculations/out/easyeda", sku, "apply");
+    if (!existsSync(dir)) continue;
+    const want = { USUPA: [2, 4], UAUX: [4], U1H: [12] };
+    const got = {};
+    for (const f of readdirSync(dir).filter((x) => x.endsWith(".json")))
+      for (const c of JSON.parse(readFileSync(join(dir, f), "utf8")).chunks.flat())
+        if (want[c.designator]) got[c.designator] = c.pins.map((p) => p.pin_number);
+    const missing = Object.entries(want).flatMap(([ref, pins]) =>
+      got[ref] ? pins.filter((n) => !got[ref].includes(n)).map((n) => `${ref}.${n}`) : []);
+    ck(`R3-BOUND-${sku}`, missing.length === 0,
+      `${sku}: R3 program pins bound${missing.length ? " — MISSING " + missing.join(", ") : ""}`);
+  }
+}
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

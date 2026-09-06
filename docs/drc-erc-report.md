@@ -113,6 +113,41 @@ KiCad 5, which is a transport format here, not a deliverable. If EasyEDA ever fi
 drop `mirrorLibY` and revert the verifier to `c.y - p.y` together — they must move as a pair.
 
 
+## R6 — three program/status pins were floating (found 2026-09-06, FIXED)
+
+Found by reading the emitted netlist back pin-by-pin during a working-zoom inspection pass, not
+by ERC. ERC cannot catch these: an unbound pin is not an *error* to it, and all three parts had
+every other pin correctly connected.
+
+| part | pin | function | was | now |
+|---|---|---|---|---|
+| `NSI6611` (9 drivers/board) | 12 `RDY` | active-low open-drain power-good | floating — could not pull | wired-OR onto per-board `DRV_RDY`, one 10 k pull-up in `SafetyChain` |
+| `TPS3430` (`USUPA/B`) | 2 `CWD`, 4 `CRST` | watchdog timeout, reset delay | floating — **window undefined** | timing caps to DGND, sized for the 10 ms window of E27/F.32 |
+| `NCP1252A` (`UAUX`) | 4 `RT` | switching-frequency program | floating — **no defined Fsw** | `RAUXRT` to GND, sized for the 65 kHz DCM point of E26/D4 rev C |
+
+The watchdog one is the serious one: `USUP` is the centrepiece of the E27/CB-10 safety chain, and
+with its window pin floating the timeout it enforced was undefined.
+
+**Values are flagged, components are not.** The exact capacitance-per-millisecond and the RT for
+65 kHz come off the final datasheets (§K). The components, their nets and their pin bindings are
+correct regardless, and that is the part that was actually missing — a floating program pin is a
+defect, a to-be-confirmed value is a normal open item. Both are marked REVIEW.
+
+**Why they survived so long.** `easyeda-pages.mjs` assigns components to sheet sections by
+designator regex (E34). New designators matched nothing, so the first attempt at this fix built
+cleanly, bound the pins, and then **silently dropped the four new parts off the sheets** — leaving
+`CWD`/`CRST`/`RT` on single-pin nets, which is worse than the no-connect they replaced. Caught by
+the zero-single-pin-net gate from R4. The section patterns now cover them and
+`acdc/dcdc UNASSIGNED: none`.
+
+New gates: `R3-RDY`, `R3-WDT`, `R3-RT` assert the parts exist in the source; `R3-BOUND-<sku>`
+asserts the pins are actually bound in each SKU's emitted netlist, so a rebuild that misses a SKU
+fails loudly.
+
+30 kW after the fix: 615 components (608 + 7), 1763 pins **100.00%**, 0 single-pin nets,
+0 ink collisions, layout gate passes.
+
+
 ## Schematic-layout gate (rev D.2, E34 — 2026-09-05)
 
 The sheets themselves are now a verified artifact:
