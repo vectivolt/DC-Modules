@@ -74,7 +74,6 @@ export const DB = [
   { m: /^C(F\d+|B[AB]F)$/, mpn: "PP-1u-1100", mfr: "Faratronic", desc: "1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)", price1k: 68, alt: "Songtian" },
   { m: /^COF[12]$/, mpn: "PP-4u7-1200", mfr: "Faratronic", desc: "4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)", price1k: 125, alt: "—" },
   { m: /^CX\d+$/, mpn: "X1-2u2-530", mfr: "Faratronic/Songtian", desc: "X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)", price1k: 62, alt: "Vishay 3386 X1" },
-  { m: /^CCGB$/, mpn: "MLCC-Y-CGND", mfr: "any", desc: "4.7 nF bridging CGND-DGND across the CAN isolation barrier (see R11)", price1k: 16, alt: "Y1 if the barrier is safety-rated" },
   { m: /^(CY(O)?[123]?|CPET)$/, mpn: "Y1-4n7-440", mfr: "Songtian/Faratronic", desc: "Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)", price1k: 16, alt: "TDK CD series" },
   { m: /^C\w+SN$/, mpn: "C1812-100p-1k", mfr: "any MLCC", desc: "100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)", price1k: 7, alt: "film 630V" },
   { m: /^CCLA$/, mpn: "PP-10n-1200", mfr: "Faratronic", desc: "10 nF 1200 V film (aux RCD clamp)", price1k: 9, alt: "MLCC 1kV ×2" },

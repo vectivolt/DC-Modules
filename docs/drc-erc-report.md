@@ -264,6 +264,28 @@ given its own class. Every designator still matches a rule (checked), and narrow
 value-consistent. Gate `R13-CLASS` in `calculations/review-checks.mjs` fails the build if any
 narrow class ever holds more distinct values than its spec allows.
 
+## R11 — RESOLVED 2026-09-06: the frozen spec already answers it, and the answer is "no Y part"
+
+`CCGB` takes a generic 4.7 nF 1206 X7R, **C107208**. That is what the design originally had, and it
+is correct.
+
+The question was whether CGND-DGND crosses a SAFETY barrier. The project's own frozen requirement
+answers it: **E25** (`docs/assumptions.md`, FROZEN) establishes one touch-safe SELV control domain,
+and `docs/architecture.md:76` states it plainly — *"the control domain is touch-safe SELV, so the
+HMI/SWD/fans/CAN need no additional barriers."*
+
+So CAN sits INSIDE the SELV domain. The isolated transceiver and isolated supply are there to break
+a ground loop to an off-board charger controller whose ground may sit at a different potential —
+**functional** isolation, not a safety barrier. A Y-class part is not required, and the RC bridge is
+doing exactly the common-mode job it is shaped for.
+
+This closes the last of R8-R12 and, like R8, R9 and R12 before it, the answer was already in the
+repository. The earlier note reasoned from an internal inconsistency — every OTHER barrier-crossing
+cap here is Y1-rated — which was a sound observation and the wrong conclusion, because those
+crossings (AC-PE, DGND-PE, output-PE) really are safety barriers and this one is not. Consistency
+with a pattern is weaker evidence than the requirement that defines the domain.
+
+### original analysis
 ## R11 — partially actioned 2026-09-06
 
 `CCGB` now has its own part class, `MLCC-Y-CGND` (REVIEW), instead of falling under the generic

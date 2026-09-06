@@ -76,7 +76,6 @@ export const LCSC = {
   "PP-10n-1200":       { status: "CLASS", spec: "10 nF 1200 V film" },
   "X1-2u2-530":        { status: "CLASS", spec: "2.2 µF 530 VAC X1 safety film" },
   "Y1-4n7-440":        { status: "CLASS", spec: "4.7 nF 440 VAC Y1 safety" },
-  "MLCC-Y-CGND":       { status: "REVIEW", spec: "4.7 nF across the CAN isolation barrier — see R11" },
   "FILM-100n-250":     { status: "CLASS", spec: "100 nF 250 V film" },
   "C1812-100p-1k":     { status: "CLASS", spec: "100 pF 1 kV C0G 1812" },
   "EL-47u-35":         { status: "CLASS", spec: "47 µF 35 V electrolytic" },
@@ -176,11 +175,19 @@ export const LCSC_BY_VALUE = {
   "R-small|45.3k":      { lcsc: "C273885", mpn: "RC0805FR-0745K3L", note: "45.3k 0805 1%" },
   "R-small|118k":       { lcsc: "C274001", mpn: "RC0805FR-07118KL", note: "118k 0805 1%" },
   "R-small|120":        { lcsc: "C114928", mpn: "RC1206FR-07120RL", note: "120R 1206 1% 250mW" },
+  "MLCC-small|4.7nF":   { lcsc: "C107208", mpn: "CC1206KRX7R9BB472", note: "4.7nF 1206 X7R 50V — CCGB, the CGND/DGND common-mode bridge. Generic (not Y-class) is correct: E25 FROZEN puts CAN inside the touch-safe SELV control domain (\"HMI/SWD/fans/CAN need no additional barriers\", architecture.md), so CGND-DGND is FUNCTIONAL isolation breaking a ground loop to the off-board controller, not a safety barrier. See R11." },
   "MLCC-small|470pF":   { lcsc: "C107152", mpn: "CC0805KRX7R9BB471", note: "470pF 0805 — CCSF, the aux CS filter; sees only the sense signal" },
   "MLCC-100n-0402|100nF": { lcsc: "C60474", mpn: "CC0402KRX7R7BB104", note: "100nF 0402 X7R 16V — used only on the 3.3 V rail (~5x derating)" },
 };
 
 // Resolve by family AND value where we have a real catalogue part, else fall back to the
 // per-MPN map (which is where the class-specified parts correctly stay).
-export const lcscForPart = (mpn, value) =>
-  LCSC_BY_VALUE[`${mpn}|${value}`] ?? lcscFor(mpn);
+// A LCSC_BY_VALUE hit carries a real C-number but no status field, so 32 BOM rows showed a part
+// number against a BLANK status — unreadable as sourcing state. In this taxonomy a mapped
+// C-number IS the orderable state, so default it rather than leave the column empty. An entry
+// that sets its own status (REVIEW, SECOND-SOURCE) keeps it.
+export const lcscForPart = (mpn, value) => {
+  const hit = LCSC_BY_VALUE[`${mpn}|${value}`];
+  if (!hit) return lcscFor(mpn);
+  return hit.status || !hit.lcsc ? hit : { ...hit, status: "ORDERABLE" };
+};

@@ -63,7 +63,9 @@ for (const sku of SKUS) {
       const vKey = LCSC_BY_VALUE[`${ov.mpn ?? rule.mpn}|${val}`] ? `#${val}` : "";
       const key = ((ov.price1k || ov.mpn) ? `${ov.mpn ?? rule.mpn}@${name}` : rule.mpn) + vKey;
       const resolved = lcscForPart(ov.mpn ?? rule.mpn, val);
-      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, val, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
+      // keep the CLASS as well as the resolved part: the row's mpn becomes the catalogue number,
+      // and re-resolving from that later cannot find a LCSC_BY_VALUE entry keyed on the class
+      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, cls: ov.mpn ?? rule.mpn, val, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
       rec.qty += ov.qtyMul ?? 1;
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);
@@ -80,8 +82,8 @@ for (const sku of SKUS) {
     totE += ext; totE10 += ext10;
     const cat = CAT(r.mpn, r.desc);
     cats[cat] = (cats[cat] ?? 0) + ext;
-    const lc = lcscForPart(r.mpn, r.val ?? "");
-    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && LCSC_BY_VALUE[`${r.mpn}|${r.val}`] ? ` ${r.val}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
+    const lc = lcscForPart(r.cls ?? r.mpn, r.val ?? "");
+    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] ? ` ${r.val}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
   csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
