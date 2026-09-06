@@ -158,8 +158,10 @@ Run against the real artifact in EasyEDA Pro V3.2.149, not against the source fi
 | | 30kw-dcdc | **0** | **0** | 14 |
 | `DC Modules 60kW SHIP D.3` | 60kw-acdc | **0** | **0** | 9 |
 | | 60kw-dcdc | **0** | **0** | 16 |
+| `DC Modules 120kW SHIP D.3` | 120kw-acdc | **0** | **0** | 9 |
+| | 120kw-dcdc | **0** | **0** | 20 |
 
-Zero errors and zero warnings on all four sheets. The title block reads correctly in the app on
+**Zero errors and zero warnings on all six sheets — every board of every SKU.** The title block reads correctly in the app on
 each: Rev D.3, Title, File, Comp and all four Comments populated, so a printed sheet identifies
 its own SKU, board and sheet number.
 
@@ -181,9 +183,13 @@ Correct sequence per SKU:
 1. `DC-Modules-footprints-<sku>.zip` -> **Extract Libraries**
 2. `DC-Modules-<sku>-final.zip` -> **Import Document**
 
-**120 kW is not yet imported.** Its footprint import stopped after 10 of 27 when the machine hit
-100% disk (`ENOSPC`); the schematic was never attempted. Redo both steps once there is free space
-— the partial library means step 1 must be repeated, not skipped.
+The 120 kW import first failed partway through its footprint library when the machine hit 100%
+disk (`ENOSPC`, 10 of 27 footprints). Retried after ~470 MB was reclaimed and it completed
+cleanly — the partial library was simply overwritten by repeating step 1.
+
+Residual fatal errors are the seven catalogue footprints still needing part selection: three
+relays (needing the mirror-contact p/ns), the fuse holder, a 6x6 tactile, the CAN common-mode
+choke and the 2-digit display. Nothing else on any sheet.
 
 
 ## R7 — isolated voltage senses have a floating output leg (found 2026-09-06, OPEN — needs a decision)
