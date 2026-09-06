@@ -14,50 +14,50 @@ Comment3 "45 functional sections - 603 components - cross-section links are glob
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Wire Notes Line
-	49450 26450 54100 26450
+	49650 26450 54100 26450
 Wire Notes Line
-	54100 26450 54100 29800
+	54100 26450 54100 29650
 Wire Notes Line
-	54100 29800 49450 29800
+	54100 29650 49650 29650
 Wire Notes Line
-	49450 29800 49450 26450
-Text Notes 49650 26790 0    79   ~ 16
+	49650 29650 49650 26450
+Text Notes 49710 26610 0    79   ~ 16
 SHEET INDEX
-Text Notes 49650 27050 0    60   ~ 0
+Text Notes 49710 26870 0    60   ~ 0
 120 kW AC-DC (lower) - 1 of 2
-Text Notes 49700 27450 0    60   ~ 0
+Text Notes 49700 27300 0    60   ~ 0
 AC-SENSING   -   13 sections
-Text Notes 49700 27750 0    60   ~ 0
+Text Notes 49700 27600 0    60   ~ 0
 VIENNA-PFC   -   12 sections
-Text Notes 49700 28050 0    60   ~ 0
+Text Notes 49700 27900 0    60   ~ 0
 CONTROL   -   6 sections
-Text Notes 49700 28350 0    60   ~ 0
+Text Notes 49700 28200 0    60   ~ 0
 AUX-POWER   -   5 sections
-Text Notes 49700 28650 0    60   ~ 0
+Text Notes 49700 28500 0    60   ~ 0
 DC-LINK   -   5 sections
-Text Notes 49700 28950 0    60   ~ 0
+Text Notes 49700 28800 0    60   ~ 0
 INPUT-EMI   -   4 sections
-Text Notes 49710 29600 0    60   ~ 0
+Text Notes 49710 29450 0    60   ~ 0
 rev D.3   -   45 sections   -   603 components
 Wire Notes Line
-	49450 30550 54100 30550
+	49850 30400 54100 30400
 Wire Notes Line
-	54100 30550 54100 33300
+	54100 30400 54100 33000
 Wire Notes Line
-	54100 33300 49450 33300
+	54100 33000 49850 33000
 Wire Notes Line
-	49450 33300 49450 30550
-Text Notes 49650 30890 0    79   ~ 16
+	49850 33000 49850 30400
+Text Notes 49910 30560 0    79   ~ 16
 NET NAMING
-Text Notes 49650 31150 0    60   ~ 0
+Text Notes 49910 30820 0    60   ~ 0
 internal junctions are named for what they join
-Text Notes 49700 31550 0    60   ~ 0
+Text Notes 49900 31250 0    60   ~ 0
 U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
-Text Notes 49700 31850 0    60   ~ 0
+Text Notes 49900 31550 0    60   ~ 0
 R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
-Text Notes 49700 32150 0    60   ~ 0
+Text Notes 49900 31850 0    60   ~ 0
 R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
-Text Notes 49700 32450 0    60   ~ 0
+Text Notes 49900 32150 0    60   ~ 0
 all others are explicit design nets
 Wire Notes Line
 	500 500 4600 500

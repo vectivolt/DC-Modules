@@ -646,7 +646,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   // fills the top two: the sheet index, then a legend for the net-naming convention.
   {
     const used = blocks.map((b) => ({ x0: b.X, y0: b.Y, x1: b.X + b.w, y1: b.Y + b.h }));
-    const PAD = 500, LH = 300, CW = 4200, HEAD = 340 + 260 + Math.round(LH * 1.4);
+    const PAD = 500, LH = 300, CW = 4200, HEAD = 160 + 260 + Math.round(LH * 1.4);
     const drawPanel = (V, title, sub, rows, footer) => {
       const px0 = snap(V.x0 + PAD), py0 = snap(V.y0 + PAD);
       const px1 = snap(V.x1 - PAD), maxY = snap(V.y1 - PAD);
@@ -668,19 +668,20 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // RIGHT-ALIGN inside the void. Drawing at the void's left edge meant a wide bottom-right
       // void still produced a centre-left panel -- 120kw-acdc's index landed at x=51% even though
       // its slot reached the right margin, and nothing could stack beneath it there.
-      const pw = 260 + ncols * cw + 200;
+      const pw = 60 + ncols * cw + 200;
       const bx0 = snap(Math.max(px0, px1 - pw));
       const px1b = snap(Math.min(px1, bx0 + pw));
       const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
       body += `Wire Notes Line\n\t${bx0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
         + `Wire Notes Line\n\t${px1b} ${py1} ${bx0} ${py1}\nWire Notes Line\n\t${bx0} ${py1} ${bx0} ${py0}\n`;
-      body += `Text Notes ${bx0 + 200} ${py0 + 340} 0    79   ~ 16\n${title}\n`;
-      body += `Text Notes ${bx0 + 200} ${py0 + 600} 0    60   ~ 0\n${sub}\n`;
+      // same title inset as a section frame (60,160) so every titled box on the sheet matches
+      body += `Text Notes ${bx0 + 60} ${py0 + 160} 0    79   ~ 16\n${title}\n`;
+      body += `Text Notes ${bx0 + 60} ${py0 + 420} 0    60   ~ 0\n${sub}\n`;
       cell.forEach((t, i) => {
-        const cx = bx0 + 260 + Math.floor(i / nRow) * cw, cy = py0 + HEAD + (i % nRow) * LH;
+        const cx = bx0 + 60 + Math.floor(i / nRow) * cw, cy = py0 + HEAD + (i % nRow) * LH;
         body += `Text Notes ${snap(cx)} ${snap(cy)} 0    60   ~ 0\n${t}\n`;
       });
-      if (footer) body += `Text Notes ${bx0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\n${footer}\n`;
+      if (footer) body += `Text Notes ${bx0 + 60} ${snap(py1 - 200)} 0    60   ~ 0\n${footer}\n`;
       return { x0: bx0, y0: py0, x1: px1b, y1: py1 };
     };
     const fams = new Map();
