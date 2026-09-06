@@ -728,6 +728,24 @@ const HAND = {
   // Same span on every SKU and 250 shorter (h 3000 against 3250); measured on the sheets because
   // shorter is not automatically safe -- 120kw-acdc gains the 250 (41800 -> 41550) and nothing
   // else moves.
+  // INPUT-EMI / SURGE probed and left packed. Packed splits the MOV group across the column
+  // boundary (MOV1 | MOV2, MOV3), which is a real defect, but no fix is affordable: three clean
+  // groups at 6/3 hold the packed span on every SKU and cost only 500 in height (h 3250 against
+  // 2750) -- and that 500 cascaded into +21% area on 30kw-acdc (42600x28800 -> 49600x30050). The
+  // one split that matches the frame exactly, 5/4, breaks the GDT group instead, which is no better
+  // than the MOV split it would replace. AC-SENSING / ANALOG-MID likewise: 2 columns is 500 taller
+  // and goes span 2 on 60 kW; 3 columns goes span 2 on 120 kW.
+  //
+  // 500 mil on one small section moving a whole sheet by a fifth is the sharpest example yet of why
+  // every one of these is measured on the sheets rather than judged from its own frame.
+
+  // Precharge: the two bypass relays first, then the precharge resistors they short out and the
+  // feedback pull-up. Packed, the resistors led and the relays came last. One column, exact frame
+  // match on every SKU (span 1, h 4250).
+  "INPUT-EMI / PRECHARGE": [
+    ["KPRE1", "KPRE2", "RPRE1", "RPRE2", "RKFBP"],
+  ],
+
   "AUX-POWER / BUCK-#V#": [
     ["CBKIA", "UBKA"],
     ["CBSTA", "LBKA", "CBKOA", "RBKF1A", "RBKF2A"],
