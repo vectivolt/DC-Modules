@@ -489,6 +489,31 @@ const HAND = {
     ["ROVD0", "ROVD1", "ROVD2", "ROVD3", "ROVD4", "ROVD5", "ROVD6", "ROVD7"],
     ["ROVDL", "COVDF", "UIVOV"],
   ],
+  // The safety interlock runs watchdog -> AND gate -> gate enable, so draw it in that order. The
+  // packed layout put the AND gate in column 1 and the watchdog that feeds it in column 3, with all
+  // nine passives dumped in a fourth column away from the part each belongs to. Now each IC sits
+  // with its own passives: watchdog with its reset/window caps and WDO pull-up, AND gate with its
+  // input pull-downs and gate-enable pull-down, fault and ready conditioning last.
+  // Composed and REJECTED, both for the same reason -- their hand frame is a different SHAPE from
+  // the one the column search produces, and on these sheets that costs more than the reading order
+  // gains. Recorded so they are not retried blind:
+  //   INPUT-EMI / EMI-FILTER  chain order (CM stage + its X bank, CM stage + DM chokes, output X
+  //     and Y caps). One wide 6-pin choke per column widens the frame: 60kw-acdc 44600x37050 ->
+  //     52600x36050, +15% area, worst void 4.6% -> 6.7%.
+  //   AUX-POWER / FLYBACK  work order (power stage and clamp, controller with timing and comp,
+  //     startup and feedback dividers). Far worse: worst void 20.5%, and 30kw-acdc and 60kw-acdc
+  //     both failed the layout gate at 19% and 16% largest empty rectangle.
+  // Retry either by matching the packed frame's aspect, as with VIENNA-PFC.
+
+  // Both boards carry this section under one title but with A/B designators, so each column lists
+  // both; the variant that is not on the board filters out. Naming only one set silently dropped
+  // the other board's twelve parts into a single fall-through column.
+  "CONTROL / SAFETY": [
+    ["USUPA", "CRSTA", "CWDA", "CSFA", "RWPUA", "USUPB", "CRSTB", "CWDB", "CSFB", "RWPUB"],
+    ["UANDA", "RENLA", "RENRA", "RGPDA", "UANDB", "RENLB", "RENRB", "RGPDB"],
+    ["CFLTA", "RFLTA", "RRDYA", "CFLTB", "RFLTB", "RRDYB"],
+  ],
+
   // Power ENTERS at the studs, so the studs come first. Both of these drew the downstream part on
   // the left: AC-ENTRY had the fuses left of the terminals feeding them, BUS-IN the link caps left
   // of the DC bus studs. Only the entry terminals are named -- the fuses and caps fall through to
