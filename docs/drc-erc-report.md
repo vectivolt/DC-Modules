@@ -148,6 +148,45 @@ fails loudly.
 0 ink collisions, layout gate passes.
 
 
+## R7 — isolated voltage senses have a floating output leg (found 2026-09-06, OPEN — needs a decision)
+
+Found by `calculations/unwired-pins.mjs`, a new check that compares the pins a symbol DECLARES
+against the pins any trace actually reaches in the built netlist. ERC cannot see this class of
+defect: nothing is "unbound" from its point of view, because the pin was never asked to connect.
+
+`ISOAMP_PINS` declares `pin6: "OUTN"`. `AMC1311`/`AMC1350` have a **differential** output, and
+`IsoVSense` traces only `OUTP`. So on all eight isolated voltage senses —
+`UIVV1/2/3` (line), `UIVBP`/`UIVBM` (bus, midpoint), `UIVOA`/`UIVOB`/`UIVOV` (bank, output) —
+the negative output leg is floating.
+
+**The design already does this correctly elsewhere.** `OutputShunt` routes `USHO.OUTN` to
+`SNS_IOUTN` and into `ULLC.16`, so the current sense is read as a true differential pair. The
+voltage senses are wired as if single-ended, but a single-ended reading needs a defined reference
+and the floating leg does not provide one.
+
+**Do NOT "fix" this by tying OUTN to AGND.** These outputs swing differentially about a
+common mode near VDD2/2, so grounding one leg fights the output driver. The two real options are:
+
+1. Route each `OUTN` to the MCU as the negative of a differential ADC pair, matching what
+   `SNS_IOUT`/`SNS_IOUTN` already do — costs 8 more ADC inputs and a pin-map revision.
+2. Terminate per the datasheet's single-ended application circuit, if that part supports one.
+
+Both are design decisions with MCU pin-allocation consequences, so this is recorded rather than
+guessed at. It is listed with the other open MCU-architecture items in `docs/assumptions.md`.
+
+**The check is now standing.** `unwired-pins.mjs` reports, per SKU, every declared pin no trace
+reaches, minus a KNOWN list where each exclusion carries its reason (explicit NC pins, spare AND
+gate outputs, the shift-register cascade output, internally-paired tactile contacts, the CAN
+shield, harness spares). 30 kW: 1930 declared pins, 185 unreached, 177 with a recorded reason,
+**8 left to adjudicate — all of them this one finding.**
+
+A first version of the check grepped the `.tsx` source and was wrong in both directions: it could
+not see traces generated in a loop (`.USR1 > .${q}`), so it cried wolf over the entire HMI display
+and shift register, and it matched pin names globally, so a pin wired on one part looked wired on
+every part sharing a pin map — which is exactly how it MISSED `OUTN` at first. Working off the
+built netlist removes both ambiguities.
+
+
 ## Schematic-layout gate (rev D.2, E34 — 2026-09-05)
 
 The sheets themselves are now a verified artifact:
