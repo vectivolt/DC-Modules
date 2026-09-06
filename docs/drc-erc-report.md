@@ -192,6 +192,39 @@ relays (needing the mirror-contact p/ns), the fuse holder, a 6x6 tactile, the CA
 choke and the 2-digit display. Nothing else on any sheet.
 
 
+## R8 — KPREA/KPREB specify a part family that cannot meet the requirement (found 2026-09-06, OPEN)
+
+Found by going to the manufacturer datasheets for the footprints that LCSC could not resolve.
+Two of the three relay families resolved cleanly (see R-notes in `lcsc-map.mjs`); the third did
+not, and the reason is a real specification error rather than a missing land.
+
+`KPREA` / `KPREB` carry the BOM p/n **`HFE9-10A-1kV-M`**. The Hongfa **HFE9** is a
+*"MINIATURE HIGH POWER **LATCHING** RELAY"*. It fails the design in three independent ways:
+
+| requirement (E30 / schematic) | HFE9 actual | verdict |
+|---|---|---|
+| switch the bank rail, 1 kV class | **max switching voltage 250 VAC** | wrong voltage class |
+| monostable coil, driven continuously by the ULN2803 on `COIL_KPRE*` | **latching** — 50 ms set/reset pulses, holds state with the coil unpowered | wrong drive, and it would not default open on power loss |
+| mirror contact for `RELAY_FB_KPRE*` readback | contact form **1A or 1B only**, no auxiliary contact | the readback has nothing to read |
+
+The schematic already draws all three requirements: `KPREA.4/6` on the bank rail, `KPREA.1/8` on
+`V24`/`COIL_KPREA` (continuous drive), and `KPREA.3/5` on `RELAY_FB_KPREA`/`DGND` (the mirror).
+So the drawing is right and the **part number is wrong** — `HFE9-10A-1kV-M` reads like a
+requirement summary that was never checked against a real Hongfa part.
+
+The latching behaviour is the safety-relevant one: a precharge bypass relay that holds its last
+state through a power loss is the opposite of what a default-open precharge path needs.
+
+**Suggested resolution** (needs sign-off, not guessing): re-specify against a family that already
+has all three properties in its catalogue, both of which this session confirmed from datasheets —
+`HFE82V-20` or `-40E` (1000 VDC class, `HA` auxiliary contact option, monostable) for the bank
+side, or the `HF167F/024-HATF(764)` used for the AC-DC precharge bypass. Current through KPRE* is
+limited by `RPREA`/`RPREB` (10 R 25 W pulse), so a 20-40 A frame is ample.
+
+No footprint has been drawn for `RELAY_HFE9_PCB` — drawing a land for a part that cannot be used
+would only make the error harder to see.
+
+
 ## R7 — isolated voltage senses have a floating output leg (found 2026-09-06, OPEN — needs a decision)
 
 Found by `calculations/unwired-pins.mjs`, a new check that compares the pins a symbol DECLARES
