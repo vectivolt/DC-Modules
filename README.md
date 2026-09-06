@@ -101,7 +101,7 @@ mindmap
       run-all.sh — one-command reproduction
     kicad5/
       DC-Modules-<sku>-SHIP.zip — the release schematics
-      6 sheets · 2819 symbols · 8049 pins verified
+      6 sheets · 217 sections · 2819 symbols · 8053 pins verified
     simulation-results/
       metrics CSVs + SVG plots
     docs/

@@ -3,7 +3,7 @@
 > **2026-09-06 update — this path is superseded.** The release drawing set is now the KiCad-5
 > import set, `kicad5/DC-Modules-<sku>-SHIP.zip` (see `docs/schematic-drawing-set.md`). That is
 > **option (b) below realised**: a file-based import instead of pin-by-pin port placement, which
-> sidesteps blockers 1-3 entirely. It lands 8049/8049 pins correct where this pin-by-pin
+> sidesteps blockers 1-3 entirely. It lands 8053/8053 pins correct where this pin-by-pin
 > transcription peaked at 94.08 %.
 >
 > Keep this document for the tool limitations it records — they are reproducible, they are why

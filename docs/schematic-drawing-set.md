@@ -26,7 +26,7 @@ are all older than the SHIP set. Import nothing from there.
 | 120 kW AC-DC | 603 | 45 | 54600 × 42300 |
 | 120 kW DC-DC | 744 | 45 | 55600 × 47550 |
 
-2819 symbols and 8049 connected pins over the set.
+2819 symbols and 8053 connected pins over the set.
 
 ## Every sheet says what it is
 
@@ -68,6 +68,44 @@ section frame anywhere in the set, and the longest wire on any sheet is 200 mil.
 for what they join (`UIVOA_VINP`, `RBALTA_M`, `RV1D_01`), not auto-numbered; 1144 `N_<side>_<n>`
 names were eliminated.
 
+## Composed sections, and the rule that governs them
+
+Packing places sections. It does not decide the order of parts *inside* one — that fell out of the
+netlist, so a section could be electrically perfect and still read as a list. A gate driver drawn
+after the resistors it drives, both fan headers grouped together with both tach pull-ups after
+them, a connector drawn last behind the passives hanging off it: all correct, none legible.
+
+**154 of the 217 sections now carry an explicit column plan** (`HAND` in `kicad5-gen.mjs`), keyed by
+section title with digits stripped, so one entry covers every replicated instance — `LEG-#` composes
+all 21 LLC legs, `PHASE-[ABC]#` all 21 Vienna phases. Each plan is a list of columns, each column a
+list of designators in signal order. Anything the plan does not name is appended as a final column,
+so a plan can never silently drop a part; the column geometry is the packer's own, so composed and
+packed sections stay visually identical.
+
+**The rule: a plan is free only when its frame matches the packed frame EXACTLY** — same span, same
+height, on all three SKUs. Then nothing else on the sheet moves. Anything else must be measured on
+all six sheets before it is kept, and the reason is that the cost is not proportional to the change:
+
+- `INPUT-EMI / SURGE`, grouped cleanly 6/3, held its span and cost **500 mil** of height. That
+  cascaded to **+21 % area** on 30 kW AC-DC (42600×28800 → 49600×30050). Rejected.
+- `BANKS-SP / SP-MATRIX` produced a frame **shorter on every SKU** and still grew 120 kW DC-DC by
+  8 %. Smaller is not safer; only exact is safe.
+- `AUX-POWER / FANS` in two columns was also shorter than packed, and sent the worst enclosed void
+  from 4.6 % to 10.2 %. In **one** column it matched exactly and was free.
+
+That last pair is the recurring shape: when a plan misses, the usual fix is fewer columns, not a
+different grouping. Thirteen sections have been probed, measured and **left packed on the evidence**,
+each recorded at its `HAND` entry with the numbers that rejected it, so none is retried blind.
+
+To probe a candidate, print the packed frame and compare:
+
+```
+FRAMES=1 node calculations/kicad5-gen.mjs 30kw 2>&1 >/dev/null | grep '<section title>'
+```
+
+Add the plan, re-run for all three SKUs, and keep it only if `span` and `h` are unchanged
+everywhere — otherwise render the sheets and read the void and dimension numbers before deciding.
+
 ## The checks, and what they currently measure
 
 Each tool measures a property of the **emitted `.sch`**, so it audits the deliverable rather than
@@ -75,12 +113,12 @@ the intent. All six sheets currently pass every one:
 
 | Tool | Checks | Current |
 |---|---|---|
-| `kicad5-verify.mjs` | every pin against an independently-built netlist | **8049 / 8049 correct, 0 wrong, 0 unconnected** |
+| `kicad5-verify.mjs` | every pin against an independently-built netlist | **8053 / 8053 correct, 0 wrong, 0 unconnected** |
 | `kicad5-visual.mjs` | ink collisions: labels vs symbols vs field text | **0 collisions** |
 | `alignment-audit.mjs` | FRAME-X/Y, SYM-X, PITCH, STUB near-misses | **no near-miss anywhere; 1 stub length** |
-| `wiring-audit.mjs` | LONG, ESCAPE, CROSS, FLOW | **longest 200 mil, 0 escapes, 0 crossings, 1999/1999 flow** |
-| `frame-padding.mjs` | inner padding of every section frame | **no overflow; min clearance L/R 221, T 65, B 205** |
-| `void-audit.mjs` | worst **enclosed** hole per sheet (whitespace with drawing on both sides) | **worst 8.2 %** (limit 12 %) |
+| `wiring-audit.mjs` | LONG, ESCAPE, CROSS, FLOW | **longest 200 mil, 0 escapes, 0 crossings, 7271/7271 flow** |
+| `frame-padding.mjs` | inner padding of every section frame | **no overflow; min clearance L/R 249, T 65, B 205** |
+| `void-audit.mjs` | worst **enclosed** hole per sheet (whitespace with drawing on both sides) | **worst 4.6 %** (limit 12 %) |
 | `cell-uniformity.mjs` | every replicated cell identical to its twins | **21 legs, 21 tanks, 7+7+7 phases** |
 | `review-checks.mjs` | the release gates (incl. LCSC, class and printed-value rules) | **all pass** |
 
@@ -132,9 +170,10 @@ the slack outward to the paper edge:
 | | 30 kW AC | 30 kW DC | 60 kW AC | 60 kW DC | 120 kW AC | 120 kW DC |
 |---|---|---|---|---|---|---|
 | before | 4.6 % | 5.4 % | **8.2 %** | 5.6 % | 3.2 % | 1.3 % |
-| after | 4.6 % | 4.0 % | **4.6 %** | 4.9 % | 3.2 % | 1.2 % |
+| after the abut fix | 4.6 % | 4.0 % | **4.6 %** | 4.9 % | 3.2 % | 1.2 % |
+| now, composed | 4.5 % | 4.1 % | **4.6 %** | 4.1 % | 3.0 % | 3.5 % |
 
-Worst across the set **8.2 % → 4.9 %**; every sheet improved or held and none regressed, which was
+Worst across the set **8.2 % → 4.9 %** (**4.6 %** today, after the composition work below); every sheet improved or held and none regressed, which was
 the condition for keeping it. Confirmed by eye as well as by the metric: the notes now continue the
 last column instead of floating alone with a hole beside them. The gate stays at 12 % so a future
 packing change that opens a real hole still fails.
@@ -147,6 +186,10 @@ Two rules, both learned the expensive way:
 weights or the void maths reshuffles the whole packing and can wreck two sheets to improve one. If
 you must touch scoring, sweep the weight and read `largest void` per sheet — that number has
 tracked the eye better than fill percentage or raggedness every time.
+
+**An exact frame match is the only free layout edit.** A composed section whose frame is even
+500 mil taller, or merely a different shape at the same span, can move every section packed
+after it — the observed range is +8 % to +21 % sheet area. Measure, do not reason.
 
 **Two changes were tested and reverted on the evidence**, and are recorded so they are not retried
 blind: reweighting raggedness (the metric improved 20350 → 8500, the sheet looked visibly worse,

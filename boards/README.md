@@ -67,7 +67,7 @@ gate them: [`docs/schematic-drawing-set.md`](../docs/schematic-drawing-set.md).
 
 Cross-section connectivity is net-labels-only (`schSectionName` + `schMaxTraceDistance={0}`); wires
 are reserved for local in-section connections, and no wire leaves its section frame anywhere in the
-set. The set is verified pin-by-pin against an independently-built netlist — **8049/8049 correct**.
+set. The set is verified pin-by-pin against an independently-built netlist — **8053/8053 correct**.
 
 The per-board SVGs at `boards/<sku>/out/<side>-schematic.svg` (`schematic-export.mjs`, checked by
 `schematic-check.mjs`) are still generated and still useful for a quick per-board look, but they are

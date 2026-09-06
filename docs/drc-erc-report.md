@@ -550,7 +550,7 @@ The sheets themselves are now a verified artifact:
 |---|---|---|
 | Symbol-overlap count per board | `node calculations/schematic-check.mjs <sku>/<side>` | **0 on every board** (was ~290/board before the E34 re-layout) |
 | Cross-section wiring policy | `schSectionName` on every component + `schMaxTraceDistance={0}` | cross-section nets render as named labels; longest remaining wire ≤ ~17 units (local, intra-section) vs 37+ before |
-| **Release sheets** | `node calculations/kicad5-gen.mjs` | `kicad5/DC-Modules-<sku>-SHIP.zip` — 6 sheets, titled section frames, per-sheet SKU/board identification, verified **8049/8049 pins**; gated by `kicad5-verify` · `kicad5-visual` · `alignment-audit` · `wiring-audit` · `frame-padding` (see `docs/schematic-drawing-set.md`) |
+| **Release sheets** | `node calculations/kicad5-gen.mjs` | `kicad5/DC-Modules-<sku>-SHIP.zip` — 6 sheets, titled section frames, per-sheet SKU/board identification, verified **8053/8053 pins**; gated by `kicad5-verify` · `kicad5-visual` · `alignment-audit` · `wiring-audit` · `frame-padding` · `void-audit` · `cell-uniformity` (see `docs/schematic-drawing-set.md`) |
 | Per-board section SVGs (secondary) | `node calculations/schematic-export.mjs` | `boards/<sku>/out/<side>-schematic.svg` — titled dashed frames per functional section (computed from real geometry, never eyeballed), title block, auto-fit canvas |
 
 Regenerate after any schematic edit: `tsci build` the board(s) → `schematic-check` (must stay 0)

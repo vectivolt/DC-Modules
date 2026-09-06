@@ -34,7 +34,7 @@ The release schematics are `kicad5/DC-Modules-<sku>-SHIP.zip`; see `docs/schemat
 | Script | Owns |
 |---|---|
 | `kicad5-gen.mjs` | **the release sheets** — packing, framing, labelling; re-zips the SHIP archive in the same run |
-| `kicad5-verify.mjs` | every pin vs an independently-built netlist (**8049/8049**, 0 wrong, 0 unconnected) |
+| `kicad5-verify.mjs` | every pin vs an independently-built netlist (**8053/8053**, 0 wrong, 0 unconnected) |
 | `kicad5-visual.mjs` | ink collisions between labels, symbols and field text |
 | `alignment-audit.mjs` | near-miss alignment: FRAME-X/Y, SYM-X, PITCH, STUB |
 | `wiring-audit.mjs` | wiring rules: LONG, ESCAPE (no wire leaves a frame), CROSS, FLOW |
