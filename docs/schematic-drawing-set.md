@@ -85,8 +85,19 @@ the intent. All six sheets currently pass every one:
 Also uniform across the set: one symbol orientation, four text sizes, two frame widths per sheet,
 400/500 mil gaps, and 229/229 titled boxes at a single (60, 160) inset.
 
-The generator is deterministic — regenerating from source reproduces the sheets byte for byte, and
-the packaged zips are verified to match the directories they were built from.
+**The whole output is a pure function of the source.** Regenerating reproduces the sheets *and the
+zips* byte for byte, so `git status` after a rebuild is a real staleness gate — if nothing is
+modified, the committed deliverable is current. Two things had to be pinned to get there, and both
+were previously blind spots rather than cosmetic:
+
+- the sheet `Date` came from `new Date()`, so every regeneration rewrote all six sheets and real
+  drift could not be told from date churn. It is now pinned to `DATE` alongside `REV`; bump it with
+  the revision.
+- a zip stores each member's mtime, so an identical-content rebuild still produced different bytes.
+  Member times are pinned and platform extra-fields dropped (`zip -qX`).
+
+Running `kicad5-gen.mjs` with no argument also used to build **only 30 kW** while printing a
+confident success line, leaving the other two SKUs stale. No argument now means all three.
 
 ## Working on the layout
 

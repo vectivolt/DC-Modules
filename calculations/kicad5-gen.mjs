@@ -23,7 +23,17 @@ import { DB, skuOverrides } from "./cost/parts-db.mjs";
 import { footprintForRef, realPackages } from "./footprint-map.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SKU = process.argv[2] || "30kw";
+
+// No SKU argument used to mean "30kw" while printing a confident success line, so `node
+// kicad5-gen.mjs` looked like a full rebuild and silently left 60kw and 120kw stale -- the same
+// blind spot that let the zips drift. No argument now means ALL THREE.
+if (!process.argv[2]) {
+  const { execFileSync } = await import("node:child_process");
+  for (const sku of ["30kw", "60kw", "120kw"])
+    execFileSync(process.execPath, [fileURLToPath(import.meta.url), sku], { stdio: "inherit" });
+  process.exit(0);
+}
+const SKU = process.argv[2];
 const SRC = SKU === "30kw"
   ? join(ROOT, "calculations/out/easyeda/apply")
   : join(ROOT, "calculations/out/easyeda", SKU, "apply");
@@ -43,6 +53,11 @@ const fpFor = (designator, mpn) => {
   return (m && pkg && pkg !== m[2]) ? `${m[1]}${pkg}` : cls;
 };
 const REV = "D.3";   // D.1 -> D.2 output-return fix (R4) -> D.3 importer-mirror fix (R5)
+// Pinned to the revision, NOT new Date(): a release sheet should carry its release date, and
+// stamping "whenever someone last ran the generator" made the output non-reproducible across
+// days -- every regen rewrote all six .sch files, so a real drift could not be told from date
+// churn. Bump this with REV.
+const DATE = "2026-09-06";
 // An early run wrote 30 kW sheets into the 60/120 kW directories and they sat there for days.
 // Packaging lists files explicitly so nothing shipped, but a stale foreign-SKU sheet in an output
 // folder is a trap — clear anything that is not this SKU's before writing.
@@ -837,7 +852,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     // The title block is the sheet's identity when it is printed on its own: which SKU, which
     // board of the sandwich, which sheet of how many, and what the board contains.
     + `Title "${SHEET_TITLES[key] ?? page.title ?? page.page}"\n`
-    + `Date "${new Date().toISOString().slice(0, 10)}"\nRev "${REV}"\n`
+    + `Date "${DATE}"\nRev "${REV}"\n`
     + `Comp "DC-Modules ${ident.sku} - board ${ident.board}, sheet ${ident.sheet}"\n`
     + `Comment1 "Module ${ident.sku} = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"\n`
     + `Comment2 "Content: ${ident.cells}"\n`
@@ -860,7 +875,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   });
   const rootSch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User 12000 8000\nencoding utf-8\nSheet 1 1\n`
-    + `Title "DC-Modules ${KW} kW module - schematic set"\nDate "${new Date().toISOString().slice(0, 10)}"\nRev "D.1"\n`
+    + `Title "DC-Modules ${KW} kW module - schematic set"\nDate "${DATE}"\nRev "D.1"\n`
     + `Comp "DC-Modules"\nComment1 "AC-DC (Vienna PFC) sheets 1-6 - DC-DC (3-phase LLC) sheets 7-12"\n`
     + `Comment2 "${CELLS} Vienna PFC cells + ${CELLS} 3-phase LLC cells per module"\nComment3 ""\nComment4 ""\n$EndDescr\n`
     + `${root}$EndSCHEMATC\n`;
@@ -879,10 +894,15 @@ writeFileSync(join(OUT, `dc-modules-${SKU}.pro`),
   const { execFileSync } = await import("node:child_process");
   const zip = join(ROOT, "kicad5", `DC-Modules-${SKU}-SHIP.zip`);
   try { unlinkSync(zip); } catch {}
-  execFileSync("zip", ["-q", "-j", zip,
-    ...files.map((f) => join(OUT, `${f}.sch`)),
+  const members = [...files.map((f) => join(OUT, `${f}.sch`)),
     join(OUT, `${LIB_NAME}.lib`), join(OUT, `${LIB_NAME}.dcm`),
-    join(OUT, `dc-modules-${SKU}.pro`), join(OUT, `dc-modules-${SKU}.sch`)]);
+    join(OUT, `dc-modules-${SKU}.pro`), join(OUT, `dc-modules-${SKU}.sch`)];
+  // A zip stores each member's mtime, so an identical-content rebuild still produced different
+  // bytes -- which meant `git status` after a regen could not tell a stale zip from a fresh one,
+  // the very blind spot that let these drift a day behind. Pin the mtimes and drop the platform
+  // extra-fields, and the zip becomes a pure function of the sheets.
+  execFileSync("touch", ["-t", `${DATE.replace(/-/g, "")}0000`, ...members]);
+  execFileSync("zip", ["-qX", "-j", zip, ...members]);
   console.log(`   packaged → kicad5/DC-Modules-${SKU}-SHIP.zip`);
 }
 console.log(`\n${files.length} sheets · ${totalComps} components · ${totalLabels} labels · ${lib.size} symbols → kicad5/dc-modules-${SKU}/`);
