@@ -61,7 +61,9 @@ for (const SKU of SKUS) {
     }
     const panels = [];
     for (let i = 0; i < lines.length; i++)
-      if (lines[i] === "SHEET INDEX") panels.push(lines[i - 1].split(/\s+/).slice(2, 4).map(Number));
+      // both filler panels use the frame border style but are NOT section frames: they sit at
+      // void coordinates, so comparing their edges to the frame grid flags correct work
+      if (lines[i] === "SHEET INDEX" || lines[i] === "NET NAMING") panels.push(lines[i - 1].split(/\s+/).slice(2, 4).map(Number));
     const frames = [];
     for (let i = 0; i + 3 < notes.length; i += 4) {
       const seg = notes.slice(i, i + 4);

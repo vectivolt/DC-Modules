@@ -40,6 +40,26 @@ COMMS-HMI   -   2 sections
 Text Notes 32860 26150 0    60   ~ 0
 rev D.3   -   33 sections   -   454 components
 Wire Notes Line
+	23200 26900 32050 26900
+Wire Notes Line
+	32050 26900 32050 29050
+Wire Notes Line
+	32050 29050 23200 29050
+Wire Notes Line
+	23200 29050 23200 26900
+Text Notes 23400 27240 0    79   ~ 16
+NET NAMING
+Text Notes 23400 27500 0    60   ~ 0
+internal junctions are named for what they join
+Text Notes 23450 27900 0    60   ~ 0
+U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
+Text Notes 23450 28200 0    60   ~ 0
+R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
+Text Notes 27650 27900 0    60   ~ 0
+R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
+Text Notes 27650 28200 0    60   ~ 0
+all others are explicit design nets
+Wire Notes Line
 	500 500 4600 500
 Wire Notes Line
 	4600 500 4600 4000

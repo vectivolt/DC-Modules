@@ -583,48 +583,63 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     return `Text Label ${x} ${y} ${dir}    45   ~ 0\n${net}\n`;
   };
 
-  // The biggest remaining hole is not a packing failure to weight away -- family grouping is a hard
-  // gate, so a frame CANNOT move to whichever column is short, and the two goals genuinely conflict
-  // (grouping wins, by the user's instruction). What a draftsman does with the leftover is put the
-  // drawing's index in it. Real content, derived from the sheet, in the space the packer cannot use.
+  // The biggest remaining holes are not packing failures to weight away -- family grouping is a
+  // hard gate, so a frame CANNOT move to whichever column is short, and the two goals genuinely
+  // conflict (grouping wins, by the user's instruction). What a draftsman does with the leftover is
+  // put real content in it. Measuring the top-5 empty rectangles showed some sheets carry TWO
+  // comparable holes (30kw-acdc: 7.8% and 7.0%) while only the largest was ever filled, so this
+  // fills the top two: the sheet index, then a legend for the net-naming convention.
   {
-    const V = largestVoid(blocks.map((b) => ({ x0: b.X, y0: b.Y, x1: b.X + b.w, y1: b.Y + b.h })),
-      sheetW, sheetH);
-    const PAD = 500, LH = 300, HEAD = 340 + 260 + Math.round(LH * 1.4);
-    const px0 = snap(V.x0 + PAD), py0 = snap(V.y0 + PAD);
-    const px1 = snap(V.x1 - PAD), maxY = snap(V.y1 - PAD);
+    const used = blocks.map((b) => ({ x0: b.X, y0: b.Y, x1: b.X + b.w, y1: b.Y + b.h }));
+    const PAD = 500, LH = 300, CW = 4200, HEAD = 340 + 260 + Math.round(LH * 1.4);
+    const drawPanel = (V, title, sub, rows, footer) => {
+      const px0 = snap(V.x0 + PAD), py0 = snap(V.y0 + PAD);
+      const px1 = snap(V.x1 - PAD), maxY = snap(V.y1 - PAD);
+      // The hole is whatever shape the packer leaves -- a tall slot on one sheet, a wide low band
+      // on another -- so the panel lays itself out in as many columns as the space affords.
+      const perCol = Math.floor((maxY - py0 - HEAD - LH - Math.round(PAD / 2)) / LH);
+      const maxCols = Math.floor((px1 - px0 - 400) / CW);
+      if (perCol < 2 || maxCols < 1) return null;
+      const ncols = Math.min(maxCols, Math.ceil(rows.length / perCol));
+      const cap = ncols * perCol, over = rows.length > cap;
+      const shown = rows.slice(0, over ? cap - 1 : rows.length);
+      const cell = [...shown, ...(over ? [`+ ${rows.length - shown.length} more`] : [])];
+      const nRow = Math.min(perCol, Math.max(1, Math.ceil(cell.length / ncols)));
+      const px1b = snap(Math.min(px1, px0 + 260 + ncols * CW + 200));
+      const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
+      body += `Wire Notes Line\n\t${px0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
+        + `Wire Notes Line\n\t${px1b} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
+      body += `Text Notes ${px0 + 200} ${py0 + 340} 0    79   ~ 16\n${title}\n`;
+      body += `Text Notes ${px0 + 200} ${py0 + 600} 0    60   ~ 0\n${sub}\n`;
+      cell.forEach((t, i) => {
+        const cx = px0 + 260 + Math.floor(i / nRow) * CW, cy = py0 + HEAD + (i % nRow) * LH;
+        body += `Text Notes ${snap(cx)} ${snap(cy)} 0    60   ~ 0\n${t}\n`;
+      });
+      if (footer) body += `Text Notes ${px0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\n${footer}\n`;
+      return { x0: px0, y0: py0, x1: px1b, y1: py1 };
+    };
     const fams = new Map();
     for (const b of blocks) {
       const f = String(b.title).split(" / ")[0];
       fams.set(f, (fams.get(f) ?? 0) + 1);
     }
-    const rows = [...fams].sort((a, b2) => b2[1] - a[1] || a[0].localeCompare(b2[0]));
-    // The hole is whatever shape the packer leaves -- a tall slot on one sheet, a wide low band on
-    // another -- so the index lays itself out in as many columns as the space affords instead of
-    // assuming one. A sheet with no real hole (60kw leaves a 1250 mil strip) correctly gets none.
-    const CW = 4200;
-    const perCol = Math.floor((maxY - py0 - HEAD - LH - Math.round(PAD / 2)) / LH);
-    const maxCols = Math.floor((px1 - px0 - 400) / CW);
-    console.error(`   [void]   ${page.page.padEnd(11)} ${Math.round(px1 - px0)} x ${Math.round(maxY - py0)} mil  perCol=${perCol} maxCols=${maxCols}`);
-    if (perCol >= 2 && maxCols >= 1) {
-      const ncols = Math.min(maxCols, Math.ceil(rows.length / perCol));
-      const cap = ncols * perCol;
-      const over = rows.length > cap;
-      const shown = rows.slice(0, over ? cap - 1 : rows.length);
-      const nRow = Math.min(perCol, Math.max(1, Math.ceil((shown.length + (over ? 1 : 0)) / ncols)));
-      const px1b = snap(Math.min(px1, px0 + 260 + ncols * CW + 200));
-      const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
-      body += `Wire Notes Line\n\t${px0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
-        + `Wire Notes Line\n\t${px1b} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
-      body += `Text Notes ${px0 + 200} ${py0 + 340} 0    79   ~ 16\nSHEET INDEX\n`;
-      body += `Text Notes ${px0 + 200} ${py0 + 600} 0    60   ~ 0\n${ident.sku} ${ident.board} - ${ident.sheet}\n`;
-      const cell = [...shown.map(([f, n]) => `${f}   -   ${n} section${n > 1 ? "s" : ""}`),
-        ...(over ? [`+ ${rows.length - shown.length} more`] : [])];
-      cell.forEach((t, i) => {
-        const cx = px0 + 260 + Math.floor(i / nRow) * CW, cy = py0 + HEAD + (i % nRow) * LH;
-        body += `Text Notes ${snap(cx)} ${snap(cy)} 0    60   ~ 0\n${t}\n`;
-      });
-      body += `Text Notes ${px0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\nrev ${REV}   -   ${blocks.length} sections   -   ${page.total} components\n`;
+    const famRows = [...fams].sort((a, b2) => b2[1] - a[1] || a[0].localeCompare(b2[0]))
+      .map(([f, n]) => `${f}   -   ${n} section${n > 1 ? "s" : ""}`);
+    const p1 = drawPanel(largestVoid(used, sheetW, sheetH), "SHEET INDEX",
+      `${ident.sku} ${ident.board} - ${ident.sheet}`, famRows,
+      `rev ${REV}   -   ${blocks.length} sections   -   ${page.total} components`);
+    if (p1) {
+      used.push(p1);
+      // Second hole gets a legend for the net names. Worth the space: every internal junction on
+      // this drawing is named for what it JOINS rather than by an ordinal, and that convention is
+      // invisible unless it is written down somewhere on the sheet.
+      drawPanel(largestVoid(used, sheetW, sheetH), "NET NAMING",
+        "internal junctions are named for what they join", [
+          "U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP",
+          "R<stem>_M        midpoint of a series pair  e.g. RBALTA_M",
+          "R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01",
+          "all others are explicit design nets",
+        ], "");
     }
   }
 

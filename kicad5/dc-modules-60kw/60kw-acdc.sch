@@ -40,6 +40,26 @@ INPUT-EMI   -   4 sections
 Text Notes 33510 22200 0    60   ~ 0
 rev D.3   -   36 sections   -   403 components
 Wire Notes Line
+	33250 23250 37900 23250
+Wire Notes Line
+	37900 23250 37900 26000
+Wire Notes Line
+	37900 26000 33250 26000
+Wire Notes Line
+	33250 26000 33250 23250
+Text Notes 33450 23590 0    79   ~ 16
+NET NAMING
+Text Notes 33450 23850 0    60   ~ 0
+internal junctions are named for what they join
+Text Notes 33500 24250 0    60   ~ 0
+U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
+Text Notes 33500 24550 0    60   ~ 0
+R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
+Text Notes 33500 24850 0    60   ~ 0
+R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
+Text Notes 33500 25150 0    60   ~ 0
+all others are explicit design nets
+Wire Notes Line
 	8500 14000 12100 14000
 Wire Notes Line
 	12100 14000 12100 17250
