@@ -23,7 +23,7 @@
      {
       "pin_number": 1,
       "name": "A",
-      "signal_name": "OUTN_SH"
+      "signal_name": "BKBN"
      },
      {
       "pin_number": 2,

@@ -7,4 +7,4 @@ version=1
 version=1
 LibDir=
 [eeschema/libraries]
-LibName1=dc-modules
+LibName1=dcmod-r4

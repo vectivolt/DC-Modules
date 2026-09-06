@@ -26,6 +26,10 @@ const SRC = SKU === "30kw"
   ? join(ROOT, "calculations/out/easyeda/apply")
   : join(ROOT, "calculations/out/easyeda", SKU, "apply");
 const OUT = join(ROOT, `kicad5/dc-modules-${SKU}`);
+// Library name is revision-stamped: EasyEDA will NOT overwrite an existing library of the same
+// name (it reports "A library with the same name already exists" and keeps the old symbols),
+// so a re-import would silently mix new sheets with stale pin geometry. Bump on any symbol change.
+const LIB_NAME = `dcmod-r4`;
 mkdirSync(OUT, { recursive: true });
 
 // ---- geometry in mils (50 mil grid) ------------------------------------------------------
@@ -77,6 +81,33 @@ const CAT = (value, mpn, pins) => {
 // ---- legacy .lib symbol library ----------------------------------------------------------
 const lib = new Map();
 const libName = (s) => String(s).replace(/[^A-Za-z0-9_.+-]/g, "_");
+
+// EasyEDA's KiCad-legacy importer places a symbol's pins at (ux+px, uy+py) — it does NOT apply
+// the "1 0 0 -1" orientation matrix that maps library Y-up to sheet Y-down. Measured, not
+// guessed: of 90 pins EasyEDA reported floating on 30kw-dcdc, this transform predicts all 90
+// (its only extra 9 are our deliberate no-connects). Pins at library Y=0 land correctly either
+// way, which is why most of the sheet survived — but 454 pins across the two 30 kW sheets
+// landed silently on the WRONG net, with no DRC warning at all.
+// So the library is written pre-mirrored about Y: EasyEDA mirrors it back and the sheet is
+// correct. Mirroring twice is the identity, so the round trip is exact.
+const mirrorLibY = (text) => text.split("\n").map((l) => {
+  const t = l.split(" ");
+  const neg = (i) => { t[i] = String(-Number(t[i])); };
+  const ang = (i) => { t[i] = String(((-Number(t[i])) % 3600 + 3600) % 3600); };
+  switch (t[0]) {
+    // X name num posx posy length orient ... -> posy is t[4], orientation t[6]
+    case "X": neg(4); if (t[6] === "U") t[6] = "D"; else if (t[6] === "D") t[6] = "U"; break;
+    case "S": neg(2); neg(4); break;
+    case "C": neg(2); break;
+    case "P": { const n = Number(t[1]); for (let k = 0; k < n; k++) neg(6 + 2 * k); break; }
+    case "A": { neg(2); const s0 = t[4], e0 = t[5]; t[4] = e0; t[5] = s0; ang(4); ang(5);
+                neg(11); neg(13);
+                const sx = t[10], sy = t[11]; t[10] = t[12]; t[11] = t[13]; t[12] = sx; t[13] = sy; break; }
+    case "F0": case "F1": case "F2": case "F3": neg(3); break;
+    default: return l;
+  }
+  return t.join(" ");
+}).join("\n");
 
 function termLib(pinNum, pinName) {
   const nm = `TERM_${pinNum}`;
@@ -264,7 +295,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
         const p0 = c.pins[0];
         const cx = snap(ox + 100), cyy = snap(oy + ROW / 2);
         const nm = termLib(p0.pin_number, p0.name);
-        body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
+        body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
           + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
@@ -277,7 +308,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       } else if (s.cat !== "IC") {
         const cx = snap(ox + 250), cyy = snap(oy + ROW / 2);
         const nm = passiveLib(s.cat, s.nums[0] ?? "1", s.nums[1] ?? "2");
-        body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
+        body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
           + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
@@ -294,7 +325,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       } else {
         const cx = snap(ox + s.halfW + 150), cyy = snap(oy + s.TEXT + s.topExtra + s.halfH);
         const nm = icLib(c.mpn || c.value, unionPins(c));
-        body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
+        body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
           + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
           + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
@@ -366,9 +397,9 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   writeFileSync(join(OUT, `dc-modules-${SKU}.sch`), rootSch);
 }
 
-writeFileSync(join(OUT, "dc-modules.lib"),
-  `EESchema-LIBRARY Version 2.4\n#encoding utf-8\n${[...lib.values()].join("")}#\n#End Library\n`);
-writeFileSync(join(OUT, "dc-modules.dcm"), `EESchema-DOCLIB  Version 2.0\n#\n#End Doc Library\n`);
+writeFileSync(join(OUT, `${LIB_NAME}.lib`),
+  mirrorLibY(`EESchema-LIBRARY Version 2.4\n#encoding utf-8\n${[...lib.values()].join("")}#\n#End Library\n`));
+writeFileSync(join(OUT, `${LIB_NAME}.dcm`), `EESchema-DOCLIB  Version 2.0\n#\n#End Doc Library\n`);
 writeFileSync(join(OUT, `dc-modules-${SKU}.pro`),
-  `update=Date\nversion=1\nlast_client=eeschema\n[general]\nversion=1\n[eeschema]\nversion=1\nLibDir=\n[eeschema/libraries]\nLibName1=dc-modules\n`);
+  `update=Date\nversion=1\nlast_client=eeschema\n[general]\nversion=1\n[eeschema]\nversion=1\nLibDir=\n[eeschema/libraries]\nLibName1=${LIB_NAME}\n`);
 console.log(`\n${files.length} sheets · ${totalComps} components · ${totalLabels} labels · ${lib.size} symbols → kicad5/dc-modules-${SKU}/`);

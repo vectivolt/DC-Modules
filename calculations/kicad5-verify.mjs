@@ -22,7 +22,8 @@ const SRC = SKU === "30kw" ? join(ROOT, "calculations/out/easyeda/apply") : join
 const SCH = join(ROOT, `kicad5/dc-modules-${SKU}`);
 
 // ---- library: symbol -> pins {num, x, y} and body extent -------------------------------
-const libText = readFileSync(join(SCH, "dc-modules.lib"), "utf8");
+const libFile = readdirSync(SCH).find((f) => f.endsWith(".lib"));
+const libText = readFileSync(join(SCH, libFile), "utf8");
 const LIB = new Map();
 for (const block of libText.split(/^DEF /m).slice(1)) {
   const name = block.split(/\s+/)[0];
@@ -96,8 +97,9 @@ for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
     const sym = LIB.get(c.lib);
     if (!sym) { problems.push(`${page.page}: unknown symbol ${c.lib} for ${c.ref}`); continue; }
     for (const p of sym.pins) {
-      // emitted orientation is always "1 0 0 -1": lib Y is up, sheet Y is down
-      const k = key(c.x + p.x, c.y - p.y);
+      // library is written pre-mirrored for EasyEDA, which places pins at (ux+px, uy+py);
+      // model that transform here so this checks what EasyEDA will actually see.
+      const k = key(c.x + p.x, c.y + p.y);
       if (!pinAt.has(k)) pinAt.set(k, []);
       pinAt.get(k).push(`${c.ref}.${p.num}`);
     }

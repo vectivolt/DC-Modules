@@ -62,6 +62,57 @@ were affected and all three are fixed by the one change.
 | 30kw acdc+dcdc | 1 (`OUTN_SH`) | **0** |
 
 
+## R5 — EasyEDA's KiCad importer mirrors symbols vertically (found 2026-09-06, FIXED)
+
+**Defect (in EasyEDA, worked around here).** EasyEDA Pro's KiCad-legacy importer places a
+symbol's pins at `(ux+px, uy+py)`. It does not apply the `1 0 0 -1` orientation matrix that maps
+library Y-up to sheet Y-down, so every symbol comes in mirrored about its own Y axis.
+
+**How it was found.** EasyEDA's schematic DRC warned that `SNS_IOUTN` was "a single network
+connected to only one component pin", though the netlist gives it two (`ULLC.16`, `USHO.6`).
+Zooming to `USHO` showed three pin rows on a two-pin-per-side symbol: a labelled chevron with no
+wire, a working row, and a wired pin with no label.
+
+**Proof, not inference.** Exporting EasyEDA's DRC log gave 90 floating pins on `30kw-dcdc`.
+Four candidate transforms were scored against that list:
+
+| Hypothesis | predicts | matches the 90 | extra |
+|---|---|---|---|
+| `(ux+px, uy-py)` — the KiCad matrix, what we assumed | 9 | 0 | 9 |
+| **`(ux+px, uy+py)` — vertical mirror** | **99** | **90 / 90** | **9** |
+| body-end shift outward by pin length | 943 | 90 | 853 |
+| `(ux-px, uy-py)` — horizontal mirror | 335 | 46 | 289 |
+
+The mirror hypothesis accounts for every reported pin, and its only 9 extras are exactly the 9
+deliberate no-connect pins on that sheet, which carry no wire by design.
+
+**Why it was nearly invisible.** Pins at library Y=0 are fixed points of the mirror, and 545 of
+the sheet's pins sit there — so most of the schematic imported correctly. The rest landed at the
+mirrored position, and where a symmetric symbol had another stub there, the pin bound to the
+**wrong net with no warning**:
+
+| | 30 kW acdc+dcdc, before the fix |
+|---|---|
+| pins on the correct net | 1116 |
+| pins floating (DRC warns) | 165 |
+| **pins silently on the WRONG net** | **454** |
+
+The 454 were the real hazard: the 165 floating pins were the only part EasyEDA complained about.
+
+**Fix.** `kicad5-gen.mjs` writes the `.lib` pre-mirrored about Y (`mirrorLibY`: pin `posy` and
+orientation U/D, plus `S`/`C`/`P`/`A`/`F*` geometry). Mirroring twice is the identity, so EasyEDA
+mirrors it back and the sheet renders and connects exactly as authored. `kicad5-verify.mjs` now
+resolves pins at `(c.x+p.x, c.y+p.y)` — it checks what EasyEDA will actually see, rather than a
+matrix convention EasyEDA ignores. That verifier is the standing gate.
+
+After the fix, all pins land on their intended net under EasyEDA's transform: 30 kW 1735,
+60 kW 2406, 120 kW 3788 — 100.00%, 0 floating, 0 wrong.
+
+**Note for future format changes:** the file is now only "upside down" if opened in genuine
+KiCad 5, which is a transport format here, not a deliverable. If EasyEDA ever fixes its importer,
+drop `mirrorLibY` and revert the verifier to `c.y - p.y` together — they must move as a pair.
+
+
 ## Schematic-layout gate (rev D.2, E34 — 2026-09-05)
 
 The sheets themselves are now a verified artifact:

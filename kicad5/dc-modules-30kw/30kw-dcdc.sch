@@ -24,7 +24,7 @@ Wire Notes Line
 Text Notes 560 660 0    79   ~ 16
 BANKS-SP / BANK-A
 $Comp
-L dc-modules:R CBA0B
+L dcmod-r4:R CBA0B
 U 1 1 5E00012D
 P 1250 1150
 F 0 "CBA0B" H 1250 990 50  0000 C CNN
@@ -44,7 +44,7 @@ Wire Wire Line
 Text GLabel 1700 1150 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:R CBA0T
+L dcmod-r4:R CBA0T
 U 1 1 5E00012E
 P 1250 1550
 F 0 "CBA0T" H 1250 1390 50  0000 C CNN
@@ -64,7 +64,7 @@ Wire Wire Line
 Text GLabel 1700 1550 0    40   Output ~ 0
 BKAM
 $Comp
-L dc-modules:R CBA1B
+L dcmod-r4:R CBA1B
 U 1 1 5E00012F
 P 1250 1950
 F 0 "CBA1B" H 1250 1790 50  0000 C CNN
@@ -84,7 +84,7 @@ Wire Wire Line
 Text GLabel 1700 1950 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:R CBA1T
+L dcmod-r4:R CBA1T
 U 1 1 5E000130
 P 1250 2350
 F 0 "CBA1T" H 1250 2190 50  0000 C CNN
@@ -104,7 +104,7 @@ Wire Wire Line
 Text GLabel 1700 2350 0    40   Output ~ 0
 BKAM
 $Comp
-L dc-modules:R CBAF
+L dcmod-r4:R CBAF
 U 1 1 5E000131
 P 1250 2750
 F 0 "CBAF" H 1250 2590 50  0000 C CNN
@@ -124,7 +124,7 @@ Wire Wire Line
 Text GLabel 1700 2750 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:R RBALBA1
+L dcmod-r4:R RBALBA1
 U 1 1 5E000132
 P 1250 3150
 F 0 "RBALBA1" H 1250 2990 50  0000 C CNN
@@ -144,7 +144,7 @@ Wire Wire Line
 Text GLabel 1700 3150 0    40   Output ~ 0
 N_DCDC_62
 $Comp
-L dc-modules:R RBALBA2
+L dcmod-r4:R RBALBA2
 U 1 1 5E000133
 P 3050 1150
 F 0 "RBALBA2" H 3050 990 50  0000 C CNN
@@ -164,7 +164,7 @@ Wire Wire Line
 Text GLabel 3500 1150 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:R RBALTA1
+L dcmod-r4:R RBALTA1
 U 1 1 5E000134
 P 2900 1550
 F 0 "RBALTA1" H 2900 1390 50  0000 C CNN
@@ -184,7 +184,7 @@ Wire Wire Line
 Text GLabel 3350 1550 0    40   Output ~ 0
 N_DCDC_61
 $Comp
-L dc-modules:R RBALTA2
+L dcmod-r4:R RBALTA2
 U 1 1 5E000135
 P 3050 1950
 F 0 "RBALTA2" H 3050 1790 50  0000 C CNN
@@ -214,7 +214,7 @@ Wire Notes Line
 Text Notes 4260 660 0    79   ~ 16
 BANKS-SP / BANK-B
 $Comp
-L dc-modules:R CBB0B
+L dcmod-r4:R CBB0B
 U 1 1 5E000136
 P 4950 1150
 F 0 "CBB0B" H 4950 990 50  0000 C CNN
@@ -234,7 +234,7 @@ Wire Wire Line
 Text GLabel 5400 1150 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:R CBB0T
+L dcmod-r4:R CBB0T
 U 1 1 5E000137
 P 4950 1550
 F 0 "CBB0T" H 4950 1390 50  0000 C CNN
@@ -254,7 +254,7 @@ Wire Wire Line
 Text GLabel 5400 1550 0    40   Output ~ 0
 BKBM
 $Comp
-L dc-modules:R CBB1B
+L dcmod-r4:R CBB1B
 U 1 1 5E000138
 P 4950 1950
 F 0 "CBB1B" H 4950 1790 50  0000 C CNN
@@ -274,7 +274,7 @@ Wire Wire Line
 Text GLabel 5400 1950 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:R CBB1T
+L dcmod-r4:R CBB1T
 U 1 1 5E000139
 P 4950 2350
 F 0 "CBB1T" H 4950 2190 50  0000 C CNN
@@ -294,7 +294,7 @@ Wire Wire Line
 Text GLabel 5400 2350 0    40   Output ~ 0
 BKBM
 $Comp
-L dc-modules:R CBBF
+L dcmod-r4:R CBBF
 U 1 1 5E00013A
 P 4950 2750
 F 0 "CBBF" H 4950 2590 50  0000 C CNN
@@ -314,7 +314,7 @@ Wire Wire Line
 Text GLabel 5400 2750 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:R RBALBB1
+L dcmod-r4:R RBALBB1
 U 1 1 5E00013B
 P 4950 3150
 F 0 "RBALBB1" H 4950 2990 50  0000 C CNN
@@ -334,7 +334,7 @@ Wire Wire Line
 Text GLabel 5400 3150 0    40   Output ~ 0
 N_DCDC_64
 $Comp
-L dc-modules:R RBALBB2
+L dcmod-r4:R RBALBB2
 U 1 1 5E00013C
 P 6750 1150
 F 0 "RBALBB2" H 6750 990 50  0000 C CNN
@@ -354,7 +354,7 @@ Wire Wire Line
 Text GLabel 7200 1150 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:R RBALTB1
+L dcmod-r4:R RBALTB1
 U 1 1 5E00013D
 P 6600 1550
 F 0 "RBALTB1" H 6600 1390 50  0000 C CNN
@@ -374,7 +374,7 @@ Wire Wire Line
 Text GLabel 7050 1550 0    40   Output ~ 0
 N_DCDC_63
 $Comp
-L dc-modules:R RBALTB2
+L dcmod-r4:R RBALTB2
 U 1 1 5E00013E
 P 6750 1950
 F 0 "RBALTB2" H 6750 1790 50  0000 C CNN
@@ -404,7 +404,7 @@ Wire Notes Line
 Text Notes 7960 660 0    79   ~ 16
 BANKS-SP / SP-MATRIX
 $Comp
-L dc-modules:HFE82V-M-CLASS KOUT
+L dcmod-r4:HFE82V-M-CLASS KOUT
 U 1 1 5E00013F
 P 9100 1450
 F 0 "KOUT" H 8700 950 50  0000 R CNN
@@ -440,7 +440,7 @@ Wire Wire Line
 Text GLabel 8450 1650 2    40   Input ~ 0
 COIL_KOUT
 $Comp
-L dc-modules:HFE82V-M-CLASS KPARA
+L dcmod-r4:HFE82V-M-CLASS KPARA
 U 1 1 5E000140
 P 9100 2600
 F 0 "KPARA" H 8700 2100 50  0000 R CNN
@@ -476,7 +476,7 @@ Wire Wire Line
 Text GLabel 8450 2800 2    40   Input ~ 0
 COIL_KPARA
 $Comp
-L dc-modules:HFE82V-M-CLASS KPARB
+L dcmod-r4:HFE82V-M-CLASS KPARB
 U 1 1 5E000141
 P 11150 1450
 F 0 "KPARB" H 10750 950 50  0000 R CNN
@@ -512,7 +512,7 @@ Wire Wire Line
 Text GLabel 10500 1650 2    40   Input ~ 0
 COIL_KPARB
 $Comp
-L dc-modules:HFE9-10A-1kV-M KPREA
+L dcmod-r4:HFE9-10A-1kV-M KPREA
 U 1 1 5E000142
 P 11200 2600
 F 0 "KPREA" H 10800 2100 50  0000 R CNN
@@ -548,7 +548,7 @@ Wire Wire Line
 Text GLabel 10550 2800 2    40   Input ~ 0
 COIL_KPREA
 $Comp
-L dc-modules:HFE9-10A-1kV-M KPREB
+L dcmod-r4:HFE9-10A-1kV-M KPREB
 U 1 1 5E000143
 P 13250 1450
 F 0 "KPREB" H 12850 950 50  0000 R CNN
@@ -584,7 +584,7 @@ Wire Wire Line
 Text GLabel 12600 1650 2    40   Input ~ 0
 COIL_KPREB
 $Comp
-L dc-modules:HFE82V-M-CLASS KSER
+L dcmod-r4:HFE82V-M-CLASS KSER
 U 1 1 5E000144
 P 13250 2600
 F 0 "KSER" H 12850 2100 50  0000 R CNN
@@ -620,7 +620,7 @@ Wire Wire Line
 Text GLabel 12600 2800 2    40   Input ~ 0
 COIL_KSER
 $Comp
-L dc-modules:R RKPUKOUT
+L dcmod-r4:R RKPUKOUT
 U 1 1 5E000145
 P 14850 1150
 F 0 "RKPUKOUT" H 14850 990 50  0000 C CNN
@@ -640,7 +640,7 @@ Wire Wire Line
 Text GLabel 15300 1150 0    40   Output ~ 0
 RELAY_FB_KOUT
 $Comp
-L dc-modules:R RKPUKPARA
+L dcmod-r4:R RKPUKPARA
 U 1 1 5E000146
 P 14850 1550
 F 0 "RKPUKPARA" H 14850 1390 50  0000 C CNN
@@ -660,7 +660,7 @@ Wire Wire Line
 Text GLabel 15300 1550 0    40   Output ~ 0
 RELAY_FB_KPARA
 $Comp
-L dc-modules:R RKPUKPARB
+L dcmod-r4:R RKPUKPARB
 U 1 1 5E000147
 P 14850 1950
 F 0 "RKPUKPARB" H 14850 1790 50  0000 C CNN
@@ -680,7 +680,7 @@ Wire Wire Line
 Text GLabel 15300 1950 0    40   Output ~ 0
 RELAY_FB_KPARB
 $Comp
-L dc-modules:R RKPUKPREA
+L dcmod-r4:R RKPUKPREA
 U 1 1 5E000148
 P 14850 2350
 F 0 "RKPUKPREA" H 14850 2190 50  0000 C CNN
@@ -700,7 +700,7 @@ Wire Wire Line
 Text GLabel 15300 2350 0    40   Output ~ 0
 RELAY_FB_KPREA
 $Comp
-L dc-modules:R RKPUKPREB
+L dcmod-r4:R RKPUKPREB
 U 1 1 5E000149
 P 14850 2750
 F 0 "RKPUKPREB" H 14850 2590 50  0000 C CNN
@@ -720,7 +720,7 @@ Wire Wire Line
 Text GLabel 15300 2750 0    40   Output ~ 0
 RELAY_FB_KPREB
 $Comp
-L dc-modules:R RKPUKSER
+L dcmod-r4:R RKPUKSER
 U 1 1 5E00014A
 P 14850 3150
 F 0 "RKPUKSER" H 14850 2990 50  0000 C CNN
@@ -740,7 +740,7 @@ Wire Wire Line
 Text GLabel 15300 3150 0    40   Output ~ 0
 RELAY_FB_KSER
 $Comp
-L dc-modules:R RPREA
+L dcmod-r4:R RPREA
 U 1 1 5E00014B
 P 16800 1150
 F 0 "RPREA" H 16800 990 50  0000 C CNN
@@ -760,7 +760,7 @@ Wire Wire Line
 Text GLabel 17250 1150 0    40   Output ~ 0
 BKBP
 $Comp
-L dc-modules:R RPREB
+L dcmod-r4:R RPREB
 U 1 1 5E00014C
 P 16800 1550
 F 0 "RPREB" H 16800 1390 50  0000 C CNN
@@ -790,7 +790,7 @@ Wire Notes Line
 Text Notes 18010 660 0    79   ~ 16
 BANKS-SP / BLEEDERS
 $Comp
-L dc-modules:SIC-1200-5A QDISA
+L dcmod-r4:SIC-1200-5A QDISA
 U 1 1 5E00014D
 P 19050 1300
 F 0 "QDISA" H 18650 950 50  0000 R CNN
@@ -814,7 +814,7 @@ Wire Wire Line
 Text GLabel 18400 1350 2    40   Input ~ 0
 BKAN
 $Comp
-L dc-modules:SIC-1200-5A QDISB
+L dcmod-r4:SIC-1200-5A QDISB
 U 1 1 5E00014E
 P 19050 2150
 F 0 "QDISB" H 18650 1800 50  0000 R CNN
@@ -838,7 +838,7 @@ Wire Wire Line
 Text GLabel 18400 2200 2    40   Input ~ 0
 BKBN
 $Comp
-L dc-modules:VOM1271T UPVA
+L dcmod-r4:VOM1271T UPVA
 U 1 1 5E00014F
 P 21000 1350
 F 0 "UPVA" H 20600 950 50  0000 R CNN
@@ -866,7 +866,7 @@ Wire Wire Line
 Text GLabel 20350 1450 2    40   Input ~ 0
 G_QDISA
 $Comp
-L dc-modules:VOM1271T UPVB
+L dcmod-r4:VOM1271T UPVB
 U 1 1 5E000150
 P 21000 2300
 F 0 "UPVB" H 20600 1900 50  0000 R CNN
@@ -894,7 +894,7 @@ Wire Wire Line
 Text GLabel 20350 2400 2    40   Input ~ 0
 G_QDISB
 $Comp
-L dc-modules:R RBDA0
+L dcmod-r4:R RBDA0
 U 1 1 5E000151
 P 20650 3050
 F 0 "RBDA0" H 20650 2890 50  0000 C CNN
@@ -914,7 +914,7 @@ Wire Wire Line
 Text GLabel 21100 3050 0    40   Output ~ 0
 N_DCDC_67
 $Comp
-L dc-modules:R RBDA1
+L dcmod-r4:R RBDA1
 U 1 1 5E000152
 P 22750 1150
 F 0 "RBDA1" H 22750 990 50  0000 C CNN
@@ -934,7 +934,7 @@ Wire Wire Line
 Text GLabel 23200 1150 0    40   Output ~ 0
 N_DCDC_68
 $Comp
-L dc-modules:R RBDA2
+L dcmod-r4:R RBDA2
 U 1 1 5E000153
 P 22750 1550
 F 0 "RBDA2" H 22750 1390 50  0000 C CNN
@@ -954,7 +954,7 @@ Wire Wire Line
 Text GLabel 23200 1550 0    40   Output ~ 0
 N_DCDC_69
 $Comp
-L dc-modules:R RBDA3
+L dcmod-r4:R RBDA3
 U 1 1 5E000154
 P 22750 1950
 F 0 "RBDA3" H 22750 1790 50  0000 C CNN
@@ -974,7 +974,7 @@ Wire Wire Line
 Text GLabel 23200 1950 0    40   Output ~ 0
 N_DCDC_70
 $Comp
-L dc-modules:R RBDB0
+L dcmod-r4:R RBDB0
 U 1 1 5E000155
 P 22600 2350
 F 0 "RBDB0" H 22600 2190 50  0000 C CNN
@@ -994,7 +994,7 @@ Wire Wire Line
 Text GLabel 23050 2350 0    40   Output ~ 0
 N_DCDC_71
 $Comp
-L dc-modules:R RBDB1
+L dcmod-r4:R RBDB1
 U 1 1 5E000156
 P 22750 2750
 F 0 "RBDB1" H 22750 2590 50  0000 C CNN
@@ -1014,7 +1014,7 @@ Wire Wire Line
 Text GLabel 23200 2750 0    40   Output ~ 0
 N_DCDC_72
 $Comp
-L dc-modules:R RBDB2
+L dcmod-r4:R RBDB2
 U 1 1 5E000157
 P 22750 3150
 F 0 "RBDB2" H 22750 2990 50  0000 C CNN
@@ -1034,7 +1034,7 @@ Wire Wire Line
 Text GLabel 23200 3150 0    40   Output ~ 0
 N_DCDC_73
 $Comp
-L dc-modules:R RBDB3
+L dcmod-r4:R RBDB3
 U 1 1 5E000158
 P 24500 1150
 F 0 "RBDB3" H 24500 990 50  0000 C CNN
@@ -1054,7 +1054,7 @@ Wire Wire Line
 Text GLabel 24950 1150 0    40   Output ~ 0
 N_DCDC_74
 $Comp
-L dc-modules:R RPVBA
+L dcmod-r4:R RPVBA
 U 1 1 5E000159
 P 24450 1550
 F 0 "RPVBA" H 24450 1390 50  0000 C CNN
@@ -1074,7 +1074,7 @@ Wire Wire Line
 Text GLabel 24900 1550 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:R RPVBB
+L dcmod-r4:R RPVBB
 U 1 1 5E00015A
 P 24450 1950
 F 0 "RPVBB" H 24450 1790 50  0000 C CNN
@@ -1094,7 +1094,7 @@ Wire Wire Line
 Text GLabel 24900 1950 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:R RPVLA
+L dcmod-r4:R RPVLA
 U 1 1 5E00015B
 P 24550 2350
 F 0 "RPVLA" H 24550 2190 50  0000 C CNN
@@ -1114,7 +1114,7 @@ Wire Wire Line
 Text GLabel 25000 2350 0    40   Output ~ 0
 N_DCDC_75
 $Comp
-L dc-modules:R RPVLB
+L dcmod-r4:R RPVLB
 U 1 1 5E00015C
 P 24550 2750
 F 0 "RPVLB" H 24550 2590 50  0000 C CNN
@@ -1144,7 +1144,7 @@ Wire Notes Line
 Text Notes 560 4110 0    79   ~ 16
 COMMS-HMI / CAN
 $Comp
-L dc-modules:PH-4 JCAN
+L dcmod-r4:PH-4 JCAN
 U 1 1 5E00015D
 P 1450 4700
 F 0 "JCAN" H 1050 4400 50  0000 R CNN
@@ -1168,7 +1168,7 @@ Wire Wire Line
 Text GLabel 2100 4700 0    40   Output ~ 0
 N_DCDC_111
 $Comp
-L dc-modules:CMC-CAN-51uH LCAN
+L dcmod-r4:CMC-CAN-51uH LCAN
 U 1 1 5E00015E
 P 1600 5550
 F 0 "LCAN" H 1200 5150 50  0000 R CNN
@@ -1196,7 +1196,7 @@ Wire Wire Line
 Text GLabel 950 5650 2    40   Input ~ 0
 N_DCDC_109
 $Comp
-L dc-modules:ISO5V-RFC-6K PSCAN
+L dcmod-r4:ISO5V-RFC-6K PSCAN
 U 1 1 5E00015F
 P 3450 5200
 F 0 "PSCAN" H 3050 4900 50  0000 R CNN
@@ -1224,7 +1224,7 @@ Wire Wire Line
 Text GLabel 3250 5750 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:PESD1CAN TVSCAN
+L dcmod-r4:PESD1CAN TVSCAN
 U 1 1 5E000160
 P 5550 4750
 F 0 "TVSCAN" H 5150 4400 50  0000 R CNN
@@ -1248,7 +1248,7 @@ Wire Wire Line
 Text GLabel 4900 4800 2    40   Input ~ 0
 CGND
 $Comp
-L dc-modules:NSI1042 UCAN
+L dcmod-r4:NSI1042 UCAN
 U 1 1 5E000161
 P 7250 5300
 F 0 "UCAN" H 6850 4900 50  0000 R CNN
@@ -1304,7 +1304,7 @@ Wire Wire Line
 Text GLabel 7450 5950 3    40   Output ~ 0
 CGND
 $Comp
-L dc-modules:R CCGB
+L dcmod-r4:R CCGB
 U 1 1 5E000162
 P 7150 6500
 F 0 "CCGB" H 7150 6340 50  0000 C CNN
@@ -1324,7 +1324,7 @@ Wire Wire Line
 Text GLabel 7600 6500 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R JTERM
+L dcmod-r4:R JTERM
 U 1 1 5E000163
 P 9250 4600
 F 0 "JTERM" H 9250 4440 50  0000 C CNN
@@ -1344,7 +1344,7 @@ Wire Wire Line
 Text GLabel 9700 4600 0    40   Output ~ 0
 N_DCDC_112
 $Comp
-L dc-modules:R RCGB
+L dcmod-r4:R RCGB
 U 1 1 5E000164
 P 9100 5000
 F 0 "RCGB" H 9100 4840 50  0000 C CNN
@@ -1364,7 +1364,7 @@ Wire Wire Line
 Text GLabel 9550 5000 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RTERM
+L dcmod-r4:R RTERM
 U 1 1 5E000165
 P 9250 5400
 F 0 "RTERM" H 9250 5240 50  0000 C CNN
@@ -1394,7 +1394,7 @@ Wire Notes Line
 Text Notes 10660 4110 0    79   ~ 16
 COMMS-HMI / HMI
 $Comp
-L dc-modules:LED-2DIG-0.56CC DISP1
+L dcmod-r4:LED-2DIG-0.56CC DISP1
 U 1 1 5E000166
 P 11700 5100
 F 0 "DISP1" H 11300 4400 50  0000 R CNN
@@ -1446,7 +1446,7 @@ Wire Wire Line
 Text GLabel 11050 5500 2    40   Input ~ 0
 N_DCDC_114
 $Comp
-L dc-modules:S8050 QDIG1
+L dcmod-r4:S8050 QDIG1
 U 1 1 5E000167
 P 11700 6300
 F 0 "QDIG1" H 11300 5950 50  0000 R CNN
@@ -1470,7 +1470,7 @@ Wire Wire Line
 Text GLabel 11050 6350 2    40   Input ~ 0
 N_DCDC_122
 $Comp
-L dc-modules:S8050 QDIG2
+L dcmod-r4:S8050 QDIG2
 U 1 1 5E000168
 P 13700 4750
 F 0 "QDIG2" H 13300 4400 50  0000 R CNN
@@ -1494,7 +1494,7 @@ Wire Wire Line
 Text GLabel 13050 4800 2    40   Input ~ 0
 N_DCDC_123
 $Comp
-L dc-modules:74HC595 USR1
+L dcmod-r4:74HC595 USR1
 U 1 1 5E000169
 P 15650 5750
 F 0 "USR1" H 15250 4900 50  0000 R CNN
@@ -1566,7 +1566,7 @@ Wire Wire Line
 Text GLabel 15450 6850 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CSW1
+L dcmod-r4:R CSW1
 U 1 1 5E00016A
 P 17250 4600
 F 0 "CSW1" H 17250 4440 50  0000 C CNN
@@ -1586,7 +1586,7 @@ Wire Wire Line
 Text GLabel 17700 4600 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CSW2
+L dcmod-r4:R CSW2
 U 1 1 5E00016B
 P 17250 5000
 F 0 "CSW2" H 17250 4840 50  0000 C CNN
@@ -1606,7 +1606,7 @@ Wire Wire Line
 Text GLabel 17700 5000 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RDIG1
+L dcmod-r4:R RDIG1
 U 1 1 5E00016C
 P 17400 5400
 F 0 "RDIG1" H 17400 5240 50  0000 C CNN
@@ -1626,7 +1626,7 @@ Wire Wire Line
 Text GLabel 17850 5400 0    40   Output ~ 0
 N_DCDC_132
 $Comp
-L dc-modules:R RDIG2
+L dcmod-r4:R RDIG2
 U 1 1 5E00016D
 P 17400 5800
 F 0 "RDIG2" H 17400 5640 50  0000 C CNN
@@ -1646,7 +1646,7 @@ Wire Wire Line
 Text GLabel 17850 5800 0    40   Output ~ 0
 N_DCDC_133
 $Comp
-L dc-modules:R RSEG0
+L dcmod-r4:R RSEG0
 U 1 1 5E00016E
 P 17450 6200
 F 0 "RSEG0" H 17450 6040 50  0000 C CNN
@@ -1666,7 +1666,7 @@ Wire Wire Line
 Text GLabel 17900 6200 0    40   Output ~ 0
 N_DCDC_114
 $Comp
-L dc-modules:R RSEG1
+L dcmod-r4:R RSEG1
 U 1 1 5E00016F
 P 17450 6600
 F 0 "RSEG1" H 17450 6440 50  0000 C CNN
@@ -1686,7 +1686,7 @@ Wire Wire Line
 Text GLabel 17900 6600 0    40   Output ~ 0
 N_DCDC_115
 $Comp
-L dc-modules:R RSEG2
+L dcmod-r4:R RSEG2
 U 1 1 5E000170
 P 19250 4600
 F 0 "RSEG2" H 19250 4440 50  0000 C CNN
@@ -1706,7 +1706,7 @@ Wire Wire Line
 Text GLabel 19700 4600 0    40   Output ~ 0
 N_DCDC_116
 $Comp
-L dc-modules:R RSEG3
+L dcmod-r4:R RSEG3
 U 1 1 5E000171
 P 19250 5000
 F 0 "RSEG3" H 19250 4840 50  0000 C CNN
@@ -1726,7 +1726,7 @@ Wire Wire Line
 Text GLabel 19700 5000 0    40   Output ~ 0
 N_DCDC_117
 $Comp
-L dc-modules:R RSEG4
+L dcmod-r4:R RSEG4
 U 1 1 5E000172
 P 19250 5400
 F 0 "RSEG4" H 19250 5240 50  0000 C CNN
@@ -1746,7 +1746,7 @@ Wire Wire Line
 Text GLabel 19700 5400 0    40   Output ~ 0
 N_DCDC_118
 $Comp
-L dc-modules:R RSEG5
+L dcmod-r4:R RSEG5
 U 1 1 5E000173
 P 19250 5800
 F 0 "RSEG5" H 19250 5640 50  0000 C CNN
@@ -1766,7 +1766,7 @@ Wire Wire Line
 Text GLabel 19700 5800 0    40   Output ~ 0
 N_DCDC_119
 $Comp
-L dc-modules:R RSEG6
+L dcmod-r4:R RSEG6
 U 1 1 5E000174
 P 19250 6200
 F 0 "RSEG6" H 19250 6040 50  0000 C CNN
@@ -1786,7 +1786,7 @@ Wire Wire Line
 Text GLabel 19700 6200 0    40   Output ~ 0
 N_DCDC_120
 $Comp
-L dc-modules:R RSEG7
+L dcmod-r4:R RSEG7
 U 1 1 5E000175
 P 19250 6600
 F 0 "RSEG7" H 19250 6440 50  0000 C CNN
@@ -1806,7 +1806,7 @@ Wire Wire Line
 Text GLabel 19700 6600 0    40   Output ~ 0
 N_DCDC_121
 $Comp
-L dc-modules:R RSW1
+L dcmod-r4:R RSW1
 U 1 1 5E000176
 P 20950 4600
 F 0 "RSW1" H 20950 4440 50  0000 C CNN
@@ -1826,7 +1826,7 @@ Wire Wire Line
 Text GLabel 21400 4600 0    40   Output ~ 0
 BTN1
 $Comp
-L dc-modules:R RSW2
+L dcmod-r4:R RSW2
 U 1 1 5E000177
 P 20950 5000
 F 0 "RSW2" H 20950 4840 50  0000 C CNN
@@ -1846,7 +1846,7 @@ Wire Wire Line
 Text GLabel 21400 5000 0    40   Output ~ 0
 BTN2
 $Comp
-L dc-modules:R_13 SW1
+L dcmod-r4:R_13 SW1
 U 1 1 5E000178
 P 20950 5400
 F 0 "SW1" H 20950 5240 50  0000 C CNN
@@ -1866,7 +1866,7 @@ Wire Wire Line
 Text GLabel 21400 5400 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R_13 SW2
+L dcmod-r4:R_13 SW2
 U 1 1 5E000179
 P 20950 5800
 F 0 "SW2" H 20950 5640 50  0000 C CNN
@@ -1896,7 +1896,7 @@ Wire Notes Line
 Text Notes 22160 4110 0    79   ~ 16
 CONTROL / MCU
 $Comp
-L dc-modules:GD32G553VET6 ULLC
+L dcmod-r4:GD32G553VET6 ULLC
 U 1 1 5E00017A
 P 23300 6600
 F 0 "ULLC" H 22800 4900 50  0000 R CNN
@@ -2157,7 +2157,7 @@ Wire Wire Line
 Text GLabel 23400 8550 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCA1
+L dcmod-r4:R CLLCA1
 U 1 1 5E00017B
 P 25500 4600
 F 0 "CLLCA1" H 25500 4440 50  0000 C CNN
@@ -2177,7 +2177,7 @@ Wire Wire Line
 Text GLabel 25950 4600 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCA2
+L dcmod-r4:R CLLCA2
 U 1 1 5E00017C
 P 25500 5000
 F 0 "CLLCA2" H 25500 4840 50  0000 C CNN
@@ -2197,7 +2197,7 @@ Wire Wire Line
 Text GLabel 25950 5000 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCD0
+L dcmod-r4:R CLLCD0
 U 1 1 5E00017D
 P 25400 5400
 F 0 "CLLCD0" H 25400 5240 50  0000 C CNN
@@ -2217,7 +2217,7 @@ Wire Wire Line
 Text GLabel 25850 5400 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCD1
+L dcmod-r4:R CLLCD1
 U 1 1 5E00017E
 P 25400 5800
 F 0 "CLLCD1" H 25400 5640 50  0000 C CNN
@@ -2237,7 +2237,7 @@ Wire Wire Line
 Text GLabel 25850 5800 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCD2
+L dcmod-r4:R CLLCD2
 U 1 1 5E00017F
 P 25400 6200
 F 0 "CLLCD2" H 25400 6040 50  0000 C CNN
@@ -2257,7 +2257,7 @@ Wire Wire Line
 Text GLabel 25850 6200 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCD3
+L dcmod-r4:R CLLCD3
 U 1 1 5E000180
 P 25400 6600
 F 0 "CLLCD3" H 25400 6440 50  0000 C CNN
@@ -2277,7 +2277,7 @@ Wire Wire Line
 Text GLabel 25850 6600 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R FBLLCA
+L dcmod-r4:R FBLLCA
 U 1 1 5E000181
 P 27050 4600
 F 0 "FBLLCA" H 27050 4440 50  0000 C CNN
@@ -2297,7 +2297,7 @@ Wire Wire Line
 Text GLabel 27500 4600 0    40   Output ~ 0
 VDDA_LLC
 $Comp
-L dc-modules:R RLLCRST
+L dcmod-r4:R RLLCRST
 U 1 1 5E000182
 P 27050 5000
 F 0 "RLLCRST" H 27050 4840 50  0000 C CNN
@@ -2327,7 +2327,7 @@ Wire Notes Line
 Text Notes 28360 4110 0    79   ~ 16
 CONTROL / SWD
 $Comp
-L dc-modules:HDR-1x5-2.54 JSWDLLC
+L dcmod-r4:HDR-1x5-2.54 JSWDLLC
 U 1 1 5E000183
 P 29400 5250
 F 0 "JSWDLLC" H 29000 4900 50  0000 R CNN
@@ -2359,7 +2359,7 @@ Wire Wire Line
 Text GLabel 29200 5850 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CLLCRST
+L dcmod-r4:R CLLCRST
 U 1 1 5E000184
 P 29150 6400
 F 0 "CLLCRST" H 29150 6240 50  0000 C CNN
@@ -2379,7 +2379,7 @@ Wire Wire Line
 Text GLabel 29600 6400 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RLLCBOOT
+L dcmod-r4:R RLLCBOOT
 U 1 1 5E000185
 P 31150 4600
 F 0 "RLLCBOOT" H 31150 4440 50  0000 C CNN
@@ -2409,7 +2409,7 @@ Wire Notes Line
 Text Notes 560 9660 0    79   ~ 16
 CONTROL / SAFETY
 $Comp
-L dc-modules:74HC11 UANDB
+L dcmod-r4:74HC11 UANDB
 U 1 1 5E000186
 P 1500 11100
 F 0 "UANDB" H 1100 10450 50  0000 R CNN
@@ -2469,7 +2469,7 @@ Wire Wire Line
 Text GLabel 1300 12000 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:TPS3430-class USUPB
+L dcmod-r4:TPS3430-class USUPB
 U 1 1 5E000187
 P 3650 10850
 F 0 "USUPB" H 3250 10450 50  0000 R CNN
@@ -2513,7 +2513,7 @@ Wire Wire Line
 Text GLabel 3550 11500 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CFLTB
+L dcmod-r4:R CFLTB
 U 1 1 5E000188
 P 3450 12050
 F 0 "CFLTB" H 3450 11890 50  0000 C CNN
@@ -2533,7 +2533,7 @@ Wire Wire Line
 Text GLabel 3900 12050 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CSFB
+L dcmod-r4:R CSFB
 U 1 1 5E000189
 P 5250 10150
 F 0 "CSFB" H 5250 9990 50  0000 C CNN
@@ -2553,7 +2553,7 @@ Wire Wire Line
 Text GLabel 5700 10150 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RENLB
+L dcmod-r4:R RENLB
 U 1 1 5E00018A
 P 5300 10550
 F 0 "RENLB" H 5300 10390 50  0000 C CNN
@@ -2573,7 +2573,7 @@ Wire Wire Line
 Text GLabel 5750 10550 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RENRB
+L dcmod-r4:R RENRB
 U 1 1 5E00018B
 P 5300 10950
 F 0 "RENRB" H 5300 10790 50  0000 C CNN
@@ -2593,7 +2593,7 @@ Wire Wire Line
 Text GLabel 5750 10950 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RFLTB
+L dcmod-r4:R RFLTB
 U 1 1 5E00018C
 P 5250 11350
 F 0 "RFLTB" H 5250 11190 50  0000 C CNN
@@ -2613,7 +2613,7 @@ Wire Wire Line
 Text GLabel 5700 11350 0    40   Output ~ 0
 FLT_LLC
 $Comp
-L dc-modules:R RGPDB
+L dcmod-r4:R RGPDB
 U 1 1 5E00018D
 P 5400 11750
 F 0 "RGPDB" H 5400 11590 50  0000 C CNN
@@ -2633,7 +2633,7 @@ Wire Wire Line
 Text GLabel 5850 11750 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R RWPUB
+L dcmod-r4:R RWPUB
 U 1 1 5E00018E
 P 5250 12150
 F 0 "RWPUB" H 5250 11990 50  0000 C CNN
@@ -2663,7 +2663,7 @@ Wire Notes Line
 Text Notes 6610 9660 0    79   ~ 16
 CONTROL / GROUNDING
 $Comp
-L dc-modules:R RAGTB
+L dcmod-r4:R RAGTB
 U 1 1 5E00018F
 P 7300 10150
 F 0 "RAGTB" H 7300 9990 50  0000 C CNN
@@ -2693,7 +2693,7 @@ Wire Notes Line
 Text Notes 8510 9660 0    79   ~ 16
 CONTROL / BUCK-3V3
 $Comp
-L dc-modules:TPS54202-class UBKB
+L dcmod-r4:TPS54202-class UBKB
 U 1 1 5E000190
 P 9550 10800
 F 0 "UBKB" H 9150 10450 50  0000 R CNN
@@ -2729,7 +2729,7 @@ Wire Wire Line
 Text GLabel 9350 11400 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CBKIB
+L dcmod-r4:R CBKIB
 U 1 1 5E000191
 P 9200 11950
 F 0 "CBKIB" H 9200 11790 50  0000 C CNN
@@ -2749,7 +2749,7 @@ Wire Wire Line
 Text GLabel 9650 11950 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CBKOB
+L dcmod-r4:R CBKOB
 U 1 1 5E000192
 P 11450 10150
 F 0 "CBKOB" H 11450 9990 50  0000 C CNN
@@ -2769,7 +2769,7 @@ Wire Wire Line
 Text GLabel 11900 10150 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R CBSTB
+L dcmod-r4:R CBSTB
 U 1 1 5E000193
 P 11600 10550
 F 0 "CBSTB" H 11600 10390 50  0000 C CNN
@@ -2789,7 +2789,7 @@ Wire Wire Line
 Text GLabel 12050 10550 0    40   Output ~ 0
 N_DCDC_105
 $Comp
-L dc-modules:L LBKB
+L dcmod-r4:L LBKB
 U 1 1 5E000194
 P 11600 10950
 F 0 "LBKB" H 11600 10790 50  0000 C CNN
@@ -2809,7 +2809,7 @@ Wire Wire Line
 Text GLabel 12050 10950 0    40   Output ~ 0
 V3P3
 $Comp
-L dc-modules:R RBKF1B
+L dcmod-r4:R RBKF1B
 U 1 1 5E000195
 P 11450 11350
 F 0 "RBKF1B" H 11450 11190 50  0000 C CNN
@@ -2829,7 +2829,7 @@ Wire Wire Line
 Text GLabel 11900 11350 0    40   Output ~ 0
 N_DCDC_106
 $Comp
-L dc-modules:R RBKF2B
+L dcmod-r4:R RBKF2B
 U 1 1 5E000196
 P 11600 11750
 F 0 "RBKF2B" H 11600 11590 50  0000 C CNN
@@ -2859,7 +2859,7 @@ Wire Notes Line
 Text Notes 13010 9660 0    79   ~ 16
 CONTROL / COIL-DRIVER
 $Comp
-L dc-modules:ULN2803A ULB
+L dcmod-r4:ULN2803A ULB
 U 1 1 5E000197
 P 14000 11050
 F 0 "ULB" H 13600 10450 50  0000 R CNN
@@ -2945,7 +2945,7 @@ Wire Notes Line
 Text Notes 15610 9660 0    79   ~ 16
 CONTROL / INTERCONNECT
 $Comp
-L dc-modules:MICROFIT3-16 JICB
+L dcmod-r4:MICROFIT3-16 JICB
 U 1 1 5E000198
 P 16650 10800
 F 0 "JICB" H 16250 9950 50  0000 R CNN
@@ -3009,7 +3009,7 @@ Wire Wire Line
 Text GLabel 16000 11350 2    40   Input ~ 0
 PE
 $Comp
-L dc-modules:R RBLRS
+L dcmod-r4:R RBLRS
 U 1 1 5E000199
 P 16450 12000
 F 0 "RBLRS" H 16450 11840 50  0000 C CNN
@@ -3029,7 +3029,7 @@ Wire Wire Line
 Text GLabel 16900 12000 0    40   Output ~ 0
 LINK_TX
 $Comp
-L dc-modules:R RBLRX
+L dcmod-r4:R RBLRX
 U 1 1 5E00019A
 P 18300 10150
 F 0 "RBLRX" H 18300 9990 50  0000 C CNN
@@ -3049,7 +3049,7 @@ Wire Wire Line
 Text GLabel 18750 10150 0    40   Output ~ 0
 LINK_TX
 $Comp
-L dc-modules:R RBLTS
+L dcmod-r4:R RBLTS
 U 1 1 5E00019B
 P 18450 10550
 F 0 "RBLTS" H 18450 10390 50  0000 C CNN
@@ -3069,7 +3069,7 @@ Wire Wire Line
 Text GLabel 18900 10550 0    40   Output ~ 0
 LINK_RX
 $Comp
-L dc-modules:R RBLTX
+L dcmod-r4:R RBLTX
 U 1 1 5E00019C
 P 18300 10950
 F 0 "RBLTX" H 18300 10790 50  0000 C CNN
@@ -3099,7 +3099,7 @@ Wire Notes Line
 Text Notes 19710 9660 0    79   ~ 16
 LLC-LEGS / BUS-IN
 $Comp
-L dc-modules:R CF0
+L dcmod-r4:R CF0
 U 1 1 5E00019D
 P 20400 10150
 F 0 "CF0" H 20400 9990 50  0000 C CNN
@@ -3119,7 +3119,7 @@ Wire Wire Line
 Text GLabel 20850 10150 0    40   Output ~ 0
 DCN
 $Comp
-L dc-modules:R CF1
+L dcmod-r4:R CF1
 U 1 1 5E00019E
 P 20400 10550
 F 0 "CF1" H 20400 10390 50  0000 C CNN
@@ -3139,7 +3139,7 @@ Wire Wire Line
 Text GLabel 20850 10550 0    40   Output ~ 0
 DCN
 $Comp
-L dc-modules:R CF2
+L dcmod-r4:R CF2
 U 1 1 5E00019F
 P 20400 10950
 F 0 "CF2" H 20400 10790 50  0000 C CNN
@@ -3159,7 +3159,7 @@ Wire Wire Line
 Text GLabel 20850 10950 0    40   Output ~ 0
 DCN
 $Comp
-L dc-modules:TERM_1 JDCN
+L dcmod-r4:TERM_1 JDCN
 U 1 1 5E0001A0
 P 20250 11350
 F 0 "JDCN" H 20250 11190 50  0000 C CNN
@@ -3175,7 +3175,7 @@ Wire Wire Line
 Text GLabel 19950 11350 2    40   Input ~ 0
 DCN
 $Comp
-L dc-modules:TERM_1 JDCP
+L dcmod-r4:TERM_1 JDCP
 U 1 1 5E0001A1
 P 20250 11750
 F 0 "JDCP" H 20250 11590 50  0000 C CNN
@@ -3191,7 +3191,7 @@ Wire Wire Line
 Text GLabel 19950 11750 2    40   Input ~ 0
 DCP
 $Comp
-L dc-modules:TERM_1 JPEB
+L dcmod-r4:TERM_1 JPEB
 U 1 1 5E0001A2
 P 20200 12150
 F 0 "JPEB" H 20200 11990 50  0000 C CNN
@@ -3217,7 +3217,7 @@ Wire Notes Line
 Text Notes 560 13110 0    79   ~ 16
 LLC-LEGS / LEG-1
 $Comp
-L dc-modules:QA01C PS1H
+L dcmod-r4:QA01C PS1H
 U 1 1 5E0001A3
 P 1350 14200
 F 0 "PS1H" H 950 13900 50  0000 R CNN
@@ -3245,7 +3245,7 @@ Wire Wire Line
 Text GLabel 1150 14750 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:QA01C PS1L
+L dcmod-r4:QA01C PS1L
 U 1 1 5E0001A4
 P 3300 14200
 F 0 "PS1L" H 2900 13900 50  0000 R CNN
@@ -3273,7 +3273,7 @@ Wire Wire Line
 Text GLabel 3100 14750 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:SG2M023120LJ Q1H
+L dcmod-r4:SG2M023120LJ Q1H
 U 1 1 5E0001A5
 P 3400 15500
 F 0 "Q1H" H 3000 15100 50  0000 R CNN
@@ -3301,7 +3301,7 @@ Wire Wire Line
 Text GLabel 2750 15600 2    40   Input ~ 0
 GH_1
 $Comp
-L dc-modules:SG2M023120LJ Q1L
+L dcmod-r4:SG2M023120LJ Q1L
 U 1 1 5E0001A6
 P 5350 13800
 F 0 "Q1L" H 4950 13400 50  0000 R CNN
@@ -3329,7 +3329,7 @@ Wire Wire Line
 Text GLabel 4700 13900 2    40   Input ~ 0
 GL_1
 $Comp
-L dc-modules:NSI6611 U1H
+L dcmod-r4:NSI6611 U1H
 U 1 1 5E0001A7
 P 7350 14500
 F 0 "U1H" H 6900 13900 50  0000 R CNN
@@ -3401,7 +3401,7 @@ Wire Wire Line
 Text GLabel 7300 15350 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:NSI6611 U1L
+L dcmod-r4:NSI6611 U1L
 U 1 1 5E0001A8
 P 9600 14500
 F 0 "U1L" H 9150 13900 50  0000 R CNN
@@ -3473,7 +3473,7 @@ Wire Wire Line
 Text GLabel 9550 15350 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R C1HB1
+L dcmod-r4:R C1HB1
 U 1 1 5E0001A9
 P 9350 15900
 F 0 "C1HB1" H 9350 15740 50  0000 C CNN
@@ -3493,7 +3493,7 @@ Wire Wire Line
 Text GLabel 9800 15900 0    40   Output ~ 0
 N_DCDC_6
 $Comp
-L dc-modules:R C1HB2
+L dcmod-r4:R C1HB2
 U 1 1 5E0001AA
 P 11650 13600
 F 0 "C1HB2" H 11650 13440 50  0000 C CNN
@@ -3513,7 +3513,7 @@ Wire Wire Line
 Text GLabel 12100 13600 0    40   Output ~ 0
 N_DCDC_1
 $Comp
-L dc-modules:R C1HBL
+L dcmod-r4:R C1HBL
 U 1 1 5E0001AB
 P 11650 14000
 F 0 "C1HBL" H 11650 13840 50  0000 C CNN
@@ -3533,7 +3533,7 @@ Wire Wire Line
 Text GLabel 12100 14000 0    40   Output ~ 0
 N_DCDC_6
 $Comp
-L dc-modules:R C1LB1
+L dcmod-r4:R C1LB1
 U 1 1 5E0001AC
 P 11650 14400
 F 0 "C1LB1" H 11650 14240 50  0000 C CNN
@@ -3553,7 +3553,7 @@ Wire Wire Line
 Text GLabel 12100 14400 0    40   Output ~ 0
 N_DCDC_13
 $Comp
-L dc-modules:R C1LB2
+L dcmod-r4:R C1LB2
 U 1 1 5E0001AD
 P 11650 14800
 F 0 "C1LB2" H 11650 14640 50  0000 C CNN
@@ -3573,7 +3573,7 @@ Wire Wire Line
 Text GLabel 12100 14800 0    40   Output ~ 0
 N_DCDC_8
 $Comp
-L dc-modules:R C1LBL
+L dcmod-r4:R C1LBL
 U 1 1 5E0001AE
 P 11650 15200
 F 0 "C1LBL" H 11650 15040 50  0000 C CNN
@@ -3593,7 +3593,7 @@ Wire Wire Line
 Text GLabel 12100 15200 0    40   Output ~ 0
 N_DCDC_13
 $Comp
-L dc-modules:D D1HS1
+L dcmod-r4:D D1HS1
 U 1 1 5E0001AF
 P 11650 15600
 F 0 "D1HS1" H 11650 15440 50  0000 C CNN
@@ -3613,7 +3613,7 @@ Wire Wire Line
 Text GLabel 12100 15600 0    40   Output ~ 0
 N_DCDC_5
 $Comp
-L dc-modules:D D1HS2
+L dcmod-r4:D D1HS2
 U 1 1 5E0001B0
 P 11500 16000
 F 0 "D1HS2" H 11500 15840 50  0000 C CNN
@@ -3633,7 +3633,7 @@ Wire Wire Line
 Text GLabel 11950 16000 0    40   Output ~ 0
 N_DCDC_7
 $Comp
-L dc-modules:D D1LS1
+L dcmod-r4:D D1LS1
 U 1 1 5E0001B1
 P 13450 13600
 F 0 "D1LS1" H 13450 13440 50  0000 C CNN
@@ -3653,7 +3653,7 @@ Wire Wire Line
 Text GLabel 13900 13600 0    40   Output ~ 0
 N_DCDC_12
 $Comp
-L dc-modules:D D1LS2
+L dcmod-r4:D D1LS2
 U 1 1 5E0001B2
 P 13300 14000
 F 0 "D1LS2" H 13300 13840 50  0000 C CNN
@@ -3673,7 +3673,7 @@ Wire Wire Line
 Text GLabel 13750 14000 0    40   Output ~ 0
 N_DCDC_14
 $Comp
-L dc-modules:R R1HGS
+L dcmod-r4:R R1HGS
 U 1 1 5E0001B3
 P 13300 14400
 F 0 "R1HGS" H 13300 14240 50  0000 C CNN
@@ -3693,7 +3693,7 @@ Wire Wire Line
 Text GLabel 13750 14400 0    40   Output ~ 0
 KH_1
 $Comp
-L dc-modules:R R1HOFF
+L dcmod-r4:R R1HOFF
 U 1 1 5E0001B4
 P 13400 14800
 F 0 "R1HOFF" H 13400 14640 50  0000 C CNN
@@ -3713,7 +3713,7 @@ Wire Wire Line
 Text GLabel 13850 14800 0    40   Output ~ 0
 GH_1
 $Comp
-L dc-modules:R R1HON
+L dcmod-r4:R R1HON
 U 1 1 5E0001B5
 P 13400 15200
 F 0 "R1HON" H 13400 15040 50  0000 C CNN
@@ -3733,7 +3733,7 @@ Wire Wire Line
 Text GLabel 13850 15200 0    40   Output ~ 0
 GH_1
 $Comp
-L dc-modules:R R1HPD
+L dcmod-r4:R R1HPD
 U 1 1 5E0001B6
 P 13400 15600
 F 0 "R1HPD" H 13400 15440 50  0000 C CNN
@@ -3753,7 +3753,7 @@ Wire Wire Line
 Text GLabel 13850 15600 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R R1LGS
+L dcmod-r4:R R1LGS
 U 1 1 5E0001B7
 P 13300 16000
 F 0 "R1LGS" H 13300 15840 50  0000 C CNN
@@ -3773,7 +3773,7 @@ Wire Wire Line
 Text GLabel 13750 16000 0    40   Output ~ 0
 KL_1
 $Comp
-L dc-modules:R R1LOFF
+L dcmod-r4:R R1LOFF
 U 1 1 5E0001B8
 P 15200 13600
 F 0 "R1LOFF" H 15200 13440 50  0000 C CNN
@@ -3793,7 +3793,7 @@ Wire Wire Line
 Text GLabel 15650 13600 0    40   Output ~ 0
 GL_1
 $Comp
-L dc-modules:R R1LON
+L dcmod-r4:R R1LON
 U 1 1 5E0001B9
 P 15250 14000
 F 0 "R1LON" H 15250 13840 50  0000 C CNN
@@ -3813,7 +3813,7 @@ Wire Wire Line
 Text GLabel 15700 14000 0    40   Output ~ 0
 GL_1
 $Comp
-L dc-modules:R R1LPD
+L dcmod-r4:R R1LPD
 U 1 1 5E0001BA
 P 15200 14400
 F 0 "R1LPD" H 15200 14240 50  0000 C CNN
@@ -3843,7 +3843,7 @@ Wire Notes Line
 Text Notes 16460 13110 0    79   ~ 16
 LLC-LEGS / LEG-2
 $Comp
-L dc-modules:QA01C PS2H
+L dcmod-r4:QA01C PS2H
 U 1 1 5E0001BB
 P 17250 14200
 F 0 "PS2H" H 16850 13900 50  0000 R CNN
@@ -3871,7 +3871,7 @@ Wire Wire Line
 Text GLabel 17050 14750 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:QA01C PS2L
+L dcmod-r4:QA01C PS2L
 U 1 1 5E0001BC
 P 19200 14200
 F 0 "PS2L" H 18800 13900 50  0000 R CNN
@@ -3899,7 +3899,7 @@ Wire Wire Line
 Text GLabel 19000 14750 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:SG2M023120LJ Q2H
+L dcmod-r4:SG2M023120LJ Q2H
 U 1 1 5E0001BD
 P 19300 15500
 F 0 "Q2H" H 18900 15100 50  0000 R CNN
@@ -3927,7 +3927,7 @@ Wire Wire Line
 Text GLabel 18650 15600 2    40   Input ~ 0
 GH_2
 $Comp
-L dc-modules:SG2M023120LJ Q2L
+L dcmod-r4:SG2M023120LJ Q2L
 U 1 1 5E0001BE
 P 21250 13800
 F 0 "Q2L" H 20850 13400 50  0000 R CNN
@@ -3955,7 +3955,7 @@ Wire Wire Line
 Text GLabel 20600 13900 2    40   Input ~ 0
 GL_2
 $Comp
-L dc-modules:NSI6611 U2H
+L dcmod-r4:NSI6611 U2H
 U 1 1 5E0001BF
 P 23250 14500
 F 0 "U2H" H 22800 13900 50  0000 R CNN
@@ -4027,7 +4027,7 @@ Wire Wire Line
 Text GLabel 23200 15350 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:NSI6611 U2L
+L dcmod-r4:NSI6611 U2L
 U 1 1 5E0001C0
 P 25500 14500
 F 0 "U2L" H 25050 13900 50  0000 R CNN
@@ -4099,7 +4099,7 @@ Wire Wire Line
 Text GLabel 25450 15350 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R C2HB1
+L dcmod-r4:R C2HB1
 U 1 1 5E0001C1
 P 25250 15900
 F 0 "C2HB1" H 25250 15740 50  0000 C CNN
@@ -4119,7 +4119,7 @@ Wire Wire Line
 Text GLabel 25700 15900 0    40   Output ~ 0
 N_DCDC_20
 $Comp
-L dc-modules:R C2HB2
+L dcmod-r4:R C2HB2
 U 1 1 5E0001C2
 P 27550 13600
 F 0 "C2HB2" H 27550 13440 50  0000 C CNN
@@ -4139,7 +4139,7 @@ Wire Wire Line
 Text GLabel 28000 13600 0    40   Output ~ 0
 N_DCDC_15
 $Comp
-L dc-modules:R C2HBL
+L dcmod-r4:R C2HBL
 U 1 1 5E0001C3
 P 27550 14000
 F 0 "C2HBL" H 27550 13840 50  0000 C CNN
@@ -4159,7 +4159,7 @@ Wire Wire Line
 Text GLabel 28000 14000 0    40   Output ~ 0
 N_DCDC_20
 $Comp
-L dc-modules:R C2LB1
+L dcmod-r4:R C2LB1
 U 1 1 5E0001C4
 P 27550 14400
 F 0 "C2LB1" H 27550 14240 50  0000 C CNN
@@ -4179,7 +4179,7 @@ Wire Wire Line
 Text GLabel 28000 14400 0    40   Output ~ 0
 N_DCDC_27
 $Comp
-L dc-modules:R C2LB2
+L dcmod-r4:R C2LB2
 U 1 1 5E0001C5
 P 27550 14800
 F 0 "C2LB2" H 27550 14640 50  0000 C CNN
@@ -4199,7 +4199,7 @@ Wire Wire Line
 Text GLabel 28000 14800 0    40   Output ~ 0
 N_DCDC_22
 $Comp
-L dc-modules:R C2LBL
+L dcmod-r4:R C2LBL
 U 1 1 5E0001C6
 P 27550 15200
 F 0 "C2LBL" H 27550 15040 50  0000 C CNN
@@ -4219,7 +4219,7 @@ Wire Wire Line
 Text GLabel 28000 15200 0    40   Output ~ 0
 N_DCDC_27
 $Comp
-L dc-modules:D D2HS1
+L dcmod-r4:D D2HS1
 U 1 1 5E0001C7
 P 27550 15600
 F 0 "D2HS1" H 27550 15440 50  0000 C CNN
@@ -4239,7 +4239,7 @@ Wire Wire Line
 Text GLabel 28000 15600 0    40   Output ~ 0
 N_DCDC_19
 $Comp
-L dc-modules:D D2HS2
+L dcmod-r4:D D2HS2
 U 1 1 5E0001C8
 P 27400 16000
 F 0 "D2HS2" H 27400 15840 50  0000 C CNN
@@ -4259,7 +4259,7 @@ Wire Wire Line
 Text GLabel 27850 16000 0    40   Output ~ 0
 N_DCDC_21
 $Comp
-L dc-modules:D D2LS1
+L dcmod-r4:D D2LS1
 U 1 1 5E0001C9
 P 29350 13600
 F 0 "D2LS1" H 29350 13440 50  0000 C CNN
@@ -4279,7 +4279,7 @@ Wire Wire Line
 Text GLabel 29800 13600 0    40   Output ~ 0
 N_DCDC_26
 $Comp
-L dc-modules:D D2LS2
+L dcmod-r4:D D2LS2
 U 1 1 5E0001CA
 P 29200 14000
 F 0 "D2LS2" H 29200 13840 50  0000 C CNN
@@ -4299,7 +4299,7 @@ Wire Wire Line
 Text GLabel 29650 14000 0    40   Output ~ 0
 N_DCDC_28
 $Comp
-L dc-modules:R R2HGS
+L dcmod-r4:R R2HGS
 U 1 1 5E0001CB
 P 29200 14400
 F 0 "R2HGS" H 29200 14240 50  0000 C CNN
@@ -4319,7 +4319,7 @@ Wire Wire Line
 Text GLabel 29650 14400 0    40   Output ~ 0
 KH_2
 $Comp
-L dc-modules:R R2HOFF
+L dcmod-r4:R R2HOFF
 U 1 1 5E0001CC
 P 29350 14800
 F 0 "R2HOFF" H 29350 14640 50  0000 C CNN
@@ -4339,7 +4339,7 @@ Wire Wire Line
 Text GLabel 29800 14800 0    40   Output ~ 0
 GH_2
 $Comp
-L dc-modules:R R2HON
+L dcmod-r4:R R2HON
 U 1 1 5E0001CD
 P 29350 15200
 F 0 "R2HON" H 29350 15040 50  0000 C CNN
@@ -4359,7 +4359,7 @@ Wire Wire Line
 Text GLabel 29800 15200 0    40   Output ~ 0
 GH_2
 $Comp
-L dc-modules:R R2HPD
+L dcmod-r4:R R2HPD
 U 1 1 5E0001CE
 P 29300 15600
 F 0 "R2HPD" H 29300 15440 50  0000 C CNN
@@ -4379,7 +4379,7 @@ Wire Wire Line
 Text GLabel 29750 15600 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R R2LGS
+L dcmod-r4:R R2LGS
 U 1 1 5E0001CF
 P 29200 16000
 F 0 "R2LGS" H 29200 15840 50  0000 C CNN
@@ -4399,7 +4399,7 @@ Wire Wire Line
 Text GLabel 29650 16000 0    40   Output ~ 0
 KL_2
 $Comp
-L dc-modules:R R2LOFF
+L dcmod-r4:R R2LOFF
 U 1 1 5E0001D0
 P 31150 13600
 F 0 "R2LOFF" H 31150 13440 50  0000 C CNN
@@ -4419,7 +4419,7 @@ Wire Wire Line
 Text GLabel 31600 13600 0    40   Output ~ 0
 GL_2
 $Comp
-L dc-modules:R R2LON
+L dcmod-r4:R R2LON
 U 1 1 5E0001D1
 P 31150 14000
 F 0 "R2LON" H 31150 13840 50  0000 C CNN
@@ -4439,7 +4439,7 @@ Wire Wire Line
 Text GLabel 31600 14000 0    40   Output ~ 0
 GL_2
 $Comp
-L dc-modules:R R2LPD
+L dcmod-r4:R R2LPD
 U 1 1 5E0001D2
 P 31100 14400
 F 0 "R2LPD" H 31100 14240 50  0000 C CNN
@@ -4469,7 +4469,7 @@ Wire Notes Line
 Text Notes 560 16960 0    79   ~ 16
 LLC-LEGS / LEG-3
 $Comp
-L dc-modules:QA01C PS3H
+L dcmod-r4:QA01C PS3H
 U 1 1 5E0001D3
 P 1350 18050
 F 0 "PS3H" H 950 17750 50  0000 R CNN
@@ -4497,7 +4497,7 @@ Wire Wire Line
 Text GLabel 1150 18600 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:QA01C PS3L
+L dcmod-r4:QA01C PS3L
 U 1 1 5E0001D4
 P 3300 18050
 F 0 "PS3L" H 2900 17750 50  0000 R CNN
@@ -4525,7 +4525,7 @@ Wire Wire Line
 Text GLabel 3100 18600 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:SG2M023120LJ Q3H
+L dcmod-r4:SG2M023120LJ Q3H
 U 1 1 5E0001D5
 P 3400 19350
 F 0 "Q3H" H 3000 18950 50  0000 R CNN
@@ -4553,7 +4553,7 @@ Wire Wire Line
 Text GLabel 2750 19450 2    40   Input ~ 0
 GH_3
 $Comp
-L dc-modules:SG2M023120LJ Q3L
+L dcmod-r4:SG2M023120LJ Q3L
 U 1 1 5E0001D6
 P 5350 17650
 F 0 "Q3L" H 4950 17250 50  0000 R CNN
@@ -4581,7 +4581,7 @@ Wire Wire Line
 Text GLabel 4700 17750 2    40   Input ~ 0
 GL_3
 $Comp
-L dc-modules:NSI6611 U3H
+L dcmod-r4:NSI6611 U3H
 U 1 1 5E0001D7
 P 7350 18350
 F 0 "U3H" H 6900 17750 50  0000 R CNN
@@ -4653,7 +4653,7 @@ Wire Wire Line
 Text GLabel 7300 19200 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:NSI6611 U3L
+L dcmod-r4:NSI6611 U3L
 U 1 1 5E0001D8
 P 9600 18350
 F 0 "U3L" H 9150 17750 50  0000 R CNN
@@ -4725,7 +4725,7 @@ Wire Wire Line
 Text GLabel 9550 19200 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R C3HB1
+L dcmod-r4:R C3HB1
 U 1 1 5E0001D9
 P 9350 19750
 F 0 "C3HB1" H 9350 19590 50  0000 C CNN
@@ -4745,7 +4745,7 @@ Wire Wire Line
 Text GLabel 9800 19750 0    40   Output ~ 0
 N_DCDC_34
 $Comp
-L dc-modules:R C3HB2
+L dcmod-r4:R C3HB2
 U 1 1 5E0001DA
 P 11650 17450
 F 0 "C3HB2" H 11650 17290 50  0000 C CNN
@@ -4765,7 +4765,7 @@ Wire Wire Line
 Text GLabel 12100 17450 0    40   Output ~ 0
 N_DCDC_29
 $Comp
-L dc-modules:R C3HBL
+L dcmod-r4:R C3HBL
 U 1 1 5E0001DB
 P 11650 17850
 F 0 "C3HBL" H 11650 17690 50  0000 C CNN
@@ -4785,7 +4785,7 @@ Wire Wire Line
 Text GLabel 12100 17850 0    40   Output ~ 0
 N_DCDC_34
 $Comp
-L dc-modules:R C3LB1
+L dcmod-r4:R C3LB1
 U 1 1 5E0001DC
 P 11650 18250
 F 0 "C3LB1" H 11650 18090 50  0000 C CNN
@@ -4805,7 +4805,7 @@ Wire Wire Line
 Text GLabel 12100 18250 0    40   Output ~ 0
 N_DCDC_41
 $Comp
-L dc-modules:R C3LB2
+L dcmod-r4:R C3LB2
 U 1 1 5E0001DD
 P 11650 18650
 F 0 "C3LB2" H 11650 18490 50  0000 C CNN
@@ -4825,7 +4825,7 @@ Wire Wire Line
 Text GLabel 12100 18650 0    40   Output ~ 0
 N_DCDC_36
 $Comp
-L dc-modules:R C3LBL
+L dcmod-r4:R C3LBL
 U 1 1 5E0001DE
 P 11650 19050
 F 0 "C3LBL" H 11650 18890 50  0000 C CNN
@@ -4845,7 +4845,7 @@ Wire Wire Line
 Text GLabel 12100 19050 0    40   Output ~ 0
 N_DCDC_41
 $Comp
-L dc-modules:D D3HS1
+L dcmod-r4:D D3HS1
 U 1 1 5E0001DF
 P 11650 19450
 F 0 "D3HS1" H 11650 19290 50  0000 C CNN
@@ -4865,7 +4865,7 @@ Wire Wire Line
 Text GLabel 12100 19450 0    40   Output ~ 0
 N_DCDC_33
 $Comp
-L dc-modules:D D3HS2
+L dcmod-r4:D D3HS2
 U 1 1 5E0001E0
 P 11500 19850
 F 0 "D3HS2" H 11500 19690 50  0000 C CNN
@@ -4885,7 +4885,7 @@ Wire Wire Line
 Text GLabel 11950 19850 0    40   Output ~ 0
 N_DCDC_35
 $Comp
-L dc-modules:D D3LS1
+L dcmod-r4:D D3LS1
 U 1 1 5E0001E1
 P 13450 17450
 F 0 "D3LS1" H 13450 17290 50  0000 C CNN
@@ -4905,7 +4905,7 @@ Wire Wire Line
 Text GLabel 13900 17450 0    40   Output ~ 0
 N_DCDC_40
 $Comp
-L dc-modules:D D3LS2
+L dcmod-r4:D D3LS2
 U 1 1 5E0001E2
 P 13300 17850
 F 0 "D3LS2" H 13300 17690 50  0000 C CNN
@@ -4925,7 +4925,7 @@ Wire Wire Line
 Text GLabel 13750 17850 0    40   Output ~ 0
 N_DCDC_42
 $Comp
-L dc-modules:R R3HGS
+L dcmod-r4:R R3HGS
 U 1 1 5E0001E3
 P 13300 18250
 F 0 "R3HGS" H 13300 18090 50  0000 C CNN
@@ -4945,7 +4945,7 @@ Wire Wire Line
 Text GLabel 13750 18250 0    40   Output ~ 0
 KH_3
 $Comp
-L dc-modules:R R3HOFF
+L dcmod-r4:R R3HOFF
 U 1 1 5E0001E4
 P 13450 18650
 F 0 "R3HOFF" H 13450 18490 50  0000 C CNN
@@ -4965,7 +4965,7 @@ Wire Wire Line
 Text GLabel 13900 18650 0    40   Output ~ 0
 GH_3
 $Comp
-L dc-modules:R R3HON
+L dcmod-r4:R R3HON
 U 1 1 5E0001E5
 P 13450 19050
 F 0 "R3HON" H 13450 18890 50  0000 C CNN
@@ -4985,7 +4985,7 @@ Wire Wire Line
 Text GLabel 13900 19050 0    40   Output ~ 0
 GH_3
 $Comp
-L dc-modules:R R3HPD
+L dcmod-r4:R R3HPD
 U 1 1 5E0001E6
 P 13400 19450
 F 0 "R3HPD" H 13400 19290 50  0000 C CNN
@@ -5005,7 +5005,7 @@ Wire Wire Line
 Text GLabel 13850 19450 0    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:R R3LGS
+L dcmod-r4:R R3LGS
 U 1 1 5E0001E7
 P 13300 19850
 F 0 "R3LGS" H 13300 19690 50  0000 C CNN
@@ -5025,7 +5025,7 @@ Wire Wire Line
 Text GLabel 13750 19850 0    40   Output ~ 0
 KL_3
 $Comp
-L dc-modules:R R3LOFF
+L dcmod-r4:R R3LOFF
 U 1 1 5E0001E8
 P 15250 17450
 F 0 "R3LOFF" H 15250 17290 50  0000 C CNN
@@ -5045,7 +5045,7 @@ Wire Wire Line
 Text GLabel 15700 17450 0    40   Output ~ 0
 GL_3
 $Comp
-L dc-modules:R R3LON
+L dcmod-r4:R R3LON
 U 1 1 5E0001E9
 P 15250 17850
 F 0 "R3LON" H 15250 17690 50  0000 C CNN
@@ -5065,7 +5065,7 @@ Wire Wire Line
 Text GLabel 15700 17850 0    40   Output ~ 0
 GL_3
 $Comp
-L dc-modules:R R3LPD
+L dcmod-r4:R R3LPD
 U 1 1 5E0001EA
 P 15200 18250
 F 0 "R3LPD" H 15200 18090 50  0000 C CNN
@@ -5095,7 +5095,7 @@ Wire Notes Line
 Text Notes 16460 16960 0    79   ~ 16
 LLC-TANKS / TANK-1
 $Comp
-L dc-modules:XFMR-LLC-10K T1
+L dcmod-r4:XFMR-LLC-10K T1
 U 1 1 5E0001EB
 P 17500 17800
 F 0 "T1" H 17100 17250 50  0000 R CNN
@@ -5135,7 +5135,7 @@ Wire Wire Line
 Text GLabel 16850 18050 2    40   Input ~ 0
 N_DCDC_48
 $Comp
-L dc-modules:R C1CF
+L dcmod-r4:R C1CF
 U 1 1 5E0001EC
 P 17200 18700
 F 0 "C1CF" H 17200 18540 50  0000 C CNN
@@ -5155,7 +5155,7 @@ Wire Wire Line
 Text GLabel 17650 18700 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:R C1R0
+L dcmod-r4:R C1R0
 U 1 1 5E0001ED
 P 17150 19100
 F 0 "C1R0" H 17150 18940 50  0000 C CNN
@@ -5175,7 +5175,7 @@ Wire Wire Line
 Text GLabel 17600 19100 0    40   Output ~ 0
 N_DCDC_43
 $Comp
-L dc-modules:R C1R1
+L dcmod-r4:R C1R1
 U 1 1 5E0001EE
 P 17150 19500
 F 0 "C1R1" H 17150 19340 50  0000 C CNN
@@ -5195,7 +5195,7 @@ Wire Wire Line
 Text GLabel 17600 19500 0    40   Output ~ 0
 N_DCDC_43
 $Comp
-L dc-modules:R C1R2
+L dcmod-r4:R C1R2
 U 1 1 5E0001EF
 P 19050 17450
 F 0 "C1R2" H 19050 17290 50  0000 C CNN
@@ -5215,7 +5215,7 @@ Wire Wire Line
 Text GLabel 19500 17450 0    40   Output ~ 0
 N_DCDC_43
 $Comp
-L dc-modules:R C1R3
+L dcmod-r4:R C1R3
 U 1 1 5E0001F0
 P 19050 17850
 F 0 "C1R3" H 19050 17690 50  0000 C CNN
@@ -5235,7 +5235,7 @@ Wire Wire Line
 Text GLabel 19500 17850 0    40   Output ~ 0
 N_DCDC_43
 $Comp
-L dc-modules:R CT1
+L dcmod-r4:R CT1
 U 1 1 5E0001F1
 P 19100 18250
 F 0 "CT1" H 19100 18090 50  0000 C CNN
@@ -5255,7 +5255,7 @@ Wire Wire Line
 Text GLabel 19550 18250 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:D D1A1
+L dcmod-r4:D D1A1
 U 1 1 5E0001F2
 P 19100 18650
 F 0 "D1A1" H 19100 18490 50  0000 C CNN
@@ -5275,7 +5275,7 @@ Wire Wire Line
 Text GLabel 19550 18650 0    40   Output ~ 0
 N_DCDC_45
 $Comp
-L dc-modules:D D1A2
+L dcmod-r4:D D1A2
 U 1 1 5E0001F3
 P 19250 19050
 F 0 "D1A2" H 19250 18890 50  0000 C CNN
@@ -5295,7 +5295,7 @@ Wire Wire Line
 Text GLabel 19700 19050 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:D D1A3
+L dcmod-r4:D D1A3
 U 1 1 5E0001F4
 P 19100 19450
 F 0 "D1A3" H 19100 19290 50  0000 C CNN
@@ -5315,7 +5315,7 @@ Wire Wire Line
 Text GLabel 19550 19450 0    40   Output ~ 0
 N_DCDC_46
 $Comp
-L dc-modules:D D1A4
+L dcmod-r4:D D1A4
 U 1 1 5E0001F5
 P 20900 17450
 F 0 "D1A4" H 20900 17290 50  0000 C CNN
@@ -5335,7 +5335,7 @@ Wire Wire Line
 Text GLabel 21350 17450 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:D D1B1
+L dcmod-r4:D D1B1
 U 1 1 5E0001F6
 P 20750 17850
 F 0 "D1B1" H 20750 17690 50  0000 C CNN
@@ -5355,7 +5355,7 @@ Wire Wire Line
 Text GLabel 21200 17850 0    40   Output ~ 0
 N_DCDC_47
 $Comp
-L dc-modules:D D1B2
+L dcmod-r4:D D1B2
 U 1 1 5E0001F7
 P 20900 18250
 F 0 "D1B2" H 20900 18090 50  0000 C CNN
@@ -5375,7 +5375,7 @@ Wire Wire Line
 Text GLabel 21350 18250 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:D D1B3
+L dcmod-r4:D D1B3
 U 1 1 5E0001F8
 P 20750 18650
 F 0 "D1B3" H 20750 18490 50  0000 C CNN
@@ -5395,7 +5395,7 @@ Wire Wire Line
 Text GLabel 21200 18650 0    40   Output ~ 0
 N_DCDC_48
 $Comp
-L dc-modules:D D1B4
+L dcmod-r4:D D1B4
 U 1 1 5E0001F9
 P 20900 19050
 F 0 "D1B4" H 20900 18890 50  0000 C CNN
@@ -5415,7 +5415,7 @@ Wire Wire Line
 Text GLabel 21350 19050 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:D D1CN
+L dcmod-r4:D D1CN
 U 1 1 5E0001FA
 P 20800 19450
 F 0 "D1CN" H 20800 19290 50  0000 C CNN
@@ -5435,7 +5435,7 @@ Wire Wire Line
 Text GLabel 21250 19450 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:D D1CP
+L dcmod-r4:D D1CP
 U 1 1 5E0001FB
 P 22400 17450
 F 0 "D1CP" H 22400 17290 50  0000 C CNN
@@ -5455,7 +5455,7 @@ Wire Wire Line
 Text GLabel 22850 17450 0    40   Output ~ 0
 I_RES1
 $Comp
-L dc-modules:L L1T
+L dcmod-r4:L L1T
 U 1 1 5E0001FC
 P 22550 17850
 F 0 "L1T" H 22550 17690 50  0000 C CNN
@@ -5475,7 +5475,7 @@ Wire Wire Line
 Text GLabel 23000 17850 0    40   Output ~ 0
 N_DCDC_44
 $Comp
-L dc-modules:R R1CF
+L dcmod-r4:R R1CF
 U 1 1 5E0001FD
 P 22400 18250
 F 0 "R1CF" H 22400 18090 50  0000 C CNN
@@ -5495,7 +5495,7 @@ Wire Wire Line
 Text GLabel 22850 18250 0    40   Output ~ 0
 I_RES1
 $Comp
-L dc-modules:R R1CT
+L dcmod-r4:R R1CT
 U 1 1 5E0001FE
 P 22400 18650
 F 0 "R1CT" H 22400 18490 50  0000 C CNN
@@ -5525,7 +5525,7 @@ Wire Notes Line
 Text Notes 23860 16960 0    79   ~ 16
 LLC-TANKS / TANK-2
 $Comp
-L dc-modules:XFMR-LLC-10K T2
+L dcmod-r4:XFMR-LLC-10K T2
 U 1 1 5E0001FF
 P 24900 17800
 F 0 "T2" H 24500 17250 50  0000 R CNN
@@ -5565,7 +5565,7 @@ Wire Wire Line
 Text GLabel 24250 18050 2    40   Input ~ 0
 N_DCDC_54
 $Comp
-L dc-modules:R C2CF
+L dcmod-r4:R C2CF
 U 1 1 5E000200
 P 24600 18700
 F 0 "C2CF" H 24600 18540 50  0000 C CNN
@@ -5585,7 +5585,7 @@ Wire Wire Line
 Text GLabel 25050 18700 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:R C2R0
+L dcmod-r4:R C2R0
 U 1 1 5E000201
 P 24550 19100
 F 0 "C2R0" H 24550 18940 50  0000 C CNN
@@ -5605,7 +5605,7 @@ Wire Wire Line
 Text GLabel 25000 19100 0    40   Output ~ 0
 N_DCDC_49
 $Comp
-L dc-modules:R C2R1
+L dcmod-r4:R C2R1
 U 1 1 5E000202
 P 24550 19500
 F 0 "C2R1" H 24550 19340 50  0000 C CNN
@@ -5625,7 +5625,7 @@ Wire Wire Line
 Text GLabel 25000 19500 0    40   Output ~ 0
 N_DCDC_49
 $Comp
-L dc-modules:R C2R2
+L dcmod-r4:R C2R2
 U 1 1 5E000203
 P 26450 17450
 F 0 "C2R2" H 26450 17290 50  0000 C CNN
@@ -5645,7 +5645,7 @@ Wire Wire Line
 Text GLabel 26900 17450 0    40   Output ~ 0
 N_DCDC_49
 $Comp
-L dc-modules:R C2R3
+L dcmod-r4:R C2R3
 U 1 1 5E000204
 P 26450 17850
 F 0 "C2R3" H 26450 17690 50  0000 C CNN
@@ -5665,7 +5665,7 @@ Wire Wire Line
 Text GLabel 26900 17850 0    40   Output ~ 0
 N_DCDC_49
 $Comp
-L dc-modules:R CT2
+L dcmod-r4:R CT2
 U 1 1 5E000205
 P 26500 18250
 F 0 "CT2" H 26500 18090 50  0000 C CNN
@@ -5685,7 +5685,7 @@ Wire Wire Line
 Text GLabel 26950 18250 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:D D2A1
+L dcmod-r4:D D2A1
 U 1 1 5E000206
 P 26500 18650
 F 0 "D2A1" H 26500 18490 50  0000 C CNN
@@ -5705,7 +5705,7 @@ Wire Wire Line
 Text GLabel 26950 18650 0    40   Output ~ 0
 N_DCDC_51
 $Comp
-L dc-modules:D D2A2
+L dcmod-r4:D D2A2
 U 1 1 5E000207
 P 26650 19050
 F 0 "D2A2" H 26650 18890 50  0000 C CNN
@@ -5725,7 +5725,7 @@ Wire Wire Line
 Text GLabel 27100 19050 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:D D2A3
+L dcmod-r4:D D2A3
 U 1 1 5E000208
 P 26500 19450
 F 0 "D2A3" H 26500 19290 50  0000 C CNN
@@ -5745,7 +5745,7 @@ Wire Wire Line
 Text GLabel 26950 19450 0    40   Output ~ 0
 N_DCDC_52
 $Comp
-L dc-modules:D D2A4
+L dcmod-r4:D D2A4
 U 1 1 5E000209
 P 28300 17450
 F 0 "D2A4" H 28300 17290 50  0000 C CNN
@@ -5765,7 +5765,7 @@ Wire Wire Line
 Text GLabel 28750 17450 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:D D2B1
+L dcmod-r4:D D2B1
 U 1 1 5E00020A
 P 28150 17850
 F 0 "D2B1" H 28150 17690 50  0000 C CNN
@@ -5785,7 +5785,7 @@ Wire Wire Line
 Text GLabel 28600 17850 0    40   Output ~ 0
 N_DCDC_53
 $Comp
-L dc-modules:D D2B2
+L dcmod-r4:D D2B2
 U 1 1 5E00020B
 P 28300 18250
 F 0 "D2B2" H 28300 18090 50  0000 C CNN
@@ -5805,7 +5805,7 @@ Wire Wire Line
 Text GLabel 28750 18250 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:D D2B3
+L dcmod-r4:D D2B3
 U 1 1 5E00020C
 P 28150 18650
 F 0 "D2B3" H 28150 18490 50  0000 C CNN
@@ -5825,7 +5825,7 @@ Wire Wire Line
 Text GLabel 28600 18650 0    40   Output ~ 0
 N_DCDC_54
 $Comp
-L dc-modules:D D2B4
+L dcmod-r4:D D2B4
 U 1 1 5E00020D
 P 28300 19050
 F 0 "D2B4" H 28300 18890 50  0000 C CNN
@@ -5845,7 +5845,7 @@ Wire Wire Line
 Text GLabel 28750 19050 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:D D2CN
+L dcmod-r4:D D2CN
 U 1 1 5E00020E
 P 28200 19450
 F 0 "D2CN" H 28200 19290 50  0000 C CNN
@@ -5865,7 +5865,7 @@ Wire Wire Line
 Text GLabel 28650 19450 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:D D2CP
+L dcmod-r4:D D2CP
 U 1 1 5E00020F
 P 29800 17450
 F 0 "D2CP" H 29800 17290 50  0000 C CNN
@@ -5885,7 +5885,7 @@ Wire Wire Line
 Text GLabel 30250 17450 0    40   Output ~ 0
 I_RES2
 $Comp
-L dc-modules:L L2T
+L dcmod-r4:L L2T
 U 1 1 5E000210
 P 29950 17850
 F 0 "L2T" H 29950 17690 50  0000 C CNN
@@ -5905,7 +5905,7 @@ Wire Wire Line
 Text GLabel 30400 17850 0    40   Output ~ 0
 N_DCDC_50
 $Comp
-L dc-modules:R R2CF
+L dcmod-r4:R R2CF
 U 1 1 5E000211
 P 29800 18250
 F 0 "R2CF" H 29800 18090 50  0000 C CNN
@@ -5925,7 +5925,7 @@ Wire Wire Line
 Text GLabel 30250 18250 0    40   Output ~ 0
 I_RES2
 $Comp
-L dc-modules:R R2CT
+L dcmod-r4:R R2CT
 U 1 1 5E000212
 P 29800 18650
 F 0 "R2CT" H 29800 18490 50  0000 C CNN
@@ -5955,7 +5955,7 @@ Wire Notes Line
 Text Notes 560 20810 0    79   ~ 16
 LLC-TANKS / TANK-3
 $Comp
-L dc-modules:XFMR-LLC-10K T3
+L dcmod-r4:XFMR-LLC-10K T3
 U 1 1 5E000213
 P 1600 21650
 F 0 "T3" H 1200 21100 50  0000 R CNN
@@ -5995,7 +5995,7 @@ Wire Wire Line
 Text GLabel 950 21900 2    40   Input ~ 0
 N_DCDC_60
 $Comp
-L dc-modules:R C3CF
+L dcmod-r4:R C3CF
 U 1 1 5E000214
 P 1300 22550
 F 0 "C3CF" H 1300 22390 50  0000 C CNN
@@ -6015,7 +6015,7 @@ Wire Wire Line
 Text GLabel 1750 22550 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:R C3R0
+L dcmod-r4:R C3R0
 U 1 1 5E000215
 P 1250 22950
 F 0 "C3R0" H 1250 22790 50  0000 C CNN
@@ -6035,7 +6035,7 @@ Wire Wire Line
 Text GLabel 1700 22950 0    40   Output ~ 0
 N_DCDC_55
 $Comp
-L dc-modules:R C3R1
+L dcmod-r4:R C3R1
 U 1 1 5E000216
 P 1250 23350
 F 0 "C3R1" H 1250 23190 50  0000 C CNN
@@ -6055,7 +6055,7 @@ Wire Wire Line
 Text GLabel 1700 23350 0    40   Output ~ 0
 N_DCDC_55
 $Comp
-L dc-modules:R C3R2
+L dcmod-r4:R C3R2
 U 1 1 5E000217
 P 3150 21300
 F 0 "C3R2" H 3150 21140 50  0000 C CNN
@@ -6075,7 +6075,7 @@ Wire Wire Line
 Text GLabel 3600 21300 0    40   Output ~ 0
 N_DCDC_55
 $Comp
-L dc-modules:R C3R3
+L dcmod-r4:R C3R3
 U 1 1 5E000218
 P 3150 21700
 F 0 "C3R3" H 3150 21540 50  0000 C CNN
@@ -6095,7 +6095,7 @@ Wire Wire Line
 Text GLabel 3600 21700 0    40   Output ~ 0
 N_DCDC_55
 $Comp
-L dc-modules:R CT3
+L dcmod-r4:R CT3
 U 1 1 5E000219
 P 3200 22100
 F 0 "CT3" H 3200 21940 50  0000 C CNN
@@ -6115,7 +6115,7 @@ Wire Wire Line
 Text GLabel 3650 22100 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:D D3A1
+L dcmod-r4:D D3A1
 U 1 1 5E00021A
 P 3200 22500
 F 0 "D3A1" H 3200 22340 50  0000 C CNN
@@ -6135,7 +6135,7 @@ Wire Wire Line
 Text GLabel 3650 22500 0    40   Output ~ 0
 N_DCDC_57
 $Comp
-L dc-modules:D D3A2
+L dcmod-r4:D D3A2
 U 1 1 5E00021B
 P 3350 22900
 F 0 "D3A2" H 3350 22740 50  0000 C CNN
@@ -6155,7 +6155,7 @@ Wire Wire Line
 Text GLabel 3800 22900 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:D D3A3
+L dcmod-r4:D D3A3
 U 1 1 5E00021C
 P 3200 23300
 F 0 "D3A3" H 3200 23140 50  0000 C CNN
@@ -6175,7 +6175,7 @@ Wire Wire Line
 Text GLabel 3650 23300 0    40   Output ~ 0
 N_DCDC_58
 $Comp
-L dc-modules:D D3A4
+L dcmod-r4:D D3A4
 U 1 1 5E00021D
 P 5000 21300
 F 0 "D3A4" H 5000 21140 50  0000 C CNN
@@ -6195,7 +6195,7 @@ Wire Wire Line
 Text GLabel 5450 21300 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:D D3B1
+L dcmod-r4:D D3B1
 U 1 1 5E00021E
 P 4850 21700
 F 0 "D3B1" H 4850 21540 50  0000 C CNN
@@ -6215,7 +6215,7 @@ Wire Wire Line
 Text GLabel 5300 21700 0    40   Output ~ 0
 N_DCDC_59
 $Comp
-L dc-modules:D D3B2
+L dcmod-r4:D D3B2
 U 1 1 5E00021F
 P 5000 22100
 F 0 "D3B2" H 5000 21940 50  0000 C CNN
@@ -6235,7 +6235,7 @@ Wire Wire Line
 Text GLabel 5450 22100 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:D D3B3
+L dcmod-r4:D D3B3
 U 1 1 5E000220
 P 4850 22500
 F 0 "D3B3" H 4850 22340 50  0000 C CNN
@@ -6255,7 +6255,7 @@ Wire Wire Line
 Text GLabel 5300 22500 0    40   Output ~ 0
 N_DCDC_60
 $Comp
-L dc-modules:D D3B4
+L dcmod-r4:D D3B4
 U 1 1 5E000221
 P 5000 22900
 F 0 "D3B4" H 5000 22740 50  0000 C CNN
@@ -6275,7 +6275,7 @@ Wire Wire Line
 Text GLabel 5450 22900 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:D D3CN
+L dcmod-r4:D D3CN
 U 1 1 5E000222
 P 4900 23300
 F 0 "D3CN" H 4900 23140 50  0000 C CNN
@@ -6295,7 +6295,7 @@ Wire Wire Line
 Text GLabel 5350 23300 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:D D3CP
+L dcmod-r4:D D3CP
 U 1 1 5E000223
 P 6500 21300
 F 0 "D3CP" H 6500 21140 50  0000 C CNN
@@ -6315,7 +6315,7 @@ Wire Wire Line
 Text GLabel 6950 21300 0    40   Output ~ 0
 I_RES3
 $Comp
-L dc-modules:L L3T
+L dcmod-r4:L L3T
 U 1 1 5E000224
 P 6650 21700
 F 0 "L3T" H 6650 21540 50  0000 C CNN
@@ -6335,7 +6335,7 @@ Wire Wire Line
 Text GLabel 7100 21700 0    40   Output ~ 0
 N_DCDC_56
 $Comp
-L dc-modules:R R3CF
+L dcmod-r4:R R3CF
 U 1 1 5E000225
 P 6500 22100
 F 0 "R3CF" H 6500 21940 50  0000 C CNN
@@ -6355,7 +6355,7 @@ Wire Wire Line
 Text GLabel 6950 22100 0    40   Output ~ 0
 I_RES3
 $Comp
-L dc-modules:R R3CT
+L dcmod-r4:R R3CT
 U 1 1 5E000226
 P 6500 22500
 F 0 "R3CT" H 6500 22340 50  0000 C CNN
@@ -6385,7 +6385,7 @@ Wire Notes Line
 Text Notes 8010 20810 0    79   ~ 16
 OUTPUT-SENSING / OUTPUT
 $Comp
-L dc-modules:ISO5V-RFC-6K PSSH
+L dcmod-r4:ISO5V-RFC-6K PSSH
 U 1 1 5E000227
 P 8800 21900
 F 0 "PSSH" H 8400 21600 50  0000 R CNN
@@ -6413,7 +6413,7 @@ Wire Wire Line
 Text GLabel 8600 22450 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:SHUNT-MANG RSHO
+L dcmod-r4:SHUNT-MANG RSHO
 U 1 1 5E000228
 P 10900 21500
 F 0 "RSHO" H 10500 21100 50  0000 R CNN
@@ -6441,7 +6441,7 @@ Wire Wire Line
 Text GLabel 10250 21600 2    40   Input ~ 0
 N_DCDC_78
 $Comp
-L dc-modules:NSI1200-DSWR USHO
+L dcmod-r4:NSI1200-DSWR USHO
 U 1 1 5E000229
 P 12800 21900
 F 0 "USHO" H 12400 21600 50  0000 R CNN
@@ -6485,7 +6485,7 @@ Wire Wire Line
 Text GLabel 12700 22450 3    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R COF1
+L dcmod-r4:R COF1
 U 1 1 5E00022A
 P 12500 23000
 F 0 "COF1" H 12500 22840 50  0000 C CNN
@@ -6505,7 +6505,7 @@ Wire Wire Line
 Text GLabel 12950 23000 0    40   Output ~ 0
 OUTN
 $Comp
-L dc-modules:R COF2
+L dcmod-r4:R COF2
 U 1 1 5E00022B
 P 12500 23400
 F 0 "COF2" H 12500 23240 50  0000 C CNN
@@ -6525,7 +6525,7 @@ Wire Wire Line
 Text GLabel 12950 23400 0    40   Output ~ 0
 OUTN
 $Comp
-L dc-modules:R CYO1
+L dcmod-r4:R CYO1
 U 1 1 5E00022C
 P 14650 21300
 F 0 "CYO1" H 14650 21140 50  0000 C CNN
@@ -6545,7 +6545,7 @@ Wire Wire Line
 Text GLabel 15100 21300 0    40   Output ~ 0
 PE
 $Comp
-L dc-modules:R CYO2
+L dcmod-r4:R CYO2
 U 1 1 5E00022D
 P 14650 21700
 F 0 "CYO2" H 14650 21540 50  0000 C CNN
@@ -6565,7 +6565,7 @@ Wire Wire Line
 Text GLabel 15100 21700 0    40   Output ~ 0
 PE
 $Comp
-L dc-modules:TERM_1 JOUTN
+L dcmod-r4:TERM_1 JOUTN
 U 1 1 5E00022E
 P 14500 22100
 F 0 "JOUTN" H 14500 21940 50  0000 C CNN
@@ -6581,7 +6581,7 @@ Wire Wire Line
 Text GLabel 14200 22100 2    40   Input ~ 0
 OUTN
 $Comp
-L dc-modules:TERM_1 JOUTP
+L dcmod-r4:TERM_1 JOUTP
 U 1 1 5E00022F
 P 14500 22500
 F 0 "JOUTP" H 14500 22340 50  0000 C CNN
@@ -6607,7 +6607,7 @@ Wire Notes Line
 Text Notes 15810 20810 0    79   ~ 16
 OUTPUT-SENSING / SENSE-VBKA
 $Comp
-L dc-modules:AMC1311-class UIVOA
+L dcmod-r4:AMC1311-class UIVOA
 U 1 1 5E000230
 P 16850 21900
 F 0 "UIVOA" H 16450 21600 50  0000 R CNN
@@ -6647,7 +6647,7 @@ Wire Wire Line
 Text GLabel 16750 22450 3    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R COADF
+L dcmod-r4:R COADF
 U 1 1 5E000231
 P 16650 23000
 F 0 "COADF" H 16650 22840 50  0000 C CNN
@@ -6667,7 +6667,7 @@ Wire Wire Line
 Text GLabel 17100 23000 0    40   Output ~ 0
 BKAN
 $Comp
-L dc-modules:R ROAD0
+L dcmod-r4:R ROAD0
 U 1 1 5E000232
 P 16500 23400
 F 0 "ROAD0" H 16500 23240 50  0000 C CNN
@@ -6687,7 +6687,7 @@ Wire Wire Line
 Text GLabel 16950 23400 0    40   Output ~ 0
 N_DCDC_79
 $Comp
-L dc-modules:R ROAD1
+L dcmod-r4:R ROAD1
 U 1 1 5E000233
 P 18850 21300
 F 0 "ROAD1" H 18850 21140 50  0000 C CNN
@@ -6707,7 +6707,7 @@ Wire Wire Line
 Text GLabel 19300 21300 0    40   Output ~ 0
 N_DCDC_80
 $Comp
-L dc-modules:R ROAD2
+L dcmod-r4:R ROAD2
 U 1 1 5E000234
 P 18850 21700
 F 0 "ROAD2" H 18850 21540 50  0000 C CNN
@@ -6727,7 +6727,7 @@ Wire Wire Line
 Text GLabel 19300 21700 0    40   Output ~ 0
 N_DCDC_81
 $Comp
-L dc-modules:R ROAD3
+L dcmod-r4:R ROAD3
 U 1 1 5E000235
 P 18850 22100
 F 0 "ROAD3" H 18850 21940 50  0000 C CNN
@@ -6747,7 +6747,7 @@ Wire Wire Line
 Text GLabel 19300 22100 0    40   Output ~ 0
 N_DCDC_82
 $Comp
-L dc-modules:R ROAD4
+L dcmod-r4:R ROAD4
 U 1 1 5E000236
 P 18850 22500
 F 0 "ROAD4" H 18850 22340 50  0000 C CNN
@@ -6767,7 +6767,7 @@ Wire Wire Line
 Text GLabel 19300 22500 0    40   Output ~ 0
 N_DCDC_83
 $Comp
-L dc-modules:R ROAD5
+L dcmod-r4:R ROAD5
 U 1 1 5E000237
 P 18850 22900
 F 0 "ROAD5" H 18850 22740 50  0000 C CNN
@@ -6787,7 +6787,7 @@ Wire Wire Line
 Text GLabel 19300 22900 0    40   Output ~ 0
 N_DCDC_84
 $Comp
-L dc-modules:R ROAD6
+L dcmod-r4:R ROAD6
 U 1 1 5E000238
 P 18850 23300
 F 0 "ROAD6" H 18850 23140 50  0000 C CNN
@@ -6807,7 +6807,7 @@ Wire Wire Line
 Text GLabel 19300 23300 0    40   Output ~ 0
 N_DCDC_85
 $Comp
-L dc-modules:R ROAD7
+L dcmod-r4:R ROAD7
 U 1 1 5E000239
 P 20600 21300
 F 0 "ROAD7" H 20600 21140 50  0000 C CNN
@@ -6827,7 +6827,7 @@ Wire Wire Line
 Text GLabel 21050 21300 0    40   Output ~ 0
 N_DCDC_86
 $Comp
-L dc-modules:R ROADL
+L dcmod-r4:R ROADL
 U 1 1 5E00023A
 P 20600 21700
 F 0 "ROADL" H 20600 21540 50  0000 C CNN
@@ -6857,7 +6857,7 @@ Wire Notes Line
 Text Notes 21960 20810 0    79   ~ 16
 OUTPUT-SENSING / SENSE-VBKB
 $Comp
-L dc-modules:AMC1311-class UIVOB
+L dcmod-r4:AMC1311-class UIVOB
 U 1 1 5E00023B
 P 23000 21900
 F 0 "UIVOB" H 22600 21600 50  0000 R CNN
@@ -6897,7 +6897,7 @@ Wire Wire Line
 Text GLabel 22900 22450 3    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R COBDF
+L dcmod-r4:R COBDF
 U 1 1 5E00023C
 P 22800 23000
 F 0 "COBDF" H 22800 22840 50  0000 C CNN
@@ -6917,7 +6917,7 @@ Wire Wire Line
 Text GLabel 23250 23000 0    40   Output ~ 0
 BKBN
 $Comp
-L dc-modules:R ROBD0
+L dcmod-r4:R ROBD0
 U 1 1 5E00023D
 P 22650 23400
 F 0 "ROBD0" H 22650 23240 50  0000 C CNN
@@ -6937,7 +6937,7 @@ Wire Wire Line
 Text GLabel 23100 23400 0    40   Output ~ 0
 N_DCDC_87
 $Comp
-L dc-modules:R ROBD1
+L dcmod-r4:R ROBD1
 U 1 1 5E00023E
 P 25000 21300
 F 0 "ROBD1" H 25000 21140 50  0000 C CNN
@@ -6957,7 +6957,7 @@ Wire Wire Line
 Text GLabel 25450 21300 0    40   Output ~ 0
 N_DCDC_88
 $Comp
-L dc-modules:R ROBD2
+L dcmod-r4:R ROBD2
 U 1 1 5E00023F
 P 25000 21700
 F 0 "ROBD2" H 25000 21540 50  0000 C CNN
@@ -6977,7 +6977,7 @@ Wire Wire Line
 Text GLabel 25450 21700 0    40   Output ~ 0
 N_DCDC_89
 $Comp
-L dc-modules:R ROBD3
+L dcmod-r4:R ROBD3
 U 1 1 5E000240
 P 25000 22100
 F 0 "ROBD3" H 25000 21940 50  0000 C CNN
@@ -6997,7 +6997,7 @@ Wire Wire Line
 Text GLabel 25450 22100 0    40   Output ~ 0
 N_DCDC_90
 $Comp
-L dc-modules:R ROBD4
+L dcmod-r4:R ROBD4
 U 1 1 5E000241
 P 25000 22500
 F 0 "ROBD4" H 25000 22340 50  0000 C CNN
@@ -7017,7 +7017,7 @@ Wire Wire Line
 Text GLabel 25450 22500 0    40   Output ~ 0
 N_DCDC_91
 $Comp
-L dc-modules:R ROBD5
+L dcmod-r4:R ROBD5
 U 1 1 5E000242
 P 25000 22900
 F 0 "ROBD5" H 25000 22740 50  0000 C CNN
@@ -7037,7 +7037,7 @@ Wire Wire Line
 Text GLabel 25450 22900 0    40   Output ~ 0
 N_DCDC_92
 $Comp
-L dc-modules:R ROBD6
+L dcmod-r4:R ROBD6
 U 1 1 5E000243
 P 25000 23300
 F 0 "ROBD6" H 25000 23140 50  0000 C CNN
@@ -7057,7 +7057,7 @@ Wire Wire Line
 Text GLabel 25450 23300 0    40   Output ~ 0
 N_DCDC_93
 $Comp
-L dc-modules:R ROBD7
+L dcmod-r4:R ROBD7
 U 1 1 5E000244
 P 26750 21300
 F 0 "ROBD7" H 26750 21140 50  0000 C CNN
@@ -7077,7 +7077,7 @@ Wire Wire Line
 Text GLabel 27200 21300 0    40   Output ~ 0
 N_DCDC_94
 $Comp
-L dc-modules:R ROBDL
+L dcmod-r4:R ROBDL
 U 1 1 5E000245
 P 26750 21700
 F 0 "ROBDL" H 26750 21540 50  0000 C CNN
@@ -7107,7 +7107,7 @@ Wire Notes Line
 Text Notes 560 24310 0    79   ~ 16
 OUTPUT-SENSING / SENSE-VOUT
 $Comp
-L dc-modules:AMC1311-class UIVOV
+L dcmod-r4:AMC1311-class UIVOV
 U 1 1 5E000246
 P 1600 25400
 F 0 "UIVOV" H 1200 25100 50  0000 R CNN
@@ -7147,7 +7147,7 @@ Wire Wire Line
 Text GLabel 1500 25950 3    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R COVDF
+L dcmod-r4:R COVDF
 U 1 1 5E000247
 P 1400 26500
 F 0 "COVDF" H 1400 26340 50  0000 C CNN
@@ -7167,7 +7167,7 @@ Wire Wire Line
 Text GLabel 1850 26500 0    40   Output ~ 0
 OUTN
 $Comp
-L dc-modules:R ROVD0
+L dcmod-r4:R ROVD0
 U 1 1 5E000248
 P 1250 26900
 F 0 "ROVD0" H 1250 26740 50  0000 C CNN
@@ -7187,7 +7187,7 @@ Wire Wire Line
 Text GLabel 1700 26900 0    40   Output ~ 0
 N_DCDC_95
 $Comp
-L dc-modules:R ROVD1
+L dcmod-r4:R ROVD1
 U 1 1 5E000249
 P 3600 24800
 F 0 "ROVD1" H 3600 24640 50  0000 C CNN
@@ -7207,7 +7207,7 @@ Wire Wire Line
 Text GLabel 4050 24800 0    40   Output ~ 0
 N_DCDC_96
 $Comp
-L dc-modules:R ROVD2
+L dcmod-r4:R ROVD2
 U 1 1 5E00024A
 P 3600 25200
 F 0 "ROVD2" H 3600 25040 50  0000 C CNN
@@ -7227,7 +7227,7 @@ Wire Wire Line
 Text GLabel 4050 25200 0    40   Output ~ 0
 N_DCDC_97
 $Comp
-L dc-modules:R ROVD3
+L dcmod-r4:R ROVD3
 U 1 1 5E00024B
 P 3600 25600
 F 0 "ROVD3" H 3600 25440 50  0000 C CNN
@@ -7247,7 +7247,7 @@ Wire Wire Line
 Text GLabel 4050 25600 0    40   Output ~ 0
 N_DCDC_98
 $Comp
-L dc-modules:R ROVD4
+L dcmod-r4:R ROVD4
 U 1 1 5E00024C
 P 3600 26000
 F 0 "ROVD4" H 3600 25840 50  0000 C CNN
@@ -7267,7 +7267,7 @@ Wire Wire Line
 Text GLabel 4050 26000 0    40   Output ~ 0
 N_DCDC_99
 $Comp
-L dc-modules:R ROVD5
+L dcmod-r4:R ROVD5
 U 1 1 5E00024D
 P 3600 26400
 F 0 "ROVD5" H 3600 26240 50  0000 C CNN
@@ -7287,7 +7287,7 @@ Wire Wire Line
 Text GLabel 4050 26400 0    40   Output ~ 0
 N_DCDC_100
 $Comp
-L dc-modules:R ROVD6
+L dcmod-r4:R ROVD6
 U 1 1 5E00024E
 P 3600 26800
 F 0 "ROVD6" H 3600 26640 50  0000 C CNN
@@ -7307,7 +7307,7 @@ Wire Wire Line
 Text GLabel 4050 26800 0    40   Output ~ 0
 N_DCDC_101
 $Comp
-L dc-modules:R ROVD7
+L dcmod-r4:R ROVD7
 U 1 1 5E00024F
 P 5450 24800
 F 0 "ROVD7" H 5450 24640 50  0000 C CNN
@@ -7327,7 +7327,7 @@ Wire Wire Line
 Text GLabel 5900 24800 0    40   Output ~ 0
 N_DCDC_102
 $Comp
-L dc-modules:R ROVDL
+L dcmod-r4:R ROVDL
 U 1 1 5E000250
 P 5450 25200
 F 0 "ROVDL" H 5450 25040 50  0000 C CNN
@@ -7357,7 +7357,7 @@ Wire Notes Line
 Text Notes 6810 24310 0    79   ~ 16
 OUTPUT-SENSING / ISO-BIAS
 $Comp
-L dc-modules:ISO5V-RFC-6K PS5BKA
+L dcmod-r4:ISO5V-RFC-6K PS5BKA
 U 1 1 5E000251
 P 7600 25400
 F 0 "PS5BKA" H 7200 25100 50  0000 R CNN
@@ -7385,7 +7385,7 @@ Wire Wire Line
 Text GLabel 7400 25950 3    40   Output ~ 0
 DGND
 $Comp
-L dc-modules:ISO5V-RFC-6K PS5BKB
+L dcmod-r4:ISO5V-RFC-6K PS5BKB
 U 1 1 5E000252
 P 9450 25400
 F 0 "PS5BKB" H 9050 25100 50  0000 R CNN
@@ -7423,7 +7423,7 @@ Wire Notes Line
 Text Notes 10910 24310 0    79   ~ 16
 OUTPUT-SENSING / ANALOG-MID
 $Comp
-L dc-modules:TLV9061-class UAVB
+L dcmod-r4:TLV9061-class UAVB
 U 1 1 5E000253
 P 11950 25400
 F 0 "UAVB" H 11550 25100 50  0000 R CNN
@@ -7455,7 +7455,7 @@ Wire Wire Line
 Text GLabel 11750 25950 3    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R CAVF
+L dcmod-r4:R CAVF
 U 1 1 5E000254
 P 11750 26500
 F 0 "CAVF" H 11750 26340 50  0000 C CNN
@@ -7475,7 +7475,7 @@ Wire Wire Line
 Text GLabel 12200 26500 0    40   Output ~ 0
 N_DCDC_104
 $Comp
-L dc-modules:R CAVM
+L dcmod-r4:R CAVM
 U 1 1 5E000255
 P 11750 26900
 F 0 "CAVM" H 11750 26740 50  0000 C CNN
@@ -7495,7 +7495,7 @@ Wire Wire Line
 Text GLabel 12200 26900 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R CAVO
+L dcmod-r4:R CAVO
 U 1 1 5E000256
 P 13800 24800
 F 0 "CAVO" H 13800 24640 50  0000 C CNN
@@ -7515,7 +7515,7 @@ Wire Wire Line
 Text GLabel 14250 24800 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R RAVF
+L dcmod-r4:R RAVF
 U 1 1 5E000257
 P 13800 25200
 F 0 "RAVF" H 13800 25040 50  0000 C CNN
@@ -7535,7 +7535,7 @@ Wire Wire Line
 Text GLabel 14250 25200 0    40   Output ~ 0
 N_DCDC_104
 $Comp
-L dc-modules:R RAVH
+L dcmod-r4:R RAVH
 U 1 1 5E000258
 P 13800 25600
 F 0 "RAVH" H 13800 25440 50  0000 C CNN
@@ -7555,7 +7555,7 @@ Wire Wire Line
 Text GLabel 14250 25600 0    40   Output ~ 0
 AVREF_MID
 $Comp
-L dc-modules:R RAVI
+L dcmod-r4:R RAVI
 U 1 1 5E000259
 P 13950 26000
 F 0 "RAVI" H 13950 25840 50  0000 C CNN
@@ -7575,7 +7575,7 @@ Wire Wire Line
 Text GLabel 14400 26000 0    40   Output ~ 0
 AVMID
 $Comp
-L dc-modules:R RAVL
+L dcmod-r4:R RAVL
 U 1 1 5E00025A
 P 13950 26400
 F 0 "RAVL" H 13950 26240 50  0000 C CNN
@@ -7605,7 +7605,7 @@ Wire Notes Line
 Text Notes 15210 24310 0    79   ~ 16
 OUTPUT-SENSING / NTC
 $Comp
-L dc-modules:R CTLLCF
+L dcmod-r4:R CTLLCF
 U 1 1 5E00025B
 P 15950 24800
 F 0 "CTLLCF" H 15950 24640 50  0000 C CNN
@@ -7625,7 +7625,7 @@ Wire Wire Line
 Text GLabel 16400 24800 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R CTXFRF
+L dcmod-r4:R CTXFRF
 U 1 1 5E00025C
 P 15950 25200
 F 0 "CTXFRF" H 15950 25040 50  0000 C CNN
@@ -7645,7 +7645,7 @@ Wire Wire Line
 Text GLabel 16400 25200 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R JTLLC
+L dcmod-r4:R JTLLC
 U 1 1 5E00025D
 P 15950 25600
 F 0 "JTLLC" H 15950 25440 50  0000 C CNN
@@ -7665,7 +7665,7 @@ Wire Wire Line
 Text GLabel 16400 25600 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R JTXFR
+L dcmod-r4:R JTXFR
 U 1 1 5E00025E
 P 15950 26000
 F 0 "JTXFR" H 15950 25840 50  0000 C CNN
@@ -7685,7 +7685,7 @@ Wire Wire Line
 Text GLabel 16400 26000 0    40   Output ~ 0
 AGND
 $Comp
-L dc-modules:R RTLLCP
+L dcmod-r4:R RTLLCP
 U 1 1 5E00025F
 P 15900 26400
 F 0 "RTLLCP" H 15900 26240 50  0000 C CNN
@@ -7705,7 +7705,7 @@ Wire Wire Line
 Text GLabel 16350 26400 0    40   Output ~ 0
 T_LLC
 $Comp
-L dc-modules:R RTXFRP
+L dcmod-r4:R RTXFRP
 U 1 1 5E000260
 P 15900 26800
 F 0 "RTXFRP" H 15900 26640 50  0000 C CNN

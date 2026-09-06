@@ -37,7 +37,8 @@ const boxOf = (txt, x, y, justify, vert = false) => {
 const hit = (a, b) => a.x0 < b.x1 - 1 && b.x0 < a.x1 - 1 && a.y0 < b.y1 - 1 && b.y0 < a.y1 - 1;
 
 const LIB = new Map();
-for (const blk of readFileSync(join(SCH, "dc-modules.lib"), "utf8").split(/^DEF /m).slice(1)) {
+const libFile = readdirSync(SCH).find((f) => f.endsWith(".lib"));
+for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice(1)) {
   const name = blk.split(/\s+/)[0];
   let box = null;
   for (const l of blk.split("\n")) {
