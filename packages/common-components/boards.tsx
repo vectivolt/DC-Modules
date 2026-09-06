@@ -422,7 +422,32 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
   // schematic sheet plan: bus row y=40..48 · LLC legs x=2 col (16/row from y=24) · sections x=30
   // · banks/matrix/bleeders x=58 · output+senses x=84 · control row below everything at cYd.
   const cYd = Math.min(24 - (3 * channels - 1) * 16 - 9.5, -25) - 10;
-  return (
+    // ---------------------------------------------------------------------------------------------
+  // PCB PLACEMENT. Board 440 x 380, matching the AC-DC card so one extrusion and one rack slot
+  // serve both. Primary on the left, secondary on the right, and the reinforced barrier runs
+  // vertically THROUGH the LlcSection cells at the transformer row -- everything else is arranged
+  // so that nothing has to cross it except the transformers themselves.
+  //
+  //   x -220..-129   LLC half-bridge legs, one per section, each behind its own transformer
+  //   x -120..  50   LLC sections: tank -> transformer (THE BARRIER) -> rectifier -> bank
+  //   x -120..  51   S/P relay matrix, directly under the banks it switches
+  //   x   55.. 218   output shunt, studs and the isolated output senses
+  //   y -190..-150   control strip, primary-referenced, along the bottom edge
+  const Q = {
+    leg: [130, 60, -10] as const, legX: -207,
+    // measured: a section cell is 170 x 53 and sits from origin-52 to origin+1, so 65 mm of pitch
+    // leaves a real 12 mm gap between transformer rows -- they are the tallest parts and need air.
+    sec: [130, 60, -10] as const, secX: -96,
+    spm: [-30, -155] as const,
+    shunt: [186, -60] as const, studX: 200, stud: [150, 110, 70] as const,
+    ivs: [170, 181, 192] as const, ivsY: 40, b5: [200, -100] as const,
+    // control strip laid by MEASURED width from x -215, 6 mm between cells:
+    // mcu 33, sfc 37, r3v3 33, ic 60, can 56, hmi 111, avmid 27 = 357 mm in 436
+    ctlY: -170, mcuX: -198, sfcX: -169, r3v3X: -123, icX: -33, canX: -21, hmiX: 46,
+    avmidX: 152, ntcX: 152, ntcY: -120,
+  };
+
+return (
     <board width={`${w}mm`} height={`${h}mm`} routingDisabled schTraceAutoLabelEnabled schMaxTraceDistance={0}>
       {/* bus entry studs from AC-DC board + film commutation caps per leg */}
       <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 20} pcbY={h / 2 - 30} schX={0} schY={46} schSectionName="INPUT" />
@@ -442,14 +467,16 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
       {/* LLC legs + sections */}
       {legs.map((l, i) => (
         <LlcHalfBridgeLeg key={l.id} id={l.id} bus="net.DCP" gnd="net.DCN" sw={l.sw}
+          x={Q.legX} y={Q.leg[i % 3]}
           pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT_LLC" en="net.GATE_EN_B"
-          x={-w / 2 + 60} y={h / 2 - 70 - i * 44} sx={2} sy={24 - i * 16} />
+          sx={2} sy={24 - i * 16} />
       ))}
       {secs.map((s, i) => (
         <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
+          x={Q.secX} y={Q.sec[i % 3]}
           bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
           ctOut={`net.I_RES${s.id}`}
-          x={-w / 2 + 180} y={h / 2 - 70 - i * 44} sx={30} sy={24 - i * 16} />
+          sx={30} sy={24 - i * 16} />
       ))}
 
       {/* bank capacitors — E29/CB-2: two-series 450 V strings (900 V string rating vs ≤525 V bank)
@@ -544,7 +571,7 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
         x={w / 2 - 260} y={-h / 2 + 40} sx={42} sy={cYd} />
 
       {/* output: shunt in negative, filter, studs, Y caps */}
-      <OutputShunt inn="net.BKBN" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={w / 2 - 120} y={-h / 2 + 60} sx={86} sy={27} />
+      <OutputShunt inn="net.BKBN" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={Q.shunt[0]} y={Q.shunt[1]} sx={86} sy={27} />
       <capacitor name="COF1" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 40} schX={86} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={w / 2 - 120} pcbY={-h / 2 + 30} schX={88.5} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="CYO1" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 40} schX={91} schY={21.5} schSectionName="OUTPUT" />
@@ -563,20 +590,20 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
       <trace from=".CYO2 > .pin2" to="net.PE" schDisplayLabel="PE" />
 
       {/* sensing (E25: bank/output voltages isolated inside their own domains — CB-3 fix) */}
-      <Bias5Module id="BKA" p5="net.B5BKA" com="net.BKAN" x={-w / 2 + 60} y={-h / 2 + 105} sx={84} sy={16} />
-      <Bias5Module id="BKB" p5="net.B5BKB" com="net.BKBN" x={-w / 2 + 60} y={-h / 2 + 98} sx={88} sy={16} />
-      <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" cf="1nF" out="net.SNS_VBKA" x={-w / 2 + 60} y={-h / 2 + 90} sx={84} sy={12} />
-      <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" cf="1nF" out="net.SNS_VBKB" x={-w / 2 + 60} y={-h / 2 + 80} sx={84} sy={7.5} />
-      <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" cf="1nF" out="net.SNS_VOUT" x={-w / 2 + 60} y={-h / 2 + 70} sx={84} sy={3} />
-      <AnalogMid x={-w / 2 + 60} y={-h / 2 + 35} sx={84} sy={-6} />
-      <NtcInput id="TLLC" out="net.T_LLC" x={-w / 2 + 60} y={-h / 2 + 55} sx={84} sy={-10.5} />
-      <NtcInput id="TXFR" out="net.T_XFMR" x={-w / 2 + 60} y={-h / 2 + 45} sx={94} sy={-10.5} />
+      <Bias5Module id="BKA" p5="net.B5BKA" com="net.BKAN" x={Q.b5[0]} y={Q.b5[1]} sx={84} sy={16} />
+      <Bias5Module id="BKB" p5="net.B5BKB" com="net.BKBN" x={Q.b5[0]} y={Q.b5[1] - 16} sx={88} sy={16} />
+      <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" cf="1nF" out="net.SNS_VBKA" x={Q.ivs[0]} y={Q.ivsY} sx={84} sy={12} />
+      <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" cf="1nF" out="net.SNS_VBKB" x={Q.ivs[1]} y={Q.ivsY} sx={84} sy={7.5} />
+      <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" cf="1nF" out="net.SNS_VOUT" x={Q.ivs[2]} y={Q.ivsY} sx={84} sy={3} />
+      <AnalogMid x={Q.avmidX} y={Q.ctlY} sx={84} sy={-6} />
+      <NtcInput id="TLLC" out="net.T_LLC" x={Q.ntcX} y={Q.ntcY} sx={84} sy={-10.5} />
+      <NtcInput id="TXFR" out="net.T_XFMR" x={Q.ntcX} y={Q.ntcY - 14} sx={94} sy={-10.5} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
-      <ControlMcu id="LLC" x={-w / 2 + 150} y={-h / 2 + 60} sx={2} sy={cYd} />
-      <Rail3V3 id="B" x={-w / 2 + 190} y={-h / 2 + 40} sx={32} sy={cYd} />
+      <ControlMcu id="LLC" x={Q.mcuX} y={Q.ctlY} sx={2} sy={cYd} />
+      <Rail3V3 id="B" x={Q.r3v3X} y={Q.ctlY} sx={32} sy={cYd} />
       <SafetyChain id="B" enLocal="net.EN_LLC" enRemote="net.EN_PFC" wdi="net.WDI_LLC" gateEn="net.GATE_EN_B"
-        x={-w / 2 + 150} y={-h / 2 + 95} sx={23} sy={cYd - 8} />
+        x={Q.sfcX} y={Q.ctlY} sx={23} sy={cYd - 8} />
       <SwdPort id="LLC" x={-w / 2 + 110} y={-h / 2 + 60} sx={16} sy={cYd} />
       <trace from=".ULLC > .pin28" to="net.SWDIO_LLC" schDisplayLabel="SWDIO_LLC" />
       <trace from=".ULLC > .pin29" to="net.SWCLK_LLC" schDisplayLabel="SWCLK_LLC" />
@@ -590,11 +617,11 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
       <resistor name="RAGTB" resistance="0" footprint="0805" pcbX={-w / 2 + 202} pcbY={-h / 2 + 95} schX={4} schY={cYd - 14} schSectionName="BOND" />
       <trace from=".RAGTB > .pin1" to="net.AGND" schDisplayLabel="AGND" />
       <trace from=".RAGTB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-      <IsolatedCan x={-w / 2 + 230} y={-h / 2 + 60} sx={48} sy={cYd} />
-      <ConfigHmi x={-w / 2 + 230} y={-h / 2 + 25} sx={63} sy={cYd} />
+      <IsolatedCan x={Q.canX} y={Q.ctlY} sx={48} sy={cYd} />
+      <ConfigHmi x={Q.hmiX} y={Q.ctlY} sx={63} sy={cYd} />
       {/* CB-14: this side of the harness crosses the link — LTX wire lands on this MCU's RX */}
       <InterconnectSignals id="B" ltx="net.LINK_RX" lrx="net.LINK_TX" enA="net.EN_PFC" enB="net.EN_LLC"
-        x={-w / 2 + 150} y={-h / 2 + 20} sx={84} sy={cYd} />
+        x={Q.icX} y={Q.ctlY} sx={84} sy={cYd} />
       {llcPins.map(([net, pin]) => (
         <trace key={`${net}${pin}`} from={`.ULLC > .pin${pin}`} to={net} />
       ))}

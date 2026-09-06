@@ -378,7 +378,7 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, sec = 
     <chip name={`Q${id}H`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={17} schY={1.4} schSectionName={sec} />
     <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={12} pcbY={0} schX={17} schY={-5.6} schSectionName={sec} />
     <DriverCh id={`${id}H`} pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
-    <DriverCh id={`${id}L`} pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={44} y={16} sx={4.5} sy={-5.6} />
+    <DriverCh id={`${id}L`} pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
     <trace from={`.Q${id}H > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     <trace from={`.Q${id}H > .G`} to={`net.GH_${id}`} />
@@ -399,23 +399,23 @@ export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = 
     {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
         resonant-CT measurement chain on its own row below the tank. */}
     {[0, 1, 2, 3].map(i => (
-      <capacitor key={i} name={`C${id}R${i}`} capacitance="46nF" footprint={FilmBoxFP(27.5)} pcbX={0} pcbY={i * 8} schX={0} schY={3 - i * 1.4} schSectionName={sec} />
+      <capacitor key={i} name={`C${id}R${i}`} capacitance="46nF" footprint={FilmBoxFP(27.5)} pcbX={0} pcbY={i * 16} schX={0} schY={3 - i * 1.4} schSectionName={sec} />
     ))}
-    <inductor name={`L${id}T`} inductance="4uH" footprint={<TrimFP />} pcbX={40} pcbY={0} schX={3} schY={3} schSectionName={sec} />
-    <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "S1A", pin5: "S1B", pin6: "S2A", pin7: "S2B" }} pcbX={80} pcbY={10} schX={7} schY={1.5} schSectionName={sec} />
+    <inductor name={`L${id}T`} inductance="4uH" footprint={<TrimFP />} pcbX={96} pcbY={12} schX={3} schY={3} schSectionName={sec} />
+    <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "S1A", pin5: "S1B", pin6: "S2A", pin7: "S2B" }} pcbX={152} pcbY={12} schX={7} schY={1.5} schSectionName={sec} />
     {["A1", "A2", "A3", "A4"].map((d, i) => (
-      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={110 + i * 12} pcbY={0} schX={11 + i * 2.4} schY={3} schSectionName={sec} />
+      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={196 + i * 18} pcbY={2} schX={11 + i * 2.4} schY={3} schSectionName={sec} />
     ))}
     {["B1", "B2", "B3", "B4"].map((d, i) => (
-      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={110 + i * 12} pcbY={12} schX={11 + i * 2.4} schY={0.6} schSectionName={sec} />
+      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={196 + i * 18} pcbY={22} schX={11 + i * 2.4} schY={0.6} schSectionName={sec} />
     ))}
     {/* measurement row: CT → burden → RC filter → clamps (CB-16 values) */}
-    <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={40} pcbY={10} schX={0} schY={-3.4} schSectionName={sec} />
-    <resistor name={`R${id}CT`} resistance="2" footprint="2512" pcbX={52} pcbY={10} schX={2.6} schY={-3.4} schSectionName={sec} />
-    <resistor name={`R${id}CF`} resistance="1k" footprint="0603" pcbX={58} pcbY={10} schX={4.6} schY={-3.4} schSectionName={sec} />
-    <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={64} pcbY={14} schX={6.6} schY={-4.4} schSectionName={sec} />
-    <diode name={`D${id}CP`} footprint="sod323" pcbX={64} pcbY={6} schX={7.2} schY={-2.6} schSectionName={sec} />
-    <diode name={`D${id}CN`} footprint="sod323" pcbX={70} pcbY={6} schX={9.6} schY={-2.6} schSectionName={sec} />
+    <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={44} pcbY={12} schX={0} schY={-3.4} schSectionName={sec} />
+    <resistor name={`R${id}CT`} resistance="2" footprint="2512" pcbX={44} pcbY={34} schX={2.6} schY={-3.4} schSectionName={sec} />
+    <resistor name={`R${id}CF`} resistance="1k" footprint="0603" pcbX={56} pcbY={32} schX={4.6} schY={-3.4} schSectionName={sec} />
+    <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={64} pcbY={34} schX={6.6} schY={-4.4} schSectionName={sec} />
+    <diode name={`D${id}CP`} footprint="sod323" pcbX={56} pcbY={40} schX={7.2} schY={-2.6} schSectionName={sec} />
+    <diode name={`D${id}CN`} footprint="sod323" pcbX={64} pcbY={40} schX={9.6} schY={-2.6} schSectionName={sec} />
     {[0, 1, 2, 3].map(i => [
       <trace key={`a${i}`} from={sw} to={`.C${id}R${i} > .pin1`} schDisplayLabel={sw.replace("net.", "")} />,
       <trace key={`b${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .pin1`} />,
@@ -501,13 +501,13 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual =
     {/* Envelope 22 × 14 (single) / 22 × 22 (dual): relays in a 3-column grid, each with its
         readback pull-up beside it; pre-insertion resistors in their own column at right. */}
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
-      <chip key={k} name={k} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 3) * 40} pcbY={Math.floor(i / 3) * 35} schX={(i % 3) * 6} schY={-Math.floor(i / 3) * 5} schSectionName={sec} />
+      <chip key={k} name={k} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 3) * 58} pcbY={Math.floor(i / 3) * 42} schX={(i % 3) * 6} schY={-Math.floor(i / 3) * 5} schSectionName={sec} />
     ))}
     {dual ? HV.map((k, i) => (
-      <chip key={`${k}2`} name={`${k}2`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 3) * 40} pcbY={80 + Math.floor(i / 3) * 35} schX={(i % 3) * 6} schY={-10 - Math.floor(i / 3) * 5} schSectionName={sec} />
+      <chip key={`${k}2`} name={`${k}2`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 3) * 58} pcbY={96 + Math.floor(i / 3) * 42} schX={(i % 3) * 6} schY={-10 - Math.floor(i / 3) * 5} schSectionName={sec} />
     )) : null}
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
-      <resistor key={`r${k}`} name={`RKPU${k}`} resistance="10k" footprint="0603" pcbX={(i % 3) * 40 + 20} pcbY={Math.floor(i / 3) * 35 + 15} schX={(i % 3) * 6 + 2.6} schY={-Math.floor(i / 3) * 5 + 1.6} schSectionName={sec} />
+      <resistor key={`r${k}`} name={`RKPU${k}`} resistance="10k" footprint="0603" pcbX={(i % 3) * 58 + 26} pcbY={Math.floor(i / 3) * 42 + 20} schX={(i % 3) * 6 + 2.6} schY={-Math.floor(i / 3) * 5 + 1.6} schSectionName={sec} />
     ))}
     <chip name="RPREA" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={130} pcbY={0} schX={17} schY={0} schSectionName={sec} />
     <chip name="RPREB" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={130} pcbY={35} schX={17} schY={-5} schSectionName={sec} />
@@ -825,7 +825,7 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
     <chip name="DISP1" footprint={<Seg2FP />} pinLabels={{ pin1: "SA", pin2: "SB", pin3: "SC", pin4: "SD", pin5: "SE", pin6: "SF", pin7: "SG", pin8: "DP", pin9: "DIG1", pin10: "DIG2" }} pcbX={0} pcbY={0} schX={8.5} schY={0} schSectionName={sec} />
     <chip name="USR1" footprint="soic16" pinLabels={{ pin1: "QB", pin2: "QC", pin3: "QD", pin4: "QE", pin5: "QF", pin6: "QG", pin7: "QH", pin8: "GND", pin9: "QHS", pin10: "SRCLR", pin11: "SRCLK", pin12: "RCLK", pin13: "OE", pin14: "SER", pin15: "QA", pin16: "VCC" }} pcbX={0} pcbY={22} schX={0} schY={0} schSectionName={sec} />
     {Array.from({ length: 8 }, (_, i) => (
-      <resistor key={i} name={`RSEG${i}`} resistance="220" footprint="0603" pcbX={32 + i * 5} pcbY={0} schX={4.5} schY={3.5 - i * 1} schSectionName={sec} />
+      <resistor key={i} name={`RSEG${i}`} resistance="220" footprint="0603" pcbX={32 + i * 5} pcbY={-12} schX={4.5} schY={3.5 - i * 1} schSectionName={sec} />
     ))}
     {["1", "2"].map((d, i) => (
       <chip key={d} name={`QDIG${d}`} footprint="sot23" pinLabels={{ pin1: "B", pin2: "E", pin3: "C" }} pcbX={32 + i * 8} pcbY={10} schX={8.5 + i * 2.6} schY={-3.4} schSectionName={sec} />
