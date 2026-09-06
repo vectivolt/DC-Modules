@@ -63,6 +63,7 @@ function pinSide(name, sig) {
 }
 
 const CAT = (value, mpn, pins) => {
+  if (pins.length === 1) return "TERM";        // stud / tab: a terminal, not a chip
   if (pins.length !== 2) return "IC";
   const m = String(mpn || value);
   if (/^(R-|R\d|HV73|CER-|WW-|SQP-|R0805|R1206|R2512|R0603)/.test(m) || /^\d+(\.\d+)?(k|M|R|Ω)?$/.test(value)) return "R";
@@ -74,6 +75,25 @@ const CAT = (value, mpn, pins) => {
 
 // ---- symbol library ---------------------------------------------------------------------
 const libSymbols = new Map();
+
+function termSymbol(pinNum, pinName) {
+  const id = `dc-modules:TERM_${pinNum}`;
+  if (libSymbols.has(id)) return id;
+  libSymbols.set(id, `(symbol "dc-modules:TERM_${pinNum}"
+    (pin_names (offset 0.762) (hide yes)) (exclude_from_sim no) (in_bom yes) (on_board yes)
+    (property "Reference" "J" (at 0 3.302 0) (effects (font (size 1.016 1.016))))
+    (property "Value" "TERM" (at 0 -3.302 0) (effects (font (size 1.016 1.016))))
+    (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+    (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+    (symbol "TERM_${pinNum}_0_1"
+      (circle (center 1.27 0) (radius 0.889)
+        (stroke (width 0.254) (type default)) (fill (type none))))
+    (symbol "TERM_${pinNum}_1_1"
+      (pin passive line (at -2.54 0 0) (length 2.921)
+        (name "${esc(pinName)}" (effects (font (size 1.016 1.016))))
+        (number "${esc(String(pinNum))}" (effects (font (size 1.016 1.016)))))))`);
+  return id;
+}
 
 function passiveSymbol(kind, n1 = "1", n2 = "2") {
   const suffix = (n1 === "1" && n2 === "2") ? "" : `_${n1}${n2}`;
@@ -150,8 +170,10 @@ function icSymbol(rawKey, pins) {
     const type = isGnd(p.signal_name) || /^(GND|VEE|VSS|EP)/i.test(p.name) ? "power_in"
       : /^(VDD|VCC|VIN|VP|COM)/i.test(p.name) ? "power_in"
       : pinSide(p.name, p.signal_name) === "right" ? "output" : "input";
+    const side = pinSide(p.name, p.signal_name);
+    const shown = (side === "top" || side === "bottom") ? "~" : p.name;   // "~" = no name drawn
     pinS += `(pin ${type} line (at ${x} ${y} ${rot}) (length 3.81)
-        (name "${esc(p.name)}" (effects (font (size 1.016 1.016))))
+        (name "${esc(shown)}" (effects (font (size 1.016 1.016))))
         (number "${esc(String(p.pin_number))}" (effects (font (size 0.762 0.762)))))\n      `;
   };
   groups.left.forEach((p, i) => emit(p, -halfW - 3.81, halfH - PITCH - i * PITCH, 0));
@@ -161,7 +183,7 @@ function icSymbol(rawKey, pins) {
 
   libSymbols.set(id, `(symbol "dc-modules:${key}"
     (pin_names (offset 0.508)) (exclude_from_sim no) (in_bom yes) (on_board yes)
-    (property "Reference" "U" (at ${-halfW} ${halfH + 2.54} 0) (effects (font (size 1.016 1.016)) (justify left)))
+    (property "Reference" "U" (at ${-halfW - 1.27} ${halfH + 2.54} 0) (effects (font (size 1.016 1.016)) (justify right)))
     (property "Value" "${esc(key)}" (at ${-halfW} ${-halfH - 2.54} 0) (effects (font (size 1.016 1.016)) (justify left)))
     (property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
     (property "Datasheet" "~" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
@@ -174,6 +196,10 @@ function icSymbol(rawKey, pins) {
 function shapeOf(c) {
   const cat = CAT(c.value, c.mpn, c.pins);
   const allPins = cat === "IC" ? unionPins(c) : c.pins;
+  if (cat === "TERM") {
+    const lw = (c.pins[0]?.signal_name?.length ?? 0) * CHW;
+    return { cat, w: 5.08 + STUB + lw, h: ROW, lw, rw: 0 };
+  }
   if (cat !== "IC") {
     const l = c.pins.find((p) => String(p.pin_number) === "1") ?? c.pins[0];
     const r = c.pins.find((p) => String(p.pin_number) === "2") ?? c.pins[1];
@@ -282,7 +308,24 @@ for (const file of PAGES) {
       const ox = snap(b.X + SECPAD + it.x + s.lw + STUB);
       const oy = snap(b.Y + SECTITLE + SECPAD + it.y);
       const lcsc = LCSC[c.mpn] ?? {};
-      if (s.cat !== "IC") {
+      if (s.cat === "TERM") {
+        const p0 = c.pins[0];
+        const cx = snap(ox + 2.54), cy2 = snap(oy + ROW / 2);
+        const lib = termSymbol(p0.pin_number, p0.name);
+        body += `\t(symbol (lib_id "${lib}") (at ${cx} ${cy2} 0) (unit 1)
+\t\t(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "${uuid(name + c.designator)}")
+\t\t(property "Reference" "${esc(c.designator)}" (at ${cx} ${snap(cy2 - 3.302)} 0) (effects (font (size 1.016 1.016))))
+\t\t(property "Value" "${esc(c.value)}" (at ${cx} ${snap(cy2 + 3.556)} 0) (effects (font (size 1.016 1.016))))
+\t\t(property "LCSC" "${esc(lcsc.lcsc ?? lcsc.status ?? "")}" (at ${cx} ${cy2} 0) (effects (font (size 1.016 1.016)) (hide yes)))
+\t\t(instances (project "dc-modules-30kw" (path "/${uuid(name)}" (reference "${esc(c.designator)}") (unit 1)))))\n`;
+        if (p0.signal_name) {
+          const px2 = snap(cx - 2.54), ex = snap(px2 - STUB);
+          body += `\t(wire (pts (xy ${px2} ${cy2}) (xy ${ex} ${cy2})) (stroke (width 0) (type default)) (uuid "${uuid(name + c.designator + "w")}"))\n`;
+          body += `\t(global_label "${esc(p0.signal_name)}" (shape input) (at ${ex} ${cy2} 180)
+\t\t(effects (font (size 1.016 1.016)) (justify right)) (uuid "${uuid(name + c.designator + "l")}"))\n`;
+          nLabels++;
+        }
+      } else if (s.cat !== "IC") {
         const cx = snap(ox + 6.35), cy2 = snap(oy + ROW / 2);
         const pnums = c.pins.map((q) => String(q.pin_number)).sort((a, b) => Number(a) - Number(b));
         const lib = passiveSymbol(s.cat, pnums[0] ?? "1", pnums[1] ?? "2");
@@ -306,8 +349,8 @@ for (const file of PAGES) {
         const lib = icSymbol(c.mpn || c.value, unionPins(c));
         body += `\t(symbol (lib_id "${lib}") (at ${cx} ${cy2} 0) (unit 1)
 \t\t(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "${uuid(name + c.designator)}")
-\t\t(property "Reference" "${esc(c.designator)}" (at ${snap(cx - s.halfW)} ${snap(cy2 - s.halfH - 2.54)} 0) (effects (font (size 1.016 1.016)) (justify left)))
-\t\t(property "Value" "${esc(c.value)}" (at ${snap(cx - s.halfW)} ${snap(cy2 + s.halfH + 2.54)} 0) (effects (font (size 1.016 1.016)) (justify left)))
+\t\t(property "Reference" "${esc(c.designator)}" (at ${snap(cx - s.halfW - 2.54)} ${snap(cy2 - s.halfH - 2.54)} 0) (effects (font (size 1.016 1.016)) (justify right)))
+\t\t(property "Value" "${esc(c.value)}" (at ${snap(cx - s.halfW - 2.54)} ${snap(cy2 + s.halfH + 2.54)} 0) (effects (font (size 1.016 1.016)) (justify right)))
 \t\t(property "LCSC" "${esc(lcsc.lcsc ?? lcsc.status ?? "")}" (at ${cx} ${cy2} 0) (effects (font (size 1.016 1.016)) (hide yes)))
 \t\t(instances (project "dc-modules-30kw" (path "/${uuid(name)}" (reference "${esc(c.designator)}") (unit 1)))))\n`;
         const bound = new Map(c.pins.map((p) => [String(p.pin_number), p.signal_name]));
@@ -320,8 +363,18 @@ for (const file of PAGES) {
 \t\t(effects (font (size 1.016 1.016)) (justify ${dir < 0 ? "right" : "left"})) (uuid "${uuid(name + c.designator + p.pin_number + "l")}"))\n`;
           nLabels++;
         };
-        s.groups.left.forEach((p, i) => put(p, snap(cx - s.halfW - 3.81), snap(cy2 - s.halfH + PITCH + i * PITCH), -1, 180));
-        s.groups.right.forEach((p, i) => put(p, snap(cx + s.halfW + 3.81), snap(cy2 - s.halfH + PITCH + i * PITCH), 1, 0));
+        // an unbound pin gets an explicit no-connect marker rather than a bare stub
+        const nc = (px2, py2) => { body += `\t(no_connect (at ${px2} ${py2}) (uuid "${uuid(name + c.designator + px2 + py2 + "nc")}"))\n`; };
+        s.groups.left.forEach((p, i) => {
+          const px2 = snap(cx - s.halfW - 3.81), py2 = snap(cy2 - s.halfH + PITCH + i * PITCH);
+          if (!bound.get(String(p.pin_number))) return nc(px2, py2);
+          put(p, px2, py2, -1, 180);
+        });
+        s.groups.right.forEach((p, i) => {
+          const px2 = snap(cx + s.halfW + 3.81), py2 = snap(cy2 - s.halfH + PITCH + i * PITCH);
+          if (!bound.get(String(p.pin_number))) return nc(px2, py2);
+          put(p, px2, py2, 1, 0);
+        });
         // power/ground leave vertically then turn into a horizontal label, so nothing collides
         s.groups.top.forEach((p, i) => {
           const px = snap(cx - s.halfW + PITCH + i * PITCH), py = snap(cy2 - s.halfH - 3.81);

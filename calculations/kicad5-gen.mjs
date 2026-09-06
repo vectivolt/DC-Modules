@@ -60,6 +60,7 @@ function groupPins(pins) {
   return g;
 }
 const CAT = (value, mpn, pins) => {
+  if (pins.length === 1) return "TERM";        // stud / tab: a terminal, not a chip
   if (pins.length !== 2) return "IC";
   const m = String(mpn || value);
   if (/^(R-|R\d|HV73|CER-|WW-|SQP-|R0805|R1206|R2512|R0603)/.test(m) || /^\d+(\.\d+)?(k|M|R|Ω)?$/.test(value)) return "R";
@@ -72,6 +73,18 @@ const CAT = (value, mpn, pins) => {
 // ---- legacy .lib symbol library ----------------------------------------------------------
 const lib = new Map();
 const libName = (s) => String(s).replace(/[^A-Za-z0-9_.+-]/g, "_");
+
+function termLib(pinNum, pinName) {
+  const nm = `TERM_${pinNum}`;
+  if (lib.has(nm)) return nm;
+  lib.set(nm, `#\n# ${nm}\n#\nDEF ${nm} J 0 40 N N 1 F N\n`
+    + `F0 "J" 0 130 50 H V C CNN\nF1 "${nm}" 0 -130 50 H V C CNN\n`
+    + `F2 "" 0 0 50 H I C CNN\nF3 "" 0 0 50 H I C CNN\nDRAW\n`
+    + `C 50 0 35 0 1 8 N\n`
+    + `X ${pinName.replace(/\s+/g, "_")} ${pinNum} -100 0 115 R 50 50 1 1 P\n`
+    + `ENDDRAW\nENDDEF\n`);
+  return nm;
+}
 
 function passiveLib(kind, n1, n2) {
   const nm = `${kind}${n1 === "1" && n2 === "2" ? "" : `_${n1}${n2}`}`;
@@ -101,15 +114,20 @@ function icLib(rawKey, pins) {
   const nameW = Math.max(...pins.map((p) => p.name.length), 4) * 30;
   const halfW = Math.max(snap(nameW + 150), 300);
   let draw = `S ${-halfW} ${halfH} ${halfW} ${-halfH} 0 1 10 f\n`;
-  const px = (p, x, y, orient) =>
-    `X ${p.name.replace(/\s+/g, "_")} ${p.pin_number} ${x} ${y} 150 ${orient} 50 40 1 1 ${
+  const px = (p, x, y, orient) => {
+    // power pins sit on the top/bottom edges; their name would be drawn inside the body where
+    // it collides with the first left/right pin name. "~" suppresses it.
+    const side = pinSide(p.name);
+    const nm = (side === "top" || side === "bottom") ? "~" : p.name.replace(/\s+/g, "_");
+    return `X ${nm} ${p.pin_number} ${x} ${y} 150 ${orient} 50 40 1 1 ${
       /^(GND|VEE|VSS|EP|VDD|VCC|VIN|VP|COM)/i.test(p.name) ? "W" : "P"}\n`;
+  };
   g.left.forEach((p, i) => { draw += px(p, -halfW - 150, halfH - PITCH - i * PITCH, "R"); });
   g.right.forEach((p, i) => { draw += px(p, halfW + 150, halfH - PITCH - i * PITCH, "L"); });
   g.top.forEach((p, i) => { draw += px(p, -halfW + PITCH + i * PITCH, halfH + 150, "D"); });
   g.bottom.forEach((p, i) => { draw += px(p, -halfW + PITCH + i * PITCH, -halfH - 150, "U"); });
   lib.set(nm, `#\n# ${nm}\n#\nDEF ${nm} U 0 40 Y Y 1 F N\n`
-    + `F0 "U" ${-halfW} ${halfH + 100} 50 H V L CNN\nF1 "${nm}" ${-halfW} ${-halfH - 100} 50 H V L CNN\n`
+    + `F0 "U" ${-halfW - 50} ${halfH + 100} 50 H V R CNN\nF1 "${nm}" ${-halfW} ${-halfH - 100} 50 H V L CNN\n`
     + `F2 "" 0 0 50 H I C CNN\nF3 "" 0 0 50 H I C CNN\nDRAW\n${draw}ENDDRAW\nENDDEF\n`);
   return nm;
 }
@@ -130,6 +148,10 @@ const unionPins = (c) => PIN_UNION.get(c.mpn || c.value) ? [...PIN_UNION.get(c.m
 
 function shapeOf(c) {
   const cat = CAT(c.value, c.mpn, c.pins);
+  if (cat === "TERM") {
+    const lw = (c.pins[0]?.signal_name?.length ?? 0) * CHW;
+    return { cat, w: 200 + STUB + lw, h: ROW, lw, rw: 0 };
+  }
   if (cat !== "IC") {
     const ns = c.pins.map((p) => String(p.pin_number)).sort((a, b) => Number(a) - Number(b));
     const l = c.pins.find((p) => String(p.pin_number) === ns[0]);
@@ -215,7 +237,21 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
       const ox = snap(b.X + SECPAD + it.x + s.lw + STUB);
       const oy = snap(b.Y + SECTITLE + SECPAD + it.y);
       const lc = LCSC[c.mpn] ?? {};
-      if (s.cat !== "IC") {
+      if (s.cat === "TERM") {
+        const p0 = c.pins[0];
+        const cx = snap(ox + 100), cyy = snap(oy + ROW / 2);
+        const nm = termLib(p0.pin_number, p0.name);
+        body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
+          + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
+          + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
+          + `F 2 "" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
+        if (p0.signal_name) {
+          const pxx = snap(cx - 100), ex = snap(pxx - STUB);
+          body += `Wire Wire Line\n\t${pxx} ${cyy} ${ex} ${cyy}\n` + GL(p0.signal_name, ex, cyy, 2);
+        }
+      } else if (s.cat !== "IC") {
         const cx = snap(ox + 250), cyy = snap(oy + ROW / 2);
         const nm = passiveLib(s.cat, s.nums[0] ?? "1", s.nums[1] ?? "2");
         body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
@@ -236,8 +272,8 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
         const cx = snap(ox + s.halfW + 150), cyy = snap(oy + s.TEXT + s.topExtra + s.halfH);
         const nm = icLib(c.mpn || c.value, unionPins(c));
         body += `$Comp\nL dc-modules:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
-          + `F 0 "${c.designator}" H ${cx - s.halfW} ${cyy - s.halfH - 100} 50  0000 L CNN\n`
-          + `F 1 "${c.value}" H ${cx - s.halfW} ${cyy + s.halfH + 130} 50  0000 L CNN\n`
+          + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
+          + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
           + `F 2 "" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
