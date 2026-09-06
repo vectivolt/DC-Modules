@@ -71,7 +71,10 @@ export const FOOTPRINT = {
   "FUSE-gG-690V-125A": "FUSE_holder_NH00", "FUSE-gG-690V-250A": "FUSE_holder_NH01",
   "SHUNT-MANG": "SHUNT_4-terminal_manganin",
   // --- modules / connectors / HMI ---
-  "QA01C": "PWRM-TH_QA01C",           // LCSC C2757491 (MORNSUN), real catalogue land   "ISO5V-RFC-6K": "SIP-4_iso-module",
+  "QA01C": "PWRM-TH_QA01C",           // LCSC C2757491 (MORNSUN), real catalogue land
+  // Was silently swallowed by the comment on the line above, so every PS5* isolated 5 V module
+  // resolved to no footprint at all. Found while resolving footprints for PCB placement.
+  "ISO5V-RFC-6K": "SIP-4_iso-module",
   "MICROFIT3-16": "CONN-TH_16P-P3.00_MicroFit", "PH-2": "CONN-TH_2P-P2.00_PH",
   "PH-4": "CONN-TH_4P-P2.00_PH", "PH-4-FAN": "CONN-TH_4P-P2.00_PH",
   "HDR-1x5-2.54": "HDR-TH_5P-P2.54-V-M", "TACT-6x6": "KEY-SMD_4P-L6.0-W6.0",

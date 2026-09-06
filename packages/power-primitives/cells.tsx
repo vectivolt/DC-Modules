@@ -22,32 +22,62 @@
 //   E30 mirror-contact relays + readback nets · CB-13 SwdPort · CB-10 SafetyChain (WD + 3-in AND)
 // Frozen electrical values: docs/assumptions.md E1–E31. Footprint dims: VERIFY vs vendor (§40).
 
+// ---------------------------------------------------------------------------------------------
+// COURTYARDS. Every custom footprint below was pads-only, so tscircuit had no body to collide:
+// 93 components on 30kw-acdc raised pcb_component_missing_courtyard_warning, and a TO-247 SiC
+// MOSFET reported a 10.0 x 2.4 mm extent against a real 15.9 x 5.0 mm package. Overlap checking
+// against pad extents is checking the wrong thing, so placement could not be trusted at all.
+//
+// These are the SAME envelopes already used by calculations/floorplan-budget.mjs and encoded in
+// the generated land-pattern names (CAP-TH_L26.5-W11.0-P22.50 states body 26.5 x 11.0 on a 22.5
+// pitch), so nothing here is a new number. The toroid rule is the one in docs/footprints-to-draw.md:
+// finished OD = core OD + 2x4 mm winding, courtyard = OD + 2 mm.
+//
+// Pad geometry is deliberately NOT changed here. Where a body is much larger than its pad span
+// (MOV disc on a 10 mm pitch, fuse holder on 30 mm) the courtyard now states the truth and the
+// DRC will say so -- that is a footprint-pitch question for §40 vendor verification, and silently
+// moving pads to hide it would be worse than showing it.
+const CY = { top: "top" } as const;
+// film/box body by lead pitch, straight from the generated .kicad_mod names
+const FILM_BODY: Record<number, [number, number]> = {
+  3.5: [8.0, 8.0], 5: [7.2, 3.5], 10: [11.0, 5.0], 15: [18.0, 5.0],
+  22.5: [26.5, 11.0], 27.5: [31.5, 13.0], 30: [31.5, 13.0], 37.5: [41.5, 20.0],
+};
+
 export const TO247_4 = () => (
   <footprint>
     {["pin1", "pin2", "pin3", "pin4"].map((h, i) => (
       <platedhole key={h} portHints={[h]} pcbX={-3.81 + i * 2.54} pcbY={0} holeDiameter="1.8mm" outerDiameter="2.4mm" shape="circle" />
     ))}
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="16.4mm" height="5.5mm" />
+    </footprint>
 );
 // diode package: port hints bind directly to diode anode/cathode (pin1=anode/pin2=cathode — VERIFY vs vendor)
 export const TO247_2 = () => (
   <footprint>
     <platedhole portHints={["anode", "pin1"]} pcbX={-2.72} pcbY={0} holeDiameter="1.8mm" outerDiameter="2.4mm" shape="circle" />
     <platedhole portHints={["cathode", "pin2"]} pcbX={2.72} pcbY={0} holeDiameter="1.8mm" outerDiameter="2.4mm" shape="circle" />
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="16.4mm" height="5.5mm" />
+    </footprint>
 );
 export const ChokeFP = () => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-30} pcbY={-6} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={30} pcbY={-6} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
-  </footprint>
+  
+    <courtyardcircle pcbX={0} pcbY={0} radius="44.5mm" />
+    </footprint>
 );
 export const Cm3FP = () => (
   <footprint>
     {["pin1", "pin2", "pin3", "pin4", "pin5", "pin6"].map((h, i) => (
       <platedhole key={h} portHints={[h]} pcbX={-25 + (i % 2) * 50} pcbY={-12 + Math.floor(i / 2) * 12} holeDiameter="2mm" outerDiameter="3.4mm" shape="circle" />
     ))}
-  </footprint>
+  
+    <courtyardcircle pcbX={0} pcbY={0} radius="36mm" />
+    </footprint>
 );
 export const XfmrFP = () => (
   <footprint>
@@ -57,13 +87,17 @@ export const XfmrFP = () => (
     {["pin4", "pin5", "pin6", "pin7"].map((h, i) => (
       <platedhole key={h} portHints={[h]} pcbX={-12 + i * 8} pcbY={20} holeDiameter="1.6mm" outerDiameter="2.6mm" shape="circle" />
     ))}
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="40mm" height="35mm" />
+    </footprint>
 );
 export const SnapInFP = () => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-5} pcbY={0} holeDiameter="2.1mm" outerDiameter="3.6mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={5} pcbY={0} holeDiameter="2.1mm" outerDiameter="3.6mm" shape="circle" />
-  </footprint>
+  
+    <courtyardcircle pcbX={0} pcbY={0} radius="18.5mm" />
+    </footprint>
 );
 export const RelayFP = () => (
   <footprint>
@@ -73,7 +107,9 @@ export const RelayFP = () => (
     {["pin3", "pin4"].map((h, i) => (
       <platedhole key={h} portHints={[h]} pcbX={-10 + i * 20} pcbY={8} holeDiameter="4.2mm" outerDiameter="8mm" shape="circle" />
     ))}
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={-2} width="52mm" height="36mm" />
+    </footprint>
 );
 // E30: relay with mirror (auxiliary) contact for weld/readback — coil pair, HV pair, mirror pair
 export const RelayMFP = () => (
@@ -87,17 +123,35 @@ export const RelayMFP = () => (
     {["pin5", "pin6"].map((h, i) => (
       <platedhole key={h} portHints={[h]} pcbX={-8 + i * 16} pcbY={-20} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
     ))}
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={-2} width="52mm" height="36mm" />
+    </footprint>
 );
 export const StudFP = () => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={0} pcbY={0} holeDiameter="8.5mm" outerDiameter="16mm" shape="circle" />
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="20mm" height="20mm" />
+    </footprint>
 );
-export const FilmBoxFP = (pitch = 27.5) => (
+export const FilmBoxFP = (pitch = 27.5, body?: [number, number]) => {
+  const [bl, bw] = body ?? FILM_BODY[pitch] ?? [pitch + 4, 6];
+  return (
+    <footprint>
+      <platedhole portHints={["pin1"]} pcbX={-pitch / 2} pcbY={0} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
+      <platedhole portHints={["pin2"]} pcbX={pitch / 2} pcbY={0} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
+      <courtyardrect pcbX={0} pcbY={0} width={`${bl}mm`} height={`${bw}mm`} />
+    </footprint>
+  );
+};
+// Disc parts on a 2-lead land: the BODY is the diameter, not the lead pitch. S20K550 is a 20 mm
+// MOV disc on a 10 mm pitch and GDT-3k5-20kA an 8 mm disc on 6 mm -- both were drawn as small
+// film boxes, which is how three MOVs could sit 15 mm apart without anything complaining.
+export const DiscFP = (pitch: number, dia: number) => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-pitch / 2} pcbY={0} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={pitch / 2} pcbY={0} holeDiameter="1.2mm" outerDiameter="2.2mm" shape="circle" />
+    <courtyardcircle pcbX={0} pcbY={0} radius={`${dia / 2 + 1}mm`} />
   </footprint>
 );
 export const ShuntFP = () => (
@@ -106,26 +160,34 @@ export const ShuntFP = () => (
     <platedhole portHints={["pin2"]} pcbX={10} pcbY={0} holeDiameter="4mm" outerDiameter="7mm" shape="circle" />
     <platedhole portHints={["pin3"]} pcbX={-5} pcbY={4} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
     <platedhole portHints={["pin4"]} pcbX={5} pcbY={4} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={2} width="40mm" height="15mm" />
+    </footprint>
 );
 export const TrimFP = () => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-15} pcbY={0} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={15} pcbY={0} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
-  </footprint>
+  
+    <courtyardcircle pcbX={0} pcbY={0} radius="22.5mm" />
+    </footprint>
 );
 export const CtFP = () => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-5} pcbY={0} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={5} pcbY={0} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="25mm" height="25mm" />
+    </footprint>
 );
 export const Seg2FP = () => (
   <footprint>
     {Array.from({ length: 10 }, (_, i) => (
       <platedhole key={i} portHints={[`pin${i + 1}`]} pcbX={-11.43 + (i % 5) * 5.08} pcbY={i < 5 ? -7.62 : 7.62} holeDiameter="0.9mm" outerDiameter="1.6mm" shape="circle" />
     ))}
-  </footprint>
+  
+    <courtyardrect pcbX={0} pcbY={0} width="25mm" height="19mm" />
+    </footprint>
 );
 export const Lqfp100 = () => (
   <footprint>

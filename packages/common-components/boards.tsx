@@ -19,7 +19,7 @@ import {
   ViennaPhase, LlcHalfBridgeLeg, LlcSection, SplitDcLink, SeriesParallelRelayMatrix,
   IsoVSense, Bias5Module, AnalogMid, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
   InterconnectSignals, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
-  DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, Cm3FP, SnapInFP,
+  DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP,
 } from "../power-primitives/cells";
 
 const assertUniquePins = (label: string, entries: [string, number][]) => {
@@ -68,17 +68,17 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
         <chip key={n} name={`J${n}`} footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={-w / 2 + 15} pcbY={h / 2 - 20 - i * 30} schX={i < 3 ? 0 : 20} schY={i < 3 ? 46 - i * 3 : 37} />
       ))}
       {[1, 2, 3].map(i => (
-        <chip key={i} name={`F${i}`} footprint={FilmBoxFP(30)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 20 - (i - 1) * 25} schX={5} schY={46 - (i - 1) * 3} />
+        <chip key={i} name={`F${i}`} footprint={FilmBoxFP(30, [48, 16])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 20 - (i - 1) * 25} schX={5} schY={46 - (i - 1) * 3} />
       ))}
       {[1, 2, 3].map(i => (
-        <chip key={i} name={`MOV${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 105 - (i - 1) * 15} schX={10} schY={46 - (i - 1) * 3} />
+        <chip key={i} name={`MOV${i}`} footprint={DiscFP(10, 20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 55} pcbY={h / 2 - 105 - (i - 1) * 15} schX={10} schY={46 - (i - 1) * 3} />
       ))}
       {/* HR-7: common-mode surge path — MOV + GDT in series, each line to PE */}
       {[1, 2, 3].map(i => (
-        <chip key={`mp${i}`} name={`MOVP${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 70} pcbY={h / 2 - 105 - (i - 1) * 15} schX={15} schY={46 - (i - 1) * 3} />
+        <chip key={`mp${i}`} name={`MOVP${i}`} footprint={DiscFP(10, 20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 70} pcbY={h / 2 - 105 - (i - 1) * 15} schX={15} schY={46 - (i - 1) * 3} />
       ))}
       {[1, 2, 3].map(i => (
-        <chip key={`g${i}`} name={`GDT${i}`} footprint={FilmBoxFP(10)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 85} pcbY={h / 2 - 105 - (i - 1) * 15} schX={20} schY={46 - (i - 1) * 3} />
+        <chip key={`g${i}`} name={`GDT${i}`} footprint={DiscFP(6, 8)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-w / 2 + 85} pcbY={h / 2 - 105 - (i - 1) * 15} schX={20} schY={46 - (i - 1) * 3} />
       ))}
       <chip name="CMC1" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={-w / 2 + 105} pcbY={h / 2 - 35} schX={26} schY={43} schSectionName="EMI" />
       <chip name="CMC2" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={-w / 2 + 105} pcbY={h / 2 - 85} schX={36} schY={43} schSectionName="EMI" />
