@@ -45,8 +45,8 @@ for (const sku of SKUS) {
       const rule = DB.find(r => r.m.test(name));
       if (!rule) { unmatched.add(`${side}:${name} (${c.ftype ?? "?"})`); anyUnmatched = true; continue; }
       const ov = (skuOverrides[sku] ?? {})[name] ?? {};
-      const key = ov.price1k ? `${rule.mpn}@${name}` : rule.mpn;
-      const rec = parts.get(key) ?? { mpn: rule.mpn, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
+      const key = (ov.price1k || ov.mpn) ? `${ov.mpn ?? rule.mpn}@${name}` : rule.mpn;
+      const rec = parts.get(key) ?? { mpn: ov.mpn ?? rule.mpn, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
       rec.qty += ov.qtyMul ?? 1;
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);

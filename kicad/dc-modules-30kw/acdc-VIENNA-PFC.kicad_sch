@@ -6,7 +6,7 @@
 	(paper "User" 325.12 318.77)
 	(title_block
 		(title "30kW ACDC 2of6 VIENNA-PFC")
-		(date "2026-09-05")
+		(date "2026-09-06")
 		(rev "D.1")
 		(company "DC-Modules — 30 kW module")
 		(comment 1 "acdc-VIENNA-PFC · 3 sections · 69 components")

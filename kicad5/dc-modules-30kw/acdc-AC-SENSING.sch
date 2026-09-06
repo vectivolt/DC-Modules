@@ -5,7 +5,7 @@ $Descr User 16700 15500
 encoding utf-8
 Sheet 1 1
 Title "30kW ACDC 4of6 AC-SENSING"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "acdc-AC-SENSING - 10 sections - 95 components"

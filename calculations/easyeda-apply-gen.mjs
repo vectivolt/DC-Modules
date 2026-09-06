@@ -73,6 +73,8 @@ function transform(c, page, all, warn) {
       P(5, "VCC2", sig(c, "VCC2")), P(4, "OUTH", sig(c, "OUTH")), P(6, "OUTL", sig(c, "OUTL")),
       P(7, "CLAMP", sig(c, "CLAMP")), P(8, "VEE2", sig(c, "VEE")),
     ];
+    // R3 DEFECT: pin 12 is RDY (active-low open-drain power-good), NOT a no-connect. It needs a
+    // pull-up (~5k to VCC1) to function. Left NC here until the pull-up exists in cells.tsx.
     out.nc = [12];
   } else if (m === "TLP152-class") {
     out.pins = [P(1, "Anode", sig(c, "ANO")), P(3, "Cathode", sig(c, "CAT")),
@@ -85,6 +87,8 @@ function transform(c, page, all, warn) {
     out.pins = [P(7, "WDI", sig(c, "WDI")), P(5, "GND", gnd), P(11, "EP", gnd),
       P(3, "SET0", sig(c, "SET0")), P(6, "SET1", sig(c, "SET1")), P(8, "WDO#", sig(c, "WDO")),
       P(10, "VDD2", vdd), P(1, "VDD1", vdd)];
+    // R3 DEFECT: pin 2 is CWD (watchdog timeout program) and pin 4 is CRST (reset-delay
+    // program) — both need a cap/strap. Floating leaves the watchdog window undefined.
     out.nc = [2, 4, 9];
   } else if (m === "TPS54202-class") {
     out.pins = [P(3, "VIN", sig(c, "VIN")), P(1, "GND", sig(c, "GND")), P(2, "SW", sig(c, "SW")),
@@ -96,8 +100,10 @@ function transform(c, page, all, warn) {
     out.pins = [P(1, "FB", sig(c, "FB")), P(2, "BO", sig(c, "BR")), P(3, "CS", sig(c, "CS")),
       P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "GATE")), P(7, "VCC", sig(c, "VCC")),
       P(8, "SS", sig(c, "COMP"))];
+    // R3 DEFECT: pin 4 is RT — a resistor to GND sets the switching frequency (50-500 kHz).
+    // Marked NC here, so the frequency-setting element is missing from the netlist.
     out.nc = [4];
-  } else if (m === "QA01C-15S18") {
+  } else if (m === "QA01C" || m === "QA01C-15S18") {
     // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. If COM net == paired driver VEE net, COM is the -4V
     // rail: COM->5 and 0V->driver KSRC net. Else unipolar: COM->6, NC 5.
     const com = sig(c, "COM");
@@ -124,11 +130,12 @@ function transform(c, page, all, warn) {
   } else if (m === "NSI1042") {
     // NSi1042-DSWR SO-16 isolated CAN: isolation preserved (GND1 logic side, GND2 bus side)
     const g1 = sig(c, "GND1"), g2 = sig(c, "GND2");
-    out.pins = [P(1, "VDD1", sig(c, "VDD1")), P(2, "GND1", g1), P(7, "GND1", g1), P(8, "GND1", g1),
+    // R3: pin 7 is NC on every orderable variant — do not tie it to GND1
+    out.pins = [P(1, "VDD1", sig(c, "VDD1")), P(2, "GND1", g1), P(8, "GND1", g1),
       P(3, "RXD", sig(c, "RXD")), P(6, "TXD", sig(c, "TXD")),
       P(16, "VDD2", sig(c, "VDD2")), P(9, "GND2", g2), P(10, "GND2", g2), P(15, "GND2", g2),
       P(12, "CANL", sig(c, "CANL")), P(13, "CANH", sig(c, "CANH"))];
-    out.nc = [4, 5, 11, 14];
+    out.nc = [4, 5, 7, 11, 14];
   } else if (m === "CMC-CAN-51uH") {
     // ACT45B windings 1-4 and 2-3
     out.pins = [P(1, "A1", sig(c, "A1")), P(4, "A2", sig(c, "A2")), P(2, "B1", sig(c, "B1")), P(3, "B2", sig(c, "B2"))];

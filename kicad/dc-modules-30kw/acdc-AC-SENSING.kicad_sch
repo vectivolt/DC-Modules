@@ -6,7 +6,7 @@
 	(paper "User" 342.9 430.53000000000003)
 	(title_block
 		(title "30kW ACDC 4of6 AC-SENSING")
-		(date "2026-09-05")
+		(date "2026-09-06")
 		(rev "D.1")
 		(company "DC-Modules — 30 kW module")
 		(comment 1 "acdc-AC-SENSING · 10 sections · 95 components")

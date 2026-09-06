@@ -16,10 +16,10 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | semiconductors | 7955 | 21.5% |
 | capacitors | 4905 | 13.2% |
 | drive+control ICs | 3948 | 10.7% |
-| resistors/shunts | 769 | 2.1% |
+| resistors/shunts | 697 | 1.9% |
 | protection | 412 | 1.1% |
 | connectors | 393 | 1.1% |
-| misc | 257 | 0.7% |
+| misc | 329 | 0.9% |
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
@@ -32,10 +32,10 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | mechanical/assembly | 13177 | 21% |
 | capacitors | 8598 | 13.7% |
 | drive+control ICs | 5583 | 8.9% |
-| resistors/shunts | 976 | 1.6% |
+| resistors/shunts | 888 | 1.4% |
 | protection | 772 | 1.2% |
 | connectors | 393 | 0.6% |
-| misc | 283 | 0.5% |
+| misc | 371 | 0.6% |
 | HMI | 24 | 0% |
 | bias/iso modules | 0 | 0% |
 
@@ -49,9 +49,9 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | capacitors | 16285 | 13.9% |
 | drive+control ICs | 8851 | 7.6% |
 | protection | 1582 | 1.3% |
-| resistors/shunts | 1436 | 1.2% |
+| resistors/shunts | 1332 | 1.1% |
+| misc | 440 | 0.4% |
 | connectors | 405 | 0.3% |
-| misc | 336 | 0.3% |
 | HMI | 24 | 0% |
 | bias/iso modules | 0 | 0% |
 

@@ -5,7 +5,7 @@ $Descr User 10200 8300
 encoding utf-8
 Sheet 1 1
 Title "30kW ACDC 1of6 INPUT-EMI"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "acdc-INPUT-EMI - 4 sections - 35 components"

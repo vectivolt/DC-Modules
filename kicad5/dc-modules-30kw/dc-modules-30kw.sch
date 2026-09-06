@@ -5,7 +5,7 @@ $Descr User 12000 8000
 encoding utf-8
 Sheet 1 1
 Title "DC-Modules 30 kW module - schematic set"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules"
 Comment1 "AC-DC (Vienna PFC) sheets 1-6 - DC-DC (3-phase LLC) sheets 7-12"

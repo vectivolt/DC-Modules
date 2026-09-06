@@ -5,7 +5,7 @@ $Descr User 9300 11650
 encoding utf-8
 Sheet 1 1
 Title "30kW ACDC 3of6 DC-LINK"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "acdc-DC-LINK - 3 sections - 28 components"

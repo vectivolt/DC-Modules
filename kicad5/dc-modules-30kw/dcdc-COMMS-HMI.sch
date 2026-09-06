@@ -5,7 +5,7 @@ $Descr User 12550 8550
 encoding utf-8
 Sheet 1 1
 Title "30kW DCDC 6of6 COMMS-HMI"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "dcdc-COMMS-HMI - 2 sections - 29 components"
@@ -174,7 +174,7 @@ DGND
 Wire Wire Line
 	7400 2300 7400 2500
 Text GLabel 7400 2500 3    50   Output ~ 0
-DGND
+CGND
 Wire Wire Line
 	7500 2300 7500 2500
 Text GLabel 7500 2500 3    50   Output ~ 0
@@ -182,10 +182,6 @@ CGND
 Wire Wire Line
 	7600 2300 7600 2500
 Text GLabel 7600 2500 3    50   Output ~ 0
-CGND
-Wire Wire Line
-	7700 2300 7700 2500
-Text GLabel 7700 2500 3    50   Output ~ 0
 CGND
 $Comp
 L dc-modules:R CCGB

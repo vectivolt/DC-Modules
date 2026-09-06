@@ -6,7 +6,7 @@
 	(paper "User" 275.59000000000003 274.32)
 	(title_block
 		(title "30kW ACDC 3of6 DC-LINK")
-		(date "2026-09-05")
+		(date "2026-09-06")
 		(rev "D.1")
 		(company "DC-Modules — 30 kW module")
 		(comment 1 "acdc-DC-LINK · 3 sections · 28 components")

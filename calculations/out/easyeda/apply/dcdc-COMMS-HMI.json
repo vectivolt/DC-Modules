@@ -26,11 +26,6 @@
       "signal_name": "DGND"
      },
      {
-      "pin_number": 7,
-      "name": "GND1",
-      "signal_name": "DGND"
-     },
-     {
       "pin_number": 8,
       "name": "GND1",
       "signal_name": "DGND"
@@ -762,6 +757,7 @@
   "UCAN": [
    4,
    5,
+   7,
    11,
    14
   ],

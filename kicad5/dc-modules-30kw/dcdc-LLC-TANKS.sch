@@ -5,7 +5,7 @@ $Descr User 8350 11850
 encoding utf-8
 Sheet 1 1
 Title "30kW DCDC 2of6 LLC-TANKS"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "dcdc-LLC-TANKS - 3 sections - 60 components"

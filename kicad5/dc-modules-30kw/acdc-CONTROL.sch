@@ -5,7 +5,7 @@ $Descr User 11500 12400
 encoding utf-8
 Sheet 1 1
 Title "30kW ACDC 5of6 CONTROL"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "acdc-CONTROL - 6 sections - 29 components"

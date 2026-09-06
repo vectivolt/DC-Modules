@@ -37,7 +37,7 @@ export const LCSC = {
   "SMBJ16A":           { lcsc: "C151859",    status: "ORDERABLE" },
   "FAST-1200-1A":      { lcsc: "C56792",     status: "ORDERABLE", note: "STTH112U 1.2 kV" },
   "B3M010C075Z":       { lcsc: "C5713521",   status: "SECOND-SOURCE", note: "C3M0021120K 1200 V/21 mΩ TO-247-4 — BASiC 750 V/10 mΩ not on LCSC; requalify Vds" },
-  "SG2M023120LJ":      { lcsc: "C5713523",   status: "SECOND-SOURCE", note: "C3M0016120K 1200 V/16 mΩ TO-247-4" },
+  "SG2M023120LJ":      { lcsc: "C5713523",   status: "SECOND-SOURCE", note: "R3: LCSC C5713523 is Wolfspeed C3M0016120K (1200 V/16 mOhm) — NOT the SiChain part, so vendor/price/RdsOn on this row describe the second source, not the primary. Pinouts are identical (1=D/tab 2=S 3=driver source 4=G) so there is no footprint risk. Gate drive differs: SiChain -4/+18 V for 23 mOhm, Wolfspeed C3M -4/+15 V." },
   "SICJBS-1200-10":    { lcsc: "C7435087",   status: "ORDERABLE", note: "GC4D10120H 1200 V SiC JBS" },
   "SICJBS-1200-20":    { lcsc: "C5713501",   status: "ORDERABLE", note: "C4D20120D 1200 V SiC JBS" },
   "SICJBS-1200-40":    { lcsc: "C7435099",   status: "ORDERABLE", note: "GC4D20120D 1200 V 34 A SiC JBS" },
@@ -45,7 +45,7 @@ export const LCSC = {
   "SIC-1200-5A":       { lcsc: "C536285",    status: "ORDERABLE", note: "IMW120R350M1H" },
 
   // ---- ORDERABLE: magnetics, relays, modules, connectors, electromechanical ----
-  "QA01C-15S18":       { lcsc: "C2757491",   status: "ORDERABLE", note: "MORNSUN QA01C 15→+20/−4 V" },
+  "QA01C":             { lcsc: "C2757491",   status: "REVIEW", note: "R3: \"QA01C-15S18\" does not exist in MORNSUN's catalogue. Real variants: QA01C = +20/-4 V, QA01C-18 = +18/-3 V. Pin map (1=Vin 2=GND 5=-Vo 6=0V 7=+Vo) was already correct. DECISION NEEDED: B3M010C075Z recommends VGSop -5/+18 V (abs max +22), so QA01C's +20 V is above the recommended drive; QA01C-18 gives +18/-3 V but SG2M023120LJ specifies 23 mOhm at +18 V." },
   "ISO5V-RFC-6K":      { lcsc: "C20613048",  status: "REVIEW", note: "B1505S-1WR2 is 3 kVDC basic; E-rev D calls for a REINFORCED ≥6 kV module — confirm before release" },
   "MICROFIT3-16":      { lcsc: "C277731",    status: "ORDERABLE", note: "Molex 430451600" },
   "PH-2":              { lcsc: "C20504437",  status: "ORDERABLE", note: "JST B2B-PH-K-S" },
@@ -59,7 +59,7 @@ export const LCSC = {
   "S20K550":           { lcsc: "C317868",    status: "REVIEW", note: "20D561K is 350 VAC/460 VDC — S20K550 needs 550 VAC; size up before release" },
   "GDT-3k5-20kA":      { lcsc: "C9900081756", status: "REVIEW", note: "BGO6000A10-LC2 — confirm 3.5 kV / 20 kA rating" },
   "FUSE-gG-690V":      { lcsc: "C4255278",   status: "REVIEW", note: "RT28-32 RO15 holder class — 690 VAC gG element to be selected per SKU current" },
-  "CT-60A-1:2500":     { lcsc: "C94571",     status: "REVIEW", note: "ZMCT103C is 5 A/1000:1 — 60 A 1:2500 line CT is a custom//alternate part" },
+  "CT-100A-1:2500":    { lcsc: "C94571",     status: "REVIEW", note: "ZMCT103C is 5 A/1000:1 — a 100 A 1:2500 line CT is a custom/alternate part. R3: sized up from 60 A because one cell draws 63.95 A rms at 285 V low line (continuous). Same price class; catch before layout — a 100 A window CT has a different pin pitch." },
   "CT-RES-1:100":      { lcsc: "C94571",     status: "REVIEW", note: "as above; resonant CT ratio differs" },
   "HF167F-80A-M":      { lcsc: "C2757422",   status: "REVIEW", note: "HF167F/24-HF 100 A@1000 VAC; mirror-contact variant to be confirmed" },
   "HFE82V-M-CLASS":    { lcsc: "C340670",    status: "REVIEW", note: "HFE82V-60/12-H2 — 12 V coil; need 24 V + mirror contact" },
@@ -107,6 +107,16 @@ export const LCSC = {
   "CMC-3PH-2mH-SKU":   { status: "CUSTOM", spec: "3-phase 2 mH nanocrystalline CM choke, current-rated per SKU — no LCSC equivalent" },
   "XFMR-LLC-10K":      { status: "CUSTOM", spec: "LLC transformer 3× PQ50/50 PC95 7:7:7, Lm 63 µH ±7% — custom wind" },
   "XFMR-AUX-FLY-C":    { status: "CUSTOM", spec: "aux flyback ETD34, 110 W, 342–860 Vin — custom wind" },
+
+  // SKU-scaled variants. The 30 kW part number was previously printed on every SKU, which read
+  // as an undersized relay/fuse on the 60/120 kW drawings even though price and class notes
+  // were already scaled. These are the classes the design actually calls for.
+  "HF167F-120A-M":     { status: "REVIEW", spec: "120 A/line power relay w/ mirror contact — 60 kW (110 A line)" },
+  "HF167F-250A-M":     { status: "REVIEW", spec: "250 A/line power relay or contactor w/ mirror contact — 120 kW (220 A line)" },
+  "FUSE-gG-690V-63A":  { status: "CLASS", spec: "63 A gG 690 VAC — 30 kW (55 A line)" },
+  "FUSE-gG-690V-125A": { status: "CLASS", spec: "125 A gG 690 VAC — 60 kW (110 A line)" },
+  "FUSE-gG-690V-250A": { status: "CLASS", spec: "250 A gG 690 VAC — 120 kW (220 A line)" },
+  "CER-50W-AX":        { status: "CLASS", spec: "50 W axial ceramic pulse resistor — 120 kW precharge/discharge (477 J/event, HR-14)" },
   "STUD-M8":           { status: "CLASS", spec: "M8 stud terminal / busbar landing" },
   "TAB-M4":            { status: "CLASS", spec: "M4 heatsink tab stud" },
 };

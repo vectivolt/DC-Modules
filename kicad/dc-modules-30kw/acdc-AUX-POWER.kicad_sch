@@ -6,7 +6,7 @@
 	(paper "User" 283.21 288.29)
 	(title_block
 		(title "30kW ACDC 6of6 AUX-POWER")
-		(date "2026-09-05")
+		(date "2026-09-06")
 		(rev "D.1")
 		(company "DC-Modules — 30 kW module")
 		(comment 1 "acdc-AUX-POWER · 5 sections · 44 components")

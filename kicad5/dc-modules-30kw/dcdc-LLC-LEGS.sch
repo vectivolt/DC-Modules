@@ -5,7 +5,7 @@ $Descr User 17150 16200
 encoding utf-8
 Sheet 1 1
 Title "30kW DCDC 1of6 LLC-LEGS"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "dcdc-LLC-LEGS - 4 sections - 78 components"

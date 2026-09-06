@@ -5,7 +5,7 @@ $Descr User 12850 12600
 encoding utf-8
 Sheet 1 1
 Title "30kW ACDC 2of6 VIENNA-PFC"
-Date "2026-09-05"
+Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules - 30 kW module"
 Comment1 "acdc-VIENNA-PFC - 3 sections - 69 components"

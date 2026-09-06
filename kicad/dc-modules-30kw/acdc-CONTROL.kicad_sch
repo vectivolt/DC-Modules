@@ -6,7 +6,7 @@
 	(paper "User" 280.67 330.2)
 	(title_block
 		(title "30kW ACDC 5of6 CONTROL")
-		(date "2026-09-05")
+		(date "2026-09-06")
 		(rev "D.1")
 		(company "DC-Modules — 30 kW module")
 		(comment 1 "acdc-CONTROL · 6 sections · 29 components")

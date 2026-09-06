@@ -6,7 +6,7 @@
 	(paper "User" 283.21 281.94)
 	(title_block
 		(title "30kW DCDC 3of6 BANKS-SP")
-		(date "2026-09-05")
+		(date "2026-09-06")
 		(rev "D.1")
 		(company "DC-Modules — 30 kW module")
 		(comment 1 "dcdc-BANKS-SP · 4 sections · 48 components")
