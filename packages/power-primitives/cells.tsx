@@ -235,16 +235,16 @@ export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, 
 export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, en, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`drv${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     <chip name={`U${id}`} footprint="soic16" pinLabels={DRV_PINS} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <BiasModule id={id} sec={sec} x={0} y={12} sx={-0.6} sy={-2.6} />
+    <BiasModule id={id} sec={sec} x={-4} y={-14} sx={-0.6} sy={-2.6} />
     <resistor name={`R${id}ON`} resistance={rgOn} footprint="1206" pcbX={16} pcbY={0} schX={2.6} schY={0.9} schSectionName={sec} />
-    <resistor name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={16} pcbY={5} schX={2.6} schY={-0.4} schSectionName={sec} />
-    <resistor name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={16} pcbY={10} schX={4.2} schY={-0.4} schSectionName={sec} />
-    <resistor name={`R${id}PD`} resistance="10k" footprint="0603" pcbX={-10} pcbY={6} schX={-2.6} schY={-1.2} schSectionName={sec} />
+    <resistor name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={16} pcbY={-5} schX={2.6} schY={-0.4} schSectionName={sec} />
+    <resistor name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={16} pcbY={-10} schX={4.2} schY={-0.4} schSectionName={sec} />
+    <resistor name={`R${id}PD`} resistance="10k" footprint="0603" pcbX={-10} pcbY={-6} schX={-2.6} schY={-1.2} schSectionName={sec} />
     <diode name={`D${id}S1`} footprint="sma" pcbX={28} pcbY={0} schX={2.7} schY={2.2} schSectionName={sec} />
-    <diode name={`D${id}S2`} footprint="sma" pcbX={34} pcbY={0} schX={4.7} schY={2.2} schSectionName={sec} />
-    <capacitor name={`C${id}BL`} capacitance="100pF" footprint="0603" pcbX={28} pcbY={6} schX={1.4} schY={1.9} schSectionName={sec} />
-    <capacitor name={`C${id}B1`} capacitance="1uF" footprint="0805" pcbX={6} pcbY={12} schX={1.2} schY={-2.5} schSectionName={sec} />
-    <capacitor name={`C${id}B2`} capacitance="1uF" footprint="0805" pcbX={12} pcbY={12} schX={2.5} schY={-2.5} schSectionName={sec} />
+    <diode name={`D${id}S2`} footprint="sma" pcbX={34} pcbY={-6} schX={4.7} schY={2.2} schSectionName={sec} />
+    <capacitor name={`C${id}BL`} capacitance="100pF" footprint="0603" pcbX={28} pcbY={-6} schX={1.4} schY={1.9} schSectionName={sec} />
+    <capacitor name={`C${id}B1`} capacitance="1uF" footprint="0805" pcbX={14} pcbY={-11} schX={1.2} schY={-2.5} schSectionName={sec} />
+    <capacitor name={`C${id}B2`} capacitance="1uF" footprint="0805" pcbX={14} pcbY={-15} schX={2.5} schY={-2.5} schSectionName={sec} />
     <trace from={`.U${id} > .VIA`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.U${id} > .GNDA`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.U${id} > .PWM`} to={pwm} schDisplayLabel={pwm.replace("net.", "")} />
@@ -288,21 +288,32 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
 // (E28 corrected CV²f = 0.86 W), clamp bleeder to 5 W axial (HR-3, 4.3 W worst-case).
 export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`vp${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 26 × 12: power path L→R along the top (choke → common-source pair → boost
-        diodes → films → snubber → clamp), the gate-drive channel in its own room below. */}
-    <inductor name={`L${id}`} inductance="165uH" footprint={<ChokeFP />} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={70} pcbY={0} schX={3} schY={0} schSectionName={sec} />
-    <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={82} pcbY={0} schX={6} schY={0} schSectionName={sec} />
-    <DriverCh id={`${id}G`} pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={70} y={16} sx={4.5} sy={-6.5} />
-    <diode name={`D${id}T`} footprint={<TO247_2 />} pcbX={104} pcbY={0} schX={9.5} schY={1.4} schSectionName={sec} />
-    <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={104} pcbY={10} schX={9.5} schY={-1.4} schSectionName={sec} />
-    <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={94} pcbY={-10} schX={12.5} schY={1.4} schSectionName={sec} />
-    <capacitor name={`C${id}FN`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={94} pcbY={20} schX={12.5} schY={-1.4} schSectionName={sec} />
-    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={118} pcbY={0} schX={15.5} schY={0.7} schSectionName={sec} />
-    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={118} pcbY={6} schX={15.5} schY={-0.9} schSectionName={sec} />
-    <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={132} pcbY={0} schX={18.5} schY={1.4} schSectionName={sec} />
-    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(15)} pcbX={132} pcbY={10} schX={21} schY={1.4} schSectionName={sec} />
-    <chip name={`R${id}C`} footprint={FilmBoxFP(20)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={132} pcbY={18} schX={23.5} schY={1.4} schSectionName={sec} />
+    {/* PCB envelope 89 x 163, origin at the cell centre. The old layout ran the parts out in one
+        200 mm line from the choke, which put the cell 175 mm wide and hung it 27 mm off the board.
+        Three phases now tile side by side in 273 mm.
+
+        The choke is the whole story: at 89 mm across it is wider than everything else in the cell
+        put together, so it sets the cell width and everything else fits underneath it.
+
+          y +50   D1 choke (89 dia)
+          y -14   DEVICE RAIL - all five TO-247 in one line at 18 mm pitch, which is what §5's
+                  ridge needs: a rail is only a rail if the devices share one Y.
+          y -34   gate-drive channel, directly behind its two switches
+          y -46   commutation films, then snubber and clamp below
+        Power flows top-to-bottom inside the cell; the cell as a whole flows left-to-right. */}
+    <inductor name={`L${id}`} inductance="165uH" footprint={<ChokeFP />} pcbX={0} pcbY={50} schX={0} schY={0} schSectionName={sec} />
+    <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-36} pcbY={-14} schX={3} schY={0} schSectionName={sec} />
+    <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-18} pcbY={-14} schX={6} schY={0} schSectionName={sec} />
+    <DriverCh id={`${id}G`} pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
+    <diode name={`D${id}T`} footprint={<TO247_2 />} pcbX={0} pcbY={-14} schX={9.5} schY={1.4} schSectionName={sec} />
+    <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={18} pcbY={-14} schX={9.5} schY={-1.4} schSectionName={sec} />
+    <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={-30} pcbY={-48} schX={12.5} schY={1.4} schSectionName={sec} />
+    <capacitor name={`C${id}FN`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={0} pcbY={-48} schX={12.5} schY={-1.4} schSectionName={sec} />
+    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={30} pcbY={-44} schX={15.5} schY={0.7} schSectionName={sec} />
+    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={30} pcbY={-51} schX={15.5} schY={-0.7} schSectionName={sec} />
+    <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={36} pcbY={-14} schX={18.5} schY={1.4} schSectionName={sec} />
+    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={22} pcbY={-60} schX={18.5} schY={-1.4} schSectionName={sec} />
+    <chip name={`R${id}C`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-8} pcbY={-62} schX={21.5} schY={0} schSectionName={sec} />
     <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
     <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
@@ -598,13 +609,14 @@ export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 }: any) 
 // ---------- line/lane CT sensor (E18) — v3/CB-15: burden + return biased to AVMID, dual clamps
 export const CtSensor = ({ id, out, sec = "CT", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`cts${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 12 × 3.6: CT → burden → filter → clamps, one measurement row */}
+    {/* PCB: the CT body is 25 mm across, so the burden and clamps sit to its RIGHT, not on top
+        of it. Envelope 57 × 25, one measurement row per phase. */}
     <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}B`} resistance="33" footprint="1206" pcbX={12} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
-    <resistor name={`R${id}F`} resistance="1k" footprint="0603" pcbX={20} pcbY={0} schX={4} schY={0} schSectionName={sec} />
-    <capacitor name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={26} pcbY={4} schX={5.6} schY={-1.2} schSectionName={sec} />
-    <diode name={`D${id}P`} footprint="sod323" pcbX={12} pcbY={6} schX={6.6} schY={1.2} schSectionName={sec} />
-    <diode name={`D${id}N`} footprint="sod323" pcbX={18} pcbY={6} schX={9} schY={1.2} schSectionName={sec} />
+    <resistor name={`R${id}B`} resistance="33" footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
+    <resistor name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
+    <capacitor name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
+    <diode name={`D${id}P`} footprint="sod323" pcbX={24} pcbY={9} schX={6.6} schY={1.2} schSectionName={sec} />
+    <diode name={`D${id}N`} footprint="sod323" pcbX={34} pcbY={9} schX={9} schY={1.2} schSectionName={sec} />
     <trace from={`.CT${id} > .S1`} to={`.R${id}B > .pin1`} />
     <trace from={`.CT${id} > .S2`} to="net.AVMID" schDisplayLabel="AVMID" />
     <trace from={`.R${id}B > .pin2`} to="net.AVMID" schDisplayLabel="AVMID" />

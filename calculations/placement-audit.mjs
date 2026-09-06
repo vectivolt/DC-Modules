@@ -16,6 +16,7 @@
 // Run: node calculations/placement-audit.mjs [sku] [side]
 
 import { readFileSync, existsSync } from "node:fs";
+import { extents } from "./pcb-geom.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -33,15 +34,29 @@ for (const e of j) (by[e.type] ??= []).push(e);
 const board = by.pcb_board?.[0];
 const W = board?.width ?? 0, H = board?.height ?? 0;
 const src = new Map(by.source_component.map((s) => [s.source_component_id, s]));
-const parts = by.pcb_component.map((p) => ({
-  name: src.get(p.source_component_id)?.name ?? "?",
-  x: p.center.x, y: p.center.y, w: p.width, h: p.height,
-}));
+// TRUE extents from courtyards -- pcb_component.width/height is the pad box (a 89 mm choke reports
+// 64 x 4), so every distance below would be measured against the wrong geometry.
+const parts = extents(j).parts;
 const srcGrp = new Map((by.source_group ?? []).map((g) => [g.source_group_id, g]));
-const groups = (by.pcb_group ?? []).map((g) => ({
-  name: g.name, x: g.center.x, y: g.center.y, w: g.width ?? 0, h: g.height ?? 0,
-  id: g.source_group_id, parent: srcGrp.get(g.source_group_id)?.parent_source_group_id,
-}));
+// Cell boxes from MEMBER COURTYARDS, not pcb_group.width/height -- that is a pad-extent box too,
+// so a cell holding an 89 mm choke reports 64 mm wide and every cell-to-cell test is measured
+// against geometry that does not exist.
+const memberOf = new Map();                       // source_group_id -> member parts
+for (const p of parts) {
+  let g = srcGrp.get(p.groupId);
+  while (g) { (memberOf.get(g.source_group_id) ?? memberOf.set(g.source_group_id, []).get(g.source_group_id)).push(p);
+              g = g.parent_source_group_id ? srcGrp.get(g.parent_source_group_id) : null; }
+}
+const groups = (by.pcb_group ?? []).map((g) => {
+  const mem = memberOf.get(g.source_group_id) ?? [];
+  const bb = mem.length
+    ? { x0: Math.min(...mem.map((m) => m.x0)), x1: Math.max(...mem.map((m) => m.x1)),
+        y0: Math.min(...mem.map((m) => m.y0)), y1: Math.max(...mem.map((m) => m.y1)) }
+    : { x0: g.center.x, x1: g.center.x, y0: g.center.y, y1: g.center.y };
+  return { name: g.name, x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2,
+           w: bb.x1 - bb.x0, h: bb.y1 - bb.y0, n: mem.length,
+           id: g.source_group_id, parent: srcGrp.get(g.source_group_id)?.parent_source_group_id };
+});
 // a group's full ancestry, so nested cells are never counted as overlapping their own parent
 const ancestors = (g) => { const out = new Set(); let p = g.parent;
   while (p) { out.add(p); p = srcGrp.get(p)?.parent_source_group_id; } return out; };
@@ -80,20 +95,35 @@ line("CELLOVL", ov.length, (groups.length * (groups.length - 1)) / 2, "cell-to-c
 for (const [a, b, d] of ov.sort((x, y) => y[2] - x[2]).slice(0, 6))
   console.log(`         ${a.padEnd(12)} x ${b.padEnd(12)} ${d.toFixed(1)} mm`);
 
-const wide = groups.filter((g) => Math.max(g.w, g.h) > SPREAD_MAX);
-line("SPREAD", wide.length, groups.length, `cells wider than ${SPREAD_MAX} mm`);
-for (const g of wide.sort((a, b) => Math.max(b.w, b.h) - Math.max(a.w, a.h)).slice(0, 5))
-  console.log(`         ${g.name.padEnd(12)} ${g.w.toFixed(0)} x ${g.h.toFixed(0)} mm`);
+// DENSITY, not width. "One contiguous cell" means the parts fill their own box -- a 10-capacitor
+// DC-link bank is legitimately 230 mm wide and perfectly contiguous, so flagging width flags
+// correct work. A cell whose members occupy under 12 % of their bounding box is scattered.
+const dens = [];
+for (const g of groups) {
+  const mem = parts.filter((p) => p.x0 >= g.x - g.w / 2 - 1 && p.x1 <= g.x + g.w / 2 + 1 &&
+                                  p.y0 >= g.y - g.h / 2 - 1 && p.y1 <= g.y + g.h / 2 + 1);
+  if (mem.length < 3) continue;
+  const bb = { x0: Math.min(...mem.map((m) => m.x0)), x1: Math.max(...mem.map((m) => m.x1)),
+               y0: Math.min(...mem.map((m) => m.y0)), y1: Math.max(...mem.map((m) => m.y1)) };
+  const boxA = (bb.x1 - bb.x0) * (bb.y1 - bb.y0);
+  const fill = boxA > 0 ? mem.reduce((a, m) => a + m.area, 0) / boxA : 1;
+  if (fill < 0.12) dens.push([g.name, mem.length, fill, bb.x1 - bb.x0, bb.y1 - bb.y0]);
+}
+line("SPREAD", dens.length, groups.length, "cells whose parts fill under 12 % of their own box");
+for (const [n, m, f, bw, bh] of dens.sort((a, b) => a[2] - b[2]).slice(0, 5))
+  console.log(`         ${n.padEnd(12)} ${String(m).padStart(3)} parts fill ${(f * 100).toFixed(0)}% of ${bw.toFixed(0)}x${bh.toFixed(0)} mm`);
 
 const far = [];
 for (const d of parts.filter((p) => /^U[A-C]\dG$/.test(p.name))) {
   const id = d.name.slice(1, 3);
   for (const q of parts.filter((p) => new RegExp(`^Q${id}[AB]$`).test(p.name))) {
-    const gap = Math.hypot(d.x - q.x, d.y - q.y);
+    const gx = Math.max(0, Math.max(d.x0, q.x0) - Math.min(d.x1, q.x1));
+    const gy = Math.max(0, Math.max(d.y0, q.y0) - Math.min(d.y1, q.y1));
+    const gap = Math.hypot(gx, gy);                       // edge-to-edge, 0 if they touch
     if (gap > DRIVER_MAX) far.push([d.name, q.name, gap]);
   }
 }
-line("DRIVER", far.length, null, `driver-to-switch over ${DRIVER_MAX} mm`);
+line("DRIVER", far.length, null, `driver-to-switch EDGE gap over ${DRIVER_MAX} mm`);
 for (const [a, b, g] of far.sort((x, y) => y[2] - x[2]).slice(0, 4))
   console.log(`         ${a} -> ${b}  ${g.toFixed(0)} mm`);
 
