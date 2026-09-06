@@ -52,6 +52,11 @@ export const FOOTPRINT = {
   "CMC-CAN-51uH": "IND-SMD_L4.5-W3.2_CMC", "XFMR-LLC-10K": "XFMR_3xPQ50-50_custom",
   "XFMR-AUX-FLY-C": "XFMR_ETD34_custom",
   "CT-100A-1:2500": "CT_window_100A_1-2500", "CT-RES-1:100": "CT_window_res_1-100",
+  // NOT the catalogue HF167F/24-HF land (LCSC C2757422). Tried it; EasyEDA's DRC rejected it:
+  // "Pin has no corresponding pad: 5, 6, 8; Pad has no corresponding pin: 2". The catalogue part
+  // is a plain 4-pad SPST-NO relay, while E30 requires the MIRROR-CONTACT variant — pins 5/6/8
+  // are the mirror used for readback. Different part, different land; the placeholder stays until
+  // the mirror-contact p/n is confirmed (lcsc-map already flags it REVIEW).
   "HF167F-80A-M": "RELAY_HF167F_PCB", "HF167F-120A-M": "RELAY_HF167F_PCB",
   "HF167F-250A-M": "RELAY_contactor_250A_stud", "HFE82V-M-CLASS": "RELAY_HFE82V_PCB",
   "HFE9-10A-1kV-M": "RELAY_HFE9_PCB",
@@ -59,7 +64,7 @@ export const FOOTPRINT = {
   "FUSE-gG-690V-125A": "FUSE_holder_NH00", "FUSE-gG-690V-250A": "FUSE_holder_NH01",
   "SHUNT-MANG": "SHUNT_4-terminal_manganin",
   // --- modules / connectors / HMI ---
-  "QA01C": "DIP-7_MORNSUN_QA01C",   "ISO5V-RFC-6K": "SIP-4_iso-module",
+  "QA01C": "PWRM-TH_QA01C",           // LCSC C2757491 (MORNSUN), real catalogue land   "ISO5V-RFC-6K": "SIP-4_iso-module",
   "MICROFIT3-16": "CONN-TH_16P-P3.00_MicroFit", "PH-2": "CONN-TH_2P-P2.00_PH",
   "PH-4": "CONN-TH_4P-P2.00_PH", "PH-4-FAN": "CONN-TH_4P-P2.00_PH",
   "HDR-1x5-2.54": "HDR-TH_5P-P2.54-V-M", "TACT-6x6": "KEY-SMD_4P-L6.0-W6.0",
