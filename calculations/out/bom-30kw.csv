@@ -42,9 +42,9 @@ DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-cu
 SHUNT-MANG,C508584,REVIEW,Isabellenhütte-eq/local,"manganin shunt 50 mV class (SKU current)","local manganin",dcdc,1,162,120,105.6,96,120,96,RSHO
 CER-2k2-10W-AX,,CLASS,TE/local,"2.2 kΩ 10 W wirewound axial (bank bleeder chain, HR-15 — ≤65 J/pulse at 120 kW, τ 4–17 s to <60 V)","SQP10",dcdc,8,18.9,14,12.3,11.2,112,90,RBDA0 RBDA1 RBDA2 RBDA3 RBDB0 RBDB1 RBDB2 RBDB3
 Y1-4n7-440,,CLASS,Songtian/Faratronic,"Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)","TDK CD series",acdc+dcdc,6,21.6,16,14.1,12.8,96,77,CY1 CY2 CY3 CPET CYO1 CYO2
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,121.5,90,79.2,72,90,72,F1
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,121.5,90,79.2,72,90,72,F2
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,121.5,90,79.2,72,90,72,F3
+FUSE-gG-690V-63A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,121.5,90,79.2,72,90,72,F1
+FUSE-gG-690V-63A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,121.5,90,79.2,72,90,72,F2
+FUSE-gG-690V-63A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,121.5,90,79.2,72,90,72,F3
 HV73-475k-1%,,CLASS,KOA/UniOhm,"475 kΩ 1206 1% anti-surge (HV divider — MR-3)","any anti-surge 1%",acdc+dcdc,64,1.9,1.4,1.2,1.1,90,70,RV1D0 RV1D1 RV1D2 RV1D3 RV1D4 RV1D5 RV1D6 RV1D7 RV2D0 RV2D1 RV2D2 RV2D3
 MICROFIT3-16,C277731,ORDERABLE,Molex 43045-16 class,"16-way board-to-board harness header, 5 A/contact (MR-14: JST PHD's 1 A contacts were over-run by V15/GND at 120 kW; spares 14/15 now carry GND)","JST VL / TE MicroMate",acdc+dcdc,2,51.3,38,33.4,30.4,76,61,JICA JICB
 R2512-47k-HV-AS,,CLASS,KOA/UniOhm,"47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (R3: 1.04 W worst case; a 1 W 2512 has sqrt(P*R)=217 V < 220 V at +10% bus) (HR-20: halves per-element V and W — ≤208 V / ≤0.92 W continuous)","any HV 2512",acdc+dcdc,18,5.4,4,3.5,3.2,72,58,RBALT0A RBALT0B RBALB0A RBALB0B RNS1A RNS1B RNS2A RNS2B RNS3A RNS3B RBALTA1 RBALTA2

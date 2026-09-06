@@ -130,7 +130,7 @@ export const DB = [
 // per-SKU overrides: name → { price1k, qtyMul, note }
 export const skuOverrides = {
   "30kw": {
-    "F1": { price1k: 90 }, "F2": { price1k: 90 }, "F3": { price1k: 90 },
+    "F1": { price1k: 90, mpn: "FUSE-gG-690V-63A" }, "F2": { price1k: 90, mpn: "FUSE-gG-690V-63A" }, "F3": { price1k: 90, mpn: "FUSE-gG-690V-63A" },
     KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
     KPRE1: { price1k: 260, note: "80 A class (55 A line)" , mpn: "HF167F-80A-M"}, KPRE2: { price1k: 260 , mpn: "HF167F-80A-M"},
     LDM1: { price1k: 120, note: "D6 60 A winding" }, LDM2: { price1k: 120 }, LDM3: { price1k: 120 },
@@ -138,7 +138,7 @@ export const skuOverrides = {
     RSHO: { price1k: 120 },
   },
   "60kw": {
-    "F1": { price1k: 210 }, "F2": { price1k: 210 }, "F3": { price1k: 210 },
+    "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
     KOUT: { price1k: 820 }, KSER: { price1k: 820 }, KPARA: { price1k: 820 }, KPARB: { price1k: 820 },
     KPRE1: { price1k: 340, note: "120 A class (110 A line)" , mpn: "HF167F-120A-M"}, KPRE2: { price1k: 340 , mpn: "HF167F-120A-M"},
     LDM1: { price1k: 240, note: "D6 120 A winding" }, LDM2: { price1k: 240 }, LDM3: { price1k: 240 },
@@ -146,7 +146,7 @@ export const skuOverrides = {
     RSHO: { price1k: 180 },
   },
   "120kw": {
-    "F1": { price1k: 480 }, "F2": { price1k: 480 }, "F3": { price1k: 480 },
+    "F1": { price1k: 480, mpn: "FUSE-gG-690V-250A" }, "F2": { price1k: 480, mpn: "FUSE-gG-690V-250A" }, "F3": { price1k: 480, mpn: "FUSE-gG-690V-250A" },
     // HR-19: the paralleled second relays are now real schematic instances (KOUT2 etc. in the
     // dual matrix) — qtyMul retired so BOM = schematic again.
     KOUT: { price1k: 820, note: "2× 200 A paralleled (dual instance)" }, KSER: { price1k: 820, note: "2× 200 A paralleled" },

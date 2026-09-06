@@ -187,6 +187,18 @@ ck("SYNTAX-DUPKEY", (() => {
   return true;
 })(), "no lcsc-map entry repeats a key — a duplicate silently discards the earlier value");
 
+ck("SYNTAX-FPDUP", (() => {
+  // Same failure mode as SYNTAX-DUPKEY, one file over: footprint-map is a flat object, so a
+  // repeated key silently keeps the LAST mapping. Keys are not always line-initial, so match them
+  // anywhere -- a line-anchored scan missed one of the two duplicates that actually existed.
+  const src = readFileSync(join(ROOT, "calculations/footprint-map.mjs"), "utf8");
+  const body = src.slice(src.indexOf("{"));
+  const keys = [...body.matchAll(/"([^"\n]+)"\s*:\s*"/g)].map((m) => m[1]);
+  const dup = [...new Set(keys.filter((k, i) => keys.indexOf(k) !== i))];
+  if (dup.length) console.log(`      duplicates: ${dup.join(", ")}`);
+  return dup.length === 0;
+})(), "no footprint-map key is mapped twice — the later mapping silently wins");
+
 ck("SYNTAX-LCSC", (() => { try { new Function(readFileSync(join(ROOT, "calculations/cost/lcsc-map.mjs"), "utf8").replace(/^export /gm, "")); return true; } catch { return false; } })(),
   "lcsc-map.mjs parses — a syntax error there silently breaks kicad5-gen AND bom-gen");
 

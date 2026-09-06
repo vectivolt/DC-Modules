@@ -640,7 +640,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
-          + `F 2 "${fpFor(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${fpFor(c.designator, mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
@@ -654,7 +654,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
-          + `F 2 "${fpFor(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${fpFor(c.designator, mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
@@ -672,7 +672,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         body += `$Comp\nL ${LIB_NAME}:${nm} ${c.designator}\nU 1 1 ${nextId()}\nP ${cx} ${cyy}\n`
           + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
           + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
-          + `F 2 "${fpFor(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
+          + `F 2 "${fpFor(c.designator, mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
           + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
           + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;

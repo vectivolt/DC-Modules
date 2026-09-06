@@ -64,7 +64,10 @@ export const FOOTPRINT = {
   "HF167F-80A-M": "RELAY_HF167F_PCB", "HF167F-120A-M": "RELAY_HF167F_PCB",
   "HF167F-250A-M": "RELAY_contactor_250A_stud", "HFE82V-M-CLASS": "RELAY_HFE82V_PCB",
   "HFE9-10A-1kV-M": "RELAY_HFE9_PCB",
-  "FUSE-gG-690V": "FUSE_holder_RT28-32", "FUSE-gG-690V-63A": "FUSE_holder_RT28-32",
+  // R9: the holder must match the LINK size, and RT28-32 takes only 10x38 mm / 2-32 A. A 63 A gG
+  // link is 14x51 and a 125 A is 22x58, so each SKU needs its own holder; 250 A leaves the RT28
+  // range entirely and is a different MOUNTING class (NH1 blade / bolted tag), not a substitution.
+  "FUSE-gG-690V": "FUSE_holder_RT28-32", "FUSE-gG-690V-63A": "FUSE_holder_RT28-63",
   "FUSE-gG-690V-125A": "FUSE_holder_NH00", "FUSE-gG-690V-250A": "FUSE_holder_NH01",
   "SHUNT-MANG": "SHUNT_4-terminal_manganin",
   // --- modules / connectors / HMI ---

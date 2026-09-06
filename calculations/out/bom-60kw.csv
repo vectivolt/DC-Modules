@@ -35,9 +35,9 @@ PP-4u7-1200,,CLASS,Faratronic,"4.7 µF 1200 V film (output — HR-8: 1000 V = 83
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6) [D6 120 A winding]","DMEGC eq",acdc,1,324,240,211.2,192,240,192,LDM1
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,324,240,211.2,192,240,192,LDM2
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,324,240,211.2,192,240,192,LDM3
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F1
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F2
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F3
+FUSE-gG-690V-125A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F1
+FUSE-gG-690V-125A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F2
+FUSE-gG-690V-125A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F3
 SHUNT-MANG,C508584,REVIEW,Isabellenhütte-eq/local,"manganin shunt 50 mV class (SKU current)","local manganin",dcdc,1,243,180,158.4,144,180,144,RSHO
 CER-25W-AX,,CLASS,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,6,37.8,28,24.6,22.4,168,134,RPRE1 RPRE2 RDIS0 RDIS1 RDIS2 RDIS3
 XFMR-AUX-FLY-C,,CUSTOM,custom (D4 rev C),"aux flyback transformer ETD34, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 (E26 rev C — CB-20 SKU-load closure; reinforced pri→sec barrier, 100% hipot 4 kV)","—",acdc,1,222.8,165,145.2,132,165,132,TAUX

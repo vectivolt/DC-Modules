@@ -274,6 +274,40 @@ No LCSC number assigned to `MLCC-small|4.7nF` for this reason; it stays CLASS un
 role is confirmed.
 
 
+## R9 — RESOLVED 2026-09-06: per-SKU fuse class wired through, and the reason it never took effect
+
+The analysis below was already correct and already written down. What was missing was that nothing
+acted on it: `skuOverrides` set only a PRICE for `F1`/`F2`/`F3` (90/210/480), never an `mpn`, so
+all three SKUs still resolved to the base `FUSE-gG-690V` and inherited the 32 A holder. `KPRE1`/
+`KPRE2` two lines away already did it correctly with `HF167F-80A-M`/`-120A-M`/`-250A-M`.
+
+Now each SKU carries its own class -- `FUSE-gG-690V-63A` / `-125A` / `-250A` -- and the holder
+follows: RT28-63 (30 kW), NH00 (60 kW), NH01 (120 kW). The 120 kW answer is the one the note
+predicted: 250 A leaves the RT28 range entirely and becomes an NH blade class, a mounting change.
+
+**The deeper bug this exposed.** The schematic resolved footprints through `c.mpn` -- the page
+JSON's BASE class -- while resolving part numbers through `partOf()`, which applies `skuOverrides`.
+Two different paths for the same component, so every per-SKU FOOTPRINT override in the project was
+dead code. Fixing `fpFor(c.designator, c.mpn)` to `fpFor(c.designator, mpn)` changed more than the
+fuses on 120 kW:
+
+| designator | was | now |
+|---|---|---|
+| F1-F3 | `FUSE_holder_RT28-32` | `FUSE_holder_NH01` |
+| KPRE1/KPRE2 | `RELAY_HF167F_PCB` | `RELAY_contactor_250A_stud` |
+| 6 resistors | `RES-TH_L60.0-W9.0-P66.00` | `RES-TH_L75.0-W12.0-P82.00` |
+
+A 250 A contactor was carrying a PCB relay land, and six higher-wattage resistors were carrying the
+smaller SKU's body. Those mappings existed and were correct; nothing ever reached them.
+
+**A mistake of mine while fixing it, worth recording.** I added RT28-125 / NH1-bolted mappings for
+the 125 A and 250 A classes without checking that correct `NH00`/`NH01` mappings already existed one
+line below. In a flat object the later key wins, so mine were both redundant and duplicate keys --
+the same defect gated as `SYNTAX-DUPKEY` for lcsc-map a commit earlier. Removed, and gate
+`SYNTAX-FPDUP` now covers footprint-map. Its key scan is deliberately not line-anchored: a
+line-anchored scan found only one of the two duplicates I had just introduced.
+
+### original analysis
 ## R9 — the AC input fuse holder is under-rated on every SKU (found 2026-09-06, OPEN)
 
 Same datasheet pass as R8. `F1`/`F2`/`F3` carry footprint `FUSE_holder_RT28-32`. The CHINT

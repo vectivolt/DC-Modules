@@ -30,9 +30,9 @@ HFE82V-20-M-CLASS,,REVIEW,Hongfa,"HV DC relay 20 A 1000 VDC w/ auxiliary contact
 AMC1311-class,C456277,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)","NSI1311 class",acdc+dcdc,5,155.3,115,101.2,92,575,460,UIVBP UIVBM UIVOA UIVOB UIVOV
 HF167F-250A-M,,REVIEW,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line) [250 A class (220 A line)]","TE T9G / contactor option",acdc,1,702,520,457.6,416,520,416,KPRE1
 HF167F-250A-M,,REVIEW,Hongfa,"power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation group at the 475 VAC system + ~660 V pk precharge transient = §K line)","TE T9G / contactor option",acdc,1,702,520,457.6,416,520,416,KPRE2
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F1
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F2
-FUSE-gG-690V,C4255278,REVIEW,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F3
+FUSE-gG-690V-250A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F1
+FUSE-gG-690V-250A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F2
+FUSE-gG-690V-250A,,CLASS,local/Bussmann,"gG fuse 690 VAC (rating per SKU)","SIBA",acdc,1,648,480,422.4,384,480,384,F3
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6) [D6 240 A winding]","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM1
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM2
 DM-22u-SKU,,CLASS,custom/POCO (D6),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9, drawing D6)","DMEGC eq",acdc,1,648,480,422.4,384,480,384,LDM3
