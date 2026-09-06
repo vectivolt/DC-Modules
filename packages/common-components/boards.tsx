@@ -120,13 +120,45 @@ return (
       <net name="V24" isForPower />
       <net name="V15" isForPower />
       <net name="V3P3" isForPower />
-      {/* PLANES carry the power. inner1/inner2 are the DC-link rails (the 39-156 A paths),
-          inner3 is the control return, inner4 is PE and the chassis reference. The two outer
-          layers keep local geometry and signal only. Nothing high-current is ever a "trace". */}
+      {/* PLANE ASSIGNMENT. This is a THREE-LEVEL converter, so the DC link is DCP / MID / DCN and
+          the midpoint carries real phase current -- it needs a plane as much as the rails do, and
+          an earlier assignment that gave inner2 to DCN and left MID as a trace had it wrong.
+
+            inner1  DCP    positive rail
+            inner2  MID    3-level midpoint, between the two rails so both couple to it evenly
+            inner3  DCN    negative rail
+            inner4  DGND   control return, referenced once to PE at the single-point bond
+
+          PE is deliberately NOT a full inner plane: it is a chassis reference, and a full PE plane
+          under the DC link would add common-mode capacitance from every rail straight to earth,
+          which is current in the CISPR measurement. It is a perimeter pour on the bottom instead,
+          tied at the mounting standoffs.
+
+          Nothing high-current is ever a "trace": above ~10 A the copper is a plane or a pour. */}
       <copperpour connectsTo="net.DCP" layer="inner1" boardEdgeMargin="1.2mm" />
-      <copperpour connectsTo="net.DCN" layer="inner2" boardEdgeMargin="1.2mm" />
-      <copperpour connectsTo="net.DGND" layer="inner3" boardEdgeMargin="1.2mm" />
-      <copperpour connectsTo="net.PE" layer="inner4" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.MID" layer="inner2" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.DCN" layer="inner3" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.DGND" layer="inner4" boardEdgeMargin="1.2mm" />
+      <copperpour connectsTo="net.PE" layer="bottom" boardEdgeMargin="1.2mm" />
+      {/* The mains phases carry 54.9 Arms at 30 kW. IPC-2221 wants a 24.7 mm external trace for
+          that on 2 oz -- which is not a trace, it is a busbar -- so each phase gets TOP-LAYER
+          copper instead. They are 50 Hz nets, so flooding them is harmless; the parts that carry
+          them (studs, fuses, MOVs, CM chokes) all sit on the top layer in the left column, so the
+          copper lands exactly where the current already is.
+
+          The switch nodes PHA0/PHB0/PHC0 are deliberately NOT poured. They carry the same current
+          but they are the high-dv/dt nodes: their copper is an antenna, and §7's rule is the
+          minimum area that carries the current. They get bounded heavy copper inside their own
+          Vienna cell, which is a hand-drawn shape, not a flood. */}
+      {["AC1", "AC2", "AC3"].map((n) => (
+        <copperpour key={n} connectsTo={`net.${n}`} layer="top" boardEdgeMargin="1.2mm" />
+      ))}
+      {["LF1", "LF2", "LF3"].map((n) => (
+        <copperpour key={n} connectsTo={`net.${n}`} layer="top" boardEdgeMargin="1.2mm" />
+      ))}
+      {["AC1F", "AC2F", "AC3F"].map((n) => (
+        <copperpour key={n} connectsTo={`net.${n}`} layer="top" boardEdgeMargin="1.2mm" />
+      ))}
       {/* AC entry, protection, EMI (§26/§27): fuses → MOV Δ + MOV/GDT L-PE → CM1 → X → CM2 → X → Y */}
       {["ACL1", "ACL2", "ACL3", "PE"].map((n, i) => (
         <chip key={n} name={`J${n}`} footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={P.jaclX} pcbY={i < 3 ? P.jacl[i] : P.jpeY} schX={i < 3 ? 0 : 20} schY={i < 3 ? 46 - i * 3 : 37} />

@@ -335,11 +335,11 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", 
     <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={18} pcbY={-14} schX={9.5} schY={-1.4} schSectionName={sec} />
     <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={-30} pcbY={-2} schX={12.5} schY={1.4} schSectionName={sec} />
     <capacitor name={`C${id}FN`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={2} pcbY={-2} schX={12.5} schY={-1.4} schSectionName={sec} />
-    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={30} pcbY={-56} schX={15.5} schY={0.7} schSectionName={sec} />
-    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={30} pcbY={-64} schX={15.5} schY={-0.7} schSectionName={sec} />
+    <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={26} pcbY={-24} schX={15.5} schY={0.7} schSectionName={sec} />
+    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={26} pcbY={-31} schX={15.5} schY={-0.7} schSectionName={sec} />
     <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={36} pcbY={-14} schX={18.5} schY={1.4} schSectionName={sec} />
-    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={34} pcbY={-74} schX={18.5} schY={-1.4} schSectionName={sec} />
-    <chip name={`R${id}C`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={-8} pcbY={-76} schX={21.5} schY={0} schSectionName={sec} />
+    <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={40} pcbY={-24} schX={18.5} schY={-1.4} schSectionName={sec} />
+    <chip name={`R${id}C`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={2} pcbY={-48} schX={21.5} schY={0} schSectionName={sec} />
     <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
     <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
