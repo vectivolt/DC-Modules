@@ -43,9 +43,18 @@ plain 4-pad SPST-NO relay while E30 needs the mirror-contact variant that carrie
 `RELAY_HF167F_PCB` (6) · `KEY-SMD_4P-L6.0-W6.0` (6) · `IND-SMD_L4.5-W3.2_CMC` (3) ·
 `LED-SEG-TH_2DIG-0.56` (3)
 
-The three relays are the awkward ones: E30 needs the **mirror-contact** variants, and the plain
-catalogue parts of the same family have a different pad count (see the rejected HF167F attempt
-above).
+**These need part SELECTION, not a lookup.** Every one is a class-spec p/n in `parts-db`
+(`TACT-6x6`, `LED-2DIG-0.56CC`, `CMC-CAN-51uH`, `FUSE-gG-690V`, `HFE82V-M-CLASS`,
+`HFE9-10A-1kV-M`), so there is no MPN to search on. Attempts on 2026-09-06 and what they showed:
+
+| tried | result | why it was not assigned |
+|---|---|---|
+| HF167F relay -> `RELAY-TH_HF167F-24-HF` (C2757422) | DRC rejected | catalogue part is plain 4-pad SPST-NO; E30 needs the mirror-contact variant whose pins 5/6/8 drive `RELAY_FB_*` |
+| tactile -> `TS-1088-AR02016` (C720477) | not assigned | that part is 3.9 x 3.0 mm; the design specifies a 6 x 6 mm body, so the land differs |
+
+Both would have silently substituted a different part. The three relays are the awkward ones for
+the same reason: E30 needs mirror-contact variants and the plain catalogue parts of the family
+have a different pad count. Confirm the p/ns, then the lands follow.
 
 ## Remaining B — genuinely custom: 9 footprints, 126 instances
 
