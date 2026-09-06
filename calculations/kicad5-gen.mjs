@@ -692,6 +692,30 @@ const HAND = {
   // frame's span and being NO TALLER is not sufficient for neutrality. A shorter frame changes
   // where every later frame lands in the skyline, and that reshuffle can go either way. Only an
   // EXACT frame match is reliably free; anything else has to be measured on the sheets.
+  // Two independent thermistor channels, so group by CHANNEL not by part type: each connector with
+  // its own pull-up and filter cap. Packed, they were alphabetical -- both connectors, then both
+  // resistors, then both caps -- so neither channel sat together. One column either way, frame
+  // identical (span 1, h 3250).
+  "AC-SENSING / NTC": [
+    ["JTINL", "RTINLP", "CTINLF", "JTPFC", "RTPFCP", "CTPFCF"],
+  ],
+  "OUTPUT-SENSING / NTC": [
+    ["JTLLC", "RTLLCP", "CTLLCF", "JTXFR", "RTXFRP", "CTXFRF"],
+  ],
+
+  // AUX-POWER / FANS and AUX-POWER / INTERCONNECT were probed and left packed. Both draw their
+  // harness connector AFTER the passives that hang off it, which is backwards, but neither is free:
+  // connectors-first FANS is span 1 and SHORTER than packed (h 3500/6250 against 4250/7750) and
+  // still sent the worst enclosed void from 4.6% to 10.2% while widening 30kw-acdc; INTERCONNECT
+  // goes span 2 on 30 kW. FANS is the cleanest demonstration of the rule above -- a smaller frame
+  // is not a safer one.
+
+  // Three aux rails, each read in its own order -- rectifier, reservoir cap, TVS clamp. Packed,
+  // these were alphabetical too: all three rectifiers, then all three caps, then both TVS, so no
+  // rail was readable as a rail. One column either way, frame identical (span 1, h 4000).
+  "AUX-POWER / RAILS": [
+    ["DAUX15", "CAUX15", "DTVS15", "DAUX24", "CAUX24", "DTVS24", "DAUXVC", "CVCC"],
+  ],
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
