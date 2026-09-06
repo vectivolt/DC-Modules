@@ -104,6 +104,39 @@ const libName = (s) => String(s).replace(/[^A-Za-z0-9_.+-]/g, "_");
 // landed silently on the WRONG net, with no DRC warning at all.
 // So the library is written pre-mirrored about Y: EasyEDA mirrors it back and the sheet is
 // correct. Mirroring twice is the identity, so the round trip is exact.
+// Largest empty rectangle on the sheet, as a fraction of sheet area. "Density" and "ragged bottom"
+// both missed the defect the eye sees first: a big blank channel THROUGH the middle of a sheet.
+// A short column is invisible to a bottom-edge measure, and a sheet can be 70% full and still have
+// one ugly hole. Rasterise coarsely and run the classic largest-rectangle-in-histogram sweep.
+const largestVoid = (rects, W, H) => {
+  const TBW = 9000, TBH = 2600;                       // title-block corner, reserved by convention
+  rects = [...rects, { x0: W - TBW, y0: H - TBH, x1: W, y1: H }];
+  const NX = 64, NY = 44, cw = W / NX, ch = H / NY;
+  const occ = Array.from({ length: NY }, () => new Uint8Array(NX));
+  for (const r of rects) {
+    const x0 = Math.max(0, Math.floor(r.x0 / cw)), x1 = Math.min(NX - 1, Math.ceil(r.x1 / cw) - 1);
+    const y0 = Math.max(0, Math.floor(r.y0 / ch)), y1 = Math.min(NY - 1, Math.ceil(r.y1 / ch) - 1);
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) occ[y][x] = 1;
+  }
+  const hgt = new Int32Array(NX);
+  let best = 0;
+  for (let y = 0; y < NY; y++) {
+    for (let x = 0; x < NX; x++) hgt[x] = occ[y][x] ? 0 : hgt[x] + 1;
+    const st = [];
+    for (let x = 0; x <= NX; x++) {
+      const h = x === NX ? 0 : hgt[x];
+      let start = x;
+      while (st.length && st[st.length - 1].h >= h) {
+        const t = st.pop();
+        best = Math.max(best, t.h * (x - t.x));
+        start = t.x;
+      }
+      st.push({ x: start, h });
+    }
+  }
+  return best / (NX * NY);
+};
+
 const mirrorLibY = (text) => text.split("\n").map((l) => {
   const t = l.split(" ");
   const neg = (i) => { t[i] = String(-Number(t[i])); };
@@ -336,10 +369,36 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   // multiplier lets a tall family widen out and the sheet come level.
   const capFor = (mul) => new Map([...famCount].map(([f, n]) =>
     [f, Math.max(famSpan.get(f), Math.round(Math.sqrt(n) * mul))]));
-  const runPack = (NC, famCap) => {
+  // Frame ORDER is a search dimension too. With one fixed order no candidate could get the largest
+  // empty rectangle under 12% on three of the six sheets — a tall frame early in a family leaves a
+  // ledge nothing later fits into. Sorting by height inside each family is the standard fix, and it
+  // costs nothing structurally: families keep their order and their grouping, only the sequence
+  // within one family changes (and within a uniform family like LLC-TANKS it changes nothing).
+  const orderings = [
+    blocks,
+    (() => {
+      const byFam = new Map();
+      for (const b of blocks) {
+        const f = String(b.title).split(" / ")[0];
+        if (!byFam.has(f)) byFam.set(f, []);
+        byFam.get(f).push(b);
+      }
+      return [...byFam.values()].flatMap((g) => [...g].sort((m, n) => n.h - m.h));
+    })(),
+    (() => {                                          // widest-first inside each family
+      const byFam = new Map();
+      for (const b of blocks) {
+        const f = String(b.title).split(" / ")[0];
+        if (!byFam.has(f)) byFam.set(f, []);
+        byFam.get(f).push(b);
+      }
+      return [...byFam.values()].flatMap((g) => [...g].sort((m, n) => n.w - m.w || n.h - m.h));
+    })(),
+  ];
+  const runPack = (NC, famCap, order) => {
     const colH = new Array(NC).fill(MARGIN);
     const out = [], famAt = new Map();
-    for (const b of blocks) {
+    for (const b of order) {
       const fam = String(b.title).split(" / ")[0];
       const cands = [];
       for (let c = 0; c + b.span <= NC; c++) cands.push({ c, y: Math.max(...colH.slice(c, c + b.span)) });
@@ -387,19 +446,47 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       const e = famX.get(f) ?? [Infinity, -Infinity];
       famX.set(f, [Math.min(e[0], X), Math.max(e[1], X)]);
     }
+    // A family's allowed spread scales with how much of the sheet it actually holds. A flat 45%
+    // cap is right for a 3-frame family and wrong for VIENNA-PFC's twelve phase frames, which are
+    // a third of the sheet's content: forcing them into 45% of the width made them stack tall and
+    // pushed everything else into a bottom-left void.
+    const famArea = new Map();
+    for (const { b: bb } of out) {
+      const f = String(bb.title).split(" / ")[0];
+      famArea.set(f, (famArea.get(f) ?? 0) + bb.w * bb.h);
+    }
+    const spreadOver = Math.max(...[...famX].map(([f, [lo, hi]]) =>
+      (hi - lo) / W - (0.35 + 0.9 * (famArea.get(f) / frameArea))));
     const spread = Math.max(...[...famX.values()].map(([lo, hi]) => hi - lo));
-    const usable = aspect >= 1.15 && aspect <= 2.1 && spread <= 0.45 * W;
-    const score = usable ? (sheetArea / frameArea) * 10 + ragged / 2000 : Infinity;
-    return { NC, out, colH, W, H, score, aspect };
+    const voidFrac = largestVoid(out.map(({ b: bb, X, Y }) =>
+      ({ x0: X, y0: Y, x1: X + bb.w, y1: Y + bb.h })), W, H + MARGIN + 800);
+    // The largest empty rectangle is a GATE too, not just a weighted term. As a weighted term the
+    // density objective outvoted it and sheets still came out with a 20-23% blank block in them,
+    // which is the first thing the eye lands on.
+    const usable = aspect >= 1.15 && aspect <= 2.1 && spreadOver <= 0 && voidFrac <= 0.12;
+    // soft score is always computed: when no candidate clears every gate we still want the best
+    // layout by the same objective, not whatever happens to be closest to a target aspect.
+    // On the bigger sheets no configuration satisfies aspect AND grouping AND void at once, so the
+    // soft score has to say which one yields. Grouping wins: a family scattered across two thirds
+    // of the sheet contradicts an explicit design instruction ("keep related components tightly
+    // grouped"), while a somewhat larger blank block is only untidy. Weight it so a spread
+    // violation dominates the density and void terms rather than competing with them.
+    const soft = (sheetArea / frameArea) * 10 + ragged / 2000 + voidFrac * 60
+      + Math.max(0, spreadOver) * 300
+      + (aspect >= 1.15 && aspect <= 2.1 ? 0 : 1000);
+    const score = usable ? soft : Infinity;
+    return { NC, out, colH, W, H, score, soft, aspect };
   };
   const minNC = Math.max(...blocks.map((b) => b.span));
   let pick = null, fallback = null;
-  for (const mul of [1.0, 1.3, 1.6, 2.0, 2.5]) {
-    const famCap = capFor(mul);
-    for (let NC = minNC; NC <= minNC + 24; NC++) {
-      const r = runPack(NC, famCap);
-      if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
-      if (!fallback || Math.abs(r.aspect - 1.45) < Math.abs(fallback.aspect - 1.45)) fallback = r;
+  for (const order of orderings) {
+    for (const mul of [1.0, 1.3, 1.6, 2.0, 2.5, 3.0, 4.0]) {
+      const famCap = capFor(mul);
+      for (let NC = minNC; NC <= minNC + 32; NC++) {
+        const r = runPack(NC, famCap, order);
+        if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
+        if (!fallback || r.soft < fallback.soft) fallback = r;
+      }
     }
   }
   pick = pick ?? fallback;

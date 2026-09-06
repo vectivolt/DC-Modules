@@ -38,6 +38,31 @@ for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice
   LIB.set(name, { pins, box: box ?? { x0: -60, y0: -100, x1: 60, y1: 100 } });
 }
 
+// largest empty rectangle as a fraction of sheet area — the blank channel the eye finds first
+const largestVoid = (rects, W, H) => {
+  const TBW = 9000, TBH = 2600;                       // title-block corner, reserved by convention
+  rects = [...rects, { x0: W - TBW, y0: H - TBH, x1: W, y1: H }];
+  const NX = 64, NY = 44, cw = W / NX, ch = H / NY;
+  const occ = Array.from({ length: NY }, () => new Uint8Array(NX));
+  for (const r of rects) {
+    const x0 = Math.max(0, Math.floor(r.x0 / cw)), x1 = Math.min(NX - 1, Math.ceil(r.x1 / cw) - 1);
+    const y0 = Math.max(0, Math.floor(r.y0 / ch)), y1 = Math.min(NY - 1, Math.ceil(r.y1 / ch) - 1);
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) occ[y][x] = 1;
+  }
+  const hgt = new Int32Array(NX);
+  let best = 0;
+  for (let y = 0; y < NY; y++) {
+    for (let x = 0; x < NX; x++) hgt[x] = occ[y][x] ? 0 : hgt[x] + 1;
+    const st = [];
+    for (let x = 0; x <= NX; x++) {
+      const h = x === NX ? 0 : hgt[x];
+      let start = x;
+      while (st.length && st[st.length - 1].h >= h) { const t = st.pop(); best = Math.max(best, t.h * (x - t.x)); start = t.x; }
+      st.push({ x: start, h });
+    }
+  }
+  return 100 * best / (NX * NY);
+};
 const stats = [];
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -112,8 +137,9 @@ for (const file of readdirSync(SCH).filter((f) => /^\d.*-(acdc|dcdc)\.sch$/.test
   const spans = [...fam.values()].filter((v) => v.length > 1).map((v) => Math.max(...v) - Math.min(...v));
   const spread = spans.length ? Math.round(spans.reduce((a, b2) => a + b2, 0) / spans.length) : 0;
   const fill = 100 * frameArea / (W * H);
-  stats.push({ name, aspect: W / H, fill, overlaps, spread, spreadPct: 100 * spread / W });
-  console.log(`${name.padEnd(18)} ${W}x${H} mil · aspect ${(W / H).toFixed(2)} · ${frames.length} frames · ${syms.length} symbols · fill ${fill.toFixed(0)}% · family spread ${spread} mil (${(100 * spread / W).toFixed(0)}% of width) · overlaps ${overlaps}`);
+  const vd = largestVoid(frames, W, H);
+  stats.push({ name, aspect: W / H, fill, overlaps, spread, spreadPct: 100 * spread / W, vd });
+  console.log(`${name.padEnd(18)} ${W}x${H} mil · aspect ${(W / H).toFixed(2)} · ${frames.length} frames · ${syms.length} symbols · fill ${fill.toFixed(0)}% · family spread ${spread} mil (${(100 * spread / W).toFixed(0)}% of width) · overlaps ${overlaps} · largest void ${vd.toFixed(0)}%`);
 }
 // Layout gate: the qualities the sheet is judged on, asserted rather than eyeballed.
 let bad = 0;
@@ -122,6 +148,7 @@ for (const r of stats) {
   if (r.aspect < 1.1 || r.aspect > 2.2) fails.push(`aspect ${r.aspect.toFixed(2)} outside 1.10-2.20`);
   if (r.fill < 40) fails.push(`frame fill ${r.fill.toFixed(0)}% below 40%`);
   if (r.overlaps) fails.push(`${r.overlaps} frame overlaps`);
+  if (r.vd > 12) fails.push(`largest empty rectangle ${r.vd.toFixed(0)}% of sheet, above 12%`);
   // relative, not absolute: a 12-frame family legitimately spans more columns on a bigger sheet
   if (r.spreadPct > 45) fails.push(`family spread ${r.spread} mil = ${r.spreadPct.toFixed(0)}% of sheet width, above 45%`);
   if (fails.length) { bad++; console.log(`FAIL ${r.name}: ${fails.join("; ")}`); }
