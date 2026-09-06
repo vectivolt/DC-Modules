@@ -148,6 +148,44 @@ fails loudly.
 0 ink collisions, layout gate passes.
 
 
+## EasyEDA verification — confirmed in the app, 2026-09-06
+
+Run against the real artifact in EasyEDA Pro V3.2.149, not against the source files.
+
+| project | sheet | errors | warnings | fatal (footprint) |
+|---|---|---|---|---|
+| `DC Modules 30kW SHIP D.3 fp` | 30kw-acdc | **0** | **0** | 9 |
+| | 30kw-dcdc | **0** | **0** | 14 |
+| `DC Modules 60kW SHIP D.3` | 60kw-acdc | **0** | **0** | 9 |
+| | 60kw-dcdc | **0** | **0** | 16 |
+
+Zero errors and zero warnings on all four sheets. The title block reads correctly in the app on
+each: Rev D.3, Title, File, Comp and all four Comments populated, so a printed sheet identifies
+its own SKU, board and sheet number.
+
+**IMPORT ORDER MATTERS — import the footprint library FIRST, then the schematic.** EasyEDA binds
+a component to its footprint *at schematic-import time*. Import the schematic first and every
+custom footprint stays unbound no matter what you add to the library afterwards; re-importing the
+schematic is the only way to bind them. Measured on 30 kW:
+
+| order | fatal on acdc | fatal on dcdc |
+|---|---|---|
+| schematic only | 89 | 79 |
+| schematic, then footprints | 89 | 73 |
+| **footprints, then schematic** | **9** | **14** |
+
+168 -> 23 across the module. The residue is the seven catalogue footprints still needing part
+selection (three relays, fuse holder, tactile, CAN choke, 2-digit display).
+
+Correct sequence per SKU:
+1. `DC-Modules-footprints-<sku>.zip` -> **Extract Libraries**
+2. `DC-Modules-<sku>-final.zip` -> **Import Document**
+
+**120 kW is not yet imported.** Its footprint import stopped after 10 of 27 when the machine hit
+100% disk (`ENOSPC`); the schematic was never attempted. Redo both steps once there is free space
+— the partial library means step 1 must be repeated, not skipped.
+
+
 ## R7 — isolated voltage senses have a floating output leg (found 2026-09-06, OPEN — needs a decision)
 
 Found by `calculations/unwired-pins.mjs`, a new check that compares the pins a symbol DECLARES
