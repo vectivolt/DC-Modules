@@ -325,16 +325,22 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       if (col.length) cols.push(col);
       let x = 0, maxH = 0; const placed = [];
       for (const c of cols) {
-        const cw = Math.max(...c.map((i) => i.s.w));
+        // Every symbol in a column starts at the SAME x, set by the column's widest left-hand net
+        // label -- not by its own. Offsetting each symbol by its own label width aligned the text
+        // and staggered the bodies, so a column of identical resistors visibly zig-zagged (RNS1A
+        // sat left of RNS1B because "AC1" is shorter than "N_ACDC_50"). The column has to grow to
+        // suit, or the shifted symbols would overflow the frame.
+        const mlw = Math.max(...c.map((i) => i.s.lw));
+        const cw = mlw + Math.max(...c.map((i) => i.s.w - i.s.lw));
         let y = 0;
-        for (const it of c) { placed.push({ it, x, y }); y += it.s.h; }
+        for (const it of c) { placed.push({ it, x, y, clw: mlw }); y += it.s.h; }
         maxH = Math.max(maxH, y); x += cw + COLGAP;
       }
       const w = x - COLGAP + 2 * SECPAD, hh = maxH + 2 * SECPAD + SECTITLE;
       const score = w * hh * (1 + Math.abs(Math.log((w / hh) / 1.3)) * 0.15);
       if (!bestL || score < bestL.score) bestL = { placed, w, h: hh, score };
     }
-    for (const { it, x, y } of bestL.placed) { it.x = x; it.y = y; }
+    for (const { it, x, y, clw } of bestL.placed) { it.x = x; it.y = y; it.clw = clw; }
     b.w = bestL.w; b.h = bestL.h;
   }
 
@@ -550,24 +556,31 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       fams.set(f, (fams.get(f) ?? 0) + 1);
     }
     const rows = [...fams].sort((a, b2) => b2[1] - a[1] || a[0].localeCompare(b2[0]));
-    const fits = Math.floor((maxY - py0 - HEAD - LH - PAD) / LH);
-    if (px1 - px0 >= 4000 && fits >= 3) {
-      const shown = rows.slice(0, Math.min(rows.length, fits));
-      const rest = rows.length - shown.length;
-      const nLines = shown.length + (rest > 0 ? 1 : 0);
-      // The box hugs its CONTENT, not the hole. Sized to the void it was a framed void -- which
-      // reads worse than the plain gap did, because a drawn border promises something inside it.
-      const py1 = snap(py0 + HEAD + nLines * LH + LH + Math.round(PAD / 2));
-      body += `Wire Notes Line\n\t${px0} ${py0} ${px1} ${py0}\nWire Notes Line\n\t${px1} ${py0} ${px1} ${py1}\n`
-        + `Wire Notes Line\n\t${px1} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
+    // The hole is whatever shape the packer leaves -- a tall slot on one sheet, a wide low band on
+    // another -- so the index lays itself out in as many columns as the space affords instead of
+    // assuming one. A sheet with no real hole (60kw leaves a 1250 mil strip) correctly gets none.
+    const CW = 4200;
+    const perCol = Math.floor((maxY - py0 - HEAD - LH - Math.round(PAD / 2)) / LH);
+    const maxCols = Math.floor((px1 - px0 - 400) / CW);
+    console.error(`   [void]   ${page.page.padEnd(11)} ${Math.round(px1 - px0)} x ${Math.round(maxY - py0)} mil  perCol=${perCol} maxCols=${maxCols}`);
+    if (perCol >= 2 && maxCols >= 1) {
+      const ncols = Math.min(maxCols, Math.ceil(rows.length / perCol));
+      const cap = ncols * perCol;
+      const over = rows.length > cap;
+      const shown = rows.slice(0, over ? cap - 1 : rows.length);
+      const nRow = Math.min(perCol, Math.max(1, Math.ceil((shown.length + (over ? 1 : 0)) / ncols)));
+      const px1b = snap(Math.min(px1, px0 + 260 + ncols * CW + 200));
+      const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
+      body += `Wire Notes Line\n\t${px0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
+        + `Wire Notes Line\n\t${px1b} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
       body += `Text Notes ${px0 + 200} ${py0 + 340} 0    79   ~ 16\nSHEET INDEX\n`;
       body += `Text Notes ${px0 + 200} ${py0 + 600} 0    60   ~ 0\n${ident.sku} ${ident.board} - ${ident.sheet}\n`;
-      let ty = py0 + HEAD;
-      for (const [f, n] of shown) {
-        body += `Text Notes ${px0 + 260} ${ty} 0    60   ~ 0\n${f}   -   ${n} section${n > 1 ? "s" : ""}\n`;
-        ty += LH;
-      }
-      if (rest > 0) { body += `Text Notes ${px0 + 260} ${ty} 0    60   ~ 0\n+ ${rest} more\n`; ty += LH; }
+      const cell = [...shown.map(([f, n]) => `${f}   -   ${n} section${n > 1 ? "s" : ""}`),
+        ...(over ? [`+ ${rows.length - shown.length} more`] : [])];
+      cell.forEach((t, i) => {
+        const cx = px0 + 260 + Math.floor(i / nRow) * CW, cy = py0 + HEAD + (i % nRow) * LH;
+        body += `Text Notes ${snap(cx)} ${snap(cy)} 0    60   ~ 0\n${t}\n`;
+      });
       body += `Text Notes ${px0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\nrev ${REV}   -   ${blocks.length} sections   -   ${page.total} components\n`;
     }
   }
@@ -580,7 +593,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
 
     for (const it of b.items) {
       const { c, s } = it;
-      const ox = snap(b.X + SECPAD + (b.pad ?? 0) + it.x + s.lw + STUB);
+      const ox = snap(b.X + SECPAD + (b.pad ?? 0) + it.x + (it.clw ?? s.lw) + STUB);
       const oy = snap(b.Y + SECTITLE + SECPAD + it.y);
       const { mpn, lc } = partOf(c.designator, c.value);
       if (s.cat === "TERM") {
