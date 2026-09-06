@@ -676,6 +676,22 @@ const HAND = {
     ["USR1", "RSEG0", "RSEG1", "RSEG2", "RSEG3", "RSEG4", "RSEG5", "RSEG6", "RSEG7"],
     ["DISP1", "QDIG1", "QDIG2", "SW1", "SW2", "CSW1", "CSW2", "RDIG1", "RDIG2", "RSW1", "RSW2"],
   ],
+  // BANKS-SP / SP-MATRIX and BANKS-SP / BANK-A/B were composed, measured and left packed. Both have
+  // real defects: on 120 kW the matrix strands KSER and KSER2 in the last column with all six
+  // pull-up resistors between them and the other eight relays, and BANK-A splits a series cap pair
+  // (CBA3B | CBA3T) across a column boundary. Neither could be fixed without cost:
+  //
+  //   SP-MATRIX  4 columns span 2, h 3750/3750/5250 (packed 6250 everywhere) -- SHORTER on every
+  //              SKU at the same span, and the 120kw-dcdc sheet still grew 8% (54600x41800 ->
+  //              66600x37050). 3 columns span 2, h 5000/5000/7750: taller on 120 kW.
+  //   BANK-A     8/8/5 keeps every pair intact at span 1 but h 2750/4000/4000 against a packed
+  //              4250/3500/3500 -- shorter on 30 kW, 500 taller on the other two. 4 columns of 6
+  //              keeps pairs too but goes span 2.
+  //
+  // The SP-MATRIX result sharpens the rule the other plans were chosen by: matching the packed
+  // frame's span and being NO TALLER is not sufficient for neutrality. A shorter frame changes
+  // where every later frame lands in the skyline, and that reshuffle can go either way. Only an
+  // EXACT frame match is reliably free; anything else has to be measured on the sheets.
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
