@@ -525,16 +525,31 @@ const HAND = {
     ["PSSH", "RSHO", "USHO", "COF1", "COF2", "CYO1", "CYO2", "JOUTN", "JOUTP"],
   ],
 
-  // Composed and REJECTED, both for the same reason -- their hand frame is a different SHAPE from
-  // the one the column search produces, and on these sheets that costs more than the reading order
-  // gains. Recorded so they are not retried blind:
-  //   INPUT-EMI / EMI-FILTER  chain order (CM stage + its X bank, CM stage + DM chokes, output X
-  //     and Y caps). One wide 6-pin choke per column widens the frame: 60kw-acdc 44600x37050 ->
-  //     52600x36050, +15% area, worst void 4.6% -> 6.7%.
-  //   AUX-POWER / FLYBACK  work order (power stage and clamp, controller with timing and comp,
-  //     startup and feedback dividers). Far worse: worst void 20.5%, and 30kw-acdc and 60kw-acdc
-  //     both failed the layout gate at 19% and 16% largest empty rectangle.
-  // Retry either by matching the packed frame's aspect, as with VIENNA-PFC.
+  // The EMI filter is a chain, so draw the chain: first CM stage with the X bank across it and the
+  // second CM stage, then the DM chokes with the output X bank and the Y caps to PE. Packed, the X
+  // caps led and both common-mode chokes sat together, so the stage order was unreadable.
+  //
+  // This split was FOUND, not guessed. Probing candidates against the packed frame gave 3 columns
+  // 5078x3250 and a 7/7 split 3297x5000, against a packed 3297x4250; keeping both chokes apart --
+  // CMC2 ending column one -- lands on 3297x4250 exactly. Frame identical, so nothing moves.
+  "INPUT-EMI / EMI-FILTER": [
+    ["CMC1", "CX11", "CX12", "CX13", "CMC2"],
+    ["LDM1", "LDM2", "LDM3", "CX21", "CX22", "CX23", "CY1", "CY2", "CY3"],
+  ],
+
+  // AUX-POWER / FLYBACK is still held back, now with data rather than a guess. Work order is
+  // TAUX, QAUX, RAUXG, RAUXCS | DCLA, RCLA1, RCLA2, CCLA | UAUX, RAUXRT, RCSF, RCOMP, CCSF, CCOMP |
+  // RAUXST1, RAUXST2, RBR1A, RBR1B, RBR2, RFB1, RFB2. Packed is 3945x6750. Probed splits:
+  //     3 columns 8/6/7        5861 x 5250   (too wide)
+  //     2 columns 11/10        3945 x 8250
+  //     2 columns 9/12         3945 x 7500   <- closest
+  //     2 columns 10/11        3945 x 7750
+  //     2 columns 12/9         3945 x 8500
+  //     2 columns 8/13, 7/14   4129 x 7500+  (column width grows)
+  // Width matches at two columns but no split reaches 6750: the chain order puts TAUX, QAUX and
+  // UAUX -- the three tall symbols -- near each other, and the packed layout beats that by
+  // interleaving them. Fixing it needs the tall parts separated without breaking work order, so
+  // probably a three-column split narrower than 5861. Start from these numbers.
 
   // Both boards carry this section under one title but with A/B designators, so each column lists
   // both; the variant that is not on the board filters out. Naming only one set silently dropped
