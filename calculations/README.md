@@ -39,6 +39,7 @@ The release schematics are `kicad5/DC-Modules-<sku>-SHIP.zip`; see `docs/schemat
 | `alignment-audit.mjs` | near-miss alignment: FRAME-X/Y, SYM-X, PITCH, STUB |
 | `wiring-audit.mjs` | wiring rules: LONG, ESCAPE (no wire leaves a frame), CROSS, FLOW |
 | `frame-padding.mjs` | inner padding of every section frame — catches content that floats or overflows |
+| `void-audit.mjs` | worst **enclosed** hole per sheet — whitespace with drawing on both sides, which is what reads as a hole rather than a margin |
 | `review-checks.mjs` | the release gates, including LCSC class and shadowed-rule checks |
 | `kicad5-preview.mjs` / `kicad5-detail.mjs` | render sheets/tiles for visual inspection |
 

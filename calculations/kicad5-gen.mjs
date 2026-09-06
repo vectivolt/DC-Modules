@@ -662,7 +662,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   {
     const used = blocks.map((b) => ({ x0: b.X, y0: b.Y, x1: b.X + b.w, y1: b.Y + b.h }));
     const PAD = 500, LH = 300, CW = 4200, HEAD = 160 + 260 + Math.round(LH * 1.4);
-    const drawPanel = (V, title, sub, rows, footer) => {
+    const drawPanel = (V, title, sub, rows, footer, fixed) => {
       const px0 = snap(V.x0 + PAD), py0 = snap(V.y0 + PAD);
       const px1 = snap(V.x1 - PAD), maxY = snap(V.y1 - PAD);
       // The hole is whatever shape the packer leaves -- a tall slot on one sheet, a wide low band
@@ -683,9 +683,14 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // RIGHT-ALIGN inside the void. Drawing at the void's left edge meant a wide bottom-right
       // void still produced a centre-left panel -- 120kw-acdc's index landed at x=51% even though
       // its slot reached the right margin, and nothing could stack beneath it there.
+      // `fixed` makes a stacked panel inherit its parent's exact edges. Each panel used to
+      // right-align on its OWN natural width, and the legend's is 200 mil narrower than the
+      // index's, so the two notes boxes sat 200 apart on every one of the six sheets -- the
+      // "shared left edge" this stack is built around never actually held. Almost-aligned reads
+      // as careless; 200 mil is invisible at sheet zoom and obvious at working zoom.
       const pw = 60 + ncols * cw + 200;
-      const bx0 = snap(Math.max(px0, px1 - pw));
-      const px1b = snap(Math.min(px1, bx0 + pw));
+      const bx0 = fixed ? fixed.x0 : snap(Math.max(px0, px1 - pw));
+      const px1b = fixed ? fixed.x1 : snap(Math.min(px1, bx0 + pw));
       const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
       body += `Wire Notes Line\n\t${bx0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
         + `Wire Notes Line\n\t${px1b} ${py1} ${bx0} ${py1}\nWire Notes Line\n\t${bx0} ${py1} ${bx0} ${py0}\n`;
@@ -747,14 +752,14 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // Second hole gets a legend for the net names. Worth the space: every internal junction on
       // this drawing is named for what it JOINS rather than by an ordinal, and that convention is
       // invisible unless it is written down somewhere on the sheet.
-      const legend = (V) => drawPanel(V, "NET NAMING",
+      const legend = (V, fixed) => drawPanel(V, "NET NAMING",
         "internal junctions are named for what they join", [
           "U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP",
           "R<stem>_M        midpoint of a series pair  e.g. RBALTA_M",
           "R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01",
           "all others are explicit design nets",
-        ], "");
-      if (!legend(below)) legend(pickVoid(used));
+        ], "", fixed);
+      if (!legend(below, { x0: p1.x0, x1: p1.x1 })) legend(pickVoid(used));
     }
   }
 

@@ -80,10 +80,31 @@ the intent. All six sheets currently pass every one:
 | `alignment-audit.mjs` | FRAME-X/Y, SYM-X, PITCH, STUB near-misses | **no near-miss anywhere; 1 stub length** |
 | `wiring-audit.mjs` | LONG, ESCAPE, CROSS, FLOW | **longest 200 mil, 0 escapes, 0 crossings, 1999/1999 flow** |
 | `frame-padding.mjs` | inner padding of every section frame | **no overflow; min clearance L/R 221, T 65, B 205** |
+| `void-audit.mjs` | worst **enclosed** hole per sheet (whitespace with drawing on both sides) | **worst 8.2 %** (limit 12 %) |
 | `review-checks.mjs` | the release gates (incl. LCSC and class rules) | **all pass** |
 
 Also uniform across the set: one symbol orientation, four text sizes, two frame widths per sheet,
-400/500 mil gaps, and 229/229 titled boxes at a single (60, 160) inset.
+400/500 mil gaps, and 229/229 titled boxes at a single (60, 160) inset. The two notes panels on
+each sheet share an exact left and right edge with a uniform 750 mil gap, so they read as one
+block rather than two strays.
+
+### The one thing a look still finds, and why it is left alone
+
+A full visual pass over all six sheets finds no misalignment, collision or stray, but it does find
+**whitespace where a short column ends early**. `void-audit.mjs` measures it. The worst is
+60 kW AC-DC at **8.2 %** of the sheet — a 7550 × 18000 mil gap between the last circuit column and
+the notes stack.
+
+Ranking by raw empty area got this wrong, which is why the metric measures *enclosure* instead:
+that sheet's single largest empty rectangle is at the paper edge, where it reads as margin. The
+hole that actually looks wrong is the narrower one with drawing on both sides.
+
+It is left as-is deliberately. Sheet width is `MARGIN + columns × COLW + MARGIN` — a whole number
+of columns, fixed before the panels are placed — so moving the notes leftward to close the gap only
+moves the same whitespace to the right margin and makes the sheet visibly lopsided, and closing it
+properly means changing sheet geometry, which is the change that cascades. Two previous attempts to
+improve raggedness both made the set worse and were reverted. The gate is set at 12 % so a future
+packing change that opens a real hole fails, without churning the ones already judged acceptable.
 
 **The whole output is a pure function of the source.** Regenerating reproduces the sheets *and the
 zips* byte for byte, so `git status` after a rebuild is a real staleness gate — if nothing is

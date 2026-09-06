@@ -64,11 +64,12 @@ for (const SKU of SKUS) {
       // both filler panels use the frame border style but are NOT section frames: they sit at
       // void coordinates, so comparing their edges to the frame grid flags correct work
       if (lines[i] === "SHEET INDEX" || lines[i] === "NET NAMING") panels.push(lines[i - 1].split(/\s+/).slice(2, 4).map(Number));
-    const frames = [];
+    const frames = [], frameAll = [];
     for (let i = 0; i + 3 < notes.length; i += 4) {
       const seg = notes.slice(i, i + 4);
       const xs = seg.flatMap((s) => [s[0], s[2]]), ys = seg.flatMap((s) => [s[1], s[3]]);
       const fr = { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
+      frameAll.push(fr);
       // skip the sheet-index panel: same border style, but it is not a section
       if (panels.some((p) => p[0] >= fr.x0 - 400 && p[0] <= fr.x1 && p[1] >= fr.y0 - 400 && p[1] <= fr.y1)) continue;
       frames.push(fr);
@@ -116,6 +117,17 @@ for (const SKU of SKUS) {
     }
     out.push(["SYM-X", symCols, { distinct: symCols, bad: new Array(symBad).fill(0) }]);
     out.push(["PITCH", pitchCols, { distinct: pitchCols, bad: new Array(pitchBad).fill(0) }]);
+
+    // PANEL: the notes panels are skipped by every check above (they are not sections), which is
+    // exactly why a 200 mil misalignment between the stacked index and legend survived on all six
+    // sheets while the code that draws them claimed a "shared left edge". Whatever is excluded
+    // from the audit is where the defect hides, so audit it here on its own terms.
+    if (panels.length === 2) {
+      const box = (p) => frameAll.find((r) => Math.abs(r.x0 - (p[0] - 60)) < 2 && Math.abs(r.y0 - (p[1] - 160)) < 2);
+      const a2 = box(panels[0]), b2 = box(panels[1]);
+      const ok = a2 && b2 && a2.x0 === b2.x0 && a2.x1 === b2.x1;
+      out.push(["PANEL", 2, { distinct: ok ? 1 : 2, bad: ok ? [] : [[a2 ? a2.x0 : 0, b2 ? b2.x0 : 0]] }]);
+    }
 
     const stubs = wires.filter((w) => w[1] === w[3]).map((w) => Math.abs(w[2] - w[0]))
       .filter((n) => n > 0 && n < 1200);

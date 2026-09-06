@@ -40,24 +40,24 @@ VIENNA-PFC   -   3 sections
 Text Notes 37710 16050 0    60   ~ 0
 rev D.3   -   31 sections   -   304 components
 Wire Notes Line
-	37850 17000 42100 17000
+	37650 17000 42100 17000
 Wire Notes Line
 	42100 17000 42100 19600
 Wire Notes Line
-	42100 19600 37850 19600
+	42100 19600 37650 19600
 Wire Notes Line
-	37850 19600 37850 17000
-Text Notes 37910 17160 0    79   ~ 16
+	37650 19600 37650 17000
+Text Notes 37710 17160 0    79   ~ 16
 NET NAMING
-Text Notes 37910 17420 0    60   ~ 0
+Text Notes 37710 17420 0    60   ~ 0
 internal junctions are named for what they join
-Text Notes 37900 17850 0    60   ~ 0
+Text Notes 37700 17850 0    60   ~ 0
 U<ref>_<PIN>     node at that IC pin        e.g. UIVOA_VINP
-Text Notes 37900 18150 0    60   ~ 0
+Text Notes 37700 18150 0    60   ~ 0
 R<stem>_M        midpoint of a series pair  e.g. RBALTA_M
-Text Notes 37900 18450 0    60   ~ 0
+Text Notes 37700 18450 0    60   ~ 0
 R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01
-Text Notes 37900 18750 0    60   ~ 0
+Text Notes 37700 18750 0    60   ~ 0
 all others are explicit design nets
 Wire Notes Line
 	4000 14000 7100 14000
