@@ -548,8 +548,22 @@ const HAND = {
   //     2 columns 8/13, 7/14   4129 x 7500+  (column width grows)
   // Width matches at two columns but no split reaches 6750: the chain order puts TAUX, QAUX and
   // UAUX -- the three tall symbols -- near each other, and the packed layout beats that by
-  // interleaving them. Fixing it needs the tall parts separated without breaking work order, so
-  // probably a three-column split narrower than 5861. Start from these numbers.
+  // interleaving them.
+  //
+  // Three columns were probed too, and cannot work: width is the SUM of the columns' widths and
+  // each column is as wide as its own widest net label, so every three-column split lands at
+  // 5650-5888 against a 3945 target (5650 with TAUX/QAUX/UAUX together, 5888 otherwise).
+  //
+  // So the closest possible is two columns 9/12 at 3945x7500 -- and that was BUILT and measured on
+  // the sheets: 30kw-acdc and 120kw-acdc unchanged, 60kw-acdc actually 750 SHORTER (44600x36300),
+  // every layout gate passing. Rejected anyway, because that same sheet's worst enclosed hole went
+  // 4.6% -> 7.5%: a 12400x9750 gap with drawing on both sides. Trading a visible hole for 750 mil
+  // of height is the wrong way round -- the void metric has tracked the eye better than any other
+  // number here.
+  //
+  // CONCLUSION, not a to-do: this section cannot be composed in work order at the packed frame
+  // size. The packer wins by being free to REORDER, which lets it interleave the three tall
+  // symbols; work order forces them together. Reopen only if the frame budget changes.
 
   // Both boards carry this section under one title but with A/B designators, so each column lists
   // both; the variant that is not on the board filters out. Naming only one set silently dropped
