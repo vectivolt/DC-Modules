@@ -716,6 +716,26 @@ const HAND = {
   "AUX-POWER / RAILS": [
     ["DAUX15", "CAUX15", "DTVS15", "DAUX24", "CAUX24", "DTVS24", "DAUXVC", "CVCC"],
   ],
+  // Both 3.3 V bucks, read as a buck: input cap and the IC, then bootstrap, inductor, output cap
+  // and the feedback divider. Packed, the IC sat alone in column one and all six passives in
+  // column two in alphabetical order, so the converter could not be traced through them.
+  //
+  // NOTE THE KEY. A section title is canonicalised by digit-stripping, so "BUCK-3V3" is looked up
+  // as "BUCK-#V#". Probing this first with the literal title silently matched nothing and handed
+  // back the PACKED numbers, which looked like a perfect match. Any section whose name contains a
+  // digit needs the # form.
+  //
+  // Same span on every SKU and 250 shorter (h 3000 against 3250); measured on the sheets because
+  // shorter is not automatically safe -- 120kw-acdc gains the 250 (41800 -> 41550) and nothing
+  // else moves.
+  "AUX-POWER / BUCK-#V#": [
+    ["CBKIA", "UBKA"],
+    ["CBSTA", "LBKA", "CBKOA", "RBKF1A", "RBKF2A"],
+  ],
+  "CONTROL / BUCK-#V#": [
+    ["CBKIB", "UBKB"],
+    ["CBSTB", "LBKB", "CBKOB", "RBKF1B", "RBKF2B"],
+  ],
   "LLC-LEGS / LEG-#": [
     ["PS#H", "U#H", "R#HON", "R#HOFF", "R#HGS", "R#HPD"],
     ["Q#H", "D#HS1", "D#HS2", "C#HB1", "C#HB2", "C#HBL"],
