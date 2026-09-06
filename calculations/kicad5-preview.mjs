@@ -52,7 +52,7 @@ for (const file of readdirSync(SCH).filter((f) => /^\d.*-(acdc|dcdc)\.sch$/.test
     const L = lines[i];
     if (L === "Wire Notes Line") notes.push(lines[++i].trim().split(/\s+/).map(Number));
     else if (L === "Wire Wire Line") wires.push(lines[++i].trim().split(/\s+/).map(Number));
-    else if (L.startsWith("Text GLabel ")) { const t = L.split(/\s+/); labels.push({ x: +t[2], y: +t[3], dir: +t[4], net: lines[++i] }); }
+    else if (L.startsWith("Text Label ") || L.startsWith("Text GLabel ")) { const t = L.split(/\s+/); labels.push({ x: +t[2], y: +t[3], dir: +t[4], net: lines[++i] }); }
     else if (L.startsWith("Text Notes ")) { const t = L.split(/\s+/); texts.push({ x: +t[2], y: +t[3], s: lines[++i] }); }
     else if (L === "$Comp") {
       let lib = "", x = 0, y = 0;
@@ -112,8 +112,8 @@ for (const file of readdirSync(SCH).filter((f) => /^\d.*-(acdc|dcdc)\.sch$/.test
   const spans = [...fam.values()].filter((v) => v.length > 1).map((v) => Math.max(...v) - Math.min(...v));
   const spread = spans.length ? Math.round(spans.reduce((a, b2) => a + b2, 0) / spans.length) : 0;
   const fill = 100 * frameArea / (W * H);
-  stats.push({ name, aspect: W / H, fill, overlaps, spread });
-  console.log(`${name.padEnd(18)} ${W}x${H} mil · aspect ${(W / H).toFixed(2)} · ${frames.length} frames · ${syms.length} symbols · fill ${fill.toFixed(0)}% · family spread ${spread} mil · overlaps ${overlaps}`);
+  stats.push({ name, aspect: W / H, fill, overlaps, spread, spreadPct: 100 * spread / W });
+  console.log(`${name.padEnd(18)} ${W}x${H} mil · aspect ${(W / H).toFixed(2)} · ${frames.length} frames · ${syms.length} symbols · fill ${fill.toFixed(0)}% · family spread ${spread} mil (${(100 * spread / W).toFixed(0)}% of width) · overlaps ${overlaps}`);
 }
 // Layout gate: the qualities the sheet is judged on, asserted rather than eyeballed.
 let bad = 0;
@@ -122,7 +122,8 @@ for (const r of stats) {
   if (r.aspect < 1.1 || r.aspect > 2.2) fails.push(`aspect ${r.aspect.toFixed(2)} outside 1.10-2.20`);
   if (r.fill < 40) fails.push(`frame fill ${r.fill.toFixed(0)}% below 40%`);
   if (r.overlaps) fails.push(`${r.overlaps} frame overlaps`);
-  if (r.spread > 20000) fails.push(`family spread ${r.spread} mil above 20000`);
+  // relative, not absolute: a 12-frame family legitimately spans more columns on a bigger sheet
+  if (r.spreadPct > 45) fails.push(`family spread ${r.spread} mil = ${r.spreadPct.toFixed(0)}% of sheet width, above 45%`);
   if (fails.length) { bad++; console.log(`FAIL ${r.name}: ${fails.join("; ")}`); }
 }
 console.log(bad ? `\n${bad} sheet(s) fail the layout gate` : `\nlayout gate: all sheets pass (aspect, fill, no frame overlap, families grouped)`);

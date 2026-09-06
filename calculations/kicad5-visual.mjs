@@ -59,7 +59,7 @@ for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
   const labels = [], syms = [], texts = [];
   for (let i = 0; i < lines.length; i++) {
     const L = lines[i];
-    if (L.startsWith("Text GLabel ")) {
+    if (L.startsWith("Text Label ") || L.startsWith("Text GLabel ")) {
       const t = L.split(/\s+/);
       const [x, y, dir] = [+t[2], +t[3], +t[4]];
       const net = lines[++i];

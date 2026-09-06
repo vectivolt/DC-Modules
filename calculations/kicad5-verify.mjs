@@ -80,7 +80,7 @@ for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
     } else if (L === "Wire Notes Line") {
       const t = lines[++i].trim().split(/\s+/).map(Number);
       notes.push(t);
-    } else if (L.startsWith("Text GLabel ")) {
+    } else if (L.startsWith("Text Label ") || L.startsWith("Text GLabel ")) {
       const t = L.split(/\s+/);
       labels.push({ x: +t[2], y: +t[3], net: lines[++i] });
     }

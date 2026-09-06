@@ -324,7 +324,19 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   // find side by side. So among the positions within one band of the lowest, prefer the one
   // nearest the family's previous frame: sections stay grouped, and the packing stays tight.
   const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 mil without wrecking the aspect                                  // mil of extra height worth paying to stay grouped
-  const runPack = (NC) => {
+  const famCount = new Map(), famSpan = new Map();
+  for (const b of blocks) {
+    const f = String(b.title).split(" / ")[0];
+    famCount.set(f, (famCount.get(f) ?? 0) + 1);
+    famSpan.set(f, Math.max(famSpan.get(f) ?? 1, b.span));
+  }
+  // How many columns a family may occupy is SEARCHED, not guessed. Fixing it at sqrt(n) left the
+  // 60 kW AC-DC sheet with its whole bottom-left empty: VIENNA-PFC stacked six phases three rows
+  // deep and set the sheet height while every other family finished at 60% of it. Sweeping a
+  // multiplier lets a tall family widen out and the sheet come level.
+  const capFor = (mul) => new Map([...famCount].map(([f, n]) =>
+    [f, Math.max(famSpan.get(f), Math.round(Math.sqrt(n) * mul))]));
+  const runPack = (NC, famCap) => {
     const colH = new Array(NC).fill(MARGIN);
     const out = [], famAt = new Map();
     for (const b of blocks) {
@@ -332,13 +344,29 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
       const cands = [];
       for (let c = 0; c + b.span <= NC; c++) cands.push({ c, y: Math.max(...colH.slice(c, c + b.span)) });
       const minY = Math.min(...cands.map((k) => k.y));
-      const prev = famAt.get(fam);
-      const best = cands.filter((k) => k.y <= minY + BAND).sort((m, n) => {
-        const dm = prev === undefined ? m.c : Math.abs(m.c - prev);
-        const dn = prev === undefined ? n.c : Math.abs(n.c - prev);
-        return dm - dn || m.y - n.y || m.c - n.c;
-      })[0];
-      famAt.set(fam, best.c);
+      const seen = famAt.get(fam);
+      // Distance is measured to the family's column BAND, not to its last column. Measuring to the
+      // last column made "same column" always win at distance 0, so a family grew straight down:
+      // on 60kw-dcdc LLC-TANKS stacked four frames in one column and finished 20000 mil below
+      // LLC-LEGS, leaving a void over a quarter of the sheet. Treating any column inside the
+      // family's band (or immediately beside it) as equally close lets a family spread sideways
+      // and finish level, while still staying contiguous.
+      // The band is CAPPED. Letting it grow by a column on each placement compounded, and
+      // families sprawled back across the sheet (three sheets failed the spread gate). A family
+      // of n frames gets about sqrt(n) columns, so it fills a compact rectangle rather than a
+      // long stack or a long stripe.
+      const cap = famCap.get(fam) ?? 1;
+      const dist = (c) => {
+        if (!seen) return c;
+        const lo = Math.min(seen.lo, c), hi = Math.max(seen.hi, c + b.span - 1);
+        if (hi - lo + 1 <= cap) return 0;
+        return c < seen.lo ? seen.lo - c : c - seen.hi;
+      };
+      const best = cands.filter((k) => k.y <= minY + BAND).sort((m, n) =>
+        dist(m.c) - dist(n.c) || m.y - n.y || m.c - n.c)[0];
+      famAt.set(fam, seen
+        ? { lo: Math.min(seen.lo, best.c), hi: Math.max(seen.hi, best.c + b.span - 1) }
+        : { lo: best.c, hi: best.c + b.span - 1 });
       out.push({ b, X: MARGIN + best.c * COLW, Y: best.y });
       for (let k = best.c; k < best.c + b.span; k++) colH[k] = best.y + b.h + SECGAP;
     }
@@ -352,17 +380,27 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     // Aspect is a HARD gate, not a weighted term: as a soft penalty the density term ran away and
     // the search happily returned a 11600 x 222350 mil single-column ribbon — dense, and useless
     // as a drawing. Only landscape pages are candidates; among those, prefer dense and level.
-    const usable = aspect >= 1.15 && aspect <= 2.1;
+    // families must also stay grouped: widest family may span at most 45% of the sheet width
+    const famX = new Map();
+    for (const { b: bb, X } of out) {
+      const f = String(bb.title).split(" / ")[0];
+      const e = famX.get(f) ?? [Infinity, -Infinity];
+      famX.set(f, [Math.min(e[0], X), Math.max(e[1], X)]);
+    }
+    const spread = Math.max(...[...famX.values()].map(([lo, hi]) => hi - lo));
+    const usable = aspect >= 1.15 && aspect <= 2.1 && spread <= 0.45 * W;
     const score = usable ? (sheetArea / frameArea) * 10 + ragged / 2000 : Infinity;
     return { NC, out, colH, W, H, score, aspect };
   };
   const minNC = Math.max(...blocks.map((b) => b.span));
   let pick = null, fallback = null;
-  for (let NC = minNC; NC <= minNC + 24; NC++) {
-    const r = runPack(NC);
-    if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
-    // keep the closest-to-landscape option in case no candidate clears the gate
-    if (!fallback || Math.abs(r.aspect - 1.45) < Math.abs(fallback.aspect - 1.45)) fallback = r;
+  for (const mul of [1.0, 1.3, 1.6, 2.0, 2.5]) {
+    const famCap = capFor(mul);
+    for (let NC = minNC; NC <= minNC + 24; NC++) {
+      const r = runPack(NC, famCap);
+      if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
+      if (!fallback || Math.abs(r.aspect - 1.45) < Math.abs(fallback.aspect - 1.45)) fallback = r;
+    }
   }
   pick = pick ?? fallback;
   const NC = pick.NC;
@@ -376,10 +414,13 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   let body = "", nLabels = 0, nNC = 0;
   const GL = (net, x, y, dir) => {                     // dir: 0 right, 2 left, 1 up, 3 down
     nLabels++;
-    // 40 mil, not 50: EasyEDA's importer substitutes its own font ("the text maybe will appear
-    // a little excursion" per its own notice) and gives the net-port chevron a fixed width, so a
-    // long name like RELAY_FB_KPRE spills past the outline. Smaller text keeps it inside.
-    return `Text GLabel ${x} ${y} ${dir}    40   ${dir === 2 ? "Input" : "Output"} ~ 0\n${net}\n`;
+    // Plain "Text Label", NOT "Text GLabel". EasyEDA renders an imported global label as a net
+    // PORT: a fixed-width chevron holding about 7 characters, with the text scaled independently,
+    // so 43% of this design's names spilled past the outline at any font size. A plain net label
+    // has no enclosing glyph, so nothing can overflow. Scope is not lost: each board is a single
+    // sheet and EasyEDA merges net labels by name across it; the only nets that leave a sheet are
+    // the 14 cross-board ones, which cross physically on the DCP/DCN/PE studs and harness anyway.
+    return `Text Label ${x} ${y} ${dir}    45   ~ 0\n${net}\n`;
   };
 
   for (const b of blocks) {
