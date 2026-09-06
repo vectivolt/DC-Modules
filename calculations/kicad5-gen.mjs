@@ -665,18 +665,23 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       const shown = rows.slice(0, over ? cap - 1 : rows.length);
       const cell = [...shown, ...(over ? [`+ ${rows.length - shown.length} more`] : [])];
       const nRow = Math.min(perCol, Math.max(1, Math.ceil(cell.length / ncols)));
-      const px1b = snap(Math.min(px1, px0 + 260 + ncols * cw + 200));
+      // RIGHT-ALIGN inside the void. Drawing at the void's left edge meant a wide bottom-right
+      // void still produced a centre-left panel -- 120kw-acdc's index landed at x=51% even though
+      // its slot reached the right margin, and nothing could stack beneath it there.
+      const pw = 260 + ncols * cw + 200;
+      const bx0 = snap(Math.max(px0, px1 - pw));
+      const px1b = snap(Math.min(px1, bx0 + pw));
       const py1 = snap(py0 + HEAD + nRow * LH + LH + Math.round(PAD / 2));
-      body += `Wire Notes Line\n\t${px0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
-        + `Wire Notes Line\n\t${px1b} ${py1} ${px0} ${py1}\nWire Notes Line\n\t${px0} ${py1} ${px0} ${py0}\n`;
-      body += `Text Notes ${px0 + 200} ${py0 + 340} 0    79   ~ 16\n${title}\n`;
-      body += `Text Notes ${px0 + 200} ${py0 + 600} 0    60   ~ 0\n${sub}\n`;
+      body += `Wire Notes Line\n\t${bx0} ${py0} ${px1b} ${py0}\nWire Notes Line\n\t${px1b} ${py0} ${px1b} ${py1}\n`
+        + `Wire Notes Line\n\t${px1b} ${py1} ${bx0} ${py1}\nWire Notes Line\n\t${bx0} ${py1} ${bx0} ${py0}\n`;
+      body += `Text Notes ${bx0 + 200} ${py0 + 340} 0    79   ~ 16\n${title}\n`;
+      body += `Text Notes ${bx0 + 200} ${py0 + 600} 0    60   ~ 0\n${sub}\n`;
       cell.forEach((t, i) => {
-        const cx = px0 + 260 + Math.floor(i / nRow) * cw, cy = py0 + HEAD + (i % nRow) * LH;
+        const cx = bx0 + 260 + Math.floor(i / nRow) * cw, cy = py0 + HEAD + (i % nRow) * LH;
         body += `Text Notes ${snap(cx)} ${snap(cy)} 0    60   ~ 0\n${t}\n`;
       });
-      if (footer) body += `Text Notes ${px0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\n${footer}\n`;
-      return { x0: px0, y0: py0, x1: px1b, y1: py1 };
+      if (footer) body += `Text Notes ${bx0 + 260} ${snap(py1 - 200)} 0    60   ~ 0\n${footer}\n`;
+      return { x0: bx0, y0: py0, x1: px1b, y1: py1 };
     };
     const fams = new Map();
     for (const b of blocks) {
@@ -701,8 +706,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // Right side wins outright when one is available: with the index taking the best slot, the
       // legend was landing at x=22% on 60kw-dcdc while every other sheet had it at 72-85%.
       const right = cands.filter((v) => v.x1 > sheetW * 0.55);
+      // RIGHT outweighs LOW. Scoring them equally let a very-low centre void beat a right-side one
+      // and put 120kw-acdc's index at x=51%, where nothing could stack beneath it. A notes block
+      // belongs against the right edge; how far down it sits matters less.
       return (right.length ? right : cands).sort((a, b) =>
-        (b.x1 / sheetW + b.y1 / sheetH) - (a.x1 / sheetW + a.y1 / sheetH))[0];
+        (2 * b.x1 / sheetW + b.y1 / sheetH) - (2 * a.x1 / sheetW + a.y1 / sheetH))[0];
     };
     const v1 = pickVoid(used);
     const p1 = drawPanel(v1, "SHEET INDEX",
