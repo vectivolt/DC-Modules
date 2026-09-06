@@ -1,41 +1,37 @@
 # Footprints
 
-Refreshed 2026-09-06 by `calculations/footprint-gen.mjs` + `docs` pass.
+Refreshed 2026-09-06 by `calculations/footprint-gen.mjs`.
 
 The `Footprint` field of every component names a land pattern. Where that pattern does not exist
 in the EasyEDA library, EasyEDA's schematic DRC raises `lacks property Footprint`. Those are a PCB
 library gap, **not** a connectivity or schematic defect — the sheets themselves report 0 errors
 and 0 warnings.
 
-## Drawn — 12 footprints, 456 instances
+## Drawn — 18 footprints, 521 of 696 instances
 
-`calculations/footprint-gen.mjs` emits these as KiCad `.kicad_mod` (a format EasyEDA Pro imports),
-packaged as `kicad5/DC-Modules-footprints.zip`.
+Emitted as KiCad `.kicad_mod` (a format EasyEDA Pro imports), packaged as
+`kicad5/DC-Modules-footprints.zip`.
 
-**Why this is not invented data.** A name like `CAP-TH_L26.5-W11.0-P22.50` already carries the
-part's body length, body width and lead pitch from its datasheet. The land follows: two pads on
-the lead pitch, hole = lead + 0.3 mm (IPC-2222 class 2), pad = hole + 2 x 0.45 mm annular ring,
-silkscreen the body outline, courtyard 0.5 mm clear. The one number *not* in the name is the lead
-diameter, so it is stated per family in the generator and is the single value to correct if a
-datasheet disagrees: 1.0 mm for axial power resistors, 0.8 mm for film caps above 10 mm pitch,
-0.6 mm below.
+**Why this is not invented data.** Each name already carries the part's own dimensions from its
+datasheet, and the land follows from them:
 
-| footprint | instances | land |
+| family | what the name fixes | the one family constant |
 |---|---|---|
-| `CAP-TH_L30.0-W30.0-P10.00` | 120 | pads +/-5.0, hole 1.1, body 30 x 30 |
-| `CAP-TH_L31.5-W13.0-P27.50` | 111 | pads +/-13.75, hole 1.1, body 31.5 x 13 |
-| `CAP-TH_L26.5-W11.0-P22.50` | 60 | pads +/-11.25, hole 1.1, body 26.5 x 11 |
-| `RES-TH_L48.0-W8.0-P54.00` | 45 | pads +/-27.0, hole 1.3, body 48 x 8 (axial) |
-| `TERM_Stud_M8` | 36 | 8.4 mm plated hole, 14 mm ring pad |
-| `CAP-TH_L7.2-W3.5-P5.00` | 24 | pads +/-2.5, hole 0.9 |
-| `RES-TH_L60.0-W9.0-P66.00` | 24 | pads +/-33.0, hole 1.3, body 60 x 9 (axial) |
-| `CAP-TH_L11.0-W5.0-P10.00` | 18 | pads +/-5.0, hole 0.9 |
-| `CAP-TH_L41.5-W20.0-P37.50` | 6 | pads +/-18.75, hole 1.1 |
-| `CAP-TH_L8.0-W8.0-P3.50` | 6 | pads +/-1.75, hole 0.9 |
-| `CAP-TH_L18.0-W5.0-P15.00` | 3 | pads +/-7.5, hole 1.1 |
-| `TERM_Tab_M4` | 3 | 4.3 mm plated hole, 8 mm ring pad |
+| `CAP-TH_L..-W..-P..`, `RES-TH_L..-W..-P..` | body L x W, lead pitch | lead dia: 1.0 mm axial power resistors, 0.8 mm film caps above 10 mm pitch, 0.6 mm below |
+| `CONN-TH_nP-P2.00_PH` | way count, pitch | JST PH contact -> 0.8 mm hole |
+| `CONN-TH_nP-P3.00_MicroFit` | way count, pitch, dual row | Micro-Fit 3.0 contact -> 1.1 mm hole |
+| `HDR-TH_nP-P2.54-V-M` | way count, pitch | 0.64 mm square post -> 1.0 mm hole |
+| `DISC-..mm_RM..`, `GDT-..mm_RM..` | disc diameter, lead pitch | 0.8 mm leads |
+| `TERM_Stud_M8`, `TERM_Tab_M4` | thread size | hole = thread + 0.4, ring pad per the stud |
 
-## Remaining A — catalogue parts: 13 footprints, 114 instances
+Holes are lead + 0.3 mm (IPC-2222 class 2), pads hole + 2 x 0.45 mm annular, silkscreen the body,
+courtyard 0.5 mm clear, pin 1 square. Every family constant above is stated in the generator and
+is the single value to correct if a datasheet disagrees.
+
+`KEY-SMD_4P-L6.0-W6.0` was deliberately NOT generated: "6.0 x 6.0" gives the body but a tactile
+switch's four-pad layout varies by series, so the name does not determine the land.
+
+## Remaining A — catalogue parts: 7 footprints, 49 instances
 
 These exist in the LCSC catalogue; resolve each with `component_search` the way `QA01C` ->
 `PWRM-TH_QA01C` (C2757491) was resolved. **A name match is not sufficient** — check pin/pad
@@ -43,11 +39,13 @@ correspondence per part. Pointing the HF167F relays at `RELAY-TH_HF167F-24-HF` (
 rejected by DRC with `Pin has no corresponding pad: 5, 6, 8`, because the catalogue part is a
 plain 4-pad SPST-NO relay while E30 needs the mirror-contact variant that carries `RELAY_FB_*`.
 
-`RELAY_HFE82V_PCB` (16) · `DISC-20mm_RM10` (18) · `CONN-TH_2P-P2.00_PH` (15) ·
-`CONN-TH_4P-P2.00_PH` (11) · `FUSE_holder_RT28-32` (9) · `GDT-8mm_RM6` (9) ·
-`RELAY_HF167F_PCB` (6) · `RELAY_HFE9_PCB` (6) · `CONN-TH_16P-P3.00_MicroFit` (6) ·
-`HDR-TH_5P-P2.54-V-M` (6) · `KEY-SMD_4P-L6.0-W6.0` (6) · `IND-SMD_L4.5-W3.2_CMC` (3) ·
+`RELAY_HFE82V_PCB` (16) · `FUSE_holder_RT28-32` (9) · `RELAY_HFE9_PCB` (6) ·
+`RELAY_HF167F_PCB` (6) · `KEY-SMD_4P-L6.0-W6.0` (6) · `IND-SMD_L4.5-W3.2_CMC` (3) ·
 `LED-SEG-TH_2DIG-0.56` (3)
+
+The three relays are the awkward ones: E30 needs the **mirror-contact** variants, and the plain
+catalogue parts of the same family have a different pad count (see the rejected HF167F attempt
+above).
 
 ## Remaining B — genuinely custom: 9 footprints, 126 instances
 
