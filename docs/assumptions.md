@@ -54,7 +54,7 @@ Statuses: **FROZEN** (change = formal ECO), **BASELINED** (best current, revisit
 | A3 | Sendust roll-off/loss fits | anchors 60µ: 80%@30 Oe; 26µ: 80%@75 Oe; loss 52.4·B^2.12·f^1.46 | Core vendor datasheet + sample L(I) measurement |
 | A4 | PC95-class loss fit | 3.2e-8·f_kHz^1.71·B_mT^2.9 (396 mW/cm³ @100k/200 mT) | Ferrite vendor curve |
 | A5 | Relay make rating | 300 A/10 ms class (HFE82) | Hongfa datasheet + qualification |
-| A6 | MCU resources | HRTIM 12 ch, 4 ADC ~4 MSPS, 8 COMP, 2 CAN; pin map on G474 conventions | GD32G553 datasheet check (R9); CAN pin conflict flagged in `mcu-pinmap.csv` |
+| A6 | MCU resources | **rev R3:** pin map rebuilt against GD32G553xx Rev 2.0 Table 2-4 (LQFP100), sized for the 120 kW worst case — `docs/mcu-pin-allocation-gd32.md`. The G474-derived symbolic map it replaces put FLT on pin 74 (**VSS**) and BOOT0 on pin 100 (**VDD**) — two hard shorts — and SWD on PA6/PA7. HRTIMER confirmed present with **8 slave units / 16 outputs** (not 6/12 as assumed); 4 ADC, 3 advanced timers (TIMER0/7/19) | **Datasheet check CLOSED (R3); allocation correct but NOT frozen** — 4 architecture decisions open: HRTIMER-vs-advanced-timer for the LLC (16 outputs available, 24 needed), PFC ADC interleave, LLC fan channels, IOUT differential mode |
 | A7 | Prices | component-selection.md col "Direct price (A)"; ±25% | RFQ round 1 |
 | A8 | Fan curve | 110 Pa @ 160 m³/h class per 120×38 fan | Vendor static-pressure curve |
 | A9 | Grid impedance for sims | 30 µH + 20 mΩ per phase | Site-dependent; sensitivity benign |
