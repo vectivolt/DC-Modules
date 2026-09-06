@@ -494,6 +494,30 @@ const HAND = {
   // nine passives dumped in a fourth column away from the part each belongs to. Now each IC sits
   // with its own passives: watchdog with its reset/window caps and WDO pull-up, AND gate with its
   // input pull-downs and gate-enable pull-down, fault and ready conditioning last.
+  // A link bank is two series halves, each with its own balance divider. Packed, the caps ran on
+  // into the next column wherever the count fell (CDB00..CDB04 then CDT00, CDT01 in column one) and
+  // both dividers were lumped together at the end, so neither half read as a half. One column per
+  // half now, each ending with its own balance pair.
+  "DC-LINK / LINK-BANK-#": [
+    ["CDB#0", "CDB#1", "CDB#2", "CDB#3", "CDB#4", "CDB#5", "RBALB#A", "RBALB#B"],
+    ["CDT#0", "CDT#1", "CDT#2", "CDT#3", "CDT#4", "CDT#5", "RBALT#A", "RBALT#B"],
+  ],
+
+  // Two independent bleeder channels; draw them as two. Packed, column one held a single resistor,
+  // column two the four active devices and column three the remaining eleven, so neither channel
+  // could be followed. Each column is now one complete channel: switch, opto, bleeder string,
+  // pull-down, gate resistor.
+  "BANKS-SP / BLEEDERS": [
+    ["QDISA", "UPVA", "RBDA0", "RBDA1", "RBDA2", "RBDA3", "RPVBA", "RPVLA"],
+    ["QDISB", "UPVB", "RBDB0", "RBDB1", "RBDB2", "RBDB3", "RPVBB", "RPVLB"],
+  ],
+
+  // OUTPUT-SENSING / OUTPUT was composed too and REJECTED. Its studs lead the section although the
+  // current LEAVES there, ahead of the shunt and amplifier that measure it -- a genuine reversal --
+  // but moving them last reshapes the frame and perturbs both larger DC-DC sheets: 60kw-dcdc
+  // 45600x35300 -> 54600x29050 (aspect 1.29 -> 1.90) and 120kw-dcdc 61100x42800 -> 55600x46050,
+  // with worst void 4.6% -> 5.8%. Bisected against BLEEDERS and LINK-BANK, which are both free.
+  //
   // Composed and REJECTED, both for the same reason -- their hand frame is a different SHAPE from
   // the one the column search produces, and on these sheets that costs more than the reading order
   // gains. Recorded so they are not retried blind:
