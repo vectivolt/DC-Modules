@@ -115,9 +115,9 @@ export const LCSC = {
   // were already scaled. These are the classes the design actually calls for.
   "HF167F-120A-M":     { status: "REVIEW", spec: "120 A/line power relay w/ mirror contact — 60 kW (110 A line)" },
   "HF167F-250A-M":     { status: "REVIEW", spec: "250 A/line power relay or contactor w/ mirror contact — 120 kW (220 A line)" },
-  "FUSE-gG-690V-63A":  { status: "CLASS", spec: "63 A gG 690 VAC — 30 kW (55 A line)" },
-  "FUSE-gG-690V-125A": { status: "CLASS", spec: "125 A gG 690 VAC — 60 kW (110 A line)" },
-  "FUSE-gG-690V-250A": { status: "CLASS", spec: "250 A gG 690 VAC — 120 kW (220 A line)" },
+  "FUSE-gG-690V-63A":  { status: "CLASS", spec: "63 A gG 690 VAC — 30 kW (55 A line)" , note: "2026-09-06 R9: holder p/n RT28-32 is a 10x38 mm, 2-32 A DIN-rail holder — a 63 A gG link is 14x51 mm and will not fit. Use RT28-63."},
+  "FUSE-gG-690V-125A": { status: "CLASS", spec: "125 A gG 690 VAC — 60 kW (110 A line)" , note: "2026-09-06 R9: RT28-32 holds 32 A max; 125 A needs the 22x58 mm RT28-125."},
+  "FUSE-gG-690V-250A": { status: "CLASS", spec: "250 A gG 690 VAC — 120 kW (220 A line)" , note: "2026-09-06 R9: 250 A EXCEEDS the whole RT28 range (max 125 A). Needs an NH-type blade fuse (NH1) or bolted-tag class — a size and mounting change, not a substitution."},
   "CER-50W-AX":        { status: "CLASS", spec: "50 W axial ceramic pulse resistor — 120 kW precharge/discharge (477 J/event, HR-14)" },
   "STUD-M8":           { status: "CLASS", spec: "M8 stud terminal / busbar landing" },
   "TAB-M4":            { status: "CLASS", spec: "M4 heatsink tab stud" },

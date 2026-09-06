@@ -192,6 +192,42 @@ relays (needing the mirror-contact p/ns), the fuse holder, a 6x6 tactile, the CA
 choke and the 2-digit display. Nothing else on any sheet.
 
 
+## R9 — the AC input fuse holder is under-rated on every SKU (found 2026-09-06, OPEN)
+
+Same datasheet pass as R8. `F1`/`F2`/`F3` carry footprint `FUSE_holder_RT28-32`. The CHINT
+**RT28-32** is a DIN-rail fuse holder for **10 x 38 mm** links rated **2-32 A** (AC 690 V /
+DC 500 V). The design's own fuse ratings are:
+
+| SKU | line current | fuse (lcsc-map) | RT28-32 limit | verdict |
+|---|---|---|---|---|
+| 30 kW | 55 A | **63 A** gG 690 VAC | 32 A | **2x over** |
+| 60 kW | 110 A | **125 A** gG 690 VAC | 32 A | **4x over** |
+| 120 kW | 220 A | **250 A** gG 690 VAC | 32 A | **8x over** |
+
+The 690 VAC voltage class is right; only the current rating and body size are wrong. A 63 A gG
+link is 14 x 51 mm and physically will not fit a 10 x 38 holder.
+
+**Correct holders within the same family**, by fuse size:
+
+| link | holder | max |
+|---|---|---|
+| 10 x 38 | RT28-32 | 32 A |
+| 14 x 51 | **RT28-63** | 63 A |
+| 22 x 58 | **RT28-125** | 125 A |
+
+So 30 kW wants RT28-63 and 60 kW wants RT28-125. **120 kW at 250 A exceeds the RT28 range
+entirely** and needs a different class — NH-type blade (NH1, to 250 A) or a bolted-tag fuse.
+That is a size and mounting change, not a substitution.
+
+**It is also not a PCB part.** RT28 is DIN-rail mounted, so there is no board land for it at all;
+the AC input fusing is a panel component and the board should present terminals that wire to it —
+the same situation as the HFE82V contactor in R8. `FUSE_holder_RT28-32` as a PCB footprint name
+is misleading on both counts.
+
+No footprint drawn, for the same reason as R8: a land for a part that cannot be used would hide
+the error rather than surface it.
+
+
 ## R8 — KPREA/KPREB specify a part family that cannot meet the requirement (found 2026-09-06, OPEN)
 
 Found by going to the manufacturer datasheets for the footprints that LCSC could not resolve.
