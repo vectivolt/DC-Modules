@@ -14,10 +14,12 @@
 // Output: kicad5/dc-modules-30kw/*.sch + dc-modules.lib + dc-modules-30kw.pro
 // Run:    node calculations/kicad5-gen.mjs
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { LCSC } from "./cost/lcsc-map.mjs";
+import { lcscFor } from "./cost/lcsc-map.mjs";
+import { SHEET_TITLES, SHEET_IDENT } from "./schematic-sections.mjs";
+import { DB, skuOverrides } from "./cost/parts-db.mjs";
 import { footprintForRef } from "./footprint-map.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -30,6 +32,18 @@ const OUT = join(ROOT, `kicad5/dc-modules-${SKU}`);
 // name (it reports "A library with the same name already exists" and keeps the old symbols),
 // so a re-import would silently mix new sheets with stale pin geometry. Bump on any symbol change.
 const LIB_NAME = `dcmod-r4`;
+const REV = "D.3";   // D.1 -> D.2 output-return fix (R4) -> D.3 importer-mirror fix (R5)
+// An early run wrote 30 kW sheets into the 60/120 kW directories and they sat there for days.
+// Packaging lists files explicitly so nothing shipped, but a stale foreign-SKU sheet in an output
+// folder is a trap — clear anything that is not this SKU's before writing.
+if (existsSync(OUT)) {
+  for (const f of readdirSync(OUT)) {
+    if ((f.endsWith(".sch") || f.endsWith(".pro")) && !f.includes(SKU)) {
+      unlinkSync(join(OUT, f));
+      console.log(`  removed stale foreign-SKU file: ${f}`);
+    }
+  }
+}
 mkdirSync(OUT, { recursive: true });
 
 // ---- geometry in mils (50 mil grid) ------------------------------------------------------
@@ -108,6 +122,16 @@ const mirrorLibY = (text) => text.split("\n").map((l) => {
   }
   return t.join(" ");
 }).join("\n");
+
+// Components in the apply payload carry no MPN — the BOM resolves it by matching the designator
+// against parts-db (with per-SKU overrides for the relays/fuses/CT that change rating by power
+// class). Do exactly the same here so the sheet, the BOM and the LCSC map can never disagree.
+const partOf = (designator) => {
+  const rule = DB.find((r) => r.m.test(designator));
+  const ov = (skuOverrides[SKU] ?? {})[designator] ?? {};
+  const mpn = ov.mpn ?? rule?.mpn ?? "";
+  return { mpn, lc: mpn ? lcscFor(mpn) : { status: "UNMAPPED" } };
+};
 
 function termLib(pinNum, pinName) {
   const nm = `TERM_${pinNum}`;
@@ -237,39 +261,117 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
   for (const b of blocks) {
     b.items = b.comps.map((c) => ({ c, s: shapeOf(c) }));
     b.items.sort((a, z) => (z.s.cat === "IC") - (a.s.cat === "IC") || a.c.designator.localeCompare(z.c.designator));
-    const maxColH = Math.max(2500, Math.ceil(Math.sqrt(b.items.reduce((a, i) => a + i.s.h, 0) * 550)));
-    const cols = []; let col = [], h = 0;
-    for (const it of b.items) {
-      if (col.length && h + it.s.h > maxColH) { cols.push(col); col = []; h = 0; }
-      col.push(it); h += it.s.h;
+    // Filling columns greedily to a height cap left the last column short, and the frame's height
+    // is set by its tallest column — so every frame carried a dead band under its short column,
+    // the same shelf problem one level down. Instead, try every sensible column count with the
+    // items balanced across them, and keep the layout with the smallest frame area (mildly
+    // penalising extreme aspect ratios so a section never becomes a sliver).
+    const totalH = b.items.reduce((a, i) => a + i.s.h, 0);
+    let bestL = null;
+    for (let k = 1; k <= Math.min(6, b.items.length); k++) {
+      const target = Math.ceil(totalH / k);
+      const cols = []; let col = [], h = 0;
+      for (const it of b.items) {
+        if (col.length && h + it.s.h > target && cols.length < k - 1) { cols.push(col); col = []; h = 0; }
+        col.push(it); h += it.s.h;
+      }
+      if (col.length) cols.push(col);
+      let x = 0, maxH = 0; const placed = [];
+      for (const c of cols) {
+        const cw = Math.max(...c.map((i) => i.s.w));
+        let y = 0;
+        for (const it of c) { placed.push({ it, x, y }); y += it.s.h; }
+        maxH = Math.max(maxH, y); x += cw + COLGAP;
+      }
+      const w = x - COLGAP + 2 * SECPAD, hh = maxH + 2 * SECPAD + SECTITLE;
+      const score = w * hh * (1 + Math.abs(Math.log((w / hh) / 1.3)) * 0.15);
+      if (!bestL || score < bestL.score) bestL = { placed, w, h: hh, score };
     }
-    if (col.length) cols.push(col);
-    let x = 0, maxH = 0;
-    for (const c of cols) {
-      const cw = Math.max(...c.map((i) => i.s.w));
-      let y = 0;
-      for (const it of c) { it.x = x; it.y = y; y += it.s.h; }
-      maxH = Math.max(maxH, y); x += cw + COLGAP;
-    }
-    b.w = x - COLGAP + 2 * SECPAD; b.h = maxH + 2 * SECPAD + SECTITLE;
+    for (const { it, x, y } of bestL.placed) { it.x = x; it.y = y; }
+    b.w = bestL.w; b.h = bestL.h;
   }
 
-  const targetW = Math.max(Math.sqrt(blocks.reduce((a, b) => a + (b.w + SECGAP) * (b.h + SECGAP), 0) * 1.5),
+  // Shelf rows set a row's height from its tallest frame, so every shorter frame in that row left
+  // a dead band beneath it — measured 59-64% sheet fill, right margins ragged by up to 28850 mil,
+  // and up to 5100 mil of slack inside a single row. Skyline placement drops each frame at the
+  // lowest point it actually fits, reusing that leftover height.
+  // Frames are placed in their existing logical order (not sorted by height, the usual packing
+  // heuristic) so the signal flow the section list encodes survives the packing.
+  const targetW = Math.max(Math.sqrt(blocks.reduce((a, b) => a + (b.w + SECGAP) * (b.h + SECGAP), 0) * 1.6),
     Math.max(...blocks.map((b) => b.w)));
-  const rows = []; let row = [], rw = 0;
+  // Frames are placed on a COLUMN GRID, not free-form. Free skyline placement put 45 frames on 31
+  // distinct left edges, with near-misses 50-200 mil apart (8850 vs 9000, 7900 vs 7950) — almost
+  // aligned reads as careless, where clearly aligned reads as deliberate. Quantising each frame's
+  // width up to a whole number of columns means every left edge comes from the same small set, so
+  // the sheet has real columns and a visible rhythm. The width a frame gains becomes symmetric
+  // padding inside it (content is centred), which reads as margin rather than as a gap.
+  const GRID = 500;
+  const gsnap = (v) => Math.ceil(v / GRID) * GRID;
+  const widths = blocks.map((b) => b.w).sort((m, n) => m - n);
+  const COLW = Math.max(gsnap(widths[Math.floor(widths.length * 0.4)] + SECGAP), 2500);
   for (const b of blocks) {
-    if (row.length && rw + SECGAP + b.w > targetW) { rows.push(row); row = []; rw = 0; }
-    row.push(b); rw += (row.length > 1 ? SECGAP : 0) + b.w;
+    b.span = Math.max(1, Math.ceil((b.w + SECGAP) / COLW));
+    const full = b.span * COLW - SECGAP;
+    b.pad = Math.round((full - b.w) / 2);          // centre the content in its widened frame
+    b.w = full;
   }
-  if (row.length) rows.push(row);
-  let cy = MARGIN;
-  for (const r of rows) {
-    let cx = MARGIN;
-    for (const b of r) { b.X = snap(cx); b.Y = snap(cy); cx += b.w + SECGAP; }
-    cy += Math.max(...r.map((b) => b.h)) + SECGAP;
+  // Column count is searched, not guessed. A heuristic NC left a ragged bottom edge and an
+  // L-shaped void in the bottom-right corner — the most visible flaw on the sheet. Score each
+  // candidate on how level the columns finish (the ragged bottom) and how close the sheet lands
+  // to a landscape 1.45 aspect, and keep the best.
+  // Placement is family-aware. Packing purely by lowest-y scattered the three VIENNA-PFC phase
+  // frames to opposite ends of the sheet — identical repeated circuits that a reader expects to
+  // find side by side. So among the positions within one band of the lowest, prefer the one
+  // nearest the family's previous frame: sections stay grouped, and the packing stays tight.
+  const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 mil without wrecking the aspect                                  // mil of extra height worth paying to stay grouped
+  const runPack = (NC) => {
+    const colH = new Array(NC).fill(MARGIN);
+    const out = [], famAt = new Map();
+    for (const b of blocks) {
+      const fam = String(b.title).split(" / ")[0];
+      const cands = [];
+      for (let c = 0; c + b.span <= NC; c++) cands.push({ c, y: Math.max(...colH.slice(c, c + b.span)) });
+      const minY = Math.min(...cands.map((k) => k.y));
+      const prev = famAt.get(fam);
+      const best = cands.filter((k) => k.y <= minY + BAND).sort((m, n) => {
+        const dm = prev === undefined ? m.c : Math.abs(m.c - prev);
+        const dn = prev === undefined ? n.c : Math.abs(n.c - prev);
+        return dm - dn || m.y - n.y || m.c - n.c;
+      })[0];
+      famAt.set(fam, best.c);
+      out.push({ b, X: MARGIN + best.c * COLW, Y: best.y });
+      for (let k = best.c; k < best.c + b.span; k++) colH[k] = best.y + b.h + SECGAP;
+    }
+    const H = Math.max(...colH), W = MARGIN + NC * COLW - SECGAP + MARGIN;
+    const ragged = H - Math.min(...colH);            // how uneven the bottom edge finishes
+    const sheetArea = W * (H + MARGIN + 800);
+    const frameArea = blocks.reduce((a2, b2) => a2 + b2.w * b2.h, 0);
+    const aspect = W / (H + MARGIN + 800);
+    // three things the eye judges, in one score: how densely the sheet is used, how level the
+    // bottom edge finishes, and how close the page is to a landscape proportion.
+    // Aspect is a HARD gate, not a weighted term: as a soft penalty the density term ran away and
+    // the search happily returned a 11600 x 222350 mil single-column ribbon — dense, and useless
+    // as a drawing. Only landscape pages are candidates; among those, prefer dense and level.
+    const usable = aspect >= 1.15 && aspect <= 2.1;
+    const score = usable ? (sheetArea / frameArea) * 10 + ragged / 2000 : Infinity;
+    return { NC, out, colH, W, H, score, aspect };
+  };
+  const minNC = Math.max(...blocks.map((b) => b.span));
+  let pick = null, fallback = null;
+  for (let NC = minNC; NC <= minNC + 24; NC++) {
+    const r = runPack(NC);
+    if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
+    // keep the closest-to-landscape option in case no candidate clears the gate
+    if (!fallback || Math.abs(r.aspect - 1.45) < Math.abs(fallback.aspect - 1.45)) fallback = r;
   }
-  const sheetW = snap(Math.max(...rows.map((r) => r.reduce((a, b, i) => a + b.w + (i ? SECGAP : 0), 0))) + 2 * MARGIN);
-  const sheetH = snap(cy - SECGAP + MARGIN + 800);
+  pick = pick ?? fallback;
+  const NC = pick.NC;
+  for (const { b, X, Y } of pick.out) { b.X = X; b.Y = Y; }
+  const sheetW = snap(MARGIN + NC * COLW - SECGAP + MARGIN);
+  const sheetH = snap(Math.max(...blocks.map((b) => b.Y + b.h)) + MARGIN + 800);
+
+  const key = `${SKU}/${page.page.includes("acdc") ? "acdc" : "dcdc"}`;   // page.page is e.g. "30kw-acdc"
+  const ident = SHEET_IDENT[key] ?? { sku: `${KW} kW`, board: "?", sheet: "? of 2", cells: "?" };
 
   let body = "", nLabels = 0, nNC = 0;
   const GL = (net, x, y, dir) => {                     // dir: 0 right, 2 left, 1 up, 3 down
@@ -288,9 +390,9 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
 
     for (const it of b.items) {
       const { c, s } = it;
-      const ox = snap(b.X + SECPAD + it.x + s.lw + STUB);
+      const ox = snap(b.X + SECPAD + (b.pad ?? 0) + it.x + s.lw + STUB);
       const oy = snap(b.Y + SECTITLE + SECPAD + it.y);
-      const lc = LCSC[c.mpn] ?? {};
+      const { mpn, lc } = partOf(c.designator);
       if (s.cat === "TERM") {
         const p0 = c.pins[0];
         const cx = snap(ox + 100), cyy = snap(oy + ROW / 2);
@@ -299,7 +401,8 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
           + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
-          + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         if (p0.signal_name) {
           const pxx = snap(cx - 100), ex = snap(pxx - STUB);
@@ -312,7 +415,8 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
           + `F 0 "${c.designator}" H ${cx} ${cyy - 160} 50  0000 C CNN\n`
           + `F 1 "${c.value}" H ${cx} ${cyy + 170} 50  0000 C CNN\n`
           + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
-          + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         const sides = [[s.nums[0], snap(cx - 250), -1], [s.nums[1], snap(cx + 250), 1]];
         for (const [pn, pxx, dir] of sides) {
@@ -329,7 +433,8 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
           + `F 0 "${c.designator}" H ${cx - s.halfW - 100} ${cyy - s.halfH - 100} 50  0000 R CNN\n`
           + `F 1 "${c.value}" H ${cx - s.halfW - 100} ${cyy + s.halfH + 130} 50  0000 R CNN\n`
           + `F 2 "${footprintForRef(c.designator, c.mpn)}" H ${cx} ${cyy} 50  0001 C CNN\nF 3 "~" H ${cx} ${cyy} 50  0001 C CNN\n`
-          + `F 4 "${lc.lcsc ?? lc.status ?? ""}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `F 4 "${lc.lcsc ?? lc.status}" H ${cx} ${cyy} 50  0001 C CNN "LCSC"\n`
+          + `F 5 "${mpn}" H ${cx} ${cyy} 50  0001 C CNN "MPN"\n`
           + `\t1    ${cx} ${cyy}\n\t1    0    0    -1  \n$EndComp\n`;
         const bound = new Map(c.pins.map((p) => [String(p.pin_number), p.signal_name]));
         const g = s.groups;
@@ -368,11 +473,15 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
 
   const sch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User ${sheetW} ${sheetH}\nencoding utf-8\nSheet 1 1\n`
-    + `Title "${page.title ?? page.page}"\nDate "${new Date().toISOString().slice(0, 10)}"\nRev "D.1"\n`
-    + `Comp "DC-Modules - ${KW} kW module"\n`
-    + `Comment1 "${page.page} - ${blocks.length} sections - ${page.total} components"\n`
-    + `Comment2 "Cross-section links are global net labels; wires are pin stubs only"\n`
-    + `Comment3 ""\nComment4 ""\n$EndDescr\n${body}$EndSCHEMATC\n`;
+    // The title block is the sheet's identity when it is printed on its own: which SKU, which
+    // board of the sandwich, which sheet of how many, and what the board contains.
+    + `Title "${SHEET_TITLES[key] ?? page.title ?? page.page}"\n`
+    + `Date "${new Date().toISOString().slice(0, 10)}"\nRev "${REV}"\n`
+    + `Comp "DC-Modules ${ident.sku} - board ${ident.board}, sheet ${ident.sheet}"\n`
+    + `Comment1 "Module ${ident.sku} = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"\n`
+    + `Comment2 "Content: ${ident.cells}"\n`
+    + `Comment3 "${blocks.length} functional sections - ${page.total} components - cross-section links are global net labels; wires are pin stubs only"\n`
+    + `Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"\n$EndDescr\n${body}$EndSCHEMATC\n`;
   writeFileSync(join(OUT, `${page.page}.sch`), sch);
   files.push(page.page);
   console.log(`${page.page.padEnd(22)} ${String(page.total).padStart(3)} comps · ${blocks.length} sections · ${nLabels} labels · ${nNC} no-connects · ${sheetW}×${sheetH} mil`);
