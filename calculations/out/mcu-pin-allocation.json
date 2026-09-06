@@ -1,0 +1,1070 @@
+{
+ "UPFC": {
+  "map": {
+   "I_A0": [
+    {
+     "pin": 20,
+     "port": "PA0",
+     "func": "ADC0_IN0 (regular rank 0)"
+    }
+   ],
+   "I_B0": [
+    {
+     "pin": 21,
+     "port": "PA1",
+     "func": "ADC1_IN1 (regular rank 0)"
+    }
+   ],
+   "I_C0": [
+    {
+     "pin": 32,
+     "port": "PB0",
+     "func": "ADC2_IN11 (regular rank 0)"
+    }
+   ],
+   "I_A1": [
+    {
+     "pin": 34,
+     "port": "PB2",
+     "func": "ADC1_IN11 (regular rank 1)"
+    }
+   ],
+   "I_B1": [
+    {
+     "pin": 44,
+     "port": "PE13",
+     "func": "ADC2_IN2 (regular rank 1)"
+    }
+   ],
+   "I_C1": [
+    {
+     "pin": 46,
+     "port": "PE15",
+     "func": "ADC3_IN1 (regular rank 1)"
+    }
+   ],
+   "I_A2": [
+    {
+     "pin": 38,
+     "port": "PE7",
+     "func": "ADC2_IN3 (regular rank 2)"
+    }
+   ],
+   "I_B2": [
+    {
+     "pin": 42,
+     "port": "PE11",
+     "func": "ADC3_IN14 (regular rank 2)"
+    }
+   ],
+   "I_C2": [
+    {
+     "pin": 22,
+     "port": "PA2",
+     "func": "ADC0_IN2 (regular rank 2)"
+    }
+   ],
+   "I_A3": [
+    {
+     "pin": 43,
+     "port": "PE12",
+     "func": "ADC3_IN15 (regular rank 3)"
+    }
+   ],
+   "I_B3": [
+    {
+     "pin": 25,
+     "port": "PA3",
+     "func": "ADC0_IN3 (regular rank 3)"
+    }
+   ],
+   "I_C3": [
+    {
+     "pin": 26,
+     "port": "PA4",
+     "func": "ADC1_IN15 (regular rank 3) - keep DAC0_OUT0 disabled"
+    }
+   ],
+   "SNS_VAC1": [
+    {
+     "pin": 17,
+     "port": "PC2",
+     "func": "ADC1_IN7 (regular rank 2)"
+    }
+   ],
+   "SNS_VAC2": [
+    {
+     "pin": 39,
+     "port": "PE8",
+     "func": "ADC2_IN5 (regular rank 3)"
+    }
+   ],
+   "SNS_VAC3": [
+    {
+     "pin": 16,
+     "port": "PC1",
+     "func": "ADC0_IN6 (regular rank 4)"
+    }
+   ],
+   "SNS_VBUSP": [
+    {
+     "pin": 45,
+     "port": "PE14",
+     "func": "ADC3_IN0 (regular rank 0)"
+    }
+   ],
+   "SNS_VMID": [
+    {
+     "pin": 15,
+     "port": "PC0",
+     "func": "ADC0_IN5 (regular rank 1)"
+    }
+   ],
+   "SNS_V24": [
+    {
+     "pin": 27,
+     "port": "PA5",
+     "func": "ADC1_IN12 (regular rank 4) - keep DAC0_OUT1 disabled"
+    }
+   ],
+   "SNS_V15": [
+    {
+     "pin": 33,
+     "port": "PB1",
+     "func": "ADC2_IN0 (regular rank 4)"
+    }
+   ],
+   "T_PFC": [
+    {
+     "pin": 41,
+     "port": "PE10",
+     "func": "ADC3_IN13 (regular rank 4)"
+    }
+   ],
+   "T_INLET": [
+    {
+     "pin": 18,
+     "port": "PC3",
+     "func": "ADC0_IN8 (regular rank 5)"
+    }
+   ],
+   "PWM_A0": [
+    {
+     "pin": 69,
+     "port": "PA8",
+     "func": "HRTIMER_ST0CH0 (lane0, carrier 0deg)"
+    }
+   ],
+   "PWM_B0": [
+    {
+     "pin": 70,
+     "port": "PA9",
+     "func": "HRTIMER_ST0CH1 (lane0, carrier 0deg)"
+    }
+   ],
+   "PWM_C0": [
+    {
+     "pin": 71,
+     "port": "PA10",
+     "func": "HRTIMER_ST1CH0 (lane0, carrier 0deg)"
+    }
+   ],
+   "PWM_A1": [
+    {
+     "pin": 51,
+     "port": "PB12",
+     "func": "HRTIMER_ST2CH0 (lane1, carrier 90deg)"
+    }
+   ],
+   "PWM_B1": [
+    {
+     "pin": 52,
+     "port": "PB13",
+     "func": "HRTIMER_ST2CH1 (lane1, carrier 90deg)"
+    }
+   ],
+   "PWM_C1": [
+    {
+     "pin": 53,
+     "port": "PB14",
+     "func": "HRTIMER_ST3CH0 (lane1, carrier 90deg)"
+    }
+   ],
+   "PWM_A2": [
+    {
+     "pin": 67,
+     "port": "PC8",
+     "func": "HRTIMER_ST4CH0 (lane2, carrier 180deg)"
+    }
+   ],
+   "PWM_B2": [
+    {
+     "pin": 68,
+     "port": "PC9",
+     "func": "HRTIMER_ST4CH1 (lane2, carrier 180deg)"
+    }
+   ],
+   "PWM_C2": [
+    {
+     "pin": 65,
+     "port": "PC6",
+     "func": "HRTIMER_ST5CH0 (lane2, carrier 180deg)"
+    }
+   ],
+   "PWM_A3": [
+    {
+     "pin": 97,
+     "port": "PE0",
+     "func": "HRTIMER_ST6CH0 (lane3, carrier 270deg)"
+    }
+   ],
+   "PWM_B3": [
+    {
+     "pin": 98,
+     "port": "PE1",
+     "func": "HRTIMER_ST6CH1 (lane3, carrier 270deg)"
+    }
+   ],
+   "PWM_C3": [
+    {
+     "pin": 1,
+     "port": "PE2",
+     "func": "HRTIMER_ST7CH0 (lane3, carrier 270deg)"
+    }
+   ],
+   "FLT_PFC": [
+    {
+     "pin": 47,
+     "port": "PB10",
+     "func": "HRTIMER_FLT2 - hardware gates all 12 outputs, active low, filtered"
+    }
+   ],
+   "LINK_TX": [
+    {
+     "pin": 79,
+     "port": "PC10",
+     "func": "USART2_TX"
+    }
+   ],
+   "LINK_RX": [
+    {
+     "pin": 80,
+     "port": "PC11",
+     "func": "USART2_RX"
+    }
+   ],
+   "FAN_PWM1": [
+    {
+     "pin": 59,
+     "port": "PD12",
+     "func": "TIMER3_CH0 (PWM out)"
+    }
+   ],
+   "FAN_PWM2": [
+    {
+     "pin": 60,
+     "port": "PD13",
+     "func": "TIMER3_CH1 (PWM out)"
+    }
+   ],
+   "FAN_PWM3": [
+    {
+     "pin": 61,
+     "port": "PD14",
+     "func": "TIMER3_CH2 (PWM out)"
+    }
+   ],
+   "FAN_PWM4": [
+    {
+     "pin": 62,
+     "port": "PD15",
+     "func": "TIMER3_CH3 (PWM out)"
+    }
+   ],
+   "FAN_TACH1": [
+    {
+     "pin": 85,
+     "port": "PD3",
+     "func": "TIMER1_CH0 (input capture, 32-bit)"
+    }
+   ],
+   "FAN_TACH2": [
+    {
+     "pin": 86,
+     "port": "PD4",
+     "func": "TIMER1_CH1 (input capture, 32-bit)"
+    }
+   ],
+   "FAN_TACH3": [
+    {
+     "pin": 89,
+     "port": "PD7",
+     "func": "TIMER1_CH2 (input capture, 32-bit)"
+    }
+   ],
+   "FAN_TACH4": [
+    {
+     "pin": 88,
+     "port": "PD6",
+     "func": "TIMER1_CH3 (input capture, 32-bit)"
+    }
+   ],
+   "WDI_PFC": [
+    {
+     "pin": 84,
+     "port": "PD2",
+     "func": "GPIO output (external watchdog kick)"
+    }
+   ],
+   "EN_PFC": [
+    {
+     "pin": 82,
+     "port": "PD0",
+     "func": "GPIO (enable from DC-DC board)"
+    }
+   ],
+   "CTL_KPRE": [
+    {
+     "pin": 83,
+     "port": "PD1",
+     "func": "GPIO output (precharge contactor drive)"
+    }
+   ],
+   "CTL_QDIS": [
+    {
+     "pin": 87,
+     "port": "PD5",
+     "func": "GPIO output (bus discharge)"
+    }
+   ],
+   "RELAY_FB_KPRE": [
+    {
+     "pin": 81,
+     "port": "PC12",
+     "func": "GPIO input (precharge relay aux contact feedback)"
+    }
+   ],
+   "NRST_PFC": [
+    {
+     "pin": 14,
+     "port": "NRST-PG10",
+     "func": "NRST - keep NRST_MDSEL at reset function, do not remap to PG10"
+    }
+   ],
+   "SWDIO_PFC": [
+    {
+     "pin": 76,
+     "port": "PA13",
+     "func": "SWDIO (JTMS)"
+    }
+   ],
+   "SWCLK_PFC": [
+    {
+     "pin": 77,
+     "port": "PA14",
+     "func": "SWCLK (JTCK)"
+    }
+   ],
+   "BOOT0_PFC": [
+    {
+     "pin": 95,
+     "port": "PB8",
+     "func": "BOOT0 - 10k pulldown, test point only, no other load"
+    }
+   ],
+   "HXTAL_IN (reserved, not in requested set)": [
+    {
+     "pin": 12,
+     "port": "PF0",
+     "func": "OSCIN"
+    }
+   ],
+   "HXTAL_OUT (reserved, not in requested set)": [
+    {
+     "pin": 13,
+     "port": "PF1",
+     "func": "OSCOUT"
+    }
+   ],
+   "VDDA_PFC": [
+    {
+     "pin": 37,
+     "port": "VDDA",
+     "func": "VDDA - filtered from V3P3 via ferrite + 1uF||100nF"
+    }
+   ],
+   "VREFP_PFC": [
+    {
+     "pin": 36,
+     "port": "VREFP",
+     "func": "VREFP - external reference, not strapped to VDDA"
+    }
+   ],
+   "VSSA_PFC": [
+    {
+     "pin": 35,
+     "port": "VSSA",
+     "func": "VSSA - analog return, star-tied to DGND (no VREFN pin exists)"
+    }
+   ],
+   "VBAT_PFC": [
+    {
+     "pin": 6,
+     "port": "VBAT",
+     "func": "VBAT - tie to V3P3 via 0R, no coin cell"
+    }
+   ],
+   "V3P3": [
+    {
+     "pin": 24,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 49,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 64,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 75,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 100,
+     "port": "VDD",
+     "func": "VDD"
+    }
+   ],
+   "DGND": [
+    {
+     "pin": 23,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 48,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 63,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 74,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 99,
+     "port": "VSS",
+     "func": "VSS"
+    }
+   ]
+  },
+  "fits": true,
+  "audit_errors": 10
+ },
+ "ULLC": {
+  "map": {
+   "PWM_L9H": [
+    {
+     "pin": 1,
+     "port": "PE2",
+     "func": "TIMER19_CH0"
+    }
+   ],
+   "PWM_L10H": [
+    {
+     "pin": 2,
+     "port": "PE3",
+     "func": "TIMER19_CH1"
+    }
+   ],
+   "PWM_L9L": [
+    {
+     "pin": 3,
+     "port": "PE4",
+     "func": "TIMER19_MCH0"
+    }
+   ],
+   "PWM_L10L": [
+    {
+     "pin": 4,
+     "port": "PE5",
+     "func": "TIMER19_MCH1"
+    }
+   ],
+   "PWM_L11L": [
+    {
+     "pin": 5,
+     "port": "PE6",
+     "func": "TIMER19_MCH2"
+    }
+   ],
+   "FLT_LLC": [
+    {
+     "pin": 28,
+     "port": "PA6",
+     "func": "TIMER7_BRKIN0 (AF4)"
+    },
+    {
+     "pin": 10,
+     "port": "PF9",
+     "func": "TIMER19_BRKIN0 (AF1)"
+    },
+    {
+     "pin": 7,
+     "port": "PC13",
+     "func": "TIMER0_BRKIN0 \u2014 R3 audit fix; the only free TIMER0 break pin"
+    }
+   ],
+   "WDI_LLC": [
+    {
+     "pin": 11,
+     "port": "PF10",
+     "func": "GPIO output"
+    }
+   ],
+   "NRST_LLC": [
+    {
+     "pin": 14,
+     "port": "NRST",
+     "func": "NRST"
+    }
+   ],
+   "SNS_IOUT": [
+    {
+     "pin": 15,
+     "port": "PC0",
+     "func": "ADC0_IN5"
+    }
+   ],
+   "SNS_IOUTN": [
+    {
+     "pin": 16,
+     "port": "PC1",
+     "func": "ADC0_IN6"
+    }
+   ],
+   "SNS_VOUT": [
+    {
+     "pin": 17,
+     "port": "PC2",
+     "func": "ADC1_IN7"
+    }
+   ],
+   "PWM_L11H": [
+    {
+     "pin": 19,
+     "port": "PF2",
+     "func": "TIMER19_CH2"
+    }
+   ],
+   "I_RES1": [
+    {
+     "pin": 20,
+     "port": "PA0",
+     "func": "ADC0_IN0"
+    }
+   ],
+   "I_RES2": [
+    {
+     "pin": 21,
+     "port": "PA1",
+     "func": "ADC0_IN1"
+    }
+   ],
+   "I_RES3": [
+    {
+     "pin": 22,
+     "port": "PA2",
+     "func": "ADC0_IN2"
+    }
+   ],
+   "DGND": [
+    {
+     "pin": 23,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 48,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 63,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 74,
+     "port": "VSS",
+     "func": "VSS"
+    },
+    {
+     "pin": 99,
+     "port": "VSS",
+     "func": "VSS"
+    }
+   ],
+   "V3P3": [
+    {
+     "pin": 24,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 49,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 64,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 75,
+     "port": "VDD",
+     "func": "VDD"
+    },
+    {
+     "pin": 100,
+     "port": "VDD",
+     "func": "VDD"
+    }
+   ],
+   "I_RES4": [
+    {
+     "pin": 27,
+     "port": "PA5",
+     "func": "ADC1_IN12"
+    }
+   ],
+   "I_RES5": [
+    {
+     "pin": 29,
+     "port": "PA7",
+     "func": "ADC1_IN3"
+    }
+   ],
+   "I_RES6": [
+    {
+     "pin": 30,
+     "port": "PC4",
+     "func": "ADC1_IN4"
+    }
+   ],
+   "T_LLC": [
+    {
+     "pin": 32,
+     "port": "PB0",
+     "func": "ADC2_IN11"
+    }
+   ],
+   "T_XFMR": [
+    {
+     "pin": 33,
+     "port": "PB1",
+     "func": "ADC2_IN0"
+    }
+   ],
+   "CTL_QDISBK": [
+    {
+     "pin": 34,
+     "port": "PB2",
+     "func": "GPIO output"
+    }
+   ],
+   "VDDA_LLC": [
+    {
+     "pin": 37,
+     "port": "VDDA",
+     "func": "VDDA"
+    }
+   ],
+   "I_RES7": [
+    {
+     "pin": 38,
+     "port": "PE7",
+     "func": "ADC2_IN3"
+    }
+   ],
+   "PWM_L1L": [
+    {
+     "pin": 39,
+     "port": "PE8",
+     "func": "TIMER0_MCH0"
+    }
+   ],
+   "PWM_L1H": [
+    {
+     "pin": 40,
+     "port": "PE9",
+     "func": "TIMER0_CH0"
+    }
+   ],
+   "PWM_L2L": [
+    {
+     "pin": 41,
+     "port": "PE10",
+     "func": "TIMER0_MCH1"
+    }
+   ],
+   "PWM_L2H": [
+    {
+     "pin": 42,
+     "port": "PE11",
+     "func": "TIMER0_CH1"
+    }
+   ],
+   "PWM_L3L": [
+    {
+     "pin": 43,
+     "port": "PE12",
+     "func": "TIMER0_MCH2"
+    }
+   ],
+   "PWM_L3H": [
+    {
+     "pin": 44,
+     "port": "PE13",
+     "func": "TIMER0_CH2"
+    }
+   ],
+   "PWM_L4H": [
+    {
+     "pin": 45,
+     "port": "PE14",
+     "func": "TIMER0_CH3"
+    }
+   ],
+   "PWM_L4L": [
+    {
+     "pin": 46,
+     "port": "PE15",
+     "func": "TIMER0_MCH3"
+    }
+   ],
+   "EN_LLC": [
+    {
+     "pin": 47,
+     "port": "PB10",
+     "func": "GPIO output (pin is also TIMER0_BRKIN0 alt - spare break input)"
+    }
+   ],
+   "HMI_DIG2": [
+    {
+     "pin": 50,
+     "port": "PB11",
+     "func": "GPIO output"
+    }
+   ],
+   "HMI_LAT": [
+    {
+     "pin": 51,
+     "port": "PB12",
+     "func": "GPIO output (SPI1_NSS pin, driven as GPIO strobe)"
+    }
+   ],
+   "HMI_CLK": [
+    {
+     "pin": 52,
+     "port": "PB13",
+     "func": "SPI1_SCK"
+    }
+   ],
+   "HMI_DIG1": [
+    {
+     "pin": 53,
+     "port": "PB14",
+     "func": "GPIO output"
+    }
+   ],
+   "HMI_DAT": [
+    {
+     "pin": 54,
+     "port": "PB15",
+     "func": "SPI1_MOSI"
+    }
+   ],
+   "SNS_VBKB": [
+    {
+     "pin": 55,
+     "port": "PD8",
+     "func": "ADC3_IN11"
+    }
+   ],
+   "SNS_VBKA": [
+    {
+     "pin": 56,
+     "port": "PD9",
+     "func": "ADC3_IN12"
+    }
+   ],
+   "I_RES8": [
+    {
+     "pin": 57,
+     "port": "PD10",
+     "func": "ADC2_IN6"
+    }
+   ],
+   "I_RES9": [
+    {
+     "pin": 58,
+     "port": "PD11",
+     "func": "ADC2_IN7"
+    }
+   ],
+   "I_RES10": [
+    {
+     "pin": 59,
+     "port": "PD12",
+     "func": "ADC3_IN8"
+    }
+   ],
+   "I_RES11": [
+    {
+     "pin": 60,
+     "port": "PD13",
+     "func": "ADC3_IN9"
+    }
+   ],
+   "I_RES12": [
+    {
+     "pin": 61,
+     "port": "PD14",
+     "func": "ADC3_IN10"
+    }
+   ],
+   "CTL_KPREB": [
+    {
+     "pin": 62,
+     "port": "PD15",
+     "func": "GPIO output"
+    }
+   ],
+   "PWM_L5H": [
+    {
+     "pin": 65,
+     "port": "PC6",
+     "func": "TIMER7_CH0"
+    }
+   ],
+   "PWM_L6H": [
+    {
+     "pin": 66,
+     "port": "PC7",
+     "func": "TIMER7_CH1"
+    }
+   ],
+   "PWM_L7H": [
+    {
+     "pin": 67,
+     "port": "PC8",
+     "func": "TIMER7_CH2"
+    }
+   ],
+   "PWM_L8H": [
+    {
+     "pin": 68,
+     "port": "PC9",
+     "func": "TIMER7_CH3"
+    }
+   ],
+   "RELAY_FB_KSER": [
+    {
+     "pin": 69,
+     "port": "PA8",
+     "func": "GPIO input (5V tolerant)"
+    }
+   ],
+   "RELAY_FB_KPARA": [
+    {
+     "pin": 70,
+     "port": "PA9",
+     "func": "GPIO input (5V tolerant)"
+    }
+   ],
+   "RELAY_FB_KPARB": [
+    {
+     "pin": 71,
+     "port": "PA10",
+     "func": "GPIO input (5V tolerant)"
+    }
+   ],
+   "RELAY_FB_KOUT": [
+    {
+     "pin": 72,
+     "port": "PA11",
+     "func": "GPIO input (5V tolerant)"
+    }
+   ],
+   "RELAY_FB_KPREA": [
+    {
+     "pin": 73,
+     "port": "PA12",
+     "func": "GPIO input (5V tolerant)"
+    }
+   ],
+   "SWDIO_LLC": [
+    {
+     "pin": 76,
+     "port": "PA13",
+     "func": "JTMS/SWDIO"
+    }
+   ],
+   "SWCLK_LLC": [
+    {
+     "pin": 77,
+     "port": "PA14",
+     "func": "JTCK/SWCLK"
+    }
+   ],
+   "RELAY_FB_KPREB": [
+    {
+     "pin": 78,
+     "port": "PA15",
+     "func": "GPIO input (JTDI released in SWD mode)"
+    }
+   ],
+   "PWM_L5L": [
+    {
+     "pin": 79,
+     "port": "PC10",
+     "func": "TIMER7_MCH0"
+    }
+   ],
+   "PWM_L6L": [
+    {
+     "pin": 80,
+     "port": "PC11",
+     "func": "TIMER7_MCH1"
+    }
+   ],
+   "PWM_L7L": [
+    {
+     "pin": 81,
+     "port": "PC12",
+     "func": "TIMER7_MCH2"
+    }
+   ],
+   "PWM_L8L": [
+    {
+     "pin": 82,
+     "port": "PD0",
+     "func": "TIMER7_MCH3"
+    }
+   ],
+   "CTL_KSER": [
+    {
+     "pin": 83,
+     "port": "PD1",
+     "func": "GPIO output"
+    }
+   ],
+   "BTN1": [
+    {
+     "pin": 84,
+     "port": "PD2",
+     "func": "GPIO input / EXTI2"
+    }
+   ],
+   "BTN2": [
+    {
+     "pin": 85,
+     "port": "PD3",
+     "func": "GPIO input / EXTI3"
+    }
+   ],
+   "CTL_KPARA": [
+    {
+     "pin": 86,
+     "port": "PD4",
+     "func": "GPIO output"
+    }
+   ],
+   "LINK_TX": [
+    {
+     "pin": 87,
+     "port": "PD5",
+     "func": "USART1_TX"
+    }
+   ],
+   "LINK_RX": [
+    {
+     "pin": 88,
+     "port": "PD6",
+     "func": "USART1_RX"
+    }
+   ],
+   "CTL_KPARB": [
+    {
+     "pin": 89,
+     "port": "PD7",
+     "func": "GPIO output"
+    }
+   ],
+   "CAN_RX": [
+    {
+     "pin": 92,
+     "port": "PB5",
+     "func": "CAN1_RX"
+    }
+   ],
+   "CAN_TX": [
+    {
+     "pin": 93,
+     "port": "PB6",
+     "func": "CAN1_TX"
+    }
+   ],
+   "CTL_KOUT": [
+    {
+     "pin": 94,
+     "port": "PB7",
+     "func": "GPIO output"
+    }
+   ],
+   "BOOT0_LLC": [
+    {
+     "pin": 95,
+     "port": "PB8/BOOT0",
+     "func": "BOOT0 (sampled at reset), GPIO thereafter"
+    }
+   ],
+   "CTL_KPREA": [
+    {
+     "pin": 96,
+     "port": "PB9",
+     "func": "GPIO output"
+    }
+   ],
+   "PWM_L12L": [
+    {
+     "pin": 97,
+     "port": "PE0",
+     "func": "TIMER19_MCH3"
+    }
+   ],
+   "PWM_L12H": [
+    {
+     "pin": 98,
+     "port": "PE1",
+     "func": "TIMER19_CH3"
+    }
+   ]
+  },
+  "fits": true,
+  "audit_errors": 10
+ }
+}

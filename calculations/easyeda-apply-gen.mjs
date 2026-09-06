@@ -15,6 +15,13 @@ mkdirSync(outDir, { recursive: true });
 
 const uuidMap = JSON.parse(readFileSync(join(srcDir, "part-uuid-map.json"), "utf8"));
 
+// GD32G553VET6 LQFP100 physical pin allocation (R3). The previous map was STM32G474-derived and
+// symbolic: it put a fault output on pin 74 (VSS) and BOOT0 on pin 100 (VDD) — two hard shorts —
+// and SWD on PA6/PA7. Allocated against GD32G553xx Rev 2.0 Table 2-4 and adversarially audited;
+// see docs/mcu-pin-allocation-gd32.md for the open architecture decisions.
+const MCU_ALLOC = JSON.parse(readFileSync(join(here, "out/mcu-pin-allocation.json"), "utf8"));
+const MCU_REF = { UPFC: "UPFC", ULLC: "ULLC" };
+
 // Live page UUIDs. page-uuids-new.json is rewritten whenever the pages are recreated
 // and is the authoritative map (pages rebuilt 2026-09-06 in canonical signal order).
 const PAGE_UUIDS = JSON.parse(readFileSync(join(srcDir, "page-uuids-new.json"), "utf8"));
@@ -155,6 +162,23 @@ function transform(c, page, all, warn) {
     out.pins = [P(10, "A", s("SA")), P(7, "B", s("SB")), P(4, "C", s("SC")), P(2, "D", s("SD")),
       P(1, "E", s("SE")), P(9, "F", s("SF")), P(5, "G", s("SG")), P(3, "DP", s("DP")),
       P(8, "DIG1", s("DIG1")), P(6, "DIG2", s("DIG2"))];
+  } else if (MCU_REF[c.designator] && MCU_ALLOC[c.designator]) {
+    // Map each bound signal onto its real package pin. A signal may land on more than one pin
+    // (supply rails, and FLT_LLC which needs one break input per advanced timer).
+    const alloc = MCU_ALLOC[c.designator].map;
+    const used = new Set();
+    for (const pin of c.pins) {
+      const sigName = pin.signal_name;
+      if (!sigName) continue;
+      const landings = alloc[sigName];
+      if (!landings) { warn.push(`${c.designator}: ${sigName} has no pin allocation`); continue; }
+      for (const l of landings) {
+        if (used.has(l.pin)) continue;
+        used.add(l.pin);
+        out.pins.push(P(l.pin, l.port, sigName));
+      }
+    }
+    for (let n = 1; n <= 100; n++) if (!used.has(n)) out.nc.push(n);
   } else {
     // Direct: numbering already matches the chosen symbol
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
