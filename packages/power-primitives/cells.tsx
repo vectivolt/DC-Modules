@@ -1173,3 +1173,34 @@ export const OutputShunt = ({ inn, out, outN, sec = "OUTPUT", x = 0, y = 0, sx =
     <trace from={outN ? ".USHO > .OUTN" : ".USHO > .OUTN"} to={outN || "net.SNS_IOUTN"} schDisplayLabel="SNS_IOUTN" />
   </group>
 );
+
+// ---------------------------------------------------------------------------------------------
+// CONTROL-CARD INTERFACE. The card is one part number for both converter roles at 30 and 60 kW;
+// see packages/common-components/control-card.tsx for how it was sized and why 120 kW is excluded.
+//
+// The connector IS the interface: the same 88-way part appears on the power board and on the card,
+// and each side traces its own pins to its own nets. Which board net a given pin carries depends on
+// the ROLE the slot straps, and the two roles are mutually exclusive wherever they differ.
+export const Card88FP = () => (
+  <footprint>
+    {Array.from({ length: 44 }, (_, i) => [
+      <platedhole key={`a${i}`} portHints={[`pin${i * 2 + 1}`]} pcbX={-54.6 + i * 2.54} pcbY={-1.27}
+        holeDiameter="1mm" outerDiameter="1.8mm" shape="circle" />,
+      <platedhole key={`b${i}`} portHints={[`pin${i * 2 + 2}`]} pcbX={-54.6 + i * 2.54} pcbY={1.27}
+        holeDiameter="1mm" outerDiameter="1.8mm" shape="circle" />,
+    ]).flat()}
+    <courtyardrect pcbX={0} pcbY={0} width="116mm" height="10mm" />
+  </footprint>
+);
+
+// The board side of the interface. `map` is a list of [pinLabel, net] for THIS role -- unused ways
+// are simply not traced, which is what makes one pinout serve both slots.
+export const CardConnector = ({ id = "CARD", map, x = 0, y = 0, sx = 0, sy = 0, sec = "CARD" }: any) => (
+  <group name={`card${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    <chip name={`J${id}`} footprint={<Card88FP />}
+      pinLabels={Object.fromEntries(map.map(([p]: any, i: number) => [`pin${i + 1}`, p]))}
+      schX={0} schY={0} schSectionName={sec} />
+    {map.map(([p, n]: any, i: number) =>
+      n ? <trace key={i} from={`.J${id} > .${p}`} to={n} schDisplayLabel={String(n).replace("net.", "")} /> : null)}
+  </group>
+);
