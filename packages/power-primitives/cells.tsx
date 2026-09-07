@@ -376,7 +376,7 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, sec = 
     {/* Envelope 24 × 15: half-bridge pair stacked at right, its two driver channels in two
         clean rows to the left (H above L, matching the bridge order). */}
     <chip name={`Q${id}H`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={17} schY={1.4} schSectionName={sec} />
-    <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={12} pcbY={0} schX={17} schY={-5.6} schSectionName={sec} />
+    <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={0} schX={17} schY={-5.6} schSectionName={sec} />
     <DriverCh id={`${id}H`} pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
     <DriverCh id={`${id}L`} pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
@@ -509,8 +509,8 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual =
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
       <resistor key={`r${k}`} name={`RKPU${k}`} resistance="10k" footprint="0603" pcbX={(i % 3) * 58 + 26} pcbY={Math.floor(i / 3) * 42 + 20} schX={(i % 3) * 6 + 2.6} schY={-Math.floor(i / 3) * 5 + 1.6} schSectionName={sec} />
     ))}
-    <chip name="RPREA" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={130} pcbY={0} schX={17} schY={0} schSectionName={sec} />
-    <chip name="RPREB" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={130} pcbY={35} schX={17} schY={-5} schSectionName={sec} />
+    <chip name="RPREA" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={150} pcbY={-30} schX={17} schY={0} schSectionName={sec} />
+    <chip name="RPREB" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={150} pcbY={-44} schX={17} schY={-5} schSectionName={sec} />
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map(k => [
       <trace key={`c1${k}`} from={`.${k} > .C1`} to="net.V24" schDisplayLabel="V24" />,
       <trace key={`c2${k}`} from={`.${k} > .C2`} to={`net.COIL_${k}`} schDisplayLabel={`COIL_${k}`} />,
@@ -828,10 +828,10 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
       <resistor key={i} name={`RSEG${i}`} resistance="220" footprint="0603" pcbX={32 + i * 5} pcbY={-12} schX={4.5} schY={3.5 - i * 1} schSectionName={sec} />
     ))}
     {["1", "2"].map((d, i) => (
-      <chip key={d} name={`QDIG${d}`} footprint="sot23" pinLabels={{ pin1: "B", pin2: "E", pin3: "C" }} pcbX={32 + i * 8} pcbY={10} schX={8.5 + i * 2.6} schY={-3.4} schSectionName={sec} />
+      <chip key={d} name={`QDIG${d}`} footprint="sot23" pinLabels={{ pin1: "B", pin2: "E", pin3: "C" }} pcbX={32 + i * 8} pcbY={22} schX={8.5 + i * 2.6} schY={-3.4} schSectionName={sec} />
     ))}
     {["1", "2"].map((d, i) => (
-      <resistor key={d} name={`RDIG${d}`} resistance="2.2k" footprint="0603" pcbX={32 + i * 8} pcbY={16} schX={7 + i * 2.6} schY={-4.8} schSectionName={sec} />
+      <resistor key={d} name={`RDIG${d}`} resistance="2.2k" footprint="0603" pcbX={32 + i * 8} pcbY={28} schX={7 + i * 2.6} schY={-4.8} schSectionName={sec} />
     ))}
     {["1", "2"].map((d, i) => (
       <chip key={d} name={`SW${d}`} footprint="pushbutton" pinLabels={{ pin1: "P1", pin2: "P2", pin3: "P3", pin4: "P4" }} pcbX={80 + i * 15} pcbY={0} schX={14.5} schY={1.4 - i * 3.2} schSectionName={sec} />
@@ -1155,8 +1155,8 @@ export const IsolatedCan = ({ sec = "CAN", x = 0, y = 0, sx = 0, sy = 0 }: any) 
 export const OutputShunt = ({ inn, out, outN, sec = "OUTPUT", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="oshunt" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     <chip name="RSHO" footprint={<ShuntFP />} pinLabels={{ pin1: "A", pin2: "B", pin3: "KA", pin4: "KB" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <chip name="USHO" footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={20} pcbY={0} schX={3.6} schY={0} schSectionName={sec} />
-    <chip name="PSSH" footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P5", pin4: "COM", pin5: "NC" }} pcbX={20} pcbY={10} schX={3.6} schY={-2.2} schSectionName={sec} />
+    <chip name="USHO" footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={36} pcbY={0} schX={3.6} schY={0} schSectionName={sec} />
+    <chip name="PSSH" footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P5", pin4: "COM", pin5: "NC" }} pcbX={36} pcbY={14} schX={3.6} schY={-2.2} schSectionName={sec} />
     <trace from={inn} to=".RSHO > .A" schDisplayLabel={inn.replace("net.", "")} />
     <trace from=".RSHO > .B" to="net.OUTN" schDisplayLabel="OUTN" />
     <trace from=".USHO > .VINP" to=".RSHO > .KA" />
