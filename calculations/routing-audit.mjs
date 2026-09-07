@@ -19,6 +19,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { extents } from "./pcb-geom.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKU = process.argv[2] || "30kw", SIDE = process.argv[3] || "acdc";
@@ -50,6 +51,7 @@ const f = join(ROOT, `dist/boards/${SKU}/${SIDE}/circuit.json`);
 if (!existsSync(f)) { console.error(`no build at ${f}`); process.exit(2); }
 const j = JSON.parse(readFileSync(f, "utf8"));
 const by = {}; for (const e of j) (by[e.type] ??= []).push(e);
+const parts = extents(j).parts;   // true courtyard extents, for the barrier-side check
 
 const netName = new Map((by.source_net ?? []).map((n) => [n.source_net_id, n.name]));
 const poured = new Map();                       // net name -> layer
@@ -120,6 +122,45 @@ for (const n of [...conns.keys()].filter((n) => SWITCH_NODE.test(n))) {
 line("SW-SPAN", spans.length, [...conns.keys()].filter((n) => SWITCH_NODE.test(n)).length,
   `switch nodes spanning more than ${SWITCH_SPAN} mm (dv/dt copper must stay small)`);
 for (const [n, sp, c] of spans) console.log(`         ${n}: ${sp.toFixed(0)} mm across ${c} parts`);
+
+// --- BARRIER -----------------------------------------------------------------------------------
+// On an isolated board the barrier is a LINE ON THE BOARD, and which side a part sits on is a
+// safety property, not a convenience. Free space on the wrong side is not free space. This check
+// exists because a "tidy up into the empty region" pass moved the whole secondary output bank --
+// eight 1000 V capacitors -- onto the PRIMARY side without anything complaining.
+//
+// The barrier is located from the transformers, which straddle it by construction.
+const xr = (re) => { const ps = parts.filter((p) => re.test(p.name));
+  return ps.length ? [Math.min(...ps.map((p) => p.x0)), Math.max(...ps.map((p) => p.x1))] : null; };
+// The barrier can run either way. Detect its orientation from the transformer row itself: if the
+// transformers span more in X than in Y the barrier is HORIZONTAL and the domains are above and
+// below it, not left and right. Testing the wrong axis reported 106 correct parts as violations.
+const tf = parts.filter((p) => /^T\d$/.test(p.name));
+const horiz = tf.length
+  && (Math.max(...tf.map((p) => p.x1)) - Math.min(...tf.map((p) => p.x0)))
+   > (Math.max(...tf.map((p) => p.y1)) - Math.min(...tf.map((p) => p.y0)));
+const axis0 = (p) => (horiz ? p.y0 : p.x0), axis1 = (p) => (horiz ? p.y1 : p.x1);
+const xf = tf.length
+  ? [Math.min(...tf.map(axis0)), Math.max(...tf.map(axis1))]
+  : null;
+if (xf) {
+  const [bx0, bx1] = xf;
+  const PRIMARY = /^(Q\d[HL]|C\dR\d|L\dT|CT\d|R\dC[TF]|C\dCF|D\dC[PN]|CF\d|JDC[PN]|JPEB)$/;
+  const SECONDARY = /^(D\d[AB]\d|CB[AB]\d[TB]|RBAL[TB][AB]\d|KSER|KPAR[AB]|KOUT|KPRE[AB]|RPRE[AB]|JOUT[PN]|RSHO|RBD[AB]\d|QDIS[AB]|COF\d)/;
+  // Vertical barrier: primary LEFT (low x), secondary RIGHT (high x).
+  // Horizontal barrier: primary ABOVE (high y), secondary BELOW (low y).
+  const inPrimaryHalf = (p) => (horiz ? axis0(p) > bx1 : axis1(p) < bx0);
+  const inSecondaryHalf = (p) => (horiz ? axis1(p) < bx0 : axis0(p) > bx1);
+  const wrongP = parts.filter((p) => SECONDARY.test(p.name) && inPrimaryHalf(p));
+  const wrongS = parts.filter((p) => PRIMARY.test(p.name) && inSecondaryHalf(p));
+  const straddle = parts.filter((p) => (PRIMARY.test(p.name) || SECONDARY.test(p.name))
+    && axis0(p) < bx1 && axis1(p) > bx0 && !/^T\d$/.test(p.name));
+  const bad2 = wrongP.length + wrongS.length + straddle.length;
+  line("BARRIER", bad2, parts.length,
+    `parts on the wrong side of the ${horiz ? "HORIZONTAL" : "vertical"} barrier at ${horiz ? "y" : "x"} ${bx0.toFixed(0)}..${bx1.toFixed(0)} (primary ${horiz ? "above" : "left"}, secondary ${horiz ? "below" : "right"})`);
+  for (const p of [...wrongP, ...wrongS, ...straddle].slice(0, 6))
+    console.log(`         ${p.name.padEnd(9)} ${horiz ? "y" : "x"} ${axis0(p).toFixed(0)}..${axis1(p).toFixed(0)}  ${SECONDARY.test(p.name) ? "SECONDARY" : "primary"} domain`);
+}
 
 const planeCount = (by.pcb_copper_pour ?? []).length;
 line("PLANES", planeCount < 4 ? 1 : 0, null, `${planeCount} pours declared`);

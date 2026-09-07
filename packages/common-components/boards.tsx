@@ -434,30 +434,36 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
   //   x   55.. 218   output shunt, studs and the isolated output senses
   //   y -190..-150   control strip, primary-referenced, along the bottom edge
   const Q = {
-    leg: [130, 60, -10] as const, legX: -207,
-    // measured: a section cell is 170 x 53 and sits from origin-52 to origin+1, so 65 mm of pitch
-    // leaves a real 12 mm gap between transformer rows -- they are the tallest parts and need air.
-    sec: [130, 60, -10] as const, secX: -96,
-    spm: [-30, -155] as const,
-    shunt: [-175, 104] as const, studX: 200, stud: [150, 110, 70] as const,
-    ivs: [160, 172, 184] as const, ivsY: 110, b5: [200, -100] as const,
-    // control strip laid by MEASURED width from x -215, 6 mm between cells:
-    // mcu 33, sfc 37, r3v3 33, ic 60, can 56, hmi 111, avmid 27 = 357 mm in 436
-    // Output banks: 8 snap-in electrolytics at 37 mm across. They were on a 20 x 25 mm pitch,
-    // piled on each other AND on transformer T1. 42 mm of pitch in the free 178 x 110 mm region
-    // bottom-left gives each one real air, and puts the life-limiting parts away from the
-    // transformers, which are the hottest things on this board.
-    bankA: -190, bankB: -100, bankStep: 42, bankY: [-90, -132] as const,
-    cfX: -200, cfStep: 35, cfY: 175,
-    busX: 205, bus: [170, 135, 100] as const,
-    // Bank balance dividers sit with the banks they balance, not across the board on the
-    // transformers. Bleeder chains and the discharge FETs take the right column.
-    balA: [-196, -184, -160, -148] as const, balB: [-106, -94, -70, -58] as const, balY: -55,
-    rbdX: 45, rbdStep: 32, rbdA: 104, rbdB: 36, qdis: [150, -20] as const,
-    outX: 205, out: [55, 20] as const,
-    ctlY: -170, mcuX: -198, sfcX: -171, r3v3X: -126, icX: -77, canX: -26, hmiX: 41,
-    avmidX: -190, ntcX: -150, ntcY: 32,
+    // ---------------------------------------------------------------------------------------
+    // HORIZONTAL BARRIER. The transformers form a band across the board at y ~21..56; primary is
+    // above it, secondary below. A vertical barrier left the secondary only 138 mm of a 440 mm
+    // rack card and jammed every output part into a strip while half the board sat empty -- this
+    // way both domains get the full width.
+    //
+    //   y 250..215  LLC half-bridge legs, one above each section
+    //   y 197.. 60  primary chain: resonant films -> CT -> trim inductor
+    //   y  56.. 21  TRANSFORMERS -- the barrier band
+    //   y -29..-250 secondary: rectifiers, banks, S/P matrix, output
+    //   x 155..220  control column, primary-referenced, up the right side
+    // ---------------------------------------------------------------------------------------
+    sec: [-100, 0, 100] as const, secY: 190,
+    leg: [-180, -60, 60] as const, legY: 224,
+    busX: 190, bus: [232, 196, 160] as const,
+    cfX: 190, cfStep: 0, cfY: 120,
+    // secondary band
+    bankX: [-180, -138, -96, -54] as const, bankY: [-70, -112] as const,
+    spm: [60, -110] as const,
+    balA: [-180, -168, -156, -144] as const, balB: [-108, -96, -84, -72] as const, balY: -158,
+    shunt: [-150, -200] as const, outX: -40, out: [-200, -232] as const,
+    cofX: -95, cof: [-200, -232] as const,
+    rbdX: 10, rbdStep: 26, rbdA: -196, rbdB: -218, qdis: [-14, -212] as const,
+    ivs: [186, 198, 210] as const, ivsY: -60, b5: [150, -150] as const,
+    // control column, primary side, right edge
+    ctlY: 100, mcuX: 178, sfcX: 178, r3v3X: 178, icX: 178, canX: 150, hmiX: 96,
+    avmidX: 178, ntcX: 178, ntcY: 88,
   };
+
+
 
 return (
     <board width={`${w}mm`} height={`${h}mm`} routingDisabled schTraceAutoLabelEnabled schMaxTraceDistance={0}>
@@ -479,13 +485,13 @@ return (
       {/* LLC legs + sections */}
       {legs.map((l, i) => (
         <LlcHalfBridgeLeg key={l.id} id={l.id} bus="net.DCP" gnd="net.DCN" sw={l.sw}
-          x={Q.legX} y={Q.leg[i % 3]}
+          x={Q.leg[i % 3]} y={Q.legY}
           pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT_LLC" en="net.GATE_EN_B"
           sx={2} sy={24 - i * 16} />
       ))}
       {secs.map((s, i) => (
         <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
-          x={Q.secX} y={Q.sec[i % 3]}
+          x={Q.sec[i % 3]} y={Q.secY}
           bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
           ctOut={`net.I_RES${s.id}`}
           sx={30} sy={24 - i * 16} />
@@ -494,16 +500,16 @@ return (
       {/* bank capacitors — E29/CB-2: two-series 450 V strings (900 V string rating vs ≤525 V bank)
           + shared string midpoints + balance dividers; film across each bank */}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankA + i * Q.bankStep} pcbY={Q.bankY[0]} schX={58 + i * 2.2} schY={27} />
+        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[0]} schX={58 + i * 2.2} schY={27} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankA + i * Q.bankStep} pcbY={Q.bankY[1]} schX={58 + i * 2.2} schY={24.2} />
+        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[1]} schX={58 + i * 2.2} schY={24.2} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankB + i * Q.bankStep} pcbY={Q.bankY[0]} schX={58 + i * 2.2} schY={17} />
+        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[2]} schX={58 + i * 2.2} schY={17} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankB + i * Q.bankStep} pcbY={Q.bankY[1]} schX={58 + i * 2.2} schY={14.2} />
+        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[3]} schX={58 + i * 2.2} schY={14.2} />
       ))}
       {/* HR-20: 2-series 47 k per string half (bank ≤525 V → ≤131 V & 0.37 W per element) */}
       <resistor name="RBALTA1" resistance="47k" footprint="2512" pcbX={Q.balA[0]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={28} schSectionName="BANKS" />
@@ -547,7 +553,7 @@ return (
           HR-19: at 120 kW the paralleled second relay per HV function is a real schematic
           instance (contacts + coil + series mirror), not a BOM multiplier. */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
-        outp="net.OUTP" dual={channels === 4} x={w / 2 - 220} y={-h / 2 + 100} sx={58} sy={4} />
+        outp="net.OUTP" dual={channels === 4} x={Q.spm[0]} y={Q.spm[1]} sx={58} sy={4} />
       {/* HR-15: commanded bank bleeders — banks otherwise hold ≤525 V for 3–14 min on the balance
           chains alone (bus discharge never touches them). One GPIO drives both optos; default-OFF
           like the bus chain (E19 rev B pattern). 4× 2.2 k 10 W axial per bank: τ ≈ 4–17 s,
@@ -584,8 +590,8 @@ return (
 
       {/* output: shunt in negative, filter, studs, Y caps */}
       <OutputShunt inn="net.BKBN" out="net.SNS_IOUT" outN="net.SNS_IOUTN" x={Q.shunt[0]} y={Q.shunt[1]} sx={86} sy={27} />
-      <capacitor name="COF1" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={186} pcbY={-120} schX={86} schY={21.5} schSectionName="OUTPUT" />
-      <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={186} pcbY={-92} schX={88.5} schY={21.5} schSectionName="OUTPUT" />
+      <capacitor name="COF1" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={Q.cofX} pcbY={Q.cof[0]} schX={86} schY={21.5} schSectionName="OUTPUT" />
+      <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={Q.cofX} pcbY={Q.cof[1]} schX={88.5} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="CYO1" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 40} schX={91} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="CYO2" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 30} schX={93.5} schY={21.5} schSectionName="OUTPUT" />
       <chip name="JOUTP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={Q.outX} pcbY={Q.out[0]} schX={98} schY={28} schSectionName="OUTPUT" />
@@ -612,11 +618,11 @@ return (
       <NtcInput id="TXFR" out="net.T_XFMR" x={Q.ntcX} y={Q.ntcY - 14} sx={94} sy={-10.5} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
-      <ControlMcu id="LLC" x={Q.mcuX} y={Q.ctlY} sx={2} sy={cYd} />
-      <Rail3V3 id="B" x={Q.r3v3X} y={Q.ctlY} sx={32} sy={cYd} />
+      <ControlMcu id="LLC" x={Q.mcuX} y={Q.ctlY + 0} sx={2} sy={cYd} />
+      <Rail3V3 id="B" x={Q.mcuX} y={Q.ctlY + -78} sx={32} sy={cYd} />
       <SafetyChain id="B" enLocal="net.EN_LLC" enRemote="net.EN_PFC" wdi="net.WDI_LLC" gateEn="net.GATE_EN_B"
-        x={Q.sfcX} y={Q.ctlY} sx={23} sy={cYd - 8} />
-      <SwdPort id="LLC" x={20} y={-45} sx={16} sy={cYd} />
+        x={Q.mcuX} y={Q.ctlY + -52} sx={23} sy={cYd - 8} />
+      <SwdPort id="LLC" x={Q.mcuX} y={Q.ctlY + -30} sx={16} sy={cYd} />
       <trace from=".ULLC > .pin28" to="net.SWDIO_LLC" schDisplayLabel="SWDIO_LLC" />
       <trace from=".ULLC > .pin29" to="net.SWCLK_LLC" schDisplayLabel="SWCLK_LLC" />
       <trace from=".ULLC > .pin100" to="net.BOOT0_LLC" schDisplayLabel="BOOT0_LLC" />
@@ -629,11 +635,11 @@ return (
       <resistor name="RAGTB" resistance="0" footprint="0805" pcbX={-122} pcbY={-45} schX={4} schY={cYd - 14} schSectionName="BOND" />
       <trace from=".RAGTB > .pin1" to="net.AGND" schDisplayLabel="AGND" />
       <trace from=".RAGTB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-      <IsolatedCan x={Q.canX} y={Q.ctlY} sx={48} sy={cYd} />
-      <ConfigHmi x={Q.hmiX} y={Q.ctlY} sx={63} sy={cYd} />
+      <IsolatedCan x={Q.canX} y={-160} sx={48} sy={cYd} />
+      <ConfigHmi x={Q.hmiX} y={-200} sx={63} sy={cYd} />
       {/* CB-14: this side of the harness crosses the link — LTX wire lands on this MCU's RX */}
       <InterconnectSignals id="B" ltx="net.LINK_RX" lrx="net.LINK_TX" enA="net.EN_PFC" enB="net.EN_LLC"
-        x={Q.icX} y={Q.ctlY} sx={84} sy={cYd} />
+        x={Q.mcuX} y={Q.ctlY + -98} sx={84} sy={cYd} />
       {llcPins.map(([net, pin]) => (
         <trace key={`${net}${pin}`} from={`.ULLC > .pin${pin}`} to={net} />
       ))}
