@@ -87,7 +87,7 @@ const psPts = points.filter(p => p.ctl === "PS");
 console.log(`Map: ${points.length} pts; PS-mode region: output ${Math.min(...psPts.map(p => p.out))}–${Math.max(...psPts.map(p => p.out))} V parallel (${psPts.length} pts)`);
 console.log(`Worst primary RMS = ${f(worst.IpRms, 1)} A @ ${worst.mode} out ${worst.out} V, load ${worst.ld} (${worst.ctl}) — envelope keeps it ~flat`);
 const worstCr = points.reduce((a, p) => (p.VcrPk > a.VcrPk ? p : a));
-console.log(`Resonant cap: ${f(Cr * 1e9, 0)} nF ±5%, Irms_max=${f(worst.IpRms, 1)} A, Vpk=${f(worstCr.VcrPk, 0)} V → 4× ${f(Cr * 1e9 / 4, 0)} nF/1200 V PP pulse film in parallel per phase (≤12 A rms each)`);
+console.log(`Resonant cap: ${f(Cr * 1e9, 0)} nF ±5%, Irms_max=${f(worst.IpRms, 1)} A, Vpk=${f(worstCr.VcrPk, 0)} V → 4× ${f(Cr * 1e9 / 4, 0)} nF/1200 V resonant-duty film in parallel per phase (≤12 A rms each; series must carry a Vrms-vs-f curve at 140 kHz — CDE 942C class / Faratronic eq, §K O-8)`);
 
 // gain curves
 const curves = [650, 740, 800, 830].map(vb => {
@@ -118,15 +118,15 @@ const Pcu = IpDesign ** 2 * Rp + 2 * IsDesign ** 2 * Rs;
 const leakEst = 3e-6;                                           // interleaved P-S-P: low leakage; external trim completes Lr
 console.log(`\nTRANSFORMER (per section, 3× PQ50/50 PC95-class): Np=Ns=${Np}, ΔB=${f(dBact * 1e3, 0)} mT, Pfe=${f(Pfe, 1)} W, Pcu=${f(Pcu, 1)} W → ${f(Pfe + Pcu, 1)} W (${f((Pfe + Pcu) / (P_PH * 0.98) * 100, 2)}%)`);
 console.log(`  Ip=${f(IpDesign, 1)} A litz ${f(Acu_p, 1)} mm² (0.1 mm strands, δ=${f(delta * 1e3, 3)} mm); Is=${f(IsDesign, 1)} A/wdg ×2; fill=${f(fill * 100, 0)}% of usable window ${fill <= 1 ? "OK" : "OVER — bobbin study required"}`);
-console.log(`  Leakage target ${f(leakEst * 1e6, 0)} µH (interleaved) + external trim ${f((Lr - leakEst) * 1e6, 1)} µH ±5% (small sendust/air toroid) = Lr`);
+console.log(`  Leakage target ${f(leakEst * 1e6, 0)} µH (interleaved) + external trim ${f((Lr - leakEst) * 1e6, 1)} µH bin set (D2 rev C: GAPPED FERRITE 2×PQ50/50 — powder cores prohibited at full AC swing, audit F1) = Lr`);
 console.log(`  Insulation: pri-sec REINFORCED 4 kV_pk class; triple-insulated secondary litz + 3.2 mm margins; interwinding shield → primary star`);
 
 writeFileSync(join(OUT, "llc-tank.csv"), [
   "param,value,unit,tolerance,note",
   `fr,140,kHz,±4%,from Lr+trim ±5% + Cr ±5%`,
   `Lr,${f(Lr * 1e6, 1)},µH,±5%,${f(leakEst * 1e6, 0)} leakage + ${f((Lr - leakEst) * 1e6, 1)} external trim`,
-  `Cr,${f(Cr * 1e9, 1)},nF,±5%,3× parallel 1200 V PP pulse film`,
-  `Lm,${f(Lm * 1e6, 0)},µH,±10%,gapped 3×PQ50/50`,
+  `Cr,${f(Cr * 1e9, 1)},nF,±5%,4× parallel 46 nF 1200 V resonant-duty film (Vrms-vs-f curve at 140 kHz — §K O-8)`,
+  `Lm,${f(Lm * 1e6, 0)},µH,±7%,gapped 3×PQ50/50 (E7 rev D2 tolerance)`,
   `Ln,${Ln},,,joint solve`, `Q_crit,${f(Q, 3)},,,at bank 518 full load`,
   `Np=Ns,${Np},turns,exact,2 secondaries (bank A/B)`,
   `dB_pp,${f(dBact * 1e3, 0)},mT,,at bus 830`,

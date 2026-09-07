@@ -46,7 +46,7 @@ attempts proved the point and were both reverted:
 | Anti-surge HV | `R2512-HV` (18) |
 | Safety-certified — must carry the certification, not just the value | `X1-2u2-530` (18) |
 | Mechanical terminals | `STUD-M8` (36) · `TAB-M4` (3) |
-| Per-SKU fuse class | `FUSE-gG-690V-63A` / `-125A` / `-250A` (3 each) |
+| Per-SKU fuse class | `FUSE-gG-690V-80A` (product, 22×58 — audit F6) / `-125A` / `-250A` (reference boards) (3 each) |
 
 ## CUSTOM — 30 instances, 3 MPNs
 

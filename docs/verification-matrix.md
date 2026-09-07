@@ -28,6 +28,7 @@ Status letters: **V** = verified by executed calc/sim (file cited) · **P** = pl
 | Sense chain completeness | V — 5 HV dividers +3(AC), CTs per phase/section, output shunt, 4 NTC |
 | HMI (E21) | V — 2 buttons, 2-digit display, 595+mux wired to MCU-LLC pins 88–94 |
 | BOM coverage | bom-gen reports **unmatched = 0** required for sign-off (currently: snubber rule added; re-run pending 120 kW build) |
+| **Margin audit E35 (2026-09-08)** | V — clean-room recompute reproduced all frozen values; 8 findings fixed same-day (D1 rev B / D2 rev C / D3 litz / D6 rev B / 27 Ω burden / 80 A fuse / card HRTIMER+AGND_2 / card-split BOM rules) and locked by the AUD-* gate set in `review-checks.mjs` |
 | Diode orientation TO-247-2 pin1=anode | ASSUMED — VERIFY vendor drawing before fab (§40) |
 | PCB layout | **N — explicitly out of scope per customer directive 2026-09-04** (placement DRC warnings ignored; layout phase reopens later) |
 | Production supervisory logic (E24) | **V — C99 fsm+CAN codec, 33/33 checks (26 scenarios + codec + 100k-frame fuzz) under ASan/UBSan**; found+fixed K_OUT gate defect (E12b) |

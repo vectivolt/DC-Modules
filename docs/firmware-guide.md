@@ -97,7 +97,7 @@ the HMI displays (`F.xx`) and CAN telemetry (STATUS2/FAULT_EVT) speak.
 The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to the rev C hardware:
 
 - **ADC scaling (rev D — R2 CB-16):** CT channels are biased at AVMID (VREF/2 ≈ 1.65 V) with
-  **per-family burdens**: line `i = (raw·3.3/4096 − 1.65) / 33 · 2500`; resonant
+  **per-family burdens**: line `i = (raw·3.3/4096 − 1.65) / 27 · 2500` (27 Ω — R3/audit: 33 Ω clipped 150 A pk observability at the 3.3 V rail); resonant
   `i = (raw·3.3/4096 − 1.65) / 2.0 · 100` (2.0 Ω burden — the 33 Ω constant here was the R2
   CB-16 defect; F.11 comparator DAC = 3.05 V for 70 A pk). AC phase-voltage channels come from
   ±5 V iso amps (gain 0.41, output centered mid-rail): bipolar conversion with the amp's datasheet

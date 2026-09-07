@@ -8,26 +8,26 @@ device Tj iteration in `calculations/pfc/pfc-design.mjs`. Status: calculated; ch
 | W | 30 kW | 60 kW | 120 kW |
 |---|---|---|---|
 | PFC semis | 158 | 317 | 634 |
-| PFC magnetics | 72 | 145 | 289 |
+| PFC magnetics (D1 rev B, audit F4) | 75 | 150 | 301 |
 | DC-link ESR | 12 | 24 | 48 |
 | LLC primary | 57 | 114 | 228 |
 | Transformers | 62 | 123 | 246 |
-| Tank (Cr+trim) | 13 | 26 | 52 |
+| Tank (Cr+trim — D2 rev C gapped ferrite fits this line; the audited sendust rev B would have been ~43 W/section) | 13 | 26 | 52 |
 | Secondary JBS | 360 | 721 | 1441 |
 | Busbar+shunt | 2 | 7 | 28 |
-| **EMI filter (D6+D7 as-drawn — was unbudgeted pre-R2)** | **49** | **132** | **248** |
+| **EMI filter (D6 rev B + D7 — audit F7 re-gauged every D6 winding to ≤5.6 A/mm²)** | **41** | **63** | **127** |
 | Aux+gate (E26 rev C per-SKU load) | 38 | 56 | 92 |
 | Fans | 20 | 20 | 40 |
-| **Total** | **844** | **1684** | **3347** |
-| **η** | **97.26%** | **97.27%** | **97.29%** |
+| **Total** | **838** | **1621** | **3237** |
+| **η** | **97.28%** | **97.37%** | **97.37%** |
 
-Spec check: peak η ≥97 % still MET at every SKU — but the pre-R2 97.4–97.5 % headline was
-counting a filter that dissipated nothing. Worst continuous corner (330 VAC full power):
-30 kW = **938 W** (filter at I² ≈ ×1.35; heatsink-mounted semis 620 W unchanged → Rth
+Spec check: peak η ≥97 % still MET at every SKU (rev-D2 restatement after the audit: the D6
+rev-B copper *improves* 60/120 kW to 97.37%). Worst continuous corner (330 VAC full power):
+30 kW ≈ **930 W** (filter at I² ≈ ×1.35; heatsink-mounted semis 620 W unchanged → Rth
 requirement unchanged, the filter heat is airstream-borne, not sink-borne). SR variant saves
-214/427/854 W (premium build, E11). D6's 60/120 kW foils run 17–18 A/mm² — the drawing's
-ΔT ≤ 45 K acceptance governs; if first articles fail it, the next foil gauge is absorbed in the
-D6 price (T-23 thermography arbitrates).
+214/427/854 W (premium build, E11). D6 rev B (audit F7) holds every winding at ≤5.6 A/mm², so
+the ΔT ≤ 45 K acceptance now has calculated margin (30 kW: ≈34 K) instead of being a
+first-article coin-flip; T-23 thermography still confirms.
 
 ## Sandwich thermal architecture (E17)
 

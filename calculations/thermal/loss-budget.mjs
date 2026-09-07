@@ -10,7 +10,7 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const f = (x, d = 1) => Number(x.toFixed(d));
 
 // ---------------- per-lane / per-channel building blocks (from Phase 3/6/7 outputs)
-const PFC_LANE = { semis: 3 * (43.5 + 24.2), mag: 3 * 33.5, note: "3 pairs @43.5 W + 3 diode-pairs 24.2 W (per-diode 12.1 W ×2) + 3 chokes 33.5 W @330 V corner" };
+const PFC_LANE = { semis: 3 * (43.5 + 24.2), mag: 3 * 34.8, note: "3 pairs @43.5 W + 3 diode-pairs 24.2 W (per-diode 12.1 W ×2) + 3 chokes 34.8 W @330 V corner (D1 rev B: N=39/18 mm² on the real 0077908A7 core — audit F4; Cu 32.4 + Fe 2.4)" };
 // LLC per channel at 30 kW nominal (bank 400, Ip 23.3 A sim / 33 A envelope-worst; use 400 V full-power pt):
 const IP_NOM = 23.3, IP_WORST = 45.6;
 const LLC_CH = (ip) => ({
@@ -37,9 +37,10 @@ const SKUS = [
 // at the design-point line currents (Rdc from turn-length/section; D6/D7 ΔT acceptances bind the
 // winder if first articles run hot — losses here are the as-drawn numbers, honest not hopeful):
 //   CMC per choke (D7 rev D foil): 11.5 / 16.7 / 36 W ×2 chokes
-//   LDM per choke (D6): 8.8 / 32.7 / 58.6 W ×3 chokes (60/120 kW foils run 17–18 A/mm² — the
-//   D6 ΔT≤45 K acceptance is the governing check; next foil gauge absorbed in D6 price if it fails)
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 8.8, "60kW": 2 * 16.7 + 3 * 32.7, "120kW": 2 * 36 + 3 * 58.6 };
+//   LDM per choke (D6 rev B — audit F7, every winding one gauge up to ≤5.6 A/mm²):
+//   5.9 / 9.8 / 18.3 W ×3 chokes (rev-A as-drawn 8.8/32.7/58.6 ran 8.3–18 A/mm² and the 30 kW
+//   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
+const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 5.9, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {

@@ -22,7 +22,11 @@ import {
   DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP,
   CardConnector,
 } from "../power-primitives/cells";
-import { cardMap } from "./control-card";
+import { cardMap, CARD_MCU_PINS, CARD_INTERNAL } from "./control-card";
+
+// Schematic/net work does not need copper, and routing these boards takes 10+ minutes each.
+// TSCI_NO_ROUTE=1 builds the netlist only, so connectivity checks run in seconds.
+const NO_ROUTE = process.env.TSCI_NO_ROUTE === "1";
 
 const assertUniquePins = (label: string, entries: [string, number][]) => {
   const seen = new Map<number, string>();
@@ -114,7 +118,7 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
   };
 
 return (
-    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" autorouter="auto-local" autorouterEffortLevel="10x"
+    <board routingDisabled={NO_ROUTE} width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" autorouter="auto-local"
       nominalTraceWidth="0.3mm" minViaEdgeToPadEdgeClearance="0.3mm"
       minViaHoleEdgeToViaHoleEdgeClearance="0.45mm"
       schTraceAutoLabelEnabled schMaxTraceDistance={0}
@@ -315,10 +319,12 @@ return (
         <CtSensor key={p.id} id={p.id} out={`net.I_${p.id}`} x={P.ctsX} y={P.ctsY[i % 3]} sx={40} sy={26 - i * 4.5} />
       ))}
 
-      {/* DC link banks + balance */}
+      {/* DC link banks + balance. key/pos were constant across instances (audit, 60/120 kW
+          reference boards): duplicate React keys can silently drop siblings, and the fixed x/sx
+          stacked bank 2/3 on bank 1. Offsets are placement-phase coarse; the key is the fix. */}
       {dcBanks.map(([n, k]) => (
-        <SplitDcLink key={-62} id={`${k}`} nPerHalf={n} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
-          x={14} y={-62} sx={10} sy={-62} />
+        <SplitDcLink key={k} id={`${k}`} nPerHalf={n} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
+          x={14 + k * 96} y={-62} sx={10 + k * 14} sy={-62} />
       ))}
 
       {/* discharge: 4× 160 Ω pulse resistors + 1200 V SiC FET.
@@ -479,7 +485,7 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
 
 
 return (
-    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" autorouter="auto-local" autorouterEffortLevel="10x"
+    <board routingDisabled={NO_ROUTE} width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" autorouter="auto-local"
       nominalTraceWidth="0.3mm" minViaEdgeToPadEdgeClearance="0.3mm"
       minViaHoleEdgeToViaHoleEdgeClearance="0.45mm"
       schTraceAutoLabelEnabled schMaxTraceDistance={0}
@@ -558,16 +564,16 @@ return (
       {/* bank capacitors — E29/CB-2: two-series 450 V strings (900 V string rating vs ≤525 V bank)
           + shared string midpoints + balance dividers; film across each bank */}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[0]} schX={58 + i * 2.2} schY={27} />
+        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[0] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={27} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[1]} schX={58 + i * 2.2} schY={24.2} />
+        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[1] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={24.2} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[2]} schX={58 + i * 2.2} schY={17} />
+        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[2] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={17} />
       ))}
       {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i]} pcbY={Q.bankY[3]} schX={58 + i * 2.2} schY={14.2} />
+        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[3] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={14.2} />
       ))}
       {/* HR-20: 2-series 47 k per string half (bank ≤525 V → ≤131 V & 0.37 W per element) */}
       <resistor name="RBALTA1" resistance="47k" footprint="2512" pcbX={Q.balA[0]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={28} schSectionName="BANKS" />
@@ -697,7 +703,7 @@ return (
 export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => {
   const map = cardMap("card");                       // generic side: pin name == net name
   return (
-    <board width={`${w}mm`} height={`${h}mm`} layers={4} thickness="1.6mm" routingDisabled
+    <board routingDisabled={NO_ROUTE} autorouter="auto-local" width={`${w}mm`} height={`${h}mm`} layers={4} thickness="1.6mm"
       schTraceAutoLabelEnabled schMaxTraceDistance={0}
       minTraceWidth="0.15mm" minViaHoleDiameter="0.3mm" minPadEdgeToPadEdgeClearance="0.12mm"
       minBoardEdgeClearance="1mm">
@@ -711,16 +717,29 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
       <copperpour connectsTo="net.DGND" layer="inner1" boardEdgeMargin="1.2mm" />
       <copperpour connectsTo="net.V3P3" layer="inner2" boardEdgeMargin="1.2mm" />
 
-      <ControlMcu id="CARD" x={-30} y={8} sx={0} sy={0} lay="top" />
+      <ControlMcu id="CARD" x={0} y={8} sx={0} sy={0} lay="top" />
       <SwdPort id="CARD" x={-30} y={-18} sx={0} sy={-12} lay="top" />
       <SafetyChain id="CARD" enLocal="net.EN_A" enRemote="net.EN_B" wdi="net.WDI" gateEn="net.GATE_EN"
         x={10} y={-18} sx={18} sy={-12} lay="top" />
-      <Rail3V3 id="CARD" x={10} y={8} sx={18} sy={0} lay="top" />
-      <AnalogMid x={-30} y={-32} sx={0} sy={-20} lay="top" />
+      <Rail3V3 id="CARD" x={24} y={8} sx={18} sy={0} lay="top" />
+      <AnalogMid x={-52} y={-32} sx={0} sy={-20} lay="top" />
 
       {/* The connector. Same 88-way part as the power board; here every way carries the generic
           net of the same name, so the two sides line up by construction. */}
       <CardConnector id="CARD" map={map} x={0} y={30} sx={40} sy={0} />
+
+      {/* THE MCU PIN MAP. Without this the MCU is an island: every connector way sits on a net
+          with exactly one endpoint, the router has nothing to route, and the board still builds.
+          It did build, for a while -- the pin-map traces were emitted by the power boards before
+          the card existed and were dropped with the MCUs, leaving 55 dead ways. */}
+      {Object.entries(CARD_MCU_PINS).map(([way, pin]) => (
+        <trace key={way} from={`.UCARD > .pin${pin}`} to={`net.${way}`} schDisplayLabel={way} />
+      ))}
+      {/* Card-only MCU pins. Without these the MCU has no watchdog kick, no boot strap and no
+          debug port -- all three were left behind on the power boards when the MCU moved. */}
+      {Object.entries(CARD_INTERNAL).map(([sig, [pin, net]]) => (
+        <trace key={sig} from={`.UCARD > .pin${pin}`} to={net} schDisplayLabel={sig} />
+      ))}
 
       {/* CARD_RULES: the FLT pull-up and its filter stay TOGETHER at the MCU end -- splitting a
           safety-critical wired-OR's pull-up across a connector changes its idle state and timing. */}
@@ -746,7 +765,7 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
       <trace from=".RROLE0 > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
       <trace from=".RROLE0 > .pin2" to="net.ROLE0" schDisplayLabel="ROLE0" />
       <trace from=".RROLE1 > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
-      <trace from=".RROLE1 > .pin2" to="net.RATING" schDisplayLabel="RATING" />
+      <trace from=".RROLE1 > .pin2" to="net.ROLE1" schDisplayLabel="ROLE1" />
     </board>
   );
 };

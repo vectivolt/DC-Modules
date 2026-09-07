@@ -1,9 +1,11 @@
 // mcu-matrix.mjs — Phase 2 formal MCU resource matrix (§20, risk R3).
 // Computes REQUIRED resources per SKU and compares against ASSUMED-AVAILABLE GD32G553 resources.
-// PROVENANCE: "avail" numbers are GD32G55x family-datasheet values as understood 2026-09 and are
-// marked ASSUMED until cross-checked against the current GigaDevice datasheet revision; the
-// pin-level table maps to STM32G474-compatible conventions (GD32G5 mirrors them) and MUST be
-// re-verified pin-by-pin before schematic freeze. No pin is reused (§20).
+// PROVENANCE: HRTIMER and timer counts are CONFIRMED against GD32G553xx Datasheet Rev 2.0 (gate
+// item A6, closed at R3 — docs/mcu-pin-allocation-gd32.md). The rest are still family-datasheet
+// values as understood 2026-09.
+// The pin-level table is NO LONGER STM32G474-derived: that assumption ("GD32G5 mirrors them") is
+// what put FLT on pin 74 (VSS) and BOOT0 on pin 100 (VDD). The authoritative pin map is
+// calculations/out/mcu-pin-allocation.json. No pin is reused (§20).
 // Run: node calculations/control/mcu-matrix.mjs
 
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -13,7 +15,11 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 mkdirSync(OUT, { recursive: true });
 
 const AVAIL = { // ASSUMED — verify against GD32G553 datasheet (R9)
-  hrtimer_ch: 12,      // 6 counting units × 2 outputs
+  // A6/R3: 8 slave units x 2 = 16 outputs, NOT the 6 units / 12 outputs previously assumed.
+  // Note the units also matter, not just the outputs: a half-bridge leg driven as a COMPLEMENTARY
+  // pair consumes one whole unit (the dead-time generator lives in the pair), so the LLC ceiling
+  // is 8 legs by units before it is 16 outputs by channels.
+  hrtimer_ch: 16, hrtimer_units: 8,
   adv_timer_ch: 8,     // spare advanced-timer channels for SR/aux PWM
   adc_units: 4, adc_ext_ch: 16, adc_ksps_per_unit: 4000e3 / 1e3, // ~4 MSPS/unit assumed
   comparators: 8, dac: 4, can: 2, usart: 5, spi: 3, gpio_lqfp100: 82,
@@ -34,7 +40,7 @@ const line = (s, m, res, req, av, note = "") => {
 
 for (const { name, lanes, ch } of SKUS) {
   // -------- MCU-PFC --------
-  line(name, "PFC", "HRTIM PWM ch", 3 * lanes, AVAIL.hrtimer_ch, "1 PWM/phase (common-source pair), lane phase-shift via timer units");
+  line(name, "PFC", "HRTIM PWM ch", 3 * lanes, AVAIL.hrtimer_ch, "1 PWM/phase (common-source pair) -- one OUTPUT each, so channels is the right limit here");
   line(name, "PFC", "ADC fast ch (I)", 3 * lanes, AVAIL.adc_units * 4, "per-lane phase currents, sampled every sw period");
   line(name, "PFC", "ADC slow ch (V+T)", 3 + 3 + 4, AVAIL.adc_ext_ch, "3 phase V, VBUS+/-/mid, 4 temps — sequencer-muxed");
   // sample-rate budget: each lane current at fsw (70 kHz) → 3*lanes*70k conversions/s
@@ -44,7 +50,11 @@ for (const { name, lanes, ch } of SKUS) {
   line(name, "PFC", "DAC (thresholds)", 2, AVAIL.dac);
   line(name, "PFC", "Relay/fan/misc GPIO", 8, 20, "precharge, discharge, 2 fan PWM, 2 tach, kill, LED");
   // -------- MCU-LLC --------
-  line(name, "LLC", "HRTIM PWM ch", 3 * ch, AVAIL.hrtimer_ch, "half-bridge pairs from complementary units, common PFM clock");
+  // Legs against UNITS, not outputs: one complementary pair = one slave unit (the dead-time
+  // generator lives in the pair), so the ceiling is 8 legs even though there are 16 channels.
+  // Comparing 12 legs against 16 channels reported 120 kW as fitting when it does not.
+  line(name, "LLC", "HRTIM units (legs)", 3 * ch, AVAIL.hrtimer_units, "1 slave unit per half-bridge leg, complementary CH0/CH1 with hardware dead-time");
+  line(name, "LLC", "HRTIM outputs (H+L)", 6 * ch, AVAIL.hrtimer_ch, "two gate signals per leg");
   line(name, "LLC", "SR PWM ch (if SR)", 4 * ch, AVAIL.adv_timer_ch, ch > 2 ? "SR NOT timer-driven at 120 kW → SR controller ICs or JBS (Phase 7)" : "");
   line(name, "LLC", "ADC fast ch (Ires)", ch, AVAIL.adc_units * 4, "1 protection-grade resonant I per channel (per-leg via ext. OR)");
   line(name, "LLC", "ADC slow ch", 2 + 2 + 4, AVAIL.adc_ext_ch, "Vout, Iout, VbankA/B, temps");

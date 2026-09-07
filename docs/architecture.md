@@ -7,7 +7,7 @@ One repeatable ~10 kW **cell pair** (PFC phase cell + LLC section) instantiated 
 ```
 3φ 285–475 VAC (full P ≥330 V)
  → fuse • MOV network • CM/DM EMI (2-stage) → precharge 33 Ω + bypass relay
- → Vienna 3-level PFC, 50 kHz, per phase: 165 µH sendust choke (T79 26µ 3-stack, N=36),
+ → Vienna 3-level PFC, 50 kHz, per phase: 165 µH-class sendust choke (0077908A7 26µ 3-stack, N=39±1 — D1 rev B, audit E35),
    common-source B3M010C075Z pair (1 PWM), 2× 1200 V/40 A JBS to rails,
    RC 10Ω/470p + RCD clamp (JBS+100 nF+470 Ω) per node
  → split bus 800 V (650–830 V commanded), 2×(5× 470 µF/450 V) + film, midpoint sensed,

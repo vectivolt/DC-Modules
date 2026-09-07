@@ -4,30 +4,55 @@ All values trace to `calculations/pfc/pfc-design.mjs` and `calculations/llc/llc-
 Acceptance limits are the production test spec (EOL §45). Material fits are catalog-class,
 marked VERIFY (A3/A4) — first-article measurement closes them.
 
-## D1 — PFC choke, 165 µH swing (p/n IND-PFC-165u) — qty 3/6/12 per SKU
+## D1 rev B — PFC choke, 165 µH swing (p/n IND-PFC-165u) — qty 3/6/12 per SKU
+
+**Rev B (margin audit 2026-09-08, F4):** re-issued against the REAL catalog core and the
+calculator's selected copper. Rev A specified 13.75 mm²/N=36, which fails its own Rdc line
+(computes 12.05 mΩ vs ≤11) and — on the actual Magnetics 0077908A7 (AL 37 nH/T² ±8%, effective
+Ae 2.27 cm², not the 2.62 cm² geometric idealisation) — lands L₀ at 144 µH, below the −12% floor,
+and 71 µH at 78 A, below acceptance.
 
 | Item | Spec |
 |---|---|
-| Core | 3× stacked sendust toroid OD79/ID49/H17 mm, µ=26 (Kool Mµ-class; POCO/DMEGC equivalent, matched Ae·le·µ) |
-| Winding | N = 36, flat-bundle 13.75 mm² Cu (7× 1.6 mm enameled parallel, or 2×(6×1) flat wire — winder's choice, Rdc governs), single layer spread ≥300° |
-| Terminations | 2× ring-lug flying leads M5, 60 mm; polarity dot at start |
-| L @ 0 A | 165 µH ±12% (100 kHz, 0.1 V) |
-| L @ 78 A pk bias | ≥ 75 µH (pulse method; ACCEPTANCE) |
-| Rdc | ≤ 11 mΩ @25 °C |
-| Loss @ rated | 33.5 W calc (24 W @400 V line) — ΔT ≤ 45 °C over 55 °C ambient, thermocouple at inner bore |
+| Core | 3× stacked sendust toroid OD79/ID48/H17 mm, µ=26 — **Magnetics 0077908A7 or matched equivalent (Chang Sung KS / POCO / DMEGC), AL 37 nH/T² ±8% per core** |
+| Winding | **N = 39 nominal; winder trims ±1 turn per core lot** so both L lines below are met across the AL ±8% band (standard swing-choke practice — a fixed N misses the bias floor on a low-AL lot). Flat copper **3×(6×1 mm) = 18 mm²** on edge (alt: 9× 1.6 mm enameled 2-layer — Rdc governs), spread ≥300° |
+| Terminations | 2× tinned flying leads, 60 mm, solder into the board's plated holes (§0.1 — resolves the rev-A ring-lug/hole conflict in favour of the board) |
+| L @ 0 A | **168 µH nominal; accept 150–185 µH** (100 kHz, 0.1 V — brackets core AL ±8%) |
+| L @ 78 A pk bias | ≥ 75 µH (pulse method; ACCEPTANCE — calc 77 µH on nominal AL) |
+| Rdc | ≤ 11 mΩ @25 °C (calc 10.0 mΩ) |
+| Core loss @ rated ripple | ≈ 2.4 W calc (ΔB ≈ 70 mT pp @ 50 kHz, A3 fit) — stated so the loss line is auditable |
+| Loss @ rated | ≈ 35 W calc total (Cu 32.4 + Fe 2.4) — ΔT ≤ 45 °C over 55 °C ambient, thermocouple at inner bore (calc ≈ 36 °C) |
 | Isolation | winding–core 500 VAC/1 min (functional; core floats on mount) |
-| Mount | center bolt M6 + silicone pad; mass ~0.9 kg |
+| Mount | center bolt M6 + silicone pad; mass ~1.0 kg |
 | Hi-pot | none (line-potential part; board-level hipot covers) |
 
-## D2 — Resonant trim inductor 4.3 µH ±5% (IND-TRIM-4u3) — qty 3/6/12
+## D2 rev C — Resonant trim inductor bin set (IND-TRIM-BIN4) — qty 3/6/12
 
-Single sendust toroid OD33 µ=60 class, N≈9, 10 mm² litz (800×0.1 mm). **REV B (from §37 Monte-Carlo):
-four bin values 3.3/3.65/4.0/4.35 µH ±3% (BOM p/n IND-TRIM-BIN4 — R2 CB-22 put the bin SET in the
-BOM; the old single 4.3 µH line was the pre-MC rev-A part); the bin is SELECTED against the mated
-transformer's measured leakage so that **Lr(total) = 7.0 µH ±3% (E7 rev D2)** — rev-A independent
-tolerances failed peak-gain yield (17.7%); an earlier "7.3 µH" acceptance line here was the stale
-rev-A total (R2 doc fix). Rac ≤ 6 mΩ @140 kHz; Irms 46 A; ΔT ≤ 40 °C. Kitting: transformer leakage
-label → trim bin pick at assembly (DFM step 3).
+**Rev C (margin audit 2026-09-08, F1): core technology changed sendust → GAPPED FERRITE.** The
+rev-B sendust toroid (OD33 µ60, N≈9) carries the full tank current — 46 A rms *sinusoidal* at
+140 kHz — i.e. full AC flux swing, ±≈310 mT. On the design's own A3 sendust loss fit that is
+**≈43 W of core loss in a 7 cm³ core** against a ~4 W/section tank budget, and at the 96 Oe peak
+field the permeability falls to ~41%, so L swung 7.4→3 µH across every resonant cycle — the ±3%
+bin concept cannot exist on a powder core at this operating point. **Powder cores are prohibited
+in this slot** (they are for DC-bias + ripple duty, like D1/D6). No core-loss line existed in
+rev B; every magnetic drawing now must state one.
+
+| Item | Spec |
+|---|---|
+| Core | **2× stacked PQ50/50, PC95/DMR95/3C95-class (SAME core p/n as D3** — one more ferrite line-item, zero new supply chain) |
+| Turns | **N = 4**, litz 1050×0.1 mm (8.25 mm², same construction family as D3 primary) |
+| Gap | total ≈ 3.3 mm, **distributed 2 positions per leg**, winding kept ≥5 mm clear of gaps (margin tape); **gap GROUND per bin** — same grind-to-AL process the D3 Lm already uses |
+| Bins | four L values **3.3 / 3.65 / 4.0 / 4.35 µH ±3%** (grind targets ≈3.05/3.37/3.70/4.03 mm before fringing; grinding trims fringing out); bin SELECTED against the mated transformer's measured leakage so **Lr(total) = 7.0 µH ±3% (E7 rev D2)** |
+| B_pk @ 65 A pk | ≤ 100 mT (calc 99 mT — loss-safe at 140 kHz by ~2× vs the 135 mT knee) |
+| Core loss | ≈1.9 W typical op / ≈6.8 W at the worst envelope corner (bank 245–262 V SER, 46 A rms) — A4 fit |
+| Rac | ≤ 4 mΩ @140 kHz (calc 1.5 mΩ Rdc ×1.15); Cu ≈3.3 W at 46 A |
+| Thermal | ΔT ≤ 40 K at 46 A rms continuous (calc ≈37 K worst corner), thermocouple on core leg |
+| Hipot | winding→core 2.5 kV AC 1 min (functional — part sits at tank potential; the isolation barrier is elsewhere) |
+| Mount | 2× M4 clamp bar (same hardware family as D3); 2 tinned litz flying leads into the board's plated holes |
+
+Kitting unchanged: transformer leakage label → trim bin pick at assembly (DFM step 3). History:
+rev A = single 4.3 µH ±5% (pre-MC); rev B = sendust bin set (R2 CB-22 — electrically frozen values
+correct, core technology wrong). The frozen E7 rev D2 tank values are UNCHANGED by rev C.
 
 ## D3 — LLC section transformer 10 kW (XFMR-LLC-10K) — qty 3/6/12
 
@@ -35,8 +60,8 @@ label → trim bin pick at assembly (DFM step 3).
 |---|---|
 | Core | 3× PQ50/50 stacked, PC95/DMR95-class, **gapped for Lm = 63 µH (E7 rev D2)** (center-leg grind, glue-stacked) |
 | Turns | Np = 7, Ns1 = 7, Ns2 = 7 (1:1:1) |
-| Primary | litz 1050×0.1 mm (10.4 mm²), 45.6 A rms design |
-| Secondaries | 2× litz 460×0.1 mm TRIPLE-INSULATED (TIW), 22.2 A rms each |
+| Primary | **litz ≥9.8 mm² Cu (e.g. 1250×0.1 mm; Rdc line governs)**, 45.6 A rms design — audit F5: the rev-A "1050×0.1 (10.4 mm²)" was self-contradictory (1050×0.1 = 8.25 mm², J 5.5, fails the 2.0 mΩ line) |
+| Secondaries | **2× litz ≥4.9 mm² TRIPLE-INSULATED (TIW), e.g. 630×0.1 mm (Rdc line governs)**, 22.2 A rms each — rev-A 460×0.1 = 3.61 mm² failed the 4.2 mΩ line |
 | Interleave | S1 – P – S2 (leakage target ≤ 3 µH primary-referred; measured leakage recorded per unit) |
 | Shield | 1-turn Cu foil between P and each S, flying lead → primary star (CM control §18/§39) |
 | Insulation | pri↔sec REINFORCED: TIW + 2× 3.2 mm margin tape; pri↔core basic |
@@ -46,6 +71,9 @@ label → trim bin pick at assembly (DFM step 3).
 | Mount | 4× M4 clamp bar; mass ~1.6 kg |
 
 ## D4 — Aux flyback transformer (XFMR-AUX-FLY) — qty 1
+
+**SUPERSEDED — see D4 rev C below.** Kept for history: rev A was EF20/half-bus, rev B ETD29/60 W.
+Do not quote from this section.
 
 EE19/EF20 class, PC40, primary 425 V-max input (fed DCP→MID, E20), 3 outputs: 24 V/0.8 A, 15 V/0.6 A, aux 15 V bias; pri↔sec reinforced TIW, hipot 3 kV; fsw ~65 kHz flyback DCM. Detailed turns sheet issued with aux SPICE validation (open item V-21).
 
@@ -66,10 +94,34 @@ turns at EMI rev). ΔT ≤ 45 K at I_rms acceptance (thermocouple, like D1/D6). 
 functional via spacing; UL1446-class tape. **Loss budget: EMI-filter line added (thermal-report
 rev D) — these losses existed before, they were just unbudgeted.**
 
-## CTs
+**Catalog adoption @30 kW (margin audit 2026-09-08):** Schaffner **RT8131-63-2M8** (vertical:
+RT8531-63-2M8) — 3-line, 63 A @60 °C, 2.8 mH, 600 VAC, nanocrystalline, PCB-mount, Digi-Key
+stocked — qualifies as a drop-in for the 30 kW winding (55.9 A worst). Qualify at EMI rev; this
+custom drawing then becomes the second source (Schaffner is single-source post-TE-acquisition;
+custom-wind fallback cores: VAC T60006 via Mouser singles, or King Magnetics rings). 60/120 kW
+reference windings stay custom — nothing in any catalog reaches 110/220 A at ≥2 mH.
 
-- Line CT (CT-60A): 1:2500, ferrite, window ≥ 9 mm (busbar pass-through), 33 Ω burden → 0.79 V/55 A rms; linearity ≤1% to 150 A pk (OC observability); qty 3/6/12.
-- Resonant CT (CT-RES): 1:100 on 10 mm toroid, in series with tank; **2.0 Ω burden → 20 mV/A-primary: 46 A rms full load = 0.92 V rms, F.11 70 A pk = 1.40 V above AVMID (R2 CB-16 — the 33 Ω line-CT burden had been copied here, giving 15 V rms and 7 W in a 0.25 W part)**; linearity to 100 A pk; calibrated at EOL; qty 3/6/12.
+## CT — current transformers — qty 3/6/12 each — **CATALOG PARTS (audit 2026-09-08)**
+
+- Line CT: **Talema ACX-1100** (2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins — made
+  at Talema Salem, India; closes the CT-100A REVIEW line). Burden on PCB **27 Ω → 0.59 V/55 A rms;
+  150 A pk OC observability = 1.62 V above AVMID, inside the 3.3 V ADC rail** (R3 fix landed —
+  the drawn 33 Ω put 150 A pk at 3.63 V, clipping the top of the protection range). Linearity
+  ≤1% to 150 A pk. qty 3/6/12.
+- Resonant CT: **Talema AS-404** (1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — the tank conductor
+  is the primary, so tank-potential insulation rides the tank wire; alt: Coilcraft CST2010-100L,
+  SMT, 47 A/1 MHz — sits at its 40 K rise at 46 A rms, airflow-verify). **2.0 Ω burden → 20 mV/A:
+  46 A rms = 0.92 V rms, F.11 70 A pk = 1.40 V above AVMID (R2 CB-16)**; linearity to 100 A pk;
+  calibrated at EOL; qty 3/6/12.
+
+**Acceptance (both CTs).** Turns ratio ±0.5 %, 100 %. Secondary Rdc recorded per unit (it feeds the
+EOL gain calibration). Phase shift ≤ 1° **at the operating frequency — 50/60 Hz for the line CT but
+140 kHz for CT-RES**: the resonant CT is a switching-frequency part and a line-frequency core will
+not serve it. Isolation busbar↔secondary 2.5 kV AC 1 min for the line CT (it sits on a line-potential
+busbar); the resonant CT is tank-referenced, functional insulation only. Saturation: the line CT must not
+saturate below 150 A peak, CT-RES below 100 A peak — that is the overcurrent observability limit,
+so it is an acceptance test and not a typical. **ΔT ≤ 30 K** at rated primary current. The burden
+resistor is on the PCB, not in the part (33 Ω line, 2.0 Ω resonant) — quote the CT bare.
 
 
 ---
@@ -83,15 +135,114 @@ Bpk 0.30 T). The primary sits at **bus potential**; the pri→sec barrier is rei
 margin, hipot 4 kV) and is the load-bearing barrier for the E25 SELV control domain — flag it as a
 **safety-critical winding operation** in the winder's traveler (100 % hipot, not sampled).
 
-## D6 — DM line chokes (HR-9, new drawing)
+Qty **1 per module**, all ratings (one aux supply per module; 110 W class covers the 120 kW worst
+load at ≥20 % corner margin). Thermal acceptance: **ΔT ≤ 45 K** at the per-SKU load, thermocouple
+on the outside of the primary margin tape — same method as D1/D3. Rdc: primary ≤ 900 mΩ,
+24 V ≤ 60 mΩ, 15 V ≤ 45 mΩ, aux ≤ 45 mΩ (bench T-18 confirms against the loss budget).
+
+## D6 — DM line chokes (DM-22u-SKU) — qty 3 per module, one per phase (HR-9, new drawing)
 
 The 3rd-stage DM chokes (`LDM1–3`, E22) carry the full line current and now get a real drawing:
 
-| SKU | I_rms/line | I_pk (ripple incl.) | Core | Winding | L @ I_pk |
+**Rev B (margin audit 2026-09-08, F7): every winding one gauge up.** Rev A ran 8.3 / 18.3 / 17.6
+A/mm² — the 30 kW part computed ΔT 46–49 K against its own 45 K acceptance, and the thermal
+report had already flagged the 60/120 foils as first-article coin-flips. Rated at ≤5.6 A/mm²:
+
+| SKU | I_rms/line | I_pk (ripple incl.) | Core | Winding (rev B) | L @ I_pk |
 |---|---|---|---|---|---|
-| 30 kW | 55 A | 82 A | 26µ sendust OD47×24×18 | 14 T × 2×AWG12 eq. flat | ≥ 22 µH ≥ 70 % roll-off point |
-| 60 kW | 110 A | 158 A | 26µ sendust OD57×26×20 | 11 T × copper foil 0.3×20 | ≥ 22 µH |
-| 120 kW | 220 A | 311 A | 26µ sendust OD79×40×17 ×2 stacked | 8 T × foil 0.5×25 | ≥ 22 µH |
+| 30 kW | 55 A | 82 A | 26µ sendust OD47×24×18 | **14 T × 3×AWG12 eq. (9.9 mm²)** — calc 6.3 W, ΔT ≈ 34 K | ≥ 22 µH ≥ 70 % roll-off point |
+| 60 kW | 110 A | 158 A | 26µ sendust OD57×26×20 | **11 T × copper foil 0.5×40 (20 mm²)** | ≥ 22 µH |
+| 120 kW | 220 A | 311 A | 26µ sendust OD79×40×17 ×2 stacked | **8 T × foil 2×(0.5×40) = 40 mm²** | ≥ 22 µH |
+
+(60/120 kW rows serve the reference boards; the shipping product is N× 30 kW modules — each
+cabinet line is three 30 kW chokes per module.)
 
 Acceptance: L(I_pk) ≥ 15 µH (LISN margin recomputed at −3 dB worst-case — still ≥ +4 dB over the
 E22 closure), ΔT ≤ 45 K at I_rms (foil), hipot winding–core 2.5 kV. Same vendor/traveler flow as D1.
+
+---
+
+# §0 — Ordering pack: what every drawing above still needs
+
+All seven magnetics are custom-by-drawing, so **the drawing is the part**. The sections above are
+complete *electrically*; a winder also needs the mechanical envelope, the terminations, the
+insulation system, the acceptance regime and the traceability that decides whether a delivered unit
+is good. Where those are absent the winder substitutes their own assumptions and you find out at
+first article. `calculations/magnetics-rfq-audit.mjs` checks these fields are present.
+
+## 0.1 Mechanical envelope and terminations — the board is already laid out to these
+
+These come from `calculations/footprint-gen.mjs` (`MAGNETICS`), which is what the PCB land patterns
+were generated from. **Every toroid is PCB through-hole**: the winding leads are soldered directly
+into plated holes sized for the conductor. Drill is `√(4·CSA/π) + 1.2 mm`, pad = drill + 0.9 mm.
+
+**Audit 2026-09-08: rows marked (†) changed conductor or construction — their drills/keep-outs
+differ from the land patterns already generated; re-run `footprint-gen.mjs` before layout freeze.**
+
+| drawing | core OD/ID/H (mm) | leads | conductor | drill / pad (mm) | max footprint ⌀ | mounting |
+|---|---|---|---|---|---|---|
+| D1 PFC choke † | 79 / 48 / 17 ×3 stacked (H 51) | 2 | 18 mm² (3×6×1 flat) | 6.0 / 6.9 | 87 | **M6 centre bolt** + silicone pad |
+| D2 trim inductor † | 2× PQ50/50 stack (50×64×35) | 2 | 8.25 mm² litz | 4.44 / 5.34 | **68 × 56 envelope** | **2× M4 clamp bar** |
+| D6 DM choke 30 kW † | 47 / 24 / 18 | 2 | 9.9 mm² | 4.75 / 5.65 | 55 | bonded |
+| D6 DM choke 60 kW † | 57 / 26 / 20 | 2 | 20 mm² foil | 6.25 / 7.15 | 65 | bonded |
+| D6 DM choke 120 kW † | 79 / 40 / 17 ×2 (H 34) | 2 | 40 mm² foil | 8.34 / 9.24 | 87 | bonded |
+| D7 CM choke 30 kW | 62 / 32 / 25 | **6** (3 windings) | 10 mm² foil | 3.97 / 4.87 | 70 | bonded |
+| D7 CM choke 60 kW | 80 / 45 / 30 | **6** | 25 mm² foil | 6.04 / 6.94 | 88 | bonded |
+| D7 CM choke 120 kW | 102 / 60 / 35 | **6** | 50 mm² foil | 8.38 / 9.28 | 110 | bonded |
+| D3 LLC transformer | 3× PQ50/50 | 7 pins @ 10 mm | ≥9.8 mm² litz (F5) | bobbin pins | 96 × 50 × 50 | **4× M4 clamp bar** |
+| D4 rev C aux flyback | ETD34 | 8 pins @ 5.08 mm | 0.8 mm² | bobbin pins | 35 × 26 × 25 | bobbin pins only |
+| Line CT (Talema ACX-1100) | 42 dia / Ø14.6 window | 4 PCB pins | catalog part | per Talema drawing | 44 | PCB pins; busbar through window |
+| Resonant CT (Talema AS-404) | case w/ Ø8 pass-through | 2 PCB pins | catalog part | per Talema drawing | 26 | PCB pins; tank wire is the primary |
+
+The "max footprint ⌀" is core OD + 8 mm, the winding-build allowance the land patterns reserve.
+**A finished part wider than this does not fit its keep-out** — it is an acceptance dimension, not
+a guide.
+
+> **RESOLVED (D1 rev B, audit 2026-09-08).** Rev A said *"ring-lug flying leads M5"* while the
+> board gives two plated holes — a ring lug cannot land in a hole. Decided for the board:
+> **tinned flying leads, 60 mm, soldered into the plated holes**; the D1 rev B table above now
+> says exactly that, and the holes grow to 6.0 mm for the 18 mm² conductor (†).
+
+## 0.2 Thermal class — derived, and it rules out Class B
+
+Ambient envelope is **full power to +55 °C, derating to +75 °C** (A11, spec §2). Applying each
+drawing's own rise limit at the *derated* ambient:
+
+| drawing | rise limit | hotspot at +55 °C | at +75 °C derated | minimum class |
+|---|---|---|---|---|
+| D1, D6, D7 | ΔT ≤ 45 K | 100 °C | 120 °C | **F (155 °C)** |
+| D2 | ΔT ≤ 40 K | 95 °C | 115 °C | **F** |
+| D3 | hotspot ≤ +55 K | 110 °C | 130 °C | **F**, H preferred |
+
+**Class B (130 °C) has no margin anywhere and is negative for D3 at the derated corner.** Specify
+a **Class F (155 °C) insulation system minimum**, UL 1446 recognised as a system (not as individual
+materials), H (180 °C) for D3.
+
+## 0.3 Still open — the winder will ask, and these are not ours to assume
+
+- **Low-temperature limit.** A11 states only the high end. Storage and operating minima are
+  unspecified anywhere in the repo. Litz bonding, tape adhesion and potting all depend on it.
+  *An EV charger installed outdoors is normally −25 or −40 °C; pick one and record it in A11.*
+- **Humidity / condensation and any conformal or vacuum-impregnation requirement.**
+- **Vibration and shock class**, which decides whether the toroids need bonding or banding beyond
+  the silicone pad.
+
+## 0.4 Acceptance, traceability and compliance — applies to every drawing
+
+- **100 % electrical test** of the acceptance line in each section. Sampled tests are called out
+  individually (D3 partial discharge, 5/lot).
+- **100 % hipot** where a drawing states one. D3 and D4 rev C carry the reinforced primary↔secondary
+  barrier that the SELV control domain depends on: flag both in the winder's traveler as a
+  **safety-critical winding operation — 100 %, never sampled**.
+- **Per-unit measured-value labelling where a downstream step consumes it.** D3's measured leakage
+  selects the D2 trim bin at kitting (DFM step 3). A D3 delivered without its leakage label is
+  unusable even if electrically perfect.
+- **Lot code and date code** on every part, traceable to core lot and wire lot.
+- **First article**: dimensional report against §0.1, full electrical against the acceptance line,
+  and a cross-section or teardown for the two reinforced-barrier parts.
+- **RoHS / REACH**; all organic materials UL 94 V-0.
+- **Packaging**: individually separated — the toroids are heavy enough (D1 ≈ 0.9 kg, D3 ≈ 1.6 kg)
+  to damage neighbours in bulk packing.
+- **Drawing control**: every section above needs a drawing number, revision and date before it is
+  sent out. D2, D3 and D4 have already been revised (rev B / rev D2 / rev C) and the revisions are
+  recorded in prose rather than in a controlled block.

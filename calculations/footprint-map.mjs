@@ -67,7 +67,7 @@ export const FOOTPRINT = {
   // R9: the holder must match the LINK size, and RT28-32 takes only 10x38 mm / 2-32 A. A 63 A gG
   // link is 14x51 and a 125 A is 22x58, so each SKU needs its own holder; 250 A leaves the RT28
   // range entirely and is a different MOUNTING class (NH1 blade / bolted tag), not a substitution.
-  "FUSE-gG-690V": "FUSE_holder_RT28-32", "FUSE-gG-690V-63A": "FUSE_holder_RT28-63",
+  "FUSE-gG-690V": "FUSE_holder_22x58", "FUSE-gG-690V-80A": "FUSE_holder_22x58",
   "FUSE-gG-690V-125A": "FUSE_holder_NH00", "FUSE-gG-690V-250A": "FUSE_holder_NH01",
   "SHUNT-MANG": "SHUNT_4-terminal_manganin",
   // --- modules / connectors / HMI ---

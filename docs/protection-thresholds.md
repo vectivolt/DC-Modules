@@ -7,7 +7,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 
 | # | Fault | Threshold | Act | Layer | Action | Code |
 |---|---|---|---|---|---|---|
-| 1 | PFC phase OC | 105 A pk (CT, per lane-phase) | <2 µs | HW comp→HRTIM kill | PFC PWM off, latch | F.01 |
+| 1 | PFC phase OC | 105 A pk (CT, per lane-phase; **27 Ω burden → 1.13 V above AVMID = 2.78 V at comparator; 150 A observability ceiling = 3.27 V, inside the rail — R3/audit**) | <2 µs | HW comp→HRTIM kill | PFC PWM off, latch | F.01 |
 | 2 | PFC DESAT | VDS>9 V @on, 2.5 µs blank | <3 µs | HW driver | soft-off, FLT latch | F.02 |
 | 3 | Bus OVP | **860 V** total (E2) | <25 µs¹ | HW comp | all PWM kill | F.03 |
 | 4 | Bus OV (fw) | 845 V, 1 ms | 1 ms | FW | controlled stop | F.04 |

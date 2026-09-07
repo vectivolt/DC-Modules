@@ -56,7 +56,7 @@ const PARTS = {
     ],
     dcdc: [
       ["D3 LLC transformer",  3, 150, 60],  // VERIFY: 3× PQ50/50 stacked + bobbin + 4× M4 clamp
-      ["D2 trim inductor",    3, 45, 45],   // OD33 + 8 + 2
+      ["D2 trim inductor",    3, 68, 56],   // D2 rev C: 2×PQ50/50 stack envelope (audit F1)
       ["bank electrolytic",   8, 37, 37],
       ["HFE82V HV relay",     5, 52, 36],   // S/P matrix + K_OUT + pre-insertion
       ["shunt 100 A",         1, 40, 15],

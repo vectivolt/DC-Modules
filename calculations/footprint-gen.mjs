@@ -298,17 +298,19 @@ ${rect(L + 4, W + 4, "F.CrtYd", 0.05)}
 // Every row below is quoted from docs/magnetics.md. Where a drawing gives per-SKU cores (D6, D7)
 // the SKU key carries its own row; everything else is common to all three SKUs.
 const MAGNETICS = {
-  // D1 — PFC choke, 3x stacked sendust OD79/ID49/H17 mu=26, centre M6 bolt, 13.75 mm2 Cu
-  "L_Toroid_3xT79_26u_custom": { all: { kind: "toroid", od: 79, id: 49, h: 17, stack: 3, csa: 13.75, bolt: 6,
-    what: "D1 PFC choke 165 uH, 3x stacked sendust toroid mu=26, N=36" } },
-  // D2 — resonant trim inductor, single sendust OD33 mu=60, N~9, 10 mm2 litz
-  "L_Toroid_trim_bin_custom": { all: { kind: "toroid", od: 33, id: 16, h: 11, csa: 10,
-    what: "D2 resonant trim inductor, bin set 3.3/3.65/4.0/4.35 uH, sendust OD33 mu=60" } },
+  // D1 rev B — PFC choke, 3x stacked 0077908A7-class sendust, centre M6 bolt, 18 mm2 Cu (audit F4)
+  "L_Toroid_3xT79_26u_custom": { all: { kind: "toroid", od: 79, id: 48, h: 17, stack: 3, csa: 18, bolt: 6,
+    what: "D1 rev B PFC choke 165 uH class, 3x stacked sendust toroid mu=26 (AL 37), N=39, 18 mm2 flat Cu" } },
+  // D2 rev C — resonant trim inductor, GAPPED FERRITE 2x PQ50/50 stack, 2 litz flying leads
+  // (audit F1: sendust at full 140 kHz AC swing = ~43 W core loss; powder prohibited in this slot).
+  // Modeled as a 2-lead part with the PQ stack envelope; leads land in plated holes like a toroid.
+  "L_Toroid_trim_bin_custom": { all: { kind: "toroid", od: 68, id: 40, h: 35, csa: 8.25, clampNote: "2x M4 clamp bar",
+    what: "D2 rev C resonant trim bin set 3.3/3.65/4.0/4.35 uH, gapped 2x PQ50/50 (envelope 68x56)" } },
   // D6 — DM line chokes, per-SKU core and winding
   "L_Toroid_sendust_per-SKU": {
-    "30kw":  { kind: "toroid", od: 47, id: 24, h: 18, csa: 6.6,  what: "D6 DM line choke 22 uH, 26u sendust OD47x24x18, 14 T (30 kW, 55 A)" },
-    "60kw":  { kind: "toroid", od: 57, id: 26, h: 20, csa: 6.0,  what: "D6 DM line choke 22 uH, 26u sendust OD57x26x20, 11 T foil 0.3x20 (60 kW, 110 A)" },
-    "120kw": { kind: "toroid", od: 79, id: 40, h: 17, stack: 2, csa: 12.5, what: "D6 DM line choke 22 uH, 26u sendust OD79x40x17 x2 stacked, 8 T foil 0.5x25 (120 kW, 220 A)" },
+    "30kw":  { kind: "toroid", od: 47, id: 24, h: 18, csa: 9.9,  what: "D6 rev B DM line choke 22 uH, 26u sendust OD47x24x18, 14 T x 3xAWG12 (30 kW, 55 A — audit F7)" },
+    "60kw":  { kind: "toroid", od: 57, id: 26, h: 20, csa: 20,  what: "D6 rev B DM line choke 22 uH, 26u sendust OD57x26x20, 11 T foil 0.5x40 (60 kW, 110 A — audit F7)" },
+    "120kw": { kind: "toroid", od: 79, id: 40, h: 17, stack: 2, csa: 40, what: "D6 rev B DM line choke 22 uH, 26u sendust OD79x40x17 x2 stacked, 8 T foil 2x(0.5x40) (120 kW, 220 A — audit F7)" },
   },
   // D7 — 3-phase CM chokes, per-SKU core and winding; 3 windings x 2 leads
   "L_CMC_3ph_nanocryst_per-SKU": {
@@ -323,8 +325,8 @@ const MAGNETICS = {
   "XFMR_ETD34_custom": { all: { kind: "bobbin", w: 35, d: 26, h: 25, pins: 8, pitch: 5.08, csa: 0.8,
     what: "D4 rev C aux flyback transformer, ETD34 PC95, 110 W class, Np 38 / N24 6 / N15 4 / Naux 4" } },
   // CTs — line CT needs a >=9 mm busbar window; resonant CT is a 10 mm toroid in series with the tank
-  "CT_window_100A_1-2500": { all: { kind: "toroid", od: 26, id: 11, h: 12, csa: 0.5,
-    what: "Line CT 1:2500 ferrite, >=9 mm busbar window, 33 R burden" } },
+  "CT_window_100A_1-2500": { all: { kind: "toroid", od: 42, id: 14.6, h: 25, csa: 0.5, pins4: true,
+    what: "Line CT: Talema ACX-1100 catalog (2500:1, 100 A, dia-14.6 window), 27 R burden — audit/R3; land per Talema drawing at layout" } },
   "CT_window_res_1-100": { all: { kind: "toroid", od: 16, id: 10, h: 8, csa: 0.5,
     what: "Resonant CT 1:100 on a 10 mm toroid, in series with the tank, 2.0 R burden" } },
   // CAN common-mode choke — TDK ACT45B-510-2P-TL003 (51 uH, 200 mA, EIA 1812)

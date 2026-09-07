@@ -2,7 +2,7 @@
 // v4 (2026-09-05, R2 review closure — docs/design-review-production-r2.md, register E32/E26-revC):
 //   CB-16 resonant CT burden 33→2.0 Ω 2512 (46 A rms/1:100 scaling) · CB-22 Cr 44→46 nF (rev D2 tank)
 //   CB-18 Rail3V3 sync-buck cell replaces the 15 V-fed LDO (fitted per board — CB-17)
-//   CB-19/20 aux rev C: 110 W all SKUs (Lp 490 µH, Ip 3.0 A @ 0.33 Ω, 50 kHz, D4 rev C), 400 V
+//   CB-19/20 aux rev C: 110 W all SKUs (Lp 345 µH, Ip 3.2 A @ 0.31 Ω, 65 kHz, D4 rev C), 400 V
 //   rectifiers, rail TVS (MR-17), QAUX gate pulldown, NCP1252 BR divider re-sized (MR-13)
 //   HR-13 watchdog symbol → 6-pin (VDD + window straps) · HR-15 DischargeCtl gets id param (bank bleeders)
 //   HR-20 balance/star resistors → 2-series HV · MR-11 AnalogMid dual-feedback + isolation R
@@ -63,10 +63,11 @@ export const TO247_2 = () => (
     </footprint>
 );
 export const ChokeFP = () => (
+  // D1 rev B (audit E35): holes sized for the 18 mm² flat-Cu flying leads (drill 6.0 / pad 6.9,
+  // magnetics §0.1 †). Courtyard unchanged (87 mm max part + margin).
   <footprint>
-    <platedhole portHints={["pin1"]} pcbX={-30} pcbY={-6} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
-    <platedhole portHints={["pin2"]} pcbX={30} pcbY={-6} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
-  
+    <platedhole portHints={["pin1"]} pcbX={-30} pcbY={-6} holeDiameter="6mm" outerDiameter="6.9mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={30} pcbY={-6} holeDiameter="6mm" outerDiameter="6.9mm" shape="circle" />
     <courtyardcircle pcbX={0} pcbY={0} radius="44.5mm" />
     </footprint>
 );
@@ -165,11 +166,13 @@ export const ShuntFP = () => (
     </footprint>
 );
 export const TrimFP = () => (
+  // D2 rev C (audit E35): gapped 2× PQ50/50 stack, envelope 68 × 56 — courtyard grown from the
+  // rev-B OD33-toroid ⌀45 and holes sized for the 8.25 mm² litz flying leads (drill 4.44/pad 5.34
+  // per magnetics §0.1 †). Lead span stays 30 mm.
   <footprint>
-    <platedhole portHints={["pin1"]} pcbX={-15} pcbY={0} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
-    <platedhole portHints={["pin2"]} pcbX={15} pcbY={0} holeDiameter="2.5mm" outerDiameter="4mm" shape="circle" />
-  
-    <courtyardcircle pcbX={0} pcbY={0} radius="22.5mm" />
+    <platedhole portHints={["pin1"]} pcbX={-15} pcbY={0} holeDiameter="4.44mm" outerDiameter="5.34mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={15} pcbY={0} holeDiameter="4.44mm" outerDiameter="5.34mm" shape="circle" />
+    <courtyardrect pcbX={0} pcbY={0} width="68mm" height="56mm" />
     </footprint>
 );
 export const CtFP = () => (
@@ -645,7 +648,10 @@ export const CtSensor = ({ id, out, sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , l
     {/* PCB: the CT body is 25 mm across, so the burden and clamps sit to its RIGHT, not on top
         of it. Envelope 57 × 25, one measurement row per phase. */}
     <chip layer={lay} name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor layer={lay} name={`R${id}B`} resistance="33" footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
+    {/* 27 Ω (R3, landed by audit 2026-09-08): 1:2500 → 0.59 V/55 A rms; the OC observability
+        limit 150 A pk reads 1.62 V above AVMID = 3.27 V, inside the 3.3 V rail. The previous
+        33 Ω put 150 A pk at 3.63 V — the top of the protection range clipped at the ADC. */}
+    <resistor layer={lay} name={`R${id}B`} resistance="27" footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
     <diode layer={lay} name={`D${id}P`} footprint="sod323" pcbX={24} pcbY={9} schX={6.6} schY={1.2} schSectionName={sec} />
@@ -883,32 +889,51 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
 // BOOT0/SWD nets bound at board level (CB-13). Pin numbers symbolic pending A6 datasheet closure.
 export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`mcu${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 10 × 16: the LQFP100 symbol is 0.4×10.2 with pins fanning both sides — give it
-        a full column; decoupling + reset + VDDA filter parts in a tidy row beneath it */}
+    {/* GD32G553VET6, LQFP-100. The supply/reset pins below are DATASHEET FACTS (Rev 2.0 Table 2-4,
+        via docs/mcu-pin-allocation-gd32.md), not choices:
+          VDD  24 49 64 75 100     VSS  23 48 63 74 99
+          VDDA 37   VSSA 35   VREFP 36   VBAT 6   NRST 14   BOOT0 95   SWDIO 76   SWCLK 77
+        These were previously STM32G474 numbers -- V3P3 on 11 and 27, DGND on 10 and 26, VDDA on
+        19/20. On this part those are ordinary I/O: pin 20 is PA0/ADC0_IN0, pin 26 is PA4, pin 27
+        is PA5, pin 11 is PF10. Every one of them is now a real signal in CARD_MCU_PINS, so the old
+        wiring shorted AIN0 to VDDA, AIN3 to V3P3, AIN12 to DGND and WDI to V3P3. This is the same
+        defect class the R3 audit caught as "FLT on pin 74 (VSS)". */}
     <chip layer={lay} name={`U${id}`} footprint={<Lqfp100 />} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    {[0, 1, 2, 3].map(i => (
-      <capacitor layer={lay} key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 6} pcbY={11} schX={-3 + i * 1.6} schY={-6.6} schSectionName={sec} />
+    {/* One 100 nF per VDD/VSS pair -- five pairs, five caps, each beside its own pin. */}
+    {[0, 1, 2, 3, 4].map(i => (
+      <capacitor layer={lay} key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 5} pcbY={11} schX={-3 + i * 1.6} schY={-6.6} schSectionName={sec} />
     ))}
-    <resistor layer={lay} name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={15} pcbY={11} schX={3.6} schY={-6.6} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={16} pcbY={11} schX={5.2} schY={-6.6} schSectionName={sec} />
     <resistor layer={lay} name={`FB${id}A`} resistance="0" footprint="0805" pcbX={-15} pcbY={11} schX={-3} schY={-8} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}A1`} capacitance="1uF" footprint="0603" pcbX={-15} pcbY={16} schX={-1.4} schY={-8} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}A2`} capacitance="100nF" footprint="0402" pcbX={-10} pcbY={16} schX={0.2} schY={-8} schSectionName={sec} />
-    {[0, 1, 2, 3].map(i => [
+    <capacitor layer={lay} name={`C${id}VR`} capacitance="100nF" footprint="0402" pcbX={-5} pcbY={16} schX={1.8} schY={-8} schSectionName={sec} />
+    {[0, 1, 2, 3, 4].map(i => [
       <trace key={`p${i}`} from={`.C${id}D${i} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />,
       <trace key={`g${i}`} from={`.C${id}D${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
     ])}
-    <trace from={`.U${id} > .pin11`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.U${id} > .pin10`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.U${id} > .pin27`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.U${id} > .pin26`} to="net.DGND" schDisplayLabel="DGND" />
+    {[24, 49, 64, 75, 100].map(p => (
+      <trace key={`vdd${p}`} from={`.U${id} > .pin${p}`} to="net.V3P3" schDisplayLabel="V3P3" />
+    ))}
+    {[23, 48, 63, 74, 99].map(p => (
+      <trace key={`vss${p}`} from={`.U${id} > .pin${p}`} to="net.DGND" schDisplayLabel="DGND" />
+    ))}
+    {/* VBAT must be SUPPLIED, not grounded: Table 4-3 gives 1.71 V minimum, and grounding it
+        unpowers the backup domain, which takes PC13/PC14/PC15 with it. */}
+    <trace from={`.U${id} > .pin6`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.FB${id}A > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.FB${id}A > .pin2`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
-    <trace from={`.U${id} > .pin19`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
-    <trace from={`.U${id} > .pin20`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
+    <trace from={`.U${id} > .pin37`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
+    {/* VREFP tied to the filtered analogue supply; there is no VREFN pin -- it is internally
+        strapped to VSSA. VSSA returns to AGND, which meets DGND once, at RAGTC on the card. */}
+    <trace from={`.U${id} > .pin36`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
+    <trace from={`.C${id}VR > .pin1`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
+    <trace from={`.C${id}VR > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.U${id} > .pin35`} to="net.AGND" schDisplayLabel="AGND" />
     <trace from={`.C${id}A1 > .pin1`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
-    <trace from={`.C${id}A1 > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.C${id}A1 > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
     <trace from={`.C${id}A2 > .pin1`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
-    <trace from={`.C${id}A2 > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.C${id}A2 > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
     <trace from={`.R${id}RST > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.R${id}RST > .pin2`} to={`net.NRST_${id}`} schDisplayLabel={`NRST_${id}`} />
     <trace from={`.U${id} > .pin14`} to={`net.NRST_${id}`} schDisplayLabel={`NRST_${id}`} />
@@ -1004,10 +1029,11 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     {/* controller ground/reference + VIN sense pin parked on VCC rail (IC-internal HV sense unused) */}
     <trace from=".UAUX > .GND" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* R3: RT (physical 4) sets the switching frequency and was floating, so the frequency-setting
-        element was simply absent — the stage had no defined Fsw. Sized for the 65 kHz DCM design
-        point of E26/D4 rev C. VALUE REVIEW: the exact RT for 65 kHz comes off the NCP1252A
-        RT-vs-Fsw curve (§K); the component and its net are correct regardless. */}
-    <resistor name="RAUXRT" resistance="100k" footprint="0603" pcbX={4} pcbY={22} schX={2} schY={-3} schSectionName={sec} />
+        element was simply absent — the stage had no defined Fsw. VALUE CLOSED (audit 2026-09-08,
+        NCP1252 datasheet Rev 9 Table 3): 43 kΩ → 100 kHz, 8.5 kΩ → 500 kHz ⇒ f ≈ 4300/RT[kΩ] kHz
+        ⇒ 66.5 kΩ 1% ≈ 64.7 kHz for the 65 kHz D4 rev C point (±5% jitter already in the corner
+        margin; A-suffix DCmax 48% vs 23% worst DCM t_on — comfortable). */}
+    <resistor name="RAUXRT" resistance="66.5k" footprint="0603" pcbX={4} pcbY={22} schX={2} schY={-3} schSectionName={sec} />
     <trace from=".RAUXRT > .pin1" to=".UAUX > .RT" />
     <trace from=".RAUXRT > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* brown-in program: full-bus divider → BR (start ≈ 330 V, hysteresis per IC) */}

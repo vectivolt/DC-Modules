@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cells = readFileSync(join(ROOT, "packages/power-primitives/cells.tsx"), "utf8");
 const boards = readFileSync(join(ROOT, "packages/common-components/boards.tsx"), "utf8");
+const card = readFileSync(join(ROOT, "packages/common-components/control-card.tsx"), "utf8");
 const db = readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8");
 
 let fail = 0;
@@ -24,16 +25,16 @@ const ck = (id, cond, what) => {
 ck("CB-1", /X1-2u2-530/.test(db) && !/X2-2u2-310/.test(db), "X caps are X1 530 VAC class");
 ck("CB-2", /CB\[AB\]\\d\+\[TB\]/.test(db) && /CBA\$\{i\}T/.test(boards) && /net\.BKAM/.test(boards) && /RBALBA/.test(boards), "bank electrolytics are 2-series strings with midpoint + balance");
 ck("CB-3", /IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN"/.test(boards) && /IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN"/.test(boards) && !/HvDivider/.test(boards), "bank/output senses are in-domain IsoVSense (no HvDivider left)");
-ck("CB-4", /RAGTA[\s\S]*?net\.AGND[\s\S]*?net\.DGND/.test(boards) && /RAGTB/.test(boards), "AGND–DGND 0 Ω tie on both boards");
+ck("CB-4", /name="RAGTC"/.test(boards) && !/name="RAGT[AB]"/.test(boards), "AGND–DGND single-point tie lives on the card (RAGTC); RAGTA/RAGTB deleted from power boards (card-split rev)");
 ck("CB-5", /RAUXST2 > \.pin2" to="\.UAUX > \.VCC"/.test(cells) && /\.UAUX > \.COMP/.test(cells) && /\.UAUX > \.BR/.test(cells) && /\.TAUX > \.AXA/.test(cells) && !/"\.UAUX > \.FB" to="net\.V15"/.test(cells), "aux controller fully wired (VCC startup, COMP, BR, aux winding; FB no longer tied to V15)");
 ck("CB-6", /AuxPower dcp="net.DCP" dcn="net.DCN"/.test(boards) && /SIC-1700/.test(db), "aux fed from full bus with 1700 V switch");
 ck("CB-7", /Lp 345 µH|Lp 345u/.test(cells) && /3\.2 A/.test(cells) && /XFMR-AUX-FLY-C/.test(db), "aux at the E26 rev C design point (110 W — R2/CB-20 superseded the 60 W closure)");
 ck("CB-8", /KPRE\[12\]/.test(db) && /HF167F/.test(db) && !/HF115F-2Z/.test(db) && /KPRE1/.test(boards), "precharge bypass = line-rated power relays");
 ck("CB-9", /C\$\{id\}FP/.test(cells) && /C\$\{id\}FN/.test(cells), "Vienna per-phase film commutation caps present");
-ck("CB-10", /SafetyChain/.test(cells) && /USUP/.test(cells) && /RGPD/.test(cells) && /SafetyChain id="A"/.test(boards) && /SafetyChain id="B"/.test(boards) && !/net\.PWM_KILL/.test(boards), "enable chain: WD + AND + pulldowns on both boards; PWM_KILL retired");
+ck("CB-10", /SafetyChain/.test(cells) && /USUP/.test(cells) && /RGPD/.test(cells) && /SafetyChain id="CARD"/.test(boards) && !/net\.PWM_KILL/.test(boards), "enable chain: WD + AND + pulldowns on the card (one card per board role); PWM_KILL retired");
 ck("CB-11", /DischargeCtl/.test(cells) && /RQDPD/.test(cells) && !/RQDPU/.test(boards), "discharge default-OFF via isolated driver (V15 pull-up gone)");
 ck("CB-12", /\.CLAMP.*to=\{gate\}|CLAMP`\} to=\{gate\}/.test(cells) || /U\$\{id\} > \.CLAMP/.test(cells), "driver CLAMP pin wired to gate");
-ck("CB-13", /SwdPort/.test(cells) && /BOOT0_PFC/.test(boards) && /BOOT0_LLC/.test(boards) && /SWDIO_PFC/.test(boards), "SWD + BOOT0 provisioning on both MCUs");
+ck("CB-13", /SwdPort/.test(cells) && /SwdPort id="CARD"/.test(boards) && /BOOT0.*net\.BOOT0_CARD/.test(card) && /SWDIO.*net\.SWDIO_CARD/.test(card), "SWD + BOOT0 provisioning on the card MCU (card-split rev)");
 ck("CB-14", /id="B" ltx="net.LINK_RX" lrx="net.LINK_TX"/.test(boards), "link TX↔RX crossed on the DC-DC side");
 ck("CB-15", /AnalogMid/.test(cells) && /net\.AVMID/.test(cells) && /\.CT\$\{id\} > \.S2`\} to="net\.AVMID"/.test(cells) && /D\$\{id\}N/.test(cells), "bipolar senses biased to buffered AVMID with dual clamps");
 
@@ -42,7 +43,7 @@ ck("HR-1", /PP-1u-1100/.test(db) && !/PP-1u-900/.test(db), "bus/bank film 1100 V
 ck("HR-2", !/R\$\{id\}SN[\s\S]{0,400}LlcHalfBridgeLeg/.test(cells) && !/leg\$\{id\}[\s\S]*?SN/.test(cells.split("LlcHalfBridgeLeg")[1].split("LlcSection")[0]), "LLC node RC snubbers deleted");
 ck("HR-3", /WW-470R-10W/.test(db), "clamp bleeder ≥10 W axial (R2/MR-19 raised the HR-3 5 W fix — 4.3 W worst now 43% of rating)");
 ck("HR-4", /RELAY_FB_\$\{k\}|RELAY_FB_/.test(cells + boards) && /M1/.test(cells) && /HFE82V-M/.test(db), "mirror-contact relays + readback nets");
-ck("HR-5", /RFLTA/.test(boards) && /RFLTB/.test(boards), "FLT pullups on both boards");
+ck("HR-5", /name="RFLTC"/.test(boards) && /name="CFLTC"/.test(boards), "FLT wired-OR pull-up + filter on the card at the MCU end (card-split rev)");
 ck("HR-6", /R\$\{id\}PD/.test(cells), "PWM pulldowns per channel");
 ck("HR-7", /GDT[123]?/.test(boards) && /MOVP/.test(boards), "L-PE MOV+GDT surge path");
 ck("HR-8", /PP-4u7-1200/.test(db), "output film 1200 V");
@@ -63,7 +64,7 @@ ck("MR-8", !/net\.NC_U\d/.test(boards), "ULN spare inputs grounded");
 const fsmH = readFileSync(join(ROOT, "firmware/core/fsm.h"), "utf8");
 const fsmC = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
 ck("R2-CB16", cells.includes('R${id}CT`} resistance="2"') && /R2512-2R0/.test(db) && db.includes("R\\d+CT"), "resonant CT burden 2.0 Ω 2512 (46 A rms/1:100 scaling; 33 Ω was the line-CT value)");
-ck("R2-CB17", /Rail3V3 id="A"/.test(boards) && /Rail3V3 id="B"/.test(boards), "3.3 V rail sourced on BOTH boards (DC-DC previously had no source)");
+ck("R2-CB17", /Rail3V3 id="CARD"/.test(boards), "3.3 V rail sourced on the card (one card per board role — card-split rev of CB-17/18)");
 ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck, not a 15 V-fed LDO");
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
 ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD34/.test(db), "aux 110 W stage values in cells + D4 rev C part");
@@ -89,7 +90,7 @@ for (const m of boards.matchAll(/net\.(FLT_\w+)/g)) {
   const net = m[1];
   ck(`R2-CLASS-FLT-${net}`, new RegExp(`\\["net\\.${net}", \\d+\\]`).test(boards), `${net} reaches a pin map`);
 }
-ck("R2-CLASS-RAIL", (boards.match(/Rail3V3 id=/g) || []).length >= 2, "every board generator sources V3P3");
+ck("R2-CLASS-RAIL", (boards.match(/Rail3V3 id=/g) || []).length >= 1 && /"V3P3", "V3P3", "V3P3"/.test(card), "V3P3 sourced on the card and exported on three 88-way ways");
 // ===== rev D ECO closures (10k-volume directive, 2026-09-05) =====
 ck("ECO-2a", /PvGateDrive id="A"/.test(boards) && /PvGateDrive id="B"/.test(boards) && /VOM1271/.test(db) && !/DischargeCtl id="A"/.test(boards), "bank bleeders on PV drivers (opto+bias stacks retired; bus discharge keeps its opto chain)");
 ck("ECO-2b", /p10k: 65/.test(db) && /p10k: 55/.test(db), "volume-quote p10k pricing on module classes");
@@ -129,7 +130,7 @@ ck("R3-RDY", /\.U\$\{id\} > \.RDY`\} to="net\.DRV_RDY"/.test(cells) && /RRDY\$\{
 ck("R3-WDT", /CWD\$\{id\}/.test(cells) && /CRST\$\{id\}/.test(cells) &&
   /pin7: "CWD", pin8: "CRST"/.test(cells),
   "TPS3430 CWD/CRST carry their timing caps (window was undefined)");
-ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin9: "RT"/.test(cells),
+ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin8: "RT"/.test(cells),
   "NCP1252A RT has its frequency-setting resistor (stage had no defined Fsw)");
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
   const { existsSync, readdirSync } = await import("node:fs");
@@ -349,6 +350,38 @@ ck("SHEET-VALUE-TEXT", (() => {
   }
   return true;
 })(), "no sheet prints an internal -class suffix, and no resistor prints a unitless value");
+
+
+// --- 2026-09-08 margin-audit closure gates (F1..F8) — functional where possible, not just greps
+{
+  const { DB } = await import("./cost/parts-db.mjs");
+  const rule = (d) => DB.find((r) => r.m.test(d));
+  const mpnOf = (d) => rule(d)?.mpn;
+  ck("AUD-DB-CARD", mpnOf("UCARD") === "GD32G553VET6" && mpnOf("JCARD") === "CONN-CARD-88" &&
+    mpnOf("JA") === "CONN-CARD-88" && mpnOf("USUPCARD") === "TPS3430-class" &&
+    mpnOf("UANDCARD") === "74HC11" && mpnOf("UBKCARD") === "TPS54202-class" &&
+    mpnOf("LBKCARD") === "IND-10u-3A",
+    "card-split designators all classify (MCU + 88-way + supervisor + AND + buck were absent from the BOM)");
+  ck("AUD-DB-CARD-R", mpnOf("RPD0") === "R0603-10k" && mpnOf("RFLTC") === "R-small" &&
+    mpnOf("RAGTC") === "R-small" && mpnOf("RBALTA1") === "R2512-47k-HV-AS" && mpnOf("RV1D0") === "HV73-475k-1%",
+    "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts");
+}
+ck("AUD-BURDEN27", /resistance="27"/.test(cells) && /R1206-27R-1%/.test(db) && !/R1206-33R-1%/.test(db),
+  "line-CT burden is 27 R end-to-end (R3 fix landed: 150 A pk observability inside the 3.3 V rail)");
+ck("AUD-D2-FERRITE", /GAPPED FERRITE/.test(db) && /PQ50\/50/.test(db.match(/IND-TRIM-BIN4[\s\S]{0,400}/)?.[0] ?? ""),
+  "D2 trim is gapped ferrite (F1: sendust at full 140 kHz AC swing = ~43 W core loss, 2:1 L swing)");
+ck("AUD-D1-REVB", /N=39/.test(db) && /18 mm²/.test(db) && /0077908A7/.test(db),
+  "D1 re-issued against the real core (AL 37) with the calculator's copper (F4)");
+ck("AUD-D6-REVB", /3×AWG12/.test(db),
+  "D6 30 kW winding one gauge up (F7: 8.3 A/mm² computed past its own dT acceptance)");
+ck("AUD-FUSE80", /FUSE-gG-690V-80A/.test(db) && !/mpn: "FUSE-gG-690V-63A"/.test(db),
+  "30 kW fuse is 80 A gG 22x58 (F6: 63 A was 88% loaded and negative after enclosure/ambient derate)");
+ck("AUD-CT-CATALOG", /ACX-1100/.test(db) && /AS-404/.test(db),
+  "both CTs are named catalog parts (Talema — closes two REVIEW lines)");
+ck("AUD-CARD-AGND2", /put\("AGND_2", "net\.AGND"\)/.test(card),
+  "AVMID's Kelvin return way exists (CARD_RULES said it; the map now does it)");
+ck("AUD-CARD-HRTIMER", /FLT: 47/.test(card) && /PWM0: 69/.test(card) && /PWM6: 70/.test(card) && /EN_B: 28/.test(card),
+  "card PWM group on the HRTIMER with FLT on HRTIMER_FLT2 (decision executed; PA6 break-input conflict dissolved)");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);
