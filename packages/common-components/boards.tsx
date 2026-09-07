@@ -103,7 +103,7 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
     dschX: 172, dschY: 76, ctsX: 158, ctsY: [44, 10, -24] as const,
     fanX: 198, fanY: -140, ntcX: 190, ntcY: -145,
     // control strip along the bottom edge, end to end by real width
-    ctlY: -172, mcuX: -123, swdX: -94, sfcX: -65, r3v3X: -20, auxX: 20,
+    cardX: 0, cardY: -172, ctlY: -172, mcuX: -123, swdX: -94, sfcX: -65, r3v3X: -20, auxX: 20,
     avmidX: 40, icX: 120, auxRowY: -148,
   };
 
@@ -277,6 +277,25 @@ return (
       <trace from=".RKFBP > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
       <trace from=".RKFBP > .pin2" to="net.RELAY_FB_KPRE" schDisplayLabel="RELAY_FB_KPRE" />
 
+      {/* CONTROL CARD INTERFACE. The MCU, SWD port, safety chain, 3V3 rail and analogue mid-rail
+          all live on the plug-in card now; this connector is what is left of them on the board.
+          cardMap() generates both sides from one source so they cannot drift. */}
+      <CardConnector id="A" map={cardMap("acdc", lanes)} x={P.cardX} y={P.cardY} sx={70} sy={30} />
+      {/* CARD_RULES: default-OFF is held by the BOARD, not the card. A card that is absent,
+          unpowered, or seated but not yet booted must not be able to enable anything. */}
+      {["GATE_EN_A", "EN_PFC", "EN_LLC", "CTL_KPRE", "CTL_QDIS"].map((n, i) => (
+        <resistor key={n} name={`RPD${i}`} resistance="10k" footprint="0603"
+          pcbX={P.cardX - 50 + i * 8} pcbY={P.cardY - 10} schX={70 + i * 2} schY={26} schSectionName="CARD" />
+      ))}
+      {["GATE_EN_A", "EN_PFC", "EN_LLC", "CTL_KPRE", "CTL_QDIS"].map((n, i) => [
+        <trace key={`a${i}`} from={`.RPD${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
+        <trace key={`b${i}`} from={`.RPD${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
+      ])}
+      {/* ROLE0 tied low identifies this as the AC-DC slot; RATING codes the power level. */}
+      <resistor name="RROLE" resistance="0" footprint="0603" pcbX={P.cardX + 50} pcbY={P.cardY - 10} schX={82} schY={26} schSectionName="CARD" />
+      <trace from=".RROLE > .pin1" to="net.RATING" schDisplayLabel="RATING" />
+      <trace from=".RROLE > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+
       {/* Vienna lanes (film commutation caps now inside each phase — CB-9) */}
       {phases.map((p, i) => (
         <ViennaPhase key={p.id} id={p.id} ac={p.ac} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
@@ -330,28 +349,12 @@ return (
       <IsoVSense id="V3" hv="net.AC3" ref="net.NSTAR" biasP="net.B5AC" rBot="11.5k" out="net.SNS_VAC3" x={P.ivs[2]} y={P.ivsY} sx={56} sy={15} />
       <IsoVSense id="BP" hv="net.DCP" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VBUSP" x={P.ivs[3]} y={P.ivsY} sx={56} sy={10.5} />
       <IsoVSense id="BM" hv="net.MID" ref="net.DCN" biasP="net.B5BUS" cf="1nF" out="net.SNS_VMID" x={P.ivs[4]} y={P.ivsY} sx={56} sy={6} />
-      <AnalogMid x={P.avmidX} y={P.ctlY} sx={56} sy={-2} />
+      
       <NtcInput id="TPFC" out="net.T_PFC" x={P.ntcX} y={P.ntcY} sx={56} sy={-6.5} />
       <NtcInput id="TINL" out="net.T_INLET" x={P.ntcX} y={P.ntcY - 8} sx={68} sy={-6.5} />
 
       {/* control: MCU-PFC + safety chain + SWD + coil driver + aux + fans + interconnect */}
-      <ControlMcu id="PFC" x={P.mcuX} y={P.ctlY} sx={4} sy={cY} />
-      <SafetyChain id="A" enLocal="net.EN_PFC" enRemote="net.EN_LLC" wdi="net.WDI_PFC" gateEn="net.GATE_EN_A"
-        x={P.sfcX} y={P.ctlY} sx={23} sy={cY - 8} />
-      <SwdPort id="PFC" x={P.swdX} y={P.ctlY} sx={16} sy={cY} />
-      <trace from=".UPFC > .pin28" to="net.SWDIO_PFC" schDisplayLabel="SWDIO_PFC" />
-      <trace from=".UPFC > .pin29" to="net.SWCLK_PFC" schDisplayLabel="SWCLK_PFC" />
-      <trace from=".UPFC > .pin100" to="net.BOOT0_PFC" schDisplayLabel="BOOT0_PFC" />
-      <resistor name="RFLTA" resistance="4.7k" footprint="0603" pcbX={-60} pcbY={-148} schX={23} schY={cY - 12.5} schSectionName="SAFETY" />
-      <capacitor name="CFLTA" capacitance="1nF" footprint="0603" pcbX={-46} pcbY={-148} schX={25.5} schY={cY - 12.5} schSectionName="SAFETY" />
-      <trace from=".RFLTA > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
-      <trace from=".RFLTA > .pin2" to="net.FLT_PFC" schDisplayLabel="FLT_PFC" />
-      <trace from=".CFLTA > .pin1" to="net.FLT_PFC" schDisplayLabel="FLT_PFC" />
-      <trace from=".CFLTA > .pin2" to="net.DGND" schDisplayLabel="DGND" />
       {/* CB-4: analog/digital ground single-point tie + DGND→PE soft bond */}
-      <resistor name="RAGTA" resistance="0" footprint="0805" pcbX={-32} pcbY={-148} schX={4} schY={cY - 14} schSectionName="BOND" />
-      <trace from=".RAGTA > .pin1" to="net.AGND" schDisplayLabel="AGND" />
-      <trace from=".RAGTA > .pin2" to="net.DGND" schDisplayLabel="DGND" />
       <resistor name="RPET" resistance="1M" footprint="1206" pcbX={-18} pcbY={-148} schX={6.5} schY={cY - 14} schSectionName="BOND" />
       <capacitor name="CPET" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={0} pcbY={-148} schX={9} schY={cY - 14} schSectionName="BOND" />
       <trace from=".RPET > .pin1" to="net.DGND" schDisplayLabel="DGND" />
@@ -362,7 +365,7 @@ return (
         outs={["net.COIL_KPRE", "net.NC_O2", "net.NC_O3", "net.NC_O4", "net.NC_O5", "net.NC_O6", "net.NC_O7A", "net.NC_O8A"]}
         x={-w / 2 + 130} y={-h / 2 + 60} sx={26} sy={cY} />
       <AuxPower dcp="net.DCP" dcn="net.DCN" x={P.auxX} y={P.ctlY} sx={40} sy={cY - 2} />
-      <Rail3V3 id="A" x={P.r3v3X} y={P.ctlY} sx={64} sy={cY} />
+      
       {/* E32: rail monitors — firmware finally sees its own supplies (24 V: ÷7.8 → 3.08 V; 15 V: ÷5.7 → 2.63 V) */}
       <resistor name="RM24A" resistance="68k" footprint="0603" pcbX={40} pcbY={-128} schX={64} schY={cY - 4} schSectionName="MON" />
       <resistor name="RM24B" resistance="10k" footprint="0603" pcbX={54} pcbY={-128} schX={66.5} schY={cY - 4} schSectionName="MON" />
@@ -382,9 +385,7 @@ return (
       <InterconnectSignals id="A" ltx="net.LINK_TX" lrx="net.LINK_RX" enA="net.EN_PFC" enB="net.EN_LLC"
         x={P.icX} y={P.auxRowY} sx={92} sy={33} />
       {/* MCU pin bindings (§20 map, asserted unique) */}
-      {pfcPins.map(([net, pin]) => (
-        <trace key={`${net}${pin}`} from={`.UPFC > .pin${pin}`} to={net} />
-      ))}
+      {/* MCU pin-map traces moved to the control card; the connector carries these nets now. */}
 
       {/* DC bus studs to DC-DC board */}
       <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={P.studX} pcbY={P.stud[0]} schX={98} schY={46} schSectionName="INPUT" />
@@ -461,6 +462,7 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
     rbdX: 176, rbdStep: 0, rbdA: -60, rbdB: -134, qdis: [-14, -212] as const,
     ivs: [186, 198, 210] as const, ivsY: -60, b5: [-16, -150] as const,
     // control column, primary side, right edge
+    cardX: 0, cardY: -236,
     mcuX: 176, mcuY: 223, swdY: 200, sfcX: 176, sfcY: 177, r3v3X: 176, r3v3Y: 156,
     icX: 160, icY: 135, canX: 160, canY: 112, hmiX: 96, ctlY: 223,
     avmidX: 176, avmidY: 92, ntcX: 176, ntcY: 78,
@@ -484,6 +486,22 @@ return (
         <trace key={`p${i}`} from={`.CF${i} > .pin1`} to="net.DCP" schDisplayLabel="DCP" />,
         <trace key={`n${i}`} from={`.CF${i} > .pin2`} to="net.DCN" schDisplayLabel="DCN" />,
       ])}
+
+      {/* CONTROL CARD INTERFACE — same 88-way part and the same generator as the AC-DC slot. */}
+      <CardConnector id="B" map={cardMap("dcdc", channels)} x={Q.cardX} y={Q.cardY} sx={70} sy={30} />
+      {/* CARD_RULES: default-OFF held by the BOARD. Seven relay lines plus the enables. */}
+      {["GATE_EN_B", "EN_PFC", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB"].map((n, i) => (
+        <resistor key={n} name={`RPDB${i}`} resistance="10k" footprint="0603"
+          pcbX={Q.cardX - 60 + i * 8} pcbY={Q.cardY - 10} schX={70 + i * 2} schY={26} schSectionName="CARD" />
+      ))}
+      {["GATE_EN_B", "EN_PFC", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB"].map((n, i) => [
+        <trace key={`a${i}`} from={`.RPDB${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
+        <trace key={`b${i}`} from={`.RPDB${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
+      ])}
+      {/* ROLE0 left open identifies the DC-DC slot; RATING codes the power level. */}
+      <resistor name="RROLEB" resistance="0" footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={82} schY={26} schSectionName="CARD" />
+      <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
+      <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
       {/* LLC legs + sections */}
       {legs.map((l, i) => (
@@ -616,36 +634,17 @@ return (
       <IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN" biasP="net.B5BKA" cf="1nF" out="net.SNS_VBKA" x={Q.ivs[0]} y={Q.ivsY} sx={84} sy={12} />
       <IsoVSense id="OB" hv="net.BKBP" ref="net.BKBN" biasP="net.B5BKB" cf="1nF" out="net.SNS_VBKB" x={Q.ivs[1]} y={Q.ivsY} sx={84} sy={7.5} />
       <IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN" biasP="net.B5OUT" cf="1nF" out="net.SNS_VOUT" x={Q.ivs[2]} y={Q.ivsY} sx={84} sy={3} />
-      <AnalogMid x={Q.avmidX} y={32} sx={84} sy={-6} />
+      
       <NtcInput id="TLLC" out="net.T_LLC" x={Q.ntcX} y={Q.ntcY} sx={84} sy={-10.5} />
       <NtcInput id="TXFR" out="net.T_XFMR" x={Q.ntcX} y={Q.ntcY - 10} sx={94} sy={-10.5} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
-      <ControlMcu id="LLC" x={Q.mcuX} y={Q.mcuY} sx={2} sy={cYd} />
-      <Rail3V3 id="B" x={Q.mcuX} y={Q.r3v3Y} sx={32} sy={cYd} />
-      <SafetyChain id="B" enLocal="net.EN_LLC" enRemote="net.EN_PFC" wdi="net.WDI_LLC" gateEn="net.GATE_EN_B"
-        x={Q.mcuX} y={Q.sfcY} sx={23} sy={cYd - 8} />
-      <SwdPort id="LLC" x={Q.mcuX} y={Q.swdY} sx={16} sy={cYd} />
-      <trace from=".ULLC > .pin28" to="net.SWDIO_LLC" schDisplayLabel="SWDIO_LLC" />
-      <trace from=".ULLC > .pin29" to="net.SWCLK_LLC" schDisplayLabel="SWCLK_LLC" />
-      <trace from=".ULLC > .pin100" to="net.BOOT0_LLC" schDisplayLabel="BOOT0_LLC" />
-      <resistor name="RFLTB" resistance="4.7k" footprint="0603" pcbX={-196} pcbY={40} schX={23} schY={cYd - 12.5} schSectionName="SAFETY" />
-      <capacitor name="CFLTB" capacitance="1nF" footprint="0603" pcbX={-182} pcbY={40} schX={25.5} schY={cYd - 12.5} schSectionName="SAFETY" />
-      <trace from=".RFLTB > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
-      <trace from=".RFLTB > .pin2" to="net.FLT_LLC" schDisplayLabel="FLT_LLC" />
-      <trace from=".CFLTB > .pin1" to="net.FLT_LLC" schDisplayLabel="FLT_LLC" />
-      <trace from=".CFLTB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-      <resistor name="RAGTB" resistance="0" footprint="0805" pcbX={-168} pcbY={40} schX={4} schY={cYd - 14} schSectionName="BOND" />
-      <trace from=".RAGTB > .pin1" to="net.AGND" schDisplayLabel="AGND" />
-      <trace from=".RAGTB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
       <IsolatedCan x={Q.canX} y={Q.canY} sx={48} sy={cYd} />
       <ConfigHmi x={Q.hmiX} y={-228} sx={63} sy={cYd} />
       {/* CB-14: this side of the harness crosses the link — LTX wire lands on this MCU's RX */}
       <InterconnectSignals id="B" ltx="net.LINK_RX" lrx="net.LINK_TX" enA="net.EN_PFC" enB="net.EN_LLC"
         x={Q.mcuX} y={Q.icY} sx={84} sy={cYd} />
-      {llcPins.map(([net, pin]) => (
-        <trace key={`${net}${pin}`} from={`.ULLC > .pin${pin}`} to={net} />
-      ))}
+      {/* MCU pin-map traces moved to the control card; the connector carries these nets. */}
     </board>
   );
 };
