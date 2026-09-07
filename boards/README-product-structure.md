@@ -26,8 +26,13 @@ rack either.
 | `30kw/dcdc` | 440 × 500 | 282 | placement clean, barrier-bounded planes, BARRIER 0 |
 | `control-card` | 120 × 80 | 43 | clean; one card serves both roles |
 
-`60kw/` and `120kw/` are kept buildable for reference and because they exercise the cell library at
-higher lane counts, but they are not product outlines.
+`60kw/` is kept buildable for reference (it exercises the cell library at 2 lanes and is the
+card's sizing role). **`120kw/` no longer builds — deliberately**: since the card split,
+`cardMap()` refuses 4 lanes (AIN needs 17 of 13), which is the architecture saying what the
+geometry, relays and fuse frames already said. Its source stays as the 4-lane cell-instantiation
+reference; its last pre-split sheet set lives in `kicad5/archive/`; every pipeline consumer
+iterates `BUILDABLE_SKUS` (parts-db) and the 120 kW product cost is a 4×-module roll-up in
+`bom-gen` (E36 scope note in the register).
 
 ## The 60/120 kW cabinet contract (audit 2026-09-08 — this IS the 60/120 kW resolution)
 

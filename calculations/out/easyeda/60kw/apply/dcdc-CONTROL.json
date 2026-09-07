@@ -3,750 +3,350 @@
  "page_uuid": "sku-60kw-dcdc-CONTROL",
  "title": "30kW DCDC 5of6 CONTROL",
  "block_order": [
-  "MCU",
-  "SWD",
-  "SAFETY",
-  "GROUNDING",
-  "BUCK-3V3",
+  "CARD-IF",
   "COIL-DRIVER",
   "INTERCONNECT"
  ],
  "chunks": [
   [
    {
-    "designator": "ULLC",
-    "value": "GD32G553VET6",
-    "block_name": "MCU",
-    "search_query": "GD32G553VET6 MCU Cortex-M33 216 MHz LQFP100",
-    "part_uuid": "e9035421dabb42c7b86bd61d0abc3f85",
-    "pins": [
-     {
-      "pin_number": 69,
-      "name": "PA8",
-      "signal_name": "RELAY_FB_KSER"
-     },
-     {
-      "pin_number": 70,
-      "name": "PA9",
-      "signal_name": "RELAY_FB_KPARA"
-     },
-     {
-      "pin_number": 71,
-      "name": "PA10",
-      "signal_name": "RELAY_FB_KPARB"
-     },
-     {
-      "pin_number": 72,
-      "name": "PA11",
-      "signal_name": "RELAY_FB_KOUT"
-     },
-     {
-      "pin_number": 73,
-      "name": "PA12",
-      "signal_name": "RELAY_FB_KPREA"
-     },
-     {
-      "pin_number": 78,
-      "name": "PA15",
-      "signal_name": "RELAY_FB_KPREB"
-     },
-     {
-      "pin_number": 23,
-      "name": "VSS",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 48,
-      "name": "VSS",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 63,
-      "name": "VSS",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 74,
-      "name": "VSS",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 99,
-      "name": "VSS",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 24,
-      "name": "VDD",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 49,
-      "name": "VDD",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 64,
-      "name": "VDD",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 75,
-      "name": "VDD",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 100,
-      "name": "VDD",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 14,
-      "name": "NRST",
-      "signal_name": "NRST_LLC"
-     },
-     {
-      "pin_number": 37,
-      "name": "VDDA",
-      "signal_name": "VDDA_LLC"
-     },
-     {
-      "pin_number": 76,
-      "name": "PA13",
-      "signal_name": "SWDIO_LLC"
-     },
-     {
-      "pin_number": 77,
-      "name": "PA14",
-      "signal_name": "SWCLK_LLC"
-     },
-     {
-      "pin_number": 20,
-      "name": "PA0",
-      "signal_name": "I_RES1"
-     },
-     {
-      "pin_number": 21,
-      "name": "PA1",
-      "signal_name": "I_RES2"
-     },
-     {
-      "pin_number": 22,
-      "name": "PA2",
-      "signal_name": "I_RES3"
-     },
-     {
-      "pin_number": 27,
-      "name": "PA5",
-      "signal_name": "I_RES4"
-     },
-     {
-      "pin_number": 29,
-      "name": "PA7",
-      "signal_name": "I_RES5"
-     },
-     {
-      "pin_number": 30,
-      "name": "PC4",
-      "signal_name": "I_RES6"
-     },
-     {
-      "pin_number": 32,
-      "name": "PB0",
-      "signal_name": "T_LLC"
-     },
-     {
-      "pin_number": 33,
-      "name": "PB1",
-      "signal_name": "T_XFMR"
-     },
-     {
-      "pin_number": 87,
-      "name": "PD5",
-      "signal_name": "LINK_TX"
-     },
-     {
-      "pin_number": 88,
-      "name": "PD6",
-      "signal_name": "LINK_RX"
-     },
-     {
-      "pin_number": 11,
-      "name": "PF10",
-      "signal_name": "WDI_LLC"
-     },
-     {
-      "pin_number": 47,
-      "name": "PB10",
-      "signal_name": "EN_LLC"
-     },
-     {
-      "pin_number": 93,
-      "name": "PB6",
-      "signal_name": "CAN_TX"
-     },
-     {
-      "pin_number": 92,
-      "name": "PB5",
-      "signal_name": "CAN_RX"
-     },
-     {
-      "pin_number": 40,
-      "name": "PE9",
-      "signal_name": "PWM_L1H"
-     },
-     {
-      "pin_number": 39,
-      "name": "PE8",
-      "signal_name": "PWM_L1L"
-     },
-     {
-      "pin_number": 42,
-      "name": "PE11",
-      "signal_name": "PWM_L2H"
-     },
-     {
-      "pin_number": 41,
-      "name": "PE10",
-      "signal_name": "PWM_L2L"
-     },
-     {
-      "pin_number": 44,
-      "name": "PE13",
-      "signal_name": "PWM_L3H"
-     },
-     {
-      "pin_number": 43,
-      "name": "PE12",
-      "signal_name": "PWM_L3L"
-     },
-     {
-      "pin_number": 45,
-      "name": "PE14",
-      "signal_name": "PWM_L4H"
-     },
-     {
-      "pin_number": 46,
-      "name": "PE15",
-      "signal_name": "PWM_L4L"
-     },
-     {
-      "pin_number": 65,
-      "name": "PC6",
-      "signal_name": "PWM_L5H"
-     },
-     {
-      "pin_number": 79,
-      "name": "PC10",
-      "signal_name": "PWM_L5L"
-     },
-     {
-      "pin_number": 66,
-      "name": "PC7",
-      "signal_name": "PWM_L6H"
-     },
-     {
-      "pin_number": 80,
-      "name": "PC11",
-      "signal_name": "PWM_L6L"
-     },
-     {
-      "pin_number": 28,
-      "name": "PA6",
-      "signal_name": "FLT_LLC"
-     },
-     {
-      "pin_number": 10,
-      "name": "PF9",
-      "signal_name": "FLT_LLC"
-     },
-     {
-      "pin_number": 7,
-      "name": "PC13",
-      "signal_name": "FLT_LLC"
-     },
-     {
-      "pin_number": 34,
-      "name": "PB2",
-      "signal_name": "CTL_QDISBK"
-     },
-     {
-      "pin_number": 83,
-      "name": "PD1",
-      "signal_name": "CTL_KSER"
-     },
-     {
-      "pin_number": 86,
-      "name": "PD4",
-      "signal_name": "CTL_KPARA"
-     },
-     {
-      "pin_number": 89,
-      "name": "PD7",
-      "signal_name": "CTL_KPARB"
-     },
-     {
-      "pin_number": 94,
-      "name": "PB7",
-      "signal_name": "CTL_KOUT"
-     },
-     {
-      "pin_number": 96,
-      "name": "PB9",
-      "signal_name": "CTL_KPREA"
-     },
-     {
-      "pin_number": 62,
-      "name": "PD15",
-      "signal_name": "CTL_KPREB"
-     },
-     {
-      "pin_number": 54,
-      "name": "PB15",
-      "signal_name": "HMI_DAT"
-     },
-     {
-      "pin_number": 52,
-      "name": "PB13",
-      "signal_name": "HMI_CLK"
-     },
-     {
-      "pin_number": 51,
-      "name": "PB12",
-      "signal_name": "HMI_LAT"
-     },
-     {
-      "pin_number": 53,
-      "name": "PB14",
-      "signal_name": "HMI_DIG1"
-     },
-     {
-      "pin_number": 50,
-      "name": "PB11",
-      "signal_name": "HMI_DIG2"
-     },
-     {
-      "pin_number": 84,
-      "name": "PD2",
-      "signal_name": "BTN1"
-     },
-     {
-      "pin_number": 85,
-      "name": "PD3",
-      "signal_name": "BTN2"
-     },
-     {
-      "pin_number": 16,
-      "name": "PC1",
-      "signal_name": "SNS_IOUTN"
-     },
-     {
-      "pin_number": 17,
-      "name": "PC2",
-      "signal_name": "SNS_VOUT"
-     },
-     {
-      "pin_number": 15,
-      "name": "PC0",
-      "signal_name": "SNS_IOUT"
-     },
-     {
-      "pin_number": 56,
-      "name": "PD9",
-      "signal_name": "SNS_VBKA"
-     },
-     {
-      "pin_number": 55,
-      "name": "PD8",
-      "signal_name": "SNS_VBKB"
-     },
-     {
-      "pin_number": 95,
-      "name": "PB8/BOOT0",
-      "signal_name": "BOOT0_LLC"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCD0",
-    "value": "100nF",
-    "block_name": "MCU",
-    "search_query": "MLCC-100n-0402 100 nF 0402 decoupling",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCD1",
-    "value": "100nF",
-    "block_name": "MCU",
-    "search_query": "MLCC-100n-0402 100 nF 0402 decoupling",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCD2",
-    "value": "100nF",
-    "block_name": "MCU",
-    "search_query": "MLCC-100n-0402 100 nF 0402 decoupling",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCD3",
-    "value": "100nF",
-    "block_name": "MCU",
-    "search_query": "MLCC-100n-0402 100 nF 0402 decoupling",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "RLLCRST",
-    "value": "10k",
-    "block_name": "MCU",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "NRST_LLC"
-     }
-    ]
-   },
-   {
-    "designator": "FBLLCA",
-    "value": "0R",
-    "block_name": "MCU",
-    "search_query": "FB-600R-0805 ferrite bead 600 Ω@100 MHz",
-    "part_uuid": "585e4bd8c0294ea8acfa10c5bff4a964",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "VDDA_LLC"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCA1",
-    "value": "1uF",
-    "block_name": "MCU",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "VDDA_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCA2",
-    "value": "100nF",
-    "block_name": "MCU",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "VDDA_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   }
-  ],
-  [
-   {
-    "designator": "JSWDLLC",
-    "value": "HDR-1x5-2.54",
-    "block_name": "SWD",
-    "search_query": "HDR-1x5-2.54 SWD/boot header",
+    "designator": "JB",
+    "value": "CONN-CARD-88",
+    "block_name": "CARD-IF",
+    "search_query": "CONN-CARD-88 88-way 2×44 2.54 mm card interface — header on power board, recepta",
     "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
       "pin_number": 1,
-      "name": "VCC",
-      "signal_name": "V3P3"
+      "name": "PWM0",
+      "signal_name": "PWM_L1H"
      },
      {
       "pin_number": 2,
-      "name": "DIO",
-      "signal_name": "SWDIO_LLC"
+      "name": "PWM1",
+      "signal_name": "PWM_L2H"
      },
      {
       "pin_number": 3,
-      "name": "CLK",
-      "signal_name": "SWCLK_LLC"
+      "name": "PWM2",
+      "signal_name": "PWM_L3H"
      },
      {
       "pin_number": 4,
-      "name": "RST",
-      "signal_name": "NRST_LLC"
+      "name": "PWM3",
+      "signal_name": "PWM_L4H"
      },
      {
       "pin_number": 5,
-      "name": "GND",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "RLLCBOOT",
-    "value": "10k",
-    "block_name": "SWD",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "BOOT0_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CLLCRST",
-    "value": "100nF",
-    "block_name": "SWD",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "NRST_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   }
-  ],
-  [
-   {
-    "designator": "USUPB",
-    "value": "TPS3430-class",
-    "block_name": "SAFETY",
-    "search_query": "TPS3430-class external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps",
-    "part_uuid": "ab9fd2f70e08449da6d862ee89653faa",
-    "pins": [
-     {
-      "pin_number": 7,
-      "name": "WDI",
-      "signal_name": "WDI_LLC"
-     },
-     {
-      "pin_number": 5,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 11,
-      "name": "EP",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 3,
-      "name": "SET0",
-      "signal_name": "DGND"
+      "name": "PWM4",
+      "signal_name": "PWM_L5H"
      },
      {
       "pin_number": 6,
-      "name": "SET1",
-      "signal_name": "DGND"
+      "name": "PWM5",
+      "signal_name": "PWM_L6H"
+     },
+     {
+      "pin_number": 7,
+      "name": "PWM6",
+      "signal_name": "PWM_L1L"
      },
      {
       "pin_number": 8,
-      "name": "WDO#",
-      "signal_name": "WDO_B"
-     },
-     {
-      "pin_number": 10,
-      "name": "VDD2",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 1,
-      "name": "VDD1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "CWD",
-      "signal_name": "USUPB_CWD"
-     },
-     {
-      "pin_number": 4,
-      "name": "CRST",
-      "signal_name": "USUPB_CRST"
-     }
-    ]
-   },
-   {
-    "designator": "UANDB",
-    "value": "74HC11",
-    "block_name": "SAFETY",
-    "search_query": "74HC11 triple 3-input AND",
-    "part_uuid": "955f4d84871f48c087d66ef1d9acc0ec",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "A1",
-      "signal_name": "EN_LLC"
-     },
-     {
-      "pin_number": 2,
-      "name": "B1",
-      "signal_name": "EN_PFC"
-     },
-     {
-      "pin_number": 3,
-      "name": "A2",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "B2",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 5,
-      "name": "C2",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 7,
-      "name": "GND",
-      "signal_name": "DGND"
+      "name": "PWM7",
+      "signal_name": "PWM_L2L"
      },
      {
       "pin_number": 9,
-      "name": "A3",
-      "signal_name": "DGND"
+      "name": "PWM8",
+      "signal_name": "PWM_L3L"
      },
      {
       "pin_number": 10,
-      "name": "B3",
-      "signal_name": "DGND"
+      "name": "PWM9",
+      "signal_name": "PWM_L4L"
      },
      {
       "pin_number": 11,
-      "name": "C3",
-      "signal_name": "DGND"
+      "name": "PWM10",
+      "signal_name": "PWM_L5L"
      },
      {
       "pin_number": 12,
-      "name": "Y1",
-      "signal_name": "GATE_EN_B"
+      "name": "PWM11",
+      "signal_name": "PWM_L6L"
      },
      {
       "pin_number": 13,
-      "name": "C1",
-      "signal_name": "WDO_B"
+      "name": "AIN0",
+      "signal_name": "I_RES1"
      },
      {
       "pin_number": 14,
-      "name": "VCC",
+      "name": "AIN1",
+      "signal_name": "I_RES2"
+     },
+     {
+      "pin_number": 15,
+      "name": "AIN2",
+      "signal_name": "I_RES3"
+     },
+     {
+      "pin_number": 16,
+      "name": "AIN3",
+      "signal_name": "I_RES4"
+     },
+     {
+      "pin_number": 17,
+      "name": "AIN4",
+      "signal_name": "I_RES5"
+     },
+     {
+      "pin_number": 18,
+      "name": "AIN5",
+      "signal_name": "I_RES6"
+     },
+     {
+      "pin_number": 19,
+      "name": "AIN6",
+      "signal_name": "SNS_VBKA"
+     },
+     {
+      "pin_number": 20,
+      "name": "AIN7",
+      "signal_name": "SNS_VBKB"
+     },
+     {
+      "pin_number": 21,
+      "name": "AIN8",
+      "signal_name": "SNS_VOUT"
+     },
+     {
+      "pin_number": 22,
+      "name": "AIN9",
+      "signal_name": "SNS_IOUT"
+     },
+     {
+      "pin_number": 23,
+      "name": "AIN10",
+      "signal_name": "SNS_IOUTN"
+     },
+     {
+      "pin_number": 26,
+      "name": "TSNS0",
+      "signal_name": "T_LLC"
+     },
+     {
+      "pin_number": 27,
+      "name": "TSNS1",
+      "signal_name": "T_XFMR"
+     },
+     {
+      "pin_number": 28,
+      "name": "AVMID",
+      "signal_name": "AVMID"
+     },
+     {
+      "pin_number": 29,
+      "name": "AGND_2",
+      "signal_name": "AGND"
+     },
+     {
+      "pin_number": 30,
+      "name": "DO0",
+      "signal_name": "CTL_KSER"
+     },
+     {
+      "pin_number": 31,
+      "name": "DO1",
+      "signal_name": "CTL_KPARA"
+     },
+     {
+      "pin_number": 32,
+      "name": "DO2",
+      "signal_name": "CTL_KPARB"
+     },
+     {
+      "pin_number": 33,
+      "name": "DO3",
+      "signal_name": "CTL_KOUT"
+     },
+     {
+      "pin_number": 34,
+      "name": "DO4",
+      "signal_name": "CTL_KPREA"
+     },
+     {
+      "pin_number": 35,
+      "name": "DO5",
+      "signal_name": "CTL_KPREB"
+     },
+     {
+      "pin_number": 36,
+      "name": "DO6",
+      "signal_name": "CTL_QDISBK"
+     },
+     {
+      "pin_number": 37,
+      "name": "DI0",
+      "signal_name": "RELAY_FB_KSER"
+     },
+     {
+      "pin_number": 38,
+      "name": "DI1",
+      "signal_name": "RELAY_FB_KPARA"
+     },
+     {
+      "pin_number": 39,
+      "name": "DI2",
+      "signal_name": "RELAY_FB_KPARB"
+     },
+     {
+      "pin_number": 40,
+      "name": "DI3",
+      "signal_name": "RELAY_FB_KOUT"
+     },
+     {
+      "pin_number": 41,
+      "name": "DI4",
+      "signal_name": "RELAY_FB_KPREA"
+     },
+     {
+      "pin_number": 42,
+      "name": "DI5",
+      "signal_name": "RELAY_FB_KPREB"
+     },
+     {
+      "pin_number": 43,
+      "name": "GATE_EN",
+      "signal_name": "GATE_EN_B"
+     },
+     {
+      "pin_number": 44,
+      "name": "FLT",
+      "signal_name": "FLT_LLC"
+     },
+     {
+      "pin_number": 45,
+      "name": "EN_A",
+      "signal_name": "EN_PFC"
+     },
+     {
+      "pin_number": 46,
+      "name": "EN_B",
+      "signal_name": "EN_LLC"
+     },
+     {
+      "pin_number": 47,
+      "name": "DRV_RDY",
+      "signal_name": "DRV_RDY"
+     },
+     {
+      "pin_number": 48,
+      "name": "LINK_TX",
+      "signal_name": "LINK_TX"
+     },
+     {
+      "pin_number": 49,
+      "name": "LINK_RX",
+      "signal_name": "LINK_RX"
+     },
+     {
+      "pin_number": 50,
+      "name": "CAN_TX",
+      "signal_name": "CAN_TX"
+     },
+     {
+      "pin_number": 51,
+      "name": "CAN_RX",
+      "signal_name": "CAN_RX"
+     },
+     {
+      "pin_number": 52,
+      "name": "HMI0",
+      "signal_name": "HMI_DAT"
+     },
+     {
+      "pin_number": 53,
+      "name": "HMI1",
+      "signal_name": "HMI_CLK"
+     },
+     {
+      "pin_number": 54,
+      "name": "HMI2",
+      "signal_name": "HMI_LAT"
+     },
+     {
+      "pin_number": 55,
+      "name": "HMI3",
+      "signal_name": "HMI_DIG1"
+     },
+     {
+      "pin_number": 56,
+      "name": "HMI4",
+      "signal_name": "HMI_DIG2"
+     },
+     {
+      "pin_number": 57,
+      "name": "HMI5",
+      "signal_name": "BTN1"
+     },
+     {
+      "pin_number": 58,
+      "name": "HMI6",
+      "signal_name": "BTN2"
+     },
+     {
+      "pin_number": 60,
+      "name": "ROLE1",
+      "signal_name": "RATING"
+     },
+     {
+      "pin_number": 61,
+      "name": "V15",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 63,
+      "name": "V3P3",
       "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 66,
+      "name": "DGND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 74,
+      "name": "AGND",
+      "signal_name": "AGND"
      }
     ]
    },
    {
-    "designator": "RWPUB",
+    "designator": "RPDB0",
     "value": "10k",
-    "block_name": "SAFETY",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "V3P3"
+      "signal_name": "GATE_EN_B"
      },
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "WDO_B"
+      "signal_name": "DGND"
      }
     ]
    },
    {
-    "designator": "RENRB",
-    "value": "100k",
-    "block_name": "SAFETY",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "designator": "RPDB1",
+    "value": "10k",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -762,10 +362,10 @@
     ]
    },
    {
-    "designator": "RENLB",
-    "value": "100k",
-    "block_name": "SAFETY",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "designator": "RPDB2",
+    "value": "10k",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -781,16 +381,16 @@
     ]
    },
    {
-    "designator": "RGPDB",
+    "designator": "RPDB3",
     "value": "10k",
-    "block_name": "SAFETY",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "GATE_EN_B"
+      "signal_name": "CTL_KSER"
      },
      {
       "pin_number": 2,
@@ -800,111 +400,16 @@
     ]
    },
    {
-    "designator": "CSFB",
-    "value": "100nF",
-    "block_name": "SAFETY",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CWDB",
-    "value": "1nF",
-    "block_name": "SAFETY",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "USUPB_CWD"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CRSTB",
-    "value": "1nF",
-    "block_name": "SAFETY",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "USUPB_CRST"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "RRDYB",
+    "designator": "RPDB4",
     "value": "10k",
-    "block_name": "SAFETY",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DRV_RDY"
-     }
-    ]
-   },
-   {
-    "designator": "RFLTB",
-    "value": "4.7k",
-    "block_name": "SAFETY",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "FLT_LLC"
-     }
-    ]
-   },
-   {
-    "designator": "CFLTB",
-    "value": "1nF",
-    "block_name": "SAFETY",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "FLT_LLC"
+      "signal_name": "CTL_KPARA"
      },
      {
       "pin_number": 2,
@@ -912,175 +417,94 @@
       "signal_name": "DGND"
      }
     ]
-   }
-  ],
-  [
+   },
    {
-    "designator": "RAGTB",
+    "designator": "RPDB5",
+    "value": "10k",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CTL_KPARB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RPDB6",
+    "value": "10k",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CTL_KOUT"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RPDB7",
+    "value": "10k",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CTL_KPREA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RPDB8",
+    "value": "10k",
+    "block_name": "CARD-IF",
+    "search_query": "R0603-10k 10 kΩ 0603 card-interface pull-down",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CTL_KPREB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RROLEB",
     "value": "0R",
-    "block_name": "GROUNDING",
+    "block_name": "CARD-IF",
     "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "AGND"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   }
-  ],
-  [
-   {
-    "designator": "UBKB",
-    "value": "TPS54202-class",
-    "block_name": "BUCK-3V3",
-    "search_query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6",
-    "part_uuid": "3e9435f2ef554f158a0e2db08d24d66e",
-    "pins": [
-     {
-      "pin_number": 3,
-      "name": "VIN",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 1,
-      "name": "GND",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 2,
-      "name": "SW",
-      "signal_name": "UBKB_SW"
-     },
-     {
-      "pin_number": 4,
-      "name": "FB",
-      "signal_name": "UBKB_FB"
-     },
-     {
-      "pin_number": 5,
-      "name": "EN",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 6,
-      "name": "BOOT",
-      "signal_name": "UBKB_BST"
-     }
-    ]
-   },
-   {
-    "designator": "LBKB",
-    "value": "IND-10u-3A",
-    "block_name": "BUCK-3V3",
-    "search_query": "IND-10u-3A 10 µH 3 A shielded power inductor",
-    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "UBKB_SW"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "V3P3"
-     }
-    ]
-   },
-   {
-    "designator": "CBKIB",
-    "value": "10uF",
-    "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CBKOB",
-    "value": "22uF",
-    "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CBSTB",
-    "value": "100nF",
-    "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "UBKB_BST"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "UBKB_SW"
-     }
-    ]
-   },
-   {
-    "designator": "RBKF1B",
-    "value": "45.3k",
-    "block_name": "BUCK-3V3",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "UBKB_FB"
-     }
-    ]
-   },
-   {
-    "designator": "RBKF2B",
-    "value": "10k",
-    "block_name": "BUCK-3V3",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "UBKB_FB"
+      "signal_name": "RATING"
      },
      {
       "pin_number": 2,
@@ -1335,49 +759,38 @@
   ]
  ],
  "nc": {
+  "JB": [
+   24,
+   25,
+   59,
+   62,
+   64,
+   65,
+   67,
+   68,
+   69,
+   70,
+   71,
+   72,
+   73,
+   75,
+   76,
+   77,
+   78,
+   79,
+   80,
+   81,
+   82,
+   83,
+   84,
+   85,
+   86,
+   87,
+   88
+  ],
   "ULB": [
    11,
    12
-  ],
-  "ULLC": [
-   1,
-   2,
-   3,
-   4,
-   5,
-   6,
-   8,
-   9,
-   12,
-   13,
-   18,
-   19,
-   25,
-   26,
-   31,
-   35,
-   36,
-   38,
-   57,
-   58,
-   59,
-   60,
-   61,
-   67,
-   68,
-   81,
-   82,
-   90,
-   91,
-   97,
-   98
-  ],
-  "USUPB": [
-   9
-  ],
-  "UANDB": [
-   6,
-   8
   ],
   "JICB": [
    11,
@@ -1386,5 +799,5 @@
   ]
  },
  "warnings": [],
- "total": 38
+ "total": 17
 }

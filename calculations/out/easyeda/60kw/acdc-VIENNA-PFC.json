@@ -104,7 +104,7 @@
    ],
    "nc_pins": [],
    "value": "IND-PFC-165u",
-   "query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+   "query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust ",
    "mpn": "IND-PFC-165u"
   },
   {
@@ -251,39 +251,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PSA0G",
+   "designator": "RA0GPD",
    "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_A0"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CA0GB1",
+   "block_name": "PHASE-A0",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UA0G_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UA0G_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "CA0GB2",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UA0G_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "UA0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RA0GON",
@@ -346,24 +371,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "RA0GPD",
+   "designator": "CA0GBL",
    "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_A0"
+     "signal_name": "UA0G_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "UA0G_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "DA0GS1",
@@ -406,64 +431,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "CA0GBL",
+   "designator": "PSA0G",
    "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "UA0G_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UA0G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "CA0GB1",
-   "block_name": "PHASE-A0",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "UA0G_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UA0G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "CA0GB2",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "UA0G_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "UA0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "DA0T",
@@ -662,7 +662,7 @@
    ],
    "nc_pins": [],
    "value": "IND-PFC-165u",
-   "query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+   "query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust ",
    "mpn": "IND-PFC-165u"
   },
   {
@@ -809,39 +809,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PSB0G",
+   "designator": "RB0GPD",
    "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_B0"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CB0GB1",
+   "block_name": "PHASE-B0",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UB0G_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UB0G_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "CB0GB2",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UB0G_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "UB0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RB0GON",
@@ -904,24 +929,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "RB0GPD",
+   "designator": "CB0GBL",
    "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_B0"
+     "signal_name": "UB0G_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "UB0G_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "DB0GS1",
@@ -964,64 +989,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "CB0GBL",
+   "designator": "PSB0G",
    "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "UB0G_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UB0G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "CB0GB1",
-   "block_name": "PHASE-B0",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "UB0G_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UB0G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "CB0GB2",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "UB0G_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "UB0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "DB0T",
@@ -1220,7 +1220,7 @@
    ],
    "nc_pins": [],
    "value": "IND-PFC-165u",
-   "query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+   "query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust ",
    "mpn": "IND-PFC-165u"
   },
   {
@@ -1367,39 +1367,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PSC0G",
+   "designator": "RC0GPD",
    "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_C0"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CC0GB1",
+   "block_name": "PHASE-C0",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UC0G_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UC0G_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "CC0GB2",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UC0G_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "UC0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RC0GON",
@@ -1462,24 +1487,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "RC0GPD",
+   "designator": "CC0GBL",
    "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_C0"
+     "signal_name": "UC0G_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "UC0G_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "DC0GS1",
@@ -1522,64 +1547,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "CC0GBL",
+   "designator": "PSC0G",
    "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "UC0G_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UC0G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "CC0GB1",
-   "block_name": "PHASE-C0",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "UC0G_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UC0G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "CC0GB2",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "UC0G_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "UC0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "DC0T",
@@ -1778,7 +1778,7 @@
    ],
    "nc_pins": [],
    "value": "IND-PFC-165u",
-   "query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+   "query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust ",
    "mpn": "IND-PFC-165u"
   },
   {
@@ -1925,39 +1925,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PSA1G",
+   "designator": "RA1GPD",
    "block_name": "PHASE-A1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_A1"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CA1GB1",
+   "block_name": "PHASE-A1",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UA1G_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UA1G_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "CA1GB2",
+   "block_name": "PHASE-A1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UA1G_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "UA1G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RA1GON",
@@ -2020,24 +2045,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "RA1GPD",
+   "designator": "CA1GBL",
    "block_name": "PHASE-A1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_A1"
+     "signal_name": "UA1G_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "UA1G_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "DA1GS1",
@@ -2080,64 +2105,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "CA1GBL",
+   "designator": "PSA1G",
    "block_name": "PHASE-A1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "UA1G_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UA1G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "CA1GB1",
-   "block_name": "PHASE-A1",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "UA1G_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UA1G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "CA1GB2",
-   "block_name": "PHASE-A1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "UA1G_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "UA1G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "DA1T",
@@ -2336,7 +2336,7 @@
    ],
    "nc_pins": [],
    "value": "IND-PFC-165u",
-   "query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+   "query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust ",
    "mpn": "IND-PFC-165u"
   },
   {
@@ -2483,39 +2483,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PSB1G",
+   "designator": "RB1GPD",
    "block_name": "PHASE-B1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_B1"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CB1GB1",
+   "block_name": "PHASE-B1",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UB1G_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UB1G_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "CB1GB2",
+   "block_name": "PHASE-B1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UB1G_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "UB1G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RB1GON",
@@ -2578,24 +2603,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "RB1GPD",
+   "designator": "CB1GBL",
    "block_name": "PHASE-B1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_B1"
+     "signal_name": "UB1G_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "UB1G_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "DB1GS1",
@@ -2638,64 +2663,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "CB1GBL",
+   "designator": "PSB1G",
    "block_name": "PHASE-B1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "UB1G_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UB1G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "CB1GB1",
-   "block_name": "PHASE-B1",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "UB1G_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UB1G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "CB1GB2",
-   "block_name": "PHASE-B1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "UB1G_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "UB1G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "DB1T",
@@ -2894,7 +2894,7 @@
    ],
    "nc_pins": [],
    "value": "IND-PFC-165u",
-   "query": "IND-PFC-165u PFC choke 165 µH, 3× T79 26µ sendust, N=36",
+   "query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust ",
    "mpn": "IND-PFC-165u"
   },
   {
@@ -3041,39 +3041,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PSC1G",
+   "designator": "RC1GPD",
    "block_name": "PHASE-C1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_C1"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CC1GB1",
+   "block_name": "PHASE-C1",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UC1G_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UC1G_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "CC1GB2",
+   "block_name": "PHASE-C1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "UC1G_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "UC1G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RC1GON",
@@ -3136,24 +3161,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "RC1GPD",
+   "designator": "CC1GBL",
    "block_name": "PHASE-C1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_C1"
+     "signal_name": "UC1G_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "UC1G_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "DC1GS1",
@@ -3196,64 +3221,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "CC1GBL",
+   "designator": "PSC1G",
    "block_name": "PHASE-C1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "UC1G_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UC1G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "CC1GB1",
-   "block_name": "PHASE-C1",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "UC1G_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "UC1G_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "CC1GB2",
-   "block_name": "PHASE-C1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "UC1G_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "UC1G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "DC1T",

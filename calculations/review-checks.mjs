@@ -6,7 +6,7 @@
 // so whole categories can't regress, not just the specific instances that were caught.
 
 import { readFileSync, existsSync } from "node:fs";
-const { skuOverrides: skuOverridesForCheck } = await import("./cost/parts-db.mjs");
+const { skuOverrides: skuOverridesForCheck, BUILDABLE_SKUS } = await import("./cost/parts-db.mjs");
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -108,7 +108,7 @@ ck("R4-2", /<OutputShunt inn="net\.BKBN"/.test(boards) && !/outn="net\.OUTN_SH"/
   "output shunt sits in the bank-negative return path (BKBN -> RSHO -> OUTN)");
 { // every net must have >= 2 pins, on whichever SKUs have been built
   const { readdirSync, existsSync } = await import("node:fs");
-  for (const sku of ["30kw", "60kw", "120kw"]) {
+  for (const sku of BUILDABLE_SKUS) {
     const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda/apply")
                                : join(ROOT, "calculations/out/easyeda", sku, "apply");
     if (!existsSync(dir)) continue;
@@ -134,7 +134,7 @@ ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin8: "RT"/.test(cells),
   "NCP1252A RT has its frequency-setting resistor (stage had no defined Fsw)");
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
   const { existsSync, readdirSync } = await import("node:fs");
-  for (const sku of ["30kw", "60kw", "120kw"]) {
+  for (const sku of BUILDABLE_SKUS) {
     const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda/apply")
                                : join(ROOT, "calculations/out/easyeda", sku, "apply");
     if (!existsSync(dir)) continue;
@@ -157,7 +157,7 @@ ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin8: "RT"/.test(cells),
   const { existsSync } = await import("node:fs");
   const NARROW = { "R1206-33R-1%": 1, "FILM-100n-250": 1, "R0805-prec-0.1%": 2, "FILM-47u-VCC": 1 };
   const byRule = new Map();
-  for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
+  for (const sku of BUILDABLE_SKUS) for (const side of ["acdc", "dcdc"]) {
     const f = join(ROOT, "dist/boards", sku, side, "circuit.json");
     if (!existsSync(f)) continue;
     for (const c of JSON.parse(readFileSync(f, "utf8"))) {
@@ -197,7 +197,7 @@ ck("SYNTAX-DUPKEY", (() => {
   const { DB } = await import("./cost/parts-db.mjs");
   const { existsSync } = await import("node:fs");
   const des = new Set();
-  for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
+  for (const sku of BUILDABLE_SKUS) for (const side of ["acdc", "dcdc"]) {
     const f = join(ROOT, "dist/boards", sku, side, "circuit.json");
     if (!existsSync(f)) continue;
     for (const c of JSON.parse(readFileSync(f, "utf8"))) if (c.type === "source_component") des.add(c.name);
@@ -228,7 +228,7 @@ ck("SYNTAX-DUPKEY", (() => {
   // nothing failed until a full rebuild from source: the committed sheets were right but no longer
   // reproducible, because the intermediate apply files were stale. Compare the two stages directly.
   const { existsSync, readdirSync } = await import("node:fs");
-  for (const sku of ["30kw", "60kw", "120kw"]) {
+  for (const sku of BUILDABLE_SKUS) {
     const pagesDir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda")
                                     : join(ROOT, "calculations/out/easyeda", sku);
     const applyDir = join(pagesDir, "apply");
@@ -254,7 +254,7 @@ ck("SYNTAX-DUPKEY", (() => {
   // name theirs RA0GPD while the half-bridges name theirs R1HPD/R1LPD, and a GPD-only filter
   // reports 24 of 36 nets "unprotected" when every one of them is fine.
   const { existsSync, readdirSync } = await import("node:fs");
-  for (const sku of ["30kw", "60kw", "120kw"]) {
+  for (const sku of BUILDABLE_SKUS) {
     const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda")
                                : join(ROOT, "calculations/out/easyeda", sku);
     if (!existsSync(dir)) continue;
@@ -311,7 +311,7 @@ ck("LCSC-CLASS-MPN", (() => {
 // per-SKU difference a reader needs to tell the three boards apart.
 ck("SKU-VALUE-MATCHES-PART", (() => {
   const ov = skuOverridesForCheck;
-  for (const sku of ["30kw", "60kw", "120kw"]) {
+  for (const sku of BUILDABLE_SKUS) {
     const want = ov[sku] ?? {};
     for (const side of ["acdc", "dcdc"]) {
       const f = join(ROOT, `kicad5/dc-modules-${sku}/${sku}-${side}.sch`);
@@ -333,7 +333,7 @@ ck("SKU-VALUE-MATCHES-PART", (() => {
 })(), "every per-SKU part override is visible on the sheet, so 30/60/120 kW boards state their own ratings");
 
 ck("SHEET-VALUE-TEXT", (() => {
-  for (const sku of ["30kw", "60kw", "120kw"]) for (const side of ["acdc", "dcdc"]) {
+  for (const sku of BUILDABLE_SKUS) for (const side of ["acdc", "dcdc"]) {
     const f = join(ROOT, `kicad5/dc-modules-${sku}/${sku}-${side}.sch`);
     if (!existsSync(f)) continue;
     const L = readFileSync(f, "utf8").split("\n");
@@ -362,7 +362,7 @@ ck("SHEET-VALUE-TEXT", (() => {
     mpnOf("UANDCARD") === "74HC11" && mpnOf("UBKCARD") === "TPS54202-class" &&
     mpnOf("LBKCARD") === "IND-10u-3A",
     "card-split designators all classify (MCU + 88-way + supervisor + AND + buck were absent from the BOM)");
-  ck("AUD-DB-CARD-R", mpnOf("RPD0") === "R0603-10k" && mpnOf("RFLTC") === "R-small" &&
+  ck("AUD-DB-CARD-R", mpnOf("RPD0") === "R0603-10k" && mpnOf("RPDB0") === "R0603-10k" && mpnOf("RFLTC") === "R-small" &&
     mpnOf("RAGTC") === "R-small" && mpnOf("RBALTA1") === "R2512-47k-HV-AS" && mpnOf("RV1D0") === "HV73-475k-1%",
     "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts");
 }

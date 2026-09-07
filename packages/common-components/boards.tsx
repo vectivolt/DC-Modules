@@ -297,14 +297,14 @@ return (
           unpowered, or seated but not yet booted must not be able to enable anything. */}
       {["GATE_EN_A", "EN_PFC", "EN_LLC", "CTL_KPRE", "CTL_QDIS"].map((n, i) => (
         <resistor key={n} name={`RPD${i}`} resistance="10k" footprint="0603"
-          pcbX={P.cardX - 50 + i * 8} pcbY={P.cardY - 10} schX={70 + i * 2} schY={26} schSectionName="CARD" />
+          pcbX={P.cardX - 50 + i * 8} pcbY={P.cardY - 10} schX={70 + i * 2} schY={23} schSectionName="CARD" />
       ))}
       {["GATE_EN_A", "EN_PFC", "EN_LLC", "CTL_KPRE", "CTL_QDIS"].map((n, i) => [
         <trace key={`a${i}`} from={`.RPD${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPD${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
       {/* ROLE0 tied low identifies this as the AC-DC slot; RATING codes the power level. */}
-      <resistor name="RROLE" resistance="0" footprint="0603" pcbX={P.cardX + 50} pcbY={P.cardY - 10} schX={82} schY={26} schSectionName="CARD" />
+      <resistor name="RROLE" resistance="0" footprint="0603" pcbX={P.cardX + 50} pcbY={P.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLE > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLE > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
@@ -535,14 +535,14 @@ return (
       {/* CARD_RULES: default-OFF held by the BOARD. Seven relay lines plus the enables. */}
       {["GATE_EN_B", "EN_PFC", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB"].map((n, i) => (
         <resistor key={n} name={`RPDB${i}`} resistance="10k" footprint="0603"
-          pcbX={Q.cardX - 60 + i * 8} pcbY={Q.cardY - 10} schX={70 + i * 2} schY={26} schSectionName="CARD" />
+          pcbX={Q.cardX - 60 + i * 8} pcbY={Q.cardY - 10} schX={70 + i * 2} schY={23} schSectionName="CARD" />
       ))}
       {["GATE_EN_B", "EN_PFC", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB"].map((n, i) => [
         <trace key={`a${i}`} from={`.RPDB${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPDB${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
       {/* ROLE0 left open identifies the DC-DC slot; RATING codes the power level. */}
-      <resistor name="RROLEB" resistance="0" footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={82} schY={26} schSectionName="CARD" />
+      <resistor name="RROLEB" resistance="0" footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 

@@ -60,6 +60,11 @@ const uuidOf = (mpn) => {
   // renaming KPREA/KPREB to HFE82V-20-M-CLASS for R8 silently dropped both relays and left
   // COIL_KPREA/B and KPREA/B_B as single-pin nets. Only a full rebuild from source surfaced it.
   if (/^(HFE\d|HFE82V|HF167F)/.test(mpn)) return uuidMap["HFE82V-M-CLASS"].part_uuid;
+  // Catalog CT adoption (audit E35): same 2-pin CT symbols, new manufacturer part numbers.
+  if (/^ACX-/.test(mpn)) return uuidMap["CT-100A-1:2500"].part_uuid;
+  if (/^AS-\d/.test(mpn)) return uuidMap["CT-RES-1:100"].part_uuid;
+  // 88-way card interface: no probed EasyEDA part exists; treat like the other connector classes.
+  if (/^CONN-CARD-88$/.test(mpn)) return uuidMap["HDR-1x5-2.54"]?.part_uuid ?? null;
   if (/^(IND-|DM-)/.test(mpn)) return uuidMap["IND-ALL-2P"].part_uuid;
   return null;
 };

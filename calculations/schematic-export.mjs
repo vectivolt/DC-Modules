@@ -13,6 +13,17 @@ const { convertCircuitJsonToSchematicSvg } = require("circuit-to-svg");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SECTIONS = {
+  // The control card (single-segment target; audit E35 — one card, both converter roles)
+  "control-card": [
+    ["MCU GD32G553VET6 & DECOUPLING", /^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/],
+    ["SWD + BOOT", /^(JSWDCARD|RCARDBOOT|CCARDRST)$/],
+    ["SAFETY CHAIN (WD + AND)", /^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD)$/],
+    ["FLT WIRED-OR + GROUND TIE", /^(RFLTC|CFLTC|RAGTC)$/],
+    ["3V3 SYNC BUCK", /^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD)$/],
+    ["ANALOG MID-RAIL", /^(RAV[HLIF]|CAV[MFO]|UAVB)$/],
+    ["ROLE STRAPS", /^RROLE[01]$/],
+    ["88-WAY INTERFACE", /^JCARD$/],
+  ],
   acdc: [
     ["AC INPUT & PROTECTION", /^(JACL\d|JPE$|F[123]$|MOV[123]$|MOVP[123]$|GDT[123]$)/],
     ["EMI FILTER", /^(CMC[12]$|CX\d\d$|CY[123]$|LDM[123]$)/],
@@ -30,6 +41,7 @@ const SECTIONS = {
     ["COIL DRIVER", /^UPA$/],
     ["FANS", /^(JFAN\d|RFT\d)$/],
     ["DC OUT + HARNESS", /^(JICA$|RA(LTX|LRX|LTS|LRS)$|JDCP$|JDCN$|JPEB$)/],
+    ["CARD INTERFACE (88-WAY)", /^(JA|RPD\d|RROLE)$/],
   ],
   dcdc: [
     ["BUS ENTRY & COMMUTATION FILMS", /^(JDCP$|JDCN$|JPEB$|CF\d+$)/],
@@ -37,6 +49,7 @@ const SECTIONS = {
     ["LLC TANKS, TRANSFORMERS & RECTIFIERS", /^(C\d+R\d$|L\d+T$|T\d+$|D\d+[AB][1-4]$|CT\d+$|R\d+C[TF]$|C\d+CF$|D\d+C[PN]$)/],
     ["BANK CAPACITORS & BALANCE", /^(CB[AB]\d+[TB]$|RBAL[TB][AB][12]$|CB[AB]F$)/],
     ["SERIES/PARALLEL MATRIX", /^(K(SER|PARA|PARB|OUT|PREA|PREB)2?$|RKPU|RPRE[AB]$)/],
+    ["CARD INTERFACE (88-WAY)", /^(JB|RPDB\d|RROLEB)$/],
     ["BANK BLEEDERS", /^(RBD[AB]\d$|QDIS[AB]$|UPV[AB]$|RPV[LB][AB]$)/],
     ["OUTPUT & SHUNT", /^(RSHO$|USHO$|PSSH$|COF[12]$|CYO[12]$|JOUTP$|JOUTN$)/],
     ["ISOLATED SENSING", /^(PS5BK[AB]$|UIVO[ABV]$|RO[ABV]D\d?L?$|CO[ABV]DF$)/],
@@ -52,12 +65,15 @@ const SECTIONS = {
   ],
 };
 
+// Default set = buildable boards + the control card (single-segment target -> dist/boards/<name>).
+// 120 kW retired: cabinet product (E36); its board pair no longer builds.
 const targets = process.argv.slice(2).length ? process.argv.slice(2)
-  : ["30kw/acdc", "30kw/dcdc", "60kw/acdc", "60kw/dcdc", "120kw/acdc", "120kw/dcdc"];
+  : ["30kw/acdc", "30kw/dcdc", "60kw/acdc", "60kw/dcdc", "control-card"];
 
 for (const t of targets) {
   const [sku, side] = t.split("/");
-  const p = join(ROOT, "dist", "boards", sku, side, "circuit.json");
+  const p = side ? join(ROOT, "dist", "boards", sku, side, "circuit.json")
+                 : join(ROOT, "dist", "boards", sku, "circuit.json");
   if (!existsSync(p)) { console.log(`!! ${t}: no build`); continue; }
   const j = JSON.parse(readFileSync(p, "utf8"));
   const srcById = new Map(j.filter(e => e.type === "source_component").map(c => [c.source_component_id, c.name]));
@@ -80,7 +96,7 @@ for (const t of targets) {
   const fs = Math.max(10, s * 0.9); // section title font px
   const frameBoxes = [];
   const assigned = new Set();
-  for (const [title, re] of SECTIONS[side] ?? []) {
+  for (const [title, re] of SECTIONS[side ?? sku] ?? []) {
     const members = comps.filter(c => !assigned.has(c.name) && re.test(c.name));
     if (!members.length) continue;
     members.forEach(c => assigned.add(c.name));
@@ -117,8 +133,9 @@ for (const t of targets) {
   svg = svg.replace(/<rect class="boundary" x="0" y="0" width="\d+" height="\d+"\/>/,
     `<rect class="boundary" x="0" y="0" width="${Math.ceil(maxFX)}" height="${Math.ceil(maxFY)}"/><g transform="translate(${M},${M})">`);
   svg = svg.replace("</svg>", `</g>${frames}${tb}</svg>`);
-  const outDir = join(ROOT, "boards", sku, "out");
+  const outDir = side ? join(ROOT, "boards", sku, "out") : join(ROOT, "boards", "out");
   mkdirSync(outDir, { recursive: true });
-  writeFileSync(join(outDir, `${side}-schematic.svg`), svg);
-  console.log(`${t}: ${comps.length} symbols → ${side}-schematic.svg (${W}×${H})${un.length ? `  [unsectioned: ${un.slice(0, 8).join(",")}${un.length > 8 ? ` +${un.length - 8}` : ""}]` : "  [all sectioned]"}`);
+  const outName = side ?? sku;
+  writeFileSync(join(outDir, `${outName}-schematic.svg`), svg);
+  console.log(`${t}: ${comps.length} symbols → ${outName}-schematic.svg (${W}×${H})${un.length ? `  [unsectioned: ${un.slice(0, 8).join(",")}${un.length > 8 ? ` +${un.length - 8}` : ""}]` : "  [all sectioned]"}`);
 }

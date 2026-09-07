@@ -318,39 +318,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PS1H",
+   "designator": "R1HPD",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_L1H"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C1HB1",
+   "block_name": "LEG-1",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U1H_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "U1H_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C1HB2",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U1H_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "U1H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "R1HON",
@@ -413,24 +438,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "R1HPD",
+   "designator": "C1HBL",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_L1H"
+     "signal_name": "U1H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "U1H_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "D1HS1",
@@ -473,64 +498,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "C1HBL",
+   "designator": "PS1H",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "U1H_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U1H_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "C1HB1",
-   "block_name": "LEG-1",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "U1H_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U1H_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "C1HB2",
-   "block_name": "LEG-1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "U1H_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "U1H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "U1L",
@@ -616,39 +616,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PS1L",
+   "designator": "R1LPD",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_L1L"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C1LB1",
+   "block_name": "LEG-1",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U1L_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "U1L_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C1LB2",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U1L_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "U1L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "R1LON",
@@ -711,24 +736,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "R1LPD",
+   "designator": "C1LBL",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_L1L"
+     "signal_name": "U1L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "U1L_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "D1LS1",
@@ -771,64 +796,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "C1LBL",
+   "designator": "PS1L",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "U1L_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U1L_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "C1LB1",
-   "block_name": "LEG-1",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "U1L_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U1L_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "C1LB2",
-   "block_name": "LEG-1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "U1L_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "U1L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "Q2H",
@@ -974,39 +974,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PS2H",
+   "designator": "R2HPD",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_L2H"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C2HB1",
+   "block_name": "LEG-2",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U2H_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "U2H_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C2HB2",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U2H_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "U2H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "R2HON",
@@ -1069,24 +1094,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "R2HPD",
+   "designator": "C2HBL",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_L2H"
+     "signal_name": "U2H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "U2H_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "D2HS1",
@@ -1129,64 +1154,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "C2HBL",
+   "designator": "PS2H",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "U2H_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U2H_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "C2HB1",
-   "block_name": "LEG-2",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "U2H_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U2H_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "C2HB2",
-   "block_name": "LEG-2",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "U2H_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "U2H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "U2L",
@@ -1272,39 +1272,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PS2L",
+   "designator": "R2LPD",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_L2L"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C2LB1",
+   "block_name": "LEG-2",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U2L_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "U2L_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C2LB2",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U2L_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "U2L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "R2LON",
@@ -1367,24 +1392,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "R2LPD",
+   "designator": "C2LBL",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_L2L"
+     "signal_name": "U2L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "U2L_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "D2LS1",
@@ -1427,64 +1452,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "C2LBL",
+   "designator": "PS2L",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "U2L_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U2L_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "C2LB1",
-   "block_name": "LEG-2",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "U2L_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U2L_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "C2LB2",
-   "block_name": "LEG-2",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "U2L_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "U2L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "Q3H",
@@ -1630,39 +1630,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PS3H",
+   "designator": "R3HPD",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_L3H"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C3HB1",
+   "block_name": "LEG-3",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U3H_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "U3H_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C3HB2",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U3H_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "U3H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "R3HON",
@@ -1725,24 +1750,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "R3HPD",
+   "designator": "C3HBL",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_L3H"
+     "signal_name": "U3H_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "U3H_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "D3HS1",
@@ -1785,64 +1810,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "C3HBL",
+   "designator": "PS3H",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "U3H_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U3H_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "C3HB1",
-   "block_name": "LEG-3",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "U3H_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U3H_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "C3HB2",
-   "block_name": "LEG-3",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "U3H_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "U3H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   },
   {
    "designator": "U3L",
@@ -1928,39 +1928,64 @@
    "mpn": "NSI6611"
   },
   {
-   "designator": "PS3L",
+   "designator": "R3LPD",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
+     "name": "pin1",
+     "signal_name": "PWM_L3L"
     },
     {
      "pin_number": 2,
-     "name": "GND",
+     "name": "pin2",
      "signal_name": "DGND"
-    },
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "C3LB1",
+   "block_name": "LEG-3",
+   "pins": [
     {
-     "pin_number": 3,
-     "name": "P18",
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U3L_VCC2"
     },
     {
-     "pin_number": 4,
-     "name": "COM",
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "U3L_GND2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
+   "designator": "C3LB2",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
      "signal_name": "U3L_GND2"
     },
     {
-     "pin_number": 5,
-     "name": "N4",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "U3L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "R3LON",
@@ -2023,24 +2048,24 @@
    "mpn": "R0805-10k"
   },
   {
-   "designator": "R3LPD",
+   "designator": "C3LBL",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "PWM_L3L"
+     "signal_name": "U3L_DST"
     },
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "U3L_GND2"
     }
    ],
    "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "D3LS1",
@@ -2083,64 +2108,39 @@
    "mpn": "US1M"
   },
   {
-   "designator": "C3LBL",
+   "designator": "PS3L",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "U3L_DST"
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U3L_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
-  },
-  {
-   "designator": "C3LB1",
-   "block_name": "LEG-3",
-   "pins": [
+     "name": "GND",
+     "signal_name": "DGND"
+    },
     {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 3,
+     "name": "P18",
      "signal_name": "U3L_VCC2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "U3L_GND2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
-  },
-  {
-   "designator": "C3LB2",
-   "block_name": "LEG-3",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
+     "pin_number": 4,
+     "name": "COM",
      "signal_name": "U3L_GND2"
     },
     {
-     "pin_number": 2,
-     "name": "pin2",
+     "pin_number": 5,
+     "name": "N4",
      "signal_name": "U3L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "MLCC-1u-0805 1 µF 0805 ",
-   "mpn": "MLCC-1u-0805"
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
   }
  ]
 }

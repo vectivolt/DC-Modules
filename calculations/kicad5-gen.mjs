@@ -29,11 +29,17 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // blind spot that let the zips drift. No argument now means ALL THREE.
 if (!process.argv[2]) {
   const { execFileSync } = await import("node:child_process");
-  for (const sku of ["30kw", "60kw", "120kw"])
+  const { BUILDABLE_SKUS } = await import("./cost/parts-db.mjs");
+  for (const sku of BUILDABLE_SKUS)
     execFileSync(process.execPath, [fileURLToPath(import.meta.url), sku], { stdio: "inherit" });
   process.exit(0);
 }
 const SKU = process.argv[2];
+if (SKU === "120kw") {
+  console.error("120kw single-board sheets are RETIRED: 120 kW is a cabinet (4x 30 kW / 2x 60 kW; " +
+    "cardMap() refuses 4 lanes). Last pre-split set archived under kicad5/archive/.");
+  process.exit(1);
+}
 const SRC = SKU === "30kw"
   ? join(ROOT, "calculations/out/easyeda/apply")
   : join(ROOT, "calculations/out/easyeda", SKU, "apply");

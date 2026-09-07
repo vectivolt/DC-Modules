@@ -159,7 +159,7 @@
    ],
    "nc_pins": [],
    "value": "IND-TRIM-BIN4",
-   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
    "mpn": "IND-TRIM-BIN4"
   },
   {
@@ -383,9 +383,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-RES-1:100",
-   "query": "CT-RES-1:100 resonant CT ",
-   "mpn": "CT-RES-1:100"
+   "value": "AS-404",
+   "query": "AS-404 resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank condu",
+   "mpn": "AS-404"
   },
   {
    "designator": "R1CT",
@@ -584,7 +584,7 @@
    ],
    "nc_pins": [],
    "value": "IND-TRIM-BIN4",
-   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
    "mpn": "IND-TRIM-BIN4"
   },
   {
@@ -808,9 +808,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-RES-1:100",
-   "query": "CT-RES-1:100 resonant CT ",
-   "mpn": "CT-RES-1:100"
+   "value": "AS-404",
+   "query": "AS-404 resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank condu",
+   "mpn": "AS-404"
   },
   {
    "designator": "R2CT",
@@ -1009,7 +1009,7 @@
    ],
    "nc_pins": [],
    "value": "IND-TRIM-BIN4",
-   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
    "mpn": "IND-TRIM-BIN4"
   },
   {
@@ -1233,9 +1233,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-RES-1:100",
-   "query": "CT-RES-1:100 resonant CT ",
-   "mpn": "CT-RES-1:100"
+   "value": "AS-404",
+   "query": "AS-404 resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank condu",
+   "mpn": "AS-404"
   },
   {
    "designator": "R3CT",
@@ -1434,7 +1434,7 @@
    ],
    "nc_pins": [],
    "value": "IND-TRIM-BIN4",
-   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
    "mpn": "IND-TRIM-BIN4"
   },
   {
@@ -1658,9 +1658,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-RES-1:100",
-   "query": "CT-RES-1:100 resonant CT ",
-   "mpn": "CT-RES-1:100"
+   "value": "AS-404",
+   "query": "AS-404 resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank condu",
+   "mpn": "AS-404"
   },
   {
    "designator": "R4CT",
@@ -1859,7 +1859,7 @@
    ],
    "nc_pins": [],
    "value": "IND-TRIM-BIN4",
-   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
    "mpn": "IND-TRIM-BIN4"
   },
   {
@@ -2083,9 +2083,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-RES-1:100",
-   "query": "CT-RES-1:100 resonant CT ",
-   "mpn": "CT-RES-1:100"
+   "value": "AS-404",
+   "query": "AS-404 resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank condu",
+   "mpn": "AS-404"
   },
   {
    "designator": "R5CT",
@@ -2284,7 +2284,7 @@
    ],
    "nc_pins": [],
    "value": "IND-TRIM-BIN4",
-   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% — bin picked agains",
+   "query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
    "mpn": "IND-TRIM-BIN4"
   },
   {
@@ -2508,9 +2508,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CT-RES-1:100",
-   "query": "CT-RES-1:100 resonant CT ",
-   "mpn": "CT-RES-1:100"
+   "value": "AS-404",
+   "query": "AS-404 resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank condu",
+   "mpn": "AS-404"
   },
   {
    "designator": "R6CT",

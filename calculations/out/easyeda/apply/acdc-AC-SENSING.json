@@ -10,7 +10,6 @@
   "SENSE-VBUS",
   "SENSE-VMID",
   "ISO-BIAS",
-  "ANALOG-MID",
   "NTC",
   "LINE-CTS-0"
  ],
@@ -1373,175 +1372,6 @@
   ],
   [
    {
-    "designator": "RAVH",
-    "value": "10k",
-    "block_name": "ANALOG-MID",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVREF_MID"
-     }
-    ]
-   },
-   {
-    "designator": "RAVL",
-    "value": "10k",
-    "block_name": "ANALOG-MID",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "AVREF_MID"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AGND"
-     }
-    ]
-   },
-   {
-    "designator": "CAVM",
-    "value": "100nF",
-    "block_name": "ANALOG-MID",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "AVREF_MID"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AGND"
-     }
-    ]
-   },
-   {
-    "designator": "UAVB",
-    "value": "TLV9061-class",
-    "block_name": "ANALOG-MID",
-    "search_query": "TLV9061-class rail-to-rail op-amp",
-    "part_uuid": "705a9444336644f5b67f6e1d80b82ddf",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "OUT",
-      "signal_name": "UAVB_OUT"
-     },
-     {
-      "pin_number": 4,
-      "name": "IN-",
-      "signal_name": "UAVB_INN"
-     },
-     {
-      "pin_number": 3,
-      "name": "IN+",
-      "signal_name": "AVREF_MID"
-     },
-     {
-      "pin_number": 2,
-      "name": "V-",
-      "signal_name": "AGND"
-     },
-     {
-      "pin_number": 5,
-      "name": "V+",
-      "signal_name": "V3P3"
-     }
-    ]
-   },
-   {
-    "designator": "RAVI",
-    "value": "4.7",
-    "block_name": "ANALOG-MID",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "UAVB_OUT"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AVMID"
-     }
-    ]
-   },
-   {
-    "designator": "RAVF",
-    "value": "10k",
-    "block_name": "ANALOG-MID",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "AVMID"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "UAVB_INN"
-     }
-    ]
-   },
-   {
-    "designator": "CAVF",
-    "value": "2.2nF",
-    "block_name": "ANALOG-MID",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "UAVB_OUT"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "UAVB_INN"
-     }
-    ]
-   },
-   {
-    "designator": "CAVO",
-    "value": "10uF",
-    "block_name": "ANALOG-MID",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
-    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "AVMID"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "AGND"
-     }
-    ]
-   }
-  ],
-  [
-   {
     "designator": "JTPFC",
     "value": "PH-2",
     "block_name": "NTC",
@@ -1659,9 +1489,9 @@
   [
    {
     "designator": "CTA0",
-    "value": "CT-100A-1:2500",
+    "value": "ACX-1100",
     "block_name": "LINE-CTS-0",
-    "search_query": "CT-100A-1:2500 line CT 100 A class",
+    "search_query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins",
     "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
     "pins": [
      {
@@ -1678,9 +1508,9 @@
    },
    {
     "designator": "RA0B",
-    "value": "33",
+    "value": "27",
     "block_name": "LINE-CTS-0",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R1206-27R-1% 27 Ω CT burden 1%",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1773,9 +1603,9 @@
    },
    {
     "designator": "CTB0",
-    "value": "CT-100A-1:2500",
+    "value": "ACX-1100",
     "block_name": "LINE-CTS-0",
-    "search_query": "CT-100A-1:2500 line CT 100 A class",
+    "search_query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins",
     "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
     "pins": [
      {
@@ -1792,9 +1622,9 @@
    },
    {
     "designator": "RB0B",
-    "value": "33",
+    "value": "27",
     "block_name": "LINE-CTS-0",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R1206-27R-1% 27 Ω CT burden 1%",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1887,9 +1717,9 @@
    },
    {
     "designator": "CTC0",
-    "value": "CT-100A-1:2500",
+    "value": "ACX-1100",
     "block_name": "LINE-CTS-0",
-    "search_query": "CT-100A-1:2500 line CT 100 A class",
+    "search_query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins",
     "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
     "pins": [
      {
@@ -1906,9 +1736,9 @@
    },
    {
     "designator": "RC0B",
-    "value": "33",
+    "value": "27",
     "block_name": "LINE-CTS-0",
-    "search_query": "R1206-33R-1% 33 Ω CT burden 1%",
+    "search_query": "R1206-27R-1% 27 Ω CT burden 1%",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -2019,5 +1849,5 @@
   ]
  },
  "warnings": [],
- "total": 95
+ "total": 87
 }

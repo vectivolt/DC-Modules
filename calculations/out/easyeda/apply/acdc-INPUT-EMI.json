@@ -70,7 +70,7 @@
     "designator": "F1",
     "value": "FUSE-gG-690V",
     "block_name": "AC-ENTRY",
-    "search_query": "FUSE-gG-690V gG fuse 690 VAC",
+    "search_query": "FUSE-gG-690V gG fuse 690 VAC, 22×58 frame",
     "part_uuid": "cec12465cd844862980ba8ae28c6ac85",
     "pins": [
      {
@@ -89,7 +89,7 @@
     "designator": "F2",
     "value": "FUSE-gG-690V",
     "block_name": "AC-ENTRY",
-    "search_query": "FUSE-gG-690V gG fuse 690 VAC",
+    "search_query": "FUSE-gG-690V gG fuse 690 VAC, 22×58 frame",
     "part_uuid": "cec12465cd844862980ba8ae28c6ac85",
     "pins": [
      {
@@ -108,7 +108,7 @@
     "designator": "F3",
     "value": "FUSE-gG-690V",
     "block_name": "AC-ENTRY",
-    "search_query": "FUSE-gG-690V gG fuse 690 VAC",
+    "search_query": "FUSE-gG-690V gG fuse 690 VAC, 22×58 frame",
     "part_uuid": "cec12465cd844862980ba8ae28c6ac85",
     "pins": [
      {

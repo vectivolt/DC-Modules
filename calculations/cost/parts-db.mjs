@@ -17,6 +17,12 @@
 // (HR-15), per-SKU CMC + pulse-resistor overrides (HR-18/HR-14).
 // Ordering matters: first matching pattern wins; keep specific patterns above the catch-alls.
 
+// The buildable/deliverable single-board set. 120 kW is a CABINET (4× 30 kW / 2× 60 kW — product
+// structure + E36): its single-board pair cannot exist since the card split (cardMap() correctly
+// refuses 4 lanes — AIN needs 17 of 13), so every pipeline consumer iterates THIS list and the
+// 120 kW product cost is a 4×-module roll-up in bom-gen.
+export const BUILDABLE_SKUS = ["30kw", "60kw"];
+
 export const DB = [
   // --- power semiconductors
   { m: /^Q[ABC]\d+[AB]$/, mpn: "B3M010C075Z", mfr: "BASiC", desc: "SiC MOSFET 750 V 10 mΩ TO-247-4", price1k: 330, alt: "SiChain 750V/10mΩ (RFQ)" },
@@ -107,7 +113,7 @@ export const DB = [
   // tie) matched the clamp-bleeder rule and became 470 Ω 10 W wirewounds; RPD0..4 (10 k card-way
   // pull-downs, the E27 default-OFF state) matched the HV-divider rule and became 475 k 1206 HV.
   { m: /^R(FLTC|AGTC)$/, mpn: "R-small", mfr: "any", desc: "card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point tie (card-split rescue)", price1k: 0.4, alt: "any" },
-  { m: /^RPD[0-9]$/, mpn: "R0603-10k", mfr: "any", desc: "10 kΩ 0603 card-interface pull-down (board-side default-OFF on GATE_EN/EN/DO ways — CARD_RULES/E27)", price1k: 0.3, alt: "any" },
+  { m: /^RPDB?[0-9]$/, mpn: "R0603-10k", mfr: "any", desc: "10 kΩ 0603 card-interface pull-down (board-side default-OFF on GATE_EN/EN/DO ways — CARD_RULES/E27)", price1k: 0.3, alt: "any" },
   { m: /^R\w+C$/, mpn: "WW-470R-10W", mfr: "local/TE", desc: "470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating)", price1k: 22, alt: "SQP10" },
   { m: /^R\w+D[0-7]$/, mpn: "HV73-475k-1%", mfr: "KOA/UniOhm", desc: "475 kΩ 1206 1% anti-surge (HV divider — MR-3)", price1k: 1.4, alt: "any anti-surge 1%" },
   { m: /^R\w{2}DL$/, mpn: "R0805-prec-0.1%", mfr: "UniOhm", desc: "divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)", price1k: 2.5, alt: "any 0.1%" },

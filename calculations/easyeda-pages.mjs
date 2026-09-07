@@ -85,13 +85,13 @@ const PAGES = {
       ["NTC", [/^JT(PFC|INL)$/, /^RT(PFC|INL)P$/, /^CT(PFC|INL)F$/]],
     ], ["STAR", "SENSE-VAC1", "SENSE-VAC2", "SENSE-VAC3", "SENSE-VBUS", "SENSE-VMID", "ISO-BIAS", "LINE-CTS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
-      ["MCU", [/^UPFC$/, /^CPFCD\d$/, /^RPFCRST$/, /^FBPFCA$/, /^CPFCA[12]$/]],
-      ["SWD", [/^JSWDPFC$/, /^RPFCBOOT$/, /^CPFCRST$/]],
-      ["SAFETY", [/^USUPA$/, /^UANDA$/, /^R(WPU|ENR|ENL|GPD|RDY)A$/, /^CSFA$/, /^RFLTA$/, /^CFLTA$/, /^CWDA$/, /^CRSTA$/]],
-      ["GROUNDING", [/^RAGTA$/, /^RPET$/, /^CPET$/]],
+      // card-split (E35): the MCU/SWD/safety-chain/3V3 moved to the control card; the power board
+      // keeps the 88-way interface, its default-OFF pull-downs, the strap, and the local drivers.
+      ["CARD-IF", [/^JA$/, /^RPD\d$/, /^RROLE$/]],
+      ["GROUNDING", [/^RPET$/, /^CPET$/]],
       ["COIL-DRIVER", [/^UPA$/]],
       ["RAIL-MON", [/^RM(24|15)[AB]$/]],
-    ], ["MCU", "SWD", "SAFETY", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
+    ], ["CARD-IF", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
     ["AUX-POWER", [
       ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^RFB[12]$/, /^RCOMP$/, /^CCOMP$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],
       ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^CVCC$/, /^DTVS(24|15)$/]],
@@ -128,14 +128,11 @@ const PAGES = {
       ["NTC", [/^JT(LLC|XFR)$/, /^RT(LLC|XFR)P$/, /^CT(LLC|XFR)F$/]],
     ], ["OUTPUT", "SENSE-VBKA", "SENSE-VBKB", "SENSE-VOUT", "ISO-BIAS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
-      ["MCU", [/^ULLC$/, /^CLLCD\d$/, /^RLLCRST$/, /^FBLLCA$/, /^CLLCA[12]$/]],
-      ["SWD", [/^JSWDLLC$/, /^RLLCBOOT$/, /^CLLCRST$/]],
-      ["SAFETY", [/^USUPB$/, /^UANDB$/, /^R(WPU|ENR|ENL|GPD|RDY)B$/, /^CSFB$/, /^RFLTB$/, /^CFLTB$/, /^CWDB$/, /^CRSTB$/]],
-      ["GROUNDING", [/^RAGTB$/]],
-      ["BUCK-3V3", [/^UBKB$/, /^LBKB$/, /^CBK[IO]B$/, /^CBSTB$/, /^RBKF[12]B$/]],
+      // card-split (E35): see the AC-DC CONTROL note — board keeps interface + pull-downs + strap.
+      ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/]],
       ["COIL-DRIVER", [/^ULB$/]],
       ["INTERCONNECT", [/^JICB$/, /^RBL(TX|RX|TS|RS)$/]],
-    ], ["MCU", "SWD", "SAFETY", "GROUNDING", "BUCK-3V3", "COIL-DRIVER", "INTERCONNECT"]],
+    ], ["CARD-IF", "COIL-DRIVER", "INTERCONNECT"]],
     ["COMMS-HMI", [
       ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/]],
       ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/]],

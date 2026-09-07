@@ -1,8 +1,8 @@
 param,value,unit,tolerance,note
 fr,140,kHz,±4%,from Lr+trim ±5% + Cr ±5%
 Lr,7,µH,±5%,3 leakage + 4 external trim
-Cr,185.4,nF,±5%,3× parallel 1200 V PP pulse film
-Lm,63,µH,±10%,gapped 3×PQ50/50
+Cr,185.4,nF,±5%,4× parallel 46 nF 1200 V resonant-duty film (Vrms-vs-f curve at 140 kHz — §K O-8)
+Lm,63,µH,±7%,gapped 3×PQ50/50 (E7 rev D2 tolerance)
 Ln,9,,,joint solve
 Q_crit,0.28,,,at bank 518 full load
 Np=Ns,7,turns,exact,2 secondaries (bank A/B)

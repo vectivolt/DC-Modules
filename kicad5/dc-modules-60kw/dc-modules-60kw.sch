@@ -15,13 +15,13 @@ Comment4 ""
 $EndDescr
 $Sheet
 S 1000 1000 4200 1400
-U 5E00035A
+U 5E00031C
 F0 "60 kW ACDC board 1of2 - Vienna PFC (2x cells)" 70
 F1 "60kw-acdc.sch" 70
 $EndSheet
 $Sheet
 S 6200 1000 4200 1400
-U 5E00035B
+U 5E00031D
 F0 "60 kW DCDC board 2of2 - 3-phase LLC (2x cells)" 70
 F1 "60kw-dcdc.sch" 70
 $EndSheet
