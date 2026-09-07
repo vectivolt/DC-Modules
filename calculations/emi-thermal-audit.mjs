@@ -92,7 +92,7 @@ const sw = parts.filter((p) => isSwitch(p) && /^(Q|D|L)[A-C]?\d/.test(p.name)); 
 const sn = parts.filter((p) => isSense(p) && SMALL(p));
 const tooClose = [];
 for (const a of sn) for (const b of sw) {
-  if (a === b || /^U[A-C]\dG$/.test(a.name)) continue;   // the driver IS the interface
+  if (a === b || /^U([A-C]\dG|\d[HL])$/.test(a.name)) continue;   // the driver IS the interface
   if (a.layer !== b.layer) continue;              // board + plane in between is real separation
   const d = gap(a, b);
   if (d < SENSE_SEP) tooClose.push([a.name, b.name, d]);

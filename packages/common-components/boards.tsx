@@ -103,7 +103,7 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
     dschX: 172, dschY: 76, ctsX: 158, ctsY: [44, 10, -24] as const,
     fanX: 198, fanY: -140, ntcX: 190, ntcY: -145,
     // control strip along the bottom edge, end to end by real width
-    cardX: 0, cardY: -172, ctlY: -172, mcuX: -123, swdX: -94, sfcX: -65, r3v3X: -20, auxX: 20,
+    cardX: 0, cardY: -226, ctlY: -172, mcuX: -123, swdX: -94, sfcX: -65, r3v3X: -20, auxX: 20,
     avmidX: 40, icX: 120, auxRowY: -148,
   };
 
@@ -456,13 +456,13 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
     // secondary band
     bankX: [-180, -138, -96, -54] as const, bankY: [-60, -102, -144, -186] as const,
     spm: [60, -140] as const,
-    balA: [-200, -188, -176, -164] as const, balB: [-152, -140, -128, -116] as const, balY: -228,
-    shunt: [-80, -232] as const, outX: -40, out: [-200, -232] as const,
+    balA: [-200, -188, -176, -164] as const, balB: [-152, -140, -128, -116] as const, balY: -244,
+    shunt: [-80, -232] as const, outX: 208, out: [-200, -232] as const,
     cofX: 10, cof: [-206, -234] as const,
-    rbdX: 176, rbdStep: 0, rbdA: -60, rbdB: -134, qdis: [-14, -212] as const,
+    rbdX: 164, rbdStep: 0, rbdA: -60, rbdB: -134, qdis: [-30, -210] as const,
     ivs: [186, 198, 210] as const, ivsY: -60, b5: [-16, -150] as const,
     // control column, primary side, right edge
-    cardX: 0, cardY: -236,
+    cardX: -30, cardY: -182,
     mcuX: 176, mcuY: 223, swdY: 200, sfcX: 176, sfcY: 177, r3v3X: 176, r3v3Y: 156,
     icX: 160, icY: 135, canX: 160, canY: 112, hmiX: 96, ctlY: 223,
     avmidX: 176, avmidY: 92, ntcX: 176, ntcY: 78,
@@ -471,7 +471,34 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
 
 
 return (
-    <board width={`${w}mm`} height={`${h}mm`} routingDisabled schTraceAutoLabelEnabled schMaxTraceDistance={0}>
+    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" routingDisabled
+      schTraceAutoLabelEnabled schMaxTraceDistance={0}
+      minTraceWidth="0.25mm" minViaHoleDiameter="0.4mm" minViaPadDiameter="0.7mm"
+      minTraceToPadEdgeClearance="0.2mm" minPadEdgeToPadEdgeClearance="0.12mm"
+      minBoardEdgeClearance="1mm">
+      {/* PLANES, BOUNDED BY THE BARRIER. This board is isolated, so a full-layer pour is not an
+          option: a plane that crosses the transformer band defeats the very barrier it crosses.
+          Each pour is clipped to its own domain -- primary above y 60, secondary below y 17 --
+          which leaves the 43 mm transformer band with no copper on any layer.
+
+            inner1  DCP  (primary)   |  OUTP  (secondary)
+            inner2  DCN  (primary)   |  OUTN  (secondary)
+            inner3  DGND (primary control return)
+            inner4  BKAN (secondary bank return)
+          PE is a bottom perimeter pour, not an inner plane, for the same common-mode reason as on
+          the AC-DC board. */}
+      <net name="DCP" isForPower /><net name="DCN" isForPower /><net name="DGND" isGround />
+      <net name="OUTP" isForPower /><net name="OUTN" isForPower />
+      <net name="BKAN" isGround /><net name="PE" isGround />
+      {[["DCP", "inner1"], ["DCN", "inner2"], ["DGND", "inner3"]].map(([n, l]) => (
+        <copperpour key={n} connectsTo={`net.${n}`} layer={l} boardEdgeMargin="1.2mm"
+          outline={[{ x: -216, y: 246 }, { x: 216, y: 246 }, { x: 216, y: 60 }, { x: -216, y: 60 }]} />
+      ))}
+      {[["OUTP", "inner1"], ["OUTN", "inner2"], ["BKAN", "inner4"]].map(([n, l]) => (
+        <copperpour key={n} connectsTo={`net.${n}`} layer={l} boardEdgeMargin="1.2mm"
+          outline={[{ x: -216, y: 17 }, { x: 216, y: 17 }, { x: 216, y: -246 }, { x: -216, y: -246 }]} />
+      ))}
+      <copperpour connectsTo="net.PE" layer="bottom" boardEdgeMargin="1.2mm" />
       {/* bus entry studs from AC-DC board + film commutation caps per leg */}
       <chip name="JDCP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={Q.busX} pcbY={Q.bus[0]} schX={0} schY={46} schSectionName="INPUT" />
       <chip name="JDCN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={Q.busX} pcbY={Q.bus[1]} schX={0} schY={43} schSectionName="INPUT" />
