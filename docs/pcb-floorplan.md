@@ -808,3 +808,85 @@ design claims **97.26–97.29 %** and **full power to +55 °C**. Both are better
 competitor on paper; both are calculated, not measured
 ([README honesty boundary](../README.md)). Worth flagging to whoever writes the datasheet.
 
+---
+
+## 13. What the layout phase changed
+
+The zone plan above was written before any board was placed. Placing them changed four things,
+each because a measurement said so rather than because the plan looked wrong on paper.
+
+### The DC-DC barrier runs horizontally, not vertically
+
+A vertical barrier splits a 440 mm rack card into a wide primary and a **138 mm** secondary. Every
+output part — banks, relay matrix, shunt, studs — ends up crammed into that strip while half the
+board sits empty at 25 % fill. Turned horizontal, with the transformer row as the barrier band,
+both domains get the full board width:
+
+```
+  y 250..215   LLC half-bridge legs
+  y 197.. 60   primary chain: resonant films -> CT -> trim inductor
+  y  56.. 21   TRANSFORMERS — the barrier band, no copper on any layer
+  y -29..-250  secondary: rectifiers, banks, S/P matrix, output
+```
+
+`LlcSection` became a vertical chain to suit it and went from 274 × 65 to **83 × 225**, so three
+tile across in 249 mm instead of not fitting at all.
+
+**A safety defect this caught.** Before the check existed, a tidy-up pass moved the eight 1000 V
+output capacitors into the "empty" bottom-left — which was the **primary** side — and the S/P relays
+straddled the barrier. Nothing complained, because nothing knew the barrier was there.
+`routing-audit.mjs` now derives the barrier *and its orientation* from the transformers and reports
+any part on the wrong side. It found 28. It is 0.
+
+### Planes are bounded by the barrier on the isolated board
+
+A full-layer pour crossing the transformer band defeats the barrier it crosses, so each pour on the
+DC-DC board is clipped to its own domain — primary above y 60, secondary below y 17:
+
+| layer | primary | secondary |
+|---|---|---|
+| inner1 | DCP | OUTP |
+| inner2 | DCN | OUTN |
+| inner3 | DGND (control return) | — |
+| inner4 | — | BKAN (bank return) |
+| bottom | PE perimeter pour, **not** an inner plane | |
+
+PE stays off the inner stack on both boards for the same reason: a full PE plane under the DC link
+couples every rail to earth, and that common-mode current lands directly in the CISPR scan.
+
+### One control card, both roles, 30 and 60 kW
+
+The MCU, SWD port, safety chain, 3V3 rail and analogue mid-rail live on a plug-in card behind an
+88-way connector; `cardMap()` generates both sides from one source so the pinout cannot drift.
+It is **not** for board area — those cells measure 9 cm² and 18 cm², 1–3 % of component area. It is
+for getting the control electronics out of the power/EMI environment, and for one part number
+instead of six.
+
+**120 kW is excluded, and that is the same conclusion §2 already reached.** A first cut tried to
+cover it; four independent adversarial reviews rejected it — the connector came out exactly 100/100
+ways with no spare, both roles consumed every analogue channel, one thermistor would serve 12 Vienna
+legs, and PWM0..11 would have to be 12 *independent* timer channels in one role and the H half of 12
+*complementary pairs* in the other, on an already-saturated LQFP-100. At 30/60 kW the same card fits
+in 76 of 88 ways with 12 spare.
+
+Three obligations fall on the power board and are not optional:
+
+- **Pull-downs hold GATE_EN, both enables and all seven relay lines OFF**, so a card that is absent,
+  unpowered, or seated but not yet booted cannot enable anything.
+- **`RAGTA` and `RAGTB` are deleted, not depopulated.** The AGND-to-DGND single-point tie moved onto
+  the card; leaving either one puts a second tie in parallel and creates the ground loop the rule
+  exists to prevent.
+- **The FLT pull-up and filter stay together** at the MCU end. Splitting a safety-critical wired-OR's
+  pull-up across a connector changes its idle state.
+
+### Both boards are 440 × 500
+
+They stack, so they share an outline. 500 mm is set by the DC-DC secondary domain and is 60 mm
+inside the class limit. Current state:
+
+| board | parts | fill | placement | EMI/thermal | routing |
+|---|---|---|---|---|---|
+| 30kw-acdc | 271 | 34.6 % | clean | pass | justified |
+| 30kw-dcdc | 282 | 25.0 % | clean | pass | justified |
+| control card | 43 | — | clean | — | — |
+

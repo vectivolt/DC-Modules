@@ -76,6 +76,12 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
   // Power enters top-left, drops through the filter, crosses the Vienna row left to right, and
   // lands on the DC link below it. The control strip runs along the bottom edge, away from every
   // switching node, which is the §3 rule that outranks tidiness.
+  // The Vienna block grows with the rating: 3 phases at 30 kW, 6 at 60 kW, tiled 3-across in rows
+  // of 172 mm. Everything below it has to move down by the same amount, so the band origins are
+  // COMPUTED from the row count rather than fixed -- a fixed table silently stacked the second row
+  // of phases on top of the DC-link bank at 60 kW.
+  const vpRows = Math.ceil((lanes * 3) / 3);
+  const bandTop = 93 - 66 - (vpRows - 1) * 172 - 12;   // first free y below the Vienna block
   const P = {
     // AC entry + protection + both CM chokes own the left column, x -218..-142, full height
     jacl: [176, 152, 128] as const, jaclX: -206, jpeY: 104,
@@ -92,12 +98,12 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
     // spread over 260 mm of board -- CM at x -180, X caps at -46, DM at +20 -- which is not a
     // filter, it is three parts that happen to be on the same net. This also fills the 120 x 125 mm
     // of dead board that sat beside the CM chokes.
-    cx1X: -120, cxY: [-24, -42, -60] as const, cx2X: -120, cx2Y: [-80, -98, -116] as const,
+    cx1X: -120, cxY: [-4, -22, -40].map((d) => bandTop + d) as any, cx2X: -120, cx2Y: [-60, -78, -96].map((d) => bandTop + d) as any,
     // DM chokes, Y caps and the neutral-star dividers sit in the strip ABOVE the bank
-    ldmX: -78, ldmY: [-80, -98, -116] as const,
-    cyX: -78, cyY: [-24, -42, -60] as const,
+    ldmX: -78, ldmY: [-60, -78, -96].map((d) => bandTop + d) as any,
+    cyX: -78, cyY: [-4, -22, -40].map((d) => bandTop + d) as any,
     rnsX: [-48, -34] as const, rnsY: -24,
-    kpreX: 40, kpre: [-20, -20] as const, rpre: [-60, -76] as const,
+    kpreX: 40, kpre: [bandTop, bandTop] as any, rpre: [-60, -76] as const,
     // right column, clear of the Vienna row (which ends at x 139.5)
     studX: 205, stud: [176, 150, 124] as const, qdis: [205, 76] as const,
     dschX: 172, dschY: 76, ctsX: 158, ctsY: [44, 10, -24] as const,
