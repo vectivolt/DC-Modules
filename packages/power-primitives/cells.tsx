@@ -964,7 +964,7 @@ export const InterconnectSignals = ({ id, ltx, lrx, enA, enB, sec = "HARNESS", x
 //  · relay-coil PWM hold economization is firmware (halves 24 V steady demand — E26).
 export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="aux" pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "FB", pin4: "COMP", pin5: "CS", pin6: "GATE", pin7: "VCC", pin8: "BR", pin9: "RT" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "GND", pin2: "FB", pin3: "COMP", pin4: "CS", pin5: "GATE", pin6: "VCC", pin7: "BR", pin8: "RT" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <chip name="QAUX" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={22} pcbY={0} schX={5} schY={-1.2} schSectionName={sec} />
     <resistor name="RAUXCS" resistance="0.31" footprint="1206" pcbX={22} pcbY={8} schX={5} schY={-2.8} schSectionName={sec} />
     <resistor name="RAUXG" resistance="100k" footprint="0603" pcbX={28} pcbY={4} schX={3.2} schY={-2.2} schSectionName={sec} />
@@ -1003,7 +1003,6 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <trace from=".TAUX > .AXB" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* controller ground/reference + VIN sense pin parked on VCC rail (IC-internal HV sense unused) */}
     <trace from=".UAUX > .GND" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
-    <trace from=".UAUX > .VIN" to=".UAUX > .VCC" />
     {/* R3: RT (physical 4) sets the switching frequency and was floating, so the frequency-setting
         element was simply absent — the stage had no defined Fsw. Sized for the 65 kHz DCM design
         point of E26/D4 rev C. VALUE REVIEW: the exact RT for 65 kHz comes off the NCP1252A

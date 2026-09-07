@@ -114,7 +114,9 @@ export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number
   };
 
 return (
-    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" routingDisabled
+    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" autorouter="auto-local" autorouterEffortLevel="10x"
+      nominalTraceWidth="0.3mm" minViaEdgeToPadEdgeClearance="0.3mm"
+      minViaHoleEdgeToViaHoleEdgeClearance="0.45mm"
       schTraceAutoLabelEnabled schMaxTraceDistance={0}
       minTraceWidth="0.25mm" minViaHoleDiameter="0.4mm" minViaPadDiameter="0.7mm"
       minTraceToPadEdgeClearance="0.2mm" minPadEdgeToPadEdgeClearance="0.12mm"
@@ -477,7 +479,9 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
 
 
 return (
-    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" routingDisabled
+    <board width={`${w}mm`} height={`${h}mm`} layers={6} thickness="2.4mm" autorouter="auto-local" autorouterEffortLevel="10x"
+      nominalTraceWidth="0.3mm" minViaEdgeToPadEdgeClearance="0.3mm"
+      minViaHoleEdgeToViaHoleEdgeClearance="0.45mm"
       schTraceAutoLabelEnabled schMaxTraceDistance={0}
       minTraceWidth="0.25mm" minViaHoleDiameter="0.4mm" minViaPadDiameter="0.7mm"
       minTraceToPadEdgeClearance="0.2mm" minPadEdgeToPadEdgeClearance="0.12mm"
