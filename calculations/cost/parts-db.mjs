@@ -87,7 +87,7 @@ export const DB = [
   { m: /^L\d+T$/, mpn: "IND-TRIM-BIN4", mfr: "custom (D2 rev C — GAPPED FERRITE)", desc: "resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/50 PC95-class (same core p/n as D3), N=4 litz, distributed gap ~3.3 mm ground per bin — audit F1: the rev-B sendust toroid at full 140 kHz AC swing computed ~43 W core loss vs a ~4 W tank budget and its L swung 2:1 over each cycle; powder cores are prohibited in this slot. Bin picked against measured transformer leakage so Lr(total)=7.0 µH (kitting per DFM step 3)", price1k: 110, alt: "air-core (lossier, stray field)" },
   { m: /^T\d+$/, mpn: "XFMR-LLC-10K", mfr: "custom (D3)", desc: "LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% (E7 rev D2)", price1k: 680, alt: "PQ65 single-core variant" },
   { m: /^TAUX$/, mpn: "XFMR-AUX-FLY-C", mfr: "custom (D4 rev C)", desc: "aux flyback transformer ETD34, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 (E26 rev C — CB-20 SKU-load closure; reinforced pri→sec barrier, 100% hipot 4 kV)", price1k: 165, alt: "—" },
-  { m: /^LDM[123]$/, mpn: "DM-22u-SKU", mfr: "custom/POCO (D6 rev B)", desc: "DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9; audit F7: 30 kW winding is 14 T × 3×AWG12 eq 9.9 mm² — the rev-A 2×AWG12 ran 8.3 A/mm² and computed ΔT 46–49 K vs the 45 K acceptance)", price1k: 120, alt: "DMEGC eq" },
+  { m: /^LDM[123]$/, mpn: "DM-CHOKE-SKU", mfr: "custom/POCO (D6 rev C — ENGINE-designed, dm-choke-design.mjs)", desc: "DM line choke, 60µ sendust stack, crest-biased L(Ipk) meets the per-variant LISN floor (E43: the inherited 22 µH could not exist at the crest on the drawn core — 7–8 µH at 82 A pk computed vs the 15 µH floor; engine rows: 30 kW 2×T48 N=7 foil 20 mm², 40 kW 2×T57 N=8 26.4 mm², 50 kW 3×T57 N=8 26.4 mm²)", price1k: 300, alt: "DMEGC/Chang Sung eq cores" },
   { m: /^CMC[12]$/, mpn: "CMC-3PH-2mH-SKU", mfr: "custom/Hongfa mag", desc: "3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source", price1k: 240, alt: "Schaffner RT8131-63-2M8 @30 kW" },
   { m: /^CT[ABC]\d+$/, mpn: "ACX-1100", mfr: "Talema (Salem, India)", desc: "line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins (audit: catalog part closes the CT-100A REVIEW; rated for 33 Ω burden so the 27 Ω fitted value is inside spec; quote Talema direct at volume — Digi-Key retail is not the RFQ price) (E18/R3)", price1k: 65, alt: "ZEMCT/HCT class eq" },
   { m: /^CT\d+$/, mpn: "AS-404", mfr: "Talema (Salem, India)", desc: "resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank conductor is the primary, so tank-potential insulation stays on your wire (audit: catalog part; alt Coilcraft CST2010-100L SMT 47 A/1 MHz sits at its 40 K rise at 46 A rms — needs airflow verify)", price1k: 55, alt: "Coilcraft CST2010-100L" },
@@ -95,12 +95,13 @@ export const DB = [
   { m: /^CD[TB]\d*\d$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in 105 °C (split bus: 415 V max per half)", price1k: 150, alt: "ChengX/Nichicon" },
   { m: /^CB[AB]\d+[TB]$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank (E29/CB-2)", price1k: 150, alt: "ChengX" },
   { m: /^C\d+R\d$/, mpn: "PP-46n-1200", mfr: "Faratronic", desc: "46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)", price1k: 68, alt: "Songtian pulse PP" },
-  { m: /^$never$/, mpn: "PP-33n-1200V", mfr: "Faratronic/CDE 942C class", desc: "33 nF 1200 V PP resonant-duty film (E41 tank: 6x per section; reached via skuOverrides only)", price1k: 11, alt: "942C20P33K" },
-  { m: /^$never$/, mpn: "PP-27n-1200V", mfr: "Faratronic/CDE 942C class", desc: "27 nF 1200 V PP resonant-duty film (E42 tank: 8x per section, per-cap ~9.7 A of the 12 A line; reached via skuOverrides only — priced at the 46 nF conservative basis until the pulse-film RFQ, same policy as E41)", price1k: 11, alt: "942C20P27K" },
+  { m: /^$never$/, mpn: "PP-33n-1200V", mfr: "Faratronic/CDE 942C class", desc: "33 nF 1200 V PP resonant-duty film (E41 tank: 6x per section; 355 V rms @140 kHz / 0.73 W per cap — O-8 RFQ line: published Vrms-vs-f curve >=460 V @140 kHz, 942C class; reached via skuOverrides only)", price1k: 11, alt: "942C20P33K" },
+  { m: /^$never$/, mpn: "PP-27n-1200V", mfr: "Faratronic/CDE 942C class", desc: "27 nF 1200 V PP resonant-duty film (E42 tank: 8x per section, per-cap ~9.7 A of the 12 A line; 407 V rms @140 kHz / 0.79 W per cap — O-8 RFQ line: published Vrms-vs-f curve >=530 V @140 kHz, 942C class; reached via skuOverrides only — priced at the 46 nF conservative basis until the pulse-film RFQ)", price1k: 11, alt: "942C20P27K" },
   { m: /^C\w+F[PN]$/, mpn: "PP-1u-600", mfr: "Faratronic", desc: "1 µF 600 V film (Vienna per-phase commutation, CB-9)", price1k: 32, alt: "Songtian" },
   { m: /^C(F\d+|B[AB]F)$/, mpn: "PP-1u-1100", mfr: "Faratronic", desc: "1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)", price1k: 68, alt: "Songtian" },
   { m: /^COF[12]$/, mpn: "PP-4u7-1200", mfr: "Faratronic", desc: "4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)", price1k: 125, alt: "—" },
-  { m: /^CX\d+$/, mpn: "X1-2u2-530", mfr: "Faratronic/Songtian", desc: "X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1)", price1k: 62, alt: "Vishay 3386 X1" },
+  { m: /^CX1\d$/, mpn: "X1-2u2-530", mfr: "Faratronic/Songtian", desc: "X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1; inter-CMC stage)", price1k: 62, alt: "Vishay 3386 X1" },
+  { m: /^CX2\d$/, mpn: "X1-4u7-530", mfr: "Faratronic/Songtian", desc: "X1 4.7 µF 530 VAC (E43: 3rd-DM-stage cap upsized 2.2→4.7 µF — attenuation is L·C and the cap is the cheap half; X-bleed τ 0.66 s ≤ 1 s through the RNS star)", price1k: 110, alt: "Vishay 3386 X1 4.7µ" },
   { m: /^(CY(O)?[123]?|CPET)$/, mpn: "Y1-4n7-440", mfr: "Songtian/Faratronic", desc: "Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)", price1k: 16, alt: "TDK CD series" },
   { m: /^C\w+SN$/, mpn: "C1812-100p-1k", mfr: "any MLCC", desc: "100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)", price1k: 7, alt: "film 630V" },
   { m: /^CCLA$/, mpn: "PP-10n-1200", mfr: "Faratronic", desc: "10 nF 1200 V film (aux RCD clamp)", price1k: 9, alt: "MLCC 1kV ×2" },
@@ -171,7 +172,7 @@ export const skuOverrides = {
     "F1": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F2": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F3": { price1k: 105, mpn: "FUSE-gG-690V-80A" },
     KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
     KPRE1: { price1k: 260, note: "80 A class (55 A line)" , mpn: "HF167F-80A-M"}, KPRE2: { price1k: 260 , mpn: "HF167F-80A-M"},
-    LDM1: { price1k: 120, note: "D6 60 A winding" }, LDM2: { price1k: 120 }, LDM3: { price1k: 120 },
+    LDM1: { price1k: 300, note: "D6-30 rev C: 2x T48 60u N=7, foil 20 mm2 — 7.4 uH @82 A pk (floor 7.0), 2.4 W [engine]", mpn: "DM-CHOKE-30" }, LDM2: { price1k: 300, mpn: "DM-CHOKE-30" }, LDM3: { price1k: 300, mpn: "DM-CHOKE-30" },
     CMC1: { price1k: 240, note: "D7 60 A winding (10 mm² foil)" }, CMC2: { price1k: 240 },
     RSHO: { price1k: 120 },
   },
@@ -182,7 +183,7 @@ export const skuOverrides = {
     "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
     KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
     KPRE1: { price1k: 300, note: "100 A class (73 A line)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
-    LDM1: { price1k: 145, note: "D6-40 winding, same J as 30 kW" }, LDM2: { price1k: 145 }, LDM3: { price1k: 145 },
+    LDM1: { price1k: 465, note: "D6-40 rev C: 2x T57 60u N=8, 26.4 mm2 — 10.5 uH @109 A pk (floor 9.2), 4.4 W [engine]", mpn: "DM-CHOKE-40" }, LDM2: { price1k: 465, mpn: "DM-CHOKE-40" }, LDM3: { price1k: 465, mpn: "DM-CHOKE-40" },
     CMC1: { price1k: 290, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here)", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 290, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 140 },
     // D1-40 (pfc-design engine at the frozen 50 kHz; the 3-stack was REFUSED on sat/swing):
@@ -191,8 +192,8 @@ export const skuOverrides = {
     LB0: { price1k: 1190, mpn: "IND-PFC-113u-40" }, LC0: { price1k: 1190, mpn: "IND-PFC-113u-40" },
     // D2-40: same 2xPQ50/50 gapped-ferrite trim, N=5 (N=4 computes 115 mT vs the 100 mT line
     // at 86 A pk), bins re-centred on 3.5 uH; gap re-ground per bin as at 30 kW
-    L1T: { price1k: 125, mpn: "IND-TRIM-BIN5-40", note: "D2-40: N=5, bins 3.2/3.5/3.8 uH" },
-    L2T: { price1k: 125, mpn: "IND-TRIM-BIN5-40" }, L3T: { price1k: 125, mpn: "IND-TRIM-BIN5-40" },
+    L1T: { price1k: 145, mpn: "IND-TRIM-BIN5-40", note: "D2-40: N=5, bins 3.2/3.5/3.8 uH; litz UPSIZED 1050->2000x0.1 (15.7 mm2, E43: the rev-C 8.25 mm2 at 61.9 A computed 7.5 A/mm2 and dT ~52 K vs the 40 K line; now Cu 4.3 W, dT 39 K)" },
+    L2T: { price1k: 145, mpn: "IND-TRIM-BIN5-40" }, L3T: { price1k: 145, mpn: "IND-TRIM-BIN5-40" },
     // resonant caps: 6x33 nF per section (per-cap ~10.2 A vs the 12 A line — 15% margin)
     "C1R0": { mpn: "PP-33n-1200V" }, "C1R1": { mpn: "PP-33n-1200V" }, "C1R2": { mpn: "PP-33n-1200V" }, "C1R3": { mpn: "PP-33n-1200V" }, "C1R4": { mpn: "PP-33n-1200V" }, "C1R5": { mpn: "PP-33n-1200V" }, "C2R0": { mpn: "PP-33n-1200V" }, "C2R1": { mpn: "PP-33n-1200V" }, "C2R2": { mpn: "PP-33n-1200V" }, "C2R3": { mpn: "PP-33n-1200V" }, "C2R4": { mpn: "PP-33n-1200V" }, "C2R5": { mpn: "PP-33n-1200V" }, "C3R0": { mpn: "PP-33n-1200V" }, "C3R1": { mpn: "PP-33n-1200V" }, "C3R2": { mpn: "PP-33n-1200V" }, "C3R3": { mpn: "PP-33n-1200V" }, "C3R4": { mpn: "PP-33n-1200V" }, "C3R5": { mpn: "PP-33n-1200V" },
     // resonant CT: AS-404 (50 A) would run 122% at 61 A rms — RFQ the 80 A class before EVT
@@ -221,9 +222,13 @@ export const skuOverrides = {
     // precharge bypass: 120 A class = 76% of class at 91.6 A — over the 75% line. Next existing
     // family part is the 250 A frame (37%); no new p/n invented.
     KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
-    LDM1: { price1k: 165, note: "D6-50 winding, same J as 30 kW" }, LDM2: { price1k: 165 }, LDM3: { price1k: 165 },
+    LDM1: { price1k: 630, note: "D6-50 rev C: 3x T57 60u N=8, 26.4 mm2 — 12.9 uH @136 A pk (floor 11.4), 8.1 W [engine]", mpn: "DM-CHOKE-50" }, LDM2: { price1k: 630, mpn: "DM-CHOKE-50" }, LDM3: { price1k: 630, mpn: "DM-CHOKE-50" },
     CMC1: { price1k: 340, note: "D7-50 custom wind 95 A", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 340, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 155 },
+    // pulse energy (E43 check): per-resistor 162 J discharge / ~211 J precharge at the 16-can link
+    // CROSS the highest 25 W-accepted family point (158 J @40 kW) -> the existing 50 W class part
+    RPRE1: { price1k: 45, note: "50 W pulse class (E43: ~211 J/event at 1.88 mF link)", mpn: "CER-50W-AX" }, RPRE2: { price1k: 45, mpn: "CER-50W-AX" },
+    RDIS0: { price1k: 45, note: "50 W pulse class (E43: 162 J each at 1.88 mF link)", mpn: "CER-50W-AX" }, RDIS1: { price1k: 45, mpn: "CER-50W-AX" }, RDIS2: { price1k: 45, mpn: "CER-50W-AX" }, RDIS3: { price1k: 45, mpn: "CER-50W-AX" },
     // D1-50 (pfc-design engine at the frozen 50 kHz, PFC_PAR=2; 40 kHz row refused): 5x T79 26u
     // sendust, N=22, 25.8 mm2 — L0 103 uH -> 50.8 uH @ 129.5 A pk, dI 34.8 A, dT 37 K (the
     // acceptance-gate convective figure; in the sealed module the stack is gap-pad-bonded to the
@@ -232,8 +237,8 @@ export const skuOverrides = {
     LB0: { price1k: 1190, mpn: "IND-PFC-103u-50" }, LC0: { price1k: 1190, mpn: "IND-PFC-103u-50" },
     // D2-50: same 2x PQ50/50 gapped-ferrite trim, N=6, bins re-centred on 3.0 uH (with Cr
     // 8x27 nF = 216 nF: fr = 139.8 kHz, trim = 50% of Lr — binnable; Bpk 83 mT vs the 100 mT line)
-    L1T: { price1k: 125, mpn: "IND-TRIM-BIN6-50", note: "D2-50: N=6, bins 2.8/3.0/3.2 uH" },
-    L2T: { price1k: 125, mpn: "IND-TRIM-BIN6-50" }, L3T: { price1k: 125, mpn: "IND-TRIM-BIN6-50" },
+    L1T: { price1k: 155, mpn: "IND-TRIM-BIN6-50", note: "D2-50: N=6, bins 2.8/3.0/3.2 uH; litz 2000x0.1 (15.7 mm2, J 4.9); convective dT computes 46 K -> the coldplate gap-pad bond is MANDATORY for this part (sealed module, E42/E43)" },
+    L2T: { price1k: 155, mpn: "IND-TRIM-BIN6-50" }, L3T: { price1k: 155, mpn: "IND-TRIM-BIN6-50" },
     // resonant caps: 8x27 nF per section (77.3 A rms / 8 = 9.7 A of the 12 A line)
     "C1R0": { mpn: "PP-27n-1200V" }, "C1R1": { mpn: "PP-27n-1200V" }, "C1R2": { mpn: "PP-27n-1200V" }, "C1R3": { mpn: "PP-27n-1200V" }, "C1R4": { mpn: "PP-27n-1200V" }, "C1R5": { mpn: "PP-27n-1200V" }, "C1R6": { mpn: "PP-27n-1200V" }, "C1R7": { mpn: "PP-27n-1200V" },
     "C2R0": { mpn: "PP-27n-1200V" }, "C2R1": { mpn: "PP-27n-1200V" }, "C2R2": { mpn: "PP-27n-1200V" }, "C2R3": { mpn: "PP-27n-1200V" }, "C2R4": { mpn: "PP-27n-1200V" }, "C2R5": { mpn: "PP-27n-1200V" }, "C2R6": { mpn: "PP-27n-1200V" }, "C2R7": { mpn: "PP-27n-1200V" },

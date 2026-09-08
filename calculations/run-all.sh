@@ -11,11 +11,13 @@ node calculations/thermal/loss-budget.mjs
 node calculations/system/envelope-grid.mjs
 node calculations/system/monte-carlo.mjs
 node calculations/system/fsm-sim.mjs
+node calculations/emi/dm-choke-design.mjs
 node calculations/emi/lisn-precompliance.mjs
 node calculations/cost/bom-gen.mjs
 if [ -f dist/boards/30kw/acdc/circuit.json ]; then node calculations/schematic-check.mjs 30kw/acdc 30kw/dcdc; fi
 if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/module-interconnect-audit.mts; fi
 npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
+node calculations/verify-independent.mjs
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 49/49 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

@@ -2,9 +2,9 @@
 
 **The module comes in three variants on one platform, one card each: 30 kW air · 40 kW air
 (E41) · 50 kW LIQUID (E42).** Higher ratings are cabinets of modules, not bigger boards.
-Price-per-kW ladder (generated, [docs/bom-cost.md](../docs/bom-cost.md)): 30→₹1,003/kW ·
-40→₹858/kW · **50→₹797/kW (cheapest module)** · 120 kW cheapest air as **3×40+CSU = ₹104,743
-(₹873/kW)** vs 4×30 = ₹122,150 · 100 kW = 2×50 (797) · 150 kW = 3×50+CSU (809, liquid); N−1
+Price-per-kW ladder (generated, [docs/bom-cost.md](../docs/bom-cost.md), rev E43): 30→₹1,021/kW ·
+40→₹881/kW · **50→₹825/kW (cheapest module)** · 120 kW cheapest air as **3×40+CSU = ₹107,536
+(₹896/kW)** vs 4×30 = ₹124,342 · 100 kW = 2×50 (825) · 150 kW = 3×50+CSU (837, liquid); N−1
 granularity 67 % vs 75 % — pick the runner at the volume decision.
 
 ## The two cooling lines (E41 vs E42) — why the family splits at 40/50
@@ -84,7 +84,7 @@ and fuse frames past 125 A. This is also how the commercial market builds (modul
 | CAN chain | 2 × 120 Ω + 3.32 k strap + 0 R shield bond + 0 R SGND reference tie | ≈ 2 |
 | CAN/AC harness | integrator-supplied, cabinet-length dependent | — |
 
-120 kW product: 4×30,079 + adder ₹1,834 = **₹122,150** or **3×34,303 + adder = ₹104,743** @10k (bom-cost.md carries the 4×-only roll-up).
+120 kW product (rev E43): 4×30,627 + adder ₹1,834 = **₹124,342** or **3×35,234 + adder = ₹107,536** @10k (bom-cost.md carries the 4×-only roll-up).
 
 **The cabinet brain (E39):** one CSU — the same control card p/n strapped into the CSU band —
 on a passive carrier (15 V DIN supply + 3.32 k strap), joining the CAN chain alongside each

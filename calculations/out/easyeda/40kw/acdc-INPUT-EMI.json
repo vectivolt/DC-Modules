@@ -475,9 +475,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
-   "mpn": "X1-2u2-530"
+   "value": "4.7uF",
+   "query": "X1-4u7-530 X1 4.7 µF 530 VAC ",
+   "mpn": "X1-4u7-530"
   },
   {
    "designator": "CX22",
@@ -495,9 +495,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
-   "mpn": "X1-2u2-530"
+   "value": "4.7uF",
+   "query": "X1-4u7-530 X1 4.7 µF 530 VAC ",
+   "mpn": "X1-4u7-530"
   },
   {
    "designator": "CX23",
@@ -515,9 +515,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
-   "mpn": "X1-2u2-530"
+   "value": "4.7uF",
+   "query": "X1-4u7-530 X1 4.7 µF 530 VAC ",
+   "mpn": "X1-4u7-530"
   },
   {
    "designator": "CY1",
@@ -595,9 +595,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "DM-22u-SKU",
-   "query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU ",
-   "mpn": "DM-22u-SKU"
+   "value": "DM-CHOKE-SKU",
+   "query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
+   "mpn": "DM-CHOKE-SKU"
   },
   {
    "designator": "LDM2",
@@ -615,9 +615,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "DM-22u-SKU",
-   "query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU ",
-   "mpn": "DM-22u-SKU"
+   "value": "DM-CHOKE-SKU",
+   "query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
+   "mpn": "DM-CHOKE-SKU"
   },
   {
    "designator": "LDM3",
@@ -635,9 +635,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "DM-22u-SKU",
-   "query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU ",
-   "mpn": "DM-22u-SKU"
+   "value": "DM-CHOKE-SKU",
+   "query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
+   "mpn": "DM-CHOKE-SKU"
   },
   {
    "designator": "KPRE1",

@@ -108,6 +108,44 @@ ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(
   ck("BRD", "50kw burden parts ordered", /R2512-1R6-2W-1%/.test(db) && /R1206-21R5-1%/.test(db), "both re-scaled burdens exist as skuOverrides");
 }
 
+// ---------------- 3b. E43 verification-pass permanent gates -------------------------------------
+// D6 DM chokes: crest-biased inductance vs each variant's equal-margin LISN floor — from the D6
+// ENGINE (the E43 finding: the inherited 22 µH could not exist at the crest on the drawn core).
+{
+  const d6 = JSON.parse(readFileSync(join(ROOT, "calculations/out/dm-choke-design.json"), "utf8"));
+  for (const sku of ["30kw", "40kw", "50kw"])
+    ck("D6", `${sku} crest-biased L vs LISN floor [engine]`, d6[sku] && d6[sku].Lpk >= d6[sku].Lfloor,
+      `${d6[sku]?.stack}× ${d6[sku]?.geom?.split(" ")[0]} ${d6[sku]?.mat} N=${d6[sku]?.N} → ${d6[sku]?.Lpk} µH ≥ ${d6[sku]?.Lfloor} (CX2 4.7 µF rev; lisn per-variant margins ≥ +4.9 dB)`);
+}
+// resonant-cap DIELECTRIC duty: current alone is the wrong invariant — V = I/(ωC) grows as C
+// shrinks, so the 27 nF variant sees MORE volts and watts per cap than the 46 nF at lower current.
+for (const [sku, n, cnF, irms] of [["30kw", 4, 46, 46.4], ["40kw", 6, 33, 61.9], ["50kw", 8, 27, 77.3]]) {
+  const iC = irms / n, vC = iC / (2 * Math.PI * 140e3 * cnF * 1e-9);
+  const wC = iC * iC * (2e-4 / (2 * Math.PI * 140e3 * cnF * 1e-9));
+  ck("CrV", `${sku} per-cap Vrms/W duty`, vC <= 530 && wC <= 1.0,
+    `${f(vC, 0)} V rms @140 kHz · ${f(wC, 2)} W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ ${f(vC * 1.3, 0)} V (942C class)`);
+}
+// D2 trim copper at the E43 litz (constant-J discipline the E41/E42 rows missed): 2000×0.1 mm
+// at 40/50; the 30 kW keeps its frozen rev-C basis (its own Rac/ΔT lines pass at J 5.62).
+for (const [sku, N, litz, irms, core] of [["40kw", 5, 15.7, 61.9, 6.5], ["50kw", 6, 15.7, 77.3, 5.0]]) {
+  const rdc = 1.5e-3 * (N / 4) * (8.25 / litz) * 1.15, pcu = irms * irms * rdc;
+  const dT = 5.44 * Math.pow(pcu + core, 0.833);
+  ck("D2c", `${sku} trim litz J/ΔT`, irms / litz <= 5.6 && (sku === "50kw" ? dT <= 50 : dT <= 40.5),
+    `2000×0.1 litz: J ${f(irms / litz, 1)} · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K${sku === "50kw" ? " convective — plate bond MANDATORY (sealed)" : ""} (the 8.25 mm² rev-C litz computed ${sku === "40kw" ? "52" : "65"} K)`);
+}
+// pulse-resistor single-event energies vs the family class points (25 W accepted ≤160 J at
+// 40 kW; the 50 W part carries the 120 kW's 364–477 J)
+for (const [sku, nHalf, cls] of [["30kw", 5, 160], ["40kw", 6, 160], ["50kw", 8, 480]]) {
+  const C = nHalf * 470e-6 / 2;
+  const eDis = 0.5 * C * 830 * 830 / 4, ePre = 0.5 * C * 671 * 671 / 2;
+  ck("Epulse", `${sku} RPRE/RDIS event energies`, eDis <= cls && ePre <= cls,
+    `discharge ${f(eDis, 0)} J · precharge ${f(ePre, 0)} J per resistor vs ${cls} J class${sku === "50kw" ? " (CER-50W-AX — E43: 162/212 J cross the 25 W family point)" : ""}`);
+}
+ck("Epulse", "50 kW 50 W parts ordered", /CER-50W-AX[\s\S]{0,80}\}, RDIS0/.test(db) || (/RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db)),
+  "RPRE1/2 + RDIS0-3 skuOverrides at 50 kW");
+// X-cap bleed with the E43 CX2 4.7 µF (star unchanged)
+ck("Xbleed", "X discharge τ after CX2 rev", 0.42 * (2.2 + 4.7) / 4.4 <= 1.0, `τ ${f(0.42 * 6.9 / 4.4, 2)} s ≤ 1 s pluggable rule`);
+
 // ---------------- 4. protection classes [reg + E35/F6 derate rule] ------------------------------
 const FUSE = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 125, I: 73.3 }, "50kw": { A: 160, I: 91.6 } };
 for (const [sku, x] of Object.entries(FUSE)) {

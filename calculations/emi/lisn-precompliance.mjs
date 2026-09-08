@@ -24,10 +24,17 @@ const comb = (n, N) => (n % N === 0 ? 1 : 0.05);
 // DM filter attenuation: 2 stages of L=9µH (CMC leakage) into C=2.2µF, source = choke current (current divider);
 // per-stage |H| ≈ 1/((f/f0)^2) above f0 = 1/(2π√(LC)) with damping floor
 const f0 = 1 / (2 * Math.PI * Math.sqrt(9e-6 * 2.2e-6));
-const f0dm = 1 / (2 * Math.PI * Math.sqrt(22e-6 * 2.2e-6));   // 3rd stage: dedicated 22 µH DM chokes (E22)
-const attDM = (fHz) => { const x = fHz / f0, xd = fHz / f0dm;
+// 3rd stage (E22 → E43 rev): dedicated DM chokes into the CX2 trio, now 4.7 µF X1. The choke's
+// CREST-BIASED inductance is what attenuates at the worst emission moment — the E43 finding:
+// the old model used 22 µH FLAT while the drawn part computed ~7–8 µH at the 82 A crest. The
+// per-variant biased values come from the D6 engine (dm-choke-design.mjs, conservative anchors).
+import { readFileSync } from "node:fs";
+const D6 = JSON.parse(readFileSync(join(OUT, "dm-choke-design.json"), "utf8"));
+const CX2 = 4.7e-6;
+const attDM3 = (fHz, L3) => { const x = fHz / f0, xd = fHz / (1 / (2 * Math.PI * Math.sqrt(L3 * CX2)));
   const per = x > 1 ? 1 / (x * x) : 1, perD = xd > 1 ? 1 / (xd * xd) : 1;
   return Math.max(per * per * perD, 1e-12); };
+const attDM = (fHz) => attDM3(fHz, D6["30kw"].Lpk * 1e-6);   // legacy lane columns ride the 30 kW part
 // CM: trapezoid dv/dt spectrum: Vn ≈ 2·Vbus/(π n)·sinc-ish with corner at 1/(π·tr); i_cm = Vn·ω·Cp
 const TR = 9e-9, CP = 200e-12, VSW = 425;
 const attCM = (fHz) => { const fc = 1 / (2 * Math.PI * Math.sqrt(2e-3 * 4.7e-9 * 3)); const x = fHz / fc; const per = x > 1 ? 1 / (x * x) : 1; return Math.max(per * per, 1e-9); };
@@ -65,5 +72,23 @@ plotSVG({ title: "Conducted pre-compliance estimate vs CISPR-32 A (±20 dB band 
   path: join(OUT, "..", "..", "simulation-results", "30kw", "plots", "lisn-precompliance.svg"),
   series: [mk(1, "DM 1-lane (30 kW)"), mk(2, "DM 2-lane (60 kW)", "#3A6B8C"), mk(4, "DM 4-lane (120 kW)", "#3A6B45"), mk("cm", "CM est.", "#A83232"), mk("lim", "Class A QP", "#666")] });
 console.log(`Worst margin: ${f(worstMargin)} dB at ${f(worstAt / 1e3, 0)} kHz (positive = under limit).`);
+// ---- E43: per-MODULE-VARIANT DM margins — each variant's own ripple source (dIpp) through its
+// own crest-biased D6 + the 4.7 µF CX2. This is the check the 22 µH-flat model could not do.
+{
+  const VAR = { "30kw": 21.4, "40kw": 28.0, "50kw": 34.8 };
+  console.log("Per-variant DM worst margins (single lane, crest-biased L, CX2 4.7 µF):");
+  for (const [sku, dipp] of Object.entries(VAR)) {
+    const L3 = D6[sku].Lpk * 1e-6;
+    let wm = 1e9, wa = 0;
+    for (let n = 3; n * FSW <= 30e6; n++) {
+      const fHz = n * FSW; if (fHz < 150e3) continue;
+      const iRes = ((8 * dipp) / (Math.PI * Math.PI * n * n)) * attDM3(fHz, L3);
+      const m = limitA(fHz) - dbuv(iRes * 25);
+      if (m < wm) { wm = m; wa = fHz; }
+    }
+    console.log(`  ${sku}: D6 ${D6[sku].stack}x ${D6[sku].geom.split(" ")[0]} L(pk)=${D6[sku].Lpk} µH → worst DM margin ${f(wm)} dB at ${f(wa / 1e3, 0)} kHz`);
+    if (wm < 3) { console.log(`  ${sku}: MARGIN UNDER +3 dB — D6/CX2 rev insufficient`); process.exitCode = 1; }
+  }
+}
 console.log(`Interleave benefit at first surviving DM harmonic: 2-lane +${f(dbuv(Ih(3)) - dbuv(Ih(4) * 1), 0)}-class dB shift upward in frequency; 4-lane pushes first full harmonic to 200 kHz where filter gives ${f(-10 * Math.log10(attDM(200e3)), 1)} dB.`);
 console.log("→ calculations/out/lisn-precompliance.csv, plots/lisn-precompliance.svg");

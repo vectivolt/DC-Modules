@@ -144,21 +144,29 @@ on the outside of the primary margin tape — same method as D1/D3. Rdc: primary
 
 The 3rd-stage DM chokes (`LDM1–3`, E22) carry the full line current and now get a real drawing:
 
-**Rev B (margin audit 2026-09-08, F7): every winding one gauge up.** Rev A ran 8.3 / 18.3 / 17.6
-A/mm² — the 30 kW part computed ΔT 46–49 K against its own 45 K acceptance, and the thermal
-report had already flagged the 60/120 foils as first-article coin-flips. Rated at ≤5.6 A/mm²:
+**Rev C (E43 full-family verification, 2026-09-08): ENGINE-designed —
+`calculations/emi/dm-choke-design.mjs`.** The rev-B electricals were inherited from E22
+("22 µH") and were never bias-checked: on the platform's own conservative roll-off anchors the
+drawn 14 T on ONE OD47 core computes **~12 µH at ZERO bias (not 22) and 7–8 µH at the 82 A
+crest** — under the 15 µH LISN floor on *either* material reading, at every SKU (the engine
+prints this as its control row). A DM choke rides the line-frequency crest: its BIASED
+inductance is what attenuates the 50 kHz ripple at the worst emission moment. Rev C fixes the
+stage two-sided: **CX2 trio 2.2 → 4.7 µF X1** (attenuation is L·C — the cap is the cheap half;
+X-bleed τ 0.66 s ≤ 1 s) and per-variant engine chokes against **equal-margin floors**
+L_floor = 15 µH × (ΔI_variant/21.4) × (2.2/4.7):
 
-| SKU | I_rms/line | I_pk (ripple incl.) | Core | Winding (rev B) | L @ I_pk |
-|---|---|---|---|---|---|
-| 30 kW | 55 A | 82 A | 26µ sendust OD47×24×18 | **14 T × 3×AWG12 eq. (9.9 mm²)** — calc 6.3 W, ΔT ≈ 34 K | ≥ 22 µH ≥ 70 % roll-off point |
-| 60 kW | 110 A | 158 A | 26µ sendust OD57×26×20 | **11 T × copper foil 0.5×40 (20 mm²)** | ≥ 22 µH |
-| 120 kW | 220 A | 311 A | 26µ sendust OD79×40×17 ×2 stacked | **8 T × foil 2×(0.5×40) = 40 mm²** | ≥ 22 µH |
+| SKU | I_rms | I_pk (crest) | Floor | Core (engine) | Winding (engine) | L0 → L @ I_pk | Cu loss | ΔT |
+|---|---|---|---|---|---|---|---|---|
+| 30 kW | 55.9 A | 82 A | 7.0 µH | **2× T48 60µ** (77439-class stack) | **7 T × foil 0.5×40 (20 mm²)**, J 2.8 | 13.7 → **7.4 µH** | 2.4 W | 12 K |
+| 40 kW | 73.3 A | 109 A | 9.2 µH | **2× T57 60µ** (OD57/26/20) | **8 T × foil 26.4 mm²**, J 2.8 | 22.9 → **10.5 µH** | 4.4 W | 14 K |
+| 50 kW | 91.6 A | 136 A | 11.4 µH | **3× T57 60µ** | **8 T × foil 26.4 mm²**, J 3.5 | 34.4 → **12.9 µH** | 8.1 W | 19 K (plate-bonded in the sealed module) |
 
-(60/120 kW rows serve the reference boards; the shipping product is N× 30 kW modules — each
-cabinet line is three 30 kW chokes per module.)
-
-Acceptance: L(I_pk) ≥ 15 µH (LISN margin recomputed at −3 dB worst-case — still ≥ +4 dB over the
-E22 closure), ΔT ≤ 45 K at I_rms (foil), hipot winding–core 2.5 kV. Same vendor/traveler flow as D1.
+Verified end-to-end: `lisn-precompliance.mjs` now runs each variant's own ripple source through
+its own crest-biased L and the 4.7 µF stage — **worst DM margins +4.9 / +5.7 / +5.6 dB**
+(the old model's "+4 dB" was computed on the impossible flat 22 µH). Acceptance: L(I_pk) ≥ the
+variant floor on the conservative anchors (real cores ride higher), ΔT ≤ 45 K at I_rms, J ≤ 5.6,
+fill ≤ 40 %, hipot winding–core 2.5 kV. Same vendor/traveler flow as D1. (The rev-B 60/120 kW
+rows are retired with their reference boards.)
 
 ---
 
@@ -252,9 +260,10 @@ materials), H (180 °C) for D3.
 | Drawing | 40 kW variant | Acceptance |
 |---|---|---|
 | **D1-40** PFC choke | **5×** 0077908A7 stack (same core p/n), N=23, wire 25.8 mm² class (J 2.84) | L0 113 µH −12% floor · L@104 A pk ≥ 64 µH · Rdc-class loss ≤ 36 W · ΔT ≤ 45 K (calc 27) — pfc-design selection at the frozen 50 kHz; the 3-stack is REFUSED by the optimizer (sat/swing floor) |
-| **D2-40** resonant trim | same 2×PQ50/50 gapped ferrite, **N=5**, bins 3.2/3.5/3.8 µH ±3%, gap re-ground per bin | Bpk ≤ 100 mT (calc 93 at 86 A pk; N=4 computes 115 — that is why N=5) |
+| **D2-40** resonant trim | same 2×PQ50/50 gapped ferrite, **N=5**, bins 3.2/3.5/3.8 µH ±3%, gap re-ground per bin; **litz 2000×0.1 mm (15.7 mm², E43)** — the rev-C 8.25 mm² at 61.9 A computed 7.5 A/mm² and ΔT ≈ 52 K vs the 40 K line | Bpk ≤ 100 mT (calc 93 at 86 A pk; N=4 computes 115 — that is why N=5) · J 3.9 · Cu 4.3 W → ΔT ≈ 39 K ✓ |
 | **D3-40** transformer | registered 2×E70/33/32 stack route (TDK stack former B66372B2000T001), 9:9:9 | flux identical to 30 kW (volt-second driven, 108 mT); the move is WINDOW fill only; litz CSA ∝ current at same J |
-| **D6-40 / D7-40** | same construction, CSA × 4/3 at constant J ≤ 5.6 A/mm² | ΔT acceptances carried unchanged; D7-40 is the custom wind (63 A catalog part out of range) |
+| **D6-40** | **rev C engine row (see D6 section): 2× T57 60µ, N=8, foil 26.4 mm²** — constant-J alone was NOT enough, the core bias was the binder | L(109 A pk) = 10.5 µH ≥ 9.2 floor · 4.4 W · ΔT 14 K |
+| **D7-40** | same construction, CSA × 4/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind (63 A catalog part out of range) |
 | CTs | line: ACX-1100 unchanged (73.3 of 100 A) · resonant: **80 A-class 1:100 at RFQ** (AS-404 stays the 30 kW part) | CT saturation/thermal at 61.9 A rms — RFQ gate before EVT |
 
 ## E42 variant drawings (50 kW LIQUID module — deltas only; sealed, magnetics plate-bonded)
@@ -266,8 +275,9 @@ the mechanism that beats them — plate thermal RFQ verifies.
 | Drawing | 50 kW variant | Acceptance |
 |---|---|---|
 | **D1-50** PFC choke | **5× T79 26µ** (same core p/n as D1-40), **N=22**, wire 25.8 mm² (J 3.55) | L0 103 µH −12% floor · L@129.5 A pk ≥ 46 µH (calc 50.8, swing floor 0.49 ≥ 0.40) · ΔI ≤ 35.6 A (calc 34.8) · ΔT ≤ 45 K (calc 37) — pfc-design at PFC_P=50e3/PAR=2, frozen 50 kHz; the 40 kHz row is REFUSED (family edge) |
-| **D2-50** resonant trim | same 2×PQ50/50 gapped ferrite, **N=6**, bins **2.8/3.0/3.2 µH** ±3%, gap re-ground per bin | Bpk ≤ 100 mT (calc 83 at 77.3 A rms); with Cr = 8×27 nF = 216 nF, fr = 139.8 kHz and trim = 50% of Lr — leakage tolerance stays binnable (the 8×33 nF option pushed trim to 39% of Lr and was rejected on binnability) |
+| **D2-50** resonant trim | same 2×PQ50/50 gapped ferrite, **N=6**, bins **2.8/3.0/3.2 µH** ±3%, gap re-ground per bin; **litz 2000×0.1 mm (15.7 mm², E43)**, J 4.9 | Bpk ≤ 100 mT (calc 83 at 77.3 A rms); fr = 139.8 kHz, trim = 50% of Lr — binnable (8×33 nF rejected on binnability); Cu 8.1 W + core ≈5 W → convective ΔT computes 46 K: **the coldplate gap-pad bond is MANDATORY for this part** |
 | **D3-50** transformer | **3×E70/33/32 stack** per section (same former family as D3-40), **6:6:6** | flux identical (volt-second driven: Ae ×1.5 → N ×2/3 → N·Ae unchanged, 108 mT); window fill ≈ 0.83× of the 40 kW wind despite +25% Cu CSA; litz CSA ∝ current at same J |
-| **D6-50 / D7-50** | same construction, CSA × 5/3 at constant J ≤ 5.6 A/mm² | ΔT acceptances carried; D7-50 = custom wind 95 A |
+| **D6-50** | **rev C engine row (see D6 section): 3× T57 60µ, N=8, foil 26.4 mm²** | L(136 A pk) = 12.9 µH ≥ 11.4 floor · 8.1 W · ΔT 19 K plate-bonded |
+| **D7-50** | same construction, CSA × 5/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind 95 A |
 | CTs | line: **150 A-class 2500:1 at RFQ** (ACX-1100 would run 92%), burden re-scaled 27→21.5 Ω · resonant: **100 A-class 1:100 at RFQ**, burden 2.0→1.6 Ω on a 2 W part | both burden re-scales hold the R3-proven 1.62 V-above-AVMID rail budget at the revved OC points (187 A pk line / 95 A pk tank) — stress-audit BRD block carries the numbers |
 

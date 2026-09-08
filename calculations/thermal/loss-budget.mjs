@@ -42,7 +42,9 @@ const SKUS = [
 //   LDM per choke (D6 rev B — audit F7, every winding one gauge up to ≤5.6 A/mm²):
 //   5.9 / 9.8 / 18.3 W ×3 chokes (rev-A as-drawn 8.8/32.7/58.6 ran 8.3–18 A/mm² and the 30 kW
 //   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 5.9, "40kW": 2 * 15.3 + 3 * 7.9, "50kW": 2 * 19.2 + 3 * 9.8, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };   // 40/50kW: D6/D7 rewound at the 30 kW current density (P ∝ I at constant J — 50 kW = ×5/3)
+// E43: LDM (D6) losses now come from the D6 ENGINE (dm-choke-design.mjs rev C — foil windings,
+// crest-biased L floors): 2.4 / 4.4 / 8.1 W per choke at 30/40/50 kW. CMC (D7) rows unchanged.
+const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 2.4, "40kW": 2 * 15.3 + 3 * 4.4, "50kW": 2 * 19.2 + 3 * 8.1, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {

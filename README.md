@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/design-E1–E42_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
+  <img src="https://img.shields.io/badge/design-E1–E43_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
   <img src="https://img.shields.io/badge/envelope_grid-5040_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
   <img src="https://img.shields.io/badge/fault_scenarios-26%2F26-2ea44f?style=for-the-badge" alt="scenarios"/>
   <img src="https://img.shields.io/badge/firmware_logic-49%2F49_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
@@ -37,7 +37,7 @@ A commercial family of **unidirectional 30–150 kW AC→DC charging products** 
 | Output | 150–1000 VDC CV/CC | Series/parallel banks, crossover **500/525 V** + 30 s dwell; PS-mode below 260 V bank; ZVS held at **every** simulated edge |
 | Output current | 100 / 200 / 400 A | constant-current below the 300 V knee, constant-power above; 130 % for 2 ms before CC fold |
 | THD | ≤5 % (stretch 3 %) | **0.59–1.05 %** full power, 2.55 % @25 % (line-cycle sim, THD-40) |
-| Peak efficiency | ≥97 % | **97.28 / 97.37 / 97.37 %** @nominal (loss budget rev B — EMI-filter copper honestly budgeted) |
+| Peak efficiency | ≥97 % | **97.32 / 97.13 / 96.94 %** full-power @nominal (30/40/50 module; 50 kW peak over envelope 98.4 %) — loss budget rev E43, EMI-filter copper at the ENGINE D6 values |
 | Envelope | full power to +55 °C | 1008 grid points per module: **0 violations**, worst Tj 138 °C vs 150 ceiling |
 | Accuracy | ±0.5 % V / ±1 % I | **±0.18 % / ±0.2 %** post-cal (10 k-sample Monte-Carlo, EOL 2-pt cal mandatory) |
 | Protections | §24 catalogue | **32-row threshold table**, HW-fast + supervisory, all 26 fault scenarios executed green |
@@ -79,15 +79,15 @@ what buys single LLC FETs at 167 A), revved tank/protection classes, full envelo
 
 | Product | Composition | Output | Cooling | Cards | ₹ @10k | **₹/kW** |
 |---|---|---|---|---|---|---|
-| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,079 | 1,003 |
-| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 34,303 | **858** |
-| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 39,853 | **797** |
-| **60 kW** | 2 × 30 | · 200 A | air | 2 | 60,158 | 1,003 |
-| **80 kW** | 2 × 40 | · 267 A | air | 2 | 68,606 | **858** |
-| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 79,706 | **797** |
-| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 122,150 | 1,018 |
-| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **104,743** | **873** — cheapest 120 |
-| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **121,393** | **809** |
+| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,627 | 1,021 |
+| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,234 | **881** |
+| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,238 | **825** |
+| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,254 | 1,021 |
+| **80 kW** | 2 × 40 | · 267 A | air | 2 | 70,468 | **881** |
+| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 82,476 | **825** |
+| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 124,342 | 1,036 |
+| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **107,536** | **896** — cheapest 120 |
+| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **125,548** | **837** |
 
 Full power from 300 V out / 330 VAC in on every variant; multi-module products share current by
 commanded-CC over CAN with staggered starts and graceful module-dropout degrade. The liquid line
@@ -203,6 +203,7 @@ This platform was **designed by iteration against its own simulations and audits
 | **E40 single-brain migration** | two cards per module = a link protocol, 9 CAN nodes at 120 kW, and a way/pin budget spent twice | ONE card per module on the SAME VET6 + 88-way slot (generated merge, 73/82 pins); 40-way harness; RATING-only identity; family control = 1/2/5 MCUs; **−₹293/module measured** |
 | **E41 stress validation** | the registered D1-40 choke was UNBUILDABLE (optimizer refuses 3-stack on sat/swing) and the 100 A fuse failed the E35 derate rule (72 < 73.3 A) | 5-stack D1-40 + 125 A class; **stress-audit.mjs joins run-all** — 34 device/magnetic acceptance checks across both variants |
 | **E42 liquid closure** | at the revved 50 kW OC points BOTH CT burdens computed past the 3.3 V rail (line 3.67 V, tank 3.55 V — protection observability clipped at the ADC) | burdens re-scaled 27→21.5 Ω / 2.0→1.6 Ω-2 W at the R3-proven rail budget; **stress-audit grows the BRD + grid-shape check families** across all three variants |
+| **E43 full-family verification** | clean-room recompute of every board (118 checks) found the D6 DM choke had NO engine: the inherited "22 µH" cannot exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH LISN floor — at EVERY variant); also 50 kW pulse-resistor energies past the 25 W family point, trim-litz J over-line at 40/50, and the 27 nF caps' Vrms duty unstated | **dm-choke-design.mjs joins the engine set** (per-variant crest-biased floors, CX2 trio → 4.7 µF X1, LISN model rebuilt per-variant: +4.9/+5.7/+5.6 dB); 50 W pulse class at 50 kW; 2000×0.1 trim litz; O-8 Vrms lines on every tank cap; **stress-audit grows D6/CrV/D2c/Epulse/Xbleed families** |
 
 Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E42** in [`docs/assumptions.md`](docs/assumptions.md).
 

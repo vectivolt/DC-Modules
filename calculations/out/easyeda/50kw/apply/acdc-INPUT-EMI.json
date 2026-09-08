@@ -444,9 +444,9 @@
    },
    {
     "designator": "CX21",
-    "value": "2.2uF",
+    "value": "4.7uF",
     "block_name": "EMI-FILTER",
-    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "search_query": "X1-4u7-530 X1 4.7 µF 530 VAC",
     "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
     "pins": [
      {
@@ -466,9 +466,9 @@
    },
    {
     "designator": "CX22",
-    "value": "2.2uF",
+    "value": "4.7uF",
     "block_name": "EMI-FILTER",
-    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "search_query": "X1-4u7-530 X1 4.7 µF 530 VAC",
     "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
     "pins": [
      {
@@ -488,9 +488,9 @@
    },
    {
     "designator": "CX23",
-    "value": "2.2uF",
+    "value": "4.7uF",
     "block_name": "EMI-FILTER",
-    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "search_query": "X1-4u7-530 X1 4.7 µF 530 VAC",
     "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
     "pins": [
      {
@@ -576,9 +576,9 @@
    },
    {
     "designator": "LDM1",
-    "value": "DM-22u-SKU",
+    "value": "DM-CHOKE-SKU",
     "block_name": "EMI-FILTER",
-    "search_query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU",
+    "search_query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
     "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
     "pins": [
      {
@@ -595,9 +595,9 @@
    },
    {
     "designator": "LDM2",
-    "value": "DM-22u-SKU",
+    "value": "DM-CHOKE-SKU",
     "block_name": "EMI-FILTER",
-    "search_query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU",
+    "search_query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
     "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
     "pins": [
      {
@@ -614,9 +614,9 @@
    },
    {
     "designator": "LDM3",
-    "value": "DM-22u-SKU",
+    "value": "DM-CHOKE-SKU",
     "block_name": "EMI-FILTER",
-    "search_query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU",
+    "search_query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
     "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
     "pins": [
      {

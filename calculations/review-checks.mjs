@@ -48,7 +48,8 @@ ck("HR-5", /name="RFLTC"/.test(boards) && /name="CFLTC"/.test(boards), "FLT wire
 ck("HR-6", /R\$\{id\}PD/.test(cells), "PWM pulldowns per channel");
 ck("HR-7", /GDT[123]?/.test(boards) && /MOVP/.test(boards), "L-PE MOV+GDT surge path");
 ck("HR-8", /PP-4u7-1200/.test(db), "output film 1200 V");
-ck("HR-9", /DM-22u-SKU/.test(db) && /LDM1: \{ price1k: 480/.test(db), "DM chokes per-SKU rated (D6)");
+ck("HR-9", /DM-CHOKE-SKU/.test(db) && /DM-CHOKE-30/.test(db) && /DM-CHOKE-40/.test(db) && /DM-CHOKE-50/.test(db) && /LDM1: \{ price1k: 480/.test(db),
+  "DM chokes per-SKU rated (D6 rev C — ENGINE-designed per variant, E43; 120 kW reference row retained)");
 // R3: the assertion previously grepped "QA01C-15S18" — a part number that does not exist at
 // MORNSUN (real variants: QA01C = +20/-4 V, QA01C-18 = +18/-3 V). The gate was pinning a typo.
 ck("HR-10", /QA01C\b/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0)");
@@ -372,8 +373,8 @@ ck("AUD-D2-FERRITE", /GAPPED FERRITE/.test(db) && /PQ50\/50/.test(db.match(/IND-
   "D2 trim is gapped ferrite (F1: sendust at full 140 kHz AC swing = ~43 W core loss, 2:1 L swing)");
 ck("AUD-D1-REVB", /N=39/.test(db) && /18 mm²/.test(db) && /0077908A7/.test(db),
   "D1 re-issued against the real core (AL 37) with the calculator's copper (F4)");
-ck("AUD-D6-REVB", /3×AWG12/.test(db),
-  "D6 30 kW winding one gauge up (F7: 8.3 A/mm² computed past its own dT acceptance)");
+ck("AUD-D6-REVC", /dm-choke-design\.mjs/.test(db) && /2x T48 60u N=7/.test(db) && /2x T57 60u N=8/.test(db) && /3x T57 60u N=8/.test(db),
+  "D6 rev C supersedes F7's wire-gauge fix: crest-biased L was the real binder (E43 — all three engine rows in the DB; F7 history lives in magnetics.md)");
 ck("AUD-FUSE80", /FUSE-gG-690V-80A/.test(db) && !/mpn: "FUSE-gG-690V-63A"/.test(db),
   "30 kW fuse is 80 A gG 22x58 (F6: 63 A was 88% loaded and negative after enclosure/ambient derate)");
 ck("AUD-CT-CATALOG", /ACX-1100/.test(db) && /AS-404/.test(db),

@@ -175,8 +175,12 @@ return (
       {[1, 2, 3].map(i => (
         <capacitor key={`x1${i}`} name={`CX1${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx1X} pcbY={P.cxY[i - 1]} schX={31} schY={46 - (i - 1) * 3} schSectionName="EMI" />
       ))}
+      {/* E43: CX2 trio 2.2 → 4.7 µF X1 (all variants) — the 3rd DM stage attenuates as L·C and
+          the cap is the cheap half: the crest-biased D6 rev + this cap hold ≥ +4.9 dB conducted
+          margin at every variant (lisn-precompliance per-variant block). X-bleed τ 0.42 → 0.66 s
+          through the RNS star — still inside the 1 s pluggable-discharge rule. */}
       {[1, 2, 3].map(i => (
-        <capacitor key={`x2${i}`} name={`CX2${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx2X} pcbY={P.cx2Y[i - 1]} schX={46} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+        <capacitor key={`x2${i}`} name={`CX2${i}`} capacitance="4.7uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx2X} pcbY={P.cx2Y[i - 1]} schX={46} schY={46 - (i - 1) * 3} schSectionName="EMI" />
       ))}
       {[1, 2, 3].map(i => (
         <capacitor key={`y${i}`} name={`CY${i}`} capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={P.cyX} pcbY={P.cyY[i - 1]} schX={51} schY={46 - (i - 1) * 3} />
@@ -216,8 +220,11 @@ return (
       <trace from=".CMC2 > .B1" to="net.AC1D" schDisplayLabel="AC1D" />
       <trace from=".CMC2 > .B2" to="net.AC2D" schDisplayLabel="AC2D" />
       <trace from=".CMC2 > .B3" to="net.AC3D" schDisplayLabel="AC3D" />
+      {/* E43: D6 is engine-designed per variant (dm-choke-design.mjs) — the inherited "22 µH"
+          could not exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH
+          LISN floor). Values are the engine L0 (crest-biased Lpk meets each variant's floor). */}
       {[1, 2, 3].map(i => (
-        <inductor key={`ldm${i}`} name={`LDM${i}`} inductance="22uH" footprint={FilmBoxFP(20)} pcbX={P.ldmX} pcbY={P.ldmY[i - 1]} schX={41} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+        <inductor key={`ldm${i}`} name={`LDM${i}`} inductance={pw === 50 ? "34uH" : pw === 40 ? "23uH" : "14uH"} footprint={FilmBoxFP(20)} pcbX={P.ldmX} pcbY={P.ldmY[i - 1]} schX={41} schY={46 - (i - 1) * 3} schSectionName="EMI" />
       ))}
       <trace from=".LDM1 > .pin1" to="net.AC1D" schDisplayLabel="AC1D" />
       <trace from=".LDM1 > .pin2" to="net.AC1" schDisplayLabel="AC1" />
