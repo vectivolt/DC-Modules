@@ -610,18 +610,18 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
 // op-amp is stable into 10 µF); DC feedback via 10 k from AVMID (accuracy), AC feedback via
 // 100 pF local (stability). Standard cap-load topology, layout note P-12.
 export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
-  <group name="avmid" pcbX={x} pcbY={y} schX={sx} schY={sy}>
+  <group name="avmid" pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 5. CAVF 2.2 nF: its corner (≈7 kHz) must sit BELOW the outer-loop
         crossover (~30 kHz with a 10 MHz op-amp into 10 µF) or the buffer still rings — found
         by the ct-frontend.mjs deck, which runs both topologies as regression evidence. */}
     <resistor layer={lay} name="RAVH" resistance="10k" footprint="0603" pcbX={0} pcbY={0} schX={0} schY={1.2} schSectionName={sec} />
     <resistor layer={lay} name="RAVL" resistance="10k" footprint="0603" pcbX={0} pcbY={5} schX={0} schY={-1.2} schSectionName={sec} />
-    <capacitor layer={lay} name="CAVM" capacitance="100nF" footprint="0603" pcbX={6} pcbY={5} schX={1.6} schY={0} schSectionName={sec} />
-    <chip layer={lay} name="UAVB" footprint="soic8" pinLabels={{ pin1: "OUT", pin2: "INN", pin3: "INP", pin4: "VN", pin5: "NC1", pin6: "NC2", pin7: "NC3", pin8: "VP" }} pcbX={12} pcbY={0} schX={4} schY={0.4} schSectionName={sec} />
-    <resistor layer={lay} name="RAVI" resistance="4.7" footprint="0603" pcbX={18} pcbY={0} schX={7} schY={0.4} schSectionName={sec} />
-    <resistor layer={lay} name="RAVF" resistance="10k" footprint="0603" pcbX={18} pcbY={6} schX={7} schY={-1.4} schSectionName={sec} />
-    <capacitor layer={lay} name="CAVF" capacitance="2.2nF" footprint="0603" pcbX={12} pcbY={6} schX={5.5} schY={2.2} schSectionName={sec} />
-    <capacitor layer={lay} name="CAVO" capacitance="10uF" footprint="0805" pcbX={24} pcbY={5} schX={9} schY={-0.8} schSectionName={sec} />
+    <capacitor layer={lay} name="CAVM" capacitance="100nF" footprint="0603" pcbX={6} pcbY={5} schX={2.6} schY={0} schSectionName={sec} />
+    <chip layer={lay} name="UAVB" footprint="soic8" pinLabels={{ pin1: "OUT", pin2: "INN", pin3: "INP", pin4: "VN", pin5: "NC1", pin6: "NC2", pin7: "NC3", pin8: "VP" }} pcbX={12} pcbY={0} schX={5.4} schY={0.4} schSectionName={sec} />
+    <resistor layer={lay} name="RAVI" resistance="4.7" footprint="0603" pcbX={18} pcbY={0} schX={8.8} schY={0.4} schSectionName={sec} />
+    <resistor layer={lay} name="RAVF" resistance="10k" footprint="0603" pcbX={18} pcbY={6} schX={8.8} schY={-1.8} schSectionName={sec} />
+    <capacitor layer={lay} name="CAVF" capacitance="2.2nF" footprint="0603" pcbX={12} pcbY={6} schX={6.6} schY={2.4} schSectionName={sec} />
+    <capacitor layer={lay} name="CAVO" capacitance="10uF" footprint="0805" pcbX={24} pcbY={5} schX={11} schY={-0.8} schSectionName={sec} />
     <trace from=".RAVH > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from=".RAVH > .pin2" to="net.AVREF_MID" />
     <trace from=".RAVL > .pin1" to="net.AVREF_MID" />
@@ -695,7 +695,7 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 // window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
 // input on the safety AND while the local MCU is in reset).
 export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
-  <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+  <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
     <chip layer={lay} name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
     <chip layer={lay} name={`UAND${id}`} footprint="soic14" pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "C2", pin6: "Y2", pin7: "GND", pin8: "Y3", pin9: "A3", pin10: "B3", pin11: "C3", pin12: "Y1", pin13: "C1", pin14: "VCC" }} pcbX={14} pcbY={0} schX={4.5} schY={0.6} schSectionName={sec} />
@@ -753,7 +753,7 @@ export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY"
 
 // ---------- SWD/boot provisioning per MCU (CB-13/HR-11): 5-pin header + BOOT0 strap + NRST cap
 export const SwdPort = ({ id, sec = "SWD", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
-  <group name={`swd${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+  <group name={`swd${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 7 × 3 */}
     <chip layer={lay} name={`JSWD${id}`} footprint="pinrow5" pinLabels={{ pin1: "VCC", pin2: "DIO", pin3: "CLK", pin4: "RST", pin5: "GND" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}BOOT`} resistance="10k" footprint="0603" pcbX={14} pcbY={0} schX={2.6} schY={0.7} schSectionName={sec} />
@@ -888,7 +888,7 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
 // ---------- MCU + decoupling + reset — v3: VDDA/VREF+ fed via ferrite + local caps (MR-7);
 // BOOT0/SWD nets bound at board level (CB-13). Pin numbers symbolic pending A6 datasheet closure.
 export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
-  <group name={`mcu${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+  <group name={`mcu${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* GD32G553VET6, LQFP-100. The supply/reset pins below are DATASHEET FACTS (Rev 2.0 Table 2-4,
         via docs/mcu-pin-allocation-gd32.md), not choices:
           VDD  24 49 64 75 100     VSS  23 48 63 74 99
@@ -901,13 +901,13 @@ export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 ,
     <chip layer={lay} name={`U${id}`} footprint={<Lqfp100 />} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     {/* One 100 nF per VDD/VSS pair -- five pairs, five caps, each beside its own pin. */}
     {[0, 1, 2, 3, 4].map(i => (
-      <capacitor layer={lay} key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 5} pcbY={11} schX={-3 + i * 1.6} schY={-6.6} schSectionName={sec} />
+      <capacitor layer={lay} key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 5} pcbY={11} schX={-4.5 + i * 2.6} schY={-6.6} schSectionName={sec} />
     ))}
-    <resistor layer={lay} name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={16} pcbY={11} schX={5.2} schY={-6.6} schSectionName={sec} />
-    <resistor layer={lay} name={`FB${id}A`} resistance="0" footprint="0805" pcbX={-15} pcbY={11} schX={-3} schY={-8} schSectionName={sec} />
-    <capacitor layer={lay} name={`C${id}A1`} capacitance="1uF" footprint="0603" pcbX={-15} pcbY={16} schX={-1.4} schY={-8} schSectionName={sec} />
-    <capacitor layer={lay} name={`C${id}A2`} capacitance="100nF" footprint="0402" pcbX={-10} pcbY={16} schX={0.2} schY={-8} schSectionName={sec} />
-    <capacitor layer={lay} name={`C${id}VR`} capacitance="100nF" footprint="0402" pcbX={-5} pcbY={16} schX={1.8} schY={-8} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={16} pcbY={11} schX={9.4} schY={-6.6} schSectionName={sec} />
+    <resistor layer={lay} name={`FB${id}A`} resistance="0" footprint="0805" pcbX={-15} pcbY={11} schX={-4.5} schY={-8.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}A1`} capacitance="1uF" footprint="0603" pcbX={-15} pcbY={16} schX={-1.9} schY={-8.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}A2`} capacitance="100nF" footprint="0402" pcbX={-10} pcbY={16} schX={0.7} schY={-8.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}VR`} capacitance="100nF" footprint="0402" pcbX={-5} pcbY={16} schX={3.3} schY={-8.2} schSectionName={sec} />
     {[0, 1, 2, 3, 4].map(i => [
       <trace key={`p${i}`} from={`.C${id}D${i} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />,
       <trace key={`g${i}`} from={`.C${id}D${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
@@ -925,8 +925,10 @@ export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 ,
     <trace from={`.FB${id}A > .pin2`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
     <trace from={`.U${id} > .pin37`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
     {/* VREFP tied to the filtered analogue supply; there is no VREFN pin -- it is internally
-        strapped to VSSA. VSSA returns to AGND, which meets DGND once, at RAGTC on the card. */}
-    <trace from={`.U${id} > .pin36`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
+        strapped to VSSA. VSSA returns to AGND, which meets DGND once, at RAGTC on the card.
+        Drawn as a short local wire to the adjacent pin 37 so the sheet shows ONE VDDA chip,
+        not two stacked ones (presentation, audit follow-up). */}
+    <trace from={`.U${id} > .pin36`} to={`.U${id} > .pin37`} />
     <trace from={`.C${id}VR > .pin1`} to={`net.VDDA_${id}`} schDisplayLabel={`VDDA_${id}`} />
     <trace from={`.C${id}VR > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
     <trace from={`.U${id} > .pin35`} to="net.AGND" schDisplayLabel="AGND" />
@@ -1094,7 +1096,7 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
 // was also at/over its operating limit on a 15 V rail). TPS54202-class: FB 0.596 V ref →
 // 45.3 k / 10 k = 3.296 V. The DC-DC board previously had NO 3.3 V source at all (CB-17).
 export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
-  <group name={`r3v3${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+  <group name={`r3v3${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     <chip layer={lay} name={`UBK${id}`} footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "SW", pin4: "FB", pin5: "EN", pin6: "BST", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <inductor layer={lay} name={`LBK${id}`} inductance="10uH" footprint={FilmBoxFP(10)} pcbX={14} pcbY={0} schX={3} schY={0.6} schSectionName={sec} />
     <capacitor layer={lay} name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-2.6} schY={0.8} schSectionName={sec} />

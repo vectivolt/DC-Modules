@@ -4,6 +4,8 @@
 // background and the circuit layer using the SVG's own real-to-screen transform, so they are
 // exact, not eyeballed. Output: boards/<sku>/out/<side>-schematic.svg
 // Run (after tsci builds): node calculations/schematic-export.mjs [30kw/acdc ...]
+import { SECTIONS } from "./schematic-sections.mjs";
+import { labelLongTraces } from "./sch-longtrace-labels.mjs";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,58 +14,8 @@ const require = createRequire(import.meta.url);
 const { convertCircuitJsonToSchematicSvg } = require("circuit-to-svg");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const SECTIONS = {
-  // The control card (single-segment target; audit E35 — one card, both converter roles)
-  "control-card": [
-    ["MCU GD32G553VET6 & DECOUPLING", /^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/],
-    ["SWD + BOOT", /^(JSWDCARD|RCARDBOOT|CCARDRST)$/],
-    ["SAFETY CHAIN (WD + AND)", /^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD)$/],
-    ["FLT WIRED-OR + GROUND TIE", /^(RFLTC|CFLTC|RAGTC)$/],
-    ["3V3 SYNC BUCK", /^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD)$/],
-    ["ANALOG MID-RAIL", /^(RAV[HLIF]|CAV[MFO]|UAVB)$/],
-    ["ROLE STRAPS", /^RROLE[01]$/],
-    ["88-WAY INTERFACE", /^JCARD$/],
-  ],
-  acdc: [
-    ["AC INPUT & PROTECTION", /^(JACL\d|JPE$|F[123]$|MOV[123]$|MOVP[123]$|GDT[123]$)/],
-    ["EMI FILTER", /^(CMC[12]$|CX\d\d$|CY[123]$|LDM[123]$)/],
-    ["PRECHARGE", /^(KPRE[12]$|RPRE[12]$|RKFBP$)/],
-    ["LINE CTs", /^(CT[ABC]\d$|R[ABC]\d[BF]$|C[ABC]\dF$|D[ABC]\d[PN]$)/],
-    ["VIENNA PFC LANES", /^(?:L|Q|D|C|R|U|PS)[ABC]\d/],
-    ["DC LINK", /^(CD[TB]\d|RBAL[TB]\d)/],
-    ["BUS DISCHARGE", /^(RDIS\d|QDIS$|QDISF$|UQD$|PSQD$|RQD)/],
-    ["ISOLATED HV SENSING", /^(RNS\d[AB]$|PS5(AC|BUS)$|UIV(V\d|BP|BM)$|R(V\d|BP|BM)D\d?L?$|C(V\d|BP|BM)DF$)/],
-    ["ANALOG MID-RAIL & TEMP", /^(RAV[HLIF]$|CAV[MFO]$|UAVB$|[JRC]T(PFC|INL))/],
-    ["MCU-PFC & SWD", /^(UPFC$|CPFCD\d|RPFCRST$|FBPFCA$|CPFCA[12]$|JSWDPFC$|RPFCBOOT$|CPFCRST$)/],
-    ["SAFETY CHAIN", /^(USUPA|UANDA|RWPUA|RENRA|RENLA|RGPDA|CSFA|RFLTA|CFLTA)$/],
-    ["GROUND BONDS", /^(RAGTA|RPET|CPET)$/],
-    ["AUX 110 W FLYBACK + 3V3 + RAIL MONITORS", /^(UAUX|QAUX|RAUX\w*|RCSF|CCSF|TAUX|DAUX\w*|CAUX\d\d|CVCC|DTVS\d\d|RBR\w+|RFB[12]|RCOMP|CCOMP|DCLA|CCLA|RCLA[12]|UBKA|LBKA|CBKIA|CBKOA|CBSTA|RBKF[12]A|RM(24|15)[AB])$/],
-    ["COIL DRIVER", /^UPA$/],
-    ["FANS", /^(JFAN\d|RFT\d)$/],
-    ["DC OUT + HARNESS", /^(JICA$|RA(LTX|LRX|LTS|LRS)$|JDCP$|JDCN$|JPEB$)/],
-    ["CARD INTERFACE (88-WAY)", /^(JA|RPD\d|RROLE)$/],
-  ],
-  dcdc: [
-    ["BUS ENTRY & COMMUTATION FILMS", /^(JDCP$|JDCN$|JPEB$|CF\d+$)/],
-    ["LLC HALF-BRIDGE LEGS", /^(Q\d+[HL]$|U\d+[HL]$|PS\d+[HL]$|[RC]\d+[HL]\w*$|D\d+[HL]S\d$)/],
-    ["LLC TANKS, TRANSFORMERS & RECTIFIERS", /^(C\d+R\d$|L\d+T$|T\d+$|D\d+[AB][1-4]$|CT\d+$|R\d+C[TF]$|C\d+CF$|D\d+C[PN]$)/],
-    ["BANK CAPACITORS & BALANCE", /^(CB[AB]\d+[TB]$|RBAL[TB][AB][12]$|CB[AB]F$)/],
-    ["SERIES/PARALLEL MATRIX", /^(K(SER|PARA|PARB|OUT|PREA|PREB)2?$|RKPU|RPRE[AB]$)/],
-    ["CARD INTERFACE (88-WAY)", /^(JB|RPDB\d|RROLEB)$/],
-    ["BANK BLEEDERS", /^(RBD[AB]\d$|QDIS[AB]$|UPV[AB]$|RPV[LB][AB]$)/],
-    ["OUTPUT & SHUNT", /^(RSHO$|USHO$|PSSH$|COF[12]$|CYO[12]$|JOUTP$|JOUTN$)/],
-    ["ISOLATED SENSING", /^(PS5BK[AB]$|UIVO[ABV]$|RO[ABV]D\d?L?$|CO[ABV]DF$)/],
-    ["ANALOG MID-RAIL & TEMP", /^(RAV[HLIF]$|CAV[MFO]$|UAVB$|[JRC]T(LLC|XFR))/],
-    ["MCU-LLC & SWD", /^(ULLC$|CLLCD\d|RLLCRST$|FBLLCA$|CLLCA[12]$|JSWDLLC$|RLLCBOOT$|CLLCRST$)/],
-    ["SAFETY CHAIN", /^(USUPB|UANDB|RWPUB|RENRB|RENLB|RGPDB|CSFB|RFLTB|CFLTB)$/],
-    ["GROUND BOND", /^RAGTB$/],
-    ["3V3 BUCK", /^(UBKB|LBKB|CBKIB|CBKOB|CBSTB|RBKF[12]B)$/],
-    ["COIL DRIVER", /^ULB$/],
-    ["ISOLATED CAN", /^(UCAN|PSCAN|LCAN|JCAN|RTERM|JTERM|TVSCAN|RCGB|CCGB)$/],
-    ["CONFIG HMI", /^(DISP1|USR1|RSEG\d|QDIG[12]|RDIG[12]|SW[12]|RSW[12]|CSW[12])$/],
-    ["HARNESS", /^(JICB$|RB(LTX|LRX|LTS|LRS)$)/],
-  ],
-};
+// SECTIONS now come from the shared module (schematic-sections.mjs) — the comment there
+// promised exporter and composer cannot drift; the exporter keeping its own copy broke that.
 
 // Default set = buildable boards + the control card (single-segment target -> dist/boards/<name>).
 // 120 kW retired: cabinet product (E36); its board pair no longer builds.
@@ -75,7 +27,7 @@ for (const t of targets) {
   const p = side ? join(ROOT, "dist", "boards", sku, side, "circuit.json")
                  : join(ROOT, "dist", "boards", sku, "circuit.json");
   if (!existsSync(p)) { console.log(`!! ${t}: no build`); continue; }
-  const j = JSON.parse(readFileSync(p, "utf8"));
+  const j = labelLongTraces(JSON.parse(readFileSync(p, "utf8")));
   const srcById = new Map(j.filter(e => e.type === "source_component").map(c => [c.source_component_id, c.name]));
   const comps = j.filter(e => e.type === "schematic_component").map(c => ({
     name: srcById.get(c.source_component_id) ?? "?",

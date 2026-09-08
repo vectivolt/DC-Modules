@@ -19,6 +19,7 @@
 // Output: boards/<sku>/out/<side>-sheet.svg
 // Run: node calculations/schematic-compose.mjs [30kw/acdc ...]
 
+import { labelLongTraces } from "./sch-longtrace-labels.mjs";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -103,14 +104,15 @@ const shelf = (items, gut, aspect = 1.6) => {                 // → rows[], eac
 
 const targets = process.argv.slice(2).filter((a) => !a.startsWith("-"));
 const list = targets.length ? targets
-  : ["30kw/acdc", "30kw/dcdc", "60kw/acdc", "60kw/dcdc", "120kw/acdc", "120kw/dcdc"];
+  : ["30kw/acdc", "30kw/dcdc", "60kw/acdc", "60kw/dcdc", "control-card"]; // 120 kW retired (E36 cabinet)
 
 let failures = 0;
 for (const t of list) {
   const [sku, side] = t.split("/");
-  const p = join(ROOT, "dist", "boards", sku, side, "circuit.json");
+  const p = side ? join(ROOT, "dist", "boards", sku, side, "circuit.json")
+                 : join(ROOT, "dist", "boards", sku, "circuit.json");
   if (!existsSync(p)) { console.log(`!! ${t}: no build at ${p}`); failures++; continue; }
-  const j = JSON.parse(readFileSync(p, "utf8"));
+  const j = labelLongTraces(JSON.parse(readFileSync(p, "utf8")));
 
   const srcById = new Map(j.filter((e) => e.type === "source_component").map((c) => [c.source_component_id, c.name]));
   const comps = j.filter((e) => e.type === "schematic_component");
@@ -235,10 +237,10 @@ for (const t of list) {
   }
 
   // ---- clusters → named sections (majority vote of member designators) ----
-  const order = (SECTIONS[side] ?? []).map(([title]) => title);
+  const order = (SECTIONS[side ?? sku] ?? []).map(([title]) => title);
   const rank = new Map(order.map((tl, i) => [tl, i]));
   const sectionOf = (names) => {
-    for (const [title, re] of SECTIONS[side] ?? []) if (names.some((n) => re.test(n))) return title;
+    for (const [title, re] of SECTIONS[side ?? sku] ?? []) if (names.some((n) => re.test(n))) return title;
     return null;
   };
   const secMap = new Map();
@@ -306,7 +308,7 @@ for (const t of list) {
 
   // ---- emit ----
   const date = new Date().toISOString().slice(0, 10);
-  const title = SHEET_TITLES[`${sku}/${side}`] ?? `${sku.toUpperCase()} ${side.toUpperCase()}`;
+  const title = SHEET_TITLES[side ? `${sku}/${side}` : sku] ?? `${sku.toUpperCase()}${side ? ` ${side.toUpperCase()}` : ""}`;
   let out = head.replace(/width="\d+" height="\d+"/, `width="${Math.ceil(totalW)}" height="${Math.ceil(totalH)}"`);
   let g = styleEl
     + `<rect class="boundary" x="0" y="0" width="${Math.ceil(totalW)}" height="${Math.ceil(totalH)}" fill="#f7f5ee"/>`
@@ -327,7 +329,7 @@ for (const t of list) {
 
   // Title block: the sheet must identify itself — which SKU, which board of the pair, and how
   // this board relates to the 30/60/120 kW set — when printed on its own.
-  const id = SHEET_IDENT[`${sku}/${side}`] ?? { sku: sku.toUpperCase(), board: side, sheet: "?", cells: "" };
+  const id = SHEET_IDENT[side ? `${sku}/${side}` : sku] ?? { sku: sku.toUpperCase(), board: side, sheet: "?", cells: "" };
   const idLine = `${id.sku} module · ${id.board} board · sheet ${id.sheet} · ${id.cells}`;
   const statLine = `${secs.length} sections · ${clusters.size} wired clusters · ${comps.length} symbols · cross-section links are net labels`;
   const lcscLine = `LCSC: calculations/out/bom-${sku}.csv`;
@@ -350,9 +352,9 @@ for (const t of list) {
 </g>`;
 
   out += g + "</svg>";
-  const outDir = join(ROOT, "boards", sku, "out");
+  const outDir = side ? join(ROOT, "boards", sku, "out") : join(ROOT, "boards", "out");
   mkdirSync(outDir, { recursive: true });
-  writeFileSync(join(outDir, `${side}-sheet.svg`), out);
+  writeFileSync(join(outDir, `${side ?? sku}-sheet.svg`), out);
 
   // ---- self-checks ----
   let bad = 0;
@@ -381,6 +383,6 @@ for (const t of list) {
   }
   if (unsectioned.length) console.log(`   !! unsectioned: ${[...new Set(unsectioned)].slice(0, 10).join(",")}`);
   if (bad) failures++;
-  console.log(`${t}: ${comps.length} symbols (${annotated} chip MPNs added) · ${byProximity} by-proximity · ${clusters.size} clusters · ${secs.length} sections · ${Math.ceil(totalW)}×${Math.ceil(totalH)} → ${side}-sheet.svg${bad ? `  [${bad} PROBLEM(S)]` : "  [clean]"}`);
+  console.log(`${t}: ${comps.length} symbols (${annotated} chip MPNs added) · ${byProximity} by-proximity · ${clusters.size} clusters · ${secs.length} sections · ${Math.ceil(totalW)}×${Math.ceil(totalH)} → ${side ?? sku}-sheet.svg${bad ? `  [${bad} PROBLEM(S)]` : "  [clean]"}`);
 }
 process.exit(failures ? 1 : 0);

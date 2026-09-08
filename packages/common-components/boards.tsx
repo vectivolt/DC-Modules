@@ -709,11 +709,15 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
       minBoardEdgeClearance="1mm">
       {/* 4 layers is enough: this board carries no current worth naming. inner1 is a solid DGND
           reference under the MCU and the analogue chains, inner2 is V3P3. */}
-      <net name="V3P3" isForPower />
-      <net name="V24" isForPower />
-      <net name="V15" isForPower />
-      <net name="DGND" isGround />
-      <net name="AGND" isGround />
+      {/* Deliberately NOT isForPower/isGround (presentation, E34/audit): power-class nets render
+          as rail/ground glyphs with ROUTED WIRES to them, which wraps the 100-pin MCU symbol in
+          long wire loops. Plain nets render as inline label chips at every pin — the handcrafted
+          convention this drawing set uses. Net identity (pours, connectivity) is by NAME. */}
+      <net name="V3P3" />
+      <net name="V24" />
+      <net name="V15" />
+      <net name="DGND" />
+      <net name="AGND" />
       <copperpour connectsTo="net.DGND" layer="inner1" boardEdgeMargin="1.2mm" />
       <copperpour connectsTo="net.V3P3" layer="inner2" boardEdgeMargin="1.2mm" />
 

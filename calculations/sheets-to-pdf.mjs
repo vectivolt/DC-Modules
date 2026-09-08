@@ -27,14 +27,14 @@ const BOARDS = [
   { f: "30kw/dcdc", name: "DC-Modules 30kW DC-DC (3-phase LLC)" },
   { f: "60kw/acdc", name: "DC-Modules 60kW AC-DC (Vienna PFC)" },
   { f: "60kw/dcdc", name: "DC-Modules 60kW DC-DC (3-phase LLC)" },
-  { f: "120kw/acdc", name: "DC-Modules 120kW AC-DC (Vienna PFC)" },
-  { f: "120kw/dcdc", name: "DC-Modules 120kW DC-DC (3-phase LLC)" },
-];
+  { f: "control-card", name: "DC-Modules Control Card (GD32G553VET6)" },
+]; // 120 kW retired: cabinet of 30/60 kW modules (E36)
 
 const PX_PER_IN = 96;
 for (const b of BOARDS) {
   const [sku, side] = b.f.split("/");
-  const svgPath = join(ROOT, "boards", sku, "out", `${side}-sheet.svg`);
+  const svgPath = side ? join(ROOT, "boards", sku, "out", `${side}-sheet.svg`)
+                       : join(ROOT, "boards", "out", `${sku}-sheet.svg`);
   if (!existsSync(svgPath)) { console.log(`!! ${b.f}: no sheet`); continue; }
   const svg = readFileSync(svgPath, "utf8");
   const m = svg.match(/width="(\d+)" height="(\d+)"/);
