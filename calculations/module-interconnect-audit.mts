@@ -18,11 +18,11 @@ import { readFileSync, existsSync } from "node:fs";
 const ROOT = process.cwd();
 const { cardMap } = await import(ROOT + "/packages/common-components/control-card.tsx");
 
-type Net = string;
-interface Board { netOfPin: Map<string, Net>; pinsOfNet: Map<Net, string[]>; comps: Set<string>; val: Map<string, string>;
+export type Net = string;
+export interface Board { netOfPin: Map<string, Net>; pinsOfNet: Map<Net, string[]>; comps: Set<string>; val: Map<string, string>;
   groupOfPin: Map<string, string>; pinsOfGroup: Map<string, string[]>; pinCount: Map<string, number>; }
 
-function load(path: string): Board | null {
+export function load(path: string): Board | null {
   if (!existsSync(path)) return null;
   const j = JSON.parse(readFileSync(path, "utf8"));
   const nets = new Map<string, string>();
@@ -69,7 +69,7 @@ function load(path: string): Board | null {
 
 /* A connector pin may reach its named net THROUGH a series element (the 100 R on the link
  * lines, MR-14). Resolve: direct net, else hop once across any 2-pin component in the group. */
-function reach(b: Board, pinKey: string): Net | undefined {
+export function reach(b: Board, pinKey: string): Net | undefined {
   const direct = b.netOfPin.get(pinKey);
   if (direct) return direct;
   const g = b.groupOfPin.get(pinKey);
@@ -84,6 +84,8 @@ function reach(b: Board, pinKey: string): Net | undefined {
   return undefined;
 }
 
+// Importable by sibling audits (polarity-audit) — the runner only fires when executed directly.
+function main() {
 let fails = 0, warns = 0;
 const bad = (m: string) => { console.log(`  FAIL  ${m}`); fails++; };
 const warn = (m: string) => { console.log(`  warn  ${m}`); warns++; };
@@ -180,3 +182,5 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "60kw"]) {
 
 console.log(fails ? `\n${fails} INTERCONNECT FAILURE(S), ${warns} warning(s)` : `\nMODULE INTERCONNECT CLEAN (${warns} warning(s))`);
 process.exit(fails ? 1 : 0);
+}
+if (process.argv[1]?.includes("module-interconnect-audit")) main();
