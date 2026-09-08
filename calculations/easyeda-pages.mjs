@@ -29,7 +29,7 @@ const idxOf = (names, re) => [...new Set(names.map((n) => n.match(re)?.[1]).filt
 /** Vienna: one block per (phase, lane) — 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
 const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
   ["A", "B", "C"].map((ph) => [`PHASE-${ph}${n}`, [
-    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]$`), new RegExp(`^D${ph}${n}[TBC]$`),
+    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]2?$`), new RegExp(`^RG${ph}${n}[AB]2$`), new RegExp(`^D${ph}${n}[TBC]$`),
     new RegExp(`^C${ph}${n}(FP|FN|SN|C)$`), new RegExp(`^R${ph}${n}(SN|C)$`),
     new RegExp(`^U${ph}${n}G$`), new RegExp(`^PS${ph}${n}G$`),
     new RegExp(`^R${ph}${n}G(ON|OFF|GS|PD)$`), new RegExp(`^D${ph}${n}GS[12]$`),
@@ -86,9 +86,9 @@ const PAGES = {
       ["PRECHARGE", [/^KPRE[12]$/, /^RPRE[12]$/, /^RKFBP$/]],
     ], ["AC-ENTRY", "SURGE", "EMI-FILTER", "PRECHARGE"]],
     ["VIENNA-PFC", [
-      ["PHASE-A", [/^LA0$/, /^QA0[AB]$/, /^DA0[TBC]$/, /^CA0(FP|FN|SN|C)$/, /^RA0(SN|C)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD)$/, /^DA0GS[12]$/, /^CA0G(BL|B1|B2)$/]],
-      ["PHASE-B", [/^LB0$/, /^QB0[AB]$/, /^DB0[TBC]$/, /^CB0(FP|FN|SN|C)$/, /^RB0(SN|C)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD)$/, /^DB0GS[12]$/, /^CB0G(BL|B1|B2)$/]],
-      ["PHASE-C", [/^LC0$/, /^QC0[AB]$/, /^DC0[TBC]$/, /^CC0(FP|FN|SN|C)$/, /^RC0(SN|C)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD)$/, /^DC0GS[12]$/, /^CC0G(BL|B1|B2)$/]],
+      ["PHASE-A", [/^LA0$/, /^QA0[AB]2?$/, /^DA0[TBC]$/, /^CA0(FP|FN|SN|C)$/, /^RA0(SN|C)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD)$/, /^DA0GS[12]$/, /^RGA0[AB]2$/, /^CA0G(BL|B1|B2)$/]],
+      ["PHASE-B", [/^LB0$/, /^QB0[AB]2?$/, /^DB0[TBC]$/, /^CB0(FP|FN|SN|C)$/, /^RB0(SN|C)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD)$/, /^DB0GS[12]$/, /^RGB0[AB]2$/, /^CB0G(BL|B1|B2)$/]],
+      ["PHASE-C", [/^LC0$/, /^QC0[AB]2?$/, /^DC0[TBC]$/, /^CC0(FP|FN|SN|C)$/, /^RC0(SN|C)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD)$/, /^DC0GS[12]$/, /^RGC0[AB]2$/, /^CC0G(BL|B1|B2)$/]],
     ], ["PHASE-A", "PHASE-B", "PHASE-C"]],
     ["DC-LINK", [
       ["LINK-BANK", [/^CD[TB]0\d$/, /^RBAL[TB]0[AB]$/]],

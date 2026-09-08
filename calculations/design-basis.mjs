@@ -24,6 +24,7 @@ const CAP_UF = 470, CAP_V = 450;            // candidate electrolytic building b
 
 const SKUS = [
   { name: "30kW",  P: 30e3,  Iout: 100, pfcLanes: 1, llcChannels: 1 },
+  { name: "40kW",  P: 40e3,  Iout: 133, pfcLanes: 1, llcChannels: 1 },   // E41 variant: same structure, +33% current
   { name: "60kW",  P: 60e3,  Iout: 200, pfcLanes: 2, llcChannels: 2 },
   { name: "120kW", P: 120e3, Iout: 400, pfcLanes: 4, llcChannels: 4 },
 ];

@@ -412,6 +412,11 @@
       "signal_name": "DI1"
      },
      {
+      "pin_number": 87,
+      "name": "pin87",
+      "signal_name": "DI9"
+     },
+     {
       "pin_number": 88,
       "name": "pin88",
       "signal_name": "DI8"
@@ -1785,101 +1790,106 @@
      },
      {
       "pin_number": 57,
+      "name": "DI9",
+      "signal_name": "DI9"
+     },
+     {
+      "pin_number": 58,
       "name": "GATE_EN",
       "signal_name": "GATE_EN"
      },
      {
-      "pin_number": 58,
+      "pin_number": 59,
       "name": "GATE_EN_A",
       "signal_name": "GATE_EN_A"
      },
      {
-      "pin_number": 59,
+      "pin_number": 60,
       "name": "FLT",
       "signal_name": "FLT"
      },
      {
-      "pin_number": 60,
+      "pin_number": 61,
       "name": "EN_A",
       "signal_name": "EN_A"
      },
      {
-      "pin_number": 61,
+      "pin_number": 62,
       "name": "EN_B",
       "signal_name": "EN_B"
      },
      {
-      "pin_number": 62,
+      "pin_number": 63,
       "name": "DRV_RDY",
       "signal_name": "DRV_RDY"
      },
      {
-      "pin_number": 63,
+      "pin_number": 64,
       "name": "CAN_TX",
       "signal_name": "CAN_TX"
      },
      {
-      "pin_number": 64,
+      "pin_number": 65,
       "name": "CAN_RX",
       "signal_name": "CAN_RX"
      },
      {
-      "pin_number": 65,
+      "pin_number": 66,
       "name": "HMI0",
       "signal_name": "HMI0"
      },
      {
-      "pin_number": 66,
+      "pin_number": 67,
       "name": "HMI1",
       "signal_name": "HMI1"
      },
      {
-      "pin_number": 67,
+      "pin_number": 68,
       "name": "HMI2",
       "signal_name": "HMI2"
      },
      {
-      "pin_number": 68,
+      "pin_number": 69,
       "name": "HMI3",
       "signal_name": "HMI3"
      },
      {
-      "pin_number": 69,
+      "pin_number": 70,
       "name": "HMI4",
       "signal_name": "HMI4"
      },
      {
-      "pin_number": 70,
+      "pin_number": 71,
       "name": "HMI5",
       "signal_name": "HMI5"
      },
      {
-      "pin_number": 71,
+      "pin_number": 72,
       "name": "HMI6",
       "signal_name": "HMI6"
      },
      {
-      "pin_number": 72,
+      "pin_number": 73,
       "name": "ROLE1",
       "signal_name": "ROLE1"
      },
      {
-      "pin_number": 73,
+      "pin_number": 74,
       "name": "V15",
       "signal_name": "V15"
      },
      {
-      "pin_number": 75,
+      "pin_number": 76,
       "name": "V3P3",
       "signal_name": "V3P3"
      },
      {
-      "pin_number": 78,
+      "pin_number": 79,
       "name": "DGND",
       "signal_name": "DGND"
      },
      {
-      "pin_number": 85,
+      "pin_number": 86,
       "name": "AGND",
       "signal_name": "AGND"
      }
@@ -1897,7 +1907,6 @@
    12,
    13,
    31,
-   87,
    90,
    97,
    98
@@ -1909,16 +1918,15 @@
    8
   ],
   "JCARD": [
-   74,
-   76,
+   75,
    77,
-   79,
+   78,
    80,
    81,
    82,
    83,
    84,
-   86,
+   85,
    87,
    88
   ]

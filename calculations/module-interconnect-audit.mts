@@ -98,7 +98,8 @@ if (!card) { console.log("no card build — run tsci build boards/control-card.t
 // which card-connector way carries which generic net, in pin order (the contract)
 const genericWays: [string, string | null][] = cardMap("card").map(([w, n]: any) => [w, n]);
 
-for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw"]) {
+const RATING_CODE: Record<string, string> = { "30kw": "0", "40kw": "1000" };   // E24 rev E bands
+for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw"]) {
   console.log(`\n== module interconnect — ${sku} ==`);
   const lanes = sku === "60kw" ? 2 : 1;
   const ac = load(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`);
@@ -160,8 +161,9 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw"]) {
   {
     const v = dc.val.get("RROLEB");
     const num = v === undefined ? undefined : String(Math.round(Number(v)));
-    if (num !== "0") bad(`RROLEB: RATING strap is ${v ?? "MISSING"}, the module slot codes 0R`);
-    else ok("RROLEB: RATING strap 0R — the card boots as the module controller");
+    const want = RATING_CODE[sku];
+    if (num !== want) bad(`RROLEB: RATING strap is ${v ?? "MISSING"}, ${sku} codes ${want === "0" ? "0R" : want + "R"}`);
+    else ok(`RROLEB: RATING strap ${want === "0" ? "0R" : want + "R"} — the card boots as the ${sku} module controller`);
   }
 }
 

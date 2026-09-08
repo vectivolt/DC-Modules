@@ -964,13 +964,17 @@
      "signal_name": "DRV_RDY"
     },
     {
+     "pin_number": 38,
+     "name": "W38",
+     "signal_name": "FAN_TACH3"
+    },
+    {
      "pin_number": 40,
      "name": "W40",
      "signal_name": "PE"
     }
    ],
    "nc_pins": [
-    38,
     39
    ],
    "value": "MICROFIT3-40",

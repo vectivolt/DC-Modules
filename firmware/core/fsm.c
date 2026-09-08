@@ -155,9 +155,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
 }
 
 /* One image, rating from the card strap (see fsm.h). Values mirror the fsm.h physics note:
- * t(<60 V) ~ 2.0 / 3.6 s at 30 / 60 kW -> windows 3000 / 5500 ms; anything else keeps the
+ * t(<60 V) ~ 2.0 / 3.6 s at 30 / 60 kW -> windows 3000 / 4000 / 5500 ms (30 / 40 / 60 kW); anything else keeps the
  * worst-case default so an undecoded strap can only delay the F.21 report, never miss it. */
 void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw)
 {
-  f->disch_to_ms = (kw == 30u) ? 3000u : (kw == 60u) ? 5500u : PMP_DISCH_TO_MS;
+  /* E24 rev E (E41): 40 kW carries +2 link cans and heavier banks — window scales with C. */
+  f->disch_to_ms = (kw == 30u) ? 3000u : (kw == 40u) ? 4000u : (kw == 60u) ? 5500u : PMP_DISCH_TO_MS;
 }

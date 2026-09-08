@@ -1,0 +1,348 @@
+{
+ "page": "CONTROL",
+ "flow": [
+  "CARD-IF",
+  "GROUNDING",
+  "COIL-DRIVER",
+  "RAIL-MON"
+ ],
+ "net_style_overrides": {},
+ "net_class_overrides": {
+  "PE": "ground"
+ },
+ "components": [
+  {
+   "designator": "RPD0",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GATE_EN_A"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD1",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "EN_PFC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD2",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTL_KPRE"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD3",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTL_QDIS"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD4",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_A0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD5",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_B0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD6",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_C0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPET",
+   "block_name": "GROUNDING",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1M",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "CPET",
+   "block_name": "GROUNDING",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7nF",
+   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
+   "mpn": "Y1-4n7-440"
+  },
+  {
+   "designator": "UPA",
+   "block_name": "COIL-DRIVER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "IN1",
+     "signal_name": "CTL_KPRE"
+    },
+    {
+     "pin_number": 2,
+     "name": "IN2",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "IN3",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "IN4",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "IN5",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 6,
+     "name": "IN6",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "IN7",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 8,
+     "name": "IN8",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "COM",
+     "signal_name": "V24"
+    },
+    {
+     "pin_number": 18,
+     "name": "OUT1",
+     "signal_name": "COIL_KPRE"
+    }
+   ],
+   "nc_pins": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+   ],
+   "value": "ULN2803A",
+   "query": "ULN2803A 8-ch relay coil driver SOIC-18 ",
+   "mpn": "ULN2803A"
+  },
+  {
+   "designator": "RM24A",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_V24"
+    }
+   ],
+   "nc_pins": [],
+   "value": "68k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RM24B",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SNS_V24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RM15A",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_V15"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RM15B",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SNS_V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  }
+ ]
+}

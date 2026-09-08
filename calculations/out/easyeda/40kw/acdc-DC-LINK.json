@@ -1,0 +1,720 @@
+{
+ "page": "DC-LINK",
+ "flow": [
+  "DISCHARGE",
+  "BUS-STUDS",
+  "LINK-BANK-0",
+  "LINK-BANK-1"
+ ],
+ "net_style_overrides": {
+  "RBALT0_M": "wire",
+  "RBALB0_M": "wire",
+  "RBALT1_M": "wire",
+  "RBALB1_M": "wire",
+  "RDIS_M": "wire",
+  "RDIS_12": "wire",
+  "RDIS_23": "wire",
+  "QDISF_D": "wire",
+  "G_QDIS": "wire",
+  "UQD_ANO": "wire",
+  "UQD_OUT": "wire",
+  "UQD_VCC": "wire"
+ },
+ "net_class_overrides": {
+  "PE": "ground"
+ },
+ "components": [
+  {
+   "designator": "CDT00",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDT01",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDT02",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDT03",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDT04",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDB00",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDB01",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDB02",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDB03",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDB04",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "RBALT0A",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "RBALT0_M"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RBALT0B",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RBALT0_M"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RBALB0A",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "RBALB0_M"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RBALB0B",
+   "block_name": "LINK-BANK-0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RBALB0_M"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "CDT10",
+   "block_name": "LINK-BANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "CDB10",
+   "block_name": "LINK-BANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "470uF",
+   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C ",
+   "mpn": "ELH-470u450"
+  },
+  {
+   "designator": "RBALT1A",
+   "block_name": "LINK-BANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "RBALT1_M"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RBALT1B",
+   "block_name": "LINK-BANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RBALT1_M"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "MID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RBALB1A",
+   "block_name": "LINK-BANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "MID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "RBALB1_M"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RBALB1B",
+   "block_name": "LINK-BANK-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RBALB1_M"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "47k",
+   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-47k-HV-AS"
+  },
+  {
+   "designator": "RDIS0",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "RDIS_M"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CER-25W-AX",
+   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-AX"
+  },
+  {
+   "designator": "RDIS1",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "RDIS_M"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "RDIS_12"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CER-25W-AX",
+   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-AX"
+  },
+  {
+   "designator": "RDIS2",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "RDIS_12"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "RDIS_23"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CER-25W-AX",
+   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-AX"
+  },
+  {
+   "designator": "RDIS3",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "RDIS_23"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "QDISF_D"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CER-25W-AX",
+   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-AX"
+  },
+  {
+   "designator": "QDIS",
+   "block_name": "DISCHARGE",
+   "pins": [],
+   "nc_pins": [
+    1
+   ],
+   "value": "TAB-M4",
+   "query": "TAB-M4 discharge FET heatsink tab stud",
+   "mpn": "TAB-M4"
+  },
+  {
+   "designator": "QDISF",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "G",
+     "signal_name": "G_QDIS"
+    },
+    {
+     "pin_number": 2,
+     "name": "D",
+     "signal_name": "QDISF_D"
+    },
+    {
+     "pin_number": 3,
+     "name": "S",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SIC-1200-5A",
+   "query": "SIC-1200-5A SiC FET 1200 V 5 A ",
+   "mpn": "SIC-1200-5A"
+  },
+  {
+   "designator": "UQD",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "ANO",
+     "signal_name": "UQD_ANO"
+    },
+    {
+     "pin_number": 2,
+     "name": "CAT",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "VEE",
+     "signal_name": "DCN"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUT",
+     "signal_name": "UQD_OUT"
+    },
+    {
+     "pin_number": 8,
+     "name": "VCC",
+     "signal_name": "UQD_VCC"
+    }
+   ],
+   "nc_pins": [
+    3,
+    4,
+    7
+   ],
+   "value": "TLP152-class",
+   "query": "TLP152-class opto gate driver ",
+   "mpn": "TLP152-class"
+  },
+  {
+   "designator": "PSQD",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "VIN",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "P18",
+     "signal_name": "UQD_VCC"
+    },
+    {
+     "pin_number": 4,
+     "name": "COM",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [
+    5
+   ],
+   "value": "QA01C",
+   "query": "QA01C iso 15→18 V module ≥6 kVDC ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "RQDL",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTL_QDIS"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UQD_ANO"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RQDG",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UQD_OUT"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "G_QDIS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RQDPD",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_QDIS"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "JDCP",
+   "block_name": "BUS-STUDS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "DCP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JDCN",
+   "block_name": "BUS-STUDS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JPEB",
+   "block_name": "BUS-STUDS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 M8 stud terminal",
+   "mpn": "STUD-M8"
+  }
+ ]
+}

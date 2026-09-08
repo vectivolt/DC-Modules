@@ -16,6 +16,7 @@ const DENS = { Cu: 8900, Al: 2700 }, PRICE = { Cu: 950, Al: 260 }; // ₹/kg
 
 const SKUS = [
   { name: "30kw", Iac: 54.9, Idc: 39, Iout: 100, len: { ac: 0.25, dc: 0.30, out: 0.30 } },
+  { name: "40kw", Iac: 73.2, Idc: 52, Iout: 133, len: { ac: 0.25, dc: 0.30, out: 0.30 } },
   { name: "60kw", Iac: 109.9, Idc: 78, Iout: 200, len: { ac: 0.30, dc: 0.35, out: 0.35 } },
   { name: "120kw", Iac: 219.8, Idc: 156, Iout: 400, len: { ac: 0.40, dc: 0.45, out: 0.45 } },
 ];

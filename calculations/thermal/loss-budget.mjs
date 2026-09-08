@@ -30,6 +30,7 @@ function secondary(IoutCh) {
 // ---------------- SKU roll-up at rated point (400 VAC in, 800 V bus, out ≥300 V full power)
 const SKUS = [
   { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 2 },
+  { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
   { name: "60kW", P: 60e3, lanes: 2, ch: 2, Iout: 200, fans: 2 },
   { name: "120kW", P: 120e3, lanes: 4, ch: 4, Iout: 400, fans: 4 },
 ];
@@ -40,17 +41,29 @@ const SKUS = [
 //   LDM per choke (D6 rev B — audit F7, every winding one gauge up to ≤5.6 A/mm²):
 //   5.9 / 9.8 / 18.3 W ×3 chokes (rev-A as-drawn 8.8/32.7/58.6 ran 8.3–18 A/mm² and the 30 kW
 //   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 5.9, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };
+const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 5.9, "40kW": 2 * 15.3 + 3 * 7.9, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };   // 40kW: D6/D7 rewound at the 30 kW current density (P ∝ I at constant J)
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
-  // 400 VAC nominal: PFC semis scale from 330 V corner by (45.3/54.9)² conduction share ≈ 0.75 avg
-  const pfcSemis = PFC_LANE.semis * 0.78 * s.lanes;
-  const pfcMag = PFC_LANE.mag * 0.72 * s.lanes;
-  const dclink = 12 * s.lanes;                       // ESR heating estimate (ripple current calc, ±50%)
-  const llc = LLC_CH(IP_NOM);
-  const pri = llc.pri * s.ch, xf = llc.xfmr * s.ch, tank = llc.tank * s.ch;
-  const { jbsW, srW } = secondary(100);
+  // E41: k = per-lane power ratio vs the 30 kW design point (1.0 for every legacy row; 1.333 for
+  // the 40 kW variant, which keeps 1 lane / 1 channel and runs everything 33% harder).
+  // Scaling bases, honest not hopeful:
+  //   · PFC pair loss splits ~0.68 conduction / 0.32 switching at 50 kHz (Phase-3 DPT energy ratio
+  //     — VERIFY against dpt CSV at E41 close): conduction ∝ k², switching ∝ k. `pfcPar` = 2
+  //     paralleled B3M per position (the no-new-part option): conduction halves, switching shared.
+  //   · PFC diodes are Vf-dominated ∝ k; D1 choke REWOUND at constant J → Cu ∝ k, Fe ≈ flat.
+  //   · transformer D3-40 rewound/upsized at constant J → Cu share (0.65) ∝ k, Fe ≈ flat.
+  //   · LLC_CH()/secondary() are already current-parameterized.
+  const k = (s.P / s.lanes) / 30e3;
+  const pairW = 43.5 * (0.68 * k * k + 0.32 * k), pairParW = 43.5 * (0.68 * k * k / 2 + 0.32 * k);
+  const pfcSemis = (3 * pairW + 3 * 24.2 * k) * 0.78 * s.lanes;
+  const pfcSemisPar = (3 * pairParW + 3 * 24.2 * k) * 0.78 * s.lanes;
+  if (k > 1.01) console.log(`  ${s.name} PFC semi scenarios @330 V corner-scaled: single-FET ${f(pfcSemis / 0.78, 0)} W · 2x-parallel ${f(pfcSemisPar / 0.78, 0)} W (per pair ${f(pairW, 1)} vs ${f(pairParW, 1)} W)`);
+  const pfcMag = 3 * (32.4 * k + 2.4) * 0.72 * s.lanes;
+  const dclink = 12 * s.lanes * k * k * (10 / (10 * k > 10 ? 12 : 10)) * (s.lanes > 1 ? 1 : 1);
+  const llc = LLC_CH(IP_NOM * k);
+  const pri = llc.pri * s.ch, xf = 3 * 20.5 * (0.65 * k + 0.35) * s.ch, tank = llc.tank * s.ch;
+  const { jbsW, srW } = secondary(100 * k);
   const secJ = jbsW * s.ch, secS = srW * s.ch;
   const bus = 0.00015 * s.Iout ** 2 + 25e-6 * s.Iout ** 2; // busbar ~0.15 mΩ + shunt 25 µΩ paths
   const emi = EMI_FILTER[s.name];

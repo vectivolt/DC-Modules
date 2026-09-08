@@ -1,4 +1,5 @@
 sku,pfc_fets,pfc_diodes,llc_pri_fets,sec_jbs_diodes,iso_drv_channels,pwm_pfc,pwm_llc
 30kW,6,6,6,24,9,3,3
+40kW,6,6,6,24,9,3,3
 60kW,12,12,12,48,18,6,6
 120kW,24,24,24,96,36,12,12

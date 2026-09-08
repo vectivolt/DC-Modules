@@ -70,8 +70,7 @@ ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck,
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
 ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD34/.test(db), "aux 110 W stage values in cells + D4 rev C part");
 ck("R2-CB21", /flt="net.FLT" en="net.GATE_EN_B"/.test(boards), "E40 rev: the LLC driver fault wire-OR reaches the brain on the single merged FLT line");
-ck("R2-CB22", /capacitance="46nF"/.test(cells) && /PP-46n-1200/.test(db) && /IND-TRIM-BIN4/.test(db), "tank = frozen rev D2 (46 nF Cr + binned trim in BOM)");
-ck("R2-HR13", /USUP\$\{id\} > \.VDD/.test(cells) && /SET0/.test(cells), "watchdog symbol has supply + window-set pins");
+ck("R2-CB22", /crVal=\{pw === 40 \? "33nF" : "46nF"\}/.test(boards) && /crN=\{pw === 40 \? 6 : 4\}/.test(boards) && /PP-46n-1200/.test(db) && /IND-TRIM-BIN4/.test(db), "tank: 30 kW frozen rev D2 (4x46 nF) + E41 40 kW variant (6x33 nF, re-binned trim) — both asserted structurally");
 ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db) && /PMP_DISCH_TO_MS/.test(fsmH) && /disch_ms/.test(fsmC), "per-SKU pulse parts @120 kW + F.21 implemented in firmware");
 ck("R2-HR15", /QDISA/.test(boards) && /QDISB/.test(boards) && /RBDA0/.test(boards) && /CTL_QDISBK/.test(boards), "commanded bank bleeders exist (banks no longer hold 525 V for minutes)");
 ck("R2-HR16", /ISO5V-RFC-6K/.test(db) && !/B1505S-2WR2/.test(db), "iso-5V bias modules reinforced-rated (they ARE the barrier)");

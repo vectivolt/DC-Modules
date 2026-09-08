@@ -486,7 +486,7 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
   BOARDS[side].push(pg);
 }
 const KW = SKU.replace("kw", "").toUpperCase();
-const CELLS = { "30kw": "1x", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "4x module" }[SKU] ?? "?";
+const CELLS = { "30kw": "1x", "40kw": "1x hot", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "4x module" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,

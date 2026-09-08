@@ -24,6 +24,22 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
+## 40KW — module COGS **₹33751 @10k** (1k ₹41707, 5k ₹37177, 100 pc ₹54404) vs red-line ₹33000 / stretch ₹29000 → **@10k OVER red-line by ₹751**
+
+| Category | ₹ @1k | share |
+|---|---|---|
+| magnetics | 10221 | 24.5% |
+| semiconductors | 9938 | 23.8% |
+| mechanical/assembly | 9502 | 22.8% |
+| capacitors | 6194 | 14.9% |
+| drive+control ICs | 3723 | 8.9% |
+| resistors/shunts | 721 | 1.7% |
+| protection | 592 | 1.4% |
+| connectors | 436 | 1% |
+| misc | 356 | 0.9% |
+| HMI | 24 | 0.1% |
+| bias/iso modules | 0 | 0% |
+
 ## 120KW — **CABINET: 4x 30 kW modules (alt: 2x 60 kW)** — cabinet COGS **₹120316 @10k** (1k ₹148751, 5k ₹132640, 100 pc ₹193848) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹42316**
 
 | Category | ₹ @1k | share |

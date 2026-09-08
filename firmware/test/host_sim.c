@@ -162,6 +162,10 @@ int main(void) {
   /* -------- core-API checks: runtime rating (card ROLE1 strap -> pmp_fsm_set_rating_kw) -------- */
   sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 30);
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, 30 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 40);   /* E41: 4000 ms window — latched by 5600, not at 3600 */
+  runsim(&s, sc_dstuck, 3600);               expect("stuck discharge, 40 kW window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 40);
+  runsim(&s, sc_dstuck, 5600);               expect("stuck discharge, 40 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
   sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
 

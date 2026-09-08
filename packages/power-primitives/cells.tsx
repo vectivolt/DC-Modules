@@ -315,7 +315,7 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
 // v3: per-phase film commutation caps DCP–MID / MID–DCN (CB-9 — restores the ≤10 nH loop premise
 // behind the DPT-frozen drive; §P-1 layout note: at the leg pins), snubber C 470p→100p with 2 W R
 // (E28 corrected CV²f = 0.86 W), clamp bleeder to 5 W axial (HR-3, 4.3 W worst-case).
-export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH", par = false, sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`vp${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB envelope 89 x 163, origin at the cell centre. The old layout ran the parts out in one
         200 mm line from the choke, which put the cell 175 mm wide and hung it 27 mm off the board.
@@ -330,7 +330,26 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, sec = "PFC", 
           y -34   gate-drive channel, directly behind its two switches
           y -46   commutation films, then snubber and clamp below
         Power flows top-to-bottom inside the cell; the cell as a whole flows left-to-right. */}
-    <inductor name={`L${id}`} inductance="165uH" footprint={<ChokeFP />} pcbX={0} pcbY={50} schX={0} schY={0} schSectionName={sec} />
+    <inductor name={`L${id}`} inductance={ind} footprint={<ChokeFP />} pcbX={0} pcbY={50} schX={0} schY={0} schSectionName={sec} />
+    {/* E41 (40 kW variant): the pair loss at +33% current would blow the 150 C corner on one
+        device — so the variant PARALLELS a second proven B3M pair (no new part number). Each
+        added FET gets its own small series gate resistor off the shared gate net (parallel-SiC
+        practice); Kelvin and DESAT references are the shared nodes. Loss engine: pair 71.1 W
+        single vs 44.9 W paralleled — the 30 kW thermal architecture then holds unchanged. */}
+    {par ? <chip name={`Q${id}A2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-45} pcbY={-14} schX={3} schY={-1.8} schSectionName={sec} /> : null}
+    {par ? <chip name={`Q${id}B2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-9} pcbY={-14} schX={6} schY={-1.8} schSectionName={sec} /> : null}
+    {par ? <resistor name={`RG${id}A2`} resistance="2.2" footprint="0805" pcbX={-45} pcbY={-24} schX={2} schY={-1.1} schSectionName={sec} /> : null}
+    {par ? <resistor name={`RG${id}B2`} resistance="2.2" footprint="0805" pcbX={-9} pcbY={-24} schX={5} schY={-1.1} schSectionName={sec} /> : null}
+    {par ? <trace from={`.RG${id}A2 > .pin1`} to={`net.G_${id}`} /> : null}
+    {par ? <trace from={`.RG${id}A2 > .pin2`} to={`.Q${id}A2 > .G`} /> : null}
+    {par ? <trace from={`.Q${id}A2 > .D`} to={`net.PH${id}`} /> : null}
+    {par ? <trace from={`.Q${id}A2 > .S`} to={`.Q${id}A > .S`} /> : null}
+    {par ? <trace from={`.Q${id}A2 > .KS`} to={`net.KS_${id}`} /> : null}
+    {par ? <trace from={`.RG${id}B2 > .pin1`} to={`net.G_${id}`} /> : null}
+    {par ? <trace from={`.RG${id}B2 > .pin2`} to={`.Q${id}B2 > .G`} /> : null}
+    {par ? <trace from={`.Q${id}B2 > .D`} to={mid} schDisplayLabel={mid.replace("net.", "")} /> : null}
+    {par ? <trace from={`.Q${id}B2 > .S`} to={`.Q${id}B > .S`} /> : null}
+    {par ? <trace from={`.Q${id}B2 > .KS`} to={`net.KS_${id}`} /> : null}
     <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-36} pcbY={-14} schX={3} schY={0} schSectionName={sec} />
     <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-18} pcbY={-14} schX={6} schY={0} schSectionName={sec} />
     <DriverCh id={`${id}G`} pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
@@ -397,14 +416,14 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, sec = 
 
 // ---------- LLC section: 4× Cr ∥ + trim Lr + resonant CT + transformer + dual JBS bridges
 // v3/CB-15: CT return + burden biased to AVMID (VREF/2), series R + dual clamp into the ADC net.
-export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
         resonant-CT measurement chain on its own row below the tank. */}
-    {[0, 1, 2, 3].map(i => (
-      <capacitor key={i} name={`C${id}R${i}`} capacitance="46nF" footprint={FilmBoxFP(27.5)} pcbX={(i % 2) * 36 - 18} pcbY={-Math.floor(i / 2) * 16} schX={0} schY={3 - i * 1.4} schSectionName={sec} />
+    {Array.from({ length: crN }, (_, i) => (
+      <capacitor key={i} name={`C${id}R${i}`} capacitance={crVal} footprint={FilmBoxFP(27.5)} pcbX={(i % 2) * 36 - 18} pcbY={-Math.floor(i / 2) * 16} schX={0} schY={3 - i * 1.4} schSectionName={sec} />
     ))}
-    <inductor name={`L${id}T`} inductance="4uH" footprint={<TrimFP />} pcbX={0} pcbY={-100} schX={3} schY={3} schSectionName={sec} />
+    <inductor name={`L${id}T`} inductance={trim} footprint={<TrimFP />} pcbX={0} pcbY={-100} schX={3} schY={3} schSectionName={sec} />
     <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "S1A", pin5: "S1B", pin6: "S2A", pin7: "S2B" }} pcbX={0} pcbY={-152} schX={7} schY={1.5} schSectionName={sec} />
     {["A1", "A2", "A3", "A4"].map((d, i) => (
       <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-27 + i * 18} pcbY={-196} schX={11 + i * 2.4} schY={3} schSectionName={sec} />
@@ -419,7 +438,7 @@ export const LlcSection = ({ id, sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = 
     <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={34} pcbY={-64} schX={6.6} schY={-4.4} schSectionName={sec} />
     <diode name={`D${id}CP`} footprint="sod323" pcbX={46} pcbY={-44} schX={7.2} schY={-2.6} schSectionName={sec} />
     <diode name={`D${id}CN`} footprint="sod323" pcbX={46} pcbY={-54} schX={9.6} schY={-2.6} schSectionName={sec} />
-    {[0, 1, 2, 3].map(i => [
+    {Array.from({ length: crN }, (_, i) => [
       <trace key={`a${i}`} from={sw} to={`.C${id}R${i} > .pin1`} schDisplayLabel={sw.replace("net.", "")} />,
       <trace key={`b${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .pin1`} />,
     ])}
@@ -1121,14 +1140,15 @@ export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 , l
 );
 
 // ---------- fan header + tach pullup (fan p/n must accept 3.3 V PWM — MR-9, BOM note)
-export const FanPort = ({ id, sec = "FANS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const FanPort = ({ id, pwmNet, sec = "FANS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`fan${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     <chip name={`JFAN${id}`} footprint="pinrow4" pinLabels={{ pin1: "GND", pin2: "V24", pin3: "TACH", pin4: "PWM" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <resistor name={`RFT${id}`} resistance="10k" footprint="0603" pcbX={12} pcbY={0} schX={2.8} schY={0} schSectionName={sec} />
     <trace from={`.JFAN${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.JFAN${id} > .V24`} to="net.V24" schDisplayLabel="V24" />
     <trace from={`.JFAN${id} > .TACH`} to={`net.FAN_TACH${id}`} schDisplayLabel={`FAN_TACH${id}`} />
-    <trace from={`.JFAN${id} > .PWM`} to={`net.FAN_PWM${id}`} schDisplayLabel={`FAN_PWM${id}`} />
+    {/* E41: fan 3 gangs on FAN_PWM2 (2 hardware PWM channels drive 3 fans; every tach monitored) */}
+    <trace from={`.JFAN${id} > .PWM`} to={pwmNet ?? `net.FAN_PWM${id}`} schDisplayLabel={(pwmNet ?? `net.FAN_PWM${id}`).replace("net.", "")} />
     <trace from={`.RFT${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.RFT${id} > .pin2`} to={`net.FAN_TACH${id}`} schDisplayLabel={`FAN_TACH${id}`} />
   </group>

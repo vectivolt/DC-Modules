@@ -17,6 +17,7 @@ const LOADS = [0, 0.05, 0.10, 0.25, 0.50, 0.75, 1.0];
 const TEMPS = [{ n: "cold", amb: -20, hs: 10 }, { n: "room", amb: 25, hs: 45 }, { n: "hot", amb: 55, hs: 70 }];
 const SKUS = [
   { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1 },
+  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1 },
   { name: "60kw", P: 60e3, Imax: 200, lanes: 2, ch: 2 },
   { name: "120kw", P: 120e3, Imax: 400, lanes: 4, ch: 4 },
 ];

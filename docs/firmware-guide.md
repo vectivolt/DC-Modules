@@ -143,6 +143,6 @@ ratings. At boot, before any enable, the HAL must:
    rating-window checks.)
 
 **E24 rev D (E40): RATING is the only strap — ROLE0 and the inter-card LINK are gone.** Bands: <0.41 V (0 R) → **module controller** (one brain, PFC+LLC) · 0.41–1.24 V (3.32 k) → **CSU** · >2.4 V (open) → no host, fault. Formerly rev C: Board strap 3.32 k against the card 10 k pullup
-reads ≈0.82 V. Windows: <0.41 V → 30 kW · 0.41–1.24 V → **CSU** · 1.24–2.4 V → 60 kW ·
+reads ≈0.82 V. Windows (rev E, E41): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** · 0.55–1.24 V (3.32k) → **CSU** · 1.24–2.4 V → 60 kW ·
 >2.4 V → no board / fault. In the CSU band the boot path runs `pmp_csu_*` (cabinet supervisor,
 `firmware/core/csu.h`) instead of the power FSM; ROLE0 is a don't-care. Same image, three roles.

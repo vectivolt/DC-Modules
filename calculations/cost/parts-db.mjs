@@ -21,11 +21,11 @@
 // structure + E36): its single-board pair cannot exist since the card split (cardMap() correctly
 // refuses 4 lanes — AIN needs 17 of 13), so every pipeline consumer iterates THIS list and the
 // 120 kW product cost is a 4×-module roll-up in bom-gen.
-export const BUILDABLE_SKUS = ["30kw"];   // E40: the module is single-brain 30 kW; 60/120 kW are cabinets
+export const BUILDABLE_SKUS = ["30kw", "40kw"];   // E40 single-brain module + E41 40 kW hot variant; 60/120 kW are cabinets
 
 export const DB = [
   // --- power semiconductors
-  { m: /^Q[ABC]\d+[AB]$/, mpn: "B3M010C075Z", mfr: "BASiC", desc: "SiC MOSFET 750 V 10 mΩ TO-247-4", price1k: 330, alt: "SiChain 750V/10mΩ (RFQ)" },
+  { m: /^Q[ABC]\d+[AB]2?$/, mpn: "B3M010C075Z", mfr: "BASiC", desc: "SiC MOSFET 750 V 10 mΩ TO-247-4", price1k: 330, alt: "SiChain 750V/10mΩ (RFQ)" },
   { m: /^Q\d+[HL]$/, mpn: "SG2M023120LJ", mfr: "SiChain", desc: "SiC MOSFET 1200 V 23 mΩ TO-247-4L", price1k: 390, alt: "BASiC B3M020120ZL" },
   { m: /^D[ABC]\d+[TB]$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)", price1k: 120, alt: "BASiC B3D040120H" },
   { m: /^D[ABC]\d+C$/, mpn: "SICJBS-1200-10", mfr: "SiChain", desc: "SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)", price1k: 55, alt: "CR Micro 1200V/10A" },
@@ -127,6 +127,7 @@ export const DB = [
   { m: /^R\w+D[0-7]$/, mpn: "HV73-475k-1%", mfr: "KOA/UniOhm", desc: "475 kΩ 1206 1% anti-surge (HV divider — MR-3)", price1k: 1.4, alt: "any anti-surge 1%" },
   { m: /^R\w{2}DL$/, mpn: "R0805-prec-0.1%", mfr: "UniOhm", desc: "divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)", price1k: 2.5, alt: "any 0.1%" },
   { m: /^RAUXCS$/, mpn: "R1206-R31-1%-0.5W", mfr: "any current-sense", desc: "0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)", price1k: 2.5, alt: "any CS 1206" },
+  { m: /^RG[ABC]\d+[AB]2$/, mpn: "R0805-2R2", mfr: "any thick-film", desc: "per-device series gate R for the E41 paralleled PFC pair (parallel-SiC practice)", price1k: 0.5, alt: "any" },
   { m: /^R\w+(ON|OFF)$/, mpn: "R1206-RG-0.5W", mfr: "any thick-film HP", desc: "gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%)", price1k: 2, alt: "2× 0805 parallel" },
   { m: /^R\w+GS$/, mpn: "R0805-10k", mfr: "any", desc: "10 kΩ gate-source", price1k: 0.5, alt: "any" },
   { m: /^R\d+CT$/, mpn: "R2512-2R0-1W-1%", mfr: "any", desc: "2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)", price1k: 3, alt: "2× 1206 1R0 series" },
@@ -172,6 +173,15 @@ export const skuOverrides = {
     CMC1: { price1k: 240, note: "D7 60 A winding (10 mm² foil)" }, CMC2: { price1k: 240 },
     RSHO: { price1k: 120 },
   },
+  // E41 40 kW hot variant — engine-driven (design-basis/loss-budget rev E41): line 73.3 A worst.
+  "40kw": {
+    "F1": { price1k: 150, mpn: "FUSE-gG-690V-100A" }, "F2": { price1k: 150, mpn: "FUSE-gG-690V-100A" }, "F3": { price1k: 150, mpn: "FUSE-gG-690V-100A" },
+    KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
+    KPRE1: { price1k: 300, note: "100 A class (73 A line)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
+    LDM1: { price1k: 145, note: "D6-40 winding, same J as 30 kW" }, LDM2: { price1k: 145 }, LDM3: { price1k: 145 },
+    CMC1: { price1k: 290, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here)", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 290, mpn: "CMC-3PH-2mH-SKU" },
+    RSHO: { price1k: 140 },
+  },
   "60kw": {
     // reference board (product = 2× 30 kW modules, each with its own 80 A): 125 A at 110 A carries
     // the same 88%/derate problem as F6 if ever built single-board — size to 160 A NH00 then.
@@ -210,6 +220,15 @@ export const mechLines = {
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 724],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 350],
     ["Assembly + calibration + EOL test", 1, 1900],
+  ],
+  // E41 40 kW: same envelope; +1 fan, heavier busbars/heatsink share, 2 extra link cans in PCB area
+  "40kw": [
+    ["PCB-ACDC 6L 440×500", 1, 1250], ["PCB-DCDC 6L 440×500", 1, 1450],
+    ["Heatsink extrusions (2, sandwich outer faces — 40 kW fin stock)", 1, 1750],
+    ["Fans 120×38 PWM (3.3 V-PWM-compatible p/n)", 3, 280],
+    ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 810],
+    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 380],
+    ["Assembly + calibration + EOL test", 1, 1950],
   ],
   "60kw": [
     ["PCB-ACDC 6L 460×420", 1, 1750], ["PCB-DCDC 6L 520×420", 1, 1950],

@@ -16,7 +16,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 0) => Number(x.toFixed(d));
 
 const SKUS = BUILDABLE_SKUS; // 120 kW = cabinet: a 4x-module roll-up is appended after the loop
-const TARGETS = { "30kw": [25000, 22000], "60kw": [42000, 36000], "120kw": [78000, 68000] };
+const TARGETS = { "40kw": [33000, 29000],  // E41: 30k red-line x1.33 rounded — provisional until pricing directive
+   "30kw": [25000, 22000], "60kw": [42000, 36000], "120kw": [78000, 68000] };
 const CAT = (mpn, desc) =>
   /SiC|MOSFET|JBS|FET 1200|650 V 4 A/.test(desc) ? "semiconductors"
     : /driver|iso |LDO|MCU|shift|ULN|flyback controller|transceiver|amplifier/.test(desc) ? "drive+control ICs"

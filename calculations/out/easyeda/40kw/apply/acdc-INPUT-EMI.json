@@ -1,0 +1,793 @@
+{
+ "page": "acdc-INPUT-EMI",
+ "page_uuid": "sku-40kw-acdc-INPUT-EMI",
+ "title": "30kW ACDC 1of6 INPUT-EMI",
+ "block_order": [
+  "AC-ENTRY",
+  "SURGE",
+  "EMI-FILTER",
+  "PRECHARGE"
+ ],
+ "chunks": [
+  [
+   {
+    "designator": "JACL1",
+    "value": "STUD-M8",
+    "block_name": "AC-ENTRY",
+    "search_query": "STUD-M8 M8 stud terminal",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "P",
+      "signal_name": "F1_JACL1"
+     }
+    ]
+   },
+   {
+    "designator": "JACL2",
+    "value": "STUD-M8",
+    "block_name": "AC-ENTRY",
+    "search_query": "STUD-M8 M8 stud terminal",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "P",
+      "signal_name": "F2_JACL2"
+     }
+    ]
+   },
+   {
+    "designator": "JACL3",
+    "value": "STUD-M8",
+    "block_name": "AC-ENTRY",
+    "search_query": "STUD-M8 M8 stud terminal",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "P",
+      "signal_name": "F3_JACL3"
+     }
+    ]
+   },
+   {
+    "designator": "JPE",
+    "value": "STUD-M8",
+    "block_name": "AC-ENTRY",
+    "search_query": "STUD-M8 M8 stud terminal",
+    "part_uuid": "736194494faf4738adfbc9ae11340269",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "P",
+      "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "F1",
+    "value": "FUSE-gG-690V",
+    "block_name": "AC-ENTRY",
+    "search_query": "FUSE-gG-690V gG fuse 690 VAC, 22×58 frame",
+    "part_uuid": "cec12465cd844862980ba8ae28c6ac85",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "F1_JACL1"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "LF1"
+     }
+    ]
+   },
+   {
+    "designator": "F2",
+    "value": "FUSE-gG-690V",
+    "block_name": "AC-ENTRY",
+    "search_query": "FUSE-gG-690V gG fuse 690 VAC, 22×58 frame",
+    "part_uuid": "cec12465cd844862980ba8ae28c6ac85",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "F2_JACL2"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "LF2"
+     }
+    ]
+   },
+   {
+    "designator": "F3",
+    "value": "FUSE-gG-690V",
+    "block_name": "AC-ENTRY",
+    "search_query": "FUSE-gG-690V gG fuse 690 VAC, 22×58 frame",
+    "part_uuid": "cec12465cd844862980ba8ae28c6ac85",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "F3_JACL3"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "LF3"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "MOV1",
+    "value": "S20K550",
+    "block_name": "SURGE",
+    "search_query": "S20K550 MOV 550 VAC 20 mm",
+    "part_uuid": "ca8bad0159364754ade5a1502a623a8e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "LF1"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "LF2"
+     }
+    ]
+   },
+   {
+    "designator": "MOV2",
+    "value": "S20K550",
+    "block_name": "SURGE",
+    "search_query": "S20K550 MOV 550 VAC 20 mm",
+    "part_uuid": "ca8bad0159364754ade5a1502a623a8e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "LF2"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "LF3"
+     }
+    ]
+   },
+   {
+    "designator": "MOV3",
+    "value": "S20K550",
+    "block_name": "SURGE",
+    "search_query": "S20K550 MOV 550 VAC 20 mm",
+    "part_uuid": "ca8bad0159364754ade5a1502a623a8e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "LF3"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "LF1"
+     }
+    ]
+   },
+   {
+    "designator": "MOVP1",
+    "value": "S20K550",
+    "block_name": "SURGE",
+    "search_query": "S20K550 MOV 550 VAC 20 mm",
+    "part_uuid": "ca8bad0159364754ade5a1502a623a8e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "LF1"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "GDT1_MOVP1"
+     }
+    ]
+   },
+   {
+    "designator": "MOVP2",
+    "value": "S20K550",
+    "block_name": "SURGE",
+    "search_query": "S20K550 MOV 550 VAC 20 mm",
+    "part_uuid": "ca8bad0159364754ade5a1502a623a8e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "LF2"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "GDT2_MOVP2"
+     }
+    ]
+   },
+   {
+    "designator": "MOVP3",
+    "value": "S20K550",
+    "block_name": "SURGE",
+    "search_query": "S20K550 MOV 550 VAC 20 mm",
+    "part_uuid": "ca8bad0159364754ade5a1502a623a8e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "LF3"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "GDT3_MOVP3"
+     }
+    ]
+   },
+   {
+    "designator": "GDT1",
+    "value": "GDT-3k5-20kA",
+    "block_name": "SURGE",
+    "search_query": "GDT-3k5-20kA gas discharge tube 3.5 kV",
+    "part_uuid": "888e1dc7e94f4be788fae535fff76e1a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "GDT1_MOVP1"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "GDT2",
+    "value": "GDT-3k5-20kA",
+    "block_name": "SURGE",
+    "search_query": "GDT-3k5-20kA gas discharge tube 3.5 kV",
+    "part_uuid": "888e1dc7e94f4be788fae535fff76e1a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "GDT2_MOVP2"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "GDT3",
+    "value": "GDT-3k5-20kA",
+    "block_name": "SURGE",
+    "search_query": "GDT-3k5-20kA gas discharge tube 3.5 kV",
+    "part_uuid": "888e1dc7e94f4be788fae535fff76e1a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "GDT3_MOVP3"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "PE"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "CMC1",
+    "value": "CMC-3PH-2mH-SKU",
+    "block_name": "EMI-FILTER",
+    "search_query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, line-current-rated windin",
+    "part_uuid": "33e84d79339641efa294076c39855107",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A1",
+      "signal_name": "LF1"
+     },
+     {
+      "pin_number": 2,
+      "name": "B1",
+      "signal_name": "AC1M"
+     },
+     {
+      "pin_number": 3,
+      "name": "A2",
+      "signal_name": "LF2"
+     },
+     {
+      "pin_number": 4,
+      "name": "B2",
+      "signal_name": "AC2M"
+     },
+     {
+      "pin_number": 5,
+      "name": "A3",
+      "signal_name": "LF3"
+     },
+     {
+      "pin_number": 6,
+      "name": "B3",
+      "signal_name": "AC3M"
+     }
+    ]
+   },
+   {
+    "designator": "CMC2",
+    "value": "CMC-3PH-2mH-SKU",
+    "block_name": "EMI-FILTER",
+    "search_query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, line-current-rated windin",
+    "part_uuid": "33e84d79339641efa294076c39855107",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A1",
+      "signal_name": "AC1M"
+     },
+     {
+      "pin_number": 2,
+      "name": "B1",
+      "signal_name": "AC1D"
+     },
+     {
+      "pin_number": 3,
+      "name": "A2",
+      "signal_name": "AC2M"
+     },
+     {
+      "pin_number": 4,
+      "name": "B2",
+      "signal_name": "AC2D"
+     },
+     {
+      "pin_number": 5,
+      "name": "A3",
+      "signal_name": "AC3M"
+     },
+     {
+      "pin_number": 6,
+      "name": "B3",
+      "signal_name": "AC3D"
+     }
+    ]
+   },
+   {
+    "designator": "CX11",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC2M"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CX12",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC3M"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CX13",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC1M"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CX21",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC2"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CX22",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC3"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CX23",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC1"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CY1",
+    "value": "4.7nF",
+    "block_name": "EMI-FILTER",
+    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PE"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CY2",
+    "value": "4.7nF",
+    "block_name": "EMI-FILTER",
+    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PE"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CY3",
+    "value": "4.7nF",
+    "block_name": "EMI-FILTER",
+    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PE"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "LDM1",
+    "value": "DM-22u-SKU",
+    "block_name": "EMI-FILTER",
+    "search_query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1D"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC1"
+     }
+    ]
+   },
+   {
+    "designator": "LDM2",
+    "value": "DM-22u-SKU",
+    "block_name": "EMI-FILTER",
+    "search_query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2D"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC2"
+     }
+    ]
+   },
+   {
+    "designator": "LDM3",
+    "value": "DM-22u-SKU",
+    "block_name": "EMI-FILTER",
+    "search_query": "DM-22u-SKU DM line choke 22 µH sendust toroid, line-current rated per SKU",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3D"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC3"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "KPRE1",
+    "value": "HF167F-80A-M",
+    "block_name": "PRECHARGE",
+    "search_query": "HF167F-80A-M power relay ≥80 A/line w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KPRE"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "AC1"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "AC1F"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "KPRE1_M2"
+     }
+    ]
+   },
+   {
+    "designator": "KPRE2",
+    "value": "HF167F-80A-M",
+    "block_name": "PRECHARGE",
+    "search_query": "HF167F-80A-M power relay ≥80 A/line w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KPRE"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "AC2"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "AC2F"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "KPRE1_M2"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KPRE"
+     }
+    ]
+   },
+   {
+    "designator": "RPRE1",
+    "value": "CER-25W-AX",
+    "block_name": "PRECHARGE",
+    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "AC1"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "AC1F"
+     }
+    ]
+   },
+   {
+    "designator": "RPRE2",
+    "value": "CER-25W-AX",
+    "block_name": "PRECHARGE",
+    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "AC2"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "AC2F"
+     }
+    ]
+   },
+   {
+    "designator": "RKFBP",
+    "value": "10k",
+    "block_name": "PRECHARGE",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KPRE"
+     }
+    ]
+   }
+  ]
+ ],
+ "nc": {
+  "CMC1": [
+   7,
+   8
+  ],
+  "CMC2": [
+   7,
+   8
+  ],
+  "KPRE1": [
+   2,
+   7
+  ],
+  "KPRE2": [
+   2,
+   7
+  ]
+ },
+ "warnings": [],
+ "total": 35
+}

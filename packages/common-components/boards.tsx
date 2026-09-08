@@ -31,12 +31,12 @@ const NO_ROUTE = process.env.TSCI_NO_ROUTE === "1";
 
 
 // ================= AC-DC BOARD =================
-export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number }) => {
+export const AcDcBoard = ({ lanes, w, h, pw = 30 }: { lanes: number; w: number; h: number; pw?: number }) => {
   const phases = Array.from({ length: lanes }, (_, l) => ["A", "B", "C"].map(p => ({ id: `${p}${l}`, ac: `net.AC${p === "A" ? "1F" : p === "B" ? "2F" : "3"}` }))).flat();
-  const nFans = lanes === 4 ? 4 : 2; // HR-17: thermal architecture is 2/2/4 fans — every fan gets its own header + monitored tach
+  const nFans = pw === 40 ? 3 : lanes === 4 ? 4 : 2; // HR-17 (+E41): 2 fans @30, 3 @40 (loss 838→1194 W), 4 @120-ref
   // MCU-PFC pin map (§20): PWM per phase, CT per phase, senses, temps, fans, link, safety chain
   // (the pre-card MCU pin tables lived here; E40 single source is umod-pinmap.mts)
-  const nDcHalf = lanes === 1 ? 5 : lanes === 2 ? 9 : 18;
+  const nDcHalf = pw === 40 ? 6 : lanes === 1 ? 5 : lanes === 2 ? 9 : 18;   // E41: 12 cans total @40 kW (design-basis)
   // schematic sheet plan (layout-polish rev): EMI row y=36..48 · Vienna lanes x=4 col from y=24
   // down (14/row) · line-CT col x=40 · HV-sense col x=56 · DC-link/discharge col x=80 · control
   // row starts below the tallest column; cY is its baseline.
@@ -280,6 +280,7 @@ return (
       {/* Vienna lanes (film commutation caps now inside each phase — CB-9) */}
       {phases.map((p, i) => (
         <ViennaPhase key={p.id} id={p.id} ac={p.ac} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
+          ind={pw === 40 ? "124uH" : "165uH"} par={pw === 40}
           pwm={`net.PWM_${p.id}`} flt="net.FLT" en="net.GATE_EN_A"
           x={P.vp[i % 3]} y={P.vpY - Math.floor(i / 3) * 172} sx={4} sy={24 - i * 14} />
       ))}
@@ -363,7 +364,7 @@ return (
       <trace from=".RM15B > .pin1" to="net.SNS_V15" schDisplayLabel="SNS_V15" />
       <trace from=".RM15B > .pin2" to="net.AGND" schDisplayLabel="AGND" />
       {Array.from({ length: nFans }, (_, i) => (
-        <FanPort key={i} id={`${i + 1}`} x={P.fanX} y={P.fanY - i * 16} sx={74} sy={cY - i * 3} />
+        <FanPort key={i} id={`${i + 1}`} pwmNet={i >= 2 ? "net.FAN_PWM2" : undefined} x={P.fanX} y={P.fanY - i * 16} sx={74} sy={cY - i * 3} />
       ))}
       <Interconnect40 id="A" map={HARNESS40} shldTo="net.PE"
         x={P.icX} y={P.auxRowY} sx={92} sy={33} />
@@ -382,11 +383,11 @@ return (
 };
 
 // ================= DC-DC BOARD =================
-export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: number }) => {
+export const DcDcBoard = ({ channels, w, h, pw = 30 }: { channels: number; w: number; h: number; pw?: number }) => {
   const legs = Array.from({ length: 3 * channels }, (_, i) => ({ id: `${i + 1}`, sw: `net.SW${i + 1}`, ch: Math.floor(i / 3) }));
   const secs = legs.map(l => ({ ...l, star: `net.STAR${l.ch}` }));
   const relayFb = ["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"];
-  const nBank = channels * 2;
+  const nBank = pw === 40 ? 3 : channels * 2;   // E41: three 2-series strings per bank at 133 A
   // schematic sheet plan: bus row y=40..48 · LLC legs x=2 col (16/row from y=24) · sections x=30
   // · banks/matrix/bleeders x=58 · output+senses x=84 · control row below everything at cYd.
   const cYd = Math.min(24 - (3 * channels - 1) * 16 - 9.5, -25) - 10;
@@ -494,7 +495,7 @@ return (
       ])}
       {/* RATING is the card's ONE identity strap (E24 rev D): 0R here = 30 kW module
           controller; the cabinet CSU carrier codes 3.32k; open = no host, fault. */}
-      <resistor name="RROLEB" resistance="0" footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
+      <resistor name="RROLEB" resistance={pw === 40 ? "1k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
@@ -507,6 +508,7 @@ return (
       ))}
       {secs.map((s, i) => (
         <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
+          crN={pw === 40 ? 6 : 4} crVal={pw === 40 ? "33nF" : "46nF"} trim={pw === 40 ? "3.5uH" : "4uH"}
           x={Q.sec[i % 3]} y={Q.secY}
           bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
           ctOut={`net.I_RES${s.id}`}
