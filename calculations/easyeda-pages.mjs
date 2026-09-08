@@ -55,6 +55,16 @@ const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
     new RegExp(`^C${n}CF$`), new RegExp(`^D${n}C[PN]$`)]]);
 
 const PAGES = {
+  // 120 kW cabinet (E39): one page — 4 module blocks + CAN chain + CSU carrier.
+  cab: [
+    ["CABINET", [
+      ["AC-ENTRY", [/^JCAB(L\d|PE)$/]],
+      ["MODULES", [/^MOD\d$/]],
+      ["DC-BUS", [/^JCABD[PN]$/]],
+      ["CAN-CHAIN", [/^RT[12]$/]],
+      ["CSU-CARRIER", [/^(JCSU|RRCSU|PSU1|UCSU|RSHB)$/]],
+    ], ["AC-ENTRY", "MODULES", "DC-BUS", "CAN-CHAIN", "CSU-CARRIER"]],
+  ],
   // Control card (E35): one page, the 8 card sections as blocks.
   card: [
     ["CONTROL", [
@@ -158,9 +168,9 @@ const WIRE_NETS = [/^PH[ABC]0$/, /^G_/, /^KS_/, /^GH_/, /^GL_/, /^KH_/, /^KL_/, 
 const RAILS = ["V3P3", "V15", "V24", "DGND", "AGND", "PE", "DCP", "DCN", "MID", "AVMID", "BKAP", "BKAN", "BKBP", "BKBN", "OUTP", "OUTN", "CGND", "B5OUT"];
 
 const f2 = (x) => JSON.stringify(x);
-for (const side of (SKU === "control-card" ? ["card"] : ["acdc", "dcdc"])) {
-  const j = JSON.parse(readFileSync(SKU === "control-card"
-    ? join(ROOT, "dist", "boards", "control-card", "circuit.json")
+for (const side of (SKU === "control-card" ? ["card"] : SKU === "cabinet" ? ["cab"] : ["acdc", "dcdc"])) {
+  const j = JSON.parse(readFileSync(SKU === "control-card" || SKU === "cabinet"
+    ? join(ROOT, "dist", "boards", SKU === "cabinet" ? "cabinet" : "control-card", "circuit.json")
     : join(ROOT, "dist", "boards", SKU, side, "circuit.json"), "utf8"));
   const comps = j.filter(e => e.type === "source_component");
   const ports = j.filter(e => e.type === "source_port");

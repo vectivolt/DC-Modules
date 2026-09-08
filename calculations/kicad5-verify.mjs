@@ -55,7 +55,7 @@ const problems = [];
 
 for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
   const page = JSON.parse(readFileSync(join(SRC, f), "utf8"));
-  const board = `${SKU}-${page.page.startsWith("acdc") ? "acdc" : "dcdc"}`;
+  const board = `${SKU}-${page.page.split("-")[0]}`;   // acdc/dcdc/card/cab pages
   if (!cache.has(board)) cache.set(board, readFileSync(join(SCH, `${board}.sch`), "utf8"));
   const text = cache.get(board);
   const lines = text.split("\n");

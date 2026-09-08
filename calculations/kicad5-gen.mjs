@@ -473,18 +473,20 @@ function shapeOf(c) {
 const files = [];
 let totalComps = 0, totalLabels = 0;
 
-const BOARDS = SKU === "control-card" ? { card: [] } : { acdc: [], dcdc: [] };
+const SINGLE = SKU === "control-card" || SKU === "cabinet";
+const BOARDS = SKU === "control-card" ? { card: [] } : SKU === "cabinet" ? { cab: [] } : { acdc: [], dcdc: [] };
 for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
   const pg = JSON.parse(readFileSync(join(SRC, file), "utf8"));
-  const side = pg.page.startsWith("acdc") ? "acdc" : pg.page.startsWith("card") ? "card" : "dcdc";
+  const side = pg.page.split("-")[0];   // acdc / dcdc / card / cab — page names are side-prefixed
   BOARDS[side].push(pg);
 }
 const KW = SKU.replace("kw", "").toUpperCase();
-const CELLS = { "30kw": "1x", "60kw": "2x", "120kw": "4x", "control-card": "1x" }[SKU] ?? "?";
+const CELLS = { "30kw": "1x", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "4x module" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,
   card: `Control Card - GD32G553VET6, one card for both converter roles (E35)`,
+  cab: `120 kW Cabinet - 4x 30 kW modules + CSU (same card, third strap role) (E39)`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {
   const page = { page: `${SKU}-${side}`, title: SIDE_TITLE[side],
@@ -1126,7 +1128,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     // title block (drawn later), so no void must be reserved for panels and the packer is free to
     // pick the genuinely best aspect/void candidate (NC=5: aspect 1.31, void 5.8%).
     const usable = aspect >= 1.15 && aspect <= 1.95 && spreadOver <= 0 && voidFrac <= 0.09
-      && (notesFits || SKU === "control-card");
+      && (notesFits || SINGLE);
     if (process.env.CARD_DIAG) console.error(`      cand NC=${NC} aspect=${aspect.toFixed(2)} void=${(voidFrac*100).toFixed(1)}% spreadOver=${spreadOver} notes=${notesFits}`);
     // soft score is always computed: when no candidate clears every gate we still want the best
     // layout by the same objective, not whatever happens to be closest to a target aspect.
@@ -1156,7 +1158,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // scatter). The card has no replication — every part is single-instance and the section
       // frames ARE the grouping — so the same-prefix "family" metric (all C*, all R*) is
       // meaningless there and only forces the packer into fallback. Exempt it.
-      const famCap = capFor(SKU === "control-card" ? 1e9 : mul);
+      const famCap = capFor(SINGLE ? 1e9 : mul);
       for (let NC = minNC; NC <= minNC + 32; NC++) {   // swept to +64: saturates at +32, no candidate improves
         const r = runPack(NC, famCap, order);
         if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
@@ -1177,7 +1179,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   const sheetW = snap(MARGIN + NC * COLW - SECGAP + MARGIN);
   const sheetH = snap(Math.max(...blocks.map((b) => b.Y + b.h)) + MARGIN + 800);
 
-  const key = SKU === "control-card" ? "control-card" : `${SKU}/${page.page.includes("acdc") ? "acdc" : "dcdc"}`;   // page.page is e.g. "30kw-acdc"
+  const key = SINGLE ? SKU : `${SKU}/${page.page.includes("acdc") ? "acdc" : "dcdc"}`;   // page.page is e.g. "30kw-acdc"
   const ident = SHEET_IDENT[key] ?? { sku: `${KW} kW`, board: "?", sheet: "? of 2", cells: "?" };
 
   let body = "", nLabels = 0, nNC = 0;
@@ -1283,7 +1285,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       return (right.length ? right : cands).sort((a, b) =>
         (2 * b.x1 / sheetW + b.y1 / sheetH) - (2 * a.x1 / sheetW + a.y1 / sheetH))[0];
     };
-    if (SKU === "control-card") {
+    if (SINGLE) {
       // Compact card footer: the per-sheet labelling requirement, satisfied without void-hunting.
       body += `Text Notes ${MARGIN + 100} ${sheetH - 700} 0    60   ~ 12\n`
         + `${ident.sku} ${ident.board} - ${ident.sheet}   ·   rev ${REV}   ·   ${blocks.length} sections   ·   ${page.total} components\n`;

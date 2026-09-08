@@ -42,6 +42,12 @@ single board was independently closed: board geometry (5 measurements, §above),
 beyond 60 kW), the HF167F relay family ceiling (R3 §3.4: 90 A switching — cannot reach 110/220 A),
 and fuse frames past 125 A. This is also how the commercial market builds (module + cabinet).
 
+**The cabinet brain (E39):** one CSU — the same control card p/n strapped into the CSU band —
+on a passive carrier (15 V DIN supply + 3.32 k strap), joining the CAN chain alongside each
+module's DC-DC card. Equal-share commanded-CC with staggered starts and graceful degrade on module
+dropout (`firmware/core/csu.c`, 45/45 with the module suite). `boards/cabinet.tsx` +
+`kicad5/dc-modules-cabinet/` is the cabinet interconnect drawing of record.
+
 What the cabinet integrator gets per module, already designed in:
 
 - **Electrical:** own AC entry (80 A gG fuse, MOV/GDT, EMI filter, precharge) per module — cabinet

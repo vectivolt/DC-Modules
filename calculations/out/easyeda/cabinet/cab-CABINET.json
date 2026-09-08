@@ -1,0 +1,545 @@
+{
+ "page": "CABINET",
+ "flow": [
+  "AC-ENTRY",
+  "MODULES",
+  "DC-BUS",
+  "CAN-CHAIN",
+  "CSU-CARRIER"
+ ],
+ "net_style_overrides": {},
+ "net_class_overrides": {
+  "PE": "ground"
+ },
+ "components": [
+  {
+   "designator": "JCABL1",
+   "block_name": "AC-ENTRY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "AC_L1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 cabinet entry/bus M8 stud",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JCABL2",
+   "block_name": "AC-ENTRY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "AC_L2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 cabinet entry/bus M8 stud",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JCABL3",
+   "block_name": "AC-ENTRY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "AC_L3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 cabinet entry/bus M8 stud",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JCABPE",
+   "block_name": "AC-ENTRY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 cabinet entry/bus M8 stud",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "MOD1",
+   "block_name": "MODULES",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "L1",
+     "signal_name": "AC_L1"
+    },
+    {
+     "pin_number": 2,
+     "name": "L2",
+     "signal_name": "AC_L2"
+    },
+    {
+     "pin_number": 3,
+     "name": "L3",
+     "signal_name": "AC_L3"
+    },
+    {
+     "pin_number": 4,
+     "name": "PE",
+     "signal_name": "PE"
+    },
+    {
+     "pin_number": 5,
+     "name": "DCP",
+     "signal_name": "DCP_BUS"
+    },
+    {
+     "pin_number": 6,
+     "name": "DCN",
+     "signal_name": "DCN_BUS"
+    },
+    {
+     "pin_number": 7,
+     "name": "CANH",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 8,
+     "name": "CANL",
+     "signal_name": "CANL"
+    },
+    {
+     "pin_number": 9,
+     "name": "SHLD",
+     "signal_name": "CAN_SHLD"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PMP-30KW-MODULE",
+   "query": "PMP-30KW-MODULE 30 kW module ",
+   "mpn": "PMP-30KW-MODULE"
+  },
+  {
+   "designator": "MOD2",
+   "block_name": "MODULES",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "L1",
+     "signal_name": "AC_L1"
+    },
+    {
+     "pin_number": 2,
+     "name": "L2",
+     "signal_name": "AC_L2"
+    },
+    {
+     "pin_number": 3,
+     "name": "L3",
+     "signal_name": "AC_L3"
+    },
+    {
+     "pin_number": 4,
+     "name": "PE",
+     "signal_name": "PE"
+    },
+    {
+     "pin_number": 5,
+     "name": "DCP",
+     "signal_name": "DCP_BUS"
+    },
+    {
+     "pin_number": 6,
+     "name": "DCN",
+     "signal_name": "DCN_BUS"
+    },
+    {
+     "pin_number": 7,
+     "name": "CANH",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 8,
+     "name": "CANL",
+     "signal_name": "CANL"
+    },
+    {
+     "pin_number": 9,
+     "name": "SHLD",
+     "signal_name": "CAN_SHLD"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PMP-30KW-MODULE",
+   "query": "PMP-30KW-MODULE 30 kW module ",
+   "mpn": "PMP-30KW-MODULE"
+  },
+  {
+   "designator": "MOD3",
+   "block_name": "MODULES",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "L1",
+     "signal_name": "AC_L1"
+    },
+    {
+     "pin_number": 2,
+     "name": "L2",
+     "signal_name": "AC_L2"
+    },
+    {
+     "pin_number": 3,
+     "name": "L3",
+     "signal_name": "AC_L3"
+    },
+    {
+     "pin_number": 4,
+     "name": "PE",
+     "signal_name": "PE"
+    },
+    {
+     "pin_number": 5,
+     "name": "DCP",
+     "signal_name": "DCP_BUS"
+    },
+    {
+     "pin_number": 6,
+     "name": "DCN",
+     "signal_name": "DCN_BUS"
+    },
+    {
+     "pin_number": 7,
+     "name": "CANH",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 8,
+     "name": "CANL",
+     "signal_name": "CANL"
+    },
+    {
+     "pin_number": 9,
+     "name": "SHLD",
+     "signal_name": "CAN_SHLD"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PMP-30KW-MODULE",
+   "query": "PMP-30KW-MODULE 30 kW module ",
+   "mpn": "PMP-30KW-MODULE"
+  },
+  {
+   "designator": "MOD4",
+   "block_name": "MODULES",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "L1",
+     "signal_name": "AC_L1"
+    },
+    {
+     "pin_number": 2,
+     "name": "L2",
+     "signal_name": "AC_L2"
+    },
+    {
+     "pin_number": 3,
+     "name": "L3",
+     "signal_name": "AC_L3"
+    },
+    {
+     "pin_number": 4,
+     "name": "PE",
+     "signal_name": "PE"
+    },
+    {
+     "pin_number": 5,
+     "name": "DCP",
+     "signal_name": "DCP_BUS"
+    },
+    {
+     "pin_number": 6,
+     "name": "DCN",
+     "signal_name": "DCN_BUS"
+    },
+    {
+     "pin_number": 7,
+     "name": "CANH",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 8,
+     "name": "CANL",
+     "signal_name": "CANL"
+    },
+    {
+     "pin_number": 9,
+     "name": "SHLD",
+     "signal_name": "CAN_SHLD"
+    }
+   ],
+   "nc_pins": [],
+   "value": "PMP-30KW-MODULE",
+   "query": "PMP-30KW-MODULE 30 kW module ",
+   "mpn": "PMP-30KW-MODULE"
+  },
+  {
+   "designator": "JCABDP",
+   "block_name": "DC-BUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "DCP_BUS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 cabinet entry/bus M8 stud",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "JCABDN",
+   "block_name": "DC-BUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "DCN_BUS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "STUD-M8",
+   "query": "STUD-M8 cabinet entry/bus M8 stud",
+   "mpn": "STUD-M8"
+  },
+  {
+   "designator": "RT1",
+   "block_name": "CAN-CHAIN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "CANL"
+    }
+   ],
+   "nc_pins": [],
+   "value": "120",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RT2",
+   "block_name": "CAN-CHAIN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "CANL"
+    }
+   ],
+   "nc_pins": [],
+   "value": "120",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "PSU1",
+   "block_name": "CSU-CARRIER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "L",
+     "signal_name": "AC_L1"
+    },
+    {
+     "pin_number": 2,
+     "name": "N",
+     "signal_name": "AC_L2"
+    },
+    {
+     "pin_number": 3,
+     "name": "PE",
+     "signal_name": "PE"
+    },
+    {
+     "pin_number": 4,
+     "name": "V15P",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 5,
+     "name": "V15N",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "QA01C",
+   "query": "QA01C iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C"
+  },
+  {
+   "designator": "JCSU",
+   "block_name": "CSU-CARRIER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "V15A",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "V15B",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 3,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "GNDB",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "GNDC",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "ROLE1",
+     "signal_name": "ROLE1"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "CONN-CARD-88-H",
+   "query": "CONN-CARD-88-H CSU carrier 88-way PIN HEADER ",
+   "mpn": "CONN-CARD-88-H"
+  },
+  {
+   "designator": "RRCSU",
+   "block_name": "CSU-CARRIER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ROLE1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "3.32k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "UCSU",
+   "block_name": "CSU-CARRIER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "V15A",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "V15B",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 3,
+     "name": "GNDA",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "GNDB",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 5,
+     "name": "GNDC",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "ROLE1",
+     "signal_name": "ROLE1"
+    },
+    {
+     "pin_number": 8,
+     "name": "CANH",
+     "signal_name": "CANH"
+    },
+    {
+     "pin_number": 9,
+     "name": "CANL",
+     "signal_name": "CANL"
+    },
+    {
+     "pin_number": 10,
+     "name": "SGND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 11,
+     "name": "SHLD",
+     "signal_name": "CAN_SHLD"
+    }
+   ],
+   "nc_pins": [
+    6
+   ],
+   "value": "CONTROL-CARD-CSU",
+   "query": "CONTROL-CARD-CSU control card in the CSU strap role ",
+   "mpn": "CONTROL-CARD-CSU"
+  },
+  {
+   "designator": "RSHB",
+   "block_name": "CSU-CARRIER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CAN_SHLD"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PE"
+    }
+   ],
+   "nc_pins": [],
+   "value": "0R",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  }
+ ]
+}

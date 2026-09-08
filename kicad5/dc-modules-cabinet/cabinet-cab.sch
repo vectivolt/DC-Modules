@@ -1,0 +1,557 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr User 10600 7550
+encoding utf-8
+Sheet 1 1
+Title "120 kW Cabinet - 4x 30 kW modules + CSU (same card, third strap role) (E39)"
+Date "2026-09-06"
+Rev "D.3"
+Comp "DC-Modules 120 kW - board Cabinet interconnect, sheet 1 of 1"
+Comment1 "Module 120 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
+Comment2 "Content: 4x 30 kW module + CSU carrier (E39)"
+Comment3 "5 functional sections - 17 components - cross-section links are global net labels; wires are pin stubs only"
+Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
+$EndDescr
+Text Notes 600 6850 0    60   ~ 12
+120 kW Cabinet interconnect - 1 of 1   ·   rev D.3   ·   5 sections   ·   17 components
+Text Notes 600 7150 0    50   ~ 0
+NET NAMING: U<ref>_<PIN> = node at that IC pin   ·   R<stem>_M = series-pair midpoint   ·   R<stem>_<nm> = tap between R<stem>n/m   ·   all others are explicit design nets
+Wire Notes Line
+	8000 500 10100 500
+Wire Notes Line
+	10100 500 10100 2750
+Wire Notes Line
+	10100 2750 8000 2750
+Wire Notes Line
+	8000 2750 8000 500
+Text Notes 8060 660 0    79   ~ 16
+cab-CABINET / AC-ENTRY
+$Comp
+L dcmod-r4:TERM_1 JCABL1
+U 1 1 5E000001
+P 9200 1150
+F 0 "JCABL1" H 9200 990 50  0000 C CNN
+F 1 "STUD-M8" H 9200 1320 50  0000 C CNN
+F 2 "TERM_Stud_M8" H 9200 1150 50  0001 C CNN
+F 3 "~" H 9200 1150 50  0001 C CNN
+F 4 "CLASS" H 9200 1150 50  0001 C CNN "LCSC"
+F 5 "STUD-M8" H 9200 1150 50  0001 C CNN "MPN"
+	1    9200 1150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9100 1150 8900 1150
+Text Label 8900 1150 2    45   ~ 0
+AC_L1
+$Comp
+L dcmod-r4:TERM_1 JCABL2
+U 1 1 5E000002
+P 9200 1550
+F 0 "JCABL2" H 9200 1390 50  0000 C CNN
+F 1 "STUD-M8" H 9200 1720 50  0000 C CNN
+F 2 "TERM_Stud_M8" H 9200 1550 50  0001 C CNN
+F 3 "~" H 9200 1550 50  0001 C CNN
+F 4 "CLASS" H 9200 1550 50  0001 C CNN "LCSC"
+F 5 "STUD-M8" H 9200 1550 50  0001 C CNN "MPN"
+	1    9200 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9100 1550 8900 1550
+Text Label 8900 1550 2    45   ~ 0
+AC_L2
+$Comp
+L dcmod-r4:TERM_1 JCABL3
+U 1 1 5E000003
+P 9200 1950
+F 0 "JCABL3" H 9200 1790 50  0000 C CNN
+F 1 "STUD-M8" H 9200 2120 50  0000 C CNN
+F 2 "TERM_Stud_M8" H 9200 1950 50  0001 C CNN
+F 3 "~" H 9200 1950 50  0001 C CNN
+F 4 "CLASS" H 9200 1950 50  0001 C CNN "LCSC"
+F 5 "STUD-M8" H 9200 1950 50  0001 C CNN "MPN"
+	1    9200 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9100 1950 8900 1950
+Text Label 8900 1950 2    45   ~ 0
+AC_L3
+$Comp
+L dcmod-r4:TERM_1 JCABPE
+U 1 1 5E000004
+P 9200 2350
+F 0 "JCABPE" H 9200 2190 50  0000 C CNN
+F 1 "STUD-M8" H 9200 2520 50  0000 C CNN
+F 2 "TERM_Stud_M8" H 9200 2350 50  0001 C CNN
+F 3 "~" H 9200 2350 50  0001 C CNN
+F 4 "CLASS" H 9200 2350 50  0001 C CNN "LCSC"
+F 5 "STUD-M8" H 9200 2350 50  0001 C CNN "MPN"
+	1    9200 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9100 2350 8900 2350
+Text Label 8900 2350 2    45   ~ 0
+PE
+Wire Notes Line
+	3000 500 7600 500
+Wire Notes Line
+	7600 500 7600 3750
+Wire Notes Line
+	7600 3750 3000 3750
+Wire Notes Line
+	3000 3750 3000 500
+Text Notes 3060 660 0    79   ~ 16
+cab-CABINET / MODULES
+$Comp
+L dcmod-r4:PMP-30KW-MODULE MOD1
+U 1 1 5E000005
+P 4350 1550
+F 0 "MOD1" H 3950 1000 50  0000 R CNN
+F 1 "PMP-30KW-MODULE" H 3950 2130 50  0000 R CNN
+F 2 "" H 4350 1550 50  0001 C CNN
+F 3 "~" H 4350 1550 50  0001 C CNN
+F 4 "UNMAPPED" H 4350 1550 50  0001 C CNN "LCSC"
+F 5 "PMP-30KW-MODULE" H 4350 1550 50  0001 C CNN "MPN"
+	1    4350 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3900 1200 3700 1200
+Text Label 3700 1200 2    45   ~ 0
+DCN_BUS
+Wire Wire Line
+	3900 1300 3700 1300
+Text Label 3700 1300 2    45   ~ 0
+DCP_BUS
+Wire Wire Line
+	3900 1400 3700 1400
+Text Label 3700 1400 2    45   ~ 0
+AC_L1
+Wire Wire Line
+	3900 1500 3700 1500
+Text Label 3700 1500 2    45   ~ 0
+AC_L2
+Wire Wire Line
+	3900 1600 3700 1600
+Text Label 3700 1600 2    45   ~ 0
+AC_L3
+Wire Wire Line
+	3900 1700 3700 1700
+Text Label 3700 1700 2    45   ~ 0
+PE
+Wire Wire Line
+	3900 1800 3700 1800
+Text Label 3700 1800 2    45   ~ 0
+CAN_SHLD
+Wire Wire Line
+	4800 1200 5000 1200
+Text Label 5000 1200 0    45   ~ 0
+CANH
+Wire Wire Line
+	4800 1300 5000 1300
+Text Label 5000 1300 0    45   ~ 0
+CANL
+$Comp
+L dcmod-r4:PMP-30KW-MODULE MOD2
+U 1 1 5E000006
+P 4350 2800
+F 0 "MOD2" H 3950 2250 50  0000 R CNN
+F 1 "PMP-30KW-MODULE" H 3950 3380 50  0000 R CNN
+F 2 "" H 4350 2800 50  0001 C CNN
+F 3 "~" H 4350 2800 50  0001 C CNN
+F 4 "UNMAPPED" H 4350 2800 50  0001 C CNN "LCSC"
+F 5 "PMP-30KW-MODULE" H 4350 2800 50  0001 C CNN "MPN"
+	1    4350 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3900 2450 3700 2450
+Text Label 3700 2450 2    45   ~ 0
+DCN_BUS
+Wire Wire Line
+	3900 2550 3700 2550
+Text Label 3700 2550 2    45   ~ 0
+DCP_BUS
+Wire Wire Line
+	3900 2650 3700 2650
+Text Label 3700 2650 2    45   ~ 0
+AC_L1
+Wire Wire Line
+	3900 2750 3700 2750
+Text Label 3700 2750 2    45   ~ 0
+AC_L2
+Wire Wire Line
+	3900 2850 3700 2850
+Text Label 3700 2850 2    45   ~ 0
+AC_L3
+Wire Wire Line
+	3900 2950 3700 2950
+Text Label 3700 2950 2    45   ~ 0
+PE
+Wire Wire Line
+	3900 3050 3700 3050
+Text Label 3700 3050 2    45   ~ 0
+CAN_SHLD
+Wire Wire Line
+	4800 2450 5000 2450
+Text Label 5000 2450 0    45   ~ 0
+CANH
+Wire Wire Line
+	4800 2550 5000 2550
+Text Label 5000 2550 0    45   ~ 0
+CANL
+$Comp
+L dcmod-r4:PMP-30KW-MODULE MOD3
+U 1 1 5E000007
+P 6350 1550
+F 0 "MOD3" H 5950 1000 50  0000 R CNN
+F 1 "PMP-30KW-MODULE" H 5950 2130 50  0000 R CNN
+F 2 "" H 6350 1550 50  0001 C CNN
+F 3 "~" H 6350 1550 50  0001 C CNN
+F 4 "UNMAPPED" H 6350 1550 50  0001 C CNN "LCSC"
+F 5 "PMP-30KW-MODULE" H 6350 1550 50  0001 C CNN "MPN"
+	1    6350 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 1200 5700 1200
+Text Label 5700 1200 2    45   ~ 0
+DCN_BUS
+Wire Wire Line
+	5900 1300 5700 1300
+Text Label 5700 1300 2    45   ~ 0
+DCP_BUS
+Wire Wire Line
+	5900 1400 5700 1400
+Text Label 5700 1400 2    45   ~ 0
+AC_L1
+Wire Wire Line
+	5900 1500 5700 1500
+Text Label 5700 1500 2    45   ~ 0
+AC_L2
+Wire Wire Line
+	5900 1600 5700 1600
+Text Label 5700 1600 2    45   ~ 0
+AC_L3
+Wire Wire Line
+	5900 1700 5700 1700
+Text Label 5700 1700 2    45   ~ 0
+PE
+Wire Wire Line
+	5900 1800 5700 1800
+Text Label 5700 1800 2    45   ~ 0
+CAN_SHLD
+Wire Wire Line
+	6800 1200 7000 1200
+Text Label 7000 1200 0    45   ~ 0
+CANH
+Wire Wire Line
+	6800 1300 7000 1300
+Text Label 7000 1300 0    45   ~ 0
+CANL
+$Comp
+L dcmod-r4:PMP-30KW-MODULE MOD4
+U 1 1 5E000008
+P 6350 2800
+F 0 "MOD4" H 5950 2250 50  0000 R CNN
+F 1 "PMP-30KW-MODULE" H 5950 3380 50  0000 R CNN
+F 2 "" H 6350 2800 50  0001 C CNN
+F 3 "~" H 6350 2800 50  0001 C CNN
+F 4 "UNMAPPED" H 6350 2800 50  0001 C CNN "LCSC"
+F 5 "PMP-30KW-MODULE" H 6350 2800 50  0001 C CNN "MPN"
+	1    6350 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 2450 5700 2450
+Text Label 5700 2450 2    45   ~ 0
+DCN_BUS
+Wire Wire Line
+	5900 2550 5700 2550
+Text Label 5700 2550 2    45   ~ 0
+DCP_BUS
+Wire Wire Line
+	5900 2650 5700 2650
+Text Label 5700 2650 2    45   ~ 0
+AC_L1
+Wire Wire Line
+	5900 2750 5700 2750
+Text Label 5700 2750 2    45   ~ 0
+AC_L2
+Wire Wire Line
+	5900 2850 5700 2850
+Text Label 5700 2850 2    45   ~ 0
+AC_L3
+Wire Wire Line
+	5900 2950 5700 2950
+Text Label 5700 2950 2    45   ~ 0
+PE
+Wire Wire Line
+	5900 3050 5700 3050
+Text Label 5700 3050 2    45   ~ 0
+CAN_SHLD
+Wire Wire Line
+	6800 2450 7000 2450
+Text Label 7000 2450 0    45   ~ 0
+CANH
+Wire Wire Line
+	6800 2550 7000 2550
+Text Label 7000 2550 0    45   ~ 0
+CANL
+Wire Notes Line
+	8000 3250 10100 3250
+Wire Notes Line
+	10100 3250 10100 4750
+Wire Notes Line
+	10100 4750 8000 4750
+Wire Notes Line
+	8000 4750 8000 3250
+Text Notes 8060 3410 0    79   ~ 16
+cab-CABINET / DC-BUS
+$Comp
+L dcmod-r4:TERM_1 JCABDN
+U 1 1 5E000009
+P 9250 3900
+F 0 "JCABDN" H 9250 3740 50  0000 C CNN
+F 1 "STUD-M8" H 9250 4070 50  0000 C CNN
+F 2 "TERM_Stud_M8" H 9250 3900 50  0001 C CNN
+F 3 "~" H 9250 3900 50  0001 C CNN
+F 4 "CLASS" H 9250 3900 50  0001 C CNN "LCSC"
+F 5 "STUD-M8" H 9250 3900 50  0001 C CNN "MPN"
+	1    9250 3900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 3900 8950 3900
+Text Label 8950 3900 2    45   ~ 0
+DCN_BUS
+$Comp
+L dcmod-r4:TERM_1 JCABDP
+U 1 1 5E00000A
+P 9250 4300
+F 0 "JCABDP" H 9250 4140 50  0000 C CNN
+F 1 "STUD-M8" H 9250 4470 50  0000 C CNN
+F 2 "TERM_Stud_M8" H 9250 4300 50  0001 C CNN
+F 3 "~" H 9250 4300 50  0001 C CNN
+F 4 "CLASS" H 9250 4300 50  0001 C CNN "LCSC"
+F 5 "STUD-M8" H 9250 4300 50  0001 C CNN "MPN"
+	1    9250 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 4300 8950 4300
+Text Label 8950 4300 2    45   ~ 0
+DCP_BUS
+Wire Notes Line
+	3000 4250 5100 4250
+Wire Notes Line
+	5100 4250 5100 5750
+Wire Notes Line
+	5100 5750 3000 5750
+Wire Notes Line
+	3000 5750 3000 4250
+Text Notes 3060 4410 0    79   ~ 16
+cab-CABINET / CAN-CHAIN
+$Comp
+L dcmod-r4:R RT1
+U 1 1 5E00000B
+P 4050 4900
+F 0 "RT1" H 4050 4740 50  0000 C CNN
+F 1 "120R" H 4050 5070 50  0000 C CNN
+F 2 "R0805" H 4050 4900 50  0001 C CNN
+F 3 "~" H 4050 4900 50  0001 C CNN
+F 4 "C114928" H 4050 4900 50  0001 C CNN "LCSC"
+F 5 "RC1206FR-07120RL" H 4050 4900 50  0001 C CNN "MPN"
+	1    4050 4900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 4900 3600 4900
+Text Label 3600 4900 2    45   ~ 0
+CANH
+Wire Wire Line
+	4300 4900 4500 4900
+Text Label 4500 4900 0    45   ~ 0
+CANL
+$Comp
+L dcmod-r4:R RT2
+U 1 1 5E00000C
+P 4050 5300
+F 0 "RT2" H 4050 5140 50  0000 C CNN
+F 1 "120R" H 4050 5470 50  0000 C CNN
+F 2 "R0805" H 4050 5300 50  0001 C CNN
+F 3 "~" H 4050 5300 50  0001 C CNN
+F 4 "C114928" H 4050 5300 50  0001 C CNN "LCSC"
+F 5 "RC1206FR-07120RL" H 4050 5300 50  0001 C CNN "MPN"
+	1    4050 5300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 5300 3600 5300
+Text Label 3600 5300 2    45   ~ 0
+CANH
+Wire Wire Line
+	4300 5300 4500 5300
+Text Label 4500 5300 0    45   ~ 0
+CANL
+Wire Notes Line
+	500 500 2600 500
+Wire Notes Line
+	2600 500 2600 6250
+Wire Notes Line
+	2600 6250 500 6250
+Wire Notes Line
+	500 6250 500 500
+Text Notes 560 660 0    79   ~ 16
+cab-CABINET / CSU-CARRIER
+$Comp
+L dcmod-r4:CONN-CARD-88-H JCSU
+U 1 1 5E00000D
+P 1600 1500
+F 0 "JCSU" H 1200 1000 50  0000 R CNN
+F 1 "CONN-CARD-88-H" H 1200 2030 50  0000 R CNN
+F 2 "" H 1600 1500 50  0001 C CNN
+F 3 "~" H 1600 1500 50  0001 C CNN
+F 4 "UNMAPPED" H 1600 1500 50  0001 C CNN "LCSC"
+F 5 "CONN-CARD-88-H" H 1600 1500 50  0001 C CNN "MPN"
+	1    1600 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 1200 950 1200
+Text Label 950 1200 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 1300 950 1300
+Text Label 950 1300 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 1400 950 1400
+Text Label 950 1400 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 1500 950 1500
+Text Label 950 1500 2    45   ~ 0
+ROLE1
+Wire Wire Line
+	1150 1600 950 1600
+Text Label 950 1600 2    45   ~ 0
+V15
+Wire Wire Line
+	1150 1700 950 1700
+Text Label 950 1700 2    45   ~ 0
+V15
+$Comp
+L dcmod-r4:QA01C PSU1
+U 1 1 5E00000E
+P 1600 2950
+F 0 "PSU1" H 1200 2650 50  0000 R CNN
+F 1 "QA01C" H 1200 3280 50  0000 R CNN
+F 2 "PWRM-TH_QA01C" H 1600 2950 50  0001 C CNN
+F 3 "~" H 1600 2950 50  0001 C CNN
+F 4 "C2757491" H 1600 2950 50  0001 C CNN "LCSC"
+F 5 "QA01C" H 1600 2950 50  0001 C CNN "MPN"
+	1    1600 2950
+	1    0    0    -1  
+$EndComp
+NoConn ~ 2050 2850
+NoConn ~ 2050 2950
+$Comp
+L dcmod-r4:CONTROL-CARD-CSU UCSU
+U 1 1 5E00000F
+P 1600 4500
+F 0 "UCSU" H 1200 3900 50  0000 R CNN
+F 1 "CONTROL-CARD-CSU" H 1200 5130 50  0000 R CNN
+F 2 "" H 1600 4500 50  0001 C CNN
+F 3 "~" H 1600 4500 50  0001 C CNN
+F 4 "UNMAPPED" H 1600 4500 50  0001 C CNN "LCSC"
+F 5 "CONTROL-CARD-CSU" H 1600 4500 50  0001 C CNN "MPN"
+	1    1600 4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 4100 950 4100
+Text Label 950 4100 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 4200 950 4200
+Text Label 950 4200 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 4300 950 4300
+Text Label 950 4300 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 4400 950 4400
+Text Label 950 4400 2    45   ~ 0
+ROLE1
+Wire Wire Line
+	1150 4500 950 4500
+Text Label 950 4500 2    45   ~ 0
+DGND
+Wire Wire Line
+	1150 4600 950 4600
+Text Label 950 4600 2    45   ~ 0
+CAN_SHLD
+Wire Wire Line
+	1150 4700 950 4700
+Text Label 950 4700 2    45   ~ 0
+V15
+Wire Wire Line
+	1150 4800 950 4800
+Text Label 950 4800 2    45   ~ 0
+V15
+Wire Wire Line
+	2050 4100 2250 4100
+Text Label 2250 4100 0    45   ~ 0
+CANH
+Wire Wire Line
+	2050 4200 2250 4200
+Text Label 2250 4200 0    45   ~ 0
+CANL
+$Comp
+L dcmod-r4:R RRCSU
+U 1 1 5E000010
+P 1400 5400
+F 0 "RRCSU" H 1400 5240 50  0000 C CNN
+F 1 "3.32k" H 1400 5570 50  0000 C CNN
+F 2 "R0805" H 1400 5400 50  0001 C CNN
+F 3 "~" H 1400 5400 50  0001 C CNN
+F 4 "CLASS" H 1400 5400 50  0001 C CNN "LCSC"
+F 5 "R-small" H 1400 5400 50  0001 C CNN "MPN"
+	1    1400 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 5400 950 5400
+Text Label 950 5400 2    45   ~ 0
+ROLE1
+Wire Wire Line
+	1650 5400 1850 5400
+Text Label 1850 5400 0    45   ~ 0
+DGND
+$Comp
+L dcmod-r4:R RSHB
+U 1 1 5E000011
+P 1400 5800
+F 0 "RSHB" H 1400 5640 50  0000 C CNN
+F 1 "0R" H 1400 5970 50  0000 C CNN
+F 2 "R0805" H 1400 5800 50  0001 C CNN
+F 3 "~" H 1400 5800 50  0001 C CNN
+F 4 "C96345" H 1400 5800 50  0001 C CNN "LCSC"
+F 5 "RC0805JR-070RL" H 1400 5800 50  0001 C CNN "MPN"
+	1    1400 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 5800 950 5800
+Text Label 950 5800 2    45   ~ 0
+CAN_SHLD
+Wire Wire Line
+	1650 5800 1850 5800
+Text Label 1850 5800 0    45   ~ 0
+PE
+$EndSCHEMATC

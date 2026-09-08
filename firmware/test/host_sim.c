@@ -5,6 +5,7 @@
  * Build/run: firmware/run_tests.sh */
 #include "../core/fsm.h"
 #include "../core/can_proto.h"
+#include "../core/csu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,6 +71,10 @@ static void plant_step(sim_t *s) {
 
 typedef void (*script_fn)(sim_t *s);
 static int checks = 0, fails = 0;
+static void ck(const char *name, int cond) {
+  checks++;
+  if (!cond) { fails++; printf("FAIL %-42s\n", name); } else printf("PASS %-42s\n", name);
+}
 static void expect(const char *name, sim_t *s, const char *states, int code, int cond) {
   checks++;
   char st[16]; snprintf(st, sizeof st, "|%s|", pmp_state_name(s->f.st));
@@ -190,6 +195,46 @@ int main(void) {
     pmp_can_id_parse((uint32_t)rand() << 16 ^ (uint32_t)rand(), &h);
   }
   checks++; puts("PASS decoder fuzz 100k frames (no sanitizer trap)");
+
+  /* ---- CSU (E39): cabinet supervisor — staggered starts, equal share, degrade, estop ---- */
+  {
+    pmp_csu_t c; pmp_csu_out_t o2;
+    pmp_csu_init(&c, 100000); c.i_req_ma = 240000;
+    uint32_t en_t[8]; int en_n = 0;
+    for (uint32_t t = 0; t < 5000; t++) {
+      if (t >= 100) for (uint8_t sc = 0; sc < 4; sc++)
+        if (t % 100 == (uint32_t)sc * 10) pmp_csu_hear(&c, (uint8_t)(0x10 + sc), t);
+      pmp_csu_step(&c, t, &o2);
+      if (o2.enable_idx >= 0 && en_n < 8) en_t[en_n++] = t;
+    }
+    ck("csu enables all four modules", en_n == 4);
+    { int stag = 1; for (int i = 1; i < en_n; i++) if (en_t[i] - en_t[i - 1] < PMP_CSU_STAGGER_MS) stag = 0;
+      ck("csu staggers starts >= 300 ms apart", stag); }
+    ck("csu waits the settle window first", en_n > 0 && en_t[0] >= 100 + PMP_CSU_SETTLE_MS);
+    ck("csu equal share 240 A / 4 = 60 A", o2.i_set_ma == 60000);
+    ck("csu reaches RUN", c.st == CSU_RUN);
+    uint32_t t2 = 5000;
+    for (; t2 < 8000; t2++) {
+      for (uint8_t sc = 0; sc < 4; sc++) if (sc != 2 && t2 % 100 == (uint32_t)sc * 10) pmp_csu_hear(&c, (uint8_t)(0x10 + sc), t2);
+      pmp_csu_step(&c, t2, &o2);
+    }
+    ck("csu dropout re-shares 240 A / 3 = 80 A", o2.i_set_ma == 80000 && pmp_csu_alive(&c, t2 - 1) == 3);
+    c.i_req_ma = 500000; pmp_csu_step(&c, t2, &o2);
+    ck("csu clamps at per-module cap 100 A", o2.i_set_ma == 100000);
+    { int re_en = 0;
+      for (uint32_t t3 = t2; t3 < t2 + 2000; t3++) {
+        for (uint8_t sc = 0; sc < 4; sc++) if (t3 % 100 == (uint32_t)sc * 10) pmp_csu_hear(&c, (uint8_t)(0x10 + sc), t3);
+        pmp_csu_step(&c, t3, &o2);
+        if (o2.enable_idx == 2) re_en = 1;
+      }
+      ck("csu re-staggers a returning module", re_en); }
+    pmp_csu_estop(&c);
+    pmp_csu_step(&c, t2 + 3000, &o2);
+    ck("csu estop latches disable broadcast", o2.broadcast_estop && o2.enable_idx < 0 && o2.i_set_ma == 0);
+    { pmp_csu_t c1; pmp_csu_init(&c1, 100000); c1.i_req_ma = 240000;
+      for (uint32_t t = 100; t < 3000; t++) { if (t % 100 == 0) pmp_csu_hear(&c1, 0x21, t); pmp_csu_step(&c1, t, &o2); }
+      ck("csu single-module cabinet: RUN at cap", c1.st == CSU_RUN && o2.i_set_ma == 100000); }
+  }
   (void)buf;
   printf("\nRESULT: %d/%d checks passed\n", checks - fails, checks);
   return fails ? 1 : 0;

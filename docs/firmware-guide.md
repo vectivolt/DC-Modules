@@ -141,3 +141,8 @@ ratings. At boot, before any enable, the HAL must:
    the F.21 discharge-supervision window (3000/5500 ms); an undecoded strap keeps the worst-case
    default, which can only delay the F.21 report, never miss it. (fsm suite: 35/35 incl. both
    rating-window checks.)
+
+**E24 rev C (E39): third RATING band = CSU.** Board strap 3.32 k against the card 10 k pullup
+reads ≈0.82 V. Windows: <0.41 V → 30 kW · 0.41–1.24 V → **CSU** · 1.24–2.4 V → 60 kW ·
+>2.4 V → no board / fault. In the CSU band the boot path runs `pmp_csu_*` (cabinet supervisor,
+`firmware/core/csu.h`) instead of the power FSM; ROLE0 is a don't-care. Same image, three roles.

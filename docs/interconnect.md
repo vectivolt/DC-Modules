@@ -85,7 +85,15 @@ note P-3); DGND→PE 1 MΩ ∥ 4.7 nF on the AC-DC board. The whole control doma
 measurement crosses on an isolated amplifier, so the HMI (buttons/display), SWD headers, fan
 connectors and CAN stay touch-safe by architecture.
 
-## Module interconnect audit (2026-09-08 — permanent gate)
+## Module interconnect audit
+
+### Cabinet section (E39)
+
+When `dist/boards/cabinet/circuit.json` exists the audit also walks the 120 kW cabinet sheet:
+CANH/CANL carry all four module drops + the CSU card + exactly two 120 Ω terminations; the
+RATING strap is 3.32 k (CSU band); PSU 15 V reaches both header ways and the card; every module
+sees AC_L1..L3/PE and lands on the DC bus; the shield is chained and PE-bonded at one point
+through RSHB only. 14 checks, netlist-level. (2026-09-08 — permanent gate)
 
 `calculations/module-interconnect-audit.mts` (in run-all) walks the BUILT netlists of
 acdc + dcdc + card per SKU and verifies every physical boundary end-to-end: DCP/DCN/PE studs on
