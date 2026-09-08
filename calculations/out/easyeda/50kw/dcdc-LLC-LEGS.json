@@ -17,12 +17,14 @@
   "U1H_VCC2": "wire",
   "U1H_OUTL": "wire",
   "U1H_VEE": "wire",
+  "D1HS1_R1HDS": "wire",
   "D1HS_M": "wire",
   "U1L_DST": "wire",
   "U1L_OUTH": "wire",
   "U1L_VCC2": "wire",
   "U1L_OUTL": "wire",
   "U1L_VEE": "wire",
+  "D1LS1_R1LDS": "wire",
   "D1LS_M": "wire",
   "GH_2": "wire",
   "SW2": "wire",
@@ -34,12 +36,14 @@
   "U2H_VCC2": "wire",
   "U2H_OUTL": "wire",
   "U2H_VEE": "wire",
+  "D2HS1_R2HDS": "wire",
   "D2HS_M": "wire",
   "U2L_DST": "wire",
   "U2L_OUTH": "wire",
   "U2L_VCC2": "wire",
   "U2L_OUTL": "wire",
   "U2L_VEE": "wire",
+  "D2LS1_R2LDS": "wire",
   "D2LS_M": "wire",
   "GH_3": "wire",
   "SW3": "wire",
@@ -51,12 +55,14 @@
   "U3H_VCC2": "wire",
   "U3H_OUTL": "wire",
   "U3H_VEE": "wire",
+  "D3HS1_R3HDS": "wire",
   "D3HS_M": "wire",
   "U3L_DST": "wire",
   "U3L_OUTH": "wire",
   "U3L_VCC2": "wire",
   "U3L_OUTL": "wire",
   "U3L_VEE": "wire",
+  "D3LS1_R3LDS": "wire",
   "D3LS_M": "wire"
  },
  "net_class_overrides": {
@@ -339,6 +345,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "C1HBV",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "C1HB1",
    "block_name": "LEG-1",
    "pins": [
@@ -459,13 +485,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "D1HS1",
+   "designator": "R1HDS",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "U1H_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "D1HS1_R1HDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D1HS1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "D1HS1_R1HDS"
     },
     {
      "pin_number": 2,
@@ -644,6 +690,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "C1LBV",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "C1LB1",
    "block_name": "LEG-1",
    "pins": [
@@ -764,13 +830,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "D1LS1",
+   "designator": "R1LDS",
    "block_name": "LEG-1",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "U1L_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "D1LS1_R1LDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D1LS1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "D1LS1_R1LDS"
     },
     {
      "pin_number": 2,
@@ -1009,6 +1095,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "C2HBV",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "C2HB1",
    "block_name": "LEG-2",
    "pins": [
@@ -1129,13 +1235,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "D2HS1",
+   "designator": "R2HDS",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "U2H_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "D2HS1_R2HDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D2HS1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "D2HS1_R2HDS"
     },
     {
      "pin_number": 2,
@@ -1314,6 +1440,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "C2LBV",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "C2LB1",
    "block_name": "LEG-2",
    "pins": [
@@ -1434,13 +1580,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "D2LS1",
+   "designator": "R2LDS",
    "block_name": "LEG-2",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "U2L_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "D2LS1_R2LDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D2LS1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "D2LS1_R2LDS"
     },
     {
      "pin_number": 2,
@@ -1679,6 +1845,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "C3HBV",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "C3HB1",
    "block_name": "LEG-3",
    "pins": [
@@ -1799,13 +1985,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "D3HS1",
+   "designator": "R3HDS",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "U3H_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "D3HS1_R3HDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D3HS1",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "D3HS1_R3HDS"
     },
     {
      "pin_number": 2,
@@ -1984,6 +2190,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "C3LBV",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "C3LB1",
    "block_name": "LEG-3",
    "pins": [
@@ -2104,13 +2330,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "D3LS1",
+   "designator": "R3LDS",
    "block_name": "LEG-3",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "U3L_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "D3LS1_R3LDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "D3LS1",
+   "block_name": "LEG-3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "D3LS1_R3LDS"
     },
     {
      "pin_number": 2,

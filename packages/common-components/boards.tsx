@@ -564,7 +564,10 @@ return (
       <resistor name="RBALTB2" resistance="47k" footprint="2512" pcbX={Q.balB[1]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={16.6} schSectionName="BANKS" />
       <resistor name="RBALBB1" resistance="47k" footprint="2512" pcbX={Q.balB[2]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={15.2} schSectionName="BANKS" />
       <resistor name="RBALBB2" resistance="47k" footprint="2512" pcbX={Q.balB[3]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={13.8} schSectionName="BANKS" />
-      <capacitor name="CBAF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-180} pcbY={-224} schX={58 + nBank * 2.2 + 5} schY={27} schSectionName="BANKS" />
+      {/* schY 20.2: at the 40 kW bank count the computed x (69.6) sits in JB's column, and one
+          row lower is the RPDB pull-down row — the film cap stacks above its twin CBBF instead
+          (found by running the overlap check on every SKU pair, not just the 30 kW battery pair). */}
+      <capacitor name="CBAF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-180} pcbY={-224} schX={58 + nBank * 2.2 + 5} schY={20.2} schSectionName="BANKS" />
       <capacitor name="CBBF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-120} pcbY={-224} schX={58 + nBank * 2.2 + 5} schY={17} schSectionName="BANKS" />
       {Array.from({ length: nBank }, (_, i) => [
         <trace key={`ap${i}`} from={`.CBA${i}T > .pin1`} to="net.BKAP" schDisplayLabel="BKAP" />,
@@ -630,9 +633,10 @@ return (
       <trace from=".QDISB > .G" to="net.G_QDISB" />
       {/* R4-8 (external review): KSER+KPARA / KSER+KPARB are destructive (bank short). Firmware
           break-before-make + mirror readback (E30/F.18) already guard it; this adds a HARDWARE
-          layer: one 74HC02 gates the KSER coil command with NOR logic so KSER_GATED =
+          layer: one 74HC02 gates the KSER coil command with NOR logic so KSER_STG1 =
           CTL_KSER AND NOT(CTL_KPARA OR CTL_KPARB). A firmware/driver fault that asserts both
-          can no longer energize the forbidden pair. */}
+          can no longer energize the forbidden pair. R5-D extends the exclusion to the
+          pre-insertion contacts with a second stage below. */}
       <chip name="UEXCL" footprint="soic14" pinLabels={{ pin1: "Y1", pin2: "A1", pin3: "B1", pin4: "Y2", pin5: "A2", pin6: "B2", pin7: "GND", pin8: "A3", pin9: "B3", pin10: "Y3", pin11: "A4", pin12: "B4", pin13: "Y4", pin14: "VCC" }} pcbX={70} pcbY={-236} schX={38} schY={cYd} schSectionName="COILS" />
       <trace from=".UEXCL > .VCC" to="net.V3P3" schDisplayLabel="V3P3" />
       <trace from=".UEXCL > .GND" to="net.DGND" schDisplayLabel="DGND" />
@@ -645,10 +649,36 @@ return (
       {/* G3: NOT(A) */}
       <trace from=".UEXCL > .A3" to=".UEXCL > .Y1" />
       <trace from=".UEXCL > .B3" to=".UEXCL > .Y1" />
-      {/* G4: KSER_GATED = NOR(NOT KSER, NOT A) = KSER AND A */}
+      {/* G4: KSER_STG1 = NOR(NOT KSER, NOT A) = KSER AND A */}
       <trace from=".UEXCL > .A4" to=".UEXCL > .Y2" />
       <trace from=".UEXCL > .B4" to=".UEXCL > .Y3" />
-      <trace from=".UEXCL > .Y4" to="net.KSER_GATED" schDisplayLabel="KSER_GATED" />
+      <trace from=".UEXCL > .Y4" to="net.KSER_STG1" schDisplayLabel="KSER_STG1" />
+      {/* R5-D second stage: the PRE-INSERTION contacts join the exclusion. KPREA/KPREB bridge
+          the banks through 10 Ω — closed against KSER they put the series stack across those
+          resistors (94 J single-fault class, HR-12). U2.G1 = B = NOR(KPREA,KPREB); G2/G3
+          invert; G4 = NOR(¬STG1, ¬B) = STG1 AND B, so
+            KSER_GATED = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB).
+          Sequencing (ramp → open → 20 ms release → weld-check → flip) stays firmware's job in
+          fsm.c ST_MODESW; this layer only makes the forbidden STATES unreachable. */}
+      <chip name="UEXCL2" footprint="soic14" pinLabels={{ pin1: "Y1", pin2: "A1", pin3: "B1", pin4: "Y2", pin5: "A2", pin6: "B2", pin7: "GND", pin8: "A3", pin9: "B3", pin10: "Y3", pin11: "A4", pin12: "B4", pin13: "Y4", pin14: "VCC" }} pcbX={70} pcbY={-248} schX={34} schY={cYd} schSectionName="COILS" />
+      <trace from=".UEXCL2 > .VCC" to="net.V3P3" schDisplayLabel="V3P3" />
+      <trace from=".UEXCL2 > .GND" to="net.DGND" schDisplayLabel="DGND" />
+      <trace from=".UEXCL2 > .A1" to="net.CTL_KPREA" schDisplayLabel="CTL_KPREA" />
+      <trace from=".UEXCL2 > .B1" to="net.CTL_KPREB" schDisplayLabel="CTL_KPREB" />
+      <trace from=".UEXCL2 > .A2" to="net.KSER_STG1" schDisplayLabel="KSER_STG1" />
+      <trace from=".UEXCL2 > .B2" to="net.KSER_STG1" schDisplayLabel="KSER_STG1" />
+      <trace from=".UEXCL2 > .A3" to=".UEXCL2 > .Y1" />
+      <trace from=".UEXCL2 > .B3" to=".UEXCL2 > .Y1" />
+      <trace from=".UEXCL2 > .A4" to=".UEXCL2 > .Y2" />
+      <trace from=".UEXCL2 > .B4" to=".UEXCL2 > .Y3" />
+      <trace from=".UEXCL2 > .Y4" to="net.KSER_GATED" schDisplayLabel="KSER_GATED" />
+      {/* R5-C: local VCC bypass for both exclusion gates */}
+      <capacitor name="CEXCL" capacitance="100nF" footprint="0603" pcbX={64} pcbY={-236} schX={37} schY={cYd - 3} schSectionName="COILS" />
+      <trace from=".CEXCL > .pin1" to=".UEXCL > .VCC" />
+      <trace from=".CEXCL > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+      <capacitor name="CEXCL2" capacitance="100nF" footprint="0603" pcbX={64} pcbY={-248} schX={34} schY={cYd - 3} schSectionName="COILS" />
+      <trace from=".CEXCL2 > .pin1" to=".UEXCL2 > .VCC" />
+      <trace from=".CEXCL2 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
       <CoilDriver id="LB" ins={["net.KSER_GATED", "net.CTL_KPARA", "net.CTL_KPARB", "net.CTL_KOUT", "net.CTL_KPREA", "net.CTL_KPREB", "net.DGND", "net.DGND"]}
         outs={["net.COIL_KSER", "net.COIL_KPARA", "net.COIL_KPARB", "net.COIL_KOUT", "net.COIL_KPREA", "net.COIL_KPREB", "net.NC_O7", "net.NC_O8"]}
         x={40} y={-236} sx={42} sy={cYd} />
@@ -724,8 +754,10 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
 
       <ControlMcu id="CARD" x={0} y={8} sx={0} sy={0} lay="top" />
       <SwdPort id="CARD" x={-30} y={-18} sx={0} sy={-12} lay="top" />
+      {/* R5-A: nrst ties the watchdog WDO onto the MCU reset network (wire-OR) — a hung MCU is
+          restarted, not merely inhibited-then-re-enabled. See SafetyChain for the contract. */}
       <SafetyChain id="CARD" enA="net.EN_A" enB="net.EN_B" wdi="net.WDI"
-        gateEnA="net.GATE_EN_A" gateEnB="net.GATE_EN"
+        gateEnA="net.GATE_EN_A" gateEnB="net.GATE_EN" nrst="net.NRST_CARD"
         x={10} y={-18} sx={18} sy={-12} lay="top" />
       <Rail3V3 id="CARD" x={24} y={8} sx={18} sy={0} lay="top" />
       <AnalogMid x={-52} y={-32} sx={0} sy={-20} lay="top" />

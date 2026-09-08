@@ -57,7 +57,7 @@ ck("HR-11", /C\$\{id\}RST/.test(cells) && /R\$\{id\}BOOT/.test(cells), "NRST cap
 ck("HR-12", /SQP-10R-25W/.test(db), "pre-insertion pulse resistors");
 
 // --- Medium
-ck("MR-1", /CER-25W-AX/.test(db) && /RPRE1" footprint=\{FilmBoxFP\(25\)\}/.test(boards), "precharge/discharge resistors on axial footprints");
+ck("MR-1", /CER-25W-33R-AX/.test(db) && /CER-25W-160R-AX/.test(db) && /RPRE1" footprint=\{FilmBoxFP\(25\)\}/.test(boards), "precharge/discharge resistors on axial footprints, value-carrying codes (R5-G)");
 ck("MR-6", /SNS_IOUTN/.test(boards) && /OUTN/.test(cells.split("OutputShunt")[1]), "shunt OUTN routed");
 ck("MR-7", /FB\$\{id\}A/.test(cells) && /VDDA_/.test(cells), "VDDA ferrite + caps");
 ck("MR-8", !/net\.NC_U\d/.test(boards), "ULN spare inputs grounded");
@@ -80,7 +80,7 @@ ck("R2-HR18", /CMC-3PH-2mH-SKU/.test(db) && /CMC1: \{ price1k: 780/.test(db), "C
 ck("R2-HR19", /dual = false/.test(cells) && /dual=\{channels === 4\}/.test(boards) && !/qtyMul: 2/.test(db), "120 kW paralleled relays are schematic instances, not BOM multipliers");
 ck("R2-HR20", /RBALT\$\{id\}A/.test(cells) && /RBALTA1/.test(boards) && /RNS\d\[AB\]|RNS\$\{i\}A/.test(boards + db.replace(/\\/g, "")), "balance/star resistors 2-series HV");
 ck("R2-MR11", /RAVI/.test(cells) && /CAVF/.test(cells), "AVMID buffer dual-feedback (no bare op-amp into 10 µF)");
-ck("R2-MR12", /GD32G553VET6/.test(db) && !/GD32G553RET6/.test(db), "MCU mpn is the 100-pin V suffix");
+ck("R2-MR12", /mpn: "GD32G553VET7"/.test(db) && !/GD32G553RET6/.test(db) && !/mpn: "GD32G553VET6"/.test(db), "MCU mpn is the 100-pin V suffix at a REAL order code (R5-I: only VET7/VET3 exist)");
 ck("R2-MR13", /NCP1252A/.test(db) && /resistance="15k"/.test(cells), "aux controller = NCP1252A; BO divider sized for its 1.0 V threshold (brown-in ≈ 322 V)");
 ck("R2-MR14", /MICROFIT3-40/.test(db) && /5 returns/.test(db), "E40 rev: 40-way 5 A-contact harness with five dedicated returns (the 2-return weakness MR-14 flagged is over-fixed)");
 ck("R2-MR17", /DTVS24/.test(cells) && /SMBJ26A/.test(db), "aux rail TVS clamps (FB-open single fault)");
@@ -358,7 +358,7 @@ ck("SHEET-VALUE-TEXT", (() => {
   const { DB } = await import("./cost/parts-db.mjs");
   const rule = (d) => DB.find((r) => r.m.test(d));
   const mpnOf = (d) => rule(d)?.mpn;
-  ck("AUD-DB-CARD", mpnOf("UCARD") === "GD32G553VET6" && mpnOf("JCARD") === "CONN-CARD-88-R" &&
+  ck("AUD-DB-CARD", mpnOf("UCARD") === "GD32G553VET7" && mpnOf("JCARD") === "CONN-CARD-88-R" &&
     mpnOf("JA") === "CONN-CARD-88-H" && mpnOf("JB") === "CONN-CARD-88-H" && mpnOf("USUPCARD") === "TPS3430-class" &&
     mpnOf("UANDCARD") === "74HC11" && mpnOf("UBKCARD") === "TPS54202-class" &&
     mpnOf("LBKCARD") === "IND-10u-3A",
@@ -450,6 +450,36 @@ ck("E44-TACH4", /DI10/.test(umodGen) && /"FAN_TACH4"/.test(umodGen) && /\[39,"FA
   "fan-4 tach end-to-end: card pin 90 (freed ROLE0) → way 88 → harness W39 (generator-asserted, donor-proven)");
 ck("E44-CLONE", /skuOverrides\["50kwa"\] = \{ \.\.\.skuOverrides\["50kw"\] \}/.test(db),
   "air-50 electrical classes are the LIQUID's by construction — the two 50s cannot drift");
+
+// ===== R5 (2026-09-09): third external-review round — all R4 majors confirmed closed by the
+// reviewer; these are the narrower items raised against the corrected sheets, each verified
+// against the built netlists / datasheets before any edit (section J of verify-independent
+// carries the electrical proofs; these pin the SOURCES so refactors cannot silently drop them).
+const fsmSrc = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
+const simSrc = readFileSync(join(ROOT, "firmware/test/host_sim.c"), "utf8");
+const protDoc = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
+ck("R5-A", /to=\{nrst\}/.test(cells) && /nrst="net.NRST_CARD"/.test(boards),
+  "watchdog WDO wire-ORed onto the MCU NRST network (AND inhibit retained): a hung MCU RESTARTS with enables low — before, gates re-enabled ~ms after WDO release with the MCU still hung");
+ck("R5-B", /R\$\{id\}DS`\} resistance="100"/.test(cells) && /R\$\{id\}DS > .pin2`\} to=\{`.D\$\{id\}S1 > .anode/.test(cells),
+  "100 R DESAT series resistor in the one driver cell = all 9 channels/module; blanking cap stays driver-side");
+ck("R5-C", /C\$\{id\}BV/.test(cells) && /C\$\{id\}VA/.test(cells) && /C\$\{id\}VB/.test(cells) && /CAND\$\{id\}/.test(cells) && /name="CAVB"/.test(cells) && /name="CCV1"/.test(cells) && /name="CSH1"/.test(cells) && /C5B\$\{id\}/.test(cells) && /CQD\$\{id\}/.test(cells) && /name="CEXCL2"/.test(boards),
+  "local bypass at every flagged class: NSI6611 VCC1, AMC both sides, bias-module 1 u bulk, CAN both domains, AND/NOR/op-amp VCC, opto driver");
+ck("R5-D", /UEXCL2/.test(boards) && /KSER_STG1/.test(boards) && /"net.CTL_KPREA"/.test(boards) && /\/\^UEXCL2\?\$\//.test(db),
+  "hardware exclusion extended to the pre-insertion contacts: KSER_GATED = KSER AND NOT(KPARA|KPARB) AND NOT(KPREA|KPREB), two 74HC02 stages");
+ck("R5-D-FW", /o->k_prea = false; o->k_preb = false; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),
+  "ST_MODESW step-20 opens ALL five matrix contacts explicitly; host_sim asserts the exclusion invariant on every tick of every scenario (50th check)");
+ck("R5-E", /RG\$\{id\}A1/.test(cells) && /RG\$\{id\}B1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[12]"),
+  "paralleled pairs are SYMMETRIC: the original device gets its own 2.2 R branch (was: one bare gate beside a resistored twin)");
+ck("R5-F", /R5-F: DC input 13.5\u201316.5 V/.test(db),
+  "QA01C-18 input range (13.5-16.5 V) vs V15 = 15.0 V recorded on the BOM line; cross-regulation re-verify staged for EVT");
+ck("R5-G", /CER-25W-33R-AX/.test(db) && /CER-50W-33R-AX/.test(db) && /CER-25W-160R-AX/.test(db) && /CER-50W-160R-AX/.test(db) && /SHUNT-50MV-100A/.test(db) && /SHUNT-50MV-133A/.test(db) && /SHUNT-50MV-167A/.test(db),
+  "RPRE/RDIS/RSHO order codes now CARRY their value/rating per SKU — a class-only p/n could be bought at any value");
+ck("R5-H", /R5-H RFQ HOLD/.test(db),
+  "NSI1042 pinout figure vs pin table contradiction held at RFQ — drawn per table, definitive suffix map required before layout release, no pins moved on half the evidence");
+ck("R5-I", /R5-I: ordering table lists ONLY VET7/.test(db),
+  "MCU order code corrected VET6->VET7 (GigaDevice lists only VET7 105 C / VET3 125 C; silicon and pinout unchanged) — every sheet title and map key follows");
+ck("R5-K", /R5-K/.test(protDoc) && /system-level/.test(protDoc),
+  "PFC reverse-direction OC honesty note: device-level DESAT covers the forward direction only; reverse events clear at SYSTEM speed (gG fuse / line OC), demonstrated at EVT both-polarity short test");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

@@ -111,9 +111,16 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   both bank bleeders fire (τ ≈ 4–17 s per SKU); supervise as F.21b (2× τ timeout per SKU). The
   bus F.21 timeout is now implemented in `fsm.c` with `PMP_DISCH_TO_MS` (override per SKU at
   build: 3000/5500/9000 ms).
-- **Watchdog:** kick `WDI_PFC` (pin 70) / `WDI_LLC` (pin 46) inside the 10 ms window from the
-  control loop tick — the external WD's WDO is a hard input to the GATE_EN AND (E27). A missed
-  window disables gates without firmware involvement; firmware sees it as F.32 on the FLT path.
+- **Watchdog (R5-A rev):** kick `WDI` inside the CWD-programmed window from the control loop
+  tick. The external WD's open-drain `WDO` is BOTH a hard input to the GATE_EN AND (E27) AND
+  wire-ORed onto `NRST_CARD` (R5-A): a missed window now drops the gates and RESETS the MCU —
+  a hung brain restarts with every enable low instead of re-arming milliseconds later with its
+  EN GPIOs still latched high. HAL contract: (1) EN/CTL_* GPIOs must NEVER be configured with
+  reset retention — the whole mechanism relies on reset ⇒ pulled-down defaults; (2) boot must
+  reach the first WDI kick inside the CWD startup window (§K sizes CWD against measured flash
+  boot + init at EVT); (3) after restart, log the reset-cause register and raise F.32 — the
+  event is visible even though hardware already made it safe. Repeated watchdog resets hold
+  the module safe by construction: gates are low through every WDO-low and every boot.
 - **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
   the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
 - **Relay feedback:** `relay_fb[]` now reads real pins — MCU-LLC 2–7 = KSER, KPARA, KPARB, KOUT,

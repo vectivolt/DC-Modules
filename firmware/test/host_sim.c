@@ -86,11 +86,15 @@ static void expect(const char *name, sim_t *s, const char *states, int code, int
            name, pmp_state_name(s->f.st), (int)s->f.latched, states, code, cond);
   } else printf("PASS %-42s (%s)\n", name, pmp_state_name(s->f.st));
 }
+static int excl_viol = 0;   /* R5-D: matrix exclusion invariant, checked EVERY tick of EVERY scenario */
 static void runsim(sim_t *s, script_fn fn, int ticks) {
   for (s->t = 0; s->t < ticks; s->t++) {
     if (fn) fn(s);
     plant_step(s);
     pmp_fsm_step(&s->f, &s->in);
+    /* the hardware UEXCL/UEXCL2 pair enforces this state-wise; firmware must never even ASK
+     * for it: KSER commanded together with any parallel-side contact (mains or pre-insertion) */
+    if (s->f.out.k_ser && (s->f.out.k_para || s->f.out.k_parb || s->f.out.k_prea || s->f.out.k_preb)) excl_viol++;
     s->in.desat_flt = false; s->in.oc_pfc_flt = false; s->in.clear_req = false; /* read-clear */
   }
 }
@@ -244,6 +248,7 @@ int main(void) {
       ck("csu single-module cabinet: RUN at cap", c1.st == CSU_RUN && o2.i_set_ma == 100000); }
   }
   (void)buf;
+  ck("matrix exclusion invariant (no KSER+KPAR/KPRE tick, all scenarios)", excl_viol == 0);
   printf("\nRESULT: %d/%d checks passed\n", checks - fails, checks);
   return fails ? 1 : 0;
 }

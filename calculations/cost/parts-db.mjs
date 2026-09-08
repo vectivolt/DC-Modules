@@ -62,24 +62,24 @@ export const DB = [
   // gate that cannot turn on. Legs 1-4 and 6-12 were unaffected, which is why it hid: it needed
   // a sheet with a leg 5 on it. Found by proving the replicated cells identical and diffing the
   // one that was not.
-  { m: /^PS\d+[HL]$/, overrides: ["ISO5V-RFC-6K"], mpn: "QA01C-18", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
+  { m: /^PS\d+[HL]$/, overrides: ["ISO5V-RFC-6K"], mpn: "QA01C-18", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it; R5-F: DC input 13.5–16.5 V vs V15 ≈15.0 V off the regulated 15.65 V aux — inside range, cross-regulation re-verify at EVT)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
   { m: /^PS5\w+$/, mpn: "ISO5V-RFC-6K", mfr: "MORNSUN QA/URB-grade", desc: "iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / DCN / BKAN / BKBN)", price1k: 95, p10k: 65, alt: "RECOM RxxP-R / certified eq" },
   { m: /^PSQD\w*$/, mpn: "QA01C", mfr: "MORNSUN", desc: "iso 15→18 V module ≥6 kVDC (bus-discharge driver bias, CB-11; insulation cert class §K)", price1k: 95, p10k: 60, alt: "B1518S-3WR3HD" },
-  { m: /^PS\w+$/, mpn: "QA01C-18", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
+  { m: /^PS\w+$/, mpn: "QA01C-18", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it; R5-F: DC input 13.5–16.5 V vs V15 ≈15.0 V off the regulated 15.65 V aux — inside range, cross-regulation re-verify at EVT)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
   { m: /^USHO$/, mpn: "NSI1200-DSWR", mfr: "NOVOSENSE", desc: "iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6)", price1k: 70, alt: "AMC1200" },
   { m: /^UIVV[123]$/, mpn: "AMC1350-class", mfr: "TI/NOVOSENSE", desc: "iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)", price1k: 135, alt: "NSI1300 class" },
   { m: /^UIV\w+$/, mpn: "AMC1311-class", mfr: "TI/NOVOSENSE", desc: "iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3; R4 note: on the 1311 class the symbol's pin-3 'VINN' is physically SHTDN — grounded = enabled, netlist correct, label carried from the shared iso-amp table)", price1k: 115, alt: "NSI1311 class" },
-  { m: /^UCAN$/, mpn: "NSI1042", mfr: "NOVOSENSE", desc: "iso CAN transceiver", price1k: 60, alt: "NSI1050" },
+  { m: /^UCAN$/, mpn: "NSI1042", mfr: "NOVOSENSE", desc: "iso CAN transceiver (R5-H RFQ HOLD: the public datasheet's pinout figure and pin table CONTRADICT each other on TXD/RXD side-1 order — drawn per the table; obtain the definitive suffix-specific map at RFQ and re-verify the sheet before layout release. Do NOT move pins on half the evidence)", price1k: 60, alt: "NSI1050" },
   { m: /^UQD$/, mpn: "TLP152-class", mfr: "Toshiba/eq", desc: "opto gate driver (isolated bus-discharge control, default-OFF — CB-11)", price1k: 42, alt: "1ED31xx lite" },
   { m: /^UPV[AB]$/, mpn: "VOM1271T", mfr: "Vishay/eq", desc: "photovoltaic MOSFET driver w/ integrated turn-off (bank bleeders — ECO-2a/E33 rev B: no floating supply needed, ms-class turn-on is the point)", price1k: 35, p10k: 28, alt: "TLP3906" },
   { m: /^USUP(CARD|[AB])$/, mpn: "TPS3430-class", mfr: "TI/eq", desc: "external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window pins; strap values per datasheet at A6/§K)", price1k: 35, alt: "MAX6753" },
   { m: /^UAND(CARD|[AB])$/, mpn: "74HC11", mfr: "any", desc: "triple 3-input AND (gate-enable wired-AND, E27)", price1k: 8, alt: "74LVC1G11 ×1" },
-  { m: /^UEXCL$/, mpn: "74HC02", mfr: "any", desc: "quad NOR SOIC-14 (R4-8: hardware S/P exclusion — KSER coil command gated by NOT(KPARA OR KPARB); both destructive matrix states involve KSER, so this kills both)", price1k: 6, alt: "74LVC02A" },
+  { m: /^UEXCL2?$/, mpn: "74HC02", mfr: "any", desc: "quad NOR SOIC-14 (R4-8 + R5-D two-stage hardware S/P exclusion — KSER coil = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB); every destructive matrix state involves KSER, so both stages kill all of them)", price1k: 6, alt: "74LVC02A" },
   { m: /^UAVB$/, mpn: "TLV9061-class", mfr: "TI/3PEAK", desc: "rail-to-rail op-amp (AVMID buffer, E31)", price1k: 12, alt: "LMV321" },
   // --- control (card-split 2026-09-08: UCARD/USUPCARD/UANDCARD/UBKCARD/LBKCARD live on the
   //     control card — the audit found the old per-board regexes silently dropped ALL of them,
   //     the MCU included, from the BOM after the split)
-  { m: /^U(PFC|LLC|CARD)$/, mpn: "GD32G553VET6", mfr: "GigaDevice", desc: "MCU Cortex-M33 216 MHz LQFP100 (MR-12: V-suffix = 100-pin — the earlier RET6 was the 64-pin part; full pin map regenerates at A6)", price1k: 210, alt: "GD32G563" },
+  { m: /^U(PFC|LLC|CARD)$/, mpn: "GD32G553VET7", mfr: "GigaDevice", desc: "MCU Cortex-M33 216 MHz LQFP100 −40…105 °C (MR-12: V-suffix = 100-pin — the earlier RET6 was the 64-pin part; R5-I: ordering table lists ONLY VET7 (105 °C/216 MHz) and VET3 (125 °C/170 MHz) — the drawn VET6 was not a valid order code, silicon/pinout unchanged; full pin map regenerates at A6)", price1k: 210, alt: "GD32G553VET3 (125 °C)" },
   { m: /^USR1$/, mpn: "74HC595", mfr: "any", desc: "shift register SOIC-16 (HMI segments)", price1k: 4, alt: "TPIC6C595" },
   { m: /^U(PA|LB)$/, mpn: "ULN2803A", mfr: "any", desc: "8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)", price1k: 9, alt: "TBD62083" },
   { m: /^UAUX$/, mpn: "NCP1252A", mfr: "onsemi", desc: "current-mode flyback controller, RT-set frequency (pin 4: 66.5 kΩ → ~65 kHz; 43 k→100 kHz / 8.5 k→500 kHz per datasheet Rev 9 — audit closed the §K RT line), A-suffix = 48% DCmax, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC", price1k: 24, alt: "UCC28C43 + RT/CT & BO rework" },
@@ -115,9 +115,11 @@ export const DB = [
   { m: /^C\w*(BL)$/, mpn: "MLCC-100p-0603", mfr: "any", desc: "100 pF 0603 (DESAT blank)", price1k: 0.4, alt: "any" },
   { m: /^C\w*B[12]$/, mpn: "MLCC-1u-0805", mfr: "any", desc: "1 µF 0805 (driver bias)", price1k: 0.8, alt: "any" },
   { m: /^C(PFC|LLC)D\d$/, mpn: "MLCC-100n-0402", mfr: "any", desc: "100 nF 0402 decoupling", price1k: 0.3, alt: "any" },
+  { m: /^C(5B\w+|SHB|CB5)$/, mpn: "MLCC-1u-0805", mfr: "any", desc: "1 µF 0805 bulk on module-fed floating rails (R5-C: Bias5/shunt-amp/CAN 5 V)", price1k: 0.8, alt: "any" },
   { m: /^C[A-Z0-9]+$/, mpn: "MLCC-small", mfr: "any", desc: "filter/decoupling MLCC 0402–0805", price1k: 0.5, alt: "any" },
   // --- resistors (power/pulse/precision first, catch-all last)
-  { m: /^R(PRE[12]|DIS\d)$/, mpn: "CER-25W-AX", mfr: "TE/local", desc: "25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)", price1k: 28, alt: "SQP25" },
+  { m: /^RPRE[12]$/, mpn: "CER-25W-33R-AX", mfr: "TE/local", desc: "33 Ω 25 W ceramic pulse resistor, axial (AC precharge; R5-G: the ohms now live in the ORDER CODE — a class-only p/n let purchasing buy any value; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant per-SKU via skuOverride; T-05)", price1k: 28, alt: "SQP25 33R" },
+  { m: /^RDIS\d$/, mpn: "CER-25W-160R-AX", mfr: "TE/local", desc: "160 Ω 25 W ceramic pulse resistor, axial (bus discharge string 4× in series; R5-G value-carrying order code; HR-14/T-05 as above)", price1k: 28, alt: "SQP25 160R" },
   { m: /^RBD[AB]\d$/, mpn: "CER-2k2-10W-AX", mfr: "TE/local", desc: "2.2 kΩ 10 W wirewound axial (bank bleeder chain, HR-15 — ≤65 J/pulse at 120 kW, τ 4–17 s to <60 V)", price1k: 14, alt: "SQP10" },
   { m: /^RPRE[AB]$/, mpn: "SQP-10R-25W", mfr: "local", desc: "10 Ω 25 W wirewound pulse, axial (bank pre-insertion — HR-12: 94 J single-fault case)", price1k: 24, alt: "—" },
   { m: /^(RBAL[TB]\w*|RNS[123][AB])$/, mpn: "R2512-47k-HV-AS", mfr: "KOA/UniOhm", desc: "47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (R3: 1.04 W worst case; a 1 W 2512 has sqrt(P*R)=217 V < 220 V at +10% bus) (HR-20: halves per-element V and W — ≤208 V / ≤0.92 W continuous)", price1k: 4, alt: "any HV 2512" },
@@ -133,12 +135,12 @@ export const DB = [
   { m: /^R\w+D[0-7]$/, mpn: "HV73-475k-1%", mfr: "KOA/UniOhm", desc: "475 kΩ 1206 1% anti-surge (HV divider — MR-3)", price1k: 1.4, alt: "any anti-surge 1%" },
   { m: /^R\w{2}DL$/, mpn: "R0805-prec-0.1%", mfr: "UniOhm", desc: "divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)", price1k: 2.5, alt: "any 0.1%" },
   { m: /^RAUXCS$/, mpn: "R1206-R31-1%-0.5W", mfr: "any current-sense", desc: "0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)", price1k: 2.5, alt: "any CS 1206" },
-  { m: /^RG([ABC]\d+[AB]|\d+[HL])2$/, mpn: "R0805-2R2", mfr: "any thick-film", desc: "per-device series gate R for paralleled SiC (E41 PFC pairs / E44 air-50 LLC pairs)", price1k: 0.5, alt: "any" },
+  { m: /^RG([ABC]\d+[AB]|\d+[HL])[12]$/, mpn: "R0805-2R2", mfr: "any thick-film", desc: "per-device series gate R for paralleled SiC — BOTH branches incl. the original device (E41/E44 pairs; R5-E symmetry)", price1k: 0.5, alt: "any" },
   { m: /^R\w+(ON|OFF)$/, mpn: "R1206-RG-0.5W", mfr: "any thick-film HP", desc: "gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%)", price1k: 2, alt: "2× 0805 parallel" },
   { m: /^R\w+GS$/, mpn: "R0805-10k", mfr: "any", desc: "10 kΩ gate-source", price1k: 0.5, alt: "any" },
   { m: /^R\d+CT$/, mpn: "R2512-2R0-1W-1%", mfr: "any", desc: "2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)", price1k: 3, alt: "2× 1206 1R0 series" },
   { m: /^R[ABC]\d+B$/, mpn: "R1206-27R-1%", mfr: "any", desc: "27 Ω CT burden 1% (line CTs 1:2500 → 0.59 V/55 A rms; 150 A pk OC observability = 1.62 V above AVMID, inside the 3.3 V rail — R3 fix, landed by margin audit 2026-09-08: the drawn 33 Ω put 150 A pk at 3.63 V, past the ADC rail)", price1k: 1.5, alt: "any" },
-  { m: /^RSH?O$/, mpn: "SHUNT-MANG", mfr: "Isabellenhütte-eq/local", desc: "manganin shunt 50 mV class (SKU current)", price1k: 120, alt: "local manganin" },
+  { m: /^RSH?O$/, mpn: "SHUNT-50MV-100A", mfr: "Isabellenhütte-eq/local", desc: "manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU via skuOverride)", price1k: 120, alt: "local manganin" },
   { m: /^RSEG\d$/, mpn: "R0603-220", mfr: "any", desc: "220 Ω segment", price1k: 0.3, alt: "any" },
   { m: /^R[A-Z0-9]+$/, mpn: "R-small", mfr: "any", desc: "small-signal resistor 0402–0805 (pulls/filters/feedback)", price1k: 0.4, alt: "any" },
   // --- ferrites
@@ -188,7 +190,7 @@ export const skuOverrides = {
     KPRE1: { price1k: 300, note: "100 A class (73 A line)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
     LDM1: { price1k: 465, note: "D6-40 rev C: 2x T57 60u N=8, 26.4 mm2 — 10.5 uH @109 A pk (floor 9.2), 4.4 W [engine]", mpn: "DM-CHOKE-40" }, LDM2: { price1k: 465, mpn: "DM-CHOKE-40" }, LDM3: { price1k: 465, mpn: "DM-CHOKE-40" },
     CMC1: { price1k: 290, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here)", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 290, mpn: "CMC-3PH-2mH-SKU" },
-    RSHO: { price1k: 140 },
+    RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A" },
     // D1-40 (pfc-design engine at the frozen 50 kHz; the 3-stack was REFUSED on sat/swing):
     // 5-stack 0077908A7, N=23, L0 113 uH -> >=64 uH @ 104 A pk, dI 28 A, dT 27 K
     LA0: { price1k: 1190, mpn: "IND-PFC-113u-40", note: "D1-40: 5x 0077908A7, N=23" },
@@ -227,11 +229,11 @@ export const skuOverrides = {
     KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
     LDM1: { price1k: 630, note: "D6-50 rev C: 3x T57 60u N=8, 26.4 mm2 — 12.9 uH @136 A pk (floor 11.4), 8.1 W [engine]", mpn: "DM-CHOKE-50" }, LDM2: { price1k: 630, mpn: "DM-CHOKE-50" }, LDM3: { price1k: 630, mpn: "DM-CHOKE-50" },
     CMC1: { price1k: 340, note: "D7-50 custom wind 95 A", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 340, mpn: "CMC-3PH-2mH-SKU" },
-    RSHO: { price1k: 155 },
+    RSHO: { price1k: 155, mpn: "SHUNT-50MV-167A" },
     // pulse energy (E43 check): per-resistor 162 J discharge / ~211 J precharge at the 16-can link
     // CROSS the highest 25 W-accepted family point (158 J @40 kW) -> the existing 50 W class part
-    RPRE1: { price1k: 45, note: "50 W pulse class (E43: ~211 J/event at 1.88 mF link)", mpn: "CER-50W-AX" }, RPRE2: { price1k: 45, mpn: "CER-50W-AX" },
-    RDIS0: { price1k: 45, note: "50 W pulse class (E43: 162 J each at 1.88 mF link)", mpn: "CER-50W-AX" }, RDIS1: { price1k: 45, mpn: "CER-50W-AX" }, RDIS2: { price1k: 45, mpn: "CER-50W-AX" }, RDIS3: { price1k: 45, mpn: "CER-50W-AX" },
+    RPRE1: { price1k: 45, note: "50 W pulse class (E43: ~211 J/event at 1.88 mF link)", mpn: "CER-50W-33R-AX" }, RPRE2: { price1k: 45, mpn: "CER-50W-33R-AX" },
+    RDIS0: { price1k: 45, note: "50 W pulse class (E43: 162 J each at 1.88 mF link)", mpn: "CER-50W-160R-AX" }, RDIS1: { price1k: 45, mpn: "CER-50W-160R-AX" }, RDIS2: { price1k: 45, mpn: "CER-50W-160R-AX" }, RDIS3: { price1k: 45, mpn: "CER-50W-160R-AX" },
     // D1-50 (pfc-design engine at the frozen 50 kHz, PFC_PAR=2; 40 kHz row refused): 5x T79 26u
     // sendust, N=22, 25.8 mm2 — L0 103 uH -> 50.8 uH @ 129.5 A pk, dI 34.8 A, dT 37 K (the
     // acceptance-gate convective figure; in the sealed module the stack is gap-pad-bonded to the
@@ -276,7 +278,7 @@ export const skuOverrides = {
     KPRE1: { price1k: 340, note: "120 A class (110 A line)" , mpn: "HF167F-120A-M"}, KPRE2: { price1k: 340 , mpn: "HF167F-120A-M"},
     LDM1: { price1k: 240, note: "D6 120 A winding" }, LDM2: { price1k: 240 }, LDM3: { price1k: 240 },
     CMC1: { price1k: 420, note: "D7 120 A winding (25 mm² foil, larger core)" }, CMC2: { price1k: 420 },
-    RSHO: { price1k: 180 },
+    RSHO: { price1k: 180, mpn: "SHUNT-50MV-200A" },
   },
   "120kw": {
     "F1": { price1k: 480, mpn: "FUSE-gG-690V-250A" }, "F2": { price1k: 480, mpn: "FUSE-gG-690V-250A" }, "F3": { price1k: 480, mpn: "FUSE-gG-690V-250A" },
@@ -288,9 +290,9 @@ export const skuOverrides = {
     KPRE1: { price1k: 520, note: "250 A class (220 A line)" , mpn: "HF167F-250A-M"}, KPRE2: { price1k: 520 , mpn: "HF167F-250A-M"},
     LDM1: { price1k: 480, note: "D6 240 A winding" }, LDM2: { price1k: 480 }, LDM3: { price1k: 480 },
     CMC1: { price1k: 780, note: "D7 240 A winding (busbar/foil, stacked cores — was 28 A/mm², HR-18)" }, CMC2: { price1k: 780 },
-    RPRE1: { price1k: 45, note: "50 W pulse variant (477 J/event — HR-14)" , mpn: "CER-50W-AX"}, RPRE2: { price1k: 45 , mpn: "CER-50W-AX"},
-    RDIS0: { price1k: 45, note: "50 W pulse variant (382 J — HR-14)" , mpn: "CER-50W-AX"}, RDIS1: { price1k: 45 , mpn: "CER-50W-AX"}, RDIS2: { price1k: 45 , mpn: "CER-50W-AX"}, RDIS3: { price1k: 45 , mpn: "CER-50W-AX"},
-    RSHO: { price1k: 260 },
+    RPRE1: { price1k: 45, note: "50 W pulse variant (477 J/event — HR-14)" , mpn: "CER-50W-33R-AX"}, RPRE2: { price1k: 45 , mpn: "CER-50W-33R-AX"},
+    RDIS0: { price1k: 45, note: "50 W pulse variant (382 J — HR-14)" , mpn: "CER-50W-160R-AX"}, RDIS1: { price1k: 45 , mpn: "CER-50W-160R-AX"}, RDIS2: { price1k: 45 , mpn: "CER-50W-160R-AX"}, RDIS3: { price1k: 45 , mpn: "CER-50W-160R-AX"},
+    RSHO: { price1k: 260, mpn: "SHUNT-50MV-400A" },
   },
 };
 

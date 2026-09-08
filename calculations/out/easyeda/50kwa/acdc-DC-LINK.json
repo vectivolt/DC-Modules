@@ -520,9 +520,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-25W-AX",
-   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
-   "mpn": "CER-25W-AX"
+   "value": "CER-25W-160R-AX",
+   "query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-160R-AX"
   },
   {
    "designator": "RDIS1",
@@ -540,9 +540,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-25W-AX",
-   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
-   "mpn": "CER-25W-AX"
+   "value": "CER-25W-160R-AX",
+   "query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-160R-AX"
   },
   {
    "designator": "RDIS2",
@@ -560,9 +560,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-25W-AX",
-   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
-   "mpn": "CER-25W-AX"
+   "value": "CER-25W-160R-AX",
+   "query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-160R-AX"
   },
   {
    "designator": "RDIS3",
@@ -580,9 +580,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-25W-AX",
-   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
-   "mpn": "CER-25W-AX"
+   "value": "CER-25W-160R-AX",
+   "query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-160R-AX"
   },
   {
    "designator": "QDIS",
@@ -750,6 +750,26 @@
    "value": "10k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
+  },
+  {
+   "designator": "CQD",
+   "block_name": "DISCHARGE",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UQD_VCC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
   },
   {
    "designator": "JDCP",

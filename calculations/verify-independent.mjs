@@ -282,8 +282,8 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("I", `${sku} V24 monitor observability`, Math.abs(A.val.get("RM24A") - 82000) < 1,
     `82k/10k → 24 V reads ${f(24 * 10 / 92, 2)} V, clips at ${f(3.3 * 92 / 10, 1)} V (+26%)`);
   // R4-8: hardware S/P exclusion truth-table wiring
-  ck("I", `${sku} S/P hardware exclusion`, D.netOfPin.get("UEXCL.A1") === "CTL_KPARA" && D.netOfPin.get("UEXCL.B1") === "CTL_KPARB" && D.netOfPin.get("UEXCL.A2") === "CTL_KSER" && D.netOfPin.get("UEXCL.Y4") === "KSER_GATED" && D.netOfPin.get("ULB.IN1") === "KSER_GATED",
-    "KSER coil = KSER AND NOT(KPARA OR KPARB) — both destructive states dead in hardware");
+  ck("I", `${sku} S/P hardware exclusion`, D.netOfPin.get("UEXCL.A1") === "CTL_KPARA" && D.netOfPin.get("UEXCL.B1") === "CTL_KPARB" && D.netOfPin.get("UEXCL.A2") === "CTL_KSER" && D.netOfPin.get("UEXCL.Y4") === "KSER_STG1",
+    "stage 1: KSER_STG1 = KSER AND NOT(KPARA OR KPARB) — R5-D adds the pre-insertion stage (section J)");
 }
 // R4-1: payload anode name ↔ netlist anode net lock (the render-seating defect class, closed at the data level)
 {
@@ -300,6 +300,41 @@ for (const [sku, s] of Object.entries(SK)) {
   }
   ck("I", "payload anode ↔ netlist anode lock", badA === 0 && okA >= 9, `${okA} Vienna diodes agree, ${badA} disagree — the sheets seat by this name`);
 }
+
+// ---------- J. R5 external-review response — electrical proofs from the built netlists ----------
+console.log("\n=== J. R5 FIXES — proven in the built netlists ===");
+// R5-A: the watchdog verdict RESETS the brain (card) — one open-drain wire-OR node
+{
+  const C = B.card;
+  const nrst = C.netOfPin.get("UCARD.pin14");
+  ck("J", "card WDO ≡ NRST merge", !!nrst && C.netOfPin.get("USUPCARD.WDO") === nrst && C.netOfPin.get("JSWDCARD.RST") === nrst && C.netOfPin.get("UANDCARD.B1") === nrst && C.netOfPin.get("UANDCARD.B2") === nrst && C.netOfPin.get("RCARDRST.pin2") === nrst,
+    `supervisor WDO + MCU NRST + SWD RST + both AND inhibits share one node (${nrst}) — hung MCU restarts with enables low`);
+  ck("J", "card AND-gate bypass", C.netOfPin.get("CANDCARD.pin1") === C.netOfPin.get("UANDCARD.VCC") && C.netOfPin.get("CANDCARD.pin2") === "DGND",
+    "100 n at the safety AND VCC (R5-C)");
+}
+for (const [sku] of Object.entries(SK)) {
+  const A = B[sku].ac, D = B[sku].dc;
+  // R5-B: DESAT series R, blanking cap stays driver-side (PFC + LLC samples cover both cell uses)
+  const dstA = A.netOfPin.get("UA0G.DST"), dstH = D.netOfPin.get("U1H.DST");
+  ck("J", `${sku} DESAT series R`, A.netOfPin.get("RA0GDS.pin1") === dstA && A.netOfPin.get("RA0GDS.pin2") === A.netOfPin.get("DA0GS1.pin1") && A.netOfPin.get("CA0GBL.pin1") === dstA && D.netOfPin.get("R1HDS.pin1") === dstH && D.netOfPin.get("R1HDS.pin2") === D.netOfPin.get("D1HS1.pin1"),
+    "DST → 100 Ω → HV diode chain, 100 pF blank on the pin side — all channels via the one cell");
+  // R5-C: bypass at every flagged pin class
+  ck("J", `${sku} driver + iso-amp bypass`, A.netOfPin.get("CA0GBV.pin1") === A.netOfPin.get("UA0G.VCC1") && A.netOfPin.get("CA0GBV.pin2") === "DGND" && D.netOfPin.get("C1HBV.pin1") === D.netOfPin.get("U1H.VCC1") && A.netOfPin.get("CV1VA.pin1") === A.netOfPin.get("UIVV1.VDD1") && A.netOfPin.get("CV1VB.pin1") === A.netOfPin.get("UIVV1.VDD2") && D.netOfPin.get("COVVA.pin1") === D.netOfPin.get("UIVOV.VDD1") && D.netOfPin.get("CSH1.pin1") === D.netOfPin.get("USHO.VDD1") && D.netOfPin.get("CSH2.pin1") === D.netOfPin.get("USHO.VDD2"),
+    "NSI6611 VCC1 + AMC class both sides at the pins");
+  ck("J", `${sku} floating-rail bulk + CAN`, A.netOfPin.get("C5BAC.pin1") === A.netOfPin.get("PS5AC.P5") && A.netOfPin.get("C5BBUS.pin1") === A.netOfPin.get("PS5BUS.P5") && D.netOfPin.get("C5BBKA.pin1") === D.netOfPin.get("PS5BKA.P5") && D.netOfPin.get("CSHB.pin1") === D.netOfPin.get("USHO.VDD1") && D.netOfPin.get("CCV1.pin1") === D.netOfPin.get("UCAN.VDD1") && D.netOfPin.get("CCV2.pin1") === D.netOfPin.get("UCAN.VDD2") && D.netOfPin.get("CCB5.pin1") === D.netOfPin.get("PSCAN.P5") && A.netOfPin.get("CQD.pin1") === A.netOfPin.get("UQD.VCC"),
+    "1 µ reservoirs live at the module-fed rails; opto driver decoupled at its pins");
+  // R5-D: two-stage exclusion — the pre-insertion contacts join
+  ck("J", `${sku} exclusion incl. pre-insertion`, D.netOfPin.get("UEXCL2.A1") === "CTL_KPREA" && D.netOfPin.get("UEXCL2.B1") === "CTL_KPREB" && D.netOfPin.get("UEXCL2.A2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.B2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.Y4") === "KSER_GATED" && D.netOfPin.get("ULB.IN1") === "KSER_GATED" && D.netOfPin.get("CEXCL.pin1") === D.netOfPin.get("UEXCL.VCC") && D.netOfPin.get("CEXCL2.pin1") === D.netOfPin.get("UEXCL2.VCC"),
+    "KSER coil = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB); both stages bypassed");
+  // R5-E: symmetric parallel gate branches — every paralleled device behind its OWN 2.2 Ω
+  const vpar = A.byName.has("QA0A2"), lpar = D.byName.has("Q1H2");
+  ck("J", `${sku} symmetric pair gates`,
+    (!vpar || (A.netOfPin.get("RGA0A1.pin1") === "G_A0" && A.netOfPin.get("RGA0A1.pin2") === A.netOfPin.get("QA0A.G") && A.netOfPin.get("QA0A.G") !== "G_A0" && A.netOfPin.get("RGB0B1.pin2") === A.netOfPin.get("QB0B.G"))) &&
+    (!lpar || (D.netOfPin.get("RG1H1.pin1") === "GH_1" && D.netOfPin.get("RG1H1.pin2") === D.netOfPin.get("Q1H.G") && D.netOfPin.get("Q1H.G") !== "GH_1" && D.netOfPin.get("RG3L1.pin2") === D.netOfPin.get("Q3L.G"))) &&
+    (vpar || (A.netOfPin.get("QA0A.G") === "G_A0")) && (lpar || (D.netOfPin.get("Q1H.G") === "GH_1")),
+    vpar || lpar ? "no bare-gate branch beside a resistored twin (di/dt shares match)" : "single devices ride the gate net directly (30 kW frozen)");
+}
+
 
 console.log(`\n${checks} checks — ${fails ? fails + " FAILURE(S)" : "ALL CLEAN"}`);
 process.exit(fails ? 1 : 0);

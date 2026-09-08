@@ -46,9 +46,10 @@ const DCDC: Rule[] = [
   { m: /^D(\d)CP$/, p1: { net: "^I_RES$1$" }, p2: { net: "^V3P3$" } },
   { m: /^D(\d)CN$/, p1: { net: "^AGND$" }, p2: { net: "^I_RES$1$" } },
 ];
-// DESAT steering chain (GateDrive cell, both boards): DST -> S1 -> S2 -> switch drain.
+// DESAT steering chain (GateDrive cell, both boards): DST -> 100R (R5-B) -> S1 -> S2 -> drain.
 // Anodes point at the driver, cathodes march toward the drain — the diodes block the HV node.
-const DESAT_S1: Rule = { m: /^D(\w+)S1$/, p1: { peer: "^U$1\\.DST$" }, p2: { peer: "^D$1S2\\.pin1$" } };
+// R5-B moved the recognized anode peer one hop: it now faces the series resistor's far pin.
+const DESAT_S1: Rule = { m: /^D(\w+)S1$/, p1: { peer: "^R$1DS\\.pin2$" }, p2: { peer: "^D$1S2\\.pin1$" } };
 ACDC.push(
   DESAT_S1,
   { m: /^D([ABC])(\d)GS2$/, p1: { peer: "^D$1$2GS1\\.pin2$" }, p2: { net: "^PH$1$2$" } }, // pair drain = phase node

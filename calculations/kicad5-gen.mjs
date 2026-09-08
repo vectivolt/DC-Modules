@@ -503,7 +503,7 @@ const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "50kwa": "1
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,
-  card: `Control Card - GD32G553VET6, one card for both converter roles (E35)`,
+  card: `Control Card - GD32G553VET7, one card for both converter roles (E35)`,
   cab: `120 kW Cabinet - 4x 30 kW modules + CSU (same card, third strap role) (E39)`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {

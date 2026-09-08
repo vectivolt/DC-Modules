@@ -48,7 +48,7 @@ const orphan = Object.keys(pins).filter((k) => !ways.includes(k) && !int.has(k))
 check("pin->way", orphan.length, orphan.length ? `pins that are neither a way nor declared internal: ${orphan.join(" ")}` : `all pins are a way, or declared internal (${Object.keys(internal).join(", ") || "none"})`);
 const allPins = [...vals, ...intPins];
 const dup = allPins.filter((v, i) => allPins.indexOf(v) !== i);
-// Datasheet-fixed pins on the GD32G553VET6 (Rev 2.0 Table 2-4). A connector way landing on any of
+// Datasheet-fixed pins on the GD32G553VET7 (Rev 2.0 Table 2-4). A connector way landing on any of
 // these is a hard short, and it is exactly what the superseded STM32-derived map did: FLT on 74
 // (VSS), BOOT0 on 100 (VDD). Only the pins DECLARED card-internal may sit here.
 const FIXEDPIN = { 23:"VSS",48:"VSS",63:"VSS",74:"VSS",99:"VSS",24:"VDD",49:"VDD",64:"VDD",75:"VDD",

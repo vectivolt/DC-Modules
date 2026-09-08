@@ -151,10 +151,10 @@ for (const [sku, nHalf, cls] of [["30kw", 5, 160], ["40kw", 6, 160], ["50kw", 8,
   const C = nHalf * 470e-6 / 2;
   const eDis = 0.5 * C * 830 * 830 / 4, ePre = 0.5 * C * 671 * 671 / 2;
   ck("Epulse", `${sku} RPRE/RDIS event energies`, eDis <= cls && ePre <= cls,
-    `discharge ${f(eDis, 0)} J · precharge ${f(ePre, 0)} J per resistor vs ${cls} J class${sku === "50kw" ? " (CER-50W-AX — E43: 162/212 J cross the 25 W family point)" : ""}`);
+    `discharge ${f(eDis, 0)} J · precharge ${f(ePre, 0)} J per resistor vs ${cls} J class${sku === "50kw" ? " (CER-50W class — E43: 162/212 J cross the 25 W family point)" : ""}`);
 }
-ck("Epulse", "50 kW 50 W parts ordered", /CER-50W-AX[\s\S]{0,80}\}, RDIS0/.test(db) || (/RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db)),
-  "RPRE1/2 + RDIS0-3 skuOverrides at 50 kW");
+ck("Epulse", "50 kW 50 W parts ordered", /CER-50W-33R-AX/.test(db) && /CER-50W-160R-AX/.test(db),
+  "RPRE1/2 + RDIS0-3 skuOverrides at 50 kW carry the 50 W VALUE codes (R5-G)");
 // X-cap bleed with the E43 CX2 4.7 µF (star unchanged)
 ck("Xbleed", "X discharge τ after CX2 rev", 0.42 * (2.2 + 4.7) / 4.4 <= 1.0, `τ ${f(0.42 * 6.9 / 4.4, 2)} s ≤ 1 s pluggable rule`);
 

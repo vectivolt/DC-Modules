@@ -3,7 +3,7 @@
 export const SECTIONS = {
   // The control card (E35): one card, both converter roles; single-segment target "control-card".
   "control-card": [
-    ["MCU GD32G553VET6 & DECOUPLING", /^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/],
+    ["MCU GD32G553VET7 & DECOUPLING", /^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/],
     ["SWD + BOOT", /^(JSWDCARD|RCARDBOOT|CCARDRST)$/],
     ["SAFETY CHAIN (WD + AND)", /^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD)$/],
     ["FLT WIRED-OR + GROUND TIE", /^(RFLTC|CFLTC|RAGTC)$/],
@@ -52,7 +52,7 @@ export const SHEET_TITLES = {
   "30kw/dcdc": "DC-Modules 30 kW — DC-DC board (3-phase LLC)",
   "60kw/acdc": "DC-Modules 60 kW — AC-DC board (Vienna PFC, 2x cells)",
   "60kw/dcdc": "DC-Modules 60 kW — DC-DC board (3-phase LLC, 2x cells)",
-  "control-card": "DC-Modules — Control Card (GD32G553VET6, one card for both converter roles)",
+  "control-card": "DC-Modules — Control Card (GD32G553VET7, one card for both converter roles)",
 };
 
 // Which board this sheet is, and where it sits in the product set. Rendered into the title

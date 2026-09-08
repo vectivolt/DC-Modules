@@ -16,7 +16,7 @@ export const FOOTPRINT = {
   "SICJBS-1200-40": "TO-247-3_L15.9-W5.0-P5.44-L",     "SIC-1700-1R": "TO-247-3_L15.9-W5.0-P5.44-L",
   "SIC-1200-5A": "TO-247-3_L15.9-W5.0-P5.44-L",        "S8050": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
   // --- ICs ---
-  "GD32G553VET6": "LQFP-100_L14.0-W14.0-P0.50-LS16.0-BL", "NSI6611": "SOIC-16_L10.3-W7.5-P1.27-LS10.3-BL",
+  "GD32G553VET7": "LQFP-100_L14.0-W14.0-P0.50-LS16.0-BL", "NSI6611": "SOIC-16_L10.3-W7.5-P1.27-LS10.3-BL",
   "NCP1252A": "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL",       "TPS54202-class": "SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL",
   "TPS3430-class": "VSON-10_L3.0-W3.0-P0.50-TL-EP", "TLV9061-class": "SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BL",
   "AMC1311-class": "SOIC-8_L5.9-W7.5-P1.27-LS11.5-BL", "AMC1350-class": "SOIC-8_L5.9-W7.5-P1.27-LS11.5-BL",
@@ -37,7 +37,7 @@ export const FOOTPRINT = {
   "R1206-R31-1%-0.5W": "R1206", "HV73-475k-1%": "R1206",
   "R2512-47k-HV-AS": "R2512", "R2512-10R-2W": "R2512",
   "R2512-HV": "R2512",  "R2512-2R0-1W-1%": "R2512",
-  "CER-25W-AX": "RES-TH_L60.0-W9.0-P66.00", "CER-50W-AX": "RES-TH_L75.0-W12.0-P82.00",
+  "CER-25W-33R-AX": "RES-TH_L60.0-W9.0-P66.00", "CER-25W-160R-AX": "RES-TH_L60.0-W9.0-P66.00", "CER-50W-33R-AX": "RES-TH_L75.0-W12.0-P82.00", "CER-50W-160R-AX": "RES-TH_L75.0-W12.0-P82.00",
   "CER-2k2-10W-AX": "RES-TH_L48.0-W8.0-P54.00", "SQP-10R-25W": "RES-TH_L60.0-W9.0-P66.00",
   "WW-470R-10W": "RES-TH_L48.0-W8.0-P54.00",
   "MLCC-small": "C0603", "MLCC-100n-0402": "C0402",
@@ -69,7 +69,7 @@ export const FOOTPRINT = {
   // range entirely and is a different MOUNTING class (NH1 blade / bolted tag), not a substitution.
   "FUSE-gG-690V": "FUSE_holder_22x58", "FUSE-gG-690V-80A": "FUSE_holder_22x58",
   "FUSE-gG-690V-125A": "FUSE_holder_NH00", "FUSE-gG-690V-250A": "FUSE_holder_NH01",
-  "SHUNT-MANG": "SHUNT_4-terminal_manganin",
+  "SHUNT-50MV-100A": "SHUNT_4-terminal_manganin", "SHUNT-50MV-133A": "SHUNT_4-terminal_manganin", "SHUNT-50MV-167A": "SHUNT_4-terminal_manganin", "SHUNT-50MV-200A": "SHUNT_4-terminal_manganin", "SHUNT-50MV-400A": "SHUNT_4-terminal_manganin",
   // --- modules / connectors / HMI ---
   "QA01C": "PWRM-TH_QA01C",           // LCSC C2757491 (MORNSUN), real catalogue land
   // Was silently swallowed by the comment on the line above, so every PS5* isolated 5 V module

@@ -713,9 +713,9 @@
    },
    {
     "designator": "RPRE1",
-    "value": "CER-25W-AX",
+    "value": "CER-25W-33R-AX",
     "block_name": "PRECHARGE",
-    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "search_query": "CER-25W-33R-AX 33 Ω 25 W ceramic pulse resistor, axial",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -732,9 +732,9 @@
    },
    {
     "designator": "RPRE2",
-    "value": "CER-25W-AX",
+    "value": "CER-25W-33R-AX",
     "block_name": "PRECHARGE",
-    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "search_query": "CER-25W-33R-AX 33 Ω 25 W ceramic pulse resistor, axial",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {

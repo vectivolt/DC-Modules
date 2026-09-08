@@ -235,6 +235,11 @@ export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, 
     <trace from={`.PS5${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.PS5${id} > .P5`} to={p5} schDisplayLabel={p5.replace("net.", "")} />
     <trace from={`.PS5${id} > .COM`} to={com} schDisplayLabel={com.replace("net.", "")} />
+    {/* R5-C: bulk on the floating 5 V — the iso-amps hanging off this module carry only their
+        own 100 nF; the 1 µF reservoir lives here at the source. */}
+    <capacitor layer={lay} name={`C5B${id}`} capacitance="1uF" footprint="0805" pcbX={8} pcbY={0} schX={2.4} schY={-1} schSectionName={sec} />
+    <trace from={`.C5B${id} > .pin1`} to={p5} schDisplayLabel={p5.replace("net.", "")} />
+    <trace from={`.C5B${id} > .pin2`} to={com} schDisplayLabel={com.replace("net.", "")} />
   </group>
 );
 
@@ -260,6 +265,9 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
         The whole channel is 50 x 16 and sits directly behind its own two switches. */}
     <chip layer={lay} name={`U${id}`} footprint="soic16" pinLabels={DRV_PINS} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}PD`} resistance="10k" footprint="0603" pcbX={-8} pcbY={0} schX={-2.6} schY={-1.2} schSectionName={sec} />
+    {/* R5-C: VCC1 local bypass — the primary-side logic rail had NO cap at the pin; every other
+        supply pin on this channel already carries one. */}
+    <capacitor layer={lay} name={`C${id}BV`} capacitance="100nF" footprint="0603" pcbX={-8} pcbY={5} schX={-2.6} schY={-2.4} schSectionName={sec} />
     {/* Bias decoupling goes on the OPPOSITE side, directly beneath the driver's secondary pin row
         (pins sit at x +2.15), sized and rotated to STRADDLE the pins they decouple.
 
@@ -275,11 +283,17 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <resistor layer={lay} name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={7.5} pcbY={-1.6} schX={2.6} schY={-0.4} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={8} pcbY={-5.5} schX={4.2} schY={-0.4} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}BL`} capacitance="100pF" footprint="0603" pcbX={14} pcbY={-4.5} schX={1.4} schY={1.9} schSectionName={sec} />
+    {/* R5-B: 100 Ω in series with the DESAT pin (standard NSI66x1 practice) — limits the pin
+        current during the switch-node dv/dt kick and the diode-capacitance discharge; the
+        blanking cap stays driver-side of it, directly on DST–Kelvin. */}
+    <resistor layer={lay} name={`R${id}DS`} resistance="100" footprint="0603" pcbX={10} pcbY={4.5} schX={1.6} schY={2.9} schSectionName={sec} />
     <diode layer={lay} name={`D${id}S1`} footprint="sma" pcbX={16} pcbY={4.5} schX={2.7} schY={2.2} schSectionName={sec} />
     <diode layer={lay} name={`D${id}S2`} footprint="sma" pcbX={24} pcbY={4.5} schX={4.7} schY={2.2} schSectionName={sec} />
     <BiasModule id={id} sec={sec} x={31} y={0} sx={-0.6} sy={-2.6} />
     <trace from={`.U${id} > .VCC1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.U${id} > .GND1`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.C${id}BV > .pin1`} to={`.U${id} > .VCC1`} />
+    <trace from={`.C${id}BV > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     {/* R4-2 input-side ties per datasheet: IN- grounded (non-inverting use), TEST to GND1 —
         the old map wired the driver-side bias COM onto the real TEST pin, an isolation-domain
         error the external review caught. ASC (driver side) ties inactive to GND2/Kelvin. */}
@@ -316,7 +330,8 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <trace from={`.U${id} > .CLAMP`} to={gate} />
     <trace from={`.R${id}GS > .pin1`} to={gate} />
     <trace from={`.R${id}GS > .pin2`} to={kelvin} />
-    <trace from={`.U${id} > .DST`} to={`.D${id}S1 > .anode`} />
+    <trace from={`.U${id} > .DST`} to={`.R${id}DS > .pin1`} />
+    <trace from={`.R${id}DS > .pin2`} to={`.D${id}S1 > .anode`} />
     <trace from={`.D${id}S1 > .cathode`} to={`.D${id}S2 > .anode`} />
     <trace from={`.D${id}S2 > .cathode`} to={desatNode} schDisplayLabel={desatNode.replace("net.", "")} />
     <trace from={`.C${id}BL > .pin1`} to={`.U${id} > .DST`} />
@@ -353,6 +368,11 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
     {par ? <chip name={`Q${id}B2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-9} pcbY={-14} schX={6} schY={-1.8} schSectionName={sec} /> : null}
     {par ? <resistor name={`RG${id}A2`} resistance="2.2" footprint="0805" pcbX={-45} pcbY={-24} schX={2} schY={-1.1} schSectionName={sec} /> : null}
     {par ? <resistor name={`RG${id}B2`} resistance="2.2" footprint="0805" pcbX={-9} pcbY={-24} schX={5} schY={-1.1} schSectionName={sec} /> : null}
+    {/* R5-E: the ORIGINAL device of each pair gets the same 2.2 Ω — one branch straight on the
+        gate net while the twin sat behind a resistor was an asymmetric split (unequal di/dt
+        share and a parasitic L-C between the two gates). Both branches now match. */}
+    {par ? <resistor name={`RG${id}A1`} resistance="2.2" footprint="0805" pcbX={-36} pcbY={-24} schX={2} schY={0.9} schSectionName={sec} /> : null}
+    {par ? <resistor name={`RG${id}B1`} resistance="2.2" footprint="0805" pcbX={-18} pcbY={-24} schX={5} schY={0.9} schSectionName={sec} /> : null}
     {par ? <trace from={`.RG${id}A2 > .pin1`} to={`net.G_${id}`} /> : null}
     {par ? <trace from={`.RG${id}A2 > .pin2`} to={`.Q${id}A2 > .G`} /> : null}
     {par ? <trace from={`.Q${id}A2 > .D`} to={`net.PH${id}`} /> : null}
@@ -378,11 +398,17 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
     <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
     <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
-    <trace from={`.Q${id}A > .G`} to={`net.G_${id}`} />
+    {par ? [
+      <trace key="a1g" from={`.RG${id}A1 > .pin1`} to={`net.G_${id}`} />,
+      <trace key="a1q" from={`.RG${id}A1 > .pin2`} to={`.Q${id}A > .G`} />,
+    ] : <trace from={`.Q${id}A > .G`} to={`net.G_${id}`} />}
     <trace from={`.Q${id}A > .KS`} to={`net.KS_${id}`} />
     <trace from={`.Q${id}A > .S`} to={`.Q${id}B > .S`} />
     <trace from={`.Q${id}B > .KS`} to={`net.KS_${id}`} />
-    <trace from={`.Q${id}B > .G`} to={`net.G_${id}`} />
+    {par ? [
+      <trace key="b1g" from={`.RG${id}B1 > .pin1`} to={`net.G_${id}`} />,
+      <trace key="b1q" from={`.RG${id}B1 > .pin2`} to={`.Q${id}B > .G`} />,
+    ] : <trace from={`.Q${id}B > .G`} to={`net.G_${id}`} />}
     <trace from={`.Q${id}B > .D`} to={mid} schDisplayLabel={mid.replace("net.", "")} />
     <trace from={`.D${id}T > .anode`} to={`net.PH${id}`} />
     <trace from={`.D${id}T > .cathode`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
@@ -420,6 +446,9 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
     {par ? <chip name={`Q${id}L2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={9} schX={20} schY={-5.6} schSectionName={sec} /> : null}
     {par ? <resistor name={`RG${id}H2`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={9} schX={19} schY={0.4} schSectionName={sec} /> : null}
     {par ? <resistor name={`RG${id}L2`} resistance="2.2" footprint="0805" pcbX={10} pcbY={9} schX={19} schY={-6.6} schSectionName={sec} /> : null}
+    {/* R5-E: matching 2.2 Ω on the ORIGINAL device of each paralleled position (see ViennaPhase) */}
+    {par ? <resistor name={`RG${id}H1`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={0} schX={16} schY={0.4} schSectionName={sec} /> : null}
+    {par ? <resistor name={`RG${id}L1`} resistance="2.2" footprint="0805" pcbX={26} pcbY={0} schX={16} schY={-6.6} schSectionName={sec} /> : null}
     {par ? [
       <trace key="h2g" from={`.RG${id}H2 > .pin1`} to={`net.GH_${id}`} />,
       <trace key="h2g2" from={`.RG${id}H2 > .pin2`} to={`.Q${id}H2 > .G`} />,
@@ -436,11 +465,17 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
     <DriverCh id={`${id}L`} pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
     <trace from={`.Q${id}H > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
-    <trace from={`.Q${id}H > .G`} to={`net.GH_${id}`} />
+    {par ? [
+      <trace key="h1a" from={`.RG${id}H1 > .pin1`} to={`net.GH_${id}`} />,
+      <trace key="h1b" from={`.RG${id}H1 > .pin2`} to={`.Q${id}H > .G`} />,
+    ] : <trace from={`.Q${id}H > .G`} to={`net.GH_${id}`} />}
     <trace from={`.Q${id}H > .KS`} to={`net.KH_${id}`} />
     <trace from={`.Q${id}L > .D`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     <trace from={`.Q${id}L > .S`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />
-    <trace from={`.Q${id}L > .G`} to={`net.GL_${id}`} />
+    {par ? [
+      <trace key="l1a" from={`.RG${id}L1 > .pin1`} to={`net.GL_${id}`} />,
+      <trace key="l1b" from={`.RG${id}L1 > .pin2`} to={`.Q${id}L > .G`} />,
+    ] : <trace from={`.Q${id}L > .G`} to={`net.GL_${id}`} />}
     <trace from={`.Q${id}L > .KS`} to={`net.KL_${id}`} />
     <trace from={`net.KH_${id}`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     <trace from={`net.KL_${id}`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />
@@ -647,6 +682,14 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
     <resistor layer={lay} name={`R${id}DL`} resistance={rBot} footprint="0805" pcbX={0} pcbY={-50} schX={10.5} schY={-1} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}DF`} capacitance={cf} footprint="0805" pcbX={0} pcbY={-56} schX={12} schY={-1} schSectionName={sec} />
     <chip layer={lay} name={`UIV${id}`} footprint="soic8" pinLabels={ISOAMP_PINS} pcbX={0} pcbY={-64} schX={15} schY={0} schSectionName={sec} />
+    {/* R5-C: the AMC-class iso-amp had NO bypass on either supply pin — 100 nF per side at the
+        pins; the 1 µF bulk lives on the bias module (hot side) / board rail (cold side). */}
+    <capacitor layer={lay} name={`C${id}VA`} capacitance="100nF" footprint="0603" pcbX={-7} pcbY={-64} schX={13} schY={1.6} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}VB`} capacitance="100nF" footprint="0603" pcbX={7} pcbY={-64} schX={17} schY={1.6} schSectionName={sec} />
+    <trace from={`.C${id}VA > .pin1`} to={`.UIV${id} > .VDD1`} />
+    <trace from={`.C${id}VA > .pin2`} to={ref} schDisplayLabel={ref.replace("net.", "")} />
+    <trace from={`.C${id}VB > .pin1`} to={`.UIV${id} > .VDD2`} />
+    <trace from={`.C${id}VB > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
     <trace from={hv} to={`.R${id}D0 > .pin1`} schDisplayLabel={hv.replace("net.", "")} />
     {Array.from({ length: 7 }, (_, i) => (
       <trace key={i} from={`.R${id}D${i} > .pin2`} to={`.R${id}D${i + 1} > .pin1`} />
@@ -698,6 +741,10 @@ export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = 
     <trace from=".CAVF > .pin2" to=".UAVB > .INN" />
     <trace from=".UAVB > .VP" to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from=".UAVB > .VN" to="net.AGND" schDisplayLabel="AGND" />
+    {/* R5-C: op-amp supply bypass at the pin (the divider's CAVM decouples AVREF_MID, not VP) */}
+    <capacitor layer={lay} name="CAVB" capacitance="100nF" footprint="0603" pcbX={12} pcbY={-6} schX={4.2} schY={2.4} schSectionName={sec} />
+    <trace from=".CAVB > .pin1" to=".UAVB > .VP" />
+    <trace from=".CAVB > .pin2" to="net.AGND" schDisplayLabel="AGND" />
     <trace from=".CAVO > .pin1" to="net.AVMID" schDisplayLabel="AVMID" />
     <trace from=".CAVO > .pin2" to="net.AGND" schDisplayLabel="AGND" />
   </group>
@@ -757,7 +804,7 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 // window-set straps) — the v3 3-pin symbol had no supply. SET straps to DGND = datasheet default
 // window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
 // input on the safety AND while the local MCU is in reset).
-export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
     <chip layer={lay} name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
@@ -797,6 +844,18 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, sec = "SAFETY
     <trace from={`.USUP${id} > .WDO`} to={`net.WDO_${id}`} />
     <trace from={`.RWPU${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.RWPU${id} > .pin2`} to={`net.WDO_${id}`} />
+    {/* R5-A: the watchdog verdict also RESETS the brain. Before this, WDO only gated the AND
+        chain: on timeout the gates dropped for the ~ms WDO held low, then RE-ENABLED with the
+        MCU still hung and its EN GPIOs still latched high. Open-drain WDO wire-ORs onto the
+        MCU NRST network (SwdPort 100 n + MCU 10 k pull-up ∥ RWPU) — a hung MCU is restarted
+        and boots with every enable low, while the AND path still clamps gates during WDO-low.
+        Firmware contract (F.32 rev): EN/relay GPIOs must never use retention through reset,
+        and the CWD window must exceed boot-to-first-kick (§K value review). */}
+    {nrst ? <trace from={`net.WDO_${id}`} to={nrst} /> : null}
+    {/* R5-C: AND-gate VCC bypass (CSF serves the supervisor, not this package) */}
+    <capacitor layer={lay} name={`CAND${id}`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={8} schX={4.5} schY={-3.2} schSectionName={sec} />
+    <trace from={`.CAND${id} > .pin1`} to={`.UAND${id} > .VCC`} />
+    <trace from={`.CAND${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.RENR${id} > .pin1`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
     <trace from={`.RENR${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     {/* E40 single brain, TWO gated chains: gate 1 = EN_B AND WDO -> local (DC-DC) GATE_EN;
@@ -865,6 +924,10 @@ export const DischargeCtl = ({ id = "", ctl, gateOut, dcn, sec = "DISCH", x = 0,
     <trace from={`.PSQD${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.PSQD${id} > .P18`} to={`.UQD${id} > .VCC`} />
     <trace from={`.PSQD${id} > .COM`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
+    {/* R5-C: opto-driver floating bias bypass at the pins */}
+    <capacitor name={`CQD${id}`} capacitance="100nF" footprint="0603" pcbX={-6} pcbY={6} schX={1.2} schY={-0.8} schSectionName={sec} />
+    <trace from={`.CQD${id} > .pin1`} to={`.UQD${id} > .VCC`} />
+    <trace from={`.CQD${id} > .pin2`} to={`.UQD${id} > .VEE`} />
     <trace from={`.UQD${id} > .VEE`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     <trace from={`.UQD${id} > .OUT`} to={`.RQDG${id} > .pin1`} />
     <trace from={`.RQDG${id} > .pin2`} to={gateOut} />
@@ -1241,6 +1304,16 @@ export const IsolatedCan = ({ sec = "CAN", x = 0, y = 0, sx = 0, sy = 0 }: any) 
     <trace from=".PSCAN > .P5" to=".UCAN > .VDD2" />
     <trace from=".PSCAN > .COM" to="net.CGND" schDisplayLabel="CGND" />
     <trace from=".UCAN > .GND2" to="net.CGND" schDisplayLabel="CGND" />
+    {/* R5-C: transceiver supply bypass, both isolation domains + bulk on the module-fed side */}
+    <capacitor name="CCV1" capacitance="100nF" footprint="0603" pcbX={-8} pcbY={6} schX={-1.6} schY={-1.2} schSectionName={sec} />
+    <trace from=".CCV1 > .pin1" to=".UCAN > .VDD1" />
+    <trace from=".CCV1 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+    <capacitor name="CCV2" capacitance="100nF" footprint="0603" pcbX={8} pcbY={6} schX={1.6} schY={-1.4} schSectionName={sec} />
+    <trace from=".CCV2 > .pin1" to=".UCAN > .VDD2" />
+    <trace from=".CCV2 > .pin2" to="net.CGND" schDisplayLabel="CGND" />
+    <capacitor name="CCB5" capacitance="1uF" footprint="0805" pcbX={14} pcbY={12} schX={2.6} schY={-3.4} schSectionName={sec} />
+    <trace from=".CCB5 > .pin1" to=".PSCAN > .P5" />
+    <trace from=".CCB5 > .pin2" to="net.CGND" schDisplayLabel="CGND" />
     <trace from=".UCAN > .CANH" to=".LCAN > .A1" />
     <trace from=".UCAN > .CANL" to=".LCAN > .A2" />
     <trace from=".LCAN > .B1" to=".JCAN > .CANH" />
@@ -1279,6 +1352,16 @@ export const OutputShunt = ({ inn, out, outN, sec = "OUTPUT", x = 0, y = 0, sx =
     <trace from=".USHO > .GND1" to=".RSHO > .KB" />
     <trace from=".USHO > .VDD2" to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from=".USHO > .GND2" to="net.AGND" schDisplayLabel="AGND" />
+    {/* R5-C: shunt iso-amp bypass both sides + bulk on the module-fed B5OUT rail */}
+    <capacitor name="CSH1" capacitance="100nF" footprint="0603" pcbX={30} pcbY={7} schX={2} schY={1.6} schSectionName={sec} />
+    <trace from=".CSH1 > .pin1" to=".USHO > .VDD1" />
+    <trace from=".CSH1 > .pin2" to=".USHO > .GND1" />
+    <capacitor name="CSH2" capacitance="100nF" footprint="0603" pcbX={42} pcbY={7} schX={5.4} schY={1.6} schSectionName={sec} />
+    <trace from=".CSH2 > .pin1" to=".USHO > .VDD2" />
+    <trace from=".CSH2 > .pin2" to="net.AGND" schDisplayLabel="AGND" />
+    <capacitor name="CSHB" capacitance="1uF" footprint="0805" pcbX={30} pcbY={14} schX={1} schY={-2.2} schSectionName={sec} />
+    <trace from=".CSHB > .pin1" to="net.B5OUT" schDisplayLabel="B5OUT" />
+    <trace from=".CSHB > .pin2" to=".USHO > .GND1" />
     <trace from=".USHO > .OUTP" to={out} schDisplayLabel={out.replace("net.", "")} />
     <trace from={outN ? ".USHO > .OUTN" : ".USHO > .OUTN"} to={outN || "net.SNS_IOUTN"} schDisplayLabel="SNS_IOUTN" />
   </group>

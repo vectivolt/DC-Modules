@@ -53,3 +53,13 @@ MID-side device and is NOT seen by DESAT. That direction is covered by the **lin
 (F.11-class fast path, observable to 150/187 A pk inside the ADC rail) plus the gG fuse
 coordination — two independent detectors per direction overall. Registered as the design basis;
 EVT T-xx short-circuit characterization exercises BOTH polarities.
+
+**R5-K note — response-time honesty for the reverse direction (E46):** the two detectors are
+NOT the same speed class, and the register must not read as if they were. Forward (PHASE-side)
+faults clear at DESAT speed — µs-class blank + soft-shutdown at the device. Reverse-polarity
+faults are seen by the line-CT OC path, which is **system-level, not device-level**: ~10–20 µs
+analog front end, then the firmware latch at the 1 ms tick, then contactor/gate response —
+with the gG fuse as the backstop for bolted faults. The MID-side device must therefore survive
+the reverse-fault i²t until that trip lands. EVT T-xx runs the short-circuit characterization
+in BOTH polarities and must demonstrate the MEASURED clearing time against the device
+short-circuit-withstand rating before any protection claim ships on the datasheet.

@@ -15,6 +15,7 @@
   "UA0G_VCC2": "wire",
   "UA0G_OUTL": "wire",
   "UA0G_VEE": "wire",
+  "DA0GS1_RA0GDS": "wire",
   "DA0GS_M": "wire",
   "CA0SN_RA0SN": "wire",
   "CA0C_DA0C": "wire",
@@ -27,6 +28,7 @@
   "UB0G_VCC2": "wire",
   "UB0G_OUTL": "wire",
   "UB0G_VEE": "wire",
+  "DB0GS1_RB0GDS": "wire",
   "DB0GS_M": "wire",
   "CB0SN_RB0SN": "wire",
   "CB0C_DB0C": "wire",
@@ -39,6 +41,7 @@
   "UC0G_VCC2": "wire",
   "UC0G_OUTL": "wire",
   "UC0G_VEE": "wire",
+  "DC0GS1_RC0GDS": "wire",
   "DC0GS_M": "wire",
   "CC0SN_RC0SN": "wire",
   "CC0C_DC0C": "wire"
@@ -236,6 +239,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "CA0GBV",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "CA0GB1",
    "block_name": "PHASE-A0",
    "pins": [
@@ -356,13 +379,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "DA0GS1",
+   "designator": "RA0GDS",
    "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "UA0G_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DA0GS1_RA0GDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "DA0GS1",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DA0GS1_RA0GDS"
     },
     {
      "pin_number": 2,
@@ -801,6 +844,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "CB0GBV",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "CB0GB1",
    "block_name": "PHASE-B0",
    "pins": [
@@ -921,13 +984,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "DB0GS1",
+   "designator": "RB0GDS",
    "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "UB0G_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DB0GS1_RB0GDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "DB0GS1",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DB0GS1_RB0GDS"
     },
     {
      "pin_number": 2,
@@ -1366,6 +1449,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "CC0GBV",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "CC0GB1",
    "block_name": "PHASE-C0",
    "pins": [
@@ -1486,13 +1589,33 @@
    "mpn": "MLCC-100p-0603"
   },
   {
-   "designator": "DC0GS1",
+   "designator": "RC0GDS",
    "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
      "signal_name": "UC0G_DST"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DC0GS1_RC0GDS"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "DC0GS1",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DC0GS1_RC0GDS"
     },
     {
      "pin_number": 2,

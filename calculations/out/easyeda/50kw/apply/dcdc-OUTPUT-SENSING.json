@@ -14,9 +14,9 @@
   [
    {
     "designator": "RSHO",
-    "value": "SHUNT-MANG",
+    "value": "SHUNT-50MV-100A",
     "block_name": "OUTPUT",
-    "search_query": "SHUNT-MANG manganin shunt 50 mV class",
+    "search_query": "SHUNT-50MV-100A manganin shunt, 50 mV @ 100 A",
     "part_uuid": "40f1e5cdd84b4b19997b5bceff1c275c",
     "pins": [
      {
@@ -118,6 +118,72 @@
       "signal_name": "RSHO_KB"
      }
     ]
+   },
+   {
+    "designator": "CSH1",
+    "value": "100nF",
+    "block_name": "OUTPUT",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5OUT"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RSHO_KB"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CSH2",
+    "value": "100nF",
+    "block_name": "OUTPUT",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CSHB",
+    "value": "1uF",
+    "block_name": "OUTPUT",
+    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5OUT"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RSHO_KB"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "COF1",
@@ -473,6 +539,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "COAVA",
+    "value": "100nF",
+    "block_name": "SENSE-VBKA",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BKA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "COAVB",
+    "value": "100nF",
+    "block_name": "SENSE-VBKA",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -712,6 +822,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "COBVA",
+    "value": "100nF",
+    "block_name": "SENSE-VBKB",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BKB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "COBVB",
+    "value": "100nF",
+    "block_name": "SENSE-VBKB",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -951,6 +1105,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "COVVA",
+    "value": "100nF",
+    "block_name": "SENSE-VOUT",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5OUT"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "OUTN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "COVVB",
+    "value": "100nF",
+    "block_name": "SENSE-VOUT",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -984,6 +1182,28 @@
     ]
    },
    {
+    "designator": "C5BBKA",
+    "value": "1uF",
+    "block_name": "ISO-BIAS",
+    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BKA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "PS5BKB",
     "value": "ISO5V-RFC-6K",
     "block_name": "ISO-BIAS",
@@ -1011,6 +1231,28 @@
       "signal_name": "BKBN"
      }
     ]
+   },
+   {
+    "designator": "C5BBKB",
+    "value": "1uF",
+    "block_name": "ISO-BIAS",
+    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BKB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1152,5 +1394,5 @@
   ]
  },
  "warnings": [],
- "total": 50
+ "total": 61
 }

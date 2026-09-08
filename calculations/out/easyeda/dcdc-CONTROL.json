@@ -8,7 +8,10 @@
  "net_style_overrides": {
   "UEXCL_Y1": "wire",
   "UEXCL_Y2": "wire",
-  "UEXCL_Y3": "wire"
+  "UEXCL_Y3": "wire",
+  "UEXCL2_Y1": "wire",
+  "UEXCL2_Y2": "wire",
+  "UEXCL2_Y3": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -678,6 +681,86 @@
     {
      "pin_number": 13,
      "name": "Y4",
+     "signal_name": "KSER_STG1"
+    },
+    {
+     "pin_number": 14,
+     "name": "VCC",
+     "signal_name": "V3P3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "74HC02",
+   "query": "74HC02 quad NOR SOIC-14 ",
+   "mpn": "74HC02"
+  },
+  {
+   "designator": "UEXCL2",
+   "block_name": "COIL-DRIVER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "Y1",
+     "signal_name": "UEXCL2_Y1"
+    },
+    {
+     "pin_number": 2,
+     "name": "A1",
+     "signal_name": "CTL_KPREA"
+    },
+    {
+     "pin_number": 3,
+     "name": "B1",
+     "signal_name": "CTL_KPREB"
+    },
+    {
+     "pin_number": 4,
+     "name": "Y2",
+     "signal_name": "UEXCL2_Y2"
+    },
+    {
+     "pin_number": 5,
+     "name": "A2",
+     "signal_name": "KSER_STG1"
+    },
+    {
+     "pin_number": 6,
+     "name": "B2",
+     "signal_name": "KSER_STG1"
+    },
+    {
+     "pin_number": 7,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 8,
+     "name": "A3",
+     "signal_name": "UEXCL2_Y1"
+    },
+    {
+     "pin_number": 9,
+     "name": "B3",
+     "signal_name": "UEXCL2_Y1"
+    },
+    {
+     "pin_number": 10,
+     "name": "Y3",
+     "signal_name": "UEXCL2_Y3"
+    },
+    {
+     "pin_number": 11,
+     "name": "A4",
+     "signal_name": "UEXCL2_Y2"
+    },
+    {
+     "pin_number": 12,
+     "name": "B4",
+     "signal_name": "UEXCL2_Y3"
+    },
+    {
+     "pin_number": 13,
+     "name": "Y4",
      "signal_name": "KSER_GATED"
     },
     {
@@ -690,6 +773,46 @@
    "value": "74HC02",
    "query": "74HC02 quad NOR SOIC-14 ",
    "mpn": "74HC02"
+  },
+  {
+   "designator": "CEXCL",
+   "block_name": "COIL-DRIVER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CEXCL2",
+   "block_name": "COIL-DRIVER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
   },
   {
    "designator": "ULB",

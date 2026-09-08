@@ -14,10 +14,15 @@ node calculations/system/fsm-sim.mjs
 node calculations/emi/dm-choke-design.mjs
 node calculations/emi/lisn-precompliance.mjs
 node calculations/cost/bom-gen.mjs
-if [ -f dist/boards/30kw/acdc/circuit.json ]; then node calculations/schematic-check.mjs 30kw/acdc 30kw/dcdc; fi
+# R5: check EVERY built SKU pair — the 30 kW-only run let a 40 kW JB×CBAF overlap hide
+SKPAIRS=""
+for s in 30kw 40kw 50kw 50kwa; do
+  if [ -f "dist/boards/$s/acdc/circuit.json" ]; then SKPAIRS="$SKPAIRS $s/acdc $s/dcdc"; fi
+done
+if [ -n "$SKPAIRS" ]; then node calculations/schematic-check.mjs $SKPAIRS; fi
 if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/module-interconnect-audit.mts; fi
 npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
 node calculations/verify-independent.mjs
-sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 49/49 OK"
+sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 50/50 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

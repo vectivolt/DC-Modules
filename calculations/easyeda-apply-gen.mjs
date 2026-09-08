@@ -16,7 +16,7 @@ mkdirSync(outDir, { recursive: true });
 
 const uuidMap = JSON.parse(readFileSync(join(here, "out/easyeda", "part-uuid-map.json"), "utf8"));
 
-// GD32G553VET6 LQFP100 physical pin allocation (R3). The previous map was STM32G474-derived and
+// GD32G553VET7 LQFP100 physical pin allocation (R3). The previous map was STM32G474-derived and
 // symbolic: it put a fault output on pin 74 (VSS) and BOOT0 on pin 100 (VDD) — two hard shorts —
 // and SWD on PA6/PA7. Allocated against GD32G553xx Rev 2.0 Table 2-4 and adversarially audited;
 // see docs/mcu-pin-allocation-gd32.md for the open architecture decisions.
@@ -63,6 +63,7 @@ const uuidOf = (mpn) => {
   // COIL_KPREA/B and KPREA/B_B as single-pin nets. Only a full rebuild from source surfaced it.
   if (/^(HFE\d|HFE82V|HF167F)/.test(mpn)) return uuidMap["HFE82V-M-CLASS"].part_uuid;
   // Catalog CT adoption (audit E35): same 2-pin CT symbols, new manufacturer part numbers.
+  if (/^SHUNT-/.test(mpn)) return uuidMap["SHUNT-MANG"]?.part_uuid ?? null;   /* R5-G renames */
   if (/^ACX-/.test(mpn)) return uuidMap["CT-100A-1:2500"].part_uuid;
   if (/^AS-\d/.test(mpn)) return uuidMap["CT-RES-1:100"].part_uuid;
   // 88-way card interface: no probed EasyEDA part exists; treat like the other connector classes.
@@ -161,7 +162,7 @@ function transform(c, page, all, warn) {
       P(4, "COM1", sig(c, "A")), P(6, "NO1", sig(c, "B")),
       P(5, "COM2", sig(c, "M1")), P(3, "NO2", sig(c, "M2"))];
     out.nc = [2, 7];
-  } else if (m === "SHUNT-MANG") {
+  } else if (m.startsWith("SHUNT-")) {   /* R5-G: value-carrying order codes, same 4-terminal cell */
     out.pins = [P(1, "A", sig(c, "A")), P(2, "B", sig(c, "B")), P(3, "KA", sig(c, "KA")), P(4, "KB", sig(c, "KB"))];
     out.nc = [5, 6];
   } else if (m === "NSI1042") {

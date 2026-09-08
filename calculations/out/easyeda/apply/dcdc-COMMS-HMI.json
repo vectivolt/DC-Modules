@@ -256,6 +256,72 @@
     "pos": {
      "rotate": 90
     }
+   },
+   {
+    "designator": "CCV1",
+    "value": "100nF",
+    "block_name": "CAN",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CCV2",
+    "value": "100nF",
+    "block_name": "CAN",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UCAN_VDD2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "CGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CCB5",
+    "value": "1uF",
+    "block_name": "CAN",
+    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UCAN_VDD2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "CGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -786,5 +852,5 @@
   ]
  },
  "warnings": [],
- "total": 29
+ "total": 32
 }

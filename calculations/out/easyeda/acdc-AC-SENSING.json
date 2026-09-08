@@ -576,6 +576,26 @@
    "mpn": "ISO5V-RFC-6K"
   },
   {
+   "designator": "C5BAC",
+   "block_name": "ISO-BIAS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails ",
+   "mpn": "MLCC-1u-0805"
+  },
+  {
    "designator": "PS5BUS",
    "block_name": "ISO-BIAS",
    "pins": [
@@ -606,6 +626,26 @@
    "value": "ISO5V-RFC-6K",
    "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
    "mpn": "ISO5V-RFC-6K"
+  },
+  {
+   "designator": "C5BBUS",
+   "block_name": "ISO-BIAS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5BUS"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails ",
+   "mpn": "MLCC-1u-0805"
   },
   {
    "designator": "RV1D0",
@@ -855,6 +895,46 @@
    "mpn": "AMC1350-class"
   },
   {
+   "designator": "CV1VA",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CV1VB",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "RV2D0",
    "block_name": "SENSE-VAC2",
    "pins": [
@@ -1100,6 +1180,46 @@
    "value": "AMC1350-class",
    "query": "AMC1350-class iso voltage-sense amp ±5 V input ",
    "mpn": "AMC1350-class"
+  },
+  {
+   "designator": "CV2VA",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CV2VB",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
   },
   {
    "designator": "RV3D0",
@@ -1349,6 +1469,46 @@
    "mpn": "AMC1350-class"
   },
   {
+   "designator": "CV3VA",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5AC"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NSTAR"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CV3VB",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "RBPD0",
    "block_name": "SENSE-VBUS",
    "pins": [
@@ -1596,6 +1756,46 @@
    "mpn": "AMC1311-class"
   },
   {
+   "designator": "CBPVA",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5BUS"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CBPVB",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "RBMD0",
    "block_name": "SENSE-VMID",
    "pins": [
@@ -1841,6 +2041,46 @@
    "value": "AMC1311-class",
    "query": "AMC1311-class iso voltage-sense amp 0–2 V input ",
    "mpn": "AMC1311-class"
+  },
+  {
+   "designator": "CBMVA",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "B5BUS"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CBMVB",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
   },
   {
    "designator": "JTPFC",

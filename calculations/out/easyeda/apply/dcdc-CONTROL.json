@@ -655,6 +655,85 @@
      {
       "pin_number": 13,
       "name": "Y4",
+      "signal_name": "KSER_STG1"
+     },
+     {
+      "pin_number": 14,
+      "name": "VCC",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "UEXCL2",
+    "value": "74HC02",
+    "block_name": "COIL-DRIVER",
+    "search_query": "74HC02 quad NOR SOIC-14",
+    "part_uuid": "955f4d84871f48c087d66ef1d9acc0ec",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "Y1",
+      "signal_name": "UEXCL2_Y1"
+     },
+     {
+      "pin_number": 2,
+      "name": "A1",
+      "signal_name": "CTL_KPREA"
+     },
+     {
+      "pin_number": 3,
+      "name": "B1",
+      "signal_name": "CTL_KPREB"
+     },
+     {
+      "pin_number": 4,
+      "name": "Y2",
+      "signal_name": "UEXCL2_Y2"
+     },
+     {
+      "pin_number": 5,
+      "name": "A2",
+      "signal_name": "KSER_STG1"
+     },
+     {
+      "pin_number": 6,
+      "name": "B2",
+      "signal_name": "KSER_STG1"
+     },
+     {
+      "pin_number": 7,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 8,
+      "name": "A3",
+      "signal_name": "UEXCL2_Y1"
+     },
+     {
+      "pin_number": 9,
+      "name": "B3",
+      "signal_name": "UEXCL2_Y1"
+     },
+     {
+      "pin_number": 10,
+      "name": "Y3",
+      "signal_name": "UEXCL2_Y3"
+     },
+     {
+      "pin_number": 11,
+      "name": "A4",
+      "signal_name": "UEXCL2_Y2"
+     },
+     {
+      "pin_number": 12,
+      "name": "B4",
+      "signal_name": "UEXCL2_Y3"
+     },
+     {
+      "pin_number": 13,
+      "name": "Y4",
       "signal_name": "KSER_GATED"
      },
      {
@@ -663,6 +742,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "CEXCL",
+    "value": "100nF",
+    "block_name": "COIL-DRIVER",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CEXCL2",
+    "value": "100nF",
+    "block_name": "COIL-DRIVER",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "ULB",
@@ -986,5 +1109,5 @@
   ]
  },
  "warnings": [],
- "total": 14
+ "total": 17
 }

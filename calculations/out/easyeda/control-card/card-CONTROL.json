@@ -490,9 +490,9 @@
     97,
     98
    ],
-   "value": "GD32G553VET6",
-   "query": "GD32G553VET6 MCU Cortex-M33 216 MHz LQFP100 ",
-   "mpn": "GD32G553VET6"
+   "value": "GD32G553VET7",
+   "query": "GD32G553VET7 MCU Cortex-M33 216 MHz LQFP100 −40…105 °C ",
+   "mpn": "GD32G553VET7"
   },
   {
    "designator": "CCARDD0",
@@ -1057,6 +1057,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "CANDCARD",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
    "designator": "RGPACARD",
    "block_name": "SAFETY",
    "pins": [
@@ -1198,6 +1218,46 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "REN1CARD",
+   "block_name": "BUCK-3V3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "UBKCARD_EN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "REN2CARD",
+   "block_name": "BUCK-3V3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UBKCARD_EN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "27k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
   },
   {
    "designator": "RBKF1CARD",
@@ -1415,6 +1475,26 @@
    ],
    "nc_pins": [],
    "value": "10uF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CAVB",
+   "block_name": "ANALOG-MID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
   },

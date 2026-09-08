@@ -29,11 +29,11 @@ const idxOf = (names, re) => [...new Set(names.map((n) => n.match(re)?.[1]).filt
 /** Vienna: one block per (phase, lane) — 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
 const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
   ["A", "B", "C"].map((ph) => [`PHASE-${ph}${n}`, [
-    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]2?$`), new RegExp(`^RG${ph}${n}[AB]2$`), new RegExp(`^D${ph}${n}[TBC]$`),
+    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]2?$`), new RegExp(`^RG${ph}${n}[AB][12]$`), new RegExp(`^D${ph}${n}[TBC]$`),
     new RegExp(`^C${ph}${n}(FP|FN|SN|C)$`), new RegExp(`^R${ph}${n}(SN|C)$`),
     new RegExp(`^U${ph}${n}G$`), new RegExp(`^PS${ph}${n}G$`),
-    new RegExp(`^R${ph}${n}G(ON|OFF|GS|PD)$`), new RegExp(`^D${ph}${n}GS[12]$`),
-    new RegExp(`^C${ph}${n}G(BL|B1|B2)$`)]]));
+    new RegExp(`^R${ph}${n}G(ON|OFF|GS|PD|DS)$`), new RegExp(`^D${ph}${n}GS[12]$`),
+    new RegExp(`^C${ph}${n}G(BL|B1|B2|BV)$`)]]));
 
 /** line CTs: one block per lane */
 const lineCtBlocks = (names) => idxOf(names, /^CTA(\d)$/).map((n) =>
@@ -46,7 +46,7 @@ const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
 
 /** LLC half-bridge legs: 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
 const legBlocks = (names) => idxOf(names, /^Q(\d+)H$/).map((n) =>
-  [`LEG-${n}`, [new RegExp(`^(Q|U|PS|R|D|C)${n}[HL]`), new RegExp(`^RG${n}[HL]2$`)]]);   /* E44 pair gate Rs */
+  [`LEG-${n}`, [new RegExp(`^(Q|U|PS|R|D|C)${n}[HL]`), new RegExp(`^RG${n}[HL][12]$`)]]);   /* E44 pair gate Rs */
 
 /** LLC resonant tanks + rectifiers, one per leg */
 const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
@@ -70,10 +70,10 @@ const PAGES = {
     ["CONTROL", [
       ["MCU", [/^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/]],
       ["SWD-BOOT", [/^(JSWDCARD|RCARDBOOT|CCARDRST)$/]],
-      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|GPA|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD)$/]],
+      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|GPA|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD|CANDCARD)$/]],
       ["FLT-GROUND", [/^(RFLTC|CFLTC|RAGTC)$/]],
-      ["BUCK-3V3", [/^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD)$/]],
-      ["ANALOG-MID", [/^(RAV[HLIF]|CAV[MFO]|UAVB)$/]],
+      ["BUCK-3V3", [/^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD|REN[12]CARD)$/]],
+      ["ANALOG-MID", [/^(RAV[HLIF]|CAV[MFOB]|UAVB)$/]],
       ["ROLE", [/^RROLE[01]$/]],
       ["CARD-IF", [/^JCARD$/]],
     ], ["MCU", "SWD-BOOT", "SAFETY", "FLT-GROUND", "BUCK-3V3", "ANALOG-MID", "ROLE", "CARD-IF"]],
@@ -86,25 +86,25 @@ const PAGES = {
       ["PRECHARGE", [/^KPRE[12]$/, /^RPRE[12]$/, /^RKFBP$/]],
     ], ["AC-ENTRY", "SURGE", "EMI-FILTER", "PRECHARGE"]],
     ["VIENNA-PFC", [
-      ["PHASE-A", [/^LA0$/, /^QA0[AB]2?$/, /^DA0[TBC]$/, /^CA0(FP|FN|SN|C)$/, /^RA0(SN|C)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD)$/, /^DA0GS[12]$/, /^RGA0[AB]2$/, /^CA0G(BL|B1|B2)$/]],
-      ["PHASE-B", [/^LB0$/, /^QB0[AB]2?$/, /^DB0[TBC]$/, /^CB0(FP|FN|SN|C)$/, /^RB0(SN|C)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD)$/, /^DB0GS[12]$/, /^RGB0[AB]2$/, /^CB0G(BL|B1|B2)$/]],
-      ["PHASE-C", [/^LC0$/, /^QC0[AB]2?$/, /^DC0[TBC]$/, /^CC0(FP|FN|SN|C)$/, /^RC0(SN|C)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD)$/, /^DC0GS[12]$/, /^RGC0[AB]2$/, /^CC0G(BL|B1|B2)$/]],
+      ["PHASE-A", [/^LA0$/, /^QA0[AB]2?$/, /^DA0[TBC]$/, /^CA0(FP|FN|SN|C)$/, /^RA0(SN|C)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD|DS)$/, /^DA0GS[12]$/, /^RGA0[AB][12]$/, /^CA0G(BL|B1|B2|BV)$/]],
+      ["PHASE-B", [/^LB0$/, /^QB0[AB]2?$/, /^DB0[TBC]$/, /^CB0(FP|FN|SN|C)$/, /^RB0(SN|C)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD|DS)$/, /^DB0GS[12]$/, /^RGB0[AB][12]$/, /^CB0G(BL|B1|B2|BV)$/]],
+      ["PHASE-C", [/^LC0$/, /^QC0[AB]2?$/, /^DC0[TBC]$/, /^CC0(FP|FN|SN|C)$/, /^RC0(SN|C)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD|DS)$/, /^DC0GS[12]$/, /^RGC0[AB][12]$/, /^CC0G(BL|B1|B2|BV)$/]],
     ], ["PHASE-A", "PHASE-B", "PHASE-C"]],
     ["DC-LINK", [
       ["LINK-BANK", [/^CD[TB]0\d$/, /^RBAL[TB]0[AB]$/]],
-      ["DISCHARGE", [/^RDIS\d$/, /^QDISF?$/, /^UQD$/, /^PSQD$/, /^RQD(L|G|PD)$/]],
+      ["DISCHARGE", [/^RDIS\d$/, /^QDISF?$/, /^UQD$/, /^PSQD$/, /^RQD(L|G|PD)$/, /^CQD$/]],
       ["BUS-STUDS", [/^JDC[PN]$/, /^JPEB$/]],
     ], ["LINK-BANK", "DISCHARGE", "BUS-STUDS"]],
     ["AC-SENSING", [
       ["STAR", [/^RNS\d[AB]$/]],
-      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^UIVV1$/]],
-      ["SENSE-VAC2", [/^RV2D\d$/, /^RV2DL$/, /^CV2DF$/, /^UIVV2$/]],
-      ["SENSE-VAC3", [/^RV3D\d$/, /^RV3DL$/, /^CV3DF$/, /^UIVV3$/]],
-      ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^UIVBP$/]],
-      ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^UIVBM$/]],
-      ["ISO-BIAS", [/^PS5(AC|BUS)$/]],
+      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^CV1V[AB]$/, /^UIVV1$/]],
+      ["SENSE-VAC2", [/^RV2D\d$/, /^RV2DL$/, /^CV2DF$/, /^CV2V[AB]$/, /^UIVV2$/]],
+      ["SENSE-VAC3", [/^RV3D\d$/, /^RV3DL$/, /^CV3DF$/, /^CV3V[AB]$/, /^UIVV3$/]],
+      ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^CBPV[AB]$/, /^UIVBP$/]],
+      ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^CBMV[AB]$/, /^UIVBM$/]],
+      ["ISO-BIAS", [/^PS5(AC|BUS)$/, /^C5B(AC|BUS)$/]],
       ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/]],
-      ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOF]$/, /^UAVB$/]],
+      ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOFB]$/, /^UAVB$/]],
       ["NTC", [/^JT(PFC|INL)$/, /^RT(PFC|INL)P$/, /^CT(PFC|INL)F$/]],
     ], ["STAR", "SENSE-VAC1", "SENSE-VAC2", "SENSE-VAC3", "SENSE-VBUS", "SENSE-VMID", "ISO-BIAS", "LINE-CTS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
@@ -126,9 +126,9 @@ const PAGES = {
   dcdc: [
     ["LLC-LEGS", [
       ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/]],
-      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL]2$/]],
-      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL]2$/]],
-      ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/, /^RG3[HL]2$/]],   /* E44 paralleled-pair gate Rs */
+      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL][12]$/]],
+      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL][12]$/]],
+      ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/, /^RG3[HL][12]$/]],   /* E44 paralleled-pair gate Rs */
     ], ["BUS-IN", "LEG-1", "LEG-2", "LEG-3"]],
     ["LLC-TANKS", [
       ["TANK-1", [/^C1R\d$/, /^L1T$/, /^T1$/, /^D1[AB][1-4]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/]],
@@ -142,22 +142,22 @@ const PAGES = {
       ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/]],
     ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],
     ["OUTPUT-SENSING", [
-      ["OUTPUT", [/^RSHO$/, /^USHO$/, /^PSSH$/, /^COF[12]$/, /^CYO[12]$/, /^JOUT[PN]$/]],
-      ["SENSE-VBKA", [/^ROAD\d$/, /^ROADL$/, /^COADF$/, /^UIVOA$/]],
-      ["SENSE-VBKB", [/^ROBD\d$/, /^ROBDL$/, /^COBDF$/, /^UIVOB$/]],
-      ["SENSE-VOUT", [/^ROVD\d$/, /^ROVDL$/, /^COVDF$/, /^UIVOV$/]],
-      ["ISO-BIAS", [/^PS5BK[AB]$/]],
-      ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOF]$/, /^UAVB$/]],
+      ["OUTPUT", [/^RSHO$/, /^USHO$/, /^PSSH$/, /^CSH[12B]$/, /^COF[12]$/, /^CYO[12]$/, /^JOUT[PN]$/]],
+      ["SENSE-VBKA", [/^ROAD\d$/, /^ROADL$/, /^COADF$/, /^COAV[AB]$/, /^UIVOA$/]],
+      ["SENSE-VBKB", [/^ROBD\d$/, /^ROBDL$/, /^COBDF$/, /^COBV[AB]$/, /^UIVOB$/]],
+      ["SENSE-VOUT", [/^ROVD\d$/, /^ROVDL$/, /^COVDF$/, /^COVV[AB]$/, /^UIVOV$/]],
+      ["ISO-BIAS", [/^PS5BK[AB]$/, /^C5BBK[AB]$/]],
+      ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOFB]$/, /^UAVB$/]],
       ["NTC", [/^JT(LLC|XFR)$/, /^RT(LLC|XFR)P$/, /^CT(LLC|XFR)F$/]],
     ], ["OUTPUT", "SENSE-VBKA", "SENSE-VBKB", "SENSE-VOUT", "ISO-BIAS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
       // card-split (E35): see the AC-DC CONTROL note — board keeps interface + pull-downs + strap.
       ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/]],
-      ["COIL-DRIVER", [/^ULB$/, /^UEXCL$/]],   /* R4-8 hardware S/P exclusion */
+      ["COIL-DRIVER", [/^ULB$/, /^UEXCL2?$/, /^CEXCL2?$/]],   /* R4-8 hardware S/P exclusion */
       ["INTERCONNECT", [/^JICB$/, /^RBL(TX|RX|TS|RS)$/]],
     ], ["CARD-IF", "COIL-DRIVER", "INTERCONNECT"]],
     ["COMMS-HMI", [
-      ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/]],
+      ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/, /^CCV[12]$/, /^CCB5$/]],
       ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/]],
     ], ["CAN", "HMI"]],
   ],

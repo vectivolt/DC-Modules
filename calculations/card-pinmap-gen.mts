@@ -1,4 +1,4 @@
-// card-pinmap-gen.mts — generate CARD_MCU_PINS from the released GD32G553VET6 allocation.
+// card-pinmap-gen.mts — generate CARD_MCU_PINS from the released GD32G553VET7 allocation.
 //
 // The card is ONE part number for both converter roles, but the released allocation has TWO maps
 // (UPFC, ULLC) allocated independently, and they disagree on 27 of the 29 signals they share.

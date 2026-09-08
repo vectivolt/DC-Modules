@@ -735,9 +735,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-25W-AX",
-   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
-   "mpn": "CER-25W-AX"
+   "value": "CER-25W-33R-AX",
+   "query": "CER-25W-33R-AX 33 Ω 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-33R-AX"
   },
   {
    "designator": "RPRE2",
@@ -755,9 +755,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-25W-AX",
-   "query": "CER-25W-AX 25 W ceramic pulse resistor, axial ",
-   "mpn": "CER-25W-AX"
+   "value": "CER-25W-33R-AX",
+   "query": "CER-25W-33R-AX 33 Ω 25 W ceramic pulse resistor, axial ",
+   "mpn": "CER-25W-33R-AX"
   },
   {
    "designator": "RKFBP",

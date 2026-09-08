@@ -15,8 +15,8 @@ Comment4 ""
 $EndDescr
 $Sheet
 S 1000 1000 4200 1400
-U 5E00002E
-F0 "Control Card - GD32G553VET6, one card for both converter roles (E35)" 70
+U 5E000032
+F0 "Control Card - GD32G553VET7, one card for both converter roles (E35)" 70
 F1 "control-card-card.sch" 70
 $EndSheet
 $EndSCHEMATC

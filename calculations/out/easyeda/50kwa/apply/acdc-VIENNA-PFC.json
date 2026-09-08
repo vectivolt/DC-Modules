@@ -90,7 +90,7 @@
     "designator": "RGA0A2",
     "value": "2.2",
     "block_name": "PHASE-A0",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -109,7 +109,7 @@
     "designator": "RGA0B2",
     "value": "2.2",
     "block_name": "PHASE-A0",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -125,6 +125,44 @@
     ]
    },
    {
+    "designator": "RGA0A1",
+    "value": "2.2",
+    "block_name": "PHASE-A0",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QA0A_G"
+     }
+    ]
+   },
+   {
+    "designator": "RGA0B1",
+    "value": "2.2",
+    "block_name": "PHASE-A0",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QA0B_G"
+     }
+    ]
+   },
+   {
     "designator": "QA0A",
     "value": "B3M010C075Z",
     "block_name": "PHASE-A0",
@@ -134,7 +172,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_A0"
+      "signal_name": "QA0A_G"
      },
      {
       "pin_number": 1,
@@ -163,7 +201,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_A0"
+      "signal_name": "QA0B_G"
      },
      {
       "pin_number": 1,
@@ -291,6 +329,28 @@
     ]
    },
    {
+    "designator": "CA0GBV",
+    "value": "100nF",
+    "block_name": "PHASE-A0",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "CA0GB1",
     "value": "1uF",
     "block_name": "PHASE-A0",
@@ -414,6 +474,25 @@
     }
    },
    {
+    "designator": "RA0GDS",
+    "value": "100",
+    "block_name": "PHASE-A0",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UA0G_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DA0GS1_RA0GDS"
+     }
+    ]
+   },
+   {
     "designator": "DA0GS1",
     "value": "US1M",
     "block_name": "PHASE-A0",
@@ -423,7 +502,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "UA0G_DST"
+      "signal_name": "DA0GS1_RA0GDS"
      },
      {
       "pin_number": 1,
@@ -751,7 +830,7 @@
     "designator": "RGB0A2",
     "value": "2.2",
     "block_name": "PHASE-B0",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -770,7 +849,7 @@
     "designator": "RGB0B2",
     "value": "2.2",
     "block_name": "PHASE-B0",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -786,6 +865,44 @@
     ]
    },
    {
+    "designator": "RGB0A1",
+    "value": "2.2",
+    "block_name": "PHASE-B0",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QB0A_G"
+     }
+    ]
+   },
+   {
+    "designator": "RGB0B1",
+    "value": "2.2",
+    "block_name": "PHASE-B0",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QB0B_G"
+     }
+    ]
+   },
+   {
     "designator": "QB0A",
     "value": "B3M010C075Z",
     "block_name": "PHASE-B0",
@@ -795,7 +912,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_B0"
+      "signal_name": "QB0A_G"
      },
      {
       "pin_number": 1,
@@ -824,7 +941,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_B0"
+      "signal_name": "QB0B_G"
      },
      {
       "pin_number": 1,
@@ -952,6 +1069,28 @@
     ]
    },
    {
+    "designator": "CB0GBV",
+    "value": "100nF",
+    "block_name": "PHASE-B0",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "CB0GB1",
     "value": "1uF",
     "block_name": "PHASE-B0",
@@ -1075,6 +1214,25 @@
     }
    },
    {
+    "designator": "RB0GDS",
+    "value": "100",
+    "block_name": "PHASE-B0",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UB0G_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DB0GS1_RB0GDS"
+     }
+    ]
+   },
+   {
     "designator": "DB0GS1",
     "value": "US1M",
     "block_name": "PHASE-B0",
@@ -1084,7 +1242,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "UB0G_DST"
+      "signal_name": "DB0GS1_RB0GDS"
      },
      {
       "pin_number": 1,
@@ -1412,7 +1570,7 @@
     "designator": "RGC0A2",
     "value": "2.2",
     "block_name": "PHASE-C0",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1431,7 +1589,7 @@
     "designator": "RGC0B2",
     "value": "2.2",
     "block_name": "PHASE-C0",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1447,6 +1605,44 @@
     ]
    },
    {
+    "designator": "RGC0A1",
+    "value": "2.2",
+    "block_name": "PHASE-C0",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QC0A_G"
+     }
+    ]
+   },
+   {
+    "designator": "RGC0B1",
+    "value": "2.2",
+    "block_name": "PHASE-C0",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QC0B_G"
+     }
+    ]
+   },
+   {
     "designator": "QC0A",
     "value": "B3M010C075Z",
     "block_name": "PHASE-C0",
@@ -1456,7 +1652,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_C0"
+      "signal_name": "QC0A_G"
      },
      {
       "pin_number": 1,
@@ -1485,7 +1681,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_C0"
+      "signal_name": "QC0B_G"
      },
      {
       "pin_number": 1,
@@ -1613,6 +1809,28 @@
     ]
    },
    {
+    "designator": "CC0GBV",
+    "value": "100nF",
+    "block_name": "PHASE-C0",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "CC0GB1",
     "value": "1uF",
     "block_name": "PHASE-C0",
@@ -1736,6 +1954,25 @@
     }
    },
    {
+    "designator": "RC0GDS",
+    "value": "100",
+    "block_name": "PHASE-C0",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UC0G_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DC0GS1_RC0GDS"
+     }
+    ]
+   },
+   {
     "designator": "DC0GS1",
     "value": "US1M",
     "block_name": "PHASE-C0",
@@ -1745,7 +1982,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "UC0G_DST"
+      "signal_name": "DC0GS1_RC0GDS"
      },
      {
       "pin_number": 1,
@@ -1996,5 +2233,5 @@
  "warnings": [
   "blocks over 24 comps (split risk): PHASE-A0, PHASE-B0, PHASE-C0"
  ],
- "total": 81
+ "total": 93
 }

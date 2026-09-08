@@ -12,9 +12,9 @@
   [
    {
     "designator": "RDIS0",
-    "value": "CER-25W-AX",
+    "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -31,9 +31,9 @@
    },
    {
     "designator": "RDIS1",
-    "value": "CER-25W-AX",
+    "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -50,9 +50,9 @@
    },
    {
     "designator": "RDIS2",
-    "value": "CER-25W-AX",
+    "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -69,9 +69,9 @@
    },
    {
     "designator": "RDIS3",
-    "value": "CER-25W-AX",
+    "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-AX 25 W ceramic pulse resistor, axial",
+    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -237,6 +237,28 @@
       "signal_name": "DCN"
      }
     ]
+   },
+   {
+    "designator": "CQD",
+    "value": "100nF",
+    "block_name": "DISCHARGE",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UQD_VCC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -801,5 +823,5 @@
   ]
  },
  "warnings": [],
- "total": 38
+ "total": 39
 }

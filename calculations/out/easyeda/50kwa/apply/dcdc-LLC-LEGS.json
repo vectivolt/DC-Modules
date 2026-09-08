@@ -130,7 +130,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GH_1"
+      "signal_name": "Q1H_G"
      },
      {
       "pin_number": 1,
@@ -159,7 +159,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GL_1"
+      "signal_name": "Q1L_G"
      },
      {
       "pin_number": 1,
@@ -240,7 +240,7 @@
     "designator": "RG1H2",
     "value": "2.2",
     "block_name": "LEG-1",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -259,7 +259,7 @@
     "designator": "RG1L2",
     "value": "2.2",
     "block_name": "LEG-1",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -271,6 +271,44 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "Q1L2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG1H1",
+    "value": "2.2",
+    "block_name": "LEG-1",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q1H_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG1L1",
+    "value": "2.2",
+    "block_name": "LEG-1",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q1L_G"
      }
     ]
    },
@@ -381,6 +419,28 @@
       "signal_name": "DGND"
      }
     ]
+   },
+   {
+    "designator": "C1HBV",
+    "value": "100nF",
+    "block_name": "LEG-1",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1HB1",
@@ -506,6 +566,25 @@
     }
    },
    {
+    "designator": "R1HDS",
+    "value": "100",
+    "block_name": "LEG-1",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U1H_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "D1HS1_R1HDS"
+     }
+    ]
+   },
+   {
     "designator": "D1HS1",
     "value": "US1M",
     "block_name": "LEG-1",
@@ -515,7 +594,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "U1H_DST"
+      "signal_name": "D1HS1_R1HDS"
      },
      {
       "pin_number": 1,
@@ -686,6 +765,28 @@
     ]
    },
    {
+    "designator": "C1LBV",
+    "value": "100nF",
+    "block_name": "LEG-1",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "C1LB1",
     "value": "1uF",
     "block_name": "LEG-1",
@@ -809,6 +910,25 @@
     }
    },
    {
+    "designator": "R1LDS",
+    "value": "100",
+    "block_name": "LEG-1",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U1L_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "D1LS1_R1LDS"
+     }
+    ]
+   },
+   {
     "designator": "D1LS1",
     "value": "US1M",
     "block_name": "LEG-1",
@@ -818,7 +938,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "U1L_DST"
+      "signal_name": "D1LS1_R1LDS"
      },
      {
       "pin_number": 1,
@@ -892,7 +1012,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GH_2"
+      "signal_name": "Q2H_G"
      },
      {
       "pin_number": 1,
@@ -921,7 +1041,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GL_2"
+      "signal_name": "Q2L_G"
      },
      {
       "pin_number": 1,
@@ -1002,7 +1122,7 @@
     "designator": "RG2H2",
     "value": "2.2",
     "block_name": "LEG-2",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1021,7 +1141,7 @@
     "designator": "RG2L2",
     "value": "2.2",
     "block_name": "LEG-2",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1033,6 +1153,44 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "Q2L2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG2H1",
+    "value": "2.2",
+    "block_name": "LEG-2",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q2H_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG2L1",
+    "value": "2.2",
+    "block_name": "LEG-2",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q2L_G"
      }
     ]
    },
@@ -1143,6 +1301,28 @@
       "signal_name": "DGND"
      }
     ]
+   },
+   {
+    "designator": "C2HBV",
+    "value": "100nF",
+    "block_name": "LEG-2",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2HB1",
@@ -1268,6 +1448,25 @@
     }
    },
    {
+    "designator": "R2HDS",
+    "value": "100",
+    "block_name": "LEG-2",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U2H_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "D2HS1_R2HDS"
+     }
+    ]
+   },
+   {
     "designator": "D2HS1",
     "value": "US1M",
     "block_name": "LEG-2",
@@ -1277,7 +1476,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "U2H_DST"
+      "signal_name": "D2HS1_R2HDS"
      },
      {
       "pin_number": 1,
@@ -1448,6 +1647,28 @@
     ]
    },
    {
+    "designator": "C2LBV",
+    "value": "100nF",
+    "block_name": "LEG-2",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "C2LB1",
     "value": "1uF",
     "block_name": "LEG-2",
@@ -1571,6 +1792,25 @@
     }
    },
    {
+    "designator": "R2LDS",
+    "value": "100",
+    "block_name": "LEG-2",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U2L_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "D2LS1_R2LDS"
+     }
+    ]
+   },
+   {
     "designator": "D2LS1",
     "value": "US1M",
     "block_name": "LEG-2",
@@ -1580,7 +1820,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "U2L_DST"
+      "signal_name": "D2LS1_R2LDS"
      },
      {
       "pin_number": 1,
@@ -1654,7 +1894,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GH_3"
+      "signal_name": "Q3H_G"
      },
      {
       "pin_number": 1,
@@ -1683,7 +1923,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GL_3"
+      "signal_name": "Q3L_G"
      },
      {
       "pin_number": 1,
@@ -1764,7 +2004,7 @@
     "designator": "RG3H2",
     "value": "2.2",
     "block_name": "LEG-3",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1783,7 +2023,7 @@
     "designator": "RG3L2",
     "value": "2.2",
     "block_name": "LEG-3",
-    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1795,6 +2035,44 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "Q3L2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG3H1",
+    "value": "2.2",
+    "block_name": "LEG-3",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q3H_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG3L1",
+    "value": "2.2",
+    "block_name": "LEG-3",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q3L_G"
      }
     ]
    },
@@ -1905,6 +2183,28 @@
       "signal_name": "DGND"
      }
     ]
+   },
+   {
+    "designator": "C3HBV",
+    "value": "100nF",
+    "block_name": "LEG-3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3HB1",
@@ -2030,6 +2330,25 @@
     }
    },
    {
+    "designator": "R3HDS",
+    "value": "100",
+    "block_name": "LEG-3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U3H_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "D3HS1_R3HDS"
+     }
+    ]
+   },
+   {
     "designator": "D3HS1",
     "value": "US1M",
     "block_name": "LEG-3",
@@ -2039,7 +2358,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "U3H_DST"
+      "signal_name": "D3HS1_R3HDS"
      },
      {
       "pin_number": 1,
@@ -2210,6 +2529,28 @@
     ]
    },
    {
+    "designator": "C3LBV",
+    "value": "100nF",
+    "block_name": "LEG-3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "C3LB1",
     "value": "1uF",
     "block_name": "LEG-3",
@@ -2333,6 +2674,25 @@
     }
    },
    {
+    "designator": "R3LDS",
+    "value": "100",
+    "block_name": "LEG-3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U3L_DST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "D3LS1_R3LDS"
+     }
+    ]
+   },
+   {
     "designator": "D3LS1",
     "value": "US1M",
     "block_name": "LEG-3",
@@ -2342,7 +2702,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "U3L_DST"
+      "signal_name": "D3LS1_R3LDS"
      },
      {
       "pin_number": 1,
@@ -2410,5 +2770,5 @@
  "warnings": [
   "blocks over 24 comps (split risk): LEG-1, LEG-2, LEG-3"
  ],
- "total": 90
+ "total": 108
 }

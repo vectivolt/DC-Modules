@@ -367,6 +367,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "CV1VA",
+    "value": "100nF",
+    "block_name": "SENSE-VAC1",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5AC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "NSTAR"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CV1VB",
+    "value": "100nF",
+    "block_name": "SENSE-VAC1",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -606,6 +650,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "CV2VA",
+    "value": "100nF",
+    "block_name": "SENSE-VAC2",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5AC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "NSTAR"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CV2VB",
+    "value": "100nF",
+    "block_name": "SENSE-VAC2",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -845,6 +933,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "CV3VA",
+    "value": "100nF",
+    "block_name": "SENSE-VAC3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5AC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "NSTAR"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CV3VB",
+    "value": "100nF",
+    "block_name": "SENSE-VAC3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1084,6 +1216,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "CBPVA",
+    "value": "100nF",
+    "block_name": "SENSE-VBUS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BUS"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBPVB",
+    "value": "100nF",
+    "block_name": "SENSE-VBUS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1323,6 +1499,50 @@
       "signal_name": "V3P3"
      }
     ]
+   },
+   {
+    "designator": "CBMVA",
+    "value": "100nF",
+    "block_name": "SENSE-VMID",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BUS"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBMVB",
+    "value": "100nF",
+    "block_name": "SENSE-VMID",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1356,6 +1576,28 @@
     ]
    },
    {
+    "designator": "C5BAC",
+    "value": "1uF",
+    "block_name": "ISO-BIAS",
+    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5AC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "NSTAR"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
     "designator": "PS5BUS",
     "value": "ISO5V-RFC-6K",
     "block_name": "ISO-BIAS",
@@ -1383,6 +1625,28 @@
       "signal_name": "DCN"
      }
     ]
+   },
+   {
+    "designator": "C5BBUS",
+    "value": "1uF",
+    "block_name": "ISO-BIAS",
+    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "B5BUS"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1879,5 +2143,5 @@
   ]
  },
  "warnings": [],
- "total": 87
+ "total": 99
 }

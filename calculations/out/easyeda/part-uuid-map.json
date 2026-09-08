@@ -332,5 +332,10 @@
   "part_uuid": "10d83543e6bc428bbfbe6731a5e279ad",
   "lcsc": "C94571",
   "note": "ZMCT103C CT symbol - PROBE pin count | R3: sized up from 60 A (63.95 A rms/cell at 285 V low line)"
+ },
+ "GD32G553VET7": {
+  "part_uuid": "e9035421dabb42c7b86bd61d0abc3f85",
+  "lcsc": "C9900185865",
+  "note": "LQFP-100, pins 1..100 datasheet numbering"
  }
 }

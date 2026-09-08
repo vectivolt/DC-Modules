@@ -121,7 +121,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     f->sw_step++;
     if (f->sw_step == 1) { f->icmd_saved = in->icmd; }               /* controller ramps I to 0 */
     if (f->sw_step == 10) { o->llc_en = false; o->k_out = false; }
-    if (f->sw_step == 20) { o->k_ser = false; o->k_para = false; o->k_parb = false; }
+    /* R5: k_prea/k_preb are cleared here too — they are already false on every reachable path
+     * (PAR pre-insertion drops them when the mains close), but the mode-switch invariant is
+     * "EVERY matrix contact open", so state it rather than infer it. */
+    if (f->sw_step == 20) { o->k_ser = false; o->k_para = false; o->k_parb = false; o->k_prea = false; o->k_preb = false; }
     if (f->sw_step == 40) {
       bool tracking = fabsf(in->vbank_a - in->vbank_b) < PMP_WELD_DV_V; /* welded contacts keep tracking */
       if (o->mode == MODE_PAR && tracking && (in->relay_fb[1] || in->relay_fb[2])) { latch(f, FC_WELD); break; }
