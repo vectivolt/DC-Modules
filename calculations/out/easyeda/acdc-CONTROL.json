@@ -12,245 +12,6 @@
  },
  "components": [
   {
-   "designator": "JA",
-   "block_name": "CARD-IF",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "PWM0",
-     "signal_name": "PWM_A0"
-    },
-    {
-     "pin_number": 2,
-     "name": "PWM1",
-     "signal_name": "PWM_B0"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM2",
-     "signal_name": "PWM_C0"
-    },
-    {
-     "pin_number": 13,
-     "name": "AIN0",
-     "signal_name": "I_A0"
-    },
-    {
-     "pin_number": 14,
-     "name": "AIN1",
-     "signal_name": "I_B0"
-    },
-    {
-     "pin_number": 15,
-     "name": "AIN2",
-     "signal_name": "I_C0"
-    },
-    {
-     "pin_number": 16,
-     "name": "AIN3",
-     "signal_name": "SNS_VAC1"
-    },
-    {
-     "pin_number": 17,
-     "name": "AIN4",
-     "signal_name": "SNS_VAC2"
-    },
-    {
-     "pin_number": 18,
-     "name": "AIN5",
-     "signal_name": "SNS_VAC3"
-    },
-    {
-     "pin_number": 19,
-     "name": "AIN6",
-     "signal_name": "SNS_VBUSP"
-    },
-    {
-     "pin_number": 20,
-     "name": "AIN7",
-     "signal_name": "SNS_VMID"
-    },
-    {
-     "pin_number": 26,
-     "name": "TSNS0",
-     "signal_name": "T_PFC"
-    },
-    {
-     "pin_number": 27,
-     "name": "TSNS1",
-     "signal_name": "T_INLET"
-    },
-    {
-     "pin_number": 28,
-     "name": "AVMID",
-     "signal_name": "AVMID"
-    },
-    {
-     "pin_number": 29,
-     "name": "AGND_2",
-     "signal_name": "AGND"
-    },
-    {
-     "pin_number": 30,
-     "name": "DO0",
-     "signal_name": "FAN_PWM1"
-    },
-    {
-     "pin_number": 31,
-     "name": "DO1",
-     "signal_name": "FAN_PWM2"
-    },
-    {
-     "pin_number": 32,
-     "name": "DO2",
-     "signal_name": "CTL_KPRE"
-    },
-    {
-     "pin_number": 33,
-     "name": "DO3",
-     "signal_name": "CTL_QDIS"
-    },
-    {
-     "pin_number": 37,
-     "name": "DI0",
-     "signal_name": "FAN_TACH1"
-    },
-    {
-     "pin_number": 38,
-     "name": "DI1",
-     "signal_name": "FAN_TACH2"
-    },
-    {
-     "pin_number": 39,
-     "name": "DI2",
-     "signal_name": "RELAY_FB_KPRE"
-    },
-    {
-     "pin_number": 43,
-     "name": "GATE_EN",
-     "signal_name": "GATE_EN_A"
-    },
-    {
-     "pin_number": 44,
-     "name": "FLT",
-     "signal_name": "FLT_PFC"
-    },
-    {
-     "pin_number": 45,
-     "name": "EN_A",
-     "signal_name": "EN_PFC"
-    },
-    {
-     "pin_number": 46,
-     "name": "EN_B",
-     "signal_name": "EN_LLC"
-    },
-    {
-     "pin_number": 47,
-     "name": "DRV_RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 48,
-     "name": "LINK_TX",
-     "signal_name": "LINK_TX"
-    },
-    {
-     "pin_number": 49,
-     "name": "LINK_RX",
-     "signal_name": "LINK_RX"
-    },
-    {
-     "pin_number": 59,
-     "name": "ROLE0",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 60,
-     "name": "ROLE1",
-     "signal_name": "RATING"
-    },
-    {
-     "pin_number": 61,
-     "name": "V15",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 63,
-     "name": "V3P3",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 66,
-     "name": "DGND",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 74,
-     "name": "AGND",
-     "signal_name": "AGND"
-    }
-   ],
-   "nc_pins": [
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    21,
-    22,
-    23,
-    24,
-    25,
-    34,
-    35,
-    36,
-    40,
-    41,
-    42,
-    50,
-    51,
-    52,
-    53,
-    54,
-    55,
-    56,
-    57,
-    58,
-    62,
-    64,
-    65,
-    67,
-    68,
-    69,
-    70,
-    71,
-    72,
-    73,
-    75,
-    76,
-    77,
-    78,
-    79,
-    80,
-    81,
-    82,
-    83,
-    84,
-    85,
-    86,
-    87,
-    88
-   ],
-   "value": "CONN-CARD-88-H",
-   "query": "CONN-CARD-88-H 88-way 2×44 2.54 mm card interface, PIN HEADER side ",
-   "mpn": "CONN-CARD-88-H"
-  },
-  {
    "designator": "RPD0",
    "block_name": "CARD-IF",
    "pins": [
@@ -297,7 +58,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "EN_LLC"
+     "signal_name": "CTL_KPRE"
     },
     {
      "pin_number": 2,
@@ -317,7 +78,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "CTL_KPRE"
+     "signal_name": "CTL_QDIS"
     },
     {
      "pin_number": 2,
@@ -337,7 +98,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "CTL_QDIS"
+     "signal_name": "PWM_A0"
     },
     {
      "pin_number": 2,
@@ -351,13 +112,13 @@
    "mpn": "R0603-10k"
   },
   {
-   "designator": "RROLE",
+   "designator": "RPD5",
    "block_name": "CARD-IF",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RATING"
+     "signal_name": "PWM_B0"
     },
     {
      "pin_number": 2,
@@ -366,9 +127,29 @@
     }
    ],
    "nc_pins": [],
-   "value": "0R",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
+  },
+  {
+   "designator": "RPD6",
+   "block_name": "CARD-IF",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "PWM_C0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
+   "mpn": "R0603-10k"
   },
   {
    "designator": "RPET",

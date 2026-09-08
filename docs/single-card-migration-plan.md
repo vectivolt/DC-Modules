@@ -1,6 +1,9 @@
 # E40 (PROPOSED) — Single Control Card per Module ("one brain, one source of truth")
 
-**Status: PLAN — not yet executed.** Directive 2026-09-08: multiple cards per module create their
+**Status: EXECUTED (branch `e40-single-card`, register E40).** Outcome beat the plan: the merged
+role fits the EXISTING VET6 and the EXISTING 88-way slot (no ZET6, no new connector — both stay
+recorded as headroom); measured BOM delta **−₹293/module**; family MCU count **1 / 2 / 5**.
+Original plan text below, kept as the decision record. Directive 2026-09-08: multiple cards per module create their
 own problems; a module should be a single control system, and the cabinet CAN should carry fewer,
 clearer voices. This document is the full migration plan with costs, pros and cons. Execution
 begins only on "go"; until then the shipped design remains the audited two-card rev.

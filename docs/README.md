@@ -47,7 +47,7 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 | [`review-response-r3.md`](review-response-r3.md) | **external PDF review R3** — "do not manufacture" on pin numbering; every finding checked against netlist + datasheet |
 | [`easyeda-transcription.md`](easyeda-transcription.md) | the EasyEDA face — frozen by directive (KiCad is the record); kept as the route + tool-limit record |
 | [`control-card-scope.md`](control-card-scope.md) | **why one card caps at 60 kW DC-DC** — the connector/HRTIMER/pin arithmetic that made 120 kW a cabinet |
-| [`single-card-migration-plan.md`](single-card-migration-plan.md) | **E40 (proposed)** — one card per module: MCU selection, 40-way harness, costs, pros/cons, phase plan |
+| [`single-card-migration-plan.md`](single-card-migration-plan.md) | **E40 (EXECUTED)** — one brain per module: the decision record, MCU matrix, measured outcome |
 
 ## Generated data & plots
 

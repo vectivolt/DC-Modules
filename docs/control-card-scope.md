@@ -1,4 +1,11 @@
-# Can one control card serve 120 kW?
+# Control-card scope — one brain per module (E40)
+
+**Current architecture:** ONE card runs the whole 30 kW module from the DC-DC slot (merged role,
+`umod-pinmap.mts`); higher ratings are cabinets (60 = 2×, 120 = 4× + CSU — same card, RATING
+band). The analysis below is the historical arithmetic that first sized the card era and still
+answers the recurring question:
+
+# Can one control card serve 120 kW? (historical, still correct)
 
 **No.** Three independent limits, any one of which is fatal on its own. None is a matter of
 layout effort — they are a connector way count, a silicon peripheral count, and a pin count.

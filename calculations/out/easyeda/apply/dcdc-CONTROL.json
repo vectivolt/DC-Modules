@@ -32,6 +32,21 @@
       "signal_name": "PWM_L3H"
      },
      {
+      "pin_number": 4,
+      "name": "PWM3",
+      "signal_name": "PWM_A0"
+     },
+     {
+      "pin_number": 5,
+      "name": "PWM4",
+      "signal_name": "PWM_B0"
+     },
+     {
+      "pin_number": 6,
+      "name": "PWM5",
+      "signal_name": "PWM_C0"
+     },
+     {
       "pin_number": 7,
       "name": "PWM6",
       "signal_name": "PWM_L1L"
@@ -64,215 +79,305 @@
      {
       "pin_number": 16,
       "name": "AIN3",
-      "signal_name": "SNS_VBKA"
+      "signal_name": "SNS_VOUT"
      },
      {
       "pin_number": 17,
       "name": "AIN4",
-      "signal_name": "SNS_VBKB"
+      "signal_name": "SNS_IOUT"
      },
      {
       "pin_number": 18,
       "name": "AIN5",
-      "signal_name": "SNS_VOUT"
+      "signal_name": "SNS_IOUTN"
      },
      {
       "pin_number": 19,
       "name": "AIN6",
-      "signal_name": "SNS_IOUT"
+      "signal_name": "SNS_VBKA"
      },
      {
       "pin_number": 20,
       "name": "AIN7",
-      "signal_name": "SNS_IOUTN"
+      "signal_name": "SNS_VBKB"
+     },
+     {
+      "pin_number": 21,
+      "name": "AIN8",
+      "signal_name": "I_A0"
+     },
+     {
+      "pin_number": 22,
+      "name": "AIN9",
+      "signal_name": "I_B0"
+     },
+     {
+      "pin_number": 23,
+      "name": "AIN10",
+      "signal_name": "I_C0"
+     },
+     {
+      "pin_number": 24,
+      "name": "AIN11",
+      "signal_name": "SNS_VAC1"
+     },
+     {
+      "pin_number": 25,
+      "name": "AIN12",
+      "signal_name": "SNS_VAC2"
      },
      {
       "pin_number": 26,
+      "name": "ANA13",
+      "signal_name": "SNS_VAC3"
+     },
+     {
+      "pin_number": 27,
+      "name": "ANA14",
+      "signal_name": "SNS_VBUSP"
+     },
+     {
+      "pin_number": 28,
+      "name": "ANA15",
+      "signal_name": "SNS_VMID"
+     },
+     {
+      "pin_number": 29,
+      "name": "ANA16",
+      "signal_name": "SNS_V24"
+     },
+     {
+      "pin_number": 30,
+      "name": "ANA17",
+      "signal_name": "SNS_V15"
+     },
+     {
+      "pin_number": 31,
+      "name": "ANA18",
+      "signal_name": "T_PFC"
+     },
+     {
+      "pin_number": 32,
+      "name": "ANA19",
+      "signal_name": "T_INLET"
+     },
+     {
+      "pin_number": 33,
       "name": "TSNS0",
       "signal_name": "T_LLC"
      },
      {
-      "pin_number": 27,
+      "pin_number": 34,
       "name": "TSNS1",
       "signal_name": "T_XFMR"
      },
      {
-      "pin_number": 28,
+      "pin_number": 35,
       "name": "AVMID",
       "signal_name": "AVMID"
      },
      {
-      "pin_number": 29,
+      "pin_number": 36,
       "name": "AGND_2",
       "signal_name": "AGND"
      },
      {
-      "pin_number": 30,
+      "pin_number": 37,
       "name": "DO0",
       "signal_name": "CTL_KSER"
      },
      {
-      "pin_number": 31,
+      "pin_number": 38,
       "name": "DO1",
       "signal_name": "CTL_KPARA"
      },
      {
-      "pin_number": 32,
+      "pin_number": 39,
       "name": "DO2",
       "signal_name": "CTL_KPARB"
      },
      {
-      "pin_number": 33,
+      "pin_number": 40,
       "name": "DO3",
       "signal_name": "CTL_KOUT"
      },
      {
-      "pin_number": 34,
+      "pin_number": 41,
       "name": "DO4",
       "signal_name": "CTL_KPREA"
      },
      {
-      "pin_number": 35,
+      "pin_number": 42,
       "name": "DO5",
       "signal_name": "CTL_KPREB"
      },
      {
-      "pin_number": 36,
+      "pin_number": 43,
       "name": "DO6",
       "signal_name": "CTL_QDISBK"
      },
      {
-      "pin_number": 37,
+      "pin_number": 44,
+      "name": "DO7",
+      "signal_name": "FAN_PWM1"
+     },
+     {
+      "pin_number": 45,
+      "name": "DO8",
+      "signal_name": "FAN_PWM2"
+     },
+     {
+      "pin_number": 46,
+      "name": "DO9",
+      "signal_name": "CTL_KPRE"
+     },
+     {
+      "pin_number": 47,
+      "name": "DO10",
+      "signal_name": "CTL_QDIS"
+     },
+     {
+      "pin_number": 48,
       "name": "DI0",
       "signal_name": "RELAY_FB_KSER"
      },
      {
-      "pin_number": 38,
+      "pin_number": 49,
       "name": "DI1",
       "signal_name": "RELAY_FB_KPARA"
      },
      {
-      "pin_number": 39,
+      "pin_number": 50,
       "name": "DI2",
       "signal_name": "RELAY_FB_KPARB"
      },
      {
-      "pin_number": 40,
+      "pin_number": 51,
       "name": "DI3",
       "signal_name": "RELAY_FB_KOUT"
      },
      {
-      "pin_number": 41,
+      "pin_number": 52,
       "name": "DI4",
       "signal_name": "RELAY_FB_KPREA"
      },
      {
-      "pin_number": 42,
+      "pin_number": 53,
       "name": "DI5",
       "signal_name": "RELAY_FB_KPREB"
      },
      {
-      "pin_number": 43,
+      "pin_number": 54,
+      "name": "DI6",
+      "signal_name": "FAN_TACH1"
+     },
+     {
+      "pin_number": 55,
+      "name": "DI7",
+      "signal_name": "FAN_TACH2"
+     },
+     {
+      "pin_number": 56,
+      "name": "DI8",
+      "signal_name": "RELAY_FB_KPRE"
+     },
+     {
+      "pin_number": 57,
       "name": "GATE_EN",
       "signal_name": "GATE_EN_B"
      },
      {
-      "pin_number": 44,
-      "name": "FLT",
-      "signal_name": "FLT_LLC"
+      "pin_number": 58,
+      "name": "GATE_EN_A",
+      "signal_name": "GATE_EN_A"
      },
      {
-      "pin_number": 45,
+      "pin_number": 59,
+      "name": "FLT",
+      "signal_name": "FLT"
+     },
+     {
+      "pin_number": 60,
       "name": "EN_A",
       "signal_name": "EN_PFC"
      },
      {
-      "pin_number": 46,
+      "pin_number": 61,
       "name": "EN_B",
       "signal_name": "EN_LLC"
      },
      {
-      "pin_number": 47,
+      "pin_number": 62,
       "name": "DRV_RDY",
       "signal_name": "DRV_RDY"
      },
      {
-      "pin_number": 48,
-      "name": "LINK_TX",
-      "signal_name": "LINK_TX"
-     },
-     {
-      "pin_number": 49,
-      "name": "LINK_RX",
-      "signal_name": "LINK_RX"
-     },
-     {
-      "pin_number": 50,
+      "pin_number": 63,
       "name": "CAN_TX",
       "signal_name": "CAN_TX"
      },
      {
-      "pin_number": 51,
+      "pin_number": 64,
       "name": "CAN_RX",
       "signal_name": "CAN_RX"
      },
      {
-      "pin_number": 52,
+      "pin_number": 65,
       "name": "HMI0",
       "signal_name": "HMI_DAT"
      },
      {
-      "pin_number": 53,
+      "pin_number": 66,
       "name": "HMI1",
       "signal_name": "HMI_CLK"
      },
      {
-      "pin_number": 54,
+      "pin_number": 67,
       "name": "HMI2",
       "signal_name": "HMI_LAT"
      },
      {
-      "pin_number": 55,
+      "pin_number": 68,
       "name": "HMI3",
       "signal_name": "HMI_DIG1"
      },
      {
-      "pin_number": 56,
+      "pin_number": 69,
       "name": "HMI4",
       "signal_name": "HMI_DIG2"
      },
      {
-      "pin_number": 57,
+      "pin_number": 70,
       "name": "HMI5",
       "signal_name": "BTN1"
      },
      {
-      "pin_number": 58,
+      "pin_number": 71,
       "name": "HMI6",
       "signal_name": "BTN2"
      },
      {
-      "pin_number": 60,
+      "pin_number": 72,
       "name": "ROLE1",
       "signal_name": "RATING"
      },
      {
-      "pin_number": 61,
+      "pin_number": 73,
       "name": "V15",
       "signal_name": "V15"
      },
      {
-      "pin_number": 63,
+      "pin_number": 75,
       "name": "V3P3",
       "signal_name": "V3P3"
      },
      {
-      "pin_number": 66,
+      "pin_number": 78,
       "name": "DGND",
       "signal_name": "DGND"
      },
      {
-      "pin_number": 74,
+      "pin_number": 85,
       "name": "AGND",
       "signal_name": "AGND"
      }
@@ -307,7 +412,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "EN_PFC"
+      "signal_name": "EN_LLC"
      },
      {
       "pin_number": 2,
@@ -326,7 +431,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "EN_LLC"
+      "signal_name": "CTL_KSER"
      },
      {
       "pin_number": 2,
@@ -345,7 +450,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_KSER"
+      "signal_name": "CTL_KPARA"
      },
      {
       "pin_number": 2,
@@ -364,7 +469,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_KPARA"
+      "signal_name": "CTL_KPARB"
      },
      {
       "pin_number": 2,
@@ -383,7 +488,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_KPARB"
+      "signal_name": "CTL_KOUT"
      },
      {
       "pin_number": 2,
@@ -402,7 +507,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_KOUT"
+      "signal_name": "CTL_KPREA"
      },
      {
       "pin_number": 2,
@@ -421,7 +526,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_KPREA"
+      "signal_name": "CTL_KPREB"
      },
      {
       "pin_number": 2,
@@ -440,7 +545,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_KPREB"
+      "signal_name": "CTL_QDISBK"
      },
      {
       "pin_number": 2,
@@ -563,151 +668,195 @@
   [
    {
     "designator": "JICB",
-    "value": "MICROFIT3-16",
+    "value": "MICROFIT3-40",
     "block_name": "INTERCONNECT",
-    "search_query": "MICROFIT3-16 16-way board-to-board harness header, 5 A/contact",
+    "search_query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact",
     "part_uuid": "66ec3910b8054bd99b8927bbb7ab1f93",
     "pins": [
      {
       "pin_number": 1,
-      "name": "V24A",
-      "signal_name": "V24"
+      "name": "W1",
+      "signal_name": "V15"
      },
      {
       "pin_number": 2,
-      "name": "V24B",
-      "signal_name": "V24"
+      "name": "W2",
+      "signal_name": "V15"
      },
      {
       "pin_number": 3,
-      "name": "GNDA",
-      "signal_name": "DGND"
+      "name": "W3",
+      "signal_name": "V24"
      },
      {
       "pin_number": 4,
-      "name": "GNDB",
-      "signal_name": "DGND"
+      "name": "W4",
+      "signal_name": "V24"
      },
      {
       "pin_number": 5,
-      "name": "V15A",
-      "signal_name": "V15"
+      "name": "W5",
+      "signal_name": "DGND"
      },
      {
       "pin_number": 6,
-      "name": "V15B",
-      "signal_name": "V15"
+      "name": "W6",
+      "signal_name": "DGND"
      },
      {
       "pin_number": 7,
-      "name": "LTX",
-      "signal_name": "JICB_LTX"
+      "name": "W7",
+      "signal_name": "DGND"
      },
      {
       "pin_number": 8,
-      "name": "LRX",
-      "signal_name": "JICB_LRX"
+      "name": "W8",
+      "signal_name": "DGND"
      },
      {
       "pin_number": 9,
-      "name": "EN",
-      "signal_name": "EN_PFC"
+      "name": "W9",
+      "signal_name": "DGND"
      },
      {
       "pin_number": 10,
-      "name": "KILL",
-      "signal_name": "EN_LLC"
+      "name": "W10",
+      "signal_name": "PWM_A0"
+     },
+     {
+      "pin_number": 11,
+      "name": "W11",
+      "signal_name": "PWM_B0"
+     },
+     {
+      "pin_number": 12,
+      "name": "W12",
+      "signal_name": "PWM_C0"
+     },
+     {
+      "pin_number": 13,
+      "name": "W13",
+      "signal_name": "I_A0"
      },
      {
       "pin_number": 14,
-      "name": "SP1",
-      "signal_name": "DGND"
+      "name": "W14",
+      "signal_name": "I_B0"
      },
      {
       "pin_number": 15,
-      "name": "SP2",
-      "signal_name": "DGND"
+      "name": "W15",
+      "signal_name": "I_C0"
      },
      {
       "pin_number": 16,
-      "name": "SHLD",
-      "signal_name": "PE"
-     }
-    ]
-   },
-   {
-    "designator": "RBLTX",
-    "value": "10k",
-    "block_name": "INTERCONNECT",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
+      "name": "W16",
+      "signal_name": "SNS_VAC1"
      },
      {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "LINK_RX"
-     }
-    ]
-   },
-   {
-    "designator": "RBLRX",
-    "value": "10k",
-    "block_name": "INTERCONNECT",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "V3P3"
+      "pin_number": 17,
+      "name": "W17",
+      "signal_name": "SNS_VAC2"
      },
      {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "LINK_TX"
-     }
-    ]
-   },
-   {
-    "designator": "RBLTS",
-    "value": "100",
-    "block_name": "INTERCONNECT",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "JICB_LTX"
+      "pin_number": 18,
+      "name": "W18",
+      "signal_name": "SNS_VAC3"
      },
      {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "LINK_RX"
-     }
-    ]
-   },
-   {
-    "designator": "RBLRS",
-    "value": "100",
-    "block_name": "INTERCONNECT",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "JICB_LRX"
+      "pin_number": 19,
+      "name": "W19",
+      "signal_name": "SNS_VBUSP"
      },
      {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "LINK_TX"
+      "pin_number": 20,
+      "name": "W20",
+      "signal_name": "SNS_VMID"
+     },
+     {
+      "pin_number": 21,
+      "name": "W21",
+      "signal_name": "SNS_V24"
+     },
+     {
+      "pin_number": 22,
+      "name": "W22",
+      "signal_name": "SNS_V15"
+     },
+     {
+      "pin_number": 23,
+      "name": "W23",
+      "signal_name": "T_PFC"
+     },
+     {
+      "pin_number": 24,
+      "name": "W24",
+      "signal_name": "T_INLET"
+     },
+     {
+      "pin_number": 25,
+      "name": "W25",
+      "signal_name": "AVMID"
+     },
+     {
+      "pin_number": 26,
+      "name": "W26",
+      "signal_name": "AGND"
+     },
+     {
+      "pin_number": 27,
+      "name": "W27",
+      "signal_name": "FAN_PWM1"
+     },
+     {
+      "pin_number": 28,
+      "name": "W28",
+      "signal_name": "FAN_PWM2"
+     },
+     {
+      "pin_number": 29,
+      "name": "W29",
+      "signal_name": "FAN_TACH1"
+     },
+     {
+      "pin_number": 30,
+      "name": "W30",
+      "signal_name": "FAN_TACH2"
+     },
+     {
+      "pin_number": 31,
+      "name": "W31",
+      "signal_name": "CTL_KPRE"
+     },
+     {
+      "pin_number": 32,
+      "name": "W32",
+      "signal_name": "CTL_QDIS"
+     },
+     {
+      "pin_number": 33,
+      "name": "W33",
+      "signal_name": "RELAY_FB_KPRE"
+     },
+     {
+      "pin_number": 34,
+      "name": "W34",
+      "signal_name": "EN_PFC"
+     },
+     {
+      "pin_number": 35,
+      "name": "W35",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 36,
+      "name": "W36",
+      "signal_name": "FLT"
+     },
+     {
+      "pin_number": 37,
+      "name": "W37",
+      "signal_name": "DRV_RDY"
      }
     ]
    }
@@ -715,39 +864,18 @@
  ],
  "nc": {
   "JB": [
-   4,
-   5,
-   6,
    10,
    11,
    12,
-   21,
-   22,
-   23,
-   24,
-   25,
-   59,
-   62,
-   64,
-   65,
-   67,
-   68,
-   69,
-   70,
-   71,
-   72,
-   73,
-   75,
+   74,
    76,
    77,
-   78,
    79,
    80,
    81,
    82,
    83,
    84,
-   85,
    86,
    87,
    88
@@ -757,11 +885,11 @@
    12
   ],
   "JICB": [
-   11,
-   12,
-   13
+   38,
+   39,
+   40
   ]
  },
  "warnings": [],
- "total": 17
+ "total": 13
 }

@@ -261,7 +261,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_LLC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -559,7 +559,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_LLC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -917,7 +917,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_LLC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -1215,7 +1215,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_LLC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -1573,7 +1573,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_LLC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -1871,7 +1871,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_LLC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,

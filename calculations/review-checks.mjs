@@ -13,6 +13,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cells = readFileSync(join(ROOT, "packages/power-primitives/cells.tsx"), "utf8");
 const boards = readFileSync(join(ROOT, "packages/common-components/boards.tsx"), "utf8");
 const card = readFileSync(join(ROOT, "packages/common-components/control-card.tsx"), "utf8");
+const umodGen = readFileSync(join(ROOT, "packages/common-components/umod-map.gen.ts"), "utf8");
 const db = readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8");
 
 let fail = 0;
@@ -35,7 +36,7 @@ ck("CB-10", /SafetyChain/.test(cells) && /USUP/.test(cells) && /RGPD/.test(cells
 ck("CB-11", /DischargeCtl/.test(cells) && /RQDPD/.test(cells) && !/RQDPU/.test(boards), "discharge default-OFF via isolated driver (V15 pull-up gone)");
 ck("CB-12", /\.CLAMP.*to=\{gate\}|CLAMP`\} to=\{gate\}/.test(cells) || /U\$\{id\} > \.CLAMP/.test(cells), "driver CLAMP pin wired to gate");
 ck("CB-13", /SwdPort/.test(cells) && /SwdPort id="CARD"/.test(boards) && /BOOT0.*net\.BOOT0_CARD/.test(card) && /SWDIO.*net\.SWDIO_CARD/.test(card), "SWD + BOOT0 provisioning on the card MCU (card-split rev)");
-ck("CB-14", /id="B" ltx="net.LINK_RX" lrx="net.LINK_TX"/.test(boards), "link TX↔RX crossed on the DC-DC side");
+ck("CB-14", /Interconnect40 id="B" map=\{HARNESS40\}/.test(boards) && !/InterconnectSignals/.test(boards), "E40 rev: straight-through 40-way harness on both boards; the crossed UART link is gone");
 ck("CB-15", /AnalogMid/.test(cells) && /net\.AVMID/.test(cells) && /\.CT\$\{id\} > \.S2`\} to="net\.AVMID"/.test(cells) && /D\$\{id\}N/.test(cells), "bipolar senses biased to buffered AVMID with dual clamps");
 
 // --- High risks
@@ -68,7 +69,7 @@ ck("R2-CB17", /Rail3V3 id="CARD"/.test(boards), "3.3 V rail sourced on the card 
 ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck, not a 15 V-fed LDO");
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
 ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD34/.test(db), "aux 110 W stage values in cells + D4 rev C part");
-ck("R2-CB21", /\["net\.FLT_LLC", 74\]/.test(boards), "FLT_LLC mapped to an MCU-LLC pin");
+ck("R2-CB21", /flt="net.FLT" en="net.GATE_EN_B"/.test(boards), "E40 rev: the LLC driver fault wire-OR reaches the brain on the single merged FLT line");
 ck("R2-CB22", /capacitance="46nF"/.test(cells) && /PP-46n-1200/.test(db) && /IND-TRIM-BIN4/.test(db), "tank = frozen rev D2 (46 nF Cr + binned trim in BOM)");
 ck("R2-HR13", /USUP\$\{id\} > \.VDD/.test(cells) && /SET0/.test(cells), "watchdog symbol has supply + window-set pins");
 ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db) && /PMP_DISCH_TO_MS/.test(fsmH) && /disch_ms/.test(fsmC), "per-SKU pulse parts @120 kW + F.21 implemented in firmware");
@@ -81,7 +82,7 @@ ck("R2-HR20", /RBALT\$\{id\}A/.test(cells) && /RBALTA1/.test(boards) && /RNS\d\[
 ck("R2-MR11", /RAVI/.test(cells) && /CAVF/.test(cells), "AVMID buffer dual-feedback (no bare op-amp into 10 µF)");
 ck("R2-MR12", /GD32G553VET6/.test(db) && !/GD32G553RET6/.test(db), "MCU mpn is the 100-pin V suffix");
 ck("R2-MR13", /NCP1252A/.test(db) && /resistance="15k"/.test(cells), "aux controller = NCP1252A; BO divider sized for its 1.0 V threshold (brown-in ≈ 322 V)");
-ck("R2-MR14", /MICROFIT3-16/.test(db) && /\.SP1`\} to="net\.DGND"/.test(cells), "harness 5 A contacts + spares carry GND");
+ck("R2-MR14", /MICROFIT3-40/.test(db) && /5 returns/.test(db), "E40 rev: 40-way 5 A-contact harness with five dedicated returns (the 2-return weakness MR-14 flagged is over-fixed)");
 ck("R2-MR17", /DTVS24/.test(cells) && /SMBJ26A/.test(db), "aux rail TVS clamps (FB-open single fault)");
 ck("R2-MR18", /cf="1nF"/.test(boards), "OVP-participating senses use the fast filter");
 ck("R2-MR22", /CSW1/.test(cells), "HMI button ESD caps");
@@ -90,7 +91,7 @@ for (const m of boards.matchAll(/net\.(FLT_\w+)/g)) {
   const net = m[1];
   ck(`R2-CLASS-FLT-${net}`, new RegExp(`\\["net\\.${net}", \\d+\\]`).test(boards), `${net} reaches a pin map`);
 }
-ck("R2-CLASS-RAIL", (boards.match(/Rail3V3 id=/g) || []).length >= 1 && /"V3P3", "V3P3", "V3P3"/.test(card), "V3P3 sourced on the card and exported on three 88-way ways");
+ck("R2-CLASS-RAIL", (boards.match(/Rail3V3 id=/g) || []).length >= 1 && (umodGen.match(/\["V3P3",null\]/g) || []).length === 3, "V3P3 sourced on the card and exported on three 88-way ways (E40 map)");
 // ===== rev D ECO closures (10k-volume directive, 2026-09-05) =====
 ck("ECO-2a", /PvGateDrive id="A"/.test(boards) && /PvGateDrive id="B"/.test(boards) && /VOM1271/.test(db) && !/DischargeCtl id="A"/.test(boards), "bank bleeders on PV drivers (opto+bias stacks retired; bus discharge keeps its opto chain)");
 ck("ECO-2b", /p10k: 65/.test(db) && /p10k: 55/.test(db), "volume-quote p10k pricing on module classes");
@@ -378,9 +379,9 @@ ck("AUD-FUSE80", /FUSE-gG-690V-80A/.test(db) && !/mpn: "FUSE-gG-690V-63A"/.test(
   "30 kW fuse is 80 A gG 22x58 (F6: 63 A was 88% loaded and negative after enclosure/ambient derate)");
 ck("AUD-CT-CATALOG", /ACX-1100/.test(db) && /AS-404/.test(db),
   "both CTs are named catalog parts (Talema — closes two REVIEW lines)");
-ck("AUD-CARD-AGND2", /put\("AGND_2", "net\.AGND"\)/.test(card),
+ck("AUD-CARD-AGND2", /\["AGND_2",null\]/.test(umodGen) && /AGND_2" \? "net\.AGND"/.test(card),
   "AVMID's Kelvin return way exists (CARD_RULES said it; the map now does it)");
-ck("AUD-CARD-HRTIMER", /FLT: 47/.test(card) && /PWM0: 69/.test(card) && /PWM6: 70/.test(card) && /EN_B: 28/.test(card),
+ck("AUD-CARD-HRTIMER", /"FLT":47/.test(umodGen) && /"PWM0":69/.test(umodGen) && /"PWM6":70/.test(umodGen) && /CARD_PWM_CONTRACT/.test(card),
   "card PWM group on the HRTIMER with FLT on HRTIMER_FLT2 (decision executed; PA6 break-input conflict dissolved)");
 
 // AUD-CAB-COMPLETE: every cabinet netlist component reaches the cabinet apply payload.

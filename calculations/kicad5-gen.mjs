@@ -35,6 +35,11 @@ if (!process.argv[2]) {
   process.exit(0);
 }
 const SKU = process.argv[2];
+if (SKU === "60kw") {
+  console.error("60kw: RETIRED (E40) — the 2-lane pair exceeded the single-brain card and the 60 kW "
+    + "product is 2 x 30 kW modules. Last two-card set archived under kicad5/archive/.");
+  process.exit(1);
+}
 if (SKU === "120kw") {
   console.error("120kw single-board sheets are RETIRED: 120 kW is a cabinet (4x 30 kW / 2x 60 kW; " +
     "cardMap() refuses 4 lanes). Last pre-split set archived under kicad5/archive/.");

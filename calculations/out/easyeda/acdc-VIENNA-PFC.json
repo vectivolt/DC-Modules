@@ -155,7 +155,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_PFC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -713,7 +713,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_PFC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,
@@ -1271,7 +1271,7 @@
     {
      "pin_number": 5,
      "name": "FLT",
-     "signal_name": "FLT_PFC"
+     "signal_name": "FLT"
     },
     {
      "pin_number": 6,

@@ -447,14 +447,12 @@
      "signal_name": "DGND"
     },
     {
-     "pin_number": 7,
+     "pin_number": 6,
      "name": "ROLE1",
      "signal_name": "ROLE1"
     }
    ],
-   "nc_pins": [
-    6
-   ],
+   "nc_pins": [],
    "value": "CONN-CARD-88-H",
    "query": "CONN-CARD-88-H CSU carrier 88-way PIN HEADER ",
    "mpn": "CONN-CARD-88-H"
@@ -509,34 +507,32 @@
      "signal_name": "DGND"
     },
     {
-     "pin_number": 7,
+     "pin_number": 6,
      "name": "ROLE1",
      "signal_name": "ROLE1"
     },
     {
-     "pin_number": 8,
+     "pin_number": 7,
      "name": "CANH",
      "signal_name": "CANH"
     },
     {
-     "pin_number": 9,
+     "pin_number": 8,
      "name": "CANL",
      "signal_name": "CANL"
     },
     {
-     "pin_number": 10,
+     "pin_number": 9,
      "name": "SGND",
      "signal_name": "CAN_SGND"
     },
     {
-     "pin_number": 11,
+     "pin_number": 10,
      "name": "SHLD",
      "signal_name": "CAN_SHLD"
     }
    ],
-   "nc_pins": [
-    6
-   ],
+   "nc_pins": [],
    "value": "CONTROL-CARD-CSU",
    "query": "CONTROL-CARD-CSU control card in the CSU strap role ",
    "mpn": "CONTROL-CARD-CSU"

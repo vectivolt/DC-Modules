@@ -24,7 +24,7 @@ rack either.
 |---|---|---|---|
 | `30kw/acdc` | 440 × 500 | 271 | placement clean, EMI/thermal pass, planes assigned |
 | `30kw/dcdc` | 440 × 500 | 282 | placement clean, barrier-bounded planes, BARRIER 0 |
-| `control-card` | 120 × 80 | 43 | clean; one card serves both roles |
+| `control-card` | 120 × 80 | 43 | clean; one card = the module brain (E40) |
 
 `60kw/` is kept buildable for reference (it exercises the cell library at 2 lanes and is the
 card's sizing role). **`120kw/` no longer builds — deliberately**: since the card split,

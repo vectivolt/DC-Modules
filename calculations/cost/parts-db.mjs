@@ -21,7 +21,7 @@
 // structure + E36): its single-board pair cannot exist since the card split (cardMap() correctly
 // refuses 4 lanes — AIN needs 17 of 13), so every pipeline consumer iterates THIS list and the
 // 120 kW product cost is a 4×-module roll-up in bom-gen.
-export const BUILDABLE_SKUS = ["30kw", "60kw"];
+export const BUILDABLE_SKUS = ["30kw"];   // E40: the module is single-brain 30 kW; 60/120 kW are cabinets
 
 export const DB = [
   // --- power semiconductors
@@ -151,7 +151,7 @@ export const DB = [
   { m: /^SW[12]$/, mpn: "TACT-6x6", mfr: "any", desc: "tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)", price1k: 3, alt: "any" },
   { m: /^JSWD\w+$/, mpn: "HDR-1x5-2.54", mfr: "any", desc: "SWD/boot header (EOL programming — CB-13; LV-only test state §45)", price1k: 8, alt: "TC2030 pads" },
   { m: /^J(ACL\d|PE|PEB|DCP|DCN|OUTP|OUTN|QDIS)?$/, mpn: "STUD-M8", mfr: "local", desc: "M8 stud terminal", price1k: 28, alt: "M6 for signal PE" },
-  { m: /^JIC[AB]$/, mpn: "MICROFIT3-16", mfr: "Molex 43045-16 class", desc: "16-way board-to-board harness header, 5 A/contact (MR-14: JST PHD's 1 A contacts were over-run by V15/GND at 120 kW; spares 14/15 now carry GND)", price1k: 38, alt: "JST VL / TE MicroMate" },
+  { m: /^JIC[AB]$/, mpn: "MICROFIT3-40", mfr: "Molex 43045-40 class (2x20)", desc: "40-way inter-board harness header, 5 A/contact (E40: the PFC bundle crosses here — PWM x3, 12 senses, AVMID+Kelvin, fans, precharge, EN/GATE_EN_A/FLT/DRV_RDY, V15/V24, 5 returns, shield)", price1k: 72, alt: "JST VL / TE MicroMate 40" },
   { m: /^JCAN$/, mpn: "PH-4", mfr: "JST", desc: "CAN connector 4-way", price1k: 8, alt: "any" },
   { m: /^JFAN[1-4]$/, mpn: "PH-4-FAN", mfr: "JST", desc: "fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17)", price1k: 6, alt: "any" },
   { m: /^J(TERM|T\w+)$/, mpn: "PH-2", mfr: "JST", desc: "2-way header (NTC/term)", price1k: 3, alt: "any" },

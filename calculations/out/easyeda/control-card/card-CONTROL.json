@@ -27,6 +27,26 @@
    "block_name": "MCU",
    "pins": [
     {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DO7"
+    },
+    {
+     "pin_number": 3,
+     "name": "pin3",
+     "signal_name": "DO8"
+    },
+    {
+     "pin_number": 4,
+     "name": "pin4",
+     "signal_name": "DO9"
+    },
+    {
+     "pin_number": 5,
+     "name": "pin5",
+     "signal_name": "DO10"
+    },
+    {
      "pin_number": 6,
      "name": "pin6",
      "signal_name": "V3P3"
@@ -60,6 +80,11 @@
      "pin_number": 18,
      "name": "pin18",
      "signal_name": "AVMID"
+    },
+    {
+     "pin_number": 19,
+     "name": "pin19",
+     "signal_name": "DI6"
     },
     {
      "pin_number": 20,
@@ -104,7 +129,7 @@
     {
      "pin_number": 28,
      "name": "pin28",
-     "signal_name": "EN_B"
+     "signal_name": "ANA19"
     },
     {
      "pin_number": 29,
@@ -152,6 +177,11 @@
      "signal_name": "ROLE1"
     },
     {
+     "pin_number": 39,
+     "name": "pin39",
+     "signal_name": "ANA13"
+    },
+    {
      "pin_number": 40,
      "name": "pin40",
      "signal_name": "HMI0"
@@ -169,17 +199,22 @@
     {
      "pin_number": 43,
      "name": "pin43",
-     "signal_name": "DI2"
+     "signal_name": "ANA17"
     },
     {
      "pin_number": 44,
      "name": "pin44",
-     "signal_name": "DI3"
+     "signal_name": "ANA18"
     },
     {
      "pin_number": 45,
      "name": "pin45",
      "signal_name": "HMI3"
+    },
+    {
+     "pin_number": 46,
+     "name": "pin46",
+     "signal_name": "ANA14"
     },
     {
      "pin_number": 47,
@@ -232,6 +267,16 @@
      "signal_name": "AIN6"
     },
     {
+     "pin_number": 57,
+     "name": "pin57",
+     "signal_name": "ANA15"
+    },
+    {
+     "pin_number": 58,
+     "name": "pin58",
+     "signal_name": "ANA16"
+    },
+    {
      "pin_number": 59,
      "name": "pin59",
      "signal_name": "DO0"
@@ -240,6 +285,11 @@
      "pin_number": 60,
      "name": "pin60",
      "signal_name": "DO1"
+    },
+    {
+     "pin_number": 61,
+     "name": "pin61",
+     "signal_name": "DI7"
     },
     {
      "pin_number": 62,
@@ -327,6 +377,16 @@
      "signal_name": "DI5"
     },
     {
+     "pin_number": 79,
+     "name": "pin79",
+     "signal_name": "DI2"
+    },
+    {
+     "pin_number": 80,
+     "name": "pin80",
+     "signal_name": "DI3"
+    },
+    {
      "pin_number": 81,
      "name": "pin81",
      "signal_name": "DRV_RDY"
@@ -335,6 +395,11 @@
      "pin_number": 82,
      "name": "pin82",
      "signal_name": "EN_A"
+    },
+    {
+     "pin_number": 83,
+     "name": "pin83",
+     "signal_name": "EN_B"
     },
     {
      "pin_number": 84,
@@ -352,24 +417,14 @@
      "signal_name": "DI1"
     },
     {
-     "pin_number": 87,
-     "name": "pin87",
-     "signal_name": "LINK_TX"
-    },
-    {
      "pin_number": 88,
      "name": "pin88",
-     "signal_name": "LINK_RX"
+     "signal_name": "DI8"
     },
     {
      "pin_number": 89,
      "name": "pin89",
      "signal_name": "DO2"
-    },
-    {
-     "pin_number": 90,
-     "name": "pin90",
-     "signal_name": "ROLE0"
     },
     {
      "pin_number": 91,
@@ -414,26 +469,15 @@
    ],
    "nc_pins": [
     1,
-    2,
-    3,
-    4,
-    5,
     7,
     8,
     9,
     10,
     12,
     13,
-    19,
     31,
-    39,
-    46,
-    57,
-    58,
-    61,
-    79,
-    80,
-    83,
+    87,
+    90,
     97,
     98
    ],
@@ -773,27 +817,32 @@
     {
      "pin_number": 1,
      "name": "A1",
-     "signal_name": "EN_A"
+     "signal_name": "EN_B"
     },
     {
      "pin_number": 2,
      "name": "B1",
-     "signal_name": "EN_B"
+     "signal_name": "WDO_CARD"
     },
     {
      "pin_number": 3,
      "name": "A2",
-     "signal_name": "DGND"
+     "signal_name": "EN_A"
     },
     {
      "pin_number": 4,
      "name": "B2",
-     "signal_name": "DGND"
+     "signal_name": "WDO_CARD"
     },
     {
      "pin_number": 5,
      "name": "C2",
-     "signal_name": "DGND"
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 6,
+     "name": "Y2",
+     "signal_name": "GATE_EN_A"
     },
     {
      "pin_number": 7,
@@ -823,7 +872,7 @@
     {
      "pin_number": 13,
      "name": "C1",
-     "signal_name": "WDO_CARD"
+     "signal_name": "V3P3"
     },
     {
      "pin_number": 14,
@@ -832,7 +881,6 @@
     }
    ],
    "nc_pins": [
-    6,
     8
    ],
    "value": "74HC11",
@@ -866,7 +914,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "EN_B"
+     "signal_name": "EN_A"
     },
     {
      "pin_number": 2,
@@ -886,7 +934,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "EN_A"
+     "signal_name": "EN_B"
     },
     {
      "pin_number": 2,
@@ -992,6 +1040,26 @@
      "pin_number": 2,
      "name": "pin2",
      "signal_name": "DRV_RDY"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RGPACARD",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "GATE_EN_A"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
     }
    ],
    "nc_pins": [],
@@ -1472,222 +1540,270 @@
     },
     {
      "pin_number": 26,
+     "name": "ANA13",
+     "signal_name": "ANA13"
+    },
+    {
+     "pin_number": 27,
+     "name": "ANA14",
+     "signal_name": "ANA14"
+    },
+    {
+     "pin_number": 28,
+     "name": "ANA15",
+     "signal_name": "ANA15"
+    },
+    {
+     "pin_number": 29,
+     "name": "ANA16",
+     "signal_name": "ANA16"
+    },
+    {
+     "pin_number": 30,
+     "name": "ANA17",
+     "signal_name": "ANA17"
+    },
+    {
+     "pin_number": 31,
+     "name": "ANA18",
+     "signal_name": "ANA18"
+    },
+    {
+     "pin_number": 32,
+     "name": "ANA19",
+     "signal_name": "ANA19"
+    },
+    {
+     "pin_number": 33,
      "name": "TSNS0",
      "signal_name": "TSNS0"
     },
     {
-     "pin_number": 27,
+     "pin_number": 34,
      "name": "TSNS1",
      "signal_name": "TSNS1"
     },
     {
-     "pin_number": 28,
+     "pin_number": 35,
      "name": "AVMID",
      "signal_name": "AVMID"
     },
     {
-     "pin_number": 29,
+     "pin_number": 36,
      "name": "AGND_2",
      "signal_name": "AGND"
     },
     {
-     "pin_number": 30,
+     "pin_number": 37,
      "name": "DO0",
      "signal_name": "DO0"
     },
     {
-     "pin_number": 31,
+     "pin_number": 38,
      "name": "DO1",
      "signal_name": "DO1"
     },
     {
-     "pin_number": 32,
+     "pin_number": 39,
      "name": "DO2",
      "signal_name": "DO2"
     },
     {
-     "pin_number": 33,
+     "pin_number": 40,
      "name": "DO3",
      "signal_name": "DO3"
     },
     {
-     "pin_number": 34,
+     "pin_number": 41,
      "name": "DO4",
      "signal_name": "DO4"
     },
     {
-     "pin_number": 35,
+     "pin_number": 42,
      "name": "DO5",
      "signal_name": "DO5"
     },
     {
-     "pin_number": 36,
+     "pin_number": 43,
      "name": "DO6",
      "signal_name": "DO6"
     },
     {
-     "pin_number": 37,
+     "pin_number": 44,
+     "name": "DO7",
+     "signal_name": "DO7"
+    },
+    {
+     "pin_number": 45,
+     "name": "DO8",
+     "signal_name": "DO8"
+    },
+    {
+     "pin_number": 46,
+     "name": "DO9",
+     "signal_name": "DO9"
+    },
+    {
+     "pin_number": 47,
+     "name": "DO10",
+     "signal_name": "DO10"
+    },
+    {
+     "pin_number": 48,
      "name": "DI0",
      "signal_name": "DI0"
     },
     {
-     "pin_number": 38,
+     "pin_number": 49,
      "name": "DI1",
      "signal_name": "DI1"
     },
     {
-     "pin_number": 39,
+     "pin_number": 50,
      "name": "DI2",
      "signal_name": "DI2"
     },
     {
-     "pin_number": 40,
+     "pin_number": 51,
      "name": "DI3",
      "signal_name": "DI3"
     },
     {
-     "pin_number": 41,
+     "pin_number": 52,
      "name": "DI4",
      "signal_name": "DI4"
     },
     {
-     "pin_number": 42,
+     "pin_number": 53,
      "name": "DI5",
      "signal_name": "DI5"
     },
     {
-     "pin_number": 43,
+     "pin_number": 54,
+     "name": "DI6",
+     "signal_name": "DI6"
+    },
+    {
+     "pin_number": 55,
+     "name": "DI7",
+     "signal_name": "DI7"
+    },
+    {
+     "pin_number": 56,
+     "name": "DI8",
+     "signal_name": "DI8"
+    },
+    {
+     "pin_number": 57,
      "name": "GATE_EN",
      "signal_name": "GATE_EN"
     },
     {
-     "pin_number": 44,
+     "pin_number": 58,
+     "name": "GATE_EN_A",
+     "signal_name": "GATE_EN_A"
+    },
+    {
+     "pin_number": 59,
      "name": "FLT",
      "signal_name": "FLT"
     },
     {
-     "pin_number": 45,
+     "pin_number": 60,
      "name": "EN_A",
      "signal_name": "EN_A"
     },
     {
-     "pin_number": 46,
+     "pin_number": 61,
      "name": "EN_B",
      "signal_name": "EN_B"
     },
     {
-     "pin_number": 47,
+     "pin_number": 62,
      "name": "DRV_RDY",
      "signal_name": "DRV_RDY"
     },
     {
-     "pin_number": 48,
-     "name": "LINK_TX",
-     "signal_name": "LINK_TX"
-    },
-    {
-     "pin_number": 49,
-     "name": "LINK_RX",
-     "signal_name": "LINK_RX"
-    },
-    {
-     "pin_number": 50,
+     "pin_number": 63,
      "name": "CAN_TX",
      "signal_name": "CAN_TX"
     },
     {
-     "pin_number": 51,
+     "pin_number": 64,
      "name": "CAN_RX",
      "signal_name": "CAN_RX"
     },
     {
-     "pin_number": 52,
+     "pin_number": 65,
      "name": "HMI0",
      "signal_name": "HMI0"
     },
     {
-     "pin_number": 53,
+     "pin_number": 66,
      "name": "HMI1",
      "signal_name": "HMI1"
     },
     {
-     "pin_number": 54,
+     "pin_number": 67,
      "name": "HMI2",
      "signal_name": "HMI2"
     },
     {
-     "pin_number": 55,
+     "pin_number": 68,
      "name": "HMI3",
      "signal_name": "HMI3"
     },
     {
-     "pin_number": 56,
+     "pin_number": 69,
      "name": "HMI4",
      "signal_name": "HMI4"
     },
     {
-     "pin_number": 57,
+     "pin_number": 70,
      "name": "HMI5",
      "signal_name": "HMI5"
     },
     {
-     "pin_number": 58,
+     "pin_number": 71,
      "name": "HMI6",
      "signal_name": "HMI6"
     },
     {
-     "pin_number": 59,
-     "name": "ROLE0",
-     "signal_name": "ROLE0"
-    },
-    {
-     "pin_number": 60,
+     "pin_number": 72,
      "name": "ROLE1",
      "signal_name": "ROLE1"
     },
     {
-     "pin_number": 61,
+     "pin_number": 73,
      "name": "V15",
      "signal_name": "V15"
     },
     {
-     "pin_number": 63,
+     "pin_number": 75,
      "name": "V3P3",
      "signal_name": "V3P3"
     },
     {
-     "pin_number": 66,
+     "pin_number": 78,
      "name": "DGND",
      "signal_name": "DGND"
     },
     {
-     "pin_number": 74,
+     "pin_number": 85,
      "name": "AGND",
      "signal_name": "AGND"
     }
    ],
    "nc_pins": [
-    62,
-    64,
-    65,
-    67,
-    68,
-    69,
-    70,
-    71,
-    72,
-    73,
-    75,
+    74,
     76,
     77,
-    78,
     79,
     80,
     81,
     82,
     83,
     84,
-    85,
     86,
     87,
     88
@@ -1754,26 +1870,6 @@
    "nc_pins": [],
    "value": "0R",
    "query": "R-small card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point t",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RROLE0",
-   "block_name": "ROLE",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "ROLE0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },
   {
