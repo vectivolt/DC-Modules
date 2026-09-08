@@ -24,7 +24,7 @@ flowchart LR
   PRE --> PH["3× ViennaPhase<br/>A0 · B0 · C0"]
   PH --> DC[("SplitDcLink<br/>2×5× 470 µF + balance")]
   DC --> ST["DCP/DCN/PE<br/>pillars → DC-DC board"]
-  PH -.PWM/FLT.- MCU["MCU-PFC<br/>GD32G553"]
+  PH -.PWM/FLT.- MCU["control card, AC-DC slot<br/>GD32G553 · 88-way JA"]
   DC -.iso senses (E25).- MCU
   AUX["AuxPower flyback 60 W<br/>full bus 342–860 V (E26)"] -.24/15/3.3 V.- MCU
 ```
@@ -41,18 +41,16 @@ flowchart LR
 | `CtSensor` ×3 | phase current | 1:2500 line CTs + 33 Ω burden (E18 — beat shunt+iso-amp on cost, isolation and OC speed) |
 | `IsoVSense` ×5 | AC + bus sense | 8× 475 k anti-surge chain **inside the measured domain** + iso amp + iso 5 V bias (E25/CB-3): AC vs artificial star (±5 V class), bus/MID vs DCN (0–2 V class) |
 | `AuxPower` | house power | **rev B (E26)**: full-bus 342–860 V, 1700 V SiC, 60 W, complete controller application (HV startup, aux-winding VCC, BR brown-in, type-II COMP); 24 V/15 V/3.3 V; re-simulated at 342/560/850 V ([V-21 rev B](../../docs/simulation-report.md)) |
-| `ControlMcu` PFC | control | pin map below — **asserted unique at build** |
+| control-card slot `JA` (88-way) | control | role/RATING straps; way map from `cardMap()` — see below |
 
-### MCU-PFC pin map (from `boards.tsx`, build-asserted)
+### Control interface (E35 — the MCU moved to the card)
 
-| Net | Pin | | Net | Pin |
-|---|---|---|---|---|
-| `PWM_A0/B0/C0` | 55/56/57 | | `SNS_VAC1/2/3` | 43/44/45 |
-| `I_A0/B0/C0` (CTs) | 30/31/32 | | `SNS_VBUSP` / `SNS_VMID` | 46 / 47 |
-| `FAN_PWM1/TACH1` | 76/77 | | `T_PFC` / `T_INLET` | 48 / 49 |
-| `FAN_PWM2/TACH2` | 78/79 | | `LINK_TX/RX` | 68/69 |
-| `CTL_KPRE` / `CTL_QDIS` | 72 / 73 | | `WDI_PFC` / `EN_PFC` | 70 / 71 |
-| `FLT_PFC` (wire-OR) | 74 | | | |
+Since the card split there is **no MCU on this board**: the 88-way `JA` slot carries PWM0–11,
+AIN0–12, temperature, DO/DI, `GATE_EN`/`FLT`, the link UART and the ROLE/RATING straps. The
+normative way map is `cardMap("acdc", lanes)` in
+[`control-card.tsx`](../../packages/common-components/control-card.tsx); the MCU pin allocation
+behind it is [`docs/mcu-pin-allocation-gd32.md`](../../docs/mcu-pin-allocation-gd32.md), and the
+module-interconnect audit proves every expected way lands on real electronics on both sides.
 
 ---
 
@@ -68,7 +66,7 @@ flowchart LR
   BC --> SP["S/P matrix<br/>KSER · KPARA/B + 10 Ω pre-insert<br/>K_OUT (E12b gate)"]
   SP --> OF["output filter<br/>2× 4.7 µF + Y caps"] --> SH["manganin shunt<br/>+ NSI1200"] --> OUT["OUT± M8 studs"]
   SP -.coils.- ULN["ULN2803"]
-  MCU2["MCU-LLC"] -.-> ULN
+  MCU2["control card, DC-DC slot<br/>88-way JB"] -.-> ULN
   MCU2 -.-> HMI["HMI: 2 buttons<br/>2-digit 7-seg + 74HC595"]
   MCU2 -.-> CAN["NSI1042 iso CAN<br/>+ choke + TVS + 120 Ω jumper"]
 ```
@@ -86,16 +84,11 @@ flowchart LR
 | `IsolatedCan` | external world | CAN 2.0B 125 kbps 29-bit, isolated + CM choke + TVS + jumpered 120 Ω ([protocol](../../docs/can-protocol.md)) |
 | `CoilDriver` | relay drive | ULN2803, 24 V coils, flyback-clamped |
 
-### MCU-LLC pin map (build-asserted)
+### Control interface (E35 — the MCU moved to the card)
 
-| Net | Pin | | Net | Pin |
-|---|---|---|---|---|
-| `PWM_L1H/L…L3H/L` | 50–55 | | `SNS_VOUT` / `SNS_IOUT` | 96 / 97 |
-| `I_RES1/2/3` | 30/31/32 | | `SNS_VBKA` / `SNS_VBKB` | 98 / 99 |
-| `CTL_KSER…KPREB` | 80–85 | | `T_LLC` / `T_XFMR` | 42 / 43 |
-| `HMI_DAT/CLK/LAT` | 88/89/90 | | `LINK_TX/RX` | 44/45 |
-| `HMI_DIG1/2` · `BTN1/2` | 91/92 · 93/94 | | `CAN_TX/RX` | 48/49 |
-| `WDI_LLC` / `EN_LLC` | 46 / 47 | | `RELAY_FB_*` ×6 / `SNS_IOUTN` | 2–7 / 95 |
+Same card p/n in the `JB` slot, DC-DC role: LLC PWM pairs on the HRTIMER, resonant CTs, bank/output
+senses, S/P relay drives + readbacks, HMI, and the isolated CAN. Normative way map:
+`cardMap("dcdc", channels)`; audit and pin allocation as on the AC-DC page.
 
 ---
 
@@ -105,7 +98,7 @@ HW-fast: per-phase CT comparators (105 A pk) → HRTIM kill · DESAT per SiC · 
 output OVP · driver UVLO chain (aux collapse ⇒ gates held low) · per-board windowed watchdog into the `GATE_EN` wired-AND (E27) across
 the harness. Supervisory: the full 32-row table ([protection-thresholds.md](../../docs/protection-thresholds.md)),
 exercised by the [26-scenario suite](../../docs/simulation-report.md) and the
-[C firmware](../../firmware/) (33/33 under sanitizers).
+[C firmware](../../firmware/) (45/45 under sanitizers).
 
 ## Top cost drivers (BOM-exact @1k, from [`bom-30kw.csv`](../../calculations/out/bom-30kw.csv))
 

@@ -6,3 +6,5 @@ spice/generated/*.out
 .tscircuit/
 calculations/out/detail/
 calculations/out/preview/
+boards/out/
+boards/*/out/

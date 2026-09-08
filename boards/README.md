@@ -1,74 +1,46 @@
-# Boards — the two-board sandwich, three ways
+# Boards — one module, one card, one cabinet
 
-Every SKU is **one module = two boards**, generated from a single parameterized source so the
-30/60/120 kW products can never drift apart electrically:
+**The product is the 30 kW module**: two boards + two identical control cards. Higher ratings are
+cabinets of modules — full contract in [`README-product-structure.md`](README-product-structure.md).
 
-| | Role | Contents | Source |
-|---|---|---|---|
-| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · fuses · MOV Δ + MOV/GDT L-PE · 2× 3-φ CM stages + 22 µH DM stage (D6) · precharge w/ line-rated bypass relays · **N× Vienna lanes** (per-phase film caps) · split DC link · default-OFF isolated discharge · MCU-PFC + watchdog/enable AND + SWD · line CTs (AVMID-biased) · isolated AC/bus senses · 60 W full-bus aux flyback · fans | [`AcDcBoard`](../packages/common-components/boards.tsx) |
-| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · **3N× LLC half-bridge legs** · tanks · **N×3 transformer sections** · dual JBS banks · 2-series bank cap strings · S/P matrix (mirror-contact relays + readback) + pre-insertion + K_OUT · output filter/shunt/studs · MCU-LLC + watchdog/enable AND + SWD · isolated bank/output senses · isolated CAN · **config HMI** | [`DcDcBoard`](../packages/common-components/boards.tsx) |
+| Source | What it is |
+|---|---|
+| [`30kw/`](30kw/) · [`60kw/`](60kw/) | the buildable module board pairs (`acdc.tsx` + `dcdc.tsx`), generated from one parameterized source ([`boards.tsx`](../packages/common-components/boards.tsx)) so the SKUs cannot drift apart |
+| [`control-card.tsx`](control-card.tsx) | the **role-agnostic control card** (GD32G553VET6, 120×80, 88-way) — one p/n serves the AC-DC slot, the DC-DC slot, and the cabinet **CSU** role via straps ([scope](../docs/control-card-scope.md)) |
+| [`cabinet.tsx`](cabinet.tsx) | the **120 kW cabinet interconnect of record** (E39): AC distribution, DC charging bus, CAN chain + SGND + terminations, CSU carrier |
+| [`120kw/`](120kw/) | **retired reference** — the single-board pair the card arithmetic ruled out; does not build, by design |
+| [`out-pdf/`](out-pdf/) | **the release PDF sets** (30 kW, 60 kW, 120 kW Cabinet, card) rendered from the audited KiCad-5 sheets |
+
+## The module, physically
+
+| | Role | Contents |
+|---|---|---|
+| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · 80 A gG fuses · MOV/GDT · 2× CM + DM EMI stages · precharge + bypass · Vienna lanes · split DC link · isolated discharge · line CTs + isolated senses · 110 W full-bus aux flyback · fans · **card slot JA** |
+| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · LLC half-bridge legs · tanks (binned trim + resonant CTs) · PQ50 transformer sections · dual JBS banks · 2-series bank strings · S/P matrix + pre-insertion + K_OUT · output filter/shunt/studs · isolated CAN · config HMI · **card slot JB** |
 
 The boards mount **face-to-face**: TO-247 rows clamp outward onto the two heatsink extrusions,
 magnetics stand in the inter-board airflow tunnel, power crosses on bolted **DCP/DCN/PE stud
-pillars**, control on a 16-way harness. Full mechanical/electrical contract:
-[`docs/interconnect.md`](../docs/interconnect.md).
+pillars**, control on a 16-way harness. Loss of the harness ⇒ both boards reach safe state
+independently. Full contract: [`docs/interconnect.md`](../docs/interconnect.md).
 
-```mermaid
-flowchart TB
-  subgraph upper["🔺 DC-DC board (components face down)"]
-    direction LR
-    LLC["3N× LLC legs"] --- XF["N×3 transformers"] --- SP["S/P + K_OUT"] --- OUT["OUT± studs"]
-  end
-  subgraph tunnel["airflow tunnel — magnetics live here"]
-    direction LR
-    M1(("chokes")) ~~~ M2(("PQ50 stacks")) ~~~ FANS[/"2–4× 120 mm fans →"/]
-  end
-  subgraph lower["🔻 AC-DC board (components face up)"]
-    direction LR
-    EMI["EMI + precharge"] --- V["N× Vienna lanes"] --- DC["split DC link"]
-  end
-  upper <-- "DCP · DCN · PE pillars + 16-way harness" --> lower
-```
-
-## Per-SKU deep dives
-
-| SKU | Boards | Deep dive |
-|---|---|---|
-| 30 kW · 100 A | 420×300 + 460×320 mm | [`30kw/README.md`](30kw/README.md) — **canonical cell-level walkthrough** |
-| 60 kW · 200 A | 460×420 + 520×420 mm | [`60kw/README.md`](60kw/README.md) |
-| 120 kW · 400 A | 560×600 + 640×620 mm | [`120kw/README.md`](120kw/README.md) |
-
-## Build & exports
+## Build & verify
 
 ```bash
-npx tsci build boards/<sku>/acdc.tsx        # netlist ERC + circuit JSON (dist/)
-npx tsci export boards/<sku>/dcdc.tsx -f schematic-svg -o out/dcdc-schematic.svg
-npx tsci export boards/<sku>/dcdc.tsx -f readable-netlist -o out/dcdc-netlist.txt
+# netlist build (E36: layout is a later phase — netlist mode is the working default)
+TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ignore-routing-drc
 ```
 
-Each `boards/<sku>/out/` already contains the exported **schematic SVGs** and **readable
-netlists**; `boards/30kw/out/` additionally keeps the pre-directive single-board v1 artifacts
-(PCB SVG, Gerbers, drill, assembly SVG) for reference.
+```bash
+# the full gate battery (calcs, sims echo, schematic checks, interconnect+polarity audits, firmware)
+sh calculations/run-all.sh
+```
 
-**ERC status:** all six boards build with **0 netlist errors** and pass the build-time MCU
-pin-map uniqueness asserts — formal report: [`docs/drc-erc-report.md`](../docs/drc-erc-report.md).
-**PCB placement/routing** is intentionally unfitted (project directive) — the layout phase
-inherits the §31/§32 rules embedded in [`docs/architecture.md`](../docs/architecture.md) and the
-creepage classes in [`docs/insulation-coordination.md`](../docs/insulation-coordination.md).
+**The release sheets are `kicad5/DC-Modules-<target>-SHIP.zip`** (targets: `30kw`, `60kw`,
+`control-card`, `cabinet`) — regenerated by `calculations/kicad5-gen.mjs` and gated by
+pin-verify (**4150/4150** across the six sheets), the ink-collision audit, and the semantic
+audits. Per-board render SVGs regenerate on demand (`calculations/schematic-export.mjs`) and are
+not committed. Cross-section connectivity is net-labels-only (E34); wires never leave their
+section frame.
 
-
-## Schematic sheets (rev D.3, E34)
-
-**The release sheets are `kicad5/DC-Modules-<sku>-SHIP.zip`** — one zip per SKU, two sheets each
-(AC-DC lower = sheet 1, DC-DC upper = sheet 2), built by `node calculations/kicad5-gen.mjs`. Every
-sheet's title block names its SKU, which board of the pair it is, and what that board contains, so
-a page printed alone still identifies itself. Full description, per-sheet stats and the audits that
-gate them: [`docs/schematic-drawing-set.md`](../docs/schematic-drawing-set.md).
-
-Cross-section connectivity is net-labels-only (`schSectionName` + `schMaxTraceDistance={0}`); wires
-are reserved for local in-section connections, and no wire leaves its section frame anywhere in the
-set. The set is verified pin-by-pin against an independently-built netlist — **8053/8053 correct**.
-
-The per-board SVGs at `boards/<sku>/out/<side>-schematic.svg` (`schematic-export.mjs`, checked by
-`schematic-check.mjs`) are still generated and still useful for a quick per-board look, but they are
-no longer the release artefact.
+Per-SKU walkthroughs: [`30kw/README.md`](30kw/README.md) (canonical, cell by cell) ·
+[`60kw/README.md`](60kw/README.md) (what doubling changes).

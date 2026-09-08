@@ -3,26 +3,28 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/design-E1–E34_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
+  <img src="https://img.shields.io/badge/design-E1–E39_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
   <img src="https://img.shields.io/badge/envelope_grid-3024_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
   <img src="https://img.shields.io/badge/fault_scenarios-26%2F26-2ea44f?style=for-the-badge" alt="scenarios"/>
-  <img src="https://img.shields.io/badge/firmware_logic-33%2F33_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
+  <img src="https://img.shields.io/badge/firmware_logic-45%2F45_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
 </p>
 <p align="center">
-  <img src="https://img.shields.io/badge/schematics-6%2F6_ERC--clean-2ea44f?style=flat-square" alt="erc"/>
-  <img src="https://img.shields.io/badge/BOM-100%25_matched_·_3_price_breaks-2ea44f?style=flat-square" alt="bom"/>
-  <img src="https://img.shields.io/badge/toolchain-TSCircuit_·_ngspice--46_·_C99-5f8fc0?style=flat-square" alt="stack"/>
-  <img src="https://img.shields.io/badge/design_review-15%2F15_blockers_closed_(rev_C)-2e7d32?style=flat-square" alt="review"/>
+  <img src="https://img.shields.io/badge/schematics-6_sheets_·_4150%2F4150_pins-2ea44f?style=flat-square" alt="pins"/>
+  <img src="https://img.shields.io/badge/BOM-100%25_matched_·_10k_basis-2ea44f?style=flat-square" alt="bom"/>
+  <img src="https://img.shields.io/badge/audits-interconnect_·_polarity_·_symbols-2ea44f?style=flat-square" alt="audits"/>
+  <img src="https://img.shields.io/badge/toolchain-TSCircuit_·_ngspice--46_·_C99_·_KiCad--5-5f8fc0?style=flat-square" alt="stack"/>
   <img src="https://img.shields.io/badge/phase-pre--hardware-e3763c?style=flat-square" alt="phase"/>
   <img src="https://img.shields.io/badge/©_Vectivolt-all_rights_reserved-555?style=flat-square" alt="license"/>
 </p>
 
 # DC-Modules — 1000 VDC EV Fast-Charging Power Platform
 
-A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging modules** engineered end-to-end in this repository: every number traces to a runnable calculation, every waveform claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated BOM line. One repeatable **~10 kW cell pair** (a Vienna PFC phase + an LLC transformer section) scales 3× / 6× / 12× across the family — same SiC, same magnetics part numbers, same firmware — packaged as a **two-board sandwich** (AC-DC below, DC-DC above) per module.
+A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging products** engineered end-to-end in this repository: every number traces to a runnable calculation, every waveform claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated BOM line.
 
-> **What this repo is:** a complete, simulation-closed, tolerance-hardened electrical design + verified supervisory firmware + manufacturing documentation.
-> **Review status:** TWO adversarial production-readiness audits, plus an external PDF review. R1 ([docs/design-review-production.md](docs/design-review-production.md)) returned **NO — 15 critical blockers** → closed same day as **rev C**. R2 ([docs/design-review-production-r2.md](docs/design-review-production-r2.md)) re-audited rev C and returned **NO again — 7 new criticals** (resonant sensing mis-scale, a board with no 3.3 V source, 100 V aux rectifiers at 160–200 V PIV, 60 W aux vs the 120 kW load, an unread LLC fault net, drawn-vs-frozen tank drift) → every finding falsification-checked, then closed same day as **rev D** (cells v4, boards v4, parts-db rev D, F.21 implemented in firmware, aux rev C re-simulated 9/9 at per-SKU loads, per-SKU protection decks, six boards rebuilt clean, gate extended to 60+ asserts incl. class checks). **Rev D.1**: 10k-volume basis (A7 rev B), ECO-2a/2b executed, E23 retired. **R3** ([docs/review-response-r3.md](docs/review-response-r3.md)) — an external reviewer audited the exported PDFs and returned **do not manufacture**, principally on component pin numbering; every finding was re-checked against the built netlist and the manufacturer datasheets, and the GD32G553 pin allocation that the STM32-derived symbolic map had got wrong was replaced ([docs/mcu-pin-allocation-gd32.md](docs/mcu-pin-allocation-gd32.md)). Open by nature: the §K datasheet gate and bench EVT (T-01…T-25).
+**The product is one 30 kW module** — an AC-DC board (Vienna PFC) + a DC-DC board (3-φ LLC) in a two-board sandwich, controlled by **two identical role-agnostic control cards** (GD32G553VET6; a strap tells each card which converter it runs). Higher ratings are **cabinets of that module**: 60 kW = 2×, 120 kW = 4× + one **CSU** — the *same card* in a third strap role, supervising the modules over CAN. One board set, one card p/n, one firmware image, family-wide.
+
+> **What this repo is:** a complete, simulation-closed, tolerance-hardened electrical design + verified supervisory firmware + manufacturing documentation, with the release schematics in an audited KiCad-5 set.
+> **Review status:** THREE adversarial audits plus an external PDF review, each answered same-day with executed fixes and new permanent gates — see [The audit trail](#the-audit-trail).
 > **What it is not (yet):** bench-validated or certified hardware — see [Honesty boundary](#honesty-boundary-50).
 
 ---
@@ -33,9 +35,10 @@ A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging module
 |---|---|---|
 | Input | 3-φ 285–475 VAC | Full power 330–475 V, **86 % @285 V** constant-current derate — calculated trade, saves ~16 % on SiC/copper/EMI |
 | Output | 150–1000 VDC CV/CC | Series/parallel banks, crossover **500/525 V** + 30 s dwell; PS-mode below 260 V bank; ZVS held at **every** simulated edge |
+| Output current | 100 / 200 / 400 A | constant-current below the 300 V knee, constant-power above; 130 % for 2 ms before CC fold |
 | THD | ≤5 % (stretch 3 %) | **0.59–1.05 %** full power, 2.55 % @25 % (line-cycle sim, THD-40) |
-| Peak efficiency | ≥97 % | **97.26–97.29 %** @nominal (loss-budget rev D — EMI-filter copper now honestly budgeted; pre-R2 97.4–97.5 % omitted it) |
-| Envelope | full power to +55 °C | 3 SKUs × 1008 grid points: **0 violations**, worst Tj 139 °C vs 150 ceiling |
+| Peak efficiency | ≥97 % | **97.28 / 97.37 / 97.37 %** @nominal (loss budget rev B — EMI-filter copper honestly budgeted) |
+| Envelope | full power to +55 °C | 1008 grid points per module: **0 violations**, worst Tj 138 °C vs 150 ceiling |
 | Accuracy | ±0.5 % V / ±1 % I | **±0.18 % / ±0.2 %** post-cal (10 k-sample Monte-Carlo, EOL 2-pt cal mandatory) |
 | Protections | §24 catalogue | **32-row threshold table**, HW-fast + supervisory, all 26 fault scenarios executed green |
 
@@ -47,33 +50,36 @@ A commercial family of **unidirectional 30 / 60 / 120 kW AC→DC charging module
 
 ```mermaid
 flowchart LR
-  AC["3φ AC<br/>285–475 V"] --> P1["Fuses · MOV Δ<br/>2× 3-φ CM stages<br/>+ 22 µH DM stage (E22)"]
+  AC["3φ AC<br/>285–475 V"] --> P1["80 A gG fuses · MOV Δ<br/>2× 3-φ CM stages<br/>+ 22 µH DM stage (E22)"]
   P1 --> P2["Precharge<br/>2× 33 Ω + 2-pole bypass"]
-  P2 --> PFC["N× Vienna lanes · 50 kHz<br/>750 V SiC pairs · 1200 V JBS<br/>RC + RCD clamp per node"]
-  PFC --> BUS[("Split DC bus<br/>650–830 V · OVP 860 V<br/>2×(5…18)× 470 µF")]
-  BUS --> LLC["N× 3-φ LLC · fr 140 kHz<br/>1200 V SiC half-bridges<br/>Cr 185 nF · Lr 7 µH · Lm 63 µH"]
-  LLC --> XF["N×3 transformer sections<br/>3× PQ50/50 · 7:7:7<br/>dual TIW secondaries"]
+  P2 --> PFC["Vienna lanes · 50 kHz<br/>750 V SiC pairs · 1200 V JBS<br/>RC + RCD clamp per node"]
+  PFC --> BUS[("Split DC bus<br/>650–830 V · OVP 860 V")]
+  BUS --> LLC["3-φ LLC · fr 140 kHz<br/>1200 V SiC half-bridges<br/>Cr 184 nF · Lr 7 µH · Lm 63 µH"]
+  LLC --> XF["3 transformer sections<br/>3× PQ50/50 · 7:7:7<br/>dual TIW secondaries"]
   XF --> BK["Banks A + B<br/>SiC JBS bridges"]
   BK --> SP["S/P matrix<br/>pre-insertion relays (E12)<br/>K_OUT gate (E12b)"]
-  SP --> OUT["150–1000 VDC<br/>100 / 200 / 400 A"]
+  SP --> OUT["150–1000 VDC<br/>100 A / module"]
   style PFC stroke:#f2b705,stroke-width:2.5px
   style LLC stroke:#f2b705,stroke-width:2.5px
   style SP stroke:#e3763c,stroke-width:2.5px
 ```
 
-**Two-board sandwich (E17):** each module = **AC-DC board** (input, EMI, precharge, Vienna lanes, DC link, MCU-PFC, aux flyback) + **DC-DC board** (LLC legs, tanks, transformers, rectifier banks, S/P matrix, output, MCU-LLC, isolated CAN, config HMI), mounted face-to-face — TO-247 rows clamp to the two *outer* heatsink extrusions, magnetics live in the inter-board airflow tunnel. Power crosses on bolted **DCP/DCN/PE stud pillars**; signals on a 16-way harness carrying the CRC-protected UART link, `GATE_EN`, and a hardware `PWM_KILL` line. Loss of the harness ⇒ both boards reach safe state independently. Full spec: [`docs/interconnect.md`](docs/interconnect.md).
+**Two-board sandwich (E17):** AC-DC board below, DC-DC board above, face-to-face — TO-247 rows clamp to the two outer heatsink extrusions, magnetics live in the inter-board airflow tunnel. Power crosses on bolted **DCP/DCN/PE stud pillars**; control on a 16-way harness (CRC-protected UART link, `GATE_EN`, hardware `PWM_KILL`). Loss of the harness ⇒ both boards reach safe state independently.
 
-### Family scaling — one cell, three products
+**Control cards (E35):** each board hosts the same 120×80 mm card on an 88-way slot. At boot the card reads a ROLE strap (which converter) and a RATING strap (which power class / CSU), so **one card p/n and one firmware image serve every role in the family** — see [`docs/control-card-scope.md`](docs/control-card-scope.md) for why this card deliberately caps at 60 kW of DC-DC, and [`docs/firmware-guide.md`](docs/firmware-guide.md) for the strap bands.
+
+### Product structure — one module, three products (E39)
 
 | | **30 kW** | **60 kW** | **120 kW** |
 |---|---|---|---|
-| Vienna lanes (interleave) | 1 | 2 @ 0/180° | 4 @ 0/90/180/270° |
-| LLC channels · transformer sections | 1 · 3 | 2 · 6 | 4 · 12 |
-| Output current | 100 A | 200 A | 400 A (2× 200 A relays) |
-| Board pair (mm) | 420×300 + 460×320 | 460×420 + 520×420 | 560×600 + 640×620 |
-| MCUs | 2 | 2 | 2 (HRTIM exactly full: 12+12 PWM) |
-| Effective ripple @EMI filter | 50 kHz | 100 kHz | 200 kHz |
-| COGS (BOM-exact, **rev D.1**) @1k / **@10k basis** | ₹37,034 / **₹29,957** | ₹62,884 / **₹50,780** | ₹117,216 / **₹94,614** |
+| Build | 1 module | **2 × 30 kW modules** | **4 × 30 kW modules + CSU** |
+| Output | 150–1000 V · 100 A | 150–1000 V · 200 A | 150–1000 V · 400 A |
+| Full power from | 300 V | 300 V | 300 V |
+| Control | 2 cards | 4 cards | 8 cards + **1 CSU card** (same p/n, third strap role) |
+| Current sharing | — | commanded-CC over CAN | commanded-CC over CAN, staggered starts, graceful module-dropout degrade |
+| COGS @10k (BOM-exact) | **₹30,372** | **₹60,744** (2×) | **≈ ₹123.0k** (4× + [cabinet adder](boards/README-product-structure.md)) |
+
+The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
 
 ---
 
@@ -83,30 +89,44 @@ flowchart LR
 mindmap
   root((DC-Modules))
     boards/
-      30kw · 60kw · 120kw
-      acdc.tsx + dcdc.tsx per SKU
-      out/ → schematic SVG · netlist · gerbers*
+      30kw · 60kw — acdc.tsx + dcdc.tsx
+      control-card.tsx · cabinet.tsx
+      120kw/ — retired reference (cabinet is the product)
+      out-pdf/ — the release PDF sets
     packages/
       power-primitives/cells.tsx — every reusable cell
-      common-components/boards.tsx — board generators + pin-map asserts
+      common-components/boards.tsx + control-card.tsx
     firmware/
-      core/ fsm.c · can_proto.c — normative C99 logic
-      test/ host_sim.c — 33/33 under ASan/UBSan
+      core/ fsm.c · can_proto.c · csu.c — normative C99
+      test/ host_sim.c — 45/45 under ASan/UBSan
     spice/
       models/ behavioral SiC lib (provenance headers)
       40+ preserved netlists in generated/
-      double-pulse · pfc · llc · aux runners
     calculations/
-      14 machine-readable modules → out/*.csv
-      run-all.sh — one-command reproduction
+      engines → out/*.csv · run-all.sh gate battery
+      kicad5-gen/verify/visual/print · audits
     kicad5/
-      DC-Modules-<sku>-SHIP.zip — the release schematics
-      6 sheets · 217 sections · 2819 symbols · 8053 pins verified
+      DC-Modules-<target>-SHIP.zip — release schematics
+      6 sheets · 4150/4150 pins verified
     simulation-results/
       metrics CSVs + SVG plots
     docs/
-      31 governing documents — start at docs/README.md
+      33 governing documents — start at docs/README.md
 ```
+
+---
+
+## Deliverables
+
+The **release face is the audited KiCad-5 set** (`kicad5/`), rendered to print-fidelity PDFs in [`boards/out-pdf/`](boards/out-pdf/):
+
+| PDF set | Pages |
+|---|---|
+| `DC-Modules 30kW — Schematic Set` | AC-DC · DC-DC · Control Card |
+| `DC-Modules 60kW — Schematic Set` | AC-DC · DC-DC · Control Card |
+| `DC-Modules 120kW — Cabinet Set` | Cabinet interconnect · + the 30 kW module sheets it instantiates |
+
+Every sheet passes the same battery before it ships: pin-level verification (4150/4150 across all six sheets), ink-collision audit, symbol-glyph review, and the semantic audits below. The EasyEDA payloads under `calculations/out/easyeda/` are **internal pipeline inputs only** — the EasyEDA face is frozen by directive; KiCad is the record.
 
 ---
 
@@ -118,53 +138,52 @@ npm install
 ```
 
 ```bash
-# reproduce EVERY calculation, simulation-derived table, BOM and the firmware test suite
+# reproduce EVERY calculation, simulation-derived table, BOM, audit gate and the firmware suite
 sh calculations/run-all.sh
-# → ...
-# → FIRMWARE LOGIC 33/33 OK
-# → ALL CALCULATIONS REPRODUCED OK
+# → MODULE INTERCONNECT CLEAN · POLARITY CLEAN · ALL REVIEW CHECKS PASS
+# → FIRMWARE LOGIC 45/45 OK · ALL CALCULATIONS REPRODUCED OK
 ```
 
 ```bash
-# build any board (netlist ERC + circuit JSON; placement DRC intentionally unfitted — layout phase pending)
-npx tsci build boards/30kw/acdc.tsx
+# build any board netlist (E36: netlist mode — PCB layout is a later phase)
+TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ignore-routing-drc
 ```
 
 ```bash
-# export deliverables for a board
-npx tsci export boards/30kw/dcdc.tsx -f schematic-svg -o out/dcdc-schematic.svg
+# regenerate the release schematics + PDFs for one target (30kw | 60kw | control-card | cabinet)
+node calculations/easyeda-pages.mjs 30kw && node calculations/easyeda-apply-gen.mjs 30kw
+node calculations/kicad5-gen.mjs 30kw
+node calculations/kicad5-verify.mjs 30kw && node calculations/kicad5-visual.mjs 30kw
+node calculations/kicad5-print.mjs 30kw && node calculations/sheets-to-pdf.mjs
 ```
 
 ```bash
-# run the SPICE suites individually (each persists netlists + metrics CSVs)
-node spice/double-pulse/dpt-run.mjs && node spice/pfc/pfc-phase-run.mjs && node spice/llc/llc-run.mjs
-```
-
-```bash
-# firmware verification alone (26 scenarios + CAN codec + 100k-frame fuzz, sanitizers on)
+# firmware verification alone (26 scenarios + rating windows + CSU supervisor + codec + 100k fuzz)
 sh firmware/run_tests.sh
 ```
 
 ---
 
-## The engineering story — what verification actually caught 🐛
+## The audit trail
 
-This platform was **designed by iteration against its own simulations**. Every layer of the pyramid earned its keep by breaking something real:
+This platform was **designed by iteration against its own simulations and audits**. Every layer earned its keep by breaking something real:
 
 | Found by | Defect | Fix (now frozen) |
 |---|---|---|
-| Double-pulse L1 | 33 nH assumed loop → 115 % V<sub>DS</sub>; snubber alone would burn 85 W | ≤10 nH layout rule + **RCD clamp to rail** → 70 % (E5) |
-| DPT energy feedback | measured k<sub>sw</sub> 2.2× the datasheet guess → Tj 175 °C @100 kHz | **fsw 100→50 kHz** re-selection (E3) |
-| Magnetics search | 55 A rms copper cannot fit a 47 mm toroid window | OD79 26µ 3-stack, swing-aware ripple criterion (choke D1) |
-| LLC window calc | PFM can't reach 150 V bank (gain 0.46 needed) | **hybrid phase-shift mode** below 260 V bank (E10) |
-| S/P transient sim | 2 V bank mismatch → **205 A** through closing contact | 10 Ω **pre-insertion relays** + ΔV<0.5 V make rule (E12) |
-| Monte-Carlo §37 | 17.7 % of tanks miss peak gain; frozen 550 V hysteresis top physically unreachable | leakage-binned trim, Lm gap-ground ±7 %, **hysteresis 500/525**, capability 1.39 (E7/E9 rev D2) |
-| LISN estimate | 30 kW 3rd harmonic lands −24.8 dB at 150 kHz band edge | third **22 µH DM stage**, family-wide → +7.8 dB (E22) |
-| Aux flyback sim | no CS clamp → CCM staircase to 6.7 A at 425 V start | cycle-by-cycle 0.85 A clamp, exactly as the real IC (D4) |
-| FSM scenario suite | F.16 short criterion unreachable with a healthy CC loop | criterion rev B: V<50 V & I>90 % sustained |
-| **C firmware port** | model masked a blind K_OUT closure → guaranteed OVP after mode change | **E12b gate**: stack must match v<sub>ext</sub>-or-v<sub>cmd</sub> before K_OUT closes |
+| Double-pulse L1 | 33 nH assumed loop → 115 % V<sub>DS</sub> | ≤10 nH layout rule + **RCD clamp to rail** → 70 % (E5) |
+| DPT energy feedback | measured k<sub>sw</sub> 2.2× datasheet → Tj 175 °C @100 kHz | **fsw 100→50 kHz** re-selection (E3) |
+| Monte-Carlo §37 | 17.7 % of tanks miss peak gain | leakage-binned trim, Lm gap-ground, **hysteresis 500/525**, capability 1.39 (E7/E9) |
+| S/P transient sim | 2 V bank mismatch → **205 A** through closing contact | 10 Ω **pre-insertion relays** + ΔV rule (E12) |
+| C firmware port | model masked a blind K_OUT closure → guaranteed OVP | **E12b gate** before K_OUT closes |
+| R1 adversarial audit | **15 critical blockers** | closed same day as rev C |
+| R2 re-audit | **7 new criticals** (no 3.3 V source on a board, mis-scaled sensing, …) | closed same day as rev D; gate suite grew to 60+ asserts |
+| R3 external PDF review | GD32 pin numbering from an STM32-derived map | pin allocation regenerated from the datasheet ([docs](docs/mcu-pin-allocation-gd32.md)) |
+| E35 margin audit | trim inductor unbuildable as drawn (~43 W core loss); three drawings short of their own copper; fuse over-derated | magnetics rev B/C set, 80 A fuse, catalog CT/CMC adoption — all re-gated |
+| E37 interconnect audit | RATING strap hardcoded (a 60 kW machine boots as 30 kW); connector bought as two unmateable headers; a dead Kelvin way | per-SKU straps, mating pair, runtime rating — 17-check cabinet-aware gate in run-all |
+| E38 polarity audit | *(nothing — 259/259 polarized parts proven correct, gate keeps it so)* | +/anode = pin 1, netlist-to-glyph |
+| E39 re-verification | cabinet bus wired to the wrong module studs; missing CAN SGND conductor; CSU supply specced 85–264 VAC on a 400 V L-L feed | OUTP/OUTN bus, SGND chain + single-point tie, WDR-class supply |
 
-Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in [`spice/generated/`](spice/generated/) · decisions in [`docs/assumptions.md`](docs/assumptions.md).
+Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E39** in [`docs/assumptions.md`](docs/assumptions.md).
 
 ---
 
@@ -172,13 +191,13 @@ Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · eve
 
 <p align="center"><img src="docs/assets/cogs-chart.svg" width="92%" alt="COGS vs targets"/></p>
 
-The BOM is **generated from the built schematics** — 76 matched lines per SKU with manufacturer, second source, and 100/1 k/5 k price breaks. Current @1k totals sit **over red-line** (₹+6.9k / +13.3k / +26.6k); the executed internal levers (custom gate-bias transformer E23, CT sensing E18) are already inside these numbers, and the remaining levers are quantified external RFQs. Stretch targets are flagged unreachable in this architecture — an honest standing management flag, not a footnote. Deep dive: [`docs/bom-guide.md`](docs/bom-guide.md) · roll-up: [`docs/bom-cost.md`](docs/bom-cost.md).
+The BOM is **generated from the built schematics** — every line matched with manufacturer, second source, and 100/1k/5k/10k price breaks (10k is the planning basis, A7 rev B). @10k: **₹30,372 / ₹60,744 / ≈₹123.0k** vs red-lines 25/42/78k — honestly over, with the remaining levers quantified in [`docs/bom-cost.md`](docs/bom-cost.md) (winder RFQ, relay frame, fuse→MCB) and the architecture-level options (LV/HV variants, 750 V secondaries) recorded as decisions-not-taken. Deep dive: [`docs/bom-guide.md`](docs/bom-guide.md).
 
 ---
 
 ## Supervisory firmware 🧠
 
-The production FSM + protection evaluator + CAN 2.0B codec live in portable **C99** (`firmware/core/`) with zero HAL dependency — the same logic verified twice (JS model ↔ C implementation) against 26 fault scenarios, plus codec guards and a 100 000-frame fuzz, sanitizer-clean.
+Portable **C99**, zero HAL dependency (`firmware/core/`): the module FSM + protection evaluator + CAN 2.0B codec, plus the **CSU cabinet supervisor** (`csu.c`) — equal-share commanded-CC, staggered starts, graceful module-dropout degrade, ESTOP latch. One image serves every role: the card reads its RATING strap at boot (`pmp_fsm_set_rating_kw()` / CSU band, E24 rev C). 45/45 checks under ASan/UBSan: 26 fault scenarios, rating windows, 10 CSU scenarios, codec guards, 100k-frame fuzz.
 
 ```mermaid
 stateDiagram-v2
@@ -196,8 +215,8 @@ stateDiagram-v2
   RUN --> SAFE : aux collapse (gates hold low)
   SAFE --> STANDBY
   STANDBY --> SHUTDOWN
-  SHUTDOWN --> DISCH : 640 Ω active bleed
-  DISCH --> [*] : bus < 60 V ≤ 2 s
+  SHUTDOWN --> DISCH : active bleed, strap-timed window
+  DISCH --> [*] : bus < 60 V
 ```
 
 Guide: [`docs/firmware-guide.md`](docs/firmware-guide.md) · protocol: [`docs/can-protocol.md`](docs/can-protocol.md) · thresholds: [`docs/protection-thresholds.md`](docs/protection-thresholds.md).
@@ -206,21 +225,21 @@ Guide: [`docs/firmware-guide.md`](docs/firmware-guide.md) · protocol: [`docs/ca
 
 ## Documentation index 📚
 
-Everything lives in [`docs/`](docs/README.md) — the index there describes all thirty documents. Highlights:
+Everything lives in [`docs/`](docs/README.md). Highlights:
 
 | Read this… | …to understand |
 |---|---|
 | [`architecture.md`](docs/architecture.md) | the frozen platform, power path, control plane, scaling |
-| [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | **the release schematics** — what to import, how every sheet is labelled, the audits that gate it |
-| [`pcb-floorplan.md`](docs/pcb-floorplan.md) | **the PCB zone plan** — where every schematic section lands on each board, and what the frozen outlines can and cannot hold |
-| [`assumptions.md`](docs/assumptions.md) | **every decision E1–E34** with provenance and its invalidator |
-| [`boards/*/README.md`](boards/) | each board, cell by cell, pin by pin |
-| [`simulation-report.md`](docs/simulation-report.md) | all executed runs in §50 format (solver, netlist, tolerances, pass/fail) |
-| [`magnetics.md`](docs/magnetics.md) | manufacturing drawings D1–D5 with acceptance limits |
-| [`interconnect.md`](docs/interconnect.md) | the sandwich, stud pillars, 16-way harness, HMI spec |
+| [`assumptions.md`](docs/assumptions.md) | **every decision E1–E39** with provenance and its invalidator |
+| [`boards/README-product-structure.md`](boards/README-product-structure.md) | module vs cabinet, the 60/120 kW contract, the CSU, the cabinet adder |
+| [`control-card-scope.md`](docs/control-card-scope.md) | why one card caps at 60 kW DC-DC — the arithmetic that retired 120 kW single-board |
+| [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | the release schematics and the audits that gate them |
+| [`magnetics.md`](docs/magnetics.md) | manufacturing drawings D1–D7 (rev B/C set) with acceptance limits |
+| [`interconnect.md`](docs/interconnect.md) | sandwich, stud pillars, 16-way harness, 88-way card slots, cabinet audit |
+| [`simulation-report.md`](docs/simulation-report.md) | all executed runs in §50 format |
 | [`thermal-report.md`](docs/thermal-report.md) | loss budgets, sandwich cooling, derating curves |
-| [`insulation-coordination.md`](docs/insulation-coordination.md) | creepage/clearance design values + standards checklist |
-| [`evt-plan.md`](docs/evt-plan.md) | the 10-test bench campaign this repo is ready for |
+| [`pcb-floorplan.md`](docs/pcb-floorplan.md) | the zone plan the layout phase will inherit |
+| [`evt-plan.md`](docs/evt-plan.md) | the bench campaign this repo is ready for (T-01…T-25) |
 | [`verification-matrix.md`](docs/verification-matrix.md) | requirement → evidence, risk register |
 | [`dfm-production.md`](docs/dfm-production.md) | assembly sequence, torque table, EOL test flow |
 
@@ -230,19 +249,22 @@ Everything lives in [`docs/`](docs/README.md) — the index there describes all 
 
 This project runs under a strict **no-fake-verification rule**: nothing is called *verified* without an executed artifact in this repo, and the words *bench-validated*, *certified* or *production-released* appear nowhere as claims. Concretely, the following are **specified and packaged but not executed**, because they physically require hardware, labs, or third parties:
 
-- 🔧 **PCB layout/placement/routing** — deliberately parked by project directive; schematics carry the layout rules (§31/§32 zones, loop budgets, creepage classes) ready for the layout phase.
-- 🧪 **EVT bench campaign T-01…T-10** — DPT bench, thermal/EMI chambers, protection injection, relay qualification ([plan](docs/evt-plan.md)).
+- 🔧 **PCB layout/placement/routing** — parked by directive (E36); schematics carry the layout rules ready for that phase, and the †-marked land patterns in [`docs/magnetics.md`](docs/magnetics.md) queue for it.
+- 🧪 **EVT bench campaign T-01…T-25** — DPT bench, thermal/EMI chambers, protection injection, relay qualification, cabinet-level CAN/stagger tests.
 - 📜 **Compliance certification** — design-for-compliance checklist exists; certification is a lab + body activity.
-- 🤝 **Vendor RFQ pricing** — BOM prices are RFQ-target assumptions ±25 % until quotes land.
+- 🤝 **Vendor RFQ pricing** — BOM prices are RFQ-target assumptions ±25 % until quotes land (film-cap V<sub>rms</sub> curve, relay mirror variant, MOV part, winder quotes).
+- 🖥️ **MCU HAL bring-up** — the C99 logic is host-proven; binding to real peripherals happens on silicon.
 
 ## Roadmap
 
-- [x] Design basis → frozen decision register E1–E34
+- [x] Design basis → frozen decision register **E1–E39**
 - [x] Simulation matrix closed (grid · Monte-Carlo · scenarios · aux · EMI estimate)
-- [x] Six schematics ERC-clean · BOM generated · firmware logic verified
-- [ ] RFQ round 1 (5 SiC vendors + magnetics + relays) → cost closure
+- [x] Release schematics: 6 audited sheets, 4150/4150 pins, three PDF sets
+- [x] Product structure closed: 30 kW module · 60 = 2× · 120 = 4× + CSU (one card p/n, one image)
+- [x] Three adversarial audits + external review answered with executed fixes and permanent gates
+- [ ] RFQ round 1 (SiC + magnetics + relays) → cost closure
 - [ ] PCB layout under the sandwich mechanical envelope
-- [ ] Prototype build → EVT T-01…T-10 → model recalibration
+- [ ] Prototype build → EVT T-01…T-25 → model recalibration
 - [ ] Compliance lab campaign → certification
 
 ---

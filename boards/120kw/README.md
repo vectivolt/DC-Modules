@@ -1,7 +1,11 @@
-# 120 kW Module — Board Pair 🔬
+# 120 kW Board Pair — RETIRED REFERENCE ⚠️
 
-The full-stretch instantiation: **4 Vienna lanes, 4 LLC channels, 12 transformer sections — still
-two boards, still two MCUs.** Cell internals: [30 kW canonical page](../30kw/README.md).
+**The 120 kW product is a cabinet: 4 × 30 kW modules + one CSU card**
+([product structure](../README-product-structure.md), register E39). This single-board pair is
+kept only as the reference that *proved why*: a 4-lane machine needs 24 HRTIMER-grade PWMs
+against the card's 16, 17 analog ways against 13, and a 872×1062 mm DC-DC board — the arithmetic
+lives in [`docs/control-card-scope.md`](../../docs/control-card-scope.md). `120kw/` deliberately
+does not build (`cardMap()` refuses 4 lanes) and is outside `BUILDABLE_SKUS`.
 
 | Spec | Value |
 |---|---|
