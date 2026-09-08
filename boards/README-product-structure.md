@@ -1,6 +1,10 @@
 # Product structure
 
-**The module is 30 kW.** Higher ratings are cabinets of 30 kW modules, not bigger boards.
+**The module comes in two variants — 30 kW and 40 kW (E41) — on one platform, one card each.**
+Higher ratings are cabinets of modules, not bigger boards. Price-per-kW ladder (generated,
+[docs/bom-cost.md](../docs/bom-cost.md)): 30→₹1,003/kW · 40→₹858/kW · 120 kW cheapest as
+**3×40+CSU = ₹104,743 (₹873/kW)** vs 4×30 = ₹122,150; N−1 granularity 67 % vs 75 % — pick the
+runner at the volume decision.
 
 |  | AC-DC depth | DC-DC single-row width | verdict |
 |---|---|---|---|
@@ -53,7 +57,7 @@ and fuse frames past 125 A. This is also how the commercial market builds (modul
 | CAN chain | 2 × 120 Ω + 3.32 k strap + 0 R shield bond + 0 R SGND reference tie | ≈ 2 |
 | CAN/AC harness | integrator-supplied, cabinet-length dependent | — |
 
-120 kW product ≈ 4 × ₹30,372 + adder ≈ **₹123.0 k @10k** (bom-cost.md carries the 4×-only roll-up).
+120 kW product: 4×30,079 + adder ₹1,834 = **₹122,150** or **3×34,303 + adder = ₹104,743** @10k (bom-cost.md carries the 4×-only roll-up).
 
 **The cabinet brain (E39):** one CSU — the same control card p/n strapped into the CSU band —
 on a passive carrier (15 V DIN supply + 3.32 k strap), joining the CAN chain alongside each

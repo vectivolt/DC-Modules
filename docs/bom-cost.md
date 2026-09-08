@@ -75,6 +75,24 @@ variants deleting the S/P matrix (−₹3k+ @30 kW, collapses the 150–1000 V s
 **conflicts with directive E17**). **Stretch targets remain a management flag (R12)** — see the
 10k headline above for where the red-lines actually stand now.
 
+## Price per kW — the product ladder (@10k basis, generated)
+
+The 40 kW variant (E41) changes the economics: the fixed overhead (card, aux, CAN, HMI, PCBs,
+enclosure) amortizes over more watts, so **every 40-based product is ~14% cheaper per kW**.
+
+| Product | Composition | ₹ @10k | **₹ / kW** |
+|---|---|---|---|
+| 30 kW module | 1 module · 1 card | 30,079 | **1,003** |
+| 40 kW module (E41) | 1 module · 1 card | 34,303 | **858** |
+| 60 kW | 2 x 30 · 2 cards | 60,158 | **1,003** |
+| 80 kW | 2 x 40 · 2 cards | 68,606 | **858** |
+| 120 kW (4 x 30) | 4 cards + CSU | 1,22,150 | **1,018** |
+| 120 kW (3 x 40) | 3 cards + CSU — cheapest 120 | 1,04,743 | **873** |
+
+Cabinet adder ₹1,834 (CSU card + carrier + WDR supply + studs + CAN passives). The
+**3×40 cabinet is the cheapest 120 kW** by ~₹17,407; choose the runner at the volume decision
+(N−1 granularity: 4×30 keeps 75% on a module loss, 3×40 keeps 67%).
+
 ## Directive cost impacts (recorded)
 - Two-board sandwich (E17): +1 PCB, interconnect studs/harness — ≈ +₹1,450/-module @30 kW vs single-board baseline.
 - HMI (2 buttons + 2-digit display + driver parts): ≈ +₹45.

@@ -18,7 +18,7 @@ One repeatable ~10 kW **cell pair** (PFC phase cell + LLC section) instantiated 
    star primaries
  → per section 2 secondaries → 2× SiC JBS bridges (1200 V/20 A) → floating banks A, B
  → S/P matrix: K_PAR_A/B (each with 10 Ω pre-insertion aux), K_SER, K_OUT, bleed
- → output filter → shunt (manganin + NSI1200) → busbar 150–1000 V, 100/200/400 A
+ → output filter → shunt (manganin + NSI1200) → busbar 150–1000 V · 100 A (30 kW) / 133 A (40 kW, E41) per module · 200/267/400 A as cabinets
 ```
 
 ## Control plane
