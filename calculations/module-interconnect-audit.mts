@@ -17,6 +17,7 @@
 import { readFileSync, existsSync } from "node:fs";
 const ROOT = process.cwd();
 const { cardMap } = await import(ROOT + "/packages/common-components/control-card.tsx");
+const { HARNESS40 } = await import(ROOT + "/packages/common-components/umod-map.gen.ts");
 
 export type Net = string;
 export interface Board { netOfPin: Map<string, Net>; pinsOfNet: Map<Net, string[]>; comps: Set<string>; val: Map<string, string>;
@@ -97,7 +98,7 @@ if (!card) { console.log("no card build — run tsci build boards/control-card.t
 // which card-connector way carries which generic net, in pin order (the contract)
 const genericWays: [string, string | null][] = cardMap("card").map(([w, n]: any) => [w, n]);
 
-for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "60kw"]) {
+for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw"]) {
   console.log(`\n== module interconnect — ${sku} ==`);
   const lanes = sku === "60kw" ? 2 : 1;
   const ac = load(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`);
@@ -112,71 +113,55 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "60kw"]) {
     else bad(`stud ${net}: acdc=${an ?? "MISSING"} dcdc=${dn ?? "MISSING"}`);
   }
 
-  // ---- 2. 16-way harness ----
-  // expected: [pin, acdc net, dcdc net] — rev C/D semantics, TX/RX crossed on the DC-DC side
-  const HARNESS: [number, string | null, string | null][] = [
-    [1, "V24", "V24"], [2, "V24", "V24"], [3, "GND", "GND"], [4, "GND", "GND"],
-    [5, "V15", "V15"], [6, "V15", "V15"],
-    [7, "LINK_TX", "LINK_RX"], [8, "LINK_RX", "LINK_TX"],
-    [9, "EN_PFC", "EN_PFC"], [10, "EN_LLC", "EN_LLC"],
-    [11, null, null], [12, null, null], [13, null, null],   // reserved (MR-2) / spares->GND rev D
-    [14, "GND", "GND"], [15, "GND", "GND"], [16, "PE", "PE"],
-  ];
-  const hpin = (b: Board, j: string, n: number) =>
-    b.netOfPin.get(`${j}.pin${n}`) ?? b.netOfPin.get(`${j}.${["V24A","V24B","GNDA","GNDB","V15A","V15B","LTX","LRX","EN","KILL","FPWM","FTACH","TINL","SP1","SP2","SHLD"][n-1]}`);
-  // control-ground name differs per board generator; accept GND/DGND as the same rail here
+  // ---- 2. 40-way harness (E40): straight-through, single source HARNESS40 ----
   const gnd = (x?: string) => (x === "DGND" ? "GND" : x);
-  for (const [n, ae, de] of HARNESS) {
-    const av = gnd(hpin(ac, "JICA", n) ?? reach(ac, "JICA." + ["V24A","V24B","GNDA","GNDB","V15A","V15B","LTX","LRX","EN","KILL","FPWM","FTACH","TINL","SP1","SP2","SHLD"][n-1]));
-    const dv = gnd(hpin(dc, "JICB", n) ?? reach(dc, "JICB." + ["V24A","V24B","GNDA","GNDB","V15A","V15B","LTX","LRX","EN","KILL","FPWM","FTACH","TINL","SP1","SP2","SHLD"][n-1]));
-    if (ae === null) {
-      if (av || dv) warn(`harness pin ${n}: reserved but wired (acdc=${av ?? "-"} dcdc=${dv ?? "-"})`);
+  let hOk = 0;
+  for (const [pos, net] of HARNESS40 as [number, string | null][]) {
+    const av = ac.netOfPin.get(`JICA.W${pos}`);
+    const dv = dc.netOfPin.get(`JICB.W${pos}`);
+    if (!net) { if (av || dv) warn(`harness W${pos}: spare but wired (${av ?? "-"}/${dv ?? "-"})`); continue; }
+    if (net === "SHLD") {
+      if (av !== "PE") bad(`harness W${pos} SHLD: AC-DC end must bond PE, has ${av ?? "OPEN"}`);
+      if (dv) warn(`harness W${pos} SHLD: DC-DC end should float, has ${dv}`);
       continue;
     }
-    if (av !== ae || dv !== de) bad(`harness pin ${n}: expected ${ae}/${de}, drawn ${av ?? "OPEN"}/${dv ?? "OPEN"}`);
+    if (gnd(av) !== gnd(net) || gnd(dv) !== gnd(net))
+      bad(`harness W${pos}: expected ${net} both ends, drawn ${av ?? "OPEN"}/${dv ?? "OPEN"}`);
+    else hOk++;
   }
-  ok("harness: 16-way semantics checked (incl. TX/RX crossover)");
+  ok(`harness: ${hOk} nets verified across all 40 ways (straight-through, SHLD bonded at AC-DC)`);
 
-  // ---- 3. the two 88-way card slots ----
-  for (const [role, b, jname] of [["acdc", ac, "JA"], ["dcdc", dc, "JB"]] as const) {
-    const roleWays: [string, string | null][] = cardMap(role, lanes).map(([w, n]: any) => [w, n]);
-    let wired = 0, deadBoard = 0, deadCard = 0;
-    for (let i = 0; i < roleWays.length; i++) {
-      const [way, roleNet] = roleWays[i];
-      const boardNet = b.netOfPin.get(`${jname}.${way}`);
+  // ---- 3. the single 88-way card slot (E40: the DC-DC board hosts the module's one brain) ----
+  {
+    const roleWays: [string, string | null][] = cardMap("module").map(([w, n]: any) => [w, n]);
+    let wired = 0, dead = 0;
+    for (const [way, roleNet] of roleWays) {
+      const boardNet = dc.netOfPin.get(`JB.${way}`);
       const cardNet = card.netOfPin.get(`JCARD.${way}`);
       const expBoard = roleNet ? roleNet.replace("net.", "") : null;
       if (expBoard) {
-        if (!boardNet) { bad(`${role} way ${i + 1} ${way}: role expects ${expBoard}, board side OPEN`); continue; }
-        if (boardNet !== expBoard) { bad(`${role} way ${i + 1} ${way}: role expects ${expBoard}, board has ${boardNet}`); continue; }
-        // the board net must reach real electronics, not just the connector
-        const others = (b.pinsOfNet.get(boardNet) ?? []).filter((k) => !k.startsWith(jname + "."));
-        if (others.length === 0) deadBoard++, bad(`${role} way ${way}: net ${boardNet} touches ONLY the connector on the board`);
-        // and the card side must land on something (MCU pin, pull-up, buffer...)
-        if (!cardNet) deadCard++, bad(`${role} way ${way}: card side OPEN for an expected signal`);
+        if (!boardNet) { dead++, bad(`module way ${way}: expects ${expBoard}, board side OPEN`); continue; }
+        if (boardNet !== expBoard) { dead++, bad(`module way ${way}: expects ${expBoard}, board has ${boardNet}`); continue; }
+        const others = (dc.pinsOfNet.get(boardNet) ?? []).filter((k) => !k.startsWith("JB."));
+        if (others.length === 0) dead++, bad(`module way ${way}: net ${boardNet} touches ONLY the connector on the board`);
+        if (!cardNet) dead++, bad(`module way ${way}: card side OPEN for an expected signal`);
         else {
           const con = (card.pinsOfNet.get(cardNet) ?? []).filter((k) => !k.startsWith("JCARD."));
-          if (con.length === 0) deadCard++, bad(`${role} way ${way}: card net ${cardNet} touches only the connector`);
+          if (con.length === 0) dead++, bad(`module way ${way}: card net ${cardNet} touches only the connector`);
         }
         wired++;
-      } else if (boardNet) {
-        // board wired a way the role map says is unused
-        warn(`${role} way ${way}: board wires ${boardNet} but the role map has it unused`);
-      }
+      } else if (boardNet) warn(`module way ${way}: board wires ${boardNet} but the role map has it unused`);
     }
-    if (deadBoard + deadCard === 0)
-      ok(`${role}<->card: ${wired} expected ways verified end-to-end (${roleWays.filter(([, n]) => n).length} in role map)`);
-    else
-      console.log(`        ${role}<->card: ${wired} ways checked, ${deadBoard + deadCard} dead-ended (see FAILs)`);
+    if (dead === 0) ok(`module<->card: ${wired} expected ways verified end-to-end (single slot, E40)`);
+    else console.log(`        module<->card: ${wired} checked, ${dead} dead-ended (see FAILs)`);
   }
 
-  // ---- 4. RATING strap encodes the SKU ----
-  const want = lanes === 2 ? "10000" : "0";
-  for (const [b, r] of [[ac, "RROLE"], [dc, "RROLEB"]] as const) {
-    const v = b.val.get(r);
+  // ---- 4. RATING strap: 0R = module controller (E24 rev D; 3.32k = CSU, open = fault) ----
+  {
+    const v = dc.val.get("RROLEB");
     const num = v === undefined ? undefined : String(Math.round(Number(v)));
-    if (num !== want) bad(`${r}: RATING strap is ${v ?? "MISSING"}, ${sku} needs ${want === "0" ? "0R" : "10k"} (card reads the wrong power class)`);
-    else ok(`${r}: RATING strap ${want === "0" ? "0R" : "10k"} — card will identify ${sku}`);
+    if (num !== "0") bad(`RROLEB: RATING strap is ${v ?? "MISSING"}, the module slot codes 0R`);
+    else ok("RROLEB: RATING strap 0R — the card boots as the module controller");
   }
 }
 

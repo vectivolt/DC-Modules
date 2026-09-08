@@ -1,120 +1,192 @@
-// umod-pinmap.mts — E40 Phase B: generate the merged 30 kW single-brain ("UMOD") pin allocation.
+// umod-pinmap.mts — E40: the single-brain module card. Generates the way/pin single source.
 //
-// R3 discipline: every pin number, port and capability is TAKEN FROM the datasheet-derived tables
-// in docs/mcu-pin-allocation-gd32.md (UPFC + ULLC + Fixed pins). This script never invents a pin:
-// it merges the two 30 kW role subsets and resolves every collision by a documented move onto a
-// pin freed by the dropped lanes/legs (donor row quoted per move), then ASSERTS uniqueness,
-// fixed-pin avoidance and capability matching (analog → ADC-capable donor, PWM → HRTIMER ST pin).
+// v2 — rebased onto the CARD-ERA authority. v1 merged the per-board UPFC/ULLC doc tables; the
+// live truth is the audited card pinout (CARD_MCU_PINS / CARD_PIN_DECISIONS, sheet-verified
+// 255/255) layered over calculations/out/mcu-pin-allocation.json (R3, checked against GD32G553xx
+// Datasheet Rev 2.0 Table 2-4). This script EXTENDS that card: every kept way keeps its audited
+// pin; every new way takes a pin whose capability is proven by a documented JSON row (donor
+// quoted). R3 discipline: nothing invented, everything asserted.
 //
-// Architecture improvement recorded as part of E40: ALL NINE PWMs sit on HRTIMER units — PFC
-// keeps ST0CH0/CH1 + ST1CH0 exactly as documented; the three LLC legs take the ST2/ST4/ST6
-// channel-pairs freed by lanes 1–3 — hardware dead-time per leg and ONE merged fault line on
-// HRTIMER_FLT7/PC4 (the doc's own recommended free pin) killing every switch.
+// What the module role changes on the card (hardware deltas are tiny):
+//   - ways LINK_TX / LINK_RX / ROLE0 retire (the second card and the slot strap die with it)
+//   - +7 analog ways ANA13..ANA19 (harness-side PFC senses) on documented ADC pins — the local
+//     fast loops (LLC CTs, output/bank senses) KEEP the original rank-0 ADC pins
+//   - +4 DO ways (fan PWM x2 on TIMER19 PWM pins — hardware PWM preserved — + KPRE/QDIS)
+//   - +3 DI ways (fan tachs on capture-capable pins + precharge feedback)
+//   - +1 GATE_EN_A way (second safety-AND output; GATE_EN becomes the local/DC-DC chain)
+//   - DI2/DI3 vacate PE12/PE13 (ADC-capable, wasted as GPIO) for ANA17/18; EN_B vacates PA6 for
+//     ANA19. All three land on freed LINK/KPRE-class GPIO.
+//   - rails trim DGND 8→7, AGND 3→2 to keep TWO spare ways (the 120 kW post-mortem called out
+//     zero-spare connectors as a defect class; 86 used + 2 spare = 88)
 //
-// Run: npx tsx calculations/control/umod-pinmap.mts   → calculations/out/umod-pinmap.csv + checks
+// Emits: packages/common-components/umod-map.gen.ts  (imported by control-card.tsx — DO NOT EDIT)
+//        calculations/out/umod-pinmap.csv            (review artifact)
 import { readFileSync, writeFileSync } from "node:fs";
 
 const ROOT = process.cwd();
-const doc = readFileSync(`${ROOT}/docs/mcu-pin-allocation-gd32.md`, "utf8");
-const upfc = doc.slice(doc.indexOf("## UPFC"), doc.indexOf("## ULLC"));
-const ullc = doc.slice(doc.indexOf("## ULLC"));
+const alloc = JSON.parse(readFileSync(`${ROOT}/calculations/out/mcu-pin-allocation.json`, "utf8"));
 
-type Row = { pin: number; port: string; fn: string; tag: string; name: string };
-function table(sec: string, tag: string): Row[] {
-  const out: Row[] = [];
-  for (const m of sec.matchAll(/\|\s*`([^`]+)`\s*\|\s*(\d+)\s*\|\s*(P[A-G]\d+)\s*\|\s*([^|]+)\|/g))
-    out.push({ name: m[1].trim(), pin: +m[2], port: m[3], fn: m[4].trim(), tag });
-  return out;
-}
-const ROWS = [...table(upfc, "UPFC"), ...table(ullc, "ULLC")];
-const byName = (tag: string, n: string): Row => {
-  const r = ROWS.find((x) => x.tag === tag && x.name === n);
-  if (!r) throw new Error(`doc missing ${tag}:${n}`);
-  return r;
-};
-const donorByPin = (pin: number): Row => {
-  const r = ROWS.find((x) => x.pin === pin);
-  if (!r) throw new Error(`no documented row uses pin ${pin} — cannot prove capability`);
-  return r;
-};
-
+// capability oracle: pin -> {port, func, via} from any documented row
+const cap = new Map<number, { port: string; func: string; via: string }>();
+for (const role of ["UPFC", "ULLC"] as const)
+  for (const [sig, lst] of Object.entries(alloc[role].map as Record<string, { pin: number; port: string; func: string }[]>))
+    for (const e of lst) if (!cap.has(e.pin)) cap.set(e.pin, { port: e.port, func: e.func, via: `${role}:${sig}` });
+// the R3 fixed-pin facts (docs/mcu-pin-allocation-gd32.md §Fixed pins) + PA6/PA7 ADC capability,
+// documented by the R3 finding that had SWD parked on "PA6 / PA7 (ADC)".
+cap.set(28, { port: "PA6", func: "ADC (per R3 fixed-pin finding); TIMER7_BRKIN0", via: "doc:R3-SWD-finding" });
 const FIXED = new Set([24, 49, 64, 75, 100, 23, 48, 63, 74, 99, 37, 35, 36, 6, 14, 95, 76, 77]);
 
-type Alloc = { sig: string; pin: number; port: string; fn: string; how: string };
-const out: Alloc[] = [];
-const keep = (tag: string, ...names: string[]) => {
-  for (const n of names) { const r = byName(tag, n); out.push({ sig: n, pin: r.pin, port: r.port, fn: r.fn, how: `keep ${tag}` }); }
+// ---- the audited card-era pin map (E35 sheet, verified) — kept ways keep these pins ----------
+const KEPT: Record<string, number> = {
+  PWM0: 69, PWM1: 71, PWM2: 51, PWM3: 53, PWM4: 67, PWM5: 65,
+  PWM6: 70, PWM7: 72, PWM8: 52, PWM9: 54, PWM10: 68, PWM11: 66,
+  AIN0: 20, AIN1: 21, AIN2: 22, AIN3: 27, AIN4: 29, AIN5: 30,
+  AIN6: 56, AIN7: 55, AIN8: 17, AIN9: 15, AIN10: 16, AIN11: 25, AIN12: 26,
+  TSNS0: 32, TSNS1: 33, AVMID: 18, ROLE1: 38,
+  DO0: 59, DO1: 60, DO2: 89, DO3: 94, DO4: 96, DO5: 62, DO6: 34,
+  DI0: 85, DI1: 86, DI4: 73, DI5: 78,
+  FLT: 47, DRV_RDY: 81, EN_A: 82,
+  CAN_TX: 93, CAN_RX: 92,
+  HMI0: 40, HMI1: 41, HMI2: 42, HMI3: 45, HMI4: 50, HMI5: 84, HMI6: 91,
 };
-const moveTo = (sig: string, srcTag: string, pin: number, why: string, needs?: RegExp) => {
-  byName(srcTag, sig); // signal must exist in its source table
-  const d = donorByPin(pin);
-  if (needs && !needs.test(d.fn)) throw new Error(`${sig}: donor pin ${pin} (${d.fn}) lacks ${needs}`);
-  out.push({ sig, pin, port: d.port, fn: d.fn, how: `moved: ${why} [donor ${d.tag}:${d.name}]` });
+// card-internal (never reach the connector) — unchanged from the audited card
+const INTERNAL: Record<string, number> = { WDI: 11, BOOT0: 95, SWDIO: 76, SWCLK: 77 };
+
+// ---- module-era changes, every new pin donor-proven --------------------------------------------
+const CHANGED: Record<string, [number, string]> = {
+  DI2: [79, "vacates PE12 (ADC3_IN15) for ANA17; lands on freed LINK_TX GPIO (PC10)"],
+  DI3: [80, "vacates PE13 (ADC2_IN2) for ANA18; lands on freed LINK_RX GPIO (PC11)"],
+  EN_B: [83, "vacates PA6 (ADC) for ANA19; lands on freed CTL_KPRE-class GPIO (PD1)"],
+};
+const NEW: Record<string, [number, string]> = {
+  ANA13: [39, "harness sense — PE8 ADC2_IN5"],
+  ANA14: [46, "harness sense — PE15 ADC3_IN1"],
+  ANA15: [57, "harness sense — PD10 ADC2_IN6"],
+  ANA16: [58, "harness sense — PD11 ADC2_IN7"],
+  ANA17: [43, "harness sense — PE12 ADC3_IN15 (vacated by DI2)"],
+  ANA18: [44, "harness sense — PE13 ADC2_IN2 (vacated by DI3)"],
+  ANA19: [28, "harness sense — PA6 ADC (vacated by EN_B)"],
+  DO7: [2, "FAN_PWM1 — PE3 TIMER19_CH1: HARDWARE fan PWM preserved"],
+  DO8: [3, "FAN_PWM2 — PE4 TIMER19_MCH0: hardware PWM"],
+  DO9: [4, "CTL_KPRE — PE5 GPIO/TIMER19_MCH1"],
+  DO10: [5, "CTL_QDIS — PE6 GPIO/TIMER19_MCH2"],
+  DI6: [19, "FAN_TACH1 — PF2 TIMER19_CH2 capture"],
+  DI7: [61, "FAN_TACH2 — PD14 TIMER3_CH2 capture"],
+  DI8: [88, "RELAY_FB_KPRE — PD6 TIMER1_CH3 capture-capable input"],
 };
 
-// ---- PFC side: lane 0 exactly as documented (incl. precharge relay feedback) ----
-keep("UPFC",
-  "PWM_A0", "PWM_B0", "PWM_C0", "I_A0", "I_B0", "I_C0",
-  "SNS_VAC1", "SNS_VAC2", "SNS_VAC3", "SNS_VBUSP", "SNS_VMID", "SNS_V24", "SNS_V15",
-  "T_PFC", "T_INLET", "FAN_PWM1", "FAN_TACH1", "FAN_PWM2", "FAN_TACH2",
-  "CTL_KPRE", "CTL_QDIS", "EN_PFC", "WDI_PFC", "RELAY_FB_KPRE");
-// single merged fault line (wired-OR on the boards) — the doc audit's recommended free pin
-out.push({ sig: "FLT", pin: 30, port: "PC4", fn: "HRTIMER_FLT7 (5V tolerant) — doc audit fix", how: "merged FLT_PFC+FLT_LLC" });
+// ---- the 88-way physical map (order = connector way number) ------------------------------------
+// [way, mcuPin | null]  — null = no MCU pin by design (safety-AND outputs, rails, spares)
+const WAYS: [string, number | null][] = [
+  ...Object.entries(KEPT).filter(([w]) => /^PWM/.test(w)).map(([w, p]) => [w, p] as [string, number]),
+  ...["AIN0","AIN1","AIN2","AIN3","AIN4","AIN5","AIN6","AIN7","AIN8","AIN9","AIN10","AIN11","AIN12"].map((w) => [w, KEPT[w]] as [string, number]),
+  ...Object.entries(NEW).filter(([w]) => /^ANA/.test(w)).map(([w, [p]]) => [w, p] as [string, number]),
+  ["TSNS0", KEPT.TSNS0], ["TSNS1", KEPT.TSNS1], ["AVMID", KEPT.AVMID], ["AGND_2", null],
+  ...["DO0","DO1","DO2","DO3","DO4","DO5","DO6"].map((w) => [w, KEPT[w]] as [string, number]),
+  ...["DO7","DO8","DO9","DO10"].map((w) => [w, NEW[w][0]] as [string, number]),
+  ["DI0", KEPT.DI0], ["DI1", KEPT.DI1], ["DI2", CHANGED.DI2[0]], ["DI3", CHANGED.DI3[0]],
+  ["DI4", KEPT.DI4], ["DI5", KEPT.DI5],
+  ...["DI6","DI7","DI8"].map((w) => [w, NEW[w][0]] as [string, number]),
+  ["GATE_EN", null], ["GATE_EN_A", null],       // the two safety-AND outputs (B = local slot, A = harness)
+  ["FLT", KEPT.FLT], ["EN_A", KEPT.EN_A], ["EN_B", CHANGED.EN_B[0]], ["DRV_RDY", KEPT.DRV_RDY],
+  ["CAN_TX", KEPT.CAN_TX], ["CAN_RX", KEPT.CAN_RX],
+  ...["HMI0","HMI1","HMI2","HMI3","HMI4","HMI5","HMI6"].map((w) => [w, KEPT[w]] as [string, number]),
+  ["ROLE1", KEPT.ROLE1],
+  ["V15", null], ["V15", null], ["V3P3", null], ["V3P3", null], ["V3P3", null],
+  ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null],
+  ["AGND", null], ["AGND", null],
+  ["SPARE0", null], ["SPARE1", null],
+];
 
-// ---- LLC legs onto the freed HRTIMER channel-pairs ----
-moveTo("PWM_L1H", "ULLC", 51, "leg1 H = ST2CH0", /HRTIMER_ST/);
-moveTo("PWM_L1L", "ULLC", 52, "leg1 L = ST2CH1", /HRTIMER_ST/);
-moveTo("PWM_L2H", "ULLC", 67, "leg2 H = ST4CH0", /HRTIMER_ST/);
-moveTo("PWM_L2L", "ULLC", 68, "leg2 L = ST4CH1", /HRTIMER_ST/);
-moveTo("PWM_L3H", "ULLC", 97, "leg3 H = ST6CH0", /HRTIMER_ST/);
-moveTo("PWM_L3L", "ULLC", 98, "leg3 L = ST6CH1", /HRTIMER_ST/);
+// ---- module-role board-side nets, way by way (the DC-DC slot hosts the card) -------------------
+const MODULE_NETS: Record<string, string | null> = {
+  // LLC legs pair on ST0..ST2 (H=CH0 way, L=CH1 way); PFC phases single-ended on ST3..ST5 CH0
+  PWM0: "PWM_L1H", PWM6: "PWM_L1L", PWM1: "PWM_L2H", PWM7: "PWM_L2L", PWM2: "PWM_L3H", PWM8: "PWM_L3L",
+  PWM3: "PWM_A0", PWM4: "PWM_B0", PWM5: "PWM_C0", PWM9: null, PWM10: null, PWM11: null,
+  // local fast loops keep the rank-0 ADC pins
+  AIN0: "I_RES1", AIN1: "I_RES2", AIN2: "I_RES3",
+  AIN3: "SNS_VOUT", AIN4: "SNS_IOUT", AIN5: "SNS_IOUTN", AIN6: "SNS_VBKA", AIN7: "SNS_VBKB",
+  AIN8: "I_A0", AIN9: "I_B0", AIN10: "I_C0", AIN11: "SNS_VAC1", AIN12: "SNS_VAC2",
+  ANA13: "SNS_VAC3", ANA14: "SNS_VBUSP", ANA15: "SNS_VMID", ANA16: "SNS_V24", ANA17: "SNS_V15",
+  ANA18: "T_PFC", ANA19: "T_INLET",
+  TSNS0: "T_LLC", TSNS1: "T_XFMR", AVMID: "AVMID", AGND_2: "AGND",
+  DO0: "CTL_KSER", DO1: "CTL_KPARA", DO2: "CTL_KPARB", DO3: "CTL_KOUT", DO4: "CTL_KPREA",
+  DO5: "CTL_KPREB", DO6: "CTL_QDISBK",
+  DO7: "FAN_PWM1", DO8: "FAN_PWM2", DO9: "CTL_KPRE", DO10: "CTL_QDIS",
+  DI0: "RELAY_FB_KSER", DI1: "RELAY_FB_KPARA", DI2: "RELAY_FB_KPARB", DI3: "RELAY_FB_KOUT",
+  DI4: "RELAY_FB_KPREA", DI5: "RELAY_FB_KPREB",
+  DI6: "FAN_TACH1", DI7: "FAN_TACH2", DI8: "RELAY_FB_KPRE",
+  GATE_EN: "GATE_EN_B", GATE_EN_A: "GATE_EN_A",
+  FLT: "FLT", EN_A: "EN_PFC", EN_B: "EN_LLC", DRV_RDY: "DRV_RDY",
+  CAN_TX: "CAN_TX", CAN_RX: "CAN_RX",
+  HMI0: "HMI_DAT", HMI1: "HMI_CLK", HMI2: "HMI_LAT", HMI3: "HMI_DIG1", HMI4: "HMI_DIG2",
+  HMI5: "BTN1", HMI6: "BTN2",
+  ROLE1: "RATING",
+  V15: "V15", V3P3: "V3P3", DGND: "DGND", AGND: "AGND", SPARE0: null, SPARE1: null,
+};
 
-// ---- LLC sensing: collisions vacate onto ADC-capable pins freed by lanes 1..3 / legs 4..12 ----
-moveTo("I_RES1", "ULLC", 38, "PA0 stays I_A0", /ADC/);
-moveTo("I_RES2", "ULLC", 42, "PA1 stays I_B0", /ADC/);
-keep("ULLC", "I_RES3");                       // PA2: PFC's I_C2 dropped, pin uncontested
-moveTo("SNS_IOUT", "ULLC", 43, "PC0 stays SNS_VMID", /ADC/);
-moveTo("SNS_IOUTN", "ULLC", 44, "PC1 stays SNS_VAC3", /ADC/);
-moveTo("SNS_VOUT", "ULLC", 46, "PC2 stays SNS_VAC1", /ADC/);
-keep("ULLC", "SNS_VBKA", "SNS_VBKB");
-moveTo("T_LLC", "ULLC", 57, "PB0 stays I_C0", /ADC/);
-moveTo("T_XFMR", "ULLC", 58, "PB1 stays SNS_V15", /ADC/);
+// ---- the 40-way inter-board harness (rev 2, replaces the 16-way): nets that cross --------------
+// [position, net | null(spare)]  — SHLD bonds to PE at the AC-DC end only.
+const HARNESS40: [number, string | null][] = [
+  [1, "V15"], [2, "V15"], [3, "V24"], [4, "V24"],
+  [5, "DGND"], [6, "DGND"], [7, "DGND"], [8, "DGND"], [9, "DGND"],
+  [10, "PWM_A0"], [11, "PWM_B0"], [12, "PWM_C0"],
+  [13, "I_A0"], [14, "I_B0"], [15, "I_C0"],
+  [16, "SNS_VAC1"], [17, "SNS_VAC2"], [18, "SNS_VAC3"],
+  [19, "SNS_VBUSP"], [20, "SNS_VMID"], [21, "SNS_V24"], [22, "SNS_V15"],
+  [23, "T_PFC"], [24, "T_INLET"],
+  [25, "AVMID"], [26, "AGND"],                       // bias out + Kelvin return, adjacent pair
+  [27, "FAN_PWM1"], [28, "FAN_PWM2"], [29, "FAN_TACH1"], [30, "FAN_TACH2"],
+  [31, "CTL_KPRE"], [32, "CTL_QDIS"], [33, "RELAY_FB_KPRE"],
+  [34, "EN_PFC"], [35, "GATE_EN_A"], [36, "FLT"], [37, "DRV_RDY"],
+  [38, null], [39, null],                            // spares
+  [40, "SHLD"],
+];
 
-// ---- LLC digital: keeps where uncontested, moves onto freed timer/link pins ----
-keep("ULLC",
-  "HMI_DAT", "HMI_DIG1", "HMI_DIG2",
-  "CTL_KOUT", "CTL_KPREA", "CTL_KPREB", "CTL_KPARB", "CTL_QDISBK",
-  "EN_LLC", "WDI_LLC", "CAN_TX", "CAN_RX",
-  "RELAY_FB_KOUT", "RELAY_FB_KPREA", "RELAY_FB_KPREB");
-moveTo("CTL_KSER", "ULLC", 2, "PD1 stays CTL_KPRE");
-moveTo("CTL_KPARA", "ULLC", 3, "PD4 stays FAN_TACH2");
-moveTo("HMI_LAT", "ULLC", 4, "PB12 is now PWM_L1H");
-moveTo("HMI_CLK", "ULLC", 5, "PB13 is now PWM_L1L");
-moveTo("RELAY_FB_KSER", "ULLC", 79, "PA8 stays PWM_A0; LINK dies with the second card");
-moveTo("RELAY_FB_KPARA", "ULLC", 80, "PA9 stays PWM_B0; LINK dies");
-moveTo("RELAY_FB_KPARB", "ULLC", 88, "PA10 stays PWM_C0");
-moveTo("BTN1", "ULLC", 7, "PD2 stays WDI_PFC (UPFC)");    // PC13 freed by the FLT merge
-moveTo("BTN2", "ULLC", 19, "PD3 stays FAN_TACH1 (UPFC)");
-
-// ---- asserts ----
-const seen = new Map<number, string>();
+// ---- asserts -----------------------------------------------------------------------------------
 let fails = 0;
-for (const a of out) {
-  if (FIXED.has(a.pin)) { console.log(`FAIL ${a.sig}: pin ${a.pin} is a fixed pin`); fails++; }
-  if (seen.has(a.pin)) { console.log(`FAIL ${a.sig}: pin ${a.pin} already carries ${seen.get(a.pin)}`); fails++; }
-  seen.set(a.pin, a.sig);
+const bad = (m: string) => { console.log(`FAIL ${m}`); fails++; };
+const pinsSeen = new Map<number, string>();
+const allPins: Record<string, number> = { ...KEPT, ...INTERNAL };
+for (const [w, [p]] of Object.entries(CHANGED)) allPins[w] = p;
+for (const [w, [p]] of Object.entries(NEW)) allPins[w] = p;
+delete (allPins as Record<string, number>).ROLE0;
+for (const [sig, pin] of Object.entries(allPins)) {
+  if (FIXED.has(pin) && !["BOOT0", "SWDIO", "SWCLK"].includes(sig)) bad(`${sig}: pin ${pin} is fixed`);
+  if (pinsSeen.has(pin)) bad(`${sig}: pin ${pin} already carries ${pinsSeen.get(pin)}`);
+  pinsSeen.set(pin, sig);
 }
-const analog = out.filter((a) => /ADC/.test(a.fn));
-const hrt = out.filter((a) => /HRTIMER_ST/.test(a.fn));
-if (analog.length < 22) { console.log(`FAIL analog count ${analog.length} < 22`); fails++; }
-if (hrt.length !== 9) { console.log(`FAIL HRTIMER PWM count ${hrt.length} != 9`); fails++; }
-if (out.length > 100 - FIXED.size) { console.log(`FAIL ${out.length} > usable pins`); fails++; }
+for (const [w, [p]] of Object.entries(NEW)) {
+  const c = cap.get(p);
+  if (!c) { bad(`${w}: pin ${p} has no documented capability row`); continue; }
+  if (/^ANA/.test(w) && !/ADC/.test(c.func)) bad(`${w}: pin ${p} (${c.func}) is not ADC-capable`);
+}
+for (const [, [p]] of Object.entries(CHANGED))
+  if (!cap.get(p)) bad(`changed pin ${p} has no documented capability row`);
+if (WAYS.length !== 88) bad(`way count ${WAYS.length} != 88`);
+const wayNames = WAYS.map(([w]) => w);
+for (const w of Object.keys(MODULE_NETS))
+  if (!wayNames.includes(w)) bad(`MODULE_NETS names unknown way ${w}`);
+for (const w of wayNames)
+  if (!(w in MODULE_NETS)) bad(`way ${w} has no module-role net entry`);
+const analogWays = wayNames.filter((w) => /^(AIN|ANA|TSNS)/.test(w)).length;
+if (analogWays !== 22) bad(`analog ways ${analogWays} != 22`);
+const hNets = HARNESS40.filter(([, n]) => n).length;
+if (HARNESS40.length !== 40) bad(`harness ${HARNESS40.length} != 40 positions`);
 
-// ---- emit ----
-out.sort((a, b) => a.pin - b.pin);
+// ---- emit --------------------------------------------------------------------------------------
+const gen = `// umod-map.gen.ts — GENERATED by calculations/control/umod-pinmap.mts (E40). DO NOT EDIT.
+// One brain per module: the DC-DC slot hosts the card; the AC-DC bundle crosses the 40-way harness.
+export const UMOD_WAYS: [string, number | null][] = ${JSON.stringify(WAYS)};
+export const UMOD_MODULE_NETS: Record<string, string | null> = ${JSON.stringify(MODULE_NETS)};
+export const UMOD_MCU_PINS: Record<string, number> = ${JSON.stringify(Object.fromEntries(Object.entries(allPins).filter(([s]) => !(s in INTERNAL))))};
+export const UMOD_INTERNAL: Record<string, number> = ${JSON.stringify(INTERNAL)};
+export const HARNESS40: [number, string | null][] = ${JSON.stringify(HARNESS40)};
+`;
+writeFileSync(`${ROOT}/packages/common-components/umod-map.gen.ts`, gen);
 writeFileSync(`${ROOT}/calculations/out/umod-pinmap.csv`,
-  "signal,pin,port,capability,how\n" + out.map((a) => `${a.sig},${a.pin},${a.port},"${a.fn}","${a.how}"`).join("\n") + "\n");
-console.log(`UMOD allocation: ${out.length} signals on VET6 (${analog.length} analog, ${hrt.length} HRTIMER PWM)`);
-console.log(`usable pins remaining: ${100 - FIXED.size - out.length}`);
-console.log(fails ? `${fails} ALLOCATION FAILURE(S)` : "UMOD PINMAP CLEAN — every pin documented, no collisions");
+  "way,mcu_pin,module_net\n" + WAYS.map(([w, p]) => `${w},${p ?? ""},${MODULE_NETS[w] ?? ""}`).join("\n") + "\n");
+console.log(`UMOD v2: ${WAYS.length} ways (${analogWays} analog, 12 PWM ways/9 used) · harness ${hNets} nets/40 ways`);
+console.log(`MCU pins allocated: ${pinsSeen.size} of 82 usable · spare pins: ${82 - pinsSeen.size}`);
+console.log(fails ? `${fails} ALLOCATION FAILURE(S)` : "UMOD MAP CLEAN — card-era pins kept, extensions donor-proven");
 process.exit(fails ? 1 : 0);

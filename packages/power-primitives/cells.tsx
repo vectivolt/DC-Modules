@@ -694,7 +694,7 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 // window-set straps) — the v3 3-pin symbol had no supply. SET straps to DGND = datasheet default
 // window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
 // input on the safety AND while the local MCU is in reset).
-export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
     <chip layer={lay} name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
@@ -729,20 +729,31 @@ export const SafetyChain = ({ id, enLocal, enRemote, wdi, gateEn, sec = "SAFETY"
     <trace from={`.USUP${id} > .SET0`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.USUP${id} > .SET1`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CSF${id} > .pin1`} to={`.USUP${id} > .VDD`} />
-    <trace from={`.RENL${id} > .pin1`} to={enLocal} schDisplayLabel={enLocal.replace("net.", "")} />
+    <trace from={`.RENL${id} > .pin1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
     <trace from={`.RENL${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.USUP${id} > .WDO`} to={`net.WDO_${id}`} />
     <trace from={`.RWPU${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.RWPU${id} > .pin2`} to={`net.WDO_${id}`} />
-    <trace from={`.RENR${id} > .pin1`} to={enRemote} schDisplayLabel={enRemote.replace("net.", "")} />
+    <trace from={`.RENR${id} > .pin1`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
     <trace from={`.RENR${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.UAND${id} > .A1`} to={enLocal} schDisplayLabel={enLocal.replace("net.", "")} />
-    <trace from={`.UAND${id} > .B1`} to={enRemote} schDisplayLabel={enRemote.replace("net.", "")} />
-    <trace from={`.UAND${id} > .C1`} to={`net.WDO_${id}`} />
-    <trace from={`.UAND${id} > .Y1`} to={gateEn} schDisplayLabel={gateEn.replace("net.", "")} />
-    <trace from={`.RGPD${id} > .pin1`} to={gateEn} schDisplayLabel={gateEn.replace("net.", "")} />
+    {/* E40 single brain, TWO gated chains: gate 1 = EN_B AND WDO -> local (DC-DC) GATE_EN;
+        gate 2 = EN_A AND WDO -> harness (AC-DC) GATE_EN_A. The third inputs tie high so each
+        output is exactly (its EN) AND (watchdog verdict); the spare gate 3 stays unused. */}
+    <trace from={`.UAND${id} > .A1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
+    <trace from={`.UAND${id} > .B1`} to={`net.WDO_${id}`} />
+    <trace from={`.UAND${id} > .C1`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.UAND${id} > .Y1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
+    <trace from={`.UAND${id} > .A2`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
+    <trace from={`.UAND${id} > .B2`} to={`net.WDO_${id}`} />
+    <trace from={`.UAND${id} > .C2`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.UAND${id} > .Y2`} to={gateEnA} schDisplayLabel={gateEnA.replace("net.", "")} />
+    <trace from={`.RGPD${id} > .pin1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
     <trace from={`.RGPD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
-    {["A2", "B2", "C2", "A3", "B3", "C3"].map(p => (
+    <resistor layer={lay} name={`RGPA${id}`} resistance="10k" footprint="0603" pcbX={28} pcbY={18} schX={9} schY={-2} schSectionName={sec} />
+    <trace from={`.RGPA${id} > .pin1`} to={gateEnA} schDisplayLabel={gateEnA.replace("net.", "")} />
+    <trace from={`.RGPA${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    {/* only gate 3 is spare now — its inputs tie low (E40 uses gates 1+2) */}
+    {["A3", "B3", "C3"].map(p => (
       <trace key={p} from={`.UAND${id} > .${p}`} to="net.DGND" schDisplayLabel="DGND" />
     ))}
     <trace from={`.UAND${id} > .VCC`} to="net.V3P3" schDisplayLabel="V3P3" />
@@ -945,35 +956,22 @@ export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 ,
 // ---------- board-to-board signal harness (16-way) — power goes via DCP/DCN/PE studs.
 // v3: link/enable nets are parameters so the DC-DC side CROSSES TX↔RX (CB-14) and each board
 // exports its own MCU enable while receiving the other's (E27). Shield bonded to PE.
-export const InterconnectSignals = ({ id, ltx, lrx, enA, enB, sec = "HARNESS", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+// ---------- inter-board harness — rev 2 (E40): 40-way, the whole PFC bundle crosses here.
+// One brain in the DC-DC slot; this harness carries to/from the AC-DC board: 3× logic-level
+// 50 kHz PFC PWM, 12 senses (CTs, VAC, bus, rails, temps), AVMID with its Kelvin AGND beside it,
+// fans, precharge/discharge drives + feedback, EN_PFC, the GATE_EN_A chain, the merged FLT
+// wired-OR, DRV_RDY, V15/V24 power and five returns. Positions are fixed by the map the boards
+// pass in (single source: umod-pinmap.mts HARNESS40); SHLD bonds to PE at the AC-DC end only.
+// No TX/RX, no crossover, no link protocol — the UART link died with the second card.
+export const Interconnect40 = ({ id, map, shldTo = null, sec = "HARNESS", x = 0, y = 0, sx = 0, sy = 0, lay = "bottom" }: any) => (
   <group name={`ic${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 9 × 5: header left, link series/pull network in two rows at right */}
-    <chip layer={lay} name={`JIC${id}`} footprint="pinrow16" pinLabels={{ pin1: "V24A", pin2: "V24B", pin3: "GNDA", pin4: "GNDB", pin5: "V15A", pin6: "V15B", pin7: "LTX", pin8: "LRX", pin9: "EN", pin10: "KILL", pin11: "FPWM", pin12: "FTACH", pin13: "TINL", pin14: "SP1", pin15: "SP2", pin16: "SHLD" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor layer={lay} name={`R${id}LTX`} resistance="10k" footprint="0603" pcbX={30} pcbY={0} schX={5.4} schY={1.4} schSectionName={sec} />
-    <resistor layer={lay} name={`R${id}LRX`} resistance="10k" footprint="0603" pcbX={30} pcbY={5} schX={5.4} schY={-1.4} schSectionName={sec} />
-    {/* v4: the CB-14 fix note promised series 100 Ω on both link lines — now fitted */}
-    <resistor layer={lay} name={`R${id}LTS`} resistance="100" footprint="0603" pcbX={38} pcbY={0} schX={3.4} schY={1.4} schSectionName={sec} />
-    <resistor layer={lay} name={`R${id}LRS`} resistance="100" footprint="0603" pcbX={38} pcbY={5} schX={3.4} schY={-1.4} schSectionName={sec} />
-    <trace from={`.JIC${id} > .V24A`} to="net.V24" schDisplayLabel="V24" />
-    <trace from={`.JIC${id} > .V24B`} to="net.V24" schDisplayLabel="V24" />
-    <trace from={`.JIC${id} > .GNDA`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.JIC${id} > .GNDB`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.JIC${id} > .V15A`} to="net.V15" schDisplayLabel="V15" />
-    <trace from={`.JIC${id} > .V15B`} to="net.V15" schDisplayLabel="V15" />
-    <trace from={`.JIC${id} > .LTX`} to={`.R${id}LTS > .pin1`} />
-    <trace from={`.R${id}LTS > .pin2`} to={ltx} schDisplayLabel={ltx.replace("net.", "")} />
-    <trace from={`.JIC${id} > .LRX`} to={`.R${id}LRS > .pin1`} />
-    <trace from={`.R${id}LRS > .pin2`} to={lrx} schDisplayLabel={lrx.replace("net.", "")} />
-    <trace from={`.R${id}LTX > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.R${id}LTX > .pin2`} to={ltx} schDisplayLabel={ltx.replace("net.", "")} />
-    <trace from={`.R${id}LRX > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.R${id}LRX > .pin2`} to={lrx} schDisplayLabel={lrx.replace("net.", "")} />
-    <trace from={`.JIC${id} > .EN`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
-    <trace from={`.JIC${id} > .KILL`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
-    {/* MR-14: spares carry extra GND — the 2-pin return was the harness's weakest link at 120 kW */}
-    <trace from={`.JIC${id} > .SP1`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.JIC${id} > .SP2`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.JIC${id} > .SHLD`} to="net.PE" schDisplayLabel="PE" />
+    <chip layer={lay} name={`JIC${id}`} footprint="pinrow40"
+      pinLabels={Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`pin${i + 1}`, `W${i + 1}`]))}
+      pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    {map.filter(([, net]: [number, string | null]) => net && net !== "SHLD").map(([pos, net]: [number, string]) => (
+      <trace key={pos} from={`.JIC${id} > .W${pos}`} to={`net.${net}`} schDisplayLabel={net} />
+    ))}
+    {shldTo ? <trace from={`.JIC${id} > .W40`} to={shldTo} schDisplayLabel={shldTo.replace("net.", "")} /> : null}
   </group>
 );
 

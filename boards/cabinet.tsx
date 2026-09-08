@@ -79,8 +79,8 @@ export default () => (
 
     {/* used ways of the 88-way carrier header; every other way is NC on the carrier (card-side
         pulldowns keep the safety/EN inputs defined — that is what the card's RPD bank is for) */}
-    <chip name="JCSU" value="CONN-CARD-88-H" footprint="pinrow7" pinLabels={{ pin1: "V15A", pin2: "V15B", pin3: "GNDA", pin4: "GNDB", pin5: "GNDC", pin6: "ROLE0", pin7: "ROLE1" }}
-      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["V15A", "V15B", "GNDA", "GNDB", "GNDC", "ROLE0", "ROLE1"] } }}
+    <chip name="JCSU" value="CONN-CARD-88-H" footprint="pinrow6" pinLabels={{ pin1: "V15A", pin2: "V15B", pin3: "GNDA", pin4: "GNDB", pin5: "GNDC", pin6: "ROLE1" }}
+      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["V15A", "V15B", "GNDA", "GNDB", "GNDC", "ROLE1"] } }}
       pcbX={40} pcbY={120} schX={26} schY={26} schSectionName="CSU-CARRIER" />
     <trace from=".JCSU > .V15A" to="net.V15" schDisplayLabel="V15" />
     <trace from=".JCSU > .V15B" to="net.V15" schDisplayLabel="V15" />
@@ -88,8 +88,8 @@ export default () => (
     <trace from=".JCSU > .GNDB" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".JCSU > .GNDC" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".JCSU > .ROLE1" to="net.ROLE1" schDisplayLabel="ROLE1" />
-    {/* ROLE0 left open on the carrier — the card's own 10 k pullup reads it high; the CSU band on
-        ROLE1 makes ROLE0 a don't-care at boot (E24 rev C) */}
+    {/* E24 rev D: RATING (ROLE1) is the card's ONLY identity strap — ROLE0 died with the
+        two-card design. 3.32 k here = the CSU band. */}
 
     {/* CSU RATING strap: 3.32 k against the card's 10 k pullup → ~0.82 V = the CSU band */}
     <resistor name="RRCSU" resistance="3.32k" footprint="0603" pcbX={60} pcbY={120} schX={26} schY={21} schSectionName="CSU-CARRIER" />
@@ -98,9 +98,9 @@ export default () => (
 
     {/* the mated control card, external pins as seen by the cabinet: 88-way power/strap side
         (1:1 with JCSU) and its own JCAN joining the cabinet bus */}
-    <chip name="UCSU" value="CONTROL-CARD-CSU" footprint="pinrow11"
-      pinLabels={{ pin1: "V15A", pin2: "V15B", pin3: "GNDA", pin4: "GNDB", pin5: "GNDC", pin6: "ROLE0", pin7: "ROLE1", pin8: "CANH", pin9: "CANL", pin10: "SGND", pin11: "SHLD" }}
-      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["V15A", "V15B", "GNDA", "GNDB", "GNDC", "ROLE0", "ROLE1"] }, rightSide: { direction: "top-to-bottom", pins: ["CANH", "CANL", "SGND", "SHLD"] } }}
+    <chip name="UCSU" value="CONTROL-CARD-CSU" footprint="pinrow10"
+      pinLabels={{ pin1: "V15A", pin2: "V15B", pin3: "GNDA", pin4: "GNDB", pin5: "GNDC", pin6: "ROLE1", pin7: "CANH", pin8: "CANL", pin9: "SGND", pin10: "SHLD" }}
+      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["V15A", "V15B", "GNDA", "GNDB", "GNDC", "ROLE1"] }, rightSide: { direction: "top-to-bottom", pins: ["CANH", "CANL", "SGND", "SHLD"] } }}
       pcbX={90} pcbY={120} schX={36} schY={25} schSectionName="CSU-CARRIER" />
     <trace from=".UCSU > .V15A" to="net.V15" schDisplayLabel="V15" />
     <trace from=".UCSU > .V15B" to="net.V15" schDisplayLabel="V15" />

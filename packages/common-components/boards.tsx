@@ -18,49 +18,24 @@
 import {
   ViennaPhase, LlcHalfBridgeLeg, LlcSection, SplitDcLink, SeriesParallelRelayMatrix,
   IsoVSense, Bias5Module, AnalogMid, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
-  InterconnectSignals, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
+  Interconnect40, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
   DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP,
   CardConnector,
 } from "../power-primitives/cells";
 import { cardMap, CARD_MCU_PINS, CARD_INTERNAL } from "./control-card";
+import { HARNESS40 } from "./umod-map.gen";
 
 // Schematic/net work does not need copper, and routing these boards takes 10+ minutes each.
 // TSCI_NO_ROUTE=1 builds the netlist only, so connectivity checks run in seconds.
 const NO_ROUTE = process.env.TSCI_NO_ROUTE === "1";
 
-const assertUniquePins = (label: string, entries: [string, number][]) => {
-  const seen = new Map<number, string>();
-  for (const [net, pin] of entries) {
-    // power/reset/analog-supply/SWD/BOOT pins are wired structurally — never map signals onto them
-    if ([10, 11, 14, 19, 20, 26, 27, 28, 29, 100].includes(pin)) throw new Error(`${label}: pin ${pin} is a reserved structural pin (${net})`);
-    if (seen.has(pin)) throw new Error(`${label}: pin ${pin} reused by ${seen.get(pin)} and ${net}`);
-    seen.set(pin, net);
-  }
-  return entries;
-};
 
 // ================= AC-DC BOARD =================
 export const AcDcBoard = ({ lanes, w, h }: { lanes: number; w: number; h: number }) => {
   const phases = Array.from({ length: lanes }, (_, l) => ["A", "B", "C"].map(p => ({ id: `${p}${l}`, ac: `net.AC${p === "A" ? "1F" : p === "B" ? "2F" : "3"}` }))).flat();
   const nFans = lanes === 4 ? 4 : 2; // HR-17: thermal architecture is 2/2/4 fans — every fan gets its own header + monitored tach
   // MCU-PFC pin map (§20): PWM per phase, CT per phase, senses, temps, fans, link, safety chain
-  const pfcPins: [string, number][] = [
-    ...phases.map((p, i) => [`net.PWM_${p.id}`, 55 + i] as [string, number]),
-    ...phases.map((p, i) => [`net.I_${p.id}`, 30 + i] as [string, number]),
-    ["net.SNS_VAC1", 43], ["net.SNS_VAC2", 44], ["net.SNS_VAC3", 45],
-    ["net.SNS_VBUSP", 46], ["net.SNS_VMID", 47],
-    ["net.T_PFC", 48], ["net.T_INLET", 49],
-    ["net.SNS_V24", 51], ["net.SNS_V15", 52],
-    ...Array.from({ length: nFans }, (_, i) => [
-      [`net.FAN_PWM${i + 1}`, i < 2 ? 76 + 2 * i : 80 + 2 * (i - 2)] as [string, number],
-      [`net.FAN_TACH${i + 1}`, i < 2 ? 77 + 2 * i : 81 + 2 * (i - 2)] as [string, number],
-    ]).flat(),
-    ["net.LINK_TX", 68], ["net.LINK_RX", 69],
-    ["net.WDI_PFC", 70], ["net.EN_PFC", 71],
-    ["net.CTL_KPRE", 72], ["net.CTL_QDIS", 73], ["net.FLT_PFC", 74],
-    ["net.RELAY_FB_KPRE", 50],
-  ];
-  assertUniquePins("MCU-PFC", pfcPins);
+  // (the pre-card MCU pin tables lived here; E40 single source is umod-pinmap.mts)
   const nDcHalf = lanes === 1 ? 5 : lanes === 2 ? 9 : 18;
   // schematic sheet plan (layout-polish rev): EMI row y=36..48 · Vienna lanes x=4 col from y=24
   // down (14/row) · line-CT col x=40 · HV-sense col x=56 · DC-link/discharge col x=80 · control
@@ -289,31 +264,23 @@ return (
       <trace from=".RKFBP > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
       <trace from=".RKFBP > .pin2" to="net.RELAY_FB_KPRE" schDisplayLabel="RELAY_FB_KPRE" />
 
-      {/* CONTROL CARD INTERFACE. The MCU, SWD port, safety chain, 3V3 rail and analogue mid-rail
-          all live on the plug-in card now; this connector is what is left of them on the board.
-          cardMap() generates both sides from one source so they cannot drift. */}
-      <CardConnector id="A" map={cardMap("acdc", lanes)} x={P.cardX} y={P.cardY} sx={70} sy={30} />
-      {/* CARD_RULES: default-OFF is held by the BOARD, not the card. A card that is absent,
-          unpowered, or seated but not yet booted must not be able to enable anything. */}
-      {["GATE_EN_A", "EN_PFC", "EN_LLC", "CTL_KPRE", "CTL_QDIS"].map((n, i) => (
+      {/* E40: THIS BOARD HAS NO CARD SLOT. The module's one brain seats in the DC-DC slot; the
+          PFC bundle crosses the 40-way harness (Interconnect40 below, map = HARNESS40). What this
+          board keeps is the default-OFF discipline: every line the harness can float must read
+          OFF here — both control lines AND the three logic-level PWM inputs. */}
+      {["GATE_EN_A", "EN_PFC", "CTL_KPRE", "CTL_QDIS", "PWM_A0", "PWM_B0", "PWM_C0"].map((n, i) => (
         <resistor key={n} name={`RPD${i}`} resistance="10k" footprint="0603"
           pcbX={P.cardX - 50 + i * 8} pcbY={P.cardY - 10} schX={70 + i * 2} schY={23} schSectionName="CARD" />
       ))}
-      {["GATE_EN_A", "EN_PFC", "EN_LLC", "CTL_KPRE", "CTL_QDIS"].map((n, i) => [
+      {["GATE_EN_A", "EN_PFC", "CTL_KPRE", "CTL_QDIS", "PWM_A0", "PWM_B0", "PWM_C0"].map((n, i) => [
         <trace key={`a${i}`} from={`.RPD${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPD${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
-      {/* ROLE0 tied low identifies this as the AC-DC slot; RATING codes the power level.
-          CARD_RULES: 0R = 30 kW, 10k = 60 kW — the strap was hardcoded 0R, so a 60 kW board
-          identified to its card as a 30 kW machine (module-interconnect audit, 2026-09-08). */}
-      <resistor name="RROLE" resistance={lanes === 2 ? "10k" : "0"} footprint="0603" pcbX={P.cardX + 50} pcbY={P.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
-      <trace from=".RROLE > .pin1" to="net.RATING" schDisplayLabel="RATING" />
-      <trace from=".RROLE > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
       {/* Vienna lanes (film commutation caps now inside each phase — CB-9) */}
       {phases.map((p, i) => (
         <ViennaPhase key={p.id} id={p.id} ac={p.ac} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
-          pwm={`net.PWM_${p.id}`} flt="net.FLT_PFC" en="net.GATE_EN_A"
+          pwm={`net.PWM_${p.id}`} flt="net.FLT" en="net.GATE_EN_A"
           x={P.vp[i % 3]} y={P.vpY - Math.floor(i / 3) * 172} sx={4} sy={24 - i * 14} />
       ))}
       {/* per-phase line CTs (primary = line conductor through aperture; §19/E18) */}
@@ -398,7 +365,7 @@ return (
       {Array.from({ length: nFans }, (_, i) => (
         <FanPort key={i} id={`${i + 1}`} x={P.fanX} y={P.fanY - i * 16} sx={74} sy={cY - i * 3} />
       ))}
-      <InterconnectSignals id="A" ltx="net.LINK_TX" lrx="net.LINK_RX" enA="net.EN_PFC" enB="net.EN_LLC"
+      <Interconnect40 id="A" map={HARNESS40} shldTo="net.PE"
         x={P.icX} y={P.auxRowY} sx={92} sy={33} />
       {/* MCU pin bindings (§20 map, asserted unique) */}
       {/* MCU pin-map traces moved to the control card; the connector carries these nets now. */}
@@ -419,24 +386,6 @@ export const DcDcBoard = ({ channels, w, h }: { channels: number; w: number; h: 
   const legs = Array.from({ length: 3 * channels }, (_, i) => ({ id: `${i + 1}`, sw: `net.SW${i + 1}`, ch: Math.floor(i / 3) }));
   const secs = legs.map(l => ({ ...l, star: `net.STAR${l.ch}` }));
   const relayFb = ["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"];
-  const llcPins: [string, number][] = [
-    ...legs.map((l, i) => [`net.PWM_L${l.id}H`, 50 + 2 * i] as [string, number]),
-    ...legs.map((l, i) => [`net.PWM_L${l.id}L`, 51 + 2 * i] as [string, number]),
-    ...Array.from({ length: 3 * channels }, (_, i) => [`net.I_RES${i + 1}`, 30 + i] as [string, number]),
-    ["net.SNS_VOUT", 96], ["net.SNS_IOUT", 97], ["net.SNS_VBKA", 98], ["net.SNS_VBKB", 99],
-    ["net.SNS_IOUTN", 95],
-    ["net.T_LLC", 42], ["net.T_XFMR", 43],
-    ["net.LINK_TX", 44], ["net.LINK_RX", 45],
-    ["net.WDI_LLC", 46], ["net.EN_LLC", 47],
-    ["net.CAN_TX", 48], ["net.CAN_RX", 49],
-    ["net.HMI_DAT", 88], ["net.HMI_CLK", 89], ["net.HMI_LAT", 90], ["net.HMI_DIG1", 91], ["net.HMI_DIG2", 92],
-    ["net.BTN1", 93], ["net.BTN2", 94],
-    ["net.CTL_KSER", 80], ["net.CTL_KPARA", 81], ["net.CTL_KPARB", 82], ["net.CTL_KOUT", 83], ["net.CTL_KPREA", 84], ["net.CTL_KPREB", 85],
-    ["net.FLT_LLC", 74],      // CB-21: the LLC driver fault wire-OR finally reaches the MCU (mirrors FLT_PFC=74)
-    ["net.CTL_QDISBK", 75],   // HR-15: commanded bank bleeders (both optos on one GPIO, ~12 mA)
-    ...relayFb.map((k, i) => [`net.RELAY_FB_${k}`, 2 + i] as [string, number]),
-  ];
-  assertUniquePins("MCU-LLC", llcPins);
   const nBank = channels * 2;
   // schematic sheet plan: bus row y=40..48 · LLC legs x=2 col (16/row from y=24) · sections x=30
   // · banks/matrix/bleeders x=58 · output+senses x=84 · control row below everything at cYd.
@@ -533,19 +482,19 @@ return (
       ])}
 
       {/* CONTROL CARD INTERFACE — same 88-way part and the same generator as the AC-DC slot. */}
-      <CardConnector id="B" map={cardMap("dcdc", channels)} x={Q.cardX} y={Q.cardY} sx={70} sy={30} />
+      <CardConnector id="B" map={cardMap("module")} x={Q.cardX} y={Q.cardY} sx={70} sy={30} />
       {/* CARD_RULES: default-OFF held by the BOARD. Seven relay lines plus the enables. */}
-      {["GATE_EN_B", "EN_PFC", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB"].map((n, i) => (
+      {["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB", "CTL_QDISBK"].map((n, i) => (
         <resistor key={n} name={`RPDB${i}`} resistance="10k" footprint="0603"
           pcbX={Q.cardX - 60 + i * 8} pcbY={Q.cardY - 10} schX={70 + i * 2} schY={23} schSectionName="CARD" />
       ))}
-      {["GATE_EN_B", "EN_PFC", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB"].map((n, i) => [
+      {["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB", "CTL_QDISBK"].map((n, i) => [
         <trace key={`a${i}`} from={`.RPDB${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPDB${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
-      {/* ROLE0 left open identifies the DC-DC slot; RATING codes the power level
-          (0R = 30 kW, 10k = 60 kW — same audit fix as RROLE). */}
-      <resistor name="RROLEB" resistance={channels === 2 ? "10k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
+      {/* RATING is the card's ONE identity strap (E24 rev D): 0R here = 30 kW module
+          controller; the cabinet CSU carrier codes 3.32k; open = no host, fault. */}
+      <resistor name="RROLEB" resistance="0" footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
@@ -553,7 +502,7 @@ return (
       {legs.map((l, i) => (
         <LlcHalfBridgeLeg key={l.id} id={l.id} bus="net.DCP" gnd="net.DCN" sw={l.sw}
           x={Q.leg[i % 3]} y={Q.legY}
-          pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT_LLC" en="net.GATE_EN_B"
+          pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT" en="net.GATE_EN_B"
           sx={2} sy={24 - i * 16} />
       ))}
       {secs.map((s, i) => (
@@ -687,8 +636,8 @@ return (
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
       <IsolatedCan x={Q.canX} y={Q.canY} sx={48} sy={cYd} />
       <ConfigHmi x={Q.hmiX} y={-228} sx={63} sy={cYd} />
-      {/* CB-14: this side of the harness crosses the link — LTX wire lands on this MCU's RX */}
-      <InterconnectSignals id="B" ltx="net.LINK_RX" lrx="net.LINK_TX" enA="net.EN_PFC" enB="net.EN_LLC"
+      {/* straight-through harness — no crossover, no link (E40) */}
+      <Interconnect40 id="B" map={HARNESS40}
         x={Q.mcuX} y={Q.icY} sx={84} sy={cYd} />
       {/* MCU pin-map traces moved to the control card; the connector carries these nets. */}
     </board>
@@ -726,7 +675,8 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
 
       <ControlMcu id="CARD" x={0} y={8} sx={0} sy={0} lay="top" />
       <SwdPort id="CARD" x={-30} y={-18} sx={0} sy={-12} lay="top" />
-      <SafetyChain id="CARD" enLocal="net.EN_A" enRemote="net.EN_B" wdi="net.WDI" gateEn="net.GATE_EN"
+      <SafetyChain id="CARD" enA="net.EN_A" enB="net.EN_B" wdi="net.WDI"
+        gateEnA="net.GATE_EN_A" gateEnB="net.GATE_EN"
         x={10} y={-18} sx={18} sy={-12} lay="top" />
       <Rail3V3 id="CARD" x={24} y={8} sx={18} sy={0} lay="top" />
       <AnalogMid x={-52} y={-32} sx={0} sy={-20} lay="top" />
@@ -764,13 +714,9 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
       <trace from=".RAGTC > .pin1" to="net.AGND" schDisplayLabel="AGND" />
       <trace from=".RAGTC > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
-      {/* ROLE0 tells firmware which slot it is in; ROLE1 is a resistor code read on an ADC pin so
-          one card covers both ratings with no build variant. Both are pulled up HERE and pulled
-          down (or coded) on the power board. */}
-      <resistor name="RROLE0" resistance="10k" footprint="0603" pcbX={40} pcbY={-16} schX={30} schY={-12} schSectionName="ID" />
+      {/* RATING (way ROLE1) is the card's one identity strap, pulled up HERE and coded on the
+          host: 0R = module controller · 3.32k = cabinet CSU · open = fault (E24 rev D). */}
       <resistor name="RROLE1" resistance="10k" footprint="0603" pcbX={46} pcbY={-16} schX={32} schY={-12} schSectionName="ID" />
-      <trace from=".RROLE0 > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
-      <trace from=".RROLE0 > .pin2" to="net.ROLE0" schDisplayLabel="ROLE0" />
       <trace from=".RROLE1 > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
       <trace from=".RROLE1 > .pin2" to="net.ROLE1" schDisplayLabel="ROLE1" />
     </board>
