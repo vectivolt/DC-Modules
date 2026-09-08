@@ -23,7 +23,8 @@ mkdirSync(OUT, { recursive: true });
 const f = (x, d = 2) => Number(x.toFixed(d));
 
 // ---- operating point (design): 30 kW lane at 330 VAC full power (worst continuous)
-const VLL = 330, PIN = 30e3 / 0.965, VBUS = 800;
+const P_LANE = +(process.env.PFC_P ?? 30e3);   // E41: 40e3 runs the hot-variant design point
+const VLL = 330, PIN = P_LANE / 0.965, VBUS = 800;
 const Vph_pk = (VLL / Math.sqrt(3)) * Math.SQRT2;          // 269.4 V
 const Iph_rms = PIN / (Math.sqrt(3) * VLL * 0.99);
 const Ipk = Iph_rms * Math.SQRT2;
@@ -47,14 +48,15 @@ const Id_rms = Math.sqrt(d2 / N_INT);
 // ---- SiC conduction with Tj iteration (pair = 2 dies in series in Vienna bidirectional switch)
 const RTH_JA = 1.9; // K/W junction→air via TIM+heatsink per device position (thermal calc refines, Phase 8)
 const TAMB_HS = 70; // heatsink ambient at +55 °C inlet (assumption, Phase 8 refines)
+const PAR = +(process.env.PFC_PAR ?? 1);   // E41: 2 = paralleled pair (two B3M per position)
 function pairLoss(fsw) {
-  // pair = TWO TO-247 packages; each dissipates half the pair conduction, the blocking one adds Psw.
+  // pair = TWO TO-247 packages (x PAR when paralleled); each package carries I/PAR.
   let Tj = 100, Pc = 0, Psw = 0;
   for (let it = 0; it < 40; it++) {
     const rds = 0.010 * (1 + 0.004 * (Tj - 25));
-    Pc = Isw_rms ** 2 * 2 * rds;                            // pair total (two dies in series)
-    Psw = 17.4e-9 * (VBUS / 2) * (2 / Math.PI) * Ipk * fsw;    // k_sw·V·Iavg_switched·fsw (blocking die)
-    const Ppkg = Pc / 2 + Psw;                              // worst package
+    Pc = Isw_rms ** 2 * 2 * rds / PAR;                      // pair-position total, shared by PAR devices
+    Psw = 17.4e-9 * (VBUS / 2) * (2 / Math.PI) * Ipk * fsw;    // total switched (shared)
+    const Ppkg = (Isw_rms / PAR) ** 2 * 2 * rds / 2 + Psw / PAR;   // worst PACKAGE
     const TjNew = TAMB_HS + Ppkg * RTH_JA;
     if (Math.abs(TjNew - Tj) < 0.01) { Tj = TjNew; break; }
     Tj = TjNew;
@@ -83,13 +85,13 @@ const MATS = [
 const MU0 = 4e-7 * Math.PI;
 const muPU = (m, H_Am) => 1 / (1 + m.a * Math.pow(Math.max(H_Am / 79.577, 1e-9), m.b));
 const RHO_CU = 1.68e-8 * 1.33;                              // Cu at ~100 °C
-const WIRES = [10.6e-6, 13.75e-6, 17.2e-6];                 // total Cu mm²: bundles of 1.6 mm strands / foil (drawing decides)
+const WIRES = [10.6e-6, 13.75e-6, 17.2e-6, 21.5e-6, 25.8e-6];   // total Cu mm²: bundles of 1.6 mm strands / foil (drawing decides; E41 adds 10-12 strand bundles)
 function inductorDesign(fsw, rippleFrac) {
   const dItgt = rippleFrac * Ipk;
   let bestI = null;
   for (const g of GEOMS)
     for (const mat of MATS)
-      for (let stack = 1; stack <= 3; stack++)
+      for (let stack = 1; stack <= 5; stack++)   /* E41: taller stacks of the SAME real core before any new p/n */
         for (const aw of WIRES) {
           if (Iph_rms / (aw * 1e6) > 5.5) continue;         // J ≤ 5.5 A/mm²
           for (let N = 10; N <= 80; N++) {

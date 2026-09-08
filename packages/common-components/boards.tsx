@@ -280,7 +280,7 @@ return (
       {/* Vienna lanes (film commutation caps now inside each phase — CB-9) */}
       {phases.map((p, i) => (
         <ViennaPhase key={p.id} id={p.id} ac={p.ac} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
-          ind={pw === 40 ? "124uH" : "165uH"} par={pw === 40}
+          ind={pw === 40 ? "113uH" : "165uH"} par={pw === 40}
           pwm={`net.PWM_${p.id}`} flt="net.FLT" en="net.GATE_EN_A"
           x={P.vp[i % 3]} y={P.vpY - Math.floor(i / 3) * 172} sx={4} sy={24 - i * 14} />
       ))}

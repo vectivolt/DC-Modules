@@ -16,5 +16,6 @@ node calculations/cost/bom-gen.mjs
 if [ -f dist/boards/30kw/acdc/circuit.json ]; then node calculations/schematic-check.mjs 30kw/acdc 30kw/dcdc; fi
 if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/module-interconnect-audit.mts; fi
 npx tsx calculations/polarity-audit.mts
+node calculations/stress-audit.mjs
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 47/47 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

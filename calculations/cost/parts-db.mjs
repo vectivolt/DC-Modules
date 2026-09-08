@@ -95,6 +95,7 @@ export const DB = [
   { m: /^CD[TB]\d*\d$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in 105 °C (split bus: 415 V max per half)", price1k: 150, alt: "ChengX/Nichicon" },
   { m: /^CB[AB]\d+[TB]$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank (E29/CB-2)", price1k: 150, alt: "ChengX" },
   { m: /^C\d+R\d$/, mpn: "PP-46n-1200", mfr: "Faratronic", desc: "46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)", price1k: 68, alt: "Songtian pulse PP" },
+  { m: /^$never$/, mpn: "PP-33n-1200V", mfr: "Faratronic/CDE 942C class", desc: "33 nF 1200 V PP resonant-duty film (E41 tank: 6x per section; reached via skuOverrides only)", price1k: 11, alt: "942C20P33K" },
   { m: /^C\w+F[PN]$/, mpn: "PP-1u-600", mfr: "Faratronic", desc: "1 µF 600 V film (Vienna per-phase commutation, CB-9)", price1k: 32, alt: "Songtian" },
   { m: /^C(F\d+|B[AB]F)$/, mpn: "PP-1u-1100", mfr: "Faratronic", desc: "1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)", price1k: 68, alt: "Songtian" },
   { m: /^COF[12]$/, mpn: "PP-4u7-1200", mfr: "Faratronic", desc: "4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)", price1k: 125, alt: "—" },
@@ -175,12 +176,27 @@ export const skuOverrides = {
   },
   // E41 40 kW hot variant — engine-driven (design-basis/loss-budget rev E41): line 73.3 A worst.
   "40kw": {
-    "F1": { price1k: 150, mpn: "FUSE-gG-690V-100A" }, "F2": { price1k: 150, mpn: "FUSE-gG-690V-100A" }, "F3": { price1k: 150, mpn: "FUSE-gG-690V-100A" },
+    // stress-audit: 100 A x 0.72 enclosed-derate = 72 A < 73.3 A worst — the exact E35/F6 failure
+    // class. 125 A (existing family part) derates to 90 A: 23% margin.
+    "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
     KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
     KPRE1: { price1k: 300, note: "100 A class (73 A line)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
     LDM1: { price1k: 145, note: "D6-40 winding, same J as 30 kW" }, LDM2: { price1k: 145 }, LDM3: { price1k: 145 },
     CMC1: { price1k: 290, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here)", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 290, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 140 },
+    // D1-40 (pfc-design engine at the frozen 50 kHz; the 3-stack was REFUSED on sat/swing):
+    // 5-stack 0077908A7, N=23, L0 113 uH -> >=64 uH @ 104 A pk, dI 28 A, dT 27 K
+    LA0: { price1k: 1190, mpn: "IND-PFC-113u-40", note: "D1-40: 5x 0077908A7, N=23" },
+    LB0: { price1k: 1190, mpn: "IND-PFC-113u-40" }, LC0: { price1k: 1190, mpn: "IND-PFC-113u-40" },
+    // D2-40: same 2xPQ50/50 gapped-ferrite trim, N=5 (N=4 computes 115 mT vs the 100 mT line
+    // at 86 A pk), bins re-centred on 3.5 uH; gap re-ground per bin as at 30 kW
+    L1T: { price1k: 125, mpn: "IND-TRIM-BIN5-40", note: "D2-40: N=5, bins 3.2/3.5/3.8 uH" },
+    L2T: { price1k: 125, mpn: "IND-TRIM-BIN5-40" }, L3T: { price1k: 125, mpn: "IND-TRIM-BIN5-40" },
+    // resonant caps: 6x33 nF per section (per-cap ~10.2 A vs the 12 A line — 15% margin)
+    "C1R0": { mpn: "PP-33n-1200V" }, "C1R1": { mpn: "PP-33n-1200V" }, "C1R2": { mpn: "PP-33n-1200V" }, "C1R3": { mpn: "PP-33n-1200V" }, "C1R4": { mpn: "PP-33n-1200V" }, "C1R5": { mpn: "PP-33n-1200V" }, "C2R0": { mpn: "PP-33n-1200V" }, "C2R1": { mpn: "PP-33n-1200V" }, "C2R2": { mpn: "PP-33n-1200V" }, "C2R3": { mpn: "PP-33n-1200V" }, "C2R4": { mpn: "PP-33n-1200V" }, "C2R5": { mpn: "PP-33n-1200V" }, "C3R0": { mpn: "PP-33n-1200V" }, "C3R1": { mpn: "PP-33n-1200V" }, "C3R2": { mpn: "PP-33n-1200V" }, "C3R3": { mpn: "PP-33n-1200V" }, "C3R4": { mpn: "PP-33n-1200V" }, "C3R5": { mpn: "PP-33n-1200V" },
+    // resonant CT: AS-404 (50 A) would run 122% at 61 A rms — RFQ the 80 A class before EVT
+    CT1: { mpn: "CT-RES-1:100-80A", note: "RFQ upsize (Talema AS class); AS-404 stays the 30 kW part" },
+    CT2: { mpn: "CT-RES-1:100-80A" }, CT3: { mpn: "CT-RES-1:100-80A" },
   },
   "60kw": {
     // reference board (product = 2× 30 kW modules, each with its own 80 A): 125 A at 110 A carries

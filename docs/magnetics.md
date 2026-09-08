@@ -246,3 +246,14 @@ materials), H (180 °C) for D3.
 - **Drawing control**: every section above needs a drawing number, revision and date before it is
   sent out. D2, D3 and D4 have already been revised (rev B / rev D2 / rev C) and the revisions are
   recorded in prose rather than in a controlled block.
+
+## E41 variant drawings (40 kW module — deltas only, everything else per the rev B/C set)
+
+| Drawing | 40 kW variant | Acceptance |
+|---|---|---|
+| **D1-40** PFC choke | **5×** 0077908A7 stack (same core p/n), N=23, wire 25.8 mm² class (J 2.84) | L0 113 µH −12% floor · L@104 A pk ≥ 64 µH · Rdc-class loss ≤ 36 W · ΔT ≤ 45 K (calc 27) — pfc-design selection at the frozen 50 kHz; the 3-stack is REFUSED by the optimizer (sat/swing floor) |
+| **D2-40** resonant trim | same 2×PQ50/50 gapped ferrite, **N=5**, bins 3.2/3.5/3.8 µH ±3%, gap re-ground per bin | Bpk ≤ 100 mT (calc 93 at 86 A pk; N=4 computes 115 — that is why N=5) |
+| **D3-40** transformer | registered 2×E70/33/32 stack route (TDK stack former B66372B2000T001), 9:9:9 | flux identical to 30 kW (volt-second driven, 108 mT); the move is WINDOW fill only; litz CSA ∝ current at same J |
+| **D6-40 / D7-40** | same construction, CSA × 4/3 at constant J ≤ 5.6 A/mm² | ΔT acceptances carried unchanged; D7-40 is the custom wind (63 A catalog part out of range) |
+| CTs | line: ACX-1100 unchanged (73.3 of 100 A) · resonant: **80 A-class 1:100 at RFQ** (AS-404 stays the 30 kW part) | CT saturation/thermal at 61.9 A rms — RFQ gate before EVT |
+
