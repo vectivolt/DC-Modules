@@ -126,7 +126,7 @@ const byFamily = (a, b) => {
   }
   return g;
 }
-const CAT = (value, mpn, pins) => {
+const CAT = (value, mpn, pins, designator = "") => {
   if (pins.length === 1) return "TERM";        // stud / tab: a terminal, not a chip
   if (pins.length !== 2) return "IC";
   const m = String(mpn || value);
@@ -134,6 +134,19 @@ const CAT = (value, mpn, pins) => {
   if (/^(MLCC|PP-|FILM-|X1-|Y1-|C1812|EL-|ELH-)/.test(m)) return /^(EL-|ELH-)/.test(m) ? "CP" : "C";
   if (/^(IND-|DM-|FB-)/.test(m)) return "L";
   if (/^(US\d|UF-|1N4148|SMBJ|FAST-|SICJBS|STTH)/.test(m)) return "D";
+  if (/^FUSE-/.test(m)) return "F";
+  if (/^(S20K|MOV)/.test(m)) return "MOV";
+  if (/^GDT-/.test(m)) return "GDT";
+  if (/^(CT-|ACX-|AS-\d)/.test(m)) return "CT";
+  // Page payloads carry no mpn field, so glyph kind used to fall through to "R" for every
+  // two-pin part whose VALUE was not ohm-shaped — every capacitor drew as a resistor once the
+  // zigzag landed (invisible in the box era: box looked like box). Designator letter is the
+  // honest fallback the schematic itself guarantees.
+  const d0 = designator[0];
+  if (d0 === "C") return "C";
+  if (d0 === "L") return "L";
+  if (d0 === "D") return "D";
+  if (d0 === "F") return "F";
   return "R";
 };
 
@@ -292,7 +305,13 @@ function passiveLib(kind, n1, n2) {
   if (lib.has(nm)) return nm;
   const ref = kind === "D" ? "D" : kind === "L" ? "L" : kind.startsWith("C") ? "C" : "R";
   let draw = "";
-  if (kind === "R") draw = "S -40 100 40 -100 0 1 10 N\n";
+  // ANSI zigzag: the audit feedback was that a box does not read as a resistor. Same envelope
+  // (±80 x, ±40 y), same pins — only the DRAW changes, so packing and pin audits are untouched.
+  if (kind === "R") draw = "P 9 0 1 10 -80 0 -65 0 -50 40 -25 -40 0 40 25 -40 50 40 65 0 80 0 N\n";
+  else if (kind === "F") draw = "S -70 30 70 -30 0 1 10 N\nP 2 0 1 10 -80 0 80 0 N\n";
+  else if (kind === "MOV") draw = "S -60 45 60 -45 0 1 10 N\nP 3 0 1 10 -85 -70 60 45 85 45 N\n";
+  else if (kind === "GDT") draw = "C 0 0 80 0 1 10 N\nP 2 0 1 12 -35 45 -35 -45 N\nP 2 0 1 12 35 45 35 -45 N\nC 0 -55 8 0 1 0 F\n";
+  else if (kind === "CT") draw = "A -40 0 40 -899 899 0 1 10 N -40 -40 -40 40\nA 40 0 40 -899 899 0 1 10 N 40 -40 40 40\nP 2 0 1 14 -90 90 90 90 N\nC -75 60 8 0 1 0 F\n";
   else if (kind === "C") draw = "P 2 0 1 12 -80 25 80 25 N\nP 2 0 1 12 -80 -25 80 -25 N\n";
   else if (kind === "CP") draw = "P 2 0 1 12 -80 25 80 25 N\nA 0 -150 130 563 1037 0 1 12 N -80 -50 80 -50\n";
   else if (kind === "L") draw = "A 0 -50 50 -899 899 0 1 8 N 0 -100 0 0\nA 0 50 50 -899 899 0 1 8 N 0 0 0 100\n";
@@ -315,6 +334,58 @@ function icLib(rawKey, pins) {
   const nameW = Math.max(...pins.map((p) => p.name.length), 4) * 30;
   const halfW = Math.max(snap(nameW + 150), 300);
   let draw = `S ${-halfW} ${halfH} ${halfW} ${-halfH} 0 1 10 f\n`;
+  // Function glyph centred in the body — audit feedback: a power FET, a relay or a transformer
+  // drawn as a bare IC box "reads like a dummy". Pins and body size are UNCHANGED (the 100%
+  // pin-verify and the packer both key on them); this only inks the part's function where the
+  // body is empty. Coordinates are small (≤±260) so glyphs stay clear of edge pin names.
+  const GLYPH = {
+    NMOS: "P 2 0 1 10 -160 0 -60 0 N\nP 2 0 1 12 -60 90 -60 -90 N\n"
+        + "P 2 0 1 12 -25 110 -25 40 N\nP 2 0 1 12 -25 30 -25 -30 N\nP 2 0 1 12 -25 -40 -25 -110 N\n"
+        + "P 2 0 1 10 -25 75 120 75 N\nP 2 0 1 10 -25 -75 120 -75 N\nP 2 0 1 10 120 75 120 -75 N\n"
+        + "P 4 0 1 8 -25 0 35 25 35 -25 -25 0 F\nP 2 0 1 10 35 0 120 0 N\n",
+    NPN: "C 0 0 130 0 1 10 N\nP 2 0 1 12 -45 80 -45 -80 N\nP 2 0 1 10 -120 0 -45 0 N\n"
+       + "P 2 0 1 10 -45 35 70 105 N\nP 2 0 1 10 -45 -35 70 -105 N\nP 3 0 1 8 40 -70 70 -105 25 -95 F\n",
+    RELAY: "S -190 60 -60 -60 0 1 10 N\nP 2 0 1 10 -190 -20 -60 20 N\n"
+         + "P 2 0 1 10 60 -60 200 -60 N\nC 70 60 10 0 1 0 F\nC 190 60 10 0 1 0 F\nP 2 0 1 12 80 55 175 100 N\n",
+    XFMR: "A -35 -90 45 1 1799 0 1 12 N -80 -90 10 -90\nA -35 0 45 1 1799 0 1 12 N -80 0 10 0\nA -35 90 45 1 1799 0 1 12 N -80 90 10 90\n"
+        + "P 2 0 1 12 25 140 25 -140 N\nP 2 0 1 12 45 140 45 -140 N\n"
+        + "A 105 -90 45 -1799 -1 0 1 12 N 60 -90 150 -90\nA 105 0 45 -1799 -1 0 1 12 N 60 0 150 0\nA 105 90 45 -1799 -1 0 1 12 N 60 90 150 90\n"
+        + "C -95 -120 9 0 1 0 F\nC 165 -120 9 0 1 0 F\n",
+    CMC: "A -60 -70 40 1 1799 0 1 12 N -100 -70 -20 -70\nA -60 30 40 1 1799 0 1 12 N -100 30 -20 30\n"
+       + "A 60 -70 40 1 1799 0 1 12 N 20 -70 100 -70\nA 60 30 40 1 1799 0 1 12 N 20 30 100 30\n"
+       + "P 2 0 1 14 -130 -15 130 -15 N\nP 2 0 1 14 -130 -25 130 -25 N\n",
+    OPTO: "P 4 0 1 8 -140 30 -140 -30 -90 0 -140 30 F\nP 2 0 1 12 -90 30 -90 -30 N\n"
+        + "P 2 0 1 10 -60 15 -10 40 N\nP 3 0 1 8 -25 42 -10 40 -18 28 F\n"
+        + "P 2 0 1 10 -60 -15 -10 10 N\nP 3 0 1 8 -25 12 -10 10 -18 -2 F\n"
+        + "P 2 0 1 12 30 60 30 -60 N\nP 2 0 1 12 45 60 45 -60 N\n",
+    ISO: "P 2 0 1 8 0 __H__ 0 __H2__ N\nP 2 0 1 8 0 __H3__ 0 __H4__ N\nP 2 0 1 8 0 __H5__ 0 __H6__ N\nP 2 0 1 8 0 __H7__ 0 __H8__ N\n",
+    SHUNT: "P 2 0 1 20 -120 0 120 0 N\nP 2 0 1 10 -70 0 -70 -60 N\nP 2 0 1 10 70 0 70 -60 N\n",
+    DCDC: "P 2 0 1 10 __DGA__ N\nA -70 30 40 1 1799 0 1 10 N -110 30 -30 30\nP 2 0 1 12 40 60 40 -60 N\nP 2 0 1 12 60 60 60 -60 N\nP 2 0 1 10 90 30 130 30 N\nP 2 0 1 10 90 -30 130 -30 N\n",
+  };
+  const GLYPH_OF = [
+    [/^(B3M|SG2M|SIC-1700|SIC-1200)/, "NMOS"],
+    [/^S8050$/, "NPN"],
+    [/^(HF167F|HFE82V)/, "RELAY"],
+    [/^XFMR-/, "XFMR"],
+    [/^CMC-/, "CMC"],
+    [/^(TLP152|VOM1271)/, "OPTO"],
+    [/^(NSI66|NSI12|NSI10|NSI82|AMC13)/, "ISO"],
+    [/^SHUNT-/, "SHUNT"],
+    [/^(QA01C|ISO5V|B1505)/, "DCDC"],
+  ];
+  {
+    const hit = GLYPH_OF.find(([re]) => re.test(nm));
+    if (hit) {
+      let g = GLYPH[hit[1]];
+      const H = Math.min(halfH - 120, 700);
+      g = g.replace("__H__", String(H)).replace("__H2__", String(Math.round(H * 0.55)))
+           .replace("__H3__", String(Math.round(H * 0.3))).replace("__H4__", String(-Math.round(H * 0.05)))
+           .replace("__H5__", String(-Math.round(H * 0.3))).replace("__H6__", String(-Math.round(H * 0.55)))
+           .replace("__H7__", String(-Math.round(H * 0.8))).replace("__H8__", String(-H))
+           .replace("__DGA__", "-130 -30 -110 30");
+      draw += g;
+    }
+  }
   const px = (p, x, y, orient) => {
     // power pins sit on the top/bottom edges; their name would be drawn inside the body where
     // it collides with the first left/right pin name. "~" suppresses it.
@@ -348,7 +419,7 @@ for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json"))) {
 const unionPins = (c) => PIN_UNION.get(c.mpn || c.value) ? [...PIN_UNION.get(c.mpn || c.value).values()] : c.pins;
 
 function shapeOf(c) {
-  const cat = CAT(c.value, c.mpn, c.pins);
+  const cat = CAT(c.value, partOf(c.designator, c.value).mpn, c.pins, c.designator);
   if (cat === "TERM") {
     const lw = (c.pins[0]?.signal_name?.length ?? 0) * CHW;
     return { cat, w: 200 + STUB + lw, h: ROW, lw, rw: 0 };

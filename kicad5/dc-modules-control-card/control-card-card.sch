@@ -349,7 +349,7 @@ Wire Wire Line
 Text Label 3100 4900 0    45   ~ 0
 V3P3
 $Comp
-L dcmod-r4:R CCARDA1
+L dcmod-r4:C CCARDA1
 U 1 1 5E000002
 P 4450 1150
 F 0 "CCARDA1" H 4450 990 50  0000 C CNN
@@ -370,7 +370,7 @@ Wire Wire Line
 Text Label 4900 1150 0    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R CCARDA2
+L dcmod-r4:C CCARDA2
 U 1 1 5E000003
 P 4450 1550
 F 0 "CCARDA2" H 4450 1390 50  0000 C CNN
@@ -391,7 +391,7 @@ Wire Wire Line
 Text Label 4900 1550 0    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R CCARDD0
+L dcmod-r4:C CCARDD0
 U 1 1 5E000004
 P 4450 1950
 F 0 "CCARDD0" H 4450 1790 50  0000 C CNN
@@ -412,7 +412,7 @@ Wire Wire Line
 Text Label 4900 1950 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CCARDD1
+L dcmod-r4:C CCARDD1
 U 1 1 5E000005
 P 4450 2350
 F 0 "CCARDD1" H 4450 2190 50  0000 C CNN
@@ -433,7 +433,7 @@ Wire Wire Line
 Text Label 4900 2350 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CCARDD2
+L dcmod-r4:C CCARDD2
 U 1 1 5E000006
 P 4450 2750
 F 0 "CCARDD2" H 4450 2590 50  0000 C CNN
@@ -454,7 +454,7 @@ Wire Wire Line
 Text Label 4900 2750 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CCARDD3
+L dcmod-r4:C CCARDD3
 U 1 1 5E000007
 P 4450 3150
 F 0 "CCARDD3" H 4450 2990 50  0000 C CNN
@@ -475,7 +475,7 @@ Wire Wire Line
 Text Label 4900 3150 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CCARDD4
+L dcmod-r4:C CCARDD4
 U 1 1 5E000008
 P 4450 3550
 F 0 "CCARDD4" H 4450 3390 50  0000 C CNN
@@ -496,7 +496,7 @@ Wire Wire Line
 Text Label 4900 3550 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CCARDVR
+L dcmod-r4:C CCARDVR
 U 1 1 5E000009
 P 4450 3950
 F 0 "CCARDVR" H 4450 3790 50  0000 C CNN
@@ -602,7 +602,7 @@ Wire Wire Line
 Text Label 1750 8200 3    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CCARDRST
+L dcmod-r4:C CCARDRST
 U 1 1 5E00000D
 P 1750 8750
 F 0 "CCARDRST" H 1750 8590 50  0000 C CNN
@@ -768,7 +768,7 @@ Wire Wire Line
 Text Label 13800 5200 3    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CRSTCARD
+L dcmod-r4:C CRSTCARD
 U 1 1 5E000011
 P 13700 5750
 F 0 "CRSTCARD" H 13700 5590 50  0000 C CNN
@@ -789,7 +789,7 @@ Wire Wire Line
 Text Label 14150 5750 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CSFCARD
+L dcmod-r4:C CSFCARD
 U 1 1 5E000012
 P 13700 6150
 F 0 "CSFCARD" H 13700 5990 50  0000 C CNN
@@ -810,7 +810,7 @@ Wire Wire Line
 Text Label 14150 6150 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CWDCARD
+L dcmod-r4:C CWDCARD
 U 1 1 5E000013
 P 13700 6550
 F 0 "CWDCARD" H 13700 6390 50  0000 C CNN
@@ -946,7 +946,7 @@ Wire Notes Line
 Text Notes 3560 6410 0    79   ~ 16
 CONTROL / FLT-GROUND
 $Comp
-L dcmod-r4:R CFLTC
+L dcmod-r4:C CFLTC
 U 1 1 5E000019
 P 4800 6900
 F 0 "CFLTC" H 4800 6740 50  0000 C CNN
@@ -1056,7 +1056,7 @@ Wire Wire Line
 Text Label 7600 6200 3    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CBKICARD
+L dcmod-r4:C CBKICARD
 U 1 1 5E00001D
 P 7600 6750
 F 0 "CBKICARD" H 7600 6590 50  0000 C CNN
@@ -1077,7 +1077,7 @@ Wire Wire Line
 Text Label 8050 6750 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CBKOCARD
+L dcmod-r4:C CBKOCARD
 U 1 1 5E00001E
 P 7600 7150
 F 0 "CBKOCARD" H 7600 6990 50  0000 C CNN
@@ -1098,7 +1098,7 @@ Wire Wire Line
 Text Label 8050 7150 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CBSTCARD
+L dcmod-r4:C CBSTCARD
 U 1 1 5E00001F
 P 7600 7550
 F 0 "CBSTCARD" H 7600 7390 50  0000 C CNN
@@ -1225,7 +1225,7 @@ Wire Wire Line
 Text Label 8200 2350 3    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R CAVF
+L dcmod-r4:C CAVF
 U 1 1 5E000024
 P 8200 2900
 F 0 "CAVF" H 8200 2740 50  0000 C CNN
@@ -1246,7 +1246,7 @@ Wire Wire Line
 Text Label 8650 2900 0    45   ~ 0
 UAVB_INN
 $Comp
-L dcmod-r4:R CAVM
+L dcmod-r4:C CAVM
 U 1 1 5E000025
 P 10400 1150
 F 0 "CAVM" H 10400 990 50  0000 C CNN
@@ -1267,7 +1267,7 @@ Wire Wire Line
 Text Label 10850 1150 0    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R CAVO
+L dcmod-r4:C CAVO
 U 1 1 5E000026
 P 10400 1550
 F 0 "CAVO" H 10400 1390 50  0000 C CNN

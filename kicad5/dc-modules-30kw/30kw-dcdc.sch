@@ -70,7 +70,7 @@ Wire Notes Line
 Text Notes 9560 6160 0    79   ~ 16
 BANKS-SP / BANK-A
 $Comp
-L dcmod-r4:R CBA0B
+L dcmod-r4:CP CBA0B
 U 1 1 5E000110
 P 11550 6650
 F 0 "CBA0B" H 11550 6490 50  0000 C CNN
@@ -91,7 +91,7 @@ Wire Wire Line
 Text Label 12000 6650 0    45   ~ 0
 BKAN
 $Comp
-L dcmod-r4:R CBA0T
+L dcmod-r4:CP CBA0T
 U 1 1 5E000111
 P 11550 7050
 F 0 "CBA0T" H 11550 6890 50  0000 C CNN
@@ -112,7 +112,7 @@ Wire Wire Line
 Text Label 12000 7050 0    45   ~ 0
 BKAM
 $Comp
-L dcmod-r4:R CBA1B
+L dcmod-r4:CP CBA1B
 U 1 1 5E000112
 P 11550 7450
 F 0 "CBA1B" H 11550 7290 50  0000 C CNN
@@ -133,7 +133,7 @@ Wire Wire Line
 Text Label 12000 7450 0    45   ~ 0
 BKAN
 $Comp
-L dcmod-r4:R CBA1T
+L dcmod-r4:CP CBA1T
 U 1 1 5E000113
 P 11550 7850
 F 0 "CBA1T" H 11550 7690 50  0000 C CNN
@@ -154,7 +154,7 @@ Wire Wire Line
 Text Label 12000 7850 0    45   ~ 0
 BKAM
 $Comp
-L dcmod-r4:R CBAF
+L dcmod-r4:C CBAF
 U 1 1 5E000114
 P 11550 8250
 F 0 "CBAF" H 11550 8090 50  0000 C CNN
@@ -269,7 +269,7 @@ Wire Notes Line
 Text Notes 560 7410 0    79   ~ 16
 BANKS-SP / BANK-B
 $Comp
-L dcmod-r4:R CBB0B
+L dcmod-r4:CP CBB0B
 U 1 1 5E000119
 P 2550 7900
 F 0 "CBB0B" H 2550 7740 50  0000 C CNN
@@ -290,7 +290,7 @@ Wire Wire Line
 Text Label 3000 7900 0    45   ~ 0
 BKBN
 $Comp
-L dcmod-r4:R CBB0T
+L dcmod-r4:CP CBB0T
 U 1 1 5E00011A
 P 2550 8300
 F 0 "CBB0T" H 2550 8140 50  0000 C CNN
@@ -311,7 +311,7 @@ Wire Wire Line
 Text Label 3000 8300 0    45   ~ 0
 BKBM
 $Comp
-L dcmod-r4:R CBB1B
+L dcmod-r4:CP CBB1B
 U 1 1 5E00011B
 P 2550 8700
 F 0 "CBB1B" H 2550 8540 50  0000 C CNN
@@ -332,7 +332,7 @@ Wire Wire Line
 Text Label 3000 8700 0    45   ~ 0
 BKBN
 $Comp
-L dcmod-r4:R CBB1T
+L dcmod-r4:CP CBB1T
 U 1 1 5E00011C
 P 2550 9100
 F 0 "CBB1T" H 2550 8940 50  0000 C CNN
@@ -353,7 +353,7 @@ Wire Wire Line
 Text Label 3000 9100 0    45   ~ 0
 BKBM
 $Comp
-L dcmod-r4:R CBBF
+L dcmod-r4:C CBBF
 U 1 1 5E00011D
 P 2550 9500
 F 0 "CBBF" H 2550 9340 50  0000 C CNN
@@ -1403,7 +1403,7 @@ Wire Wire Line
 Text Label 8350 14550 3    45   ~ 0
 CGND
 $Comp
-L dcmod-r4:R CCGB
+L dcmod-r4:C CCGB
 U 1 1 5E000145
 P 7950 15100
 F 0 "CCGB" H 7950 14940 50  0000 C CNN
@@ -1673,7 +1673,7 @@ Wire Wire Line
 Text Label 1450 14950 3    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CSW1
+L dcmod-r4:C CSW1
 U 1 1 5E00014D
 P 3450 16700
 F 0 "CSW1" H 3450 16540 50  0000 C CNN
@@ -1694,7 +1694,7 @@ Wire Wire Line
 Text Label 3900 16700 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R CSW2
+L dcmod-r4:C CSW2
 U 1 1 5E00014E
 P 3450 17100
 F 0 "CSW2" H 3450 16940 50  0000 C CNN
@@ -2707,7 +2707,7 @@ Wire Notes Line
 Text Notes 23060 7660 0    79   ~ 16
 LLC-LEGS / BUS-IN
 $Comp
-L dcmod-r4:R CF0
+L dcmod-r4:C CF0
 U 1 1 5E00016E
 P 25500 8150
 F 0 "CF0" H 25500 7990 50  0000 C CNN
@@ -2728,7 +2728,7 @@ Wire Wire Line
 Text Label 25950 8150 0    45   ~ 0
 DCN
 $Comp
-L dcmod-r4:R CF1
+L dcmod-r4:C CF1
 U 1 1 5E00016F
 P 25500 8550
 F 0 "CF1" H 25500 8390 50  0000 C CNN
@@ -2749,7 +2749,7 @@ Wire Wire Line
 Text Label 25950 8550 0    45   ~ 0
 DCN
 $Comp
-L dcmod-r4:R CF2
+L dcmod-r4:C CF2
 U 1 1 5E000170
 P 25500 8950
 F 0 "CF2" H 25500 8790 50  0000 C CNN
@@ -3101,7 +3101,7 @@ Wire Wire Line
 Text Label 19400 8300 3    45   ~ 0
 U1L_VEE
 $Comp
-L dcmod-r4:R C1HB1
+L dcmod-r4:C C1HB1
 U 1 1 5E00017A
 P 17250 6400
 F 0 "C1HB1" H 17250 6240 50  0000 C CNN
@@ -3122,7 +3122,7 @@ Wire Wire Line
 Text Label 17700 6400 0    45   ~ 0
 U1H_GND2
 $Comp
-L dcmod-r4:R C1HB2
+L dcmod-r4:C C1HB2
 U 1 1 5E00017B
 P 17250 6800
 F 0 "C1HB2" H 17250 6640 50  0000 C CNN
@@ -3143,7 +3143,7 @@ Wire Wire Line
 Text Label 17700 6800 0    45   ~ 0
 U1H_VEE
 $Comp
-L dcmod-r4:R C1HBL
+L dcmod-r4:C C1HBL
 U 1 1 5E00017C
 P 17250 7200
 F 0 "C1HBL" H 17250 7040 50  0000 C CNN
@@ -3164,7 +3164,7 @@ Wire Wire Line
 Text Label 17700 7200 0    45   ~ 0
 U1H_GND2
 $Comp
-L dcmod-r4:R C1LB1
+L dcmod-r4:C C1LB1
 U 1 1 5E00017D
 P 21450 6400
 F 0 "C1LB1" H 21450 6240 50  0000 C CNN
@@ -3185,7 +3185,7 @@ Wire Wire Line
 Text Label 21900 6400 0    45   ~ 0
 U1L_GND2
 $Comp
-L dcmod-r4:R C1LB2
+L dcmod-r4:C C1LB2
 U 1 1 5E00017E
 P 21450 6800
 F 0 "C1LB2" H 21450 6640 50  0000 C CNN
@@ -3206,7 +3206,7 @@ Wire Wire Line
 Text Label 21900 6800 0    45   ~ 0
 U1L_VEE
 $Comp
-L dcmod-r4:R C1LBL
+L dcmod-r4:C C1LBL
 U 1 1 5E00017F
 P 21450 7200
 F 0 "C1LBL" H 21450 7040 50  0000 C CNN
@@ -3759,7 +3759,7 @@ Wire Wire Line
 Text Label 19400 15300 3    45   ~ 0
 U2L_VEE
 $Comp
-L dcmod-r4:R C2HB1
+L dcmod-r4:C C2HB1
 U 1 1 5E000192
 P 17250 13400
 F 0 "C2HB1" H 17250 13240 50  0000 C CNN
@@ -3780,7 +3780,7 @@ Wire Wire Line
 Text Label 17700 13400 0    45   ~ 0
 U2H_GND2
 $Comp
-L dcmod-r4:R C2HB2
+L dcmod-r4:C C2HB2
 U 1 1 5E000193
 P 17250 13800
 F 0 "C2HB2" H 17250 13640 50  0000 C CNN
@@ -3801,7 +3801,7 @@ Wire Wire Line
 Text Label 17700 13800 0    45   ~ 0
 U2H_VEE
 $Comp
-L dcmod-r4:R C2HBL
+L dcmod-r4:C C2HBL
 U 1 1 5E000194
 P 17250 14200
 F 0 "C2HBL" H 17250 14040 50  0000 C CNN
@@ -3822,7 +3822,7 @@ Wire Wire Line
 Text Label 17700 14200 0    45   ~ 0
 U2H_GND2
 $Comp
-L dcmod-r4:R C2LB1
+L dcmod-r4:C C2LB1
 U 1 1 5E000195
 P 21450 13400
 F 0 "C2LB1" H 21450 13240 50  0000 C CNN
@@ -3843,7 +3843,7 @@ Wire Wire Line
 Text Label 21900 13400 0    45   ~ 0
 U2L_GND2
 $Comp
-L dcmod-r4:R C2LB2
+L dcmod-r4:C C2LB2
 U 1 1 5E000196
 P 21450 13800
 F 0 "C2LB2" H 21450 13640 50  0000 C CNN
@@ -3864,7 +3864,7 @@ Wire Wire Line
 Text Label 21900 13800 0    45   ~ 0
 U2L_VEE
 $Comp
-L dcmod-r4:R C2LBL
+L dcmod-r4:C C2LBL
 U 1 1 5E000197
 P 21450 14200
 F 0 "C2LBL" H 21450 14040 50  0000 C CNN
@@ -4417,7 +4417,7 @@ Wire Wire Line
 Text Label 28400 4800 3    45   ~ 0
 U3L_VEE
 $Comp
-L dcmod-r4:R C3HB1
+L dcmod-r4:C C3HB1
 U 1 1 5E0001AA
 P 26250 2900
 F 0 "C3HB1" H 26250 2740 50  0000 C CNN
@@ -4438,7 +4438,7 @@ Wire Wire Line
 Text Label 26700 2900 0    45   ~ 0
 U3H_GND2
 $Comp
-L dcmod-r4:R C3HB2
+L dcmod-r4:C C3HB2
 U 1 1 5E0001AB
 P 26250 3300
 F 0 "C3HB2" H 26250 3140 50  0000 C CNN
@@ -4459,7 +4459,7 @@ Wire Wire Line
 Text Label 26700 3300 0    45   ~ 0
 U3H_VEE
 $Comp
-L dcmod-r4:R C3HBL
+L dcmod-r4:C C3HBL
 U 1 1 5E0001AC
 P 26250 3700
 F 0 "C3HBL" H 26250 3540 50  0000 C CNN
@@ -4480,7 +4480,7 @@ Wire Wire Line
 Text Label 26700 3700 0    45   ~ 0
 U3H_GND2
 $Comp
-L dcmod-r4:R C3LB1
+L dcmod-r4:C C3LB1
 U 1 1 5E0001AD
 P 30450 2900
 F 0 "C3LB1" H 30450 2740 50  0000 C CNN
@@ -4501,7 +4501,7 @@ Wire Wire Line
 Text Label 30900 2900 0    45   ~ 0
 U3L_GND2
 $Comp
-L dcmod-r4:R C3LB2
+L dcmod-r4:C C3LB2
 U 1 1 5E0001AE
 P 30450 3300
 F 0 "C3LB2" H 30450 3140 50  0000 C CNN
@@ -4522,7 +4522,7 @@ Wire Wire Line
 Text Label 30900 3300 0    45   ~ 0
 U3L_VEE
 $Comp
-L dcmod-r4:R C3LBL
+L dcmod-r4:C C3LBL
 U 1 1 5E0001AF
 P 30450 3700
 F 0 "C3LBL" H 30450 3540 50  0000 C CNN
@@ -4846,7 +4846,7 @@ Wire Wire Line
 Text Label 2650 23050 2    45   ~ 0
 STAR0
 $Comp
-L dcmod-r4:R C1CF
+L dcmod-r4:C C1CF
 U 1 1 5E0001BD
 P 6600 23600
 F 0 "C1CF" H 6600 23440 50  0000 C CNN
@@ -4867,7 +4867,7 @@ Wire Wire Line
 Text Label 7050 23600 0    45   ~ 0
 AVMID
 $Comp
-L dcmod-r4:R C1R0
+L dcmod-r4:C C1R0
 U 1 1 5E0001BE
 P 3100 23650
 F 0 "C1R0" H 3100 23490 50  0000 C CNN
@@ -4888,7 +4888,7 @@ Wire Wire Line
 Text Label 3550 23650 0    45   ~ 0
 C1R0_C1R1
 $Comp
-L dcmod-r4:R C1R1
+L dcmod-r4:C C1R1
 U 1 1 5E0001BF
 P 3100 24050
 F 0 "C1R1" H 3100 23890 50  0000 C CNN
@@ -4909,7 +4909,7 @@ Wire Wire Line
 Text Label 3550 24050 0    45   ~ 0
 C1R0_C1R1
 $Comp
-L dcmod-r4:R C1R2
+L dcmod-r4:C C1R2
 U 1 1 5E0001C0
 P 3100 24450
 F 0 "C1R2" H 3100 24290 50  0000 C CNN
@@ -4930,7 +4930,7 @@ Wire Wire Line
 Text Label 3550 24450 0    45   ~ 0
 C1R0_C1R1
 $Comp
-L dcmod-r4:R C1R3
+L dcmod-r4:C C1R3
 U 1 1 5E0001C1
 P 3100 24850
 F 0 "C1R3" H 3100 24690 50  0000 C CNN
@@ -4951,7 +4951,7 @@ Wire Wire Line
 Text Label 3550 24850 0    45   ~ 0
 C1R0_C1R1
 $Comp
-L dcmod-r4:R CT1
+L dcmod-r4:CT CT1
 U 1 1 5E0001C2
 P 6600 22400
 F 0 "CT1" H 6600 22240 50  0000 C CNN
@@ -5296,7 +5296,7 @@ Wire Wire Line
 Text Label 11650 22550 2    45   ~ 0
 STAR0
 $Comp
-L dcmod-r4:R C2CF
+L dcmod-r4:C C2CF
 U 1 1 5E0001D1
 P 15600 23100
 F 0 "C2CF" H 15600 22940 50  0000 C CNN
@@ -5317,7 +5317,7 @@ Wire Wire Line
 Text Label 16050 23100 0    45   ~ 0
 AVMID
 $Comp
-L dcmod-r4:R C2R0
+L dcmod-r4:C C2R0
 U 1 1 5E0001D2
 P 12100 23150
 F 0 "C2R0" H 12100 22990 50  0000 C CNN
@@ -5338,7 +5338,7 @@ Wire Wire Line
 Text Label 12550 23150 0    45   ~ 0
 C2R0_C2R1
 $Comp
-L dcmod-r4:R C2R1
+L dcmod-r4:C C2R1
 U 1 1 5E0001D3
 P 12100 23550
 F 0 "C2R1" H 12100 23390 50  0000 C CNN
@@ -5359,7 +5359,7 @@ Wire Wire Line
 Text Label 12550 23550 0    45   ~ 0
 C2R0_C2R1
 $Comp
-L dcmod-r4:R C2R2
+L dcmod-r4:C C2R2
 U 1 1 5E0001D4
 P 12100 23950
 F 0 "C2R2" H 12100 23790 50  0000 C CNN
@@ -5380,7 +5380,7 @@ Wire Wire Line
 Text Label 12550 23950 0    45   ~ 0
 C2R0_C2R1
 $Comp
-L dcmod-r4:R C2R3
+L dcmod-r4:C C2R3
 U 1 1 5E0001D5
 P 12100 24350
 F 0 "C2R3" H 12100 24190 50  0000 C CNN
@@ -5401,7 +5401,7 @@ Wire Wire Line
 Text Label 12550 24350 0    45   ~ 0
 C2R0_C2R1
 $Comp
-L dcmod-r4:R CT2
+L dcmod-r4:CT CT2
 U 1 1 5E0001D6
 P 15600 21900
 F 0 "CT2" H 15600 21740 50  0000 C CNN
@@ -5746,7 +5746,7 @@ Wire Wire Line
 Text Label 20650 19300 2    45   ~ 0
 STAR0
 $Comp
-L dcmod-r4:R C3CF
+L dcmod-r4:C C3CF
 U 1 1 5E0001E5
 P 24600 19850
 F 0 "C3CF" H 24600 19690 50  0000 C CNN
@@ -5767,7 +5767,7 @@ Wire Wire Line
 Text Label 25050 19850 0    45   ~ 0
 AVMID
 $Comp
-L dcmod-r4:R C3R0
+L dcmod-r4:C C3R0
 U 1 1 5E0001E6
 P 21100 19900
 F 0 "C3R0" H 21100 19740 50  0000 C CNN
@@ -5788,7 +5788,7 @@ Wire Wire Line
 Text Label 21550 19900 0    45   ~ 0
 C3R0_C3R1
 $Comp
-L dcmod-r4:R C3R1
+L dcmod-r4:C C3R1
 U 1 1 5E0001E7
 P 21100 20300
 F 0 "C3R1" H 21100 20140 50  0000 C CNN
@@ -5809,7 +5809,7 @@ Wire Wire Line
 Text Label 21550 20300 0    45   ~ 0
 C3R0_C3R1
 $Comp
-L dcmod-r4:R C3R2
+L dcmod-r4:C C3R2
 U 1 1 5E0001E8
 P 21100 20700
 F 0 "C3R2" H 21100 20540 50  0000 C CNN
@@ -5830,7 +5830,7 @@ Wire Wire Line
 Text Label 21550 20700 0    45   ~ 0
 C3R0_C3R1
 $Comp
-L dcmod-r4:R C3R3
+L dcmod-r4:C C3R3
 U 1 1 5E0001E9
 P 21100 21100
 F 0 "C3R3" H 21100 20940 50  0000 C CNN
@@ -5851,7 +5851,7 @@ Wire Wire Line
 Text Label 21550 21100 0    45   ~ 0
 C3R0_C3R1
 $Comp
-L dcmod-r4:R CT3
+L dcmod-r4:CT CT3
 U 1 1 5E0001EA
 P 24600 18650
 F 0 "CT3" H 24600 18490 50  0000 C CNN
@@ -6258,7 +6258,7 @@ Wire Wire Line
 Text Label 29400 12050 3    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R COF1
+L dcmod-r4:C COF1
 U 1 1 5E0001FB
 P 29300 12600
 F 0 "COF1" H 29300 12440 50  0000 C CNN
@@ -6279,7 +6279,7 @@ Wire Wire Line
 Text Label 29750 12600 0    45   ~ 0
 OUTN
 $Comp
-L dcmod-r4:R COF2
+L dcmod-r4:C COF2
 U 1 1 5E0001FC
 P 29300 13000
 F 0 "COF2" H 29300 12840 50  0000 C CNN
@@ -6300,7 +6300,7 @@ Wire Wire Line
 Text Label 29750 13000 0    45   ~ 0
 OUTN
 $Comp
-L dcmod-r4:R CYO1
+L dcmod-r4:C CYO1
 U 1 1 5E0001FD
 P 29300 13400
 F 0 "CYO1" H 29300 13240 50  0000 C CNN
@@ -6321,7 +6321,7 @@ Wire Wire Line
 Text Label 29750 13400 0    45   ~ 0
 PE
 $Comp
-L dcmod-r4:R CYO2
+L dcmod-r4:C CYO2
 U 1 1 5E0001FE
 P 29300 13800
 F 0 "CYO2" H 29300 13640 50  0000 C CNN
@@ -6427,7 +6427,7 @@ Wire Wire Line
 Text Label 34850 7900 3    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R COADF
+L dcmod-r4:C COADF
 U 1 1 5E000202
 P 34750 6300
 F 0 "COADF" H 34750 6140 50  0000 C CNN
@@ -6688,7 +6688,7 @@ Wire Wire Line
 Text Label 34850 12400 3    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R COBDF
+L dcmod-r4:C COBDF
 U 1 1 5E00020D
 P 34750 10800
 F 0 "COBDF" H 34750 10640 50  0000 C CNN
@@ -6949,7 +6949,7 @@ Wire Wire Line
 Text Label 34850 16900 3    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R COVDF
+L dcmod-r4:C COVDF
 U 1 1 5E000218
 P 34750 15300
 F 0 "COVDF" H 34750 15140 50  0000 C CNN
@@ -7237,7 +7237,7 @@ Wire Notes Line
 Text Notes 27560 15660 0    79   ~ 16
 OUTPUT-SENSING / NTC
 $Comp
-L dcmod-r4:R CTLLCF
+L dcmod-r4:C CTLLCF
 U 1 1 5E000224
 P 29550 16950
 F 0 "CTLLCF" H 29550 16790 50  0000 C CNN
@@ -7258,7 +7258,7 @@ Wire Wire Line
 Text Label 30000 16950 0    45   ~ 0
 AGND
 $Comp
-L dcmod-r4:R CTXFRF
+L dcmod-r4:C CTXFRF
 U 1 1 5E000225
 P 29550 18150
 F 0 "CTXFRF" H 29550 17990 50  0000 C CNN

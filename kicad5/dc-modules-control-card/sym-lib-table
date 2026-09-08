@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "dcmod-r4")(type "Legacy")(uri "${KIPRJMOD}/dcmod-r4.lib")(options "")(descr "DC-Modules generated symbol lib"))
+)
