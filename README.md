@@ -96,6 +96,35 @@ the cart's job, the module's plate NTCs + OT ladder are its dry-run protection, 
 The generated ladder lives in [`docs/bom-cost.md`](docs/bom-cost.md); N−1 note: a 4×30 cabinet
 keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at the volume decision.
 
+### Module variant specifications (rev E43 — every number engine-derived and gate-verified)
+
+| Specification | **30 kW** | **40 kW** (E41) | **50 kW** (E42 · liquid) |
+|---|---|---|---|
+| Rated power · max output current | 30 kW · 100 A | 40 kW · 133 A | 50 kW · 167 A |
+| Input (all) | 3-φ 285–475 VAC | full power ≥330 VAC | 86 % CC derate @285 V |
+| Output (all) | 150–1000 VDC | S/P crossover 500/525 V + 30 s dwell | full power ≥300 V out |
+| Worst continuous line current | 55.9 A | 73.3 A | 91.6 A |
+| Efficiency — full power @400 VAC | 97.32 % | 97.13 % | 96.94 % |
+| Efficiency — peak over envelope | 98.43 % | 98.47 % | 98.44 % |
+| Total loss at rated | 827 W | 1,183 W | 1,580 W |
+| Cooling | forced air · 2 fans | forced air · 3 fans | **sealed liquid** · 2 coldplates · 0 fans (≤60 °C coolant · 6 L/min · ΔT ≈ 4 K) |
+| Envelope proof (grid, 1008 pts each) | 0 fail · worst Tj 139 °C | 0 fail · worst Tj 147 °C | 0 fail · worst Tj 140 °C — full envelope, zero tank clamps |
+| Vienna PFC (3-φ · 50 kHz) | single 750 V SiC pair/position | **paralleled pairs** | paralleled pairs (same silicon as 40) |
+| PFC choke D1 | 3× 0077908A7 · N=39 · 165 µH | 5× T79 26µ · N=23 · 113 µH | 5× T79 26µ · N=22 · 103 µH |
+| LLC tank (fr 140 kHz) | 4×46 nF + 4.0 µH bins | 6×33 nF + 3.5 µH bins | 8×27 nF + 3.0 µH bins · revved class (65 A pk / 95 A pk OC) |
+| Transformer (per section) | 3× PQ50/50 | 2× E70/33/32 | 3× E70/33/32 (Bpk identical 108 mT) |
+| DM stage D6 + CX2 (E43 engine) | 2× T48 60µ N=7 · 4.7 µF | 2× T57 60µ N=8 · 4.7 µF | 3× T57 60µ N=8 · 4.7 µF |
+| Conducted-EMI worst DM margin | +4.9 dB (crest-biased) | +5.7 dB | +5.6 dB |
+| Input protection (gG) | 80 A · 22×58 | 125 A · 22×58 | 160 A · NH00 |
+| Precharge bypass class | 80 A (70 %) | 100 A (73 %) | 250 A (37 %) |
+| Output relay K_OUT | 1× 200 A (50 %) | 1× 200 A (67 %) | **2× 200 A dual** (42 %/relay, series-mirror readback) |
+| DC link · bank strings | 10 cans · 2/bank | 12 · 3 | 16 · 4 |
+| Bus discharge to <60 V | 2.0 s (3.0 s F.21 window) | 2.4 s (4.0 s) | 3.2 s (5.0 s) |
+| Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k — same p/n, same image |
+| Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich · 40-way harness |
+| **BOM @10k · ₹/kW** | **₹30,627 · 1,021/kW** | **₹35,234 · 881/kW** | **₹41,238 · 825/kW** |
+| Builds products | 60 kW (2×) · 120 kW (4×+CSU) | 80 kW (2×) · **120 kW (3×+CSU — cheapest)** | 100 kW (2×) · 150 kW (3×+CSU) |
+
 The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
 
 ---
