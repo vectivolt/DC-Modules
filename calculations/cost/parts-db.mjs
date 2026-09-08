@@ -11,7 +11,7 @@
 // reverted to packaged p/n (HR-10 — custom E23 transformer deferred to cost ECO-1).
 // rev D (2026-09-05): R2 review closure (docs/design-review-production-r2.md) — resonant burden
 // 2 Ω (CB-16), Cr mpn 46 nF + binned trim (CB-22), buck 3V3 (CB-17/18), 400 V aux rectifiers
-// (CB-19), 110 W aux (CB-20/E26 rev C), NCP1252B65 primary (MR-13), VET6 MCU suffix (MR-12),
+// (CB-19), 110 W aux (CB-20/E26 rev C), NCP1252 primary (MR-13; A→D suffix at R6-G for cold-start), VET6 MCU suffix (MR-12),
 // reinforced iso-5V modules (HR-16), 6-pin WD (HR-13), 47 k 2-series HV balance/star (HR-20),
 // Micro-Fit harness (MR-14), rail TVS (MR-17), 10 W clamp bleeder (MR-19), bank-bleed parts
 // (HR-15), per-SKU CMC + pulse-resistor overrides (HR-18/HR-14).
@@ -82,7 +82,7 @@ export const DB = [
   { m: /^U(PFC|LLC|CARD)$/, mpn: "GD32G553VET7", mfr: "GigaDevice", desc: "MCU Cortex-M33 216 MHz LQFP100 −40…105 °C (MR-12: V-suffix = 100-pin — the earlier RET6 was the 64-pin part; R5-I: ordering table lists ONLY VET7 (105 °C/216 MHz) and VET3 (125 °C/170 MHz) — the drawn VET6 was not a valid order code, silicon/pinout unchanged; full pin map regenerates at A6)", price1k: 210, alt: "GD32G553VET3 (125 °C)" },
   { m: /^USR1$/, mpn: "74HC595", mfr: "any", desc: "shift register SOIC-16 (HMI segments)", price1k: 4, alt: "TPIC6C595" },
   { m: /^U(PA|LB)$/, mpn: "ULN2803A", mfr: "any", desc: "8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)", price1k: 9, alt: "TBD62083" },
-  { m: /^UAUX$/, mpn: "NCP1252A", mfr: "onsemi", desc: "current-mode flyback controller, RT-set frequency (pin 4: 66.5 kΩ → ~65 kHz; 43 k→100 kHz / 8.5 k→500 kHz per datasheet Rev 9 — audit closed the §K RT line), A-suffix = 48% DCmax, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC", price1k: 24, alt: "UCC28C43 + RT/CT & BO rework" },
+  { m: /^UAUX$/, mpn: "NCP1252D", mfr: "onsemi", desc: "current-mode flyback controller, RT-set 65 kHz (66.5 kΩ, datasheet Rev 9), SOIC-8. R6-G: D-suffix REPLACES the drawn A — the A version has a mandatory 120 ms pre-soft-start delay with only 1.0 V UVLO hysteresis, and the 940 k startup feed (0.59 mA) minus ICC (1.4–2.2 mA) crashes VCC in 28–60 ms → cold start would HICCUP FOREVER. D: no delay, VCC(on) 14 V / 5.0 V hysteresis, DCmax 45.6% vs the 22% worst duty this DCM flyback needs at the 321 V brown-in. Startup budget: ≈5.6 mA × 60 ms soft-start+takeover = 336 µC → CVCC ≥ 67 µF → 220 µF fitted (3× margin, cold-start ≈ 5–6 s at 565 V precharged bus — boot-time spec note, firmware-guide)", price1k: 24, alt: "UCC28C43 + RT/CT & BO rework" },
   { m: /^UBK(CARD|[AB])$/, mpn: "TPS54202-class", mfr: "TI/eq", desc: "15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; on the card since the split, exporting V3P3 over the 88-way)", price1k: 15, alt: "MP2451/SY8113" },
   { m: /^LBK(CARD|[AB])$/, mpn: "IND-10u-3A", mfr: "any shielded", desc: "10 µH 3 A shielded power inductor (3V3 buck)", price1k: 6, alt: "any" },
   // --- magnetics (custom assemblies; costed builds from magnetics calc)
@@ -110,7 +110,7 @@ export const DB = [
   { m: /^CCLA$/, mpn: "PP-10n-1200", mfr: "Faratronic", desc: "10 nF 1200 V film (aux RCD clamp)", price1k: 9, alt: "MLCC 1kV ×2" },
   { m: /^C[ABC]\d+C$/, mpn: "FILM-100n-250", mfr: "Faratronic", desc: "100 nF 250 V film (Vienna RCD clamp)", price1k: 18, alt: "MLCC 250V" },
   { m: /^CAUX(24|15)$/, mpn: "EL-220u-35", mfr: "Aishi", desc: "220 µF 35 V", price1k: 4, alt: "any" },
-  { m: /^CVCC$/, mpn: "EL-47u-35", mfr: "Aishi", desc: "47 µF 35 V (controller VCC reservoir — CB-5)", price1k: 3, alt: "any" },
+  { m: /^CVCC$/, mpn: "EL-220u-35", mfr: "Aishi", desc: "220 µF 35 V (controller VCC cold-start reservoir — CB-5/R6-G: D-version needs ≥67 µF through soft-start before the aux winding takes over)", price1k: 4, alt: "any" },
   { m: /^C3V3$/, mpn: "MLCC-10u-0805", mfr: "any", desc: "10 µF 0805", price1k: 1.2, alt: "any" },
   { m: /^C\w*(BL)$/, mpn: "MLCC-100p-0603", mfr: "any", desc: "100 pF 0603 (DESAT blank)", price1k: 0.4, alt: "any" },
   { m: /^C\w*B[12]$/, mpn: "MLCC-1u-0805", mfr: "any", desc: "1 µF 0805 (driver bias)", price1k: 0.8, alt: "any" },

@@ -63,7 +63,7 @@ const fpFor = (designator, mpn) => {
   const m = cls.match(/^([RCL])(\d{4})$/);
   return (m && pkg && pkg !== m[2]) ? `${m[1]}${pkg}` : cls;
 };
-const REV = "D.3";   // D.1 -> D.2 output-return fix (R4) -> D.3 importer-mirror fix (R5)
+const REV = "D.4";   // D.1 -> D.2 output-return fix (R4) -> D.3 importer-mirror fix -> D.4 R6 set (WDO face-merge, NCP1252D, shunt sign, magnetics notes)
 // Pinned to the revision, NOT new Date(): a release sheet should carry its release date, and
 // stamping "whenever someone last ran the generator" made the output non-reproducible across
 // days -- every regen rewrote all six .sch files, so a real drift could not be told from date
@@ -1331,7 +1331,38 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
           "R<stem>_<nm>     tap between R<stem>n/m     e.g. RV1D_01",
           "all others are explicit design nets",
         ], "", fixed);
-      if (!legend(below, { x0: p1.x0, x1: p1.x1 })) legend(pickVoid(used));
+      const l1 = legend(below, { x0: p1.x0, x1: p1.x1 }) || legend(pickVoid(used));
+      if (l1) used.push(l1);
+      // R6-H: the external reviewer twice noted the sheets carry only magnetic part LABELS
+      // ("XFMR-LLC-... without turns, Lm, Lr") — the construction data lives in
+      // docs/magnetics.md; print the identity lines on the sheet so the drawing is no longer
+      // the only artifact a reviewer holds. Values are the frozen D1/D2/D3/D6 drawings.
+      const MAG = {
+        acdc: {
+          "30": ["D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2",
+                 "D6 LDM1-3: 2x T48 60u, N=7, foil 20mm2 -> 7.4uH @82A pk (floor 7.0uH)"],
+          "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu, N=23 -> L0 113uH, >=64uH @104A pk",
+                 "D6 LDM1-3: 2x T57 60u, N=8, 26.4mm2 -> 10.5uH @109A pk (floor 9.2uH)"],
+          "50": ["D1 LA0-LC0: 5x T79 26u sendust, N=22, 25.8mm2 -> 50.8uH @129.5A pk",
+                 "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH)"],
+        },
+        dcdc: {
+          "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 9:9:9, litz 1350/660x0.1 TIW, Lm gap-ground +/-7%",
+                 "D2 L1T-L3T: gapped 2x PQ50/50, N=4, bins ~4.0uH, gap ground per bin"],
+          "40": ["D3 T1-T3: 2x E70/33/32 per section, 9:9:9 (window-fill basis, D3-40)",
+                 "D2 L1T-L3T: N=5, bins 3.2/3.5/3.8uH, litz 2000x0.1 (15.7mm2)"],
+          "50": ["D3 T1-T3: 3x E70/33/32 per section, 9:9:9 (D3-50)",
+                 "D2 L1T-L3T: N=6, bins 2.8/3.0/3.2uH, litz 3000x0.1 (23.6mm2)"],
+        },
+      };
+      const magRows = MAG[key.endsWith("acdc") ? "acdc" : "dcdc"]?.[KW];
+      if (magRows) {
+        const magPanel = (V, fixed) => drawPanel(V, "MAGNETICS CONSTRUCTION",
+          "identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)",
+          [...magRows, "tank Cr/trim-bin values printed at the TANK sections"], "", fixed);
+        const m1 = magPanel(pickVoid(used));
+        if (m1) used.push(m1);
+      }
     }
     }
   }

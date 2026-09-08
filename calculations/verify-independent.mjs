@@ -257,7 +257,7 @@ ck("G", "cabinet essentials", B.cab && [1, 2, 3, 4].every(i => B.cab.byName.has(
 console.log("\n=== H. FIRMWARE COHERENCE ===");
 const fsmc = readFileSync(`${ROOT}/firmware/core/fsm.c`, "utf8"), fsmh = readFileSync(`${ROOT}/firmware/core/fsm.h`, "utf8");
 ck("H", "discharge windows match physics", /3000u/.test(fsmc) && /4000u/.test(fsmc) && /5000u/.test(fsmc),
-  "3000/4000/5000 ms vs computed 1.98/2.37/3.16 s (52–63% used)");
+  "3000/4000/5000 ms vs powered-path 1.98/2.37/3.16 s — R6: valid for the AC-PRESENT latch case; AC-removed is two-phase (active→321 V, passive to 60 V — protection-thresholds E47)");
 ck("H", "rev G band table in the contract header", /1\.24-1\.82 \(10k\)/.test(fsmh) && /1\.82-2\.30 \(15k\)/.test(fsmh) && /50 kW AIR/.test(fsmh), "fsm.h teaches the shipping decode incl. both 50 kW bands");
 ck("H", "OT ladder is the 50 kW dry-run protection", /PMP_OT_TRIP_C\s+115/.test(fsmh) && /fan_ok/.test(fsmc), "plate NTC → derate → 115 °C trip; fan_ok HAL-tied at 50 kW");
 
@@ -311,6 +311,11 @@ console.log("\n=== J. R5 FIXES — proven in the built netlists ===");
     `supervisor WDO + MCU NRST + SWD RST + both AND inhibits share one node (${nrst}) — hung MCU restarts with enables low`);
   ck("J", "card AND-gate bypass", C.netOfPin.get("CANDCARD.pin1") === C.netOfPin.get("UANDCARD.VCC") && C.netOfPin.get("CANDCARD.pin2") === "DGND",
     "100 n at the safety AND VCC (R5-C)");
+  // R6-A: the merge must be VISIBLE — the canonical net NAME on every one of those pins is
+  // NRST_CARD itself (the R5 net-net trace was electrically right but drew as two label groups;
+  // the reviewer read "watchdog not connected" off the face).
+  ck("J", "card WDO face-name = NRST_CARD", nrst === "NRST_CARD" && C.netOfPin.get("RWPUCARD.pin2") === "NRST_CARD",
+    "one NAME, every pin — the sheet now shows the connection the netlist always had (R6-A)");
 }
 for (const [sku] of Object.entries(SK)) {
   const A = B[sku].ac, D = B[sku].dc;
@@ -326,6 +331,12 @@ for (const [sku] of Object.entries(SK)) {
   // R5-D: two-stage exclusion — the pre-insertion contacts join
   ck("J", `${sku} exclusion incl. pre-insertion`, D.netOfPin.get("UEXCL2.A1") === "CTL_KPREA" && D.netOfPin.get("UEXCL2.B1") === "CTL_KPREB" && D.netOfPin.get("UEXCL2.A2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.B2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.Y4") === "KSER_GATED" && D.netOfPin.get("ULB.IN1") === "KSER_GATED" && D.netOfPin.get("CEXCL.pin1") === D.netOfPin.get("UEXCL.VCC") && D.netOfPin.get("CEXCL2.pin1") === D.netOfPin.get("UEXCL2.VCC"),
     "KSER coil = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB); both stages bypassed");
+  // R6-E: output-current sign — VINP rides KB (OUTN side) so delivering current reads POSITIVE
+  ck("J", `${sku} shunt differential sign`, D.netOfPin.get("USHO.VINP") === D.netOfPin.get("RSHO.KB") && D.netOfPin.get("USHO.VINN") === D.netOfPin.get("RSHO.KA"),
+    "return current OUTN→B→A: KB high of KA when delivering — positive reading = charging (R6-E)");
+  // R6-D/G: the last two bypass gaps + the cold-start reservoir at the pins
+  ck("J", `${sku} aux + HMI bypass`, A.netOfPin.get("CVCCB.pin1") === A.netOfPin.get("UAUX.VCC") && A.netOfPin.get("CVCCB.pin2") === A.netOfPin.get("UAUX.GND") && A.netOfPin.get("CVCC.pin1") === A.netOfPin.get("UAUX.VCC") && D.netOfPin.get("CSR1.pin1") === D.netOfPin.get("USR1.VCC") && D.netOfPin.get("CSR1.pin2") === "DGND",
+    "NCP1252 VCC: 100 n at the pin + 220 µF cold-start reservoir; 74HC595 decoupled (R6-D/G)");
   // R5-E: symmetric parallel gate branches — every paralleled device behind its OWN 2.2 Ω
   const vpar = A.byName.has("QA0A2"), lpar = D.byName.has("Q1H2");
   ck("J", `${sku} symmetric pair gates`,

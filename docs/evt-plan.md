@@ -30,7 +30,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 
 | ID | Test | Pass criterion |
 |---|---|---|
-| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere; aux BO brown-in 310–335 V (NCP1252A) |
+| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere incl. cold-start ≤8 s (R6-G budget); aux BO brown-in 310–335 V (NCP1252D) |
 | T-12 | Programming-session thermal watch (SWD attached, bus at 830 V, MCU held in reset 10 min) | discharge chain stays OFF (E19 rev B); no component > 60 °C rise |
 | T-13 | Filter-cap soak 475 VAC 48 h | CX ΔT ≤ 10 K, no capacitance loss > 5 % |
 | T-14 | Hipot + touch-leakage **with all sense chains fitted** | 4 kV pri↔sec < 5 mA (Y-caps dominated), leakage < 3.5 mA |

@@ -13,9 +13,9 @@
   [
    {
     "designator": "UAUX",
-    "value": "NCP1252A",
+    "value": "NCP1252D",
     "block_name": "FLYBACK",
-    "search_query": "NCP1252A current-mode flyback controller, RT-set frequency",
+    "search_query": "NCP1252D current-mode flyback controller, RT-set 65 kHz",
     "part_uuid": "a1b76f9179ff4bd69f577af8bfe3fee2",
     "pins": [
      {
@@ -635,9 +635,9 @@
    },
    {
     "designator": "CVCC",
-    "value": "47uF",
+    "value": "220uF",
     "block_name": "RAILS",
-    "search_query": "EL-47u-35 47 µF 35 V",
+    "search_query": "EL-220u-35 220 µF 35 V",
     "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
     "pins": [
      {
@@ -692,6 +692,28 @@
       "signal_name": "V15"
      }
     ]
+   },
+   {
+    "designator": "CVCCB",
+    "value": "100nF",
+    "block_name": "RAILS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_VCC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1304,5 +1326,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 49
+ "total": 50
 }

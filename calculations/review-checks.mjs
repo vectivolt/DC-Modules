@@ -81,7 +81,7 @@ ck("R2-HR19", /dual = false/.test(cells) && /dual=\{channels === 4\}/.test(board
 ck("R2-HR20", /RBALT\$\{id\}A/.test(cells) && /RBALTA1/.test(boards) && /RNS\d\[AB\]|RNS\$\{i\}A/.test(boards + db.replace(/\\/g, "")), "balance/star resistors 2-series HV");
 ck("R2-MR11", /RAVI/.test(cells) && /CAVF/.test(cells), "AVMID buffer dual-feedback (no bare op-amp into 10 µF)");
 ck("R2-MR12", /mpn: "GD32G553VET7"/.test(db) && !/GD32G553RET6/.test(db) && !/mpn: "GD32G553VET6"/.test(db), "MCU mpn is the 100-pin V suffix at a REAL order code (R5-I: only VET7/VET3 exist)");
-ck("R2-MR13", /NCP1252A/.test(db) && /resistance="15k"/.test(cells), "aux controller = NCP1252A; BO divider sized for its 1.0 V threshold (brown-in ≈ 322 V)");
+ck("R2-MR13", /NCP1252D/.test(db) && /resistance="15k"/.test(cells), "aux controller = NCP1252D (R6-G: A-suffix could not cold-start — 120 ms delay vs 1 V hysteresis); BO divider sized for the 1.0 V threshold (brown-in ≈ 321 V)");
 ck("R2-MR14", /MICROFIT3-40/.test(db) && /5 returns/.test(db), "E40 rev: 40-way 5 A-contact harness with five dedicated returns (the 2-return weakness MR-14 flagged is over-fixed)");
 ck("R2-MR17", /DTVS24/.test(cells) && /SMBJ26A/.test(db), "aux rail TVS clamps (FB-open single fault)");
 ck("R2-MR18", /cf="1nF"/.test(boards), "OVP-participating senses use the fast filter");
@@ -132,7 +132,7 @@ ck("R3-WDT", /CWD\$\{id\}/.test(cells) && /CRST\$\{id\}/.test(cells) &&
   /pin7: "CWD", pin8: "CRST"/.test(cells),
   "TPS3430 CWD/CRST carry their timing caps (window was undefined)");
 ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin4: "RT"/.test(cells),
-  "NCP1252A RT has its frequency-setting resistor (stage had no defined Fsw)");
+  "NCP1252 RT has its frequency-setting resistor (stage had no defined Fsw)");
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
   const { existsSync, readdirSync } = await import("node:fs");
   for (const sku of BUILDABLE_SKUS) {
@@ -458,8 +458,8 @@ ck("E44-CLONE", /skuOverrides\["50kwa"\] = \{ \.\.\.skuOverrides\["50kw"\] \}/.t
 const fsmSrc = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
 const simSrc = readFileSync(join(ROOT, "firmware/test/host_sim.c"), "utf8");
 const protDoc = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
-ck("R5-A", /to=\{nrst\}/.test(cells) && /nrst="net.NRST_CARD"/.test(boards),
-  "watchdog WDO wire-ORed onto the MCU NRST network (AND inhibit retained): a hung MCU RESTARTS with enables low — before, gates re-enabled ~ms after WDO release with the MCU still hung");
+ck("R5-A", /wdoNet = nrst \?\?/.test(cells) && /nrst="net.NRST_CARD"/.test(boards),
+  "watchdog WDO rides the MCU NRST net (AND inhibit retained): a hung MCU RESTARTS with enables low — R6-A upgraded the R5 net-net merge to an outright net RENAME so the sheet face shows it");
 ck("R5-B", /R\$\{id\}DS`\} resistance="100"/.test(cells) && /R\$\{id\}DS > .pin2`\} to=\{`.D\$\{id\}S1 > .anode/.test(cells),
   "100 R DESAT series resistor in the one driver cell = all 9 channels/module; blanking cap stays driver-side");
 ck("R5-C", /C\$\{id\}BV/.test(cells) && /C\$\{id\}VA/.test(cells) && /C\$\{id\}VB/.test(cells) && /CAND\$\{id\}/.test(cells) && /name="CAVB"/.test(cells) && /name="CCV1"/.test(cells) && /name="CSH1"/.test(cells) && /C5B\$\{id\}/.test(cells) && /CQD\$\{id\}/.test(cells) && /name="CEXCL2"/.test(boards),
@@ -480,6 +480,27 @@ ck("R5-I", /R5-I: ordering table lists ONLY VET7/.test(db),
   "MCU order code corrected VET6->VET7 (GigaDevice lists only VET7 105 C / VET3 125 C; silicon and pinout unchanged) — every sheet title and map key follows");
 ck("R5-K", /R5-K/.test(protDoc) && /system-level/.test(protDoc),
   "PFC reverse-direction OC honesty note: device-level DESAT covers the forward direction only; reverse events clear at SYSTEM speed (gG fuse / line OC), demonstrated at EVT both-polarity short test");
+
+// ===== R6 (2026-09-09): fourth external-review round — reviewer confirms the R5 wave landed,
+// reads the shutdown path end-to-end, and catches the drawing face + two supply-integrity items.
+const protR6 = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
+const fwR6 = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
+const pinmapR6 = readFileSync(join(ROOT, "calculations/control/umod-pinmap.mts"), "utf8");
+const k5genR6 = readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8");
+ck("R6-A", /wdoNet = nrst \?\?/.test(cells) && !/to=\{nrst\}/.test(cells),
+  "the WDO/NRST merge is a net RENAME, not a pin-less net-net trace — the R5 implementation was electrically one node but DREW as two disconnected label groups (the R4-1 face-defect class); one name now labels every pin");
+ck("R6-B", /R6 discharge-timeline honesty/.test(protR6) && /R6: this timer's REAL coverage/.test(protR6) && /F\.21 semantics \(R6\)/.test(fwR6),
+  "discharge is two-phase (active to the 321 V aux brown-out, then passive 2x47k to 60 V, 4-10 min + 62477-1 label) and F.21 is documented as the AC-PRESENT latch — no more powered-to-60V claims");
+ck("R6-C", /CMP-capable inputs/.test(protR6) && /COMPARATOR-capable/.test(pinmapR6) && /PFC reverse-direction hardware trip/.test(fwR6),
+  "reverse-polarity PFC OC has a DESIGNATED us-class path (line-CT -> on-chip CMP -> HRTIMER FLT) with the A6 pin constraint registered at the generator — not just an honesty note");
+ck("R6-D", /CVCCB/.test(cells) && /CSR1/.test(cells),
+  "last two bypass gaps closed: NCP1252 VCC 100 n at the pin, 74HC595 supply decoupled");
+ck("R6-E", /USHO > .VINP" to=".RSHO > .KB/.test(cells) && /positive \(SNS_IOUT/.test(fwR6),
+  "output shunt differential flipped so delivering current reads POSITIVE; sign convention + bring-up check in firmware-guide");
+ck("R6-G", /mpn: "NCP1252D"/.test(db) && /name="CVCC" capacitance="220uF"/.test(cells) && /EL-220u-35/.test(db),
+  "aux controller A->D: the A version could not cold-start (mandatory 120 ms pre-start delay vs 1.0 V hysteresis = 28-60 ms of reservoir); D has no delay + 5 V hysteresis; CVCC 220 uF = 3x the 67 uF budget");
+ck("R6-H", /MAGNETICS CONSTRUCTION/.test(k5genR6),
+  "sheet NOTES now print the magnetics identity (cores, turns, bins, litz) — the part labels are no longer the only carrier on the deliverable face");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

@@ -180,5 +180,45 @@ console.log("  30 kW: 1 card (0R) · 40 kW: 1 card (1k) · 50 kW liquid: 1 card 
 console.log("  products: 30→1 · 40→1 · 50→1 · 60(2×30)→2 · 80(2×40)→2 · 100(2×50)→2 · 120(4×30 or 3×40)→4/3+CSU · 150(3×50)→3+CSU");
 console.log("  card budget @every variant: 74/82 MCU pins · 87/88 ways · 9/12 PWM · 22 analog · 8 spare pins (the 50 kW frees the 5 fan lines — sealed module)");
 
+
+// ---------------- R6 (E47): discharge timeline · aux cold-start · PV gate drive -----------------
+// The external R6 review traced the SHUTDOWN path end-to-end: the active discharge is powered
+// FROM the link it discharges (PSQD ← V15 ← bus-fed aux, brown-out 321 V), so the honest
+// timeline is two-phase. These checks recompute it from the drawn R/C every run and refuse the
+// build if the docs stop telling that truth.
+const cellsSrc = readFileSync(join(ROOT, "packages/power-primitives/cells.tsx"), "utf8");
+const protDoc = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
+const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
+{
+  const VBO = 1 * (1 + 4.8e6 / 15e3);                       // NCP1252 BO: 321 V (RBR 2×2.4M / 15k)
+  ck("R6", "aux brown-out threshold as drawn", Math.abs(VBO - 321) < 2, `1 V × (1+4.8M/15k) = ${f(VBO, 0)} V — the active-discharge floor`);
+  for (const [sku, nHalf] of [["30kw", 5], ["40kw", 6], ["50kw", 8], ["50kwa", 8]]) {
+    const Clink = nHalf * 470e-6 / 2;                        // series halves
+    const tAct = 640 * Clink * Math.log(830 / VBO);          // QDISF powered phase
+    const tPas = 94e3 * (nHalf * 470e-6) * Math.log(VBO / 60); // per-half 2×47k pair, half-C
+    ck("R6", `${sku} discharge timeline (AC removed)`, tAct < 1.5 && tAct + tPas < 660,
+      `active 830→${f(VBO, 0)} V in ${f(tAct, 2)} s, then PASSIVE 2×47k: +${f(tPas, 0)} s → total ${f((tAct + tPas) / 60, 1)} min ≤ 11 min label ceiling`);
+  }
+  ck("R6", "discharge honesty lives in the docs", /R6 discharge-timeline honesty/.test(protDoc) && /wait 10 min/.test(protDoc) && /F\.21 semantics \(R6\)/.test(fwDoc),
+    "protection-thresholds two-phase note + 62477-1 label text + firmware-guide F.21 real-coverage note");
+}
+{
+  // NCP1252 cold start (datasheet Table 3/4, read at R6): D version — no 120 ms delay, 5 V hys.
+  const drain = 3.5e-3 + 2.6e-3 - 0.49e-3;                   // ICC3 max + QAUX gate charge − 940k feed
+  const need = drain * 0.060 / 5.0;                          // 60 ms soft-start+takeover over the hysteresis
+  ck("R6", "aux cold-start reservoir (D version)", /mpn: "NCP1252D"/.test(db) && /name="CVCC" capacitance="220uF"/.test(cellsSrc) && 220e-6 >= 2 * need,
+    `budget ${f(drain * 1e3, 1)} mA × 60 ms / 5 V = ${f(need * 1e6, 0)} µF → 220 µF fitted (${f(220e-6 / need, 1)}×). The drawn A-version could NOT start: 120 ms mandatory delay vs 1.0 V hysteresis ÷ ${f((1.4e-3 - 0.59e-3) * 1e3, 2)}–${f((2.2e-3 - 0.59e-3) * 1e3, 2)} mA net = 28–60 ms`);
+  const dutyBO = Math.sqrt(2 * 110 / (345e-6 * 65e3)) * 345e-6 * 65e3 / 321; // DCM peak duty at brown-in, full aux load
+  ck("R6", "D-version duty ceiling holds at brown-in", dutyBO < 0.442,
+    `worst DCM duty ${f(dutyBO * 100, 1)}% ≤ 44.2% DCmax(min) — the A-version's 48% ceiling was never the constraint`);
+}
+{
+  // VOM1271 PV gate drive into the 1 M gate-source resistor (load line, datasheet Voc/Isc)
+  const Voc = 8.4, IscMin = 40e-6, R = 1e6;
+  const vgs = Voc * R / (R + Voc / IscMin);
+  ck("R6", "bank-bleeder PV gate drive", vgs >= 4 + 2,
+    `load line: ${f(vgs, 2)} V at 1 MΩ (worst Isc 40 µA) ≥ Vth 4 V + 2 V margin — 59 mA bleed sits in the ohmic region; architecture stands (reviewer: verify, don't replace)`);
+}
+
 console.log(fails ? `\n${fails} STRESS FAILURE(S)` : "\nSTRESS AUDIT CLEAN — every device inside its own acceptance line, all three variants");
 process.exit(fails ? 1 : 0);

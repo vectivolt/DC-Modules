@@ -27,7 +27,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 18 | Relay weld | ΔV<1.5 V @200 ms, ≥10 A ref (E13) | 200 ms | FW | latch, inhibit mode change | F.18 |
 | 19 | Relay open-fail | mirror-contact readback mismatch 100 ms (hardware path per E30: RELAY_FB_* nets, KPRE series pair) | 100 ms | FW | latch | F.19 |
 | 20 | Precharge fail | **as implemented (fsm.c): abort iff t > 400 ms AND bus < 50% line pk** — tolerant of the per-SKU charge time (t95 ≈ 160/288/576 ms at 30/60/120 kW); the earlier "<90% in 400 ms" wording described the completion check, not the abort (R2 HR-14 doc fix) | — | FW | abort, open KPRE | F.20 |
-| 21 | Discharge fail | bus >60 V after per-SKU timeout: **3 / 5.5 / 9 s** (`PMP_DISCH_TO_MS`, physics: t<60 V ≈ 2.0/3.6/7.2 s at 640 Ω) — **now implemented in fsm.c** (R2: the row previously had no code) | per SKU | FW | latch, discharge stays commanded | F.21 |
+| 21 | Discharge fail | bus >60 V after per-SKU timeout: **3 / 4 / 5 s** (`PMP_DISCH_TO_MS` rev G; powered-path physics 830→60 V ≈ 2.0/2.4/3.2 s at 640 Ω) — **R6: this timer's REAL coverage is the AC-PRESENT case** (bus held up by the permanent RPRE rectifier path → FC_DISCH = "isolate upstream first"); with AC removed the aux browns out at ~321 V mid-count and the passive path + enclosure label finish the job (R6 note below) | per SKU | FW | latch, discharge stays commanded | F.21 |
 | 21b | Bank discharge fail | either bank >60 V @ **2.5×** bank-bleed τ after `CTL_QDISBK` (E33; τ = 8.8 kΩ·C_bank ≈ 4.1/8.3/16.5 s → timeout 10.3/20.6/41.2 s per SKU; 2.0τ would false-fail a healthy bleed at 525·e⁻² = 71 V — caught by the per-SKU deck) | per SKU | FW | latch, inhibit touch-service bit | F.21 |
 | 22 | OT PFC/LLC/XFMR | 95/100/115 °C NTC | 1 s | FW | derate −2%/°C → stop @+10 °C | F.22–24 |
 | 23 | Fan fail | tach < 50% cmd 3 s | 3 s | FW | derate 50%, F-code | F.25 |
@@ -54,6 +54,18 @@ MID-side device and is NOT seen by DESAT. That direction is covered by the **lin
 coordination — two independent detectors per direction overall. Registered as the design basis;
 EVT T-xx short-circuit characterization exercises BOTH polarities.
 
+**R6 rev — the reverse direction gets a DESIGNATED µs-class path (E47):** the line-CT signals
+(SNS_IA/IB/IC, observable to 150/187 A pk inside the ADC rail) shall be routed to the GD32's
+on-chip comparators with DAC thresholds and the comparator outputs muxed into an HRTIMER
+fault input — a **hardware PWM kill with no firmware in the loop**. Timing budget: CT
+(ACX class, ≥50 kHz bw) → burden → 1 k/1 n filter (τ = 1 µs) → CMP (≈50 ns) → HRTIMER FLT
+(sub-cycle) ≈ **2–3 µs total**, device-class for the polarity DESAT cannot see. Constraint
+registered for the A6 pin-map regeneration: SNS_IA/IB/IC **must land on CMP-capable inputs**
+(§K verifies against the final AF table; if a channel cannot reach a CMP, it re-pins — the
+map regenerates from one table). EVT T-xx demonstrates the measured end-to-end trip time in
+BOTH polarities against the device short-circuit withstand. Until that demonstration, the
+honest floor below still stands:
+
 **R5-K note — response-time honesty for the reverse direction (E46):** the two detectors are
 NOT the same speed class, and the register must not read as if they were. Forward (PHASE-side)
 faults clear at DESAT speed — µs-class blank + soft-shutdown at the device. Reverse-polarity
@@ -63,3 +75,22 @@ with the gG fuse as the backstop for bolted faults. The MID-side device must the
 the reverse-fault i²t until that trip lands. EVT T-xx runs the short-circuit characterization
 in BOTH polarities and must demonstrate the MEASURED clearing time against the device
 short-circuit-withstand rating before any protection claim ships on the datasheet.
+
+
+**R6 discharge-timeline honesty (E47):** the active discharge chain (QDISF + 4×160 Ω) is
+powered by V15, which the bus-fed aux flyback stops producing at the **321 V brown-out**
+(1 V × (1 + 4.8 M/15 k)); V15 then collapses in milliseconds (~0.2 A of bias load on 220 µF)
+and the MCU (V3P3 ← V15 buck) browns out with it. The real AC-removed timeline is therefore
+**two-phase**: active 830→~321 V in ≤1.2 s (τ = 640 Ω · C_link), then PASSIVE through the
+2×47 k balance pairs — 321→60 V ≈ 370/445/593 s at 30/40/50 kW (τ = 94 k × half-link C).
+Worst total ≈ **10 minutes at 50 kW**. Consequences, registered: (1) the enclosure carries the
+IEC 62477-1 stored-energy **warning label with the stated discharge time** ("wait 10 min or
+verify <60 V") — tool-access only; (2) **F.21's real coverage is the AC-PRESENT case**: with
+mains still feeding the link through the permanent RPRE paths the bus cannot fall (rectifier
+holds ≥~530 V), the aux stays alive, the timer expires and FC_DISCH latches — correctly
+signalling "discharge impossible, isolate upstream first". In the AC-removed case the MCU
+dies mid-count and no fault is latched; safety is the passive path plus the label. (3) The
+same hold-up limit applies to the bank bleeders (PV-driven QDISA/B lose their MCU command):
+bank passive balance pairs give the same few-minute class. Do NOT "fix" this by lowering the
+BO divider — 321 V is the flyback's full-load DCM floor (duty 22% of the D-version's 44%
+ceiling at that bus; at 150 V it would need 58%).

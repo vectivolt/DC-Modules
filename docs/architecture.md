@@ -84,7 +84,7 @@ flowchart LR
 Power path unchanged again; the R2 pass caught defects inside the rev-C fixes and 30 kW-defaults
 masquerading as SKU scaling: resonant sensing re-scaled (2.0 Ω burdens), **each board now sources
 its own 3.3 V via sync buck** (the DC-DC board had no 3.3 V source at all), aux re-rated to a
-single 110 W stage family-wide (D4 rev C, NCP1252A, 400 V rectifiers), `FLT_LLC` reaches MCU-LLC,
+single 110 W stage family-wide (D4 rev C, NCP1252D — R6-G cold-start fix, 400 V rectifiers), `FLT_LLC` reaches MCU-LLC,
 commanded **bank** discharge added (E33), tank aligned to the frozen rev-D2 values, watchdog symbol
 completed, reinforced-class bias modules, 4 monitored fans + dual S/P relay instances + per-SKU
 CM chokes/pulse parts at 120 kW, F.21 implemented in firmware. Full log:

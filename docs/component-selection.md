@@ -113,7 +113,7 @@ Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49
 | Resonant CT burden | 33 Ω 1206 (line-CT value, 15 V rms/7 W at the front-end) | **2.0 Ω 1 W 2512** | R2 CB-16 |
 | 3.3 V rail | AMS1117 SOT-223 from 15 V, AC-DC board only | **TPS54202-class sync buck, one per board** | CB-17/CB-18 |
 | Aux rectifiers | SS310 (100 V) at 130–199 V PIV | **400 V ultrafast (UF-400V-3A SMC / US2G)** | CB-19 |
-| Aux stage | 60 W ETD29 (rev B) | **110 W ETD34 (D4 rev C), NCP1252A, CS 0.31 Ω, rail TVS** | CB-20/MR-13/MR-17 |
+| Aux stage | 60 W ETD29 (rev B) | **110 W ETD34 (D4 rev C), NCP1252D (R6-G: A could not cold-start), CS 0.31 Ω, rail TVS** | CB-20/MR-13/MR-17 |
 | LLC fault path | FLT_LLC unread | **MCU-LLC pin 74** | CB-21 |
 | Tank | 4×44 nF + single 4.3 µH trim (rev D) | **4×46 nF + D2 bin set (rev D2 as frozen)** | CB-22 |
 | Watchdog symbol | 3-pin, unpowered | **6-pin w/ VDD + SET straps** | HR-13 |

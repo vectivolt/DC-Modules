@@ -796,7 +796,7 @@
     {
      "pin_number": 5,
      "name": "WDO",
-     "signal_name": "WDO_CARD"
+     "signal_name": "NRST_CARD"
     },
     {
      "pin_number": 6,
@@ -831,7 +831,7 @@
     {
      "pin_number": 2,
      "name": "B1",
-     "signal_name": "WDO_CARD"
+     "signal_name": "NRST_CARD"
     },
     {
      "pin_number": 3,
@@ -841,7 +841,7 @@
     {
      "pin_number": 4,
      "name": "B2",
-     "signal_name": "WDO_CARD"
+     "signal_name": "NRST_CARD"
     },
     {
      "pin_number": 5,
@@ -908,7 +908,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "WDO_CARD"
+     "signal_name": "NRST_CARD"
     }
    ],
    "nc_pins": [],

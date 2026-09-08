@@ -804,7 +804,15 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 // window-set straps) — the v3 3-pin symbol had no supply. SET straps to DGND = datasheet default
 // window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
 // input on the safety AND while the local MCU is in reset).
-export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => {
+  // R6-A: when nrst is given it REPLACES the WDO net name outright. The R5 implementation
+  // merged net.WDO_id onto nrst with a pin-less net-to-net trace — electrically one node
+  // (section J proved it) but the DRAWING still showed two disconnected label groups, and the
+  // external reviewer read the sheet as "watchdog not connected to reset". Same defect class
+  // as R4-1: the netlist told the truth, the deliverable face did not. One name, every pin.
+  const wdoNet = nrst ?? `net.WDO_${id}`;
+  const wdoLbl = wdoNet.replace("net.", "");
+  return (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
     <chip layer={lay} name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
@@ -841,17 +849,14 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
     <trace from={`.CSF${id} > .pin1`} to={`.USUP${id} > .VDD`} />
     <trace from={`.RENL${id} > .pin1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
     <trace from={`.RENL${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.USUP${id} > .WDO`} to={`net.WDO_${id}`} />
+    <trace from={`.USUP${id} > .WDO`} to={wdoNet} schDisplayLabel={wdoLbl} />
     <trace from={`.RWPU${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.RWPU${id} > .pin2`} to={`net.WDO_${id}`} />
-    {/* R5-A: the watchdog verdict also RESETS the brain. Before this, WDO only gated the AND
-        chain: on timeout the gates dropped for the ~ms WDO held low, then RE-ENABLED with the
-        MCU still hung and its EN GPIOs still latched high. Open-drain WDO wire-ORs onto the
-        MCU NRST network (SwdPort 100 n + MCU 10 k pull-up ∥ RWPU) — a hung MCU is restarted
-        and boots with every enable low, while the AND path still clamps gates during WDO-low.
-        Firmware contract (F.32 rev): EN/relay GPIOs must never use retention through reset,
-        and the CWD window must exceed boot-to-first-kick (§K value review). */}
-    {nrst ? <trace from={`net.WDO_${id}`} to={nrst} /> : null}
+    <trace from={`.RWPU${id} > .pin2`} to={wdoNet} schDisplayLabel={wdoLbl} />
+    {/* R5-A semantics (unchanged by the R6-A rename): a hung MCU is RESTARTED, not merely
+        inhibited — WDO (open-drain) rides the MCU NRST network (SwdPort 100 n + MCU 10 k
+        pull-up ∥ RWPU), while the AND path still clamps gates during WDO-low. Firmware
+        contract: EN/relay GPIOs never use retention through reset; CWD window > boot-to-
+        first-kick (§K); PG10-NRST must stay in NRST mode (no option-byte remap). */}
     {/* R5-C: AND-gate VCC bypass (CSF serves the supervisor, not this package) */}
     <capacitor layer={lay} name={`CAND${id}`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={8} schX={4.5} schY={-3.2} schSectionName={sec} />
     <trace from={`.CAND${id} > .pin1`} to={`.UAND${id} > .VCC`} />
@@ -862,11 +867,11 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
         gate 2 = EN_A AND WDO -> harness (AC-DC) GATE_EN_A. The third inputs tie high so each
         output is exactly (its EN) AND (watchdog verdict); the spare gate 3 stays unused. */}
     <trace from={`.UAND${id} > .A1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
-    <trace from={`.UAND${id} > .B1`} to={`net.WDO_${id}`} />
+    <trace from={`.UAND${id} > .B1`} to={wdoNet} schDisplayLabel={wdoLbl} />
     <trace from={`.UAND${id} > .C1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.UAND${id} > .Y1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
     <trace from={`.UAND${id} > .A2`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
-    <trace from={`.UAND${id} > .B2`} to={`net.WDO_${id}`} />
+    <trace from={`.UAND${id} > .B2`} to={wdoNet} schDisplayLabel={wdoLbl} />
     <trace from={`.UAND${id} > .C2`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.UAND${id} > .Y2`} to={gateEnA} schDisplayLabel={gateEnA.replace("net.", "")} />
     <trace from={`.RGPD${id} > .pin1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
@@ -882,7 +887,8 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
     <trace from={`.UAND${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CSF${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
   </group>
-);
+  );
+};
 
 // ---------- SWD/boot provisioning per MCU (CB-13/HR-11): 5-pin header + BOOT0 strap + NRST cap
 export const SwdPort = ({ id, sec = "SWD", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
@@ -988,6 +994,10 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
     ))}
     <trace from=".USR1 > .VCC" to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from=".USR1 > .GND" to="net.DGND" schDisplayLabel="DGND" />
+    {/* R6-D: shift-register supply bypass (CSW1/2 are button filters, not this) */}
+    <capacitor name="CSR1" capacitance="100nF" footprint="0603" pcbX={8} pcbY={22} schX={-2} schY={-1.6} schSectionName={sec} />
+    <trace from=".CSR1 > .pin1" to=".USR1 > .VCC" />
+    <trace from=".CSR1 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".USR1 > .OE" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".USR1 > .SRCLR" to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from=".USR1 > .SER" to="net.HMI_DAT" schDisplayLabel="HMI_DAT" />
@@ -1130,7 +1140,7 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <diode name="DAUXVC" footprint="smb" pcbX={72} pcbY={16} schX={11} schY={-0.8} schSectionName={sec} />
     <capacitor name="CAUX24" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={0} schX={13.4} schY={2.4} schSectionName={sec} />
     <capacitor name="CAUX15" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={8} schX={13.4} schY={0.8} schSectionName={sec} />
-    <capacitor name="CVCC" capacitance="47uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={16} schX={13.4} schY={-0.8} schSectionName={sec} />
+    <capacitor name="CVCC" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={16} schX={13.4} schY={-0.8} schSectionName={sec} />
     <diode name="DTVS24" footprint="smb" pcbX={98} pcbY={0} schX={15.8} schY={2.4} schSectionName={sec} />
     <diode name="DTVS15" footprint="smb" pcbX={108} pcbY={0} schX={15.8} schY={0.8} schSectionName={sec} />
     <resistor name="RAUXST1" resistance="470k" footprint="2512" pcbX={0} pcbY={10} schX={-0.9} schY={3.4} schSectionName={sec} />
@@ -1158,6 +1168,14 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <trace from=".RAUXST1 > .pin2" to=".RAUXST2 > .pin1" />
     <trace from=".RAUXST2 > .pin2" to=".UAUX > .VCC" />
     <trace from=".CVCC > .pin1" to=".UAUX > .VCC" />
+    {/* R6-D/G: 100 n ceramic AT the VCC pin (the 220 µF reservoir is the cold-start budget:
+        NCP1252 D-version, no 120 ms pre-start delay, 5 V UVLO hysteresis — worst-case startup
+        drain ≈ 5.6 mA for ~60 ms of soft-start+takeover = 336 µC → C ≥ 67 µF; the drawn A65
+        would hiccup forever: 1.0 V hysteresis ÷ ~0.8–1.7 mA net drain = 28–60 ms vs its own
+        120 ms mandatory delay. Caught by the R6 external-review startup question. */}
+    <capacitor name="CVCCB" capacitance="100nF" footprint="0603" pcbX={78} pcbY={16} schX={12.4} schY={-1.8} schSectionName={sec} />
+    <trace from=".CVCCB > .pin1" to=".UAUX > .VCC" />
+    <trace from=".CVCCB > .pin2" to=".UAUX > .GND" />
     <trace from=".CVCC > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     <trace from=".TAUX > .AXA" to=".DAUXVC > .anode" />
     <trace from=".DAUXVC > .cathode" to=".UAUX > .VCC" />
@@ -1342,8 +1360,11 @@ export const OutputShunt = ({ inn, out, outN, sec = "OUTPUT", x = 0, y = 0, sx =
     <chip name="PSSH" footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P5", pin4: "COM", pin5: "NC" }} pcbX={36} pcbY={14} schX={3.6} schY={-2.2} schSectionName={sec} />
     <trace from={inn} to=".RSHO > .A" schDisplayLabel={inn.replace("net.", "")} />
     <trace from=".RSHO > .B" to="net.OUTN" schDisplayLabel="OUTN" />
-    <trace from=".USHO > .VINP" to=".RSHO > .KA" />
-    <trace from=".USHO > .VINN" to=".RSHO > .KB" />
+    {/* R6-E: return current flows OUTN→B→A→BKBN, so KA sits LOW of KB when delivering.
+        VINP on KB / VINN on KA makes positive output current read POSITIVE — the firmware
+        sign convention (firmware-guide) and every bring-up check follow this orientation. */}
+    <trace from=".USHO > .VINP" to=".RSHO > .KB" />
+    <trace from=".USHO > .VINN" to=".RSHO > .KA" />
     <trace from=".PSSH > .VIN" to="net.V15" schDisplayLabel="V15" />
     <trace from=".PSSH > .GND" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".PSSH > .P5" to="net.B5OUT" schDisplayLabel="B5OUT" />

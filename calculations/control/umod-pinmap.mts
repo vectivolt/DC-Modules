@@ -1,4 +1,7 @@
 // umod-pinmap.mts — E40: the single-brain module card. Generates the way/pin single source.
+// R6/E47 CONSTRAINT for the A6 regeneration: AIN0/AIN1/AIN2 (SNS_IA/IB/IC line CTs) must
+// land on COMPARATOR-capable inputs — the reverse-polarity PFC OC trip is CMP(DAC)→HRTIMER
+// FLT in hardware (protection-thresholds R6 rev). Verify against the GD32G553 AF table at §K.
 //
 // v2 — rebased onto the CARD-ERA authority. v1 merged the per-board UPFC/ULLC doc tables; the
 // live truth is the audited card pinout (CARD_MCU_PINS / CARD_PIN_DECISIONS, sheet-verified

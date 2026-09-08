@@ -337,5 +337,10 @@
   "part_uuid": "e9035421dabb42c7b86bd61d0abc3f85",
   "lcsc": "C9900185865",
   "note": "LQFP-100, pins 1..100 datasheet numbering"
+ },
+ "NCP1252D": {
+  "part_uuid": "a1b76f9179ff4bd69f577af8bfe3fee2",
+  "lcsc": "C80800",
+  "note": "NCP1252ADR2G SOIC-8 - PROBE pin names"
  }
 }

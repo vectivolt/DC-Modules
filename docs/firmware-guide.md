@@ -119,8 +119,27 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   reset retention — the whole mechanism relies on reset ⇒ pulled-down defaults; (2) boot must
   reach the first WDI kick inside the CWD startup window (§K sizes CWD against measured flash
   boot + init at EVT); (3) after restart, log the reset-cause register and raise F.32 — the
-  event is visible even though hardware already made it safe. Repeated watchdog resets hold
-  the module safe by construction: gates are low through every WDO-low and every boot.
+  event is visible even though hardware already made it safe; (4) **PG10-NRST stays in NRST
+  mode — the option bytes must NEVER remap it to GPIO** (R6: the whole mechanism rides on
+  pin 14 being reset). Repeated watchdog resets hold the module safe by construction: gates
+  are low through every WDO-low and every boot.
+- **PFC reverse-direction hardware trip (R6/E47):** configure on-chip comparators on
+  SNS_IA/IB/IC with DAC thresholds at the F.10 OC level and route them to an HRTIMER fault
+  input — a hardware PWM kill (~2–3 µs incl. the 1 k/1 n front end) for the current polarity
+  the phase-side DESAT cannot see. The A6 pin regeneration must place these three signals on
+  CMP-capable pins (registered constraint). Verify the trip end-to-end at EVT, both polarities.
+- **Output-current sign (R6-E):** VINP rides the shunt's KB (OUTN side), VINN rides KA — so
+  **positive (SNS_IOUT − SNS_IOUTN) = delivering current to the vehicle**. Verify with a small
+  known load before closing the current loop.
+- **Cold-start budget (R6-G):** the aux controller is the NCP1252 **D** version (no 120 ms
+  pre-start delay, 5 V UVLO hysteresis) with a 220 µF VCC reservoir; expect ≈5–6 s from AC
+  apply to rails-up at a 565 V precharged bus (0.59 mA through the 940 k startup feed). The
+  CSU's staggered-enable already tolerates this.
+- **F.21 semantics (R6):** the discharge timeout's real coverage is the AC-PRESENT case
+  (bus held up by the permanent RPRE rectifier path → timer expires → FC_DISCH = "isolate
+  upstream"). In the AC-removed case the aux browns out at ~321 V bus mid-discharge, the MCU
+  dies un-faulted, and the passive balance path + enclosure label finish the job (~4–10 min
+  to <60 V, per protection-thresholds). Do not chase a latched F.21 after AC removal.
 - **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
   the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
 - **Relay feedback:** `relay_fb[]` now reads real pins — MCU-LLC 2–7 = KSER, KPARA, KPARB, KOUT,

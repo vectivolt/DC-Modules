@@ -6,7 +6,7 @@ encoding utf-8
 Sheet 1 1
 Title "DC-Modules — Control Card (GD32G553VET7, one card for both converter roles)"
 Date "2026-09-06"
-Rev "D.3"
+Rev "D.4"
 Comp "DC-Modules 30/60 kW - board Control card, sheet 3 of 3"
 Comment1 "Module 30/60 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
 Comment2 "Content: role-agnostic: AC-DC or DC-DC slot via ROLE straps"
@@ -14,7 +14,7 @@ Comment3 "8 functional sections - 49 components - cross-section links are global
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Text Notes 600 10850 0    60   ~ 12
-30/60 kW Control card - 3 of 3   ·   rev D.3   ·   8 sections   ·   49 components
+30/60 kW Control card - 3 of 3   ·   rev D.4   ·   8 sections   ·   49 components
 Text Notes 600 11150 0    50   ~ 0
 NET NAMING: U<ref>_<PIN> = node at that IC pin   ·   R<stem>_M = series-pair midpoint   ·   R<stem>_<nm> = tap between R<stem>n/m   ·   all others are explicit design nets
 Wire Notes Line
@@ -733,11 +733,11 @@ DGND
 Wire Wire Line
 	10400 2000 10200 2000
 Text Label 10200 2000 2    45   ~ 0
-WDO_CARD
+NRST_CARD
 Wire Wire Line
 	10400 2100 10200 2100
 Text Label 10200 2100 2    45   ~ 0
-WDO_CARD
+NRST_CARD
 Wire Wire Line
 	10400 2200 10200 2200
 Text Label 10200 2200 2    45   ~ 0
@@ -806,7 +806,7 @@ WDI
 Wire Wire Line
 	10400 4650 10200 4650
 Text Label 10200 4650 2    45   ~ 0
-WDO_CARD
+NRST_CARD
 Wire Wire Line
 	10650 3900 10650 3700
 Text Label 10650 3700 1    45   ~ 0
@@ -1032,7 +1032,7 @@ V3P3
 Wire Wire Line
 	10900 9350 11100 9350
 Text Label 11100 9350 0    45   ~ 0
-WDO_CARD
+NRST_CARD
 Wire Notes Line
 	12500 500 15100 500
 Wire Notes Line

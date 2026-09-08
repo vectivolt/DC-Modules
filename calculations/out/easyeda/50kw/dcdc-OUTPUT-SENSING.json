@@ -83,12 +83,12 @@
     {
      "pin_number": 2,
      "name": "VINP",
-     "signal_name": "RSHO_KA"
+     "signal_name": "RSHO_KB"
     },
     {
      "pin_number": 3,
      "name": "VINN",
-     "signal_name": "RSHO_KB"
+     "signal_name": "RSHO_KA"
     },
     {
      "pin_number": 4,

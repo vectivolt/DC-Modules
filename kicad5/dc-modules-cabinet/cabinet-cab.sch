@@ -6,7 +6,7 @@ encoding utf-8
 Sheet 1 1
 Title "120 kW Cabinet - 4x 30 kW modules + CSU (same card, third strap role) (E39)"
 Date "2026-09-06"
-Rev "D.3"
+Rev "D.4"
 Comp "DC-Modules 120 kW - board Cabinet interconnect, sheet 1 of 1"
 Comment1 "Module 120 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
 Comment2 "Content: 4x 30 kW module + CSU carrier (E39)"
@@ -14,7 +14,7 @@ Comment3 "5 functional sections - 18 components - cross-section links are global
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Text Notes 600 6850 0    60   ~ 12
-120 kW Cabinet interconnect - 1 of 1   ·   rev D.3   ·   5 sections   ·   18 components
+120 kW Cabinet interconnect - 1 of 1   ·   rev D.4   ·   5 sections   ·   18 components
 Text Notes 600 7150 0    50   ~ 0
 NET NAMING: U<ref>_<PIN> = node at that IC pin   ·   R<stem>_M = series-pair midpoint   ·   R<stem>_<nm> = tap between R<stem>n/m   ·   all others are explicit design nets
 Wire Notes Line

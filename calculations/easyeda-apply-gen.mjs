@@ -135,7 +135,7 @@ function transform(c, page, all, warn) {
   } else if (m === "TLV9061-class") {
     out.pins = [P(1, "OUT", sig(c, "OUT")), P(4, "IN-", sig(c, "INN")), P(3, "IN+", sig(c, "INP")),
       P(2, "V-", sig(c, "VN")), P(5, "V+", sig(c, "VP"))];
-  } else if (m === "NCP1252A") {
+  } else if (/^NCP1252/.test(m)) {   /* A→D order-code swap (R6-G) — same SOIC-8 cell */
     // R4-3: cells author the real map now (FB/BO/CS/RT/GND/DRV/VCC/SS) — pass-through.
     out.pins = [P(1, "FB", sig(c, "FB")), P(2, "BO", sig(c, "BO")), P(3, "CS", sig(c, "CS")),
       P(4, "RT", sig(c, "RT")), P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "DRV")),
@@ -215,7 +215,7 @@ function transform(c, page, all, warn) {
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
     out.nc = (c.nc_pins || []).slice();
   }
-  // NCP1252A VIN/VCC merged onto pin 7: nothing extra to do (same net).
+  // NCP1252 VIN/VCC merged onto pin 7: nothing extra to do (same net).
   return out;
 }
 

@@ -117,7 +117,7 @@ const PAGES = {
     ], ["CARD-IF", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
     ["AUX-POWER", [
       ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^(DZAUX|QAUXFB|RZFB|RBEFB|CFBF|CAUXSS)$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],   /* R4-3: zener-NPN loop replaces the RFB/RCOMP set */
-      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^CVCC$/, /^DTVS(24|15)$/]],
+      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^CVCCB?$/, /^DTVS(24|15)$/]],
       ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/, /^REN[12]A$/]],   /* R4-4/R4-5 */
       ["FANS", [/^JFAN\d$/, /^RFT\d$/, /^RFDT\d$/]],
       ["INTERCONNECT", [/^JICA$/, /^RAL(TX|RX|TS|RS)$/]],
@@ -158,7 +158,7 @@ const PAGES = {
     ], ["CARD-IF", "COIL-DRIVER", "INTERCONNECT"]],
     ["COMMS-HMI", [
       ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/, /^CCV[12]$/, /^CCB5$/]],
-      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/]],
+      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^CSR1$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/]],
     ], ["CAN", "HMI"]],
   ],
 };
