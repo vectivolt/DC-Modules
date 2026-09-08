@@ -43,6 +43,15 @@ export const DB = [
   { m: /^QDIG[12]$/, mpn: "S8050", mfr: "CJ", desc: "NPN SOT-23 (display digit driver)", price1k: 0.4, alt: "MMBT2222" },
   // --- gate drive, isolation & safety chain
   { m: /^U([ABC]\d+G|\d+[HL])$/, mpn: "NSI6611", mfr: "NOVOSENSE", desc: "iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16", price1k: 85, alt: "NSI6602B" },
+  // ---- 120 kW cabinet sheet (E39) — interface blocks + CSU carrier ----
+  { m: /^MOD\d$/, mpn: "PMP-30KW-MODULE", mfr: "own", desc: "30 kW module (interface block — cost is the module roll-up, not a part)", price1k: 0, alt: "—" },
+  { m: /^UCSU$/, mpn: "CONTROL-CARD-CSU", mfr: "own", desc: "control card in the CSU strap role (same p/n as module cards — E39)", price1k: 0, alt: "—" },
+  { m: /^JCSU$/, mpn: "CONN-CARD-88-H", mfr: "generic 2.54 mm", desc: "CSU carrier 88-way PIN HEADER (mates the card receptacle; only V15/GND/ROLE ways used)", price1k: 45, alt: "Samtec TSW-144" },
+  { m: /^PSU1$/, mpn: "PSU-15V-DIN-WDR", mfr: "MeanWell", desc: "15 V DIN supply, WIDE-RANGE 180-550 VAC input (WDR-60-15) — fed L1-L2 at 400 VAC L-L, no neutral at cabinet entry; an MDR 85-264 VAC part would fail", price1k: 1300, alt: "TDK-Lambda DRB/480 V class" },
+  { m: /^JCAB(L\d|PE|D[PN])$/, mpn: "STUD-M8", mfr: "local", desc: "cabinet entry/bus M8 stud", price1k: 28, alt: "M10 for DC bus" },
+  { m: /^RT[12]$/, mpn: "R0603-120R-1%", mfr: "any", desc: "CAN termination 120 Ω (both chain ends)", price1k: 0.4, alt: "any" },
+  { m: /^RRCSU$/, mpn: "R0603-3k32-1%", mfr: "any", desc: "CSU RATING strap 3.32 k → 0.82 V band (E24 rev C)", price1k: 0.4, alt: "any 1%" },
+  { m: /^RSHB$/, mpn: "R0603-0R", mfr: "any", desc: "CAN shield single-point PE bond (liftable)", price1k: 0.3, alt: "any" },
   { m: /^PS(CAN|SH)$/, mpn: "ISO5V-RFC-6K", mfr: "MORNSUN QA/URB-grade", desc: "iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test (HR-16: this module IS part of the mains/output→SELV barrier — B1505S 1.5 kV functional grade rejected; certificate class = §K gate)", price1k: 95, p10k: 65, alt: "RECOM RxxP-R / certified eq" },
   // MUST precede the /^PS5\w+$/ rule below. In "PS5AC"/"PS5BUS" the 5 means 5 VOLTS; in "PS5H"
   // the 5 is the LLC LEG INDEX. The 5 V sense rule was swallowing leg 5's two gate-bias modules,
@@ -138,15 +147,6 @@ export const DB = [
   // buy three headers and nothing mates (module-interconnect audit, 2026-09-08).
   { m: /^J[AB]$/, mpn: "CONN-CARD-88-H", mfr: "any 2×44 0.1in", desc: "88-way 2×44 2.54 mm card interface, PIN HEADER side (power board), keyed", price1k: 45, alt: "Samtec TSW-144-xx-x-D class" },
   { m: /^JCARD$/, mpn: "CONN-CARD-88-R", mfr: "any 2×44 0.1in", desc: "88-way 2×44 2.54 mm card interface, RECEPTACLE side (card), keyed, mates CONN-CARD-88-H", price1k: 75, alt: "Samtec SSW-144-xx-x-D class" },
-  // ---- 120 kW cabinet sheet (E39) — interface blocks + CSU carrier ----
-  { m: /^MOD\d$/, mpn: "PMP-30KW-MODULE", mfr: "own", desc: "30 kW module (interface block — cost is the module roll-up, not a part)", price1k: 0, alt: "—" },
-  { m: /^UCSU$/, mpn: "CONTROL-CARD-CSU", mfr: "own", desc: "control card in the CSU strap role (same p/n as module cards — E39)", price1k: 0, alt: "—" },
-  { m: /^JCSU$/, mpn: "CONN-CARD-88-H", mfr: "generic 2.54 mm", desc: "CSU carrier 88-way PIN HEADER (mates the card receptacle; only V15/GND/ROLE ways used)", price1k: 45, alt: "Samtec TSW-144" },
-  { m: /^PSU1$/, mpn: "PSU-15V-DIN-30W", mfr: "MeanWell", desc: "15 V DIN-rail supply for the CSU card (MDR-20-15 class)", price1k: 650, alt: "any 15 V/1 A DIN" },
-  { m: /^JCAB(L\d|PE|D[PN])$/, mpn: "STUD-M8", mfr: "local", desc: "cabinet entry/bus M8 stud", price1k: 28, alt: "M10 for DC bus" },
-  { m: /^RT[12]$/, mpn: "R0603-120R-1%", mfr: "any", desc: "CAN termination 120 Ω (both chain ends)", price1k: 0.4, alt: "any" },
-  { m: /^RRCSU$/, mpn: "R0603-3k32-1%", mfr: "any", desc: "CSU RATING strap 3.32 k → 0.82 V band (E24 rev C)", price1k: 0.4, alt: "any 1%" },
-  { m: /^RSHB$/, mpn: "R0603-0R", mfr: "any", desc: "CAN shield single-point PE bond (liftable)", price1k: 0.3, alt: "any" },
   { m: /^DISP1$/, mpn: "LED-2DIG-0.56CC", mfr: "any", desc: "2-digit 7-seg 0.56\" common-cathode (HMI)", price1k: 18, alt: "any" },
   { m: /^SW[12]$/, mpn: "TACT-6x6", mfr: "any", desc: "tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)", price1k: 3, alt: "any" },
   { m: /^JSWD\w+$/, mpn: "HDR-1x5-2.54", mfr: "any", desc: "SWD/boot header (EOL programming — CB-13; LV-only test state §45)", price1k: 8, alt: "TC2030 pads" },

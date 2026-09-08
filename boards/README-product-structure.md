@@ -42,6 +42,19 @@ single board was independently closed: board geometry (5 measurements, §above),
 beyond 60 kW), the HF167F relay family ceiling (R3 §3.4: 90 A switching — cannot reach 110/220 A),
 and fuse frames past 125 A. This is also how the commercial market builds (module + cabinet).
 
+## 120 kW cabinet adder (E39) — cost on top of 4 × module roll-up
+
+| line | part | ₹ @10k |
+|---|---|---|
+| CSU card | same control-card assembly as the module cards (1×) | ≈ card assembly cost |
+| Carrier header | CONN-CARD-88-H | 45 |
+| CSU supply | **PSU-15V-DIN-WDR** (MeanWell WDR-60-15, **180–550 VAC input** — it is fed L1–L2 at 400 VAC line-to-line; an 85–264 VAC MDR-class part would fail) | 1300 |
+| Cabinet studs | 6 × STUD-M8 (L1/L2/L3/PE entry + BUS_P/BUS_N; M10/busbar at 400 A per the bus note) | 168 |
+| CAN chain | 2 × 120 Ω + 3.32 k strap + 0 R shield bond + 0 R SGND reference tie | ≈ 2 |
+| CAN/AC harness | integrator-supplied, cabinet-length dependent | — |
+
+120 kW product ≈ 4 × ₹30,372 + adder ≈ **₹123.0 k @10k** (bom-cost.md carries the 4×-only roll-up).
+
 **The cabinet brain (E39):** one CSU — the same control card p/n strapped into the CSU band —
 on a passive carrier (15 V DIN supply + 3.32 k strap), joining the CAN chain alongside each
 module's DC-DC card. Equal-share commanded-CC with staggered starts and graceful degrade on module

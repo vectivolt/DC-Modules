@@ -98,13 +98,13 @@
      },
      {
       "pin_number": 5,
-      "name": "DCP",
-      "signal_name": "DCP_BUS"
+      "name": "OUTP",
+      "signal_name": "BUS_P"
      },
      {
       "pin_number": 6,
-      "name": "DCN",
-      "signal_name": "DCN_BUS"
+      "name": "OUTN",
+      "signal_name": "BUS_N"
      },
      {
       "pin_number": 7,
@@ -118,6 +118,11 @@
      },
      {
       "pin_number": 9,
+      "name": "SGND",
+      "signal_name": "CAN_SGND"
+     },
+     {
+      "pin_number": 10,
       "name": "SHLD",
       "signal_name": "CAN_SHLD"
      }
@@ -152,13 +157,13 @@
      },
      {
       "pin_number": 5,
-      "name": "DCP",
-      "signal_name": "DCP_BUS"
+      "name": "OUTP",
+      "signal_name": "BUS_P"
      },
      {
       "pin_number": 6,
-      "name": "DCN",
-      "signal_name": "DCN_BUS"
+      "name": "OUTN",
+      "signal_name": "BUS_N"
      },
      {
       "pin_number": 7,
@@ -172,6 +177,11 @@
      },
      {
       "pin_number": 9,
+      "name": "SGND",
+      "signal_name": "CAN_SGND"
+     },
+     {
+      "pin_number": 10,
       "name": "SHLD",
       "signal_name": "CAN_SHLD"
      }
@@ -206,13 +216,13 @@
      },
      {
       "pin_number": 5,
-      "name": "DCP",
-      "signal_name": "DCP_BUS"
+      "name": "OUTP",
+      "signal_name": "BUS_P"
      },
      {
       "pin_number": 6,
-      "name": "DCN",
-      "signal_name": "DCN_BUS"
+      "name": "OUTN",
+      "signal_name": "BUS_N"
      },
      {
       "pin_number": 7,
@@ -226,6 +236,11 @@
      },
      {
       "pin_number": 9,
+      "name": "SGND",
+      "signal_name": "CAN_SGND"
+     },
+     {
+      "pin_number": 10,
       "name": "SHLD",
       "signal_name": "CAN_SHLD"
      }
@@ -260,13 +275,13 @@
      },
      {
       "pin_number": 5,
-      "name": "DCP",
-      "signal_name": "DCP_BUS"
+      "name": "OUTP",
+      "signal_name": "BUS_P"
      },
      {
       "pin_number": 6,
-      "name": "DCN",
-      "signal_name": "DCN_BUS"
+      "name": "OUTN",
+      "signal_name": "BUS_N"
      },
      {
       "pin_number": 7,
@@ -280,6 +295,11 @@
      },
      {
       "pin_number": 9,
+      "name": "SGND",
+      "signal_name": "CAN_SGND"
+     },
+     {
+      "pin_number": 10,
       "name": "SHLD",
       "signal_name": "CAN_SHLD"
      }
@@ -297,7 +317,7 @@
      {
       "pin_number": 1,
       "name": "P",
-      "signal_name": "DCP_BUS"
+      "signal_name": "BUS_P"
      }
     ]
    },
@@ -311,7 +331,7 @@
      {
       "pin_number": 1,
       "name": "P",
-      "signal_name": "DCN_BUS"
+      "signal_name": "BUS_N"
      }
     ]
    }
@@ -321,7 +341,7 @@
     "designator": "RT1",
     "value": "120",
     "block_name": "CAN-CHAIN",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "search_query": "R0603-120R-1% CAN termination 120 Ω",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -340,7 +360,7 @@
     "designator": "RT2",
     "value": "120",
     "block_name": "CAN-CHAIN",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "search_query": "R0603-120R-1% CAN termination 120 Ω",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -359,30 +379,35 @@
   [
    {
     "designator": "PSU1",
-    "value": "QA01C",
+    "value": "PSU-15V-DIN-WDR",
     "block_name": "CSU-CARRIER",
-    "search_query": "QA01C iso gate-bias module +18/−4-configured",
-    "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
+    "search_query": "PSU-15V-DIN-WDR 15 V DIN supply, WIDE-RANGE 180-550 VAC input",
+    "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
       "pin_number": 1,
-      "name": "VIN",
-      "signal_name": ""
+      "name": "L",
+      "signal_name": "AC_L1"
      },
      {
       "pin_number": 2,
-      "name": "GND",
-      "signal_name": ""
+      "name": "N",
+      "signal_name": "AC_L2"
      },
      {
-      "pin_number": 7,
-      "name": "+VO",
-      "signal_name": ""
+      "pin_number": 3,
+      "name": "PE",
+      "signal_name": "PE"
      },
      {
-      "pin_number": 6,
-      "name": "0V",
-      "signal_name": ""
+      "pin_number": 4,
+      "name": "V15P",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 5,
+      "name": "V15N",
+      "signal_name": "DGND"
      }
     ]
    },
@@ -429,7 +454,7 @@
     "designator": "RRCSU",
     "value": "3.32k",
     "block_name": "CSU-CARRIER",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "search_query": "R0603-3k32-1% CSU RATING strap 3.32 k → 0.82 V band",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -494,7 +519,7 @@
      {
       "pin_number": 10,
       "name": "SGND",
-      "signal_name": "DGND"
+      "signal_name": "CAN_SGND"
      },
      {
       "pin_number": 11,
@@ -504,10 +529,29 @@
     ]
    },
    {
-    "designator": "RSHB",
+    "designator": "RSGB",
     "value": "0R",
     "block_name": "CSU-CARRIER",
     "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CAN_SGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RSHB",
+    "value": "0R",
+    "block_name": "CSU-CARRIER",
+    "search_query": "R0603-0R CAN shield single-point PE bond",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -525,9 +569,6 @@
   ]
  ],
  "nc": {
-  "PSU1": [
-   5
-  ],
   "JCSU": [
    6
   ],
@@ -536,5 +577,5 @@
   ]
  },
  "warnings": [],
- "total": 17
+ "total": 18
 }

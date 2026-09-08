@@ -62,7 +62,7 @@ const PAGES = {
       ["MODULES", [/^MOD\d$/]],
       ["DC-BUS", [/^JCABD[PN]$/]],
       ["CAN-CHAIN", [/^RT[12]$/]],
-      ["CSU-CARRIER", [/^(JCSU|RRCSU|PSU1|UCSU|RSHB)$/]],
+      ["CSU-CARRIER", [/^(JCSU|RRCSU|PSU1|UCSU|RSHB|RSGB)$/]],
     ], ["AC-ENTRY", "MODULES", "DC-BUS", "CAN-CHAIN", "CSU-CARRIER"]],
   ],
   // Control card (E35): one page, the 8 card sections as blocks.

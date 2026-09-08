@@ -383,5 +383,20 @@ ck("AUD-CARD-AGND2", /put\("AGND_2", "net\.AGND"\)/.test(card),
 ck("AUD-CARD-HRTIMER", /FLT: 47/.test(card) && /PWM0: 69/.test(card) && /PWM6: 70/.test(card) && /EN_B: 28/.test(card),
   "card PWM group on the HRTIMER with FLT on HRTIMER_FLT2 (decision executed; PA6 break-input conflict dissolved)");
 
+// AUD-CAB-COMPLETE: every cabinet netlist component reaches the cabinet apply payload.
+// The silent-drop class (HFE82V, CTs, JA/JB, RSGB) has now bitten four times; the module SKUs
+// are covered by APPLY-COMPLETE-<sku>, the cabinet was not — this closes it.
+try {
+  const cabNet = JSON.parse(readFileSync(join(ROOT, "dist/boards/cabinet/circuit.json"), "utf8"))
+    .filter((e) => e.type === "source_component").map((e) => e.name);
+  const cabAp = JSON.parse(readFileSync(join(ROOT, "calculations/out/easyeda/cabinet/apply/cab-CABINET.json"), "utf8"))
+    .chunks.flat().map((c) => c.designator);
+  const dropped = cabNet.filter((n) => !cabAp.includes(n));
+  ck("AUD-CAB-COMPLETE", dropped.length === 0,
+    dropped.length ? `cabinet apply DROPPED ${dropped.join(", ")}` : `cabinet: all ${cabNet.length} components reach the apply payload`);
+} catch (e) {
+  ck("AUD-CAB-COMPLETE", false, "cabinet build/apply missing: " + e.message);
+}
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

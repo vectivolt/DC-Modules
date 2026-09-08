@@ -15,7 +15,7 @@ Comment4 ""
 $EndDescr
 $Sheet
 S 1000 1000 4200 1400
-U 5E000012
+U 5E000013
 F0 "120 kW Cabinet - 4x 30 kW modules + CSU (same card, third strap role) (E39)" 70
 F1 "cabinet-cab.sch" 70
 $EndSheet

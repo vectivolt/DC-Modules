@@ -195,13 +195,16 @@ if (cab) {
     else if (rts.length !== 2) bad(`cabinet ${net}: ${rts.length} termination pins (need both RT1 and RT2)`);
     else ok(`cabinet ${net}: 4 modules + CSU + 2 terminations`);
   }
-  for (const [r, v] of [["RT1", "120"], ["RT2", "120"], ["RRCSU", "3320"], ["RSHB", "0"]] as const) {
+  for (const [r, v] of [["RT1", "120"], ["RT2", "120"], ["RRCSU", "3320"], ["RSHB", "0"], ["RSGB", "0"]] as const) {
     const got = cab.val.get(r); const num = got === undefined ? undefined : String(Math.round(Number(got)));
     if (num !== v) bad(`cabinet ${r}: value ${got ?? "MISSING"}, want ${v}`); else ok(`cabinet ${r} = ${v} Ω`);
   }
   // CSU feed: PSU 15 V reaches both V15 ways of the header AND the card; grounds common
   const v15ok = ["PSU1.V15P", "JCSU.V15A", "JCSU.V15B", "UCSU.V15A", "UCSU.V15B"].every((k) => has("V15", k));
-  const gndok = ["PSU1.V15N", "JCSU.GNDA", "JCSU.GNDB", "JCSU.GNDC", "UCSU.SGND"].every((k) => has("DGND", k));
+  const gndok = ["PSU1.V15N", "JCSU.GNDA", "JCSU.GNDB", "JCSU.GNDC"].every((k) => has("DGND", k));
+  const sgok = has("CAN_SGND", "UCSU.SGND") && has("CAN_SGND", "RSGB.pin1") && has("DGND", "RSGB.pin2");
+  sgok ? ok("cabinet CAN_SGND: isolated-domain reference chained + single-point DGND tie via RSGB")
+       : bad("cabinet CAN_SGND: reference wire/tie wrong (isolated NSI1042 domains need the SGND conductor)");
   v15ok ? ok("cabinet CSU: PSU 15 V feeds header + card") : bad("cabinet CSU: V15 feed incomplete");
   gndok ? ok("cabinet CSU: grounds common (incl. card SGND)") : bad("cabinet CSU: ground net incomplete");
   // RATING strap forms the CSU band against the card pullup
@@ -210,8 +213,8 @@ if (cab) {
   // per-module AC + DC bus
   for (const n of [1, 2, 3, 4]) {
     const okm = has("AC_L1", `MOD${n}.L1`) && has("AC_L2", `MOD${n}.L2`) && has("AC_L3", `MOD${n}.L3`)
-      && has("PE", `MOD${n}.PE`) && has("DCP_BUS", `MOD${n}.DCP`) && has("DCN_BUS", `MOD${n}.DCN`);
-    okm ? ok(`cabinet MOD${n}: AC feed + PE + DC bus`) : bad(`cabinet MOD${n}: AC/PE/DC wiring incomplete`);
+      && has("PE", `MOD${n}.PE`) && has("BUS_P", `MOD${n}.OUTP`) && has("BUS_N", `MOD${n}.OUTN`) && has("CAN_SGND", `MOD${n}.SGND`);
+    okm ? ok(`cabinet MOD${n}: AC feed + PE + charging bus + SGND`) : bad(`cabinet MOD${n}: AC/PE/BUS/SGND wiring incomplete`);
   }
   // shield: all drops on CAN_SHLD, bonded to PE through the single 0 R link
   const shok = [1, 2, 3, 4].every((n) => has("CAN_SHLD", `MOD${n}.SHLD`)) && has("CAN_SHLD", "UCSU.SHLD")

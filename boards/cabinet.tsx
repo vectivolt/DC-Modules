@@ -33,9 +33,9 @@ export default () => (
 
     {/* ---- the four 30 kW modules, interface pins only ---- */}
     {MODS.map((n) => (
-      <chip key={n} name={`MOD${n}`} value="PMP-30KW-MODULE" footprint="pinrow9"
-        pinLabels={{ pin1: "L1", pin2: "L2", pin3: "L3", pin4: "PE", pin5: "DCP", pin6: "DCN", pin7: "CANH", pin8: "CANL", pin9: "SHLD" }}
-        schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["L1", "L2", "L3", "PE"] }, rightSide: { direction: "top-to-bottom", pins: ["DCP", "DCN", "CANH", "CANL", "SHLD"] } }}
+      <chip key={n} name={`MOD${n}`} value="PMP-30KW-MODULE" footprint="pinrow10"
+        pinLabels={{ pin1: "L1", pin2: "L2", pin3: "L3", pin4: "PE", pin5: "OUTP", pin6: "OUTN", pin7: "CANH", pin8: "CANL", pin9: "SGND", pin10: "SHLD" }}
+        schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["L1", "L2", "L3", "PE"] }, rightSide: { direction: "top-to-bottom", pins: ["OUTP", "OUTN", "CANH", "CANL", "SGND", "SHLD"] } }}
         pcbX={40 + n * 30} pcbY={40} schX={14 + ((n - 1) % 2) * 14} schY={42 - Math.floor((n - 1) / 2) * 9} schSectionName="MODULES" />
     ))}
     {MODS.map((n) => [
@@ -43,8 +43,9 @@ export default () => (
       <trace key={`l2${n}`} from={`.MOD${n} > .L2`} to="net.AC_L2" schDisplayLabel="AC_L2" />,
       <trace key={`l3${n}`} from={`.MOD${n} > .L3`} to="net.AC_L3" schDisplayLabel="AC_L3" />,
       <trace key={`pe${n}`} from={`.MOD${n} > .PE`} to="net.PE" schDisplayLabel="PE" />,
-      <trace key={`dp${n}`} from={`.MOD${n} > .DCP`} to="net.DCP_BUS" schDisplayLabel="DCP_BUS" />,
-      <trace key={`dn${n}`} from={`.MOD${n} > .DCN`} to="net.DCN_BUS" schDisplayLabel="DCN_BUS" />,
+      <trace key={`dp${n}`} from={`.MOD${n} > .OUTP`} to="net.BUS_P" schDisplayLabel="BUS_P" />,
+      <trace key={`dn${n}`} from={`.MOD${n} > .OUTN`} to="net.BUS_N" schDisplayLabel="BUS_N" />,
+      <trace key={`sg${n}`} from={`.MOD${n} > .SGND`} to="net.CAN_SGND" schDisplayLabel="CAN_SGND" />,
       <trace key={`ch${n}`} from={`.MOD${n} > .CANH`} to="net.CANH" schDisplayLabel="CANH" />,
       <trace key={`cl${n}`} from={`.MOD${n} > .CANL`} to="net.CANL" schDisplayLabel="CANL" />,
       <trace key={`sh${n}`} from={`.MOD${n} > .SHLD`} to="net.CAN_SHLD" schDisplayLabel="CAN_SHLD" />,
@@ -53,8 +54,8 @@ export default () => (
     {/* ---- DC parallel bus studs ---- */}
     <chip name="JCABDP" value="STUD-M8" footprint="pinrow1" pinLabels={{ pin1: "P" }} pcbX={200} pcbY={0} schX={46} schY={46} schSectionName="DC-BUS" />
     <chip name="JCABDN" value="STUD-M8" footprint="pinrow1" pinLabels={{ pin1: "P" }} pcbX={208} pcbY={0} schX={46} schY={43} schSectionName="DC-BUS" />
-    <trace from=".JCABDP > .P" to="net.DCP_BUS" schDisplayLabel="DCP_BUS" />
-    <trace from=".JCABDN > .P" to="net.DCN_BUS" schDisplayLabel="DCN_BUS" />
+    <trace from=".JCABDP > .P" to="net.BUS_P" schDisplayLabel="BUS_P" />
+    <trace from=".JCABDN > .P" to="net.BUS_N" schDisplayLabel="BUS_N" />
 
     {/* ---- CAN chain terminations (one per end of the daisy chain) ---- */}
     <resistor name="RT1" resistance="120" footprint="0603" pcbX={100} pcbY={80} schX={4} schY={24} schSectionName="CAN-CHAIN" />
@@ -64,8 +65,10 @@ export default () => (
     <trace from=".RT2 > .pin1" to="net.CANH" schDisplayLabel="CANH" />
     <trace from=".RT2 > .pin2" to="net.CANL" schDisplayLabel="CANL" />
 
-    {/* ---- CSU carrier: 15 V feed + strap into the 88-way header; the mated card joins CAN ---- */}
-    <chip name="PSU1" value="PSU-15V-DIN" footprint="pinrow5" pinLabels={{ pin1: "L", pin2: "N", pin3: "PE", pin4: "V15P", pin5: "V15N" }}
+    {/* ---- CSU carrier: 15 V feed + strap into the 88-way header; the mated card joins CAN ----
+        PSU input is L1-L2 = 400 VAC LINE-TO-LINE (the entry has no neutral): the part MUST be a
+        wide-range 180-550 VAC type (MeanWell WDR-60-15 class), never an 85-264 VAC MDR class. */}
+    <chip name="PSU1" value="PSU-15V-DIN-WDR" footprint="pinrow5" pinLabels={{ pin1: "L", pin2: "N", pin3: "PE", pin4: "V15P", pin5: "V15N" }}
       schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["L", "N", "PE"] }, rightSide: { direction: "top-to-bottom", pins: ["V15P", "V15N"] } }}
       pcbX={0} pcbY={120} schX={16} schY={26} schSectionName="CSU-CARRIER" />
     <trace from=".PSU1 > .L" to="net.AC_L1" schDisplayLabel="AC_L1" />
@@ -107,7 +110,12 @@ export default () => (
     <trace from=".UCSU > .ROLE1" to="net.ROLE1" schDisplayLabel="ROLE1" />
     <trace from=".UCSU > .CANH" to="net.CANH" schDisplayLabel="CANH" />
     <trace from=".UCSU > .CANL" to="net.CANL" schDisplayLabel="CANL" />
-    <trace from=".UCSU > .SGND" to="net.DGND" schDisplayLabel="DGND" />
+    <trace from=".UCSU > .SGND" to="net.CAN_SGND" schDisplayLabel="CAN_SGND" />
+    {/* the CAN domain is ISOLATED per card (NSI1042/CGND): the harness must carry the SGND
+        reference wire between all drops; it is referenced to cabinet ground at ONE point (here) */}
+    <resistor name="RSGB" resistance="0" footprint="0603" pcbX={140} pcbY={120} schX={40} schY={19} schSectionName="CSU-CARRIER" />
+    <trace from=".RSGB > .pin1" to="net.CAN_SGND" schDisplayLabel="CAN_SGND" />
+    <trace from=".RSGB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".UCSU > .SHLD" to="net.CAN_SHLD" schDisplayLabel="CAN_SHLD" />
     {/* shield bonded to PE at the CSU end ONLY (single-point, liftable 0 R bond) */}
     <resistor name="RSHB" resistance="0" footprint="0603" pcbX={130} pcbY={120} schX={36} schY={19} schSectionName="CSU-CARRIER" />
