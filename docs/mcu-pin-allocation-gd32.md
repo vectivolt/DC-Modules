@@ -291,3 +291,22 @@ Fits with spare I/O. 77 signals over 87 pin landings.
 Until 1–4 are settled this map is *correct but not frozen*: it is safe to draw and to route
 supplies against, and it is no longer capable of shorting a rail.
 
+## UMOD — E40 merged 30 kW single-brain role (generated)
+
+One card runs the whole 30 kW module (E40). The allocation is **generated, not hand-edited**:
+`calculations/control/umod-pinmap.mts` merges the two role subsets above and resolves every
+collision by a documented move onto a pin freed by the dropped lanes/legs — donor row quoted per
+move, uniqueness/fixed-pin/capability asserted on every run. Output of record:
+`calculations/out/umod-pinmap.csv` (65 signals · 22 analog · 9 PWM · 17 usable pins spare).
+
+Highlights of the merge:
+- **All nine PWMs on the HRTIMER**: PFC keeps ST0CH0/CH1 + ST1CH0; LLC legs take the ST2/ST4/ST6
+  pairs freed by lanes 1–3. Hardware dead-time per leg; one merged `FLT` wired-OR on
+  **HRTIMER_FLT7 / PC4 / pin 30** (this doc's own audit-recommended free pin) kills every switch.
+- The inter-card `LINK` (USART2, pins 79/80) **dies with the second card**; its pins take the
+  S/P relay feedbacks displaced from PA8–PA10 by the PFC PWMs.
+- ADC collisions vacate onto the lane-1..3 CT pins (PE7/PE11/PE12/PE13/PE15) and I_RES8/9's
+  PD10/PD11 — 22 simultaneous analog channels, all on documented ADC-capable pins.
+- `FLT_LLC`'s PC13 frees for BTN1; TIMER19 pins freed by legs 9–12 absorb HMI_LAT/CLK and
+  the displaced KSER/KPARA drives.
+
