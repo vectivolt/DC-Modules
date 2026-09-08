@@ -39,7 +39,9 @@ const hit = (a, b) => a.x0 < b.x1 - 1 && b.x0 < a.x1 - 1 && a.y0 < b.y1 - 1 && b
 const LIB = new Map();
 const libFile = readdirSync(SCH).find((f) => f.endsWith(".lib"));
 for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice(1)) {
-  const name = blk.split(/\s+/)[0];
+  const head = blk.split(/\s+/);
+  const name = head[0];
+  const namesShown = head[5] !== "N";   // DEF draw-pin-names flag: N = invisible in KiCad AND in print
   let box = null;
   const pins = [];
   for (const l of blk.split("\n")) {
@@ -55,7 +57,7 @@ for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice
       box = { x0: t[1] - t[3], y0: t[2] - t[3], x1: t[1] + t[3], y1: t[2] + t[3] };
     }
   }
-  LIB.set(name, { box: box ?? { x0: -40, y0: -100, x1: 40, y1: 100 }, pins });
+  LIB.set(name, { box: box ?? { x0: -40, y0: -100, x1: 40, y1: 100 }, pins, namesShown });
 }
 
 let pages = 0, problems = [], nLab = 0, nSym = 0, nPin = 0;
@@ -89,7 +91,7 @@ for (const f of (SKU === "control-card" ? ["control-card-card.sch"] : [`${SKU}-a
       // this text existed and was never being checked — on a dense IC it is the text most likely
       // to collide, because the body width is derived from the longest name.
       for (const pn of entry.pins ?? []) {
-        if (!pn.name || pn.name === "~") continue;
+        if (!pn.name || pn.name === "~" || entry.namesShown === false) continue;
         const px = x + pn.x, py = y + pn.y;          // lib is pre-mirrored for EasyEDA
         const inward = pn.o === "R" ? 1 : pn.o === "L" ? -1 : 0;
         const inwardY = pn.o === "U" ? -1 : pn.o === "D" ? 1 : 0;

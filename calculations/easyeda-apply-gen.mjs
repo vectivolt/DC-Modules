@@ -77,6 +77,13 @@ function transform(c, page, all, warn) {
   const m = c.mpn || c.value;
   const out = { designator: c.designator, value: c.value, block_name: c.block_name,
     search_query: (c.query || m).trim(), part_uuid: uuidOf(m), pins: [], nc: [] };
+  // EasyEDA's probed MLCC/FILM/ELCAP symbols are vertical-native, so unrotated placement on a
+  // horizontal run shows plates sideways (and the ELCAP "+" on top). rotate 90 = visual CCW =
+  // native-top lands LEFT, which puts ELCAP pin 1 (+) on the pin-1 wire side, matching the
+  // netlist convention (pin1 = +). VERIFY-IN-APP on next session: if "+" reads on the right,
+  // flip to 270. Hint uses the extension's own pos{rotate} shape; harmless if the planner
+  // ignores it (then fix = re-probe horizontal-native parts).
+  if (/^(MLCC|C1812|PP-|FILM-|X1-|Y1-|ELH-|EL-)/.test(m)) out.pos = { rotate: 90 };
   if (!out.part_uuid) { warn.push(`${c.designator}: no part_uuid for ${m}`); return null; }
   const byNum = Object.fromEntries(c.pins.map((p) => [p.pin_number, p.signal_name]));
 

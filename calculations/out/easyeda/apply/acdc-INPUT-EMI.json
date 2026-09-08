@@ -393,7 +393,10 @@
       "name": "pin2",
       "signal_name": "AC2M"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CX12",
@@ -412,7 +415,10 @@
       "name": "pin2",
       "signal_name": "AC3M"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CX13",
@@ -431,7 +437,10 @@
       "name": "pin2",
       "signal_name": "AC1M"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CX21",
@@ -450,7 +459,10 @@
       "name": "pin2",
       "signal_name": "AC2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CX22",
@@ -469,7 +481,10 @@
       "name": "pin2",
       "signal_name": "AC3"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CX23",
@@ -488,7 +503,10 @@
       "name": "pin2",
       "signal_name": "AC1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CY1",
@@ -507,7 +525,10 @@
       "name": "pin2",
       "signal_name": "PE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CY2",
@@ -526,7 +547,10 @@
       "name": "pin2",
       "signal_name": "PE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CY3",
@@ -545,7 +569,10 @@
       "name": "pin2",
       "signal_name": "PE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "LDM1",

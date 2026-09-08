@@ -300,7 +300,10 @@
       "name": "pin2",
       "signal_name": "MID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDT01",
@@ -319,7 +322,10 @@
       "name": "pin2",
       "signal_name": "MID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDT02",
@@ -338,7 +344,10 @@
       "name": "pin2",
       "signal_name": "MID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDT03",
@@ -357,7 +366,10 @@
       "name": "pin2",
       "signal_name": "MID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDT04",
@@ -376,7 +388,10 @@
       "name": "pin2",
       "signal_name": "MID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDB00",
@@ -395,7 +410,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDB01",
@@ -414,7 +432,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDB02",
@@ -433,7 +454,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDB03",
@@ -452,7 +476,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CDB04",
@@ -471,7 +498,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "RBALT0A",

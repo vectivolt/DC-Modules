@@ -29,7 +29,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1R1",
@@ -48,7 +51,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1R2",
@@ -67,7 +73,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1R3",
@@ -86,7 +95,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L1T",
@@ -377,7 +389,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D1CP",
@@ -436,7 +451,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2R1",
@@ -455,7 +473,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2R2",
@@ -474,7 +495,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2R3",
@@ -493,7 +517,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L2T",
@@ -784,7 +811,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D2CP",
@@ -843,7 +873,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3R1",
@@ -862,7 +895,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3R2",
@@ -881,7 +917,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3R3",
@@ -900,7 +939,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L3T",
@@ -1191,7 +1233,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D3CP",
@@ -1250,7 +1295,10 @@
       "name": "pin2",
       "signal_name": "C4R0_C4R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C4R1",
@@ -1269,7 +1317,10 @@
       "name": "pin2",
       "signal_name": "C4R0_C4R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C4R2",
@@ -1288,7 +1339,10 @@
       "name": "pin2",
       "signal_name": "C4R0_C4R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C4R3",
@@ -1307,7 +1361,10 @@
       "name": "pin2",
       "signal_name": "C4R0_C4R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L4T",
@@ -1598,7 +1655,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D4CP",
@@ -1657,7 +1717,10 @@
       "name": "pin2",
       "signal_name": "C5R0_C5R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C5R1",
@@ -1676,7 +1739,10 @@
       "name": "pin2",
       "signal_name": "C5R0_C5R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C5R2",
@@ -1695,7 +1761,10 @@
       "name": "pin2",
       "signal_name": "C5R0_C5R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C5R3",
@@ -1714,7 +1783,10 @@
       "name": "pin2",
       "signal_name": "C5R0_C5R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L5T",
@@ -2005,7 +2077,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D5CP",
@@ -2064,7 +2139,10 @@
       "name": "pin2",
       "signal_name": "C6R0_C6R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C6R1",
@@ -2083,7 +2161,10 @@
       "name": "pin2",
       "signal_name": "C6R0_C6R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C6R2",
@@ -2102,7 +2183,10 @@
       "name": "pin2",
       "signal_name": "C6R0_C6R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C6R3",
@@ -2121,7 +2205,10 @@
       "name": "pin2",
       "signal_name": "C6R0_C6R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L6T",
@@ -2412,7 +2499,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D6CP",

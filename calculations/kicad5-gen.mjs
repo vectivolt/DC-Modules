@@ -138,6 +138,7 @@ const CAT = (value, mpn, pins, designator = "") => {
   if (/^(S20K|MOV)/.test(m)) return "MOV";
   if (/^GDT-/.test(m)) return "GDT";
   if (/^(CT-|ACX-|AS-\d)/.test(m)) return "CT";
+  if (/^TACT-/.test(m) || /^SW/.test(designator)) return "SW";  // momentary button, not a resistor
   // Page payloads carry no mpn field, so glyph kind used to fall through to "R" for every
   // two-pin part whose VALUE was not ohm-shaped — every capacitor drew as a resistor once the
   // zigzag landed (invisible in the box era: box looked like box). Designator letter is the
@@ -312,15 +313,29 @@ function passiveLib(kind, n1, n2) {
   else if (kind === "MOV") draw = "S -60 45 60 -45 0 1 10 N\nP 3 0 1 10 -85 -70 60 45 85 45 N\n";
   else if (kind === "GDT") draw = "C 0 0 80 0 1 10 N\nP 2 0 1 12 -35 45 -35 -45 N\nP 2 0 1 12 35 45 35 -45 N\nC 0 -55 8 0 1 0 F\n";
   else if (kind === "CT") draw = "A -40 0 40 -899 899 0 1 10 N -40 -40 -40 40\nA 40 0 40 -899 899 0 1 10 N 40 -40 40 40\nP 2 0 1 14 -90 90 90 90 N\nC -75 60 8 0 1 0 F\n";
-  else if (kind === "C") draw = "P 2 0 1 12 -80 25 80 25 N\nP 2 0 1 12 -80 -25 80 -25 N\n";
-  else if (kind === "CP") draw = "P 2 0 1 12 -80 25 80 25 N\nA 0 -150 130 563 1037 0 1 12 N -80 -50 80 -50\n";
-  else if (kind === "L") draw = "A 0 -50 50 -899 899 0 1 8 N 0 -100 0 0\nA 0 50 50 -899 899 0 1 8 N 0 0 0 100\n";
+  // SW: momentary pushbutton — two contact posts, bridge bar, actuator stem. Pins stop at the
+  // posts so the open gap reads as a break, exactly like a datasheet tact switch.
+  else if (kind === "SW") draw = "C -40 0 10 0 1 10 N\nC 40 0 10 0 1 10 N\nP 2 0 1 12 -55 45 55 45 N\nP 2 0 1 10 0 45 0 75 N\n";
+  // Plates PERPENDICULAR to the pins (pins run horizontally at y=0): a plate drawn parallel to
+  // the wire reads as a rotated symbol, and on CP it hides which side is +. Height matches the
+  // R zigzag envelope (±40) so cap columns pack exactly like resistor columns.
+  else if (kind === "C") draw = "P 2 0 1 12 -20 -40 -20 40 N\nP 2 0 1 12 20 -40 20 40 N\n";
+  // CP: straight plate = pin 1 = +, marked with a "+"; curved plate bows away toward pin 2.
+  // (Verified in the netlists: every EL-/ELH- instance has pin 1 on the more-positive node.)
+  // NOTE the lib writer's EasyEDA pre-mirror negates Y and reverses arc endpoints: the "+" is
+  // authored at +y to LAND above the wire, and arc endpoint order is chosen for the mirrored file.
+  else if (kind === "CP") draw = "P 2 0 1 12 -20 -40 -20 40 N\nA 6 0 44 -646 646 0 1 12 N 25 -40 25 40\n"
+    + "P 2 0 1 8 -85 55 -55 55 N\nP 2 0 1 8 -70 40 -70 70 N\n";
+  else if (kind === "L") draw = "A -40 0 40 1 1799 0 1 8 N 0 0 -80 0\nA 40 0 40 1 1799 0 1 8 N 80 0 0 0\n";
   else if (kind === "D") draw = "P 4 0 1 8 -50 50 -50 -50 50 0 -50 50 F\nP 2 0 1 12 50 50 50 -50 N\n";
   // pins point away from the body; legacy orientation letters: L R U D = direction the pin runs
+  // C/CP pins lengthen so the stub ends exactly at its plate (arc apex on the CP curved side)
+  const len1 = kind === "C" || kind === "CP" ? 230 : kind === "SW" ? 200 : 170;
+  const len2 = kind === "C" ? 230 : kind === "CP" || kind === "SW" ? 200 : 170;
   lib.set(nm, `#\n# ${nm}\n#\nDEF ${nm} ${ref} 0 40 N N 1 F N\n`
     + `F0 "${ref}" 0 130 50 H V C CNN\nF1 "${nm}" 0 -130 50 H V C CNN\n`
     + `F2 "" 0 0 50 H I C CNN\nF3 "" 0 0 50 H I C CNN\nDRAW\n${draw}`
-    + `X ${n1} ${n1} -250 0 170 R 50 50 1 1 P\nX ${n2} ${n2} 250 0 170 L 50 50 1 1 P\n`
+    + `X ${n1} ${n1} -250 0 ${len1} R 50 50 1 1 P\nX ${n2} ${n2} 250 0 ${len2} L 50 50 1 1 P\n`
     + `ENDDRAW\nENDDEF\n`);
   return nm;
 }

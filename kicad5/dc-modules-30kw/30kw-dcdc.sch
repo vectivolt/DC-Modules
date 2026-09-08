@@ -1967,7 +1967,7 @@ Wire Wire Line
 Text Label 3900 18700 0    45   ~ 0
 BTN2
 $Comp
-L dcmod-r4:R_13 SW1
+L dcmod-r4:SW_13 SW1
 U 1 1 5E00015B
 P 3450 15900
 F 0 "SW1" H 3450 15740 50  0000 C CNN
@@ -1988,7 +1988,7 @@ Wire Wire Line
 Text Label 3900 15900 0    45   ~ 0
 DGND
 $Comp
-L dcmod-r4:R_13 SW2
+L dcmod-r4:SW_13 SW2
 U 1 1 5E00015C
 P 3450 16300
 F 0 "SW2" H 3450 16140 50  0000 C CNN

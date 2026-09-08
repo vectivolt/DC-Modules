@@ -320,7 +320,10 @@
       "name": "pin2",
       "signal_name": "NSTAR"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVV1",
@@ -556,7 +559,10 @@
       "name": "pin2",
       "signal_name": "NSTAR"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVV2",
@@ -792,7 +798,10 @@
       "name": "pin2",
       "signal_name": "NSTAR"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVV3",
@@ -1028,7 +1037,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVBP",
@@ -1264,7 +1276,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVBM",
@@ -1427,7 +1442,10 @@
       "name": "pin2",
       "signal_name": "AGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "JTINL",
@@ -1484,7 +1502,10 @@
       "name": "pin2",
       "signal_name": "AGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -1562,7 +1583,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DA0P",
@@ -1676,7 +1700,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DB0P",
@@ -1790,7 +1817,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DC0P",
@@ -1906,7 +1936,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DA1P",
@@ -2020,7 +2053,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DB1P",
@@ -2134,7 +2170,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DC1P",

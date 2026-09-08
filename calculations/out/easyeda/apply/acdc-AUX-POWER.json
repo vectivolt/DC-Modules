@@ -157,7 +157,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "TAUX",
@@ -377,7 +380,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DCLA",
@@ -415,7 +421,10 @@
       "name": "pin2",
       "signal_name": "DCP"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "RCLA1",
@@ -550,7 +559,10 @@
       "name": "pin2",
       "signal_name": "DGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CAUX15",
@@ -569,7 +581,10 @@
       "name": "pin2",
       "signal_name": "DGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CVCC",
@@ -588,7 +603,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "DTVS24",

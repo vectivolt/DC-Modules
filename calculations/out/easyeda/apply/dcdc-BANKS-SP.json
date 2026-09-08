@@ -27,7 +27,10 @@
       "name": "pin2",
       "signal_name": "BKAM"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CBA1T",
@@ -46,7 +49,10 @@
       "name": "pin2",
       "signal_name": "BKAM"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CBA0B",
@@ -65,7 +71,10 @@
       "name": "pin2",
       "signal_name": "BKAN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CBA1B",
@@ -84,7 +93,10 @@
       "name": "pin2",
       "signal_name": "BKAN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "RBALTA1",
@@ -179,7 +191,10 @@
       "name": "pin2",
       "signal_name": "BKAN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -200,7 +215,10 @@
       "name": "pin2",
       "signal_name": "BKBM"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CBB1T",
@@ -219,7 +237,10 @@
       "name": "pin2",
       "signal_name": "BKBM"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CBB0B",
@@ -238,7 +259,10 @@
       "name": "pin2",
       "signal_name": "BKBN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CBB1B",
@@ -257,7 +281,10 @@
       "name": "pin2",
       "signal_name": "BKBN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "RBALTB1",
@@ -352,7 +379,10 @@
       "name": "pin2",
       "signal_name": "BKBN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [

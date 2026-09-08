@@ -376,7 +376,10 @@
       "name": "pin2",
       "signal_name": "PE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [

@@ -72,7 +72,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CF1",
@@ -91,7 +94,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CF2",
@@ -110,7 +116,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CF3",
@@ -129,7 +138,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CF4",
@@ -148,7 +160,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CF5",
@@ -167,7 +182,10 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -354,7 +372,10 @@
       "name": "pin2",
       "signal_name": "U1H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1HB2",
@@ -373,7 +394,10 @@
       "name": "pin2",
       "signal_name": "U1H_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R1HON",
@@ -449,7 +473,10 @@
       "name": "pin2",
       "signal_name": "U1H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D1HS1",
@@ -643,7 +670,10 @@
       "name": "pin2",
       "signal_name": "U1L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1LB2",
@@ -662,7 +692,10 @@
       "name": "pin2",
       "signal_name": "U1L_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R1LON",
@@ -738,7 +771,10 @@
       "name": "pin2",
       "signal_name": "U1L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D1LS1",
@@ -992,7 +1028,10 @@
       "name": "pin2",
       "signal_name": "U2H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2HB2",
@@ -1011,7 +1050,10 @@
       "name": "pin2",
       "signal_name": "U2H_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R2HON",
@@ -1087,7 +1129,10 @@
       "name": "pin2",
       "signal_name": "U2H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D2HS1",
@@ -1281,7 +1326,10 @@
       "name": "pin2",
       "signal_name": "U2L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2LB2",
@@ -1300,7 +1348,10 @@
       "name": "pin2",
       "signal_name": "U2L_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R2LON",
@@ -1376,7 +1427,10 @@
       "name": "pin2",
       "signal_name": "U2L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D2LS1",
@@ -1630,7 +1684,10 @@
       "name": "pin2",
       "signal_name": "U3H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3HB2",
@@ -1649,7 +1706,10 @@
       "name": "pin2",
       "signal_name": "U3H_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R3HON",
@@ -1725,7 +1785,10 @@
       "name": "pin2",
       "signal_name": "U3H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D3HS1",
@@ -1919,7 +1982,10 @@
       "name": "pin2",
       "signal_name": "U3L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3LB2",
@@ -1938,7 +2004,10 @@
       "name": "pin2",
       "signal_name": "U3L_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R3LON",
@@ -2014,7 +2083,10 @@
       "name": "pin2",
       "signal_name": "U3L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D3LS1",
@@ -2268,7 +2340,10 @@
       "name": "pin2",
       "signal_name": "U4H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C4HB2",
@@ -2287,7 +2362,10 @@
       "name": "pin2",
       "signal_name": "U4H_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R4HON",
@@ -2363,7 +2441,10 @@
       "name": "pin2",
       "signal_name": "U4H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D4HS1",
@@ -2557,7 +2638,10 @@
       "name": "pin2",
       "signal_name": "U4L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C4LB2",
@@ -2576,7 +2660,10 @@
       "name": "pin2",
       "signal_name": "U4L_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R4LON",
@@ -2652,7 +2739,10 @@
       "name": "pin2",
       "signal_name": "U4L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D4LS1",
@@ -2906,7 +2996,10 @@
       "name": "pin2",
       "signal_name": "U5H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C5HB2",
@@ -2925,7 +3018,10 @@
       "name": "pin2",
       "signal_name": "U5H_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R5HON",
@@ -3001,7 +3097,10 @@
       "name": "pin2",
       "signal_name": "U5H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D5HS1",
@@ -3195,7 +3294,10 @@
       "name": "pin2",
       "signal_name": "U5L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C5LB2",
@@ -3214,7 +3316,10 @@
       "name": "pin2",
       "signal_name": "U5L_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R5LON",
@@ -3290,7 +3395,10 @@
       "name": "pin2",
       "signal_name": "U5L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D5LS1",
@@ -3544,7 +3652,10 @@
       "name": "pin2",
       "signal_name": "U6H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C6HB2",
@@ -3563,7 +3674,10 @@
       "name": "pin2",
       "signal_name": "U6H_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R6HON",
@@ -3639,7 +3753,10 @@
       "name": "pin2",
       "signal_name": "U6H_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D6HS1",
@@ -3833,7 +3950,10 @@
       "name": "pin2",
       "signal_name": "U6L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C6LB2",
@@ -3852,7 +3972,10 @@
       "name": "pin2",
       "signal_name": "U6L_VEE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "R6LON",
@@ -3928,7 +4051,10 @@
       "name": "pin2",
       "signal_name": "U6L_GND2"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D6LS1",

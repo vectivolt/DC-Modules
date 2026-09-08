@@ -26,7 +26,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1R1",
@@ -45,7 +48,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1R2",
@@ -64,7 +70,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C1R3",
@@ -83,7 +92,10 @@
       "name": "pin2",
       "signal_name": "C1R0_C1R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L1T",
@@ -374,7 +386,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D1CP",
@@ -433,7 +448,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2R1",
@@ -452,7 +470,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2R2",
@@ -471,7 +492,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C2R3",
@@ -490,7 +514,10 @@
       "name": "pin2",
       "signal_name": "C2R0_C2R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L2T",
@@ -781,7 +808,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D2CP",
@@ -840,7 +870,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3R1",
@@ -859,7 +892,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3R2",
@@ -878,7 +914,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "C3R3",
@@ -897,7 +936,10 @@
       "name": "pin2",
       "signal_name": "C3R0_C3R1"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "L3T",
@@ -1188,7 +1230,10 @@
       "name": "pin2",
       "signal_name": "AVMID"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "D3CP",

@@ -252,7 +252,10 @@
       "name": "pin2",
       "signal_name": "DGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ],
   [
@@ -730,7 +733,10 @@
       "name": "pin2",
       "signal_name": "DGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CSW2",
@@ -749,7 +755,10 @@
       "name": "pin2",
       "signal_name": "DGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ]
  ],

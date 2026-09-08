@@ -136,7 +136,10 @@
       "name": "pin2",
       "signal_name": "OUTN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "COF2",
@@ -155,7 +158,10 @@
       "name": "pin2",
       "signal_name": "OUTN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CYO1",
@@ -174,7 +180,10 @@
       "name": "pin2",
       "signal_name": "PE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "CYO2",
@@ -193,7 +202,10 @@
       "name": "pin2",
       "signal_name": "PE"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "JOUTP",
@@ -413,7 +425,10 @@
       "name": "pin2",
       "signal_name": "BKAN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVOA",
@@ -649,7 +664,10 @@
       "name": "pin2",
       "signal_name": "BKBN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVOB",
@@ -885,7 +903,10 @@
       "name": "pin2",
       "signal_name": "OUTN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "UIVOV",
@@ -1048,7 +1069,10 @@
       "name": "pin2",
       "signal_name": "AGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
     "designator": "JTXFR",
@@ -1105,7 +1129,10 @@
       "name": "pin2",
       "signal_name": "AGND"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    }
   ]
  ],
