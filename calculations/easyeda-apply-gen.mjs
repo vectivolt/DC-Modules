@@ -65,7 +65,7 @@ const uuidOf = (mpn) => {
   if (/^ACX-/.test(mpn)) return uuidMap["CT-100A-1:2500"].part_uuid;
   if (/^AS-\d/.test(mpn)) return uuidMap["CT-RES-1:100"].part_uuid;
   // 88-way card interface: no probed EasyEDA part exists; treat like the other connector classes.
-  if (/^CONN-CARD-88$/.test(mpn)) return uuidMap["HDR-1x5-2.54"]?.part_uuid ?? null;
+  if (/^CONN-CARD-88/.test(mpn)) return uuidMap["HDR-1x5-2.54"]?.part_uuid ?? null;  // -H and -R halves (E37 pair split)
   if (/^(IND-|DM-)/.test(mpn)) return uuidMap["IND-ALL-2P"].part_uuid;
   return null;
 };

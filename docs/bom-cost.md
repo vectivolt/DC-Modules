@@ -8,7 +8,7 @@ Price breaks: 100 pc = ×1.35 electronics / ×1.15 mech; 5000 pc = ×0.88 / ×0.
 2026-09-05 (≥10k units/yr): the 10k column is the planning basis; heuristics resolve at RFQ round 1.
 Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k columns included).
 
-## 30KW — module COGS **₹30356 @10k** (1k ₹37534, 5k ₹33465, 100 pc ₹48929) vs red-line ₹25000 / stretch ₹22000 → **@10k OVER red-line by ₹5356**
+## 30KW — module COGS **₹30372 @10k** (1k ₹37554, 5k ₹33483, 100 pc ₹48956) vs red-line ₹25000 / stretch ₹22000 → **@10k OVER red-line by ₹5372**
 
 | Category | ₹ @1k | share |
 |---|---|---|
@@ -18,13 +18,13 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | capacitors | 4895 | 13% |
 | drive+control ICs | 3948 | 10.5% |
 | resistors/shunts | 712 | 1.9% |
+| connectors | 483 | 1.3% |
+| misc | 476 | 1.3% |
 | protection | 457 | 1.2% |
-| connectors | 393 | 1% |
-| misc | 326 | 0.9% |
-| bias/iso modules | 220 | 0.6% |
 | HMI | 24 | 0.1% |
+| bias/iso modules | 0 | 0% |
 
-## 60KW — single-board REFERENCE (product 60 kW = 2× module) — module COGS **₹51183 @10k** (1k ₹63414, 5k ₹56463, 100 pc ₹82974) vs red-line ₹42000 / stretch ₹36000 → **@10k OVER red-line by ₹9183**
+## 60KW — single-board REFERENCE (product 60 kW = 2× module) — module COGS **₹51199 @10k** (1k ₹63434, 5k ₹56481, 100 pc ₹83001) vs red-line ₹42000 / stretch ₹36000 → **@10k OVER red-line by ₹9199**
 
 | Category | ₹ @1k | share |
 |---|---|---|
@@ -35,12 +35,12 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | drive+control ICs | 5583 | 8.8% |
 | resistors/shunts | 902 | 1.4% |
 | protection | 772 | 1.2% |
-| connectors | 393 | 0.6% |
-| misc | 369 | 0.6% |
-| bias/iso modules | 220 | 0.3% |
+| misc | 519 | 0.8% |
+| connectors | 483 | 0.8% |
 | HMI | 24 | 0% |
+| bias/iso modules | 0 | 0% |
 
-## 120KW — **CABINET: 4x 30 kW modules (alt: 2x 60 kW)** — cabinet COGS **₹121424 @10k** (1k ₹150135, 5k ₹133860, 100 pc ₹195716) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹43424**
+## 120KW — **CABINET: 4x 30 kW modules (alt: 2x 60 kW)** — cabinet COGS **₹121488 @10k** (1k ₹150215, 5k ₹133932, 100 pc ₹195824) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹43488**
 
 | Category | ₹ @1k | share |
 |---|---|---|
@@ -50,11 +50,11 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | capacitors | 19580 | 13% |
 | drive+control ICs | 15793 | 10.5% |
 | resistors/shunts | 2846 | 1.9% |
+| connectors | 1932 | 1.3% |
+| misc | 1906 | 1.3% |
 | protection | 1828 | 1.2% |
-| connectors | 1572 | 1% |
-| misc | 1306 | 0.9% |
-| bias/iso modules | 880 | 0.6% |
 | HMI | 96 | 0.1% |
+| bias/iso modules | 0 | 0% |
 
 ## Red-line closure levers (R12 rev D — 10k basis; the generic volume break is ALREADY in the 10k column, so the old "5k-break" lever is retired to avoid double-counting)
 

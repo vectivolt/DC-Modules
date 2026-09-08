@@ -35,7 +35,6 @@ PP-4u7-1200,,CLASS,Faratronic,"4.7 µF 1200 V film (output — HR-8: 1000 V = 83
 DM-22u-SKU,,CLASS,custom/POCO (D6 rev B),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9; audit F7: 30 kW winding is 14 T × 3×AWG12 eq 9.9 mm² — the rev-A 2×AWG12 ran 8.3 A/mm² and computed ΔT 46–49 K vs the 45 K acceptance) [D6 120 A winding]","DMEGC eq",acdc,1,324,240,211.2,192,240,192,LDM1
 DM-22u-SKU,,CLASS,custom/POCO (D6 rev B),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9; audit F7: 30 kW winding is 14 T × 3×AWG12 eq 9.9 mm² — the rev-A 2×AWG12 ran 8.3 A/mm² and computed ΔT 46–49 K vs the 45 K acceptance)","DMEGC eq",acdc,1,324,240,211.2,192,240,192,LDM2
 DM-22u-SKU,,CLASS,custom/POCO (D6 rev B),"DM line choke 22 µH sendust toroid, line-current rated per SKU (HR-9; audit F7: 30 kW winding is 14 T × 3×AWG12 eq 9.9 mm² — the rev-A 2×AWG12 ran 8.3 A/mm² and computed ΔT 46–49 K vs the 45 K acceptance)","DMEGC eq",acdc,1,324,240,211.2,192,240,192,LDM3
-CONN-CARD-88,,UNMAPPED,any 2×44 0.1in,"88-way 2×44 2.54 mm card interface — header on power board, receptacle on card, keyed (card-split rescue: the module's main mating interface matched no DB rule and was absent from the BOM)","Samtec SSW/TSW class",acdc+dcdc+card,4,74.3,55,48.4,44,220,176,JA JB JCARD
 FUSE-gG-690V-125A,,CLASS,local/Bussmann,"gG fuse 690 VAC, 22×58 frame (rating per SKU — audit F6: 80 A @30 kW; the 63 A part ran 88% loaded at 55.9 A worst and NEGATIVE against the ~0.72× enclosed/+55 °C derate; holder must be the matching 22×58 base, NOT the 10×38 RT28-32)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F1
 FUSE-gG-690V-125A,,CLASS,local/Bussmann,"gG fuse 690 VAC, 22×58 frame (rating per SKU — audit F6: 80 A @30 kW; the 63 A part ran 88% loaded at 55.9 A worst and NEGATIVE against the ~0.72× enclosed/+55 °C derate; holder must be the matching 22×58 base, NOT the 10×38 RT28-32)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F2
 FUSE-gG-690V-125A,,CLASS,local/Bussmann,"gG fuse 690 VAC, 22×58 frame (rating per SKU — audit F6: 80 A @30 kW; the 63 A part ran 88% loaded at 55.9 A worst and NEGATIVE against the ~0.72× enclosed/+55 °C derate; holder must be the matching 22×58 base, NOT the 10×38 RT28-32)","SIBA",acdc,1,283.5,210,184.8,168,210,168,F3
@@ -43,11 +42,13 @@ SHUNT-MANG,C508584,REVIEW,Isabellenhütte-eq/local,"manganin shunt 50 mV class (
 CER-25W-AX,,CLASS,TE/local,"25 W ceramic pulse resistor, axial (precharge 33 Ω / discharge 160 Ω; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant at 120 kW via skuOverride; per-SKU T-05)","SQP25",acdc,6,37.8,28,24.6,22.4,168,134,RPRE1 RPRE2 RDIS0 RDIS1 RDIS2 RDIS3
 XFMR-AUX-FLY-C,,CUSTOM,custom (D4 rev C),"aux flyback transformer ETD34, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 (E26 rev C — CB-20 SKU-load closure; reinforced pri→sec barrier, 100% hipot 4 kV)","—",acdc,1,222.8,165,145.2,132,165,132,TAUX
 C2M1000170D,C5713500,ORDERABLE,CR Micro/BASiC,"SiC FET 1700 V ~1 Ω (aux flyback, full-bus E26 rev C; TO-247 likely package — MR-23, footprint placeholder §40)","G3R1700 class",acdc,1,216,160,140.8,128,160,128,QAUX
+CONN-CARD-88-R,,UNMAPPED,any 2×44 0.1in,"88-way 2×44 2.54 mm card interface, RECEPTACLE side (card), keyed, mates CONN-CARD-88-H","Samtec SSW-144-xx-x-D class",card,2,101.3,75,66,60,150,120,JCARD
 S20K550,C317868,REVIEW,TDK/Songtian,"MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE)","Songtian eq",acdc,6,29.7,22,19.4,17.6,132,106,MOV1 MOV2 MOV3 MOVP1 MOVP2 MOVP3
 WW-470R-10W,,CLASS,local/TE,"470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating)","SQP10",acdc,6,29.7,22,19.4,17.6,132,106,RA0C RB0C RC0C RA1C RB1C RC1C
 CER-2k2-10W-AX,,CLASS,TE/local,"2.2 kΩ 10 W wirewound axial (bank bleeder chain, HR-15 — ≤65 J/pulse at 120 kW, τ 4–17 s to <60 V)","SQP10",dcdc,8,18.9,14,12.3,11.2,112,90,RBDA0 RBDA1 RBDA2 RBDA3 RBDB0 RBDB1 RBDB2 RBDB3
 FILM-100n-250,,CLASS,Faratronic,"100 nF 250 V film (Vienna RCD clamp)","MLCC 250V",acdc,6,24.3,18,15.8,14.4,108,86,CA0C CB0C CC0C CA1C CB1C CC1C
 VY1472M63Y5UQ63V0,C499492,ORDERABLE,Songtian/Faratronic,"Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)","TDK CD series",acdc+dcdc,6,21.6,16,14.1,12.8,96,77,CY1 CY2 CY3 CPET CYO1 CYO2
+CONN-CARD-88-H,,UNMAPPED,any 2×44 0.1in,"88-way 2×44 2.54 mm card interface, PIN HEADER side (power board), keyed","Samtec TSW-144-xx-x-D class",acdc+dcdc,2,60.8,45,39.6,36,90,72,JA JB
 HV732BTTD4753F,C4121673,ORDERABLE,KOA/UniOhm,"475 kΩ 1206 1% anti-surge (HV divider — MR-3)","any anti-surge 1%",acdc+dcdc,64,1.9,1.4,1.2,1.1,90,70,RV1D0 RV1D1 RV1D2 RV1D3 RV1D4 RV1D5 RV1D6 RV1D7 RV2D0 RV2D1 RV2D2 RV2D3
 PS122WF4702T4E,C2793932,REVIEW,KOA/UniOhm,"47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (R3: 1.04 W worst case; a 1 W 2512 has sqrt(P*R)=217 V < 220 V at +10% bus) (HR-20: halves per-element V and W — ≤208 V / ≤0.92 W continuous)","any HV 2512",acdc+dcdc,22,5.4,4,3.5,3.2,88,70,RBALT0A RBALT0B RBALB0A RBALB0B RBALT1A RBALT1B RBALB1A RBALB1B RNS1A RNS1B RNS2A RNS2B
 MICROFIT3-16,C277731,ORDERABLE,Molex 43045-16 class,"16-way board-to-board harness header, 5 A/contact (MR-14: JST PHD's 1 A contacts were over-run by V15/GND at 120 kW; spares 14/15 now carry GND)","JST VL / TE MicroMate",acdc+dcdc,2,51.3,38,33.4,30.4,76,61,JICA JICB
@@ -64,7 +65,7 @@ TLP152,C17255258,ORDERABLE,Toshiba/eq,"opto gate driver (isolated bus-discharge 
 CRM2512-FX-10R0ELF,C840605,ORDERABLE,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,6,8.1,6,5.3,4.8,36,29,RA0SN RB0SN RC0SN RA1SN RB1SN RC1SN
 TPS54202DDCR,C191884,ORDERABLE,TI/eq,"15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; on the card since the split, exporting V3P3 over the 88-way)","MP2451/SY8113",card,2,20.3,15,13.2,12,30,24,UBKCARD
 CL21B105KBFNNNE,C28323,ORDERABLE,any,"1 µF 0805 (driver bias) 1uF","any",acdc+dcdc,36,1.1,0.8,0.7,0.6,29,22,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 CA1GB1 CA1GB2 CB1GB1 CB1GB2 CC1GB1 CC1GB2
-RC0805FR-0710KL,C84376,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 10k","any",acdc+dcdc+card,64,0.5,0.4,0.4,0.3,26,19,RKFBP RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RQDPD RTPFCP RTINLP RFB2 RCOMP
+RC0805FR-0710KL,C84376,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 10k","any",acdc+dcdc+card,66,0.5,0.4,0.4,0.3,26,20,RKFBP RROLE RA0GPD RB0GPD RC0GPD RA1GPD RB1GPD RC1GPD RQDPD RTPFCP RTINLP RFB2
 NCP1252A,C80800,ORDERABLE,onsemi,"current-mode flyback controller, RT-set frequency (pin 4: 66.5 kΩ → ~65 kHz; 43 k→100 kHz / 8.5 k→500 kHz per datasheet Rev 9 — audit closed the §K RT line), A-suffix = 48% DCmax, BO pin, VCC-resistor startup, SOIC-8 — MR-13: the drawn application IS this IC","UCC28C43 + RT/CT & BO rework",acdc,1,32.4,24,21.1,19.2,24,19,UAUX
 SR1206FR-7W2R2L,C873951,ORDERABLE,any thick-film HP,"gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%) 2.2","2× 0805 parallel",dcdc,12,2.7,2,1.8,1.6,24,19,R1HOFF R1LOFF R2HOFF R2LOFF R3HOFF R3LOFF R4HOFF R4LOFF R5HOFF R5LOFF R6HOFF R6LOFF
 TLV9061IDBVR,C398358,ORDERABLE,TI/3PEAK,"rail-to-rail op-amp (AVMID buffer, E31)","LMV321",card,2,16.2,12,10.6,9.6,24,19,UAVB
@@ -107,7 +108,6 @@ RC0603FR-07220RL,C107696,ORDERABLE,any,"220 Ω segment 220","any",dcdc,8,0.4,0.3
 RC0805FR-07100RL,C105577,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100","any",acdc+dcdc,5,0.5,0.4,0.4,0.3,2,2,RQDG RALTS RALRS RBLTS RBLRS
 RC0805FR-07100KL,C96346,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100k","any",acdc+card,5,0.5,0.4,0.4,0.3,2,2,RAUXG RENRCARD RENLCARD
 CL21A106KAYNNNE,C15850,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10uF","any",card,4,0.7,0.5,0.4,0.4,2,2,CBKICARD CAVO
-RC0805JR-070RL,C96345,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 0R","any",acdc+dcdc+card,4,0.5,0.4,0.4,0.3,2,1,RROLE RROLEB RAGTC
 RC0805FR-071ML,C107700,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1M","any",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,RPET RPVBA RPVBB RCGB
 GZ2012D601TF,C1017,ORDERABLE,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",card,2,1.1,0.8,0.7,0.6,2,1,FBCARDA
 CC0603KRX7R9BB103,C100042,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10nF","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
@@ -120,6 +120,7 @@ RC0805FR-072K2L,C114561,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/
 RC0805FR-0745K3L,C273885,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 45.3k","any",card,2,0.5,0.4,0.4,0.3,1,1,RBKF1CARD
 RC0805FR-074R7L,C137513,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 4.7","any",card,2,0.5,0.4,0.4,0.3,1,1,RAVI
 RC0805FR-074K7L,C60816,ORDERABLE,any,"card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point tie (card-split rescue) 4.7k","any",card,2,0.5,0.4,0.4,0.3,1,1,RFLTC
+RC0805JR-070RL,C96345,ORDERABLE,any,"card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point tie (card-split rescue) 0R","any",card,2,0.5,0.4,0.4,0.3,1,1,RAGTC
 CC0805KRX7R9BB471,C107152,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 470pF","any",acdc,1,0.7,0.5,0.4,0.4,1,0,CCSF
 CC1206KRX7R9BB472,C107208,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 4.7nF","any",dcdc,1,0.7,0.5,0.4,0.4,1,0,CCGB
 RC0805FR-0715KL,C114559,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 15k","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RBR2
@@ -138,5 +139,5 @@ MECH,,MECH,—,"Busbars/interconnect + harness (busbar-calc)","—",module,1,189
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,633,550,512,479,550,479,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,2990,2600,2418,2262,2600,2262,
-TOTAL_ELECTRONIC,,,,,,,,,,,,50237,39719,
-TOTAL_MODULE,,,,,,,,,,,,63414,51183,
+TOTAL_ELECTRONIC,,,,,,,,,,,,50257,39735,
+TOTAL_MODULE,,,,,,,,,,,,63434,51199,

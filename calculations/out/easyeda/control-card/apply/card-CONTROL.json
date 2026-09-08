@@ -1381,9 +1381,9 @@
   [
    {
     "designator": "JCARD",
-    "value": "CONN-CARD-88",
+    "value": "CONN-CARD-88-R",
     "block_name": "CARD-IF",
-    "search_query": "CONN-CARD-88 88-way 2×44 2.54 mm card interface — header on power board, recepta",
+    "search_query": "CONN-CARD-88-R 88-way 2×44 2.54 mm card interface, RECEPTACLE side",
     "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
@@ -1529,7 +1529,7 @@
      {
       "pin_number": 29,
       "name": "AGND_2",
-      "signal_name": "AGND_2"
+      "signal_name": "AGND"
      },
      {
       "pin_number": 30,

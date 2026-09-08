@@ -126,3 +126,18 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   (24 V coils, 20 kHz) — halves steady 24 V demand; implement in the HAL coil driver.
 - **Boot/provisioning:** BOOT0 strapped low, SWD on the JSWD headers (CB-13); EOL flow per
   dfm-production.md step 4 is now physically possible.
+
+## Card boot identity (E35/E37 — one image, straps decide)
+
+The control card is ONE part number and ONE firmware image for both converter roles and both
+ratings. At boot, before any enable, the HAL must:
+
+1. Read **ROLE0** (GPIO, pin 90): low = AC-DC slot (board ties the way to DGND), high/floating
+   (card 10k pull-up) = DC-DC slot. Configure the role personality (PWM semantics, AIN map,
+   DO/DI meanings) accordingly.
+2. Read **ROLE1/RATING** (ADC, pin 38) against the card's 10 k pull-up to V3P3 and the board's
+   strap to DGND: **~0.0 V → 0R → 30 kW · ~1.65 V → 10 k → 60 kW · ~3.3 V → no board seated
+   (fault, stay disabled)**. Call `pmp_fsm_set_rating_kw()` with the decoded rating — it narrows
+   the F.21 discharge-supervision window (3000/5500 ms); an undecoded strap keeps the worst-case
+   default, which can only delay the F.21 report, never miss it. (fsm suite: 35/35 incl. both
+   rating-window checks.)

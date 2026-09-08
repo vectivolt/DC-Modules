@@ -116,6 +116,8 @@ SCRIPT(sc_wdt) { sc_en(s); if (s->t == 1500) s->in.wdt_ok = false; }
 SCRIPT(sc_canto) { sc_en(s); if (s->t > 900) s->in.can_age_ms += 2; }
 SCRIPT(sc_link) { sc_en(s); if (s->t > 1500) s->in.link_age_ms += 2; }
 SCRIPT(sc_shut) { sc_en(s); if (s->t == 1200) s->f.st = ST_SHUTDOWN; }
+/* F.21 rating plumbing (card strap, one image): bus held up so discharge can never finish */
+SCRIPT(sc_dstuck) { sc_en(s); if (s->t == 100) s->f.st = ST_SHUTDOWN; if (s->t > 100) s->p.bus = 300; }
 SCRIPT(sc_lock) {
   sc_en(s);
   if (s->t >= 600 && s->t < 2400 && s->t % 300 == 0) s->in.desat_flt = true;
@@ -151,6 +153,12 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_link, 3000);   expect("link loss F.27", &s, "|FAULT|LOCK|", FC_LINK, 1);
   sim_init(&s); runsim(&s, sc_shut, 3000);   expect("shutdown discharge <60V", &s, "|OFF|", -1, s.p.bus < 60);
   sim_init(&s); runsim(&s, sc_lock, 3000);   expect("5 faults -> LOCK", &s, "|LOCK|", -1, s.f.lock);
+
+  /* -------- core-API checks: runtime rating (card ROLE1 strap -> pmp_fsm_set_rating_kw) -------- */
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 30);
+  runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, 30 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
+  sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
+  runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
 
   /* -------- CAN codec round-trip + guards -------- */
   uint8_t buf[8];

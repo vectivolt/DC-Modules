@@ -75,7 +75,11 @@ export const cardMap = (role, lanes = 1) => {
     // because every way group is a fixed-length loop so the way NAMES do not vary with lane count.
     // It was deriving the card's own pinout from a configuration the card cannot serve.
     const generic = cardMap("dcdc", 2).map(([p]) => p);
-    return generic.map((p) => [p, `net.${p}`]);
+    // AGND_2 is AVMID's Kelvin RETURN: on the card it must land on the card's AGND at the
+    // buffer's ground (module-interconnect audit: a literal net.AGND_2 touched nothing on the
+    // card — a dead way pretending to be a Kelvin). The Kelvin property is a routing rule
+    // (single tie at the AnalogMid ground), recorded in CARD_RULES; netlist-wise it is AGND.
+    return generic.map((p) => [p, p === "AGND_2" ? "net.AGND" : `net.${p}`]);
   }
   const ac = role === "acdc";
   const ph = Array.from({ length: lanes * 3 }, (_, i) =>

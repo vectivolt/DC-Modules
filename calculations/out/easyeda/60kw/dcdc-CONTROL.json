@@ -352,9 +352,9 @@
     87,
     88
    ],
-   "value": "CONN-CARD-88",
-   "query": "CONN-CARD-88 88-way 2×44 2.54 mm card interface — header on power board, recepta",
-   "mpn": "CONN-CARD-88"
+   "value": "CONN-CARD-88-H",
+   "query": "CONN-CARD-88-H 88-way 2×44 2.54 mm card interface, PIN HEADER side ",
+   "mpn": "CONN-CARD-88-H"
   },
   {
    "designator": "RPDB0",
@@ -552,7 +552,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "0R",
+   "value": "10k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },

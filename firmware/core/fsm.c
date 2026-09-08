@@ -14,6 +14,9 @@ static void latch(pmp_fsm_t *f, pmp_fault_t code) {
 
 void pmp_fsm_init(pmp_fsm_t *f) {
   *f = (pmp_fsm_t){0};
+  /* worst-case-safe default AFTER the zeroing (a zero window would latch F.21 on the first
+     ST_DISCH tick); HAL narrows per rating via pmp_fsm_set_rating_kw() */
+  f->disch_to_ms = PMP_DISCH_TO_MS;
   f->st = ST_INIT;
   f->out.derate = 1.0f;
   f->out.mode = MODE_PAR;
@@ -144,9 +147,17 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   case ST_DISCH:
     f->disch_ms++;
     if (in->vbus < 60.0f) { f->st = ST_OFF; o->q_disch = false; }
-    else if (f->disch_ms > PMP_DISCH_TO_MS) latch(f, FC_DISCH);   /* F.21 — discharge kept commanded */
+    else if (f->disch_ms > f->disch_to_ms) latch(f, FC_DISCH);   /* F.21 — discharge kept commanded */
     break;
   case ST_OFF:
     break;
   }
+}
+
+/* One image, rating from the card strap (see fsm.h). Values mirror the fsm.h physics note:
+ * t(<60 V) ~ 2.0 / 3.6 s at 30 / 60 kW -> windows 3000 / 5500 ms; anything else keeps the
+ * worst-case default so an undecoded strap can only delay the F.21 report, never miss it. */
+void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw)
+{
+  f->disch_to_ms = (kw == 30u) ? 3000u : (kw == 60u) ? 5500u : PMP_DISCH_TO_MS;
 }

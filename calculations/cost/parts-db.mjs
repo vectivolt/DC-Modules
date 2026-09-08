@@ -134,7 +134,10 @@ export const DB = [
   { m: /^MOVP?[123]$/, mpn: "S20K550", mfr: "TDK/Songtian", desc: "MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE)", price1k: 22, alt: "Songtian eq" },
   { m: /^GDT[123]$/, mpn: "GDT-3k5-20kA", mfr: "Bourns/eq", desc: "gas discharge tube 3.5 kV (L-PE surge path, HR-7)", price1k: 18, alt: "Littelfuse CG3" },
   { m: /^F[123]$/, mpn: "FUSE-gG-690V", mfr: "local/Bussmann", desc: "gG fuse 690 VAC, 22×58 frame (rating per SKU — audit F6: 80 A @30 kW; the 63 A part ran 88% loaded at 55.9 A worst and NEGATIVE against the ~0.72× enclosed/+55 °C derate; holder must be the matching 22×58 base, NOT the 10×38 RT28-32)", price1k: 105, alt: "SIBA" },
-  { m: /^J(A|B|CARD)$/, mpn: "CONN-CARD-88", mfr: "any 2×44 0.1in", desc: "88-way 2×44 2.54 mm card interface — header on power board, receptacle on card, keyed (card-split rescue: the module's main mating interface matched no DB rule and was absent from the BOM)", price1k: 55, alt: "Samtec SSW/TSW class" },
+  // A connector PAIR is two different parts. One p/n for all three refs meant purchasing would
+  // buy three headers and nothing mates (module-interconnect audit, 2026-09-08).
+  { m: /^J[AB]$/, mpn: "CONN-CARD-88-H", mfr: "any 2×44 0.1in", desc: "88-way 2×44 2.54 mm card interface, PIN HEADER side (power board), keyed", price1k: 45, alt: "Samtec TSW-144-xx-x-D class" },
+  { m: /^JCARD$/, mpn: "CONN-CARD-88-R", mfr: "any 2×44 0.1in", desc: "88-way 2×44 2.54 mm card interface, RECEPTACLE side (card), keyed, mates CONN-CARD-88-H", price1k: 75, alt: "Samtec SSW-144-xx-x-D class" },
   { m: /^DISP1$/, mpn: "LED-2DIG-0.56CC", mfr: "any", desc: "2-digit 7-seg 0.56\" common-cathode (HMI)", price1k: 18, alt: "any" },
   { m: /^SW[12]$/, mpn: "TACT-6x6", mfr: "any", desc: "tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)", price1k: 3, alt: "any" },
   { m: /^JSWD\w+$/, mpn: "HDR-1x5-2.54", mfr: "any", desc: "SWD/boot header (EOL programming — CB-13; LV-only test state §45)", price1k: 8, alt: "TC2030 pads" },

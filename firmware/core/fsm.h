@@ -55,12 +55,19 @@ typedef struct {
   uint8_t fault_count;
   bool lock, need_enable;
   uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms;
+  uint32_t disch_to_ms;     /* F.21 window — runtime per rating (card strap), default = macro */
   float icmd_saved;
   pmp_out_t out;
 } pmp_fsm_t;
 
 void pmp_fsm_init(pmp_fsm_t *f);
 void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in);   /* call every 1 ms */
+/* Card promise (CARD_RULES): ONE firmware image, rating read at boot from the RATING strap on
+ * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND):
+ *   ~0.0 V -> 0R strap  -> 30 kW · ~1.65 V -> 10k strap -> 60 kW · ~3.3 V -> no board / fault.
+ * HAL decodes the band and calls this once before enabling; unknown ratings keep the
+ * worst-case default window (longer timeout = later F.21 report, never an unsafe one). */
+void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw);
 const char *pmp_state_name(pmp_state_t s);
 
 /* thresholds (protection-thresholds.md rev B) — exposed for EOL/limits telemetry */

@@ -12,9 +12,9 @@
   [
    {
     "designator": "JA",
-    "value": "CONN-CARD-88",
+    "value": "CONN-CARD-88-H",
     "block_name": "CARD-IF",
-    "search_query": "CONN-CARD-88 88-way 2×44 2.54 mm card interface — header on power board, recepta",
+    "search_query": "CONN-CARD-88-H 88-way 2×44 2.54 mm card interface, PIN HEADER side",
     "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
@@ -321,7 +321,7 @@
    },
    {
     "designator": "RROLE",
-    "value": "0R",
+    "value": "10k",
     "block_name": "CARD-IF",
     "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",

@@ -303,8 +303,10 @@ return (
         <trace key={`a${i}`} from={`.RPD${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPD${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
-      {/* ROLE0 tied low identifies this as the AC-DC slot; RATING codes the power level. */}
-      <resistor name="RROLE" resistance="0" footprint="0603" pcbX={P.cardX + 50} pcbY={P.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
+      {/* ROLE0 tied low identifies this as the AC-DC slot; RATING codes the power level.
+          CARD_RULES: 0R = 30 kW, 10k = 60 kW — the strap was hardcoded 0R, so a 60 kW board
+          identified to its card as a 30 kW machine (module-interconnect audit, 2026-09-08). */}
+      <resistor name="RROLE" resistance={lanes === 2 ? "10k" : "0"} footprint="0603" pcbX={P.cardX + 50} pcbY={P.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLE > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLE > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
@@ -541,8 +543,9 @@ return (
         <trace key={`a${i}`} from={`.RPDB${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPDB${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
-      {/* ROLE0 left open identifies the DC-DC slot; RATING codes the power level. */}
-      <resistor name="RROLEB" resistance="0" footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
+      {/* ROLE0 left open identifies the DC-DC slot; RATING codes the power level
+          (0R = 30 kW, 10k = 60 kW — same audit fix as RROLE). */}
+      <resistor name="RROLEB" resistance={channels === 2 ? "10k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 

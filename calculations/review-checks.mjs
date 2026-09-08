@@ -357,8 +357,8 @@ ck("SHEET-VALUE-TEXT", (() => {
   const { DB } = await import("./cost/parts-db.mjs");
   const rule = (d) => DB.find((r) => r.m.test(d));
   const mpnOf = (d) => rule(d)?.mpn;
-  ck("AUD-DB-CARD", mpnOf("UCARD") === "GD32G553VET6" && mpnOf("JCARD") === "CONN-CARD-88" &&
-    mpnOf("JA") === "CONN-CARD-88" && mpnOf("USUPCARD") === "TPS3430-class" &&
+  ck("AUD-DB-CARD", mpnOf("UCARD") === "GD32G553VET6" && mpnOf("JCARD") === "CONN-CARD-88-R" &&
+    mpnOf("JA") === "CONN-CARD-88-H" && mpnOf("JB") === "CONN-CARD-88-H" && mpnOf("USUPCARD") === "TPS3430-class" &&
     mpnOf("UANDCARD") === "74HC11" && mpnOf("UBKCARD") === "TPS54202-class" &&
     mpnOf("LBKCARD") === "IND-10u-3A",
     "card-split designators all classify (MCU + 88-way + supervisor + AND + buck were absent from the BOM)");

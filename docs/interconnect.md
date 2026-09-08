@@ -84,3 +84,15 @@ is deleted (review CB-11).
 note P-3); DGND→PE 1 MΩ ∥ 4.7 nF on the AC-DC board. The whole control domain is SELV; every HV
 measurement crosses on an isolated amplifier, so the HMI (buttons/display), SWD headers, fan
 connectors and CAN stay touch-safe by architecture.
+
+## Module interconnect audit (2026-09-08 — permanent gate)
+
+`calculations/module-interconnect-audit.mts` (in run-all) walks the BUILT netlists of
+acdc + dcdc + card per SKU and verifies every physical boundary end-to-end: DCP/DCN/PE studs on
+both boards; all 16 harness pins against the semantic table above (including the TX/RX crossover
+and the series-100R hop); every expected 88-way card way wired on the board AND landing on real
+electronics on the card, both roles; and the RATING strap encoding the SKU. Found and fixed at
+introduction: RATING hardcoded 0R (a 60 kW board identified as 30 kW), the 88-way listed as one
+p/n for both halves (headers cannot mate headers → CONN-CARD-88-H / -R pair), and the AGND_2
+Kelvin way dead on the card side. Negative-tested: a wrong expectation or a wrong netlist makes
+it fail loudly (78 FAILs on a board swap).
