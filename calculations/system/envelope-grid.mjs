@@ -25,6 +25,10 @@ const SKUS = [
   // Tank class REVVED (E42): ceiling 65 A pk / OC 95 A pk / 100 A-class CT / 8×27 nF + BIN6 —
   // same 0.68 ceiling:OC ratio as the frozen 48/70 class the 30/40 share.
   { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, rth: 1.1, ref: { cold: 10, room: 45, hot: 65 }, ipCeil: 65 },
+  // E44 AIR variant: same tank class + PFC pairs as the liquid; the LLC half-bridges PARALLEL
+  // (parL: per-package conduction quarters) so plain 4-fan air holds the full envelope — worst
+  // corner ~99 °C, no folds. Air thermal defaults (1.9 K/W to the 70 °C sink ref).
+  { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, parL: 2, ipCeil: 65 },
   { name: "60kw", P: 60e3, Imax: 200, lanes: 2, ch: 2 },
   { name: "120kw", P: 120e3, Imax: 400, lanes: 4, ch: 4 },
 ];
@@ -94,7 +98,8 @@ for (const s of SKUS) {
       const Pc = (IswR / par) ** 2 * 2 * rdsP, Psw = 17.4e-9 * (bus / 2) * (2 / Math.PI) * (Iline * Math.SQRT2) * 50e3 / par;
       TjP = HS + (Pc / 2 + Psw) * RTH;                      // per-PACKAGE dissipation into the SKU's Rth
       const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
-      TjL = HS + ((Ip / Math.SQRT2) ** 2 * rdsL + (ctl === "PS" ? 8 : 1)) * RTH;
+      const parL = s.parL ?? 1;                             // E44: paralleled LLC — per-PACKAGE share
+      TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PS" ? 8 : 1) / parL) * RTH;
     }
     // E41: thermal fold — the FSM's DERATE ladder in grid form. If the LLC package exceeds its
     // ceiling at the (already tank-clamped) corner, availability folds back until it holds; the
@@ -107,14 +112,15 @@ for (const s of SKUS) {
       TjL = HS + 15;
       for (let i = 0; i < 25; i++) {
         const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
-        TjL = HS + ((Ip / Math.SQRT2) ** 2 * rdsL + (ctl === "PS" ? 8 : 1)) * RTH;
+        const parL = s.parL ?? 1;
+        TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PS" ? 8 : 1) / parL) * RTH;
       }
     }
     if (folds) notes += `thermal derate to ${f(100 * PoutE / Pout, 0)}% `;
     const Pph3 = PphE, Pout3 = PoutE;
     // stage losses (scaled from loss-budget building blocks)
     const pfcW = s.lanes * 3 * ((IswR ** 2) * 2 * 0.010 * (1 + 0.004 * (TjP - 25)) / (s.par ?? 1) + 17.4e-9 * (bus / 2) * (2 / Math.PI) * Iline * Math.SQRT2 * 50e3 / 3 + 12.1 * (Iline / 54.94) ** 1.6 + 33.5 * (Iline / 54.94) ** 2 * 0.8);
-    const llcW = s.ch * (6 * (Ip / Math.SQRT2) ** 2 * 0.035 + 3 * (20.5 * (Pph3 / 10.2e3) ** 1.3) + 3 * Ip * Ip * 0.008);
+    const llcW = s.ch * (6 * (Ip / Math.SQRT2) ** 2 * 0.035 / (s.parL ?? 1) + 3 * (20.5 * (Pph3 / 10.2e3) ** 1.3) + 3 * Ip * Ip * 0.008);
     const secW = s.ch * 2 * (2 * 1.35 * (Pout3 / 0.99 / (2 * s.ch)) / bank + 2 * 0.022 * ((Pout3 / (2 * s.ch) / bank) * 1.11) ** 2 / 3);
     const fixW = 20 + 12 * s.lanes + 10 * s.ch + 10 * (s.lanes > 2 ? 2 : 1);
     const loss = pfcW + llcW + secW + fixW;

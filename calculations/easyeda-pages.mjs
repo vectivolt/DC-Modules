@@ -46,7 +46,7 @@ const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
 
 /** LLC half-bridge legs: 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
 const legBlocks = (names) => idxOf(names, /^Q(\d+)H$/).map((n) =>
-  [`LEG-${n}`, [new RegExp(`^(Q|U|PS|R|D|C)${n}[HL]`)]]);
+  [`LEG-${n}`, [new RegExp(`^(Q|U|PS|R|D|C)${n}[HL]`), new RegExp(`^RG${n}[HL]2$`)]]);   /* E44 pair gate Rs */
 
 /** LLC resonant tanks + rectifiers, one per leg */
 const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
@@ -116,19 +116,19 @@ const PAGES = {
       ["RAIL-MON", [/^RM(24|15)[AB]$/]],
     ], ["CARD-IF", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
     ["AUX-POWER", [
-      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^RFB[12]$/, /^RCOMP$/, /^CCOMP$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],
+      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^(DZAUX|QAUXFB|RZFB|RBEFB|CFBF|CAUXSS)$/, /^DCLA$/, /^CCLA$/, /^RCLA[12]$/]],   /* R4-3: zener-NPN loop replaces the RFB/RCOMP set */
       ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^CVCC$/, /^DTVS(24|15)$/]],
-      ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/]],
-      ["FANS", [/^JFAN\d$/, /^RFT\d$/]],
+      ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/, /^REN[12]A$/]],   /* R4-4/R4-5 */
+      ["FANS", [/^JFAN\d$/, /^RFT\d$/, /^RFDT\d$/]],
       ["INTERCONNECT", [/^JICA$/, /^RAL(TX|RX|TS|RS)$/]],
     ], ["FLYBACK", "RAILS", "BUCK-3V3", "FANS", "INTERCONNECT"]],
   ],
   dcdc: [
     ["LLC-LEGS", [
       ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/]],
-      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/]],
-      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/]],
-      ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/]],
+      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL]2$/]],
+      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL]2$/]],
+      ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/, /^RG3[HL]2$/]],   /* E44 paralleled-pair gate Rs */
     ], ["BUS-IN", "LEG-1", "LEG-2", "LEG-3"]],
     ["LLC-TANKS", [
       ["TANK-1", [/^C1R\d$/, /^L1T$/, /^T1$/, /^D1[AB][1-4]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/]],
@@ -153,7 +153,7 @@ const PAGES = {
     ["CONTROL", [
       // card-split (E35): see the AC-DC CONTROL note — board keeps interface + pull-downs + strap.
       ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/]],
-      ["COIL-DRIVER", [/^ULB$/]],
+      ["COIL-DRIVER", [/^ULB$/, /^UEXCL$/]],   /* R4-8 hardware S/P exclusion */
       ["INTERCONNECT", [/^JICB$/, /^RBL(TX|RX|TS|RS)$/]],
     ], ["CARD-IF", "COIL-DRIVER", "INTERCONNECT"]],
     ["COMMS-HMI", [

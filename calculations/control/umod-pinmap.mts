@@ -34,6 +34,9 @@ for (const role of ["UPFC", "ULLC"] as const)
 // the R3 fixed-pin facts (docs/mcu-pin-allocation-gd32.md §Fixed pins) + PA6/PA7 ADC capability,
 // documented by the R3 finding that had SWD parked on "PA6 / PA7 (ADC)".
 cap.set(28, { port: "PA6", func: "ADC (per R3 fixed-pin finding); TIMER7_BRKIN0", via: "doc:R3-SWD-finding" });
+// E44: pin 90 (PB3) is the FREED ROLE0 landing — documented free + 5V-tolerant in
+// docs/mcu-pin-allocation-gd32.md ("CAN2_RX on pin 90 PB3"; GPIO/EXTI input-capable).
+cap.set(90, { port: "PB3", func: "GPIO/EXTI input; CAN2_RX alt (freed ROLE0 landing)", via: "doc:pin-allocation-CAN2-finding" });
 const FIXED = new Set([24, 49, 64, 75, 100, 23, 48, 63, 74, 99, 37, 35, 36, 6, 14, 95, 76, 77]);
 
 // ---- the audited card-era pin map (E35 sheet, verified) — kept ways keep these pins ----------
@@ -74,6 +77,7 @@ const NEW: Record<string, [number, string]> = {
   DI7: [61, "FAN_TACH2 — PD14 TIMER3_CH2 capture"],
   DI8: [88, "RELAY_FB_KPRE — PD6 TIMER1_CH3 capture-capable input"],
   DI9: [87, "FAN_TACH3 (E41 3-fan variant) — PD5 GPIO/EXTI edge count; fan 3 PWM gangs on FAN_PWM2"],
+  DI10: [90, "FAN_TACH4 (E44 air-50 4-fan variant) — PB3 GPIO/EXTI edge count (freed ROLE0 landing); fan 4 PWM gangs on FAN_PWM2. Consumes the last spare way at the registered single-lane family ceiling (50 kW) — no further variant can need more ways, recorded deliberately vs the zero-spare defect class"],
 };
 
 // ---- the 88-way physical map (order = connector way number) ------------------------------------
@@ -87,7 +91,7 @@ const WAYS: [string, number | null][] = [
   ...["DO7","DO8","DO9","DO10"].map((w) => [w, NEW[w][0]] as [string, number]),
   ["DI0", KEPT.DI0], ["DI1", KEPT.DI1], ["DI2", CHANGED.DI2[0]], ["DI3", CHANGED.DI3[0]],
   ["DI4", KEPT.DI4], ["DI5", KEPT.DI5],
-  ...["DI6","DI7","DI8","DI9"].map((w) => [w, NEW[w][0]] as [string, number]),
+  ...["DI6","DI7","DI8","DI9","DI10"].map((w) => [w, NEW[w][0]] as [string, number]),
   ["GATE_EN", null], ["GATE_EN_A", null],       // the two safety-AND outputs (B = local slot, A = harness)
   ["FLT", KEPT.FLT], ["EN_A", KEPT.EN_A], ["EN_B", CHANGED.EN_B[0]], ["DRV_RDY", KEPT.DRV_RDY],
   ["CAN_TX", KEPT.CAN_TX], ["CAN_RX", KEPT.CAN_RX],
@@ -96,7 +100,6 @@ const WAYS: [string, number | null][] = [
   ["V15", null], ["V15", null], ["V3P3", null], ["V3P3", null], ["V3P3", null],
   ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null], ["DGND", null],
   ["AGND", null], ["AGND", null],
-  ["SPARE1", null],
 ];
 
 // ---- module-role board-side nets, way by way (the DC-DC slot hosts the card) -------------------
@@ -116,14 +119,14 @@ const MODULE_NETS: Record<string, string | null> = {
   DO7: "FAN_PWM1", DO8: "FAN_PWM2", DO9: "CTL_KPRE", DO10: "CTL_QDIS",
   DI0: "RELAY_FB_KSER", DI1: "RELAY_FB_KPARA", DI2: "RELAY_FB_KPARB", DI3: "RELAY_FB_KOUT",
   DI4: "RELAY_FB_KPREA", DI5: "RELAY_FB_KPREB",
-  DI6: "FAN_TACH1", DI7: "FAN_TACH2", DI8: "RELAY_FB_KPRE", DI9: "FAN_TACH3",
+  DI6: "FAN_TACH1", DI7: "FAN_TACH2", DI8: "RELAY_FB_KPRE", DI9: "FAN_TACH3", DI10: "FAN_TACH4",
   GATE_EN: "GATE_EN_B", GATE_EN_A: "GATE_EN_A",
   FLT: "FLT", EN_A: "EN_PFC", EN_B: "EN_LLC", DRV_RDY: "DRV_RDY",
   CAN_TX: "CAN_TX", CAN_RX: "CAN_RX",
   HMI0: "HMI_DAT", HMI1: "HMI_CLK", HMI2: "HMI_LAT", HMI3: "HMI_DIG1", HMI4: "HMI_DIG2",
   HMI5: "BTN1", HMI6: "BTN2",
   ROLE1: "RATING",
-  V15: "V15", V3P3: "V3P3", DGND: "DGND", AGND: "AGND", SPARE1: null,
+  V15: "V15", V3P3: "V3P3", DGND: "DGND", AGND: "AGND",
 };
 
 // ---- the 40-way inter-board harness (rev 2, replaces the 16-way): nets that cross --------------
@@ -140,7 +143,7 @@ const HARNESS40: [number, string | null][] = [
   [27, "FAN_PWM1"], [28, "FAN_PWM2"], [29, "FAN_TACH1"], [30, "FAN_TACH2"],
   [31, "CTL_KPRE"], [32, "CTL_QDIS"], [33, "RELAY_FB_KPRE"],
   [34, "EN_PFC"], [35, "GATE_EN_A"], [36, "FLT"], [37, "DRV_RDY"],
-  [38, "FAN_TACH3"], [39, null],                     // W38: E41 third fan tach; W39 spare
+  [38, "FAN_TACH3"], [39, "FAN_TACH4"],             // W38: E41 third fan tach; W39: E44 fourth (air-50)
   [40, "SHLD"],
 ];
 

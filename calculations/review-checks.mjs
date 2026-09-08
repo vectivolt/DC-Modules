@@ -27,7 +27,7 @@ ck("CB-1", /X1-2u2-530/.test(db) && !/X2-2u2-310/.test(db), "X caps are X1 530 V
 ck("CB-2", /CB\[AB\]\\d\+\[TB\]/.test(db) && /CBA\$\{i\}T/.test(boards) && /net\.BKAM/.test(boards) && /RBALBA/.test(boards), "bank electrolytics are 2-series strings with midpoint + balance");
 ck("CB-3", /IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN"/.test(boards) && /IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN"/.test(boards) && !/HvDivider/.test(boards), "bank/output senses are in-domain IsoVSense (no HvDivider left)");
 ck("CB-4", /name="RAGTC"/.test(boards) && !/name="RAGT[AB]"/.test(boards), "AGND–DGND single-point tie lives on the card (RAGTC); RAGTA/RAGTB deleted from power boards (card-split rev)");
-ck("CB-5", /RAUXST2 > \.pin2" to="\.UAUX > \.VCC"/.test(cells) && /\.UAUX > \.COMP/.test(cells) && /\.UAUX > \.BR/.test(cells) && /\.TAUX > \.AXA/.test(cells) && !/"\.UAUX > \.FB" to="net\.V15"/.test(cells), "aux controller fully wired (VCC startup, COMP, BR, aux winding; FB no longer tied to V15)");
+ck("CB-5", /RAUXST2 > \.pin2" to="\.UAUX > \.VCC"/.test(cells) && /\.UAUX > \.BO/.test(cells) && /\.UAUX > \.SS/.test(cells) && /\.TAUX > \.AXA/.test(cells) && !/"\.UAUX > \.FB" to="net\.V15"/.test(cells), "aux controller fully wired on the REAL NCP1252 map (VCC startup, BO, SS, aux winding — R4-3)");
 ck("CB-6", /AuxPower dcp="net.DCP" dcn="net.DCN"/.test(boards) && /SIC-1700/.test(db), "aux fed from full bus with 1700 V switch");
 ck("CB-7", /Lp 345 µH|Lp 345u/.test(cells) && /3\.2 A/.test(cells) && /XFMR-AUX-FLY-C/.test(db), "aux at the E26 rev C design point (110 W — R2/CB-20 superseded the 60 W closure)");
 ck("CB-8", /KPRE\[12\]/.test(db) && /HF167F/.test(db) && !/HF115F-2Z/.test(db) && /KPRE1/.test(boards), "precharge bypass = line-rated power relays");
@@ -131,7 +131,7 @@ ck("R3-RDY", /\.U\$\{id\} > \.RDY`\} to="net\.DRV_RDY"/.test(cells) && /RRDY\$\{
 ck("R3-WDT", /CWD\$\{id\}/.test(cells) && /CRST\$\{id\}/.test(cells) &&
   /pin7: "CWD", pin8: "CRST"/.test(cells),
   "TPS3430 CWD/CRST carry their timing caps (window was undefined)");
-ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin8: "RT"/.test(cells),
+ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin4: "RT"/.test(cells),
   "NCP1252A RT has its frequency-setting resistor (stage had no defined Fsw)");
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
   const { existsSync, readdirSync } = await import("node:fs");
@@ -401,16 +401,16 @@ try {
 
 // ===== E42 (2026-09-08): 50 kW LIQUID variant — structural asserts for every deliberate delta.
 // Each is the grep that WOULD have found the defect had the delta been half-applied.
-ck("E42-FANS", /pw === 50 \? 0 :/.test(boards) && /RFDT/.test(boards) && /pw === 50 \? 8 : pw === 40 \? 6 :/.test(boards),
-  "sealed module: nFans=0 at 50 kW with defined-low tach terminators; 16-can link (8/half)");
+ck("E42-FANS", /pw === 50 \? \(air \? 4 : 0\)/.test(boards) && /RFDT/.test(boards) && /pw === 50 \? 8 : pw === 40 \? 6 :/.test(boards),
+  "50 kW fans: 0 sealed-liquid / 4 air (E44), defined-low tach terminators on the liquid; 16-can link (8/half)");
 ck("E42-KOUT", /dualOut=\{pw === 50\}/.test(boards) && /dual \? HV : dualOut \? \["KOUT"\]/.test(cells) && /KOUT2: \{ price1k: 460/.test(db),
   "K_OUT dual pair at 50 kW only (matrix legs single) — cell prop + board wiring + BOM instance");
 ck("E42-BURDENS", /burden=\{pw === 50 \? "21\.5" : "27"\}/.test(boards) && /ctBurden=\{pw === 50 \? "1\.6" : "2"\}/.test(boards),
   "both CT burdens re-scaled at 50 kW (rail budget at the revved OC points — stress-audit BRD carries the numbers)");
 ck("E42-CLASSES", /FUSE-gG-690V-160A/.test(db) && /91\.6 A line = 37%/.test(db) && /CT-LINE-2500-150A/.test(db) && /IND-PFC-103u-50/.test(db) && /XFMR-LLC-3E70-50/.test(db) && /Liquid coldplates/.test(db),
   "50 kW protection/magnetics classes + coldplate mech lines all ordered in parts-db");
-ck("E42-RATING", /pw === 50 \? "10k" : pw === 40 \? "1k" : "0"/.test(boards) && /"50kw": "10000"/.test(readFileSync(join(ROOT, "calculations/module-interconnect-audit.mts"), "utf8")),
-  "RATING strap 10k = 50 kW (E24 rev F — retires the stale two-card-era 10k mapping) and the audit knows it");
+ck("E42-RATING", /pw === 50 \? \(air \? "15k" : "10k"\) : pw === 40 \? "1k" : "0"/.test(boards) && /"50kw": "10000", "50kwa": "15000"/.test(readFileSync(join(ROOT, "calculations/module-interconnect-audit.mts"), "utf8")),
+  "RATING straps 10k = 50 liquid / 15k = 50 AIR (E24 rev G) and the audit knows both");
 {
   const grid = readFileSync(join(ROOT, "calculations/system/envelope-grid.mjs"), "utf8");
   ck("E42-GRID", /ipCeil: 65/.test(grid) && /rth: 1\.1/.test(grid) && /ref: \{ cold: 10, room: 45, hot: 65 \}/.test(grid),
@@ -421,6 +421,35 @@ ck("E42-RATING", /pw === 50 \? "10k" : pw === 40 \? "1k" : "0"/.test(boards) && 
   ck("E42-FW", /kw == 50u\) \? 5000u/.test(fsm) && /50 kW window/.test(readFileSync(join(ROOT, "firmware/test/host_sim.c"), "utf8")),
     "50 kW discharge window in the FSM + both window tests in host_sim");
 }
+
+// ===== R4 (2026-09-08): external PDF-review response — every accepted claim gated so it can
+// never regress. The full claim-by-claim disposition lives in the E45 register row.
+ck("R4-1", /polarity seating/.test(readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8")),
+  "polarized 2-pin parts SEAT SEMANTICALLY on the sheets (anode-named pin under the anode glyph) and the generator refuses unproven diodes — the netlists were always right, the sheet face was mirrored");
+ck("R4-2", /pin3: "GND2"/.test(cells) && /pin16: "TEST"/.test(cells) && cells.includes("`.U${id} > .GND2`} to={kelvin}") && cells.includes("`.PS${id} > .COM`} to={kelvin}") && cells.includes("`.U${id} > .TEST`} to=\"net.DGND\"") && !/KSRC/.test(cells.split("DRV_PINS")[1].split("ISOAMP_PINS")[0]),
+  "NSI6611 on its REAL pin map (datasheet Table 1.1): GND2 IS the Kelvin — bias COM, driver GND2 and FET source are one node; TEST->GND1, IN- grounded, ASC tied inactive; the fictional KSRC pin is gone");
+ck("R4-3", /pin1: "FB", pin2: "BO", pin3: "CS", pin4: "RT", pin5: "GND", pin6: "DRV", pin7: "VCC", pin8: "SS"/.test(cells) && /QAUXFB > \.C"} to="\.UAUX > \.FB"/.test(cells.replace(/\s+/g, " ")) || (/QAUXFB/.test(cells) && /DZAUX/.test(cells) && /CAUXSS/.test(cells) && /pin8: "SS"/.test(cells)),
+  "aux flyback: REAL NCP1252 map + opto-emulating zener-NPN loop (correct feedback SIGN — the old VCC divider into FB was positive feedback) + SS cap on the real soft-start pin");
+ck("R4-4", cells.includes('REN1${id}') && cells.includes('REN2${id}') && !cells.includes('.EN`} to="net.V15"'),
+  "TPS54202 EN off the 15 V rail (7 V abs max) — 100k/27k divider = 3.19 V + V15 UVLO at ~5.7 V");
+ck("R4-5", /Rail3V3 id="A"/.test(boards),
+  "AC-DC board sources its own V3P3 (the E40 slot removal had left it a floating island — iso-amps, clamps and pull-ups unpowered)");
+ck("R4-6", /QA01C-18/.test(db),
+  "gate-bias pinned to the -18 variant (+18/-3): B3M +22 V abs and SG2M body-diode -4 V limits both hold with real margin (O-11 CLOSED)");
+ck("R4-7", /RM24A" resistance="82k"/.test(boards),
+  "V24 monitor rescaled 68k->82k: full-scale 30.4 V (+26% observability; the old divider clipped at +7%)");
+ck("R4-8", /UEXCL/.test(boards) && /KSER_GATED/.test(boards) && /"net.KSER_GATED", "net.CTL_KPARA"/.test(boards),
+  "hardware S/P exclusion: 74HC02 gates the KSER coil so KSER AND (KPARA OR KPARB) cannot energize — layered over the E30 mirror readback + F.18 weld latch");
+
+// ===== E44 (2026-09-08): 50 kW AIR variant — the upgraded-30 discipline asserted structurally.
+ck("E44-UPGRADED-30", /lanes=\{1\} pw=\{50\} air/.test(readFileSync(join(ROOT, "boards/50kwa/acdc.tsx"), "utf8")) && /channels=\{1\} pw=\{50\} air/.test(readFileSync(join(ROOT, "boards/50kwa/dcdc.tsx"), "utf8")),
+  "air-50 is ONE lane / ONE channel / ONE card — an upgraded 30, never a derated 60 (the user constraint, in the wrappers)");
+ck("E44-LLCPAR", /par=\{pw === 50 && air\}/.test(boards) && /Q\$\{id\}H2/.test(cells) && /RG\$\{id\}H2/.test(cells) && /Q\\d\+\[HL\]2\?/.test(db),
+  "LLC paralleling: cell pattern (per-device 2.2R off shared gate nets, Kelvin shared) + board wiring + BOM rule");
+ck("E44-TACH4", /DI10/.test(umodGen) && /"FAN_TACH4"/.test(umodGen) && /\[39,"FAN_TACH4"\]/.test(umodGen),
+  "fan-4 tach end-to-end: card pin 90 (freed ROLE0) → way 88 → harness W39 (generator-asserted, donor-proven)");
+ck("E44-CLONE", /skuOverrides\["50kwa"\] = \{ \.\.\.skuOverrides\["50kw"\] \}/.test(db),
+  "air-50 electrical classes are the LIQUID's by construction — the two 50s cannot drift");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

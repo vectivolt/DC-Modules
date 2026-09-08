@@ -215,7 +215,11 @@ export const XfmrAuxFP = () => (
     </footprint>
 );
 
-const DRV_PINS = { pin1: "VIA", pin2: "GNDA", pin3: "PWM", pin4: "EN", pin5: "FLT", pin6: "RDY", pin7: "NC1", pin8: "NC2", pin9: "CLAMP", pin10: "VEE", pin11: "OUTL", pin12: "OUTH", pin13: "VCC2", pin14: "KSRC", pin15: "DST", pin16: "GND2" };
+// R4-2 (external review + NSI66x1A-Q1 datasheet rev 1.2, Table 1.1): the REAL NSI6611ASC map —
+// driver side pins 1-8, input side 9-16. The previous table was fictional (input side on 1-8,
+// an invented KSRC pin, GND2 parked on the real TEST pin). GND2 (pin 3) IS the driver-side
+// ground/Kelvin reference — there is no separate source-sense pin.
+const DRV_PINS = { pin1: "ASC", pin2: "DST", pin3: "GND2", pin4: "OUTH", pin5: "VCC2", pin6: "OUTL", pin7: "CLAMP", pin8: "VEE", pin9: "GND1", pin10: "INP", pin11: "INN", pin12: "RDY", pin13: "FLT", pin14: "EN", pin15: "VCC1", pin16: "TEST" };
 const ISOAMP_PINS = { pin1: "VDD1", pin2: "VINP", pin3: "VINN", pin4: "GND1", pin5: "GND2", pin6: "OUTN", pin7: "OUTP", pin8: "VDD2" };
 
 // ---------- isolated gate-bias module (+18/−4). HR-10: reverted to packaged module p/n for
@@ -274,9 +278,15 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <diode layer={lay} name={`D${id}S1`} footprint="sma" pcbX={16} pcbY={4.5} schX={2.7} schY={2.2} schSectionName={sec} />
     <diode layer={lay} name={`D${id}S2`} footprint="sma" pcbX={24} pcbY={4.5} schX={4.7} schY={2.2} schSectionName={sec} />
     <BiasModule id={id} sec={sec} x={31} y={0} sx={-0.6} sy={-2.6} />
-    <trace from={`.U${id} > .VIA`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.U${id} > .GNDA`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.U${id} > .PWM`} to={pwm} schDisplayLabel={pwm.replace("net.", "")} />
+    <trace from={`.U${id} > .VCC1`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.U${id} > .GND1`} to="net.DGND" schDisplayLabel="DGND" />
+    {/* R4-2 input-side ties per datasheet: IN- grounded (non-inverting use), TEST to GND1 —
+        the old map wired the driver-side bias COM onto the real TEST pin, an isolation-domain
+        error the external review caught. ASC (driver side) ties inactive to GND2/Kelvin. */}
+    <trace from={`.U${id} > .INN`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.U${id} > .TEST`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.U${id} > .ASC`} to={kelvin} />
+    <trace from={`.U${id} > .INP`} to={pwm} schDisplayLabel={pwm.replace("net.", "")} />
     <trace from={`.R${id}PD > .pin1`} to={pwm} schDisplayLabel={pwm.replace("net.", "")} />
     <trace from={`.R${id}PD > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.U${id} > .EN`} to={en} schDisplayLabel={en.replace("net.", "")} />
@@ -289,11 +299,15 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <trace from={`.PS${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.PS${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.PS${id} > .P18`} to={`.U${id} > .VCC2`} />
-    <trace from={`.PS${id} > .COM`} to={`.U${id} > .GND2`} />
+    {/* R4-2 THE structural fix: the bias 0 V, the driver GND2 and the FET Kelvin source are ONE
+        node — previously the bias COM floated on a private net while the (fictional) KSRC pin
+        held the Kelvin, so gate amplitude and UVLO had no defined source reference. */}
+    <trace from={`.PS${id} > .COM`} to={kelvin} />
+    <trace from={`.U${id} > .GND2`} to={kelvin} />
     <trace from={`.PS${id} > .N4`} to={`.U${id} > .VEE`} />
     <trace from={`.C${id}B1 > .pin1`} to={`.U${id} > .VCC2`} />
-    <trace from={`.C${id}B1 > .pin2`} to={`.U${id} > .GND2`} />
-    <trace from={`.C${id}B2 > .pin1`} to={`.U${id} > .GND2`} maxLength="12mm" />
+    <trace from={`.C${id}B1 > .pin2`} to={kelvin} />
+    <trace from={`.C${id}B2 > .pin1`} to={kelvin} maxLength="12mm" />
     <trace from={`.C${id}B2 > .pin2`} to={`.U${id} > .VEE`} />
     <trace from={`.U${id} > .OUTH`} to={`.R${id}ON > .pin1`} />
     <trace from={`.R${id}ON > .pin2`} to={gate} />
@@ -302,12 +316,11 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <trace from={`.U${id} > .CLAMP`} to={gate} />
     <trace from={`.R${id}GS > .pin1`} to={gate} />
     <trace from={`.R${id}GS > .pin2`} to={kelvin} />
-    <trace from={`.U${id} > .KSRC`} to={kelvin} />
     <trace from={`.U${id} > .DST`} to={`.D${id}S1 > .anode`} />
     <trace from={`.D${id}S1 > .cathode`} to={`.D${id}S2 > .anode`} />
     <trace from={`.D${id}S2 > .cathode`} to={desatNode} schDisplayLabel={desatNode.replace("net.", "")} />
     <trace from={`.C${id}BL > .pin1`} to={`.U${id} > .DST`} />
-    <trace from={`.C${id}BL > .pin2`} to={`.U${id} > .GND2`} />
+    <trace from={`.C${id}BL > .pin2`} to={kelvin} />
   </group>
 );
 
@@ -393,12 +406,32 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
 // ---------- LLC half-bridge leg: 2 FETs + 2 driver channels.
 // v3/E28: node RC snubbers DELETED — ZVS topology needs none and CV²f at 140 kHz (≈45 W for
 // 470 pF/830 V) is untenable; ringing containment is the DPT-frozen gate drive + ≤15 nH loop (§P-2).
-export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, sec = "LLC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = false, sec = "LLC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`leg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 24 × 15: half-bridge pair stacked at right, its two driver channels in two
-        clean rows to the left (H above L, matching the bridge order). */}
+        clean rows to the left (H above L, matching the bridge order).
+        E44 (air-50): `par` PARALLELS a second proven SG2M per position — same practice as the
+        E41 Vienna pair (per-device 2.2 Ω gate R off the shared gate net, Kelvin shared, DESAT
+        shared via the one driver watching the common drain node). Per-package conduction
+        quarters: the air worst corner drops 232 → 99 °C — fans become sufficient. */}
     <chip name={`Q${id}H`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={17} schY={1.4} schSectionName={sec} />
     <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={0} schX={17} schY={-5.6} schSectionName={sec} />
+    {par ? <chip name={`Q${id}H2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={9} schX={20} schY={1.4} schSectionName={sec} /> : null}
+    {par ? <chip name={`Q${id}L2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={9} schX={20} schY={-5.6} schSectionName={sec} /> : null}
+    {par ? <resistor name={`RG${id}H2`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={9} schX={19} schY={0.4} schSectionName={sec} /> : null}
+    {par ? <resistor name={`RG${id}L2`} resistance="2.2" footprint="0805" pcbX={10} pcbY={9} schX={19} schY={-6.6} schSectionName={sec} /> : null}
+    {par ? [
+      <trace key="h2g" from={`.RG${id}H2 > .pin1`} to={`net.GH_${id}`} />,
+      <trace key="h2g2" from={`.RG${id}H2 > .pin2`} to={`.Q${id}H2 > .G`} />,
+      <trace key="h2d" from={`.Q${id}H2 > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />,
+      <trace key="h2s" from={`.Q${id}H2 > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />,
+      <trace key="h2k" from={`.Q${id}H2 > .KS`} to={`net.KH_${id}`} />,
+      <trace key="l2g" from={`.RG${id}L2 > .pin1`} to={`net.GL_${id}`} />,
+      <trace key="l2g2" from={`.RG${id}L2 > .pin2`} to={`.Q${id}L2 > .G`} />,
+      <trace key="l2d" from={`.Q${id}L2 > .D`} to={sw} schDisplayLabel={sw.replace("net.", "")} />,
+      <trace key="l2s" from={`.Q${id}L2 > .S`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />,
+      <trace key="l2k" from={`.Q${id}L2 > .KS`} to={`net.KL_${id}`} />,
+    ] : null}
     <DriverCh id={`${id}H`} pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
     <DriverCh id={`${id}L`} pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
@@ -1019,7 +1052,10 @@ export const Interconnect40 = ({ id, map, shldTo = null, sec = "HARNESS", x = 0,
 //  · relay-coil PWM hold economization is firmware (halves 24 V steady demand — E26).
 export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="aux" pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "GND", pin2: "FB", pin3: "COMP", pin4: "CS", pin5: "GATE", pin6: "VCC", pin7: "BR", pin8: "RT" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    {/* R4-3 (external review + NCP1252 datasheet rev 9, Table 1): REAL map — FB=1, BO=2, CS=3,
+        RT=4, GND=5, DRV=6, VCC=7, SS=8. The previous table was fictional and the "COMP" network
+        actually landed on soft-start. */}
+    <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "FB", pin2: "BO", pin3: "CS", pin4: "RT", pin5: "GND", pin6: "DRV", pin7: "VCC", pin8: "SS" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <chip name="QAUX" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={22} pcbY={0} schX={5} schY={-1.2} schSectionName={sec} />
     <resistor name="RAUXCS" resistance="0.31" footprint="1206" pcbX={22} pcbY={8} schX={5} schY={-2.8} schSectionName={sec} />
     <resistor name="RAUXG" resistance="100k" footprint="0603" pcbX={28} pcbY={4} schX={3.2} schY={-2.2} schSectionName={sec} />
@@ -1039,10 +1075,17 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <resistor name="RBR1A" resistance="2.4M" footprint="2512" pcbX={0} pcbY={16} schX={-0.9} schY={-3.4} schSectionName={sec} />
     <resistor name="RBR1B" resistance="2.4M" footprint="2512" pcbX={10} pcbY={16} schX={0.9} schY={-3.4} schSectionName={sec} />
     <resistor name="RBR2" resistance="15k" footprint="0603" pcbX={22} pcbY={16} schX={2.7} schY={-3.4} schSectionName={sec} />
-    <resistor name="RFB1" resistance="118k" footprint="0603" pcbX={-10} pcbY={0} schX={-3} schY={1.2} schSectionName={sec} />
-    <resistor name="RFB2" resistance="10k" footprint="0603" pcbX={-10} pcbY={5} schX={-3} schY={0} schSectionName={sec} />
-    <resistor name="RCOMP" resistance="10k" footprint="0603" pcbX={-10} pcbY={10} schX={-3} schY={-1.2} schSectionName={sec} />
-    <capacitor name="CCOMP" capacitance="100nF" footprint="0603" pcbX={-10} pcbY={15} schX={-4.6} schY={-1.2} schSectionName={sec} />
+    {/* R4-3 regulation: NCP1252 FB has an internal pull-up and HIGH FB = MORE demand — the old
+        VCC->FB divider was POSITIVE feedback (rails would run to the TVS clamps). The classic
+        opto-emulating primary-side loop closes it with the right sign: VCC (aux winding tracks
+        the outputs) exceeds VZ+VBE ≈ 15.7 V -> QAUXFB conducts -> FB pulled LOW -> demand cut.
+        V24 = 15.7 x 6/4 ≈ 23.5 V, V15 ≈ 15 V after rectifier drops (D4 rev C turns). */}
+    <diode name="DZAUX" footprint="sod123" pcbX={-10} pcbY={0} schX={-3} schY={1.2} schSectionName={sec} />
+    <resistor name="RZFB" resistance="2.2k" footprint="0603" pcbX={-10} pcbY={5} schX={-4.6} schY={1.2} schSectionName={sec} />
+    <chip name="QAUXFB" footprint="sot23" pinLabels={{ pin1: "B", pin2: "E", pin3: "C" }} pcbX={-10} pcbY={10} schX={-3} schY={0} schSectionName={sec} />
+    <resistor name="RBEFB" resistance="10k" footprint="0603" pcbX={-16} pcbY={10} schX={-4.6} schY={0} schSectionName={sec} />
+    <capacitor name="CFBF" capacitance="1nF" footprint="0603" pcbX={-10} pcbY={15} schX={-3} schY={-1.2} schSectionName={sec} />
+    <capacitor name="CAUXSS" capacitance="100nF" footprint="0603" pcbX={-16} pcbY={15} schX={-4.6} schY={-1.2} schSectionName={sec} />
     <diode name="DCLA" footprint="smb" pcbX={76} pcbY={-8} schX={4.5} schY={3.4} schSectionName={sec} />
     <capacitor name="CCLA" capacitance="10nF" footprint={FilmBoxFP(15)} pcbX={94} pcbY={-8} schX={6.3} schY={3.4} schSectionName={sec} />
     <resistor name="RCLA1" resistance="47k" footprint="2512" pcbX={114} pcbY={-8} schX={8.1} schY={3.4} schSectionName={sec} />
@@ -1069,18 +1112,21 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     {/* brown-in program: full-bus divider → BR (start ≈ 330 V, hysteresis per IC) */}
     <trace from=".RBR1A > .pin1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RBR1A > .pin2" to=".RBR1B > .pin1" />
-    <trace from=".RBR1B > .pin2" to=".UAUX > .BR" />
-    <trace from=".RBR2 > .pin1" to=".UAUX > .BR" />
+    <trace from=".RBR1B > .pin2" to=".UAUX > .BO" />
+    <trace from=".RBR2 > .pin1" to=".UAUX > .BO" />
     <trace from=".RBR2 > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* primary-side regulation: FB divider from the VCC/aux rail (tracks secondaries); type-II COMP */}
-    <trace from=".RFB1 > .pin1" to=".UAUX > .VCC" />
-    <trace from=".RFB1 > .pin2" to=".UAUX > .FB" />
-    <trace from=".RFB2 > .pin1" to=".UAUX > .FB" />
-    <trace from=".RFB2 > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
-    <trace from=".RCOMP > .pin1" to=".UAUX > .COMP" />
-    <trace from=".RCOMP > .pin2" to=".UAUX > .FB" />
-    <trace from=".CCOMP > .pin1" to=".UAUX > .COMP" />
-    <trace from=".CCOMP > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
+    <trace from=".RZFB > .pin1" to=".UAUX > .VCC" />
+    <trace from=".RZFB > .pin2" to=".DZAUX > .cathode" />
+    <trace from=".DZAUX > .anode" to=".QAUXFB > .B" />
+    <trace from=".RBEFB > .pin1" to=".QAUXFB > .B" />
+    <trace from=".RBEFB > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
+    <trace from=".QAUXFB > .E" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
+    <trace from=".QAUXFB > .C" to=".UAUX > .FB" />
+    <trace from=".CFBF > .pin1" to=".UAUX > .FB" />
+    <trace from=".CFBF > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
+    <trace from=".CAUXSS > .pin1" to=".UAUX > .SS" />
+    <trace from=".CAUXSS > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* power stage: primary + RCD clamp + gated switch + filtered CS */}
     <trace from=".TAUX > .P1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".QAUX > .D" to=".TAUX > .P2" />
@@ -1090,7 +1136,7 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <trace from=".RCLA1 > .pin1" to=".CCLA > .pin1" />
     <trace from=".RCLA1 > .pin2" to=".RCLA2 > .pin1" />
     <trace from=".RCLA2 > .pin2" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
-    <trace from=".UAUX > .GATE" to=".QAUX > .G" />
+    <trace from=".UAUX > .DRV" to=".QAUX > .G" />
     <trace from=".RAUXG > .pin1" to=".QAUX > .G" />
     <trace from=".RAUXG > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     <trace from=".QAUX > .S" to=".RAUXCS > .pin1" />
@@ -1130,10 +1176,18 @@ export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 , l
     <capacitor layer={lay} name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-2.6} schY={0.8} schSectionName={sec} />
     <capacitor layer={lay} name={`CBKO${id}`} capacitance="22uF" footprint="0805" pcbX={22} pcbY={4} schX={5.4} schY={0.6} schSectionName={sec} />
     <capacitor layer={lay} name={`CBST${id}`} capacitance="100nF" footprint="0603" pcbX={8} pcbY={-6} schX={1.8} schY={1.9} schSectionName={sec} />
+    <resistor layer={lay} name={`REN1${id}`} resistance="100k" footprint="0603" pcbX={-14} pcbY={-6} schX={-2.6} schY={-1.2} schSectionName={sec} />
+    <resistor layer={lay} name={`REN2${id}`} resistance="27k" footprint="0603" pcbX={-14} pcbY={-12} schX={-2.6} schY={-2.4} schSectionName={sec} />
     <resistor layer={lay} name={`RBKF1${id}`} resistance="45.3k" footprint="0603" pcbX={14} pcbY={8} schX={3} schY={-1.2} schSectionName={sec} />
     <resistor layer={lay} name={`RBKF2${id}`} resistance="10k" footprint="0603" pcbX={20} pcbY={8} schX={4.6} schY={-1.2} schSectionName={sec} />
     <trace from={`.UBK${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
-    <trace from={`.UBK${id} > .EN`} to="net.V15" schDisplayLabel="V15" />
+    {/* R4-4 (external review): EN was tied to 15 V — TPS54202 EN absolute max is 7 V. Divider
+        puts EN at 3.19 V (inside the 5.5 V recommended max) and doubles as UVLO: enable
+        threshold ~1.2 V → converter starts once V15 ≥ ~5.7 V. */}
+    <trace from={`.REN1${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
+    <trace from={`.REN1${id} > .pin2`} to={`.UBK${id} > .EN`} />
+    <trace from={`.REN2${id} > .pin1`} to={`.UBK${id} > .EN`} />
+    <trace from={`.REN2${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.UBK${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CBKI${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.CBKI${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />

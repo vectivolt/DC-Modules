@@ -32,6 +32,7 @@ const SKUS = [
   { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 2 },
   { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
   { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6 L/min)
+  { name: "50kWa", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 4, parL: 2 },   // E44 AIR: 4 fans; LLC paralleled (pri conduction halves)
   { name: "60kW", P: 60e3, lanes: 2, ch: 2, Iout: 200, fans: 2 },
   { name: "120kW", P: 120e3, lanes: 4, ch: 4, Iout: 400, fans: 4 },
 ];
@@ -44,7 +45,7 @@ const SKUS = [
 //   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
 // E43: LDM (D6) losses now come from the D6 ENGINE (dm-choke-design.mjs rev C — foil windings,
 // crest-biased L floors): 2.4 / 4.4 / 8.1 W per choke at 30/40/50 kW. CMC (D7) rows unchanged.
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 2.4, "40kW": 2 * 15.3 + 3 * 4.4, "50kW": 2 * 19.2 + 3 * 8.1, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };
+const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 2.4, "40kW": 2 * 15.3 + 3 * 4.4, "50kW": 2 * 19.2 + 3 * 8.1, "50kWa": 2 * 19.2 + 3 * 8.1, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
@@ -65,7 +66,7 @@ for (const s of SKUS) {
   const pfcMag = 3 * (32.4 * k + 2.4) * 0.72 * s.lanes;
   const dclink = 12 * s.lanes * k * k * (10 / (10 * k > 10 ? 12 : 10)) * (s.lanes > 1 ? 1 : 1);
   const llc = LLC_CH(IP_NOM * k);
-  const pri = llc.pri * s.ch, xf = 3 * 20.5 * (0.65 * k + 0.35) * s.ch, tank = llc.tank * s.ch;
+  const pri = llc.pri * s.ch / (s.parL ?? 1), xf = 3 * 20.5 * (0.65 * k + 0.35) * s.ch, tank = llc.tank * s.ch;   // E44: paralleled LLC halves pri conduction
   const { jbsW, srW } = secondary(100 * k);
   const secJ = jbsW * s.ch, secS = srW * s.ch;
   const bus = 0.00015 * s.Iout ** 2 + 25e-6 * s.Iout ** 2; // busbar ~0.15 mΩ + shunt 25 µΩ paths

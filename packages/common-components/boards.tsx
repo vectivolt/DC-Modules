@@ -31,9 +31,9 @@ const NO_ROUTE = process.env.TSCI_NO_ROUTE === "1";
 
 
 // ================= AC-DC BOARD =================
-export const AcDcBoard = ({ lanes, w, h, pw = 30 }: { lanes: number; w: number; h: number; pw?: number }) => {
+export const AcDcBoard = ({ lanes, w, h, pw = 30, air = false }: { lanes: number; w: number; h: number; pw?: number; air?: boolean }) => {
   const phases = Array.from({ length: lanes }, (_, l) => ["A", "B", "C"].map(p => ({ id: `${p}${l}`, ac: `net.AC${p === "A" ? "1F" : p === "B" ? "2F" : "3"}` }))).flat();
-  const nFans = pw === 50 ? 0 : pw === 40 ? 3 : lanes === 4 ? 4 : 2; // HR-17 (+E41/E42): 2 fans @30, 3 @40, ZERO @50 (sealed liquid module — coldplates replace the extrusions), 4 @120-ref
+  const nFans = pw === 50 ? (air ? 4 : 0) : pw === 40 ? 3 : lanes === 4 ? 4 : 2; // HR-17 (+E41/E42/E44): 2 @30, 3 @40, ZERO @50-liquid (sealed), FOUR @50-air (E44: 1,580 W at the family's ~395 W/fan density; fans 3+4 gang FAN_PWM2), 4 @120-ref
   // MCU-PFC pin map (§20): PWM per phase, CT per phase, senses, temps, fans, link, safety chain
   // (the pre-card MCU pin tables lived here; E40 single source is umod-pinmap.mts)
   const nDcHalf = pw === 50 ? 8 : pw === 40 ? 6 : lanes === 1 ? 5 : lanes === 2 ? 9 : 18;   // E41: 12 cans @40 · E42: 16 @50 (ripple ∝ I)
@@ -356,9 +356,14 @@ return (
         outs={["net.COIL_KPRE", "net.NC_O2", "net.NC_O3", "net.NC_O4", "net.NC_O5", "net.NC_O6", "net.NC_O7A", "net.NC_O8A"]}
         x={-w / 2 + 130} y={-h / 2 + 60} sx={26} sy={cY} />
       <AuxPower dcp="net.DCP" dcn="net.DCN" x={P.auxX} y={P.ctlY} sx={40} sy={cY - 2} />
+      {/* R4-5 (external review): since E40 removed this board's card slot, V3P3 here was a
+          FLOATING ISLAND — iso-amp secondaries, CT clamps, tach pull-ups and the KPRE feedback
+          pull-up had no 3.3 V source (the harness carries V15/V24 only). Local sync buck,
+          same CB-17/18 cell the card uses. */}
+      <Rail3V3 id="A" x={P.r3v3X} y={P.ctlY} sx={62} sy={cY + 2.5} />
       
       {/* E32: rail monitors — firmware finally sees its own supplies (24 V: ÷7.8 → 3.08 V; 15 V: ÷5.7 → 2.63 V) */}
-      <resistor name="RM24A" resistance="68k" footprint="0603" pcbX={40} pcbY={-128} schX={64} schY={cY - 4} schSectionName="MON" />
+      <resistor name="RM24A" resistance="82k" footprint="0603" pcbX={40} pcbY={-128} schX={64} schY={cY - 4} schSectionName="MON" />
       <resistor name="RM24B" resistance="10k" footprint="0603" pcbX={54} pcbY={-128} schX={66.5} schY={cY - 4} schSectionName="MON" />
       <resistor name="RM15A" resistance="47k" footprint="0603" pcbX={68} pcbY={-128} schX={64} schY={cY - 5.5} schSectionName="MON" />
       <resistor name="RM15B" resistance="10k" footprint="0603" pcbX={82} pcbY={-128} schX={66.5} schY={cY - 5.5} schSectionName="MON" />
@@ -377,11 +382,11 @@ return (
           HARNESS40 p/n on every variant). With no FanPort pull-ups fitted, the MCU tach inputs
           would float — a defined-LOW here makes an accidental read report "fan stopped", the
           fail-safe direction, instead of noise. PWM1/2 stay MCU-driven (defined by the card). */}
-      {pw === 50 ? [1, 2, 3].map(i => (
+      {nFans === 0 ? [1, 2, 3, 4].map(i => (
         <resistor key={`fdt${i}`} name={`RFDT${i}`} resistance="10k" footprint="0603"
           pcbX={P.fanX} pcbY={P.fanY - (i - 1) * 10} schX={74 + (i - 1) * 2.4} schY={cY} schSectionName="FANS" />
       )) : null}
-      {pw === 50 ? [1, 2, 3].map(i => [
+      {nFans === 0 ? [1, 2, 3, 4].map(i => [
         <trace key={`fdta${i}`} from={`.RFDT${i} > .pin1`} to={`net.FAN_TACH${i}`} schDisplayLabel={`FAN_TACH${i}`} />,
         <trace key={`fdtb${i}`} from={`.RFDT${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ]) : null}
@@ -402,7 +407,7 @@ return (
 };
 
 // ================= DC-DC BOARD =================
-export const DcDcBoard = ({ channels, w, h, pw = 30 }: { channels: number; w: number; h: number; pw?: number }) => {
+export const DcDcBoard = ({ channels, w, h, pw = 30, air = false }: { channels: number; w: number; h: number; pw?: number; air?: boolean }) => {
   const legs = Array.from({ length: 3 * channels }, (_, i) => ({ id: `${i + 1}`, sw: `net.SW${i + 1}`, ch: Math.floor(i / 3) }));
   const secs = legs.map(l => ({ ...l, star: `net.STAR${l.ch}` }));
   const relayFb = ["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"];
@@ -515,7 +520,7 @@ return (
       {/* RATING is the card's ONE identity strap (E24 rev F): 0R = 30 kW · 1k = 40 kW ·
           10k = 50 kW liquid (the stale two-card-era 10k→"60 kW" mapping is retired — no
           single-brain 60 exists, E40) · 3.32k = cabinet CSU · open = no host, fault. */}
-      <resistor name="RROLEB" resistance={pw === 50 ? "10k" : pw === 40 ? "1k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
+      <resistor name="RROLEB" resistance={pw === 50 ? (air ? "15k" : "10k") : pw === 40 ? "1k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
@@ -524,6 +529,7 @@ return (
         <LlcHalfBridgeLeg key={l.id} id={l.id} bus="net.DCP" gnd="net.DCN" sw={l.sw}
           x={Q.leg[i % 3]} y={Q.legY}
           pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT" en="net.GATE_EN_B"
+          par={pw === 50 && air}
           sx={2} sy={24 - i * 16} />
       ))}
       {secs.map((s, i) => (
@@ -622,7 +628,28 @@ return (
       <trace from=".RBDB3 > .B" to=".QDISB > .D" />
       <trace from=".QDISB > .S" to="net.BKBN" schDisplayLabel="BKBN" />
       <trace from=".QDISB > .G" to="net.G_QDISB" />
-      <CoilDriver id="LB" ins={["net.CTL_KSER", "net.CTL_KPARA", "net.CTL_KPARB", "net.CTL_KOUT", "net.CTL_KPREA", "net.CTL_KPREB", "net.DGND", "net.DGND"]}
+      {/* R4-8 (external review): KSER+KPARA / KSER+KPARB are destructive (bank short). Firmware
+          break-before-make + mirror readback (E30/F.18) already guard it; this adds a HARDWARE
+          layer: one 74HC02 gates the KSER coil command with NOR logic so KSER_GATED =
+          CTL_KSER AND NOT(CTL_KPARA OR CTL_KPARB). A firmware/driver fault that asserts both
+          can no longer energize the forbidden pair. */}
+      <chip name="UEXCL" footprint="soic14" pinLabels={{ pin1: "Y1", pin2: "A1", pin3: "B1", pin4: "Y2", pin5: "A2", pin6: "B2", pin7: "GND", pin8: "A3", pin9: "B3", pin10: "Y3", pin11: "A4", pin12: "B4", pin13: "Y4", pin14: "VCC" }} pcbX={70} pcbY={-236} schX={38} schY={cYd} schSectionName="COILS" />
+      <trace from=".UEXCL > .VCC" to="net.V3P3" schDisplayLabel="V3P3" />
+      <trace from=".UEXCL > .GND" to="net.DGND" schDisplayLabel="DGND" />
+      {/* G1: A = NOR(KPARA, KPARB) — high only when both parallel commands are OFF */}
+      <trace from=".UEXCL > .A1" to="net.CTL_KPARA" schDisplayLabel="CTL_KPARA" />
+      <trace from=".UEXCL > .B1" to="net.CTL_KPARB" schDisplayLabel="CTL_KPARB" />
+      {/* G2: NOT(KSER) */}
+      <trace from=".UEXCL > .A2" to="net.CTL_KSER" schDisplayLabel="CTL_KSER" />
+      <trace from=".UEXCL > .B2" to="net.CTL_KSER" schDisplayLabel="CTL_KSER" />
+      {/* G3: NOT(A) */}
+      <trace from=".UEXCL > .A3" to=".UEXCL > .Y1" />
+      <trace from=".UEXCL > .B3" to=".UEXCL > .Y1" />
+      {/* G4: KSER_GATED = NOR(NOT KSER, NOT A) = KSER AND A */}
+      <trace from=".UEXCL > .A4" to=".UEXCL > .Y2" />
+      <trace from=".UEXCL > .B4" to=".UEXCL > .Y3" />
+      <trace from=".UEXCL > .Y4" to="net.KSER_GATED" schDisplayLabel="KSER_GATED" />
+      <CoilDriver id="LB" ins={["net.KSER_GATED", "net.CTL_KPARA", "net.CTL_KPARB", "net.CTL_KOUT", "net.CTL_KPREA", "net.CTL_KPREB", "net.DGND", "net.DGND"]}
         outs={["net.COIL_KSER", "net.COIL_KPARA", "net.COIL_KPARB", "net.COIL_KOUT", "net.COIL_KPREA", "net.COIL_KPREB", "net.NC_O7", "net.NC_O8"]}
         x={40} y={-236} sx={42} sy={cYd} />
 

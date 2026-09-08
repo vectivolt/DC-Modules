@@ -1,0 +1,1360 @@
+{
+ "page": "dcdc-BANKS-SP",
+ "page_uuid": "sku-50kwa-dcdc-BANKS-SP",
+ "title": "30kW DCDC 3of6 BANKS-SP",
+ "block_order": [
+  "BANK-A",
+  "BANK-B",
+  "SP-MATRIX",
+  "BLEEDERS"
+ ],
+ "chunks": [
+  [
+   {
+    "designator": "CBA0T",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA1T",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA2T",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA3T",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA0B",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA1B",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA2B",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBA3B",
+    "value": "470uF",
+    "block_name": "BANK-A",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "RBALTA1",
+    "value": "47k",
+    "block_name": "BANK-A",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBALTA_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBALTA2",
+    "value": "47k",
+    "block_name": "BANK-A",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBALTA_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAM"
+     }
+    ]
+   },
+   {
+    "designator": "RBALBA1",
+    "value": "47k",
+    "block_name": "BANK-A",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBALBA_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBALBA2",
+    "value": "47k",
+    "block_name": "BANK-A",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBALBA_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ]
+   },
+   {
+    "designator": "CBAF",
+    "value": "1uF",
+    "block_name": "BANK-A",
+    "search_query": "PP-1u-1100 1 µF 1100 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   }
+  ],
+  [
+   {
+    "designator": "CBB0T",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB1T",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB2T",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB3T",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB0B",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB1B",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB2B",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBB3B",
+    "value": "470uF",
+    "block_name": "BANK-B",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "part_uuid": "3c344eb6e7e04a7d8ec2547e0ca7941a",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "RBALTB1",
+    "value": "47k",
+    "block_name": "BANK-B",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBALTB_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBALTB2",
+    "value": "47k",
+    "block_name": "BANK-B",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBALTB_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBM"
+     }
+    ]
+   },
+   {
+    "designator": "RBALBB1",
+    "value": "47k",
+    "block_name": "BANK-B",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBALBB_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBALBB2",
+    "value": "47k",
+    "block_name": "BANK-B",
+    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBALBB_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ]
+   },
+   {
+    "designator": "CBBF",
+    "value": "1uF",
+    "block_name": "BANK-B",
+    "search_query": "PP-1u-1100 1 µF 1100 V film",
+    "part_uuid": "2fa63e87daa04d99aaa11b52aaa6a4fc",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   }
+  ],
+  [
+   {
+    "designator": "KSER",
+    "value": "HFE82V-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KSER"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAN"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KSER"
+     }
+    ]
+   },
+   {
+    "designator": "KPARA",
+    "value": "HFE82V-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KPARA"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KPARA"
+     }
+    ]
+   },
+   {
+    "designator": "KPARB",
+    "value": "HFE82V-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KPARB"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAN"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "BKBN"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KPARB"
+     }
+    ]
+   },
+   {
+    "designator": "KOUT",
+    "value": "HFE82V-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KOUT"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "OUTP"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "KOUT_M2"
+     }
+    ]
+   },
+   {
+    "designator": "KPREA",
+    "value": "HFE82V-20-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KPREA"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "KPREA_B"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KPREA"
+     }
+    ]
+   },
+   {
+    "designator": "KPREB",
+    "value": "HFE82V-20-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KPREB"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAN"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "KPREB_B"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KPREB"
+     }
+    ]
+   },
+   {
+    "designator": "KOUT2",
+    "value": "HFE82V-M-CLASS",
+    "block_name": "SP-MATRIX",
+    "search_query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact",
+    "part_uuid": "47abc59ea74b4534afb80850b553e9fd",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "COIL1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 8,
+      "name": "COIL2",
+      "signal_name": "COIL_KOUT"
+     },
+     {
+      "pin_number": 4,
+      "name": "COM1",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 6,
+      "name": "NO1",
+      "signal_name": "OUTP"
+     },
+     {
+      "pin_number": 5,
+      "name": "COM2",
+      "signal_name": "KOUT_M2"
+     },
+     {
+      "pin_number": 3,
+      "name": "NO2",
+      "signal_name": "RELAY_FB_KOUT"
+     }
+    ]
+   },
+   {
+    "designator": "RKPUKSER",
+    "value": "10k",
+    "block_name": "SP-MATRIX",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KSER"
+     }
+    ]
+   },
+   {
+    "designator": "RKPUKPARA",
+    "value": "10k",
+    "block_name": "SP-MATRIX",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KPARA"
+     }
+    ]
+   },
+   {
+    "designator": "RKPUKPARB",
+    "value": "10k",
+    "block_name": "SP-MATRIX",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KPARB"
+     }
+    ]
+   },
+   {
+    "designator": "RKPUKOUT",
+    "value": "10k",
+    "block_name": "SP-MATRIX",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KOUT"
+     }
+    ]
+   },
+   {
+    "designator": "RKPUKPREA",
+    "value": "10k",
+    "block_name": "SP-MATRIX",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KPREA"
+     }
+    ]
+   },
+   {
+    "designator": "RKPUKPREB",
+    "value": "10k",
+    "block_name": "SP-MATRIX",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RELAY_FB_KPREB"
+     }
+    ]
+   },
+   {
+    "designator": "RPREA",
+    "value": "SQP-10R-25W",
+    "block_name": "SP-MATRIX",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "KPREA_B"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "BKBP"
+     }
+    ]
+   },
+   {
+    "designator": "RPREB",
+    "value": "SQP-10R-25W",
+    "block_name": "SP-MATRIX",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "KPREB_B"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "BKBN"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "RBDA0",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "BKAP"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "RBDA_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBDA1",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "RBDA_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "RBDA_12"
+     }
+    ]
+   },
+   {
+    "designator": "RBDA2",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "RBDA_12"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "RBDA_23"
+     }
+    ]
+   },
+   {
+    "designator": "RBDA3",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "RBDA_23"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "QDISA_D"
+     }
+    ]
+   },
+   {
+    "designator": "RBDB0",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "BKBP"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "RBDB_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBDB1",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "RBDB_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "RBDB_12"
+     }
+    ]
+   },
+   {
+    "designator": "RBDB2",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "RBDB_12"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "RBDB_23"
+     }
+    ]
+   },
+   {
+    "designator": "RBDB3",
+    "value": "CER-2k2-10W-AX",
+    "block_name": "BLEEDERS",
+    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "RBDB_23"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "QDISB_D"
+     }
+    ]
+   },
+   {
+    "designator": "QDISA",
+    "value": "SIC-1200-5A",
+    "block_name": "BLEEDERS",
+    "search_query": "SIC-1200-5A SiC FET 1200 V 5 A",
+    "part_uuid": "67bd2497788546aa8282bf83fe86508d",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "G",
+      "signal_name": "G_QDISA"
+     },
+     {
+      "pin_number": 2,
+      "name": "D",
+      "signal_name": "QDISA_D"
+     },
+     {
+      "pin_number": 3,
+      "name": "S",
+      "signal_name": "BKAN"
+     }
+    ]
+   },
+   {
+    "designator": "QDISB",
+    "value": "SIC-1200-5A",
+    "block_name": "BLEEDERS",
+    "search_query": "SIC-1200-5A SiC FET 1200 V 5 A",
+    "part_uuid": "67bd2497788546aa8282bf83fe86508d",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "G",
+      "signal_name": "G_QDISB"
+     },
+     {
+      "pin_number": 2,
+      "name": "D",
+      "signal_name": "QDISB_D"
+     },
+     {
+      "pin_number": 3,
+      "name": "S",
+      "signal_name": "BKBN"
+     }
+    ]
+   },
+   {
+    "designator": "UPVA",
+    "value": "VOM1271T",
+    "block_name": "BLEEDERS",
+    "search_query": "VOM1271T photovoltaic MOSFET driver w/ integrated turn-off",
+    "part_uuid": "1eb2e50c5fa04956960077e2ae80263e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A1",
+      "signal_name": "UPVA_ANO"
+     },
+     {
+      "pin_number": 2,
+      "name": "C1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "A2",
+      "signal_name": "G_QDISA"
+     },
+     {
+      "pin_number": 3,
+      "name": "C2",
+      "signal_name": "BKAN"
+     }
+    ]
+   },
+   {
+    "designator": "RPVLA",
+    "value": "330",
+    "block_name": "BLEEDERS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CTL_QDISBK"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UPVA_ANO"
+     }
+    ]
+   },
+   {
+    "designator": "RPVBA",
+    "value": "1M",
+    "block_name": "BLEEDERS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_QDISA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKAN"
+     }
+    ]
+   },
+   {
+    "designator": "UPVB",
+    "value": "VOM1271T",
+    "block_name": "BLEEDERS",
+    "search_query": "VOM1271T photovoltaic MOSFET driver w/ integrated turn-off",
+    "part_uuid": "1eb2e50c5fa04956960077e2ae80263e",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A1",
+      "signal_name": "UPVB_ANO"
+     },
+     {
+      "pin_number": 2,
+      "name": "C1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "A2",
+      "signal_name": "G_QDISB"
+     },
+     {
+      "pin_number": 3,
+      "name": "C2",
+      "signal_name": "BKBN"
+     }
+    ]
+   },
+   {
+    "designator": "RPVLB",
+    "value": "330",
+    "block_name": "BLEEDERS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CTL_QDISBK"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UPVB_ANO"
+     }
+    ]
+   },
+   {
+    "designator": "RPVBB",
+    "value": "1M",
+    "block_name": "BLEEDERS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_QDISB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "BKBN"
+     }
+    ]
+   }
+  ]
+ ],
+ "nc": {
+  "KSER": [
+   2,
+   7
+  ],
+  "KPARA": [
+   2,
+   7
+  ],
+  "KPARB": [
+   2,
+   7
+  ],
+  "KOUT": [
+   2,
+   7
+  ],
+  "KPREA": [
+   2,
+   7
+  ],
+  "KPREB": [
+   2,
+   7
+  ],
+  "KOUT2": [
+   2,
+   7
+  ]
+ },
+ "warnings": [],
+ "total": 57
+}

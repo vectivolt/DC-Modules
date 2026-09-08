@@ -49,7 +49,7 @@ const PAGE_TITLES = {
 };
 
 const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SMBJ26A",
-  "FAST-1200-1A", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40"]);
+  "FAST-1200-1A", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15"]);
 
 const uuidOf = (mpn) => {
   if (uuidMap[mpn]) return uuidMap[mpn].part_uuid;
@@ -68,6 +68,9 @@ const uuidOf = (mpn) => {
   // 88-way card interface: no probed EasyEDA part exists; treat like the other connector classes.
   if (/^CONN-CARD-88/.test(mpn)) return uuidMap["HDR-1x5-2.54"]?.part_uuid ?? null;  // -H and -R halves (E37 pair split)
   if (/^(IND-|DM-)/.test(mpn)) return uuidMap["IND-ALL-2P"].part_uuid;
+  if (/^QA01C/.test(mpn)) return uuidMap["QA01C"].part_uuid;            // R4-6 -18 variant
+  if (/^BZT52/.test(mpn)) return uuidMap["1N4148WS"].part_uuid;         // R4-3 zener (SOD class)
+  if (/^74HC02$/.test(mpn)) return uuidMap["74HC11"].part_uuid;         // R4-8 exclusion NOR
   // E40: the 40-way harness reuses the probed 16-way header class as its placeholder.
   if (/^MICROFIT3-/.test(mpn)) return uuidMap["MICROFIT3-16"]?.part_uuid ?? null;
   // Cabinet sheet blocks (E39): interface symbols only — same placeholder class as the 88-way.
@@ -98,17 +101,16 @@ function transform(c, page, all, warn) {
     // TO-247-4 symbol: 1=D 2=S 3=DS 4=G
     out.pins = [P(4, "G", sig(c, "G")), P(1, "D", sig(c, "D")), P(2, "S", sig(c, "S")), P(3, "DS", sig(c, "KS"))];
   } else if (m === "NSI6611") {
-    const ks = sig(c, "KSRC"), g2 = sig(c, "GND2");
-    if (g2 && ks && g2 !== ks) warn.push(`${c.designator}: KSRC(${ks}) != GND2(${g2}); GND2 pin3 uses KSRC`);
+    // R4-2: the CELLS now author the REAL NSI6611ASC map (GND2 = Kelvin, TEST -> GND1, ASC tied
+    // inactive) — this branch is a pure pass-through. The old translation put TEST on the Kelvin,
+    // which the external review correctly flagged; its KSRC!=GND2 warning was the tell.
     out.pins = [
-      P(15, "VCC1", sig(c, "VIA")), P(9, "GND1", sig(c, "GNDA")), P(10, "IN+", sig(c, "PWM")),
-      P(11, "IN-", sig(c, "GNDA")), P(14, "RST#/EN", sig(c, "EN")), P(13, "FLT#", sig(c, "FLT")),
-      P(2, "DESAT", sig(c, "DST")), P(3, "GND2", ks), P(1, "ASC", ks), P(16, "TEST", ks),
+      P(15, "VCC1", sig(c, "VCC1")), P(9, "GND1", sig(c, "GND1")), P(10, "IN+", sig(c, "INP")),
+      P(11, "IN-", sig(c, "INN")), P(14, "RST#/EN", sig(c, "EN")), P(13, "FLT#", sig(c, "FLT")),
+      P(2, "DESAT", sig(c, "DST")), P(3, "GND2", sig(c, "GND2")), P(1, "ASC", sig(c, "ASC")),
+      P(16, "TEST", sig(c, "TEST")),
       P(5, "VCC2", sig(c, "VCC2")), P(4, "OUTH", sig(c, "OUTH")), P(6, "OUTL", sig(c, "OUTL")),
-      P(7, "CLAMP", sig(c, "CLAMP")), P(8, "VEE2", sig(c, "VEE")),
-      // R3 CLOSED: pin 12 is RDY, an active-low open-drain power-good. It is now wired-OR onto the
-      // per-board DRV_RDY net with a single 10 k pull-up in SafetyChain, so it can actually pull.
-      P(12, "RDY", sig(c, "RDY")),
+      P(7, "CLAMP", sig(c, "CLAMP")), P(8, "VEE2", sig(c, "VEE")), P(12, "RDY", sig(c, "RDY")),
     ];
     out.nc = [];
   } else if (m === "TLP152-class") {
@@ -133,25 +135,20 @@ function transform(c, page, all, warn) {
     out.pins = [P(1, "OUT", sig(c, "OUT")), P(4, "IN-", sig(c, "INN")), P(3, "IN+", sig(c, "INP")),
       P(2, "V-", sig(c, "VN")), P(5, "V+", sig(c, "VP"))];
   } else if (m === "NCP1252A") {
-    out.pins = [P(1, "FB", sig(c, "FB")), P(2, "BO", sig(c, "BR")), P(3, "CS", sig(c, "CS")),
-      P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "GATE")), P(7, "VCC", sig(c, "VCC")),
-      P(8, "SS", sig(c, "COMP")),
-      // R3 CLOSED: pin 4 is RT — the resistor to GND that sets Fsw. RAUXRT now provides it.
-      P(4, "RT", sig(c, "RT"))];
+    // R4-3: cells author the real map now (FB/BO/CS/RT/GND/DRV/VCC/SS) — pass-through.
+    out.pins = [P(1, "FB", sig(c, "FB")), P(2, "BO", sig(c, "BO")), P(3, "CS", sig(c, "CS")),
+      P(4, "RT", sig(c, "RT")), P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "DRV")),
+      P(7, "VCC", sig(c, "VCC")), P(8, "SS", sig(c, "SS"))];
     out.nc = [];
-  } else if (m === "QA01C" || m === "QA01C-15S18") {
+  } else if (m.startsWith("QA01C")   /* R4-6 rename: exact-match was drop-class bug #6 */) {
     // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. If COM net == paired driver VEE net, COM is the -4V
     // rail: COM->5 and 0V->driver KSRC net. Else unipolar: COM->6, NC 5.
-    const com = sig(c, "COM");
-    const drv = all.find((d) => (d.mpn || d.value) === "NSI6611" &&
-      d.pins.some((p) => p.name === "VEE" && p.signal_name === com));
-    out.pins = [P(1, "VIN", sig(c, "VIN")), P(2, "GND", sig(c, "GND")), P(7, "+VO", sig(c, "P18"))];
-    if (drv) {
-      out.pins.push(P(5, "-VO", com), P(6, "0V", drv.pins.find((p) => p.name === "KSRC").signal_name));
-    } else {
-      out.pins.push(P(6, "0V", com));
-      out.nc = [5];
-    }
+    // R4-2/R4-6: the cells now wire the dual rail explicitly — COM is the 0 V/Kelvin node,
+    // N4 the negative rail. Direct mapping; the old driver-lookup heuristic is retired.
+    out.pins = [P(1, "VIN", sig(c, "VIN")), P(2, "GND", sig(c, "GND")), P(7, "+VO", sig(c, "P18")),
+      P(6, "0V", sig(c, "COM"))];
+    const n4 = sig(c, "N4");
+    if (n4) out.pins.push(P(5, "-VO", n4)); else out.nc = [5];
   } else if (m === "ISO5V-RFC-6K") {
     out.pins = [P(2, "Vin", sig(c, "VIN")), P(1, "GND", sig(c, "GND")),
       P(4, "+Vo", sig(c, "P5")), P(3, "-Vo", sig(c, "COM"))];

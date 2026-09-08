@@ -37,7 +37,7 @@ A commercial family of **unidirectional 30–150 kW AC→DC charging products** 
 | Output | 150–1000 VDC CV/CC | Series/parallel banks, crossover **500/525 V** + 30 s dwell; PS-mode below 260 V bank; ZVS held at **every** simulated edge |
 | Output current | 100 / 200 / 400 A | constant-current below the 300 V knee, constant-power above; 130 % for 2 ms before CC fold |
 | THD | ≤5 % (stretch 3 %) | **0.59–1.05 %** full power, 2.55 % @25 % (line-cycle sim, THD-40) |
-| Peak efficiency | ≥97 % | **97.32 / 97.13 / 96.94 %** full-power @nominal (30/40/50 module; 50 kW peak over envelope 98.4 %) — loss budget rev E43, EMI-filter copper at the ENGINE D6 values |
+| Peak efficiency | ≥97 % | **97.32 / 97.13 / 96.94 / 97.01 %** full-power @nominal (30/40/50L/50A; peaks 98.43–**98.55 %**) — loss budget rev E44, EMI copper at the engine D6 values |
 | Envelope | full power to +55 °C | 1008 grid points per module: **0 violations**, worst Tj 138 °C vs 150 ceiling |
 | Accuracy | ±0.5 % V / ±1 % I | **±0.18 % / ±0.2 %** post-cal (10 k-sample Monte-Carlo, EOL 2-pt cal mandatory) |
 | Protections | §24 catalogue | **32-row threshold table**, HW-fast + supervisory, all 26 fault scenarios executed green |
@@ -70,24 +70,29 @@ flowchart LR
 
 ### Product structure — one module, two cooling lines (E39/E42)
 
-Three module variants share one platform (E40/E41/E42): the **30 kW**, its hot-rodded air
-sibling the **40 kW**, and the sealed **50 kW LIQUID** — same boards, same single card (RATING
-strap 0 Ω / 1 k / 10 k), engine-selected part deltas. The 40 is the **air** sweet spot
+Four module variants share one platform (E40/E41/E42/E44): the **30 kW**, the **40 kW air**
+hot-rod, the sealed **50 kW LIQUID**, and the **50 kW AIR** twin — same boards, same single
+card (RATING strap 0 Ω / 1 k / 10 k / 15 k), engine-selected part deltas. The air-50 parallels
+the LLC pairs (per-package conduction quarters — worst corner 107 °C on plain 4-fan air, ZERO
+envelope folds) and shares every electrical class with the liquid by construction. The 40 is the **air** sweet spot
 (paralleled PFC pairs, 5-stack choke, 6×33 nF tanks, 125 A class, 3 fans); the 50 swaps both
 extrusions for **liquid coldplates and deletes every fan** — zero new silicon (the coldplate is
 what buys single LLC FETs at 167 A), revved tank/protection classes, full envelope grid-proven.
 
 | Product | Composition | Output | Cooling | Cards | ₹ @10k | **₹/kW** |
 |---|---|---|---|---|---|---|
-| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,627 | 1,021 |
-| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,234 | **881** |
-| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,238 | **825** |
-| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,254 | 1,021 |
-| **80 kW** | 2 × 40 | · 267 A | air | 2 | 70,468 | **881** |
-| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 82,476 | **825** |
-| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 124,342 | 1,036 |
-| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **107,536** | **896** — cheapest 120 |
-| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **125,548** | **837** |
+| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,657 | 1,022 |
+| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,264 | 882 |
+| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,293 | **826** |
+| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 40,942 | **819** — cheapest module |
+| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,314 | 1,022 |
+| **80 kW** | 2 × 40 | · 267 A | air | 2 | 70,528 | 882 |
+| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 82,586 | **826** |
+| **100 kW** | 2 × 50a | · 333 A | air | 2 | 81,884 | **819** |
+| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 124,462 | 1,037 |
+| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **107,626** | **897** — cheapest 120 |
+| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **125,713** | **838** |
+| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **124,660** | **831** |
 
 Full power from 300 V out / 330 VAC in on every variant; multi-module products share current by
 commanded-CC over CAN with staggered starts and graceful module-dropout degrade. The liquid line
@@ -98,32 +103,33 @@ keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at th
 
 ### Module variant specifications (rev E43 — every number engine-derived and gate-verified)
 
-| Specification | **30 kW** | **40 kW** (E41) | **50 kW** (E42 · liquid) |
-|---|---|---|---|
-| Rated power · max output current | 30 kW · 100 A | 40 kW · 133 A | 50 kW · 167 A |
-| Input (all) | 3-φ 285–475 VAC | full power ≥330 VAC | 86 % CC derate @285 V |
-| Output (all) | 150–1000 VDC | S/P crossover 500/525 V + 30 s dwell | full power ≥300 V out |
-| Worst continuous line current | 55.9 A | 73.3 A | 91.6 A |
-| Efficiency — full power @400 VAC | 97.32 % | 97.13 % | 96.94 % |
-| Efficiency — peak over envelope | 98.43 % | 98.47 % | 98.44 % |
-| Total loss at rated | 827 W | 1,183 W | 1,580 W |
-| Cooling | forced air · 2 fans | forced air · 3 fans | **sealed liquid** · 2 coldplates · 0 fans (≤60 °C coolant · 6 L/min · ΔT ≈ 4 K) |
-| Envelope proof (grid, 1008 pts each) | 0 fail · worst Tj 139 °C | 0 fail · worst Tj 147 °C | 0 fail · worst Tj 140 °C — full envelope, zero tank clamps |
-| Vienna PFC (3-φ · 50 kHz) | single 750 V SiC pair/position | **paralleled pairs** | paralleled pairs (same silicon as 40) |
-| PFC choke D1 | 3× 0077908A7 · N=39 · 165 µH | 5× T79 26µ · N=23 · 113 µH | 5× T79 26µ · N=22 · 103 µH |
-| LLC tank (fr 140 kHz) | 4×46 nF + 4.0 µH bins | 6×33 nF + 3.5 µH bins | 8×27 nF + 3.0 µH bins · revved class (65 A pk / 95 A pk OC) |
-| Transformer (per section) | 3× PQ50/50 | 2× E70/33/32 | 3× E70/33/32 (Bpk identical 108 mT) |
-| DM stage D6 + CX2 (E43 engine) | 2× T48 60µ N=7 · 4.7 µF | 2× T57 60µ N=8 · 4.7 µF | 3× T57 60µ N=8 · 4.7 µF |
-| Conducted-EMI worst DM margin | +4.9 dB (crest-biased) | +5.7 dB | +5.6 dB |
-| Input protection (gG) | 80 A · 22×58 | 125 A · 22×58 | 160 A · NH00 |
-| Precharge bypass class | 80 A (70 %) | 100 A (73 %) | 250 A (37 %) |
-| Output relay K_OUT | 1× 200 A (50 %) | 1× 200 A (67 %) | **2× 200 A dual** (42 %/relay, series-mirror readback) |
-| DC link · bank strings | 10 cans · 2/bank | 12 · 3 | 16 · 4 |
-| Bus discharge to <60 V | 2.0 s (3.0 s F.21 window) | 2.4 s (4.0 s) | 3.2 s (5.0 s) |
-| Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k — same p/n, same image |
-| Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich · 40-way harness |
-| **BOM @10k · ₹/kW** | **₹30,627 · 1,021/kW** | **₹35,234 · 881/kW** | **₹41,238 · 825/kW** |
-| Builds products | 60 kW (2×) · 120 kW (4×+CSU) | 80 kW (2×) · **120 kW (3×+CSU — cheapest)** | 100 kW (2×) · 150 kW (3×+CSU) |
+| Specification | **30 kW** | **40 kW** (E41) | **50 kW** (E42 · liquid) | **50 kW** (E44 · air) |
+|---|---|---|---|---|
+| Rated power · max output current | 30 kW · 100 A | 40 kW · 133 A | 50 kW · 167 A | 50 kW · 167 A |
+| Input (all) | 3-φ 285–475 VAC | full power ≥330 VAC | 86 % CC derate @285 V | — common |
+| Output (all) | 150–1000 VDC | S/P crossover 500/525 V + 30 s dwell | full power ≥300 V out | — common |
+| Worst continuous line current | 55.9 A | 73.3 A | 91.6 A | 91.6 A |
+| Efficiency — full power @400 VAC | 97.32 % | 97.13 % | 96.94 % | **97.01 %** |
+| Efficiency — peak over envelope | 98.43 % | 98.47 % | 98.44 % | **98.55 %** |
+| Total loss at rated | 827 W | 1,183 W | 1,580 W | 1,541 W |
+| Cooling | forced air · 2 fans | forced air · 3 fans | **sealed liquid** · 2 coldplates · 0 fans (≤60 °C coolant · 6 L/min · ΔT ≈ 4 K) | forced air · **4 fans** (3 front + 1 rear; all tachs monitored) |
+| Envelope proof (grid, 1008 pts each) | 0 fail · worst Tj 139 °C | 0 fail · worst Tj 147 °C | 0 fail · worst Tj 140 °C — full envelope, zero tank clamps | 0 fail · worst Tj **107 °C** — **zero folds anywhere** |
+| Vienna PFC (3-φ · 50 kHz) | single 750 V SiC pair/position | **paralleled pairs** | paralleled pairs (same silicon as 40) | paralleled pairs |
+| PFC choke D1 | 3× 0077908A7 · N=39 · 165 µH | 5× T79 26µ · N=23 · 113 µH | 5× T79 26µ · N=22 · 103 µH | same D1-50 part |
+| LLC silicon | 6× single SG2M | 6× single | 6× single (the coldplate buys it) | **12× — paralleled pairs** (per-package conduction ÷4) |
+| LLC tank (fr 140 kHz) | 4×46 nF + 4.0 µH bins | 6×33 nF + 3.5 µH bins | 8×27 nF + 3.0 µH bins · revved class (65 A pk / 95 A pk OC) | identical to E42 (by construction) |
+| Transformer (per section) | 3× PQ50/50 | 2× E70/33/32 | 3× E70/33/32 (Bpk identical 108 mT) | 3× E70/33/32 |
+| DM stage D6 + CX2 (E43 engine) | 2× T48 60µ N=7 · 4.7 µF | 2× T57 60µ N=8 · 4.7 µF | 3× T57 60µ N=8 · 4.7 µF | same D6-50 |
+| Conducted-EMI worst DM margin | +4.9 dB (crest-biased) | +5.7 dB | +5.6 dB | +5.6 dB |
+| Input protection (gG) | 80 A · 22×58 | 125 A · 22×58 | 160 A · NH00 | 160 A · NH00 |
+| Precharge bypass class | 80 A (70 %) | 100 A (73 %) | 250 A (37 %) | 250 A (37 %) |
+| Output relay K_OUT | 1× 200 A (50 %) | 1× 200 A (67 %) | **2× 200 A dual** (42 %/relay, series-mirror readback) | 2× 200 A dual |
+| DC link · bank strings | 10 cans · 2/bank | 12 · 3 | 16 · 4 | 16 · 4 |
+| Bus discharge to <60 V | 2.0 s (3.0 s F.21 window) | 2.4 s (4.0 s) | 3.2 s (5.0 s) | 3.2 s (5.0 s) |
+| Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k | 1 card · **15 k** — same p/n, same image (E24 rev G) |
+| Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich | 40-way harness — common |
+| **BOM @10k · ₹/kW** | **₹30,657 · 1,022/kW** | **₹35,264 · 882/kW** | **₹41,293 · 826/kW** | **₹40,942 · 819/kW — cheapest** |
+| Builds products | 60 kW (2×) · 120 kW (4×+CSU) | 80 kW (2×) · **120 kW (3×+CSU — cheapest)** | 100 kW (2×) · 150 kW (3×+CSU) | 100 kW air · **150 kW air (831/kW)** |
 
 The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
 
@@ -232,6 +238,7 @@ This platform was **designed by iteration against its own simulations and audits
 | **E40 single-brain migration** | two cards per module = a link protocol, 9 CAN nodes at 120 kW, and a way/pin budget spent twice | ONE card per module on the SAME VET6 + 88-way slot (generated merge, 73/82 pins); 40-way harness; RATING-only identity; family control = 1/2/5 MCUs; **−₹293/module measured** |
 | **E41 stress validation** | the registered D1-40 choke was UNBUILDABLE (optimizer refuses 3-stack on sat/swing) and the 100 A fuse failed the E35 derate rule (72 < 73.3 A) | 5-stack D1-40 + 125 A class; **stress-audit.mjs joins run-all** — 34 device/magnetic acceptance checks across both variants |
 | **E42 liquid closure** | at the revved 50 kW OC points BOTH CT burdens computed past the 3.3 V rail (line 3.67 V, tank 3.55 V — protection observability clipped at the ADC) | burdens re-scaled 27→21.5 Ω / 2.0→1.6 Ω-2 W at the R3-proven rail budget; **stress-audit grows the BRD + grid-shape check families** across all three variants |
+| **R4 external review response** | three independent PDF reviews claimed ~40 reversed diodes, driver isolation faults, a connector mismatch and supply-pin violations | triaged claim-by-claim against netlists + glyph crops + vendor datasheets: the diode claims were ONE sheet-rendering defect (netlists correct all along — now semantically seated + generator-refused + data-locked); the REAL finds — fictional NSI6611/NCP1252 pin maps, floating driver bias COM, wrong-sign aux feedback, TPS54202 EN at 15 V, the AC-DC V3P3 island, V24 monitor clipping — all fixed and gated as **R4-1…R4-8**; hardware S/P exclusion added; full disposition in register **E45** |
 | **E43 full-family verification** | clean-room recompute of every board (118 checks) found the D6 DM choke had NO engine: the inherited "22 µH" cannot exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH LISN floor — at EVERY variant); also 50 kW pulse-resistor energies past the 25 W family point, trim-litz J over-line at 40/50, and the 27 nF caps' Vrms duty unstated | **dm-choke-design.mjs joins the engine set** (per-variant crest-biased floors, CX2 trio → 4.7 µF X1, LISN model rebuilt per-variant: +4.9/+5.7/+5.6 dB); 50 W pulse class at 50 kW; 2000×0.1 trim litz; O-8 Vrms lines on every tank cap; **stress-audit grows D6/CrV/D2c/Epulse/Xbleed families** |
 
 Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E42** in [`docs/assumptions.md`](docs/assumptions.md).

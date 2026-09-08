@@ -21,17 +21,18 @@
 // structure + E36): its single-board pair cannot exist since the card split (cardMap() correctly
 // refuses 4 lanes — AIN needs 17 of 13), so every pipeline consumer iterates THIS list and the
 // 120 kW product cost is a 4×-module roll-up in bom-gen.
-export const BUILDABLE_SKUS = ["30kw", "40kw", "50kw"];   // E40 single-brain module + E41 40 kW hot variant + E42 50 kW liquid variant; 60/80/100/120/150 kW are cabinets
+export const BUILDABLE_SKUS = ["30kw", "40kw", "50kw", "50kwa"];   // E40 single-brain + E41 40 kW air + E42 50 kW liquid + E44 50 kW AIR; 60/80/100/120/150 kW are cabinets
 
 export const DB = [
   // --- power semiconductors
   { m: /^Q[ABC]\d+[AB]2?$/, mpn: "B3M010C075Z", mfr: "BASiC", desc: "SiC MOSFET 750 V 10 mΩ TO-247-4", price1k: 330, alt: "SiChain 750V/10mΩ (RFQ)" },
-  { m: /^Q\d+[HL]$/, mpn: "SG2M023120LJ", mfr: "SiChain", desc: "SiC MOSFET 1200 V 23 mΩ TO-247-4L", price1k: 390, alt: "BASiC B3M020120ZL" },
+  { m: /^Q\d+[HL]2?$/, mpn: "SG2M023120LJ", mfr: "SiChain", desc: "SiC MOSFET 1200 V 23 mΩ TO-247-4L (E44: the air-50 parallels a second per position — Q#H2/L2)", price1k: 390, alt: "BASiC B3M020120ZL" },
   { m: /^D[ABC]\d+[TB]$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)", price1k: 120, alt: "BASiC B3D040120H" },
   { m: /^D[ABC]\d+C$/, mpn: "SICJBS-1200-10", mfr: "SiChain", desc: "SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)", price1k: 55, alt: "CR Micro 1200V/10A" },
   { m: /^D\d+[AB][1-4]$/, mpn: "SICJBS-1200-20", mfr: "SiChain", desc: "SiC JBS 1200 V 20 A TO-247-2 (secondary bridge)", price1k: 90, alt: "CR Micro 1200V/20A" },
   { m: /^QDIS[FAB]$/, mpn: "SIC-1200-5A", mfr: "CR Micro", desc: "SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15)", price1k: 120, alt: "BASiC small 1200V" },
   { m: /^QAUX$/, mpn: "SIC-1700-1R", mfr: "CR Micro/BASiC", desc: "SiC FET 1700 V ~1 Ω (aux flyback, full-bus E26 rev C; TO-247 likely package — MR-23, footprint placeholder §40)", price1k: 160, alt: "G3R1700 class" },
+  { m: /^DZAUX$/, mpn: "BZT52-C15", mfr: "any", desc: "15 V zener SOD-123 (R4-3: primary-side regulation reference — VCC regulates at VZ+VBE ≈ 15.7 V, aux winding tracks the rails)", price1k: 0.8, alt: "MMSZ5245B" },
   { m: /^DCLA$/, mpn: "FAST-1200-1A", mfr: "MDD/eq", desc: "1200 V 1 A fast diode SMB (aux RCD clamp)", price1k: 6, alt: "US1M ×2 series" },
   { m: /^D\w*S[12]$/, mpn: "US1M", mfr: "Yageo/MDD", desc: "1 kV 1 A fast diode SMA (DESAT chain)", price1k: 1.2, alt: "M7/US1M any" },
   { m: /^DAUX24$/, mpn: "UF-400V-3A", mfr: "onsemi/MDD (MURS340 class)", desc: "400 V 3 A ultrafast, SMC pad (aux 24 V rectifier — CB-19: PIV ≈ 176 V + leakage ring; 100 V Schottky avalanched)", price1k: 5, alt: "ES3 series 400 V" },
@@ -40,6 +41,7 @@ export const DB = [
   { m: /^DTVS15$/, mpn: "SMBJ16A", mfr: "any", desc: "TVS 16 V uni SMB (V15 rail clamp — MR-17)", price1k: 3, alt: "any" },
   { m: /^D\w+P$/, mpn: "1N4148WS", mfr: "any", desc: "clamp diode SOD-323 (to 3V3)", price1k: 0.4, alt: "BAS316" },
   { m: /^D\w+N$/, mpn: "1N4148WS", mfr: "any", desc: "clamp diode SOD-323 (from AGND — CB-15 bipolar front-end)", price1k: 0.4, alt: "BAS316" },
+  { m: /^QAUXFB$/, mpn: "S8050", mfr: "CJ", desc: "NPN SOT-23 (R4-3: opto-emulating FB pull-down — closes the NCP1252 primary-side loop with the correct sign)", price1k: 0.4, alt: "MMBT2222" },
   { m: /^QDIG[12]$/, mpn: "S8050", mfr: "CJ", desc: "NPN SOT-23 (display digit driver)", price1k: 0.4, alt: "MMBT2222" },
   // --- gate drive, isolation & safety chain
   { m: /^U([ABC]\d+G|\d+[HL])$/, mpn: "NSI6611", mfr: "NOVOSENSE", desc: "iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16", price1k: 85, alt: "NSI6602B" },
@@ -60,18 +62,19 @@ export const DB = [
   // gate that cannot turn on. Legs 1-4 and 6-12 were unaffected, which is why it hid: it needed
   // a sheet with a leg 5 on it. Found by proving the replicated cells identical and diffing the
   // one that was not.
-  { m: /^PS\d+[HL]$/, overrides: ["ISO5V-RFC-6K"], mpn: "QA01C", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
+  { m: /^PS\d+[HL]$/, overrides: ["ISO5V-RFC-6K"], mpn: "QA01C-18", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
   { m: /^PS5\w+$/, mpn: "ISO5V-RFC-6K", mfr: "MORNSUN QA/URB-grade", desc: "iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / DCN / BKAN / BKBN)", price1k: 95, p10k: 65, alt: "RECOM RxxP-R / certified eq" },
   { m: /^PSQD\w*$/, mpn: "QA01C", mfr: "MORNSUN", desc: "iso 15→18 V module ≥6 kVDC (bus-discharge driver bias, CB-11; insulation cert class §K)", price1k: 95, p10k: 60, alt: "B1518S-3WR3HD" },
-  { m: /^PS\w+$/, mpn: "QA01C", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
+  { m: /^PS\w+$/, mpn: "QA01C-18", mfr: "MORNSUN", desc: "iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs aggregated) module pricing ≤₹55 makes the custom-transformer ECO-1 net ≈ ₹0 with added EMC/mfg risk → ECO-1 RETIRED; O-11: drawn P18/COM/N4 dual-rail vs single-out suffix — the −4 V zener-split or a true dual-rail p/n MUST be resolved at §K, E5/E6 off-bias depends on it)", price1k: 95, p10k: 55, alt: "domestic iso-module eq (2nd source at RFQ)" },
   { m: /^USHO$/, mpn: "NSI1200-DSWR", mfr: "NOVOSENSE", desc: "iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6)", price1k: 70, alt: "AMC1200" },
   { m: /^UIVV[123]$/, mpn: "AMC1350-class", mfr: "TI/NOVOSENSE", desc: "iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)", price1k: 135, alt: "NSI1300 class" },
-  { m: /^UIV\w+$/, mpn: "AMC1311-class", mfr: "TI/NOVOSENSE", desc: "iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3)", price1k: 115, alt: "NSI1311 class" },
+  { m: /^UIV\w+$/, mpn: "AMC1311-class", mfr: "TI/NOVOSENSE", desc: "iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3; R4 note: on the 1311 class the symbol's pin-3 'VINN' is physically SHTDN — grounded = enabled, netlist correct, label carried from the shared iso-amp table)", price1k: 115, alt: "NSI1311 class" },
   { m: /^UCAN$/, mpn: "NSI1042", mfr: "NOVOSENSE", desc: "iso CAN transceiver", price1k: 60, alt: "NSI1050" },
   { m: /^UQD$/, mpn: "TLP152-class", mfr: "Toshiba/eq", desc: "opto gate driver (isolated bus-discharge control, default-OFF — CB-11)", price1k: 42, alt: "1ED31xx lite" },
   { m: /^UPV[AB]$/, mpn: "VOM1271T", mfr: "Vishay/eq", desc: "photovoltaic MOSFET driver w/ integrated turn-off (bank bleeders — ECO-2a/E33 rev B: no floating supply needed, ms-class turn-on is the point)", price1k: 35, p10k: 28, alt: "TLP3906" },
   { m: /^USUP(CARD|[AB])$/, mpn: "TPS3430-class", mfr: "TI/eq", desc: "external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window pins; strap values per datasheet at A6/§K)", price1k: 35, alt: "MAX6753" },
   { m: /^UAND(CARD|[AB])$/, mpn: "74HC11", mfr: "any", desc: "triple 3-input AND (gate-enable wired-AND, E27)", price1k: 8, alt: "74LVC1G11 ×1" },
+  { m: /^UEXCL$/, mpn: "74HC02", mfr: "any", desc: "quad NOR SOIC-14 (R4-8: hardware S/P exclusion — KSER coil command gated by NOT(KPARA OR KPARB); both destructive matrix states involve KSER, so this kills both)", price1k: 6, alt: "74LVC02A" },
   { m: /^UAVB$/, mpn: "TLV9061-class", mfr: "TI/3PEAK", desc: "rail-to-rail op-amp (AVMID buffer, E31)", price1k: 12, alt: "LMV321" },
   // --- control (card-split 2026-09-08: UCARD/USUPCARD/UANDCARD/UBKCARD/LBKCARD live on the
   //     control card — the audit found the old per-board regexes silently dropped ALL of them,
@@ -130,7 +133,7 @@ export const DB = [
   { m: /^R\w+D[0-7]$/, mpn: "HV73-475k-1%", mfr: "KOA/UniOhm", desc: "475 kΩ 1206 1% anti-surge (HV divider — MR-3)", price1k: 1.4, alt: "any anti-surge 1%" },
   { m: /^R\w{2}DL$/, mpn: "R0805-prec-0.1%", mfr: "UniOhm", desc: "divider bottom 0.1% (6.8 k unipolar / 11.5 k AC)", price1k: 2.5, alt: "any 0.1%" },
   { m: /^RAUXCS$/, mpn: "R1206-R31-1%-0.5W", mfr: "any current-sense", desc: "0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)", price1k: 2.5, alt: "any CS 1206" },
-  { m: /^RG[ABC]\d+[AB]2$/, mpn: "R0805-2R2", mfr: "any thick-film", desc: "per-device series gate R for the E41 paralleled PFC pair (parallel-SiC practice)", price1k: 0.5, alt: "any" },
+  { m: /^RG([ABC]\d+[AB]|\d+[HL])2$/, mpn: "R0805-2R2", mfr: "any thick-film", desc: "per-device series gate R for paralleled SiC (E41 PFC pairs / E44 air-50 LLC pairs)", price1k: 0.5, alt: "any" },
   { m: /^R\w+(ON|OFF)$/, mpn: "R1206-RG-0.5W", mfr: "any thick-film HP", desc: "gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%)", price1k: 2, alt: "2× 0805 parallel" },
   { m: /^R\w+GS$/, mpn: "R0805-10k", mfr: "any", desc: "10 kΩ gate-source", price1k: 0.5, alt: "any" },
   { m: /^R\d+CT$/, mpn: "R2512-2R0-1W-1%", mfr: "any", desc: "2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here)", price1k: 3, alt: "2× 1206 1R0 series" },
@@ -237,8 +240,8 @@ export const skuOverrides = {
     LB0: { price1k: 1190, mpn: "IND-PFC-103u-50" }, LC0: { price1k: 1190, mpn: "IND-PFC-103u-50" },
     // D2-50: same 2x PQ50/50 gapped-ferrite trim, N=6, bins re-centred on 3.0 uH (with Cr
     // 8x27 nF = 216 nF: fr = 139.8 kHz, trim = 50% of Lr — binnable; Bpk 83 mT vs the 100 mT line)
-    L1T: { price1k: 155, mpn: "IND-TRIM-BIN6-50", note: "D2-50: N=6, bins 2.8/3.0/3.2 uH; litz 2000x0.1 (15.7 mm2, J 4.9); convective dT computes 46 K -> the coldplate gap-pad bond is MANDATORY for this part (sealed module, E42/E43)" },
-    L2T: { price1k: 155, mpn: "IND-TRIM-BIN6-50" }, L3T: { price1k: 155, mpn: "IND-TRIM-BIN6-50" },
+    L1T: { price1k: 165, mpn: "IND-TRIM-BIN6-50", note: "D2-50 rev E44: N=6, bins 2.8/3.0/3.2 uH; litz 3000x0.1 (23.6 mm2, J 3.3) — ONE drawing serves liquid AND air (convective dT 38.6 K <= 40; the plate bond on the sealed module is belt-and-suspenders, no longer load-bearing)" },
+    L2T: { price1k: 165, mpn: "IND-TRIM-BIN6-50" }, L3T: { price1k: 165, mpn: "IND-TRIM-BIN6-50" },
     // resonant caps: 8x27 nF per section (77.3 A rms / 8 = 9.7 A of the 12 A line)
     "C1R0": { mpn: "PP-27n-1200V" }, "C1R1": { mpn: "PP-27n-1200V" }, "C1R2": { mpn: "PP-27n-1200V" }, "C1R3": { mpn: "PP-27n-1200V" }, "C1R4": { mpn: "PP-27n-1200V" }, "C1R5": { mpn: "PP-27n-1200V" }, "C1R6": { mpn: "PP-27n-1200V" }, "C1R7": { mpn: "PP-27n-1200V" },
     "C2R0": { mpn: "PP-27n-1200V" }, "C2R1": { mpn: "PP-27n-1200V" }, "C2R2": { mpn: "PP-27n-1200V" }, "C2R3": { mpn: "PP-27n-1200V" }, "C2R4": { mpn: "PP-27n-1200V" }, "C2R5": { mpn: "PP-27n-1200V" }, "C2R6": { mpn: "PP-27n-1200V" }, "C2R7": { mpn: "PP-27n-1200V" },
@@ -262,6 +265,9 @@ export const skuOverrides = {
     T1: { price1k: 850, mpn: "XFMR-LLC-3E70-50", note: "D3-50: 3x E70/33/32 per section (+1 core set vs 40 kW)" },
     T2: { price1k: 850, mpn: "XFMR-LLC-3E70-50" }, T3: { price1k: 850, mpn: "XFMR-LLC-3E70-50" },
   },
+  // E44 50 kW AIR variant: every electrical class IDENTICAL to the liquid 50 kW (same line/tank/
+  // output currents — the classes were set by current, not by coolant). Assigned programmatically
+  // below (skuOverrides["50kwa"] = { ...skuOverrides["50kw"] }) so the two can never drift.
   "60kw": {
     // reference board (product = 2× 30 kW modules, each with its own 80 A): 125 A at 110 A carries
     // the same 88%/derate problem as F6 if ever built single-board — size to 160 A NH00 then.
@@ -287,6 +293,8 @@ export const skuOverrides = {
     RSHO: { price1k: 260 },
   },
 };
+
+skuOverrides["50kwa"] = { ...skuOverrides["50kw"] };   // E44: air-50 shares every class part with the liquid
 
 // E23 custom bias transformer: RETIRED (rev D, 10k-volume decision — E23 rev B). At 10k
 // modules/yr the QA01C-class module lands ≤₹55 (p10k), making the custom multi-secondary
@@ -323,6 +331,17 @@ export const mechLines = {
     ["NTC sensor assemblies (insulated tip spec, E25 — plate-mounted)", 4, 18],
     ["TIM/insulators/fasteners", 1, 420],
     ["Assembly + calibration + EOL test (incl. coolant-loop pressure/leak test)", 1, 2150],
+  ],
+  // E44 50 kW AIR: extrusions + 4 fans replace the coldplate set; vented enclosure; same PCBs
+  "50kwa": [
+    ["PCB-ACDC 6L 440×500 (50 kW copper masses)", 1, 1300], ["PCB-DCDC 6L 440×500", 1, 1500],
+    ["Heatsink extrusions (2, sandwich outer faces — 50 kW fin stock)", 1, 1900],
+    ["Fans 120×38 PWM (3 front + 1 rear, 3.3 V-PWM-compatible p/n)", 4, 280],
+    ["Enclosure sheet metal + hardware (vented; NH00 fuse bases)", 1, 1000],
+    ["Busbars/interconnect studs + harness (busbar-calc, 167 A output class)", 1, 850],
+    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18],
+    ["TIM/insulators/fasteners", 1, 420],
+    ["Assembly + calibration + EOL test", 1, 2000],
   ],
   "60kw": [
     ["PCB-ACDC 6L 460×420", 1, 1750], ["PCB-DCDC 6L 520×420", 1, 1950],

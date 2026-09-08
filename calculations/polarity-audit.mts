@@ -36,6 +36,7 @@ const ACDC: Rule[] = [
   { m: /^DAUX(24|15)$/, p1: { peer: "^TAUX\\." }, p2: { net: "^V$1$" } }, // flyback secondary rectifiers
   { m: /^DAUXVC$/, p1: { peer: "^TAUX\\.AXA$" }, p2: { peer: "^UAUX\\.VCC$" } }, // VCC winding rectifier
   { m: /^DCLA$/, p1: { peer: "^TAUX\\.P2$" }, p2: { peer: "^CCLA\\." } },   // RCD clamp diode
+  { m: /^DZAUX$/, p1: { peer: "^QAUXFB\\.B$" }, p2: { peer: "^RZFB\\." } }, // R4-3 zener: reverse-biased ref, cathode toward VCC via RZFB
 ];
 const DCDC: Rule[] = [
   { m: /^CB([AB])\d+T$/, p1: { net: "^BK$1P$" }, p2: { net: "^BK$1M$" } }, // bank string top can
@@ -97,7 +98,7 @@ function audit(b: Board, rules: Rule[], tag: string) {
   console.log(`  ok    ${tag}: ${okCount}/${seen} polarized parts verified (+/anode on pin 1)`);
 }
 
-for (const sku of ["30kw", "40kw", "50kw"]) {   // E40 module + E41 hot variant + E42 liquid variant
+for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {   // E40 + E41 + E42 liquid + E44 air
   console.log(`\n== polarity — ${sku} ==`);
   const ac = load(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`);
   const dc = load(`${ROOT}/dist/boards/${sku}/dcdc/circuit.json`);

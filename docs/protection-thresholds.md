@@ -46,3 +46,10 @@ tighten, never loosen beyond table max (resistor-set ceilings on comparator refe
 carry a 1 nF filter (pole ≈ 23 kHz) + AMC1311 group delay → total trip path ≈ 10–20 µs. The old
 "<10 µs" figure predated the isolated front-ends. Consequence at trip dV/dt (≈18 V/ms load-dump):
 overshoot ≤ 0.5 V — no margin impact; the number in the table is now the number the hardware has.
+
+**R4 note — Vienna DESAT direction coverage (E45):** each common-source pair's DESAT chain
+senses the PHASE-side drain only; a fault of the opposite current polarity develops V_DS on the
+MID-side device and is NOT seen by DESAT. That direction is covered by the **line-CT OC trip**
+(F.11-class fast path, observable to 150/187 A pk inside the ADC rail) plus the gG fuse
+coordination — two independent detectors per direction overall. Registered as the design basis;
+EVT T-xx short-circuit characterization exercises BOTH polarities.

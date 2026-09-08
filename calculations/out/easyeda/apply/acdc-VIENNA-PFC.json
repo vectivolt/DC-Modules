@@ -141,7 +141,7 @@
      {
       "pin_number": 16,
       "name": "TEST",
-      "signal_name": "KS_A0"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 5,
@@ -209,7 +209,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UA0G_GND2"
+      "signal_name": "KS_A0"
      }
     ],
     "pos": {
@@ -226,7 +226,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "UA0G_GND2"
+      "signal_name": "KS_A0"
      },
      {
       "pin_number": 2,
@@ -310,7 +310,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UA0G_GND2"
+      "signal_name": "KS_A0"
      }
     ],
     "pos": {
@@ -357,9 +357,9 @@
    },
    {
     "designator": "PSA0G",
-    "value": "QA01C",
+    "value": "QA01C-18",
     "block_name": "PHASE-A0",
-    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
     "pins": [
      {
@@ -380,7 +380,12 @@
      {
       "pin_number": 6,
       "name": "0V",
-      "signal_name": "UA0G_GND2"
+      "signal_name": "KS_A0"
+     },
+     {
+      "pin_number": 5,
+      "name": "-VO",
+      "signal_name": "UA0G_VEE"
      }
     ]
    },
@@ -701,7 +706,7 @@
      {
       "pin_number": 16,
       "name": "TEST",
-      "signal_name": "KS_B0"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 5,
@@ -769,7 +774,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UB0G_GND2"
+      "signal_name": "KS_B0"
      }
     ],
     "pos": {
@@ -786,7 +791,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "UB0G_GND2"
+      "signal_name": "KS_B0"
      },
      {
       "pin_number": 2,
@@ -870,7 +875,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UB0G_GND2"
+      "signal_name": "KS_B0"
      }
     ],
     "pos": {
@@ -917,9 +922,9 @@
    },
    {
     "designator": "PSB0G",
-    "value": "QA01C",
+    "value": "QA01C-18",
     "block_name": "PHASE-B0",
-    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
     "pins": [
      {
@@ -940,7 +945,12 @@
      {
       "pin_number": 6,
       "name": "0V",
-      "signal_name": "UB0G_GND2"
+      "signal_name": "KS_B0"
+     },
+     {
+      "pin_number": 5,
+      "name": "-VO",
+      "signal_name": "UB0G_VEE"
      }
     ]
    },
@@ -1261,7 +1271,7 @@
      {
       "pin_number": 16,
       "name": "TEST",
-      "signal_name": "KS_C0"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 5,
@@ -1329,7 +1339,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UC0G_GND2"
+      "signal_name": "KS_C0"
      }
     ],
     "pos": {
@@ -1346,7 +1356,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "UC0G_GND2"
+      "signal_name": "KS_C0"
      },
      {
       "pin_number": 2,
@@ -1430,7 +1440,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UC0G_GND2"
+      "signal_name": "KS_C0"
      }
     ],
     "pos": {
@@ -1477,9 +1487,9 @@
    },
    {
     "designator": "PSC0G",
-    "value": "QA01C",
+    "value": "QA01C-18",
     "block_name": "PHASE-C0",
-    "search_query": "QA01C iso gate-bias module +18/−4-configured",
+    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "part_uuid": "e532c672abe4451aa99c80fe55b1f2d4",
     "pins": [
      {
@@ -1500,7 +1510,12 @@
      {
       "pin_number": 6,
       "name": "0V",
-      "signal_name": "UC0G_GND2"
+      "signal_name": "KS_C0"
+     },
+     {
+      "pin_number": 5,
+      "name": "-VO",
+      "signal_name": "UC0G_VEE"
      }
     ]
    },
@@ -1689,21 +1704,7 @@
    }
   ]
  ],
- "nc": {
-  "PSA0G": [
-   5
-  ],
-  "PSB0G": [
-   5
-  ],
-  "PSC0G": [
-   5
-  ]
- },
- "warnings": [
-  "UA0G: KSRC(KS_A0) != GND2(UA0G_GND2); GND2 pin3 uses KSRC",
-  "UB0G: KSRC(KS_B0) != GND2(UB0G_GND2); GND2 pin3 uses KSRC",
-  "UC0G: KSRC(KS_C0) != GND2(UC0G_GND2); GND2 pin3 uses KSRC"
- ],
+ "nc": {},
+ "warnings": [],
  "total": 69
 }

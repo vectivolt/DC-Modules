@@ -275,9 +275,18 @@ the mechanism that beats them — plate thermal RFQ verifies.
 | Drawing | 50 kW variant | Acceptance |
 |---|---|---|
 | **D1-50** PFC choke | **5× T79 26µ** (same core p/n as D1-40), **N=22**, wire 25.8 mm² (J 3.55) | L0 103 µH −12% floor · L@129.5 A pk ≥ 46 µH (calc 50.8, swing floor 0.49 ≥ 0.40) · ΔI ≤ 35.6 A (calc 34.8) · ΔT ≤ 45 K (calc 37) — pfc-design at PFC_P=50e3/PAR=2, frozen 50 kHz; the 40 kHz row is REFUSED (family edge) |
-| **D2-50** resonant trim | same 2×PQ50/50 gapped ferrite, **N=6**, bins **2.8/3.0/3.2 µH** ±3%, gap re-ground per bin; **litz 2000×0.1 mm (15.7 mm², E43)**, J 4.9 | Bpk ≤ 100 mT (calc 83 at 77.3 A rms); fr = 139.8 kHz, trim = 50% of Lr — binnable (8×33 nF rejected on binnability); Cu 8.1 W + core ≈5 W → convective ΔT computes 46 K: **the coldplate gap-pad bond is MANDATORY for this part** |
+| **D2-50** resonant trim | same 2×PQ50/50 gapped ferrite, **N=6**, bins **2.8/3.0/3.2 µH** ±3%, gap re-ground per bin; **litz 3000×0.1 mm (23.6 mm², E44 rev)**, J 3.3 | Bpk ≤ 100 mT (calc 83 at 77.3 A rms); fr = 139.8 kHz, trim = 50% of Lr — binnable; Cu 5.4 W + core ≈5 W → **convective ΔT 38 K ≤ 40: ONE drawing serves liquid AND air** (the sealed module's plate bond is belt-and-suspenders now, not load-bearing) |
 | **D3-50** transformer | **3×E70/33/32 stack** per section (same former family as D3-40), **6:6:6** | flux identical (volt-second driven: Ae ×1.5 → N ×2/3 → N·Ae unchanged, 108 mT); window fill ≈ 0.83× of the 40 kW wind despite +25% Cu CSA; litz CSA ∝ current at same J |
 | **D6-50** | **rev C engine row (see D6 section): 3× T57 60µ, N=8, foil 26.4 mm²** | L(136 A pk) = 12.9 µH ≥ 11.4 floor · 8.1 W · ΔT 19 K plate-bonded |
 | **D7-50** | same construction, CSA × 5/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind 95 A |
 | CTs | line: **150 A-class 2500:1 at RFQ** (ACX-1100 would run 92%), burden re-scaled 27→21.5 Ω · resonant: **100 A-class 1:100 at RFQ**, burden 2.0→1.6 Ω on a 2 W part | both burden re-scales hold the R3-proven 1.62 V-above-AVMID rail budget at the revved OC points (187 A pk line / 95 A pk tank) — stress-audit BRD block carries the numbers |
+
+## E44 variant note (50 kW AIR module — same magnetics set as E42)
+
+The air twin (`50kwa`) uses the **identical D1-50 / D2-50 / D3-50 / D6-50 / D7-50 set** — the
+classes were set by current, not coolant, and `skuOverrides["50kwa"] = {...skuOverrides["50kw"]}`
+enforces it. Air-specific notes: D1-50's 37 K and D6-50's 19 K convective figures now sit in
+real fan airflow (conservative); D2-50's E44 litz rev (3000×0.1) exists precisely so one trim
+drawing serves both coolings at ≤40 K. The only new POWER part on the air twin is silicon, not
+magnetic: 6× paralleled LLC FETs (E44 register row).
 

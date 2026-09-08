@@ -18,6 +18,7 @@ const f = (x, d = 0) => Number(x.toFixed(d));
 const SKUS = BUILDABLE_SKUS; // 120 kW = cabinet: a 4x-module roll-up is appended after the loop
 const TARGETS = { "40kw": [33000, 29000],  // E41: 30k red-line x1.33 rounded — provisional until pricing directive
    "50kw": [43000, 39000],                 // E42: 40k red-line x1.25 + coldplate adder — provisional until pricing directive
+   "50kwa": [43000, 39000],                // E44: air twin, same provisional line
    "30kw": [25000, 22000], "60kw": [42000, 36000], "120kw": [78000, 68000] };
 const CAT = (mpn, desc) =>
   /SiC|MOSFET|JBS|FET 1200|650 V 4 A/.test(desc) ? "semiconductors"
@@ -123,17 +124,20 @@ for (const sku of SKUS) {
 // Cabinet adder (CSU card + carrier header + WDR PSU + studs + CAN passives) — README-product-structure.
 const CAB_ADDER = 1834;
 const PKW = (() => {
-  const m30 = summary["30kw"], m40 = summary["40kw"], m50 = summary["50kw"];
+  const m30 = summary["30kw"], m40 = summary["40kw"], m50 = summary["50kw"], m50a = summary["50kwa"];
   const rows = [
     ["30 kW module", 30, m30.g10k, "1 module · 1 card · air"],
     ["40 kW module (E41)", 40, m40.g10k, "1 module · 1 card · air"],
     ["50 kW module (E42)", 50, m50.g10k, "1 module · 1 card · LIQUID"],
+    ["50 kW module (E44)", 50, m50a.g10k, "1 module · 1 card · AIR (paralleled LLC, 4 fans)"],
     ["60 kW", 60, 2 * m30.g10k, "2 x 30 · 2 cards · air"],
     ["80 kW", 80, 2 * m40.g10k, "2 x 40 · 2 cards · air"],
     ["100 kW", 100, 2 * m50.g10k, "2 x 50 · 2 cards · liquid"],
+    ["100 kW air", 100, 2 * m50a.g10k, "2 x 50a · 2 cards · air"],
     ["120 kW (4 x 30)", 120, 4 * m30.g10k + CAB_ADDER, "4 cards + CSU · air"],
-    ["120 kW (3 x 40)", 120, 3 * m40.g10k + CAB_ADDER, "3 cards + CSU · air — cheapest 120"],
+    ["120 kW (3 x 40)", 120, 3 * m40.g10k + CAB_ADDER, "3 cards + CSU · air"],
     ["150 kW (3 x 50)", 150, 3 * m50.g10k + CAB_ADDER, "3 cards + CSU · liquid"],
+    ["150 kW air (3 x 50a)", 150, 3 * m50a.g10k + CAB_ADDER, "3 cards + CSU · air"],
   ];
   return rows.map(([n, kw, cost, note]) => [n, kw, f(cost), f(cost / kw), note]);
 })();

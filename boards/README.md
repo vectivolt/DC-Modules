@@ -7,7 +7,7 @@ price-per-kW ladder in
 
 | Source | What it is |
 |---|---|
-| [`30kw/`](30kw/) · [`40kw/`](40kw/) · [`50kw/`](50kw/) | the buildable module variants (`acdc.tsx` + `dcdc.tsx`) — one parameterized source ([`boards.tsx`](../packages/common-components/boards.tsx)): the 40 kW an engine-selected hot-rod of the 30 (E41: paralleled PFC pairs, 5-stack choke, 6×33 nF tanks, 125 A class, 3 fans), the 50 kW the sealed LIQUID variant (E42: same silicon as the 40, coldplates, ZERO fans, revved tank/protection classes, dual K_OUT) |
+| [`30kw/`](30kw/) · [`40kw/`](40kw/) · [`50kw/`](50kw/) · [`50kwa/`](50kwa/) | the buildable module variants (`acdc.tsx` + `dcdc.tsx`) — one parameterized source ([`boards.tsx`](../packages/common-components/boards.tsx)): the 40 kW an engine-selected hot-rod of the 30 (E41: paralleled PFC pairs, 5-stack choke, 6×33 nF tanks, 125 A class, 3 fans), the 50 kW the sealed LIQUID variant (E42: same silicon as the 40, coldplates, ZERO fans, revved tank/protection classes, dual K_OUT), the 50kwa its AIR twin (E44: paralleled LLC pairs, 4 fans, same classes by construction) |
 | [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET6, 120×80, 88-way) — one p/n, one image: the module brain (30 or 40 kW by RATING strap) and the cabinet **CSU** role ([scope](../docs/control-card-scope.md)) |
 | [`cabinet.tsx`](cabinet.tsx) | the **120 kW cabinet interconnect of record** (E39): AC distribution, DC charging bus, CAN chain + SGND + terminations, CSU carrier |
 | [`60kw/`](60kw/) · [`120kw/`](120kw/) | **retired references** — multi-lane pairs; the products are cabinets of modules |

@@ -5,6 +5,7 @@
  "block_order": [
   "FLYBACK",
   "RAILS",
+  "BUCK-3V3",
   "FANS",
   "INTERCONNECT"
  ],
@@ -25,12 +26,17 @@
      {
       "pin_number": 2,
       "name": "BO",
-      "signal_name": "UAUX_BR"
+      "signal_name": "UAUX_BO"
      },
      {
       "pin_number": 3,
       "name": "CS",
       "signal_name": "UAUX_CS"
+     },
+     {
+      "pin_number": 4,
+      "name": "RT",
+      "signal_name": "UAUX_RT"
      },
      {
       "pin_number": 5,
@@ -40,7 +46,7 @@
      {
       "pin_number": 6,
       "name": "DRV",
-      "signal_name": "UAUX_GATE"
+      "signal_name": "UAUX_DRV"
      },
      {
       "pin_number": 7,
@@ -50,12 +56,7 @@
      {
       "pin_number": 8,
       "name": "SS",
-      "signal_name": "UAUX_COMP"
-     },
-     {
-      "pin_number": 4,
-      "name": "RT",
-      "signal_name": "UAUX_RT"
+      "signal_name": "UAUX_SS"
      }
     ]
    },
@@ -69,7 +70,7 @@
      {
       "pin_number": 1,
       "name": "G",
-      "signal_name": "UAUX_GATE"
+      "signal_name": "UAUX_DRV"
      },
      {
       "pin_number": 2,
@@ -112,7 +113,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "UAUX_GATE"
+      "signal_name": "UAUX_DRV"
      },
      {
       "pin_number": 2,
@@ -283,7 +284,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "UAUX_BR"
+      "signal_name": "UAUX_BO"
      }
     ]
    },
@@ -297,7 +298,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "UAUX_BR"
+      "signal_name": "UAUX_BO"
      },
      {
       "pin_number": 2,
@@ -307,8 +308,27 @@
     ]
    },
    {
-    "designator": "RFB1",
-    "value": "118k",
+    "designator": "DZAUX",
+    "value": "BZT52-C15",
+    "block_name": "FLYBACK",
+    "search_query": "BZT52-C15 15 V zener SOD-123",
+    "part_uuid": "24f1572ddddb42c2abec3b14b1aeb99f",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "QAUXFB_B"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DZAUX_RZFB"
+     }
+    ]
+   },
+   {
+    "designator": "RZFB",
+    "value": "2.2k",
     "block_name": "FLYBACK",
     "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
@@ -321,16 +341,59 @@
      {
       "pin_number": 2,
       "name": "pin2",
+      "signal_name": "DZAUX_RZFB"
+     }
+    ]
+   },
+   {
+    "designator": "QAUXFB",
+    "value": "S8050",
+    "block_name": "FLYBACK",
+    "search_query": "S8050 NPN SOT-23",
+    "part_uuid": "370825f0c2e04210b48b6e907229e1b3",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "B",
+      "signal_name": "QAUXFB_B"
+     },
+     {
+      "pin_number": 2,
+      "name": "E",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 3,
+      "name": "C",
       "signal_name": "UAUX_FB"
      }
     ]
    },
    {
-    "designator": "RFB2",
+    "designator": "RBEFB",
     "value": "10k",
     "block_name": "FLYBACK",
     "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "QAUXFB_B"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CFBF",
+    "value": "1nF",
+    "block_name": "FLYBACK",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
     "pins": [
      {
       "pin_number": 1,
@@ -342,29 +405,13 @@
       "name": "pin2",
       "signal_name": "DCN"
      }
-    ]
+    ],
+    "pos": {
+     "rotate": 90
+    }
    },
    {
-    "designator": "RCOMP",
-    "value": "10k",
-    "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
-    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "UAUX_COMP"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "UAUX_FB"
-     }
-    ]
-   },
-   {
-    "designator": "CCOMP",
+    "designator": "CAUXSS",
     "value": "100nF",
     "block_name": "FLYBACK",
     "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
@@ -373,7 +420,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "UAUX_COMP"
+      "signal_name": "UAUX_SS"
      },
      {
       "pin_number": 2,
@@ -643,6 +690,208 @@
       "pin_number": 1,
       "name": "C",
       "signal_name": "V15"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "UBKA",
+    "value": "TPS54202-class",
+    "block_name": "BUCK-3V3",
+    "search_query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6",
+    "part_uuid": "3e9435f2ef554f158a0e2db08d24d66e",
+    "pins": [
+     {
+      "pin_number": 3,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "SW",
+      "signal_name": "UBKA_SW"
+     },
+     {
+      "pin_number": 4,
+      "name": "FB",
+      "signal_name": "UBKA_FB"
+     },
+     {
+      "pin_number": 5,
+      "name": "EN",
+      "signal_name": "UBKA_EN"
+     },
+     {
+      "pin_number": 6,
+      "name": "BOOT",
+      "signal_name": "UBKA_BST"
+     }
+    ]
+   },
+   {
+    "designator": "LBKA",
+    "value": "IND-10u-3A",
+    "block_name": "BUCK-3V3",
+    "search_query": "IND-10u-3A 10 µH 3 A shielded power inductor",
+    "part_uuid": "9a812a0fb5da4190ba46488efa84e704",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_SW"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "CBKIA",
+    "value": "10uF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBKOA",
+    "value": "22uF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "CBSTA",
+    "value": "100nF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "part_uuid": "49c50a09a6674d6b9c72fcc3adebcbca",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_BST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UBKA_SW"
+     }
+    ],
+    "pos": {
+     "rotate": 90
+    }
+   },
+   {
+    "designator": "REN1A",
+    "value": "100k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UBKA_EN"
+     }
+    ]
+   },
+   {
+    "designator": "REN2A",
+    "value": "27k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_EN"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RBKF1A",
+    "value": "45.3k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UBKA_FB"
+     }
+    ]
+   },
+   {
+    "designator": "RBKF2A",
+    "value": "10k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_FB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
      }
     ]
    }
@@ -992,6 +1241,11 @@
       "signal_name": "FAN_TACH3"
      },
      {
+      "pin_number": 39,
+      "name": "W39",
+      "signal_name": "FAN_TACH4"
+     },
+     {
       "pin_number": 40,
       "name": "W40",
       "signal_name": "PE"
@@ -1000,11 +1254,7 @@
    }
   ]
  ],
- "nc": {
-  "JICA": [
-   39
-  ]
- },
+ "nc": {},
  "warnings": [],
- "total": 36
+ "total": 47
 }

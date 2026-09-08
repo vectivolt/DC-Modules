@@ -58,7 +58,7 @@ function loadNet(path) {
   return { netOfPin, pinsOfNet, val, byName, names: [...byName.keys()] };
 }
 const B = {};
-for (const sku of ["30kw", "40kw", "50kw"]) {
+for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   B[sku] = { ac: loadNet(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`), dc: loadNet(`${ROOT}/dist/boards/${sku}/dcdc/circuit.json`) };
 }
 B.card = loadNet(`${ROOT}/dist/boards/control-card/circuit.json`);
@@ -69,7 +69,8 @@ console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
 const SK = {
   "30kw": { P: 30e3, Imax: 100, par: 1, nHalf: 5, nBank: 2, fans: 2, crN: 4, crV: 46e-9, trim: 4.0e-6, tRms: 46.4, fuse: 80, kpre: 80, lineCT: 100, resCT: 50, lineB: 27, resB: 2.0, disch: 3000, litz: 8.25 },
   "40kw": { P: 40e3, Imax: 133, par: 2, nHalf: 6, nBank: 3, fans: 3, crN: 6, crV: 33e-9, trim: 3.5e-6, tRms: 61.9, fuse: 125, kpre: 100, lineCT: 100, resCT: 80, lineB: 27, resB: 2.0, disch: 4000, litz: 15.7 },
-  "50kw": { P: 50e3, Imax: 167, par: 2, nHalf: 8, nBank: 4, fans: 0, crN: 8, crV: 27e-9, trim: 3.0e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 21.5, resB: 1.6, disch: 5000, litz: 15.7 },
+  "50kw": { P: 50e3, Imax: 167, par: 2, nHalf: 8, nBank: 4, fans: 0, crN: 8, crV: 27e-9, trim: 3.0e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 21.5, resB: 1.6, disch: 5000, litz: 23.6 },
+  "50kwa": { P: 50e3, Imax: 167, par: 2, parL: 2, nHalf: 8, nBank: 4, fans: 4, crN: 8, crV: 27e-9, trim: 3.0e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 21.5, resB: 1.6, disch: 5000, litz: 23.6 },
 };
 for (const [sku, s] of Object.entries(SK)) {
   s.Iline = (s.P / 0.965) / (Math.sqrt(3) * 330 * 0.99);
@@ -94,14 +95,14 @@ for (const [sku, s] of Object.entries(SK)) {
   const esr = 2e-4 / (2 * Math.PI * 140e3 * s.crV), wCap = iCap * iCap * esr;
   ck("B", `${sku} per-cap duty`, iCap <= 12 && vCap < 530 && wCap < 1.0,
     `${f(iCap, 1)} A · ${f(vCap, 0)} V rms @140 kHz · ${f(wCap, 2)} W dielectric (O-8 line: curve ≥ ${f(vCap * 1.3, 0)} V — 942C class covers)`);
-  const B_ = s.trim * s.tRms * Math.SQRT2 / ({ "30kw": 4, "40kw": 5, "50kw": 6 }[sku] * AE2) * 1e3;
+  const B_ = s.trim * s.tRms * Math.SQRT2 / ({ "30kw": 4, "40kw": 5, "50kw": 6, "50kwa": 6 }[sku] * AE2) * 1e3;
   const J = s.tRms / s.litz;
-  const rdc = 1.5e-3 * ({ "30kw": 4, "40kw": 5, "50kw": 6 }[sku] / 4) * (8.25 / s.litz) * 1.15;
-  const pcu = s.tRms ** 2 * rdc, ptot = pcu + { "30kw": 6.8, "40kw": 6.5, "50kw": 5.0 }[sku];
+  const rdc = 1.5e-3 * ({ "30kw": 4, "40kw": 5, "50kw": 6, "50kwa": 6 }[sku] / 4) * (8.25 / s.litz) * 1.15;
+  const pcu = s.tRms ** 2 * rdc, ptot = pcu + { "30kw": 6.8, "40kw": 6.5, "50kw": 5.0, "50kwa": 5.0 }[sku];
   const dT = 5.44 * Math.pow(ptot, 0.833);
   const jLine = sku === "30kw" ? 5.65 : 5.6;   // 30 kW = frozen rev C basis (its own lines are Rac/ΔT, both met; J computes 5.62)
-  ck("B", `${sku} trim: Bpk/J/ΔT with the E43 litz`, B_ <= 100.5 && J <= jLine && (sku === "50kw" ? dT <= 50 : dT <= 40.5),
-    `Bpk ${f(B_, 0)} mT · J ${f(J, 1)} A/mm² · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K${sku === "50kw" ? " convective (plate-bond MANDATORY — sealed module)" : " ≤ 40"}`);
+  ck("B", `${sku} trim: Bpk/J/ΔT`, B_ <= 100.5 && J <= jLine && dT <= 40.5,
+    `Bpk ${f(B_, 0)} mT · J ${f(J, 1)} A/mm² · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K ≤ 40 (E44: one D2-50 drawing, 3000×0.1 litz, serves liquid and air)`);
 }
 
 // ---------- C. protection ladder (energies, classes, timing) ----------
@@ -113,7 +114,7 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("C", `${sku} discharge window physics`, tDis * 1000 < s.disch * 0.8,
     `τ ${f(tau, 2)} s → ${f(tDis, 2)} s to <60 V vs ${s.disch} ms window (${f(100 * tDis * 1000 / s.disch, 0)}% used)`);
   const eDis = 0.5 * Cser * 830 * 830 / 4, ePre = 0.5 * Cser * 671 * 671 / 2;
-  const cls = sku === "50kw" ? 480 : 160;   // 50 W family part vs highest-accepted 25 W point
+  const cls = /^50kw/.test(sku) ? 480 : 160;   // 50 W family part (both 50s) vs highest-accepted 25 W point
   ck("C", `${sku} pulse-resistor energies inside class`, eDis <= cls && ePre <= cls,
     `RDIS ${f(eDis, 0)} J · RPRE ${f(ePre, 0)} J per resistor vs ${cls} J (${sku === "50kw" ? "CER-50W-AX ordered — E43" : "25 W family point"})`);
   // precharge completes long before the FSM abort line
@@ -124,11 +125,11 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("C", `${sku} fuse derate`, cap >= (sku === "30kw" ? 55.9 : s.Iline),
     `${s.fuse} A gG → ${f(cap, 1)} A enclosed/hot ≥ ${f(sku === "30kw" ? 55.9 : s.Iline, 1)} A`);
   ck("C", `${sku} precharge-bypass class`, (sku === "30kw" ? 55.9 : s.Iline) / s.kpre <= 0.75, `${f(100 * (sku === "30kw" ? 55.9 : s.Iline) / s.kpre, 0)}% of ${s.kpre} A`);
-  const kout = s.Iout / (sku === "50kw" ? 2 : 1) / 200;
+  const kout = s.Iout / (/^50kw/.test(sku) ? 2 : 1) / 200;
   ck("C", `${sku} K_OUT loading`, kout <= 0.70, `${f(100 * kout, 0)}% per 200 A relay${sku === "50kw" ? " (dual)" : ""}`);
   // OC observability inside the rail
-  const obs = 1.65 + (sku === "50kw" ? 187.5 : 150) / 2500 * s.lineB;
-  const res = 1.65 + (sku === "50kw" ? 95 : 70) / ({ "30kw": 100, "40kw": 100, "50kw": 100 }[sku]) * s.resB;
+  const obs = 1.65 + (/^50kw/.test(sku) ? 187.5 : 150) / 2500 * s.lineB;
+  const res = 1.65 + (/^50kw/.test(sku) ? 95 : 70) / 100 * s.resB;
   ck("C", `${sku} CT burden rail budgets`, obs <= 3.28 && res <= 3.28,
     `line OC obs ${f(obs, 2)} V · tank OC ${f(res, 2)} V (≤3.27 proven budget)`);
   // bank bleeders
@@ -143,8 +144,8 @@ for (const [sku, s] of Object.entries(SK)) {
 { // RATING bands with 1% parts
   const v = (R) => 3.3 * R / (R + 10e3);
   const lo = (R) => 3.3 * (R * 0.99) / (R * 0.99 + 10e3 * 1.01), hi = (R) => 3.3 * (R * 1.01) / (R * 1.01 + 10e3 * 0.99);
-  ck("C", "RATING bands hold at ±1% parts", lo(1e3) > 0.15 && hi(1e3) < 0.55 && lo(3.32e3) > 0.55 && hi(3.32e3) < 1.24 && lo(10e3) > 1.24 && hi(10e3) < 2.40,
-    `1k → ${f(lo(1e3), 3)}–${f(hi(1e3), 3)} · 3.32k → ${f(lo(3.32e3), 3)}–${f(hi(3.32e3), 3)} · 10k → ${f(lo(10e3), 3)}–${f(hi(10e3), 3)} V (rev F edges 0.15/0.55/1.24/2.40)`);
+  ck("C", "RATING bands hold at ±1% parts", lo(1e3) > 0.15 && hi(1e3) < 0.55 && lo(3.32e3) > 0.55 && hi(3.32e3) < 1.24 && lo(10e3) > 1.24 && hi(10e3) < 1.82 && lo(15e3) > 1.82 && hi(15e3) < 2.30,
+    `1k → ${f(lo(1e3), 3)}–${f(hi(1e3), 3)} · 3.32k → ${f(lo(3.32e3), 3)}–${f(hi(3.32e3), 3)} · 10k → ${f(lo(10e3), 3)}–${f(hi(10e3), 3)} · 15k → ${f(lo(15e3), 3)}–${f(hi(15e3), 3)} V (rev G edges 0.15/0.55/1.24/1.82/2.30)`);
 }
 
 // ---------- D. thermal cross-check vs the grid's own worst rows ----------
@@ -192,7 +193,7 @@ for (const [sku, s] of Object.entries(SK)) {
   const perCan = iRip / (s.nBank * 1);          // strings share; series pair carries same current
   ck("F", `${sku} bank per-can interleave ripple`, perCan <= 2.9,
     `3-φ residue ${f(iRip, 1)} A rms over ${s.nBank} strings → ${f(perCan, 2)} A/can (class ~2.8 A @105 °C; film takes the 280 kHz component)`);
-  const pCan = { "30kw": 12, "40kw": 12 * (4 / 3) ** 2 * 10 / 12, "50kw": 12 * (5 / 3) ** 2 * 10 / 16 }[sku] / (s.nHalf * 2);
+  const pCan = { "30kw": 12, "40kw": 12 * (4 / 3) ** 2 * 10 / 12, "50kw": 12 * (5 / 3) ** 2 * 10 / 16, "50kwa": 12 * (5 / 3) ** 2 * 10 / 16 }[sku] / (s.nHalf * 2);
   ck("F", `${sku} link per-can dissipation vs family control`, pCan <= 1.85,
     `${f(pCan, 2)} W/can (30 kW control ${f(12 / 10, 2)} — same class duty, bench T-03 measures)`);
 }
@@ -206,10 +207,10 @@ for (const [sku, s] of Object.entries(SK)) {
     `${6 + (s.par === 2 ? 6 : 0)} FETs${s.par === 2 ? " (paralleled pairs + per-device gate Rs)" : ""}`);
   ck("G", `${sku} PFC diodes + clamp`, cnt(A, /^D[ABC]0[TB]$/) === 6 && cnt(A, /^D[ABC]0C$/) === 3, "6 boost JBS + 3 RCD clamp");
   ck("G", `${sku} link cans`, cnt(A, /^CD[TB]\d*\d$/) === s.nHalf * 2, `${s.nHalf * 2} × 470 µF (${s.nHalf}/half)`);
-  ck("G", `${sku} fans + tach terminators`, cnt(A, /^JFAN\d$/) === s.fans && cnt(A, /^RFDT\d$/) === (sku === "50kw" ? 3 : 0),
-    `${s.fans} fans${sku === "50kw" ? " + 3 defined-low tach terminators (sealed)" : ""}`);
+  ck("G", `${sku} fans + tach terminators`, cnt(A, /^JFAN\d$/) === s.fans && cnt(A, /^RFDT\d$/) === (s.fans === 0 ? 4 : 0),
+    `${s.fans} fans${s.fans === 0 ? " + 4 defined-low tach terminators (sealed; incl. the E44 TACH4 way)" : ""}`);
   ck("G", `${sku} CX2 trio at the E43 value`, [1, 2, 3].every(i => Math.abs(A.val.get(`CX2${i}`) - 4.7e-6) < 1e-8) && [1, 2, 3].every(i => Math.abs(A.val.get(`CX1${i}`) - 2.2e-6) < 1e-8), "CX1 2.2 µF · CX2 4.7 µF");
-  const ldmWant = { "30kw": 14e-6, "40kw": 23e-6, "50kw": 34e-6 }[sku];
+  const ldmWant = { "30kw": 14e-6, "40kw": 23e-6, "50kw": 34e-6, "50kwa": 34e-6 }[sku];
   ck("G", `${sku} LDM engine value`, [1, 2, 3].every(i => Math.abs(A.val.get(`LDM${i}`) - ldmWant) < 1e-6), `${f(ldmWant * 1e6, 0)} µH L0 (D6 rev C)`);
   ck("G", `${sku} line-CT burden`, [["A"], ["B"], ["C"]].every(([p]) => Math.abs(A.val.get(`R${p}0B`) - s.lineB) < 0.1), `${s.lineB} Ω`);
   // precharge + discharge paths
@@ -227,7 +228,8 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("G", `${sku} DC-DC default-OFF coverage`, dcPD.every((n, i) => D.netOfPin.get(`RPDB${i}.pin1`) === n && D.netOfPin.get(`RPDB${i}.pin2`) === "DGND"),
     `${dcPD.length}/9 lines pulled to DGND`);
   // LLC + tank + banks
-  ck("G", `${sku} LLC legs`, cnt(D, /^Q\d[HL]$/) === 6, "6 half-bridge FETs, 3 legs");
+  ck("G", `${sku} LLC legs`, cnt(D, /^Q\d[HL]$/) === 6 && cnt(D, /^Q\d[HL]2$/) === (s.parL ? 6 : 0) && cnt(D, /^RG\d[HL]2$/) === (s.parL ? 6 : 0),
+    s.parL ? "12 half-bridge FETs (E44 paralleled pairs + per-device gate Rs)" : "6 half-bridge FETs, 3 legs");
   ck("G", `${sku} tank caps`, cnt(D, /^C\dR\d$/) === 3 * s.crN && [0, 1, 2].every(k => Math.abs(D.val.get(`C${k + 1}R0`) - s.crV) < 1e-12),
     `${3 * s.crN} × ${f(s.crV * 1e9, 0)} nF`);
   ck("G", `${sku} trim + resonant burden`, [1, 2, 3].every(i => Math.abs(D.val.get(`L${i}T`) - s.trim) < 1e-9) && [1, 2, 3].every(i => Math.abs(D.val.get(`R${i}CT`) - s.resB) < 0.05),
@@ -235,7 +237,7 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("G", `${sku} bank strings`, cnt(D, /^CB[AB]\d+[TB]$/) === s.nBank * 4, `${s.nBank} strings × 2-series × 2 banks`);
   ck("G", `${sku} secondary bridges`, cnt(D, /^D\d[AB][1-4]$/) === 24, "24 JBS diodes (dual bridges × 3 sections)");
   // K_OUT single vs dual + mirror chain
-  if (sku === "50kw") {
+  if (sku === "50kw" || sku === "50kwa") {
     ck("G", `${sku} K_OUT dual pair`, D.byName.has("KOUT2") && D.netOfPin.get("KOUT.M2") === D.netOfPin.get("KOUT2.M1") && D.netOfPin.get("KOUT2.M2") === "RELAY_FB_KOUT"
       && D.netOfPin.get("KOUT2.A") === D.netOfPin.get("KOUT.A") && D.netOfPin.get("KOUT2.B") === D.netOfPin.get("KOUT.B") && D.netOfPin.get("KOUT2.C2") === D.netOfPin.get("KOUT.C2"),
       "contacts paralleled, coils share the driver, mirrors in series → one FB proves BOTH released");
@@ -243,7 +245,7 @@ for (const [sku, s] of Object.entries(SK)) {
   } else {
     ck("G", `${sku} K_OUT single + mirror`, !D.byName.has("KOUT2") && D.netOfPin.get("KOUT.M2") === "RELAY_FB_KOUT", "single 200 A class, mirror to FB");
   }
-  ck("G", `${sku} RATING strap`, Math.abs(D.val.get("RROLEB") - { "30kw": 0, "40kw": 1000, "50kw": 10000 }[sku]) < 1, `${D.val.get("RROLEB")} Ω`);
+  ck("G", `${sku} RATING strap`, Math.abs(D.val.get("RROLEB") - { "30kw": 0, "40kw": 1000, "50kw": 10000, "50kwa": 15000 }[sku]) < 1, `${D.val.get("RROLEB")} Ω`);
   ck("G", `${sku} star + bond`, cnt(A, /^RNS[123][AB]$/) === 6 && A.netOfPin.get("RPET.pin2") === "PE" && A.netOfPin.get("CPET.pin2") === "PE", "2-series star ×3 + soft PE bond");
 }
 ck("G", "card essentials", B.card.byName.has("UCARD") && B.card.byName.has("USUPCARD") && B.card.byName.has("UANDCARD") && Math.abs(B.card.val.get("RROLE1") - 10000) < 1 && B.card.netOfPin.get("RFLTC.pin2") === "FLT",
@@ -256,8 +258,48 @@ console.log("\n=== H. FIRMWARE COHERENCE ===");
 const fsmc = readFileSync(`${ROOT}/firmware/core/fsm.c`, "utf8"), fsmh = readFileSync(`${ROOT}/firmware/core/fsm.h`, "utf8");
 ck("H", "discharge windows match physics", /3000u/.test(fsmc) && /4000u/.test(fsmc) && /5000u/.test(fsmc),
   "3000/4000/5000 ms vs computed 1.98/2.37/3.16 s (52–63% used)");
-ck("H", "rev F band table in the contract header", /1\.24-2\.40 \(10k\)/.test(fsmh) && /50 kW LIQUID/.test(fsmh), "fsm.h teaches the shipping decode");
+ck("H", "rev G band table in the contract header", /1\.24-1\.82 \(10k\)/.test(fsmh) && /1\.82-2\.30 \(15k\)/.test(fsmh) && /50 kW AIR/.test(fsmh), "fsm.h teaches the shipping decode incl. both 50 kW bands");
 ck("H", "OT ladder is the 50 kW dry-run protection", /PMP_OT_TRIP_C\s+115/.test(fsmh) && /fan_ok/.test(fsmc), "plate NTC → derate → 115 °C trip; fan_ok HAL-tied at 50 kW");
+
+// ---------- I. R4 external-review response — electrical proofs from the netlists ----------
+console.log("\n=== I. R4 FIXES — proven in the built netlists ===");
+for (const [sku, s] of Object.entries(SK)) {
+  const A = B[sku].ac, D = B[sku].dc;
+  // R4-2: bias COM ≡ driver GND2 ≡ FET Kelvin source, one node per channel (sample per stage)
+  const kA = A.netOfPin.get("QA0A.KS");
+  ck("I", `${sku} PFC driver GND2≡Kelvin≡bias-COM`, A.netOfPin.get("UA0G.GND2") === kA && A.netOfPin.get("PSA0G.COM") === kA && A.netOfPin.get("UA0G.TEST") === "DGND" && A.netOfPin.get("UA0G.INN") === "DGND" && A.netOfPin.get("UA0G.ASC") === kA,
+    `one source-referenced node (${kA}) + TEST/IN- on GND1 + ASC inactive`);
+  const kH = D.netOfPin.get("Q1H.KS");
+  ck("I", `${sku} LLC driver GND2≡Kelvin≡bias-COM`, D.netOfPin.get("U1H.GND2") === kH && D.netOfPin.get("PS1H.COM") === kH,
+    `high-side channel referenced to ${kH}`);
+  // R4-5 + R4-4: every board sources V3P3 locally/through its slot, EN inside its abs max
+  ck("I", `${sku} AC-DC V3P3 sourced + EN divider`, A.byName.has("UBKA") && A.netOfPin.get("REN1A.pin2") === A.netOfPin.get("UBKA.EN") && A.netOfPin.get("UBKA.EN") !== "V15",
+    `local buck present; EN = 15 × 27/127 = ${f(15 * 27 / 127, 2)} V ≤ 5.5 rec (was tied to 15 V)`);
+  // R4-3: aux loop closed with the right sign
+  ck("I", `${sku} aux regulation loop`, A.netOfPin.get("QAUXFB.C") === A.netOfPin.get("UAUX.FB") && A.netOfPin.get("CAUXSS.pin1") === A.netOfPin.get("UAUX.SS") && A.netOfPin.get("RBR1B.pin2") === A.netOfPin.get("UAUX.BO"),
+    "zener-NPN pulls FB DOWN as VCC rises (negative feedback); SS cap on the real pin 8; BO divider on the real pin 2");
+  // R4-7: V24 monitor scale
+  ck("I", `${sku} V24 monitor observability`, Math.abs(A.val.get("RM24A") - 82000) < 1,
+    `82k/10k → 24 V reads ${f(24 * 10 / 92, 2)} V, clips at ${f(3.3 * 92 / 10, 1)} V (+26%)`);
+  // R4-8: hardware S/P exclusion truth-table wiring
+  ck("I", `${sku} S/P hardware exclusion`, D.netOfPin.get("UEXCL.A1") === "CTL_KPARA" && D.netOfPin.get("UEXCL.B1") === "CTL_KPARB" && D.netOfPin.get("UEXCL.A2") === "CTL_KSER" && D.netOfPin.get("UEXCL.Y4") === "KSER_GATED" && D.netOfPin.get("ULB.IN1") === "KSER_GATED",
+    "KSER coil = KSER AND NOT(KPARA OR KPARB) — both destructive states dead in hardware");
+}
+// R4-1: payload anode name ↔ netlist anode net lock (the render-seating defect class, closed at the data level)
+{
+  const pay = JSON.parse(readFileSync(`${ROOT}/calculations/out/easyeda/40kw/apply/acdc-VIENNA-PFC.json`, "utf8"));
+  let okA = 0, badA = 0;
+  for (const c of pay.chunks.flat()) {
+    if (!/^D[ABC]0[TBC]$/.test(c.designator ?? "")) continue;
+    const aPin = (c.pins ?? []).find((q) => /^(A|anode)$/i.test(q.name ?? ""));
+    // netlist convention (E38, re-proven here): port pin1 IS the anode. The payload's
+    // pin_numberING is inverted for diodes (its "A" NAME is correct — that is what the sheets
+    // seat by since R4-1); this lock pins name↔netlist so neither layer can drift again.
+    const netA = B["40kw"].ac.netOfPin.get(`${c.designator}.pin1`);
+    if (aPin && netA && aPin.signal_name === netA) okA++; else badA++;
+  }
+  ck("I", "payload anode ↔ netlist anode lock", badA === 0 && okA >= 9, `${okA} Vienna diodes agree, ${badA} disagree — the sheets seat by this name`);
+}
 
 console.log(`\n${checks} checks — ${fails ? fails + " FAILURE(S)" : "ALL CLEAN"}`);
 process.exit(fails ? 1 : 0);

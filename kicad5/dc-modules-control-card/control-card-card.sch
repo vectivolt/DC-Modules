@@ -367,34 +367,38 @@ DO2
 Wire Wire Line
 	5900 4800 6100 4800
 Text Label 6100 4800 0    45   ~ 0
-HMI6
+DI10
 Wire Wire Line
 	5900 4900 6100 4900
 Text Label 6100 4900 0    45   ~ 0
-CAN_RX
+HMI6
 Wire Wire Line
 	5900 5000 6100 5000
 Text Label 6100 5000 0    45   ~ 0
-CAN_TX
+CAN_RX
 Wire Wire Line
 	5900 5100 6100 5100
 Text Label 6100 5100 0    45   ~ 0
-DO3
+CAN_TX
 Wire Wire Line
 	5900 5200 6100 5200
 Text Label 6100 5200 0    45   ~ 0
-BOOT0_CARD
+DO3
 Wire Wire Line
 	5900 5300 6100 5300
 Text Label 6100 5300 0    45   ~ 0
-DO4
+BOOT0_CARD
 Wire Wire Line
 	5900 5400 6100 5400
 Text Label 6100 5400 0    45   ~ 0
-DGND
+DO4
 Wire Wire Line
 	5900 5500 6100 5500
 Text Label 6100 5500 0    45   ~ 0
+DGND
+Wire Wire Line
+	5900 5600 6100 5600
+Text Label 6100 5600 0    45   ~ 0
 V3P3
 $Comp
 L dcmod-r4:C CCARDA1
@@ -1111,7 +1115,7 @@ UBKCARD_BST
 Wire Wire Line
 	13350 1800 13150 1800
 Text Label 13150 1800 2    45   ~ 0
-V15
+UBKCARD_EN
 Wire Wire Line
 	13350 1900 13150 1900
 Text Label 13150 1900 2    45   ~ 0
@@ -1645,165 +1649,169 @@ DI9
 Wire Wire Line
 	10200 4800 10000 4800
 Text Label 10000 4800 2    45   ~ 0
-DO0
+DI10
 Wire Wire Line
 	10200 4900 10000 4900
 Text Label 10000 4900 2    45   ~ 0
-DO1
+DO0
 Wire Wire Line
 	10200 5000 10000 5000
 Text Label 10000 5000 2    45   ~ 0
-DO2
+DO1
 Wire Wire Line
 	11300 1200 11500 1200
 Text Label 11500 1200 0    45   ~ 0
-DO3
+DO2
 Wire Wire Line
 	11300 1300 11500 1300
 Text Label 11500 1300 0    45   ~ 0
-DO4
+DO3
 Wire Wire Line
 	11300 1400 11500 1400
 Text Label 11500 1400 0    45   ~ 0
-DO5
+DO4
 Wire Wire Line
 	11300 1500 11500 1500
 Text Label 11500 1500 0    45   ~ 0
-DO6
+DO5
 Wire Wire Line
 	11300 1600 11500 1600
 Text Label 11500 1600 0    45   ~ 0
-DO7
+DO6
 Wire Wire Line
 	11300 1700 11500 1700
 Text Label 11500 1700 0    45   ~ 0
-DO8
+DO7
 Wire Wire Line
 	11300 1800 11500 1800
 Text Label 11500 1800 0    45   ~ 0
-DO9
+DO8
 Wire Wire Line
 	11300 1900 11500 1900
 Text Label 11500 1900 0    45   ~ 0
-DO10
+DO9
 Wire Wire Line
 	11300 2000 11500 2000
 Text Label 11500 2000 0    45   ~ 0
-DRV_RDY
+DO10
 Wire Wire Line
 	11300 2100 11500 2100
 Text Label 11500 2100 0    45   ~ 0
-EN_A
+DRV_RDY
 Wire Wire Line
 	11300 2200 11500 2200
 Text Label 11500 2200 0    45   ~ 0
-EN_B
+EN_A
 Wire Wire Line
 	11300 2300 11500 2300
 Text Label 11500 2300 0    45   ~ 0
-FLT
+EN_B
 Wire Wire Line
 	11300 2400 11500 2400
 Text Label 11500 2400 0    45   ~ 0
-GATE_EN
+FLT
 Wire Wire Line
 	11300 2500 11500 2500
 Text Label 11500 2500 0    45   ~ 0
-GATE_EN_A
+GATE_EN
 Wire Wire Line
 	11300 2600 11500 2600
 Text Label 11500 2600 0    45   ~ 0
-HMI0
+GATE_EN_A
 Wire Wire Line
 	11300 2700 11500 2700
 Text Label 11500 2700 0    45   ~ 0
-HMI1
+HMI0
 Wire Wire Line
 	11300 2800 11500 2800
 Text Label 11500 2800 0    45   ~ 0
-HMI2
+HMI1
 Wire Wire Line
 	11300 2900 11500 2900
 Text Label 11500 2900 0    45   ~ 0
-HMI3
+HMI2
 Wire Wire Line
 	11300 3000 11500 3000
 Text Label 11500 3000 0    45   ~ 0
-HMI4
+HMI3
 Wire Wire Line
 	11300 3100 11500 3100
 Text Label 11500 3100 0    45   ~ 0
-HMI5
+HMI4
 Wire Wire Line
 	11300 3200 11500 3200
 Text Label 11500 3200 0    45   ~ 0
-HMI6
+HMI5
 Wire Wire Line
 	11300 3300 11500 3300
 Text Label 11500 3300 0    45   ~ 0
-PWM0
+HMI6
 Wire Wire Line
 	11300 3400 11500 3400
 Text Label 11500 3400 0    45   ~ 0
-PWM1
+PWM0
 Wire Wire Line
 	11300 3500 11500 3500
 Text Label 11500 3500 0    45   ~ 0
-PWM2
+PWM1
 Wire Wire Line
 	11300 3600 11500 3600
 Text Label 11500 3600 0    45   ~ 0
-PWM3
+PWM2
 Wire Wire Line
 	11300 3700 11500 3700
 Text Label 11500 3700 0    45   ~ 0
-PWM4
+PWM3
 Wire Wire Line
 	11300 3800 11500 3800
 Text Label 11500 3800 0    45   ~ 0
-PWM5
+PWM4
 Wire Wire Line
 	11300 3900 11500 3900
 Text Label 11500 3900 0    45   ~ 0
-PWM6
+PWM5
 Wire Wire Line
 	11300 4000 11500 4000
 Text Label 11500 4000 0    45   ~ 0
-PWM7
+PWM6
 Wire Wire Line
 	11300 4100 11500 4100
 Text Label 11500 4100 0    45   ~ 0
-PWM8
+PWM7
 Wire Wire Line
 	11300 4200 11500 4200
 Text Label 11500 4200 0    45   ~ 0
-PWM9
+PWM8
 Wire Wire Line
 	11300 4300 11500 4300
 Text Label 11500 4300 0    45   ~ 0
-PWM10
+PWM9
 Wire Wire Line
 	11300 4400 11500 4400
 Text Label 11500 4400 0    45   ~ 0
-PWM11
+PWM10
 Wire Wire Line
 	11300 4500 11500 4500
 Text Label 11500 4500 0    45   ~ 0
-ROLE1
+PWM11
 Wire Wire Line
 	11300 4600 11500 4600
 Text Label 11500 4600 0    45   ~ 0
-TSNS0
+ROLE1
 Wire Wire Line
 	11300 4700 11500 4700
 Text Label 11500 4700 0    45   ~ 0
-TSNS1
+TSNS0
 Wire Wire Line
 	11300 4800 11500 4800
 Text Label 11500 4800 0    45   ~ 0
-V15
+TSNS1
 Wire Wire Line
 	11300 4900 11500 4900
 Text Label 11500 4900 0    45   ~ 0
+V15
+Wire Wire Line
+	11300 5000 11500 5000
+Text Label 11500 5000 0    45   ~ 0
 V3P3
 $EndSCHEMATC

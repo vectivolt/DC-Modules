@@ -256,7 +256,7 @@
   [
    {
     "designator": "RM24A",
-    "value": "68k",
+    "value": "82k",
     "block_name": "RAIL-MON",
     "search_query": "R-small small-signal resistor 0402–0805",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",

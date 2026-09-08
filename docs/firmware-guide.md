@@ -143,13 +143,20 @@ ratings. At boot, before any enable, the HAL must:
    two-card era; rev F reassigns that band, see below.)
 
 **E24 rev D (E40): RATING is the only strap — ROLE0 and the inter-card LINK are gone.** Bands: <0.41 V (0 R) → **module controller** (one brain, PFC+LLC) · 0.41–1.24 V (3.32 k) → **CSU** · >2.4 V (open) → no host, fault. Formerly rev C: Board strap 3.32 k against the card 10 k pullup
-reads ≈0.82 V. Windows (**rev F, E42**): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** · 0.55–1.24 V (3.32k) → **CSU** · 1.24–2.4 V (10k) → **50 kW LIQUID** ·
->2.4 V → no board / fault. (Rev F retires the stale two-card-era 10 k = "60 kW" reading — no
-single-brain 60 exists, E40; a legacy decode of 60 only lengthens the F.21 window, never an
-unsafe direction.) `pmp_fsm_set_rating_kw()` windows: 3000/4000/**5000**/5500-legacy ms — suite
-49/49 incl. all three rating-window pairs. In the CSU band the boot path runs `pmp_csu_*`
+reads ≈0.82 V. Windows (**rev G, E44**): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** ·
+0.55–1.24 V (3.32k) → **CSU** · 1.24–1.82 V (10k) → **50 kW LIQUID** · 1.82–2.30 V (15k) →
+**50 kW AIR** · >2.4 V → no board / fault. (Rev F had retired the stale two-card-era 10 k =
+"60 kW" reading; rev G splits its band for the air twin — ±1 % separations proven by the
+verify-independent gate.) Both 50 kW bands call `pmp_fsm_set_rating_kw(50)` — same 16-can link,
+same 5000 ms F.21 window; ONLY the fan personality differs and it is HAL band-decided. Windows:
+3000/4000/**5000**/5500-legacy ms — suite 49/49. In the CSU band the boot path runs `pmp_csu_*`
 (cabinet supervisor, `firmware/core/csu.h`) instead of the power FSM; ROLE0 is a don't-care.
-Same image, four identities.
+Same image, five identities.
+
+**50 kW AIR HAL notes (E44):** four fans — FAN_PWM1 drives fans 1–2's rail... fans 1/2 on
+PWM1/PWM2 individually, fans 3+4 gang FAN_PWM2 (rear pair). ALL FOUR tachs supervised:
+TACH1–3 on the E40/E41 pins, **TACH4 on pin 90 / way 88 / harness W39** (E44). Fan-fail derate
+per the existing `fan_ok` path; the 4-fan set runs the family's ~395 W/fan density.
 
 **50 kW liquid HAL notes (E42):** the module is sealed with ZERO fans — HAL ties `fan_ok = true`
 permanently, leaves FAN_PWM0/1 outputs idle and ignores the tach inputs (the board holds all
@@ -159,4 +166,6 @@ ladder (derate at `PMP_OT_DERATE_C`, trip 115 °C) IS the loss-of-coolant protec
 plate at rated load crosses the ladder in seconds, well inside the 10 ms FSM tick. Flow
 assurance itself (pump, flow meter) is the cooling cart's job, charger-level per the E42 system
 boundary. Sense calibration constants for the re-scaled CT burdens (21.5 Ω line / 1.6 Ω
-resonant) are rating-keyed like every other cal row.
+resonant) are rating-keyed like every other cal row. **R4-7:** the V24 monitor divider is
+82k/10k on every variant (24 V reads 2.609 V, full-scale 30.4 V) — update the cal constant;
+the old 68k basis clipped at 25.7 V.

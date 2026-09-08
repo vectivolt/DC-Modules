@@ -34,7 +34,7 @@ for (const [n, v, cls, lim, why] of V)
 
 // ---------------- 2. junction temperatures [grid] — worst corner of 4032 points ------------------
 const grid = readFileSync(join(ROOT, "calculations/out/envelope-grid.csv"), "utf8").trim().split("\n").map(r => r.split(","));
-for (const sku of ["30kw", "40kw", "50kw"]) {
+for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
   const tjp = Math.max(...rows.map(r => +r[13])), tjl = Math.max(...rows.map(r => +r[14]));
   ck("Tj", `${sku} PFC FET worst corner`, tjp <= 150, `${tjp} °C vs 150 ceiling (abs max 175) [grid, ${rows.length} pts]`);
@@ -53,10 +53,19 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
   ck("E42", "50kw envelope: zero tank-ceiling clamps", ceilNotes.length === 0, `${ceilNotes.length} clamped rows — the E42 class rev exists precisely so this is zero`);
   ck("E42", "50kw folds: single-step, hot-PS-corner family only", deepFolds.length === 0 && foldNotes.every(r => r[4] === "hot" && r[6] === "PS"), `${foldNotes.length} rows fold ×0.93 once (Vout 150/200 hot — the 40 kW's own corner family), none deeper`);
 }
+// E44 grid-shape asserts for the AIR 50: the paralleled LLC must deliver the full envelope on
+// plain 4-fan air — zero folds, zero clamps (worst corner computes ~107 °C).
+{
+  const ra = grid.filter(r => r[0] === "50kwa" && r[6] !== "IDLE" && r[13] !== "");
+  const ipMax = Math.max(...ra.map(r => +r[10])), notes = ra.filter(r => (r[16] ?? "") !== "");
+  const tjl = Math.max(...ra.map(r => +r[14]));
+  ck("E44", "50kwa full envelope on air, zero derates", notes.length === 0 && ipMax <= 65.05 && tjl <= 150,
+    `${notes.length} noted rows · Ip ${f(ipMax)} ≤ 65 · worst TjLLC ${tjl} °C (paralleled pairs — per-package conduction quarters)`);
+}
 // diodes [lb k-scaling]: per-diode dissipation into its position Rth at its reference —
 // air variants: 1.9 K/W to the 70 °C sink · E42 liquid: 1.1 K/W to the 65 °C plate
-const SEC_W = { "30kw": 360, "40kw": 521, "50kw": 701 };    // sec bridge totals [lb rev E42]
-for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70], ["50kw", 5 / 3, 1.1, 65]]) {
+const SEC_W = { "30kw": 360, "40kw": 521, "50kw": 701, "50kwa": 701 };    // sec bridge totals [lb rev E44]
+for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70], ["50kw", 5 / 3, 1.1, 65], ["50kwa", 5 / 3, 1.9, 70]]) {
   const pfcD = 12.1 * Math.pow(k, 1.6);                     // Vf + dyn-R blend [lb]
   const secD = SEC_W[sku] / 24;                             // sec bridge total / 24 diodes [lb]
   ck("Tj", `${sku} PFC boost diode`, ref + rth * pfcD <= 150, `${f(pfcD)} W → Tj ≈ ${f(ref + rth * pfcD, 0)} °C (${rth} K/W to ${ref} °C ref)`);
@@ -69,6 +78,7 @@ const D1 = {
   "30kw": { L0: 165.4, Lpk: 82.8, dT: 35, J: 54.94 / 17.2, note: "3× 0077908A7, N=36 (rev B N=39 lot-trim basis)" },
   "40kw": { L0: 112.6, Lpk: 63.7, dT: 27, J: 73.25 / 25.8, note: "5× 0077908A7, N=23 — engine selection at frozen 50 kHz" },
   "50kw": { L0: 103, Lpk: 50.8, dT: 37, J: 91.57 / 25.8, note: "D1-50: 5× T79 26µ N=22 — engine at frozen 50 kHz (PFC_P=50e3 PAR=2; 40 kHz row REFUSED); plate-bonded in the sealed module, convective dT is the conservative gate" },
+  "50kwa": { L0: 103, Lpk: 50.8, dT: 37, J: 91.57 / 25.8, note: "same D1-50 part (E44 air twin — classes set by current, not coolant); 37 K convective sits in real fan airflow" },
 };
 for (const [sku, d] of Object.entries(D1)) {
   ck("D1", `${sku} swing floor`, d.Lpk / d.L0 >= 0.40, `L@Ipk/L0 = ${f(d.Lpk / d.L0, 2)} ≥ 0.40 (${d.note})`);
@@ -77,7 +87,7 @@ for (const [sku, d] of Object.entries(D1)) {
 }
 // D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae(2×PQ50/50)=656 µm²·1e-6)
 const AE2 = 2 * 328e-6;
-const D2 = { "30kw": { L: 4.0e-6, Irms: 46.4, N: 4 }, "40kw": { L: 3.5e-6, Irms: 61.9, N: 5 }, "50kw": { L: 3.0e-6, Irms: 77.3, N: 6 } };
+const D2 = { "30kw": { L: 4.0e-6, Irms: 46.4, N: 4 }, "40kw": { L: 3.5e-6, Irms: 61.9, N: 5 }, "50kw": { L: 3.0e-6, Irms: 77.3, N: 6 }, "50kwa": { L: 3.0e-6, Irms: 77.3, N: 6 } };
 for (const [sku, d] of Object.entries(D2)) {
   const B = d.L * d.Irms * Math.SQRT2 / (d.N * AE2) * 1e3;
   ck("D2", `${sku} trim Bpk`, B <= 100.5, `${f(B, 0)} mT vs 100 mT loss line (N=${d.N} — 40 kW at N=4 computes 115 mT: that is WHY the variant is N=5; 50 kW: BIN6 3.0 µH keeps trim = 50% of Lr so leakage tolerance stays binnable, fr = 139.8 kHz with 8×27 nF)`);
@@ -88,7 +98,7 @@ ck("D3", "all variants Bpk", true, "108 mT (identical volt-seconds) vs PC95 410 
 for (const [sku, J] of [["30kw", 5.5], ["40kw", 5.5], ["50kw", 5.5]])
   ck("D6/D7", `${sku} winding J`, J <= 5.6, `${J} A/mm² (CSA scales with current — same density, ΔT acceptance carried)`);
 // tank capacitors: per-cap current vs the 12 A spec line (13.5 A part class at RFQ)
-const CAP = { "30kw": { n: 4, I: 46.4 }, "40kw": { n: 6, I: 61.9 }, "50kw": { n: 8, I: 77.3 } };
+const CAP = { "30kw": { n: 4, I: 46.4 }, "40kw": { n: 6, I: 61.9 }, "50kw": { n: 8, I: 77.3 }, "50kwa": { n: 8, I: 77.3 } };
 for (const [sku, c] of Object.entries(CAP))
   ck("Cr", `${sku} per-cap current`, c.I / c.n <= 12, `${f(c.I / c.n)} A of 12 A line (${c.n}× per section)`);
 // CTs
@@ -113,9 +123,11 @@ ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(
 // ENGINE (the E43 finding: the inherited 22 µH could not exist at the crest on the drawn core).
 {
   const d6 = JSON.parse(readFileSync(join(ROOT, "calculations/out/dm-choke-design.json"), "utf8"));
-  for (const sku of ["30kw", "40kw", "50kw"])
-    ck("D6", `${sku} crest-biased L vs LISN floor [engine]`, d6[sku] && d6[sku].Lpk >= d6[sku].Lfloor,
-      `${d6[sku]?.stack}× ${d6[sku]?.geom?.split(" ")[0]} ${d6[sku]?.mat} N=${d6[sku]?.N} → ${d6[sku]?.Lpk} µH ≥ ${d6[sku]?.Lfloor} (CX2 4.7 µF rev; lisn per-variant margins ≥ +4.9 dB)`);
+  for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
+    const row = d6[sku] ?? d6["50kw"];   // E44: the air twin shares the D6-50 part
+    ck("D6", `${sku} crest-biased L vs LISN floor [engine]`, row && row.Lpk >= row.Lfloor,
+      `${row?.stack}× ${row?.geom?.split(" ")[0]} ${row?.mat} N=${row?.N} → ${row?.Lpk} µH ≥ ${row?.Lfloor} (CX2 4.7 µF rev; lisn per-variant margins ≥ +4.9 dB)`);
+  }
 }
 // resonant-cap DIELECTRIC duty: current alone is the wrong invariant — V = I/(ωC) grows as C
 // shrinks, so the 27 nF variant sees MORE volts and watts per cap than the 46 nF at lower current.
@@ -127,15 +139,15 @@ for (const [sku, n, cnF, irms] of [["30kw", 4, 46, 46.4], ["40kw", 6, 33, 61.9],
 }
 // D2 trim copper at the E43 litz (constant-J discipline the E41/E42 rows missed): 2000×0.1 mm
 // at 40/50; the 30 kW keeps its frozen rev-C basis (its own Rac/ΔT lines pass at J 5.62).
-for (const [sku, N, litz, irms, core] of [["40kw", 5, 15.7, 61.9, 6.5], ["50kw", 6, 15.7, 77.3, 5.0]]) {
+for (const [sku, N, litz, irms, core] of [["40kw", 5, 15.7, 61.9, 6.5], ["50kw", 6, 23.6, 77.3, 5.0], ["50kwa", 6, 23.6, 77.3, 5.0]]) {
   const rdc = 1.5e-3 * (N / 4) * (8.25 / litz) * 1.15, pcu = irms * irms * rdc;
   const dT = 5.44 * Math.pow(pcu + core, 0.833);
-  ck("D2c", `${sku} trim litz J/ΔT`, irms / litz <= 5.6 && (sku === "50kw" ? dT <= 50 : dT <= 40.5),
-    `2000×0.1 litz: J ${f(irms / litz, 1)} · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K${sku === "50kw" ? " convective — plate bond MANDATORY (sealed)" : ""} (the 8.25 mm² rev-C litz computed ${sku === "40kw" ? "52" : "65"} K)`);
+  ck("D2c", `${sku} trim litz J/ΔT`, irms / litz <= 5.6 && dT <= 40.5,
+    `${litz === 23.6 ? "3000" : "2000"}×0.1 litz: J ${f(irms / litz, 1)} · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K ≤ 40 (E44 rev: ONE D2-50 drawing serves liquid AND air — the plate bond is belt-and-suspenders now, not load-bearing)`);
 }
 // pulse-resistor single-event energies vs the family class points (25 W accepted ≤160 J at
 // 40 kW; the 50 W part carries the 120 kW's 364–477 J)
-for (const [sku, nHalf, cls] of [["30kw", 5, 160], ["40kw", 6, 160], ["50kw", 8, 480]]) {
+for (const [sku, nHalf, cls] of [["30kw", 5, 160], ["40kw", 6, 160], ["50kw", 8, 480], ["50kwa", 8, 480]]) {
   const C = nHalf * 470e-6 / 2;
   const eDis = 0.5 * C * 830 * 830 / 4, ePre = 0.5 * C * 671 * 671 / 2;
   ck("Epulse", `${sku} RPRE/RDIS event energies`, eDis <= cls && ePre <= cls,
@@ -147,12 +159,12 @@ ck("Epulse", "50 kW 50 W parts ordered", /CER-50W-AX[\s\S]{0,80}\}, RDIS0/.test(
 ck("Xbleed", "X discharge τ after CX2 rev", 0.42 * (2.2 + 4.7) / 4.4 <= 1.0, `τ ${f(0.42 * 6.9 / 4.4, 2)} s ≤ 1 s pluggable rule`);
 
 // ---------------- 4. protection classes [reg + E35/F6 derate rule] ------------------------------
-const FUSE = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 125, I: 73.3 }, "50kw": { A: 160, I: 91.6 } };
+const FUSE = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 125, I: 73.3 }, "50kw": { A: 160, I: 91.6 }, "50kwa": { A: 160, I: 91.6 } };
 for (const [sku, x] of Object.entries(FUSE)) {
   const cap = x.A * 0.72;                                    // enclosed + 55 °C derate [E35/F6]
   ck("F", `${sku} gG fuse ${x.A} A`, cap >= x.I, `derated capacity ${f(cap)} A ≥ ${x.I} A worst (the 40 kW 100 A first pick FAILED this at 72 < 73.3; 50 kW 125 A computes 90 < 91.6 — same class, hence 160 A NH00)`);
 }
-const RELAY = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 100, I: 73.3 }, "50kw": { A: 250, I: 91.6 } };
+const RELAY = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 100, I: 73.3 }, "50kw": { A: 250, I: 91.6 }, "50kwa": { A: 250, I: 91.6 } };
 for (const [sku, x] of Object.entries(RELAY))
   ck("K", `${sku} precharge bypass ${x.A} A`, x.I / x.A <= 0.75, `${f(100 * x.I / x.A, 0)}% of class (E35 accepted 70% at 30 kW; the 120 A family part computes 76% at 50 kW — over the line, hence the 250 A frame)`);
 ck("K", "K_OUT 200 A class @40 kW", 133 / 200 <= 0.70, "133 A = 67% (30 kW: 50%)");
@@ -164,7 +176,7 @@ ck("K", "matrix legs single @50 kW", 100 / 200 <= 0.70 && 83.5 / 200 <= 0.70, "K
 
 // ---------------- 5. card consumption (informational) -------------------------------------------
 console.log("\n=== CARD CONSUMPTION (E40/E41/E42 — ONE brain per module, every variant) ===");
-console.log("  30 kW: 1 card (RATING 0R) · 40 kW: 1 card (1k) · 50 kW liquid: 1 card (10k) — same p/n");
+console.log("  30 kW: 1 card (0R) · 40 kW: 1 card (1k) · 50 kW liquid: 1 card (10k) · 50 kW AIR: 1 card (15k) — same p/n, E24 rev G");
 console.log("  products: 30→1 · 40→1 · 50→1 · 60(2×30)→2 · 80(2×40)→2 · 100(2×50)→2 · 120(4×30 or 3×40)→4/3+CSU · 150(3×50)→3+CSU");
 console.log("  card budget @every variant: 74/82 MCU pins · 87/88 ways · 9/12 PWM · 22 analog · 8 spare pins (the 50 kW frees the 5 fan lines — sealed module)");
 

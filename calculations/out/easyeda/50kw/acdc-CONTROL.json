@@ -280,7 +280,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "68k",
+   "value": "82k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },

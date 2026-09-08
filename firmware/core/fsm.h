@@ -63,15 +63,17 @@ typedef struct {
 void pmp_fsm_init(pmp_fsm_t *f);
 void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in);   /* call every 1 ms */
 /* Card promise (CARD_RULES): ONE firmware image, rating read at boot from the RATING strap on
- * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND) — E24 rev F bands:
+ * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND) — E24 rev G bands:
  *   <0.15 V  (0R)    -> 30 kW module
  *   0.15-0.55 (1k)   -> 40 kW module (E41)
  *   0.55-1.24 (3.32k)-> cabinet CSU role
- *   1.24-2.40 (10k)  -> 50 kW LIQUID module (E42 — retires the stale two-card-era 10k = "60 kW"
- *                       mapping; no single-brain 60 exists, E40. At 50 kW the HAL also ties
- *                       fan_ok = true (sealed module, zero fans) and leaves the tach inputs
- *                       ignored — the board holds them defined-low.)
+ *   1.24-1.82 (10k)  -> 50 kW LIQUID module (E42 — HAL ties fan_ok = true: sealed, zero fans,
+ *                       tach inputs held defined-low by the board)
+ *   1.82-2.30 (15k)  -> 50 kW AIR module (E44 — 4 fans, all four tachs supervised incl. the
+ *                       W39/pin-90 TACH4; fans 3+4 gang FAN_PWM2)
  *   >2.40 V  (open)  -> no host, fault.
+ * Both 50 kW bands call pmp_fsm_set_rating_kw(50) — same link, same F.21 window; only the
+ * fan personality differs (HAL, band-decided). Rev G retired rev F's single 1.24-2.40 band.
  * HAL decodes the band and calls this once before enabling; unknown ratings keep the
  * worst-case default window (longer timeout = later F.21 report, never an unsafe one). */
 void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw);

@@ -445,9 +445,22 @@ function shapeOf(c) {
     return { cat, w: 200 + STUB + lw, h: ROW, lw, rw: 0 };
   }
   if (cat !== "IC") {
-    const ns = c.pins.map((p) => String(p.pin_number)).sort((a, b) => Number(a) - Number(b));
-    const l = c.pins.find((p) => String(p.pin_number) === ns[0]);
-    const r = c.pins.find((p) => String(p.pin_number) === ns[1]);
+    let ns = c.pins.map((p) => String(p.pin_number)).sort((a, b) => Number(a) - Number(b));
+    let l = c.pins.find((p) => String(p.pin_number) === ns[0]);
+    let r = c.pins.find((p) => String(p.pin_number) === ns[1]);
+    // R4-1 (external review, 2026-09-08): SEAT POLARIZED PINS SEMANTICALLY, NOT NUMERICALLY.
+    // Diode source ports arrive numbered anode=2/cathode=1 while the D glyph draws its anode on
+    // the LEFT seat — numeric seating rendered EVERY diode reversed on the sheets (netlists were
+    // correct throughout; the reviewer read the PDFs faithfully). The anode-named pin now takes
+    // the left seat regardless of number; the emitted symbol variant (e.g. D_21) keeps pin
+    // numbers truthful. Electrolytics are unaffected (pin1/pin2 named, numeric == semantic).
+    if (c.pins.length === 2) {
+      const a = c.pins.find((p) => /^(A|anode|\+)$/i.test(p.name ?? ""));
+      const k = c.pins.find((p) => /^(C|K|cathode|-)$/i.test(p.name ?? ""));
+      if (a && k) { l = a; r = k; ns = [String(a.pin_number), String(k.pin_number)]; }
+      else if (cat === "D")
+        throw new Error(`R4-1 polarity seating: diode ${c.designator} payload has no named anode/cathode pins — refusing to emit a glyph whose orientation cannot be proven`);
+    }
     const lw = (l?.signal_name?.length ?? 0) * CHW, rw = (r?.signal_name?.length ?? 0) * CHW;
     return { cat, nums: ns, w: 500 + STUB * 2 + lw + rw, h: ROW, lw, rw };
   }
@@ -485,8 +498,8 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
   const side = pg.page.split("-")[0];   // acdc / dcdc / card / cab — page names are side-prefixed
   BOARDS[side].push(pg);
 }
-const KW = SKU.replace("kw", "").toUpperCase();
-const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "4x module" }[SKU] ?? "?";
+const KW = SKU.replace(/kwa$/, "").replace("kw", "").toUpperCase();
+const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "50kwa": "1x air", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "4x module" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,

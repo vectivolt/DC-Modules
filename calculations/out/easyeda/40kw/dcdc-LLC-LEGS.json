@@ -12,57 +12,51 @@
   "KH_1": "wire",
   "GL_1": "wire",
   "KL_1": "wire",
-  "U1H_VEE": "wire",
-  "U1H_OUTL": "wire",
+  "U1H_DST": "wire",
   "U1H_OUTH": "wire",
   "U1H_VCC2": "wire",
-  "U1H_DST": "wire",
-  "U1H_GND2": "wire",
+  "U1H_OUTL": "wire",
+  "U1H_VEE": "wire",
   "D1HS_M": "wire",
-  "U1L_VEE": "wire",
-  "U1L_OUTL": "wire",
+  "U1L_DST": "wire",
   "U1L_OUTH": "wire",
   "U1L_VCC2": "wire",
-  "U1L_DST": "wire",
-  "U1L_GND2": "wire",
+  "U1L_OUTL": "wire",
+  "U1L_VEE": "wire",
   "D1LS_M": "wire",
   "GH_2": "wire",
   "SW2": "wire",
   "KH_2": "wire",
   "GL_2": "wire",
   "KL_2": "wire",
-  "U2H_VEE": "wire",
-  "U2H_OUTL": "wire",
+  "U2H_DST": "wire",
   "U2H_OUTH": "wire",
   "U2H_VCC2": "wire",
-  "U2H_DST": "wire",
-  "U2H_GND2": "wire",
+  "U2H_OUTL": "wire",
+  "U2H_VEE": "wire",
   "D2HS_M": "wire",
-  "U2L_VEE": "wire",
-  "U2L_OUTL": "wire",
+  "U2L_DST": "wire",
   "U2L_OUTH": "wire",
   "U2L_VCC2": "wire",
-  "U2L_DST": "wire",
-  "U2L_GND2": "wire",
+  "U2L_OUTL": "wire",
+  "U2L_VEE": "wire",
   "D2LS_M": "wire",
   "GH_3": "wire",
   "SW3": "wire",
   "KH_3": "wire",
   "GL_3": "wire",
   "KL_3": "wire",
-  "U3H_VEE": "wire",
-  "U3H_OUTL": "wire",
+  "U3H_DST": "wire",
   "U3H_OUTH": "wire",
   "U3H_VCC2": "wire",
-  "U3H_DST": "wire",
-  "U3H_GND2": "wire",
+  "U3H_OUTL": "wire",
+  "U3H_VEE": "wire",
   "D3HS_M": "wire",
-  "U3L_VEE": "wire",
-  "U3L_OUTL": "wire",
+  "U3L_DST": "wire",
   "U3L_OUTH": "wire",
   "U3L_VCC2": "wire",
-  "U3L_DST": "wire",
-  "U3L_GND2": "wire",
+  "U3L_OUTL": "wire",
+  "U3L_VEE": "wire",
   "D3LS_M": "wire"
  },
  "net_class_overrides": {
@@ -201,7 +195,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -231,7 +225,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -240,79 +234,86 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIA",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM",
-     "signal_name": "PWM_L1H"
-    },
-    {
-     "pin_number": 4,
-     "name": "EN",
-     "signal_name": "GATE_EN_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "FLT",
-     "signal_name": "FLT"
-    },
-    {
-     "pin_number": 6,
-     "name": "RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 9,
-     "name": "CLAMP",
-     "signal_name": "GH_1"
-    },
-    {
-     "pin_number": 10,
-     "name": "VEE",
-     "signal_name": "U1H_VEE"
-    },
-    {
-     "pin_number": 11,
-     "name": "OUTL",
-     "signal_name": "U1H_OUTL"
-    },
-    {
-     "pin_number": 12,
-     "name": "OUTH",
-     "signal_name": "U1H_OUTH"
-    },
-    {
-     "pin_number": 13,
-     "name": "VCC2",
-     "signal_name": "U1H_VCC2"
-    },
-    {
-     "pin_number": 14,
-     "name": "KSRC",
+     "name": "ASC",
      "signal_name": "KH_1"
     },
     {
-     "pin_number": 15,
+     "pin_number": 2,
      "name": "DST",
      "signal_name": "U1H_DST"
     },
     {
-     "pin_number": 16,
+     "pin_number": 3,
      "name": "GND2",
-     "signal_name": "U1H_GND2"
+     "signal_name": "KH_1"
+    },
+    {
+     "pin_number": 4,
+     "name": "OUTH",
+     "signal_name": "U1H_OUTH"
+    },
+    {
+     "pin_number": 5,
+     "name": "VCC2",
+     "signal_name": "U1H_VCC2"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTL",
+     "signal_name": "U1H_OUTL"
+    },
+    {
+     "pin_number": 7,
+     "name": "CLAMP",
+     "signal_name": "GH_1"
+    },
+    {
+     "pin_number": 8,
+     "name": "VEE",
+     "signal_name": "U1H_VEE"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "INP",
+     "signal_name": "PWM_L1H"
+    },
+    {
+     "pin_number": 11,
+     "name": "INN",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
+     "pin_number": 13,
+     "name": "FLT",
+     "signal_name": "FLT"
+    },
+    {
+     "pin_number": 14,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 15,
+     "name": "VCC1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 16,
+     "name": "TEST",
+     "signal_name": "DGND"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "NSI6611",
    "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
    "mpn": "NSI6611"
@@ -349,7 +350,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U1H_GND2"
+     "signal_name": "KH_1"
     }
    ],
    "nc_pins": [],
@@ -364,7 +365,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "U1H_GND2"
+     "signal_name": "KH_1"
     },
     {
      "pin_number": 2,
@@ -449,7 +450,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U1H_GND2"
+     "signal_name": "KH_1"
     }
    ],
    "nc_pins": [],
@@ -519,7 +520,7 @@
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "U1H_GND2"
+     "signal_name": "KH_1"
     },
     {
      "pin_number": 5,
@@ -528,9 +529,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "QA01C-18",
+   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C-18"
   },
   {
    "designator": "U1L",
@@ -538,79 +539,86 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIA",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM",
-     "signal_name": "PWM_L1L"
-    },
-    {
-     "pin_number": 4,
-     "name": "EN",
-     "signal_name": "GATE_EN_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "FLT",
-     "signal_name": "FLT"
-    },
-    {
-     "pin_number": 6,
-     "name": "RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 9,
-     "name": "CLAMP",
-     "signal_name": "GL_1"
-    },
-    {
-     "pin_number": 10,
-     "name": "VEE",
-     "signal_name": "U1L_VEE"
-    },
-    {
-     "pin_number": 11,
-     "name": "OUTL",
-     "signal_name": "U1L_OUTL"
-    },
-    {
-     "pin_number": 12,
-     "name": "OUTH",
-     "signal_name": "U1L_OUTH"
-    },
-    {
-     "pin_number": 13,
-     "name": "VCC2",
-     "signal_name": "U1L_VCC2"
-    },
-    {
-     "pin_number": 14,
-     "name": "KSRC",
+     "name": "ASC",
      "signal_name": "KL_1"
     },
     {
-     "pin_number": 15,
+     "pin_number": 2,
      "name": "DST",
      "signal_name": "U1L_DST"
     },
     {
-     "pin_number": 16,
+     "pin_number": 3,
      "name": "GND2",
-     "signal_name": "U1L_GND2"
+     "signal_name": "KL_1"
+    },
+    {
+     "pin_number": 4,
+     "name": "OUTH",
+     "signal_name": "U1L_OUTH"
+    },
+    {
+     "pin_number": 5,
+     "name": "VCC2",
+     "signal_name": "U1L_VCC2"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTL",
+     "signal_name": "U1L_OUTL"
+    },
+    {
+     "pin_number": 7,
+     "name": "CLAMP",
+     "signal_name": "GL_1"
+    },
+    {
+     "pin_number": 8,
+     "name": "VEE",
+     "signal_name": "U1L_VEE"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "INP",
+     "signal_name": "PWM_L1L"
+    },
+    {
+     "pin_number": 11,
+     "name": "INN",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
+     "pin_number": 13,
+     "name": "FLT",
+     "signal_name": "FLT"
+    },
+    {
+     "pin_number": 14,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 15,
+     "name": "VCC1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 16,
+     "name": "TEST",
+     "signal_name": "DGND"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "NSI6611",
    "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
    "mpn": "NSI6611"
@@ -647,7 +655,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U1L_GND2"
+     "signal_name": "KL_1"
     }
    ],
    "nc_pins": [],
@@ -662,7 +670,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "U1L_GND2"
+     "signal_name": "KL_1"
     },
     {
      "pin_number": 2,
@@ -747,7 +755,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U1L_GND2"
+     "signal_name": "KL_1"
     }
    ],
    "nc_pins": [],
@@ -817,7 +825,7 @@
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "U1L_GND2"
+     "signal_name": "KL_1"
     },
     {
      "pin_number": 5,
@@ -826,9 +834,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "QA01C-18",
+   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C-18"
   },
   {
    "designator": "Q2H",
@@ -857,7 +865,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -887,7 +895,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -896,79 +904,86 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIA",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM",
-     "signal_name": "PWM_L2H"
-    },
-    {
-     "pin_number": 4,
-     "name": "EN",
-     "signal_name": "GATE_EN_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "FLT",
-     "signal_name": "FLT"
-    },
-    {
-     "pin_number": 6,
-     "name": "RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 9,
-     "name": "CLAMP",
-     "signal_name": "GH_2"
-    },
-    {
-     "pin_number": 10,
-     "name": "VEE",
-     "signal_name": "U2H_VEE"
-    },
-    {
-     "pin_number": 11,
-     "name": "OUTL",
-     "signal_name": "U2H_OUTL"
-    },
-    {
-     "pin_number": 12,
-     "name": "OUTH",
-     "signal_name": "U2H_OUTH"
-    },
-    {
-     "pin_number": 13,
-     "name": "VCC2",
-     "signal_name": "U2H_VCC2"
-    },
-    {
-     "pin_number": 14,
-     "name": "KSRC",
+     "name": "ASC",
      "signal_name": "KH_2"
     },
     {
-     "pin_number": 15,
+     "pin_number": 2,
      "name": "DST",
      "signal_name": "U2H_DST"
     },
     {
-     "pin_number": 16,
+     "pin_number": 3,
      "name": "GND2",
-     "signal_name": "U2H_GND2"
+     "signal_name": "KH_2"
+    },
+    {
+     "pin_number": 4,
+     "name": "OUTH",
+     "signal_name": "U2H_OUTH"
+    },
+    {
+     "pin_number": 5,
+     "name": "VCC2",
+     "signal_name": "U2H_VCC2"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTL",
+     "signal_name": "U2H_OUTL"
+    },
+    {
+     "pin_number": 7,
+     "name": "CLAMP",
+     "signal_name": "GH_2"
+    },
+    {
+     "pin_number": 8,
+     "name": "VEE",
+     "signal_name": "U2H_VEE"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "INP",
+     "signal_name": "PWM_L2H"
+    },
+    {
+     "pin_number": 11,
+     "name": "INN",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
+     "pin_number": 13,
+     "name": "FLT",
+     "signal_name": "FLT"
+    },
+    {
+     "pin_number": 14,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 15,
+     "name": "VCC1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 16,
+     "name": "TEST",
+     "signal_name": "DGND"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "NSI6611",
    "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
    "mpn": "NSI6611"
@@ -1005,7 +1020,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U2H_GND2"
+     "signal_name": "KH_2"
     }
    ],
    "nc_pins": [],
@@ -1020,7 +1035,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "U2H_GND2"
+     "signal_name": "KH_2"
     },
     {
      "pin_number": 2,
@@ -1105,7 +1120,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U2H_GND2"
+     "signal_name": "KH_2"
     }
    ],
    "nc_pins": [],
@@ -1175,7 +1190,7 @@
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "U2H_GND2"
+     "signal_name": "KH_2"
     },
     {
      "pin_number": 5,
@@ -1184,9 +1199,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "QA01C-18",
+   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C-18"
   },
   {
    "designator": "U2L",
@@ -1194,79 +1209,86 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIA",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM",
-     "signal_name": "PWM_L2L"
-    },
-    {
-     "pin_number": 4,
-     "name": "EN",
-     "signal_name": "GATE_EN_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "FLT",
-     "signal_name": "FLT"
-    },
-    {
-     "pin_number": 6,
-     "name": "RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 9,
-     "name": "CLAMP",
-     "signal_name": "GL_2"
-    },
-    {
-     "pin_number": 10,
-     "name": "VEE",
-     "signal_name": "U2L_VEE"
-    },
-    {
-     "pin_number": 11,
-     "name": "OUTL",
-     "signal_name": "U2L_OUTL"
-    },
-    {
-     "pin_number": 12,
-     "name": "OUTH",
-     "signal_name": "U2L_OUTH"
-    },
-    {
-     "pin_number": 13,
-     "name": "VCC2",
-     "signal_name": "U2L_VCC2"
-    },
-    {
-     "pin_number": 14,
-     "name": "KSRC",
+     "name": "ASC",
      "signal_name": "KL_2"
     },
     {
-     "pin_number": 15,
+     "pin_number": 2,
      "name": "DST",
      "signal_name": "U2L_DST"
     },
     {
-     "pin_number": 16,
+     "pin_number": 3,
      "name": "GND2",
-     "signal_name": "U2L_GND2"
+     "signal_name": "KL_2"
+    },
+    {
+     "pin_number": 4,
+     "name": "OUTH",
+     "signal_name": "U2L_OUTH"
+    },
+    {
+     "pin_number": 5,
+     "name": "VCC2",
+     "signal_name": "U2L_VCC2"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTL",
+     "signal_name": "U2L_OUTL"
+    },
+    {
+     "pin_number": 7,
+     "name": "CLAMP",
+     "signal_name": "GL_2"
+    },
+    {
+     "pin_number": 8,
+     "name": "VEE",
+     "signal_name": "U2L_VEE"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "INP",
+     "signal_name": "PWM_L2L"
+    },
+    {
+     "pin_number": 11,
+     "name": "INN",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
+     "pin_number": 13,
+     "name": "FLT",
+     "signal_name": "FLT"
+    },
+    {
+     "pin_number": 14,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 15,
+     "name": "VCC1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 16,
+     "name": "TEST",
+     "signal_name": "DGND"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "NSI6611",
    "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
    "mpn": "NSI6611"
@@ -1303,7 +1325,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U2L_GND2"
+     "signal_name": "KL_2"
     }
    ],
    "nc_pins": [],
@@ -1318,7 +1340,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "U2L_GND2"
+     "signal_name": "KL_2"
     },
     {
      "pin_number": 2,
@@ -1403,7 +1425,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U2L_GND2"
+     "signal_name": "KL_2"
     }
    ],
    "nc_pins": [],
@@ -1473,7 +1495,7 @@
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "U2L_GND2"
+     "signal_name": "KL_2"
     },
     {
      "pin_number": 5,
@@ -1482,9 +1504,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "QA01C-18",
+   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C-18"
   },
   {
    "designator": "Q3H",
@@ -1513,7 +1535,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -1543,7 +1565,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -1552,79 +1574,86 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIA",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM",
-     "signal_name": "PWM_L3H"
-    },
-    {
-     "pin_number": 4,
-     "name": "EN",
-     "signal_name": "GATE_EN_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "FLT",
-     "signal_name": "FLT"
-    },
-    {
-     "pin_number": 6,
-     "name": "RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 9,
-     "name": "CLAMP",
-     "signal_name": "GH_3"
-    },
-    {
-     "pin_number": 10,
-     "name": "VEE",
-     "signal_name": "U3H_VEE"
-    },
-    {
-     "pin_number": 11,
-     "name": "OUTL",
-     "signal_name": "U3H_OUTL"
-    },
-    {
-     "pin_number": 12,
-     "name": "OUTH",
-     "signal_name": "U3H_OUTH"
-    },
-    {
-     "pin_number": 13,
-     "name": "VCC2",
-     "signal_name": "U3H_VCC2"
-    },
-    {
-     "pin_number": 14,
-     "name": "KSRC",
+     "name": "ASC",
      "signal_name": "KH_3"
     },
     {
-     "pin_number": 15,
+     "pin_number": 2,
      "name": "DST",
      "signal_name": "U3H_DST"
     },
     {
-     "pin_number": 16,
+     "pin_number": 3,
      "name": "GND2",
-     "signal_name": "U3H_GND2"
+     "signal_name": "KH_3"
+    },
+    {
+     "pin_number": 4,
+     "name": "OUTH",
+     "signal_name": "U3H_OUTH"
+    },
+    {
+     "pin_number": 5,
+     "name": "VCC2",
+     "signal_name": "U3H_VCC2"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTL",
+     "signal_name": "U3H_OUTL"
+    },
+    {
+     "pin_number": 7,
+     "name": "CLAMP",
+     "signal_name": "GH_3"
+    },
+    {
+     "pin_number": 8,
+     "name": "VEE",
+     "signal_name": "U3H_VEE"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "INP",
+     "signal_name": "PWM_L3H"
+    },
+    {
+     "pin_number": 11,
+     "name": "INN",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
+     "pin_number": 13,
+     "name": "FLT",
+     "signal_name": "FLT"
+    },
+    {
+     "pin_number": 14,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 15,
+     "name": "VCC1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 16,
+     "name": "TEST",
+     "signal_name": "DGND"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "NSI6611",
    "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
    "mpn": "NSI6611"
@@ -1661,7 +1690,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U3H_GND2"
+     "signal_name": "KH_3"
     }
    ],
    "nc_pins": [],
@@ -1676,7 +1705,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "U3H_GND2"
+     "signal_name": "KH_3"
     },
     {
      "pin_number": 2,
@@ -1761,7 +1790,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U3H_GND2"
+     "signal_name": "KH_3"
     }
    ],
    "nc_pins": [],
@@ -1831,7 +1860,7 @@
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "U3H_GND2"
+     "signal_name": "KH_3"
     },
     {
      "pin_number": 5,
@@ -1840,9 +1869,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "QA01C-18",
+   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C-18"
   },
   {
    "designator": "U3L",
@@ -1850,79 +1879,86 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIA",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM",
-     "signal_name": "PWM_L3L"
-    },
-    {
-     "pin_number": 4,
-     "name": "EN",
-     "signal_name": "GATE_EN_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "FLT",
-     "signal_name": "FLT"
-    },
-    {
-     "pin_number": 6,
-     "name": "RDY",
-     "signal_name": "DRV_RDY"
-    },
-    {
-     "pin_number": 9,
-     "name": "CLAMP",
-     "signal_name": "GL_3"
-    },
-    {
-     "pin_number": 10,
-     "name": "VEE",
-     "signal_name": "U3L_VEE"
-    },
-    {
-     "pin_number": 11,
-     "name": "OUTL",
-     "signal_name": "U3L_OUTL"
-    },
-    {
-     "pin_number": 12,
-     "name": "OUTH",
-     "signal_name": "U3L_OUTH"
-    },
-    {
-     "pin_number": 13,
-     "name": "VCC2",
-     "signal_name": "U3L_VCC2"
-    },
-    {
-     "pin_number": 14,
-     "name": "KSRC",
+     "name": "ASC",
      "signal_name": "KL_3"
     },
     {
-     "pin_number": 15,
+     "pin_number": 2,
      "name": "DST",
      "signal_name": "U3L_DST"
     },
     {
-     "pin_number": 16,
+     "pin_number": 3,
      "name": "GND2",
-     "signal_name": "U3L_GND2"
+     "signal_name": "KL_3"
+    },
+    {
+     "pin_number": 4,
+     "name": "OUTH",
+     "signal_name": "U3L_OUTH"
+    },
+    {
+     "pin_number": 5,
+     "name": "VCC2",
+     "signal_name": "U3L_VCC2"
+    },
+    {
+     "pin_number": 6,
+     "name": "OUTL",
+     "signal_name": "U3L_OUTL"
+    },
+    {
+     "pin_number": 7,
+     "name": "CLAMP",
+     "signal_name": "GL_3"
+    },
+    {
+     "pin_number": 8,
+     "name": "VEE",
+     "signal_name": "U3L_VEE"
+    },
+    {
+     "pin_number": 9,
+     "name": "GND1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 10,
+     "name": "INP",
+     "signal_name": "PWM_L3L"
+    },
+    {
+     "pin_number": 11,
+     "name": "INN",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 12,
+     "name": "RDY",
+     "signal_name": "DRV_RDY"
+    },
+    {
+     "pin_number": 13,
+     "name": "FLT",
+     "signal_name": "FLT"
+    },
+    {
+     "pin_number": 14,
+     "name": "EN",
+     "signal_name": "GATE_EN_B"
+    },
+    {
+     "pin_number": 15,
+     "name": "VCC1",
+     "signal_name": "V3P3"
+    },
+    {
+     "pin_number": 16,
+     "name": "TEST",
+     "signal_name": "DGND"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "NSI6611",
    "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
    "mpn": "NSI6611"
@@ -1959,7 +1995,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U3L_GND2"
+     "signal_name": "KL_3"
     }
    ],
    "nc_pins": [],
@@ -1974,7 +2010,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "U3L_GND2"
+     "signal_name": "KL_3"
     },
     {
      "pin_number": 2,
@@ -2059,7 +2095,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "U3L_GND2"
+     "signal_name": "KL_3"
     }
    ],
    "nc_pins": [],
@@ -2129,7 +2165,7 @@
     {
      "pin_number": 4,
      "name": "COM",
-     "signal_name": "U3L_GND2"
+     "signal_name": "KL_3"
     },
     {
      "pin_number": 5,
@@ -2138,9 +2174,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C",
-   "query": "QA01C iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C"
+   "value": "QA01C-18",
+   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "mpn": "QA01C-18"
   }
  ]
 }
