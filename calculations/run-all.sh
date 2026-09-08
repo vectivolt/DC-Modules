@@ -17,5 +17,5 @@ if [ -f dist/boards/30kw/acdc/circuit.json ]; then node calculations/schematic-c
 if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/module-interconnect-audit.mts; fi
 npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
-sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 47/47 OK"
+sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 49/49 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

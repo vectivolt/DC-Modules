@@ -21,7 +21,7 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 | [`assumptions.md`](assumptions.md) | E1–E39 frozen decisions + external assumptions + fidelity policy |
 | [`component-selection.md`](component-selection.md) | RFQ-ready candidate table, sourcing policy, rev-B parts deltas |
 | [`interconnect.md`](interconnect.md) | two-board sandwich, stud pillars, 16-way harness, **HMI spec** |
-| [`magnetics.md`](magnetics.md) | manufacturing drawings **D1–D7** (rev B/C set) + the **E41 40 kW variant table** (5-stack D1-40, N=5 trim, E70 route) |
+| [`magnetics.md`](magnetics.md) | manufacturing drawings **D1–D7** (rev B/C set) + the **E41/E42 variant tables** (40 kW: 5-stack D1-40, N=5 trim, 2×E70 route · 50 kW liquid: N=22 D1-50, BIN6 trim, 3×E70, plate-bonded) |
 | [`aux-transformer-D4.md`](aux-transformer-D4.md) | aux flyback turns sheet (generated with the V-21 sim closure) |
 | [`simulation-report.md`](simulation-report.md) | every executed run in §50 format — solver, netlists, tolerances, outcomes |
 | [`protection-thresholds.md`](protection-thresholds.md) | 32-row fault table (HW/FW split, timings, `F.xx` codes) — rev B |
@@ -35,7 +35,7 @@ these docs traces to a runnable artifact (`calculations/run-all.sh` reproduces t
 | [`dfm-production.md`](dfm-production.md) | assembly sequence, torque table, EOL test flow (§44/§45) |
 | [`drc-erc-report.md`](drc-erc-report.md) | formal 6-board ERC report (generated from builds) |
 | [`verification-matrix.md`](verification-matrix.md) | requirement→evidence matrix + risk register |
-| `calculations/stress-audit.mjs` | **the zero-point-of-failure gate** — 34 switch/diode/magnetic/protection acceptance checks, both variants, in run-all |
+| `calculations/stress-audit.mjs` | **the zero-point-of-failure gate** — switch/diode/magnetic/protection acceptance checks across all THREE variants (incl. the E42 grid-shape + burden-rail families), in run-all |
 | [`evt-plan.md`](evt-plan.md) | the bench campaign this repo is staged for (T-01…T-25) |
 | [`design-review-production.md`](design-review-production.md) | **adversarial production review R1** — verdict NO at review time; rev C fix log: 15/15 blockers closed (+HR/MR) |
 | [`design-review-production-r2.md`](design-review-production-r2.md) | **adversarial re-audit R2 of rev C** — NO again (7 new CBs incl. defects inside the rev-C fixes); falsification round + rev D fix log; gate = `review-checks.mjs` (60+ asserts incl. class checks) |

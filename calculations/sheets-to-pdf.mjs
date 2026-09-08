@@ -30,6 +30,8 @@ const BOARDS = [
   { k5: "30kw-dcdc", name: "DC-Modules 30kW DC-DC (3-phase LLC)" },
   { k5: "40kw-acdc", name: "DC-Modules 40kW AC-DC (Vienna PFC, E41)" },
   { k5: "40kw-dcdc", name: "DC-Modules 40kW DC-DC (3-phase LLC, E41)" },
+  { k5: "50kw-acdc", name: "DC-Modules 50kW AC-DC (Vienna PFC, E42 liquid)" },
+  { k5: "50kw-dcdc", name: "DC-Modules 50kW DC-DC (3-phase LLC, E42 liquid)" },
   { k5: "control-card-card", name: "DC-Modules Control Card (GD32G553VET6)" },
   { k5: "cabinet-cab", name: "DC-Modules 120kW Cabinet (4x30kW + CSU)" },
 ]; // 120 kW retired: cabinet of 30/60 kW modules (E36)

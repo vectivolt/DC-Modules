@@ -64,13 +64,13 @@ ck("MR-8", !/net\.NC_U\d/.test(boards), "ULN spare inputs grounded");
 // ===== R2 review closure (docs/design-review-production-r2.md, 2026-09-05) =====
 const fsmH = readFileSync(join(ROOT, "firmware/core/fsm.h"), "utf8");
 const fsmC = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
-ck("R2-CB16", cells.includes('R${id}CT`} resistance="2"') && /R2512-2R0/.test(db) && db.includes("R\\d+CT"), "resonant CT burden 2.0 Ω 2512 (46 A rms/1:100 scaling; 33 Ω was the line-CT value)");
+ck("R2-CB16", cells.includes('ctBurden = "2"') && cells.includes('R${id}CT`} resistance={ctBurden}') && /R2512-2R0/.test(db) && db.includes("R\\d+CT"), "resonant CT burden 2.0 Ω 2512 default (46 A rms/1:100 scaling); E42 re-scales per variant via the ctBurden prop — the default stays the frozen value");
 ck("R2-CB17", /Rail3V3 id="CARD"/.test(boards), "3.3 V rail sourced on the card (one card per board role — card-split rev of CB-17/18)");
 ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck, not a 15 V-fed LDO");
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
 ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD34/.test(db), "aux 110 W stage values in cells + D4 rev C part");
 ck("R2-CB21", /flt="net.FLT" en="net.GATE_EN_B"/.test(boards), "E40 rev: the LLC driver fault wire-OR reaches the brain on the single merged FLT line");
-ck("R2-CB22", /crVal=\{pw === 40 \? "33nF" : "46nF"\}/.test(boards) && /crN=\{pw === 40 \? 6 : 4\}/.test(boards) && /PP-46n-1200/.test(db) && /IND-TRIM-BIN4/.test(db), "tank: 30 kW frozen rev D2 (4x46 nF) + E41 40 kW variant (6x33 nF, re-binned trim) — both asserted structurally");
+ck("R2-CB22", /crVal=\{pw === 50 \? "27nF" : pw === 40 \? "33nF" : "46nF"\}/.test(boards) && /crN=\{pw === 50 \? 8 : pw === 40 \? 6 : 4\}/.test(boards) && /PP-46n-1200/.test(db) && /PP-33n-1200V/.test(db) && /PP-27n-1200V/.test(db) && /IND-TRIM-BIN4/.test(db) && /IND-TRIM-BIN5-40/.test(db) && /IND-TRIM-BIN6-50/.test(db), "tank: 30 kW frozen rev D2 (4x46 nF) + E41 (6x33 nF, BIN5) + E42 (8x27 nF, BIN6) — all three asserted structurally");
 ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db) && /PMP_DISCH_TO_MS/.test(fsmH) && /disch_ms/.test(fsmC), "per-SKU pulse parts @120 kW + F.21 implemented in firmware");
 ck("R2-HR15", /QDISA/.test(boards) && /QDISB/.test(boards) && /RBDA0/.test(boards) && /CTL_QDISBK/.test(boards), "commanded bank bleeders exist (banks no longer hold 525 V for minutes)");
 ck("R2-HR16", /ISO5V-RFC-6K/.test(db) && !/B1505S-2WR2/.test(db), "iso-5V bias modules reinforced-rated (they ARE the barrier)");
@@ -366,8 +366,8 @@ ck("SHEET-VALUE-TEXT", (() => {
     mpnOf("RAGTC") === "R-small" && mpnOf("RBALTA1") === "R2512-47k-HV-AS" && mpnOf("RV1D0") === "HV73-475k-1%",
     "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts");
 }
-ck("AUD-BURDEN27", /resistance="27"/.test(cells) && /R1206-27R-1%/.test(db) && !/R1206-33R-1%/.test(db),
-  "line-CT burden is 27 R end-to-end (R3 fix landed: 150 A pk observability inside the 3.3 V rail)");
+ck("AUD-BURDEN27", cells.includes('burden = "27"') && cells.includes('R${id}B`} resistance={burden}') && /R1206-27R-1%/.test(db) && !/R1206-33R-1%/.test(db),
+  "line-CT burden defaults to 27 R (R3 fix: 150 A pk observability inside the 3.3 V rail); E42 re-scales per variant via the burden prop at the same rail budget");
 ck("AUD-D2-FERRITE", /GAPPED FERRITE/.test(db) && /PQ50\/50/.test(db.match(/IND-TRIM-BIN4[\s\S]{0,400}/)?.[0] ?? ""),
   "D2 trim is gapped ferrite (F1: sendust at full 140 kHz AC swing = ~43 W core loss, 2:1 L swing)");
 ck("AUD-D1-REVB", /N=39/.test(db) && /18 mm²/.test(db) && /0077908A7/.test(db),
@@ -396,6 +396,29 @@ try {
     dropped.length ? `cabinet apply DROPPED ${dropped.join(", ")}` : `cabinet: all ${cabNet.length} components reach the apply payload`);
 } catch (e) {
   ck("AUD-CAB-COMPLETE", false, "cabinet build/apply missing: " + e.message);
+}
+
+// ===== E42 (2026-09-08): 50 kW LIQUID variant — structural asserts for every deliberate delta.
+// Each is the grep that WOULD have found the defect had the delta been half-applied.
+ck("E42-FANS", /pw === 50 \? 0 :/.test(boards) && /RFDT/.test(boards) && /pw === 50 \? 8 : pw === 40 \? 6 :/.test(boards),
+  "sealed module: nFans=0 at 50 kW with defined-low tach terminators; 16-can link (8/half)");
+ck("E42-KOUT", /dualOut=\{pw === 50\}/.test(boards) && /dual \? HV : dualOut \? \["KOUT"\]/.test(cells) && /KOUT2: \{ price1k: 460/.test(db),
+  "K_OUT dual pair at 50 kW only (matrix legs single) — cell prop + board wiring + BOM instance");
+ck("E42-BURDENS", /burden=\{pw === 50 \? "21\.5" : "27"\}/.test(boards) && /ctBurden=\{pw === 50 \? "1\.6" : "2"\}/.test(boards),
+  "both CT burdens re-scaled at 50 kW (rail budget at the revved OC points — stress-audit BRD carries the numbers)");
+ck("E42-CLASSES", /FUSE-gG-690V-160A/.test(db) && /91\.6 A line = 37%/.test(db) && /CT-LINE-2500-150A/.test(db) && /IND-PFC-103u-50/.test(db) && /XFMR-LLC-3E70-50/.test(db) && /Liquid coldplates/.test(db),
+  "50 kW protection/magnetics classes + coldplate mech lines all ordered in parts-db");
+ck("E42-RATING", /pw === 50 \? "10k" : pw === 40 \? "1k" : "0"/.test(boards) && /"50kw": "10000"/.test(readFileSync(join(ROOT, "calculations/module-interconnect-audit.mts"), "utf8")),
+  "RATING strap 10k = 50 kW (E24 rev F — retires the stale two-card-era 10k mapping) and the audit knows it");
+{
+  const grid = readFileSync(join(ROOT, "calculations/system/envelope-grid.mjs"), "utf8");
+  ck("E42-GRID", /ipCeil: 65/.test(grid) && /rth: 1\.1/.test(grid) && /ref: \{ cold: 10, room: 45, hot: 65 \}/.test(grid),
+    "liquid thermal model + revved tank ceiling registered IN the grid source (not a side note)");
+}
+{
+  const fsm = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
+  ck("E42-FW", /kw == 50u\) \? 5000u/.test(fsm) && /50 kW window/.test(readFileSync(join(ROOT, "firmware/test/host_sim.c"), "utf8")),
+    "50 kW discharge window in the FSM + both window tests in host_sim");
 }
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");

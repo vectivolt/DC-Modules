@@ -98,8 +98,8 @@ if (!card) { console.log("no card build — run tsci build boards/control-card.t
 // which card-connector way carries which generic net, in pin order (the contract)
 const genericWays: [string, string | null][] = cardMap("card").map(([w, n]: any) => [w, n]);
 
-const RATING_CODE: Record<string, string> = { "30kw": "0", "40kw": "1000" };   // E24 rev E bands
-for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw"]) {
+const RATING_CODE: Record<string, string> = { "30kw": "0", "40kw": "1000", "50kw": "10000" };   // E24 rev F bands (10k = 50 kW liquid)
+for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw"]) {
   console.log(`\n== module interconnect — ${sku} ==`);
   const lanes = sku === "60kw" ? 2 : 1;
   const ac = load(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`);

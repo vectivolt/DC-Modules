@@ -21,7 +21,7 @@
 // structure + E36): its single-board pair cannot exist since the card split (cardMap() correctly
 // refuses 4 lanes — AIN needs 17 of 13), so every pipeline consumer iterates THIS list and the
 // 120 kW product cost is a 4×-module roll-up in bom-gen.
-export const BUILDABLE_SKUS = ["30kw", "40kw"];   // E40 single-brain module + E41 40 kW hot variant; 60/120 kW are cabinets
+export const BUILDABLE_SKUS = ["30kw", "40kw", "50kw"];   // E40 single-brain module + E41 40 kW hot variant + E42 50 kW liquid variant; 60/80/100/120/150 kW are cabinets
 
 export const DB = [
   // --- power semiconductors
@@ -96,6 +96,7 @@ export const DB = [
   { m: /^CB[AB]\d+[TB]$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank (E29/CB-2)", price1k: 150, alt: "ChengX" },
   { m: /^C\d+R\d$/, mpn: "PP-46n-1200", mfr: "Faratronic", desc: "46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)", price1k: 68, alt: "Songtian pulse PP" },
   { m: /^$never$/, mpn: "PP-33n-1200V", mfr: "Faratronic/CDE 942C class", desc: "33 nF 1200 V PP resonant-duty film (E41 tank: 6x per section; reached via skuOverrides only)", price1k: 11, alt: "942C20P33K" },
+  { m: /^$never$/, mpn: "PP-27n-1200V", mfr: "Faratronic/CDE 942C class", desc: "27 nF 1200 V PP resonant-duty film (E42 tank: 8x per section, per-cap ~9.7 A of the 12 A line; reached via skuOverrides only — priced at the 46 nF conservative basis until the pulse-film RFQ, same policy as E41)", price1k: 11, alt: "942C20P27K" },
   { m: /^C\w+F[PN]$/, mpn: "PP-1u-600", mfr: "Faratronic", desc: "1 µF 600 V film (Vienna per-phase commutation, CB-9)", price1k: 32, alt: "Songtian" },
   { m: /^C(F\d+|B[AB]F)$/, mpn: "PP-1u-1100", mfr: "Faratronic", desc: "1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)", price1k: 68, alt: "Songtian" },
   { m: /^COF[12]$/, mpn: "PP-4u7-1200", mfr: "Faratronic", desc: "4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)", price1k: 125, alt: "—" },
@@ -197,6 +198,64 @@ export const skuOverrides = {
     // resonant CT: AS-404 (50 A) would run 122% at 61 A rms — RFQ the 80 A class before EVT
     CT1: { mpn: "CT-RES-1:100-80A", note: "RFQ upsize (Talema AS class); AS-404 stays the 30 kW part" },
     CT2: { mpn: "CT-RES-1:100-80A" }, CT3: { mpn: "CT-RES-1:100-80A" },
+    // D3-40 identity (registered at E41, BOM identity landed at E42 close): the 40 kW transformer
+    // is the 2x E70/33/32 stack — WINDOW-driven, volt-second-identical, same price basis as the
+    // 3x PQ50 drawing until the winder RFQ splits them.
+    T1: { mpn: "XFMR-LLC-2E70-40", note: "D3-40: 2x E70/33/32 per section (window fill)" },
+    T2: { mpn: "XFMR-LLC-2E70-40" }, T3: { mpn: "XFMR-LLC-2E70-40" },
+  },
+  // E42 50 kW LIQUID variant — engine-driven (pfc-design @PFC_P=50e3/PFC_PAR=2, frozen 50 kHz;
+  // envelope grid at plate Rth 1.1 K/W / 65 C hot plate ref): line 91.6 A worst, output 167 A,
+  // tank 77.3 A rms per section. SAME silicon as the 40 kW (paralleled PFC pairs, single LLC
+  // FETs) — the coldplate is what buys that. Protection classes rev: see each note.
+  "50kw": {
+    // stress rule (E35/F6, 0.72x enclosed derate): 125 A -> 90 A < 91.6 A worst — FAILS by the
+    // same class E41 caught at 100 A. 160 A gG derates to 115 A (26% margin). Frame steps
+    // 22x58 -> NH00 (mech line carries the holder).
+    "F1": { price1k: 260, mpn: "FUSE-gG-690V-160A" }, "F2": { price1k: 260, mpn: "FUSE-gG-690V-160A" }, "F3": { price1k: 260, mpn: "FUSE-gG-690V-160A" },
+    // K_OUT carries full output current in BOTH modes: 167 A = 84% of one 200 A class -> DUAL
+    // (KOUT2 is a real schematic instance, series-mirror readback — the 120 kW HR-19 pattern).
+    // KSER (SER-mode <=100 A = 50%) and KPARA/B (per-bank <=84 A = 42%) stay single.
+    KOUT: { price1k: 460, note: "2x 200 A paralleled (dual instance, E42)" }, KOUT2: { price1k: 460 },
+    KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
+    // precharge bypass: 120 A class = 76% of class at 91.6 A — over the 75% line. Next existing
+    // family part is the 250 A frame (37%); no new p/n invented.
+    KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
+    LDM1: { price1k: 165, note: "D6-50 winding, same J as 30 kW" }, LDM2: { price1k: 165 }, LDM3: { price1k: 165 },
+    CMC1: { price1k: 340, note: "D7-50 custom wind 95 A", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 340, mpn: "CMC-3PH-2mH-SKU" },
+    RSHO: { price1k: 155 },
+    // D1-50 (pfc-design engine at the frozen 50 kHz, PFC_PAR=2; 40 kHz row refused): 5x T79 26u
+    // sendust, N=22, 25.8 mm2 — L0 103 uH -> 50.8 uH @ 129.5 A pk, dI 34.8 A, dT 37 K (the
+    // acceptance-gate convective figure; in the sealed module the stack is gap-pad-bonded to the
+    // coldplate web, VERIFY at plate thermal RFQ)
+    LA0: { price1k: 1190, mpn: "IND-PFC-103u-50", note: "D1-50: 5x T79 26u, N=22 (engine @50 kHz)" },
+    LB0: { price1k: 1190, mpn: "IND-PFC-103u-50" }, LC0: { price1k: 1190, mpn: "IND-PFC-103u-50" },
+    // D2-50: same 2x PQ50/50 gapped-ferrite trim, N=6, bins re-centred on 3.0 uH (with Cr
+    // 8x27 nF = 216 nF: fr = 139.8 kHz, trim = 50% of Lr — binnable; Bpk 83 mT vs the 100 mT line)
+    L1T: { price1k: 125, mpn: "IND-TRIM-BIN6-50", note: "D2-50: N=6, bins 2.8/3.0/3.2 uH" },
+    L2T: { price1k: 125, mpn: "IND-TRIM-BIN6-50" }, L3T: { price1k: 125, mpn: "IND-TRIM-BIN6-50" },
+    // resonant caps: 8x27 nF per section (77.3 A rms / 8 = 9.7 A of the 12 A line)
+    "C1R0": { mpn: "PP-27n-1200V" }, "C1R1": { mpn: "PP-27n-1200V" }, "C1R2": { mpn: "PP-27n-1200V" }, "C1R3": { mpn: "PP-27n-1200V" }, "C1R4": { mpn: "PP-27n-1200V" }, "C1R5": { mpn: "PP-27n-1200V" }, "C1R6": { mpn: "PP-27n-1200V" }, "C1R7": { mpn: "PP-27n-1200V" },
+    "C2R0": { mpn: "PP-27n-1200V" }, "C2R1": { mpn: "PP-27n-1200V" }, "C2R2": { mpn: "PP-27n-1200V" }, "C2R3": { mpn: "PP-27n-1200V" }, "C2R4": { mpn: "PP-27n-1200V" }, "C2R5": { mpn: "PP-27n-1200V" }, "C2R6": { mpn: "PP-27n-1200V" }, "C2R7": { mpn: "PP-27n-1200V" },
+    "C3R0": { mpn: "PP-27n-1200V" }, "C3R1": { mpn: "PP-27n-1200V" }, "C3R2": { mpn: "PP-27n-1200V" }, "C3R3": { mpn: "PP-27n-1200V" }, "C3R4": { mpn: "PP-27n-1200V" }, "C3R5": { mpn: "PP-27n-1200V" }, "C3R6": { mpn: "PP-27n-1200V" }, "C3R7": { mpn: "PP-27n-1200V" },
+    // tank protection class rev (E42): envelope ceiling 65 A pk / OC 95 A pk (same 0.68 ratio as
+    // the frozen 48/70) — resonant CT to the 100 A class (77.3 rms = 77%, same class use as E41's
+    // 80 A pick); 2.0 ohm burden unchanged (95 A pk -> 1.9 V at the comparator, inside the rail)
+    CT1: { mpn: "CT-RES-1:100-100A", note: "E42 class rev (Talema AS class RFQ); OC 95 A pk on the re-scaled 1.6R burden = 3.17 V (2.0R would clip at 3.55 V)" },
+    CT2: { mpn: "CT-RES-1:100-100A" }, CT3: { mpn: "CT-RES-1:100-100A" },
+    // resonant burden re-scale: 1.6 ohm on a 2 W 2512 (0.96 W worst = 48%; the 1 W frozen part
+    // would run 96% at 77.3 A rms) — metering signal identical to the 40 kW (1.24 V rms)
+    R1CT: { mpn: "R2512-1R6-2W-1%", note: "E42: tank OC 95 A pk inside the rail; 2 W class" },
+    R2CT: { mpn: "R2512-1R6-2W-1%" }, R3CT: { mpn: "R2512-1R6-2W-1%" },
+    // line CTs: ACX-1100 (100 A) would run 92% at 91.6 A rms — class up at RFQ (sensor path)
+    CTA0: { price1k: 95, mpn: "CT-LINE-2500-150A", note: "150 A class (ACX family upsize RFQ); burden re-scaled 27R -> 21.5R so 187 A pk OC observability = 3.26 V (the R3-proven rail budget)" },
+    CTB0: { price1k: 95, mpn: "CT-LINE-2500-150A" }, CTC0: { price1k: 95, mpn: "CT-LINE-2500-150A" },
+    RA0B: { mpn: "R1206-21R5-1%", note: "E42 line-CT burden re-scale (rail budget at 187 A pk)" },
+    RB0B: { mpn: "R1206-21R5-1%" }, RC0B: { mpn: "R1206-21R5-1%" },
+    // D3-50: 3x E70/33/32 per section — Ae x1.5 -> turns x2/3 at identical volt-seconds (Bpk
+    // unchanged 108 mT), window fill ~0.83x of the 40 kW wind despite +25% copper CSA
+    T1: { price1k: 850, mpn: "XFMR-LLC-3E70-50", note: "D3-50: 3x E70/33/32 per section (+1 core set vs 40 kW)" },
+    T2: { price1k: 850, mpn: "XFMR-LLC-3E70-50" }, T3: { price1k: 850, mpn: "XFMR-LLC-3E70-50" },
   },
   "60kw": {
     // reference board (product = 2× 30 kW modules, each with its own 80 A): 125 A at 110 A carries
@@ -245,6 +304,20 @@ export const mechLines = {
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 810],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 380],
     ["Assembly + calibration + EOL test", 1, 1950],
+  ],
+  // E42 50 kW LIQUID: same 440x500 envelope; coldplates REPLACE the extrusions AND the fans
+  // (sealed module). Coldplate pricing is the thermal-RFQ estimate (brazed/FSW channel plate at
+  // 10k/yr) — flagged REVIEW like the other custom lines. EOL adds the pressure/leak test.
+  "50kw": [
+    ["PCB-ACDC 6L 440×500 (50 kW copper masses)", 1, 1300], ["PCB-DCDC 6L 440×500", 1, 1500],
+    ["Liquid coldplates (2, sandwich outer faces, brazed channel — REVIEW at thermal RFQ)", 1, 4400],
+    ["Coolant fittings: 2× quick-disconnect + internal manifold/hose set", 1, 380],
+    ["Gap pads + potting (choke stacks / transformers / EMI magnetics → plate webs)", 1, 420],
+    ["Enclosure sheet metal + hardware (sealed, gasket set; NH00 fuse bases)", 1, 1250],
+    ["Busbars/interconnect studs + harness (busbar-calc, 167 A output class)", 1, 850],
+    ["NTC sensor assemblies (insulated tip spec, E25 — plate-mounted)", 4, 18],
+    ["TIM/insulators/fasteners", 1, 420],
+    ["Assembly + calibration + EOL test (incl. coolant-loop pressure/leak test)", 1, 2150],
   ],
   "60kw": [
     ["PCB-ACDC 6L 460×420", 1, 1750], ["PCB-DCDC 6L 520×420", 1, 1950],

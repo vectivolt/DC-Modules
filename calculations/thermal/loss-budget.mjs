@@ -31,6 +31,7 @@ function secondary(IoutCh) {
 const SKUS = [
   { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 2 },
   { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
+  { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6 L/min)
   { name: "60kW", P: 60e3, lanes: 2, ch: 2, Iout: 200, fans: 2 },
   { name: "120kW", P: 120e3, lanes: 4, ch: 4, Iout: 400, fans: 4 },
 ];
@@ -41,7 +42,7 @@ const SKUS = [
 //   LDM per choke (D6 rev B — audit F7, every winding one gauge up to ≤5.6 A/mm²):
 //   5.9 / 9.8 / 18.3 W ×3 chokes (rev-A as-drawn 8.8/32.7/58.6 ran 8.3–18 A/mm² and the 30 kW
 //   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 5.9, "40kW": 2 * 15.3 + 3 * 7.9, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };   // 40kW: D6/D7 rewound at the 30 kW current density (P ∝ I at constant J)
+const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 5.9, "40kW": 2 * 15.3 + 3 * 7.9, "50kW": 2 * 19.2 + 3 * 9.8, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };   // 40/50kW: D6/D7 rewound at the 30 kW current density (P ∝ I at constant J — 50 kW = ×5/3)
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {

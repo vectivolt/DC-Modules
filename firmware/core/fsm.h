@@ -63,8 +63,15 @@ typedef struct {
 void pmp_fsm_init(pmp_fsm_t *f);
 void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in);   /* call every 1 ms */
 /* Card promise (CARD_RULES): ONE firmware image, rating read at boot from the RATING strap on
- * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND):
- *   ~0.0 V -> 0R strap  -> 30 kW · ~1.65 V -> 10k strap -> 60 kW · ~3.3 V -> no board / fault.
+ * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND) — E24 rev F bands:
+ *   <0.15 V  (0R)    -> 30 kW module
+ *   0.15-0.55 (1k)   -> 40 kW module (E41)
+ *   0.55-1.24 (3.32k)-> cabinet CSU role
+ *   1.24-2.40 (10k)  -> 50 kW LIQUID module (E42 — retires the stale two-card-era 10k = "60 kW"
+ *                       mapping; no single-brain 60 exists, E40. At 50 kW the HAL also ties
+ *                       fan_ok = true (sealed module, zero fans) and leaves the tach inputs
+ *                       ignored — the board holds them defined-low.)
+ *   >2.40 V  (open)  -> no host, fault.
  * HAL decodes the band and calls this once before enabling; unknown ratings keep the
  * worst-case default window (longer timeout = later F.21 report, never an unsafe one). */
 void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw);

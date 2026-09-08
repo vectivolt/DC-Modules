@@ -160,5 +160,9 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
 void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw)
 {
   /* E24 rev E (E41): 40 kW carries +2 link cans and heavier banks — window scales with C. */
-  f->disch_to_ms = (kw == 30u) ? 3000u : (kw == 40u) ? 4000u : (kw == 60u) ? 5500u : PMP_DISCH_TO_MS;
+  f->disch_to_ms = (kw == 30u) ? 3000u : (kw == 40u) ? 4000u : (kw == 50u) ? 5000u
+                 : (kw == 60u) ? 5500u : PMP_DISCH_TO_MS;
+  /* E42 50 kW: 16-can link (8/half, 1.88 mF series) into the 640 R chain — 3.16 s to <60 V,
+   * 5000 ms window = 58% margin, same policy band as 30/40. 60 kW row is the retired
+   * two-lane reference, kept so a legacy strap read stays safe (longer window, never shorter). */
 }

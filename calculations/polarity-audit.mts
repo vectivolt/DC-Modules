@@ -97,7 +97,7 @@ function audit(b: Board, rules: Rule[], tag: string) {
   console.log(`  ok    ${tag}: ${okCount}/${seen} polarized parts verified (+/anode on pin 1)`);
 }
 
-for (const sku of ["30kw", "40kw"]) {   // E40 module + E41 hot variant
+for (const sku of ["30kw", "40kw", "50kw"]) {   // E40 module + E41 hot variant + E42 liquid variant
   console.log(`\n== polarity — ${sku} ==`);
   const ac = load(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`);
   const dc = load(`${ROOT}/dist/boards/${sku}/dcdc/circuit.json`);

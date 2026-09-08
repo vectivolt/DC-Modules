@@ -18,6 +18,13 @@ const TEMPS = [{ n: "cold", amb: -20, hs: 10 }, { n: "room", amb: 25, hs: 45 }, 
 const SKUS = [
   { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1 },
   { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1, par: 2 },   // E41: paralleled PFC pair
+  // E42 LIQUID variant: same silicon as 40 kW (paralleled PFC pairs, SINGLE LLC FETs — the
+  // coldplate is what buys that). Thermal model: rth = j→plate ≈ 0.55 die + 0.35 TIM + 0.2
+  // local plate constriction = 1.1 K/W into `ref` = plate temp at the device (coolant inlet
+  // ≤60 °C + ~5 K spread at hot; cold = chiller floor; VERIFY both at plate thermal RFQ).
+  // Tank class REVVED (E42): ceiling 65 A pk / OC 95 A pk / 100 A-class CT / 8×27 nF + BIN6 —
+  // same 0.68 ceiling:OC ratio as the frozen 48/70 class the 30/40 share.
+  { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, rth: 1.1, ref: { cold: 10, room: 45, hot: 65 }, ipCeil: 65 },
   { name: "60kw", P: 60e3, Imax: 200, lanes: 2, ch: 2 },
   { name: "120kw", P: 120e3, Imax: 400, lanes: 4, ch: 4 },
 ];
@@ -39,6 +46,9 @@ for (const s of SKUS) {
     const M = bank / (bus / 2);
     let notes = "";
     if (Pout === 0) { rows.push([s.name, Vin, Vout, load, T.n, mode, "IDLE", 0, f(bus, 0), "", 0, 0, "", "", "", "PASS", "standby"]); continue; }
+    const HS = s.ref?.[T.n] ?? T.hs;              // E42: liquid SKUs reference the PLATE temp
+    const RTH = s.rth ?? 1.9;                     // E42: 1.1 K/W j→plate vs 1.9 K/W j→air-sink
+    const CEIL = s.ipCeil ?? 48;                  // E42: per-variant tank envelope ceiling (A pk)
     const Pph = Pout / 0.98 / (3 * s.ch);
     const Rac = (8 / Math.PI ** 2) * bank * bank / Pph;
     const Q = Math.sqrt(LR / CR) / Rac;
@@ -49,14 +59,17 @@ for (const s of SKUS) {
     let im = bus / 2 / (4 * fn * FR * LM) / Math.SQRT2;
     let Ip = Math.hypot(Ip1, im);
     // E41 corner policy: the tank hardware (CT class, trim bins, F.11 OC at 70 A pk, the 48 A pk
-    // envelope ceiling) is IDENTICAL on every variant — availability CLAMPS to the ceiling instead
+    // envelope ceiling) is IDENTICAL on the 30/40 — availability CLAMPS to the ceiling instead
     // of growing the tank. At 30 kW this never engages (grid unchanged); at 40 kW it derates the
     // low-line x low-output corners, exactly the commercial envelope-curve shape. Two-pass
     // re-solve so fn/Q/im are consistent at the clamped power.
+    // E42: the 50 kW REVS the class instead (ipCeil 65 / OC 95 / 100 A CT / 8-cap tank) because
+    // its Imax-bound region sits at Ip1 = 167/(0.98·3·0.9) = 63.1 A — clamping to 48 would fold
+    // a third of the commercial envelope, which is a class-selection problem, not a physics one.
     let PoutE = Pout, PphE = Pph;
-    if (Ip > 48) {
+    if (Ip > CEIL) {
       for (let it = 0; it < 2; it++) {
-        const Ip1max = Math.sqrt(Math.max(48 * 48 - im * im, 1));
+        const Ip1max = Math.sqrt(Math.max(CEIL * CEIL - im * im, 1));
         const kx = Math.min(1, (Ip1max * 0.9 * bank) / PphE);
         PphE = PphE * kx; PoutE = PoutE * kx;
         const RacE = (8 / Math.PI ** 2) * bank * bank / PphE;
@@ -74,14 +87,14 @@ for (const s of SKUS) {
     const Iline = Pin / (Math.sqrt(3) * Vin * 0.99) / s.lanes;      // per-lane phase current
     const IswR = 35.95 * (Iline / 54.94);
     // losses w/ Tj iteration (per worst package)
-    let TjP = T.hs + 20, TjL = T.hs + 15;
+    let TjP = HS + 20, TjL = HS + 15;
     for (let i = 0; i < 25; i++) {
       const par = s.par ?? 1;                               // E41: paralleled devices share the pair current
       const rdsP = 0.010 * (1 + 0.004 * (TjP - 25));
       const Pc = (IswR / par) ** 2 * 2 * rdsP, Psw = 17.4e-9 * (bus / 2) * (2 / Math.PI) * (Iline * Math.SQRT2) * 50e3 / par;
-      TjP = T.hs + (Pc / 2 + Psw) * 1.9;                    // per-PACKAGE dissipation into the same 1.9 K/W
+      TjP = HS + (Pc / 2 + Psw) * RTH;                      // per-PACKAGE dissipation into the SKU's Rth
       const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
-      TjL = T.hs + ((Ip / Math.SQRT2) ** 2 * rdsL + (ctl === "PS" ? 8 : 1)) * 1.9;
+      TjL = HS + ((Ip / Math.SQRT2) ** 2 * rdsL + (ctl === "PS" ? 8 : 1)) * RTH;
     }
     // E41: thermal fold — the FSM's DERATE ladder in grid form. If the LLC package exceeds its
     // ceiling at the (already tank-clamped) corner, availability folds back until it holds; the
@@ -91,10 +104,10 @@ for (const s of SKUS) {
     while (TjL > 150 && folds < 10) {
       PphE *= 0.93; PoutE *= 0.93; folds++;
       Ip1 = PphE / (0.9 * bank); Ip = Math.hypot(Ip1, im);
-      TjL = T.hs + 15;
+      TjL = HS + 15;
       for (let i = 0; i < 25; i++) {
         const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
-        TjL = T.hs + ((Ip / Math.SQRT2) ** 2 * rdsL + (ctl === "PS" ? 8 : 1)) * 1.9;
+        TjL = HS + ((Ip / Math.SQRT2) ** 2 * rdsL + (ctl === "PS" ? 8 : 1)) * RTH;
       }
     }
     if (folds) notes += `thermal derate to ${f(100 * PoutE / Pout, 0)}% `;
@@ -107,9 +120,9 @@ for (const s of SKUS) {
     const loss = pfcW + llcW + secW + fixW;
     const eta = 100 * Pout3 / (Pout3 + loss);
     // pass criteria
-    const pass = TjP <= 150 && TjL <= 150.5 && Ip <= 48.05 && fn >= 0.45 && fn <= 1.45 &&
+    const pass = TjP <= 150 && TjL <= 150.5 && Ip <= CEIL + 0.05 && fn >= 0.45 && fn <= 1.45 &&
       (load < 0.25 || eta >= (Vout >= 300 && Vin >= 330 && load >= 0.5 ? 95 : 88));
-    if (!pass) { fails++; notes = `LIMIT: ${TjP > 150 ? "TjPFC " : ""}${TjL > 150 ? "TjLLC " : ""}${Ip > 48.05 ? "Ip " : ""}${eta < 88 ? "eta" : ""}`; }
+    if (!pass) { fails++; notes = `LIMIT: ${TjP > 150 ? "TjPFC " : ""}${TjL > 150 ? "TjLLC " : ""}${Ip > CEIL + 0.05 ? "Ip " : ""}${eta < 88 ? "eta" : ""}`; }
     if (load === 1 && eta < worst.eta) worst = { eta, sku: s.name, Vin, Vout, T: T.n };
     tjMax = Math.max(tjMax, TjP, TjL);
     rows.push([s.name, Vin, Vout, load, T.n, mode, ctl, f(Pout, 0), f(bus, 0), f(fn, 3), f(Ip, 1), f(Iline, 1), f(eta, 2), f(TjP, 0), f(TjL, 0), pass ? "PASS" : "FAIL", notes]);

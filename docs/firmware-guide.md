@@ -136,13 +136,27 @@ ratings. At boot, before any enable, the HAL must:
    (card 10k pull-up) = DC-DC slot. Configure the role personality (PWM semantics, AIN map,
    DO/DI meanings) accordingly.
 2. Read **ROLE1/RATING** (ADC, pin 38) against the card's 10 k pull-up to V3P3 and the board's
-   strap to DGND: **~0.0 V → 0R → 30 kW · ~1.65 V → 10 k → 60 kW · ~3.3 V → no board seated
-   (fault, stay disabled)**. Call `pmp_fsm_set_rating_kw()` with the decoded rating — it narrows
-   the F.21 discharge-supervision window (3000/5500 ms); an undecoded strap keeps the worst-case
-   default, which can only delay the F.21 report, never miss it. (fsm suite: 35/35 incl. both
-   rating-window checks.)
+   strap to DGND — decode per the **rev F band table below** (0R/1k/3.32k/10k/open). Call
+   `pmp_fsm_set_rating_kw()` with the decoded rating — it narrows the F.21
+   discharge-supervision window; an undecoded strap keeps the worst-case default, which can
+   only delay the F.21 report, never miss it. (This step originally read ~1.65 V as "60 kW" —
+   two-card era; rev F reassigns that band, see below.)
 
 **E24 rev D (E40): RATING is the only strap — ROLE0 and the inter-card LINK are gone.** Bands: <0.41 V (0 R) → **module controller** (one brain, PFC+LLC) · 0.41–1.24 V (3.32 k) → **CSU** · >2.4 V (open) → no host, fault. Formerly rev C: Board strap 3.32 k against the card 10 k pullup
-reads ≈0.82 V. Windows (rev E, E41): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** · 0.55–1.24 V (3.32k) → **CSU** · 1.24–2.4 V → 60 kW ·
->2.4 V → no board / fault. In the CSU band the boot path runs `pmp_csu_*` (cabinet supervisor,
-`firmware/core/csu.h`) instead of the power FSM; ROLE0 is a don't-care. Same image, three roles.
+reads ≈0.82 V. Windows (**rev F, E42**): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** · 0.55–1.24 V (3.32k) → **CSU** · 1.24–2.4 V (10k) → **50 kW LIQUID** ·
+>2.4 V → no board / fault. (Rev F retires the stale two-card-era 10 k = "60 kW" reading — no
+single-brain 60 exists, E40; a legacy decode of 60 only lengthens the F.21 window, never an
+unsafe direction.) `pmp_fsm_set_rating_kw()` windows: 3000/4000/**5000**/5500-legacy ms — suite
+49/49 incl. all three rating-window pairs. In the CSU band the boot path runs `pmp_csu_*`
+(cabinet supervisor, `firmware/core/csu.h`) instead of the power FSM; ROLE0 is a don't-care.
+Same image, four identities.
+
+**50 kW liquid HAL notes (E42):** the module is sealed with ZERO fans — HAL ties `fan_ok = true`
+permanently, leaves FAN_PWM0/1 outputs idle and ignores the tach inputs (the board holds all
+three tach ways defined-LOW via RFDT terminators, so an accidental read reports "stopped", the
+fail-safe direction). The plate NTCs land on the same T_PFC/T_LLC channels; the existing OT
+ladder (derate at `PMP_OT_DERATE_C`, trip 115 °C) IS the loss-of-coolant protection — a dry
+plate at rated load crosses the ladder in seconds, well inside the 10 ms FSM tick. Flow
+assurance itself (pump, flow meter) is the cooling cart's job, charger-level per the E42 system
+boundary. Sense calibration constants for the re-scaled CT burdens (21.5 Ω line / 1.6 Ω
+resonant) are rating-keyed like every other cal row.

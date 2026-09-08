@@ -40,6 +40,22 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
+## 50KW — module COGS **₹39853 @10k** (1k ₹49052, 5k ₹43803, 100 pc ₹63672) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹3147**
+
+| Category | ₹ @1k | share |
+|---|---|---|
+| mechanical/assembly | 12742 | 26% |
+| magnetics | 12391 | 25.3% |
+| semiconductors | 9938 | 20.3% |
+| capacitors | 7802 | 15.9% |
+| drive+control ICs | 3723 | 7.6% |
+| protection | 922 | 1.9% |
+| resistors/shunts | 736 | 1.5% |
+| connectors | 418 | 0.9% |
+| misc | 356 | 0.7% |
+| HMI | 24 | 0% |
+| bias/iso modules | 0 | 0% |
+
 ## 120KW — **CABINET: 4x 30 kW modules (alt: 2x 60 kW)** — cabinet COGS **₹120316 @10k** (1k ₹148751, 5k ₹132640, 100 pc ₹193848) vs red-line ₹78000 / stretch ₹68000 → **@10k OVER red-line by ₹42316**
 
 | Category | ₹ @1k | share |
@@ -79,15 +95,23 @@ variants deleting the S/P matrix (−₹3k+ @30 kW, collapses the 150–1000 V s
 
 The 40 kW variant (E41) changes the economics: the fixed overhead (card, aux, CAN, HMI, PCBs,
 enclosure) amortizes over more watts, so **every 40-based product is ~14% cheaper per kW**.
+The 50 kW liquid variant (E42) extends the ladder for liquid-loop sites: the coldplate pair
+replaces extrusions + all fans, the same silicon as the 40 kW runs it (single LLC FETs — the
+grid closes 0-FAIL at plate Rth 1.1 K/W), and the liquid products carry the sealed/no-fan
+reliability case; the cooling cart (pump, HX, flow assurance) is charger-level, outside module
+COGS, per the registered E42 system boundary.
 
 | Product | Composition | ₹ @10k | **₹ / kW** |
 |---|---|---|---|
-| 30 kW module | 1 module · 1 card | 30,079 | **1,003** |
-| 40 kW module (E41) | 1 module · 1 card | 34,303 | **858** |
-| 60 kW | 2 x 30 · 2 cards | 60,158 | **1,003** |
-| 80 kW | 2 x 40 · 2 cards | 68,606 | **858** |
-| 120 kW (4 x 30) | 4 cards + CSU | 1,22,150 | **1,018** |
-| 120 kW (3 x 40) | 3 cards + CSU — cheapest 120 | 1,04,743 | **873** |
+| 30 kW module | 1 module · 1 card · air | 30,079 | **1,003** |
+| 40 kW module (E41) | 1 module · 1 card · air | 34,303 | **858** |
+| 50 kW module (E42) | 1 module · 1 card · LIQUID | 39,853 | **797** |
+| 60 kW | 2 x 30 · 2 cards · air | 60,158 | **1,003** |
+| 80 kW | 2 x 40 · 2 cards · air | 68,606 | **858** |
+| 100 kW | 2 x 50 · 2 cards · liquid | 79,706 | **797** |
+| 120 kW (4 x 30) | 4 cards + CSU · air | 1,22,150 | **1,018** |
+| 120 kW (3 x 40) | 3 cards + CSU · air — cheapest 120 | 1,04,743 | **873** |
+| 150 kW (3 x 50) | 3 cards + CSU · liquid | 1,21,393 | **809** |
 
 Cabinet adder ₹1,834 (CSU card + carrier + WDR supply + studs + CAN passives). The
 **3×40 cabinet is the cheapest 120 kW** by ~₹17,407; choose the runner at the volume decision

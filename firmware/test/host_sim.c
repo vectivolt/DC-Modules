@@ -166,6 +166,10 @@ int main(void) {
   runsim(&s, sc_dstuck, 3600);               expect("stuck discharge, 40 kW window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
   sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 40);
   runsim(&s, sc_dstuck, 5600);               expect("stuck discharge, 40 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);   /* E42: 5000 ms window (16-can link) — open at 4600, latched by 6600 */
+  runsim(&s, sc_dstuck, 4600);               expect("stuck discharge, 50 kW window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);
+  runsim(&s, sc_dstuck, 6600);               expect("stuck discharge, 50 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
   sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
 

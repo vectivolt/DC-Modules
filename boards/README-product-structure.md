@@ -1,10 +1,35 @@
 # Product structure
 
-**The module comes in two variants — 30 kW and 40 kW (E41) — on one platform, one card each.**
-Higher ratings are cabinets of modules, not bigger boards. Price-per-kW ladder (generated,
-[docs/bom-cost.md](../docs/bom-cost.md)): 30→₹1,003/kW · 40→₹858/kW · 120 kW cheapest as
-**3×40+CSU = ₹104,743 (₹873/kW)** vs 4×30 = ₹122,150; N−1 granularity 67 % vs 75 % — pick the
-runner at the volume decision.
+**The module comes in three variants on one platform, one card each: 30 kW air · 40 kW air
+(E41) · 50 kW LIQUID (E42).** Higher ratings are cabinets of modules, not bigger boards.
+Price-per-kW ladder (generated, [docs/bom-cost.md](../docs/bom-cost.md)): 30→₹1,003/kW ·
+40→₹858/kW · **50→₹797/kW (cheapest module)** · 120 kW cheapest air as **3×40+CSU = ₹104,743
+(₹873/kW)** vs 4×30 = ₹122,150 · 100 kW = 2×50 (797) · 150 kW = 3×50+CSU (809, liquid); N−1
+granularity 67 % vs 75 % — pick the runner at the volume decision.
+
+## The two cooling lines (E41 vs E42) — why the family splits at 40/50
+
+**Air stops paying at 40 kW.** The air-cooled 50 was assessed and declined on five recorded
+risks: two possible engine refusals (choke family edge, transformer window), magnetics height
+vs the inter-board tunnel, a product-honesty risk (the hot-site folds land exactly on the
+low-voltage/high-current region where real LFP/bus sessions sit — a "50 kW" delivering
+~44–46 kW), and a fan-reliability regression (4 fans, thinner Tj margins). The **liquid 50
+deletes the decisive ones**: the coldplate (Rth 1.1 K/W to a 65 °C plate vs 1.9 K/W to a 70 °C
+air sink) runs the *same silicon as the 40* — single LLC FETs at 167 A — with the grid closing
+0-FAIL over the FULL envelope, zero fans, sealed enclosure. What it costs instead: the tank
+protection class revs (65 A pk envelope / 95 A pk OC / 100 A CT / 8-cap tank), 160 A NH00
+fuses, a 250 A precharge class, a dual K_OUT, and a charger-level cooling cart (flow assurance
+is the cart's job; the module's plate NTCs + OT ladder are its dry-run protection — E42 system
+boundary).
+
+**Why there is no 60 kW module (and never a single-lane 120).** A monolithic 60 needs a second
+lane: two lanes = 18 PWM / ~30 analog — past ANY single-brain card (`cardMap()` throws), so a
+60 kW module would carry 2 cards and cost what 2×30 already costs (≈₹853/kW for the retired
+two-lane machine vs the 40's 858 — no prize for breaking commonality). A single-lane 120 fails
+on non-thermal walls — silicon paralleling count, choke stack feasibility, fuse-class ladder,
+transformer window, PCB copper — none of which liquid cooling touches. The ladder's shape is
+physics: **per-module power is bounded by the single-lane/single-brain envelope (50 kW liquid
+is its ceiling), and products above it are cabinets.**
 
 |  | AC-DC depth | DC-DC single-row width | verdict |
 |---|---|---|---|
@@ -28,6 +53,8 @@ rack either.
 |---|---|---|---|
 | `30kw/acdc` | 440 × 500 | 271 | placement clean, EMI/thermal pass, planes assigned |
 | `30kw/dcdc` | 440 × 500 | 282 | placement clean, barrier-bounded planes, BARRIER 0 |
+| `40kw/acdc` · `40kw/dcdc` | 440 × 500 | 287 · 288 | E41 air variant (netlist scope, E36) |
+| `50kw/acdc` · `50kw/dcdc` | 440 × 500 | 285 · 299 | E42 liquid variant (netlist scope; coldplate mech at thermal RFQ) |
 | `control-card` | 120 × 80 | 43 | clean; one card = the module brain (E40) |
 
 `60kw/` is kept buildable for reference (it exercises the cell library at 2 lanes and is the

@@ -416,7 +416,7 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, sec = 
 
 // ---------- LLC section: 4× Cr ∥ + trim Lr + resonant CT + transformer + dual JBS bridges
 // v3/CB-15: CT return + burden biased to AVMID (VREF/2), series R + dual clamp into the ADC net.
-export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", ctBurden = "2", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
         resonant-CT measurement chain on its own row below the tank. */}
@@ -431,9 +431,12 @@ export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", sw, star
     {["B1", "B2", "B3", "B4"].map((d, i) => (
       <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-27 + i * 18} pcbY={-216} schX={11 + i * 2.4} schY={0.6} schSectionName={sec} />
     ))}
-    {/* measurement row: CT → burden → RC filter → clamps (CB-16 values) */}
+    {/* measurement row: CT → burden → RC filter → clamps (CB-16 values).
+        E42: `ctBurden` re-scales with the tank protection class — the 50 kW OC at 95 A pk on
+        the frozen 2.0 Ω would read 3.55 V (past the rail); 1.6 Ω puts it at 3.17 V and holds
+        the SAME 1.24 V rms metering signal as the 40 kW (2 W part — 0.96 W worst = 48%). */}
     <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={-52} schX={0} schY={-3.4} schSectionName={sec} />
-    <resistor name={`R${id}CT`} resistance="2" footprint="2512" pcbX={34} pcbY={-44} schX={2.6} schY={-3.4} schSectionName={sec} />
+    <resistor name={`R${id}CT`} resistance={ctBurden} footprint="2512" pcbX={34} pcbY={-44} schX={2.6} schY={-3.4} schSectionName={sec} />
     <resistor name={`R${id}CF`} resistance="1k" footprint="0603" pcbX={34} pcbY={-54} schX={4.6} schY={-3.4} schSectionName={sec} />
     <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={34} pcbY={-64} schX={6.6} schY={-4.4} schSectionName={sec} />
     <diode name={`D${id}CP`} footprint="sod323" pcbX={46} pcbY={-44} schX={7.2} schY={-2.6} schSectionName={sec} />
@@ -515,9 +518,13 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
 // (2× ~70 mA on one ULN channel), mirrors in SERIES with the primary's → RELAY_FB reads
 // "both mains open" (same semantics as the KPRE chain). Sharing note: contact-R-matched pairs
 // or 250 A-class contacts — §K; symmetric busbar per layout note P-16.
-export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual = false, sec = "SPMATRIX", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual = false, dualOut = false, sec = "SPMATRIX", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
   const HV = ["KSER", "KPARA", "KPARB", "KOUT"];
   const contacts: Record<string, [string, string]> = { KSER: [bkAn, bkBp], KPARA: [bkAp, bkBp], KPARB: [bkAn, bkBn], KOUT: [bkAp, outp] };
+  // E42: `dualOut` pairs ONLY K_OUT (the one matrix position that carries full output current in
+  // every mode — 167 A at 50 kW = 84% of one 200 A class). KSER (SER-mode ≤100 A) and KPARA/B
+  // (per-bank ≤84 A) stay inside their class single. `dual` (120 kW reference) pairs all four.
+  const paired = dual ? HV : dualOut ? ["KOUT"] : [];
   return (
   <group name="spmatrix" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 22 × 14 (single) / 22 × 22 (dual): relays in a 3-column grid, each with its
@@ -525,9 +532,9 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual =
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
       <chip key={k} name={k} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 2) * 58} pcbY={Math.floor(i / 2) * 42} schX={(i % 3) * 6} schY={-Math.floor(i / 3) * 5} schSectionName={sec} />
     ))}
-    {dual ? HV.map((k, i) => (
+    {paired.map((k, i) => (
       <chip key={`${k}2`} name={`${k}2`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 2) * 58} pcbY={138 + Math.floor(i / 2) * 42} schX={(i % 3) * 6} schY={-10 - Math.floor(i / 3) * 5} schSectionName={sec} />
-    )) : null}
+    ))}
     {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
       <resistor key={`r${k}`} name={`RKPU${k}`} resistance="10k" footprint="0603" pcbX={(i % 2) * 58 + 26} pcbY={Math.floor(i / 2) * 42 + 20} schX={(i % 3) * 6 + 2.6} schY={-Math.floor(i / 3) * 5 + 1.6} schSectionName={sec} />
     ))}
@@ -540,11 +547,13 @@ export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual =
       <trace key={`pu${k}`} from={`.RKPU${k} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />,
       <trace key={`pu2${k}`} from={`.RKPU${k} > .pin2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />,
     ])}
-    {/* mirror chain: single → M2 to FB; dual → M2 into the pair relay's mirror, then FB */}
+    {/* mirror chain: single → M2 to FB; paired → M2 into the pair relay's mirror, then FB —
+        ONE readback line proves BOTH relays released (series mirror = welded-contact detect
+        covers the pair; E30 logic unchanged in firmware) */}
     {["KPREA", "KPREB"].map(k => (
       <trace key={`m2${k}`} from={`.${k} > .M2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />
     ))}
-    {HV.map(k => dual ? [
+    {HV.map(k => paired.includes(k) ? [
       <trace key={`m2${k}`} from={`.${k} > .M2`} to={`.${k}2 > .M1`} />,
       <trace key={`m3${k}`} from={`.${k}2 > .M2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />,
       <trace key={`c12${k}`} from={`.${k}2 > .C1`} to="net.V24" schDisplayLabel="V24" />,
@@ -662,15 +671,17 @@ export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = 
 );
 
 // ---------- line/lane CT sensor (E18) — v3/CB-15: burden + return biased to AVMID, dual clamps
-export const CtSensor = ({ id, out, sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const CtSensor = ({ id, out, burden = "27", sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`cts${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB: the CT body is 25 mm across, so the burden and clamps sit to its RIGHT, not on top
         of it. Envelope 57 × 25, one measurement row per phase. */}
     <chip layer={lay} name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     {/* 27 Ω (R3, landed by audit 2026-09-08): 1:2500 → 0.59 V/55 A rms; the OC observability
         limit 150 A pk reads 1.62 V above AVMID = 3.27 V, inside the 3.3 V rail. The previous
-        33 Ω put 150 A pk at 3.63 V — the top of the protection range clipped at the ADC. */}
-    <resistor layer={lay} name={`R${id}B`} resistance="27" footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
+        33 Ω put 150 A pk at 3.63 V — the top of the protection range clipped at the ADC.
+        E42: `burden` re-scales per variant — the SAME 1.62 V-above-AVMID rail budget at the
+        variant's own observability point (50 kW: 187 A pk on 21.5 Ω = 3.26 V). */}
+    <resistor layer={lay} name={`R${id}B`} resistance={burden} footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
     <diode layer={lay} name={`D${id}P`} footprint="sod323" pcbX={24} pcbY={9} schX={6.6} schY={1.2} schSectionName={sec} />
