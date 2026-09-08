@@ -55,6 +55,19 @@ const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
     new RegExp(`^C${n}CF$`), new RegExp(`^D${n}C[PN]$`)]]);
 
 const PAGES = {
+  // Control card (E35): one page, the 8 card sections as blocks.
+  card: [
+    ["CONTROL", [
+      ["MCU", [/^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/]],
+      ["SWD-BOOT", [/^(JSWDCARD|RCARDBOOT|CCARDRST)$/]],
+      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD)$/]],
+      ["FLT-GROUND", [/^(RFLTC|CFLTC|RAGTC)$/]],
+      ["BUCK-3V3", [/^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD)$/]],
+      ["ANALOG-MID", [/^(RAV[HLIF]|CAV[MFO]|UAVB)$/]],
+      ["ROLE", [/^RROLE[01]$/]],
+      ["CARD-IF", [/^JCARD$/]],
+    ], ["MCU", "SWD-BOOT", "SAFETY", "FLT-GROUND", "BUCK-3V3", "ANALOG-MID", "ROLE", "CARD-IF"]],
+  ],
   acdc: [
     ["INPUT-EMI", [
       ["AC-ENTRY", [/^JACL\d$/, /^JPE$/, /^F[123]$/]],
@@ -145,8 +158,10 @@ const WIRE_NETS = [/^PH[ABC]0$/, /^G_/, /^KS_/, /^GH_/, /^GL_/, /^KH_/, /^KL_/, 
 const RAILS = ["V3P3", "V15", "V24", "DGND", "AGND", "PE", "DCP", "DCN", "MID", "AVMID", "BKAP", "BKAN", "BKBP", "BKBN", "OUTP", "OUTN", "CGND", "B5OUT"];
 
 const f2 = (x) => JSON.stringify(x);
-for (const side of ["acdc", "dcdc"]) {
-  const j = JSON.parse(readFileSync(join(ROOT, "dist", "boards", SKU, side, "circuit.json"), "utf8"));
+for (const side of (SKU === "control-card" ? ["card"] : ["acdc", "dcdc"])) {
+  const j = JSON.parse(readFileSync(SKU === "control-card"
+    ? join(ROOT, "dist", "boards", "control-card", "circuit.json")
+    : join(ROOT, "dist", "boards", SKU, side, "circuit.json"), "utf8"));
   const comps = j.filter(e => e.type === "source_component");
   const ports = j.filter(e => e.type === "source_port");
   const nets = new Map(j.filter(e => e.type === "source_net").map(n => [n.source_net_id, n.name]));

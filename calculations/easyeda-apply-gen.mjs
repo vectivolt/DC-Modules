@@ -32,6 +32,7 @@ const PAGE_UUIDS = SKU === "30kw"
 
 // Human-facing page titles: SKU, which board of the pair, position in the set, function.
 const PAGE_TITLES = {
+  "card-CONTROL": "Control Card 1of1 CONTROL",
   "acdc-INPUT-EMI": "30kW ACDC 1of6 INPUT-EMI",
   "acdc-VIENNA-PFC": "30kW ACDC 2of6 VIENNA-PFC",
   "acdc-DC-LINK": "30kW ACDC 3of6 DC-LINK",
@@ -212,7 +213,7 @@ function transform(c, page, all, warn) {
 // fully-correct page (dcdc-LLC-TANKS: 3 calls, one complete block each, 0 wrong nets).
 // Mixing or splitting blocks across calls is what corrupts net-port placement, and a
 // block split across calls also draws two boxes for one section.
-for (const f of readdirSync(srcDir).filter((f) => /^(acdc|dcdc)-.*\.json$/.test(f))) {
+for (const f of readdirSync(srcDir).filter((f) => /^(acdc|dcdc|card)-.*\.json$/.test(f))) {
   const key = f.replace(/\.json$/, "");
   if (!PAGE_UUIDS[key]) continue;
   const p = JSON.parse(readFileSync(join(srcDir, f), "utf8"));

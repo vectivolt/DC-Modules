@@ -7,7 +7,7 @@ Sheet 1 1
 Title "DC-Modules 30 kW — DC-DC board (3-phase LLC)"
 Date "2026-09-06"
 Rev "D.3"
-Comp "DC-Modules 30 kW - board DC-DC (upper), sheet 2 of 2"
+Comp "DC-Modules 30 kW - board DC-DC (upper), sheet 2 of 3"
 Comment1 "Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
 Comment2 "Content: 1x Vienna PFC cell + 1x 3-ph LLC cell"
 Comment3 "22 functional sections - 282 components - cross-section links are global net labels; wires are pin stubs only"
@@ -24,7 +24,7 @@ Wire Notes Line
 Text Notes 18860 22810 0    79   ~ 16
 SHEET INDEX
 Text Notes 18860 23070 0    60   ~ 0
-30 kW DC-DC (upper) - 2 of 2
+30 kW DC-DC (upper) - 2 of 3
 Text Notes 18850 23500 0    60   ~ 0
 OUTPUT-SENSING   -   6 sections
 Text Notes 18850 23800 0    60   ~ 0

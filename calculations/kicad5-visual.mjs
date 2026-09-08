@@ -59,7 +59,7 @@ for (const blk of readFileSync(join(SCH, libFile), "utf8").split(/^DEF /m).slice
 }
 
 let pages = 0, problems = [], nLab = 0, nSym = 0, nPin = 0;
-for (const f of [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`]) {
+for (const f of (SKU === "control-card" ? ["control-card-card.sch"] : [`${SKU}-acdc.sch`, `${SKU}-dcdc.sch`])) {
   const lines = readFileSync(join(SCH, f), "utf8").split("\n");
   const labels = [], syms = [], texts = [];
   const pinText = [];

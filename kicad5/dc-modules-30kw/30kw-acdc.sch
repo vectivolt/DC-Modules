@@ -7,7 +7,7 @@ Sheet 1 1
 Title "DC-Modules 30 kW — AC-DC board (Vienna PFC)"
 Date "2026-09-06"
 Rev "D.3"
-Comp "DC-Modules 30 kW - board AC-DC (lower), sheet 1 of 2"
+Comp "DC-Modules 30 kW - board AC-DC (lower), sheet 1 of 3"
 Comment1 "Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
 Comment2 "Content: 1x Vienna PFC cell + 1x 3-ph LLC cell"
 Comment3 "27 functional sections - 271 components - cross-section links are global net labels; wires are pin stubs only"
@@ -24,7 +24,7 @@ Wire Notes Line
 Text Notes 37160 9160 0    79   ~ 16
 SHEET INDEX
 Text Notes 37160 9420 0    60   ~ 0
-30 kW AC-DC (lower) - 1 of 2
+30 kW AC-DC (lower) - 1 of 3
 Text Notes 37150 9850 0    60   ~ 0
 AC-SENSING   -   9 sections
 Text Notes 37150 10150 0    60   ~ 0

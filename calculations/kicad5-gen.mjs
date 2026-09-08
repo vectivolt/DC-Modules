@@ -387,17 +387,18 @@ function shapeOf(c) {
 const files = [];
 let totalComps = 0, totalLabels = 0;
 
-const BOARDS = { acdc: [], dcdc: [] };
+const BOARDS = SKU === "control-card" ? { card: [] } : { acdc: [], dcdc: [] };
 for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
   const pg = JSON.parse(readFileSync(join(SRC, file), "utf8"));
-  const side = pg.page.startsWith("acdc") ? "acdc" : "dcdc";
+  const side = pg.page.startsWith("acdc") ? "acdc" : pg.page.startsWith("card") ? "card" : "dcdc";
   BOARDS[side].push(pg);
 }
 const KW = SKU.replace("kw", "").toUpperCase();
-const CELLS = { "30kw": "1x", "60kw": "2x", "120kw": "4x" }[SKU] ?? "?";
+const CELLS = { "30kw": "1x", "60kw": "2x", "120kw": "4x", "control-card": "1x" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,
+  card: `Control Card - GD32G553VET6, one card for both converter roles (E35)`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {
   const page = { page: `${SKU}-${side}`, title: SIDE_TITLE[side],
@@ -405,7 +406,7 @@ for (const [side, pgs] of Object.entries(BOARDS)) {
     nc: Object.assign({}, ...pgs.map((p) => p.nc)) };
   // every functional page contributes its blocks, prefixed so the section reads "PAGE / BLOCK"
   const blocks = pgs.flatMap((p) => p.block_order.map((b, i) => ({
-    title: `${p.page.replace(/^(acdc|dcdc)-/, "")} / ${b}`, comps: p.chunks[i] })));
+    title: `${p.page.replace(/^(acdc|dcdc|card)-/, "")} / ${b}`, comps: p.chunks[i] })));
 
 // HAND-PLACED SECTIONS: built, measured, and REJECTED on 2026-09-06. Recorded because the result
 // was not what I expected and the reason generalises.
@@ -1035,7 +1036,12 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // for a heading plus two text rows and returns null below ~4200 -- so 663 of 693 candidates
       // "fitted" and the sheet still lost both panels. Match the consumer, not the shortlist.
       .some((v) => v.x1 - v.x0 > 5200 && v.y1 - v.y0 > 4200 && v.y1 > (H + MARGIN + 800) * 0.4);
-    const usable = aspect >= 1.15 && aspect <= 1.95 && spreadOver <= 0 && voidFrac <= 0.09 && notesFits;
+    // Card: one small single-instance sheet — its index/legend go into a compact footer above the
+    // title block (drawn later), so no void must be reserved for panels and the packer is free to
+    // pick the genuinely best aspect/void candidate (NC=5: aspect 1.31, void 5.8%).
+    const usable = aspect >= 1.15 && aspect <= 1.95 && spreadOver <= 0 && voidFrac <= 0.09
+      && (notesFits || SKU === "control-card");
+    if (process.env.CARD_DIAG) console.error(`      cand NC=${NC} aspect=${aspect.toFixed(2)} void=${(voidFrac*100).toFixed(1)}% spreadOver=${spreadOver} notes=${notesFits}`);
     // soft score is always computed: when no candidate clears every gate we still want the best
     // layout by the same objective, not whatever happens to be closest to a target aspect.
     // On the bigger sheets no configuration satisfies aspect AND grouping AND void at once, so the
@@ -1060,7 +1066,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   let pick = null, fallback = null;
   for (const order of orderings) {
     for (const mul of [1.0, 1.3, 1.6, 2.0, 2.5, 3.0, 4.0]) {
-      const famCap = capFor(mul);
+      // Family-spread gating exists for the REPLICATED power cells (21 identical legs must not
+      // scatter). The card has no replication — every part is single-instance and the section
+      // frames ARE the grouping — so the same-prefix "family" metric (all C*, all R*) is
+      // meaningless there and only forces the packer into fallback. Exempt it.
+      const famCap = capFor(SKU === "control-card" ? 1e9 : mul);
       for (let NC = minNC; NC <= minNC + 32; NC++) {   // swept to +64: saturates at +32, no candidate improves
         const r = runPack(NC, famCap, order);
         if (r.score < Infinity && (!pick || r.score < pick.score)) pick = r;
@@ -1081,7 +1091,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   const sheetW = snap(MARGIN + NC * COLW - SECGAP + MARGIN);
   const sheetH = snap(Math.max(...blocks.map((b) => b.Y + b.h)) + MARGIN + 800);
 
-  const key = `${SKU}/${page.page.includes("acdc") ? "acdc" : "dcdc"}`;   // page.page is e.g. "30kw-acdc"
+  const key = SKU === "control-card" ? "control-card" : `${SKU}/${page.page.includes("acdc") ? "acdc" : "dcdc"}`;   // page.page is e.g. "30kw-acdc"
   const ident = SHEET_IDENT[key] ?? { sku: `${KW} kW`, board: "?", sheet: "? of 2", cells: "?" };
 
   let body = "", nLabels = 0, nNC = 0;
@@ -1187,6 +1197,13 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       return (right.length ? right : cands).sort((a, b) =>
         (2 * b.x1 / sheetW + b.y1 / sheetH) - (2 * a.x1 / sheetW + a.y1 / sheetH))[0];
     };
+    if (SKU === "control-card") {
+      // Compact card footer: the per-sheet labelling requirement, satisfied without void-hunting.
+      body += `Text Notes ${MARGIN + 100} ${sheetH - 700} 0    60   ~ 12\n`
+        + `${ident.sku} ${ident.board} - ${ident.sheet}   ·   rev ${REV}   ·   ${blocks.length} sections   ·   ${page.total} components\n`;
+      body += `Text Notes ${MARGIN + 100} ${sheetH - 400} 0    50   ~ 0\n`
+        + `NET NAMING: U<ref>_<PIN> = node at that IC pin   ·   R<stem>_M = series-pair midpoint   ·   R<stem>_<nm> = tap between R<stem>n/m   ·   all others are explicit design nets\n`;
+    } else {
     const v1 = pickVoid(used);
     const p1 = drawPanel(v1, "SHEET INDEX",
       `${ident.sku} ${ident.board} - ${ident.sheet}`, famRows,
@@ -1209,6 +1226,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
           "all others are explicit design nets",
         ], "", fixed);
       if (!legend(below, { x0: p1.x0, x1: p1.x1 })) legend(pickVoid(used));
+    }
     }
   }
 

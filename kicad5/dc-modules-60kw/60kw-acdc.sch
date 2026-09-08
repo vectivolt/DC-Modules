@@ -7,7 +7,7 @@ Sheet 1 1
 Title "DC-Modules 60 kW — AC-DC board (Vienna PFC, 2x cells)"
 Date "2026-09-06"
 Rev "D.3"
-Comp "DC-Modules 60 kW - board AC-DC (lower), sheet 1 of 2"
+Comp "DC-Modules 60 kW - board AC-DC (lower), sheet 1 of 3"
 Comment1 "Module 60 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
 Comment2 "Content: 2x Vienna PFC cells + 2x 3-ph LLC cells"
 Comment3 "32 functional sections - 370 components - cross-section links are global net labels; wires are pin stubs only"
@@ -24,7 +24,7 @@ Wire Notes Line
 Text Notes 560 21610 0    79   ~ 16
 SHEET INDEX
 Text Notes 560 21870 0    60   ~ 0
-60 kW AC-DC (lower) - 1 of 2
+60 kW AC-DC (lower) - 1 of 3
 Text Notes 550 22300 0    60   ~ 0
 AC-SENSING   -   10 sections
 Text Notes 550 22600 0    60   ~ 0

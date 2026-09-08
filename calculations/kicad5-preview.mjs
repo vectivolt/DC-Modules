@@ -66,7 +66,7 @@ const largestVoid = (rects, W, H) => {
 const stats = [];
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-for (const file of readdirSync(SCH).filter((f) => /^\d.*-(acdc|dcdc)\.sch$/.test(f)).sort()) {
+for (const file of readdirSync(SCH).filter((f) => f !== `dc-modules-${SKU}.sch` && /-(acdc|dcdc|card)\.sch$/.test(f)).sort()) {
   const lines = readFileSync(join(SCH, file), "utf8").split("\n");
   const [W, H] = lines.find((l) => l.startsWith("$Descr")).split(/\s+/).slice(2).map(Number);
   const title = (lines.find((l) => l.startsWith("Title ")) ?? "").slice(6).replace(/"/g, "");
@@ -146,11 +146,13 @@ let bad = 0;
 for (const r of stats) {
   const fails = [];
   if (r.aspect < 1.1 || r.aspect > 2.2) fails.push(`aspect ${r.aspect.toFixed(2)} outside 1.10-2.20`);
+  // (card exemption mirrors kicad5-gen: no replicated families on a single-instance board)
+  const isCard = r.name.includes("control-card");
   if (r.fill < 40) fails.push(`frame fill ${r.fill.toFixed(0)}% below 40%`);
   if (r.overlaps) fails.push(`${r.overlaps} frame overlaps`);
   if (r.vd > 9) fails.push(`largest empty rectangle ${r.vd.toFixed(0)}% of sheet, above 9%`);
   // relative, not absolute: a 12-frame family legitimately spans more columns on a bigger sheet
-  if (r.spreadPct > 45) fails.push(`family spread ${r.spread} mil = ${r.spreadPct.toFixed(0)}% of sheet width, above 45%`);
+  if (!isCard && r.spreadPct > 45) fails.push(`family spread ${r.spread} mil = ${r.spreadPct.toFixed(0)}% of sheet width, above 45%`);
   if (fails.length) { bad++; console.log(`FAIL ${r.name}: ${fails.join("; ")}`); }
 }
 console.log(bad ? `\n${bad} sheet(s) fail the layout gate` : `\nlayout gate: all sheets pass (aspect, fill, no frame overlap, families grouped)`);
