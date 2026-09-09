@@ -192,12 +192,17 @@ const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
 {
   const VBO = 1 * (1 + 4.8e6 / 15e3);                       // NCP1252 BO: 321 V (RBR 2×2.4M / 15k)
   ck("R6", "aux brown-out threshold as drawn", Math.abs(VBO - 321) < 2, `1 V × (1+4.8M/15k) = ${f(VBO, 0)} V — the active-discharge floor`);
-  for (const [sku, nHalf] of [["30kw", 5], ["40kw", 6], ["50kw", 8], ["50kwa", 8]]) {
+  // R8 correction (external review retrace): the 40/50 kW links carry TWO SplitDcLink banks,
+  // each with its own 2×47k pair per half → the pairs PARALLEL (47k/half, 94k full-link);
+  // only the single-bank 30 kW is 188k. The R7 report dismissed the reviewer's 222 s as an
+  // arithmetic slip — the slip was OURS, and this model now counts the drawn strings per SKU
+  // (verify-independent proves the counts against the netlists).
+  for (const [sku, nHalf, nSets] of [["30kw", 5, 1], ["40kw", 6, 2], ["50kw", 8, 2], ["50kwa", 8, 2]]) {
     const Clink = nHalf * 470e-6 / 2;                        // series halves
     const tAct = 640 * Clink * Math.log(830 / VBO);          // QDISF powered phase
-    const tPas = 94e3 * (nHalf * 470e-6) * Math.log(VBO / 60); // per-half 2×47k pair, half-C
+    const tPas = (94e3 / nSets) * (nHalf * 470e-6) * Math.log(VBO / 60); // per-half pairs in parallel
     ck("R6", `${sku} discharge timeline (AC removed)`, tAct < 1.5 && tAct + tPas < 660,
-      `active 830→${f(VBO, 0)} V in ${f(tAct, 2)} s, then PASSIVE 2×47k: +${f(tPas, 0)} s → total ${f((tAct + tPas) / 60, 1)} min ≤ 11 min label ceiling`);
+      `active 830→${f(VBO, 0)} V in ${f(tAct, 2)} s, then PASSIVE ${nSets}×(2×47k)/half: +${f(tPas, 0)} s → total ${f((tAct + tPas) / 60, 1)} min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)`);
   }
   ck("R6", "discharge honesty lives in the docs", /R6 discharge-timeline honesty/.test(protDoc) && /wait 10 min/.test(protDoc) && /F\.21 semantics \(R6\)/.test(fwDoc),
     "protection-thresholds two-phase note + 62477-1 label text + firmware-guide F.21 real-coverage note");
@@ -219,10 +224,13 @@ const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
   // 1.2 k LED feed (11 mA) behind QPVD instead of the old 5 mA GPIO drive. Worst-case
   // load line = the (Isc,Voc) chord (the real PV curve is convex-above it).
   const Voc = 7.8, Isc = 6.0e-6, R = 6.8e6, Igss = 100e-9, VthMax = 3.5;
-  const ifLed = (15 - 1.4 - 0.2) / 1200;
+  // R8: LED current must hold ≥10 mA at the DECLARED rail floor (13.5 V, the QA01C input
+  // minimum) with VF(max) 1.6 V, Vce 0.2 V and +1% resistance — hence 1 k/2010, not 1.2 k.
+  const ifFloor = (13.5 - 1.6 - 0.2) / (1000 * 1.01);
+  const pLedMax = ((16.5 - 1.2 - 0.2) / 990) ** 2 * 1000;
   const vChord = Isc * R * Voc / (Voc + Isc * R) - Igss * R;
-  ck("R7", "bank-bleeder PV gate drive (guaranteed)", ifLed >= 10e-3 && vChord >= VthMax + 2 && /resistance="6.8M"/.test(cellsSrc) && /QPVD/.test(cellsSrc + readFileSync(join(ROOT, "packages/common-components/boards.tsx"), "utf8")),
-    `IF ${f(ifLed * 1e3, 1)} mA ≥ the 10 mA spec point; chord ${f(Isc * R * Voc / (Voc + Isc * R), 2)} V − ${f(Igss * R, 2)} V Igss = ${f(vChord, 2)} V ≥ Vth(max) 3.5 + 2 (QDIS gate spec on the BOM line); old 1 M/GPIO chord was 3.4 V — below threshold`);
+  ck("R7", "bank-bleeder PV gate drive (25 °C-endpoint model)", ifFloor >= 10e-3 && pLedMax <= 0.5 * 0.75 && vChord >= VthMax + 2 && /resistance="6.8M"/.test(cellsSrc) && /resistance="1k" footprint="2010"/.test(cellsSrc) && /QPVD/.test(cellsSrc + readFileSync(join(ROOT, "packages/common-components/boards.tsx"), "utf8")),
+    `IF ${f(ifFloor * 1e3, 2)} mA ≥ 10 mA at the 13.5 V rail floor (R8: 1 k/2010, ${f(pLedMax, 2)} W worst ≤ 50% of 0.75 W); chord ${f(vChord, 2)} V ≥ Vth(max)+2 — a 25 °C-ENDPOINT MODEL (Voc typ ~5.4 V at 100 °C): bleed-interval ambient declared ≤70 °C, EVT loaded-Vgs gates the BOM freeze`);
 }
 
 console.log(fails ? `\n${fails} STRESS FAILURE(S)` : "\nSTRESS AUDIT CLEAN — every device inside its own acceptance line, all three variants");

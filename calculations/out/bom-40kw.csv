@@ -23,7 +23,7 @@ HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readbac
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KPARB
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KOUT
 AMC1350QDWVRQ1,C5214206,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)","NSI1300 class",acdc,3,182.3,135,118.8,108,405,324,UIVV1 UIVV2 UIVV3
-IMW120R350M1H,C536285,ORDERABLE,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15; R7-B gate spec for the PV-driven bleeders: Vth(max) ≤ 3.5 V, Igss ≤ 100 nA — the VOM1271 guaranteed chord delivers ≥5.8 V at 6.8 MΩ)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
+IMW120R350M1H,C536285,ORDERABLE,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15; R7-B/R8 gate spec for the PV-driven bleeders: Vth(max) ≤ 3.5 V, Igss ≤ 100 nA. The 6.8 MΩ load-line figure (≈5.8 V after leakage) is a 25 °C-ENDPOINT MODEL, not an all-temperature guarantee — VOM1271 Voc(typ) falls to ~5.4 V at 100 °C; declared bleed-interval local ambient ≤ 70 °C, and EVT loaded-Vgs/discharge measurement with the exact orderable FET gates the BOM freeze)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
 PP-1u-1100,,CLASS,Faratronic,"1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)","Songtian",dcdc,5,91.8,68,59.8,54.4,340,272,CF0 CF1 CF2 CBAF CBBF
 STUD-M8,,CLASS,local,"M8 stud terminal","M6 for signal PE",acdc+dcdc,12,37.8,28,24.6,22.4,336,269,JACL1 JACL2 JACL3 JPE JDCP JDCN JPEB JDCP JDCN JPEB JOUTP JOUTN
 X1-4u7-530,,UNMAPPED,Faratronic/Songtian,"X1 4.7 µF 530 VAC (E43: 3rd-DM-stage cap upsized 2.2→4.7 µF — attenuation is L·C and the cap is the cheap half; X-bleed τ 0.66 s ≤ 1 s through the RNS star)","Vishay 3386 X1 4.7µ",acdc,3,148.5,110,96.8,88,330,264,CX21 CX22 CX23
@@ -130,10 +130,11 @@ PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,
 74HC595,C19192516,ORDERABLE,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
 CC0603JRNPO9BN101,C14665,ORDERABLE,any,"100 pF 0603 (DESAT blank) 100pF","any",acdc+dcdc,9,0.5,0.4,0.4,0.3,4,3,CA0GBL CB0GBL CC0GBL C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
 RC0805FR-071KL,C95781,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1k","any",acdc+dcdc,8,0.5,0.4,0.4,0.3,3,2,RA0F RB0F RC0F RCSF RROLEB R1CF R2CF R3CF
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc+card,8,0.5,0.4,0.4,0.3,3,2,RAUXRT REN2A RM24A RPVLA RPVBA RPVLB RPVBB REN2CARD
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
 PT1206FR-7W0R31L,C6148847,ORDERABLE,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
+R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc+card,6,0.5,0.4,0.4,0.3,2,2,RAUXRT REN2A RM24A RPVBA RPVBB REN2CARD
+R2010-1k-0.75W-1%,,UNMAPPED,any thick-film,"1 kΩ 0.75 W 2010, PV-driver LED feed (R8: ≥10 mA guaranteed-point drive held to the 13.5 V rail floor; 0.24 W worst = 31%)","2× 510R 1206 series",dcdc,2,1.6,1.2,1.1,1,2,2,RPVLA RPVLB
 RC0603FR-07220RL,C107696,ORDERABLE,any,"220 Ω segment 220","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 RC0805FR-07100KL,C96346,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100k","any",acdc+card,5,0.5,0.4,0.4,0.3,2,2,RAUXG REN1A RENRCARD RENLCARD REN1CARD
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (QAUXFB: R4-3 opto-emulating FB pull-down · QPVD: R7-B low-side switch for the PV-driver LEDs at the guaranteed 10 mA point)","MMBT2222",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,QAUXFB QPVD QDIG1 QDIG2
@@ -167,5 +168,5 @@ MECH,,MECH,—,"Busbars/interconnect studs + harness (busbar-calc)","—",module
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,437,380,353,331,380,331,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,2243,1950,1814,1697,1950,1697,
-TOTAL_ELECTRONIC,,,,,,,,,,,,34129,27027,
-TOTAL_MODULE,,,,,,,,,,,,43631,35294,
+TOTAL_ELECTRONIC,,,,,,,,,,,,34131,27029,
+TOTAL_MODULE,,,,,,,,,,,,43633,35295,

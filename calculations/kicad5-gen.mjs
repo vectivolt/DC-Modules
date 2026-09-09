@@ -1347,11 +1347,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
                  "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH)"],
         },
         dcdc: {
-          "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 9:9:9, litz 1350/660x0.1 TIW, Lm 63uH +/-7% gap-ground",
+          "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 7:7:7 (E8), litz 1350/660x0.1 TIW, Lm 63uH +/-7% gap-ground",
                  "D2 L1T-L3T: gapped 2x PQ50/50, N=4, bins ~4.0uH, gap ground per bin"],
-          "40": ["D3 T1-T3: 2x E70/33/32 per section, 9:9:9 (window-fill basis, D3-40)",
+          "40": ["D3 T1-T3: 2x E70/33/32 per section, 9:9:9 (D3-40, window-fill basis), Lm 63uH +/-7% gap-ground",
                  "D2 L1T-L3T: N=5, bins 3.2/3.5/3.8uH, litz 2000x0.1 (15.7mm2)"],
-          "50": ["D3 T1-T3: 3x E70/33/32 per section, 9:9:9 (D3-50)",
+          "50": ["D3 T1-T3: 3x E70/33/32 per section, 6:6:6 (D3-50: Ae x1.5 -> N x2/3, 108mT unchanged), Lm 63uH +/-7%",
                  "D2 L1T-L3T: N=6, bins 2.8/3.0/3.2uH, litz 3000x0.1 (23.6mm2)"],
         },
       };

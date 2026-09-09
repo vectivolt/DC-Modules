@@ -1005,9 +1005,9 @@
    },
    {
     "designator": "RPVLA",
-    "value": "1.2k",
+    "value": "1k",
     "block_name": "BLEEDERS",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "search_query": "R2010-1k-0.75W-1% 1 kΩ 0.75 W 2010, PV-driver LED feed",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {
@@ -1072,9 +1072,9 @@
    },
    {
     "designator": "RPVLB",
-    "value": "1.2k",
+    "value": "1k",
     "block_name": "BLEEDERS",
-    "search_query": "R-small small-signal resistor 0402–0805",
+    "search_query": "R2010-1k-0.75W-1% 1 kΩ 0.75 W 2010, PV-driver LED feed",
     "part_uuid": "b0602c6e20fc41faa226d9f001a9bead",
     "pins": [
      {

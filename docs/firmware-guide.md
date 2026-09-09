@@ -143,8 +143,8 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
 - **F.21 semantics (R6):** the discharge timeout's real coverage is the AC-PRESENT case
   (bus held up by the permanent RPRE rectifier path → timer expires → FC_DISCH = "isolate
   upstream"). In the AC-removed case the aux browns out at ~321 V bus mid-discharge, the MCU
-  dies un-faulted, and the passive balance path + enclosure label finish the job (~4–10 min
-  to <60 V, per protection-thresholds). Do not chase a latched F.21 after AC removal.
+  dies un-faulted, and the passive balance path + enclosure label finish the job (3.7–6.2 min
+  to <60 V per SKU — R8-corrected balance-string model, per protection-thresholds). Do not chase a latched F.21 after AC removal.
 - **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
   the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
 - **Relay feedback:** `relay_fb[]` now reads real pins — MCU-LLC 2–7 = KSER, KPARA, KPARB, KOUT,

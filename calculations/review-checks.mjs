@@ -518,5 +518,20 @@ ck("R7-D", /BIASED value governs/.test(readFileSync(join(ROOT, "calculations/kic
 ck("R7-E", /DESIGN TARGET until measured/.test(readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8")) && /AND\nverify <60 V at the link/.test(readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8")),
   "honesty language: the 2-3 us trip is a target until EVT measures it (ACX HF response unspecified), and the service label reads wait AND verify — never wait OR verify");
 
+// ===== R8 (2026-09-09): sixth external-review round — reviewer closes the comparator swap, the
+// PV rework and the CAN order code, and lands a correction ON US: the 40/50 kW links carry TWO
+// parallel balance strings per half (94k full-link), so the R7 report's dismissal of their 222 s
+// figure was OUR arithmetic error. Model, docs and register corrected; panels gain the missing
+// Lm lines and the RIGHT turns (30 kW is 7:7:7 per E8, 50 kW is 6:6:6 per D3-50 — both had been
+// transcribed 9:9:9 when the panel was introduced at R6-H).
+const k5genR8 = readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8");
+const protR8 = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
+ck("R8-A", /nSets/.test(readFileSync(join(ROOT, "calculations/stress-audit.mjs"), "utf8")) && /370 \/ 222 \/ 296/.test(protR8) && /retracted at E49/.test(protR8),
+  "discharge model counts the DRAWN balance strings per SKU (30=188k, 40/50=94k full-link); the wrong dismissal is retracted in the register, and verify-independent proves the counts from the netlists");
+ck("R8-B", /7:7:7 \(E8\)/.test(k5genR8) && /6:6:6 \(D3-50/.test(k5genR8) && k5genR8.split("Lm 63uH").length === 4,
+  "MAG panels: correct turns per SKU (7:7:7 / 9:9:9 / 6:6:6) and the Lm 63uH ±7% line on ALL THREE dcdc rows — the R6-H panel had transcribed two SKUs' turns wrong and printed Lm only at 30 kW");
+ck("R8-C", /resistance="1k" footprint="2010"/.test(cells) && /R2010-1k-0.75W/.test(db) && /25 °C-ENDPOINT MODEL/.test(db),
+  "PV LED feed 1.2k→1k/2010 (≥10 mA held to the 13.5 V rail floor, 31% of rating at the 16.5 V corner) and the gate-voltage claim de-escalated from guarantee to 25 °C-endpoint model with declared ambient + EVT gate");
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

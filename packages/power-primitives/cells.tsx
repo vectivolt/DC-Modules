@@ -947,7 +947,7 @@ export const DischargeCtl = ({ id = "", ctl, gateOut, dcn, sec = "DISCH", x = 0,
 // R7-B (external review, datasheet Rev 1.9): the ONLY point with GUARANTEED minimums is
 // IF = 10 mA (Voc ≥ 7.8 V, Isc ≥ 6.0 µA); the old 330 Ω GPIO drive sat at ~5 mA where NO
 // minimum exists, and the 1 MΩ gate load's guaranteed load-line chord computed 3.4 V — below
-// threshold. Rework: LEDs fed from V15 at ~11 mA through 1.2 k (cathodes to the shared
+// threshold. Rework: LEDs fed from V15 through 1 k/2010 (R8: >=10 mA held down to the 13.5 V rail floor with VF(max) 1.6 + Vce 0.2 + 1% R; 15.3 mA / 0.24 W at the 16.5 V corner - 31% of the 0.75 W part) (cathodes to the shared
 // PV_SINK, switched by the board's QPVD low-side NPN — GPIO cannot source 2×10 mA), and the
 // gate bleed raised to 6.8 MΩ: worst-case chord V = Isc·R·Voc/(Voc+Isc·R) = 6.55 V, minus
 // ≤0.7 V of 100 nA-class gate leakage ⇒ ≥5.8 V at the gate vs Vth ≤3.5 V + 2 V margin.
@@ -957,7 +957,7 @@ export const PvGateDrive = ({ id, gateOut, src, sec = "BLEED", x = 0, y = 0, sx 
   <group name={`pvg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 8 × 2.5 */}
     <chip name={`UPV${id}`} footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VN", pin6: "NC3", pin7: "NC4", pin8: "VP" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`RPVL${id}`} resistance="1.2k" footprint="1206" pcbX={-10} pcbY={0} schX={-2.4} schY={0} schSectionName={sec} />
+    <resistor name={`RPVL${id}`} resistance="1k" footprint="2010" pcbX={-10} pcbY={0} schX={-2.4} schY={0} schSectionName={sec} />
     <resistor name={`RPVB${id}`} resistance="6.8M" footprint="0805" pcbX={10} pcbY={0} schX={2.6} schY={0} schSectionName={sec} />
     <trace from={`.RPVL${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.RPVL${id} > .pin2`} to={`.UPV${id} > .ANO`} />

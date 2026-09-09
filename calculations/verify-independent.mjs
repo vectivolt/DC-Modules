@@ -340,9 +340,15 @@ for (const [sku] of Object.entries(SK)) {
   // R6-D/G: the last two bypass gaps + the cold-start reservoir at the pins
   ck("J", `${sku} aux + HMI bypass`, A.netOfPin.get("CVCCB.pin1") === A.netOfPin.get("UAUX.VCC") && A.netOfPin.get("CVCCB.pin2") === A.netOfPin.get("UAUX.GND") && A.netOfPin.get("CVCC.pin1") === A.netOfPin.get("UAUX.VCC") && D.netOfPin.get("CSR1.pin1") === D.netOfPin.get("USR1.VCC") && D.netOfPin.get("CSR1.pin2") === "DGND",
     "NCP1252 VCC: 100 n at the pin + 220 µF cold-start reservoir; 74HC595 decoupled (R6-D/G)");
+  // R8: balance-string count per SKU — the passive-discharge model MUST match the drawn
+  // population (the R7 report modeled one 2×47k pair per half everywhere; the 40/50 links
+  // have TWO bank blocks in parallel — the external reviewer's retrace was right).
+  const nSets = A.byName.has("RBALT1A") ? 2 : 1;
+  ck("J", `${sku} link balance population`, nSets === (sku === "30kw" ? 1 : 2) && A.netOfPin.get("RBALT0A.pin1") === "DCP" && A.netOfPin.get("RBALB0B.pin2") === "DCN",
+    `${nSets}× (2×47k) per half drawn → ${nSets === 1 ? "188k" : "94k"} full-link (R8-corrected discharge model uses the drawn count)`);
   // R7-B: PV bleeder drive at the guaranteed point — V15-fed LEDs behind the shared low-side
-  ck("J", `${sku} PV bleeder drive network`, D.netOfPin.get("RPVLA.pin1") === "V15" && D.netOfPin.get("RPVLB.pin1") === "V15" && D.netOfPin.get("UPVA.CAT") === "PV_SINK" && D.netOfPin.get("UPVB.CAT") === "PV_SINK" && D.netOfPin.get("QPVD.C") === "PV_SINK" && D.netOfPin.get("QPVD.E") === "DGND" && D.netOfPin.get("RPVDP.pin1") === D.netOfPin.get("QPVD.B") && Math.abs(D.val.get("RPVBA") - 6.8e6) < 1e3,
-    "11 mA LED feed (the 10 mA spec point) via QPVD; 6.8 M gate bleed — guaranteed chord ≥5.8 V (R7-B)");
+  ck("J", `${sku} PV bleeder drive network`, D.netOfPin.get("RPVLA.pin1") === "V15" && D.netOfPin.get("RPVLB.pin1") === "V15" && D.netOfPin.get("UPVA.CAT") === "PV_SINK" && D.netOfPin.get("UPVB.CAT") === "PV_SINK" && D.netOfPin.get("QPVD.C") === "PV_SINK" && D.netOfPin.get("QPVD.E") === "DGND" && D.netOfPin.get("RPVDP.pin1") === D.netOfPin.get("QPVD.B") && Math.abs(D.val.get("RPVBA") - 6.8e6) < 1e3 && Math.abs(D.val.get("RPVLA") - 1000) < 1,
+    "1 k/2010 LED feed holds ≥10 mA to the 13.5 V rail floor via QPVD; 6.8 M gate bleed (R7-B/R8 — 25 °C-endpoint model, EVT gates the FET)");
   // R5-E: symmetric parallel gate branches — every paralleled device behind its OWN 2.2 Ω
   const vpar = A.byName.has("QA0A2"), lpar = D.byName.has("Q1H2");
   ck("J", `${sku} symmetric pair gates`,

@@ -53,7 +53,7 @@ const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SM
 
 const uuidOf = (mpn) => {
   if (uuidMap[mpn]) return uuidMap[mpn].part_uuid;
-  if (/^(R-small|R0603|R0805|R1206|R2512|HV73-|CER-|WW-|SQP-)/.test(mpn)) return uuidMap["R-ALL"].part_uuid;
+  if (/^(R-small|R0603|R0805|R1206|R2010|R2512|HV73-|CER-|WW-|SQP-)/.test(mpn)) return uuidMap["R-ALL"].part_uuid;
   if (/^(MLCC|C1812)/.test(mpn)) return uuidMap["MLCC-ALL"].part_uuid;
   if (/^(PP-|FILM-|X1-|Y1-)/.test(mpn)) return uuidMap["FILM-ALL"].part_uuid;
   if (/^(ELH-|EL-)/.test(mpn)) return uuidMap["ELCAP-ALL"].part_uuid;

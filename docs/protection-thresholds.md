@@ -88,8 +88,11 @@ powered by V15, which the bus-fed aux flyback stops producing at the **321 V bro
 (1 V × (1 + 4.8 M/15 k)); V15 then collapses in milliseconds (~0.2 A of bias load on 220 µF)
 and the MCU (V3P3 ← V15 buck) browns out with it. The real AC-removed timeline is therefore
 **two-phase**: active 830→~321 V in ≤1.2 s (τ = 640 Ω · C_link), then PASSIVE through the
-2×47 k balance pairs — 321→60 V ≈ 370/445/593 s at 30/40/50 kW (τ = 94 k × half-link C).
-Worst total ≈ **10 minutes at 50 kW**. Consequences, registered: (1) the enclosure carries the
+balance pairs — **R8 correction (external retrace, confirmed in the netlists):** the 40/50 kW
+links carry TWO bank blocks whose 2×47 k pairs PARALLEL to 47 k per half (94 k full-link);
+only the single-bank 30 kW is 188 k. 321→60 V ≈ **370 / 222 / 296 s** at 30/40/50 kW —
+totals ≈ 6.2 / 3.7 / 5.0 min; **the 30 kW is the slowest**, and the R7 report's dismissal of
+the reviewer's 222 s figure was OUR error, retracted at E49. Consequences, registered: (1) the enclosure carries the
 IEC 62477-1 stored-energy **warning label with the stated discharge time** ("isolate upstream, wait 10 min, AND
 verify <60 V at the link and both banks before access") — tool-access only; the wait alone
 is never the permission, the measurement is; (2) **F.21's real coverage is the AC-PRESENT case**: with
