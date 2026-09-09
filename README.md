@@ -3,13 +3,13 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/design-E1–E47_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
+  <img src="https://img.shields.io/badge/design-E1–E48_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
   <img src="https://img.shields.io/badge/envelope_grid-6048_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
   <img src="https://img.shields.io/badge/fault_scenarios-26%2F26-2ea44f?style=for-the-badge" alt="scenarios"/>
   <img src="https://img.shields.io/badge/firmware_logic-50%2F50_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
 </p>
 <p align="center">
-  <img src="https://img.shields.io/badge/schematics-6_sets_·_7766%2F7766_pins-2ea44f?style=flat-square" alt="pins"/>
+  <img src="https://img.shields.io/badge/schematics-6_sets_·_7794%2F7794_pins-2ea44f?style=flat-square" alt="pins"/>
   <img src="https://img.shields.io/badge/BOM-100%25_matched_·_10k_basis-2ea44f?style=flat-square" alt="bom"/>
   <img src="https://img.shields.io/badge/audits-interconnect_·_polarity_·_symbols-2ea44f?style=flat-square" alt="audits"/>
   <img src="https://img.shields.io/badge/toolchain-TSCircuit_·_ngspice--46_·_C99_·_KiCad--5-5f8fc0?style=flat-square" alt="stack"/>
@@ -239,11 +239,12 @@ This platform was **designed by iteration against its own simulations and audits
 | **E41 stress validation** | the registered D1-40 choke was UNBUILDABLE (optimizer refuses 3-stack on sat/swing) and the 100 A fuse failed the E35 derate rule (72 < 73.3 A) | 5-stack D1-40 + 125 A class; **stress-audit.mjs joins run-all** — 34 device/magnetic acceptance checks across both variants |
 | **E42 liquid closure** | at the revved 50 kW OC points BOTH CT burdens computed past the 3.3 V rail (line 3.67 V, tank 3.55 V — protection observability clipped at the ADC) | burdens re-scaled 27→21.5 Ω / 2.0→1.6 Ω-2 W at the R3-proven rail budget; **stress-audit grows the BRD + grid-shape check families** across all three variants |
 | **R4 external review response** | three independent PDF reviews claimed ~40 reversed diodes, driver isolation faults, a connector mismatch and supply-pin violations | triaged claim-by-claim against netlists + glyph crops + vendor datasheets: the diode claims were ONE sheet-rendering defect (netlists correct all along — now semantically seated + generator-refused + data-locked); the REAL finds — fictional NSI6611/NCP1252 pin maps, floating driver bias COM, wrong-sign aux feedback, TPS54202 EN at 15 V, the AC-DC V3P3 island, V24 monitor clipping — all fixed and gated as **R4-1…R4-8**; hardware S/P exclusion added; full disposition in register **E45** |
+| **R7 external review response** | reviewer closes R6 (and the CAN pin-map hold, with the definitive Rev 1.3 datasheet), then catches that phases B/C sat on OPPOSITE INPUTS of ONE comparator (my "CMP-capable pin" rule was instance-blind) and that the PV-bleeder proof used a TYPICAL current as worst case | **AIN9↔AIN11** swapped in the one generator (A/B/C → CMP7/CMP1/CMP2, all on IP inputs — verified against Fig 2-3); PV LEDs re-fed from V15 at the guaranteed 10 mA point behind QPVD + 6.8 M gate bleed (chord ≥5.8 V); NSI1042-**DSWR** closed; biased-L and Lm 63 µH on the sheet panels; "wait AND verify" label; gates R7-A..E |
 | **R6 external review response** | reviewer confirms the R5 wave, then reads the sheets and the shutdown path deeper: the R5 watchdog merge was INVISIBLE on the drawing (pin-less net-net trace — netlist right, face wrong, the R4-1 class again); the aux controller's A-suffix **could not cold-start** (120 ms mandatory delay vs 1 V hysteresis = 28–60 ms of reservoir); active discharge is powered from the link it discharges (aux dies at 321 V); shunt sign reads negative when delivering | WDO net **renamed** onto NRST_CARD (one label, every pin); **NCP1252A→D** + 220 µF reservoir (3× the 67 µF budget); two-phase discharge timeline computed per-SKU + 62477-1 label + honest F.21 semantics; µs reverse-OC path designated (CMP→HRTIMER FLT, A6 pin constraint); shunt differential flipped (positive = delivering); magnetics construction printed in sheet NOTES; gates R6-A..H |
 | **R5 external review response** | reviewer confirms all R4 majors closed, then finds the watchdog only INHIBITED (a hung MCU re-armed ~ms after WDO release), missing DESAT series Rs and local bypass, exclusion not covering pre-insertion, asymmetric pair gates, and an MCU order code that does not exist (VET6) | **WDO wire-ORed onto NRST** (hung brain restarts with enables low); 100 Ω DESAT R ×9; bypass at every flagged pin; **second 74HC02 stage** (KSER excluded vs KPRE too) + per-tick sim invariant; symmetric 2.2 Ω branches; value-carrying order codes (33R/160R/shunt-per-SKU); **VET7**; gates R5-A..K + verify-independent section J |
 | **E43 full-family verification** | clean-room recompute of every board (118 checks) found the D6 DM choke had NO engine: the inherited "22 µH" cannot exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH LISN floor — at EVERY variant); also 50 kW pulse-resistor energies past the 25 W family point, trim-litz J over-line at 40/50, and the 27 nF caps' Vrms duty unstated | **dm-choke-design.mjs joins the engine set** (per-variant crest-biased floors, CX2 trio → 4.7 µF X1, LISN model rebuilt per-variant: +4.9/+5.7/+5.6 dB); 50 W pulse class at 50 kW; 2000×0.1 trim litz; O-8 Vrms lines on every tank cap; **stress-audit grows D6/CrV/D2c/Epulse/Xbleed families** |
 
-Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E47** in [`docs/assumptions.md`](docs/assumptions.md).
+Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E48** in [`docs/assumptions.md`](docs/assumptions.md).
 
 ---
 

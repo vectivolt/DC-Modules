@@ -26,7 +26,8 @@
   "G_QDISA": "wire",
   "G_QDISB": "wire",
   "UPVA_ANO": "wire",
-  "UPVB_ANO": "wire"
+  "UPVB_ANO": "wire",
+  "QPVD_B": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -1012,7 +1013,7 @@
     {
      "pin_number": 2,
      "name": "CAT",
-     "signal_name": "DGND"
+     "signal_name": "PV_SINK"
     },
     {
      "pin_number": 5,
@@ -1042,7 +1043,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "CTL_QDISBK"
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
@@ -1051,7 +1052,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "330",
+   "value": "1.2k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },
@@ -1071,7 +1072,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "1M",
+   "value": "6.8M",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },
@@ -1087,7 +1088,7 @@
     {
      "pin_number": 2,
      "name": "CAT",
-     "signal_name": "DGND"
+     "signal_name": "PV_SINK"
     },
     {
      "pin_number": 5,
@@ -1117,7 +1118,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "CTL_QDISBK"
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
@@ -1126,7 +1127,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "330",
+   "value": "1.2k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },
@@ -1146,7 +1147,72 @@
     }
    ],
    "nc_pins": [],
-   "value": "1M",
+   "value": "6.8M",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "QPVD",
+   "block_name": "BLEEDERS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "B",
+     "signal_name": "QPVD_B"
+    },
+    {
+     "pin_number": 2,
+     "name": "E",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "C",
+     "signal_name": "PV_SINK"
+    }
+   ],
+   "nc_pins": [],
+   "value": "S8050",
+   "query": "S8050 NPN SOT-23 ",
+   "mpn": "S8050"
+  },
+  {
+   "designator": "RPVDB",
+   "block_name": "BLEEDERS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CTL_QDISBK"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QPVD_B"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RPVDP",
+   "block_name": "BLEEDERS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "QPVD_B"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   }

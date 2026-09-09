@@ -76,7 +76,7 @@ D1 LA0-LC0: 5x 0077908A7 KoolMu, N=23 -> L0 113uH, >=64uH @104A pk
 Text Notes 39450 17450 0    60   ~ 0
 D6 LDM1-3: 2x T57 60u, N=8, 26.4mm2 -> 10.5uH @109A pk (floor 9.2uH)
 Text Notes 39450 17750 0    60   ~ 0
-tank Cr/trim-bin values printed at the TANK sections
+total Lr = trim + measured xfmr leakage (bins COMPENSATE leakage spread); Cr at TANK sections
 Wire Notes Line
 	18000 8750 21100 8750
 Wire Notes Line

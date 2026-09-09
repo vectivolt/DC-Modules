@@ -615,8 +615,20 @@ return (
       <chip name="QDISB" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={Q.qdis[0]} pcbY={Q.qdis[1] - 30} schX={69.5} schY={-23} schSectionName="BLEED" />
       {/* ECO-2a (E33 rev B): PV drivers replace the opto+bias stacks — bleeders need ms-class
           default-OFF drive only; −₹204/module, two fewer floating supplies */}
-      <PvGateDrive id="A" ctl="net.CTL_QDISBK" gateOut="net.G_QDISA" src="net.BKAN" x={w / 2 - 260} y={-h / 2 + 150} sx={75.5} sy={-19} />
-      <PvGateDrive id="B" ctl="net.CTL_QDISBK" gateOut="net.G_QDISB" src="net.BKBN" x={w / 2 - 260} y={-h / 2 + 160} sx={75.5} sy={-23} />
+      <PvGateDrive id="A" gateOut="net.G_QDISA" src="net.BKAN" x={w / 2 - 260} y={-h / 2 + 150} sx={75.5} sy={-19} />
+      <PvGateDrive id="B" gateOut="net.G_QDISB" src="net.BKBN" x={w / 2 - 260} y={-h / 2 + 160} sx={75.5} sy={-23} />
+      {/* R7-B: one low-side NPN switches both PV LEDs at the guaranteed 10 mA point from V15
+          (a GPIO cannot source 2×11 mA); base pulldown keeps the bleeders default-OFF through
+          reset exactly as the old GPIO-direct drive did. */}
+      <chip name="QPVD" footprint="sot23" pinLabels={{ pin1: "B", pin2: "E", pin3: "C" }} pcbX={w / 2 - 280} pcbY={-h / 2 + 170} schX={73} schY={-21.4} schSectionName="BLEED" />
+      <resistor name="RPVDB" resistance="4.7k" footprint="0603" pcbX={w / 2 - 290} pcbY={-h / 2 + 170} schX={71} schY={-21.4} schSectionName="BLEED" />
+      <resistor name="RPVDP" resistance="10k" footprint="0603" pcbX={w / 2 - 290} pcbY={-h / 2 + 178} schX={71} schY={-22.6} schSectionName="BLEED" />
+      <trace from="net.CTL_QDISBK" to=".RPVDB > .pin1" schDisplayLabel="CTL_QDISBK" />
+      <trace from=".RPVDB > .pin2" to=".QPVD > .B" />
+      <trace from=".RPVDP > .pin1" to=".QPVD > .B" />
+      <trace from=".RPVDP > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+      <trace from=".QPVD > .E" to="net.DGND" schDisplayLabel="DGND" />
+      <trace from=".QPVD > .C" to="net.PV_SINK" schDisplayLabel="PV_SINK" />
       <trace from=".RBDA0 > .A" to="net.BKAP" schDisplayLabel="BKAP" />
       <trace from=".RBDA0 > .B" to=".RBDA1 > .A" />
       <trace from=".RBDA1 > .B" to=".RBDA2 > .A" />

@@ -80,9 +80,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "NSI1042",
-   "query": "NSI1042 iso CAN transceiver ",
-   "mpn": "NSI1042"
+   "value": "NSI1042-DSWR",
+   "query": "NSI1042-DSWR iso CAN transceiver SO-16 ",
+   "mpn": "NSI1042-DSWR"
   },
   {
    "designator": "PSCAN",

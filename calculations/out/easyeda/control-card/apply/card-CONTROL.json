@@ -59,7 +59,7 @@
      {
       "pin_number": 15,
       "name": "pin15",
-      "signal_name": "AIN9"
+      "signal_name": "AIN11"
      },
      {
       "pin_number": 16,
@@ -109,7 +109,7 @@
      {
       "pin_number": 25,
       "name": "pin25",
-      "signal_name": "AIN11"
+      "signal_name": "AIN9"
      },
      {
       "pin_number": 26,

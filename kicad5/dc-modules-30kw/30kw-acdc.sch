@@ -72,11 +72,11 @@ MAGNETICS CONSTRUCTION
 Text Notes 11210 21070 0    60   ~ 0
 identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)
 Text Notes 11200 21500 0    60   ~ 0
-D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2
+D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2 -> L0 169uH, >=75uH @82A pk (BIASED value governs ripple/trip calcs)
 Text Notes 11200 21800 0    60   ~ 0
 D6 LDM1-3: 2x T48 60u, N=7, foil 20mm2 -> 7.4uH @82A pk (floor 7.0uH)
 Text Notes 11200 22100 0    60   ~ 0
-tank Cr/trim-bin values printed at the TANK sections
+total Lr = trim + measured xfmr leakage (bins COMPENSATE leakage spread); Cr at TANK sections
 Wire Notes Line
 	7500 14250 10600 14250
 Wire Notes Line

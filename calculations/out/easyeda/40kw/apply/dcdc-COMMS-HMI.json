@@ -10,9 +10,9 @@
   [
    {
     "designator": "UCAN",
-    "value": "NSI1042",
+    "value": "NSI1042-DSWR",
     "block_name": "CAN",
-    "search_query": "NSI1042 iso CAN transceiver",
+    "search_query": "NSI1042-DSWR iso CAN transceiver SO-16",
     "part_uuid": "4f04f004e6cd4c26a4599aaff5ae09ed",
     "pins": [
      {

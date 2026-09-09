@@ -1339,7 +1339,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       // the only artifact a reviewer holds. Values are the frozen D1/D2/D3/D6 drawings.
       const MAG = {
         acdc: {
-          "30": ["D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2",
+          "30": ["D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2 -> L0 169uH, >=75uH @82A pk (BIASED value governs ripple/trip calcs)",
                  "D6 LDM1-3: 2x T48 60u, N=7, foil 20mm2 -> 7.4uH @82A pk (floor 7.0uH)"],
           "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu, N=23 -> L0 113uH, >=64uH @104A pk",
                  "D6 LDM1-3: 2x T57 60u, N=8, 26.4mm2 -> 10.5uH @109A pk (floor 9.2uH)"],
@@ -1347,7 +1347,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
                  "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH)"],
         },
         dcdc: {
-          "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 9:9:9, litz 1350/660x0.1 TIW, Lm gap-ground +/-7%",
+          "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 9:9:9, litz 1350/660x0.1 TIW, Lm 63uH +/-7% gap-ground",
                  "D2 L1T-L3T: gapped 2x PQ50/50, N=4, bins ~4.0uH, gap ground per bin"],
           "40": ["D3 T1-T3: 2x E70/33/32 per section, 9:9:9 (window-fill basis, D3-40)",
                  "D2 L1T-L3T: N=5, bins 3.2/3.5/3.8uH, litz 2000x0.1 (15.7mm2)"],
@@ -1359,7 +1359,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       if (magRows) {
         const magPanel = (V, fixed) => drawPanel(V, "MAGNETICS CONSTRUCTION",
           "identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)",
-          [...magRows, "tank Cr/trim-bin values printed at the TANK sections"], "", fixed);
+          [...magRows, "total Lr = trim + measured xfmr leakage (bins COMPENSATE leakage spread); Cr at TANK sections"], "", fixed);
         const m1 = magPanel(pickVoid(used));
         if (m1) used.push(m1);
       }

@@ -139,7 +139,7 @@ const PAGES = {
       ["BANK-A", [/^CBA\d[TB]$/, /^RBALT?A[12]$/, /^RBALBA[12]$/, /^CBAF$/]],
       ["BANK-B", [/^CBB\d[TB]$/, /^RBALT?B[12]$/, /^RBALBB[12]$/, /^CBBF$/]],
       ["SP-MATRIX", [/^K(SER|PARA|PARB|OUT|PREA|PREB)2?$/, /^RKPU/, /^RPRE[AB]$/]],
-      ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/]],
+      ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/, /^(QPVD|RPVD[BP])$/]],
     ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],
     ["OUTPUT-SENSING", [
       ["OUTPUT", [/^RSHO$/, /^USHO$/, /^PSSH$/, /^CSH[12B]$/, /^COF[12]$/, /^CYO[12]$/, /^JOUT[PN]$/]],

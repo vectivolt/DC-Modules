@@ -165,7 +165,7 @@ function transform(c, page, all, warn) {
   } else if (m.startsWith("SHUNT-")) {   /* R5-G: value-carrying order codes, same 4-terminal cell */
     out.pins = [P(1, "A", sig(c, "A")), P(2, "B", sig(c, "B")), P(3, "KA", sig(c, "KA")), P(4, "KB", sig(c, "KB"))];
     out.nc = [5, 6];
-  } else if (m === "NSI1042") {
+  } else if (/^NSI1042/.test(m)) {   /* -DSWR order code (R7) — same SO-16 translation */
     // NSi1042-DSWR SO-16 isolated CAN: isolation preserved (GND1 logic side, GND2 bus side)
     const g1 = sig(c, "GND1"), g2 = sig(c, "GND2");
     // R3: pin 7 is NC on every orderable variant — do not tie it to GND1

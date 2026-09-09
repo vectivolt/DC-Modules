@@ -54,17 +54,23 @@ MID-side device and is NOT seen by DESAT. That direction is covered by the **lin
 coordination — two independent detectors per direction overall. Registered as the design basis;
 EVT T-xx short-circuit characterization exercises BOTH polarities.
 
-**R6 rev — the reverse direction gets a DESIGNATED µs-class path (E47):** the line-CT signals
-(SNS_IA/IB/IC, observable to 150/187 A pk inside the ADC rail) shall be routed to the GD32's
-on-chip comparators with DAC thresholds and the comparator outputs muxed into an HRTIMER
-fault input — a **hardware PWM kill with no firmware in the loop**. Timing budget: CT
-(ACX class, ≥50 kHz bw) → burden → 1 k/1 n filter (τ = 1 µs) → CMP (≈50 ns) → HRTIMER FLT
-(sub-cycle) ≈ **2–3 µs total**, device-class for the polarity DESAT cannot see. Constraint
-registered for the A6 pin-map regeneration: SNS_IA/IB/IC **must land on CMP-capable inputs**
-(§K verifies against the final AF table; if a channel cannot reach a CMP, it re-pins — the
-map regenerates from one table). EVT T-xx demonstrates the measured end-to-end trip time in
-BOTH polarities against the device short-circuit withstand. Until that demonstration, the
-honest floor below still stands:
+**R6 rev / R7-A rev — the reverse direction gets a DESIGNATED µs-class path (E47/E48):** the
+line-CT signals route to on-chip comparators with DAC thresholds, muxed into an HRTIMER fault
+input — a **hardware PWM kill with no firmware in the loop**. **R7-A: "CMP-capable pin" was
+NOT a sufficient constraint** — the external reviewer traced the LQFP100 table and found
+phases B and C on OPPOSITE INPUTS of the SAME comparator (pin 15/PC0 = CMP2_IM, pin 16/PC1 =
+CMP2_IP; the DAC reference can only drive the IM side, so a signal there gets no independent
+comparison). Allocation is now INSTANCE- and POLARITY-aware, executed by swapping AIN9↔AIN11
+in the one pin-map generator (verified against GD32G553 Rev 2.0 Figure 2-3 + pin table):
+**I_A0 → PC2/CMP7_IP · I_B0 → PA3/CMP1_IP (ADC0_IN3 keeps metering) · I_C0 → PC1/CMP2_IP**;
+SNS_VAC1 → PC0/ADC01_IN5 (50 Hz metering, needs no CMP). Each phase gets ONE single-sided
+threshold **on the DESAT-blind polarity BY DESIGN** — the opposite polarity is DESAT's own
+µs-class coverage; this is the complement, not a window detector, and the register says so.
+Timing: burden → 1 k/1 n (τ = 1 µs) → CMP (≈50 ns) → HRTIMER FLT (sub-cycle) ≈ 2–3 µs is a
+**DESIGN TARGET until measured** — the ACX line CT is catalogued for 50/60 Hz metering and
+its HF response is NOT vendor-specified; EVT T-xx measures the true threshold-crossing-to-
+gate-off time in BOTH polarities against the device short-circuit withstand. Until that
+demonstration, the honest floor below still stands:
 
 **R5-K note — response-time honesty for the reverse direction (E46):** the two detectors are
 NOT the same speed class, and the register must not read as if they were. Forward (PHASE-side)
@@ -84,8 +90,9 @@ and the MCU (V3P3 ← V15 buck) browns out with it. The real AC-removed timeline
 **two-phase**: active 830→~321 V in ≤1.2 s (τ = 640 Ω · C_link), then PASSIVE through the
 2×47 k balance pairs — 321→60 V ≈ 370/445/593 s at 30/40/50 kW (τ = 94 k × half-link C).
 Worst total ≈ **10 minutes at 50 kW**. Consequences, registered: (1) the enclosure carries the
-IEC 62477-1 stored-energy **warning label with the stated discharge time** ("wait 10 min or
-verify <60 V") — tool-access only; (2) **F.21's real coverage is the AC-PRESENT case**: with
+IEC 62477-1 stored-energy **warning label with the stated discharge time** ("isolate upstream, wait 10 min, AND
+verify <60 V at the link and both banks before access") — tool-access only; the wait alone
+is never the permission, the measurement is; (2) **F.21's real coverage is the AC-PRESENT case**: with
 mains still feeding the link through the permanent RPRE paths the bus cannot fall (rectifier
 holds ≥~530 V), the aux stays alive, the timer expires and FC_DISCH latches — correctly
 signalling "discharge impossible, isolate upstream first". In the AC-removed case the MCU

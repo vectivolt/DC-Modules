@@ -316,6 +316,9 @@ console.log("\n=== J. R5 FIXES — proven in the built netlists ===");
   // the reviewer read "watchdog not connected" off the face).
   ck("J", "card WDO face-name = NRST_CARD", nrst === "NRST_CARD" && C.netOfPin.get("RWPUCARD.pin2") === "NRST_CARD",
     "one NAME, every pin — the sheet now shows the connection the netlist always had (R6-A)");
+  // R7-A: comparator-INSTANCE-aware current-sense allocation (B and C shared CMP2 before)
+  ck("J", "card CMP allocation (R7-A)", C.netOfPin.get("UCARD.pin17") === "AIN8" && C.netOfPin.get("UCARD.pin25") === "AIN9" && C.netOfPin.get("UCARD.pin16") === "AIN10" && C.netOfPin.get("UCARD.pin15") === "AIN11",
+    "I_A0→PC2/CMP7_IP · I_B0→PA3/CMP1_IP · I_C0→PC1/CMP2_IP · VAC1→PC0/ADC — three INDEPENDENT comparators (GD32G553 Fig 2-3 verified)");
 }
 for (const [sku] of Object.entries(SK)) {
   const A = B[sku].ac, D = B[sku].dc;
@@ -337,6 +340,9 @@ for (const [sku] of Object.entries(SK)) {
   // R6-D/G: the last two bypass gaps + the cold-start reservoir at the pins
   ck("J", `${sku} aux + HMI bypass`, A.netOfPin.get("CVCCB.pin1") === A.netOfPin.get("UAUX.VCC") && A.netOfPin.get("CVCCB.pin2") === A.netOfPin.get("UAUX.GND") && A.netOfPin.get("CVCC.pin1") === A.netOfPin.get("UAUX.VCC") && D.netOfPin.get("CSR1.pin1") === D.netOfPin.get("USR1.VCC") && D.netOfPin.get("CSR1.pin2") === "DGND",
     "NCP1252 VCC: 100 n at the pin + 220 µF cold-start reservoir; 74HC595 decoupled (R6-D/G)");
+  // R7-B: PV bleeder drive at the guaranteed point — V15-fed LEDs behind the shared low-side
+  ck("J", `${sku} PV bleeder drive network`, D.netOfPin.get("RPVLA.pin1") === "V15" && D.netOfPin.get("RPVLB.pin1") === "V15" && D.netOfPin.get("UPVA.CAT") === "PV_SINK" && D.netOfPin.get("UPVB.CAT") === "PV_SINK" && D.netOfPin.get("QPVD.C") === "PV_SINK" && D.netOfPin.get("QPVD.E") === "DGND" && D.netOfPin.get("RPVDP.pin1") === D.netOfPin.get("QPVD.B") && Math.abs(D.val.get("RPVBA") - 6.8e6) < 1e3,
+    "11 mA LED feed (the 10 mA spec point) via QPVD; 6.8 M gate bleed — guaranteed chord ≥5.8 V (R7-B)");
   // R5-E: symmetric parallel gate branches — every paralleled device behind its OWN 2.2 Ω
   const vpar = A.byName.has("QA0A2"), lpar = D.byName.has("Q1H2");
   ck("J", `${sku} symmetric pair gates`,

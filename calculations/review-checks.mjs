@@ -474,8 +474,8 @@ ck("R5-F", /R5-F: DC input 13.5\u201316.5 V/.test(db),
   "QA01C-18 input range (13.5-16.5 V) vs V15 = 15.0 V recorded on the BOM line; cross-regulation re-verify staged for EVT");
 ck("R5-G", /CER-25W-33R-AX/.test(db) && /CER-50W-33R-AX/.test(db) && /CER-25W-160R-AX/.test(db) && /CER-50W-160R-AX/.test(db) && /SHUNT-50MV-100A/.test(db) && /SHUNT-50MV-133A/.test(db) && /SHUNT-50MV-167A/.test(db),
   "RPRE/RDIS/RSHO order codes now CARRY their value/rating per SKU — a class-only p/n could be bought at any value");
-ck("R5-H", /R5-H RFQ HOLD/.test(db),
-  "NSI1042 pinout figure vs pin table contradiction held at RFQ — drawn per table, definitive suffix map required before layout release, no pins moved on half the evidence");
+ck("R5-H", /R5-H HOLD CLOSED at R7/.test(db) && /NSI1042-DSWR/.test(db),
+  "NSI1042 pin-map hold CLOSED: Rev 1.3 drawing + table agree for -DSWR and match the sheets (reviewer-verified independently); full order code in the BOM");
 ck("R5-I", /R5-I: ordering table lists ONLY VET7/.test(db),
   "MCU order code corrected VET6->VET7 (GigaDevice lists only VET7 105 C / VET3 125 C; silicon and pinout unchanged) — every sheet title and map key follows");
 ck("R5-K", /R5-K/.test(protDoc) && /system-level/.test(protDoc),
@@ -491,7 +491,7 @@ ck("R6-A", /wdoNet = nrst \?\?/.test(cells) && !/to=\{nrst\}/.test(cells),
   "the WDO/NRST merge is a net RENAME, not a pin-less net-net trace — the R5 implementation was electrically one node but DREW as two disconnected label groups (the R4-1 face-defect class); one name now labels every pin");
 ck("R6-B", /R6 discharge-timeline honesty/.test(protR6) && /R6: this timer's REAL coverage/.test(protR6) && /F\.21 semantics \(R6\)/.test(fwR6),
   "discharge is two-phase (active to the 321 V aux brown-out, then passive 2x47k to 60 V, 4-10 min + 62477-1 label) and F.21 is documented as the AC-PRESENT latch — no more powered-to-60V claims");
-ck("R6-C", /CMP-capable inputs/.test(protR6) && /COMPARATOR-capable/.test(pinmapR6) && /PFC reverse-direction hardware trip/.test(fwR6),
+ck("R6-C", /INSTANCE- and POLARITY-aware/.test(protR6) && /COMPARATOR-capable/.test(pinmapR6) && /PFC reverse-direction hardware trip/.test(fwR6),
   "reverse-polarity PFC OC has a DESIGNATED us-class path (line-CT -> on-chip CMP -> HRTIMER FLT) with the A6 pin constraint registered at the generator — not just an honesty note");
 ck("R6-D", /CVCCB/.test(cells) && /CSR1/.test(cells),
   "last two bypass gaps closed: NCP1252 VCC 100 n at the pin, 74HC595 supply decoupled");
@@ -501,6 +501,22 @@ ck("R6-G", /mpn: "NCP1252D"/.test(db) && /name="CVCC" capacitance="220uF"/.test(
   "aux controller A->D: the A version could not cold-start (mandatory 120 ms pre-start delay vs 1.0 V hysteresis = 28-60 ms of reservoir); D has no delay + 5 V hysteresis; CVCC 220 uF = 3x the 67 uF budget");
 ck("R6-H", /MAGNETICS CONSTRUCTION/.test(k5genR6),
   "sheet NOTES now print the magnetics identity (cores, turns, bins, litz) — the part labels are no longer the only carrier on the deliverable face");
+
+// ===== R7 (2026-09-09): fifth external-review round — reviewer closes the R6 wave (and the
+// NSI1042 hold, with the Rev 1.3 datasheet) and catches the comparator-INSTANCE conflict the
+// R6 "CMP-capable pin" rule missed, plus a typ-vs-min misread in the PV bleeder claim.
+const pinmapR7 = readFileSync(join(ROOT, "calculations/control/umod-pinmap.mts"), "utf8");
+const genR7 = readFileSync(join(ROOT, "packages/common-components/umod-map.gen.ts"), "utf8");
+ck("R7-A", /AIN9: 25/.test(pinmapR7) && /AIN11: 15/.test(pinmapR7) && /"AIN9":25/.test(genR7.replace(/\s/g, "")) && /CMP1_IP/.test(pinmapR7) && /INSTANCE- and POLARITY-aware/.test(readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8")),
+  "comparator allocation is INSTANCE-aware: AIN9<->AIN11 swapped in the ONE generator (I_B0 -> PA3/CMP1_IP; B and C no longer share CMP2's two inputs) — verified against GD32G553 Rev 2.0 Fig 2-3");
+ck("R7-B", /IF = 10 mA \(Voc ≥ 7.8 V, Isc ≥ 6.0 µA\)/.test(cells) && /resistance="6.8M"/.test(cells) && /QPVD/.test(boards) && /Vth\(max\) ≤ 3.5 V, Igss ≤ 100 nA/.test(db),
+  "PV bleeder drive moved to the ONLY guaranteed spec point (V15-fed 11 mA via QPVD, 6.8 M gate bleed, chord >=5.8 V) — the prior claim used a typical current as a worst case (reviewer catch)");
+ck("R7-C", /NSI1042-DSWR/.test(db) && /HOLD CLOSED at R7/.test(db),
+  "CAN transceiver hold closed with the full order code — Rev 1.3 drawing and table agree and match the sheets exactly (reviewer-verified independently)");
+ck("R7-D", /BIASED value governs/.test(readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8")) && /Lm 63uH/.test(readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8")),
+  "the 30 kW D1 panel row carries the biased-inductance value (169 uH L0 is NOT the full-current L) and the D3 row carries the numerical Lm target");
+ck("R7-E", /DESIGN TARGET until measured/.test(readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8")) && /AND\nverify <60 V at the link/.test(readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8")),
+  "honesty language: the 2-3 us trip is a target until EVT measures it (ACX HF response unspecified), and the service label reads wait AND verify — never wait OR verify");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

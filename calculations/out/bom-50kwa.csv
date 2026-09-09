@@ -26,7 +26,7 @@ HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readbac
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K) [2x 200 A paralleled (dual instance, E42)]","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KOUT
 HFE82V-M-CLASS,,REVIEW,Hongfa,"HV DC relay 1000 V w/ mirror contact (E30 readback; current class per SKU; *2 = 120 kW paralleled pair, HR-19 — contact-R matched at assembly or 250 A-class, §K)","GIGAVAC eq",dcdc,1,621,460,404.8,368,460,368,KOUT2
 AMC1350QDWVRQ1,C5214206,ORDERABLE,TI/NOVOSENSE,"iso voltage-sense amp ±5 V input (AC phase sense vs artificial star, E25)","NSI1300 class",acdc,3,182.3,135,118.8,108,405,324,UIVV1 UIVV2 UIVV3
-IMW120R350M1H,C536285,ORDERABLE,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
+IMW120R350M1H,C536285,ORDERABLE,CR Micro,"SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15; R7-B gate spec for the PV-driven bleeders: Vth(max) ≤ 3.5 V, Igss ≤ 100 nA — the VOM1271 guaranteed chord delivers ≥5.8 V at 6.8 MΩ)","BASiC small 1200V",acdc+dcdc,3,162,120,105.6,96,360,288,QDISF QDISA QDISB
 CMC-3PH-2mH-SKU,,CUSTOM,custom/Hongfa mag,"3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source [D7-50 custom wind 95 A]","Schaffner RT8131-63-2M8 @30 kW",acdc,1,459,340,299.2,272,340,272,CMC1
 CMC-3PH-2mH-SKU,,CUSTOM,custom/Hongfa mag,"3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source","Schaffner RT8131-63-2M8 @30 kW",acdc,1,459,340,299.2,272,340,272,CMC2
 PP-1u-1100,,CLASS,Faratronic,"1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)","Songtian",dcdc,5,91.8,68,59.8,54.4,340,272,CF0 CF1 CF2 CBAF CBBF
@@ -84,7 +84,7 @@ PP-27n-1200V,,UNMAPPED,Faratronic,"46 nF 1200 V PP pulse film (resonant — CB-2
 PP-27n-1200V,,UNMAPPED,Faratronic,"46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)","Songtian pulse PP",dcdc,1,91.8,68,59.8,54.4,68,54,C3R6
 PP-27n-1200V,,UNMAPPED,Faratronic,"46 nF 1200 V PP pulse film (resonant — CB-22: mpn now matches the frozen rev-D2 tank; Vrms ≈ 300 V @140 kHz → pulse-grade curve check O-8/§K)","Songtian pulse PP",dcdc,1,91.8,68,59.8,54.4,68,54,C3R7
 WW-470R-10W,,CLASS,local/TE,"470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating)","SQP10",acdc,3,29.7,22,19.4,17.6,66,53,RA0C RB0C RC0C
-NSI1042,C3445856,ORDERABLE,NOVOSENSE,"iso CAN transceiver (R5-H RFQ HOLD: the public datasheet's pinout figure and pin table CONTRADICT each other on TXD/RXD side-1 order — drawn per the table; obtain the definitive suffix-specific map at RFQ and re-verify the sheet before layout release. Do NOT move pins on half the evidence)","NSI1050",dcdc,1,81,60,52.8,48,60,48,UCAN
+NSI1042-DSWR,,UNMAPPED,NOVOSENSE,"iso CAN transceiver SO-16 (R5-H HOLD CLOSED at R7: datasheet Rev 1.3 package drawing + pin table AGREE for the -DSWR suffix — VDD1=1, GND1=2/8, RXD=3, TXD=6, GND2=9/10/15, CANL=12, CANH=13, pin 11 NC — exactly the map the sheets already carry; external reviewer independently verified)","NSI1050-DSWR",dcdc,1,81,60,52.8,48,60,48,UCAN
 CT-RES-1:100-100A,,UNMAPPED,Talema (Salem, India),"resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank conductor is the primary, so tank-potential insulation stays on your wire (audit: catalog part; alt Coilcraft CST2010-100L SMT 47 A/1 MHz sits at its 40 K rise at 46 A rms — needs airflow verify) [E42 class rev (Talema AS class RFQ); OC 95 A pk on the re-scaled 1.6R burden = 3.17 V (2.0R would clip at 3.55 V)]","Coilcraft CST2010-100L",dcdc,1,74.3,55,48.4,44,55,44,CT1
 CT-RES-1:100-100A,,UNMAPPED,Talema (Salem, India),"resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank conductor is the primary, so tank-potential insulation stays on your wire (audit: catalog part; alt Coilcraft CST2010-100L SMT 47 A/1 MHz sits at its 40 K rise at 46 A rms — needs airflow verify)","Coilcraft CST2010-100L",dcdc,1,74.3,55,48.4,44,55,44,CT2
 CT-RES-1:100-100A,,UNMAPPED,Talema (Salem, India),"resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank conductor is the primary, so tank-potential insulation stays on your wire (audit: catalog part; alt Coilcraft CST2010-100L SMT 47 A/1 MHz sits at its 40 K rise at 46 A rms — needs airflow verify)","Coilcraft CST2010-100L",dcdc,1,74.3,55,48.4,44,55,44,CT3
@@ -111,7 +111,7 @@ CL21B105KBFNNNE,C28323,ORDERABLE,any,"1 µF 0805 (driver bias) 1uF","any",acdc+d
 CRM2512-FX-10R0ELF,C840605,ORDERABLE,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,3,8.1,6,5.3,4.8,18,14,RA0SN RB0SN RC0SN
 ULN2803A,C2865085,ORDERABLE,any,"8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)","TBD62083",acdc+dcdc,2,12.2,9,7.9,7.2,18,14,UPA ULB
 LED-2DIG-0.56CC,C9900021773,REVIEW,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
-RC0805FR-0710KL,C84376,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 10k","any",acdc+dcdc+card,42,0.5,0.4,0.4,0.3,17,13,RKFBP RA0GPD RB0GPD RC0GPD RQDPD RTPFCP RTINLP RBEFB RBKF2A RM24B RM15B RFT1
+RC0805FR-0710KL,C84376,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 10k","any",acdc+dcdc+card,43,0.5,0.4,0.4,0.3,17,13,RKFBP RA0GPD RB0GPD RC0GPD RQDPD RTPFCP RTINLP RBEFB RBKF2A RM24B RM15B RFT1
 B2B-PH-K-S,C20504437,ORDERABLE,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,2.4,15,12,JTPFC JTINL JTLLC JTXFR JTERM
 R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
 ARG05BTC6801,C3033907,ORDERABLE,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC) 6.8k","any 0.1%",acdc+dcdc,5,3.4,2.5,2.2,2,13,10,RBPDL RBMDL ROADL ROBDL ROVDL
@@ -140,6 +140,7 @@ RC0805FR-07100RL,C105577,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls
 PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,TVSCAN
 74HC595,C19192516,ORDERABLE,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
 CC0603JRNPO9BN101,C14665,ORDERABLE,any,"100 pF 0603 (DESAT blank) 100pF","any",acdc+dcdc,9,0.5,0.4,0.4,0.3,4,3,CA0GBL CB0GBL CC0GBL C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
+R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc+card,8,0.5,0.4,0.4,0.3,3,2,RAUXRT REN2A RM24A RPVLA RPVBA RPVLB RPVBB REN2CARD
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
 R2512-1R6-2W-1%,,UNMAPPED,any,"2.0 Ω 1% 1 W 2512 resonant-CT burden (CB-16: 46 A rms/1:100 → 0.92 V rms, 0.42 W; F.11 70 A pk = 3.05 V at comparator — the 33 Ω line-CT value was mis-copied here) [E42: tank OC 95 A pk inside the rail; 2 W class]","2× 1206 1R0 series",dcdc,1,4.1,3,2.6,2.4,3,2,R1CT
@@ -149,30 +150,29 @@ RC0805FR-071KL,C95781,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/fi
 PT1206FR-7W0R31L,C6148847,ORDERABLE,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
 RC0603FR-07220RL,C107696,ORDERABLE,any,"220 Ω segment 220","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 RC0805FR-07100KL,C96346,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100k","any",acdc+card,5,0.5,0.4,0.4,0.3,2,2,RAUXG REN1A RENRCARD RENLCARD REN1CARD
-RC0805FR-071ML,C107700,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1M","any",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,RPET RPVBA RPVBB RCGB
-R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+card,4,0.5,0.4,0.4,0.3,2,1,RAUXRT REN2A RM24A REN2CARD
+S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (QAUXFB: R4-3 opto-emulating FB pull-down · QPVD: R7-B low-side switch for the PV-driver LEDs at the guaranteed 10 mA point)","MMBT2222",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,QAUXFB QPVD QDIG1 QDIG2
 R1206-21R5-1%,,UNMAPPED,any,"27 Ω CT burden 1% (line CTs 1:2500 → 0.59 V/55 A rms; 150 A pk OC observability = 1.62 V above AVMID, inside the 3.3 V rail — R3 fix, landed by margin audit 2026-09-08: the drawn 33 Ω put 150 A pk at 3.63 V, past the ADC rail) [E42 line-CT burden re-scale (rail budget at 187 A pk)]","any",acdc,1,2,1.5,1.3,1.2,2,1,RA0B
 R1206-21R5-1%,,UNMAPPED,any,"27 Ω CT burden 1% (line CTs 1:2500 → 0.59 V/55 A rms; 150 A pk OC observability = 1.62 V above AVMID, inside the 3.3 V rail — R3 fix, landed by margin audit 2026-09-08: the drawn 33 Ω put 150 A pk at 3.63 V, past the ADC rail)","any",acdc,1,2,1.5,1.3,1.2,2,1,RB0B
 R1206-21R5-1%,,UNMAPPED,any,"27 Ω CT burden 1% (line CTs 1:2500 → 0.59 V/55 A rms; 150 A pk OC observability = 1.62 V above AVMID, inside the 3.3 V rail — R3 fix, landed by margin audit 2026-09-08: the drawn 33 Ω put 150 A pk at 3.63 V, past the ADC rail)","any",acdc,1,2,1.5,1.3,1.2,2,1,RC0B
 CC0603KRX7R9BB103,C100042,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10nF","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
 CL21A106KAYNNNE,C15850,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10uF","any",acdc+card,3,0.7,0.5,0.4,0.4,2,1,CBKIA CBKICARD CAVO
 CC0603JRNPO9BN221,C106210,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 220pF","any",dcdc,3,0.7,0.5,0.4,0.4,2,1,C1CF C2CF C3CF
-RC0805FR-07330RL,C110440,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 330","any",acdc+dcdc,3,0.5,0.4,0.4,0.3,1,1,RQDL RPVLA RPVLB
 RC0805FR-072K2L,C114561,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 2.2k","any",acdc+dcdc,3,0.5,0.4,0.4,0.3,1,1,RZFB RDIG1 RDIG2
-S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (R4-3: opto-emulating FB pull-down — closes the NCP1252 primary-side loop with the correct sign)","MMBT2222",acdc+dcdc,3,0.5,0.4,0.4,0.3,1,1,QAUXFB QDIG1 QDIG2
 GRM21BR61C226ME44L,C86817,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 22uF","any",acdc+card,2,0.7,0.5,0.4,0.4,1,1,CBKOA CBKOCARD
+RC0805FR-071ML,C107700,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1M","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RPET RCGB
 RC0805FR-0715KL,C114559,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 15k","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RBR2 RROLEB
 BZT52-C15,,UNMAPPED,any,"15 V zener SOD-123 (R4-3: primary-side regulation reference — VCC regulates at VZ+VBE ≈ 15.7 V, aux winding tracks the rails)","MMSZ5245B",acdc,1,1.1,0.8,0.7,0.6,1,1,DZAUX
 RC0805FR-0745K3L,C273885,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 45.3k","any",acdc+card,2,0.5,0.4,0.4,0.3,1,1,RBKF1A RBKF1CARD
+RC0805FR-074K7L,C60816,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 4.7k","any",dcdc+card,2,0.5,0.4,0.4,0.3,1,1,RPVDB RFLTC
 GZ2012D601TF,C1017,ORDERABLE,any,"ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7)","any",card,1,1.1,0.8,0.7,0.6,1,1,FBCARDA
 CC0805KRX7R9BB471,C107152,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 470pF","any",acdc,1,0.7,0.5,0.4,0.4,1,0,CCSF
 CC1206KRX7R9BB472,C107208,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 4.7nF","any",dcdc,1,0.7,0.5,0.4,0.4,1,0,CCGB
 CL21B105KBFNNNE,C28323,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 1uF","any",card,1,0.7,0.5,0.4,0.4,1,0,CCARDA1
 CC0805KRX7R9BB222,C107146,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 2.2nF","any",card,1,0.7,0.5,0.4,0.4,1,0,CAVF
+RC0805FR-07330RL,C110440,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 330","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RQDL
 RC0805FR-0747KL,C126351,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 47k","any",acdc,1,0.5,0.4,0.4,0.3,0,0,RM15A
 RC1206FR-07120RL,C114928,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 120","any",dcdc,1,0.5,0.4,0.4,0.3,0,0,RTERM
 RC0805FR-074R7L,C137513,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 4.7","any",card,1,0.5,0.4,0.4,0.3,0,0,RAVI
-RC0805FR-074K7L,C60816,ORDERABLE,any,"card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point tie (card-split rescue) 4.7k","any",card,1,0.5,0.4,0.4,0.3,0,0,RFLTC
 RC0805JR-070RL,C96345,ORDERABLE,any,"card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point tie (card-split rescue) 0R","any",card,1,0.5,0.4,0.4,0.3,0,0,RAGTC
 BIAS-XFMR-SET,,CUSTOM,custom,"BIAS-XFMR multi-secondary set (E23) — RETIRED at 10k volume (modules permanent, E23 rev B)","—",acdc+dcdc,2,0,0,0,0,0,0,
 MECH,,MECH,—,"PCB-ACDC 6L 440×500 (50 kW copper masses)","—",module,1,1495,1300,1209,1131,1300,1131,
@@ -184,5 +184,5 @@ MECH,,MECH,—,"Busbars/interconnect studs + harness (busbar-calc, 167 A output 
 MECH,,MECH,—,"NTC sensor assemblies (insulated tip spec, E25)","—",module,4,21,18,17,16,72,63,
 MECH,,MECH,—,"TIM/insulators/fasteners","—",module,1,483,420,391,365,420,365,
 MECH,,MECH,—,"Assembly + calibration + EOL test","—",module,1,2300,2000,1860,1740,2000,1740,
-TOTAL_ELECTRONIC,,,,,,,,,,,,40510,32132,
-TOTAL_MODULE,,,,,,,,,,,,50672,40973,
+TOTAL_ELECTRONIC,,,,,,,,,,,,40511,32133,
+TOTAL_MODULE,,,,,,,,,,,,50673,40974,

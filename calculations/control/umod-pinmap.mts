@@ -47,7 +47,15 @@ const KEPT: Record<string, number> = {
   PWM0: 69, PWM1: 71, PWM2: 51, PWM3: 53, PWM4: 67, PWM5: 65,
   PWM6: 70, PWM7: 72, PWM8: 52, PWM9: 54, PWM10: 68, PWM11: 66,
   AIN0: 20, AIN1: 21, AIN2: 22, AIN3: 27, AIN4: 29, AIN5: 30,
-  AIN6: 56, AIN7: 55, AIN8: 17, AIN9: 15, AIN10: 16, AIN11: 25, AIN12: 26,
+  // R7-A (E48): AIN9<->AIN11 SWAPPED vs the R3 allocation. The R6 constraint ("CMP-capable
+  // pin") was NOT sufficient — the external reviewer traced the LQFP100 table: pin 15/PC0 is
+  // CMP2_IM and pin 16/PC1 is CMP2_IP, so phases B and C sat on OPPOSITE INPUTS OF THE SAME
+  // COMPARATOR (and the DAC threshold can only drive the IM side — a signal there gets no
+  // independent comparison). Allocation must be INSTANCE- and POLARITY-aware:
+  //   I_A0 -> pin 17 PC2 = CMP7_IP · I_B0 -> pin 25 PA3 = CMP1_IP (ADC0_IN3 keeps metering)
+  //   I_C0 -> pin 16 PC1 = CMP2_IP · SNS_VAC1 -> pin 15 PC0 = ADC01_IN5 (slow 50 Hz, no CMP)
+  // Verified against GD32G553xx Rev 2.0 Figure 2-3 + pin-definition table.
+  AIN6: 56, AIN7: 55, AIN8: 17, AIN9: 25, AIN10: 16, AIN11: 15, AIN12: 26,
   TSNS0: 32, TSNS1: 33, AVMID: 18, ROLE1: 38,
   DO0: 59, DO1: 60, DO2: 89, DO3: 94, DO4: 96, DO5: 62, DO6: 34,
   DI0: 85, DI1: 86, DI4: 73, DI5: 78,

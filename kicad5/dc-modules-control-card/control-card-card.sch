@@ -71,7 +71,7 @@ NRST_CARD
 Wire Wire Line
 	1900 1900 1700 1900
 Text Label 1700 1900 2    45   ~ 0
-AIN9
+AIN11
 Wire Wire Line
 	1900 2000 1700 2000
 Text Label 1700 2000 2    45   ~ 0
@@ -111,7 +111,7 @@ V3P3
 Wire Wire Line
 	1900 2900 1700 2900
 Text Label 1700 2900 2    45   ~ 0
-AIN11
+AIN9
 Wire Wire Line
 	1900 3000 1700 3000
 Text Label 1700 3000 2    45   ~ 0

@@ -123,17 +123,22 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   mode — the option bytes must NEVER remap it to GPIO** (R6: the whole mechanism rides on
   pin 14 being reset). Repeated watchdog resets hold the module safe by construction: gates
   are low through every WDO-low and every boot.
-- **PFC reverse-direction hardware trip (R6/E47):** configure on-chip comparators on
-  SNS_IA/IB/IC with DAC thresholds at the F.10 OC level and route them to an HRTIMER fault
-  input — a hardware PWM kill (~2–3 µs incl. the 1 k/1 n front end) for the current polarity
-  the phase-side DESAT cannot see. The A6 pin regeneration must place these three signals on
-  CMP-capable pins (registered constraint). Verify the trip end-to-end at EVT, both polarities.
+- **PFC reverse-direction hardware trip (R6/E47 · R7-A allocation):** the comparator channels
+  are now pinned INSTANCE-aware (the R6 "CMP-capable" rule missed that B and C shared CMP2's
+  two inputs): **I_A0 = PC2/CMP7_IP, I_B0 = PA3/CMP1_IP, I_C0 = PC1/CMP2_IP**, DAC thresholds
+  on the IM sides, outputs → HRTIMER fault. ADC map change that rides along: **I_B0 is now
+  ADC0_IN3 (PA3) and SNS_VAC1 is ADC01_IN5 (PC0)** — update the channel table with the pin
+  map, both regenerate from umod-pinmap. Each phase carries ONE threshold on the DESAT-blind
+  polarity by design (the other polarity is DESAT's); the ~2–3 µs figure is a design target
+  until EVT measures threshold-to-gate-off in both polarities (the ACX CT's HF response is
+  not vendor-specified).
 - **Output-current sign (R6-E):** VINP rides the shunt's KB (OUTN side), VINN rides KA — so
   **positive (SNS_IOUT − SNS_IOUTN) = delivering current to the vehicle**. Verify with a small
   known load before closing the current loop.
 - **Cold-start budget (R6-G):** the aux controller is the NCP1252 **D** version (no 120 ms
   pre-start delay, 5 V UVLO hysteresis) with a 220 µF VCC reservoir; expect ≈5–6 s from AC
-  apply to rails-up at a 565 V precharged bus (0.59 mA through the 940 k startup feed). The
+  apply to rails-up at a 565 V precharged bus (nominal 400 VLL; ≈8 s at low line with the
+  100 µA worst startup draw — size any boot supervision to ≥10 s) (0.59 mA through the 940 k startup feed). The
   CSU's staggered-enable already tolerates this.
 - **F.21 semantics (R6):** the discharge timeout's real coverage is the AC-PRESENT case
   (bus held up by the permanent RPRE rectifier path → timer expires → FC_DISCH = "isolate

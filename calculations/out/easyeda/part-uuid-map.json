@@ -342,5 +342,10 @@
   "part_uuid": "a1b76f9179ff4bd69f577af8bfe3fee2",
   "lcsc": "C80800",
   "note": "NCP1252ADR2G SOIC-8 - PROBE pin names"
+ },
+ "NSI1042-DSWR": {
+  "part_uuid": "4f04f004e6cd4c26a4599aaff5ae09ed",
+  "lcsc": "C3445856",
+  "note": "PROBED NSi1042-DSWR SO-16 isolated CAN: 1 VDD1, 2/7/8 GND1, 3 RXD, 6 TXD, 9/10/15 GND2, 12 CANL, 13 CANH, 16 VDD2; NC 4,5,11,14. (SOIC-8 NSI1042-DSWVR is a digital isolator, not a CAN PHY.)"
  }
 }

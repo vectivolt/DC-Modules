@@ -213,11 +213,16 @@ const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
     `worst DCM duty ${f(dutyBO * 100, 1)}% ≤ 44.2% DCmax(min) — the A-version's 48% ceiling was never the constraint`);
 }
 {
-  // VOM1271 PV gate drive into the 1 M gate-source resistor (load line, datasheet Voc/Isc)
-  const Voc = 8.4, IscMin = 40e-6, R = 1e6;
-  const vgs = Voc * R / (R + Voc / IscMin);
-  ck("R6", "bank-bleeder PV gate drive", vgs >= 4 + 2,
-    `load line: ${f(vgs, 2)} V at 1 MΩ (worst Isc 40 µA) ≥ Vth 4 V + 2 V margin — 59 mA bleed sits in the ohmic region; architecture stands (reviewer: verify, don't replace)`);
+  // R7-B: VOM1271 GUARANTEED numbers only (datasheet Rev 1.9 — the R6 check used a 40 µA
+  // "worst" that was actually a typical-class misread; the reviewer caught it). The ONLY
+  // spec'd-minimum point is IF = 10 mA: Voc ≥ 7.8 V, Isc ≥ 6.0 µA — hence the V15-fed
+  // 1.2 k LED feed (11 mA) behind QPVD instead of the old 5 mA GPIO drive. Worst-case
+  // load line = the (Isc,Voc) chord (the real PV curve is convex-above it).
+  const Voc = 7.8, Isc = 6.0e-6, R = 6.8e6, Igss = 100e-9, VthMax = 3.5;
+  const ifLed = (15 - 1.4 - 0.2) / 1200;
+  const vChord = Isc * R * Voc / (Voc + Isc * R) - Igss * R;
+  ck("R7", "bank-bleeder PV gate drive (guaranteed)", ifLed >= 10e-3 && vChord >= VthMax + 2 && /resistance="6.8M"/.test(cellsSrc) && /QPVD/.test(cellsSrc + readFileSync(join(ROOT, "packages/common-components/boards.tsx"), "utf8")),
+    `IF ${f(ifLed * 1e3, 1)} mA ≥ the 10 mA spec point; chord ${f(Isc * R * Voc / (Voc + Isc * R), 2)} V − ${f(Igss * R, 2)} V Igss = ${f(vChord, 2)} V ≥ Vth(max) 3.5 + 2 (QDIS gate spec on the BOM line); old 1 M/GPIO chord was 3.4 V — below threshold`);
 }
 
 console.log(fails ? `\n${fails} STRESS FAILURE(S)` : "\nSTRESS AUDIT CLEAN — every device inside its own acceptance line, all three variants");

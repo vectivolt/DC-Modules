@@ -942,22 +942,26 @@ export const DischargeCtl = ({ id = "", ctl, gateOut, dcn, sec = "DISCH", x = 0,
   </group>
 );
 
-// ---------- photovoltaic gate drive (ECO-2a, E33 rev B): VOM1271-class PV driver for the bank
-// bleeders — the bleeder needs default-OFF isolation and ms-class turn-on only, so the opto +
-// DCN-referenced bias-module stack (₹137/bank) is over-built; the PV driver (₹35) needs NO
-// floating supply. Output ~8.4 V open-circuit: enough to enhance the SiC bleeder FET at its
-// 60 mA operating point (Rds elevated at Vgs 8 V — irrelevant at I²R ≈ mW). Integrated
-// turn-off circuit; RGB bleed for belt-and-braces default-OFF. NOT for the bus discharge
-// (QDISF keeps the fast opto+bias chain) and never for switching gates.
-export const PvGateDrive = ({ id, ctl, gateOut, src, sec = "BLEED", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+// ---------- photovoltaic gate drive (ECO-2a, E33 rev B · R7-B rework): VOM1271-class PV driver
+// for the bank bleeders — default-OFF isolation, ms-class turn-on, no floating supply.
+// R7-B (external review, datasheet Rev 1.9): the ONLY point with GUARANTEED minimums is
+// IF = 10 mA (Voc ≥ 7.8 V, Isc ≥ 6.0 µA); the old 330 Ω GPIO drive sat at ~5 mA where NO
+// minimum exists, and the 1 MΩ gate load's guaranteed load-line chord computed 3.4 V — below
+// threshold. Rework: LEDs fed from V15 at ~11 mA through 1.2 k (cathodes to the shared
+// PV_SINK, switched by the board's QPVD low-side NPN — GPIO cannot source 2×10 mA), and the
+// gate bleed raised to 6.8 MΩ: worst-case chord V = Isc·R·Voc/(Voc+Isc·R) = 6.55 V, minus
+// ≤0.7 V of 100 nA-class gate leakage ⇒ ≥5.8 V at the gate vs Vth ≤3.5 V + 2 V margin.
+// Integrated turn-off still does the active discharge; 6.8 M is the belt-and-braces bleed.
+// NOT for the bus discharge (QDISF keeps the fast opto+bias chain) and never for switching gates.
+export const PvGateDrive = ({ id, gateOut, src, sec = "BLEED", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`pvg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 8 × 2.5 */}
     <chip name={`UPV${id}`} footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VN", pin6: "NC3", pin7: "NC4", pin8: "VP" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
-    <resistor name={`RPVL${id}`} resistance="330" footprint="0603" pcbX={-10} pcbY={0} schX={-2.4} schY={0} schSectionName={sec} />
-    <resistor name={`RPVB${id}`} resistance="1M" footprint="0805" pcbX={10} pcbY={0} schX={2.6} schY={0} schSectionName={sec} />
-    <trace from={ctl} to={`.RPVL${id} > .pin1`} schDisplayLabel={ctl.replace("net.", "")} />
+    <resistor name={`RPVL${id}`} resistance="1.2k" footprint="1206" pcbX={-10} pcbY={0} schX={-2.4} schY={0} schSectionName={sec} />
+    <resistor name={`RPVB${id}`} resistance="6.8M" footprint="0805" pcbX={10} pcbY={0} schX={2.6} schY={0} schSectionName={sec} />
+    <trace from={`.RPVL${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.RPVL${id} > .pin2`} to={`.UPV${id} > .ANO`} />
-    <trace from={`.UPV${id} > .CAT`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.UPV${id} > .CAT`} to="net.PV_SINK" schDisplayLabel="PV_SINK" />
     <trace from={`.UPV${id} > .VP`} to={gateOut} />
     <trace from={`.UPV${id} > .VN`} to={src} schDisplayLabel={src.replace("net.", "")} />
     <trace from={`.RPVB${id} > .pin1`} to={gateOut} />
