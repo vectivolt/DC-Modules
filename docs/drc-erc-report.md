@@ -1,5 +1,7 @@
 # DRC / ERC Report (§49-23) — generated from tsci builds, rev F (schematic rev D.1, 2026-09-05)
 
+> **HISTORICAL RECORD** — kept verbatim as an ERC snapshot of the rev-F builds; the standing gates are run-all's battery (schematic/interconnect/polarity/stress + verify-independent 218).
+
 Rev F: the three DC-DC boards rebuilt after ECO-2a (PV-driver bank bleeders replacing the
 opto+bias stacks) — again 0 netlist port errors each (`UPVA/UPVB` in, `PSQDA/B·UQDA/B` out,
 verified in circuit JSON); AC-DC boards unchanged from the rev-D build.

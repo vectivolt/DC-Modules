@@ -1,5 +1,7 @@
 # Simulation Report — Executed Runs (§50 format)
 
+> **HISTORICAL RECORD** — kept verbatim as the Phase-9 execution record; later variant engines (D6 rev C, per-variant LISN/grids, NCP1252D aux re-basis) live in calculations/ and register rows E41–E49.
+
 Solver for all runs: **ngspice-46 (KLU), method=gear**, macOS arm64. Every generated netlist is preserved under `spice/generated/*.cir`; raw waveform data `spice/generated/*.out`; metrics CSVs under `simulation-results/30kw/`. Models: `spice/models/sic-behavioral.lib` (BEHAVIORAL — provenance and limitations in the file header; vendor-encrypted PSpice models documented as ngspice-incompatible per §8). Anything not listed here is **NOT VERIFIED**.
 
 ## 1. Level-1 double-pulse (§16) — `spice/double-pulse/dpt-run.mjs`

@@ -10,9 +10,9 @@ Fasteners: M3 (PCB), M4 (TO-247 clamps/tabs), M5 (choke lugs), M6 (relay), M8 (p
 1. SMT both boards (double-sided reflow; THT wave/selective for drivers' pin-rows, relays, film caps).
 2. THT power: TO-247 rows loose-fit → clamp bars → snap-in caps → studs.
 3. Magnetics kitting: transformer units mated to trim-inductor **bin per leakage label (D2 rev C — gapped-ferrite bins, audit E35; kitting flow unchanged)**; chokes torqued M6, thermocouple pocket check (first article per lot).
-4. Board test A (AC-DC) and B (DC-DC) separately at low voltage: aux rails, **MCU program+boot via the JSWD headers (BOOT0 strapped low; CB-13 — this step is now physically provisioned)**, gate pulses into dummy RC (PWM-off isolation §45), relay click **+ mirror-contact readback** test (E30), HMI/CAN on B.
+4. Board test A (AC-DC) and B (DC-DC) separately at low voltage with a **test control card** in the slot/harness: aux rails, **card program+boot via its JSWD header (BOOT0 strapped low; CB-13)**, gate pulses into dummy RC (PWM-off isolation §45), relay click **+ mirror-contact readback** test (E30), HMI/CAN on B.
 5. TO-247 clamp to respective extrusion with phase-change TIM (0.5 K·cm²/W class), torque M4 = 1.2 N·m, pattern center-out; TIM coverage witness on 1/50.
-6. Sandwich mate: pillar studs DCP/DCN/PE 12 N·m + belleville; 16-way harness with retention clip, shield drain to PE (AC-DC end).
+6. Sandwich mate: pillar studs DCP/DCN/PE 12 N·m + belleville; 40-way harness (HARNESS40) with retention clip, shield drain to PE (AC-DC end only).
 7. Enclosure: tunnel baffles, fans (arrow check), filter, front panel (display window + button actuators + CAN/term access).
 8. EOL (below) → serialize, HMI address 00, ship config via CAN IDENT write.
 

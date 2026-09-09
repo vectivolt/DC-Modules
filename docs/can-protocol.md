@@ -1,6 +1,6 @@
 # External CAN Interface (§23/§46/§49-20) — rev A
 
-Physical: ISO 11898-2, isolated (NSI1042 + iso 5 V), 120 Ω jumper-selectable termination, CM choke + TVS.
+Physical: ISO 11898-2, isolated (NSI1042-DSWR + iso 5 V), 120 Ω jumper-selectable termination, CM choke + TVS.
 Protocol: **CAN 2.0B, 125 kbps, 29-bit extended ID** (CAN-FD capable transceiver for future, E-arch).
 Behavioral compatibility with NIUERA/Tonhe/Maxwell/UUGreenPower module classes (§46) — capability-equivalent,
 **not** packet-cloned (interop packet layout only under contract, N-2).

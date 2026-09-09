@@ -1,91 +1,90 @@
-# Platform Architecture — Phase 9 Freeze (rev B: two-board sandwich, E17)
+# Platform Architecture — rev E49 (2026-09-09)
 
-One repeatable ~10 kW **cell pair** (PFC phase cell + LLC section) instantiated 3/6/12×, **two sandwiched boards (AC-DC lower + DC-DC upper, faces inward, semis to outer heatsinks — docs/interconnect.md)**, one enclosure, one external CAN, one 2-button/2-digit config HMI, two GD32G553 MCUs — at every rating. Values below are the frozen set (assumptions.md E1–E16); calculations in `calculations/`, sims in `docs/simulation-report.md`.
+One ~10 kW **cell pair** (Vienna PFC phase cell + 3-φ LLC section ×3) on one two-board sandwich
+(AC-DC lower + DC-DC upper, faces inward, semiconductors to the outer heatsinks), **one control
+card — one brain per module** (GD32G553VET7, E40), one external CAN, one 2-button/2-digit HMI.
+Four module SKUs share the platform; higher ratings are **cabinets of modules**. Values below are
+the frozen set (register E1–E49 in [`assumptions.md`](assumptions.md)); every number reproduces
+from `calculations/run-all.sh`.
 
-## Power path (30 kW; ×2 lanes/channels = 60 kW; ×4 = 120 kW, one PCB)
+## The family (E40/E41/E42/E44)
+
+| Module | Silicon vs 30 kW | Cooling | ₹@10k · ₹/kW |
+|---|---|---|---|
+| **30 kW** | baseline (single B3M pair/phase, single SG2M/position) | air, 2 fans | 30,682 · 1,023 |
+| **40 kW** (E41) | PFC pairs **paralleled** (2× B3M/position, own 2.2 Ω each) | air, 3 fans | 35,292 · 882 |
+| **50 kW** (E42) | 40 kW silicon (single LLC FETs — the coldplate buys it) | **liquid**, 0 fans | 41,320 · 826 |
+| **50 kW air** (E44) | PFC **and** LLC paralleled (per-package conduction quarters) | air, 4 fans | 40,972 · **819 — cheapest** |
+| Products | 60/80/100 kW = 2× modules · 120/150 kW = 3–4× + **CSU** (same card, strap role) | | cheapest 120 = 3×40+CSU ₹107,710 (898) |
+
+## Power path (per module; all four SKUs, one drawing family)
 
 ```
 3φ 285–475 VAC (full P ≥330 V)
- → fuse • MOV network • CM/DM EMI (2-stage) → precharge 33 Ω + bypass relay
- → Vienna 3-level PFC, 50 kHz, per phase: 165 µH-class sendust choke (0077908A7 26µ 3-stack, N=39±1 — D1 rev B, audit E35),
-   common-source B3M010C075Z pair (1 PWM), 2× 1200 V/40 A JBS to rails,
-   RC 10Ω/470p + RCD clamp (JBS+100 nF+470 Ω) per node
- → split bus 800 V (650–830 V commanded), 2×(5× 470 µF/450 V) + film, midpoint sensed,
-   HW OVP 860 V, balancing loop, discharge 640 Ω/FET
- → 3-phase half-bridge LLC per channel, SG2M023120LJ, PFM 100–203 kHz around fr=140 kHz,
-   per phase (E7 rev D2): Cr 185 nF (4×46 nF 1200 V PP) + Lr trim binned 3.3–4.35 µH
-   (D2, Lr total 7.0 µH) + section transformer (3×PQ50/50, 7:7:7, Lm 63 µH, leakage ~3 µH),
-   star primaries
- → per section 2 secondaries → 2× SiC JBS bridges (1200 V/20 A) → floating banks A, B
- → S/P matrix: K_PAR_A/B (each with 10 Ω pre-insertion aux), K_SER, K_OUT, bleed
- → output filter → shunt (manganin + NSI1200) → busbar 150–1000 V · 100 A (30 kW) / 133 A (40 kW, E41) per module · 200/267/400 A as cabinets
+ → fuse (80/125/160 A gG per SKU) • MOV Δ + GDT • 2-stage CM/DM EMI (D6/D7 per SKU)
+ → precharge 33 Ω ×2 + 2-pole bypass relay (E14 rev B)
+ → Vienna 3-level PFC, 50 kHz: per-SKU D1 choke (biased-L governs — see magnetics.md),
+   common-source B3M010C075Z pair (×2 paralleled at 40/50), 2× 1200 V JBS to rails,
+   RC snubber + RCD clamp per node, DESAT (fwd) + line-CT→CMP→HRTIMER trip (rev, E47/E48)
+ → split 800 V bus (650–830 V commanded), 2×(5/6/8× 470 µF) per SKU + films, HW OVP 860 V,
+   two-phase discharge: 640 Ω active to the 321 V aux floor, then passive balance
+   (370/222/296 s to <60 V at 30/40/50 — label: isolate, wait 10 min, AND verify; E47/E49)
+ → 3-phase half-bridge LLC, SG2M023120LJ (×2 paralleled on the air-50), PFM around fr 140 kHz:
+   per-SKU Cr bank (4×46 n / 6×33 n / 8×27 n), binned trim + leakage = Lr, section transformer
+   (3×PQ50 7:7:7 · 2×E70 9:9:9 · 3×E70 6:6:6), Lm 63 µH ±7 %, star primaries
+ → 2 secondaries/section → 2× SiC JBS bridges → floating banks A, B
+ → S/P matrix: K_PAR_A/B (10 Ω pre-insertion), K_SER, K_OUT (dual at 50 kW), bank bleeders
+   (VOM1271 PV-driven, R8 drive), two-stage 74HC02 exclusion (KSER ∧ ¬KPAR* ∧ ¬KPRE*, R5-D)
+ → output filter → manganin shunt (50 mV, per-SKU rating; positive = delivering, R6-E)
+ → studs 150–1000 V · 100/133/167 A per SKU
 ```
 
-## Control plane
+## Control plane (E40 single brain)
 
-- **MCU-PFC** (GD32G553): 3/6/12 HRTIM PWM (lanes phase-shifted 180° or 90°), per-lane phase-current loops (fc 3 kHz, PM 50°), bus-voltage loop (15 Hz) with VBUS_ref follower, PLL, midpoint balancing, precharge/discharge FSM, fan control, comparator OC/OVP → PWM kill.
-- **MCU-LLC**: 3/6/12 HRTIM half-bridge pairs common PFM clock, CV/CC loops, mode map (PFM / PS <260 V bank / burst), bus_ref = clamp(2·bank/0.95, 650, 830) requested over internal link, S/P FSM (I≈0 → PWM off → BBM → pre-insert to ΔV<0.5 V → make → verify → resume; weld detect 1.5 V/200 ms), K_OUT pre-regulation to terminal V, external CAN 2.0B 125 kbps 29-bit.
-- Internal link: UART/CAN 10 ms cadence, CRC16 + sequence + 50 ms timeout → controlled shutdown; re-ENABLE required after loss (§22/§23).
+- **One control card** in the DC-DC slot runs Vienna + LLC together: all nine PWMs on HRTIMER
+  units (LLC pairs ST0–2 with hardware dead-time, PFC singles ST3–5), 22 analog channels,
+  one merged FLT on HRTIMER_FLT2. The 88-way slot carries the DC-DC side; a **40-way
+  straight-through harness** (HARNESS40, generated) carries the whole PFC bundle to the AC-DC
+  board. No inter-MCU link exists.
+- **Identity = one RATING strap** (E24 rev G): 0 R → 30 kW · 1 k → 40 kW · 3.32 k → cabinet
+  CSU · 10 k → 50 kW liquid · 15 k → 50 kW air · open → fault. One card p/n, one firmware
+  image, family-wide (1/2/3–5 cards at module/2×/cabinet scale).
+- Loops: per-phase current (fc ≈3 kHz, PM 50°), bus voltage (15 Hz) with bus_ref =
+  clamp(2·bank/0.95, 650, 830), PLL + midpoint balance; LLC CV/CC with mode map
+  (PFM / phase-shift <260 V bank / burst), S/P FSM with pre-insertion, weld check and the
+  E12b K_OUT gate. External CAN 2.0B 125 kbps, 29-bit ([`can-protocol.md`](can-protocol.md)).
+- Supervisory C99 core (`firmware/`) is the normative logic — 26 scenarios + CSU + codec +
+  fuzz + invariants, **50/50 under ASan/UBSan** ([`firmware-guide.md`](firmware-guide.md)).
 
-## Protection map (§24; thresholds table in docs/protection-thresholds.md)
+## Protection map (full table: [`protection-thresholds.md`](protection-thresholds.md))
 
-Hardware-fast (no firmware): per-lane phase OC comparators → HRTIM kill; resonant OC per channel; bus OVP 860 V; output OVP; DESAT per SiC (NSI6611); driver UVLO; complementary-PWM interlock; watchdog gate-kill; aux-collapse gate clamp (drivers hold-low on UVLO — §28 requirement).
-Supervisory (firmware): §24 full list — input OV/UV/phase loss (validated behavior: sim run `400-phloss`)/sequence/imbalance, midpoint, all temperature zones, fan tach, output OC/UV/short, bank imbalance, relay faults (incl. weld), discharge failure, sensor plausibility, comm timeouts, EEPROM CRC, repeated-fault lockout, pre-fault snapshot ring buffer.
+Hardware-fast, no firmware in the loop: per-phase line-CT → on-chip comparator (A/B/C on
+CMP7/CMP1/CMP2, instance-verified E48) → HRTIMER kill for the DESAT-blind polarity; NSI6611
+DESAT (100 Ω series, R5-B) for the forward polarity; resonant OC comparators; bus/output OVP;
+driver UVLO; the two-stage relay exclusion; and the watchdog — whose open-drain WDO both
+gates the enable AND **resets the MCU** (WDO ≡ NRST, R5-A/R6-A: a hung brain restarts with
+every enable low). Supervisory firmware carries the ~30-row F.xx ladder with per-SKU windows.
 
-## Scaling (Phase 12 confirmation)
+## Auxiliary and rails
 
-| | 30 kW | 60 kW | 120 kW |
-|---|---|---|---|
-| PFC lanes (interleave) | 1 | 2 @0/180° | 4 @0/90/180/270° |
-| LLC channels | 1 | 2 | 4 |
-| Magnetics | 3 chokes + 3 sections | 6+6 | 12+12 — same two p/n family-wide |
-| DC link | 10× 470 µF | 18–20× | 36–40× |
-| Output relays | 100 A set | 200 A set | 2×200 A paralleled (make at matched V per FSM) |
-| PWM/MCU | 3+3 ch | 6+6 | 12+12 (HRTIM full) |
-| Ripple at EMI filter | 50 kHz | 100 kHz eff. | 200 kHz eff. |
+Full-bus 110 W flyback (D4 rev C): **NCP1252D** (R6-G — the A-suffix could not cold-start:
+120 ms mandatory delay vs 1 V hysteresis), 220 µF VCC reservoir, brown-out at 321 V bus,
+cold start ≈5–6 s nominal (≈8 s low-line). Rails: V24 (coils/fans), V15 (bias + card feed),
+per-board 3.3 V sync bucks (100 k/27 k EN dividers, R4-4), reinforced-class isolated bias
+modules (QA01C-18, +18/−3) for every floating driver/sense domain.
 
-Same two-board outline family, same heatsink extrusion profile (length scales), same fan p/n (2/2/4). Board pair per SKU: 420×300+460×320 / 460×420+520×420 / 560×600+640×620 mm.
+## Efficiency / thermal snapshot (per-variant engines; grid 6048 pts, 0 fail)
 
-## Efficiency / thermal snapshot (loss-budget.mjs)
+η at 400 V / full load ≥300 V out: **97.28 % (30) · 97.4 % class (40) · 97.5 % class (50 L)
+· 97.01 % full / 98.55 % peak (50 air — family best per-kW)**. Worst-corner Tj ≤147 °C vs the
+150 °C policy ceiling, every device inside its own acceptance line (`stress-audit.mjs`, in
+run-all). Cooling: extrusions + 2/3/4 fans, or the E42 coldplate pair (sealed, zero fans).
 
-η at 400 V/full/≥300 V out: 97.4 / 97.5 / 97.5 % (JBS baseline; SR variant +0.68 pt). Worst corner (330 V in): 30 kW = 871 W total, 620 W on heatsink → Rth ≤0.032 K/W at rated airflow; derate 100%@55 °C → 40%@75 °C.
+## Revision trail
 
-
----
-
-## Rev C (2026-09-05) — production-review closure deltas
-
-The frozen power path is unchanged. What changed is the support architecture (register E25–E31):
-
-```mermaid
-flowchart LR
-  subgraph SELV["SELV control domain (AGND=DGND, soft-bonded to PE)"]
-    MCUP["MCU-PFC + WD-A"] --- AND_A["AND: EN_PFC × EN_LLC × WDO"] --> GEA["GATE_EN_A ⭢ 9–36 driver EN"]
-    MCUL["MCU-LLC + WD-B"] --- AND_B["AND ×3"] --> GEB["GATE_EN_B"]
-    MCUP <-->|"UART, crossed on DC-DC side"| MCUL
-  end
-  ACD["AC phases"] -- "±5 V iso amps vs artificial star" --> MCUP
-  BUS["DCP/MID"] -- "0–2 V iso amps vs DCN" --> MCUP
-  BKS["banks / output"] -- "iso amps in-domain" --> MCUL
-  CTS["line + resonant CTs"] -- "AVMID-biased burdens" --> MCUP & MCUL
-  DIS["discharge FET (DCN)"] -- "opto, default-OFF" --> MCUP
-```
-
-- **Enable/kill:** no software-only gate path remains — E27 wired-AND with per-board windowed
-  watchdogs; harness loss or a hung MCU disables both boards' gates in hardware.
-- **Sensing:** every HV measurement is isolated (E25); the control domain is touch-safe SELV, so
-  the HMI/SWD/fans/CAN need no additional barriers.
-- **Aux:** full-bus 60 W flyback (E26) — boots from 285 VAC cold; powers worst-case relay+fan load.
-- **Energy storage:** bank strings 2×450 V (E29); Vienna legs carry local film commutation caps.
-- **Readback:** all HV relays have mirror contacts wired to the MCUs (E30) — F.19 is real.
-
-## Rev D (2026-09-05) — R2 re-audit closure deltas (E32/E33, E26 rev C)
-
-Power path unchanged again; the R2 pass caught defects inside the rev-C fixes and 30 kW-defaults
-masquerading as SKU scaling: resonant sensing re-scaled (2.0 Ω burdens), **each board now sources
-its own 3.3 V via sync buck** (the DC-DC board had no 3.3 V source at all), aux re-rated to a
-single 110 W stage family-wide (D4 rev C, NCP1252D — R6-G cold-start fix, 400 V rectifiers), `FLT_LLC` reaches MCU-LLC,
-commanded **bank** discharge added (E33), tank aligned to the frozen rev-D2 values, watchdog symbol
-completed, reinforced-class bias modules, 4 monitored fans + dual S/P relay instances + per-SKU
-CM chokes/pulse parts at 120 kW, F.21 implemented in firmware. Full log:
-`docs/design-review-production-r2.md`.
+The power path froze at Phase 9; everything since is closure and variants, recorded
+decision-by-decision in the register (E17 sandwich · E25–E33 production closure · E35–E39
+audits · E40 single brain · E41/E42/E44 variants · E43 family verification · **E45–E49 the
+five external-review rounds R4–R8**). Dated fix logs: `design-review-production*.md`,
+`review-response-r3.md`; the audit trail summary lives in the top-level
+[`README.md`](../README.md).

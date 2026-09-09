@@ -34,10 +34,10 @@ A sheet printed alone still identifies itself. The title block carries the SKU, 
 pair, sheet *n* of 2, what the module is, and what that board contains:
 
     Title    DC-Modules 30 kW — AC-DC board (Vienna PFC)
-    Rev      D.3
+    Rev      D.4
     Comp     DC-Modules 30 kW - board AC-DC (lower), sheet 1 of 2
     Comment1 Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper),
-             bolted DCP/DCN/PE studs + 16-way control harness
+             bolted DCP/DCN/PE studs + 40-way control harness (HARNESS40)
     Comment2 Content: 1x Vienna PFC cell + 1x 3-ph LLC cell
     Comment3 31 functional sections - 304 components - cross-section links are global net labels
     Comment4 Every component carries MPN + LCSC fields

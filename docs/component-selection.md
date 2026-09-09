@@ -21,8 +21,8 @@ Rule applied: no device >75% repetitive blocking incl. simulated ring (§4); DPT
 | Iso gate driver | NSI6611 | NOVOSENSE | ~10 A, UVLO, Miller clamp, DESAT, soft-off | 9/18/36 | LCSC | ₹85 | NSI6602 variants; 2ED020I12 (non-Chinese fallback) |
 | Iso amp (HV sense) | NSI1200 | NOVOSENSE | ±50 mV shunt class | 4/6/10 | LCSC | ₹70 | NSI1300 family |
 | Iso ADC/amp (output V) | NSI1311 class | NOVOSENSE | iso ΣΔ | 2 | LCSC | ₹95 | TI AMC1311 fallback |
-| Iso CAN | NSI1042 | NOVOSENSE | CAN 2.0B/FD capable | 1 | LCSC | ₹60 | NSI1050 |
-| MCU | GD32G553RET6-class | GigaDevice | M33 216 MHz, HRTIMER, 4 ADC | 2 | LCSC | ₹210 | GD32G563 larger pkg (R3 mitigation) |
+| Iso CAN | NSI1042-DSWR | NOVOSENSE | CAN 2.0B/FD capable (pin map closed vs Rev 1.3, R7) | 1 | LCSC | ₹60 | NSI1050-DSWR |
+| MCU | GD32G553VET7 | GigaDevice | M33 216 MHz, HRTIMER, LQFP100, −40…105 °C (R5-I: only VET7/VET3 are order codes) | 1 (one card/module, E40) | LCSC | ₹210 | GD32G553VET3 (125 °C) |
 | Digital iso (relay/fault) | NSI8241 class | NOVOSENSE | 4-ch | 3/4/6 | LCSC | ₹45 | — |
 
 ## 3. Passives / electromechanical (power-critical)
@@ -65,7 +65,7 @@ Cost roll-up lives in `calculations/out/cost-model.csv` and `docs/bom-cost.md` (
 | HMI display | 2-digit 0.56" CC 7-seg | 1 | ₹18 | E21 |
 | HMI buttons | 6×6 tactile | 2 | ₹3 | E21 |
 | HMI driver | 74HC595 + 2× S8050 | 1+2 | ₹5 | E21 |
-| B2B harness | JST PHD 2.0 16-way + leads | 1 set | ₹22+ | E17 |
+| B2B harness | Micro-Fit 3.0-class 2×20 (HARNESS40, 40-way) + leads | 1 set | ₹72+ | E17/E40 |
 | Bus studs | M8 pillar sets ×3 | 1 set | ₹84 | E17, torque 12 N·m |
 
 Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49-21/22).
@@ -125,7 +125,7 @@ Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49
 | 120 kW S/P relay pairs | BOM qtyMul only | **dual schematic instances w/ series mirrors** | HR-19 |
 | Balance/star resistors | single 100 k 2512 (415 V/1.7 W each) | **2-series 47 k HV anti-surge** | HR-20 |
 | AVMID buffer | op-amp direct into 10 µF | **4.7 Ω isolation + dual feedback** | MR-11 |
-| MCU mpn | GD32G553**R**ET6 (64-pin!) | **GD32G553VET6** | MR-12 |
+| MCU mpn | GD32G553**R**ET6 (64-pin!) | **GD32G553VET6** → VET7 at R5-I (VET6 was never a real order code) | MR-12 |
 | B2B harness | JST PHD (1 A contacts) | **Micro-Fit 3.0-class 5 A; spares = GND; link series 100 Ω** | MR-14 |
 | OVP sense filters | 10 nF (τ 68 µs vs "<10 µs" claim) | **1 nF on OVP channels; table restated <25 µs** | MR-18 |
 | Clamp bleeder | 470 Ω 5 W (86 % worst) | **470 Ω 10 W** | MR-19 |

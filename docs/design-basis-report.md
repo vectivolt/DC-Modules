@@ -1,5 +1,7 @@
 # Design Basis Report — 30/60/120 kW Unidirectional 1000 VDC EV Charging Monoblocks
 
+> **HISTORICAL RECORD** — kept verbatim as the Phase-1 basis; the live system is docs/architecture.md (rev E49).
+
 Status: **PHASE 1 DELIVERABLE — ANALYTICAL BASIS ONLY.** No SPICE simulation has been executed yet. Every number below is either a documented assumption or traces to `calculations/design-basis.mjs` (outputs in `calculations/out/*.csv`). Items that require simulation or RFQ confirmation are explicitly marked. Nothing in this document is claimed as verified.
 
 ---

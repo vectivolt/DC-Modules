@@ -41,8 +41,8 @@ attempts proved the point and were both reverted:
 |---|---|
 | DC-link electrolytics — chosen by ripple current and endurance, not capacitance | `ELH-470u450` (120) |
 | Voltage-class film | `PP-46n-1200` (84) · `PP-1u-600` (42) · `PP-1u-1100` (27) · `FILM-100n-250` (21) · `PP-4u7-1200` (6) · `PP-10n-1200` (3) |
-| Custom magnetics by drawing | `IND-PFC-165u` (21) · `IND-TRIM-BIN4` (21) · `DM-22u-SKU` (9) |
-| Pulse / power resistors | `CER-2k2-10W-AX` (24) · `WW-470R-10W` (21) · `CER-25W-AX` (12) · `CER-50W-AX` (6) · `SQP-10R-25W` (6) |
+| Custom magnetics by drawing | `IND-PFC-*` per SKU (D1) · `IND-TRIM-BIN4/5/6` (D2) · `DM-CHOKE-30/40/50` (D6 rev C) |
+| Pulse / power resistors | `CER-2k2-10W-AX` · `WW-470R-10W` · `CER-25W/50W-33R-AX` (precharge) · `CER-25W/50W-160R-AX` (discharge) · `SQP-10R-25W` — value-carrying codes since R5-G |
 | Anti-surge HV | `R2512-HV` (18) |
 | Safety-certified — must carry the certification, not just the value | `X1-2u2-530` (18) |
 | Mechanical terminals | `STUD-M8` (36) · `TAB-M4` (3) |
@@ -68,8 +68,8 @@ parts that **do** have a C-number but still need requalification before release:
 | `CT-100A-1:2500` | C94571 | 63.95 A rms/cell at 285 V low line — class check |
 | `CT-RES-1:100` | C94571 | resonant CT, same toroid family |
 | `ISO5V-RFC-6K` | C20613048 | reinforced rating required by E25 |
-| `QA01C` | C2757491 | iso gate-bias module, +18/−4 configured (E23 rev B) |
-| `SHUNT-MANG` | C508584 | manganin shunt 50 mV class, per-SKU current |
+| `QA01C-18` | C2757491 | iso gate-bias module, +18/−3 (R4-6; E23 rev B module decision) |
+| `SHUNT-50MV-100A/133A/167A` | C508584 | manganin shunt, rated current in the order code per SKU (R5-G) |
 | `PS122WF4702T4E` | C2793932 | **zero stock / pre-sale** — sourcing risk, not a rating problem |
 | `TACT-6x6` | C318884 | body size unresolved — candidates rejected at 3.9×3.0 and 5.2×5.2 mm |
 | `LED-2DIG-0.56CC` | C9900021773 | segment pin map not validated against a chosen part |

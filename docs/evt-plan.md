@@ -44,9 +44,13 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 | ID | Test | Pass criterion |
 |---|---|---|
 | T-19 | 3.3 V rails both boards, 55 °C, full driver load | 3.30 ± 0.15 V; buck Tj-est < 105 °C (CB-17/18) |
-| T-20 | FLT_LLC injection (driver DESAT jig on one LLC channel) | F.12 latch on MCU-LLC ≤ 10 ms; no flux-walk on adjacent sections (CB-21) |
+| T-20 | FLT injection (driver DESAT jig on one LLC channel) | F.12 latch on the card ≤ 10 ms; no flux-walk on adjacent sections (CB-21) |
 | T-21 | Bank discharge: shutdown from series 1000 V and parallel 500 V | both banks < 60 V within 2× τ table; F.21/F.21b timing per SKU (HR-15/HR-14); resistor ΔT per pulse spec |
 | T-22 | Precharge/discharge timing per SKU (extends T-05) | t95 within ±25 % of 160/288/576 ms; pulse parts < 180 °C at the 50 W 120 kW variants |
 | T-23 | CM choke thermography at rated line current per SKU (extends T-04) | ΔT ≤ 45 K (D7 windings, HR-18) |
 | T-24 | Dual-relay pair current share at 120 kW (Rogowski both paths) | worst split ≤ 60/40 at 400 A, or pair re-binned (HR-19) |
 | T-25 | Tolerance-corner gain capability (deliberate worst-bin trim + low-Lm transformer build) | bank_max ≥ 525 V at full load (CB-22 / §37 yield fix validated in hardware) |
+| T-26 | PFC fast-trip timing, BOTH current polarities (E47/E48) | measured threshold-crossing → gate-off ≤ the registered budget on every phase; CT polarity ↔ comparator-trip polarity confirmed per phase; DESAT covers the forward direction, CMP the reverse |
+| T-27 | Discharge hold-up waveform (E47/E49) | active phase reaches ≤~330 V before aux brown-out; passive continuation matches the per-SKU 370/222/296 s model ±tolerances; label wait verified with residual-V measurement |
+| T-28 | PV bleeder loaded drive (R8) | loaded V_GS, drain current and FET temperature with the exact orderable QDIS part across the declared ≤70 °C bleed ambient; discharge time per bank model |
+| T-29 | Aux cold-start waveform (R6-G) | first switching ≤10 s from AC apply at 320–480 VLL; VCC never crosses VCC(off) during soft-start + takeover; V15 floor during commanded bleed recorded (feeds T-28) |

@@ -297,7 +297,7 @@ Everything lives in [`docs/`](docs/README.md). Highlights:
 | [`control-card-scope.md`](docs/control-card-scope.md) | why one card caps at 60 kW DC-DC — the arithmetic that retired 120 kW single-board |
 | [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | the release schematics and the audits that gate them |
 | [`magnetics.md`](docs/magnetics.md) | manufacturing drawings D1–D7 (rev B/C set) with acceptance limits |
-| [`interconnect.md`](docs/interconnect.md) | sandwich, stud pillars, 16-way harness, 88-way card slots, cabinet audit |
+| [`interconnect.md`](docs/interconnect.md) | sandwich, stud pillars, 40-way harness, the 88-way card slot, cabinet audit |
 | [`simulation-report.md`](docs/simulation-report.md) | all executed runs in §50 format |
 | [`thermal-report.md`](docs/thermal-report.md) | loss budgets, sandwich cooling, derating curves |
 | [`pcb-floorplan.md`](docs/pcb-floorplan.md) | the zone plan the layout phase will inherit |

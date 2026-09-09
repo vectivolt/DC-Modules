@@ -1,6 +1,6 @@
 # BOM Guide — how the numbers are made, and what they mean 💰
 
-The BOM is **not a spreadsheet someone typed** — it is generated from the six built schematics:
+The BOM is **not a spreadsheet someone typed** — it is generated from the built boards (four module SKUs + card + cabinet):
 
 ```mermaid
 flowchart LR
@@ -48,7 +48,7 @@ pie showData title 30 kW COGS ₹36,066 @1k (rev C)
 
 ## The red-line problem, stated plainly
 
-| @1k | 30 kW | 60 kW | 120 kW |
+| @1k (pre-cabinet snapshot — live totals in `bom-cost.md`) | 30 kW | 60 kW | 120 kW |
 |---|---|---|---|
 | **Actual (BOM-exact, rev C)** | ₹36,066 | ₹61,415 | ₹114,833 |
 | Red-line | 25,000 | 42,000 | 78,000 |

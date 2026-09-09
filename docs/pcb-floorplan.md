@@ -146,7 +146,7 @@ These are frozen; the zones are built around them, not negotiated with them.
 | Semis to heatsinks | AC-DC semis → **lower** extrusion, DC-DC semis → **upper** extrusion, component faces inward | interconnect.md E17 |
 | Magnetics | stand in the **inter-board tunnel**, in the primary airstream | interconnect.md E17 |
 | B2B power | 3× M8 stud pairs DCP / DCN / PE, stud-stud creepage **≥14 mm**, ≤50 µΩ per joint | interconnect.md, busbar-drawings.md |
-| B2B signal | 16-way, 300 mm **shielded** harness, shield to PE at the AC-DC end only | interconnect.md |
+| B2B signal | 40-way (HARNESS40), 300 mm **shielded** harness, shield to PE at the AC-DC end only | interconnect.md |
 | Clearance / creepage | 300 Vrms 3.0/4.0 · 830 VDC bus 4.0/5.5 · 1000 VDC out 4.5/6.3 · **reinforced pri↔sec 8.0/12.6 + routed slots** | insulation-coordination.md |
 | Y-caps | 3 line-PE + 2 output-PE, Y1 440 VAC class, only across defined barriers | insulation-coordination.md |
 | CAN domain | CGND **floats**, 4 mm to everything, 1 MΩ ∥ 4.7 nF bleed to DGND | insulation-coordination.md |
@@ -358,7 +358,7 @@ runs from the front face towards the rear face, which is also the airflow direct
 | **Y5 SECONDARY RECTIFIERS + BANKS** | `BANKS-SP / BANK-A`, `BANK-B` | 2× JBS bridge per section, bank electrolytics + film | Secondary side. Bridges on the secondary device rail, as far forward as the barrier allows; **bank caps immediately behind them, at the front edge of the secondary zone** (§0 — they are life-limiting and must not sit at the exhaust). Banks A and B float — treat **both** at 1000 V class to PE and to each other. |
 | **Y6 S/P MATRIX** | `BANKS-SP / SP-MATRIX`, `BLEEDERS` | K_PAR_A/B + 10 Ω pre-insertion, K_SER, K_OUT, commanded bleeders | Guarded island — insulation-coordination.md calls this out explicitly. Relay lugs are M6 busbar joints, not PCB pads. Mirror contacts routed as a separate readback group. |
 | **Y7 OUTPUT** | `OUTPUT-SENSING / OUTPUT` | output filter, 4-terminal manganin shunt, DC± studs, **CAN contacts on the same plug** | **Rear face, far corner from the AC entry** (§0 diagonal). Reached by a short busbar from the banks, which stay forward. **Kelvin taps on the shunt are untouchable** — no other copper in their loop. OUT± keeps 6.3 mm to chassis everywhere. |
-| **Y8 CONTROL** | `CONTROL / MCU`, `SAFETY`, `SWD`, `COIL-DRIVER`, `GROUNDING`, `BUCK-3V3`, `INTERCONNECT` | MCU-LLC, interlock, relay coil driver, 15→3.3 V buck, JICB | Strip along one long edge, **primary side only, stopping at the barrier**. Primary-referenced because its rails arrive over the harness from the AC-DC board's single-point ground. Relay *coils* are driven from here; relay *contacts* are secondary — the relay body is itself a barrier component. |
+| **Y8 CONTROL** | `CONTROL / MCU`, `SAFETY`, `SWD`, `COIL-DRIVER`, `GROUNDING`, `BUCK-3V3`, `INTERCONNECT` | the 88-way card slot, interlock gates, relay coil driver, 15→3.3 V buck, JICB | Strip along one long edge, **primary side only, stopping at the barrier**. Primary-referenced because its rails arrive over the harness from the AC-DC board's single-point ground. Relay *coils* are driven from here; relay *contacts* are secondary — the relay body is itself a barrier component. |
 | **Y9 SECONDARY SENSE** | `OUTPUT-SENSING / SENSE-VBKA/VBKB/VOUT`, `ANALOG-MID`, `ISO-BIAS`, `NTC` | bank/output dividers, iso-shunt amp, isolated bias | Pods on the **secondary** side at their measured nodes, each with its own isolated bias, each crossing the barrier once through its isolator. No secondary-referenced signal reaches the MCU un-isolated. |
 | **Y10 HMI + CAN** | `COMMS-HMI / HMI`, `COMMS-HMI / CAN` | 2-digit display, 74HC595 + digit mux, 2 buttons, isolated CAN + floating CGND | **Split — see below.** CAN isolator stays on the control strip and only the isolated pair flies to the DC output plug; display and buttons go on a front-panel daughter card. |
 
@@ -651,7 +651,7 @@ The barrier is not only a gap in copper; each part sitting on it is part of the 
   [busbar-drawings.md](busbar-drawings.md).
 - **PE pillar** is the module's structural earth between the two extrusions — it also carries the
   extrusion PE bond of §4.
-- **Signal:** 16-way shielded harness, shield to PE at the AC-DC end only. Route it along the
+- **Signal:** 40-way shielded harness (HARNESS40), shield to PE at the AC-DC end only. Route it along the
   control-strip edge of both boards, physically separated from the DCP/DCN pillars — the harness
   carries the hardware kill line and the internal link, and a bus transient coupled into either is a
   module-level fault.

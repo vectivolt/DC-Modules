@@ -15,5 +15,4 @@ usable ✓ (holds at Lp +10 %). Rectifiers (CB-19): PIV = Vo + 860·n ≈ **160 
 Insulation: primary is at bus potential — reinforced barrier pri→all secondaries (TIW secondaries
 + 3 mm margin tape), hipot 4 kV 100 % (E25 SELV control domain depends on this barrier). Aux(VCC)
 winding is primary-side (DCN-referenced) — functional insulation only to primary, reinforced to
-secondaries. Rev C — bench T-09 verifies NCP1252A UVLO/BO thresholds and thermal (T-18 at the
-per-SKU load table).
+secondaries. Rev C — bench T-09 verifies the NCP1252**D** thresholds (14 V on / 9 V off — controller re-based at R6-G: the A-suffix could not cold-start) and thermal (T-18 at the per-SKU load table); cold-start waveform is EVT T-29.

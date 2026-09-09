@@ -2,22 +2,23 @@
 
 The `firmware/` tree holds the **normative** control-plane logic in portable C99 — no HAL, no RTOS
 assumptions — verified against the same plant and the same 26 fault scenarios as the design-phase
-model, plus protocol-codec guards and a 100 000-frame fuzz, all under AddressSanitizer +
-UndefinedBehaviorSanitizer. **33/33 checks pass**; run it yourself:
+model, plus the CSU supervisor, protocol-codec guards, a 100 000-frame fuzz and the R5-D
+exclusion invariant, all under AddressSanitizer + UndefinedBehaviorSanitizer. **50/50 checks
+pass**; run it yourself:
 
 ```bash
 sh firmware/run_tests.sh
-# cc -std=c99 -Wall -Wextra -Werror -fsanitize=address,undefined ... → RESULT: 33/33 checks passed
+# cc -std=c99 -Wall -Wextra -Werror -fsanitize=address,undefined ... → RESULT: 50/50 checks passed
 ```
 
 ## Files
 
 | File | Contents |
 |---|---|
-| `firmware/core/fsm.h` | states, fault codes (`F.xx` ↔ `FC_*`), threshold constants (mirror of [protection-thresholds.md](protection-thresholds.md) rev B), I/O structs, API |
+| `firmware/core/fsm.h` | states, fault codes (`F.xx` ↔ `FC_*`), threshold constants (mirror of [protection-thresholds.md](protection-thresholds.md)), I/O structs, API |
 | `firmware/core/fsm.c` | `pmp_fsm_step()` — 1 ms supervisory tick: HW-fault mirror → supervisory checks → state machine (precharge, enable chain, pre-insertion S/P sequencing, K_OUT gate, dwell, weld check, lockout, discharge) |
 | `firmware/core/can_proto.{h,c}` | CAN 2.0B codec per [can-protocol.md](can-protocol.md): 29-bit ID pack/parse, SET_OUTPUT / MODULE_CTL / STATUS1/2 / TEMPS / BUS frames — little-endian, DLC- and range-guarded, contradiction-rejecting |
-| `firmware/test/host_sim.c` | the verification rig: behavioral plant + 26 scripted scenarios + codec round-trips + fuzz |
+| `firmware/test/host_sim.c` | the verification rig: behavioral plant + 26 scripted scenarios + CSU suite + codec round-trips + fuzz + the per-tick matrix-exclusion invariant |
 | `firmware/run_tests.sh` | one-command build & run with sanitizers, `-Werror` |
 
 ## The FSM
@@ -41,7 +42,7 @@ stateDiagram-v2
   FAULT --> LOCK : 5 latches / window (F.31)
   STANDBY --> SHUTDOWN : off request
   SHUTDOWN --> DISCH : Q_DISCH on
-  DISCH --> [*] : bus < 60 V (≤ 2 s, F.21 supervised)
+  DISCH --> [*] : F.21-supervised (AC-present latch; AC-removed = two-phase, see protection-thresholds)
 ```
 
 Two rules that exist because verification **broke** their predecessors:
@@ -59,7 +60,7 @@ Two rules that exist because verification **broke** their predecessors:
 ```mermaid
 sequenceDiagram
   participant CAN as Controller (CAN)
-  participant LLC as MCU-LLC (FSM)
+  participant LLC as Card FSM
   participant K as Relay matrix
   CAN->>LLC: SET_OUTPUT 750 V (was 400 V)
   Note over LLC: crossover request → 30 s dwell timer
@@ -78,16 +79,15 @@ sequenceDiagram
 
 `pmp_fsm_step()` is pure logic over `pmp_in_t` → `pmp_out_t`. The MCU integration layer must:
 
-1. call it from a 1 ms tick (watchdog-supervised; missing ticks trips the independent WDT → `PWM_KILL`);
+1. call it from a 1 ms tick (watchdog-supervised; a missed WDI window drops the gates AND resets the MCU — WDO ≡ NRST, R5-A);
 2. populate `pmp_in_t` from calibrated ADC/CT/NTC channels (pin maps in `boards.tsx`, EOL cal per [dfm-production.md](dfm-production.md));
 3. mirror `out.pwm_kill` and driver `FLT` lines in **hardware** (HRTIM fault inputs + comparators) — firmware re-asserts, silicon acts first;
 4. map `out.k_*` through the ULN drivers and read back contact states into `relay_fb[]`;
 5. keep `PMP_MODE_DWELL_MS` at its product timebase (30 000 ms; the host suite compresses time 1000×);
-6. exchange `LINK` frames (CRC16 + sequence) across the board harness — 50 ms starvation latches F.27 on both boards independently.
+6. (single-brain, E40) there is no inter-MCU link — external CAN starvation is F.28; the 40-way harness carries no protocol, only signals with board-side default-OFF.
 
-MCU-PFC runs the subordinate slice of the same header (precharge, lane enables, `GATE_EN`,
-`CTL_QDIS`) so both processors share one vocabulary of states and fault codes — which is also what
-the HMI displays (`F.xx`) and CAN telemetry (STATUS2/FAULT_EVT) speak.
+The ONE card (E40) runs the whole vocabulary — precharge, enables, S/P matrix, discharge — and the
+same `F.xx` codes appear on the HMI and in CAN telemetry (STATUS2/FAULT_EVT).
 
 
 ---
@@ -104,9 +104,9 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   offset. Bus/bank/output channels are unipolar 0–2 V iso-amp outputs. `SNS_IOUT`/`SNS_IOUTN`
   form a software differential (subtract before scaling — MR-6). **Rail monitors** SNS_V24/SNS_V15
   (pins 51/52): ÷7.8 and ÷5.7 dividers — alarm at ±15 %.
-- **LLC fault path (rev D — R2 CB-21):** `FLT_LLC` lands on MCU-LLC pin 74 — latch F.02/F.12-class
-  faults from it exactly as MCU-PFC does from pin 74; it is also the F.32 visibility path on this
-  board.
+- **Fault path (E40 merge):** the ONE wired-OR `FLT` lands on card pin 47 (PB10 —
+  HRTIMER_FLT2 hardware trip); latch F.02/F.12-class faults from it. It is also the F.32
+  visibility path after a watchdog restart.
 - **Bank discharge (rev D — E33):** on SHUTDOWN, after `q_disch`, assert `CTL_QDISBK` (pin 75) —
   both bank bleeders fire (τ ≈ 4–17 s per SKU); supervise as F.21b (2× τ timeout per SKU). The
   bus F.21 timeout is now implemented in `fsm.c` with `PMP_DISCH_TO_MS` (override per SKU at
@@ -147,10 +147,10 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   to <60 V per SKU — R8-corrected balance-string model, per protection-thresholds). Do not chase a latched F.21 after AC removal.
 - **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
   the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
-- **Relay feedback:** `relay_fb[]` now reads real pins — MCU-LLC 2–7 = KSER, KPARA, KPARB, KOUT,
-  KPREA, KPREB mirror contacts (low = main open; **at 120 kW each HV function is a dual relay
-  pair with series mirrors on the same net — low = BOTH mains open, R2 HR-19**); MCU-PFC 50 =
-  KPRE1+KPRE2 series chain (high = both mains open). F.19 evaluates exactly as already coded.
+- **Relay feedback:** `relay_fb[]` reads the card ways DI0–DI5 = KSER, KPARA, KPARB, KOUT,
+  KPREA, KPREB mirror contacts (low = main open; a dual-relay function carries series mirrors
+  on one net — low = BOTH mains open) and DI8 = the KPRE1+KPRE2 series chain (high = both
+  open). Way→pin authority: `umod-map.gen.ts`. F.19 evaluates exactly as coded.
 - **Discharge:** `CTL_QDIS` is active-high into an opto LED; default (reset/tri-state) = OFF.
   No inversion vs the FSM's `discharge_cmd`.
 - **Relay economization (E26):** after 60 ms pull-in at 100 % duty, PWM coil hold at ~40 %

@@ -1,4 +1,4 @@
-# Protection Thresholds (§24/§49-19) — rev C (R2 re-audit closure, 2026-09-05)
+# Protection Thresholds (§24/§49-19) — rev E49 (R4–R8 external-review closures, 2026-09-09)
 
 HW = comparator/driver hardware, independent of firmware; FW = supervisory firmware.
 Tolerances include sense-chain error (divider 1% + 0.1% bottom, CT 1%+burden 1%, shunt 0.5% + amp).
@@ -37,7 +37,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 27 | Sensor implausible | cross-checks (ΣI≈0, Vout vs bank sum ±5%, T range) | 100 ms | FW | stop, latch | F.29 |
 | 28 | EEPROM CRC | at boot | boot | FW | safe defaults, F-code, no output | F.30 |
 | 29 | Repeated fault lockout | 5 latches / 10 min | — | FW | lockout until CAN clear + ENABLE | F.31 |
-| 30 | Watchdog | 10 ms window | HW | independent windowed WD per board → GATE_EN wired-AND (E27; PWM_KILL retired) | gates default-disabled | F.32 |
+| 30 | Watchdog | CWD-programmed window | HW | card supervisor: open-drain WDO gates the GATE_EN AND **and rides NRST_CARD** (R5-A/R6-A) — a hung MCU restarts with enables low | gates default-disabled through WDO-low and boot | F.32 |
 
 Hardware comparator DACs: thresholds from MCU DAC but **latch path is analog** — firmware can
 tighten, never loosen beyond table max (resistor-set ceilings on comparator references).

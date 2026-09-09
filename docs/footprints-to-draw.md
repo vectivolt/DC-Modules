@@ -18,7 +18,7 @@ fabricated manufacturing data, so each is listed here with its real package inst
 | `CAP-TH_L26.5-W11.0-P22.50` | 60 | 2.2uF, 1uF |
 | `RES-TH_L48.0-W8.0-P54.00` | 45 | WW-470R-10W, CER-2k2-10W-AX |
 | `TERM_Stud_M8` | 36 | STUD-M8 |
-| `RES-TH_L60.0-W9.0-P66.00` | 24 | CER-25W-AX, SQP-10R-25W |
+| `RES-TH_L60.0-W9.0-P66.00` | 24 | CER-25W-33R/160R-AX, SQP-10R-25W |
 | `R0603` | 24 | 220 |
 | `L_Toroid_3xT79_26u_custom` | 21 | IND-PFC-165u |
 | `CAP-TH_L7.2-W3.5-P5.00` | 21 | 100nF |
@@ -46,7 +46,7 @@ fabricated manufacturing data, so each is listed here with its real package inst
 | `TERM_Tab_M4` | 3 | TAB-M4 |
 | `IND-SMD_L4.5-W3.2_CMC` | 3 | CMC-CAN-51uH |
 | `LED-SEG-TH_2DIG-0.56` | 3 | LED-2DIG-0.56CC |
-| `SHUNT_4-terminal_manganin` | 3 | SHUNT-MANG |
+| `SHUNT_4-terminal_manganin` | 3 | SHUNT-50MV-100A/133A/167A |
 
 **36 footprints, 825 component instances across 30/60/120 kW.**
 

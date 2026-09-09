@@ -1,94 +1,78 @@
-# Verification Matrix & Risk Register (§49-23/24, §50)
+# Verification Matrix & Risk Register — rev E49
 
-Status letters: **V** = verified by executed calc/sim (file cited) · **P** = planned/spec'd, not executed · **N** = not applicable at this phase. Nothing marked V without an artifact on disk.
+Status letters: **V** = verified by executed calc/sim/audit (artifact cited) · **P** =
+planned/spec'd, not executed · **N** = not applicable at this phase. Nothing marked V without
+an artifact on disk; `calculations/run-all.sh` reproduces the battery.
 
 ## Requirements → evidence
 
 | Req (§2) | Evidence | Status |
 |---|---|---|
-| PF ≥0.99 / THD ≤5% (stretch 3%) | `pfc-phase-runs.csv`: THD-40 0.59–1.05% full, 2.55% @25% | V (averaged fidelity; bench confirm at EVT T-02) |
-| Output 150–1000 V CV/CC envelope | `llc-opmap.csv` (60 pts) + `llc-oppoints.csv` (ZVS all, boost margin +59%) | V analysis / P bench |
-| Peak η ≥97% | `loss-budget.csv`: 97.4–97.5% @nominal (JBS) | V calc / P bench |
-| Full power to +55 °C, derate to 75 °C | `derating.csv`, heatsink Rth ≤0.032 K/W requirement | V calc / P thermal chamber |
+| PF ≥0.99 / THD ≤5% (stretch 3%) | `pfc-phase-runs.csv`: THD 0.59–1.05% full, 2.55% @25% | V (averaged fidelity; bench at EVT T-02) |
+| Output 150–1000 V CV/CC envelope | `llc-opmap.csv` + `llc-oppoints.csv` (ZVS all points) + per-variant envelope grid **6048 pts, 0 fail** (corner folds = FSM derate rows) | V analysis / P bench |
+| Peak η ≥97% | `loss-budget.csv` per variant: 97.0–97.5% class (air-50 98.55% pk) | V calc / P bench |
+| Full power to +55 °C, derate to 75 °C | `derating.csv`; worst Tj ≤147 °C vs the 150 °C ceiling (`stress-audit.mjs`, all variants) | V calc / P thermal chamber |
 | Ripple ≤±0.5% | bank/output film+elyt sizing; 3-φ interleave | P (bench T-03) |
-| V-acc ±0.5% / I-acc ±1% | divider 0.1% bottom + EOL cal flow (§45) | P (cal at EOL) |
-| Standby <10 W | aux budget 6.8 W calc @idle (LLC off, fans off) | P bench |
+| V-acc ±0.5% / I-acc ±1% | divider 0.1% bottom + EOL cal flow | P (cal at EOL) |
+| Standby <10 W | aux budget calc @idle | P bench |
 | Input derating curve | E1 curve + `input-currents.csv` | V |
-| Protections (30 items) | `protection-thresholds.md` — HW paths in schematic (DESAT/COMP/OVP nets) | V design / P bench T-06 |
-| Mode-change FSM safety | `sp-transition.csv` → pre-insertion architecture E12/E13 | V sim / P bench T-07 |
+| Protections | `protection-thresholds.md` — HW paths in the netlists (DESAT chains, CMP allocation E48, OVP, exclusion, WDO≡NRST) | V design / P bench T-06 + both-polarity trip timing (E47/E48) |
+| Mode-change FSM safety | `sp-transition.csv` → pre-insertion E12/E13; per-tick exclusion invariant in host_sim | V sim / P bench T-07 |
+| Discharge to <60 V | two-phase model per SKU (370/222/296 s passive, netlist-proven balance strings — E49) + label + F.21 AC-present latch | V calc / P bench (hold-up waveform) |
 
-## Schematic/BOM verification (this rev)
+## Schematic/BOM verification (rev E49, standing gates)
 
 | Check | Result |
 |---|---|
-| Netlist build errors ("could not find port", invalid pins) | **0 on all six boards** (30/60 pairs verified; 120 pair after background build — this line updates at final review) |
-| MCU pin conflicts | `assertUniquePins` throws at build — **passing** on built boards (incl. HW-pin exclusions) |
-| Driver channels fully powered/wired (bias, DESAT, EN, FLT) | V — `DriverCh` cell used for all 9/18/36 channels |
-| Every relay coil driven | V — ULN outputs mapped, KPRE on AC-DC ULN, 6 coils on DC-DC ULN |
-| Sense chain completeness | V — 5 HV dividers +3(AC), CTs per phase/section, output shunt, 4 NTC |
-| HMI (E21) | V — 2 buttons, 2-digit display, 595+mux wired to MCU-LLC pins 88–94 |
-| BOM coverage | bom-gen reports **unmatched = 0** required for sign-off (currently: snubber rule added; re-run pending 120 kW build) |
-| **Margin audit E35 (2026-09-08)** | V — clean-room recompute reproduced all frozen values; 8 findings fixed same-day (D1 rev B / D2 rev C / D3 litz / D6 rev B / 27 Ω burden / 80 A fuse / card HRTIMER+AGND_2 / card-split BOM rules) and locked by the AUD-* gate set in `review-checks.mjs` |
-| Diode orientation TO-247-2 pin1=anode | ASSUMED — VERIFY vendor drawing before fab (§40) |
-| PCB layout | **N — explicitly out of scope per customer directive 2026-09-04** (placement DRC warnings ignored; layout phase reopens later) |
-| Production supervisory logic (E24) | **V — C99 fsm+CAN codec, 33/33 checks (26 scenarios + codec + 100k-frame fuzz) under ASan/UBSan**; found+fixed K_OUT gate defect (E12b) |
+| Netlist build errors | **0 on all 10 boards** (4 SKU pairs + card + cabinet) |
+| Sheet pin correctness | `kicad5-verify.mjs`: **7794/7794 across the six SHIP targets** |
+| Schematic symbol overlaps | **0** — every SKU pair checked (battery, widened at R6) |
+| Module interconnect | CLEAN — studs, all 40 harness ways, both 88-way slots, RATING straps, cabinet section |
+| Polarity | **every polarized part +/anode on pin 1 as the glyphs draw it** (E38 netlist gate + the R4-1 semantic-seating fix + payload↔netlist anode lock) |
+| Driver channels fully wired | V — one `DriverCh` cell = all 9 channels/module (real NSI6611 map, R4-2; DESAT series R, R5-B) |
+| Independent verifier | `verify-independent.mjs`: **218 checks** — clean-room netlist parser + sections A–J (R4/R5/R6/R7/R8 electrical proofs) |
+| BOM coverage | unmatched designators = 0; every class part carries a value-carrying order code (R5-G/R7-C/R8-C) |
+| Stress acceptance | `stress-audit.mjs` CLEAN — device/magnetic/protection/pulse/discharge/cold-start families, all variants |
+| Supervisory logic (E24) | C99 fsm + CAN codec + CSU: **50/50 checks** (26 scenarios + codec + 100k fuzz + rating windows + exclusion invariant) under ASan/UBSan |
+| PCB layout | **N — out of scope per customer directive (E36)**; layout phase reopens with `pcb-floorplan.md` |
 
-## SPICE matrix status (§35/§36) — deltas from simulation-report.md
+## Simulation matrix status
 
-Executed: DPT (26), PFC loops AC, Vienna line-cycle (6), precharge/discharge, LLC op-points (8, re-run at rev D2), S/P mismatch (4),
-**§35 grid 3024 pts (0 fail)**, **§37 Monte-Carlo 6 batches (all PASS after rev-D2 iteration)**, **aux flyback V-21 (PASS both corners)**,
-**LISN pre-compliance (E22 closes 30 kW gap, +7.8 dB estimate margin)**, **§36 scenario suite 26/26 PASS (fsm-sim)**.
-Open: none in the simulation domain. Hardware-domain items (bench/chamber/PD/relay-life) = EVT T-01…T-10 — physically outside this environment.
+Executed: DPT (26) · PFC loops · Vienna line-cycle (6) · precharge/discharge · LLC op-points ·
+S/P mismatch (4) · envelope grid 6048 pts (0 fail) · §37 Monte-Carlo (PASS after rev-D2) · aux
+flyback V-21 (PASS both corners; controller re-based NCP1252D at R6-G) · LISN pre-compliance
+per variant (+4.9/+5.7/+5.6 dB with the D6 rev C engine) · §36 scenario suite 26/26 (fsm-sim).
+Open in the simulation domain: none. Hardware-domain items = EVT T-01… (below).
 
-## Independent design review (2026-09-05)
+## Review history (dated records; every finding gated)
 
-Adversarial production audit `design-review-production.md`: **verdict NO** — 15 critical blockers
-(filter/bank cap ratings, isolation-breaching sense dividers, floating AGND, aux block unbuildable +
-range/budget, precharge bypass rating, missing Vienna film caps, enable/kill/WD chain unimplemented,
-discharge fail-engaged hazard, CLAMP pins floating, no SWD/boot, link TX/TX, unbiased bipolar senses),
-12 high, 10 medium. Fault-matrix delta rows FAIL until fixed; §K datasheet gate defined. This
-supersedes the earlier schematic-verification optimism: ERC-clean ≠ electrically correct.
+| Round | Verdict at review | Closure |
+|---|---|---|
+| **R1** adversarial (`design-review-production.md`) | NO — 15 critical | rev C, same day |
+| **R2** re-audit (`design-review-production-r2.md`) | NO — 7 new criticals inside the rev-C fixes | rev D, same day; gate grew to 60+ asserts |
+| **R3** external PDF (`review-response-r3.md`) | "do not manufacture" on pin numbering | pin allocation regenerated from the datasheet |
+| **E35/E37/E38/E39** margin, interconnect, polarity, cabinet audits | 8 + 4 + 0 + 3 findings | same-day closure, permanent gates |
+| **R4–R8** external PDF rounds (register E45–E49) | ~40 claims/round, triaged against netlists + vendor datasheets | every real defect fixed same-day (diode rendering, NSI6611/NCP1252 maps, WDO≡NRST, NCP1252D cold-start, CMP instance allocation, PV drive, discharge model — incl. one retraction of our own arithmetic at E49); gates R4-*…R8-* |
 
-**Fix closure (rev C, same day):** all 15 blockers + the HR/MR list implemented in schematic rev C
-(cells v3 / boards v3 / parts-db rev C — see the Fix log appendix in `design-review-production.md`).
-Evidence: six boards rebuilt 0 netlist errors; aux flyback rev B simulated at 342/560/850 V (PASS);
-per-fix grep assertions in `calculations/review-checks.mjs`. Still open by nature: §K datasheet
-gate, ECO-1 (E23), bench EVT (T-01…T-18).
-
-## R2 re-audit (2026-09-05, second adversarial pass on rev C)
-
-`design-review-production-r2.md`: **verdict NO again** — 7 new critical blockers (CB-16…CB-22:
-resonant burden ×15 mis-scale, DC-DC board without a 3.3 V source, thermally-impossible LDO,
-100 V aux rectifiers at 160–200 V PIV, 60 W aux vs ≈90 W 120 kW demand, FLT_LLC unread by any MCU,
-drawn tank ≠ MC-validated rev-D2 tank), 8 high (watchdog symbol unpowered, per-SKU pulse/timing
-gaps, no bank discharge, 1.5 kV bias modules inside the reinforced barrier, 120 kW fan/relay
-scaling, CM-choke copper at 28 A/mm², balance-resistor stress), 15 medium. Every finding was
-re-verified in a dedicated falsification pass before action (one sub-claim retracted: fsm.c's
-precharge abort is tolerant as coded — doc wording only; the pass also *found* that F.21 had no
-implementation). **Fix closure (rev D, same day):** cells v4 / boards v4 / parts-db rev D /
-fsm F.21 / aux deck rev C — fix log in the R2 doc. Evidence: six boards rebuilt clean, aux rev C
-sim 9/9 PASS at per-SKU loads, firmware 33/33, gate extended to 60+ asserts incl. class checks
-(rail sourcing per board, every FLT net on a pin map). Meta-lesson recorded: the rev-C closure
-gate held only the ground R1 had mapped — R2's defects lived in the fixes themselves and in
-30 kW-defaults standing in for SKU scaling.
-
-## Risk register (rev B)
+## Risk register (rev E49)
 
 | ID | Risk | Sev×Lik | Mitigation / retirement | Status |
 |---|---|---|---|---|
-| R1 | LLC gain hole 150–260 V bank | H×M | Hybrid PS mode — ZVS shown at PS-150 op point; duty→P calibration FW-R2 | Mitigated (design), bench pending |
-| R2 | ~~120 kW single-PCB density~~ → superseded by E17 two-board split; new: inter-board 156 A stud joints | M×M | Milliohm EOL check, belleville hardware, torque spec | Open (design done) |
-| R3 | 2-MCU ceiling at 120 kW | M×M | Pin maps assert-clean at 12+12 PWM; ADC rate margin 19× | Closed (analysis) |
-| R4 | SiC RFQ pricing ±25% | H×M | 5-vendor RFQ round 1 after DPT freeze | Open |
-| R5 | 1000 V relay qual (make/weld/400 A) | H×M | Pre-insertion + paralleled-relay make policy; vendor qual plan | Open |
-| R6 | Behavioral SiC model band (±40% Esw) | M×H | k_sw worst-case used for fsw choice; vendor models at NDA; bench DPT T-01 | Mitigated |
-| R7 | Transformer PD at 1 kV class | H×M | D3 insulation system + PD sample test | Open (spec'd) |
-| R8 | EMI pre-compliance gap | M×H | 2-stage filter + interleave; LISN deck P; chamber at EVT | Open |
-| R9 | GD32G553 datasheet deltas (pins/HRTIM) | M×M | A6 verify; pin maps regenerate from tables | Open |
-| R10 | Vienna zero-cross distortion (common-gate) | L×M | THD sims clean at averaged level; bench check T-02 | Mitigated |
-| R11 | Two-board harness single point of failure | M×L | KILL/EN fail-safe + link CRC/timeout; harness retention + shield | Mitigated (design) |
-| R12 | COGS vs red-line | H×M | **Re-based at the ≥10k units/yr directive (A7 rev B, 2026-09-05)**: 10k-tier COGS (see bom-cost.md headline) sits near/below the red-lines with the remaining R12-rev-D levers (magnetics winder RFQ, 4-layer AC-DC, relay frame, fuse externalization) closing the rest; ECO-1 retired, ECO-2a/2b executed in rev D. Heuristic ×0.80/×0.87 + p10k converts to quotes at RFQ round 1 — the risk is now quote realization, not architecture. Stretch flag reviewed after RFQ | **Open (quote-dependent only, severity reduced)** |
+| R1 | LLC gain hole 150–260 V bank | H×M | hybrid PS mode, ZVS shown; duty→P cal at FW | Mitigated (design), bench pending |
+| R2 | Inter-board 156 A stud joints | M×M | milliohm EOL check, belleville hardware, torque spec | Open (design done) |
+| R3 | SiC RFQ pricing ±25% | H×M | 5-vendor RFQ round 1 after DPT freeze | Open |
+| R4 | 1000 V relay qual (make/weld) + mirror-variant confirmation | H×M | pre-insertion + matched-V make policy + two-stage exclusion; Hongfa RFQ | Open |
+| R5 | Behavioral SiC model band (±40% Esw) | M×H | worst-case k_sw used for fsw; bench DPT T-01 | Mitigated |
+| R6 | Transformer PD at 1 kV class | H×M | D3 insulation system + PD sample test | Open (spec'd) |
+| R7 | EMI pre-compliance gap | M×H | per-variant D6 engine + LISN margins; chamber at EVT | Mitigated (analysis) |
+| R8 | GD32G553 AF/CMP table deltas | M×M | A6 regeneration from the vendor table; CMP-instance constraint already pinned (E48) | Open (narrowed) |
+| R9 | PV bleeder loaded gate drive over temperature | M×M | R8 drive at the guaranteed 10 mA point + 25 °C-endpoint model; **EVT loaded-Vgs gates the BOM freeze** | Open (measurement) |
+| R10 | Aux cold-start at low line | L×M | NCP1252D + 220 µF (3× budget); startup waveform at EVT | Mitigated (design) |
+| R11 | COGS vs red-line | H×M | 10k-basis near/below red-lines; levers in `bom-cost.md`; risk = quote realization | Open (quote-dependent) |
 
 ## EVT plan pointer
 
-Bench-first items T-01…T-10 in `docs/evt-plan.md` (DPT bench vs sim, THD/PF, ripple/accuracy, thermal chamber, precharge/discharge pulse ratings, protection injection, S/P transition, EMI pre-scan, aux brown-out, HMI/CAN soak).
+Bench campaign in [`evt-plan.md`](evt-plan.md): DPT vs sim, THD/PF, ripple/accuracy, thermal
+chamber, precharge/discharge pulse ratings, protection injection **incl. both-polarity trip
+timing and the CT/comparator polarity pairing (E47/E48)**, S/P transitions, EMI pre-scan, aux
+cold-start/brown-out waveform, PV bleeder loaded-Vgs, HMI/CAN soak.

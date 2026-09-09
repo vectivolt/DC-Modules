@@ -1,6 +1,6 @@
 # Assumptions & Frozen Decisions Register
 
-Rev: Phase 9 freeze, 2026-09-04; rev C 2026-09-05 — production-review closure (E19/E20/E23 revised, E25–E31 added; docs/design-review-production.md fix log); **rev D 2026-09-05** — R2 re-audit closure (E26 revised to rev C aux, E32/E33 added; docs/design-review-production-r2.md fix log; gate now 60+ checks incl. class asserts). Every entry: value + provenance + what invalidates it.
+Rev: Phase 9 freeze 2026-09-04 → rev C/D 2026-09-05 (R1/R2 adversarial closures) → **rev E49, 2026-09-09**: E35–E39 audits, E40 single brain, E41/E42/E44 variants, E43 family verification, and the five external-review rounds **R4–R8 (E45–E49)** — each answered same-day with executed fixes and permanent gates (`review-checks.mjs` 142 asserts · `verify-independent.mjs` 218 checks). Every entry: value + provenance + what invalidates it. Rows are immutable history — corrections get NEW rows (see E49's retraction).
 Statuses: **FROZEN** (change = formal ECO), **BASELINED** (best current, revisit trigger named), **ASSUMED** (needs external confirmation).
 
 ## Electrical architecture

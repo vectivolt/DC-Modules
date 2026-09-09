@@ -1,5 +1,7 @@
 # Thermal Report (§29/§49-17/18) — rev D (R2/HR-18 closure: EMI filter budgeted)
 
+> **Note (E49):** the tables below are the rev-D snapshot in the pre-variant 30/60/120 framing (60/120 = the retired single-board references). The LIVE per-variant numbers (30/40/50L/50A) come from the per-variant engines — `loss-budget.mjs`, the 6048-pt envelope grid and `stress-audit.mjs` Tj gates (worst corner ≤147 °C, every variant) — and the E42 coldplate / E44 four-fan cooling rows live in the register.
+
 Sources: `calculations/thermal/loss-budget.mjs` → `out/loss-budget.csv`, `out/derating.csv`;
 device Tj iteration in `calculations/pfc/pfc-design.mjs`. Status: calculated; chamber validation = EVT T-04/T-23.
 

@@ -1,6 +1,6 @@
 # 30 kW Module — Board Pair Deep Dive 🔬
 
-**The canonical cell-level document.** The 60/120 kW pages describe only their scaling deltas;
+**The canonical cell-level document.** The 40/50 kW variants describe only their deltas (register rows E41/E42/E44 + `docs/magnetics.md` tables);
 every cell explained here is instantiated unchanged across the family.
 
 | Spec | Value |

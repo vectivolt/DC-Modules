@@ -1,49 +1,50 @@
-# Boards — one module, one card, one cabinet
+# Boards — one module family, one card, one cabinet
 
-**The module (30 / 40 kW air, 50 kW liquid — E41/E42) is two boards + ONE control card** — a
-single brain in the DC-DC slot (E40). Higher ratings are cabinets of modules — contract and the
-price-per-kW ladder in
+**A module (30 / 40 kW air · 50 kW liquid · 50 kW air — E41/E42/E44) is two boards + ONE
+control card** — a single brain in the DC-DC slot (E40). Higher ratings are cabinets of
+modules — contract and the price-per-kW ladder in
 [`README-product-structure.md`](README-product-structure.md).
 
 | Source | What it is |
 |---|---|
-| [`30kw/`](30kw/) · [`40kw/`](40kw/) · [`50kw/`](50kw/) · [`50kwa/`](50kwa/) | the buildable module variants (`acdc.tsx` + `dcdc.tsx`) — one parameterized source ([`boards.tsx`](../packages/common-components/boards.tsx)): the 40 kW an engine-selected hot-rod of the 30 (E41: paralleled PFC pairs, 5-stack choke, 6×33 nF tanks, 125 A class, 3 fans), the 50 kW the sealed LIQUID variant (E42: same silicon as the 40, coldplates, ZERO fans, revved tank/protection classes, dual K_OUT), the 50kwa its AIR twin (E44: paralleled LLC pairs, 4 fans, same classes by construction) |
-| [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET6, 120×80, 88-way) — one p/n, one image: the module brain (30 or 40 kW by RATING strap) and the cabinet **CSU** role ([scope](../docs/control-card-scope.md)) |
+| [`30kw/`](30kw/) · [`40kw/`](40kw/) · [`50kw/`](50kw/) · [`50kwa/`](50kwa/) | the four buildable module variants (`acdc.tsx` + `dcdc.tsx`) — one parameterized source ([`boards.tsx`](../packages/common-components/boards.tsx)): the 40 kW an engine-selected hot-rod of the 30 (E41: paralleled PFC pairs, 5-stack choke, 6×33 nF tanks, 125 A class, 3 fans), the 50 kW the sealed LIQUID variant (E42: same silicon as the 40, coldplates, ZERO fans, revved tank/protection classes, dual K_OUT), the 50kwa its AIR twin (E44: paralleled LLC pairs too, 4 fans, same electrical classes by construction — the family's cheapest ₹/kW) |
+| [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120×80, 88-way) — one p/n, one image: module brain (30/40/50L/50A by RATING strap, E24 rev G) and the cabinet **CSU** role ([scope](../docs/control-card-scope.md)) |
 | [`cabinet.tsx`](cabinet.tsx) | the **120 kW cabinet interconnect of record** (E39): AC distribution, DC charging bus, CAN chain + SGND + terminations, CSU carrier |
-| [`60kw/`](60kw/) · [`120kw/`](120kw/) | **retired references** — multi-lane pairs; the products are cabinets of modules |
-| [`out-pdf/`](out-pdf/) | **the release PDF sets** (30 kW · 40 kW · 50 kW liquid · 120 kW Cabinet · card) rendered from the audited KiCad-5 sheets |
+| [`60kw/`](60kw/) · [`120kw/`](120kw/) | **retired references** — multi-lane single-board pairs; the products are cabinets of modules |
+| [`out-pdf/`](out-pdf/) | **the release PDF sets** (30 kW · 40 kW · 50 kW · 50 kW-Air · 120 kW Cabinet — each AC-DC + DC-DC + card) rendered from the audited KiCad-5 sheets |
 
 ## The module, physically
 
 | | Role | Contents |
 |---|---|---|
-| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · gG fuses (80 A @30 / 125 A @40 / 160 A NH00 @50) · MOV/GDT · 2× CM + DM EMI stages · precharge + bypass · Vienna lanes · split DC link · isolated discharge · line CTs + isolated senses · 110 W full-bus aux flyback · fans (none @50 — sealed liquid) · **40-way harness header** (no card slot — E40) |
-| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · LLC half-bridge legs · tanks (binned trim + resonant CTs) · PQ50 transformer sections · dual JBS banks · 2-series bank strings · S/P matrix + pre-insertion + K_OUT · output filter/shunt/studs · isolated CAN · config HMI · **the 88-way card slot** (the module's one brain) |
+| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · gG fuses (80/125/160 A per SKU) · MOV/GDT · 2× CM + DM EMI stages · precharge + bypass · Vienna phases · split DC link · isolated discharge · line CTs + isolated senses · 110 W full-bus aux flyback (NCP1252D) · local 3.3 V buck · fans (2/3/0/4 per SKU) · **40-way harness header** (no card slot — E40) |
+| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · LLC half-bridge legs (paralleled on the air-50) · tanks (binned trim + resonant CTs) · transformer sections · dual JBS banks · 2-series bank strings + PV-driven bleeders · S/P matrix + pre-insertion + K_OUT + two-stage exclusion · output filter/shunt/studs · isolated CAN (NSI1042-DSWR) · config HMI · **the 88-way card slot** (the module's one brain) |
 
 The boards mount **face-to-face**: TO-247 rows clamp outward onto the two heatsink extrusions
-(**liquid coldplates on the 50 kW** — sealed module, magnetics gap-pad-bonded to the plate webs
-instead of standing in the airflow tunnel), power crosses on bolted **DCP/DCN/PE stud
-pillars**, control on the 40-way harness (E40). Loss of the harness ⇒ both boards reach safe
-state independently. Full contract: [`docs/interconnect.md`](../docs/interconnect.md).
+(**liquid coldplates on the 50 kW** — sealed module, magnetics gap-pad-bonded to the plate
+webs), power crosses on bolted **DCP/DCN/PE stud pillars**, control on the 40-way harness.
+Full contract: [`docs/interconnect.md`](../docs/interconnect.md).
 
 ## Build & verify
 
 ```bash
 # netlist build (E36: layout is a later phase — netlist mode is the working default)
-TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ignore-routing-drc
+npx tsci build boards/30kw/acdc.tsx
 ```
 
 ```bash
-# the full gate battery (calcs, sims echo, schematic checks, interconnect+polarity audits, firmware)
+# the full gate battery (calcs, sims echo, schematic checks, interconnect+polarity audits,
+# stress audit, 218-check independent verifier, firmware 50/50)
 sh calculations/run-all.sh
 ```
 
 **The release sheets are `kicad5/DC-Modules-<target>-SHIP.zip`** (targets: `30kw`, `40kw`,
-`50kw`, `control-card`, `cabinet`) — regenerated by `calculations/kicad5-gen.mjs` and gated by
-pin-verify (**5298/5298** across the eight sheets), the ink-collision audit, and the semantic
-audits. Per-board render SVGs regenerate on demand (`calculations/schematic-export.mjs`) and are
-not committed. Cross-section connectivity is net-labels-only (E34); wires never leave their
+`50kw`, `50kwa`, `control-card`, `cabinet`) — regenerated by `calculations/kicad5-gen.mjs` and
+gated by pin-verify (**7794/7794 across the six targets**) plus the semantic audits. The PDF
+pipeline is `kicad5-print.mjs` (composed SVGs) → `sheets-to-pdf.mjs` → the merged sets in
+`out-pdf/`. Cross-section connectivity is net-labels-only (E34); wires never leave their
 section frame.
 
-Per-variant walkthrough: [`30kw/README.md`](30kw/README.md) (canonical, cell by cell); the 40/50 kW
-deltas are the E41/E42 register rows + the variant tables in [`docs/magnetics.md`](../docs/magnetics.md).
+Per-variant walkthrough: [`30kw/README.md`](30kw/README.md) (canonical, cell by cell); the
+40/50 deltas are the E41/E42/E44 register rows + the variant tables in
+[`docs/magnetics.md`](../docs/magnetics.md).
