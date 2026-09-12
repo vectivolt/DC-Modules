@@ -47,7 +47,7 @@ flowchart LR
 | [`control-card-scope.md`](control-card-scope.md) | why one card caps at 50 kW — ways/HRTIMER/pin arithmetic | `cardMap()` throws past it |
 | [`component-selection.md`](component-selection.md) | part table, sourcing policy, second sources, price basis | — |
 | [`can-protocol.md`](can-protocol.md) | CAN 2.0B application contract (IDs, frames, CSU rules) | `can_proto.c` is normative (fuzzed) |
-| [`bom-guide.md`](bom-guide.md) | how the BOM generates + the silent-drop traps and their gates | — |
+| [`bom-guide.md`](bom-guide.md) | how the BOM generates + the maturity taxonomy (E57) | `bom-maturity.mjs` fails UNMAPPED/substance-free lines |
 | [`dfm-production.md`](dfm-production.md) | assembly sequence, kitting (D2 bins), travelers, EOL, coating (E52) | — |
 | [`thermal-report.md`](thermal-report.md) | loss budgets, cooling, corners, derating | regenerate via `loss-budget.mjs` |
 | [`busbar-drawings.md`](busbar-drawings.md) | bulk-copper paths, joint + torque schedule | — |

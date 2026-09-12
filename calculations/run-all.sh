@@ -14,6 +14,7 @@ node calculations/system/fsm-sim.mjs
 node calculations/emi/dm-choke-design.mjs
 node calculations/emi/lisn-precompliance.mjs
 node calculations/cost/bom-gen.mjs
+node calculations/cost/bom-maturity.mjs
 # R5: check EVERY built SKU pair — the 30 kW-only run let a 40 kW JB×CBAF overlap hide
 SKPAIRS=""
 for s in 30kw 40kw 50kw 50kwa; do

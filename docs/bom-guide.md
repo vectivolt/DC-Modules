@@ -64,3 +64,17 @@ the remaining levers are external (magnetics/relay/SiC RFQs, 4-layer AC-DC confi
 120 kW partial de-commonization option worth −₹6.1k) and are individually quantified with their
 trigger conditions in [`bom-cost.md`](bom-cost.md). **Stretch targets are not reachable in this
 architecture** — that sentence is a standing management flag (risk R12), on purpose.
+
+
+## BOM maturity (E57 — standing gate)
+
+> [!IMPORTANT]
+> `calculations/cost/bom-maturity.mjs` (in run-all) FAILS the battery if any mpn the BOM can
+> emit is UNMAPPED in `lcsc-map.mjs`, or carries a status with no substance. The taxonomy:
+> **ORDERABLE** (verified catalog part) · **SECOND-SOURCE** (verified equivalent named) ·
+> **DIRECT** (vendor-direct order code documented — Talema, Hongfa, MeanWell class) ·
+> **CLASS** (rating specified, purchasing selects — spec line + candidates mandatory) ·
+> **CUSTOM** (built to our drawing — the magnetics pack) · **REVIEW** (tracked open decision —
+> allowed only with an actionable note). "Generic, widely available, cheap" is enforced by
+> construction: no invented order codes, every class names real candidate families, and the
+> remaining REVIEW list IS the open sourcing worklist.
