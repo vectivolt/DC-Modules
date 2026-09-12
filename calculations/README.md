@@ -1,53 +1,70 @@
-# Calculations — machine-readable engineering (§48) 🧮
+# Calculations — machine-readable engineering
 
-Every number in the docs traces here. One command reproduces everything, including the firmware
-verification:
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__TOOLING-2ea44f?style=flat-square" alt="live"/> <img src="https://img.shields.io/badge/rev-E54-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/battery-run--all_·_218%2F218_·_50%2F50-2ea44f?style=flat-square" alt="battery"/></p>
+
+> **Purpose** — every number in the docs traces to a runnable tool here; one command reproduces
+> the lot. E54 cleaned this directory to exactly the tools the production path uses: engines,
+> gates, the release pipeline, and the sheet-QA suite. Superseded faces (old KiCad exporter,
+> composed-SVG set, EasyEDA in-app verify) and the parked layout tools live on branch
+> `archive/pre-focus-E49`.
 
 ```bash
-sh calculations/run-all.sh
-# → FIRMWARE LOGIC 33/33 OK
-# → ALL CALCULATIONS REPRODUCED OK
+sh calculations/run-all.sh   # → 218/218 · stress clean · FIRMWARE LOGIC 50/50 OK · ALL CALCULATIONS REPRODUCED OK
 ```
 
-| Module | Owns |
+## Engines (design truth)
+
+| Tool | Owns |
 |---|---|
-| `design-basis.mjs` | input currents, availability policy, first-pass sizing (Phase-1 baseline) |
-| `pfc/pfc-design.mjs` | Vienna device currents (numeric integrals), Tj-iterated losses, sendust choke search, **fsw selection by system cost** |
-| `pfc/pfc-control.mjs` | current/voltage loop design + ngspice AC cross-check (PM match within 0.4°) |
-| `llc/llc-design.mjs` | tank synthesis rev D2 (joint Ln·Q solve), operating map, transformer stack, resonant-cap spec |
-| `control/mcu-matrix.mjs` | MCU resource budget + pin map CSVs (the §20 artifact) |
-| `thermal/loss-budget.mjs` | full loss budgets, JBS-vs-SR decision with sensitivity, heatsink Rth, derating curve |
-| `busbar/busbar-calc.mjs` | every bulk path: J, R, ΔT, partial-L, Cu-vs-Al verdicts, joint schedule |
-| `emi/lisn-precompliance.mjs` | conducted-emissions estimate (±20 dB) — found and closed the 150 kHz gap (E22) |
-| `system/envelope-grid.mjs` | **§35 grid: 3×1008 points, 0 failures** |
-| `system/monte-carlo.mjs` | **§37: 6 batches ×10k** — drove trim binning, Lm tolerance, hysteresis rev |
-| `system/fsm-sim.mjs` | **§36: 26 scenarios** against the supervisory model |
-| `cost/parts-db.mjs` + `cost/bom-gen.mjs` | the BOM factory (see docs/bom-guide.md) |
-| `plot.mjs` | zero-dependency SVG plotter used by everything |
+| `design-basis.mjs` | input currents, availability policy, first-pass sizing |
+| `pfc/pfc-design.mjs` | Vienna device losses + D1 choke search on the **catalog core** (E51) |
+| `pfc/pfc-control.mjs` | current/voltage loops + ngspice AC cross-check |
+| `llc/llc-design.mjs` | tank synthesis (Ln·Q joint solve), op map, transformer basis |
+| `emi/dm-choke-design.mjs` | D6 engine — crest-biased floors per variant (E43) |
+| `emi/lisn-precompliance.mjs` | conducted-emissions tendency per variant |
+| `thermal/loss-budget.mjs` | loss budgets (E51 real per-SKU transformer rows), JBS-vs-SR, derating |
+| `system/envelope-grid.mjs` | the 4-SKU envelope grid (4032 pts, 0 fail) |
+| `system/monte-carlo.mjs` · `system/fsm-sim.mjs` | §37 tolerance batches · §36 scenario suite |
+| `busbar/busbar-calc.mjs` | bulk-copper paths, joint schedule (active SKUs) |
+| `control/umod-pinmap.mts` | **single source** for card map / harness / MCU pins → `umod-map.gen.ts` |
+| `control/mcu-matrix.mjs` | MCU resource budget CSVs |
+| `plot.mjs` | zero-dependency SVG plotter used by the engines |
 
-Outputs land in `out/` (CSVs committed — they are deliverables §49-12/21).
+## Standing gates (in `run-all.sh`)
 
-## Drawing set — generation and audit
-
-The release schematics are `kicad5/DC-Modules-<sku>-SHIP.zip`; see `docs/schematic-drawing-set.md`.
-
-| Script | Owns |
+| Gate | Proves |
 |---|---|
-| `kicad5-gen.mjs` | **the release sheets** — packing, framing, labelling; re-zips the SHIP archive in the same run |
-| `kicad5-verify.mjs` | every pin vs an independently-built netlist (**8053/8053**, 0 wrong, 0 unconnected) |
-| `kicad5-visual.mjs` | ink collisions between labels, symbols and field text |
-| `alignment-audit.mjs` | near-miss alignment: FRAME-X/Y, SYM-X, PITCH, STUB |
-| `wiring-audit.mjs` | wiring rules: LONG, ESCAPE (no wire leaves a frame), CROSS, FLOW |
-| `frame-padding.mjs` | inner padding of every section frame — catches content that floats or overflows |
-| `void-audit.mjs` | worst **enclosed** hole per sheet — whitespace with drawing on both sides, which is what reads as a hole rather than a margin |
-| `cell-uniformity.mjs` | proves every replicated cell (LLC leg, tank, Vienna phase) is identical to its twins — found R14 |
-| `floorplan-budget.mjs` | **PCB feasibility** — TO-247 edge-rail demand vs usable perimeter, and dominant-part area fill vs board outline, per board per SKU |
-| `review-checks.mjs` | the release gates, including LCSC class and shadowed-rule checks |
-| `kicad5-preview.mjs` / `kicad5-detail.mjs` | render sheets/tiles for visual inspection |
+| `schematic-check.mjs` | 0 symbol overlaps, every built SKU pair |
+| `module-interconnect-audit.mts` | studs · all 40 harness ways · 88-way slot · RATING straps · cabinet section |
+| `polarity-audit.mts` | every polarized part +/anode on pin 1 (netlist-proven) |
+| `stress-audit.mjs` | every device/magnetic/protection class vs its own line — **D1/D2/D3/D4 computed from catalog constants** (E51/E52) |
+| `verify-independent.mjs` | 218 clean-room checks (own parser, own physics, R4–R8 sections) |
+| `review-checks.mjs` | 140+ asserts: R1…R8 + E35…E53 closures (run after any schematic edit) |
+| `magnetics-rfq-audit.mjs` | every magnetic drawing carries its full ordering pack |
 
-Each audit reads the **emitted `.sch`**, so it measures the deliverable rather than the intent.
-All six sheets currently pass all of them.
+## Release pipeline (KiCad-5 face = the record)
 
-Superseded but kept: `schematic-compose.mjs` (SVG composer), `easyeda-pages.mjs` /
-`easyeda-apply-gen.mjs` / `easyeda-verify.mjs` (the pin-by-pin EasyEDA MCP route — see
-`docs/easyeda-transcription.md` for why it was abandoned).
+`easyeda-pages.mjs <sku>` → `easyeda-apply-gen.mjs <sku>` → `kicad5-gen.mjs <sku>` (sheets +
+SHIP zip, `schematic-sections.mjs` shared tables) → `kicad5-print.mjs <sku>` (print-fidelity
+SVGs) → `sheets-to-pdf.mjs` (the five release PDF sets in `boards/out-pdf/`).
+**Order matters**: pages+apply must rerun after any parts-db value/mpn change, prints before
+PDFs — the gates catch staleness (SKU-VALUE, APPLY-COMPLETE).
+
+## Sheet-QA suite (measures the emitted `.sch`, not the intent)
+
+| Tool | Measures |
+|---|---|
+| `kicad5-verify.mjs` | every pin vs an independent netlist (**7794+/7794+ across six targets**) |
+| `kicad5-visual.mjs` | ink collisions | 
+| `alignment-audit.mjs` · `wiring-audit.mjs` · `frame-padding.mjs` · `void-audit.mjs` | near-miss alignment · wiring rules · frame padding · worst enclosed hole |
+| `cell-uniformity.mjs` | every replicated cell identical to its twins (per-SKU families, E50) |
+| `kicad5-preview.mjs` · `kicad5-detail.mjs` | sheet/tile renders for eye review |
+| `footprint-gen.mjs` · `footprint-map.mjs` | magnetics §0.1 land-pattern source († queue for layout reopen) |
+
+## BOM factory
+
+`cost/parts-db.mjs` (classifier + skuOverrides + mech) → `cost/bom-gen.mjs` (tiers, ladder →
+`docs/bom-cost.md`, generator-owned) · `cost/lcsc-map.mjs` + `cost/lcsc-from-build.mjs` ·
+`pin-map-export.mjs` → `docs/symbol-pin-map.md`.
+
+Outputs land in `out/` (CSVs committed — they are cited deliverables).

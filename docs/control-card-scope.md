@@ -129,6 +129,6 @@ which was allocated for the advanced-timer plan:
 | `FLT` | pin 28, PA6, TIMER7_BRKIN0 | an `HRTIMER_FLT*` pin (e.g. PB10 / pin 47, as the PFC uses) |
 
 Two consequences if it is taken: `PWM0..11` and `FLT` get new pins, and `EN_B` has to vacate pin 47.
-`calculations/card-pinmap-gen.mts` regenerates the map, so this is a table change, not a rework —
+`calculations/control/umod-pinmap.mts` regenerates the map (single source since E40; the card-era pinmap tools retired at E54), so this is a table change, not a rework —
 but it is an **architecture decision, not a layout one**, and it should be made before the pinout
 is frozen. Flagged, not decided.
