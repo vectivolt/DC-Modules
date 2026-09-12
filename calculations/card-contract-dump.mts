@@ -11,7 +11,7 @@ const out: any = {
   scope: [...m.CARD_SCOPE],
   roles: {},
 };
-for (const [sku, lanes] of [["30kw", 1], ["60kw", 2], ["120kw", 4]] as any)
+for (const [sku, lanes] of [["30kw", 1], ["40kw", 1], ["50kw", 1], ["50kwa", 1]] as any)
   for (const role of ["acdc", "dcdc"]) {
     try { out.roles[`${sku}/${role}`] = { ok: true, map: m.cardMap(role, lanes) }; }
     catch (e: any) { out.roles[`${sku}/${role}`] = { ok: false, error: e.message }; }

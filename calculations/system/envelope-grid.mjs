@@ -29,8 +29,8 @@ const SKUS = [
   // (parL: per-package conduction quarters) so plain 4-fan air holds the full envelope — worst
   // corner ~99 °C, no folds. Air thermal defaults (1.9 K/W to the 70 °C sink ref).
   { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, parL: 2, ipCeil: 65 },
-  { name: "60kw", P: 60e3, Imax: 200, lanes: 2, ch: 2 },
-  { name: "120kw", P: 120e3, Imax: 400, lanes: 4, ch: 4 },
+  // E50: 60/120 kW single-board rows retired with their reference boards (archive/pre-focus-E49);
+  // 60–150 kW products are cabinets of these four modules.
 ];
 const LR = 7.0e-6, CR = 185.4e-9, LM = 63e-6, LN = 9, FR = 140e3;
 const gain = (fn, Q) => 1 / Math.hypot(1 + (1 / LN) * (1 - 1 / (fn * fn)), Q * (fn - 1 / fn));

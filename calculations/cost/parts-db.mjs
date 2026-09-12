@@ -271,30 +271,9 @@ export const skuOverrides = {
   // E44 50 kW AIR variant: every electrical class IDENTICAL to the liquid 50 kW (same line/tank/
   // output currents — the classes were set by current, not by coolant). Assigned programmatically
   // below (skuOverrides["50kwa"] = { ...skuOverrides["50kw"] }) so the two can never drift.
-  "60kw": {
-    // reference board (product = 2× 30 kW modules, each with its own 80 A): 125 A at 110 A carries
-    // the same 88%/derate problem as F6 if ever built single-board — size to 160 A NH00 then.
-    "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
-    KOUT: { price1k: 820 }, KSER: { price1k: 820 }, KPARA: { price1k: 820 }, KPARB: { price1k: 820 },
-    KPRE1: { price1k: 340, note: "120 A class (110 A line)" , mpn: "HF167F-120A-M"}, KPRE2: { price1k: 340 , mpn: "HF167F-120A-M"},
-    LDM1: { price1k: 240, note: "D6 120 A winding" }, LDM2: { price1k: 240 }, LDM3: { price1k: 240 },
-    CMC1: { price1k: 420, note: "D7 120 A winding (25 mm² foil, larger core)" }, CMC2: { price1k: 420 },
-    RSHO: { price1k: 180, mpn: "SHUNT-50MV-200A" },
-  },
-  "120kw": {
-    "F1": { price1k: 480, mpn: "FUSE-gG-690V-250A" }, "F2": { price1k: 480, mpn: "FUSE-gG-690V-250A" }, "F3": { price1k: 480, mpn: "FUSE-gG-690V-250A" },
-    // HR-19: the paralleled second relays are now real schematic instances (KOUT2 etc. in the
-    // dual matrix) — qtyMul retired so BOM = schematic again.
-    KOUT: { price1k: 820, note: "2× 200 A paralleled (dual instance)" }, KSER: { price1k: 820, note: "2× 200 A paralleled" },
-    KPARA: { price1k: 820 }, KPARB: { price1k: 820 },
-    KOUT2: { price1k: 820 }, KSER2: { price1k: 820 }, KPARA2: { price1k: 820 }, KPARB2: { price1k: 820 },
-    KPRE1: { price1k: 520, note: "250 A class (220 A line)" , mpn: "HF167F-250A-M"}, KPRE2: { price1k: 520 , mpn: "HF167F-250A-M"},
-    LDM1: { price1k: 480, note: "D6 240 A winding" }, LDM2: { price1k: 480 }, LDM3: { price1k: 480 },
-    CMC1: { price1k: 780, note: "D7 240 A winding (busbar/foil, stacked cores — was 28 A/mm², HR-18)" }, CMC2: { price1k: 780 },
-    RPRE1: { price1k: 45, note: "50 W pulse variant (477 J/event — HR-14)" , mpn: "CER-50W-33R-AX"}, RPRE2: { price1k: 45 , mpn: "CER-50W-33R-AX"},
-    RDIS0: { price1k: 45, note: "50 W pulse variant (382 J — HR-14)" , mpn: "CER-50W-160R-AX"}, RDIS1: { price1k: 45 , mpn: "CER-50W-160R-AX"}, RDIS2: { price1k: 45 , mpn: "CER-50W-160R-AX"}, RDIS3: { price1k: 45 , mpn: "CER-50W-160R-AX"},
-    RSHO: { price1k: 260, mpn: "SHUNT-50MV-400A" },
-  },
+  // E50: the 60/120 kW single-board override blocks are retired with their reference boards
+  // (recoverable on branch archive/pre-focus-E49); 60–150 kW products are cabinets of the four
+  // module SKUs and cost as module roll-ups in bom-gen.
 };
 
 skuOverrides["50kwa"] = { ...skuOverrides["50kw"] };   // E44: air-50 shares every class part with the liquid
@@ -346,18 +325,6 @@ export const mechLines = {
     ["TIM/insulators/fasteners", 1, 420],
     ["Assembly + calibration + EOL test", 1, 2000],
   ],
-  "60kw": [
-    ["PCB-ACDC 6L 460×420", 1, 1750], ["PCB-DCDC 6L 520×420", 1, 1950],
-    ["Heatsink extrusions", 1, 2700], ["Fans 120×38 PWM (3.3 V-PWM-compatible p/n)", 2, 280],
-    ["Enclosure sheet metal + hardware", 1, 1350], ["Busbars/interconnect + harness (busbar-calc)", 1, 1645],
-    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 550],
-    ["Assembly + calibration + EOL test", 1, 2600],
-  ],
-  "120kw": [
-    ["PCB-ACDC 6L 560×600", 1, 3000], ["PCB-DCDC 6L 640×620", 1, 3550],
-    ["Heatsink extrusions", 1, 5200], ["Fans 120×38 PWM (3.3 V-PWM-compatible p/n)", 4, 280],
-    ["Enclosure sheet metal + hardware", 1, 1900], ["Busbars/interconnect + harness (busbar-calc)", 1, 4169],
-    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 950],
-    ["Assembly + calibration + EOL test", 1, 3900],
-  ],
+  // E50: 60/120 kW single-board mech lines retired (archive/pre-focus-E49) — cabinet products
+  // carry their own adders in bom-gen/README-product-structure.
 };

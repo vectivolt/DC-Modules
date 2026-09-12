@@ -39,7 +39,7 @@ const valueOf = (c) => c.ftype === "simple_resistor"
   : c.ftype === "simple_capacitor" ? eng(Number(c.capacitance), "F") : "";
 
 const votes = new Map();          // family|value -> Map(lcsc -> count)
-for (const sku of ["30kw", "60kw", "120kw"]) {
+for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   for (const side of ["acdc", "dcdc"]) {
     const p = join(ROOT, "dist/boards", sku, side, "circuit.json");
     if (!existsSync(p)) continue;

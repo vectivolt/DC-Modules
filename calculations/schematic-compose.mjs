@@ -104,7 +104,7 @@ const shelf = (items, gut, aspect = 1.6) => {                 // → rows[], eac
 
 const targets = process.argv.slice(2).filter((a) => !a.startsWith("-"));
 const list = targets.length ? targets
-  : ["30kw/acdc", "30kw/dcdc", "60kw/acdc", "60kw/dcdc", "control-card"]; // 120 kW retired (E36 cabinet)
+  : ["30kw/acdc", "30kw/dcdc", "40kw/acdc", "40kw/dcdc", "50kw/acdc", "50kw/dcdc", "50kwa/acdc", "50kwa/dcdc", "control-card"]; // E50: active SKUs only (60/120 single-board retired to archive/pre-focus-E49)
 
 let failures = 0;
 for (const t of list) {

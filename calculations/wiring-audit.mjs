@@ -21,7 +21,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SKUS = process.argv[2] ? [process.argv[2]] : ["30kw", "60kw", "120kw"];
+const SKUS = process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw", "50kwa"];
 const LONG = 1000;           // mil: a wire longer than this is not a stub any more
 
 let bad = 0;

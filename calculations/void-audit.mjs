@@ -22,7 +22,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SKUS = process.argv[2] ? [process.argv[2]] : ["30kw", "60kw", "120kw"];
+const SKUS = process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw", "50kwa"];
 const FAIL = 12;              // % of sheet area; current worst is 8.2 on 60kw-acdc
 const MINAREA = 1e6;          // ignore slivers
 

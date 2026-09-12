@@ -59,13 +59,12 @@ rack either.
 | `50kw/acdc` · `50kw/dcdc` | 440 × 500 | 285 · 299 | E42 liquid variant (netlist scope; coldplate mech at thermal RFQ) |
 | `control-card` | 120 × 80 | 43 | clean; one card = the module brain (E40) |
 
-`60kw/` is kept buildable for reference (it exercises the cell library at 2 lanes and is the
-card's sizing role). **`120kw/` no longer builds — deliberately**: since the card split,
-`cardMap()` refuses 4 lanes (AIN needs 17 of 13), which is the architecture saying what the
-geometry, relays and fuse frames already said. Its source stays as the 4-lane cell-instantiation
-reference; its last pre-split sheet set lives in `kicad5/archive/`; every pipeline consumer
-iterates `BUILDABLE_SKUS` (parts-db) and the 120 kW product cost is a 4×-module roll-up in
-`bom-gen` (E36 scope note in the register).
+**E50 (2026-09-12): the `60kw/` and `120kw/` single-board references are OFF `main`** — they
+live on branch `archive/pre-focus-E49` (with the superseded `kicad5/archive/` zips). The
+architecture facts they demonstrated stand in the register: `cardMap()` refuses ≥2 lanes
+(AIN needs 17 of 13), fuse/relay frames stop at 125 A/90 A switching, and the DC-DC board
+cannot tile wider. Every pipeline consumer iterates `BUILDABLE_SKUS` (parts-db) and the
+120 kW product cost is a module roll-up in `bom-gen`.
 
 ## The 60/120 kW cabinet contract (audit 2026-09-08 — this IS the 60/120 kW resolution)
 
@@ -110,7 +109,5 @@ What the cabinet integrator gets per module, already designed in:
 - **Service:** commanded bank/bus discharge, touch-safe SELV control face, per-module HMI fault
   ring — all module-local, cabinet-independent.
 
-The `60kw/` and `120kw/` single-board references remain **library exercisers only**: their
-fuse (125/250 A) and relay rows carry annotations in `parts-db.mjs` saying so, and their known
-reference-only limitations (R3 relay ceiling, PA6 break-input conflict in the 120 kW ULLC map)
-are documented where they live. Nothing that ships depends on them.
+Nothing that ships depends on the retired 60/120 kW single-board references (E50: archived to
+branch `archive/pre-focus-E49` together with their parts-db override blocks and mech lines).

@@ -48,8 +48,8 @@ ck("HR-5", /name="RFLTC"/.test(boards) && /name="CFLTC"/.test(boards), "FLT wire
 ck("HR-6", /R\$\{id\}PD/.test(cells), "PWM pulldowns per channel");
 ck("HR-7", /GDT[123]?/.test(boards) && /MOVP/.test(boards), "L-PE MOV+GDT surge path");
 ck("HR-8", /PP-4u7-1200/.test(db), "output film 1200 V");
-ck("HR-9", /DM-CHOKE-SKU/.test(db) && /DM-CHOKE-30/.test(db) && /DM-CHOKE-40/.test(db) && /DM-CHOKE-50/.test(db) && /LDM1: \{ price1k: 480/.test(db),
-  "DM chokes per-SKU rated (D6 rev C — ENGINE-designed per variant, E43; 120 kW reference row retained)");
+ck("HR-9", /DM-CHOKE-SKU/.test(db) && /DM-CHOKE-30/.test(db) && /DM-CHOKE-40/.test(db) && /DM-CHOKE-50/.test(db),
+  "DM chokes per-SKU rated (D6 rev C — ENGINE-designed per variant, E43; E50: 60/120 kW reference rows retired to archive/pre-focus-E49)");
 // R3: the assertion previously grepped "QA01C-15S18" — a part number that does not exist at
 // MORNSUN (real variants: QA01C = +20/-4 V, QA01C-18 = +18/-3 V). The gate was pinning a typo.
 ck("HR-10", /QA01C\b/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0)");
@@ -76,7 +76,7 @@ ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(d
 ck("R2-HR15", /QDISA/.test(boards) && /QDISB/.test(boards) && /RBDA0/.test(boards) && /CTL_QDISBK/.test(boards), "commanded bank bleeders exist (banks no longer hold 525 V for minutes)");
 ck("R2-HR16", /ISO5V-RFC-6K/.test(db) && !/B1505S-2WR2/.test(db), "iso-5V bias modules reinforced-rated (they ARE the barrier)");
 ck("R2-HR17", /FAN_PWM\$\{i \+ 1\}|nFans/.test(boards) && /lanes === 4 \? 4 : 2/.test(boards), "fan ports scale with SKU (4 @120 kW, each with tach)");
-ck("R2-HR18", /CMC-3PH-2mH-SKU/.test(db) && /CMC1: \{ price1k: 780/.test(db), "CM chokes per-SKU rated (D7)");
+ck("R2-HR18", /CMC-3PH-2mH-SKU/.test(db) && /D7-40 custom wind 75 A/.test(db) && /D7-50 custom wind 95 A/.test(db), "CM chokes per-SKU rated (D7; E50: 60/120 kW rows retired)");
 ck("R2-HR19", /dual = false/.test(cells) && /dual=\{channels === 4\}/.test(boards) && !/qtyMul: 2/.test(db), "120 kW paralleled relays are schematic instances, not BOM multipliers");
 ck("R2-HR20", /RBALT\$\{id\}A/.test(cells) && /RBALTA1/.test(boards) && /RNS\d\[AB\]|RNS\$\{i\}A/.test(boards + db.replace(/\\/g, "")), "balance/star resistors 2-series HV");
 ck("R2-MR11", /RAVI/.test(cells) && /CAVF/.test(cells), "AVMID buffer dual-feedback (no bare op-amp into 10 µF)");

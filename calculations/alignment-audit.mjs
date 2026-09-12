@@ -25,7 +25,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SKUS = process.argv[2] ? [process.argv[2]] : ["30kw", "60kw", "120kw"];
+const SKUS = process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw", "50kwa"];
 const NEAR = 249;            // mil: SUB-GRID only. Frames snap to a 250 mil Y grid, so a 250 mil
                              // gap is an adjacent grid slot (deliberate); anything less is a miss.
 

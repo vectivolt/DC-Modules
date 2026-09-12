@@ -141,9 +141,8 @@ The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2×
 mindmap
   root((DC-Modules))
     boards/
-      30kw · 40kw — acdc.tsx + dcdc.tsx (the module variants)
+      30kw · 40kw · 50kw · 50kwa — acdc.tsx + dcdc.tsx (the module variants)
       control-card.tsx · cabinet.tsx
-      60kw/ · 120kw/ — retired references (cabinets are the products)
       out-pdf/ — the release PDF sets
     packages/
       power-primitives/cells.tsx — every reusable cell

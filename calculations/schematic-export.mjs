@@ -20,7 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Default set = buildable boards + the control card (single-segment target -> dist/boards/<name>).
 // 120 kW retired: cabinet product (E36); its board pair no longer builds.
 const targets = process.argv.slice(2).length ? process.argv.slice(2)
-  : ["30kw/acdc", "30kw/dcdc", "60kw/acdc", "60kw/dcdc", "control-card"];
+  : ["30kw/acdc", "30kw/dcdc", "40kw/acdc", "40kw/dcdc", "50kw/acdc", "50kw/dcdc", "50kwa/acdc", "50kwa/dcdc", "control-card"];
 
 for (const t of targets) {
   const [sku, side] = t.split("/");

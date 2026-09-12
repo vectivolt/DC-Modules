@@ -33,8 +33,7 @@ const SKUS = [
   { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
   { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6 L/min)
   { name: "50kWa", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 4, parL: 2 },   // E44 AIR: 4 fans; LLC paralleled (pri conduction halves)
-  { name: "60kW", P: 60e3, lanes: 2, ch: 2, Iout: 200, fans: 2 },
-  { name: "120kW", P: 120e3, lanes: 4, ch: 4, Iout: 400, fans: 4 },
+  // E50: 60/120 kW single-board rows retired (products are cabinets of the four modules above)
 ];
 // rev D (R2 HR-18): EMI-filter copper — previously entirely unbudgeted. As-drawn D6/D7 windings
 // at the design-point line currents (Rdc from turn-length/section; D6/D7 ΔT acceptances bind the
@@ -45,7 +44,7 @@ const SKUS = [
 //   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
 // E43: LDM (D6) losses now come from the D6 ENGINE (dm-choke-design.mjs rev C — foil windings,
 // crest-biased L floors): 2.4 / 4.4 / 8.1 W per choke at 30/40/50 kW. CMC (D7) rows unchanged.
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 2.4, "40kW": 2 * 15.3 + 3 * 4.4, "50kW": 2 * 19.2 + 3 * 8.1, "50kWa": 2 * 19.2 + 3 * 8.1, "60kW": 2 * 16.7 + 3 * 9.8, "120kW": 2 * 36 + 3 * 18.3 };
+const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 2.4, "40kW": 2 * 15.3 + 3 * 4.4, "50kW": 2 * 19.2 + 3 * 8.1, "50kWa": 2 * 19.2 + 3 * 8.1 };
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
