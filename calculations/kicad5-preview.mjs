@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // kicad5-preview.mjs — render an emitted KiCad 5.1 legacy sheet to SVG so the layout can be
-// LOOKED AT without a full EasyEDA import (each import is ~20 GUI steps and a minute of waiting,
+// LOOKED AT without opening a full KiCad session (
 // which is far too slow for an inspect-fix-repeat loop).
 //
 // It draws what the eye judges: section frames and their titles, symbol bodies, pin stubs, net

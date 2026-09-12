@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // kicad5-gen.mjs — emit the hand-placed schematic in KiCad 5.1 LEGACY format, the only
-// schematic format EasyEDA Pro can import.
+// KiCad 5 legacy schematic format — the terminal deliverable face (E56).
 //
-// EasyEDA Pro's importer accepts "KiCad 5.1 / 5.9" projects (prodocs.easyeda.com/en/import-export/
+// The KiCad 5 legacy (pre-S-expression) format was chosen for maximal importer compatibility
 // import-kicad/), which is the pre-S-expression Eeschema format: .sch + .lib + .pro, zipped.
 // The KiCad 10 .kicad_sch files kicad-gen.mjs writes are a newer format it cannot read, so the
-// handcrafted geometry could never have reached EasyEDA through them.
+// handcrafted geometry could never have survived a lossy conversion path.
 //
 // Geometry is identical to kicad-gen.mjs: every pin gets a short stub ending in a global label,
 // components sit on a 50 mil grid in uniform columns, sections are framed with notes lines and
@@ -46,10 +46,10 @@ if (SKU === "120kw") {
   process.exit(1);
 }
 const SRC = SKU === "30kw"
-  ? join(ROOT, "calculations/out/easyeda/apply")
-  : join(ROOT, "calculations/out/easyeda", SKU, "apply");
+  ? join(ROOT, "calculations/out/sheets/apply")
+  : join(ROOT, "calculations/out/sheets", SKU, "apply");
 const OUT = join(ROOT, `kicad5/dc-modules-${SKU}`);
-// Library name is revision-stamped: EasyEDA will NOT overwrite an existing library of the same
+// Library name is revision-stamped: importers will NOT overwrite an existing library of the same
 // name (it reports "A library with the same name already exists" and keeps the old symbols),
 // so a re-import would silently mix new sheets with stale pin geometry. Bump on any symbol change.
 const LIB_NAME = `dcmod-r4`;
@@ -160,14 +160,12 @@ const CAT = (value, mpn, pins, designator = "") => {
 const lib = new Map();
 const libName = (s) => String(s).replace(/[^A-Za-z0-9_.+-]/g, "_");
 
-// EasyEDA's KiCad-legacy importer places a symbol's pins at (ux+px, uy+py) — it does NOT apply
-// the "1 0 0 -1" orientation matrix that maps library Y-up to sheet Y-down. Measured, not
-// guessed: of 90 pins EasyEDA reported floating on 30kw-dcdc, this transform predicts all 90
-// (its only extra 9 are our deliberate no-connects). Pins at library Y=0 land correctly either
-// way, which is why most of the sheet survived — but 454 pins across the two 30 kW sheets
-// landed silently on the WRONG net, with no DRC warning at all.
-// So the library is written pre-mirrored about Y: EasyEDA mirrors it back and the sheet is
-// correct. Mirroring twice is the identity, so the round trip is exact.
+// E56: the library is emitted in NATIVE KiCad legacy convention — sheet position of a pin is
+// (ux + px, uy − py) under the standard "1 0 0 -1" matrix every instance uses. (History: through
+// E55 the lib was pre-mirrored about Y because the then-consumer applied (ux+px, uy+py); with the
+// EasyEDA layer removed, KiCad itself is the terminal face and the recorded LATENT mirror defect
+// — IC pin rows flipped in real eeschema — is retired by construction. kicad5-verify models the
+// native matrix against an independent netlist, so a regression here fails 7,000+ pin checks.)
 // Largest empty rectangle on the sheet, as a fraction of sheet area. "Density" and "ragged bottom"
 // both missed the defect the eye sees first: a big blank channel THROUGH the middle of a sheet.
 // A short column is invisible to a bottom-edge measure, and a sheet can be 70% full and still have
@@ -241,24 +239,6 @@ const voidCandidates = (rects, W, H, n) => {
   return out;
 };
 
-const mirrorLibY = (text) => text.split("\n").map((l) => {
-  const t = l.split(" ");
-  const neg = (i) => { t[i] = String(-Number(t[i])); };
-  const ang = (i) => { t[i] = String(((-Number(t[i])) % 3600 + 3600) % 3600); };
-  switch (t[0]) {
-    // X name num posx posy length orient ... -> posy is t[4], orientation t[6]
-    case "X": neg(4); if (t[6] === "U") t[6] = "D"; else if (t[6] === "D") t[6] = "U"; break;
-    case "S": neg(2); neg(4); break;
-    case "C": neg(2); break;
-    case "P": { const n = Number(t[1]); for (let k = 0; k < n; k++) neg(6 + 2 * k); break; }
-    case "A": { neg(2); const s0 = t[4], e0 = t[5]; t[4] = e0; t[5] = s0; ang(4); ang(5);
-                neg(11); neg(13);
-                const sx = t[10], sy = t[11]; t[10] = t[12]; t[11] = t[13]; t[12] = sx; t[13] = sy; break; }
-    case "F0": case "F1": case "F2": case "F3": neg(3); break;
-    default: return l;
-  }
-  return t.join(" ");
-}).join("\n");
 
 // Components in the apply payload carry no MPN — the BOM resolves it by matching the designator
 // against parts-db (with per-SKU overrides for the relays/fuses/CT that change rating by power
@@ -327,7 +307,7 @@ function passiveLib(kind, n1, n2) {
   else if (kind === "C") draw = "P 2 0 1 12 -20 -40 -20 40 N\nP 2 0 1 12 20 -40 20 40 N\n";
   // CP: straight plate = pin 1 = +, marked with a "+"; curved plate bows away toward pin 2.
   // (Verified in the netlists: every EL-/ELH- instance has pin 1 on the more-positive node.)
-  // NOTE the lib writer's EasyEDA pre-mirror negates Y and reverses arc endpoints: the "+" is
+  // NOTE (E56: native emission) the "+" is
   // authored at +y to LAND above the wire, and arc endpoint order is chosen for the mirrored file.
   else if (kind === "CP") draw = "P 2 0 1 12 -20 -40 -20 40 N\nA 6 0 44 -646 646 0 1 12 N 25 -40 25 40\n"
     + "P 2 0 1 8 -85 55 -55 55 N\nP 2 0 1 8 -70 40 -70 70 N\n";
@@ -1203,11 +1183,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   let body = "", nLabels = 0, nNC = 0;
   const GL = (net, x, y, dir) => {                     // dir: 0 right, 2 left, 1 up, 3 down
     nLabels++;
-    // Plain "Text Label", NOT "Text GLabel". EasyEDA renders an imported global label as a net
+    // Plain "Text Label", NOT "Text GLabel". Legacy eeschema renders a global label as a net
     // PORT: a fixed-width chevron holding about 7 characters, with the text scaled independently,
     // so 43% of this design's names spilled past the outline at any font size. A plain net label
     // has no enclosing glyph, so nothing can overflow. Scope is not lost: each board is a single
-    // sheet and EasyEDA merges net labels by name across it; the only nets that leave a sheet are
+    // sheet and eeschema merges net labels by name across it; the only nets that leave a sheet are
     // the 14 cross-board ones, which cross physically on the DCP/DCN/PE studs and harness anyway.
     return `Text Label ${x} ${y} ${dir}    45   ~ 0\n${net}\n`;
   };
@@ -1473,7 +1453,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   console.log(`${page.page.padEnd(22)} ${String(page.total).padStart(3)} comps · ${blocks.length} sections · ${nLabels} labels · ${nNC} no-connects · ${sheetW}×${sheetH} mil`);
 }
 
-// Root sheet referencing all twelve pages, so EasyEDA imports the whole board set in one go
+// Root sheet referencing all pages, so the whole board set opens in one project
 // rather than one loose file at a time.
 {
   let root = "", sx = 1000, sy = 1000;
@@ -1492,12 +1472,12 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   writeFileSync(join(OUT, `dc-modules-${SKU}.sch`), rootSch);
 }
 
-writeFileSync(join(OUT, `${LIB_NAME}.lib`),
-  mirrorLibY(`EESchema-LIBRARY Version 2.4\n#encoding utf-8\n${[...lib.values()].join("")}#\n#End Library\n`));
+writeFileSync(join(OUT, `${LIB_NAME}.lib`),   /* E56: native emission — no pre-mirror */
+  `EESchema-LIBRARY Version 2.4\n#encoding utf-8\n${[...lib.values()].join("")}#\n#End Library\n`);
 writeFileSync(join(OUT, `${LIB_NAME}.dcm`), `EESchema-DOCLIB  Version 2.0\n#\n#End Doc Library\n`);
 writeFileSync(join(OUT, `dc-modules-${SKU}.pro`),
   `update=Date\nversion=1\nlast_client=eeschema\n[general]\nversion=1\n[eeschema]\nversion=1\nLibDir=\n[eeschema/libraries]\nLibName1=${LIB_NAME}\n`);
-// Package for EasyEDA import as part of GENERATING, not as a separate manual step. The zips had
+// Package the SHIP zip as part of GENERATING, not as a separate manual step. The zips had
 // drifted a full day behind the sheets -- the deliverable a person actually imports was stale
 // while every check on the source passed. Packaging here means it cannot go stale again.
 {

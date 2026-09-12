@@ -4,8 +4,8 @@
 // designator/value text at their real positions.
 //
 // This exists so the detail inspection the drawing is judged on can be done against the actual
-// deliverable geometry rather than against EasyEDA screenshots. The .sch + .lib pair IS what
-// EasyEDA imports, so anything wrong here is wrong there; and unlike a screenshot this can be
+// deliverable geometry itself. The .sch + .lib pair IS the record (E56: KiCad terminal face),
+// so anything wrong here is wrong in the deliverable; and unlike a screenshot this can be
 // zoomed anywhere, on any sheet, without the app being reachable.
 //
 // Run: node calculations/kicad5-detail.mjs <sku> <sheet> [cols] [rows]
@@ -82,8 +82,8 @@ for (let i = 0; i + 3 < notes.length; i += 4) {
 }
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-// library Y is pre-mirrored for EasyEDA, so a pin's sheet position is (cx + px, cy + py)
-const P = (c, p) => [c.x + p.x, c.y + p.y];
+// E56: native lib — sheet pin position is (cx + px, cy − py) under the standard matrix
+const P = (c, p) => [c.x + p.x, c.y - p.y];
 
 for (let r = 0; r < ROWS; r++) for (let cIdx = 0; cIdx < COLS; cIdx++) {
   const tw = W / COLS, th = H / ROWS;

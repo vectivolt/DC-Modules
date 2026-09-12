@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // footprint-map.mjs — intended package per part family.
 //
-// EasyEDA raises a FATAL DRC error for any component without a Footprint property (44 per page
+// KiCad raises a FATAL DRC error for any component without a Footprint property (44 per page
 // on import). PCB layout is out of scope by standing directive, so these are the specified
 // packages, not placed library footprints: the schematic states the intended package and the
 // error clears honestly. Names follow the JEITA/JEDEC package designation; where the package is
@@ -56,7 +56,7 @@ export const FOOTPRINT = {
   "CMC-CAN-51uH": "IND-SMD_L4.5-W3.2_CMC", "XFMR-LLC-10K": "XFMR_3xPQ50-50_custom",
   "XFMR-AUX-FLY-D": "XFMR_ETD39_custom",
   "CT-100A-1:2500": "CT_window_100A_1-2500", "CT-RES-1:100": "CT_window_res_1-100",
-  // NOT the catalogue HF167F/24-HF land (LCSC C2757422). Tried it; EasyEDA's DRC rejected it:
+  // NOT the catalogue HF167F/24-HF land (LCSC C2757422). Tried it; KiCad's DRC rejected it:
   // "Pin has no corresponding pad: 5, 6, 8; Pad has no corresponding pin: 2". The catalogue part
   // is a plain 4-pad SPST-NO relay, while E30 requires the MIRROR-CONTACT variant — pins 5/6/8
   // are the mirror used for readback. Different part, different land; the placeholder stays until

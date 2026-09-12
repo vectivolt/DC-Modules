@@ -72,7 +72,7 @@ flowchart LR
 | [`simulation-report.md`](simulation-report.md) | **EVIDENCE** — the simulation-truth ledger; never claim beyond it |
 | [`design-basis-report.md`](design-basis-report.md) | HISTORICAL (gate-pinned path) — Phase-1 basis |
 | [`design-review-production.md`](design-review-production.md) · [`-r2.md`](design-review-production-r2.md) | HISTORICAL (gate-pinned) — R1/R2 audits, same-day closures |
-| [`history/`](history/README.md) | six more dated records (R3, E40 plan, ERC snapshot, EasyEDA face, R3 pin map, drawing-set era) — moved at E53 |
+| [`history/`](history/README.md) | six more dated records (R3 response, E40 plan, ERC snapshot, the retired EasyEDA-era face notes, R3 pin map, drawing-set era) — moved at E53; the EasyEDA layer itself was removed at E56 |
 
 The external rounds **R4–R8** live in register rows E45–E49 with permanent gates
 (`review-checks.mjs` R4-*…R8-*, `verify-independent.mjs` §I/J).

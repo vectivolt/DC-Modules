@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // footprint-gen.mjs — author the through-hole land patterns whose geometry is fully determined
 // by the dimensions already encoded in the footprint name, and emit them as KiCad .kicad_mod
-// files (a format EasyEDA Pro imports directly).
+// files (standard KiCad footprint format).
 //
 // WHY THIS IS NOT INVENTED DATA. A name like CAP-TH_L26.5-W11.0-P22.50 already carries the
 // part's body length, body width and lead pitch from its datasheet. The land pattern follows:
@@ -209,7 +209,7 @@ const contactor = (name, { L, W, termPitch, bolt, mountX, mountY, amps, what }) 
   const tp = bolt + 6, tx = Number((termPitch / 2).toFixed(1));
   const mx = Number((mountX / 2).toFixed(1)), my = Number((mountY / 2).toFixed(1));
   const hx = Number((L / 2 + 6).toFixed(1));
-  // Pad NUMBERS must equal the symbol's pin numbers or EasyEDA refuses to bind the footprint
+  // Pad NUMBERS must equal the symbol's pin numbers or the footprint will not bind
   // ("Pin has no corresponding pad"). Our relay symbol numbers its pins 1,3,4,5,6,8 (C1/M2/A/M1/
   // B/C2), which is our convention, not Hongfa's 1-2 / A1-A2 / C1-C2 labelling. Map by FUNCTION:
   //   4 = A  and 6 = B   -> the two M6 screw main terminals

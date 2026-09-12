@@ -1,0 +1,1246 @@
+{
+ "page": "acdc-AUX-POWER",
+ "title": "30kW ACDC 6of6 AUX-POWER",
+ "block_order": [
+  "FLYBACK",
+  "RAILS",
+  "BUCK-3V3",
+  "FANS",
+  "INTERCONNECT"
+ ],
+ "chunks": [
+  [
+   {
+    "designator": "UAUX",
+    "value": "NCP1252D",
+    "block_name": "FLYBACK",
+    "search_query": "NCP1252D current-mode flyback controller, RT-set 65 kHz",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "FB",
+      "signal_name": "UAUX_FB"
+     },
+     {
+      "pin_number": 2,
+      "name": "BO",
+      "signal_name": "UAUX_BO"
+     },
+     {
+      "pin_number": 3,
+      "name": "CS",
+      "signal_name": "UAUX_CS"
+     },
+     {
+      "pin_number": 4,
+      "name": "RT",
+      "signal_name": "UAUX_RT"
+     },
+     {
+      "pin_number": 5,
+      "name": "GND",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 6,
+      "name": "DRV",
+      "signal_name": "UAUX_DRV"
+     },
+     {
+      "pin_number": 7,
+      "name": "VCC",
+      "signal_name": "UAUX_VCC"
+     },
+     {
+      "pin_number": 8,
+      "name": "SS",
+      "signal_name": "UAUX_SS"
+     }
+    ]
+   },
+   {
+    "designator": "QAUX",
+    "value": "SIC-1700-1R",
+    "block_name": "FLYBACK",
+    "search_query": "SIC-1700-1R SiC FET 1700 V ~1 Ω",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "G",
+      "signal_name": "UAUX_DRV"
+     },
+     {
+      "pin_number": 2,
+      "name": "D",
+      "signal_name": "QAUX_D"
+     },
+     {
+      "pin_number": 3,
+      "name": "S",
+      "signal_name": "QAUX_S"
+     }
+    ]
+   },
+   {
+    "designator": "RAUXCS",
+    "value": "310m",
+    "block_name": "FLYBACK",
+    "search_query": "R1206-R31-1%-0.5W 0.31 Ω 1% 0.5 W 1206 current-sense",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "QAUX_S"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RAUXG",
+    "value": "100k",
+    "block_name": "FLYBACK",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_DRV"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RCSF",
+    "value": "1k",
+    "block_name": "FLYBACK",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "QAUX_S"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UAUX_CS"
+     }
+    ]
+   },
+   {
+    "designator": "CCSF",
+    "value": "470pF",
+    "block_name": "FLYBACK",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_CS"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "TAUX",
+    "value": "XFMR-AUX-FLY-D",
+    "block_name": "FLYBACK",
+    "search_query": "XFMR-AUX-FLY-D aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input,",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "P1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "P2",
+      "signal_name": "QAUX_D"
+     },
+     {
+      "pin_number": 3,
+      "name": "S24A",
+      "signal_name": "TAUX_S24A"
+     },
+     {
+      "pin_number": 4,
+      "name": "S24B",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 5,
+      "name": "S15A",
+      "signal_name": "TAUX_S15A"
+     },
+     {
+      "pin_number": 6,
+      "name": "S15B",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "AXA",
+      "signal_name": "TAUX_AXA"
+     },
+     {
+      "pin_number": 8,
+      "name": "AXB",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RAUXST1",
+    "value": "470k",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-HV 2512 HV-rated",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RAUXST_M"
+     }
+    ]
+   },
+   {
+    "designator": "RAUXST2",
+    "value": "470k",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-HV 2512 HV-rated",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RAUXST_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UAUX_VCC"
+     }
+    ]
+   },
+   {
+    "designator": "RBR1A",
+    "value": "2.4M",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-HV 2512 HV-rated",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBR1_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBR1B",
+    "value": "2.4M",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-HV 2512 HV-rated",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBR1_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UAUX_BO"
+     }
+    ]
+   },
+   {
+    "designator": "RBR2",
+    "value": "15k",
+    "block_name": "FLYBACK",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_BO"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "DZAUX",
+    "value": "BZT52-C15",
+    "block_name": "FLYBACK",
+    "search_query": "BZT52-C15 15 V zener SOD-123",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "QAUXFB_B"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "DZAUX_RZFB"
+     }
+    ]
+   },
+   {
+    "designator": "RZFB",
+    "value": "2.2k",
+    "block_name": "FLYBACK",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_VCC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DZAUX_RZFB"
+     }
+    ]
+   },
+   {
+    "designator": "QAUXFB",
+    "value": "S8050",
+    "block_name": "FLYBACK",
+    "search_query": "S8050 NPN SOT-23",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "B",
+      "signal_name": "QAUXFB_B"
+     },
+     {
+      "pin_number": 2,
+      "name": "E",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 3,
+      "name": "C",
+      "signal_name": "UAUX_FB"
+     }
+    ]
+   },
+   {
+    "designator": "RBEFB",
+    "value": "10k",
+    "block_name": "FLYBACK",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "QAUXFB_B"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CFBF",
+    "value": "1nF",
+    "block_name": "FLYBACK",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_FB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CAUXSS",
+    "value": "100nF",
+    "block_name": "FLYBACK",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_SS"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "DCLA",
+    "value": "FAST-1200-1A",
+    "block_name": "FLYBACK",
+    "search_query": "FAST-1200-1A 1200 V 1 A fast diode SMB",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "QAUX_D"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "CCLA_DCLA"
+     }
+    ]
+   },
+   {
+    "designator": "CCLA",
+    "value": "10nF",
+    "block_name": "FLYBACK",
+    "search_query": "PP-10n-1200 10 nF 1200 V film",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CCLA_DCLA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RCLA1",
+    "value": "47k",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-HV 2512 HV-rated",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CCLA_DCLA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RCLA_M"
+     }
+    ]
+   },
+   {
+    "designator": "RCLA2",
+    "value": "47k",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-HV 2512 HV-rated",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RCLA_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCP"
+     }
+    ]
+   },
+   {
+    "designator": "RAUXRT",
+    "value": "66.5k",
+    "block_name": "FLYBACK",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_RT"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "DAUX24",
+    "value": "UF-400V-3A",
+    "block_name": "RAILS",
+    "search_query": "UF-400V-3A 400 V 3 A ultrafast, SMC pad",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "TAUX_S24A"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V24"
+     }
+    ]
+   },
+   {
+    "designator": "DAUX15",
+    "value": "US2G",
+    "block_name": "RAILS",
+    "search_query": "US2G 400 V 2 A ultrafast SMB",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "TAUX_S15A"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V15"
+     }
+    ]
+   },
+   {
+    "designator": "DAUXVC",
+    "value": "US2G",
+    "block_name": "RAILS",
+    "search_query": "US2G 400 V 2 A ultrafast SMB",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "TAUX_AXA"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "UAUX_VCC"
+     }
+    ]
+   },
+   {
+    "designator": "CAUX24",
+    "value": "220uF",
+    "block_name": "RAILS",
+    "search_query": "EL-220u-35 220 µF 35 V",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CAUX15",
+    "value": "220uF",
+    "block_name": "RAILS",
+    "search_query": "EL-220u-35 220 µF 35 V",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CVCC",
+    "value": "220uF",
+    "block_name": "RAILS",
+    "search_query": "EL-220u-35 220 µF 35 V",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_VCC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "DTVS24",
+    "value": "SMBJ26A",
+    "block_name": "RAILS",
+    "search_query": "SMBJ26A TVS 26 V uni SMB",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V24"
+     }
+    ]
+   },
+   {
+    "designator": "DTVS15",
+    "value": "SMBJ16A",
+    "block_name": "RAILS",
+    "search_query": "SMBJ16A TVS 16 V uni SMB",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "V15"
+     }
+    ]
+   },
+   {
+    "designator": "CVCCB",
+    "value": "100nF",
+    "block_name": "RAILS",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UAUX_VCC"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "UBKA",
+    "value": "TPS54202-class",
+    "block_name": "BUCK-3V3",
+    "search_query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6",
+    "pins": [
+     {
+      "pin_number": 3,
+      "name": "VIN",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "SW",
+      "signal_name": "UBKA_SW"
+     },
+     {
+      "pin_number": 4,
+      "name": "FB",
+      "signal_name": "UBKA_FB"
+     },
+     {
+      "pin_number": 5,
+      "name": "EN",
+      "signal_name": "UBKA_EN"
+     },
+     {
+      "pin_number": 6,
+      "name": "BOOT",
+      "signal_name": "UBKA_BST"
+     }
+    ]
+   },
+   {
+    "designator": "LBKA",
+    "value": "IND-10u-3A",
+    "block_name": "BUCK-3V3",
+    "search_query": "IND-10u-3A 10 µH 3 A shielded power inductor",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_SW"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "V3P3"
+     }
+    ]
+   },
+   {
+    "designator": "CBKIA",
+    "value": "10uF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CBKOA",
+    "value": "22uF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CBSTA",
+    "value": "100nF",
+    "block_name": "BUCK-3V3",
+    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_BST"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UBKA_SW"
+     }
+    ]
+   },
+   {
+    "designator": "REN1A",
+    "value": "100k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UBKA_EN"
+     }
+    ]
+   },
+   {
+    "designator": "REN2A",
+    "value": "27k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_EN"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RBKF1A",
+    "value": "45.3k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "UBKA_FB"
+     }
+    ]
+   },
+   {
+    "designator": "RBKF2A",
+    "value": "10k",
+    "block_name": "BUCK-3V3",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UBKA_FB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "JFAN1",
+    "value": "PH-4-FAN",
+    "block_name": "FANS",
+    "search_query": "PH-4-FAN fan header 4-way",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "V24",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 3,
+      "name": "TACH",
+      "signal_name": "FAN_TACH1"
+     },
+     {
+      "pin_number": 4,
+      "name": "PWM",
+      "signal_name": "FAN_PWM1"
+     }
+    ]
+   },
+   {
+    "designator": "RFT1",
+    "value": "10k",
+    "block_name": "FANS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "FAN_TACH1"
+     }
+    ]
+   },
+   {
+    "designator": "JFAN2",
+    "value": "PH-4-FAN",
+    "block_name": "FANS",
+    "search_query": "PH-4-FAN fan header 4-way",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "V24",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 3,
+      "name": "TACH",
+      "signal_name": "FAN_TACH2"
+     },
+     {
+      "pin_number": 4,
+      "name": "PWM",
+      "signal_name": "FAN_PWM2"
+     }
+    ]
+   },
+   {
+    "designator": "RFT2",
+    "value": "10k",
+    "block_name": "FANS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "FAN_TACH2"
+     }
+    ]
+   },
+   {
+    "designator": "JFAN3",
+    "value": "PH-4-FAN",
+    "block_name": "FANS",
+    "search_query": "PH-4-FAN fan header 4-way",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "V24",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 3,
+      "name": "TACH",
+      "signal_name": "FAN_TACH3"
+     },
+     {
+      "pin_number": 4,
+      "name": "PWM",
+      "signal_name": "FAN_PWM2"
+     }
+    ]
+   },
+   {
+    "designator": "RFT3",
+    "value": "10k",
+    "block_name": "FANS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "FAN_TACH3"
+     }
+    ]
+   },
+   {
+    "designator": "JFAN4",
+    "value": "PH-4-FAN",
+    "block_name": "FANS",
+    "search_query": "PH-4-FAN fan header 4-way",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "V24",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 3,
+      "name": "TACH",
+      "signal_name": "FAN_TACH4"
+     },
+     {
+      "pin_number": 4,
+      "name": "PWM",
+      "signal_name": "FAN_PWM2"
+     }
+    ]
+   },
+   {
+    "designator": "RFT4",
+    "value": "10k",
+    "block_name": "FANS",
+    "search_query": "R-small small-signal resistor 0402–0805",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "FAN_TACH4"
+     }
+    ]
+   }
+  ],
+  [
+   {
+    "designator": "JICA",
+    "value": "MICROFIT3-40",
+    "block_name": "INTERCONNECT",
+    "search_query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "W1",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "W2",
+      "signal_name": "V15"
+     },
+     {
+      "pin_number": 3,
+      "name": "W3",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 4,
+      "name": "W4",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 5,
+      "name": "W5",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 6,
+      "name": "W6",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "W7",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 8,
+      "name": "W8",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 9,
+      "name": "W9",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 10,
+      "name": "W10",
+      "signal_name": "PWM_A0"
+     },
+     {
+      "pin_number": 11,
+      "name": "W11",
+      "signal_name": "PWM_B0"
+     },
+     {
+      "pin_number": 12,
+      "name": "W12",
+      "signal_name": "PWM_C0"
+     },
+     {
+      "pin_number": 13,
+      "name": "W13",
+      "signal_name": "I_A0"
+     },
+     {
+      "pin_number": 14,
+      "name": "W14",
+      "signal_name": "I_B0"
+     },
+     {
+      "pin_number": 15,
+      "name": "W15",
+      "signal_name": "I_C0"
+     },
+     {
+      "pin_number": 16,
+      "name": "W16",
+      "signal_name": "SNS_VAC1"
+     },
+     {
+      "pin_number": 17,
+      "name": "W17",
+      "signal_name": "SNS_VAC2"
+     },
+     {
+      "pin_number": 18,
+      "name": "W18",
+      "signal_name": "SNS_VAC3"
+     },
+     {
+      "pin_number": 19,
+      "name": "W19",
+      "signal_name": "SNS_VBUSP"
+     },
+     {
+      "pin_number": 20,
+      "name": "W20",
+      "signal_name": "SNS_VMID"
+     },
+     {
+      "pin_number": 21,
+      "name": "W21",
+      "signal_name": "SNS_V24"
+     },
+     {
+      "pin_number": 22,
+      "name": "W22",
+      "signal_name": "SNS_V15"
+     },
+     {
+      "pin_number": 23,
+      "name": "W23",
+      "signal_name": "T_PFC"
+     },
+     {
+      "pin_number": 24,
+      "name": "W24",
+      "signal_name": "T_INLET"
+     },
+     {
+      "pin_number": 25,
+      "name": "W25",
+      "signal_name": "AVMID"
+     },
+     {
+      "pin_number": 26,
+      "name": "W26",
+      "signal_name": "AGND"
+     },
+     {
+      "pin_number": 27,
+      "name": "W27",
+      "signal_name": "FAN_PWM1"
+     },
+     {
+      "pin_number": 28,
+      "name": "W28",
+      "signal_name": "FAN_PWM2"
+     },
+     {
+      "pin_number": 29,
+      "name": "W29",
+      "signal_name": "FAN_TACH1"
+     },
+     {
+      "pin_number": 30,
+      "name": "W30",
+      "signal_name": "FAN_TACH2"
+     },
+     {
+      "pin_number": 31,
+      "name": "W31",
+      "signal_name": "CTL_KPRE"
+     },
+     {
+      "pin_number": 32,
+      "name": "W32",
+      "signal_name": "CTL_QDIS"
+     },
+     {
+      "pin_number": 33,
+      "name": "W33",
+      "signal_name": "RELAY_FB_KPRE"
+     },
+     {
+      "pin_number": 34,
+      "name": "W34",
+      "signal_name": "EN_PFC"
+     },
+     {
+      "pin_number": 35,
+      "name": "W35",
+      "signal_name": "GATE_EN_A"
+     },
+     {
+      "pin_number": 36,
+      "name": "W36",
+      "signal_name": "FLT"
+     },
+     {
+      "pin_number": 37,
+      "name": "W37",
+      "signal_name": "DRV_RDY"
+     },
+     {
+      "pin_number": 38,
+      "name": "W38",
+      "signal_name": "FAN_TACH3"
+     },
+     {
+      "pin_number": 39,
+      "name": "W39",
+      "signal_name": "FAN_TACH4"
+     },
+     {
+      "pin_number": 40,
+      "name": "W40",
+      "signal_name": "PE"
+     }
+    ]
+   }
+  ]
+ ],
+ "nc": {},
+ "warnings": [],
+ "total": 50
+}

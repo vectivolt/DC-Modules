@@ -44,10 +44,10 @@ sh calculations/run-all.sh   # → 218/218 · stress clean · FIRMWARE LOGIC 50/
 
 ## Release pipeline (KiCad-5 face = the record)
 
-`easyeda-pages.mjs <sku>` → `easyeda-apply-gen.mjs <sku>` → `kicad5-gen.mjs <sku>` (sheets +
+`sheet-pages.mjs <sku>` → `sheet-netlist-gen.mjs <sku>` → `kicad5-gen.mjs <sku>` (sheets +
 SHIP zip, `schematic-sections.mjs` shared tables) → `kicad5-print.mjs <sku>` (print-fidelity
 SVGs) → `sheets-to-pdf.mjs` (the five release PDF sets in `boards/out-pdf/`).
-**Order matters**: pages+apply must rerun after any parts-db value/mpn change, prints before
+**Order matters** (E56: the EasyEDA app layer is fully removed — these are internal netlist stages; KiCad is the terminal face): pages+netlist-gen must rerun after any parts-db value/mpn change, prints before
 PDFs — the gates catch staleness (SKU-VALUE, APPLY-COMPLETE).
 
 ## Sheet-QA suite (measures the emitted `.sch`, not the intent)

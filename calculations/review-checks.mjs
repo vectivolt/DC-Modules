@@ -110,8 +110,8 @@ ck("R4-2", /<OutputShunt inn="net\.BKBN"/.test(boards) && !/outn="net\.OUTN_SH"/
 { // every net must have >= 2 pins, on whichever SKUs have been built
   const { readdirSync, existsSync } = await import("node:fs");
   for (const sku of BUILDABLE_SKUS) {
-    const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda/apply")
-                               : join(ROOT, "calculations/out/easyeda", sku, "apply");
+    const dir = sku === "30kw" ? join(ROOT, "calculations/out/sheets/apply")
+                               : join(ROOT, "calculations/out/sheets", sku, "apply");
     if (!existsSync(dir)) continue;
     const pins = new Map();
     for (const f of readdirSync(dir).filter(x => x.endsWith(".json")))
@@ -136,8 +136,8 @@ ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin4: "RT"/.test(cells),
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
   const { existsSync, readdirSync } = await import("node:fs");
   for (const sku of BUILDABLE_SKUS) {
-    const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda/apply")
-                               : join(ROOT, "calculations/out/easyeda", sku, "apply");
+    const dir = sku === "30kw" ? join(ROOT, "calculations/out/sheets/apply")
+                               : join(ROOT, "calculations/out/sheets", sku, "apply");
     if (!existsSync(dir)) continue;
     const want = { USUPA: [2, 4], UAUX: [4], U1H: [12] };
     const got = {};
@@ -224,14 +224,14 @@ ck("SYNTAX-DUPKEY", (() => {
     `no parts-db rule is shadowed by an earlier, broader one${msg ? " — " + msg : ""}`);
 }
 
-{ // A component with no part_uuid is SKIPPED silently by easyeda-apply-gen — it simply does not
+{ // APPLY-COMPLETE: every netlist component must appear in its sheet payload (E56: the uuid skip
   // appear downstream, and its nets lose an end. Renaming KPREA/KPREB for R8 did exactly that and
   // nothing failed until a full rebuild from source: the committed sheets were right but no longer
   // reproducible, because the intermediate apply files were stale. Compare the two stages directly.
   const { existsSync, readdirSync } = await import("node:fs");
   for (const sku of BUILDABLE_SKUS) {
-    const pagesDir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda")
-                                    : join(ROOT, "calculations/out/easyeda", sku);
+    const pagesDir = sku === "30kw" ? join(ROOT, "calculations/out/sheets")
+                                    : join(ROOT, "calculations/out/sheets", sku);
     const applyDir = join(pagesDir, "apply");
     if (!existsSync(applyDir)) continue;
     const want = new Set(), got = new Set();
@@ -256,8 +256,8 @@ ck("SYNTAX-DUPKEY", (() => {
   // reports 24 of 36 nets "unprotected" when every one of them is fine.
   const { existsSync, readdirSync } = await import("node:fs");
   for (const sku of BUILDABLE_SKUS) {
-    const dir = sku === "30kw" ? join(ROOT, "calculations/out/easyeda")
-                               : join(ROOT, "calculations/out/easyeda", sku);
+    const dir = sku === "30kw" ? join(ROOT, "calculations/out/sheets")
+                               : join(ROOT, "calculations/out/sheets", sku);
     if (!existsSync(dir)) continue;
     const nets = new Map();
     for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
@@ -390,7 +390,7 @@ ck("AUD-CARD-HRTIMER", /"FLT":47/.test(umodGen) && /"PWM0":69/.test(umodGen) && 
 try {
   const cabNet = JSON.parse(readFileSync(join(ROOT, "dist/boards/cabinet/circuit.json"), "utf8"))
     .filter((e) => e.type === "source_component").map((e) => e.name);
-  const cabAp = JSON.parse(readFileSync(join(ROOT, "calculations/out/easyeda/cabinet/apply/cab-CABINET.json"), "utf8"))
+  const cabAp = JSON.parse(readFileSync(join(ROOT, "calculations/out/sheets/cabinet/apply/cab-CABINET.json"), "utf8"))
     .chunks.flat().map((c) => c.designator);
   const dropped = cabNet.filter((n) => !cabAp.includes(n));
   ck("AUD-CAB-COMPLETE", dropped.length === 0,

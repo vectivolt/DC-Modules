@@ -5,7 +5,7 @@
 // kicad-cli (KiCad 10) cannot read the legacy format, so it cannot check these files. This
 // parses them back from scratch — library pin offsets, component placements, wire segments,
 // global labels — rebuilds connectivity by geometry, and compares every pin against
-// calculations/out/easyeda/apply/*.json. It trusts nothing the generator claims.
+// calculations/out/sheets/apply/*.json. It trusts nothing the generator claims.
 //
 // Also checks the drawing rules the sheets are supposed to satisfy: every label sits on a wire
 // end, no component body overlaps another, and every section frame is closed.
@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKU = process.argv[2] || "30kw";
-const SRC = SKU === "30kw" ? join(ROOT, "calculations/out/easyeda/apply") : join(ROOT, "calculations/out/easyeda", SKU, "apply");
+const SRC = SKU === "30kw" ? join(ROOT, "calculations/out/sheets/apply") : join(ROOT, "calculations/out/sheets", SKU, "apply");
 const SCH = join(ROOT, `kicad5/dc-modules-${SKU}`);
 
 // ---- library: symbol -> pins {num, x, y} and body extent -------------------------------
@@ -97,9 +97,8 @@ for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
     const sym = LIB.get(c.lib);
     if (!sym) { problems.push(`${page.page}: unknown symbol ${c.lib} for ${c.ref}`); continue; }
     for (const p of sym.pins) {
-      // library is written pre-mirrored for EasyEDA, which places pins at (ux+px, uy+py);
-      // model that transform here so this checks what EasyEDA will actually see.
-      const k = key(c.x + p.x, c.y + p.y);
+      // E56: native lib + the standard "1 0 0 -1" instance matrix → sheet pin = (ux+px, uy−py).
+      const k = key(c.x + p.x, c.y - p.y);
       if (!pinAt.has(k)) pinAt.set(k, []);
       pinAt.get(k).push(`${c.ref}.${p.num}`);
     }

@@ -99,24 +99,21 @@ for (const file of readdirSync(SCH).filter((f) => f !== `dc-modules-${SKU}.sch` 
       else if (sh.k === "A") g += `<path d="M ${c.x + sh.sx} ${c.y + sh.sy} A ${sh.r} ${sh.r} 0 0 1 ${c.x + sh.ex} ${c.y + sh.ey}" fill="none" stroke="${INK}" stroke-width="${Math.max(7, sh.w)}"/>`;
     }
     for (const p of s.pins) {
-      const px = c.x + p.x, py = c.y + p.y;
+      const px = c.x + p.x, py = c.y - p.y;   /* E56 native matrix */
       const dx = p.o === "R" ? p.len : p.o === "L" ? -p.len : 0;
-      // The lib is authored in the EasyEDA-importer convention: Y pre-negated AND U/D swapped.
-      // Positions parse correctly under plain ADD (the CP "+" and pin dots land right), but the
-      // orientation letters are in the mirrored sense — so U runs DOWN (+y) and D runs UP here.
-      // Without this flip every top/bottom IC pin stub drew away from the body (floating stubs).
-      const dy = p.o === "U" ? p.len : p.o === "D" ? -p.len : 0;
+      // E56 native: orientation U points toward a body ABOVE (screen-up = −y), D below.
+      const dy = p.o === "U" ? -p.len : p.o === "D" ? p.len : 0;
       g += `<line x1="${px}" y1="${py}" x2="${px + dx}" y2="${py + dy}" stroke="${INK}" stroke-width="6"/>`;
       g += `<circle cx="${px}" cy="${py}" r="8" fill="#b03030"/>`;
       if (p.name && p.name !== "~" && s.pins.length > 2) {
         const ix = px + (p.o === "R" ? p.len + 40 : p.o === "L" ? -p.len - 40 : 0);
-        const iy = py + (p.o === "U" ? p.len + 40 : p.o === "D" ? -p.len - 40 : 18);
+        const iy = py + (p.o === "U" ? -p.len - 40 : p.o === "D" ? p.len + 40 : 18);
         const a = p.o === "R" ? "start" : p.o === "L" ? "end" : "middle";
         g += `<text x="${ix}" y="${iy}" font-family="Helvetica,Arial" font-size="50" fill="#4a5a63" text-anchor="${a}">${esc(p.name)}</text>`;
       }
       if (s.pins.length > 2) {
         const nx = px + (p.o === "R" ? p.len / 2 : p.o === "L" ? -p.len / 2 : 0);
-        const ny = py + (p.o === "U" ? -p.len / 2 : p.o === "D" ? p.len / 2 : -25);
+        const ny = py + (p.o === "U" ? p.len / 2 : p.o === "D" ? -p.len / 2 : -25);
         g += `<text x="${nx}" y="${ny}" font-family="Helvetica,Arial" font-size="40" fill="${PINNO}" text-anchor="middle">${esc(p.num)}</text>`;
       }
     }

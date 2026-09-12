@@ -287,7 +287,7 @@ for (const [sku, s] of Object.entries(SK)) {
 }
 // R4-1: payload anode name ↔ netlist anode net lock (the render-seating defect class, closed at the data level)
 {
-  const pay = JSON.parse(readFileSync(`${ROOT}/calculations/out/easyeda/40kw/apply/acdc-VIENNA-PFC.json`, "utf8"));
+  const pay = JSON.parse(readFileSync(`${ROOT}/calculations/out/sheets/40kw/apply/acdc-VIENNA-PFC.json`, "utf8"));
   let okA = 0, badA = 0;
   for (const c of pay.chunks.flat()) {
     if (!/^D[ABC]0[TBC]$/.test(c.designator ?? "")) continue;
