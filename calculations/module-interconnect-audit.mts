@@ -167,20 +167,20 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
   }
 }
 
-// ---- 5. the 120 kW cabinet sheet (E39): 4 modules + one CSU card on the CAN chain ----
+// ---- 5. the 150 kW cabinet sheet (E39 structure · E55 re-base): 3 × 50 kW modules + one CSU ----
 const cab = load(`${ROOT}/dist/boards/cabinet/circuit.json`);
 if (cab) {
-  console.log(`\n== cabinet interconnect — 120 kW ==`);
+  console.log(`\n== cabinet interconnect — 150 kW (3 × 50) ==`);
   const pinsOn = (net: string) => cab.pinsOfNet.get(net) ?? [];
   const has = (net: string, key: string) => pinsOn(net).includes(key);
   // every module drop + the CSU card + exactly the two chain terminations
   for (const net of ["CANH", "CANL"] as const) {
-    const want = [1, 2, 3, 4].map((n) => `MOD${n}.${net}`).concat([`UCSU.${net}`]);
+    const want = [1, 2, 3].map((n) => `MOD${n}.${net}`).concat([`UCSU.${net}`]);
     const missing = want.filter((k) => !has(net, k));
     const rts = pinsOn(net).filter((k) => /^RT[12]\./.test(k));
     if (missing.length) bad(`cabinet ${net}: missing drops ${missing.join(", ")}`);
     else if (rts.length !== 2) bad(`cabinet ${net}: ${rts.length} termination pins (need both RT1 and RT2)`);
-    else ok(`cabinet ${net}: 4 modules + CSU + 2 terminations`);
+    else ok(`cabinet ${net}: 3 modules + CSU + 2 terminations`);
   }
   for (const [r, v] of [["RT1", "120"], ["RT2", "120"], ["RRCSU", "3320"], ["RSHB", "0"], ["RSGB", "0"]] as const) {
     const got = cab.val.get(r); const num = got === undefined ? undefined : String(Math.round(Number(got)));
@@ -198,13 +198,13 @@ if (cab) {
   const roleok = ["JCSU.ROLE1", "UCSU.ROLE1", "RRCSU.pin1"].every((k) => has("ROLE1", k));
   roleok ? ok("cabinet CSU: ROLE1 strap in place (3.32 k → CSU band)") : bad("cabinet CSU: ROLE1 strap net wrong");
   // per-module AC + DC bus
-  for (const n of [1, 2, 3, 4]) {
+  for (const n of [1, 2, 3]) {
     const okm = has("AC_L1", `MOD${n}.L1`) && has("AC_L2", `MOD${n}.L2`) && has("AC_L3", `MOD${n}.L3`)
       && has("PE", `MOD${n}.PE`) && has("BUS_P", `MOD${n}.OUTP`) && has("BUS_N", `MOD${n}.OUTN`) && has("CAN_SGND", `MOD${n}.SGND`);
     okm ? ok(`cabinet MOD${n}: AC feed + PE + charging bus + SGND`) : bad(`cabinet MOD${n}: AC/PE/BUS/SGND wiring incomplete`);
   }
   // shield: all drops on CAN_SHLD, bonded to PE through the single 0 R link
-  const shok = [1, 2, 3, 4].every((n) => has("CAN_SHLD", `MOD${n}.SHLD`)) && has("CAN_SHLD", "UCSU.SHLD")
+  const shok = [1, 2, 3].every((n) => has("CAN_SHLD", `MOD${n}.SHLD`)) && has("CAN_SHLD", "UCSU.SHLD")
     && has("CAN_SHLD", "RSHB.pin1") && has("PE", "RSHB.pin2");
   shok ? ok("cabinet shield: chained + single-point PE bond via RSHB") : bad("cabinet shield: bond/drops wrong");
   // cabinet studs exist

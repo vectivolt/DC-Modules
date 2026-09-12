@@ -3,11 +3,11 @@
 **The module comes in four variants on one platform, one card each: 30 kW air · 40 kW air
 (E41) · 50 kW LIQUID (E42) · 50 kW AIR (E44 — paralleled LLC pairs, 4 fans, every electrical
 class shared with the liquid twin by construction).** Higher ratings are cabinets of modules, not bigger boards.
-Price-per-kW ladder (generated, [docs/bom-cost.md](../docs/bom-cost.md), rev E51): 30→₹1,033/kW ·
-40→₹893/kW · 50-liquid→₹835/kW · **50-AIR→₹829/kW (cheapest module)** · 120 kW cheapest as
-**3×40+CSU ≈ ₹109,015 (₹908/kW)** vs 4×30 = ₹125,754 · 100 kW = 2×50a (829) or 2×50L (835) ·
-150 kW = 3×50a+CSU (**841, air**) or 3×50L+CSU (848, liquid); N−1 granularity 67 % vs 75 % —
-pick the runner at the volume decision.
+**E55 product ladder** (generated, [docs/bom-cost.md](../docs/bom-cost.md)): modules
+30→₹1,033/kW · 40→₹893/kW · 50-liquid→₹835/kW · **50-AIR→₹829/kW (cheapest module)**; products
+**100 kW = 2×50a ₹82,850 (829)** or 2×50L ₹83,546 (835) · **150 kW = 3×50a+CSU ₹126,109 (841)**
+or 3×50L+CSU ₹127,153 (848). The 60/80/120 kW compositions are RETIRED (E55): each was dominated
+per-kW by a 50-based product; N−1 on a 150 keeps 67 %, on a 100 keeps 50 %.
 
 ## The two cooling lines (E41 vs E42) — why the family splits at 40/50
 
@@ -24,7 +24,7 @@ fuses, a 250 A precharge class, a dual K_OUT, and a charger-level cooling cart (
 is the cart's job; the module's plate NTCs + OT ladder are its dry-run protection — E42 system
 boundary).
 
-**Why there is no 60 kW module (and never a single-lane 120).** A monolithic 60 needs a second
+**Why the module family stops at 50 kW (the single-lane/single-brain envelope).** A monolithic 60 needs a second
 lane: two lanes = 18 PWM / ~30 analog — past ANY single-brain card (`cardMap()` throws), so a
 60 kW module would carry 2 cards and cost what 2×30 already costs (≈₹853/kW for the retired
 two-lane machine vs the 40's 858 — no prize for breaking commonality). A single-lane 120 fails
@@ -66,15 +66,15 @@ architecture facts they demonstrated stand in the register: `cardMap()` refuses 
 cannot tile wider. Every pipeline consumer iterates `BUILDABLE_SKUS` (parts-db) and the
 120 kW product cost is a module roll-up in `bom-gen`.
 
-## The 60/120 kW cabinet contract (audit 2026-09-08 — this IS the 60/120 kW resolution)
+## The multi-module contract (audit 2026-09-08 · products re-based E55)
 
-**60 kW = 2 × 30 kW modules; 120 kW = 4 × 30 kW modules, in a cabinet.** Every path to a bigger
+**100 kW = 2 × 50 kW modules; 150 kW = 3 × 50 kW modules + CSU, in a cabinet.** Every path to a bigger
 single board was independently closed: board geometry (5 measurements, §above), the control card
 (88 ways / HRTIMER units / 100 pins — `docs/control-card-scope.md`, and `cardMap()` now *throws*
 beyond 60 kW), the HF167F relay family ceiling (R3 §3.4: 90 A switching — cannot reach 110/220 A),
 and fuse frames past 125 A. This is also how the commercial market builds (module + cabinet).
 
-## 120 kW cabinet adder (E39) — cost on top of 4 × module roll-up
+## 150 kW cabinet adder (E39/E55) — cost on top of the 3 × 50 module roll-up
 
 | line | part | ₹ @10k |
 |---|---|---|
@@ -85,7 +85,7 @@ and fuse frames past 125 A. This is also how the commercial market builds (modul
 | CAN chain | 2 × 120 Ω + 3.32 k strap + 0 R shield bond + 0 R SGND reference tie | ≈ 2 |
 | CAN/AC harness | integrator-supplied, cabinet-length dependent | — |
 
-120 kW product (rev E51): 4×30,980 + adder ₹1,834 = **₹125,754** or **3×35,727 + adder = ₹109,015** @10k (bom-cost.md carries the 4×-only roll-up).
+150 kW product (rev E55): 3×41,425 (air) + adder ₹1,834 = **₹126,109** · 3×41,773 (liquid) + adder = **₹127,153** @10k (bom-cost.md carries the air roll-up; 100 kW = plain 2× module, no adder).
 
 **The cabinet brain (E39):** one CSU — the same control card p/n strapped into the CSU band —
 on a passive carrier (15 V DIN supply + 3.32 k strap), joining the CAN chain alongside each

@@ -71,9 +71,9 @@
   [
    {
     "designator": "MOD1",
-    "value": "PMP-30KW-MODULE",
+    "value": "PMP-50KW-MODULE",
     "block_name": "MODULES",
-    "search_query": "PMP-30KW-MODULE 30 kW module",
+    "search_query": "PMP-50KW-MODULE 50 kW module interface block",
     "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
@@ -130,9 +130,9 @@
    },
    {
     "designator": "MOD2",
-    "value": "PMP-30KW-MODULE",
+    "value": "PMP-50KW-MODULE",
     "block_name": "MODULES",
-    "search_query": "PMP-30KW-MODULE 30 kW module",
+    "search_query": "PMP-50KW-MODULE 50 kW module interface block",
     "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
@@ -189,68 +189,9 @@
    },
    {
     "designator": "MOD3",
-    "value": "PMP-30KW-MODULE",
+    "value": "PMP-50KW-MODULE",
     "block_name": "MODULES",
-    "search_query": "PMP-30KW-MODULE 30 kW module",
-    "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "L1",
-      "signal_name": "AC_L1"
-     },
-     {
-      "pin_number": 2,
-      "name": "L2",
-      "signal_name": "AC_L2"
-     },
-     {
-      "pin_number": 3,
-      "name": "L3",
-      "signal_name": "AC_L3"
-     },
-     {
-      "pin_number": 4,
-      "name": "PE",
-      "signal_name": "PE"
-     },
-     {
-      "pin_number": 5,
-      "name": "OUTP",
-      "signal_name": "BUS_P"
-     },
-     {
-      "pin_number": 6,
-      "name": "OUTN",
-      "signal_name": "BUS_N"
-     },
-     {
-      "pin_number": 7,
-      "name": "CANH",
-      "signal_name": "CANH"
-     },
-     {
-      "pin_number": 8,
-      "name": "CANL",
-      "signal_name": "CANL"
-     },
-     {
-      "pin_number": 9,
-      "name": "SGND",
-      "signal_name": "CAN_SGND"
-     },
-     {
-      "pin_number": 10,
-      "name": "SHLD",
-      "signal_name": "CAN_SHLD"
-     }
-    ]
-   },
-   {
-    "designator": "MOD4",
-    "value": "PMP-30KW-MODULE",
-    "block_name": "MODULES",
-    "search_query": "PMP-30KW-MODULE 30 kW module",
+    "search_query": "PMP-50KW-MODULE 50 kW module interface block",
     "part_uuid": "b2a2f6c62e1345f99584f2356956658e",
     "pins": [
      {
@@ -570,5 +511,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 18
+ "total": 17
 }

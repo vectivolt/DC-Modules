@@ -1,4 +1,4 @@
-# Platform Architecture — rev E49 (2026-09-09)
+# Platform Architecture — rev E55 (2026-09-12)
 
 <p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
 
@@ -9,7 +9,7 @@ One ~10 kW **cell pair** (Vienna PFC phase cell + 3-φ LLC section ×3) on one t
 (AC-DC lower + DC-DC upper, faces inward, semiconductors to the outer heatsinks), **one control
 card — one brain per module** (GD32G553VET7, E40), one external CAN, one 2-button/2-digit HMI.
 Four module SKUs share the platform; higher ratings are **cabinets of modules**. Values below are
-the frozen set (register E1–E49 in [`assumptions.md`](assumptions.md)); every number reproduces
+the frozen set (register E1–E55 in [`assumptions.md`](assumptions.md)); every number reproduces
 from `calculations/run-all.sh`.
 
 ```mermaid
@@ -37,11 +37,11 @@ flowchart LR
 
 | Module | Silicon vs 30 kW | Cooling | ₹@10k · ₹/kW |
 |---|---|---|---|
-| **30 kW** | baseline (single B3M pair/phase, single SG2M/position) | air, 2 fans | 30,682 · 1,023 |
-| **40 kW** (E41) | PFC pairs **paralleled** (2× B3M/position, own 2.2 Ω each) | air, 3 fans | 35,292 · 882 |
-| **50 kW** (E42) | 40 kW silicon (single LLC FETs — the coldplate buys it) | **liquid**, 0 fans | 41,320 · 826 |
-| **50 kW air** (E44) | PFC **and** LLC paralleled (per-package conduction quarters) | air, 4 fans | 40,972 · **819 — cheapest** |
-| Products | 60/80/100 kW = 2× modules · 120/150 kW = 3–4× + **CSU** (same card, strap role) | | cheapest 120 = 3×40+CSU ₹107,710 (898) |
+| **30 kW** | baseline (single B3M pair/phase, single SG2M/position) | air, 2 fans | 30,980 · 1,033 |
+| **40 kW** (E41) | PFC pairs **paralleled** (2× B3M/position, own 2.2 Ω each) | air, 3 fans | 35,727 · 893 |
+| **50 kW** (E42) | 40 kW silicon (single LLC FETs — the coldplate buys it) | **liquid**, 0 fans | 41,773 · 835 |
+| **50 kW air** (E44) | PFC **and** LLC paralleled (per-package conduction quarters) | air, 4 fans | 41,425 · **829 — cheapest** |
+| Products (E55) | **100 kW = 2×50** (no CSU) · **150 kW = 3×50 + CSU** (same card, strap role) | | 100a ₹82,850 (829) · 150a ₹126,109 (841) |
 
 ## Power path (per module; all four SKUs, one drawing family)
 
@@ -57,7 +57,7 @@ flowchart LR
    (370/222/296 s to <60 V at 30/40/50 — label: isolate, wait 10 min, AND verify; E47/E49)
  → 3-phase half-bridge LLC, SG2M023120LJ (×2 paralleled on the air-50), PFM around fr 140 kHz:
    per-SKU Cr bank (4×46 n / 6×33 n / 8×27 n), binned trim + leakage = Lr, section transformer
-   (3×PQ50 7:7:7 · 2×E70 9:9:9 · 3×E70 6:6:6), Lm 63 µH ±7 %, star primaries
+   (E51 revs: 3×PQ50 7:7:7 · 2×E70 6:6:6 · 2×E70 5:5:5 — compacted litz + foil sec), Lm 63 µH ±7 %, star primaries
  → 2 secondaries/section → 2× SiC JBS bridges → floating banks A, B
  → S/P matrix: K_PAR_A/B (10 Ω pre-insertion), K_SER, K_OUT (dual at 50 kW), bank bleeders
    (VOM1271 PV-driven, R8 drive), two-stage 74HC02 exclusion (KSER ∧ ¬KPAR* ∧ ¬KPRE*, R5-D)
@@ -93,7 +93,7 @@ every enable low). Supervisory firmware carries the ~30-row F.xx ladder with per
 
 ## Auxiliary and rails
 
-Full-bus 110 W flyback (D4 rev C): **NCP1252D** (R6-G — the A-suffix could not cold-start:
+Full-bus 110 W flyback (D4 rev D — ETD39, E52 sat margin): **NCP1252D** (R6-G — the A-suffix could not cold-start:
 120 ms mandatory delay vs 1 V hysteresis), 220 µF VCC reservoir, brown-out at 321 V bus,
 cold start ≈5–6 s nominal (≈8 s low-line). Rails: V24 (coils/fans), V15 (bias + card feed),
 per-board 3.3 V sync bucks (100 k/27 k EN dividers, R4-4), reinforced-class isolated bias
@@ -101,8 +101,8 @@ modules (QA01C-18, +18/−3) for every floating driver/sense domain.
 
 ## Efficiency / thermal snapshot (per-variant engines; grid 6048 pts, 0 fail)
 
-η at 400 V / full load ≥300 V out: **97.28 % (30) · 97.4 % class (40) · 97.5 % class (50 L)
-· 97.01 % full / 98.55 % peak (50 air — family best per-kW)**. Worst-corner Tj ≤147 °C vs the
+η at 400 V / full load ≥300 V out: **97.32 / 97.06 / 96.85 / 96.92 %** (30/40/50L/50A; peaks
+98.4–98.55 % — loss budget rev E51 with real per-SKU transformer rows). Worst-corner Tj ≤147 °C vs the
 150 °C policy ceiling, every device inside its own acceptance line (`stress-audit.mjs`, in
 run-all). Cooling: extrusions + 2/3/4 fans, or the E42 coldplate pair (sealed, zero fans).
 
@@ -111,6 +111,8 @@ run-all). Cooling: extrusions + 2/3/4 fans, or the E42 coldplate pair (sealed, z
 The power path froze at Phase 9; everything since is closure and variants, recorded
 decision-by-decision in the register (E17 sandwich · E25–E33 production closure · E35–E39
 audits · E40 single brain · E41/E42/E44 variants · E43 family verification · **E45–E49 the
-five external-review rounds R4–R8**). Dated fix logs: `design-review-production*.md`,
+five external-review rounds R4–R8** · E50–E55: repo focus, the independent magnetics
+recomputation and re-issues, production margins, docs restructure, deep clean, and the E55
+product ladder). Dated fix logs: `design-review-production*.md`,
 `history/review-response-r3.md`; the audit trail summary lives in the top-level
 [`README.md`](../README.md).

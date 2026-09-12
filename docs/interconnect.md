@@ -98,6 +98,6 @@ Driven by the card: 74HC595 (segments, decoupled per R6-D) + 2 NPN digit mux + 2
 acdc + dcdc + card per SKU across every physical boundary: DCP/DCN/PE studs, all 40 harness
 ways pin-for-pin, every 88-way card way wired on the board AND landing on real electronics on
 the card, and the RATING strap encoding the SKU (E24 rev G bands). Negative-tested (a board
-swap produces 78 FAILs). The cabinet section walks the 120 kW sheet: CAN chain with exactly
+swap produces 78 FAILs). The cabinet section walks the 150 kW sheet (3 × 50 + CSU, E55): CAN chain with exactly
 two 120 Ω terminations, CSU strap band, PSU feed, per-module AC/DC landings, single-point
-shield bond (E39).
+shield bond (E39/E55).

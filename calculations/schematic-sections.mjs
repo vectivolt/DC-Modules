@@ -65,5 +65,5 @@ export const SHEET_IDENT = {
   "control-card": { sku: "30/60 kW", board: "Control card", sheet: "3 of 3", cells: "role-agnostic: AC-DC or DC-DC slot via ROLE straps" },
   "40kw/acdc":  { sku: "40 kW", board: "AC-DC (lower)", sheet: "1 of 3", cells: "E41 hot variant: paralleled PFC pairs, 124 uH chokes, 12-can link, 3 fans" },
   "40kw/dcdc":  { sku: "40 kW", board: "DC-DC (upper)", sheet: "2 of 3", cells: "E41 hot variant: 6x33 nF tanks, re-binned trim, 3 strings/bank" },
-  "cabinet": { sku: "120 kW", board: "Cabinet interconnect", sheet: "1 of 1", cells: "4x 30 kW module + CSU carrier (E39)" },
+  "cabinet": { sku: "150 kW", board: "Cabinet interconnect", sheet: "1 of 1", cells: "3x 50 kW module + CSU carrier (E39/E55)" },
 };

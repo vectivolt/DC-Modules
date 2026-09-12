@@ -21,7 +21,7 @@
 
 A commercial family of **unidirectional 30–150 kW AC→DC charging products** engineered end-to-end in this repository: every number traces to a runnable calculation, every waveform claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated BOM line.
 
-**The product is one 30 kW module** — an AC-DC board (Vienna PFC) + a DC-DC board (3-φ LLC) in a two-board sandwich, controlled by **ONE control card — one brain per module** (GD32G553VET7, E40/R5-I; the merged role runs Vienna + LLC together, all nine PWMs on HRTIMER units). Two engine-selected variants extend it on the same boards and card: the **40 kW air** hot-rod (E41) and the **50 kW liquid** sealed module (E42). Higher ratings are **cabinets of those modules**: 60/80/100 kW = 2×, 120/150 kW = 3–4× + one **CSU** — the *same card* in a strap role, supervising the modules over CAN. One board set, one card p/n, one firmware image, family-wide.
+**The product is one 30 kW module** — an AC-DC board (Vienna PFC) + a DC-DC board (3-φ LLC) in a two-board sandwich, controlled by **ONE control card — one brain per module** (GD32G553VET7, E40/R5-I; the merged role runs Vienna + LLC together, all nine PWMs on HRTIMER units). Two engine-selected variants extend it on the same boards and card: the **40 kW air** hot-rod (E41) and the **50 kW liquid** sealed module (E42). Above the modules sit exactly two products (E55): **100 kW = 2 × 50** (group-master CAN, no extra hardware) and **150 kW = 3 × 50 + one CSU** — the *same card* in a strap role, supervising the modules over CAN. One board set, one card p/n, one firmware image, family-wide.
 
 > **What this repo is:** a complete, simulation-closed, tolerance-hardened electrical design + verified supervisory firmware + manufacturing documentation, with the release schematics in an audited KiCad-5 set.
 > **Review status:** THREE adversarial audits plus TWO external PDF review rounds, each answered same-day with executed fixes and new permanent gates — see [The audit trail](#the-audit-trail).
@@ -66,7 +66,7 @@ flowchart LR
 
 **Two-board sandwich (E17, harness rev E40):** AC-DC board below, DC-DC board above, face-to-face — TO-247 rows clamp to the two outer heatsink extrusions, magnetics live in the inter-board airflow tunnel. Power crosses on bolted **DCP/DCN/PE stud pillars**; control on a **40-way straight-through harness** carrying the PFC bundle (3× logic-level PWM, 12 senses, AVMID + Kelvin return, fans, precharge, `EN_PFC`/`GATE_EN_A`/`FLT`/`DRV_RDY`, V15/V24, five returns, shield). Loss of the harness ⇒ the AC-DC board's gates die by hardware pull-downs; the brain shuts its own side down.
 
-**The control card (E35/E40):** ONE 120×80 mm card in the DC-DC board's 88-way slot runs the whole module — Vienna + LLC together on the same GD32G553VET7 (73/82 pins, 22 analog channels, all nine PWMs on HRTIMER units, one merged FLT). Identity is a single **RATING strap** (0 R = module controller · 3.32 k = cabinet CSU · open = fault), so **one card p/n and one firmware image serve every seat in the family** — 1/2/5 MCUs at 30/60/120 kW. See [`docs/control-card-scope.md`](docs/control-card-scope.md) and [`docs/firmware-guide.md`](docs/firmware-guide.md).
+**The control card (E35/E40):** ONE 120×80 mm card in the DC-DC board's 88-way slot runs the whole module — Vienna + LLC together on the same GD32G553VET7 (73/82 pins, 22 analog channels, all nine PWMs on HRTIMER units, one merged FLT). Identity is a single **RATING strap** (0 R = module controller · 3.32 k = cabinet CSU · open = fault), so **one card p/n and one firmware image serve every seat in the family** — 1 card per module, +1 CSU at 150 kW. See [`docs/control-card-scope.md`](docs/control-card-scope.md) and [`docs/firmware-guide.md`](docs/firmware-guide.md).
 
 ### Product structure — one module, two cooling lines (E39/E42)
 
@@ -85,12 +85,8 @@ what buys single LLC FETs at 167 A), revved tank/protection classes, full envelo
 | **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,727 | 893 |
 | **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,773 | **835** |
 | **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 41,425 | **829** — cheapest module |
-| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,960 | 1,033 |
-| **80 kW** | 2 × 40 | · 267 A | air | 2 | 71,454 | 893 |
 | **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 83,546 | **835** |
 | **100 kW** | 2 × 50a | · 333 A | air | 2 | 82,850 | **822** |
-| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 125,754 | 1,048 |
-| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **109,015** | **908** — cheapest 120 |
 | **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **127,153** | **848** |
 | **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **126,109** | **841** |
 
@@ -98,8 +94,9 @@ Full power from 300 V out / 330 VAC in on every variant; multi-module products s
 commanded-CC over CAN with staggered starts and graceful module-dropout degrade. The liquid line
 needs a charger-level cooling cart (coolant ≤60 °C in, 6 L/min per module — flow assurance is
 the cart's job, the module's plate NTCs + OT ladder are its dry-run protection, E42 boundary).
-The generated ladder lives in [`docs/bom-cost.md`](docs/bom-cost.md); N−1 note: a 4×30 cabinet
-keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at the volume decision.
+The generated ladder lives in [`docs/bom-cost.md`](docs/bom-cost.md). **E55 product line:** the
+60/80/120 kW compositions are retired — every multi-module product standardizes on the 50 kW
+twins (cheapest ₹/kW in the family; a 150 keeps 67 % on a module loss, a 100 keeps 50 %).
 
 ### Module variant specifications (rev E46 — every number engine-derived and gate-verified)
 
@@ -129,7 +126,7 @@ keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at th
 | Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k | 1 card · **15 k** — same p/n, same image (E24 rev G) |
 | Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich | 40-way harness — common |
 | **BOM @10k · ₹/kW** | **₹30,980 · 1,033/kW** | **₹35,727 · 893/kW** | **₹41,773 · 835/kW** | **₹41,425 · 829/kW — cheapest** |
-| Builds products | 60 kW (2×) · 120 kW (4×+CSU) | 80 kW (2×) · **120 kW (3×+CSU — cheapest)** | 100 kW (2×) · 150 kW (3×+CSU) | 100 kW air · **150 kW air (832/kW)** |
+| Builds products | — (single-module segment) | — (single-module segment) | 100 kW (2×) · 150 kW (3×+CSU) | 100 kW air (829/kW) · **150 kW air (841/kW)** |
 
 The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
 
@@ -292,8 +289,8 @@ Everything lives in [`docs/`](docs/README.md). Highlights:
 |---|---|
 | [`architecture.md`](docs/architecture.md) | the frozen platform, power path, control plane, scaling |
 | [`assumptions.md`](docs/assumptions.md) | **every decision E1–E42** with provenance and its invalidator |
-| [`boards/README-product-structure.md`](boards/README-product-structure.md) | module vs cabinet, the 60/120 kW contract, the CSU, the cabinet adder |
-| [`control-card-scope.md`](docs/control-card-scope.md) | why one card caps at 60 kW DC-DC — the arithmetic that retired 120 kW single-board |
+| [`boards/README-product-structure.md`](boards/README-product-structure.md) | module vs cabinet, the 100/150 kW products, the CSU, the cabinet adder |
+| [`control-card-scope.md`](docs/control-card-scope.md) | why one card caps at the 50 kW single-lane envelope — the arithmetic behind the module ceiling |
 | [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | the release schematics and the audits that gate them |
 | [`magnetics.md`](docs/magnetics.md) | manufacturing drawings D1–D7 (rev B/C set) with acceptance limits |
 | [`interconnect.md`](docs/interconnect.md) | sandwich, stud pillars, 40-way harness, the 88-way card slot, cabinet audit |
@@ -320,7 +317,7 @@ This project runs under a strict **no-fake-verification rule**: nothing is calle
 
 - [x] Design basis → frozen decision register **E1–E42**
 - [x] Simulation matrix closed (grid · Monte-Carlo · scenarios · aux · EMI estimate)
-- [x] Release schematics: 8 audited sheets, 5298/5298 pins, four PDF sets (30 kW · 40 kW · 50 kW liquid · 120 kW Cabinet)
+- [x] Release schematics: 8 audited sheets, 5298/5298 pins, five PDF sets (30 · 40 · 50 L · 50 A · 150 kW Cabinet)
 - [x] Product structure closed: 30 kW module · 60 = 2× · 120 = 4× + CSU — **one brain per module (E40), 1/2/5 MCUs family-wide**
 - [x] Three adversarial audits + external review answered with executed fixes and permanent gates
 - [ ] RFQ round 1 (SiC + magnetics + relays) → cost closure

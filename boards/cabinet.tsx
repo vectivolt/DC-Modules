@@ -1,7 +1,9 @@
-// cabinet.tsx — the 120 kW cabinet as a schematic (E39).
+// cabinet.tsx — the 150 kW cabinet as a schematic (E39 structure · E55 re-base 3 × 50 kW).
 //
-// 120 kW = 4 × 30 kW modules + ONE coordinating MCU: the same control card p/n booting in the
-// CSU strap role (RATING band 3.32 k → ~0.82 V, between the 0 V/30 kW and 1.65 V/60 kW codes).
+// 150 kW = 3 × 50 kW modules (liquid 50kw or air 50kwa — same interface) + ONE coordinating
+// MCU: the same control card p/n booting in the CSU strap role (RATING band 3.32 k → ~0.82 V).
+// The 100 kW product = 2 × 50 with NO CSU (group-master CAN, E39 claim-by-hearing); the
+// 60/80/120 kW compositions are RETIRED at E55 — the product ladder is 30/40/50/100/150.
 // The card sits on a passive CSU carrier drawn here: 15 V DIN brick into the V15 ways, one strap
 // resistor, done. CAN addressing is UID-claim in firmware, so the harness carries no address pins.
 //
@@ -10,14 +12,15 @@
 // 120 Ω terminations, PE bonding, and the CSU assembly. Netlist-only build (E36 — no PCB).
 //
 // Section map (E34: nets not wires, every component carries schSectionName):
-//   AC-ENTRY   cabinet studs L1/L2/L3/PE → per-module feeds (module has its own 80 A gG fuse)
-//   MODULES    MOD1..MOD4 interface blocks
+//   AC-ENTRY   cabinet studs L1/L2/L3/PE → per-module feeds (each 50 kW module carries its own
+//              160 A gG NH00 input protection)
+//   MODULES    MOD1..MOD3 interface blocks
 //   DC-BUS     DCP/DCN parallel bus studs (modules parallel through their own K_OUT + E12b gate)
-//   CAN-CHAIN  linear daisy chain, 120 Ω at BOTH ends (RT1 at CSU end, RT2 at MOD4 end),
+//   CAN-CHAIN  linear daisy chain, 120 Ω at BOTH ends (RT1 at CSU end, RT2 at MOD3 end),
 //              shield bonded to PE at the CSU end only
 //   CSU-CARRIER JCSU 88-way header (used ways only; the rest are NC on the carrier) + RRCSU strap
 //              + PSU1 15 V DIN supply + the mated card's external pins (UCSU)
-const MODS = [1, 2, 3, 4];
+const MODS = [1, 2, 3];
 
 export default () => (
   <board width="400mm" height="300mm" routingDisabled>
@@ -31,9 +34,9 @@ export default () => (
     <trace from=".JCABL3 > .P" to="net.AC_L3" schDisplayLabel="AC_L3" />
     <trace from=".JCABPE > .P" to="net.PE" schDisplayLabel="PE" />
 
-    {/* ---- the four 30 kW modules, interface pins only ---- */}
+    {/* ---- the three 50 kW modules (50kw liquid / 50kwa air — same interface), pins only ---- */}
     {MODS.map((n) => (
-      <chip key={n} name={`MOD${n}`} value="PMP-30KW-MODULE" footprint="pinrow10"
+      <chip key={n} name={`MOD${n}`} value="PMP-50KW-MODULE" footprint="pinrow10"
         pinLabels={{ pin1: "L1", pin2: "L2", pin3: "L3", pin4: "PE", pin5: "OUTP", pin6: "OUTN", pin7: "CANH", pin8: "CANL", pin9: "SGND", pin10: "SHLD" }}
         schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["L1", "L2", "L3", "PE"] }, rightSide: { direction: "top-to-bottom", pins: ["OUTP", "OUTN", "CANH", "CANL", "SGND", "SHLD"] } }}
         pcbX={40 + n * 30} pcbY={40} schX={14 + ((n - 1) % 2) * 14} schY={42 - Math.floor((n - 1) / 2) * 9} schSectionName="MODULES" />

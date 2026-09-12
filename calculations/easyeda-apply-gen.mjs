@@ -75,7 +75,7 @@ const uuidOf = (mpn) => {
   // E40: the 40-way harness reuses the probed 16-way header class as its placeholder.
   if (/^MICROFIT3-/.test(mpn)) return uuidMap["MICROFIT3-16"]?.part_uuid ?? null;
   // Cabinet sheet blocks (E39): interface symbols only — same placeholder class as the 88-way.
-  if (/^(PMP-30KW|CONTROL-CARD-CSU|PSU-15V|STUD-M8)/.test(mpn)) return uuidMap["HDR-1x5-2.54"]?.part_uuid ?? null;
+  if (/^(PMP-\d+KW|CONTROL-CARD-CSU|PSU-15V|STUD-M8)/.test(mpn)) return uuidMap["HDR-1x5-2.54"]?.part_uuid ?? null;   // E55: prefix-match the module class (the exact-match drop-class bug, occurrence #7 — PMP-50KW re-base)
   return null;
 };
 

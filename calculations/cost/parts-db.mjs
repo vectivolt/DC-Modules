@@ -46,7 +46,7 @@ export const DB = [
   // --- gate drive, isolation & safety chain
   { m: /^U([ABC]\d+G|\d+[HL])$/, mpn: "NSI6611", mfr: "NOVOSENSE", desc: "iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16", price1k: 85, alt: "NSI6602B" },
   // ---- 120 kW cabinet sheet (E39) — interface blocks + CSU carrier ----
-  { m: /^MOD\d$/, mpn: "PMP-30KW-MODULE", mfr: "own", desc: "30 kW module (interface block — cost is the module roll-up, not a part)", price1k: 0, alt: "—" },
+  { m: /^MOD\d$/, mpn: "PMP-50KW-MODULE", mfr: "own", desc: "50 kW module interface block (liquid 50kw or air 50kwa — E55 cabinet re-base; cost is the module roll-up, not a part)", price1k: 0, alt: "—" },
   { m: /^UCSU$/, mpn: "CONTROL-CARD-CSU", mfr: "own", desc: "control card in the CSU strap role (same p/n as module cards — E39)", price1k: 0, alt: "—" },
   { m: /^JCSU$/, mpn: "CONN-CARD-88-H", mfr: "generic 2.54 mm", desc: "CSU carrier 88-way PIN HEADER (mates the card receptacle; only V15/GND/ROLE ways used)", price1k: 45, alt: "Samtec TSW-144" },
   { m: /^PSU1$/, mpn: "PSU-15V-DIN-WDR", mfr: "MeanWell", desc: "15 V DIN supply, WIDE-RANGE 180-550 VAC input (WDR-60-15) — fed L1-L2 at 400 VAC L-L, no neutral at cabinet entry; an MDR 85-264 VAC part would fail", price1k: 1300, alt: "TDK-Lambda DRB/480 V class" },

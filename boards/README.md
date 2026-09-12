@@ -9,8 +9,8 @@ modules — contract and the price-per-kW ladder in
 |---|---|
 | [`30kw/`](30kw/) · [`40kw/`](40kw/) · [`50kw/`](50kw/) · [`50kwa/`](50kwa/) | the four buildable module variants (`acdc.tsx` + `dcdc.tsx`) — one parameterized source ([`boards.tsx`](../packages/common-components/boards.tsx)): the 40 kW an engine-selected hot-rod of the 30 (E41: paralleled PFC pairs, 5-stack choke, 6×33 nF tanks, 125 A class, 3 fans), the 50 kW the sealed LIQUID variant (E42: same silicon as the 40, coldplates, ZERO fans, revved tank/protection classes, dual K_OUT), the 50kwa its AIR twin (E44: paralleled LLC pairs too, 4 fans, same electrical classes by construction — the family's cheapest ₹/kW) |
 | [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120×80, 88-way) — one p/n, one image: module brain (30/40/50L/50A by RATING strap, E24 rev G) and the cabinet **CSU** role ([scope](../docs/control-card-scope.md)) |
-| [`cabinet.tsx`](cabinet.tsx) | the **120 kW cabinet interconnect of record** (E39): AC distribution, DC charging bus, CAN chain + SGND + terminations, CSU carrier |
-| [`out-pdf/`](out-pdf/) | **the release PDF sets** (30 kW · 40 kW · 50 kW · 50 kW-Air · 120 kW Cabinet — each AC-DC + DC-DC + card) rendered from the audited KiCad-5 sheets |
+| [`cabinet.tsx`](cabinet.tsx) | the **150 kW cabinet interconnect of record** (E39/E55: 3 × 50 kW + CSU): AC distribution, DC charging bus, CAN chain + SGND + terminations, CSU carrier |
+| [`out-pdf/`](out-pdf/) | **the release PDF sets** (30 kW · 40 kW · 50 kW · 50 kW-Air · **150 kW Cabinet** — each AC-DC + DC-DC + card) rendered from the audited KiCad-5 sheets |
 
 The retired multi-lane single-board references (`60kw/`, `120kw/`) and the superseded kicad5
 zips were moved off `main` at **E50** — recover them on branch `archive/pre-focus-E49`.
