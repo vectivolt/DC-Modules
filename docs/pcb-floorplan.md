@@ -9,7 +9,7 @@ Feasibility numbers are generated: `node calculations/floorplan-budget.mjs`.
 
 Related: [interconnect.md](interconnect.md) (E17 sandwich), [insulation-coordination.md](insulation-coordination.md)
 (creepage table), [thermal-report.md](thermal-report.md) (loss per block),
-[magnetics.md](magnetics.md) (D1–D7 envelopes), [schematic-drawing-set.md](schematic-drawing-set.md)
+[magnetics.md](magnetics.md) (D1–D7 envelopes), [schematic-drawing-set.md](history/schematic-drawing-set.md)
 (the 217 sections this maps).
 
 ---

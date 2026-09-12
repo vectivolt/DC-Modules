@@ -322,8 +322,8 @@ const MAGNETICS = {
   "XFMR_3xPQ50-50_custom": { all: { kind: "bobbin", w: 96, d: 50, h: 50, pins: 7, pitch: 10, csa: 10.4, clamp: 4,
     what: "D3 LLC section transformer 10 kW, 3x PQ50/50 stacked, Np/Ns1/Ns2 = 7/7/7, Lm 63 uH" } },
   // D4 rev C — aux flyback, ETD34 PC95, Np 38 / N24 6 / N15 4 / Naux 4 -> 8 terminations
-  "XFMR_ETD34_custom": { all: { kind: "bobbin", w: 35, d: 26, h: 25, pins: 8, pitch: 5.08, csa: 0.8,
-    what: "D4 rev C aux flyback transformer, ETD34 PC95, 110 W class, Np 38 / N24 6 / N15 4 / Naux 4" } },
+  "XFMR_ETD39_custom": { all: { kind: "bobbin", w: 42, d: 30, h: 30, pins: 8, pitch: 5.08, csa: 0.8,
+    what: "D4 rev D aux flyback transformer, ETD39 PC95, 110 W class, Np 38 / N24 6 / N15 4 / Naux 4 (E52 margin rev — Bpk 0.233 T)" } },
   // CTs — line CT needs a >=9 mm busbar window; resonant CT is a 10 mm toroid in series with the tank
   "CT_window_100A_1-2500": { all: { kind: "toroid", od: 42, id: 14.6, h: 25, csa: 0.5, pins4: true,
     what: "Line CT: Talema ACX-1100 catalog (2500:1, 100 A, dia-14.6 window), 27 R burden — audit/R3; land per Talema drawing at layout" } },

@@ -54,7 +54,7 @@ export const FOOTPRINT = {
   "IND-PFC-165u": "L_Toroid_3xT79_26u_custom", "IND-TRIM-BIN4": "L_Toroid_trim_bin_custom",
   "DM-22u-SKU": "L_Toroid_sendust_per-SKU", "CMC-3PH-2mH-SKU": "L_CMC_3ph_nanocryst_per-SKU",
   "CMC-CAN-51uH": "IND-SMD_L4.5-W3.2_CMC", "XFMR-LLC-10K": "XFMR_3xPQ50-50_custom",
-  "XFMR-AUX-FLY-C": "XFMR_ETD34_custom",
+  "XFMR-AUX-FLY-D": "XFMR_ETD39_custom",
   "CT-100A-1:2500": "CT_window_100A_1-2500", "CT-RES-1:100": "CT_window_res_1-100",
   // NOT the catalogue HF167F/24-HF land (LCSC C2757422). Tried it; EasyEDA's DRC rejected it:
   // "Pin has no corresponding pad: 5, 6, 8; Pad has no corresponding pin: 2". The catalogue part

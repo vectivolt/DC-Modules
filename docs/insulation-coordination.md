@@ -1,5 +1,10 @@
 # Insulation Coordination (§33) + Standards Matrix (§47) — rev A
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Barrier map, creepage/clearance design values, hipot plan, SELV architecture.
+
+
 Basis standards (current editions to be pulled at DQ): IEC 60664-1 (coordination), IEC 62477-1
 (PECS safety, decides most clearances), IEC/IS 61851-23 (DC EVSE system level), IEC 61000-4-x
 (immunity), CISPR 32/EN 55032-class conducted (pre-compliance basis). **No compliance is claimed** —

@@ -236,9 +236,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "XFMR-AUX-FLY-C",
-   "query": "XFMR-AUX-FLY-C aux flyback transformer ETD34, 110 W class, 342–860 V input, Np38",
-   "mpn": "XFMR-AUX-FLY-C"
+   "value": "XFMR-AUX-FLY-D",
+   "query": "XFMR-AUX-FLY-D aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input,",
+   "mpn": "XFMR-AUX-FLY-D"
   },
   {
    "designator": "DAUX24",

@@ -1,5 +1,12 @@
 # Firmware Guide — supervisory logic that's already been through hell 🧠
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Supervisory C99 core: design, API, HAL contract, boot identity, F.21 semantics, R5–R7 contracts.
+>
+> **Gate coupling** — review-checks R6-B/R7-E greps pin passages of this file — edit additively.
+
+
 The `firmware/` tree holds the **normative** control-plane logic in portable C99 — no HAL, no RTOS
 assumptions — verified against the same plant and the same 26 fault scenarios as the design-phase
 model, plus the CSU supervisor, protocol-codec guards, a 100 000-frame fuzz and the R5-D

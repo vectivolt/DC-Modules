@@ -1,5 +1,12 @@
 # Production-Readiness Design Review — Independent Adversarial Audit 🔎
 
+<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORD-555?style=flat-square" alt="HISTORICAL__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — R1 adversarial audit (dated record) — 15 blockers, all closed at rev C.
+>
+> **Gate coupling** — review-checks derives its R1 asserts from this record — gate-pinned path.
+
+
 **Scope:** complete schematic set (6 boards), BOM, calculations, firmware interfaces, protection
 architecture. **Explicitly excluded:** PCB placement/routing/stack-up (layout dependencies are
 flagged in §P, not reviewed). **Method:** every claim below was verified against the schematic

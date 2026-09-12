@@ -1,8 +1,29 @@
 # EVT Test Plan (§49-25) — first-article board pairs, rev A
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — First-hardware test plan T-00…T-29 + EOL derivation; sim-vs-bench deltas >20 % reopen the owning calc.
+
+
 Preconditions: boards assembled minus SiC (T-00 bare bring-up), lab aux input (§28), HV supply +
 3-φ variac/source, chroma load, LISN, thermal chamber. Every test logs to the verification matrix;
 sim-vs-bench deltas >20% reopen the owning calc/sim.
+
+```mermaid
+flowchart LR
+  A["T-00<br/>bare bring-up"] --> B["T-01<br/>bench DPT<br/>(closes A1/R5)"]
+  B --> C["T-02/T-03<br/>PFC + DC quality"]
+  C --> D["T-04/T-23<br/>thermal chamber"]
+  C --> E["T-05/T-21/T-22<br/>pulse parts"]
+  C --> F["T-06/T-16/T-17/T-20/T-26<br/>protection injection"]
+  F --> G["T-07/T-24/T-25<br/>S-P transitions + corners"]
+  D --> H["T-08<br/>EMI pre-scan"]
+  E --> I["T-09…T-13/T-18/T-19/T-27…T-29<br/>aux · discharge · PV drive"]
+  G --> J["T-10/T-14/T-15<br/>soak · hipot · thermography"]
+  H --> K(["BOM freeze gates:<br/>loaded PV Vgs · both-polarity trip<br/>D4 clamp · magnetics first-articles"])
+  I --> K
+  J --> K
+```
 
 | ID | Test | Method / acceptance |
 |---|---|---|

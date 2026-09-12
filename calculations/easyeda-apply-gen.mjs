@@ -19,7 +19,7 @@ const uuidMap = JSON.parse(readFileSync(join(here, "out/easyeda", "part-uuid-map
 // GD32G553VET7 LQFP100 physical pin allocation (R3). The previous map was STM32G474-derived and
 // symbolic: it put a fault output on pin 74 (VSS) and BOOT0 on pin 100 (VDD) — two hard shorts —
 // and SWD on PA6/PA7. Allocated against GD32G553xx Rev 2.0 Table 2-4 and adversarially audited;
-// see docs/mcu-pin-allocation-gd32.md for the open architecture decisions.
+// see docs/history/mcu-pin-allocation-gd32.md for the open architecture decisions.
 const MCU_ALLOC = JSON.parse(readFileSync(join(here, "out/mcu-pin-allocation.json"), "utf8"));
 const MCU_REF = { UPFC: "UPFC", ULLC: "ULLC" };
 

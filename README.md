@@ -81,18 +81,18 @@ what buys single LLC FETs at 167 A), revved tank/protection classes, full envelo
 
 | Product | Composition | Output | Cooling | Cards | ₹ @10k | **₹/kW** |
 |---|---|---|---|---|---|---|
-| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,686 | 1,023 |
-| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,415 | 885 |
-| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,444 | **829** |
-| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 41,096 | **822** — cheapest module |
-| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,372 | 1,023 |
-| **80 kW** | 2 × 40 | · 267 A | air | 2 | 70,830 | 885 |
-| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 82,888 | **829** |
-| **100 kW** | 2 × 50a | · 333 A | air | 2 | 82,192 | **822** |
-| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 124,578 | 1,038 |
-| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **108,079** | **901** — cheapest 120 |
-| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **126,166** | **841** |
-| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **125,122** | **834** |
+| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,980 | 1,033 |
+| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,727 | 893 |
+| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,773 | **835** |
+| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 41,425 | **829** — cheapest module |
+| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,960 | 1,033 |
+| **80 kW** | 2 × 40 | · 267 A | air | 2 | 71,454 | 893 |
+| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 83,546 | **835** |
+| **100 kW** | 2 × 50a | · 333 A | air | 2 | 82,850 | **822** |
+| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 125,754 | 1,048 |
+| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **109,015** | **908** — cheapest 120 |
+| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **127,153** | **848** |
+| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **126,109** | **841** |
 
 Full power from 300 V out / 330 VAC in on every variant; multi-module products share current by
 commanded-CC over CAN with staggered starts and graceful module-dropout degrade. The liquid line
@@ -128,7 +128,7 @@ keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at th
 | Bus discharge to <60 V | 2.0 s (3.0 s F.21 window) | 2.4 s (4.0 s) | 3.2 s (5.0 s) | 3.2 s (5.0 s) |
 | Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k | 1 card · **15 k** — same p/n, same image (E24 rev G) |
 | Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich | 40-way harness — common |
-| **BOM @10k · ₹/kW** | **₹30,686 · 1,023/kW** | **₹35,415 · 885/kW** | **₹41,444 · 829/kW** | **₹41,096 · 822/kW — cheapest** |
+| **BOM @10k · ₹/kW** | **₹30,980 · 1,033/kW** | **₹35,727 · 893/kW** | **₹41,773 · 835/kW** | **₹41,425 · 829/kW — cheapest** |
 | Builds products | 60 kW (2×) · 120 kW (4×+CSU) | 80 kW (2×) · **120 kW (3×+CSU — cheapest)** | 100 kW (2×) · 150 kW (3×+CSU) | 100 kW air · **150 kW air (832/kW)** |
 
 The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).

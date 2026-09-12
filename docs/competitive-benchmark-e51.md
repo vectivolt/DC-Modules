@@ -1,5 +1,12 @@
 # Competitive benchmark — 30/40/50 kW modules vs the market (E51, 2026-09-12)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Verified market position: reference designs, Chinese modules, SiC economics, density gap, cost levers.
+>
+> **Gate coupling** — claims labeled [V] survived 3-vote adversarial verification (105-agent research run).
+
+
 Method: deep-research pass (105 agents, 3-vote adversarial verification per claim; primary
 manufacturer documents only — every number below labeled **[V]** survived that process; numbers
 labeled **[est]** are our estimates or the user's own market intelligence and carry no external

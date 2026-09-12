@@ -1,5 +1,12 @@
 # Magnetics — Designs & Manufacturing Drawings (§11/§14/§49-14/15)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Manufacturing drawings D1–D7 with acceptance lines + per-variant tables. RFQ sheets: magnetics-manufacturing-pack.md.
+>
+> **Gate coupling** — magnetics-rfq-audit (field completeness) · stress-audit D1/D2/D3/D6 families (computed).
+
+
 All values trace to `calculations/pfc/pfc-design.mjs` and `calculations/llc/llc-design.mjs`.
 Acceptance limits are the production test spec (EOL §45). Material fits are catalog-class,
 marked VERIFY (A3/A4) — first-article measurement closes them.
@@ -40,7 +47,7 @@ rev B; every magnetic drawing now must state one.
 | Item | Spec |
 |---|---|
 | Core | **2× stacked PQ50/50, PC95/DMR95/3C95-class (SAME core p/n as D3** — one more ferrite line-item, zero new supply chain) |
-| Turns | **N = 4**, litz 1050×0.1 mm (8.25 mm², same construction family as D3 primary) |
+| Turns | **N = 4**, litz **1350×0.1 mm (10.6 mm² — E52 margin rev**: the frozen 1050×0.1 rode J 5.62 exactly at the 5.6 line; 1350 lands J 4.38 / ΔT ≈ 35 K **and is the same litz as the D3-30 primary — one spool covers both parts**) |
 | Gap | total ≈ 3.3 mm, **distributed 2 positions per leg**, winding kept ≥5 mm clear of gaps (margin tape); **gap GROUND per bin** — same grind-to-AL process the D3 Lm already uses |
 | Bins | four L values **3.3 / 3.65 / 4.0 / 4.35 µH ±3%** (grind targets ≈3.05/3.37/3.70/4.03 mm before fringing; grinding trims fringing out); bin SELECTED against the mated transformer's measured leakage so **Lr(total) = 7.0 µH ±3% (E7 rev D2)** |
 | B_pk @ 65 A pk | ≤ 100 mT (calc 99 mT — loss-safe at 140 kHz by ~2× vs the 135 mT knee) |
@@ -139,7 +146,13 @@ resistor is on the PCB, not in the part (33 Ω line, 2.0 Ω resonant) — quote 
 
 ---
 
-## D4 rev C — aux flyback transformer (E26 rev C)
+## D4 rev C — aux flyback transformer (E26 rev C) — **superseded by rev D (E52): core ETD34 → ETD39**
+
+> **Rev D (E52, 2026-09-12):** same electricals (Lp 345 µH, Np 38/6/4/4, AL 239, clamp 3.2 A,
+> NCP1252D), core one size up — the ETD34 ran Bpk 0.30 T ≈ 85 % of hot Bsat at Lp +10 % + clamp;
+> ETD39 (Ae 125 mm²) lands 0.233 T / 66 % at tolerance. Order code **XFMR-AUX-FLY-D**; turns
+> sheet: [`aux-transformer-D4.md`](aux-transformer-D4.md). The rev-C text below stands as the
+> electrical record.
 
 Superseded rev A (EF20, half-bus) and rev B (ETD29, 60 W — R2 CB-20: lost to the per-SKU load).
 Now **ETD34 PC95, 342–860 V input, 110 W class, one p/n family-wide**: see the generated

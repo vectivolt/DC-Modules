@@ -1,9 +1,33 @@
 # Two-Board Sandwich & Interconnect — rev E49 (E17 directive · E40 single brain)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — The physical module contract: two-board sandwich, stud pillars, the 40-way harness, grounding, HMI.
+>
+> **Gate coupling** — module-interconnect-audit walks every boundary of this contract each battery run.
+
+
 Each module = **AC-DC board (lower)** + **DC-DC board (upper)**, component faces toward each
 other, heatsink surfaces outward (power semiconductors clamp to the outer extrusions or the E42
 coldplates; magnetics stand in the inter-board volume). One **control card** seats in the DC-DC
 board's 88-way slot and runs the whole module.
+
+```mermaid
+flowchart TB
+  subgraph DCDC["DC-DC BOARD (upper) — faces down"]
+    direction LR
+    SLOT["88-way card slot JB"] --- CARD["CONTROL CARD<br/>the module's one brain"]
+    TANKS["tanks · transformers · banks<br/>S/P matrix · output studs"]
+  end
+  subgraph ACDC["AC-DC BOARD (lower) — faces up"]
+    direction LR
+    JICA["40-way harness JICA"] --- VIEN["EMI · precharge · Vienna<br/>split link · aux flyback"]
+  end
+  DCDC =="DCP · DCN · PE<br/>M8 stud pillars · 12 N·m · <50 µΩ"==> ACDC
+  CARD -."JICB ↔ JICA harness<br/>3× PWM · 12 senses · AVMID+Kelvin<br/>EN/GATE_EN_A/FLT · V15/V24 · 5 returns · SHLD".-> JICA
+  HS1["outer heatsink / coldplate"] --- DCDC
+  ACDC --- HS2["outer heatsink / coldplate"]
+```
 
 ## Board contents
 
@@ -42,7 +66,7 @@ puts the AC-DC side gates off in hardware; the card's watchdog covers the brain 
 (WDO ≡ NRST, R5-A).
 
 *(The pre-E40 two-card 16-way harness and its UART link are retired; the migration record is
-[`single-card-migration-plan.md`](single-card-migration-plan.md), decision E40.)*
+[`single-card-migration-plan.md`](history/single-card-migration-plan.md), decision E40.)*
 
 ## Grounding (E25)
 

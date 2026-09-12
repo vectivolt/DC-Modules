@@ -1,5 +1,25 @@
 # Protection Thresholds (§24/§49-19) — rev E49 (R4–R8 external-review closures, 2026-09-09)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — The F.xx fault ladder: hardware-fast paths, supervisory windows, per-SKU timings, R4–R8 protection notes.
+>
+> **Gate coupling** — review-checks R5-K/R6-B/R6-C greps pin passages of this file — edit additively.
+
+
+```mermaid
+flowchart LR
+  subgraph HW["HARDWARE-FAST — no firmware in the loop"]
+    CT["line CT ×3"] --> CMP["on-chip CMP7/CMP1/CMP2<br/>(instance-verified E48)"] --> KILL["HRTIMER FLT<br/>gate kill ~2–3 µs target"]
+    DST["NSI6611 DESAT<br/>(fwd polarity, 100 Ω R5-B)"] --> KILL
+    RCT["resonant CT + comparator"] --> KILL
+    OVP["bus OVP 860 V"] --> KILL
+    WD["watchdog WDO"] -->|"gates enable AND resets<br/>(WDO ≡ NRST, R5-A/R6-A)"| KILL
+  end
+  KILL --> FSM["supervisory F.xx ladder<br/>per-SKU windows · latched snapshot"]
+  FSM --> EXCL["two-stage 74HC02 relay exclusion<br/>KSER ∧ ¬KPAR* ∧ ¬KPRE* (R5-D)"]
+```
+
 HW = comparator/driver hardware, independent of firmware; FW = supervisory firmware.
 Tolerances include sense-chain error (divider 1% + 0.1% bottom, CT 1%+burden 1%, shunt 0.5% + amp).
 Every latched fault stores a pre-fault snapshot (2 kSa ring: Vbus±, Iphase×3, Vout, Iout, fsw, state).

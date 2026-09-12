@@ -1,5 +1,10 @@
 # DFM & Production Flow (§44/§45) — rev A, two-board sandwich
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Production flow: kitting (D2 bins), safety-critical winding travelers, EOL test derivation, coating (E52).
+
+
 ## Commonization scorecard (§44)
 One SiC set, one driver p/n, one bias architecture, one PFC choke p/n, one transformer section p/n,
 one relay family, one fan p/n, one connector set, two board designs per SKU generated from ONE cell

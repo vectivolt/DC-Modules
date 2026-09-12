@@ -121,7 +121,7 @@ export const LCSC = {
   "DM-22u-SKU":        { status: "CLASS", spec: "22 µH sendust DM line choke, current-rated per SKU" },
   "CMC-3PH-2mH-SKU":   { status: "CUSTOM", spec: "3-phase 2 mH nanocrystalline CM choke, current-rated per SKU — no LCSC equivalent. 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH, Digi-Key) as catalog drop-in; custom drawing stays second source (audit)" },
   "XFMR-LLC-10K":      { status: "CUSTOM", spec: "LLC transformer 3× PQ50/50 PC95 7:7:7, Lm 63 µH ±7% — custom wind" },
-  "XFMR-AUX-FLY-C":    { status: "CUSTOM", spec: "aux flyback ETD34, 110 W, 342–860 Vin — custom wind" },
+  "XFMR-AUX-FLY-D":    { status: "CUSTOM", spec: "aux flyback ETD39 PC95, 110 W, 342–860 Vin (D4 rev D, E52 sat-margin rev) — custom wind" },
 
   // SKU-scaled variants. The 30 kW part number was previously printed on every SKU, which read
   // as an undersized relay/fuse on the 60/120 kW drawings even though price and class notes

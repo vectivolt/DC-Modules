@@ -1,11 +1,37 @@
 # Platform Architecture — rev E49 (2026-09-09)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — The platform in one read: family, power path, control plane, protection map, rails, thermal snapshot.
+
+
 One ~10 kW **cell pair** (Vienna PFC phase cell + 3-φ LLC section ×3) on one two-board sandwich
 (AC-DC lower + DC-DC upper, faces inward, semiconductors to the outer heatsinks), **one control
 card — one brain per module** (GD32G553VET7, E40), one external CAN, one 2-button/2-digit HMI.
 Four module SKUs share the platform; higher ratings are **cabinets of modules**. Values below are
 the frozen set (register E1–E49 in [`assumptions.md`](assumptions.md)); every number reproduces
 from `calculations/run-all.sh`.
+
+```mermaid
+flowchart LR
+  AC(["3φ 285–475 VAC"]) --> EMI["gG fuse · MOV Δ + GDT<br/>2× CM + DM EMI stages"]
+  EMI --> PRE["precharge<br/>2× 33 Ω + 2-pole bypass"]
+  PRE --> V["VIENNA PFC · 50 kHz<br/>750 V SiC pairs · 1200 V JBS"]
+  V --> BUS[("split DC bus<br/>650–830 V · OVP 860")]
+  BUS --> LLC["3-φ LLC · fr 140 kHz<br/>1200 V SiC half-bridges"]
+  LLC --> XF["3× section transformers<br/>D3 rev B · Lm 63 µH"]
+  XF --> BK["banks A + B<br/>SiC JBS bridges"]
+  BK --> SP["S/P matrix + exclusion<br/>pre-insertion · K_OUT"]
+  SP --> OUT(["150–1000 VDC<br/>100/133/167 A"])
+  CARD["ONE control card<br/>GD32G553VET7 · RATING strap"] -. "40-way harness (PFC bundle)" .-> V
+  CARD --- LLC
+  AUX["110 W full-bus aux<br/>NCP1252D · D4 rev D"] --> CARD
+  BUS --> AUX
+  style V stroke:#f2b705,stroke-width:2.5px
+  style LLC stroke:#f2b705,stroke-width:2.5px
+  style SP stroke:#e3763c,stroke-width:2.5px
+  style CARD stroke:#2ea44f,stroke-width:2.5px
+```
 
 ## The family (E40/E41/E42/E44)
 
@@ -86,5 +112,5 @@ The power path froze at Phase 9; everything since is closure and variants, recor
 decision-by-decision in the register (E17 sandwich · E25–E33 production closure · E35–E39
 audits · E40 single brain · E41/E42/E44 variants · E43 family verification · **E45–E49 the
 five external-review rounds R4–R8**). Dated fix logs: `design-review-production*.md`,
-`review-response-r3.md`; the audit trail summary lives in the top-level
+`history/review-response-r3.md`; the audit trail summary lives in the top-level
 [`README.md`](../README.md).

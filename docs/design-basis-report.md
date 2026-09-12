@@ -1,5 +1,12 @@
 # Design Basis Report — 30/60/120 kW Unidirectional 1000 VDC EV Charging Monoblocks
 
+<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORD-555?style=flat-square" alt="HISTORICAL__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Phase-1 design basis (dated). Superseded values carry arrow-notes; the register is authoritative.
+>
+> **Gate coupling** — design-basis.mjs greps this file — gate-pinned path.
+
+
 > **HISTORICAL RECORD** — kept verbatim as the Phase-1 basis; the live system is docs/architecture.md (rev E49).
 
 Status: **PHASE 1 DELIVERABLE — ANALYTICAL BASIS ONLY.** No SPICE simulation has been executed yet. Every number below is either a documented assumption or traces to `calculations/design-basis.mjs` (outputs in `calculations/out/*.csv`). Items that require simulation or RFQ confirmation are explicitly marked. Nothing in this document is claimed as verified.

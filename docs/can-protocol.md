@@ -1,5 +1,12 @@
 # External CAN Interface (§23/§46/§49-20) — rev A
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — External CAN 2.0B contract: addressing, frames, telemetry, service mode.
+>
+> **Gate coupling** — firmware/core/can_proto.c is the normative codec (fuzzed, 50/50).
+
+
 Physical: ISO 11898-2, isolated (NSI1042-DSWR + iso 5 V), 120 Ω jumper-selectable termination, CM choke + TVS.
 Protocol: **CAN 2.0B, 125 kbps, 29-bit extended ID** (CAN-FD capable transceiver for future, E-arch).
 Behavioral compatibility with NIUERA/Tonhe/Maxwell/UUGreenPower module classes (§46) — capability-equivalent,

@@ -29,7 +29,7 @@ ck("CB-3", /IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN"/.test(boards) && /Iso
 ck("CB-4", /name="RAGTC"/.test(boards) && !/name="RAGT[AB]"/.test(boards), "AGND–DGND single-point tie lives on the card (RAGTC); RAGTA/RAGTB deleted from power boards (card-split rev)");
 ck("CB-5", /RAUXST2 > \.pin2" to="\.UAUX > \.VCC"/.test(cells) && /\.UAUX > \.BO/.test(cells) && /\.UAUX > \.SS/.test(cells) && /\.TAUX > \.AXA/.test(cells) && !/"\.UAUX > \.FB" to="net\.V15"/.test(cells), "aux controller fully wired on the REAL NCP1252 map (VCC startup, BO, SS, aux winding — R4-3)");
 ck("CB-6", /AuxPower dcp="net.DCP" dcn="net.DCN"/.test(boards) && /SIC-1700/.test(db), "aux fed from full bus with 1700 V switch");
-ck("CB-7", /Lp 345 µH|Lp 345u/.test(cells) && /3\.2 A/.test(cells) && /XFMR-AUX-FLY-C/.test(db), "aux at the E26 rev C design point (110 W — R2/CB-20 superseded the 60 W closure)");
+ck("CB-7", /Lp 345 µH|Lp 345u/.test(cells) && /3\.2 A/.test(cells) && /XFMR-AUX-FLY-D/.test(db), "aux at the E26 rev C design point (110 W; part = D4 rev D ETD39 at E52 — electricals unchanged)");
 ck("CB-8", /KPRE\[12\]/.test(db) && /HF167F/.test(db) && !/HF115F-2Z/.test(db) && /KPRE1/.test(boards), "precharge bypass = line-rated power relays");
 ck("CB-9", /C\$\{id\}FP/.test(cells) && /C\$\{id\}FN/.test(cells), "Vienna per-phase film commutation caps present");
 ck("CB-10", /SafetyChain/.test(cells) && /USUP/.test(cells) && /RGPD/.test(cells) && /SafetyChain id="CARD"/.test(boards) && !/net\.PWM_KILL/.test(boards), "enable chain: WD + AND + pulldowns on the card (one card per board role); PWM_KILL retired");
@@ -69,7 +69,7 @@ ck("R2-CB16", cells.includes('ctBurden = "2"') && cells.includes('R${id}CT`} res
 ck("R2-CB17", /Rail3V3 id="CARD"/.test(boards), "3.3 V rail sourced on the card (one card per board role — card-split rev of CB-17/18)");
 ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck, not a 15 V-fed LDO");
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
-ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD34/.test(db), "aux 110 W stage values in cells + D4 rev C part");
+ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD39/.test(db), "aux 110 W stage values in cells + D4 part (rev D ETD39 at E52 — sat margin 85%→66% at Lp+10%+clamp; electricals unchanged)");
 ck("R2-CB21", /flt="net.FLT" en="net.GATE_EN_B"/.test(boards), "E40 rev: the LLC driver fault wire-OR reaches the brain on the single merged FLT line");
 ck("R2-CB22", /crVal=\{pw === 50 \? "27nF" : pw === 40 \? "33nF" : "46nF"\}/.test(boards) && /crN=\{pw === 50 \? 8 : pw === 40 \? 6 : 4\}/.test(boards) && /PP-46n-1200/.test(db) && /PP-33n-1200V/.test(db) && /PP-27n-1200V/.test(db) && /IND-TRIM-BIN4/.test(db) && /IND-TRIM-BIN5-40/.test(db) && /IND-TRIM-BIN6-50/.test(db), "tank: 30 kW frozen rev D2 (4x46 nF) + E41 (6x33 nF, BIN5) + E42 (8x27 nF, BIN6) — all three asserted structurally");
 ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db) && /PMP_DISCH_TO_MS/.test(fsmH) && /disch_ms/.test(fsmC), "per-SKU pulse parts @120 kW + F.21 implemented in firmware");

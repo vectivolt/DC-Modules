@@ -1,5 +1,12 @@
 # End-to-end validation verdict — 30/40/50 kW modules (E51 review, 2026-09-12)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — End-to-end validation verdict by category — startup through tolerances — with evidence and the honest open list.
+>
+> **Gate coupling** — summarizes the standing battery; verification-matrix.md carries the requirement rows.
+
+
 The customer's closing question: *are these modules practical, manufacturable, reliable and
 commercially competitive — not simulations that fail later on magnetics, thermal or unrealistic
 components?* Verdict per category, evidence cited; **V** = verified by executed calc/audit on

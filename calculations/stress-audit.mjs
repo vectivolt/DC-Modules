@@ -162,11 +162,17 @@ for (const [sku, n, cnF, irms] of [["30kw", 4, 46, 46.4], ["40kw", 6, 33, 61.9],
 }
 // D2 trim copper at the E43 litz (constant-J discipline the E41/E42 rows missed): 2000×0.1 mm
 // at 40/50; the 30 kW keeps its frozen rev-C basis (its own Rac/ΔT lines pass at J 5.62).
-for (const [sku, N, litz, irms, core] of [["40kw", 5, 15.7, 61.9, 6.5], ["50kw", 6, 23.6, 77.3, 5.0], ["50kwa", 6, 23.6, 77.3, 5.0]]) {
+for (const [sku, N, litz, irms, core] of [["30kw", 4, 10.6, 46.4, 6.8], ["40kw", 5, 15.7, 61.9, 6.5], ["50kw", 6, 23.6, 77.3, 5.0], ["50kwa", 6, 23.6, 77.3, 5.0]]) {
   const rdc = 1.5e-3 * (N / 4) * (8.25 / litz) * 1.15, pcu = irms * irms * rdc;
   const dT = 5.44 * Math.pow(pcu + core, 0.833);
   ck("D2c", `${sku} trim litz J/ΔT`, irms / litz <= 5.6 && dT <= 40.5,
-    `${litz === 23.6 ? "3000" : "2000"}×0.1 litz: J ${f(irms / litz, 1)} · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K ≤ 40 (E44 rev: ONE D2-50 drawing serves liquid AND air — the plate bond is belt-and-suspenders now, not load-bearing)`);
+    `${litz === 23.6 ? "3000" : litz === 15.7 ? "2000" : "1350"}×0.1 litz: J ${f(irms / litz, 1)} · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K ≤ 40 (E52: 30 kW upsized 1050→1350 — the frozen wind rode J 5.62 AT the line; now 4.38, same litz as the D3-30 primary)`);
+}
+// D4 aux flyback saturation margin — E52: computed, not asserted-by-prose (ETD39 Ae 125 mm²)
+{
+  const bpk = 345e-6 * 3.2 / (38 * 125e-6);
+  ck("D4", "aux flyback Bpk on ETD39 [computed]", bpk <= 0.24 && bpk * 1.10 <= 0.26 && /ETD39/.test(db),
+    `Lp·Ipclamp/(Np·Ae) = ${f(bpk * 1e3, 0)} mT (${f(bpk * 1.1 * 1e3, 0)} at Lp+10%) vs hot Bsat ~390 — 66% at tolerance (the ETD34 rev C ran 85%; E52 margin rev, electricals/sim unchanged)`);
 }
 // pulse-resistor single-event energies vs the family class points (25 W accepted ≤160 J at
 // 40 kW; the 50 W part carries the 120 kW's 364–477 J)

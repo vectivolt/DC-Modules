@@ -87,9 +87,9 @@ export const DB = [
   { m: /^LBK(CARD|[AB])$/, mpn: "IND-10u-3A", mfr: "any shielded", desc: "10 µH 3 A shielded power inductor (3V3 buck)", price1k: 6, alt: "any" },
   // --- magnetics (custom assemblies; costed builds from magnetics calc)
   { m: /^L[ABC]\d+$/, mpn: "IND-PFC-165u", mfr: "custom (docs/magnetics.md D1 rev B)", desc: "PFC choke 165 µH class, 3× OD79 26µ sendust (Magnetics 0077908A7 / Chang Sung KS eq, catalog AL 37 nH/T² ±8%), N=39, 3×(6×1 mm) flat Cu 18 mm² (audit F4: the rev-A 13.75 mm²/N=36 failed its own Rdc and L lines against the real core)", price1k: 1035, alt: "POCO/DMEGC equiv core" },
-  { m: /^L\d+T$/, mpn: "IND-TRIM-BIN4", mfr: "custom (D2 rev C — GAPPED FERRITE)", desc: "resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/50 PC95-class (same core p/n as D3), N=4 litz, distributed gap ~3.3 mm ground per bin — audit F1: the rev-B sendust toroid at full 140 kHz AC swing computed ~43 W core loss vs a ~4 W tank budget and its L swung 2:1 over each cycle; powder cores are prohibited in this slot. Bin picked against measured transformer leakage so Lr(total)=7.0 µH (kitting per DFM step 3)", price1k: 110, alt: "air-core (lossier, stray field)" },
+  { m: /^L\d+T$/, mpn: "IND-TRIM-BIN4", mfr: "custom (D2 rev C — GAPPED FERRITE)", desc: "resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/50 PC95-class (same core p/n as D3), N=4 litz 1350×0.1 mm (10.6 mm² — E52 margin rev: the frozen 1050×0.1 rode J 5.62 exactly at the 5.6 line; 1350 lands J 4.38/ΔT ~35 K AND is the same litz construction as the D3-30 primary — one spool), distributed gap ~3.3 mm ground per bin — audit F1: the rev-B sendust toroid at full 140 kHz AC swing computed ~43 W core loss vs a ~4 W tank budget and its L swung 2:1 over each cycle; powder cores are prohibited in this slot. Bin picked against measured transformer leakage so Lr(total)=7.0 µH (kitting per DFM step 3)", price1k: 110, alt: "air-core (lossier, stray field)" },
   { m: /^T\d+$/, mpn: "XFMR-LLC-10K", mfr: "custom (D3)", desc: "LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% (E7 rev D2)", price1k: 680, alt: "PQ65 single-core variant" },
-  { m: /^TAUX$/, mpn: "XFMR-AUX-FLY-C", mfr: "custom (D4 rev C)", desc: "aux flyback transformer ETD34, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 (E26 rev C — CB-20 SKU-load closure; reinforced pri→sec barrier, 100% hipot 4 kV)", price1k: 165, alt: "—" },
+  { m: /^TAUX$/, mpn: "XFMR-AUX-FLY-D", mfr: "custom (D4 rev D — E52)", desc: "aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 UNCHANGED, Lp 345 µH/AL 239 unchanged (E52 margin rev: ETD34's Bpk 0.30 T ran 85% of hot Bsat at Lp+10%+clamp — ETD39 Ae 125 mm² puts it at 0.233 T / 66% at tolerance; DCM proof and the 9/9 aux sim are Lp-based, unaffected; reinforced pri→sec barrier, 100% hipot 4 kV)", price1k: 185, alt: "—" },
   { m: /^LDM[123]$/, mpn: "DM-CHOKE-SKU", mfr: "custom/POCO (D6 rev C — ENGINE-designed, dm-choke-design.mjs)", desc: "DM line choke, 60µ sendust stack, crest-biased L(Ipk) meets the per-variant LISN floor (E43: the inherited 22 µH could not exist at the crest on the drawn core — 7–8 µH at 82 A pk computed vs the 15 µH floor; engine rows: 30 kW 2×T48 N=7 foil 20 mm², 40 kW 2×T57 N=8 26.4 mm², 50 kW 3×T57 N=8 26.4 mm²)", price1k: 300, alt: "DMEGC/Chang Sung eq cores" },
   { m: /^CMC[12]$/, mpn: "CMC-3PH-2mH-SKU", mfr: "custom/Hongfa mag", desc: "3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source", price1k: 240, alt: "Schaffner RT8131-63-2M8 @30 kW" },
   { m: /^CT[ABC]\d+$/, mpn: "ACX-1100", mfr: "Talema (Salem, India)", desc: "line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins (audit: catalog part closes the CT-100A REVIEW; rated for 33 Ω burden so the 27 Ω fitted value is inside spec; quote Talema direct at volume — Digi-Key retail is not the RFQ price) (E18/R3)", price1k: 65, alt: "ZEMCT/HCT class eq" },
@@ -292,18 +292,20 @@ export const biasCommon = { desc: 'BIAS-XFMR multi-secondary set (E23) — RETIR
 export const mechLines = {
   "30kw": [
     ["PCB-ACDC 6L 420×300", 1, 1200], ["PCB-DCDC 6L 460×320", 1, 1400],
-    ["Heatsink extrusions (2, sandwich outer faces)", 1, 1500], ["Fans 120×38 PWM (3.3 V-PWM-compatible p/n)", 2, 280],
+    ["Heatsink extrusions (2, sandwich outer faces)", 1, 1500], ["Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C — E52 field-reliability spec)", 2, 280],
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 724],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 350],
+    ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 320],
     ["Assembly + calibration + EOL test", 1, 1900],
   ],
   // E41 40 kW: same envelope; +1 fan, heavier busbars/heatsink share, 2 extra link cans in PCB area
   "40kw": [
     ["PCB-ACDC 6L 440×500", 1, 1250], ["PCB-DCDC 6L 440×500", 1, 1450],
     ["Heatsink extrusions (2, sandwich outer faces — 40 kW fin stock)", 1, 1750],
-    ["Fans 120×38 PWM (3.3 V-PWM-compatible p/n)", 3, 280],
+    ["Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C — E52 field-reliability spec)", 3, 280],
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 810],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 380],
+    ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 340],
     ["Assembly + calibration + EOL test", 1, 1950],
   ],
   // E42 50 kW LIQUID: same 440x500 envelope; coldplates REPLACE the extrusions AND the fans
@@ -318,17 +320,19 @@ export const mechLines = {
     ["Busbars/interconnect studs + harness (busbar-calc, 167 A output class)", 1, 850],
     ["NTC sensor assemblies (insulated tip spec, E25 — plate-mounted)", 4, 18],
     ["TIM/insulators/fasteners", 1, 420],
+    ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test (incl. coolant-loop pressure/leak test)", 1, 2150],
   ],
   // E44 50 kW AIR: extrusions + 4 fans replace the coldplate set; vented enclosure; same PCBs
   "50kwa": [
     ["PCB-ACDC 6L 440×500 (50 kW copper masses)", 1, 1300], ["PCB-DCDC 6L 440×500", 1, 1500],
     ["Heatsink extrusions (2, sandwich outer faces — 50 kW fin stock)", 1, 1900],
-    ["Fans 120×38 PWM (3 front + 1 rear, 3.3 V-PWM-compatible p/n)", 4, 280],
+    ["Fans 120×38 PWM (3 front + 1 rear, 3.3 V-PWM p/n, dual-ball L10 ≥70 kh — E52)", 4, 280],
     ["Enclosure sheet metal + hardware (vented; NH00 fuse bases)", 1, 1000],
     ["Busbars/interconnect studs + harness (busbar-calc, 167 A output class)", 1, 850],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18],
     ["TIM/insulators/fasteners", 1, 420],
+    ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test", 1, 2000],
   ],
   // E50: 60/120 kW single-board mech lines retired (archive/pre-focus-E49) — cabinet products

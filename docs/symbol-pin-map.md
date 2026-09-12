@@ -1,5 +1,10 @@
 # Symbol → package pin map (verified)
 
+<p align="left"><img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="GENERATED"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Symbol/pin families across payloads+netlists. Owned by pin-map-export.mjs.
+
+
 The schematic is authored with **logical** pin identifiers — `G`/`D`/`S`/`KS` on a MOSFET,
 `DST`/`ASC`/`RDY` on a gate driver (the REAL vendor names since R4) — because the cells are SKU-generic. Every netlist that
 leaves this repo is emitted through the remap in

@@ -1,5 +1,12 @@
 # Thermal Report (§29/§49-17/18) — rev D (R2/HR-18 closure: EMI filter budgeted)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Loss budgets, heatsink/fan/coldplate requirements, derating curve, per-variant corners.
+>
+> **Gate coupling** — regenerate via loss-budget.mjs — do not hand-edit numbers.
+
+
 > **Note (E49):** the tables below are the rev-D snapshot in the pre-variant 30/60/120 framing (60/120 = the retired single-board references). The LIVE per-variant numbers (30/40/50L/50A) come from the per-variant engines — `loss-budget.mjs`, the 6048-pt envelope grid and `stress-audit.mjs` Tj gates (worst corner ≤147 °C, every variant) — and the E42 coldplate / E44 four-fan cooling rows live in the register.
 
 Sources: `calculations/thermal/loss-budget.mjs` → `out/loss-budget.csv`, `out/derating.csv`;

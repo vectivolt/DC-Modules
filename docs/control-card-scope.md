@@ -1,5 +1,10 @@
 # Control-card scope — one brain per module (E40)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Why the card caps at one lane / 50 kW: ways, HRTIMER units, pins — the physics of the single-brain envelope.
+
+
 **Current architecture:** ONE card runs the whole 30 kW module from the DC-DC slot (merged role,
 `umod-pinmap.mts`); higher ratings are cabinets (60 = 2×, 120 = 4× + CSU — same card, RATING
 band). The analysis below is the historical arithmetic that first sized the card era and still
@@ -36,7 +41,7 @@ spent**, and that is before the extra per-lane fault lines and thermistors a 120
 
 ## 2. Timer outputs — the HRTIMER has 16, the job needs 24
 
-From `docs/mcu-pin-allocation-gd32.md` (GD32G553xx Rev 2.0, §3.22): the HRTIMER is
+From `docs/history/mcu-pin-allocation-gd32.md` (GD32G553xx Rev 2.0, §3.22): the HRTIMER is
 **8 slave units × 2 channels = 16 outputs**. A 120 kW LLC needs 24 complementary gate signals.
 
 The binding number is the **units, not the channels**. A half-bridge leg driven as a complementary
@@ -104,7 +109,7 @@ was meant to avoid.
 
 ## 6. Open item the scope restriction actually *unlocks*
 
-`docs/mcu-pin-allocation-gd32.md` leaves the **HRTIMER-vs-advanced-timer choice for the LLC** open,
+`docs/history/mcu-pin-allocation-gd32.md` leaves the **HRTIMER-vs-advanced-timer choice for the LLC** open,
 and at 120 kW there was no choice to make: 24 outputs needed, 16 available, so the LLC had to go on
 TIMER0/7/19 and inherit the PA6 break-input conflict.
 

@@ -1,5 +1,12 @@
 # Magnetics Manufacturing Pack — RFQ-ready spec sheets (E51, 2026-09-12)
 
+<p align="left"><img src="https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square" alt="RFQ__PACK"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — One controlled spec sheet per magnetic — quote-ready: electricals, construction, insulation, parasitics, thermal, production tests, sourcing.
+>
+> **Gate coupling** — magnetics-rfq-audit: 0 missing fields across 7 drawings.
+
+
 **Scope:** every magnetic on the 30 / 40 / 50 kW modules, one controlled sheet each, written so a
 winding house can quote and build without asking questions. Electricals trace to
 [`magnetics.md`](magnetics.md) (the design record) and the E51 recomputation; this pack adds the
@@ -18,7 +25,7 @@ to every sheet. Insulation values follow [`insulation-coordination.md`](insulati
 |---|---|
 | Insulation system | **UL 1446-recognised SYSTEM, Class F (155 °C) minimum**; Class H (180 °C) for D3. Organic materials UL 94 V-0. |
 | Thermal basis | Full power to +55 °C ambient, derate to +75 °C (A11). ΔT acceptance limits are per-sheet; thermocouple positions stated per-sheet. |
-| Low-temp / environment | Storage −40 °C, operating −25 °C (A11 rev pending — quote adhesives/potting to −40 °C). Humidity 95 % RH non-condensing; parts must accept conformal-coated boards adjacent. |
+| Low-temp / environment | **A11 rev B (E52, registered):** operating −25…+55 °C full power (derate to +75), cold start ≥ −25 °C, storage/transport −40…+85 °C — quote adhesives/potting/litz bonding to −40 °C. Humidity 5–95 % RH non-condensing; boards are acrylic conformal-coated (E52 baseline) — parts must accept coated boards adjacent. |
 | Vibration | 2 g 10–500 Hz sine sweep survival (bonded/banded construction; IEC 60068-2-6 class) — toroid stacks epoxy-banded, not tape-only. |
 | Traceability | Lot + date code on every part, traceable to core lot and wire lot. First article: dimensional vs the mechanical row, full electrical vs the acceptance rows, cross-section/teardown for D3 and D4 (reinforced-barrier parts). |
 | 100 % tests | Every acceptance-row electrical + every stated hipot, 100 % end-of-line at the winder. Sampled tests marked (S). |
@@ -87,7 +94,7 @@ As D1-40 except:
 |---|---|
 | Function | LLC external resonant inductor, **full AC swing** 46.4 A rms sinusoidal @140 kHz, tank potential |
 | Core | 2× stacked PQ50/50, **PC95/DMR95/3C95-class** (powder cores PROHIBITED in this slot — E35); bobbinless taped assembly (no catalog 2-stack former exists — tooling is the winder's fixture, not a former) |
-| Winding | N = 4, litz 1050×0.1 mm served (8.25 mm² Cu), winding kept ≥5 mm clear of gaps (margin tape) |
+| Winding | N = 4, litz **1350×0.1 mm served (10.6 mm² Cu — E52: J 4.38, same litz as the D3-30 primary, one spool)**, winding kept ≥5 mm clear of gaps (margin tape) |
 | Gap / bins | total ≈3.3 mm distributed 2 positions/leg, **ground per bin**: 3.3 / 3.65 / 4.0 / 4.35 µH ±3 % @140 kHz 0.1 V. Bin SELECTED at kitting against the mated transformer's leakage label → Lr(total) = 7.0 µH ±3 % |
 | Flux / loss | Bpk ≤ 100 mT @65.6 A pk (bin-max) · Fe ≈ 7 W worst-corner + Cu ≈ 3.3 W |
 | Parasitics | Rac ≤ 4 mΩ @140 kHz · SRF ≥ 700 kHz (≥5× fr) · winding–core C ≤ 100 pF |
@@ -143,14 +150,14 @@ MANDATORY on both 50 variants** · Lm grind AL 2.52 µH/T² · Rdc P ≤ 1.9 mΩ
 (The registered 3×E70 route is withdrawn: its 3-set former does not exist as a catalog part and
 the wind still computed ~1.2× window.)
 
-## PMP-MAG-D4 rev C — aux flyback transformer (`XFMR-AUX-FLY-C`) — qty 1
+## PMP-MAG-D4 rev D (E52) — aux flyback transformer (`XFMR-AUX-FLY-D`) — qty 1
 
 | Row | Spec |
 |---|---|
 | Function | 110 W-class DCM flyback, 342–860 VDC input, 65 kHz, Vor ≈ 157 V, Ip clamp 3.2 A |
-| Core | ETD34 PC95-class, gapped to **AL 239 nH/T²** (centre leg) |
-| Windings | Np 38 (345 µH ±10 %) / N24 = 6 / N15 = 4 / Naux = 4; primary 0.5 mm (2×0.35 bifilar OK); secondaries TIW 0.8 mm² class; margin 3 mm |
-| Flux | Bpk 0.30 T @clamp (0.33 at Lp+10 %) vs PC95 hot Bsat ~0.39 — clamp-limited; **EVT T-09 verifies clamp before BOM freeze** |
+| Core | **ETD39 PC95-class** (rev D, E52 saturation-margin re-core), gapped to **AL 239 nH/T²** (centre leg) — electricals identical to rev C |
+| Windings | Np 38 (345 µH ±10 %) / N24 = 6 / N15 = 4 / Naux = 4; primary 0.5 mm (2×0.35 bifilar OK); secondaries TIW 0.8 mm² class; margin 3 mm (ETD39 former AN ≈ 177 mm² — fill relaxed vs rev C) |
+| Flux | **Bpk 0.233 T @clamp (0.256 at Lp+10 %) vs PC95 hot Bsat ~0.39 — 66 % at tolerance** (rev C ETD34 ran 85 %); clamp-limited; **EVT T-09 verifies clamp before BOM freeze** |
 | Insulation | pri at BUS potential → pri↔ALL secondaries REINFORCED (TIW + 3 mm margin), **hipot 4 kV 100 % — SAFETY-CRITICAL traveler flag** (E25 SELV depends on it); aux winding = primary-side, functional to pri, reinforced to secs |
 | Acceptance | Lp 345 µH ±10 % · turns exact · Rdc: pri ≤ 900 mΩ / 24 V ≤ 60 mΩ / 15 V ≤ 45 mΩ / aux ≤ 45 mΩ · hipot 4 kV · leakage ≤ 12 µH (clamp energy) |
 | Parasitics | C(pri↔sec) ≤ 50 pF · SRF(pri) ≥ 650 kHz (10× fsw) |

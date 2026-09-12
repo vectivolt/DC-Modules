@@ -1,5 +1,10 @@
 # Component Selection & Sourcing — Phase 2
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — RFQ-ready part table, sourcing policy, second-source rules, price basis (A7).
+
+
 Status: CANDIDATE TABLE FOR RFQ. Electrical stress values trace to `calculations/`. **All prices are RFQ *assumptions* (INR, ~6k–24k pcs/yr aggregate across SKUs), marked (A). MOQ/lead-time are typical-industry assumptions (A) until quotes return.** No part is "qualified" until DPT simulation (Phase 4) + sample validation. LCSC is prototype-source only (§42).
 
 ## 1. Power semiconductors

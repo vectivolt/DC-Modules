@@ -3,7 +3,7 @@
 //
 // Why this exists: the EasyEDA Copilot MCP exposes no way to set a component position, draw a
 // wire, or place a frame — it auto-grids symbols and drops net ports, and its own success
-// reports are unreliable (see docs/easyeda-transcription.md). So a millimetre-accurate,
+// reports are unreliable (see docs/history/easyeda-transcription.md). So a millimetre-accurate,
 // deliberately composed schematic cannot be produced through that API. Authoring KiCad source
 // puts every coordinate under our control, gives a real verification loop (kicad-cli erc +
 // netlist export diffed against circuit.json), and imports into EasyEDA Pro.

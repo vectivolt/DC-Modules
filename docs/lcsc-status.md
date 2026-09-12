@@ -1,5 +1,10 @@
 # LCSC assignment status
 
+<p align="left"><img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="GENERATED"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — LCSC coverage per BOM line (ORDERABLE/CLASS/REVIEW/CUSTOM). Regenerated — do not hand-edit.
+
+
 Every component on every sheet carries an `LCSC` field, and every BOM line carries `lcsc` +
 `lcsc_status`. This documents what the values mean and — for `CLASS` — **why**, so the remainder
 reads as adjudicated rather than unfinished.

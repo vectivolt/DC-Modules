@@ -1,5 +1,10 @@
 # BOM Guide — how the numbers are made, and what they mean 💰
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — How the BOM generates: parts-db classifier → bom-gen tiers → bom-cost.md; the silent-drop traps and their gates.
+
+
 The BOM is **not a spreadsheet someone typed** — it is generated from the built boards (four module SKUs + card + cabinet):
 
 ```mermaid

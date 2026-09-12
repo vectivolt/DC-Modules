@@ -1,5 +1,10 @@
 # Simulation Report — Executed Runs (§50 format)
 
+<p align="left"><img src="https://img.shields.io/badge/status-EVIDENCE__RECORD-e3763c?style=flat-square" alt="EVIDENCE__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — The simulation truth ledger (V-xx): never claim beyond it. Dated record backing current claims.
+
+
 > **HISTORICAL RECORD** — kept verbatim as the Phase-9 execution record; later variant engines (D6 rev C, per-variant LISN/grids, NCP1252D aux re-basis) live in calculations/ and register rows E41–E49.
 
 Solver for all runs: **ngspice-46 (KLU), method=gear**, macOS arm64. Every generated netlist is preserved under `spice/generated/*.cir`; raw waveform data `spice/generated/*.out`; metrics CSVs under `simulation-results/30kw/`. Models: `spice/models/sic-behavioral.lib` (BEHAVIORAL — provenance and limitations in the file header; vendor-encrypted PSpice models documented as ngspice-incompatible per §8). Anything not listed here is **NOT VERIFIED**.

@@ -1,5 +1,12 @@
 # Verification Matrix & Risk Register — rev E49 (+E51 magnetics recomputation)
 
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — Requirement→evidence matrix and risk register; nothing marked V without an artifact on disk.
+>
+> **Gate coupling** — run-all.sh reproduces the battery this matrix cites.
+
+
 > **E51 (2026-09-12):** independent magnetics recompute against catalog cores/formers re-issued
 > D1-40/50 (catalog-AL turns + lot-trim) and D3 all-SKU constructions (window feasibility — the
 > as-drawn transformers could not wind); stress-audit D1/D3 rows now COMPUTE from catalog
@@ -9,6 +16,20 @@
 Status letters: **V** = verified by executed calc/sim/audit (artifact cited) · **P** =
 planned/spec'd, not executed · **N** = not applicable at this phase. Nothing marked V without
 an artifact on disk; `calculations/run-all.sh` reproduces the battery.
+
+```mermaid
+flowchart LR
+  SRC["cells.tsx · boards.tsx<br/>control-card.tsx · parts-db"] --> BUILD["tsci netlist builds<br/>(8 boards, 0 errors)"]
+  BUILD --> ENG["engines<br/>pfc · llc · dm-choke · loss<br/>grid 4032 pts · MC · fsm-sim"]
+  ENG --> GATES["computing gates<br/>stress-audit (D1–D7 from catalog)<br/>interconnect · polarity · schematic"]
+  GATES --> IND["verify-independent<br/>218 clean-room checks"]
+  IND --> REV["review-checks<br/>140+ asserts (R1…R8 · E35…E52)"]
+  REV --> SHIP["kicad5 SHIP zips ×6<br/>pin-verify · visual · uniformity"]
+  SHIP --> PDF["print SVGs → 5 PDF sets"]
+  FW["firmware host_sim<br/>50/50 ASan/UBSan"] --> REV
+  style GATES stroke:#f2b705,stroke-width:2.5px
+  style IND stroke:#2ea44f,stroke-width:2.5px
+```
 
 ## Requirements → evidence
 

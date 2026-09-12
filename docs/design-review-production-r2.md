@@ -1,5 +1,12 @@
 # Production-Readiness Design Review R2 — Independent Re-Audit of Schematic Rev C 🔎
 
+<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORD-555?style=flat-square" alt="HISTORICAL__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+
+> **Purpose** — R2 re-audit (dated record) — 7 CBs + HR/MR set, all closed at rev D.
+>
+> **Gate coupling** — review-checks R2-* asserts derive from this record — gate-pinned path.
+
+
 **Date:** 2026-09-05 · **Target:** schematic rev C (cells v3 / boards v3 / parts-db rev C — the
 state that closed all 15 blockers of `design-review-production.md`).
 **Scope:** complete schematic set (6 boards), BOM/parts-db, calculations, simulations, protection
