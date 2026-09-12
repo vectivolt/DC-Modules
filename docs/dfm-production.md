@@ -40,3 +40,10 @@ Fasteners: M3 (PCB), M4 (TO-247 clamps/tabs), M5 (choke lugs), M6 (relay), M8 (p
 8. Fault-injection subset: OVP comparator (bus pump), CAN timeout ramp-off, HMI buttons/display segments.
 Statistical: full-envelope sweep 1/200; thermal spot 1/50; conducted EMI pre-scan 1/500/lot-change; relay life audit lot sample per Hongfa agreement.
 Records: serial-keyed CSV to MES; firmware locks lifetime counters at first RUN.
+
+
+> [!IMPORTANT]
+> **E59 — electrolytic vent rule:** ≥5 mm free space above every snap-in can's vent face; no
+> conformal coating, label, tie or harness over a vent; cans oriented so a vent event exhausts
+> away from the card and harness. (The 2-series strings make venting a balance-failure-only
+> event — the F-rows see it first — but the mechanical rule costs nothing and caps the outcome.)

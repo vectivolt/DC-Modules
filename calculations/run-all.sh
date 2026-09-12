@@ -25,6 +25,8 @@ if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/modul
 npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
 node calculations/magnetics/temp-critique.mjs
+node calculations/magnetics/mag-sync.mjs
+node calculations/system/fault-energy.mjs
 node calculations/verify-independent.mjs
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 50/50 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

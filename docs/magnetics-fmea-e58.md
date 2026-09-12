@@ -55,6 +55,29 @@ check computes it), **CLOSED-BY-CONSTRUCTION** (topology/netlist-proven), **CLOS
 | 19 | D2-bin / transformer mispairing in service | fr off → capability loss (not damage: MC shows ±3 % bins bound it) | **SPEC** — kitting flow labels both parts; service policy: transformer+trim replaced as a MATCHED PAIR (dfm/pack kitting rows) |
 | 20 | Winder substitutes material/core (the drop-in that isn't) | any of the above, latent | **SPEC** — equivalence tests are acceptance (AL band + roll-off anchors + now the three-temperature L(I)); the pack forbids un-verified substitution |
 
+
+## The module heat question, answered with the budget (E59)
+
+Yes — the module dissipates real heat: **827 / 1,211 / 1,627 / 1,588 W** worst-corner at
+30/40/50L/50A (loss-budget rev E51, EMI copper included). The E59 `fault-energy` gate asserts
+it actually leaves the box:
+
+| SKU | Worst heat | Air needed (ΔT 20 K) | Installed (fans × 160 m³/h @ ~60 % op point) | Margin | One-fan-out |
+|---|---|---|---|---|---|
+| 30 kW | 827 W | 128 m³/h | 2 × → 192 | **1.5×** | 96 ≥ derated need 70 ✓ |
+| 40 kW | 1,211 W | 187 m³/h | 3 × → 288 | **1.54×** | 192 ≥ 103 ✓ |
+| 50 kW L | 1,627 W | — (liquid) | 6 L/min → coolant ΔT **4.6 K** | ✓ | plate-NTC dry-run ladder |
+| 50 kW A | 1,588 W | 245 m³/h | 4 × → 384 | **1.57×** | 288 ≥ 135 ✓ |
+
+What the temperature does downstream is the gated part: exhaust ≈ inlet + 20 K, so the
+magnetics tunnel sees ≤ 75 °C air at the rated corner and the module **derates to 40 % above
+55 °C inlet** — which is exactly the corner pair the E58 equilibria were solved at (cores
+settle 77–101 °C, at the material's loss minimum). Sensing: heatsink/plate NTCs feed the OT
+ladder (derate 0.6 → trip), every fan tach is monitored (E44), and a magnetics-proximity NTC
+pad is registered for the layout reopen (E59) so the transformer tunnel gets its own eye.
+**Nothing in the heat path is an assumption anymore: need, margin, n−1, coolant ΔT, core
+equilibria and runaway distance are all standing computed gates.**
+
 ## What only hardware can close (EVT hooks — unchanged list, now with sharper targets)
 
 Powered tank validation at temperature extremes (bins + leakage curve) · both-polarity SC timing

@@ -30,7 +30,7 @@ and 71 µH at 78 A, below acceptance.
 | Core loss @ rated ripple | ≈ 2.4 W calc (ΔB ≈ 70 mT pp @ 50 kHz, A3 fit) — stated so the loss line is auditable |
 | Loss @ rated | ≈ 35 W calc total (Cu 32.4 + Fe 2.4) — ΔT ≤ 45 °C over 55 °C ambient, thermocouple at inner bore (calc ≈ 36 °C) |
 | Isolation | winding–core 500 VAC/1 min (functional; core floats on mount) |
-| Mount | center bolt M6 + silicone pad; mass ~1.0 kg |
+| Mount | center bolt M6 + silicone pad + epoxy band; mass **~2.2 kg (computed — mag-sync gate, E59: core 0.96 + Cu 1.06 + build; the old ~1.0 was eyeballed)** |
 | Hi-pot | none (line-potential part; board-level hipot covers) |
 
 ## D2 rev C — Resonant trim inductor bin set (IND-TRIM-BIN4) — qty 3/6/12
@@ -79,7 +79,7 @@ correct, core technology wrong). The frozen E7 rev D2 tank values are UNCHANGED 
 | Item | Spec |
 |---|---|
 | Core | 3× PQ50/50 stacked, PC95/DMR95-class, **gapped for Lm = 63 µH (E7 rev D2)** (center-leg grind, glue-stacked) |
-| Turns | Np = 7, Ns1 = 7, Ns2 = 7 (1:1:1) |
+| Turns | Np = 7, Ns1 = 7, Ns2 = 7 — **7:7:7** (ratio 1:1:1) |
 | Primary | **litz ≥9.8 mm² Cu (e.g. 1250×0.1 mm; Rdc line governs)**, 45.6 A rms design — audit F5: the rev-A "1050×0.1 (10.4 mm²)" was self-contradictory (1050×0.1 = 8.25 mm², J 5.5, fails the 2.0 mΩ line) |
 | Secondaries | **2× litz ≥4.9 mm² TRIPLE-INSULATED (TIW), e.g. 630×0.1 mm (Rdc line governs)**, 22.2 A rms each — rev-A 460×0.1 = 3.61 mm² failed the 4.2 mΩ line |
 | Interleave | S1 – P – S2 (leakage target ≤ 3 µH primary-referred; measured leakage recorded per unit) |
@@ -88,7 +88,7 @@ correct, core technology wrong). The frozen E7 rev D2 tank values are UNCHANGED 
 | Hi-pot | pri↔sec 4.0 kV DC 1 s 100%; pri↔core 2.5 kV; **PD sample test**: ≤10 pC @ 1.5 kV pk, 5/lot (§14) |
 | Electrical accept | **Lm 63 µH ±7% (gap ground to AL target — rev B, §37 MC; E7 rev D2 value, R2 doc-alignment)**; leakage measured & labeled per unit (bin input, ±20% window acceptable); turns 1:1:1 ±0; Rdc P ≤ 2.0 mΩ, S ≤ 4.2 mΩ |
 | Loss | 20.5 W calc at design point; hotspot ≤ +55 °C rise (thermocouple under margin tape, type-test) |
-| Mount | 4× M4 clamp bar; mass ~1.6 kg |
+| Mount | 4× M4 clamp bar; mass **~0.8 kg (computed, E59 — the old ~1.6 was eyeballed)** |
 
 ## D4 — Aux flyback transformer (XFMR-AUX-FLY) — qty 1
 
@@ -275,7 +275,7 @@ materials), H (180 °C) for D3.
 - **First article**: dimensional report against §0.1, full electrical against the acceptance line,
   and a cross-section or teardown for the two reinforced-barrier parts.
 - **RoHS / REACH**; all organic materials UL 94 V-0.
-- **Packaging**: individually separated — the toroids are heavy enough (D1 ≈ 0.9 kg, D3 ≈ 1.6 kg)
+- **Packaging**: individually separated — the toroids are heavy enough (computed, E59: D1 ≈ 2.2–3.0 kg, D3 ≈ 0.8–1.5 kg)
   to damage neighbours in bulk packing.
 - **Drawing control**: every section above needs a drawing number, revision and date before it is
   sent out. D2, D3 and D4 have already been revised (rev B / rev D2 / rev C) and the revisions are

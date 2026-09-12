@@ -39,6 +39,7 @@ flowchart LR
 | [`firmware-guide.md`](firmware-guide.md) | supervisory C99 core: API, HAL contract, boot identity, F.21 semantics | **grep-pinned** (R6-B/R7-E) — additive edits only |
 | [`magnetics.md`](magnetics.md) | drawings **D1–D7** + variant tables (E51/E52 revs baked in) | `magnetics-rfq-audit` · computed stress families |
 | [`magnetics-fmea-e58.md`](magnetics-fmea-e58.md) | **E58 FMEA** — temperature verdict (measured 3C95 surfaces) + 20 failure modes with closures | `magnetics/temp-critique.mjs` recomputes every row |
+| [`magnetics-build-instructions.md`](magnetics-build-instructions.md) | **E59 work instructions** — step-by-step build per magnetic: lay-ups, cut lengths, tapes, terminations, impregnation, hold points | pairs with the pack; mag-sync pins the identities |
 | [`magnetics-manufacturing-pack.md`](magnetics-manufacturing-pack.md) | **RFQ pack** — one quote-ready sheet per magnetic + sourcing directory | rfq-audit: 0 missing fields |
 | [`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) | verified market position, SiC verdict, density gap, cost levers | [V] claims = 3-vote verified |
 | [`final-validation-e51.md`](final-validation-e51.md) | end-to-end category verdicts + the honest open list | summarizes the standing battery |

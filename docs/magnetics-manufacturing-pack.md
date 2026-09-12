@@ -4,7 +4,7 @@
 
 > **Purpose** — One controlled spec sheet per magnetic — quote-ready: electricals, construction, insulation, parasitics, thermal, production tests, sourcing.
 >
-> **Gate coupling** — magnetics-rfq-audit: 0 missing fields across 7 drawings.
+> **Gate coupling** — magnetics-rfq-audit: 0 missing fields · mag-sync (E59) pins every identity + computed mass. Build process: [`magnetics-build-instructions.md`](magnetics-build-instructions.md).
 
 
 **Scope:** every magnetic on the 30 / 40 / 50 kW modules, one controlled sheet each, written so a
@@ -29,7 +29,7 @@ to every sheet. Insulation values follow [`insulation-coordination.md`](insulati
 | Vibration | 2 g 10–500 Hz sine sweep survival (bonded/banded construction; IEC 60068-2-6 class) — toroid stacks epoxy-banded, not tape-only. |
 | Traceability | Lot + date code on every part, traceable to core lot and wire lot. First article: dimensional vs the mechanical row, full electrical vs the acceptance rows, cross-section/teardown for D3 and D4 (reinforced-barrier parts). |
 | 100 % tests | Every acceptance-row electrical + every stated hipot, 100 % end-of-line at the winder. Sampled tests marked (S). |
-| Packaging | Individually celled — D1 ≈ 1.3–2.2 kg, D3 ≈ 1.6–2.3 kg; parts damage each other in bulk packing. |
+| Packaging | Individually celled — computed masses (E59): D1 ≈ 2.2–3.0 kg · D3 ≈ 0.8–1.5 kg · D2 ≈ 0.45 kg; parts damage each other in bulk packing. |
 | RoHS/REACH | Required; declare materials on first article. |
 
 **Core / material / wire sourcing directory** (design intent — purchasing selects within class):
@@ -60,7 +60,7 @@ to every sheet. Insulation values follow [`insulation-coordination.md`](insulati
 | Parasitics | SRF ≥ 500 kHz (≥10× fsw) · winding–core capacitance no spec (functional) |
 | Insulation | winding–core 500 VAC 1 min (functional; part floats on mount); Class F system |
 | Thermal | ΔT ≤ 45 K at 54.9 A rms in 2 m/s airflow; thermocouple at inner bore |
-| Mechanical | finished ⌀ ≤ 87 mm × H ≤ 62 mm; M6 centre bolt + silicone pad; 2× tinned flying leads 60 mm into plated holes ⌀6.0 mm; mass ~1.3 kg |
+| Mechanical | finished ⌀ ≤ 87 mm × H ≤ 62 mm; M6 centre bolt + silicone pad; 2× tinned flying leads 60 mm into plated holes ⌀6.0 mm; mass **~2.2 kg (computed — mag-sync, E59)** |
 | Production test | 100 %: L₀, L@78 A (pulse), Rdc, 500 VAC. (S) 1/lot: L(I) curve 0–100 A, ΔT type-test 1/first article |
 
 ## PMP-MAG-D1-40 rev B (E51) — PFC swing choke 40 kW (`IND-PFC-116u-40`) — qty 3
@@ -73,7 +73,7 @@ As D1-30 except:
 | Winding | **N = 26 ±1 lot-trim**, conductor 25.8 mm² class = **8× 2.0 mm or 13× 1.6 mm enameled round**, 2-layer, spread ≥300° |
 | Electrical acceptance | L₀ **106–135 µH** (lot-trim window; 116 nominal) · **L @104 A pk ≥ 61 µH** · Rdc ≤ 7.0 mΩ |
 | Operating point | 73.3 A rms / 103.6 A pk + 27.5 A pp @50 kHz; ~39 W; J 2.84; ΔT calc 30 K |
-| Mechanical | ⌀ ≤ 87 × H ≤ 100 mm; M6 centre bolt; drill 6.0/pad 6.9; mass ~2.0 kg |
+| Mechanical | ⌀ ≤ 87 × H ≤ 100 mm; M6 centre bolt; drill 6.0/pad 6.9; mass **~3.0 kg (computed, E59)** — ≥3 kg stacks take the centre bolt PLUS two-point epoxy banding to standoffs (2 g rule) |
 | Note | **Rev B re-issued on the CATALOG core** — the E41 N=23 selection came from a geometric-Ae model and misses its floors on the real part (E51). Any equivalent core must match AL 37 ±8 % AND the 26µ roll-off anchors. |
 
 ## PMP-MAG-D1-50 rev B (E51) — PFC swing choke 50 kW (`IND-PFC-107u-50`) — qty 3
@@ -84,6 +84,7 @@ As D1-40 except:
 |---|---|
 | Winding | **N = 24 ±1 lot-trim**, 25.8 mm² |
 | Electrical acceptance | L₀ **98–124 µH** (107 nominal) · **L @129.5 A pk ≥ 45 µH** · Rdc ≤ 6.5 mΩ |
+| Mass | **~2.9 kg (computed, E59)** — centre bolt + two-point banding |
 | Operating point | 91.6 A rms / 129.5 A pk + 36.2 A pp @50 kHz; ~57 W; J 3.55; ΔT calc 41 K convective |
 | Cooling interface | **gap-pad bond of the stack face to the coldplate/extrusion web** (E42/E44 practice) — flatness of the bonded face ≤ 0.5 mm; convective ΔT row is the acceptance gate, the bond is the mechanism |
 | Note | dIpp basis restated 36.2 A pp at E51 (catalog core; D6-50 floor restated 11.8 µH — met at 12.9). 6-stack variant (holds 34.8 A pp) on record but declined pending tunnel-height check. |
@@ -127,7 +128,7 @@ liquid AND air 50 (plate bond belt-and-suspenders on the sealed module).
 | Electrical acceptance (100 %) | turns 1:1:1 exact · Lm 63 µH ±7 % @10 kHz 0.1 V · **leakage measured @140 kHz and LABELED per unit** (kitting input — a part without its label is unusable) · Rdc P ≤ 2.0 mΩ, S ≤ 4.2 mΩ each |
 | Parasitics | Rac/Rdc ≤ 1.35 @140 kHz (interleave keeps proximity down) · **C(pri↔sec) ≤ 150 pF with shield grounded** · C(pri self) ≤ 60 pF |
 | Loss / thermal | ~21 W at design point (Fe 13 + Cu 8) · hotspot ≤ +55 K, thermocouple under barrier wrap (type-test); clamp in airflow |
-| Mechanical | ≤ 96 × 50 × 52 mm; 4× M4 clamp bar — **non-magnetic stainless, slotted, ≥8 mm from any gap face (E58)**; 7 flying litz/foil terminations onto pins @10 mm pitch; mass ~1.6 kg |
+| Mechanical | ≤ 96 × 50 × 52 mm; 4× M4 clamp bar — **non-magnetic stainless, slotted, ≥8 mm from any gap face (E58)**; 7 flying litz/foil terminations onto pins @10 mm pitch; mass **~0.8 kg (computed, E59)** |
 | Production test | 100 %: ratio, Lm, leakage+label, Rdc×3, hipot 4 kV, pri-core 2.5 kV. (S): PD 5/lot, Rac 5/lot, thermal first-article + yearly |
 
 ## PMP-MAG-D3-40 rev B (E51) — LLC transformer 13.6 kW (`XFMR-LLC-2E70-40`) — qty 3
@@ -140,6 +141,7 @@ As D3-30 except:
 | Turns / flux | **6 : 6 : 6** · Bpk 90 mT · Lm 63 µH ±7 % (grind to AL 1.75 µH/T²) |
 | Windings | Primary compacted litz ≥13.8 mm² (e.g. 1750×0.1 profiled) · secondaries foil 0.25 × 28 mm, 6 turns each · window 88 % — **the registered 9:9:9 litz+TIW+margin wind demands ~2.4× this former's window; do not quote it** |
 | Loss / thermal | ~34 W/section (Fe 14 + Cu 20) · hotspot ≤ +55 K WITH clamp bonded to extrusion web (gap pad) — bond is part of the module assembly, flatness ≤0.5 mm on the bonded face |
+| Mass | **~1.45 kg (computed, E59)** |
 | Acceptance deltas | Rdc P ≤ 2.4 mΩ · S ≤ 5.2 mΩ · leakage 3 ±0.7 µH labeled |
 
 ## PMP-MAG-D3-50 rev B (E51) — LLC transformer 17 kW (`XFMR-LLC-2E70-50`) — qty 3
