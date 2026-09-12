@@ -100,7 +100,7 @@ As D1-40 except:
 | Parasitics | Rac ≤ 4 mΩ @140 kHz · SRF ≥ 700 kHz (≥5× fr) · winding–core C ≤ 100 pF |
 | Insulation | winding→core hipot 2.5 kV AC 1 min (functional — barrier is elsewhere); Class F |
 | Thermal | ΔT ≤ 40 K at 46.4 A rms continuous (calc 38 worst corner); thermocouple on core leg |
-| Mechanical | 68 × 56 envelope, 2× M4 clamp bar, 2 tinned litz flying leads, drill 4.44/pad 5.34 |
+| Mechanical | 68 × 56 envelope, 2× M4 clamp bar — **non-magnetic stainless (A2/A4), slotted over the gap plane, no closed conductive loop, ≥8 mm from any gap face (E58 fringing-eddy rule)**; 2 tinned litz flying leads, drill 4.44/pad 5.34 |
 | Production test | 100 %: L@bin (140 kHz), Rdc, hipot, bin label. (S) Rac @140 kHz 5/lot, ΔT first-article |
 
 ## PMP-MAG-D2-40 rev C — trim bin set 40 kW (`IND-TRIM-BIN5-40`) — qty 3
@@ -127,7 +127,7 @@ liquid AND air 50 (plate bond belt-and-suspenders on the sealed module).
 | Electrical acceptance (100 %) | turns 1:1:1 exact · Lm 63 µH ±7 % @10 kHz 0.1 V · **leakage measured @140 kHz and LABELED per unit** (kitting input — a part without its label is unusable) · Rdc P ≤ 2.0 mΩ, S ≤ 4.2 mΩ each |
 | Parasitics | Rac/Rdc ≤ 1.35 @140 kHz (interleave keeps proximity down) · **C(pri↔sec) ≤ 150 pF with shield grounded** · C(pri self) ≤ 60 pF |
 | Loss / thermal | ~21 W at design point (Fe 13 + Cu 8) · hotspot ≤ +55 K, thermocouple under barrier wrap (type-test); clamp in airflow |
-| Mechanical | ≤ 96 × 50 × 52 mm; 4× M4 clamp bar; 7 flying litz/foil terminations onto pins @10 mm pitch; mass ~1.6 kg |
+| Mechanical | ≤ 96 × 50 × 52 mm; 4× M4 clamp bar — **non-magnetic stainless, slotted, ≥8 mm from any gap face (E58)**; 7 flying litz/foil terminations onto pins @10 mm pitch; mass ~1.6 kg |
 | Production test | 100 %: ratio, Lm, leakage+label, Rdc×3, hipot 4 kV, pri-core 2.5 kV. (S): PD 5/lot, Rac 5/lot, thermal first-article + yearly |
 
 ## PMP-MAG-D3-40 rev B (E51) — LLC transformer 13.6 kW (`XFMR-LLC-2E70-40`) — qty 3
@@ -198,19 +198,21 @@ hipot. **T57 core p/n must be sample-verified for AL + roll-off before PO (E51 s
 
 | Part | Spec to quote | Acceptance |
 |---|---|---|
-| Line CT — Talema ACX-1100 (30/40 kW) · 150 A 2500:1 class (50 kW, RFQ) | 2500:1, ±1 %, Ø14.6 window, 4 kV hipot, PCB pins | ratio ±0.5 % 100 % · no sat below 150 A pk (187 A pk @50 kW class) · phase ≤1° @50/60 Hz · sec Rdc recorded per unit (EOL cal input) · ΔT ≤ 30 K |
-| Resonant CT — Talema AS-404 (30 kW) · 80 A-class (40 kW) · 100 A-class (50 kW) | 1:100, 20–200 kHz, Ø8 pass-through (tank wire = primary) | ratio ±0.5 % **at 140 kHz** · no sat below 100 A pk · ΔT ≤ 30 K at rated tank current — a line-frequency core does NOT serve this slot |
+| Line CT — Talema ACX-1100 (30/40 kW) · 150 A 2500:1 class (50 kW, RFQ) | 2500:1, ±1 %, Ø14.6 window, 4 kV hipot, PCB pins | ratio ±0.5 % 100 % · no sat below 150 A pk (187 A pk @50 kW class) — **acceptance at 25 °C carries a ×1.25 factor OR is demonstrated at 85 °C core (E58: CT core Bsat falls with temperature; the OC observability ceiling must hold hot)** · phase ≤1° @50/60 Hz · sec Rdc recorded per unit (EOL cal input) · ΔT ≤ 30 K |
+| Resonant CT — Talema AS-404 (30 kW) · 80 A-class (40 kW) · 100 A-class (50 kW) | 1:100, 20–200 kHz, Ø8 pass-through (tank wire = primary) | ratio ±0.5 % **at 140 kHz** · no sat below 100 A pk (×1.25 at 25 °C or shown at 85 °C — E58) · ΔT ≤ 30 K at rated tank current — a line-frequency core does NOT serve this slot |
 
 ## Build & validation method (applies to quotes)
 
 1. **First article (every p/n):** dimensional vs mechanical row → full electrical vs acceptance →
-   L(I) or leakage curve as stated → thermal type-test at the operating row → cross-section for
-   D3/D4 (barrier photos in the FA report).
+   L(I) or leakage curve as stated → thermal type-test at the operating row → **thermal shock
+   IEC 60068-2-14 Na, 5 cycles −40 ↔ +125 °C, then re-test the electrical row (E58 — litz bonds,
+   gap glue, banding)** → cross-section for D3/D4 (barrier photos in the FA report).
 2. **D3 leakage-engineering step (one-time per variant):** wind 3 units at 3 spacer thicknesses,
    measure leakage @140 kHz, freeze the spacer for 3±0.7 µH, record the curve in the FA report.
    Then production leakage spread feeds the existing D2 bin-kitting flow unchanged.
 3. **Sendust equivalence (any non-Magnetics core):** measure L(I) 0→1.3×Ipk on 5 cores/lot vs the
-   A3 anchors; a lot outside ±8 % AL or softer roll-off is rejected — the drawings lot-trim ±1
+   A3 anchors — **at −25 °C, +25 °C and +100 °C (E58: the design carries a ±3 % µ temperature band;
+   a material outside it fails equivalence even if the 25 °C curve matches)**; a lot outside ±8 % AL or softer roll-off is rejected — the drawings lot-trim ±1
    turn, they do not absorb material substitution.
 4. **Production:** 100 %-test rows above; SPC on Lm/leakage (D3) and L₀ (D1) — drift beyond ±1σ
    band from FA triggers core-lot review.

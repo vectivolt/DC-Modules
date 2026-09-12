@@ -334,6 +334,13 @@ for (const [sku] of Object.entries(SK)) {
   // R5-D: two-stage exclusion — the pre-insertion contacts join
   ck("J", `${sku} exclusion incl. pre-insertion`, D.netOfPin.get("UEXCL2.A1") === "CTL_KPREA" && D.netOfPin.get("UEXCL2.B1") === "CTL_KPREB" && D.netOfPin.get("UEXCL2.A2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.B2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.Y4") === "KSER_GATED" && D.netOfPin.get("ULB.IN1") === "KSER_GATED" && D.netOfPin.get("CEXCL.pin1") === D.netOfPin.get("UEXCL.VCC") && D.netOfPin.get("CEXCL2.pin1") === D.netOfPin.get("UEXCL2.VCC"),
     "KSER coil = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB); both stages bypassed");
+  // E58: flux-walk blocker — the resonant Cr bank sits in SERIES with each primary
+  // (SW → Cr → trim → P1), so DC volt-second asymmetry cannot walk the transformer core.
+  ck("J", `${sku} flux-walk blocked by series Cr (all 3 sections)`, [1, 2, 3].every((n) =>
+    D.netOfPin.get(`C${n}R0.pin2`) === D.netOfPin.get(`L${n}T.pin1`) &&
+    D.netOfPin.get(`L${n}T.pin2`) === D.netOfPin.get(`T${n}.P1`) &&
+    D.netOfPin.get(`C${n}R0.pin1`) !== D.netOfPin.get(`T${n}.P1`)),
+    "SW → Cr bank → trim → primary, Cr strictly in series — DC-block by construction (E58 temp-critique companion)");
   // R6-E: output-current sign — VINP rides KB (OUTN side) so delivering current reads POSITIVE
   ck("J", `${sku} shunt differential sign`, D.netOfPin.get("USHO.VINP") === D.netOfPin.get("RSHO.KB") && D.netOfPin.get("USHO.VINN") === D.netOfPin.get("RSHO.KA"),
     "return current OUTN→B→A: KB high of KA when delivering — positive reading = charging (R6-E)");

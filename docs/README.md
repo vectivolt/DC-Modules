@@ -2,7 +2,7 @@
 
 <p align="left">
   <img src="https://img.shields.io/badge/register-E1–E53-f2b705?style=flat-square" alt="register"/>
-  <img src="https://img.shields.io/badge/battery-run--all_·_218%2F218_·_50%2F50-2ea44f?style=flat-square" alt="battery"/>
+  <img src="https://img.shields.io/badge/battery-run--all_·_222%2F222_·_50%2F50-2ea44f?style=flat-square" alt="battery"/>
   <img src="https://img.shields.io/badge/docs-live_·_generated_·_history-5f8fc0?style=flat-square" alt="docs"/>
   <img src="https://img.shields.io/badge/phase-pre--hardware-e3763c?style=flat-square" alt="phase"/>
 </p>
@@ -38,6 +38,7 @@ flowchart LR
 | [`protection-thresholds.md`](protection-thresholds.md) | the F.xx ladder + fault-path diagram; HW/FW split, per-SKU timings | **grep-pinned** (R5-K/R6-B/R6-C) — additive edits only |
 | [`firmware-guide.md`](firmware-guide.md) | supervisory C99 core: API, HAL contract, boot identity, F.21 semantics | **grep-pinned** (R6-B/R7-E) — additive edits only |
 | [`magnetics.md`](magnetics.md) | drawings **D1–D7** + variant tables (E51/E52 revs baked in) | `magnetics-rfq-audit` · computed stress families |
+| [`magnetics-fmea-e58.md`](magnetics-fmea-e58.md) | **E58 FMEA** — temperature verdict (measured 3C95 surfaces) + 20 failure modes with closures | `magnetics/temp-critique.mjs` recomputes every row |
 | [`magnetics-manufacturing-pack.md`](magnetics-manufacturing-pack.md) | **RFQ pack** — one quote-ready sheet per magnetic + sourcing directory | rfq-audit: 0 missing fields |
 | [`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) | verified market position, SiC verdict, density gap, cost levers | [V] claims = 3-vote verified |
 | [`final-validation-e51.md`](final-validation-e51.md) | end-to-end category verdicts + the honest open list | summarizes the standing battery |

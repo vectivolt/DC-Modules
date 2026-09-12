@@ -1,6 +1,6 @@
 # Calculations — machine-readable engineering
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__TOOLING-2ea44f?style=flat-square" alt="live"/> <img src="https://img.shields.io/badge/rev-E54-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/battery-run--all_·_218%2F218_·_50%2F50-2ea44f?style=flat-square" alt="battery"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__TOOLING-2ea44f?style=flat-square" alt="live"/> <img src="https://img.shields.io/badge/rev-E54-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/battery-run--all_·_222%2F222_·_50%2F50-2ea44f?style=flat-square" alt="battery"/></p>
 
 > **Purpose** — every number in the docs traces to a runnable tool here; one command reproduces
 > the lot. E54 cleaned this directory to exactly the tools the production path uses: engines,
@@ -9,7 +9,7 @@
 > `archive/pre-focus-E49`.
 
 ```bash
-sh calculations/run-all.sh   # → 218/218 · stress clean · FIRMWARE LOGIC 50/50 OK · ALL CALCULATIONS REPRODUCED OK
+sh calculations/run-all.sh   # → 222/222 · stress clean · FIRMWARE LOGIC 50/50 OK · ALL CALCULATIONS REPRODUCED OK
 ```
 
 ## Engines (design truth)

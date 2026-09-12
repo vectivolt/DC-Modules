@@ -36,7 +36,7 @@ npx tsci build boards/30kw/acdc.tsx
 
 ```bash
 # the full gate battery (calcs, sims echo, schematic checks, interconnect+polarity audits,
-# stress audit, 218-check independent verifier, firmware 50/50)
+# stress audit, 222-check independent verifier, firmware 50/50)
 sh calculations/run-all.sh
 ```
 

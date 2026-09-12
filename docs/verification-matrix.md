@@ -22,8 +22,8 @@ flowchart LR
   SRC["cells.tsx · boards.tsx<br/>control-card.tsx · parts-db"] --> BUILD["tsci netlist builds<br/>(8 boards, 0 errors)"]
   BUILD --> ENG["engines<br/>pfc · llc · dm-choke · loss<br/>grid 4032 pts · MC · fsm-sim"]
   ENG --> GATES["computing gates<br/>stress-audit (D1–D7 from catalog)<br/>interconnect · polarity · schematic"]
-  GATES --> IND["verify-independent<br/>218 clean-room checks"]
-  IND --> REV["review-checks<br/>140+ asserts (R1…R8 · E35…E52)"]
+  GATES --> IND["verify-independent<br/>222 clean-room checks"]
+  IND --> REV["review-checks<br/>140+ asserts (R1…R8 · E35…E58)"]
   REV --> SHIP["kicad5 SHIP zips ×6<br/>pin-verify · visual · uniformity"]
   SHIP --> PDF["print SVGs → 5 PDF sets"]
   FW["firmware host_sim<br/>50/50 ASan/UBSan"] --> REV
@@ -57,7 +57,7 @@ flowchart LR
 | Module interconnect | CLEAN — studs, all 40 harness ways, both 88-way slots, RATING straps, cabinet section |
 | Polarity | **every polarized part +/anode on pin 1 as the glyphs draw it** (E38 netlist gate + the R4-1 semantic-seating fix + payload↔netlist anode lock) |
 | Driver channels fully wired | V — one `DriverCh` cell = all 9 channels/module (real NSI6611 map, R4-2; DESAT series R, R5-B) |
-| Independent verifier | `verify-independent.mjs`: **218 checks** — clean-room netlist parser + sections A–J (R4/R5/R6/R7/R8 electrical proofs) |
+| Independent verifier | `verify-independent.mjs`: **222 checks** — clean-room netlist parser + sections A–J (R4/R5/R6/R7/R8 electrical proofs) |
 | BOM coverage | unmatched designators = 0; every class part carries a value-carrying order code (R5-G/R7-C/R8-C) |
 | Stress acceptance | `stress-audit.mjs` CLEAN — device/magnetic/protection/pulse/discharge/cold-start families, all variants |
 | Supervisory logic (E24) | C99 fsm + CAN codec + CSU: **50/50 checks** (26 scenarios + codec + 100k fuzz + rating windows + exclusion invariant) under ASan/UBSan |

@@ -24,6 +24,7 @@ if [ -n "$SKPAIRS" ]; then node calculations/schematic-check.mjs $SKPAIRS; fi
 if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/module-interconnect-audit.mts; fi
 npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
+node calculations/magnetics/temp-critique.mjs
 node calculations/verify-independent.mjs
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 50/50 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"
