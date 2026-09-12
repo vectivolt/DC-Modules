@@ -73,17 +73,25 @@ for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70]
 }
 
 // ---------------- 3. magnetics vs their OWN acceptance lines ------------------------------------
-// D1 PFC choke [pfc engine selections — 3-stack at 40 kW was REFUSED by the optimizer]
+// D1 PFC choke — E51: COMPUTED from the CATALOG core (0077908A7: AL 37 nH/T² ±8%, le 201 mm),
+// not hand-copied engine output (the E41/E42 rows had inherited the geometric-Ae model and two
+// stress rows here were stale rev-A copies — three sources, three answers, none the drawing).
+const AL79 = 37e-9, LE79 = 0.201, R26 = { a: 2.13e-4, b: 1.637 };
+const mu26 = (H) => 1 / (1 + R26.a * Math.pow(Math.max(H / 79.577, 1e-9), R26.b));
 const D1 = {
-  "30kw": { L0: 165.4, Lpk: 82.8, dT: 35, J: 54.94 / 17.2, note: "3× 0077908A7, N=36 (rev B N=39 lot-trim basis)" },
-  "40kw": { L0: 112.6, Lpk: 63.7, dT: 27, J: 73.25 / 25.8, note: "5× 0077908A7, N=23 — engine selection at frozen 50 kHz" },
-  "50kw": { L0: 103, Lpk: 50.8, dT: 37, J: 91.57 / 25.8, note: "D1-50: 5× T79 26µ N=22 — engine at frozen 50 kHz (PFC_P=50e3 PAR=2; 40 kHz row REFUSED); plate-bonded in the sealed module, convective dT is the conservative gate" },
-  "50kwa": { L0: 103, Lpk: 50.8, dT: 37, J: 91.57 / 25.8, note: "same D1-50 part (E44 air twin — classes set by current, not coolant); 37 K convective sits in real fan airflow" },
+  "30kw": { stack: 3, N: 39, cu: 18.0, Irms: 54.94, Ibias: 78, Lfloor: 75, dT: 36, note: "D1 rev B: N=39±1 lot-trim, 18 mm² (drawing of record)" },
+  "40kw": { stack: 5, N: 26, cu: 25.8, Irms: 73.25, Ibias: 104, Lfloor: 61, dT: 30, note: "D1-40 rev B (E51): N=26±1 on CATALOG AL — the E41 N=23 missed its floor on the real core" },
+  "50kw": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, dT: 41, note: "D1-50 rev B (E51): N=24±1, dIpp basis restated 36.2 A pp (D6-50 floor 11.8 ≤ built 12.9); plate/web-bonded" },
+  "50kwa": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, dT: 41, note: "same D1-50 rev B part (E44 twin)" },
 };
 for (const [sku, d] of Object.entries(D1)) {
-  ck("D1", `${sku} swing floor`, d.Lpk / d.L0 >= 0.40, `L@Ipk/L0 = ${f(d.Lpk / d.L0, 2)} ≥ 0.40 (${d.note})`);
+  const L0 = AL79 * d.stack * d.N * d.N * 1e6;
+  const Lb = mu26(d.N * d.Ibias / LE79) * L0;
+  const J = d.Irms / d.cu;
+  ck("D1", `${sku} biased-L floor [catalog AL]`, Lb >= d.Lfloor, `L0 ${f(L0, 0)} µH → ${f(Lb, 1)} µH @${d.Ibias} A ≥ ${d.Lfloor} (${d.note})`);
+  ck("D1", `${sku} swing floor`, Lb / L0 >= 0.40 || sku === "30kw", `L@Ibias/L0 = ${f(Lb / L0, 2)} (30 kW swing-choke basis exempt: drawing governs via its own biased-L line)`);
   ck("D1", `${sku} ΔT`, d.dT <= 45, `${d.dT} K vs 45 K acceptance`);
-  ck("D1", `${sku} current density`, d.J <= 5.5, `${f(d.J, 2)} A/mm² ≤ 5.5`);
+  ck("D1", `${sku} current density`, J <= 5.5, `${f(J, 2)} A/mm² ≤ 5.5`);
 }
 // D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae(2×PQ50/50)=656 µm²·1e-6)
 const AE2 = 2 * 328e-6;
@@ -92,8 +100,23 @@ for (const [sku, d] of Object.entries(D2)) {
   const B = d.L * d.Irms * Math.SQRT2 / (d.N * AE2) * 1e3;
   ck("D2", `${sku} trim Bpk`, B <= 100.5, `${f(B, 0)} mT vs 100 mT loss line (N=${d.N} — 40 kW at N=4 computes 115 mT: that is WHY the variant is N=5; 50 kW: BIN6 3.0 µH keeps trim = 50% of Lr so leakage tolerance stays binnable, fr = 139.8 kHz with 8×27 nF)`);
 }
-// D3 transformer: flux is VOLTAGE-driven — same V/turns/fr on every variant [reg]
-ck("D3", "all variants Bpk", true, "108 mT (identical volt-seconds) vs PC95 410 mT sat — loss-limited by design; 40 kW: 2×E70/33/32 for WINDOW fill; 50 kW: 3×E70 (Ae ×1.5 → N ×2/3 → N·Ae and Bpk UNCHANGED, window fill ~0.83× of the 40 despite +25% Cu)");
+// D3 transformer — E51: the old check here was literally `true` while the register carried a
+// ×1.8 flux-claim error ("108 mT identical" — the E70 routes actually ran 60 mT) and windings
+// that could not fit their formers. Now COMPUTED from volt-seconds (415 V half-cycle @140 kHz)
+// against each variant's core set and its registered Bpk line.
+{
+  const LAM = 415 / (2 * 140e3);
+  const D3 = {
+    "30kw": { sets: 3, Ae: 328e-6, N: 7, BpkLine: 108, win: "75% of bobbinless PQ window (compacted litz + foil sec, E51 construction)" },
+    "40kw": { sets: 2, Ae: 683e-6, N: 6, BpkLine: 90, win: "88% of B66372B2000 former AN 389 mm² (E51: 9:9:9 computed 242–294% — unbuildable)" },
+    "50kw": { sets: 2, Ae: 683e-6, N: 5, BpkLine: 109, win: "91% of B66372B2000 former (E51: registered 3-set former does not exist)" },
+    "50kwa": { sets: 2, Ae: 683e-6, N: 5, BpkLine: 109, win: "same D3-50 rev B part" },
+  };
+  for (const [sku, d] of Object.entries(D3)) {
+    const Bamp = LAM / (d.N * d.Ae * d.sets) / 2 * 1e3;
+    ck("D3", `${sku} Bpk from volt-seconds`, Math.abs(Bamp - d.BpkLine) <= 2 && Bamp <= 115, `${f(Bamp, 0)} mT vs registered ${d.BpkLine} (≤115 loss line; hot Bsat ~330); window: ${d.win}`);
+  }
+}
 // D6/D7 EMI chokes: constant-J rewind at 40/50 kW [lb]
 for (const [sku, J] of [["30kw", 5.5], ["40kw", 5.5], ["50kw", 5.5]])
   ck("D6/D7", `${sku} winding J`, J <= 5.6, `${J} A/mm² (CSA scales with current — same density, ΔT acceptance carried)`);

@@ -1,4 +1,10 @@
-# Verification Matrix & Risk Register — rev E49
+# Verification Matrix & Risk Register — rev E49 (+E51 magnetics recomputation)
+
+> **E51 (2026-09-12):** independent magnetics recompute against catalog cores/formers re-issued
+> D1-40/50 (catalog-AL turns + lot-trim) and D3 all-SKU constructions (window feasibility — the
+> as-drawn transformers could not wind); stress-audit D1/D3 rows now COMPUTE from catalog
+> constants; loss-budget carries real per-SKU transformer rows. Category verdicts:
+> [`final-validation-e51.md`](final-validation-e51.md).
 
 Status letters: **V** = verified by executed calc/sim/audit (artifact cited) · **P** =
 planned/spec'd, not executed · **N** = not applicable at this phase. Nothing marked V without

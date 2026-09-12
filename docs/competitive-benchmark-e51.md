@@ -1,0 +1,113 @@
+# Competitive benchmark — 30/40/50 kW modules vs the market (E51, 2026-09-12)
+
+Method: deep-research pass (105 agents, 3-vote adversarial verification per claim; primary
+manufacturer documents only — every number below labeled **[V]** survived that process; numbers
+labeled **[est]** are our estimates or the user's own market intelligence and carry no external
+verification). Full provenance in the E51 session record.
+
+## 1. Topology verdict: our architecture IS current reference practice
+
+| Design | PFC | Isolated stage | Range strategy | Result |
+|---|---|---|---|---|
+| **Ours** | Vienna, 50 kHz, SiC 750 V | 3-φ interleaved LLC, fr 140 kHz, 1200 V SiC, JBS sec | S/P output banks (contactor, on-the-fly), 150–1000 V | η 97.3/97.1/96.9–97.0 full-load calc, 98.4–98.55 peak |
+| Wolfspeed CRD-30DD12N-K 30 kW [V] | (DC-DC only, 650–900 V link) | **3-φ interleaved LLC, 130–250 kHz adaptive, discrete 1200 V SiC (C3M0040120K)** | **S/P secondary banks** 200–1000 V (manual jumpers) | >98.3 % peak DC-DC, 6.5 kW/L |
+| Microchip 30 kW Vienna ref [V] | **Vienna @140 kHz**, 700 V/15 mΩ SiC | — | — | 98.6 % @30 kW (bench) |
+| Infineon 50 kW EV kit (Jun 2024) [V] | 2-level 6-sw AFE, 48 kHz SiC | 1-φ DAB 100 kHz, link tracks 1.4×Vout (700–840 V) | link-tracking, 350–750 V/100 A | **96 % measured system peak**, forced air, 45 kW proven |
+| onsemi 25 kW SiC-PIM [V] | 6-sw AFE | DAB w/ discrete series L | CC-derate <500 V (50 A cap) | >96 % system target |
+
+**Conclusions [V]:** (1) Our exact DC-DC architecture (3-φ interleaved LLC + S/P banks + discrete
+1200 V SiC) is Wolfspeed's current 30 kW reference design — not exotic, not theoretical. (2) Our
+50 kHz Vienna is CONSERVATIVE (Microchip proves 140 kHz; headroom exists, E3 stands on thermal
+grounds). (3) Our 150–1000 V window is wider than any of the three published strategies. (4) The
+one place we are structurally harder than the references: our S/P flip is contactor-based
+on-the-fly — Wolfspeed's is manual jumpers — which is exactly why the E12/E30/R4-8/R5-D
+exclusion+mirror hardware exists. (5) The competing architecture (AFE+DAB) measures ~96 % system
+peak — our topology family holds the efficiency high ground.
+
+## 2. The Chinese benchmark wall
+
+| Module | P | η peak / full [V] | Output | Density [V] | Weight | Devices |
+|---|---|---|---|---|---|---|
+| Infy REG1K0100U/G 30 kW | 30 kW | ≥95.8 / ≥95.5 % (G2 ≥96) | 150–1000 V, 100 A, CP ≥300 V | 16.7 L → **1.8 kW/L** | ≤22.5 kg (1.33 kW/kg) | unverified (Si SJ assumed [est]) |
+| UUGreen UR100040-SW(EU) 40 kW | 40 kW | >96 / >95 % | 150–1000 V, 133 A, CP ≥300 V | 11.0 L → **3.6 kW/L** | ≤16 kg (2.5 kW/kg) | mainstream SKU unverified |
+| UUGreen UR100040SW-**SiC** (+G2) | 40 kW | **≥97 / >97.5 % claimed** | same | same class | same | **SiC (vendor-branded)** |
+| Tonhe TH750Q61ND-AX (2019, on file) | 20 kW | ≥95.5 % max | 200–750 V | 8.4 L → 2.4 kW/L | — | 3-φ APFC + LLC, dual DSP |
+| **Ours 30 kW** | 30 | **97.3 calc / 98.4 pk** | 150–1000 V | ~11.6 L → **~2.6 kW/L [est]** | ~13 kg [est] | all-SiC |
+| **Ours 40 kW** | 40 | 97.1 / 98.4 | 150–1000 V | ~18.9 L → 2.1 kW/L [est] | ~16 kg [est] | all-SiC |
+| **Ours 50 kW air** | 50 | 97.0 / 98.55 | 150–1000 V | ~18.9 L → 2.6 kW/L [est] | ~17 kg [est] | all-SiC |
+
+**Where we win:** efficiency. Verified market state: mainstream Chinese modules are 95.5–96.5 %
+peak; only just-launched SiC flagships claim ≥97 %. Our calculated 97.0–97.3 full-load /
+98.4–98.55 peak is at or ahead of the newest SiC generation — worth ~300–600 W less heat per
+module at full load, i.e. smaller fans, longer fan life, and a real opex line for buyers
+(≈1.5 % of 30 kW × 4000 h/yr ≈ 1.8 MWh/yr/module).
+
+**Where we lose:** power density. UUGreen packs 40 kW into 11 L; our 40/50 kW envelope is ~19 L
+(2-board sandwich, E36 layout phase still parked). 30 kW at ~2.6 kW/L is mid-pack. **The density
+gap is a layout/packaging problem, not a topology one** — same magnetics volume at 140 kHz vs
+their ~100–200 kHz is comparable; the sandwich carries air where a production module carries
+components. Register this as the #1 physical-design lever when E36 reopens.
+
+**Cost [est — the one table that decides the business]:** BOM @10k: ₹30.7k/35.3k/41.0–41.3k
+($346/398/463–466 @88.7). The user's own buy benchmark for a Chinese 30 kW module at 10k volume:
+₹35k (~$395). No RMB street-price claims survived verification (open question — get 3 factory
+quotes; the CAN-protocol PDFs on file for UUGreen/Tonhe/NIUERA/ENR/Maxwell say which factories
+already talk to us). Reading: **our 30 kW BOM undercuts the user's own buy price by ~12 %**
+before assembly/overhead/margin — build-vs-buy stands at 30 kW and improves at 40/50 (₹843→797/kW
+vs buying 30 kW-class ~₹1,167/kW). Even on their home-market basis, a Chinese maker's SiC 40 kW
+sells at a premium over Si SKUs — our all-SiC BOM at $398 lands inside the plausible factory-cost
+band of their SiC generation. **We are not structurally uncompetitive; we are one layout
+compression away from parity on density with an efficiency lead.**
+
+## 3. SiC verdict [V for the driver, est for the number]
+
+- Verified structural driver: SiC overcapacity through 2027–28 (Yole: ~50 % upstream / ~70 %
+  device-line utilization 2025), 6" substrates <$500→~$400 in 2024 with vendors selling at a
+  loss, Chinese entrants at ~35 % combined 2024 substrate share. Direction: 1200 V SiC keeps
+  getting cheaper through our build window.
+- Market confirmation: UUGreen ships its 40 kW flagship as SiC and prices it as the premium SKU;
+  SiC is the differentiator TIER-1 Chinese makers now market at exactly our power class.
+- Our BOM reality: Chinese-sourced SiC already (BASiC 750 V 10 mΩ ₹330; SiChain 1200 V 23 mΩ
+  ₹390; JBS ₹90–120). Full-SiC silicon spend ≈ ₹6.5–9k/module ≈ 21 % of BOM [est].
+- **Verdict: SiC gives us the product position (η ≥97 class) the market's newest premium SKUs
+  are just reaching, at Chinese device pricing. Reverting any stage to Si SJ/IGBT would save
+  ≈₹2–3k/module [est] and surrender the only spec line where we beat the incumbents. Keep
+  all-SiC.**
+
+## 4. Magnetics practice cross-check [V]
+
+- PFC chokes: reference practice = stacked High Flux/sendust powder toroids, SOLID wire (ripple
+  ~11 % of rms), ~70 µH @46 A rms/140 kHz (Chang Sung CH571060 ×2, 20 T, >2.6 mm wire —
+  Microchip). Ours: same family, more L (165/116/107 µH) because 50 kHz needs it; bundles not
+  litz ✓; bias-swing design ✓. **Practice-aligned.** (CH571060 also closes our D6 T57 p/n gap.)
+- LLC/DAB transformers: catalog integrated-leakage parts exist to ~17 kW (TDK P302640D003 at
+  50 kW 3-φ DAB); at 60 kW Wolfspeed hand-winds (E100/60/28 3C94, litz AWG4-eq) and had no
+  commercial source as of Aug 2025. Ours at 10–17 kW/section is right at the boundary and stays
+  custom because of 1:1:1 + dual secondaries + S/P — expected, not exotic. **The E51 window
+  findings (D3 rev B) are what make ours actually windable; the reference world confirms this
+  power class is where transformer sourcing gets hard.**
+- External trim inductor vs integrated leakage: Infineon integrates (leakage IS the 8 µH);
+  Wolfspeed 60 kW keeps ~5 µH leakage + tank. Our bins+trim approach is heavier than industry's
+  fixed-element practice — kept because the ±3 % fr window bought §37 MC yield, but the
+  **fixed-Lr study stays on the EVT list** (kill the 4-bin kitting flow if control margins allow).
+- Ferrite second source: DMEGC PQ50/50 in DMR95 verified (≤23.95 W/set max @100k/200 mT/100 °C;
+  Ae 363.8 differs from Ferroxcube 328 — AL-grind absorbs it).
+
+## 5. What did NOT survive verification (honest gaps)
+
+RMB street prices · internals/teardowns of shipping Chinese modules (mainstream 30 kW device
+technology Si-vs-SiC unverified) · litz/TIW industry norms · CMC practice · winder piece pricing
+and lead times · production test suites · field failure modes and observed MTBF. **Actions:**
+(1) three factory RFQs (Infy/UUGreen/Winline) through the existing protocol-doc relationships;
+(2) buy one UR100040-SW and one REG1K0100U for teardown (≈₹80–120k [est] — answers devices,
+magnetics construction, and the density recipe in one purchase); (3) winder RFQs carry the E51
+manufacturing pack (docs/magnetics-manufacturing-pack.md) — piece-price question resolves itself.
+
+## 6. Cost levers if the 3 quotes come back under us [est]
+
+Ranked by ₹ and risk: (1) layout compression at E36 reopen (density parity, no BOM change);
+(2) fixed-Lr tank (kills bin kitting + 3 CT class upgrades stay); (3) JBS→SR premium variant
+already engineered (+0.68 η pt at +₹2.7k — sell it as the SiC-G2 answer, don't cost-reduce it);
+(4) relay matrix: the S/P contactor set (₹2.3–3.4k) is the one BOM block Chinese fixed-topology
+modules don't carry — a 300–1000 V CP window without S/P (link-tracking, Infineon-style) would
+shed it but re-opens the whole tank design; registered as a next-platform question, not this one.

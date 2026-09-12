@@ -72,7 +72,7 @@ MAGNETICS CONSTRUCTION
 Text Notes 20860 28970 0    60   ~ 0
 identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)
 Text Notes 20850 29400 0    60   ~ 0
-D3 T1-T3: 2x E70/33/32 per section, 9:9:9 (D3-40, window-fill basis), Lm 63uH +/-7% gap-ground
+D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 6:6:6, Bpk 90mT (E51: 9:9:9 was unbuildable at 2.4x window; compacted litz + foil sec), Lm 63uH +/-7% gap-ground
 Text Notes 20850 29700 0    60   ~ 0
 D2 L1T-L3T: N=5, bins 3.2/3.5/3.8uH, litz 2000x0.1 (15.7mm2)
 Text Notes 20850 30000 0    60   ~ 0

@@ -24,14 +24,14 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
-## 40KW — module COGS **₹35295 @10k** (1k ₹43633, 5k ₹38872, 100 pc ₹57003) vs red-line ₹33000 / stretch ₹29000 → **@10k OVER red-line by ₹2295**
+## 40KW — module COGS **₹35415 @10k** (1k ₹43783, 5k ₹39004, 100 pc ₹57206) vs red-line ₹33000 / stretch ₹29000 → **@10k OVER red-line by ₹2415**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 11751 | 26.9% |
-| semiconductors | 9941 | 22.8% |
-| mechanical/assembly | 9502 | 21.8% |
-| capacitors | 6359 | 14.6% |
+| magnetics | 11901 | 27.2% |
+| semiconductors | 9941 | 22.7% |
+| mechanical/assembly | 9502 | 21.7% |
+| capacitors | 6359 | 14.5% |
 | drive+control ICs | 3746 | 8.6% |
 | protection | 772 | 1.8% |
 | resistors/shunts | 727 | 1.7% |
@@ -40,15 +40,15 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
-## 50KW — module COGS **₹41324 @10k** (1k ₹50885, 5k ₹45416, 100 pc ₹66146) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1676**
+## 50KW — module COGS **₹41444 @10k** (1k ₹51035, 5k ₹45548, 100 pc ₹66349) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1556**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 13741 | 27% |
+| magnetics | 13891 | 27.2% |
 | mechanical/assembly | 12742 | 25% |
 | semiconductors | 9941 | 19.5% |
-| capacitors | 7967 | 15.7% |
-| drive+control ICs | 3746 | 7.4% |
+| capacitors | 7967 | 15.6% |
+| drive+control ICs | 3746 | 7.3% |
 | protection | 922 | 1.8% |
 | resistors/shunts | 844 | 1.7% |
 | connectors | 418 | 0.8% |
@@ -56,13 +56,13 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | bias/iso modules | 165 | 0.3% |
 | HMI | 24 | 0% |
 
-## 50KWA — module COGS **₹40976 @10k** (1k ₹50675, 5k ₹45102, 100 pc ₹66379) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹2024**
+## 50KWA — module COGS **₹41096 @10k** (1k ₹50825, 5k ₹45234, 100 pc ₹66581) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1904**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 13741 | 27.1% |
+| magnetics | 13891 | 27.3% |
 | semiconductors | 12287 | 24.2% |
-| mechanical/assembly | 10162 | 20.1% |
+| mechanical/assembly | 10162 | 20% |
 | capacitors | 7967 | 15.7% |
 | drive+control ICs | 3746 | 7.4% |
 | protection | 922 | 1.8% |
@@ -120,20 +120,20 @@ COGS, per the registered E42 system boundary.
 | Product | Composition | ₹ @10k | **₹ / kW** |
 |---|---|---|---|
 | 30 kW module | 1 module · 1 card · air | 30,686 | **1,023** |
-| 40 kW module (E41) | 1 module · 1 card · air | 35,295 | **882** |
-| 50 kW module (E42) | 1 module · 1 card · LIQUID | 41,324 | **826** |
-| 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 40,976 | **820** |
+| 40 kW module (E41) | 1 module · 1 card · air | 35,415 | **885** |
+| 50 kW module (E42) | 1 module · 1 card · LIQUID | 41,444 | **829** |
+| 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 41,096 | **822** |
 | 60 kW | 2 x 30 · 2 cards · air | 61,372 | **1,023** |
-| 80 kW | 2 x 40 · 2 cards · air | 70,590 | **882** |
-| 100 kW | 2 x 50 · 2 cards · liquid | 82,648 | **826** |
-| 100 kW air | 2 x 50a · 2 cards · air | 81,952 | **820** |
+| 80 kW | 2 x 40 · 2 cards · air | 70,830 | **885** |
+| 100 kW | 2 x 50 · 2 cards · liquid | 82,888 | **829** |
+| 100 kW air | 2 x 50a · 2 cards · air | 82,192 | **822** |
 | 120 kW (4 x 30) | 4 cards + CSU · air | 1,24,578 | **1,038** |
-| 120 kW (3 x 40) | 3 cards + CSU · air | 1,07,719 | **898** |
-| 150 kW (3 x 50) | 3 cards + CSU · liquid | 1,25,806 | **839** |
-| 150 kW air (3 x 50a) | 3 cards + CSU · air | 1,24,762 | **832** |
+| 120 kW (3 x 40) | 3 cards + CSU · air | 1,08,079 | **901** |
+| 150 kW (3 x 50) | 3 cards + CSU · liquid | 1,26,166 | **841** |
+| 150 kW air (3 x 50a) | 3 cards + CSU · air | 1,25,122 | **834** |
 
 Cabinet adder ₹1,834 (CSU card + carrier + WDR supply + studs + CAN passives). The
-**3×40 cabinet is the cheapest 120 kW** by ~₹16,859; choose the runner at the volume decision
+**3×40 cabinet is the cheapest 120 kW** by ~₹16,499; choose the runner at the volume decision
 (N−1 granularity: 4×30 keeps 75% on a module loss, 3×40 keeps 67%).
 
 ## Directive cost impacts (recorded)

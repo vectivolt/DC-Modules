@@ -1341,17 +1341,17 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         acdc: {
           "30": ["D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2 -> L0 169uH, >=75uH @82A pk (BIASED value governs ripple/trip calcs)",
                  "D6 LDM1-3: 2x T48 60u, N=7, foil 20mm2 -> 7.4uH @82A pk (floor 7.0uH)"],
-          "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu, N=23 -> L0 113uH, >=64uH @104A pk",
+          "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu (CATALOG AL37), N=26 +/-1 lot trim -> L0 116uH, >=61uH @104A pk (E51)",
                  "D6 LDM1-3: 2x T57 60u, N=8, 26.4mm2 -> 10.5uH @109A pk (floor 9.2uH)"],
-          "50": ["D1 LA0-LC0: 5x T79 26u sendust, N=22, 25.8mm2 -> 50.8uH @129.5A pk",
-                 "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH)"],
+          "50": ["D1 LA0-LC0: 5x T79 26u sendust (CATALOG AL37), N=24 +/-1 lot trim -> L0 107uH, >=45uH @129.5A pk (E51)",
+                 "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH, E51 restated basis 11.8 — met)"],
         },
         dcdc: {
           "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 7:7:7 (E8), litz 1350/660x0.1 TIW, Lm 63uH +/-7% gap-ground",
                  "D2 L1T-L3T: gapped 2x PQ50/50, N=4, bins ~4.0uH, gap ground per bin"],
-          "40": ["D3 T1-T3: 2x E70/33/32 per section, 9:9:9 (D3-40, window-fill basis), Lm 63uH +/-7% gap-ground",
+          "40": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 6:6:6, Bpk 90mT (E51: 9:9:9 was unbuildable at 2.4x window; compacted litz + foil sec), Lm 63uH +/-7% gap-ground",
                  "D2 L1T-L3T: N=5, bins 3.2/3.5/3.8uH, litz 2000x0.1 (15.7mm2)"],
-          "50": ["D3 T1-T3: 3x E70/33/32 per section, 6:6:6 (D3-50: Ae x1.5 -> N x2/3, 108mT unchanged), Lm 63uH +/-7%",
+          "50": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 5:5:5, Bpk 109mT (E51: 3-set former does not exist; web-bonded), Lm 63uH +/-7%",
                  "D2 L1T-L3T: N=6, bins 2.8/3.0/3.2uH, litz 3000x0.1 (23.6mm2)"],
         },
       };

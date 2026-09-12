@@ -23,7 +23,10 @@ firmware 50/50).
 | [`interconnect.md`](interconnect.md) | two-board sandwich, stud pillars, **40-way harness**, grounding, HMI spec |
 | [`protection-thresholds.md`](protection-thresholds.md) | the F.xx fault table (HW/FW split, per-SKU timings) + the R4–R8 protection notes (DESAT direction, CMP allocation, two-phase discharge) |
 | [`firmware-guide.md`](firmware-guide.md) | supervisory C core: design, API, HAL contract, boot identity, R5–R7 contracts |
-| [`magnetics.md`](magnetics.md) | manufacturing drawings **D1–D7** + the per-variant tables (40/50 kW cores, turns, litz, bins) |
+| [`magnetics.md`](magnetics.md) | manufacturing drawings **D1–D7** + the per-variant tables (40/50 kW cores, turns, litz, bins) — E51 revs: D1-40/50 catalog-core re-issue, D3 window/construction fixes |
+| [`magnetics-manufacturing-pack.md`](magnetics-manufacturing-pack.md) | **E51 RFQ pack**: one controlled spec sheet per magnetic (electricals, construction, insulation, parasitics, thermal, production tests) + core/litz/winder sourcing directory |
+| [`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) | **E51 benchmark** vs Wolfspeed/Microchip/Infineon/onsemi references + Infy/UUGreen/Tonhe modules (verified claims labeled) — SiC verdict, density gap, cost levers |
+| [`final-validation-e51.md`](final-validation-e51.md) | **E51 end-to-end verdict**: startup→tolerances category table, evidence cited, honest open list (EVT/§K/RFQ/layout) |
 | [`component-selection.md`](component-selection.md) | RFQ-ready part table, sourcing policy, second-source rules |
 | [`control-card-scope.md`](control-card-scope.md) | the connector/HRTIMER/pin arithmetic behind the one-card design |
 | [`can-protocol.md`](can-protocol.md) | CAN 2.0B application protocol (IDs, frames, CSU rules) |

@@ -407,7 +407,7 @@ ck("E42-KOUT", /dualOut=\{pw === 50\}/.test(boards) && /dual \? HV : dualOut \? 
   "K_OUT dual pair at 50 kW only (matrix legs single) — cell prop + board wiring + BOM instance");
 ck("E42-BURDENS", /burden=\{pw === 50 \? "21\.5" : "27"\}/.test(boards) && /ctBurden=\{pw === 50 \? "1\.6" : "2"\}/.test(boards),
   "both CT burdens re-scaled at 50 kW (rail budget at the revved OC points — stress-audit BRD carries the numbers)");
-ck("E42-CLASSES", /FUSE-gG-690V-160A/.test(db) && /91\.6 A line = 37%/.test(db) && /CT-LINE-2500-150A/.test(db) && /IND-PFC-103u-50/.test(db) && /XFMR-LLC-3E70-50/.test(db) && /Liquid coldplates/.test(db),
+ck("E42-CLASSES", /FUSE-gG-690V-160A/.test(db) && /91\.6 A line = 37%/.test(db) && /CT-LINE-2500-150A/.test(db) && /IND-PFC-107u-50/.test(db) && /XFMR-LLC-2E70-50/.test(db) && /Liquid coldplates/.test(db),
   "50 kW protection/magnetics classes + coldplate mech lines all ordered in parts-db");
 ck("E42-RATING", /pw === 50 \? \(air \? "15k" : "10k"\) : pw === 40 \? "1k" : "0"/.test(boards) && /"50kw": "10000", "50kwa": "15000"/.test(readFileSync(join(ROOT, "calculations/module-interconnect-audit.mts"), "utf8")),
   "RATING straps 10k = 50 liquid / 15k = 50 AIR (E24 rev G) and the audit knows both");
@@ -528,8 +528,11 @@ const k5genR8 = readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8");
 const protR8 = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
 ck("R8-A", /nSets/.test(readFileSync(join(ROOT, "calculations/stress-audit.mjs"), "utf8")) && /370 \/ 222 \/ 296/.test(protR8) && /retracted at E49/.test(protR8),
   "discharge model counts the DRAWN balance strings per SKU (30=188k, 40/50=94k full-link); the wrong dismissal is retracted in the register, and verify-independent proves the counts from the netlists");
-ck("R8-B", /7:7:7 \(E8\)/.test(k5genR8) && /6:6:6 \(D3-50/.test(k5genR8) && k5genR8.split("Lm 63uH").length === 4,
-  "MAG panels: correct turns per SKU (7:7:7 / 9:9:9 / 6:6:6) and the Lm 63uH ±7% line on ALL THREE dcdc rows — the R6-H panel had transcribed two SKUs' turns wrong and printed Lm only at 30 kW");
+// R8-B rev E51: the panel-truth requirement stands (turns + Lm on every dcdc row) but the truth
+// moved — D3-40/50 re-issued 6:6:6 / 5:5:5 on 2×E70 sets (the 9:9:9 and 3-set routes were
+// unbuildable; see E51). The register's R8-B row stays historical.
+ck("R8-B", /7:7:7 \(E8\)/.test(k5genR8) && /6:6:6, Bpk 90mT \(E51/.test(k5genR8) && /5:5:5, Bpk 109mT \(E51/.test(k5genR8) && k5genR8.split("Lm 63uH").length === 4,
+  "MAG panels: correct turns per SKU (7:7:7 / 6:6:6 / 5:5:5 — E51 revs) and the Lm 63uH ±7% line on ALL THREE dcdc rows");
 ck("R8-C", /resistance="1k" footprint="2010"/.test(cells) && /R2010-1k-0.75W/.test(db) && /25 °C-ENDPOINT MODEL/.test(db),
   "PV LED feed 1.2k→1k/2010 (≥10 mA held to the 13.5 V rail floor, 31% of rating at the 16.5 V corner) and the gate-voltage claim de-escalated from guarantee to 25 °C-endpoint model with declared ambient + EVT gate");
 

@@ -192,10 +192,13 @@ export const skuOverrides = {
     LDM1: { price1k: 465, note: "D6-40 rev C: 2x T57 60u N=8, 26.4 mm2 — 10.5 uH @109 A pk (floor 9.2), 4.4 W [engine]", mpn: "DM-CHOKE-40" }, LDM2: { price1k: 465, mpn: "DM-CHOKE-40" }, LDM3: { price1k: 465, mpn: "DM-CHOKE-40" },
     CMC1: { price1k: 290, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here)", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 290, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A" },
-    // D1-40 (pfc-design engine at the frozen 50 kHz; the 3-stack was REFUSED on sat/swing):
-    // 5-stack 0077908A7, N=23, L0 113 uH -> >=64 uH @ 104 A pk, dI 28 A, dT 27 K
-    LA0: { price1k: 1190, mpn: "IND-PFC-113u-40", note: "D1-40: 5x 0077908A7, N=23" },
-    LB0: { price1k: 1190, mpn: "IND-PFC-113u-40" }, LC0: { price1k: 1190, mpn: "IND-PFC-113u-40" },
+    // D1-40 rev B (E51): the E41 selection (N=23/L0 113) came from the engine's GEOMETRIC core
+    // model (Ae 2.62) — on the CATALOG 0077908A7 (AL 37 +/-8%, Ae 2.27, the E35-pinned data) it
+    // computes L0 98 uH and 55 uH @104 A pk, missing its own 64 uH floor and inflating dIpp to
+    // 32 A (the D6/LISN ripple basis). Re-issued: 5-stack, N=26 +/-1 lot-trim -> L0 116 uH
+    // [106-135 lot window], >=61 uH @104 A pk, dIpp 27.5 A nom, dT 30 K, fill 36%.
+    LA0: { price1k: 1240, mpn: "IND-PFC-116u-40", note: "D1-40 rev B: 5x 0077908A7 CATALOG core, N=26 +/-1 lot-trim (E51)" },
+    LB0: { price1k: 1240, mpn: "IND-PFC-116u-40" }, LC0: { price1k: 1240, mpn: "IND-PFC-116u-40" },
     // D2-40: same 2xPQ50/50 gapped-ferrite trim, N=5 (N=4 computes 115 mT vs the 100 mT line
     // at 86 A pk), bins re-centred on 3.5 uH; gap re-ground per bin as at 30 kW
     L1T: { price1k: 145, mpn: "IND-TRIM-BIN5-40", note: "D2-40: N=5, bins 3.2/3.5/3.8 uH; litz UPSIZED 1050->2000x0.1 (15.7 mm2, E43: the rev-C 8.25 mm2 at 61.9 A computed 7.5 A/mm2 and dT ~52 K vs the 40 K line; now Cu 4.3 W, dT 39 K)" },
@@ -208,7 +211,7 @@ export const skuOverrides = {
     // D3-40 identity (registered at E41, BOM identity landed at E42 close): the 40 kW transformer
     // is the 2x E70/33/32 stack — WINDOW-driven, volt-second-identical, same price basis as the
     // 3x PQ50 drawing until the winder RFQ splits them.
-    T1: { mpn: "XFMR-LLC-2E70-40", note: "D3-40: 2x E70/33/32 per section (window fill)" },
+    T1: { mpn: "XFMR-LLC-2E70-40", note: "D3-40 rev B (E51): 2x E70/33/32 sets on B66372B2000T001 stack former, 6:6:6 (the registered 9:9:9 litz+TIW+margin wind demands ~2.4x the former window AN 389 mm2 — unbuildable; Bpk truth 90 mT at 6:6:6, NOT the '108 mT' doc claim), compacted-profile litz pri + Cu-foil TIW-barrier secondaries, leakage engineered 3 +/-0.7 uH" },
     T2: { mpn: "XFMR-LLC-2E70-40" }, T3: { mpn: "XFMR-LLC-2E70-40" },
   },
   // E42 50 kW LIQUID variant — engine-driven (pfc-design @PFC_P=50e3/PFC_PAR=2, frozen 50 kHz;
@@ -235,12 +238,15 @@ export const skuOverrides = {
     // CROSS the highest 25 W-accepted family point (158 J @40 kW) -> the existing 50 W class part
     RPRE1: { price1k: 45, note: "50 W pulse class (E43: ~211 J/event at 1.88 mF link)", mpn: "CER-50W-33R-AX" }, RPRE2: { price1k: 45, mpn: "CER-50W-33R-AX" },
     RDIS0: { price1k: 45, note: "50 W pulse class (E43: 162 J each at 1.88 mF link)", mpn: "CER-50W-160R-AX" }, RDIS1: { price1k: 45, mpn: "CER-50W-160R-AX" }, RDIS2: { price1k: 45, mpn: "CER-50W-160R-AX" }, RDIS3: { price1k: 45, mpn: "CER-50W-160R-AX" },
-    // D1-50 (pfc-design engine at the frozen 50 kHz, PFC_PAR=2; 40 kHz row refused): 5x T79 26u
-    // sendust, N=22, 25.8 mm2 — L0 103 uH -> 50.8 uH @ 129.5 A pk, dI 34.8 A, dT 37 K (the
-    // acceptance-gate convective figure; in the sealed module the stack is gap-pad-bonded to the
-    // coldplate web, VERIFY at plate thermal RFQ)
-    LA0: { price1k: 1190, mpn: "IND-PFC-103u-50", note: "D1-50: 5x T79 26u, N=22 (engine @50 kHz)" },
-    LB0: { price1k: 1190, mpn: "IND-PFC-103u-50" }, LC0: { price1k: 1190, mpn: "IND-PFC-103u-50" },
+    // D1-50 rev B (E51): the E42 selection (N=22/L0 103) was geometric-core output — on the
+    // CATALOG 0077908A7 it computes 90 uH / 44 uH @129.5 A and over-runs the ripple basis; no N
+    // on the 5-stack holds BOTH the 34.8 A pp basis and the 0.40 swing floor at catalog AL.
+    // Re-issued at the honest point: N=24 +/-1 lot-trim -> L0 107 uH [98-124], >=45 uH
+    // @129.5 A pk, dIpp basis RESTATED 36.2 A pp nom (D6-50 equal-margin floor restates to
+    // 11.8 uH — the built D6-50 delivers 12.9, LISN margin stays >= +5.2 dB), swing 0.405,
+    // dT 41 K convective (plate/web bond per E42/E44 practice).
+    LA0: { price1k: 1240, mpn: "IND-PFC-107u-50", note: "D1-50 rev B: 5x T79 26u CATALOG core, N=24 +/-1 lot-trim (E51)" },
+    LB0: { price1k: 1240, mpn: "IND-PFC-107u-50" }, LC0: { price1k: 1240, mpn: "IND-PFC-107u-50" },
     // D2-50: same 2x PQ50/50 gapped-ferrite trim, N=6, bins re-centred on 3.0 uH (with Cr
     // 8x27 nF = 216 nF: fr = 139.8 kHz, trim = 50% of Lr — binnable; Bpk 83 mT vs the 100 mT line)
     L1T: { price1k: 165, mpn: "IND-TRIM-BIN6-50", note: "D2-50 rev E44: N=6, bins 2.8/3.0/3.2 uH; litz 3000x0.1 (23.6 mm2, J 3.3) — ONE drawing serves liquid AND air (convective dT 38.6 K <= 40; the plate bond on the sealed module is belt-and-suspenders, no longer load-bearing)" },
@@ -265,8 +271,8 @@ export const skuOverrides = {
     RB0B: { mpn: "R1206-21R5-1%" }, RC0B: { mpn: "R1206-21R5-1%" },
     // D3-50: 3x E70/33/32 per section — Ae x1.5 -> turns x2/3 at identical volt-seconds (Bpk
     // unchanged 108 mT), window fill ~0.83x of the 40 kW wind despite +25% copper CSA
-    T1: { price1k: 850, mpn: "XFMR-LLC-3E70-50", note: "D3-50: 3x E70/33/32 per section (+1 core set vs 40 kW)" },
-    T2: { price1k: 850, mpn: "XFMR-LLC-3E70-50" }, T3: { price1k: 850, mpn: "XFMR-LLC-3E70-50" },
+    T1: { price1k: 850, mpn: "XFMR-LLC-2E70-50", note: "D3-50 rev B (E51): 2x E70/33/32 sets on B66372B2000T001, 5:5:5, Bpk 109 mT (the registered 3-set route needs a former that DOES NOT EXIST and still demands ~1.2x its window; 2-set 5:5:5 fits at 91% with compacted litz + foil secondaries), Fe 24.4 W/section -> transformer clamp bonds to the coldplate/extrusion web (E42/E44 magnetics-bond practice), leakage engineered 3 +/-0.7 uH" },
+    T2: { price1k: 850, mpn: "XFMR-LLC-2E70-50" }, T3: { price1k: 850, mpn: "XFMR-LLC-2E70-50" },
   },
   // E44 50 kW AIR variant: every electrical class IDENTICAL to the liquid 50 kW (same line/tank/
   // output currents — the classes were set by current, not by coolant). Assigned programmatically

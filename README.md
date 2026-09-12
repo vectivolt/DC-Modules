@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/design-E1–E49_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
+  <img src="https://img.shields.io/badge/design-E1–E51_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
   <img src="https://img.shields.io/badge/envelope_grid-6048_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
   <img src="https://img.shields.io/badge/fault_scenarios-26%2F26-2ea44f?style=for-the-badge" alt="scenarios"/>
   <img src="https://img.shields.io/badge/firmware_logic-50%2F50_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
@@ -37,7 +37,7 @@ A commercial family of **unidirectional 30–150 kW AC→DC charging products** 
 | Output | 150–1000 VDC CV/CC | Series/parallel banks, crossover **500/525 V** + 30 s dwell; PS-mode below 260 V bank; ZVS held at **every** simulated edge |
 | Output current | 100 / 200 / 400 A | constant-current below the 300 V knee, constant-power above; 130 % for 2 ms before CC fold |
 | THD | ≤5 % (stretch 3 %) | **0.59–1.05 %** full power, 2.55 % @25 % (line-cycle sim, THD-40) |
-| Peak efficiency | ≥97 % | **97.32 / 97.13 / 96.94 / 97.01 %** full-power @nominal (30/40/50L/50A; peaks 98.43–**98.55 %**) — loss budget rev E44, EMI copper at the engine D6 values |
+| Peak efficiency | ≥97 % | **97.32 / 97.06 / 96.85 / 96.92 %** full-power @nominal (30/40/50L/50A; peaks 98.4–**98.55 %**) — loss budget rev E51 (real per-SKU transformer rows; the E44 40/50 figures had understated D3 copper) |
 | Envelope | full power to +55 °C | 1008 grid points per module: **0 violations**, worst Tj 138 °C vs 150 ceiling |
 | Accuracy | ±0.5 % V / ±1 % I | **±0.18 % / ±0.2 %** post-cal (10 k-sample Monte-Carlo, EOL 2-pt cal mandatory) |
 | Protections | §24 catalogue | **32-row threshold table**, HW-fast + supervisory, all 26 fault scenarios executed green |
@@ -81,18 +81,18 @@ what buys single LLC FETs at 167 A), revved tank/protection classes, full envelo
 
 | Product | Composition | Output | Cooling | Cards | ₹ @10k | **₹/kW** |
 |---|---|---|---|---|---|---|
-| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,682 | 1,023 |
-| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,292 | 882 |
-| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,320 | **826** |
-| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 40,972 | **819** — cheapest module |
-| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,364 | 1,023 |
-| **80 kW** | 2 × 40 | · 267 A | air | 2 | 70,584 | 882 |
-| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 82,640 | **826** |
-| **100 kW** | 2 × 50a | · 333 A | air | 2 | 81,944 | **819** |
-| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 124,562 | 1,038 |
-| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **107,710** | **898** — cheapest 120 |
-| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **125,794** | **839** |
-| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **124,750** | **832** |
+| **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,686 | 1,023 |
+| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,415 | 885 |
+| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,444 | **829** |
+| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 41,096 | **822** — cheapest module |
+| **60 kW** | 2 × 30 | · 200 A | air | 2 | 61,372 | 1,023 |
+| **80 kW** | 2 × 40 | · 267 A | air | 2 | 70,830 | 885 |
+| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 82,888 | **829** |
+| **100 kW** | 2 × 50a | · 333 A | air | 2 | 82,192 | **822** |
+| **120 kW** | 4 × 30 + CSU | · 400 A | air | 4 + 1 | 124,578 | 1,038 |
+| **120 kW** | **3 × 40 + CSU** | · 400 A | air | 3 + 1 | **108,079** | **901** — cheapest 120 |
+| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **126,166** | **841** |
+| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **125,122** | **834** |
 
 Full power from 300 V out / 330 VAC in on every variant; multi-module products share current by
 commanded-CC over CAN with staggered starts and graceful module-dropout degrade. The liquid line
@@ -109,7 +109,7 @@ keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at th
 | Input (all) | 3-φ 285–475 VAC | full power ≥330 VAC | 86 % CC derate @285 V | — common |
 | Output (all) | 150–1000 VDC | S/P crossover 500/525 V + 30 s dwell | full power ≥300 V out | — common |
 | Worst continuous line current | 55.9 A | 73.3 A | 91.6 A | 91.6 A |
-| Efficiency — full power @400 VAC | 97.32 % | 97.13 % | 96.94 % | **97.01 %** |
+| Efficiency — full power @400 VAC | 97.32 % | 97.06 % | 96.85 % | **96.92 %** |
 | Efficiency — peak over envelope | 98.43 % | 98.47 % | 98.44 % | **98.55 %** |
 | Total loss at rated | 827 W | 1,183 W | 1,580 W | 1,541 W |
 | Cooling | forced air · 2 fans | forced air · 3 fans | **sealed liquid** · 2 coldplates · 0 fans (≤60 °C coolant · 6 L/min · ΔT ≈ 4 K) | forced air · **4 fans** (3 front + 1 rear; all tachs monitored) |
@@ -128,7 +128,7 @@ keeps 75 % on a module loss, 3×40 and 3×50 keep 67 % — pick the runner at th
 | Bus discharge to <60 V | 2.0 s (3.0 s F.21 window) | 2.4 s (4.0 s) | 3.2 s (5.0 s) | 3.2 s (5.0 s) |
 | Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k | 1 card · **15 k** — same p/n, same image (E24 rev G) |
 | Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich | 40-way harness — common |
-| **BOM @10k · ₹/kW** | **₹30,682 · 1,023/kW** | **₹35,292 · 882/kW** | **₹41,320 · 826/kW** | **₹40,972 · 819/kW — cheapest** |
+| **BOM @10k · ₹/kW** | **₹30,686 · 1,023/kW** | **₹35,415 · 885/kW** | **₹41,444 · 829/kW** | **₹41,096 · 822/kW — cheapest** |
 | Builds products | 60 kW (2×) · 120 kW (4×+CSU) | 80 kW (2×) · **120 kW (3×+CSU — cheapest)** | 100 kW (2×) · 150 kW (3×+CSU) | 100 kW air · **150 kW air (832/kW)** |
 
 The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
@@ -244,7 +244,7 @@ This platform was **designed by iteration against its own simulations and audits
 | **R5 external review response** | reviewer confirms all R4 majors closed, then finds the watchdog only INHIBITED (a hung MCU re-armed ~ms after WDO release), missing DESAT series Rs and local bypass, exclusion not covering pre-insertion, asymmetric pair gates, and an MCU order code that does not exist (VET6) | **WDO wire-ORed onto NRST** (hung brain restarts with enables low); 100 Ω DESAT R ×9; bypass at every flagged pin; **second 74HC02 stage** (KSER excluded vs KPRE too) + per-tick sim invariant; symmetric 2.2 Ω branches; value-carrying order codes (33R/160R/shunt-per-SKU); **VET7**; gates R5-A..K + verify-independent section J |
 | **E43 full-family verification** | clean-room recompute of every board (118 checks) found the D6 DM choke had NO engine: the inherited "22 µH" cannot exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH LISN floor — at EVERY variant); also 50 kW pulse-resistor energies past the 25 W family point, trim-litz J over-line at 40/50, and the 27 nF caps' Vrms duty unstated | **dm-choke-design.mjs joins the engine set** (per-variant crest-biased floors, CX2 trio → 4.7 µF X1, LISN model rebuilt per-variant: +4.9/+5.7/+5.6 dB); 50 W pulse class at 50 kW; 2000×0.1 trim litz; O-8 Vrms lines on every tank cap; **stress-audit grows D6/CrV/D2c/Epulse/Xbleed families** |
 
-Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E49** in [`docs/assumptions.md`](docs/assumptions.md).
+Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E51** in [`docs/assumptions.md`](docs/assumptions.md).
 
 ---
 

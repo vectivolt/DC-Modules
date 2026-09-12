@@ -65,7 +65,11 @@ for (const s of SKUS) {
   const pfcMag = 3 * (32.4 * k + 2.4) * 0.72 * s.lanes;
   const dclink = 12 * s.lanes * k * k * (10 / (10 * k > 10 ? 12 : 10)) * (s.lanes > 1 ? 1 : 1);
   const llc = LLC_CH(IP_NOM * k);
-  const pri = llc.pri * s.ch / (s.parL ?? 1), xf = 3 * 20.5 * (0.65 * k + 0.35) * s.ch, tank = llc.tank * s.ch;   // E44: paralleled LLC halves pri conduction
+  // E51: transformer per-section losses from the re-issued D3 drawings (real former MLT 230.5 mm
+  // on the E70 routes — the old 0.65k+0.35 scaling of the PQ number understated 40/50 by 9-16 W/section):
+  // 30 kW = 3×PQ50 7:7:7 (llc-design 20.5 W) · 40 = 2×E70 6:6:6 (34.3) · 50 = 2×E70 5:5:5 (45.1, web-bonded)
+  const XFMR_SEC = { "30kW": 20.5, "40kW": 34.3, "50kW": 45.1, "50kWa": 45.1 };
+  const pri = llc.pri * s.ch / (s.parL ?? 1), xf = 3 * (XFMR_SEC[s.name] ?? 20.5) * s.ch, tank = llc.tank * s.ch;   // E44: paralleled LLC halves pri conduction
   const { jbsW, srW } = secondary(100 * k);
   const secJ = jbsW * s.ch, secS = srW * s.ch;
   const bus = 0.00015 * s.Iout ** 2 + 25e-6 * s.Iout ** 2; // busbar ~0.15 mΩ + shunt 25 µΩ paths

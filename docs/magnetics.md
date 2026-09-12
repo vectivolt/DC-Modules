@@ -54,7 +54,20 @@ Kitting unchanged: transformer leakage label → trim bin pick at assembly (DFM 
 rev A = single 4.3 µH ±5% (pre-MC); rev B = sendust bin set (R2 CB-22 — electrically frozen values
 correct, core technology wrong). The frozen E7 rev D2 tank values are UNCHANGED by rev C.
 
-## D3 — LLC section transformer 10 kW (XFMR-LLC-10K) — qty 3/6/12
+## D3 — LLC section transformer 10 kW (XFMR-LLC-10K) — qty 3 per module
+
+> **E51 window study + construction rev (2026-09-12).** A clean-room re-check against real
+> catalog windows found the as-drawn litz+TIW+**margin** constructions do not wind: this 30 kW
+> part computed **142–172 %** of its available window, the 40 kW 9:9:9 route **242–294 %** of
+> its named former, the 50 kW 3-set route needed a former that does not exist. Fixes: (1) the
+> construction below is revised to **compacted/profile rectangular litz primary + copper-foil
+> secondaries with a TIW/FIW barrier** — TIW **or** 3.2 mm margins, never both (the double
+> barrier was eating ~18 % of the window for no credit); with it this 30 kW wind closes at
+> **~75 %** of the bobbinless 3-stack window (E8 stands); (2) the 40/50 variants move to
+> 2×E70 sets at 6:6:6 / 5:5:5 (their rows below); (3) **leakage is a controlled parameter**
+> (interleave spacer sets it): target **3 ±0.7 µH** primary-referred so the frozen D2 bins and
+> Lr = 7.0/6.5/6.0 µH per-SKU tanks stay untouched. Winder deliverable adds a leakage
+> first-article curve (spacer thickness → measured leakage) before production release.
 
 | Item | Spec |
 |---|---|
@@ -259,9 +272,9 @@ materials), H (180 °C) for D3.
 
 | Drawing | 40 kW variant | Acceptance |
 |---|---|---|
-| **D1-40** PFC choke | **5×** 0077908A7 stack (same core p/n), N=23, wire 25.8 mm² class (J 2.84) | L0 113 µH −12% floor · L@104 A pk ≥ 64 µH · Rdc-class loss ≤ 36 W · ΔT ≤ 45 K (calc 27) — pfc-design selection at the frozen 50 kHz; the 3-stack is REFUSED by the optimizer (sat/swing floor) |
+| **D1-40 rev B (E51)** PFC choke | **5×** 0077908A7 stack (same core p/n), **N = 26 ±1 lot-trim**, wire 25.8 mm² class (J 2.84) — **re-issued on the CATALOG core (AL 37 ±8%, Ae 2.27 cm²)**: the E41 N=23 was the engine's geometric-Ae output and computes L0 98 µH / 55 µH @104 A on the real part, missing its own floor and inflating the D6/LISN ripple basis to 32 A pp | L0 **116 µH** nom, accept **106–135** (lot-trim window) · **L@104 A pk ≥ 61 µH** · dIpp ≤ 28 A nom · Rdc ≤ 7.0 mΩ · ΔT ≤ 45 K (calc 30) · fill 36 % |
 | **D2-40** resonant trim | same 2×PQ50/50 gapped ferrite, **N=5**, bins 3.2/3.5/3.8 µH ±3%, gap re-ground per bin; **litz 2000×0.1 mm (15.7 mm², E43)** — the rev-C 8.25 mm² at 61.9 A computed 7.5 A/mm² and ΔT ≈ 52 K vs the 40 K line | Bpk ≤ 100 mT (calc 93 at 86 A pk; N=4 computes 115 — that is why N=5) · J 3.9 · Cu 4.3 W → ΔT ≈ 39 K ✓ |
-| **D3-40** transformer | registered 2×E70/33/32 stack route (TDK stack former B66372B2000T001), 9:9:9 | flux identical to 30 kW (volt-second driven, 108 mT); the move is WINDOW fill only; litz CSA ∝ current at same J |
+| **D3-40 rev B (E51)** transformer | 2× E70/33/32 sets on TDK stack former **B66372B2000T001** (AN 389 mm², lN 230.5 mm — datasheet Oct-2024), **6:6:6**, compacted-profile litz primary + **Cu-foil TIW-barrier secondaries**, leakage ENGINEERED to 3 ±0.7 µH (interleave spacer = the knob; measured & labeled per unit, bins unchanged) | **The registered 9:9:9 was unbuildable**: its litz+TIW+margin wind demands ~2.4× the former window (window study, E51), and the "Bpk 108 mT identical" claim was a ×1.8 error (9:9:9 ran 60 mT). Rev B: **Bpk 90 mT** · Fe 14.4 + Cu 19.9 ≈ 34 W/section (real-MLT) · window 88 % of AN · hotspot ≤ +55 K WITH clamp-to-extrusion web bond (type-test) |
 | **D6-40** | **rev C engine row (see D6 section): 2× T57 60µ, N=8, foil 26.4 mm²** — constant-J alone was NOT enough, the core bias was the binder | L(109 A pk) = 10.5 µH ≥ 9.2 floor · 4.4 W · ΔT 14 K |
 | **D7-40** | same construction, CSA × 4/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind (63 A catalog part out of range) |
 | CTs | line: ACX-1100 unchanged (73.3 of 100 A) · resonant: **80 A-class 1:100 at RFQ** (AS-404 stays the 30 kW part) | CT saturation/thermal at 61.9 A rms — RFQ gate before EVT |
@@ -274,9 +287,9 @@ the mechanism that beats them — plate thermal RFQ verifies.
 
 | Drawing | 50 kW variant | Acceptance |
 |---|---|---|
-| **D1-50** PFC choke | **5× T79 26µ** (same core p/n as D1-40), **N=22**, wire 25.8 mm² (J 3.55) | L0 103 µH −12% floor · L@129.5 A pk ≥ 46 µH (calc 50.8, swing floor 0.49 ≥ 0.40) · ΔI ≤ 35.6 A (calc 34.8) · ΔT ≤ 45 K (calc 37) — pfc-design at PFC_P=50e3/PAR=2, frozen 50 kHz; the 40 kHz row is REFUSED (family edge) |
+| **D1-50 rev B (E51)** PFC choke | **5× T79 26µ** (same core p/n as D1-40), **N = 24 ±1 lot-trim**, wire 25.8 mm² (J 3.55) — **re-issued on the CATALOG core**: the E42 N=22 was geometric-Ae output (90 µH real, 44 µH @129.5 A); on catalog AL **no N on the 5-stack** holds both the 34.8 A pp basis and the 0.40 swing floor, so the basis is restated honestly | L0 **107 µH** nom, accept **98–124** · **L@129.5 A pk ≥ 45 µH** · **dIpp basis restated 36.2 A pp nom** (D6-50 equal-margin floor restates to 11.8 µH — the built D6-50 delivers 12.9; LISN DM margin stays ≥ +5.2 dB) · swing 0.405 ≥ 0.40 · ΔT ≤ 45 K (calc 41; plate/web-bonded per E42/E44) |
 | **D2-50** resonant trim | same 2×PQ50/50 gapped ferrite, **N=6**, bins **2.8/3.0/3.2 µH** ±3%, gap re-ground per bin; **litz 3000×0.1 mm (23.6 mm², E44 rev)**, J 3.3 | Bpk ≤ 100 mT (calc 83 at 77.3 A rms); fr = 139.8 kHz, trim = 50% of Lr — binnable; Cu 5.4 W + core ≈5 W → **convective ΔT 38 K ≤ 40: ONE drawing serves liquid AND air** (the sealed module's plate bond is belt-and-suspenders now, not load-bearing) |
-| **D3-50** transformer | **3×E70/33/32 stack** per section (same former family as D3-40), **6:6:6** | flux identical (volt-second driven: Ae ×1.5 → N ×2/3 → N·Ae unchanged, 108 mT); window fill ≈ 0.83× of the 40 kW wind despite +25% Cu CSA; litz CSA ∝ current at same J |
+| **D3-50 rev B (E51)** transformer | **2× E70/33/32 sets** on the SAME B66372B2000T001 former as D3-40, **5:5:5**, compacted-profile litz primary + Cu-foil TIW-barrier secondaries, leakage engineered 3 ±0.7 µH | **The registered 3×E70 route required a 3-set former that DOES NOT EXIST** (TDK offers 1- and 2-set only) and still demanded ~1.2× its window; and while its N·Ae matched the 40 kW's, both ran 60 mT — the "108 mT" transcription was a ×1.8 error. Rev B: **Bpk 109 mT** (30 kW class) · Fe 24.4 + Cu 20.7 ≈ 45 W/section · window 91 % · **transformer clamp bonds to coldplate/extrusion web MANDATORY** (the D2-50/D1-50 bond practice) · hotspot ≤ +55 K with bond (type-test) |
 | **D6-50** | **rev C engine row (see D6 section): 3× T57 60µ, N=8, foil 26.4 mm²** | L(136 A pk) = 12.9 µH ≥ 11.4 floor · 8.1 W · ΔT 19 K plate-bonded |
 | **D7-50** | same construction, CSA × 5/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind 95 A |
 | CTs | line: **150 A-class 2500:1 at RFQ** (ACX-1100 would run 92%), burden re-scaled 27→21.5 Ω · resonant: **100 A-class 1:100 at RFQ**, burden 2.0→1.6 Ω on a 2 W part | both burden re-scales hold the R3-proven 1.62 V-above-AVMID rail budget at the revved OC points (187 A pk line / 95 A pk tank) — stress-audit BRD block carries the numbers |
