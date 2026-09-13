@@ -91,7 +91,7 @@ export const DB = [
   { m: /^T\d+$/, mpn: "XFMR-LLC-10K", mfr: "custom (D3-30 rev C, E65)", desc: "D3-30 rev C (E65): LLC section transformer 2× E70/33/32 PC95-class on TDK B66372B2000 (same former as D3-40), 7:7:7, Lm 63 µH ±7% (distributed gap ground to AL), S1–P–S2 interleave, primary TIW-served litz 2475×0.071 mm, secondaries Cu foil 0.10×28 mm; vacuum-impregnated, both yoke faces gap-padded to the webs, 130 °C cutout. The 3× PQ50/50 stack it replaces could not be wound (stacked PQ leg tips leave 5–6 mm radial build vs the 8.1 mm lay-up) and its real MLT 191–229 mm (not 115) put Rdc outside its own rows; at the simulated 77–88 kHz / 525 V-bank corner it ran away in air. Envelope gate: Fe 22.3 W (142 mT), Cu 23.9 W (SER250), winding hot-spot 104 °C at 55 °C inlet, B̂ ≤36 % of hot Bsat. E65 cost roll-up [est, REVIEW at winder RFQ]: E70/33/32 PC95-class set ₹160, litz 0.05 mm ₹2,600/kg, TIW-served 0.071 mm ₹2,210/kg, Cu foil ₹1,050/kg, +10 % leads, former, insulation, gap work, labour + test → ₹1,200", price1k: 1200, alt: "Ferroxcube 3C95 E71/33/32 sets" },
   { m: /^TAUX$/, mpn: "XFMR-AUX-FLY-D", mfr: "custom (D4 rev D — E52)", desc: "aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 UNCHANGED, Lp 345 µH/AL 239 unchanged (E52 margin rev: ETD34's Bpk 0.30 T ran 85% of hot Bsat at Lp+10%+clamp — ETD39 Ae 125 mm² puts it at 0.233 T / 66% at tolerance; DCM proof and the 9/9 aux sim are Lp-based, unaffected; reinforced pri→sec barrier, 100% hipot 4 kV)", price1k: 185, alt: "—" },
   { m: /^LDM[123]$/, mpn: "DM-CHOKE-SKU", mfr: "custom/POCO (D6 rev C — ENGINE-designed, dm-choke-design.mjs)", desc: "DM line choke, 60µ sendust stack, crest-biased L(Ipk) meets the per-variant LISN floor (E43: the inherited 22 µH could not exist at the crest on the drawn core — 7–8 µH at 82 A pk computed vs the 15 µH floor; engine rows: 30 kW 2×T48 N=7 foil 20 mm², 40 kW 2×T57 N=8 26.4 mm², 50 kW 3×T57 N=8 26.4 mm²)", price1k: 300, alt: "DMEGC/Chang Sung eq cores" },
-  { m: /^CMC[12]$/, mpn: "CMC-3PH-2mH-SKU", mfr: "custom/Hongfa mag", desc: "3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source", price1k: 240, alt: "Schaffner RT8131-63-2M8 @30 kW" },
+  { m: /^CMC[12]$/, mpn: "CMC-3PH-2mH-SKU", mfr: "custom/Hongfa mag", desc: "3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 rev B (dm-choke-design D7 engine): acceptance L_cm ≥ 2 mH @10 kHz AND ≥ 1.0 mH @150 kHz, ≥ 80 % of it with I_pk DM bias line-to-line, leakage 6–12 µH, A_Fe floor on the quote (L_lk,max·I_pk/(8·A_Fe) ≤ 0.6 T), ΔT ≤ 45 K on hot copper. 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source", price1k: 1327, alt: "Schaffner RT8131-63-2M8 @30 kW" },
   { m: /^CT[ABC]\d+$/, mpn: "ACX-1100", mfr: "Talema (Salem, India)", desc: "line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins (audit: catalog part closes the CT-100A REVIEW; rated for 33 Ω burden so the 27 Ω fitted value is inside spec; quote Talema direct at volume — Digi-Key retail is not the RFQ price) (E18/R3)", price1k: 65, alt: "ZEMCT/HCT class eq" },
   { m: /^CT\d+$/, mpn: "AS-404", mfr: "Talema (Salem, India)", desc: "resonant CT 1:100, 50 A, 20–200 kHz, Ø8 mm pass-through — your tank conductor is the primary, so tank-potential insulation stays on your wire (audit: catalog part; alt Coilcraft CST2010-100L SMT 47 A/1 MHz sits at its 40 K rise at 46 A rms — needs airflow verify)", price1k: 55, alt: "Coilcraft CST2010-100L" },
   // --- capacitors
@@ -103,9 +103,9 @@ export const DB = [
   { m: /^C\w+F[PN]$/, mpn: "PP-1u-600", mfr: "Faratronic", desc: "1 µF 600 V film (Vienna per-phase commutation, CB-9)", price1k: 32, alt: "Songtian" },
   { m: /^C(F\d+|B[AB]F)$/, mpn: "PP-1u-1100", mfr: "Faratronic", desc: "1 µF 1100 V film (bus commutation/bank — HR-1: 830 V ≤ 76%)", price1k: 68, alt: "Songtian" },
   { m: /^COF[12]$/, mpn: "PP-4u7-1200", mfr: "Faratronic", desc: "4.7 µF 1200 V film (output — HR-8: 1000 V = 83%)", price1k: 125, alt: "—" },
-  { m: /^CX1\d$/, mpn: "X1-2u2-530", mfr: "Faratronic/Songtian", desc: "X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1; inter-CMC stage)", price1k: 62, alt: "Vishay 3386 X1" },
+  { m: /^(CX1\d|CDMP\d)$/, mpn: "X1-2u2-530", mfr: "Faratronic/Songtian", desc: "X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1; inter-CMC stage CX1x · E65 CX2-node series-RC network CDMPx + RDMPx for filter/current-loop stability, pfc-control)", price1k: 62, alt: "Vishay 3386 X1" },
   { m: /^CX2\d$/, mpn: "X1-4u7-530", mfr: "Faratronic/Songtian", desc: "X1 4.7 µF 530 VAC (E43: 3rd-DM-stage cap upsized 2.2→4.7 µF — attenuation is L·C and the cap is the cheap half; X-bleed τ 0.66 s ≤ 1 s through the RNS star)", price1k: 110, alt: "Vishay 3386 X1 4.7µ" },
-  { m: /^(CY(O)?[123]?|CPET)$/, mpn: "Y1-4n7-440", mfr: "Songtian/Faratronic", desc: "Y1 4.7 nF 440 VAC (L-PE / output-PE / DGND-PE — MR-4; DC use verify O-7)", price1k: 16, alt: "TDK CD series" },
+  { m: /^(CY(O)?[1-6]?|CPET)$/, mpn: "Y1-4n7-440", mfr: "Songtian/Faratronic", desc: "Y1 4.7 nF 440 VAC (L-PE on AC1..3 and — E65 second CM stage — on AC1M..3M / output-PE / DGND-PE — MR-4; DC use verify O-7)", price1k: 16, alt: "TDK CD series" },
   { m: /^C\w+SN$/, mpn: "C1812-100p-1k", mfr: "any MLCC", desc: "100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)", price1k: 7, alt: "film 630V" },
   { m: /^CCLA$/, mpn: "PP-10n-1200", mfr: "Faratronic", desc: "10 nF 1200 V film (aux RCD clamp)", price1k: 9, alt: "MLCC 1kV ×2" },
   { m: /^C[ABC]\d+C$/, mpn: "FILM-100n-250", mfr: "Faratronic", desc: "100 nF 250 V film (Vienna RCD clamp)", price1k: 18, alt: "MLCC 250V" },
@@ -122,7 +122,7 @@ export const DB = [
   { m: /^RPRE[12]$/, mpn: "CER-25W-33R-AX", mfr: "TE/local", desc: "33 Ω 25 W ceramic pulse resistor, axial (AC precharge; R5-G: the ohms now live in the ORDER CODE — a class-only p/n let purchasing buy any value; HR-14: pulse energy scales ×3.6 with SKU C — 50 W variant per-SKU via skuOverride; T-05)", price1k: 28, alt: "SQP25 33R" },
   { m: /^RDIS\d$/, mpn: "CER-25W-160R-AX", mfr: "TE/local", desc: "160 Ω 25 W ceramic pulse resistor, axial (bus discharge string 4× in series; R5-G value-carrying order code; HR-14/T-05 as above)", price1k: 28, alt: "SQP25 160R" },
   { m: /^RBD[AB]\d$/, mpn: "CER-2k2-10W-AX", mfr: "TE/local", desc: "2.2 kΩ 10 W wirewound axial (bank bleeder chain, HR-15 — ≤65 J/pulse at 120 kW, τ 4–17 s to <60 V)", price1k: 14, alt: "SQP10" },
-  { m: /^RPRE[AB]$/, mpn: "SQP-10R-25W", mfr: "local", desc: "10 Ω 25 W wirewound pulse, axial (bank pre-insertion — HR-12: 94 J single-fault case)", price1k: 24, alt: "—" },
+  { m: /^(RPRE[AB]|RDMP\d)$/, mpn: "SQP-10R-25W", mfr: "local", desc: "10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH (bank pre-insertion — HR-12: 94 J single-fault case · E65 CX2-node series-RC network RDMPx: ≤ 3.1 W worst per resistor, 0.6 J per line-connect)", price1k: 24, alt: "—" },
   { m: /^(RBAL[TB]\w*|RNS[123][AB])$/, mpn: "R2512-47k-HV-AS", mfr: "KOA/UniOhm", desc: "47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (R3: 1.04 W worst case; a 1 W 2512 has sqrt(P*R)=217 V < 220 V at +10% bus) (HR-20: halves per-element V and W — ≤208 V / ≤0.92 W continuous)", price1k: 4, alt: "any HV 2512" },
   { m: /^R\w*SN$/, mpn: "R2512-10R-2W", mfr: "any", desc: "10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)", price1k: 6, alt: "any" },
   { m: /^R(AUXST[12]|BR1[AB]|CLA[12])$/, mpn: "R2512-HV", mfr: "UniOhm", desc: "2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)", price1k: 2.5, alt: "any 500V-rated" },
@@ -180,7 +180,7 @@ export const skuOverrides = {
     KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
     KPRE1: { price1k: 260, note: "80 A class (55 A line)" , mpn: "HF167F-80A-M"}, KPRE2: { price1k: 260 , mpn: "HF167F-80A-M"},
     LDM1: { price1k: 300, note: "D6-30 rev C: 2x T48 60u N=7, foil 20 mm2 — 7.4 uH @82 A pk (floor 7.0), 2.4 W [engine]", mpn: "DM-CHOKE-30" }, LDM2: { price1k: 300, mpn: "DM-CHOKE-30" }, LDM3: { price1k: 300, mpn: "DM-CHOKE-30" },
-    CMC1: { price1k: 240, note: "D7 60 A winding (10 mm² foil)" }, CMC2: { price1k: 240 },
+    CMC1: { price1k: 1327, note: "D7-30 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 9.9 W, ΔT 20 K — second source to the Schaffner catalog part [est roll-up]" }, CMC2: { price1k: 1327 },
     RSHO: { price1k: 120 },
   },
   // E41 40 kW hot variant — engine-driven (design-basis/loss-budget rev E41): line 73.3 A worst.
@@ -191,7 +191,7 @@ export const skuOverrides = {
     KOUT: { price1k: 460 }, KSER: { price1k: 460 }, KPARA: { price1k: 460 }, KPARB: { price1k: 460 },
     KPRE1: { price1k: 300, note: "100 A class (73 A line)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
     LDM1: { price1k: 465, note: "D6-40 rev C: 2x T57 60u N=8, 26.4 mm2 — 10.5 uH @109 A pk (floor 9.2), 4.4 W [engine]", mpn: "DM-CHOKE-40" }, LDM2: { price1k: 465, mpn: "DM-CHOKE-40" }, LDM3: { price1k: 465, mpn: "DM-CHOKE-40" },
-    CMC1: { price1k: 290, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here)", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 290, mpn: "CMC-3PH-2mH-SKU" },
+    CMC1: { price1k: 1327, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here) · D7-40 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 17.0 W, ΔT 32 K [est roll-up]", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 1327, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A" },
     // D1-40 rev B (E51): the E41 selection (N=23/L0 113) came from the engine's GEOMETRIC core
     // model (Ae 2.62) — on the CATALOG 0077908A7 (AL 37 +/-8%, Ae 2.27, the E35-pinned data) it
@@ -241,7 +241,7 @@ export const skuOverrides = {
     // family part is the 250 A frame (37%); no new p/n invented.
     KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
     LDM1: { price1k: 630, note: "D6-50 rev C: 3x T57 60u N=8, 26.4 mm2 — 12.9 uH @136 A pk (floor 11.4), 8.1 W [engine]", mpn: "DM-CHOKE-50" }, LDM2: { price1k: 630, mpn: "DM-CHOKE-50" }, LDM3: { price1k: 630, mpn: "DM-CHOKE-50" },
-    CMC1: { price1k: 340, note: "D7-50 custom wind 95 A", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 340, mpn: "CMC-3PH-2mH-SKU" },
+    CMC1: { price1k: 2065, note: "D7-50 custom wind 95 A · D7-50 rev B (E65 engine): T 90/50/30, A_Fe ≥ 450 mm², 3×8 T 25 mm², 26.7 W, ΔT 38 K [est roll-up]", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 2065, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 155, mpn: "SHUNT-50MV-167A" },
     // pulse energy (E43 check): per-resistor 162 J discharge / ~211 J precharge at the 16-can link
     // CROSS the highest 25 W-accepted family point (158 J @40 kW) -> the existing 50 W class part

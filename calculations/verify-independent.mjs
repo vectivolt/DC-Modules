@@ -144,9 +144,10 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("C", `${sku} bank bleeder window`, tauB >= 2 && tauB <= 17 && 0.5 * cBank * 525 * 525 / 4 <= 65,
     `τ ${f(tauB, 1)} s (family 4–17 s) · ${f(0.5 * cBank * 525 * 525 / 4, 0)} J/resistor ≤ 65`);
 }
-{ // X-bleed with the E43 4.7 µF CX2
-  const tauX = 0.42 * (2.2 + 4.7) / (2.2 + 2.2);
-  ck("C", "X-cap bleed after CX2 4.7 µF", tauX <= 1.0, `τ ${f(tauX, 2)} s ≤ 1 s pluggable rule (star unchanged)`);
+{ // X-bleed with the E43 4.7 µF CX2 and the E65 damper cap (its 10 Ω is ≪ the bleed star, it discharges with the bank)
+  const A30 = B["30kw"].ac, cX = (A30.val.get("CX11") + A30.val.get("CX21") + (A30.val.get("CDMP1") ?? 0)) * 1e6;
+  const tauX = 0.42 * cX / (2.2 + 2.2);
+  ck("C", "X-cap bleed after CX2 4.7 µF + damper", tauX <= 1.0, `τ ${f(tauX, 2)} s for ${f(cX, 1)} µF Δ per phase pair (netlist) ≤ 1 s pluggable rule (star unchanged)`);
 }
 { // RATING bands with 1% parts
   const v = (R) => 3.3 * R / (R + 10e3);
@@ -255,6 +256,17 @@ for (const [sku, s] of Object.entries(SK)) {
     ck("G", `${sku} K_OUT single + mirror`, !D.byName.has("KOUT2") && D.netOfPin.get("KOUT.M2") === "RELAY_FB_KOUT", "single 200 A class, mirror to FB");
   }
   ck("G", `${sku} RATING strap`, Math.abs(D.val.get("RROLEB") - { "30kw": 0, "40kw": 1000, "50kw": 10000, "50kwa": 15000 }[sku]) < 1, `${D.val.get("RROLEB")} Ω`);
+  // E65: the filter the pre-compliance and stability gates model — Y trios on BOTH CM-choke nodes (two CM stages)
+  // and the CX2-node Rd–Cd damper; then the PE leakage those Y caps imply
+  const yOn = (node) => A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin1`) === node && A.netOfPin.get(`${n}.pin2`) === "PE" && Math.abs(A.val.get(n) - 4.7e-9) < 1e-11).length;
+  ck("G", `${sku} two-stage CM ladder`, [1, 2, 3].every((p) => yOn(`AC${p}`) === 1 && yOn(`AC${p}M`) === 1 && A.netOfPin.get(`CMC1.B${p}`) === `AC${p}M` && A.netOfPin.get(`CMC2.A${p}`) === `AC${p}M`),
+    "Y1 4.7 nF L-PE on AC1..3 and on AC1M..3M between CMC1 and CMC2");
+  ck("G", `${sku} CX2-node damper`, [1, 2, 3].every((p) => A.netOfPin.get(`CDMP${p}.pin1`) === `AC${p}` && A.netOfPin.get(`CDMP${p}.pin2`) === A.netOfPin.get(`RDMP${p}.pin1`)
+    && A.netOfPin.get(`RDMP${p}.pin2`) === `AC${p % 3 + 1}` && Math.abs(A.val.get(`CDMP${p}`) - 2.2e-6) < 1e-8 && Math.abs(A.val.get(`RDMP${p}`) - 10) < 0.01), "2.2 µF + 10 Ω in series, delta across AC1..3");
+  // one line open at 1.1 × 475 VAC with +20 % Y tolerance: the two live phases drive ω·1.2·C·Vph into PE
+  const cyPh = A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin2`) === "PE").reduce((a, n) => a + A.val.get(n), 0) / 3;
+  const iPE = 2 * Math.PI * 50 * 1.2 * cyPh * 1.1 * 475 / Math.sqrt(3);
+  ck("G", `${sku} Y leakage to PE (one line open)`, 3 * iPE <= 3.5e-3, `${f(cyPh * 1e9, 1)} nF/phase → ${f(iPE * 1e3, 2)} mA per module, ${f(3 * iPE * 1e3, 2)} mA for the 3-module 150 kW product ≤ 3.5 mA (EVT T-14)`);
   ck("G", `${sku} star + bond`, cnt(A, /^RNS[123][AB]$/) === 6 && A.netOfPin.get("RPET.pin2") === "PE" && A.netOfPin.get("CPET.pin2") === "PE", "2-series star ×3 + soft PE bond");
 }
 ck("G", "card essentials", B.card.byName.has("UCARD") && B.card.byName.has("USUPCARD") && B.card.byName.has("UANDCARD") && Math.abs(B.card.val.get("RROLE1") - 10000) < 1 && B.card.netOfPin.get("RFLTC.pin2") === "FLT",

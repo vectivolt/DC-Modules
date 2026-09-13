@@ -626,9 +626,12 @@ const HAND = {
   // This split was FOUND, not guessed. Probing candidates against the packed frame gave 3 columns
   // 5078x3250 and a 7/7 split 3297x5000, against a packed 3297x4250; keeping both chokes apart --
   // CMC2 ending column one -- lands on 3297x4250 exactly. Frame identical, so nothing moves.
+  // E65: the second Y trio (CY4-6, the stage-1 node) joins the first column beside the X bank it shares a node with;
+  // the CX2-node Rd–Cd damper takes a third column (frame re-probe is the integrator's sheet-pipeline run).
   "INPUT-EMI / EMI-FILTER": [
-    ["CMC1", "CX11", "CX12", "CX13", "CMC2"],
+    ["CMC1", "CX11", "CX12", "CX13", "CY4", "CY5", "CY6", "CMC2"],
     ["LDM1", "LDM2", "LDM3", "CX21", "CX22", "CX23", "CY1", "CY2", "CY3"],
+    ["CDMP1", "CDMP2", "CDMP3", "RDMP1", "RDMP2", "RDMP3"],
   ],
 
   // AUX-POWER / FLYBACK is still held back, now with data rather than a guess. Work order is

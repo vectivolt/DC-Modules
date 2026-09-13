@@ -260,6 +260,28 @@ Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥
 
 ---
 
+## E65 — PFC current loop against the input filter (2026-09-13)
+
+> [!IMPORTANT]
+> The input EMI filter was never inside a control model: `pfc-control.mjs` closed the current loop on a bare
+> 100 µH plant and `vienna-switched.mjs` on a stiff grid. With the drawn filter (CMC leakage · CX1 · D6 · CX2) and
+> the A9 grid, the undamped loop is **unstable** — the switched model oscillates at the 1.5·Tsw basis (63–90 % of
+> the fundamental between 2 and 45 kHz, Lg 100 µH) and the small-signal Nyquist check has no margin even at 15 µs.
+> The schematic now carries a CX2-node Rd–Cd damper (CDMP1-3 2.2 µF + RDMP1-3 10 Ω, delta). The three
+> requirements below are what the margins were computed with; the standing gate is `calculations/pfc/pfc-control.mjs`
+> (`out/pfc-filter-stability.csv`) and its `[EMI]` row in `stress-audit.mjs`.
+
+| Req | What the code does | Why (computed) |
+|---|---|---|
+| **FW-EMI-1** loop delay | Phase currents sampled at carrier peak **and** valley (100 kHz); the duty computed from a sample is loaded at the next half-period — total sample→PWM delay **≤ 15 µs** | damped filter: modulus margin min\|1+Y·Zo\| **0.53–0.65** at 15 µs (P and PI, Lg 0/30/100 µH, leakage 6–12 µH, D1/D6 at zero-crossing and crest); at the 1.5·Tsw = 30 µs single-update basis only 0.18–0.33 |
+| **FW-EMI-2** voltage feed-forward | Feed-forward and the resistive-emulation reference use SNS_VAC1..3 as drawn (divider RC τ ≈ 115 µs), with the 50 Hz lag rotated out by mixing the other two phases: v′ₖ = vₖ + ωτ·(vₖ₋₁ − vₖ₊₁)/√3 | without the feed-forward the damped margins drop to 0.36–0.43 |
+| **FW-EMI-3** gain per rating | Current-loop proportional gain = 2π·3 kHz·L_D1 at the simulated crest, lot −8 %: **1.27 / 1.04 / 0.78 V/A** (30/40/50 kW, from the strap); PI zero no higher than the 425 Hz of the loop design | the single PI (1.87 V/A, placed on a 100 µH plant) crosses at 5–7 kHz on the 40/50 kW D1 and is unstable at 30 µs even with the damper |
+
+Not firmware: EVT line — a grid-impedance step test at Lg ≈ 100 µH per phase (and the 3-module cabinet on one
+transformer) with the loop delay measured on the scope, before the margins above are called verified.
+
+---
+
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">External CAN Protocol →</a></sub>
 

@@ -6,14 +6,15 @@ cd "$(dirname "$0")/.."
 node calculations/design-basis.mjs
 node calculations/control/mcu-matrix.mjs
 node calculations/pfc/pfc-design.mjs
-node calculations/pfc/pfc-control.mjs
 node calculations/llc/llc-design.mjs
+# E65: the D7 engine reads the simulated crest, the filter-stability check reads both chokes, loss-budget reads all three
+node calculations/pfc/vienna-switched.mjs
+node calculations/emi/dm-choke-design.mjs
+node calculations/pfc/pfc-control.mjs
 node calculations/thermal/loss-budget.mjs
 node calculations/system/envelope-grid.mjs
-node calculations/pfc/vienna-switched.mjs
 node calculations/system/monte-carlo.mjs
 node calculations/system/fsm-sim.mjs
-node calculations/emi/dm-choke-design.mjs
 node calculations/emi/lisn-precompliance.mjs
 node calculations/cost/bom-gen.mjs
 node calculations/cost/bom-maturity.mjs

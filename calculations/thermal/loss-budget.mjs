@@ -56,7 +56,13 @@ const SKUS = [
 //   part computed past its own ΔT≤45 K acceptance; scaled by conductor CSA 6.6→9.9 / 6→20 / 12.5→40)
 // E43: LDM (D6) losses now come from the D6 ENGINE (dm-choke-design.mjs rev C — foil windings,
 // crest-biased L floors): 2.4 / 4.4 / 8.1 W per choke at 30/40/50 kW. CMC (D7) rows unchanged.
-const EMI_FILTER = { "30kW": 2 * 11.5 + 3 * 2.4, "40kW": 2 * 15.3 + 3 * 4.4, "50kW": 2 * 19.2 + 3 * 8.1, "50kWa": 2 * 19.2 + 3 * 8.1 };
+// E65: every EMI-filter term now comes from its engine — D7 (2 chokes) and D6 (3 chokes) from dm-choke-design (hot copper
+// at the worst continuous line current; the D7 rows had been 20 °C copper on a one-layer turn the core could not hold:
+// 11.5/15.3/19.2 → engine) + the CX2-node damper (pfc-control switched model, 330 VAC full power). run-all runs both first.
+const CH = JSON.parse(readFileSync(join(OUT, "dm-choke-design.json"), "utf8"));
+const DAMP = readFileSync(join(OUT, "pfc-filter-stability.csv"), "utf8").split("\n").map((l) => l.split(",")).filter((r) => r[1] === "time-domain" && r[3] === "15");
+const emiW = (k) => 2 * CH.d7[k].P + 3 * CH[k].P + Math.max(...DAMP.filter((r) => r[0] === k).map((r) => +r[7]));
+const EMI_FILTER = { "30kW": emiW("30kw"), "40kW": emiW("40kw"), "50kW": emiW("50kw"), "50kWa": emiW("50kw") };
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
