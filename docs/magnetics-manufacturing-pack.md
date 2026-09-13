@@ -47,7 +47,7 @@ own sheet (D3: E65).
 | [PMP-MAG-D1-50](#pmp-mag-d1-50-rev-c-e65--pfc-swing-choke-50-kw-ind-pfc-107u-50--qty-3) | PFC swing choke 50 kW | B (E51) | `IND-PFC-107u-50` | 3 | 5-stack, N = 24 ± 1 |
 | [PMP-MAG-D3-30/40/50 rev D](#pmp-mag-d3-304050-rev-d-e67--full-bridge-transformer-cells-xfmr-llc-cell--qty-2) | full-bridge transformer cells | **D (E67)** | `XFMR-LLC-CELL-2E70-30 / -3E70-40 / -3E70-50` | 2 | primaries in series → n 2 — reinforced barrier, safety-critical hipot |
 | [PMP-MAG-D2-30/40/50 rev F](#pmp-mag-d2-304050-rev-f-e67--external-resonant-inductor-ind-lr-e70--qty-1) | external resonant inductor | **F (E67)** | `IND-LR-E70-30 / -40 / -50` | 1 | gapped E70 pair, ±3 %, no bins |
-| [PMP-MAG-D8-30/40/50](#pmp-mag-d8-304050-e67--bank-filter-inductors-ind-bank--qty-2) | bank filter inductors | **A (E67)** | `IND-BANK-30 / -40 / -50` | 2 | the D6 construction at DC duty |
+| [PMP-MAG-D8-30/40/50](#pmp-mag-d8-304050-e67--bank-filter-inductors-ind-bank--qty-2) | bank filter inductors | ~~A (E67)~~ retired (E68c) | `IND-BANK-30 / -40 / -50` | 2 | the D6 construction at DC duty |
 | [PMP-MAG-D2-30](#pmp-mag-d2-30-rev-e-e65--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3) | resonant trim bin set 30 kW | ~~E (E65)~~ superseded (E67) | `IND-TRIM-BIN4` | 3 | 1 × E70, N 8, 6112 × 0.05 litz — 4 bins |
 | [PMP-MAG-D2-40](#pmp-mag-d2-40-rev-e-e65--trim-bin-set-40-kw-ind-trim-e70-40--qty-3) | resonant trim bin set 40 kW | ~~E (E65)~~ superseded (E67) | `IND-TRIM-E70-40` | 3 | 2 × E70, N 5, 8149 × 0.05 litz — 4 bins |
 | [PMP-MAG-D2-50](#pmp-mag-d2-50-rev-e-e65--trim-bin-set-50-kw-ind-trim-e70-50--qty-3) | resonant trim bin set 50 kW | ~~E (E65)~~ superseded (E67) | `IND-TRIM-E70-50` | 3 | the D2-40 build with its own bins — liquid and air |
@@ -55,7 +55,7 @@ own sheet (D3: E65).
 | [PMP-MAG-D3-40](#pmp-mag-d3-40-rev-c-e65--llc-transformer-136-kw-xfmr-llc-2e70-40--qty-3) | LLC transformer 13.6 kW | ~~C (E65)~~ superseded (E67) | `XFMR-LLC-2E70-40` | 3 | 2 × E70, 6:6:6 — E60 winding, now VPI + two-face bond |
 | [PMP-MAG-D3-50](#pmp-mag-d3-50-rev-c-e65--llc-transformer-17-kw-xfmr-llc-3e70-50--qty-3) | LLC transformer 17 kW | ~~C (E65)~~ superseded (E67) | `XFMR-LLC-3E70-50` | 3 | 3 × E70, 5:5:5 — custom 3-set former (tooling) |
 | [PMP-MAG-D4](#pmp-mag-d4-rev-e-e65--aux-flyback-transformer-xfmr-aux-fly-e--qty-1) | aux flyback transformer | D (E52) | `XFMR-AUX-FLY-E` | 1 | reinforced — 100 % hipot |
-| [PMP-MAG-D6](#pmp-mag-d6-304050-rev-c--dm-line-chokes-dm-choke-30-40-50--qty-3-each) | DM line chokes | C | `DM-CHOKE-30/-40/-50` | 3 | engine-designed, crest-biased floors |
+| [PMP-MAG-D6](#pmp-mag-d6-304050-rev-c--dm-line-chokes-dm-choke-30-40-50--qty-3-each) | DM line chokes | ~~C~~ retired (E68b) | `DM-CHOKE-30/-40/-50` | 3 | engine-designed, crest-biased floors |
 | [PMP-MAG-D7](#pmp-mag-d7-30-40-50-rev-b--3-phase-cm-chokes-cmc-3ph-2mh-sku--qty-2-each) | 3-phase CM chokes 40 / 50 kW | A | `CMC-3PH-2mH-SKU` | 2 | 30 kW buys the Schaffner catalog part |
 | [CT buy specs](#ct-buy-specs-catalog--quote-bare-burden-lives-on-the-pcb) | line and resonant CTs | — | Talema ACX / AS | 3 + 3 | quote bare — the burden lives on the PCB |
 
@@ -171,6 +171,10 @@ computed value). The stack is inside the ±5 % Lr the tank decks were solved at;
 assembled module (resonant CT phase sweep).
 
 ## PMP-MAG-D8-30/40/50 (E67) — bank filter inductors (`IND-BANK`) — qty 2
+
+> [!WARNING]
+> **RETIRED at E68c — do not quote.** The output banks are film-only (9 / 12 / 14 × 2.2 µF 630 V per bank, 0.5 % RMS ripple
+> gated at −10 % C in `current-coordination`), so no bank inductor exists in the BOM. Kept as the E67 record.
 
 | Row | D8-30 `IND-BANK-30` | D8-40 `IND-BANK-40` | D8-50 `IND-BANK-50` |
 |---|---|---|---|
@@ -395,6 +399,11 @@ As D3-30 rev C except — **new p/n; one drawing serves the liquid and the air S
 | Proof | `calculations/magnetics/d4-flyback.mjs` via `stress-audit` [D4] rows + the drawn-circuit ngspice deck `spice/aux/aux-flyback.mjs` (17 rows; V24/V15 hard short bounded at ≤ 85 % Bsat before the fault latch) |
 
 ## PMP-MAG-D6-30/40/50 rev C — DM line chokes (`DM-CHOKE-30/-40/-50`) — qty 3 each
+
+> [!WARNING]
+> **RETIRED at E68b — do not quote.** The InfyPower-style filter (CMC1 · 4.7 µF★ X2 · CMC2 · 4.7 µF★ X2 · 2 × 4.7 µF★ X2)
+> needs no DM choke: on the per-phase ladder it holds 28.7–32.9 dB DM margin against 18.4–19.6 dB for the filter with D6
+> (`lisn-precompliance`). The sheet stays as the E43–E67 record.
 
 Engine-designed (`emi/dm-choke-design.mjs`); acceptance = **crest-biased inductance**, which is
 what attenuates at the worst emission moment:

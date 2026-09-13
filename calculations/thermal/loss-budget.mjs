@@ -69,7 +69,7 @@ const emiW = (k) => 2 * CH.d7[k].P + Math.max(...DAMP.filter((r) => r[0] === k).
 const EMI_FILTER = { "30kW": emiW("30kw"), "40kW": emiW("40kw"), "50kW": emiW("50kw"), "50kWa": emiW("50kw") };
 // E67: output path — the DOUT blocking diode (Vf 1.05 V, the current-coordination basis) carries the whole output current, and the
 // two D8 bank inductors (D6 construction, engine Rdc) each carry half of it in PAR. Missing from the first E67 roll-up (0.3 pt).
-const outW = (Iout, sku) => 1.05 * Iout + 2 * (CH[sku.toLowerCase().replace("50kwa", "50kw")].Rdc_mR / 1e3) * (Iout / 2) ** 2;
+const outW = (Iout) => 1.05 * Iout;   // E68: film-only banks — no D8 copper; the DOUT diode remains
 const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","out_diode_lf_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
@@ -128,7 +128,7 @@ console.log(`fan-life field costs are priced in — revisit at Phase 17 with rea
 
 // ---------------- heatsink requirement + corners + derating
 // Worst continuous: 330 VAC full power, JBS baseline, +55 °C ambient.
-const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + outW(100, "30kW") + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
+const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + outW(100) + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
 const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + secondary(100).jbsW + 1.05 * 100;   // E67: DOUT is heatsink-mounted
 console.log(`\n30 kW worst-corner dissipation ≈ ${f(totalWorst30, 0)} W, of which heatsink-mounted semis ≈ ${f(semisShare, 0)} W`);
 const RthReq = 20 / semisShare;                       // allow 20 K sink-to-air rise at 55 °C ambient → sink ≤75 °C

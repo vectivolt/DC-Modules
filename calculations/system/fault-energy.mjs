@@ -21,10 +21,10 @@ console.log("=== FAULT-ENERGY / BURN-SAFETY AUDIT (E59) ===");
 const LBL = readFileSync(new URL("../out/loss-budget.csv", import.meta.url), "utf8").trim().split("\n").map((l) => l.split(","));
 const LB = Object.fromEntries(LBL.slice(1).map((c) => [c[0].toLowerCase(), +c[LBL[0].indexOf("total_jbs_W")]]));   // E67: by header — a new loss column shifted the index
 const SKUS = {
-  "30kw": { linkCans: 10, bankCe: 1, Pworst: LB["30kw"], fans: 2, out: 100 },
-  "40kw": { linkCans: 12, bankCe: 1, Pworst: LB["40kw"], fans: 3, out: 133 },
-  "50kw": { linkCans: 16, bankCe: 2, Pworst: LB["50kw"], fans: 0, out: 167 },   // liquid
-  "50kwa": { linkCans: 16, bankCe: 2, Pworst: LB["50kwa"], fans: 4, out: 167 },
+  "30kw": { linkCans: 10, bankC: 9 * 2.2e-6, Pworst: LB["30kw"], fans: 2, out: 100 },
+  "40kw": { linkCans: 12, bankC: 12 * 2.2e-6, Pworst: LB["40kw"], fans: 3, out: 133 },
+  "50kw": { linkCans: 16, bankC: 14 * 2.2e-6, Pworst: LB["50kw"], fans: 0, out: 167 },   // liquid
+  "50kwa": { linkCans: 16, bankC: 14 * 2.2e-6, Pworst: LB["50kwa"], fans: 4, out: 167 },
 };
 for (const [sku, s] of Object.entries(SKUS)) {
   const Clink = (s.linkCans / 2) * 470e-6 / 1;            // 2-series strings paralleled
@@ -33,7 +33,7 @@ for (const [sku, s] of Object.entries(SKUS)) {
   const rClass = sku === "30kw" || sku === "40kw" ? (sku === "40kw" ? 480 : 480) : 480;  // 25 W CER family point 480 J single-event (HR-14 basis; 50 W parts at 50 kW)
   ck("RESERVOIR", `${sku} DC link ${f(Elink, 0)} J @860 V`, perR <= rClass,
     `C=${f(Clink * 1e3, 2)} mF → ${f(perR, 0)} J per discharge resistor vs ${rClass} J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)`);
-  const Ebank = 0.5 * (s.bankCe * 330e-6) * 500 ** 2;   // E67: nE × 330 µF 550 V per bank behind the filter inductor, bank ≤ 500 V
+  const Ebank = 0.5 * s.bankC * 500 ** 2;   // E68: film-only bank (nF × 2.2 µF), bank ≤ 500 V
   ck("RESERVOIR", `${sku} bank ${f(Ebank, 0)} J @500 V`, Ebank / 4 <= 65,
     `per bleeder-chain resistor ${f(Ebank / 4, 1)} J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)`);
 }

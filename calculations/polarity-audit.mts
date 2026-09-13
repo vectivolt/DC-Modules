@@ -40,9 +40,8 @@ const ACDC: Rule[] = [
   { m: /^DZAUX$/, p1: { peer: "^QAUXFB\\.B$" }, p2: { peer: "^RZFB\\." } }, // R4-3 zener: reverse-biased ref, cathode toward VCC via RZFB
 ];
 const DCDC: Rule[] = [
-  { m: /^CE([AB])\d$/, p1: { net: "^BK$1P$" }, p2: { net: "^BK$1N$" } },   // E67 bank electrolytic behind the filter inductor
   { m: /^DOUT$/, p1: { net: "^BKAP$" }, p2: { net: "^OUTP$" } },           // E67 output blocking diode: bank-A top → output
-  { m: /^D(\d)([AB])[13](P[23])?$/, p1: { peer: "^T$1$2\\." }, p2: { net: "^RK$2P$" } }, // E67 sec. bridge top JBS (cell T1A → rectifier node, film + Lf)
+  { m: /^D(\d)([AB])[13](P[23])?$/, p1: { peer: "^T$1$2\\." }, p2: { net: "^BK$2P$" } }, // E68 sec. bridge top JBS (cell T1A → film-only bank)
   { m: /^D(\d)([AB])[24](P[23])?$/, p1: { net: "^BK$2N$" }, p2: { peer: "^T$1$2\\." } }, // E67 sec. bridge bottom JBS
   { m: /^D(\d)CP$/, p1: { net: "^I_RES$1$" }, p2: { net: "^V3P3$" } },
   { m: /^D(\d)CN$/, p1: { net: "^AGND$" }, p2: { net: "^I_RES$1$" } },

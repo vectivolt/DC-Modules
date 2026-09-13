@@ -110,26 +110,29 @@ for (const sku of Object.keys(TANKS)) {
     `sim ${f(dAvg)} A avg / ${f(dRms)} A rms per diode → ${f(pD)} W → Tj ${f(tj, 0)} °C (hot JBS V0 0.95 V / rd ${rdJ * 1e3} mΩ — RFQ acceptance)`);
 }
 
-// ---------------- H2. E67 output stage: bank filter + blocking diode, from the committed ngspice ripple ----------------
+// ---------------- H2. E68 output stage: film-only bank + blocking diode, from the committed ngspice ripple ----------------
+// Every simulated corner: ripple current per 2.2 µF film (≤ 10.5 A line) and bank ripple VOLTAGE ≤ 0.5 % RMS of the output
+// (InfyPower/Tonhe-class "effective value ≤ 0.5 %"; SER stacks two in-phase banks on the output, so each bank gets half).
 {
-  const boards = rd("packages/common-components/boards.tsx"), ch = JSON.parse(rd("calculations/out/dm-choke-design.json"));
-  const BF = { "30kw": { nF: 4, nE: 1, L: 7.4e-6 }, "40kw": { nF: 5, nE: 1, L: 10.5e-6 }, "50kw": { nF: 6, nE: 2, L: 12.9e-6 } };
+  const boards = rd("packages/common-components/boards.tsx");
+  const BF = { "30kw": { nF: 9 }, "40kw": { nF: 12 }, "50kw": { nF: 14 } };
   const DOUT = { "30kw": { A: 150, rjc: 0.25 }, "40kw": { A: 200, rjc: 0.18 }, "50kw": { A: 250, rjc: 0.15 } };
   for (const sku of Object.keys(TANKS)) {
-    const k = sku === "50kwa" ? "50kw" : sku, b = BF[k], t = TANKS[sku], d6 = ch[k];
+    const k = sku === "50kwa" ? "50kw" : sku, b = BF[k], t = TANKS[sku];
     const L = rd(`simulation-results/${sku}/llc-flux.csv`).split("\n").filter((l) => l && !l.startsWith("#")), h = L[0].split(",");
-    const rows = L.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [h[i], +v || v])));
-    const w = rows.reduce((a, r) => (r.Ibank_rip_A > a.Ibank_rip_A ? r : a)), f2 = 2 * w.fsw_kHz * 1e3;
-    const perCap = w.Ibank_rip_A / b.nF, xcf = 1 / (2 * Math.PI * f2 * b.nF * 2.2e-6), xlf = 2 * Math.PI * f2 * b.L, iCe = (w.Ibank_rip_A * xcf / xlf) / b.nE;
-    const iDC = Math.max(t.P / 500, t.Imax / 2), crest = Math.SQRT2 * d6.J * d6.aw_mm2, pLf = (d6.Rdc_mR / 1e3) * iDC * iDC, dT = d6.dT * pLf / d6.P;
-    ck("OUT", `${sku} bank filter: film ripple, Lf DC duty, electrolytic ripple + voltage`, perCap <= 10.5 && iDC <= crest && dT <= 45 && iCe <= 2.0 && 500 / 550 <= 0.92,
-      `worst simulated bank ripple ${f(w.Ibank_rip_A)} A rms at ${w.corner} (2·fsw ${f(f2 / 1e3, 0)} kHz) → ${f(perCap, 2)} A per 2.2 µF (${b.nF}×, ≤10.5) · Lf ${f(b.L * 1e6, 1)} µH (D6-${k.slice(0, 2)} construction, L ≥ ${d6.Lpk} µH up to its ${f(crest, 0)} A crest basis) at ${f(iDC, 0)} A DC: ${f(pLf, 1)} W, ΔT ${f(dT, 0)} K · Ce ${f(iCe, 2)} A rms each (${b.nE}× 330 µF, ≤2.0) · 500 V of 550 V = 91 %`);
+    const rows = L.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [h[i], +v || v]))).filter((r) => r.Ibank_rip_A);
+    const C = 0.9 * b.nF * 2.2e-6;   // −10 % film tolerance
+    const ev = rows.map((r) => { const f2 = 2 * r.fsw_kHz * 1e3, dv = r.Ibank_rip_A / (2 * Math.PI * f2 * C), ser = /^SER/.test(r.corner);
+      return { r, f2, perCap: r.Ibank_rip_A / b.nF, pct: 100 * dv * (ser ? 2 : 1) / (r.bank_V * (ser ? 2 : 1)) }; });
+    const wc = ev.reduce((a, e) => (e.perCap > a.perCap ? e : a)), wv = ev.reduce((a, e) => (e.pct > a.pct ? e : a));
+    ck("OUT", `${sku} film-only bank: ripple current per film + output ripple voltage`, wc.perCap <= 10.5 && wv.pct <= 0.5,
+      `${b.nF}× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current ${f(wc.r.Ibank_rip_A)} A rms at ${wc.r.corner} → ${f(wc.perCap, 2)} A per film (≤10.5) · worst ripple ${f(wv.pct, 2)} % RMS at ${wv.r.corner} (${wv.r.bank_V} V bank, 2·fsw ${f(wv.f2 / 1e3, 0)} kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic`);
     const Iout = t.Imax, pD = 1.05 * Iout, TjD = (sku === "50kw" ? 65 : 70) + pD * (DOUT[k].rjc + 0.08 + 0.1);
     ck("OUT", `${sku} output blocking diode DOUT`, Iout <= 0.8 * DOUT[k].A && TjD <= 140,
       `${Iout} A of the ${DOUT[k].A} A class (${f(100 * Iout / DOUT[k].A, 0)} %) · ${f(pD, 0)} W at Vf 1.05 V → Tj ${f(TjD, 0)} °C (Rjc ${DOUT[k].rjc} + TIM 0.08 + local 0.1 K/W to the ${sku === "50kw" ? 65 : 70} °C ref) — InfyPower practice; 1600 V vs 1000 V out = 63 %`);
   }
-  ck("SYNC", "boards.tsx bank filter per rating", /pw === 50 \? \{ nF: 6, nE: 2, lf: "12\.9uH" \} : pw === 40 \? \{ nF: 5, nE: 1, lf: "10\.5uH" \} : \{ nF: 4, nE: 1, lf: "7\.4uH" \}/.test(boards),
-    "30 kW 4× film + 7.4 µH + 1× 330 µF · 40 kW 5× + 10.5 µH + 1× · 50 kW 6× + 12.9 µH + 2× (E67)");
+  ck("SYNC", "boards.tsx film-only bank per rating", /pw === 50 \? \{ nF: 14 \} : pw === 40 \? \{ nF: 12 \} : \{ nF: 9 \}/.test(boards),
+    "30 kW 9× · 40 kW 12× · 50 kW 14× 2.2 µF film per bank (E68)");
 }
 
 // ---------------- I. DESAT timing vs short-circuit withstand ----------------

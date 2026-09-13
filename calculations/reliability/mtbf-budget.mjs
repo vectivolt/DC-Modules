@@ -23,7 +23,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 // FIT per unit at 40 °C, quality II — SR-332-class base rates, conservative side of published tables.
 const CLASSES = [
   { name: "SiC power die",        fit: 20,  m: (r) => /SiC (MOSFET|JBS|FET)|SiC diode/i.test(r.desc) },
-  { name: "Si power semi",        fit: 10,  m: (r) => /MOSFET|IGBT|rectifier|zener|TVS diode|diode/i.test(r.desc) && !/SiC/i.test(r.desc) && r.cat !== "protection" },
+  { name: "Si power semi",        fit: 10,  m: (r) => /MOSFET|IGBT|rectifier|zener|TVS diode|diode/i.test(r.desc) && !/SiC/i.test(r.desc) && r.cat !== "protection" && !/µF|nF|pF/.test(r.desc) },   // E68: a capacitor whose text says "rectifier-side" is not a semiconductor
   { name: "MCU",                  fit: 15,  m: (r) => /MCU|Cortex/i.test(r.desc) },
   { name: "iso driver / iso amp", fit: 10,  m: (r) => /iso (gate driver|voltage-sense|15→|CAN)|isolator|AMC|NSI/i.test(r.desc) },
   { name: "bias / iso module",    fit: 15,  m: (r) => /module/i.test(r.desc) && /iso|bias/i.test(r.desc) },
@@ -41,13 +41,14 @@ const CLASSES = [
 const PCB_FIT = 5;      // per board (2 power boards + 1 card)
 const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 
-// REGISTERED at E68a (clip-mounted single dies: one PFC die per phase, 4 LLC FETs at 30 kW, the air-50 = the liquid; E67 was
-// 2757/2953/2999/3259 FIT, E64 3081/3297/3396/3552) — recomputed every run, ±1 % drift fails.
-const REGISTERED = { "30kw": { fit: 2661, mtbfKh: 376 }, "40kw": { fit: 2809, mtbfKh: 356 }, "50kw": { fit: 2875, mtbfKh: 348 }, "50kwa": { fit: 2887, mtbfKh: 346 } };
+// REGISTERED at E68c (single dies E68a · star-X2 filter E68b · film-only banks E68c, and the film caps no longer classed as Si
+// semis — "rectifier-side" in a capacitor's text had put the E67 bank films at 10 FIT each). E68a was 2661/2809/2875/2887 FIT,
+// E67 2757/2953/2999/3259, E64 3081/3297/3396/3552 — recomputed every run, ±1 % drift fails.
+const REGISTERED = { "30kw": { fit: 2613, mtbfKh: 383 }, "40kw": { fit: 2753, mtbfKh: 363 }, "50kw": { fit: 2791, mtbfKh: 358 }, "50kwa": { fit: 2803, mtbfKh: 357 } };
 // E55 products = N modules. E66: the 150 kW CSU adder (card-class assembly + DIN supply + carrier, 350 FIT) is deleted.
 const PRODUCTS = { "100kw (2×50L)": { n: 2, base: "50kw", csu: 0 }, "100kw air (2×50a)": { n: 2, base: "50kwa", csu: 0 },
                    "150kw (3×50L)": { n: 3, base: "50kw", csu: 0 }, "150kw air (3×50a)": { n: 3, base: "50kwa", csu: 0 } };
-const REG_PRODUCTS = { "100kw (2×50L)": 174, "100kw air (2×50a)": 173, "150kw (3×50L)": 116, "150kw air (3×50a)": 115 };   // E68a
+const REG_PRODUCTS = { "100kw (2×50L)": 179, "100kw air (2×50a)": 178, "150kw (3×50L)": 119, "150kw air (3×50a)": 119 };   // E68c
 
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };

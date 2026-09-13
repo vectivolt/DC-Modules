@@ -137,6 +137,10 @@ Powder cores stay prohibited in this slot (full AC swing at 83–203 kHz).
 
 ## D8 (E67) — bank filter inductors — qty 2 per module
 
+> [!WARNING]
+> **RETIRED at E68c — do not quote.** The output banks are film-only (9 / 12 / 14 × 2.2 µF 630 V per bank, 0.5 % RMS ripple
+> gated at −10 % C in `current-coordination`), so no bank inductor exists in the BOM. Kept as the E67 record.
+
 One bridge has no interleave cancellation, so each bank gets a film → Lf → electrolytic filter. Lf is the **D6 sendust
 construction** at DC duty (the parts, winders and acceptance lines already exist): D6-30 (2 × T48 60µ, N 7, foil 20 mm²,
 7.4 µH), D6-40 (2 × T57 60µ, N 8, 26.4 mm², 10.5 µH), D6-50 (3 × T57 60µ, N 8, 26.4 mm², 12.9 µH). At the HIGH-mode
@@ -400,6 +404,11 @@ on the outside of the primary margin tape — same method as D1/D3. Rdc: primary
 24 V ≤ 60 mΩ, 15 V ≤ 45 mΩ, aux ≤ 45 mΩ (bench T-18 confirms against the loss budget).
 
 ## D6 — DM line chokes (DM-22u-SKU) — qty 3 per module, one per phase (HR-9, new drawing)
+
+> [!WARNING]
+> **RETIRED at E68b — do not quote.** The InfyPower-style filter (CMC1 · 4.7 µF★ X2 · CMC2 · 4.7 µF★ X2 · 2 × 4.7 µF★ X2)
+> needs no DM choke: on the per-phase ladder it holds 28.7–32.9 dB DM margin against 18.4–19.6 dB for the filter with D6
+> (`lisn-precompliance`). The sheet stays as the E43–E67 record.
 
 The 3rd-stage DM chokes (`LDM1–3`, E22) carry the full line current and now get a real drawing:
 

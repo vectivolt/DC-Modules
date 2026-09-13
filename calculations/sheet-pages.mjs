@@ -127,8 +127,8 @@ const PAGES = {
       ["F11-WINDOW", [/^[RC]F11[HML]$/]],   /* E67: the ladder was unassigned since E65 (three comparators hid it from R4-3) */
     ], ["TANK", "RECT-A", "RECT-B", "F11-WINDOW"]],
     ["BANKS-SP", [
-      ["BANK-A", [/^CBA\d[TB]$/, /^RBALT?A[12]$/, /^RBALBA[12]$/, /^CBAF$/, /^CFA\d$/, /^LFA$/, /^CEA\d$/]],   /* E67 bank filter */
-      ["BANK-B", [/^CBB\d[TB]$/, /^RBALT?B[12]$/, /^RBALBB[12]$/, /^CBBF$/, /^CFB\d$/, /^LFB$/, /^CEB\d$/]],
+      ["BANK-A", [/^CFA\d+$/]],   /* E68 film-only bank */
+      ["BANK-B", [/^CFB\d+$/]],
       ["SP-MATRIX", [/^K(SER|PARA|PARB|OUT|PREA|PREB)2?$/, /^RKPU/, /^RPRE[AB]$/, /^DOUT$/]],
       ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/, /^(QPVD|RPVD[BP])$/]],
     ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],

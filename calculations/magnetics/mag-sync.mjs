@@ -30,13 +30,12 @@ const IDS = [
   { id: "D1-30", tokens: { "N = 39": [mag, pack], "150–185 µH": [mag, pack], "≥ 75 µH": [pack], "165uH": [boards], "N=39": [k5, db] } },
   { id: "D1-40", tokens: { "N = 26": [pack], "N=26": [mag, k5, db], "116": [mag, pack, db, boards], "≥61": [mag], "61 µH": [pack] } },
   { id: "D1-50", tokens: { "N = 24": [pack], "N=24": [mag, k5, db], "107": [mag, pack, db, boards], "45 µH": [pack] } },
-  // E67: the full-bridge tank — D3 rev D transformer cells (primaries in series), D2 rev F external Lr, D8 bank filter (D6 construction)
+  // E67: the full-bridge tank — D3 rev D transformer cells (primaries in series), D2 rev F external Lr. E68 retired D6 (AC DM chokes)
+  // and D8 (bank inductors, the D6 construction): the star-X2 filter and film-only banks need neither.
   { id: "D2 rev F external Lr", tokens: { "5.16 µH": [mag, pack, db], "4.07 µH": [mag, pack, db], "3.28 µH": [mag, pack, db], "5.16uH": [boards, k5], "4.07uH": [boards, k5], "3.28uH": [boards, k5], "8000×0.05": [mag, pack, db], "10000×0.05": [mag, pack, db], "12000×0.05": [mag, pack, db], "IND-LR-E70-40": [pack, db], "IND-LR-E70-50": [pack, db] } },
   { id: "D3 rev D cells", tokens: { "6:6∥6": [mag, pack, db], "4:4∥4": [mag, pack, db], "3850×0.063": [mag, pack, db], "3536×0.071": [mag, pack, db], "XFMR-LLC-CELL-2E70-30": [pack, db], "XFMR-LLC-CELL-3E70-40": [pack, db], "XFMR-LLC-CELL-3E70-50": [pack, db], "B66372B2000": [mag, pack, k5, db] } },
-  { id: "D8 bank filter", tokens: { "IND-BANK-30": [pack, db], "IND-BANK-40": [pack, db], "IND-BANK-50": [pack, db], "7.4uH": [boards, k5], "10.5uH": [boards, k5], "12.9uH": [boards, k5] } },
   { id: "D2/D3 build (E65/E67)", tokens: { "VPI": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
   { id: "D4", tokens: { "ETD44": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-E": [pack, db], "≤ 4 µH": [pack] } },   // E65 D4 rev E (d4-flyback)
-  { id: "D6", tokens: { "N=7": [db], "N=8": [db], "7 T": [mag], "8 T": [mag], "7.4": [mag, db], "10.5": [mag, db], "12.9": [mag, db] } },
 ];
 const NAMES = new Map([[mag, "magnetics.md"], [pack, "pack"], [db, "parts-db"], [k5, "kicad5-panel"], [boards, "boards.tsx"]]);
 // whitespace-normalized matching: carriers legitimately write "N = 26 ±1" / "6 : 6 : 6" — the

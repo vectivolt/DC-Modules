@@ -1333,14 +1333,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         },
         dcdc: {
           "30": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372B2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED",
-                 "D2 L1R (E67 rev F): external Lr 5.16uH +/-3%, 2x E70/33/32, N=5, litz 8000x0.05, distributed gap, bonded",
-                 "D8 LFA/LFB: bank filter = D6-30 construction at DC duty, 2x T48 60u N=7 foil 20mm2 -> 7.4uH"],
+                 "D2 L1R (E67 rev F): external Lr 5.16uH +/-3%, 2x E70/33/32, N=5, litz 8000x0.05, distributed gap, bonded"],
           "40": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 21.75uH/cell +/-7%, Bpk 159mT, BONDED",
-                 "D2 L1R (E67 rev F): external Lr 4.07uH +/-3%, 2x E70/33/32, N=5, litz 10000x0.05, distributed gap, bonded",
-                 "D8 LFA/LFB: bank filter = D6-40 construction at DC duty, 2x T57 60u N=8 26.4mm2 -> 10.5uH"],
+                 "D2 L1R (E67 rev F): external Lr 4.07uH +/-3%, 2x E70/33/32, N=5, litz 10000x0.05, distributed gap, bonded"],
           "50": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 17.8uH/cell +/-7%, Bpk 159mT, plate/web-BONDED",
-                 "D2 L1R (E67 rev F): external Lr 3.28uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded",
-                 "D8 LFA/LFB: bank filter = D6-50 construction at DC duty, 3x T57 60u N=8 26.4mm2 -> 12.9uH"],
+                 "D2 L1R (E67 rev F): external Lr 3.28uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded"],
         },
       };
       const magRows = MAG[key.endsWith("acdc") ? "acdc" : "dcdc"]?.[KW];
