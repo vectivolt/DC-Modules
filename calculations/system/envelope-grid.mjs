@@ -8,6 +8,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TANKS, TANK_CLASS, JBS_POS } from "../llc/tanks.mjs";
+import { mountFor } from "../thermal/mount.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 mkdirSync(OUT, { recursive: true });
 const f = (x, d = 2) => Number(x.toFixed(d));
@@ -20,11 +21,11 @@ const LOADS = [0, 0.05, 0.10, 0.25, 0.50, 0.75, 1.0];
 const TEMPS = [{ n: "cold", amb: -20, hs: 10 }, { n: "room", amb: 25, hs: 45 }, { n: "hot", amb: 55, hs: 70 }];
 const SKUS = [
   // E67: tRms = the full-bridge tank-current CLASS in A RMS (current-coordination TANK_CLASS); parL = FETs per bridge position
-  // (tanks.mjs par). Air thermal default 1.9 K/W j→air-sink at the 70 °C sink ref; liquid 1.1 K/W j→plate (E42).
+  // (tanks.mjs par). E68: thermal basis from mount.mjs — clip-mounted dies, 0.8 K/W j→base at 70 °C (air) · 0.65 K/W j→plate at 65 °C.
   { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1 },
-  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1, par: 2 },   // E41: paralleled PFC pair
-  { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, rth: 1.1, ref: { cold: 10, room: 45, hot: 65 } },
-  { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2 },
+  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1 },   // E68: one PFC die per position (E41 pair retired with the pad basis)
+  { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, ref: { cold: 10, room: 45, hot: 65 } },   // liquid: plate references
+  { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1 },
 ];
 for (const s of SKUS) { s.tRms = TANK_CLASS[s.name]; s.parL = TANKS[s.name].par; s.jbs = JBS_POS[s.name]; }
 // E60: each SKU's OWN tank (tanks.mjs — the drawn crN×crVal / trim+leakage / Lm), not the 30 kW
@@ -54,7 +55,7 @@ for (const s of SKUS) {
     let notes = "";
     if (Pout === 0) { rows.push([s.name, Vin, Vout, load, T.n, mode, "IDLE", 0, f(bus, 0), "", 0, 0, "", "", "", "PASS", "standby"]); continue; }
     const HS = s.ref?.[T.n] ?? T.hs;              // E42: liquid SKUs reference the PLATE temp
-    const RTH = s.rth ?? 1.9;                     // E42: 1.1 K/W j→plate vs 1.9 K/W j→air-sink
+    const RTH = mountFor(s.name).rth;             // E68: mount.mjs (clip-mounted dies)
     const CEIL = s.tRms;                          // E67: full-bridge tank-current CLASS, A RMS
     const Pph = Pout / 0.98;                      // E67: ONE bridge carries the module
     const Rac = ((8 * NT * NT) / Math.PI ** 2) * bank * bank / Pph;

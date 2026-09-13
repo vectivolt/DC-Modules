@@ -1,28 +1,28 @@
 {
-  "fingerprint": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss500p",
+  "fingerprint": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss250p",
   "worstCorner": "SER250-full-bus764",
-  "ipPkMax": 113,
-  "ipRmsMax": 70.5,
-  "imPkMax": 43.7,
-  "vcrAcMax": 561,
+  "ipPkMax": 112.7,
+  "ipRmsMax": 70.4,
+  "imPkMax": 43.8,
+  "vcrAcMax": 565,
   "isRmsMax": 69.2,
-  "isPkMax": 108.9,
-  "idAvgMax": 30.2,
-  "fetRmsMax": 49.9,
-  "fetToffMax": 92,
+  "isPkMax": 108.5,
+  "idAvgMax": 30,
+  "fetRmsMax": 49.8,
+  "fetToffMax": 91,
   "zvsAll": true,
   "legsInRails": true,
   "capability": true,
   "race": {
-    "pre": 113.037478,
-    "at2us": 200.861468,
-    "at3us": 210.145536,
-    "at5us": 344.502763,
-    "at10us": 374.08419,
-    "at40us": 374.08419
+    "pre": 112.686343,
+    "at2us": 200.349156,
+    "at3us": 209.07549,
+    "at5us": 342.019435,
+    "at10us": 370.262936,
+    "at40us": 370.262936
   },
   "shortFmax": {
-    "rms": 156.1,
-    "pk": 250.6
+    "rms": 155.9,
+    "pk": 248.7
   }
 }

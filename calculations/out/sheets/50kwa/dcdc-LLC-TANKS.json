@@ -373,26 +373,6 @@
    "mpn": "SICJBS-1200-40"
   },
   {
-   "designator": "D1A1P3",
-   "block_name": "RECT-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "T1A_SA"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RKAP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
    "designator": "D1A2",
    "block_name": "RECT-A",
    "pins": [
@@ -414,26 +394,6 @@
   },
   {
    "designator": "D1A2P2",
-   "block_name": "RECT-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAN"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "T1A_SA"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
-   "designator": "D1A2P3",
    "block_name": "RECT-A",
    "pins": [
     {
@@ -493,26 +453,6 @@
    "mpn": "SICJBS-1200-40"
   },
   {
-   "designator": "D1A3P3",
-   "block_name": "RECT-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "T1A_SB"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RKAP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
    "designator": "D1A4",
    "block_name": "RECT-A",
    "pins": [
@@ -534,26 +474,6 @@
   },
   {
    "designator": "D1A4P2",
-   "block_name": "RECT-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAN"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "T1A_SB"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
-   "designator": "D1A4P3",
    "block_name": "RECT-A",
    "pins": [
     {
@@ -613,26 +533,6 @@
    "mpn": "SICJBS-1200-40"
   },
   {
-   "designator": "D1B1P3",
-   "block_name": "RECT-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "T1B_SA"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RKBP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
    "designator": "D1B2",
    "block_name": "RECT-B",
    "pins": [
@@ -654,26 +554,6 @@
   },
   {
    "designator": "D1B2P2",
-   "block_name": "RECT-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBN"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "T1B_SA"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
-   "designator": "D1B2P3",
    "block_name": "RECT-B",
    "pins": [
     {
@@ -733,26 +613,6 @@
    "mpn": "SICJBS-1200-40"
   },
   {
-   "designator": "D1B3P3",
-   "block_name": "RECT-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "T1B_SB"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RKBP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
    "designator": "D1B4",
    "block_name": "RECT-B",
    "pins": [
@@ -774,26 +634,6 @@
   },
   {
    "designator": "D1B4P2",
-   "block_name": "RECT-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBN"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "T1B_SB"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2 ",
-   "mpn": "SICJBS-1200-40"
-  },
-  {
-   "designator": "D1B4P3",
    "block_name": "RECT-B",
    "pins": [
     {

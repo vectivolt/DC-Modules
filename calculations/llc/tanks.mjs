@@ -15,10 +15,10 @@
 //   · Lr is the TOTAL series inductance; the D2 external inductor carries Lr − (D3 leakage + loop stray) — magnetics-envelope
 //     asserts that split. par = SG2M023120LJ per bridge position (per-package conduction at the current-critical corner).
 export const TANKS = {
-  "30kw": { P: 30e3, Imax: 100, n: 2, crN: 7, crNF: 33, Lr: 5.6e-6, Lm: 56e-6, par: 2 },
+  "30kw": { P: 30e3, Imax: 100, n: 2, crN: 7, crNF: 33, Lr: 5.6e-6, Lm: 56e-6, par: 1 },   // E68: one die per position on the clip mount
   "40kw": { P: 40e3, Imax: 133, n: 2, crN: 9, crNF: 33, Lr: 4.35e-6, Lm: 43.5e-6, par: 2 },
   "50kw": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 2 },
-  "50kwa": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 3 },   // air: a third FET per position
+  "50kwa": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 2 },   // E68: the air twin = the liquid (was 3)
 };
 for (const t of Object.values(TANKS)) {
   t.Cr = t.crN * t.crNF * 1e-9;
@@ -29,7 +29,7 @@ for (const t of Object.values(TANKS)) {
 // E67 tank RMS classes (nominal + tolerance corners, A rms) — D2 litz/ΔT, Cr per cap and the resonant CT are sized to these;
 // secondary SiC JBS per bridge position: count × current class (hot V0 0.95 V; rd 45 mΩ for the 20 A class, 22 mΩ for 40 A)
 export const TANK_CLASS = { "30kw": 78, "40kw": 100, "50kw": 120, "50kwa": 120 };
-export const JBS_POS = { "30kw": { n: 2, cls: 40 }, "40kw": { n: 2, cls: 40 }, "50kw": { n: 2, cls: 40 }, "50kwa": { n: 3, cls: 40 } };   // one 40 A part everywhere (InfyPower: 16 × 40 A)
+export const JBS_POS = { "30kw": { n: 2, cls: 40 }, "40kw": { n: 2, cls: 40 }, "50kw": { n: 2, cls: 40 }, "50kwa": { n: 2, cls: 40 } };   // one 40 A part everywhere (InfyPower: 16 × 40 A at 40 kW) · E68: 8 at 30 kW was checked and REJECTED — +135 W rd loss, airflow margin 1.11×
 export const fingerprint = (sku) => {
   const t = TANKS[sku];
   return `${sku}:FB n${t.n}/Lr${+(t.Lr * 1e6).toFixed(3)}u/Cr${t.crN}x${t.crNF}n/Lm${+(t.Lm * 1e6).toFixed(3)}u/Coss${Math.round(t.coss * 1e12)}p`;

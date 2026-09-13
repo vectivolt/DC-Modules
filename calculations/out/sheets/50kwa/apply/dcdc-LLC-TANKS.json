@@ -527,24 +527,6 @@
     ]
    },
    {
-    "designator": "D1A1P3",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "T1A_SA"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "RKAP"
-     }
-    ]
-   },
-   {
     "designator": "D1A2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
@@ -564,24 +546,6 @@
    },
    {
     "designator": "D1A2P2",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "BKAN"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "T1A_SA"
-     }
-    ]
-   },
-   {
-    "designator": "D1A2P3",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
     "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
@@ -635,24 +599,6 @@
     ]
    },
    {
-    "designator": "D1A3P3",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "T1A_SB"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "RKAP"
-     }
-    ]
-   },
-   {
     "designator": "D1A4",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
@@ -672,24 +618,6 @@
    },
    {
     "designator": "D1A4P2",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "BKAN"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "T1A_SB"
-     }
-    ]
-   },
-   {
-    "designator": "D1A4P3",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
     "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
@@ -745,24 +673,6 @@
     ]
    },
    {
-    "designator": "D1B1P3",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "T1B_SA"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "RKBP"
-     }
-    ]
-   },
-   {
     "designator": "D1B2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
@@ -782,24 +692,6 @@
    },
    {
     "designator": "D1B2P2",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "BKBN"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "T1B_SA"
-     }
-    ]
-   },
-   {
-    "designator": "D1B2P3",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
     "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
@@ -853,24 +745,6 @@
     ]
    },
    {
-    "designator": "D1B3P3",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "T1B_SB"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "RKBP"
-     }
-    ]
-   },
-   {
     "designator": "D1B4",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
@@ -890,24 +764,6 @@
    },
    {
     "designator": "D1B4P2",
-    "value": "SICJBS-1200-40",
-    "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
-    "pins": [
-     {
-      "pin_number": 2,
-      "name": "A",
-      "signal_name": "BKBN"
-     },
-     {
-      "pin_number": 1,
-      "name": "C",
-      "signal_name": "T1B_SB"
-     }
-    ]
-   },
-   {
-    "designator": "D1B4P3",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
     "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
@@ -1020,5 +876,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 52
+ "total": 44
 }

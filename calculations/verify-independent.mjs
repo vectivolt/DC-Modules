@@ -67,10 +67,10 @@ B.cab = loadNet(`${ROOT}/dist/boards/cabinet/circuit.json`);
 // ---------- A. system currents (first principles) ----------
 console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
 const SK = {   // E67 full bridge: crN × 33 nF · external Lr (D2 rev F) · tank class (A rms) · 0.05 mm litz area · bank film/electrolytic counts
-  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 2, nHalf: 5, fans: 2, crN: 7, crV: 33e-9, lr: 5.16e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 4, nE: 1, dPar: 2, dout: 150 },
-  "40kw": { P: 40e3, Imax: 133, par: 2, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 4.07e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 5, nE: 1, dPar: 2, dout: 200 },
-  "50kw": { P: 50e3, Imax: 167, par: 2, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 2, dout: 250 },
-  "50kwa": { P: 50e3, Imax: 167, par: 2, parL: 3, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 3, dout: 250 },
+  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 1, nHalf: 5, fans: 2, crN: 7, crV: 33e-9, lr: 5.16e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 4, nE: 1, dPar: 2, dout: 150 },
+  "40kw": { P: 40e3, Imax: 133, par: 1, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 4.07e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 5, nE: 1, dPar: 2, dout: 200 },
+  "50kw": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 2, dout: 250 },
+  "50kwa": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 2, dout: 250 },
 };
 for (const [sku, s] of Object.entries(SK)) {
   s.Iline = (s.P / 0.965) / (Math.sqrt(3) * 330 * 0.99);
@@ -167,7 +167,7 @@ function tjWorst(sku) {
 { // 50 kW liquid: re-derive the grid's OWN worst LLC row closed-form (E67: full bridge, par FETs per position)
   const g = tjWorst("50kw"), ipW = +g.lRow[10], psW = g.lRow[6] === "PSM" ? 8 : 1, par = SK["50kw"].parL;
   const plate = { cold: 10, room: 45, hot: 65 }[g.lRow[4]];
-  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + psW / par) * 1.1;
+  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + psW / par) * 0.65;   // E68 clip mount onto the plate
   ck("D", "50kw LLC worst corner reproduces", Math.abs(Tj - g.l) < 3, `closed-form ${f(Tj, 0)} °C vs grid ${g.l} at its worst row (${g.lRow[2]} V ${g.lRow[5]} ${g.lRow[6]} ${g.lRow[4]}, Ip ${ipW} A rms — ${par} FETs per position, liquid model)`);
   ck("D", "50kw Ip max inside the tank class", g.ip <= SK["50kw"].tRms * 1.02, `${g.ip} A rms ≤ ${SK["50kw"].tRms} A rms class`);
 }
