@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E64-f2b705?style=for-the-badge" alt="decision register E1 to E64"/>
+  <img src="https://img.shields.io/badge/decision_register-E1–E67-f2b705?style=for-the-badge" alt="decision register E1 to E67"/>
   <img src="https://img.shields.io/badge/envelope_grid-5544_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 5544 points, 0 failures"/>
   <img src="https://img.shields.io/badge/independent_checks-226%2F226-2ea44f?style=for-the-badge" alt="independent verifier 226 of 226"/>
   <img src="https://img.shields.io/badge/firmware-54%2F54_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 54 of 54"/>
@@ -170,7 +170,7 @@ flowchart LR
 | Efficiency — full power at 400 VAC | 97.19 % | 96.92 % | 96.68 % | 96.82 % |
 | Efficiency — peak | 98.45 % | 98.49 % | 98.46 % | 98.58 % |
 | Loss at rated | 866 W | 1,273 W | 1,717 W | 1,642 W |
-| Cooling | 2 fans | 3 fans | 2 coldplates · 0 fans · ≤ 60 °C coolant · 6 L/min | 4 fans (3 front + 1 rear) |
+| Cooling | 2 fans | 3 fans | 2 coldplates · 0 fans · ≤ 60 °C coolant · 6.5 L/min (E67) | 4 fans (3 front + 1 rear) |
 | Vienna silicon | single 750 V SiC pair / position | paralleled pairs | paralleled pairs | paralleled pairs |
 | PFC choke D1 | 3 × 0077908A7 · N = 39 | 5 × 0077908A7 · N = 26 | 5 × 0077908A7 · N = 24 | = 50 kW liquid |
 | LLC silicon | 6 × SG2M023120LJ | 6 × | 6 × (the coldplate buys it) | 12 × — paralleled pairs |
@@ -264,7 +264,7 @@ status badge and next/previous navigation.
 | Start here | To understand |
 |---|---|
 | [Platform architecture](docs/architecture.md) | the module in one read |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E64, with provenance and invalidator |
+| [Decision register](docs/assumptions.md) | every frozen decision E1–E67, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
 | [Magnetics drawings](docs/magnetics.md) · [RFQ pack](docs/magnetics-manufacturing-pack.md) | the custom parts and how to buy them |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
@@ -291,7 +291,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 ## 🗺️ Roadmap
 
-- [x] Frozen decision register E1–E64
+- [x] Frozen decision register E1–E67
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
 - [x] Release schematics — six KiCad-5 targets, 7,784 / 7,784 pins, ten board PDFs
 - [x] Product structure — 30 / 40 / 50 L / 50 A modules, 100 kW = 2 × 50, 150 kW = 3 × 50 (no CSU, E66)

@@ -1331,19 +1331,22 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
                  "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH, E51 restated basis 11.8 — met)"],
         },
         dcdc: {
-          "30": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 7:7:7 (E65 rev C; E8 turns), Bpk 142mT @525V-bank sim, pri litz 2475x0.071 + sec Cu foil 0.10x28, Lm 63uH +/-7% gap-ground, BONDED",
-                 "D2 L1T-L3T: 1x E70/33/32, N=8, bins 6.35/6.5/6.65/6.8uH, litz 6112x0.05, distributed gap, bonded (E65: carries ~all of Lr)"],
-          "40": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 6:6:6, Bpk 176mT @525V-bank sim, pri litz 3486x0.071 + sec foil 0.127x28, Lm 63uH +/-7% gap-ground, BONDED",
-                 "D2 L1T-L3T: 2x E70/33/32, N=5, bins 5.85/6.0/6.15/6.3uH, litz 8149x0.05, distributed gap, bonded (E65)"],
-          "50": ["D3 T1-T3: 3x E70/33/32 sets (3-set former), 5:5:5, Bpk 158mT @525V-bank sim, pri litz 4370x0.071 + sec foil 0.127x28, Lm 63uH +/-7%, plate/web-BONDED",
-                 "D2 L1T-L3T: 2x E70/33/32, N=5, bins 5.35/5.5/5.65/5.8uH, litz 8149x0.05, distributed gap, bonded (E65)"],
+          "30": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372B2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED",
+                 "D2 L1R (E67 rev F): external Lr 5.16uH +/-3%, 2x E70/33/32, N=5, litz 8000x0.05, distributed gap, bonded",
+                 "D8 LFA/LFB: bank filter = D6-30 construction at DC duty, 2x T48 60u N=7 foil 20mm2 -> 7.4uH"],
+          "40": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 21.75uH/cell +/-7%, Bpk 159mT, BONDED",
+                 "D2 L1R (E67 rev F): external Lr 4.07uH +/-3%, 2x E70/33/32, N=5, litz 10000x0.05, distributed gap, bonded",
+                 "D8 LFA/LFB: bank filter = D6-40 construction at DC duty, 2x T57 60u N=8 26.4mm2 -> 10.5uH"],
+          "50": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 17.8uH/cell +/-7%, Bpk 159mT, plate/web-BONDED",
+                 "D2 L1R (E67 rev F): external Lr 3.28uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded",
+                 "D8 LFA/LFB: bank filter = D6-50 construction at DC duty, 3x T57 60u N=8 26.4mm2 -> 12.9uH"],
         },
       };
       const magRows = MAG[key.endsWith("acdc") ? "acdc" : "dcdc"]?.[KW];
       if (magRows) {
         const magPanel = (V, fixed) => drawPanel(V, "MAGNETICS CONSTRUCTION",
           "identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)",
-          [...magRows, key.endsWith("acdc") ? "Cr at TANK sections" : "total Lr = D2 bin + measured xfmr leakage (~0.2uH) + 0.1uH loop; Cr at TANK sections", ...(key.endsWith("acdc") ? [] : ["T_XFMR NTC loop runs through 6 NC 130C cutouts, one per D3/D2 (open loop = OT trip, E65 bond-loss cover)"])], "", fixed);
+          [...magRows, key.endsWith("acdc") ? "Cr at TANK sections" : "total Lr = D2 + 2x cell leakage (acceptance +/-30%) + 0.1uH loop = +/-5% simulated; Cr at TANK", ...(key.endsWith("acdc") ? [] : ["bond loss screened by the EOL bonded thermal soak (T_XFMR NTC rise at fixed load, E65)"])], "", fixed);
         const m1 = magPanel(pickVoid(used));
         if (m1) used.push(m1);
       }

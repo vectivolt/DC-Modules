@@ -31,8 +31,8 @@ export const SECTIONS = {
   ],
   dcdc: [
     ["BUS ENTRY & COMMUTATION FILMS", /^(JDCP$|JDCN$|JPEB$|CF\d+$)/],
-    ["LLC HALF-BRIDGE LEGS", /^(Q\d+[HL]$|U\d+[HL]$|PS\d+[HL]$|[RC]\d+[HL]\w*$|D\d+[HL]S\d$)/],
-    ["LLC TANKS, TRANSFORMERS & RECTIFIERS", /^(C\d+R\d$|L\d+T$|T\d+$|D\d+[AB][1-4]$|CT\d+$|R\d+C[TF]$|C\d+CF$|D\d+C[PN]$)/],
+    ["LLC FULL-BRIDGE LEGS", /^(Q\d+[HL]\d?$|U\d+[HL]$|PS\d+[HL]$|[RC]\d+[HL]\w*$|RG\d+[HL]\d$|D\d+[HL]S\d$)/],
+    ["LLC TANK, TRANSFORMER CELLS & RECTIFIERS", /^(C\d+R\d+$|L\d+R$|T\d+[AB]$|D\d+[AB][1-4](P[23])?$|CT\d+$|R\d+C[TF]$|C\d+CF$|D\d+C[PN]$|U\d+W$|D\d+W$|C\d+WB$)/],
     ["BANK CAPACITORS & BALANCE", /^(CB[AB]\d+[TB]$|RBAL[TB][AB][12]$|CB[AB]F$)/],
     ["SERIES/PARALLEL MATRIX", /^(K(SER|PARA|PARB|OUT|PREA|PREB)2?$|RKPU|RPRE[AB]$)/],
     ["BANK BLEEDERS", /^(RBD[AB]\d$|QDIS[AB]$|UPV[AB]$|RPV[LB][AB]$)/],

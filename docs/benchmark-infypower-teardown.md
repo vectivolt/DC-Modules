@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
   <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
-  <img src="https://img.shields.io/badge/verdict-no_architecture_change_·_R18-2ea44f?style=flat-square" alt="verdict: no architecture change · R18"/>
+  <img src="https://img.shields.io/badge/verdict-E67_full_bridge_adopted_·_R18-2ea44f?style=flat-square" alt="verdict: E67 full bridge adopted · R18"/>
 </p>
 
 > [!NOTE]

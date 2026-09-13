@@ -48,7 +48,8 @@ const PAGE_TITLES = {
 };
 
 const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SMBJ26A",
-  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15"]);
+  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15",
+  "DIODE-1600V-150A-MOD", "DIODE-1600V-200A-MOD", "DIODE-1600V-250A-MOD"]);   /* E67 DOUT: source pin1 = anode (DiodeModFP portHints) */
 
 const sig = (c, name) => c.pins.find((p) => p.name === name)?.signal_name;
 const P = (n, name, s) => ({ pin_number: n, name, signal_name: s ?? "" });
@@ -140,9 +141,8 @@ function transform(c, page, all, warn) {
   } else if (m === "CMC-CAN-51uH") {
     // ACT45B windings 1-4 and 2-3
     out.pins = [P(1, "A1", sig(c, "A1")), P(4, "A2", sig(c, "A2")), P(2, "B1", sig(c, "B1")), P(3, "B2", sig(c, "B2"))];
-  } else if (m === "XFMR-LLC-10K") {
+  } else if (/^XFMR-LLC-CELL-/.test(m)) {   /* E67 D3 rev D cell: P1 P2 SH SA SB, all five bound */
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
-    out.nc = [8];
   } else if (m === "CMC-3PH-2mH-SKU") {
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
     out.nc = [7, 8];

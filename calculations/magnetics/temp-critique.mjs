@@ -100,34 +100,38 @@ for (const p of PARTS) {
 }
 // ---- saturation margins vs temperature ----
 {
-  const { D2: D2C, D3: D3C, excitation } = await import("./magnetics-envelope.mjs");
+  const { D2: D2C, D3: D3C, D3_CELLS, excitation } = await import("./magnetics-envelope.mjs");
   const { TANKS } = await import("../llc/tanks.mjs");
   const { stack } = await import("./geometry.mjs");
   let wB = 0, wAt = "";
   for (const [sku, c] of Object.entries(D3C)) for (const r of excitation(sku).rows) {
-    const B = 63e-6 * r.Im_pk_A * r.lm_scale / (c.N * stack(c.core, c.n).Ae);
+    const B = (TANKS[sku].Lm / D3_CELLS) * r.Im_pk_A * r.lm_scale / (c.N * stack(c.core, c.n).Ae);   // E67: Lm/2 per cell
     if (B > wB) { wB = B; wAt = `${sku} ${r.corner}`; }
   }
   ck("BSAT", "D3 simulated worst flux at 130 °C core", wB <= 0.5 * Bsat(130),
-    `worst B̂ ${f2(wB * 1e3, 0)} mT (${wAt}, E65 envelope) ≤ 50% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * wB / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
+    `worst B̂ ${f2(wB * 1e3, 0)} mT (${wAt}, E67 cell envelope) ≤ 50% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * wB / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
   const { shortRacePeak } = await import("../../spice/llc/llc-flux-post.mjs");
-  const F11 = { "30kw": 85, "40kw": 115, "50kw": 145, "50kwa": 145 };   // race peak 3 µs after the F.11 crossing (E65)
-  const bf = Object.entries(D2C).map(([sku, c]) => [sku, Math.max(...TANKS[sku].bins) * 1e-6 * shortRacePeak(sku, F11[sku]).peak / (c.N * stack(c.core, c.n).Ae)]);
+  const F11 = { "30kw": 140, "40kw": 180, "50kw": 220, "50kwa": 220 };   // E67 F.11 classes (current-coordination OC); kill peak 1 µs after the crossing
+  const bf = Object.entries(D2C).map(([sku, c]) => [sku, c.Lmax * shortRacePeak(sku, F11[sku]).peak / (c.N * stack(c.core, c.n).Ae)]);
   const worst = bf.reduce((a, x) => (x[1] > a[1] ? x : a));
-  ck("BSAT", `D2 fault flux (bin-max L × (F.11 + 3 µs race), worst SKU = ${worst[0]})`, worst[1] <= 0.6 * Bsat(130),
-    `${f2(worst[1] * 1e3, 0)} mT at the crossing-referenced race (E65 D2: ${bf.map(([k, v]) => `${k} ${f2(v * 1e3, 0)}`).join(" · ")}) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
+  ck("BSAT", `D2 fault flux (Lmax × F.11 kill peak, worst SKU = ${worst[0]})`, worst[1] <= 0.6 * Bsat(130),
+    `${f2(worst[1] * 1e3, 0)} mT at the crossing-referenced kill (E67 D2 rev F: ${bf.map(([k, v]) => `${k} ${f2(v * 1e3, 0)}`).join(" · ")}) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
 }
 ck("BSAT", `D4 at the computed cycle-by-cycle limit, 130 °C (${D4.core})`, D4R.B <= 0.75 * Bsat(130) && D4C.B > 0.75 * Bsat(130),
   `${f2(D4R.ipkLim, 2)} A (860 V, Lp +${D4.tolL * 100} %, VILIM max, CS lag + tILIM max) → ${f2(D4R.B * 1e3, 0)} mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * D4R.B / Bsat(130), 0)}% absolute) — E65: the E52 "256 mT at a 3.2 A clamp" row read ${f2(D4C.B * 1e3, 0)} mT (${f2(100 * D4C.B / Bsat(130), 0)}%) once the drawn sense chain was computed`);
 // ---- Lm gap dominance: amplitude-permeability swing must not move Lm beyond its ±7% window ----
 {
+  const { D3: D3C, D3_CELLS } = await import("./magnetics-envelope.mjs");
+  const { TANKS } = await import("../llc/tanks.mjs");
+  const { stack } = await import("./geometry.mjs");
   const mu25 = interp(D.muAmp["25C"] ?? D.muAmp[Object.keys(D.muAmp)[0]], 0.108);
   const mu100 = interp(D.muAmp["100C"] ?? D.muAmp[Object.keys(D.muAmp).at(-1)], 0.108);
-  const g = 1.3e-3, le = 0.149;                                  // D3-40/50 class: ~1.3 mm total gap
+  const le = 0.149, mu0 = 4e-7 * Math.PI;                         // E67: the SMALLEST D3 cell gap (most µ-sensitive) from the tables
+  const g = Math.min(...Object.entries(D3C).map(([sku, c]) => (mu0 * c.N * c.N * stack(c.core, c.n).Ae) / (TANKS[sku].Lm / D3_CELLS)));
   const AL = (mu) => 1 / (g + le / mu);                          // ∝, gap-normalized
   const dev = Math.abs(AL(mu100) / AL(mu25) - 1);
   ck("LM", "gap-ground Lm vs amplitude-µ swing 25↔100 °C", dev <= 0.03,
-    `µa(108 mT): ${f2(mu25, 0)} → ${f2(mu100, 0)}; Lm shift ${f2(dev * 100, 1)}% (gap-dominated) ≤ 3% — inside the ±7% window with the grind tolerance`);
+    `µa(108 mT): ${f2(mu25, 0)} → ${f2(mu100, 0)}; Lm shift ${f2(dev * 100, 1)}% on the smallest cell gap Σ ${f2(g * 1e3, 2)} mm (gap-dominated) ≤ 3% — inside the ±7% window with the grind tolerance`);
 }
 // ---- D1 fault chain: soft-sat di/dt from the OC threshold to the CT ceiling (R6-C/R8) ----
 {

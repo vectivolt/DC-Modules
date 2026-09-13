@@ -1,29 +1,28 @@
 {
-  "fingerprint": "40kw:Lr6.5u/Cr6x33n/Lm63u/Coss250p",
-  "worstCorner": "SER250-full-mismatch",
-  "ipPkMax": 94,
-  "ipRmsMax": 64.4,
-  "imPkMax": 22.3,
-  "vcrAcMax": 560,
-  "isRmsMax": 32,
-  "isPkMax": 47,
-  "idAvgMax": 14.4,
-  "fetRmsMax": 45.5,
-  "fetToffMax": 79.3,
-  "shareMax": 7.49,
+  "fingerprint": "40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss500p",
+  "worstCorner": "SER250-full-bus764",
+  "ipPkMax": 148.1,
+  "ipRmsMax": 93.3,
+  "imPkMax": 56.1,
+  "vcrAcMax": 580,
+  "isRmsMax": 91.7,
+  "isPkMax": 142.7,
+  "idAvgMax": 40,
+  "fetRmsMax": 66,
+  "fetToffMax": 120,
   "zvsAll": true,
   "legsInRails": true,
   "capability": true,
   "race": {
-    "pre": 91.5388789,
-    "at2us": 129.728855,
-    "at3us": 139.160268,
-    "at5us": 197.469332,
-    "at10us": 260.753063,
-    "at40us": 301.379996
+    "pre": 148.09517,
+    "at2us": 267.149048,
+    "at3us": 267.149048,
+    "at5us": 434.19762,
+    "at10us": 471.48704,
+    "at40us": 471.48704
   },
   "shortFmax": {
-    "rms": 67.5,
-    "pk": 111.8
+    "rms": 200.7,
+    "pk": 319.8
   }
 }

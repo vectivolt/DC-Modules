@@ -19,7 +19,7 @@ function newM() {
   return {
     st: "INIT", t: 0, faults: [], latched: null, lock: false, faultCount: 0,
     bus: 0, mid: 0.5, bankA: 0, bankB: 0, vout: 0, iout: 0, vext: 0, extConn: false,
-    kpre: false, kout: false, kser: false, kpara: false, kparb: false, kprea: false, kpreb: false,
+    kpre: false, kser: false, kpara: false, kparb: false,   // E67: K_OUT + pre-insertion retired (output blocking diode)
     weldedPARA: false, pfcOn: false, llcOn: false, pcmd: 0, vcmd: 400, icmd: 100, mode: "PAR",
     vin: 400, phases: 3, tempX: 60, fanOk: true, canFresh: 0, linkFresh: 0, auxOk: true, wdtOk: true,
     derate: 1, dwell: 0, log: [],
@@ -43,13 +43,15 @@ function step(m, ev = {}) {
   const iLim = m.transient > 0 ? m.icmd * 1.25 : m.icmd;
   if (m.transient > 0) m.transient--;
   const vtar = Math.min(m.vcmd, iLim * rload);
-  const bankT = m.llcOn ? Math.min(vtar / (m.mode === "SER" ? 2 : 1), 525) : 0;
+  const bankT = m.llcOn ? Math.min(vtar / (m.mode === "SER" ? 2 : 1), 500) : 0;   // E67: LOW mode tops out at 500 V
   m.bankA += ((m.llcOn ? bankT : m.bankA * 0.995) - m.bankA) * 0.08;
   m.bankB += ((m.llcOn ? bankT : m.bankB * 0.995) - m.bankB) * 0.08;
-  if (m.weldedPARA) m.bankB = m.bankA;
+  // a welded K_PARA: paralleled banks track; in SER (KSER closed) it shorts bank A, which then cannot charge (E67 → F.17)
+  if (m.weldedPARA) { if (m.mode === "SER" && m.kser) m.bankA = 0; else m.bankB = m.bankA; }
   const stack = m.mode === "SER" ? (m.kser ? m.bankA + m.bankB : m.bankA) : (m.kpara ? Math.max(m.bankA, m.bankB) : m.bankA);
-  m.vout = m.kout ? stack : (m.extConn ? m.vext : 0);
-  m.iout = m.kout && m.llcOn ? Math.min(stack / Math.max(rload, 0.01), iLim * 1.02) : 0;
+  const out = m.st === "RUN" || m.st === "DERATE";                 // E67: the blocking diode conducts once the stack leads
+  m.vout = m.llcOn ? Math.max(stack, m.extConn ? m.vext : 0) : (m.extConn ? m.vext : 0);
+  m.iout = out && m.llcOn ? Math.min(stack / Math.max(rload, 0.01), iLim * 1.02) : 0;
   m.tempX += ((m.llcOn ? 40 + 55 * m.derate + (m.fanOk ? 0 : 15) : 40) - m.tempX) * 0.002;
   // ---- HW-fast layer ----
   if (m.bus > 860) latch(m, F.BUS_OVP_HW);
@@ -70,8 +72,8 @@ function step(m, ev = {}) {
     if (m.mode === "SER" && m.kser && Math.abs(m.bankA - m.bankB) > 25) latch(m, F.BANK_IMB);
     if (m.tempX > 115) latch(m, F.OT); else if (m.tempX > 105) m.derate = Math.min(m.derate, 0.6);
     if (!m.fanOk) m.derate = Math.min(m.derate, 0.5);
-    { const meas = m.voutStuck ?? m.vout; if (Number.isNaN(meas) || (m.kout && m.llcOn && stack > 100 && Math.abs(meas - stack) > stack * 0.2)) latch(m, F.SENSOR); }
-    if (m.canFresh > 1000) { m.st = "STANDBY"; m.llcOn = false; m.kout = false; m.needEnable = true; m.log.push([m.t, "CANTO", F.CAN_TO]); }
+    { const meas = m.voutStuck ?? m.vout; if (Number.isNaN(meas) || (m.llcOn && stack > 100 && Math.abs(meas - stack) > stack * 0.2)) latch(m, F.SENSOR); }
+    if (m.canFresh > 1000) { m.st = "STANDBY"; m.llcOn = false; m.needEnable = true; m.log.push([m.t, "CANTO", F.CAN_TO]); }
     if (m.linkFresh > 50) latch(m, F.LINK);
   }
   // ---- FSM ----
@@ -85,22 +87,20 @@ function step(m, ev = {}) {
       if (m.enable && !m.needEnable && !m.lock && m.canFresh < 1000) {
         m.pfcOn = true;
         if (m.bus > 700) {
-          // backfeed policy: match stack to external voltage before K_OUT
           if (m.extConn && m.vext < 0) { latch(m, F.BACKFEED); break; }
           const vStart = m.extConn && m.vext > 0 ? m.vext : m.vcmd;   // E65: a connected battery sets the operating voltage
-          m.mode = vStart > 525 ? "SER" : "PAR";   // E60: start threshold = RUN entry (525 V) — no SER bank-250 starts
+          m.mode = vStart > 500 ? "SER" : "PAR";   // E67: LOW ≤ 500 V · HIGH above (AUTO)
           m.llcOn = true;
           const ready = m.mode === "SER" ? m.kser : m.kpara && m.kparb;
           if (!ready) {
-            // pre-insertion sequence
-            if (m.mode === "PAR") {
-              if (!m.kprea) { m.kprea = m.kpreb = true; m.log.push([m.t, "PREINS"]); }
-              else if (Math.abs(m.bankA - m.bankB) < 0.5) { m.kpara = m.kparb = true; m.kprea = m.kpreb = false; m.log.push([m.t, "PAR-MADE"]); }
-            } else m.kser = true;
-          } else if (!m.kout) {
-            // K_OUT gate rev B (parity with fsm.c): match stack to vext if connected, else to vcmd
-            const tgt = m.extConn ? m.vext : m.vcmd;
-            if (Math.abs(stack - tgt) < Math.max(10, 0.05 * Math.abs(tgt))) { m.kout = true; m.st = "RUN"; m.log.push([m.t, "->RUN"]); }
+            if (m.mode === "PAR") { m.kpara = m.kparb = true; m.log.push([m.t, "PAR-MADE"]); }   // E67: zero-current make, banks bled
+            else m.kser = true;
+          } else {
+            // E67: a welded matrix contact shows during the soft start — in SER a welded K_PARA holds bank A at 0 V (F.17)
+            if (m.mode === "SER" && Math.max(m.bankA, m.bankB) > 50 && Math.abs(m.bankA - m.bankB) > 25) { latch(m, F.BANK_IMB); break; }
+            // E67 RUN entry: the stack reaches its target (vext when a vehicle is present) — the diode then conducts
+            const tgt = m.extConn ? m.vext : Math.min(m.vcmd, m.mode === "SER" ? 1000 : 500);
+            if (Math.abs(stack - tgt) < Math.max(10, 0.05 * Math.abs(tgt))) { m.st = "RUN"; m.log.push([m.t, "->RUN"]); }
           }
         }
       }
@@ -109,7 +109,7 @@ function step(m, ev = {}) {
       if (m.derate < 1) { m.st = "DERATE"; m.log.push([m.t, "->DERATE", m.derate]); }
       // mode transition request with dwell
       const vX = m.extConn ? m.vout : m.vcmd;                     // E65: crossover on the real battery voltage
-      if ((m.mode === "PAR" && vX > 525) || (m.mode === "SER" && vX < 500)) {
+      if ((m.mode === "PAR" && vX > 500) || (m.mode === "SER" && vX < 480)) {   // E67 AUTO: 500 V line, 480 V return
         m.dwell++;
         if (m.dwell > 30) { m.st = "MODESW"; m.swStep = 0; m.log.push([m.t, "->MODESW"]); }
       } else m.dwell = 0;
@@ -118,11 +118,9 @@ function step(m, ev = {}) {
     case "MODESW": {
       m.swStep++;
       if (m.swStep === 1) { m.icmd0 = m.icmd; m.icmd = 0; }
-      if (m.swStep === 10) { m.llcOn = false; m.kout = false; }
-      if (m.swStep === 20) { m.kser = false; m.kpara = false; m.kparb = false; }
+      if (m.swStep === 10) { m.llcOn = false; }
+      if (m.swStep === 20) { m.kser = false; m.kpara = false; m.kparb = false; }   // zero current: LLC stopped, diode blocking
       if (m.swStep === 40) {
-        // weld check: banks must diverge with LLC re-biased one bank
-        if (m.weldedPARA) { latch(m, F.WELD); break; }
         m.mode = m.mode === "PAR" ? "SER" : "PAR"; m.icmd = m.icmd0; m.rloadOverride = undefined; m.prevR = undefined; m.st = "STANDBY"; m.enable = true;
         m.log.push([m.t, "MODE=" + m.mode]);
       }
@@ -130,10 +128,9 @@ function step(m, ev = {}) {
     }
     case "SAFE": if (m.auxOk) m.st = "STANDBY"; break;
     case "FAULT":
-      m.kout = false;
       if (m.clear && !m.lock) { m.latched = null; m.st = "STANDBY"; m.needEnable = true; m.clear = false; }
       break;
-    case "SHUTDOWN": m.st = "DISCH"; m.pfcOn = m.llcOn = false; m.kout = false; m.kpre = false; break;
+    case "SHUTDOWN": m.st = "DISCH"; m.pfcOn = m.llcOn = false; m.kpre = false; break;
     case "DISCH": if (m.bus < 60) { m.st = "OFF"; m.log.push([m.t, "BUS<60V"]); } break;
   }
   return m;
@@ -154,7 +151,7 @@ const en = (t) => (t === 500 ? { enable: true } : {});
 
 // 1–3 startup chain
 run("power-up→precharge→standby", () => ({}), { st: ["STANDBY"] });
-run("enable→run (PAR)", en, { st: ["RUN"], extra: m => m.kpara && m.kout });
+run("enable→run (PAR)", en, { st: ["RUN"], extra: m => m.kpara && m.kparb && !m.kser });
 run("enable→run (SER 750 V)", (t) => (t === 1 ? { vcmd: 750 } : en(t)), { st: ["RUN"], extra: m => m.kser });
 // 4–8 load/CV-CC
 run("load step 0→25→100→25%", (t, m) => t === 500 ? { enable: true } : t === 900 ? { rloadOverride: 16 } : t === 1200 ? { rloadOverride: 4 } : t === 1500 ? { rloadOverride: 16 } : {}, { st: ["RUN"], extra: m => m.iout < 135 });
@@ -162,7 +159,7 @@ run("CV→CC→CV (R collapse/restore)", (t) => t === 500 ? { enable: true } : t
 run("output open circuit", (t) => t === 500 ? { enable: true } : t === 1200 ? { rloadOverride: 1e6 } : {}, { st: ["RUN"], extra: m => m.iout < 1 });
 // 9–12 short/backfeed
 run("output short → F.16", (t) => t === 500 ? { enable: true } : t === 1400 ? { rloadOverride: 0.02 } : {}, { st: ["FAULT", "LOCK"], code: F.OUT_SHORT });
-run("ext battery present, matched close", (t) => t === 1 ? { extConn: true, vext: 400 } : en(t), { st: ["RUN"], extra: m => m.kout });
+run("ext battery present, stack meets it through the diode (E67)", (t) => t === 1 ? { extConn: true, vext: 400 } : en(t), { st: ["RUN"], extra: m => m.iout > 0 });
 run("reverse backfeed → F.33 inhibit", (t) => t === 1 ? { extConn: true, vext: -350 } : en(t), { st: ["FAULT", "LOCK"], code: F.BACKFEED });
 // 13–17 grid
 run("phase loss mid-run → F.09", (t) => t === 500 ? { enable: true } : t === 1500 ? { phases: 2 } : {}, { st: ["FAULT", "LOCK"], code: F.PH_LOSS });
@@ -171,8 +168,8 @@ run("sag 250 V → F.08", (t) => t === 500 ? { enable: true } : t === 1500 ? { v
 run("bus HW OVP 870 V → F.03", (t, m) => t === 500 ? { enable: true } : t === 1500 ? { bus: 870 } : {}, { st: ["FAULT", "LOCK"], code: F.BUS_OVP_HW });
 run("midpoint imbalance → F.06", (t) => t === 500 ? { enable: true } : t === 1500 ? { mid: 0.44 } : {}, { st: ["FAULT", "LOCK"], code: F.MID_IMB });
 // 18–19 mode transitions
-run("S/P up-transition 400→750 V under dwell", (t) => t === 500 ? { enable: true } : t === 1200 ? { vcmd: 750 } : {}, { st: ["RUN"], extra: m => m.mode === "SER" && m.kser && m.kout });
-run("transition with welded K_PARA → F.18", (t, m) => t === 1 ? { weldedPARA: true } : t === 500 ? { enable: true } : t === 1200 ? { vcmd: 750 } : {}, { st: ["FAULT", "LOCK"], code: F.WELD });
+run("S/P up-transition 400→750 V under dwell", (t) => t === 500 ? { enable: true } : t === 1200 ? { vcmd: 750 } : {}, { st: ["RUN"], extra: m => m.mode === "SER" && m.kser });
+run("transition with welded K_PARA → F.17 at the SER start (E67)", (t, m) => t === 1 ? { weldedPARA: true } : t === 500 ? { enable: true } : t === 1200 ? { vcmd: 750 } : {}, { st: ["FAULT", "LOCK"], code: F.BANK_IMB });
 // 20–22 thermal/airflow/sensor
 run("fan fail → DERATE 50%", (t) => t === 500 ? { enable: true } : t === 1500 ? { fanOk: false } : {}, { st: ["DERATE"], extra: m => m.derate === 0.5 });
 run("OT 118 °C → F.22", (t) => t === 500 ? { enable: true } : t === 1500 ? { tempX: 118 } : {}, { st: ["FAULT", "LOCK"], code: F.OT });

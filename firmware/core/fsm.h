@@ -24,6 +24,9 @@ typedef enum {
 } pmp_fault_t;
 
 typedef enum { MODE_PAR = 0, MODE_SER = 1 } pmp_mode_t;
+/* E67: output-voltage mode as the charging-module market sets it (UUGreen/ENR "set high or low voltage mode", Tonhe low/high
+ * section, NIUERA 0xA0/0xA1/0xA2) — MODULE_CTL force_lv / force_hv, neither = AUTO. Applied only in STANDBY. */
+typedef enum { OMODE_AUTO = 0, OMODE_LOW = 1, OMODE_HIGH = 2 } pmp_omode_t;
 
 typedef struct {            /* measured / external inputs, engineering units */
   float vin_ll;             /* worst line-line VAC */
@@ -35,18 +38,19 @@ typedef struct {            /* measured / external inputs, engineering units */
   float temp_max_c;         /* worst NTC zone (per-zone handling in zone table upstream) */
   bool fan_ok, aux_ok, wdt_ok;
   bool desat_flt, oc_pfc_flt;             /* latched HW flags (read-clear) */
-  bool relay_fb[6];                       /* contact readback: SER,PARA,PARB,OUT,PREA,PREB */
   uint32_t can_age_ms, link_age_ms;
   bool enable_req, clear_req;
   float vcmd, icmd;                       /* CAN setpoints */
+  pmp_omode_t omode_req;                  /* E67: MODULE_CTL force_lv/force_hv (AUTO when neither) */
 } pmp_in_t;
 
 typedef struct {            /* commands to drivers/relays/loops */
   bool pfc_en, llc_en, pwm_kill;
-  bool k_pre, k_ser, k_para, k_parb, k_out, k_prea, k_preb, q_disch;
+  bool k_pre, k_ser, k_para, k_parb, q_disch;   /* E67: K_OUT + pre-insertion retired — the output blocking diode */
   float derate;             /* 0..1 multiplier on power/current limits */
   pmp_mode_t mode;
   float vbus_ref;           /* E10 policy */
+  float v_max;              /* E67: voltage-loop ceiling of the bank connection — PAR 500 V, SER 1000 V */
 } pmp_out_t;
 
 typedef struct {
@@ -59,6 +63,7 @@ typedef struct {
   float oc_line_a, oc_tank_a;  /* E60: F.01 / F.11 hardware-comparator thresholds, A pk, per rating —
                                   the HAL programs the CMP DACs from these (firmware may tighten, never loosen) */
   float icmd_saved;
+  pmp_omode_t omode;        /* E67: the mode in force for this session (latched from omode_req in STANDBY) */
   pmp_out_t out;
 } pmp_fsm_t;
 
@@ -100,8 +105,12 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_WELD_DV_V        1.5f
 #define PMP_WELD_MS        200u
 #define PMP_MODE_DWELL_MS   30u     /* scaled: 30 s in product, 30 ms in host sim timebase */
-#define PMP_XOVER_UP_V     500.0f   /* E9 rev B */
-#define PMP_XOVER_DN_V     525.0f
+/* E67: LOW (banks parallel) ≤ 500 V, HIGH (banks series) ≥ 500 V. AUTO starts on the 500 V line and switches in RUN (stop,
+   reconfigure, restart) with a 480 V return so a battery at the boundary cannot chatter; HIGH refuses a start below 480 V. */
+#define PMP_XOVER_UP_V     480.0f
+#define PMP_XOVER_DN_V     500.0f
+#define PMP_PAR_VMAX_V     500.0f
+#define PMP_SER_VMAX_V    1000.0f
 /* E60: bus reference floor tracks the line — a Vienna rectifier cannot regulate below the line-line
    crest (cycle-by-cycle sim: 475 VAC on a 650 V bus = 75 % overmodulation, 15 % THD; with the floor
    0.1 % THD). vbus_ref = clamp(max(2·bank/0.95, K·√2·VLL), 650, 830). */

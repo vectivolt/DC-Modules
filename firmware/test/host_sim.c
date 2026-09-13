@@ -50,14 +50,16 @@ static void plant_step(sim_t *s) {
   float ilim = s->p.transient > 0 ? s->in.icmd * 1.25f : s->in.icmd;
   if (s->p.transient > 0) s->p.transient--;
   float vtar = fminf(s->in.vcmd, ilim * rload);
-  float bankT = o->llc_en ? fminf(vtar / (o->mode == MODE_SER ? 2 : 1), 525) : 0;
+  float bankT = o->llc_en ? fminf(vtar / (o->mode == MODE_SER ? 2 : 1), 500) : 0;
   p->bankA += ((o->llc_en ? bankT : p->bankA * 0.995f) - p->bankA) * 0.08f;
   p->bankB += ((o->llc_en ? bankT : p->bankB * 0.995f) - p->bankB) * 0.08f;
-  if (s->welded_para) p->bankB = p->bankA;
+  /* a welded K_PARA: paralleled banks track; in SER (KSER closed) it shorts bank A (E67 → F.17 at the soft start) */
+  if (s->welded_para) { if (o->mode == MODE_SER && o->k_ser) p->bankA = 0; else p->bankB = p->bankA; }
   float stack = (o->mode == MODE_SER) ? (o->k_ser ? p->bankA + p->bankB : p->bankA)
                                       : (o->k_para ? fmaxf(p->bankA, p->bankB) : p->bankA);
-  p->vout = o->k_out ? stack : (s->in.ext_connected ? s->in.vext : 0);
-  p->iout = (o->k_out && o->llc_en) ? fminf(stack / fmaxf(rload, 0.01f), ilim * 1.02f) : 0;
+  bool out = s->f.st == ST_RUN || s->f.st == ST_DERATE;             /* E67: the output diode conducts once RUN is entered */
+  p->vout = o->llc_en ? fmaxf(stack, s->in.ext_connected ? s->in.vext : 0) : (s->in.ext_connected ? s->in.vext : 0);
+  p->iout = (out && o->llc_en) ? fminf(stack / fmaxf(rload, 0.01f), ilim * 1.02f) : 0;
   p->temp += ((o->llc_en ? 40 + 55 * o->derate + (s->in.fan_ok ? 0 : 15) : 40) - p->temp) * 0.002f;
   /* feed measurements */
   s->in.vbus = p->bus;
@@ -65,8 +67,6 @@ static void plant_step(sim_t *s) {
   s->in.vout_meas = s->vout_stuck_en ? s->vout_stuck : p->vout;
   s->in.iout_meas = p->iout;
   s->in.temp_max_c = p->temp;
-  s->in.relay_fb[1] = s->welded_para || o->k_para;   /* PARA readback tracks weld */
-  s->in.relay_fb[2] = s->welded_para || o->k_parb;
 }
 
 typedef void (*script_fn)(sim_t *s);
@@ -93,8 +93,8 @@ static void runsim(sim_t *s, script_fn fn, int ticks) {
     plant_step(s);
     pmp_fsm_step(&s->f, &s->in);
     /* the hardware UEXCL/UEXCL2 pair enforces this state-wise; firmware must never even ASK
-     * for it: KSER commanded together with any parallel-side contact (mains or pre-insertion) */
-    if (s->f.out.k_ser && (s->f.out.k_para || s->f.out.k_parb || s->f.out.k_prea || s->f.out.k_preb)) excl_viol++;
+     * for it: KSER commanded together with a parallel-side contact */
+    if (s->f.out.k_ser && (s->f.out.k_para || s->f.out.k_parb)) excl_viol++;
     s->in.desat_flt = false; s->in.oc_pfc_flt = false; s->in.clear_req = false; /* read-clear */
   }
 }
@@ -115,13 +115,20 @@ SCRIPT(sc_sag) { sc_en(s); if (s->t == 1500) s->in.vin_ll = 250; }
 SCRIPT(sc_busov) { sc_en(s); if (s->t == 1500) s->p.bus = 870; }
 SCRIPT(sc_mid) { sc_en(s); if (s->t == 1500) s->in.vmid_frac = 0.44f; }
 SCRIPT(sc_modesw) { sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
+SCRIPT(sc_start490) { if (s->t == 1) s->in.vcmd = 490; sc_en(s); }
 SCRIPT(sc_start510) { if (s->t == 1) s->in.vcmd = 510; sc_en(s); }
+/* E67 2-mode convention: forced LOW at a 700 V command runs PAR capped at 500 V; forced HIGH at 450 V is refused; a mode
+ * request that arrives while running waits for the next start; AUTO returns to PAR only below 480 V */
+SCRIPT(sc_lowforced) { if (s->t == 1) { s->in.vcmd = 700; s->in.omode_req = OMODE_LOW; } sc_en(s); }
+SCRIPT(sc_highlow) { if (s->t == 1) { s->in.vcmd = 450; s->in.omode_req = OMODE_HIGH; } sc_en(s); }
+SCRIPT(sc_reqrun) { if (s->t == 1) s->in.vcmd = 750; sc_en(s); if (s->t == 1500) s->in.omode_req = OMODE_LOW; }
+SCRIPT(sc_hyst) { if (s->t == 1) s->in.vcmd = 510; sc_en(s); if (s->t == 1500) s->in.vcmd = 490; }
 SCRIPT(sc_hiline) { if (s->t == 1) { s->in.vin_ll = 475; s->in.vcmd = 300; } sc_en(s); }
 SCRIPT(sc_weld) { if (s->t == 1) s->welded_para = true; sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
 /* E65: EV sends its maximum (800 V) as vcmd while the pack sits at 450 V — must start PAR, never SER at bank 225 V */
 SCRIPT(sc_extlow) { if (s->t == 1) { s->in.ext_connected = true; s->in.vext = 450; s->in.vcmd = 800; } sc_en(s); s->rload_ovr = 4.5f; }
 /* E65: session starts at 300 V (bus ref 650) and the command climbs to 520 V — the reference must follow (830) */
-SCRIPT(sc_climb) { if (s->t == 1) s->in.vcmd = 300; sc_en(s); if (s->t == 1800) s->in.vcmd = 520; }
+SCRIPT(sc_climb) { if (s->t == 1) s->in.vcmd = 300; sc_en(s); if (s->t == 1800) s->in.vcmd = 495; }
 /* E65: a magnetics cutout opens — the T_XFMR channel hits the rail and the guard reports 150 °C */
 SCRIPT(sc_ntcopen) { sc_en(s); if (s->t >= 1500) s->p.temp = pmp_ntc_guard_c(70.0f, 0.995f); }
 SCRIPT(sc_fan) { sc_en(s); if (s->t == 1500) s->in.fan_ok = false; }
@@ -145,13 +152,13 @@ int main(void) {
   sim_t s;
   /* -------- scenarios (mirror fsm-sim.mjs) -------- */
   sim_init(&s); runsim(&s, sc_none, 3000);   expect("power-up->precharge->standby", &s, "|STANDBY|", -1, 1);
-  sim_init(&s); runsim(&s, sc_en, 3000);     expect("enable->run PAR", &s, "|RUN|", -1, s.f.out.k_para && s.f.out.k_out);
+  sim_init(&s); runsim(&s, sc_en, 3000);     expect("enable->run PAR", &s, "|RUN|", -1, s.f.out.k_para && s.f.out.k_parb && !s.f.out.k_ser);
   sim_init(&s); runsim(&s, sc_ser, 3000);    expect("enable->run SER 750V", &s, "|RUN|", -1, s.f.out.k_ser);
   sim_init(&s); runsim(&s, sc_steps, 3000);  expect("load steps 0-25-100-25", &s, "|RUN|", -1, s.p.iout < 135);
   sim_init(&s); runsim(&s, sc_cvcc, 3000);   expect("CV->CC->CV", &s, "|RUN|", -1, s.p.iout <= 135);
   sim_init(&s); runsim(&s, sc_open, 3000);   expect("output open", &s, "|RUN|", -1, s.p.iout < 1);
   sim_init(&s); runsim(&s, sc_short, 3000);  expect("output short F.16", &s, "|FAULT|LOCK|", FC_OUT_SHORT, 1);
-  sim_init(&s); runsim(&s, sc_extok, 3000);  expect("ext battery matched close", &s, "|RUN|", -1, s.f.out.k_out);
+  sim_init(&s); runsim(&s, sc_extok, 3000);  expect("E67 ext battery: stack meets it through the diode", &s, "|RUN|", -1, s.p.iout > 0);
   sim_init(&s); runsim(&s, sc_extrev, 3000); expect("reverse backfeed F.33", &s, "|FAULT|LOCK|", FC_BACKFEED, 1);
   sim_init(&s); runsim(&s, sc_phloss, 3000); expect("phase loss F.09", &s, "|FAULT|LOCK|", FC_PH_LOSS, 1);
   sim_init(&s); runsim(&s, sc_swell, 3000);  expect("swell F.07", &s, "|FAULT|LOCK|", FC_IN_OV, 1);
@@ -159,13 +166,18 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_busov, 3000);  expect("bus OVP F.03", &s, "|FAULT|LOCK|", FC_BUS_OVP, 1);
   sim_init(&s); runsim(&s, sc_mid, 3000);    expect("midpoint F.06", &s, "|FAULT|LOCK|", FC_MID_IMB, 1);
   sim_init(&s); runsim(&s, sc_modesw, 3000); expect("S/P transition w/ dwell", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.out.k_ser);
-  sim_init(&s); runsim(&s, sc_start510, 3000); expect("E60 start at 510 V selects PAR (entry = 525 V)", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser);
+  sim_init(&s); runsim(&s, sc_start490, 3000); expect("E67 start at 490 V selects LOW/PAR", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser && s.f.out.v_max == 500.0f);
+  sim_init(&s); runsim(&s, sc_start510, 3000); expect("E67 start at 510 V selects HIGH/SER (line = 500 V)", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.out.k_ser && !s.f.out.k_para);
+  sim_init(&s); runsim(&s, sc_lowforced, 3000); expect("E67 forced LOW at 700 V runs PAR capped 500 V", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.v_max == 500.0f && s.p.bankA <= 501.0f);
+  sim_init(&s); runsim(&s, sc_highlow, 3000); expect("E67 forced HIGH at 450 V refused (standby)", &s, "|STANDBY|", -1, !s.f.out.llc_en && !s.f.out.k_ser);
+  sim_init(&s); runsim(&s, sc_reqrun, 3000); expect("E67 mode request ignored while running", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.omode == OMODE_AUTO);
+  sim_init(&s); runsim(&s, sc_hyst, 3000);   expect("E67 AUTO holds SER at 490 V (return 480 V)", &s, "|RUN|", -1, s.f.out.mode == MODE_SER);
   sim_init(&s); runsim(&s, sc_hiline, 3000); expect("E60 bus floor at 475 VAC >= 1.08*sqrt2*VLL", &s, "|RUN|", -1, s.f.out.vbus_ref >= 1.08f * 1.414f * 475.0f - 0.5f);
   sim_init(&s); runsim(&s, sc_extlow, 3000); expect("E65 vcmd 800 / battery 450 V starts PAR", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser);
-  sim_init(&s); runsim(&s, sc_climb, 3000);  expect("E65 bus ref follows a climbing bank (300 -> 520 V)", &s, "|RUN|", -1, s.f.out.vbus_ref >= 829.0f && s.f.out.mode == MODE_PAR);
+  sim_init(&s); runsim(&s, sc_climb, 3000);  expect("E65 bus ref follows a climbing bank (300 -> 495 V)", &s, "|RUN|", -1, s.f.out.vbus_ref >= 829.0f && s.f.out.mode == MODE_PAR);
   sim_init(&s); runsim(&s, sc_ntcopen, 3000); expect("E65 open NTC/cutout loop F.22", &s, "|FAULT|LOCK|", FC_OT, 1);
   ck("E65 ntc guard passes a healthy -40 C reading", pmp_ntc_guard_c(-40.0f, 0.96f) == -40.0f);
-  sim_init(&s); runsim(&s, sc_weld, 3000);   expect("welded K_PARA F.18", &s, "|FAULT|LOCK|", FC_WELD, 1);
+  sim_init(&s); runsim(&s, sc_weld, 3000);   expect("E67 welded K_PARA -> F.17 at the SER soft start", &s, "|FAULT|LOCK|", FC_BANK_IMB, 1);
   sim_init(&s); runsim(&s, sc_fan, 3000);    expect("fan fail derate 50%", &s, "|DERATE|", -1, s.f.out.derate == 0.5f);
   sim_init(&s); runsim(&s, sc_ot, 3000);     expect("OT F.22", &s, "|FAULT|LOCK|", FC_OT, 1);
   sim_init(&s); runsim(&s, sc_sensor, 3000); expect("stuck Vout sensor F.29", &s, "|FAULT|LOCK|", FC_SENSOR, 1);
@@ -189,9 +201,9 @@ int main(void) {
   sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);
   runsim(&s, sc_dstuck, 6600);               expect("stuck discharge, 50 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
   sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);
-  checks++; if (s.f.oc_line_a != 195.0f || s.f.oc_tank_a != 145.0f) { fails++; puts("FAIL E60 50 kW OC classes"); } else puts("PASS E60 50 kW OC classes 195/145 A pk");
+  checks++; if (s.f.oc_line_a != 195.0f || s.f.oc_tank_a != 220.0f) { fails++; puts("FAIL E67 50 kW OC classes"); } else puts("PASS E67 50 kW OC classes 195/220 A pk");
   pmp_fsm_set_rating_kw(&s.f, 40);
-  checks++; if (s.f.oc_line_a != 155.0f || s.f.oc_tank_a != 115.0f) { fails++; puts("FAIL E60 40 kW OC classes"); } else puts("PASS E60 40 kW OC classes 155/115 A pk");
+  checks++; if (s.f.oc_line_a != 155.0f || s.f.oc_tank_a != 180.0f) { fails++; puts("FAIL E67 40 kW OC classes"); } else puts("PASS E67 40 kW OC classes 155/180 A pk");
   sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
 

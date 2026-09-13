@@ -18,12 +18,13 @@ console.log("=== FAULT-ENERGY / BURN-SAFETY AUDIT (E59) ===");
 // ---- 1. energy reservoirs and their dump paths (J at the worst legal voltage) ----
 // E60: module heat read from the loss-budget output (was hand-copied and went stale when the
 // LLC current basis was re-solved)
-const LB = Object.fromEntries(readFileSync(new URL("../out/loss-budget.csv", import.meta.url), "utf8").trim().split("\n").slice(1).map((l) => l.split(",")).map((c) => [c[0].toLowerCase(), +c[13]]));
+const LBL = readFileSync(new URL("../out/loss-budget.csv", import.meta.url), "utf8").trim().split("\n").map((l) => l.split(","));
+const LB = Object.fromEntries(LBL.slice(1).map((c) => [c[0].toLowerCase(), +c[LBL[0].indexOf("total_jbs_W")]]));   // E67: by header — a new loss column shifted the index
 const SKUS = {
-  "30kw": { linkCans: 10, bankStrPerBank: 2, Pworst: LB["30kw"], fans: 2, out: 100 },
-  "40kw": { linkCans: 12, bankStrPerBank: 3, Pworst: LB["40kw"], fans: 3, out: 133 },
-  "50kw": { linkCans: 16, bankStrPerBank: 4, Pworst: LB["50kw"], fans: 0, out: 167 },   // liquid
-  "50kwa": { linkCans: 16, bankStrPerBank: 4, Pworst: LB["50kwa"], fans: 4, out: 167 },
+  "30kw": { linkCans: 10, bankCe: 1, Pworst: LB["30kw"], fans: 2, out: 100 },
+  "40kw": { linkCans: 12, bankCe: 1, Pworst: LB["40kw"], fans: 3, out: 133 },
+  "50kw": { linkCans: 16, bankCe: 2, Pworst: LB["50kw"], fans: 0, out: 167 },   // liquid
+  "50kwa": { linkCans: 16, bankCe: 2, Pworst: LB["50kwa"], fans: 4, out: 167 },
 };
 for (const [sku, s] of Object.entries(SKUS)) {
   const Clink = (s.linkCans / 2) * 470e-6 / 1;            // 2-series strings paralleled
@@ -32,12 +33,12 @@ for (const [sku, s] of Object.entries(SKUS)) {
   const rClass = sku === "30kw" || sku === "40kw" ? (sku === "40kw" ? 480 : 480) : 480;  // 25 W CER family point 480 J single-event (HR-14 basis; 50 W parts at 50 kW)
   ck("RESERVOIR", `${sku} DC link ${f(Elink, 0)} J @860 V`, perR <= rClass,
     `C=${f(Clink * 1e3, 2)} mF → ${f(perR, 0)} J per discharge resistor vs ${rClass} J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)`);
-  const Ebank = 0.5 * (s.bankStrPerBank * 470e-6 / 2) * 525 ** 2;
-  ck("RESERVOIR", `${sku} bank ${f(Ebank, 0)} J @525 V`, Ebank / 4 <= 65,
+  const Ebank = 0.5 * (s.bankCe * 330e-6) * 500 ** 2;   // E67: nE × 330 µF 550 V per bank behind the filter inductor, bank ≤ 500 V
+  ck("RESERVOIR", `${sku} bank ${f(Ebank, 0)} J @500 V`, Ebank / 4 <= 65,
     `per bleeder-chain resistor ${f(Ebank / 4, 1)} J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)`);
 }
-ck("RESERVOIR", "tank caps (per section, worst)", 0.5 * 216e-9 * 865 ** 2 < 0.2,
-  `${f(0.5 * 216e-9 * 865 ** 2 * 1000, 0)} mJ — three orders below any pulse rating; rings down in the tank R`);
+ck("RESERVOIR", "tank caps (E67 full bridge, 11 × 33 nF worst)", 0.5 * 363e-9 * 865 ** 2 < 0.2,
+  `${f(0.5 * 363e-9 * 865 ** 2 * 1000, 0)} mJ — three orders below any pulse rating; rings down in the tank R`);
 // E60: at the 50 kW observability ceiling (311 A on 13 Ω) the D1-50 is soft-saturated — L(311 A,
 // lot −8 %) ≈ 15.8 µH on the catalog 26µ curve (current-coordination owns the per-SKU race)
 ck("RESERVOIR", "D1 magnetic energy at the CT ceiling", 0.5 * 15.8e-6 * 311 ** 2 < 2,
@@ -70,9 +71,9 @@ ck("VENT", "bank/link can strings", 900 >= 525 * 1.55 && true,
 const need = (P) => 3600 * P / (1.16 * 1005 * 20);
 for (const [sku, s] of Object.entries(SKUS)) {
   if (s.fans === 0) {
-    const dT = s.Pworst / (0.1 * 1042 * 3.4);   // 6 L/min = 0.1 L/s × ρ1042 × cp3.4 J/gK (50/50 EG)
+    const dT = s.Pworst / ((6.5 / 60) * 1042 * 3.4);   // E67: 6.5 L/min (was 6 — the DOUT + D8 output path added 188 W) × ρ1042 × cp3.4 J/gK (50/50 EG)
     ck("AIR", `${sku} liquid loop`, dT <= 5,
-      `${f(s.Pworst, 0)} W into 6 L/min 50/50 EG-water → coolant ΔT ${f(dT, 1)} K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder`);
+      `${f(s.Pworst, 0)} W into 6.5 L/min 50/50 EG-water → coolant ΔT ${f(dT, 1)} K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder`);
     continue;
   }
   const req = need(s.Pworst), have = s.fans * 160 * 0.6;

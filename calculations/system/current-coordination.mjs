@@ -12,7 +12,9 @@ import { shortRacePeak } from "../../spice/llc/llc-flux-post.mjs";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { TANKS, fingerprint } from "../llc/tanks.mjs";
+import { TANKS, TANK_CLASS, JBS_POS, fingerprint } from "../llc/tanks.mjs";
+import { D2 as D2C } from "../magnetics/magnetics-envelope.mjs";
+import { stack } from "../magnetics/geometry.mjs";
 import { D1, Ld1 } from "../pfc/vienna-switched.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const rd = (p) => readFileSync(join(ROOT, p), "utf8");
@@ -23,17 +25,18 @@ const ck = (sec, name, cond, detail) => { console.log(`${cond ? "  ok  " : "  FA
 // ---- THE coordination classes. fsm.c, boards.tsx/cells.tsx, parts-db and protection-thresholds.md
 // are asserted against this table (section K) so the carriers cannot drift apart again.
 export const OC = {
-  // E65 resonant burdens 1.2/0.91/0.75 → 1.0/0.82/0.68 Ω: the internal-short race measured from the F.11 CROSSING peaks at
-  // 149/180/213 A (216 A air twin) — beyond the 135/178 A ceilings of the E60 burdens at 30/40 kW, 0.2 % inside at 50 kW air
-  "30kw": { F01: 120, lineRb: 22, F11: 85, resRb: 1.0, lineMpn: "R1206-22R-1%", resMpn: "R2512-1R00-1W-1%" },
-  "40kw": { F01: 155, lineRb: 18, F11: 115, resRb: 0.82, lineMpn: "R1206-18R-1%", resMpn: "R2512-0R82-1W-1%" },
-  "50kw": { F01: 195, lineRb: 13, F11: 145, resRb: 0.68, lineMpn: "R1206-13R-1%", resMpn: "R2512-0R68-2W-1%" },
+  // E67 full bridge: ONE resonant CT carries the whole tank. F.11 = 1.2 × the power-solved worst peak (the PSM-at-f_max 764 V-bus
+  // corner: 113/148/183 A); the post-short race from that corner crosses F.11 1.35–1.5 µs after the bank collapse and reaches
+  // 328/417/503 A at +3 µs, so the burden drops to keep that monitor peak on the ADC rail (thresholds 0.66 V above AVMID)
+  "30kw": { F01: 120, lineRb: 22, F11: 140, resRb: 0.47, lineMpn: "R1206-22R-1%", resMpn: "R2512-0R47-1W-1%" },
+  "40kw": { F01: 155, lineRb: 18, F11: 180, resRb: 0.36, lineMpn: "R1206-18R-1%", resMpn: "R2512-0R36-1W-1%" },
+  "50kw": { F01: 195, lineRb: 13, F11: 220, resRb: 0.30, lineMpn: "R1206-13R-1%", resMpn: "R2512-0R30-2W-1%" },
 };
 OC["50kwa"] = OC["50kw"];
 export const BLANK = { pfc: 47e-12, llc: 22e-12 };              // DESAT blanking caps (NSI66x1A)
 const RULE = { margin: 1.2, avmid: 1.65, rail: 3.27, thrMaxV: 3.0 };
 const Bsat130 = 0.499 + (0.401 - 0.499) / 75 * (130 - 25);      // measured 3C95 (temp-critique basis)
-console.log("=== CURRENT & PROTECTION COORDINATION (E60) — simulated currents vs thresholds, ceilings, flux, timing, parts ===");
+console.log("=== CURRENT & PROTECTION COORDINATION (E60 gate, E67 full bridge) — simulated currents vs thresholds, ceilings, flux, timing, parts ===");
 
 // ---------------- A. simulation freshness + physicality ----------------
 const SUM = {}, LLC = {};
@@ -44,8 +47,8 @@ for (const sku of Object.keys(TANKS)) {
   const hdr = lines[0].split(","); LLC[sku] = lines.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [hdr[i], v])));
   ck("SIM", `${sku} LLC deck pinned to the drawn tank`, s.fingerprint === fingerprint(sku),
     `${s.fingerprint} vs tanks.mjs ${fingerprint(sku)} — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)`);
-  ck("SIM", `${sku} deck physical + capable`, s.legsInRails && s.zvsAll && LLC[sku].every((r) => r.mode !== "NO-CAPABILITY" && Math.abs(+r.P_err_pct) <= 2.5),
-    `legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 3 legs every corner · power solved ≤2.5 % incl. the gain-worst tolerance corner`);
+  ck("SIM", `${sku} deck physical + capable`, s.legsInRails && s.zvsAll && LLC[sku].every((r) => r.mode !== "NO-CAPABILITY" && (r.mode === "BURST" || Math.abs(+r.P_err_pct) <= 2.5)),
+    `legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 4 switches every corner · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner`);
 }
 const vs = rd("calculations/out/vienna-switched.csv").split("\n").filter((l) => l && !l.startsWith("#"));
 const vh = vs[0].split(","), VS = vs.slice(1).map((l) => { const c = l.match(/("[^"]*"|[^,]+)/g); return Object.fromEntries(c.map((v, i) => [vh[i], v])); });
@@ -80,30 +83,52 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
 const SEC = { "30kw": { rth: 1.9, ref: 70 }, "40kw": { rth: 1.9, ref: 70 }, "50kw": { rth: 1.1, ref: 65 }, "50kwa": { rth: 1.9, ref: 70 } };
 for (const sku of Object.keys(TANKS)) {
   const t = TANKS[sku], c = OC[sku], s = SUM[sku], rows = LLC[sku];
-  const nominal = rows.filter((r) => !/mismatch/.test(r.corner));
-  const pkNom = Math.max(...nominal.map((r) => +r.Ip_pk_A)), rmsNom = Math.max(...nominal.map((r) => +r.Ip_rms_A));
+  const pkNom = Math.max(...rows.map((r) => +r.Ip_pk_A)), rmsNom = Math.max(...rows.map((r) => +r.Ip_rms_A));
   ck("F.11", `${sku} threshold ≥ ${RULE.margin}× simulated worst tank peak`, c.F11 >= RULE.margin * s.ipPkMax,
-    `${c.F11} A pk vs ${s.ipPkMax} A (${s.worstCorner}; nominal corners ${f(pkNom)} A) → ${f(c.F11 / s.ipPkMax, 2)}× — the as-drawn 70/70/95 A sat at 1.00/0.74/0.81×`);
-  // E65: F.11 is a hardware WINDOW comparator per section (both polarities → HRTIMER_FLT2): the kill lands ≤1 µs after |Ip|
+    `${c.F11} A pk vs ${s.ipPkMax} A (${s.worstCorner}) → ${f(c.F11 / s.ipPkMax, 2)}×`);
+  // E65: F.11 is a hardware WINDOW comparator on the tank CT (both polarities → HRTIMER_FLT2): the kill lands ≤1 µs after |Ip|
   // crosses F.11 on the committed post-short envelope (llc-short.csv). The E60 check sampled fixed times after the short and
   // assumed a positive-only threshold — which the worst section crosses 4.5–6.4 µs late because the fault swings it negative.
   const { tX, peak: racePk } = shortRacePeak(sku, c.F11), mon = shortRacePeak(sku, c.F11, 3).peak;
   const di = racePk - c.F11, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
   ck("F.11", `${sku} window-comparator kill + observability`, racePk * 1.2 <= ceil && mon * 1.05 <= ceil && thrV <= RULE.thrMaxV && 2 * RULE.avmid - thrV >= 0.3,
-    `|Ip| crosses F.11 ${f(tX, 2)} µs after the short → kill peak ${f(racePk)} A (+1 µs, ×1.2 ≤ ${f(ceil)} A on ${c.resRb} Ω) · monitor peak +3 µs ${f(mon)} A ×1.05 in rail · window ${f(2 * RULE.avmid - thrV, 2)}/${f(thrV, 2)} V (E60 fixed-time sampling said ${f(c.F11 + s.race.at3us - s.race.pre)} A)`);
-  const Lmax = Math.max(...t.bins) * 1e-6;
-  const bNorm = Lmax * pkNom / (t.nTrim * t.aeTrim), bFault = Lmax * racePk / (t.nTrim * t.aeTrim);
-  ck("D2", `${sku} trim flux: operating + fault`, bNorm <= 0.110 && bFault <= 0.6 * Bsat130,
-    `bin-max ${Math.max(...t.bins)} µH: ${f(bNorm * 1e3, 0)} mT at the worst nominal peak (≤110; the pack's 100 mT line was taken at the NOMINAL bin) · ${f(bFault * 1e3, 0)} mT at F.11+race ≤ 60 % Bsat(130 °C) ${f(0.6 * Bsat130 * 1e3, 0)} mT`);
+    `|Ip| crosses F.11 ${f(tX, 2)} µs after the short → kill peak ${f(racePk)} A (+1 µs, ×1.2 ≤ ${f(ceil)} A on ${c.resRb} Ω) · monitor peak +3 µs ${f(mon)} A ×1.05 in rail · window ${f(2 * RULE.avmid - thrV, 2)}/${f(thrV, 2)} V`);
+  const d2 = D2C[sku], Ae2 = stack(d2.core, d2.n).Ae;
+  const bNorm = d2.Lmax * pkNom / (d2.N * Ae2), bFault = d2.Lmax * racePk / (d2.N * Ae2);
+  ck("D2", `${sku} external Lr flux: operating + fault`, bNorm <= 0.110 && bFault <= 0.6 * Bsat130,
+    `Lmax ${f(d2.Lmax * 1e6, 2)} µH (${d2.n}×${d2.core} N ${d2.N}): ${f(bNorm * 1e3, 0)} mT at the worst simulated peak (≤110) · ${f(bFault * 1e3, 0)} mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) ${f(0.6 * Bsat130 * 1e3, 0)} mT`);
   const perCap = rmsNom / t.crN, vcr = s.vcrAcMax / Math.SQRT2;
   ck("Cr", `${sku} resonant caps at the simulated corners`, perCap <= 12 && vcr <= 530,
     `${f(perCap, 2)} A rms per cap (${t.crN}× ${t.crNF} nF) ≤ 12 · Vcr ${s.vcrAcMax} V pk = ${f(vcr, 0)} V rms ≤ 530 (O-8 RFQ line; max sits at the gain-critical 77–82 kHz corner, not at fr)`);
-  ck("TANK", `${sku} tank RMS inside the drawn class`, rmsNom <= [46.4, 61.9, 77.3][sku === "30kw" ? 0 : sku === "40kw" ? 1 : 2] * 1.02,
-    `${f(rmsNom)} A rms (nominal+tolerance corners) vs class ${sku === "30kw" ? 46.4 : sku === "40kw" ? 61.9 : 77.3} — D2 litz/ΔT, Cr, CT all sized to it; the mismatch corner (${s.ipRmsMax} A) is an EOL current-sharing reject, not a thermal state`);
-  const dAvg = Math.max(...nominal.map((r) => +r.Idiode_avg_A)), dRms = Math.max(...nominal.map((r) => +r.Isec_rms_A)) / Math.SQRT2;
-  const pD = 0.95 * dAvg + 0.045 * dRms * dRms, tj = SEC[sku].ref + SEC[sku].rth * pD;
-  ck("JBS", `${sku} secondary diode at the SER-band corner`, tj <= 175 && (tj <= 150.5 || sku === "50kwa"),
-    `sim ${f(dAvg)} A avg / ${f(dRms)} A rms per diode → ${f(pD)} W → Tj ${f(tj, 0)} °C${tj > 150 ? " — above 150: the grid folds this corner (93 %, envelope-grid TjJBS column) and the start rule keeps SER out of 500–525 V" : ""} (hot JBS class V0 0.95 V/rd 45 mΩ — RFQ acceptance)`);
+  ck("TANK", `${sku} tank RMS inside the drawn class`, rmsNom <= TANK_CLASS[sku] * 1.02,
+    `${f(rmsNom)} A rms (nominal + tolerance corners) vs class ${TANK_CLASS[sku]} A — D2 litz/ΔT, Cr and the resonant CT are sized to it`);
+  const jp = JBS_POS[sku], rdJ = jp.cls === 40 ? 0.022 : 0.045;
+  const dAvg = Math.max(...rows.map((r) => +r.Idiode_avg_A)) / jp.n, dRms = Math.max(...rows.map((r) => +r.Isec_rms_A)) / Math.SQRT2 / jp.n;
+  const pD = 0.95 * dAvg + rdJ * dRms * dRms, tj = SEC[sku].ref + SEC[sku].rth * pD;
+  ck("JBS", `${sku} secondary diodes (${jp.n}× ${jp.cls} A per position) at the HIGH-mode floor`, tj <= 150.5,
+    `sim ${f(dAvg)} A avg / ${f(dRms)} A rms per diode → ${f(pD)} W → Tj ${f(tj, 0)} °C (hot JBS V0 0.95 V / rd ${rdJ * 1e3} mΩ — RFQ acceptance)`);
+}
+
+// ---------------- H2. E67 output stage: bank filter + blocking diode, from the committed ngspice ripple ----------------
+{
+  const boards = rd("packages/common-components/boards.tsx"), ch = JSON.parse(rd("calculations/out/dm-choke-design.json"));
+  const BF = { "30kw": { nF: 4, nE: 1, L: 7.4e-6 }, "40kw": { nF: 5, nE: 1, L: 10.5e-6 }, "50kw": { nF: 6, nE: 2, L: 12.9e-6 } };
+  const DOUT = { "30kw": { A: 150, rjc: 0.25 }, "40kw": { A: 200, rjc: 0.18 }, "50kw": { A: 250, rjc: 0.15 } };
+  for (const sku of Object.keys(TANKS)) {
+    const k = sku === "50kwa" ? "50kw" : sku, b = BF[k], t = TANKS[sku], d6 = ch[k];
+    const L = rd(`simulation-results/${sku}/llc-flux.csv`).split("\n").filter((l) => l && !l.startsWith("#")), h = L[0].split(",");
+    const rows = L.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [h[i], +v || v])));
+    const w = rows.reduce((a, r) => (r.Ibank_rip_A > a.Ibank_rip_A ? r : a)), f2 = 2 * w.fsw_kHz * 1e3;
+    const perCap = w.Ibank_rip_A / b.nF, xcf = 1 / (2 * Math.PI * f2 * b.nF * 2.2e-6), xlf = 2 * Math.PI * f2 * b.L, iCe = (w.Ibank_rip_A * xcf / xlf) / b.nE;
+    const iDC = Math.max(t.P / 500, t.Imax / 2), crest = Math.SQRT2 * d6.J * d6.aw_mm2, pLf = (d6.Rdc_mR / 1e3) * iDC * iDC, dT = d6.dT * pLf / d6.P;
+    ck("OUT", `${sku} bank filter: film ripple, Lf DC duty, electrolytic ripple + voltage`, perCap <= 10.5 && iDC <= crest && dT <= 45 && iCe <= 2.0 && 500 / 550 <= 0.92,
+      `worst simulated bank ripple ${f(w.Ibank_rip_A)} A rms at ${w.corner} (2·fsw ${f(f2 / 1e3, 0)} kHz) → ${f(perCap, 2)} A per 2.2 µF (${b.nF}×, ≤10.5) · Lf ${f(b.L * 1e6, 1)} µH (D6-${k.slice(0, 2)} construction, L ≥ ${d6.Lpk} µH up to its ${f(crest, 0)} A crest basis) at ${f(iDC, 0)} A DC: ${f(pLf, 1)} W, ΔT ${f(dT, 0)} K · Ce ${f(iCe, 2)} A rms each (${b.nE}× 330 µF, ≤2.0) · 500 V of 550 V = 91 %`);
+    const Iout = t.Imax, pD = 1.05 * Iout, TjD = (sku === "50kw" ? 65 : 70) + pD * (DOUT[k].rjc + 0.08 + 0.1);
+    ck("OUT", `${sku} output blocking diode DOUT`, Iout <= 0.8 * DOUT[k].A && TjD <= 140,
+      `${Iout} A of the ${DOUT[k].A} A class (${f(100 * Iout / DOUT[k].A, 0)} %) · ${f(pD, 0)} W at Vf 1.05 V → Tj ${f(TjD, 0)} °C (Rjc ${DOUT[k].rjc} + TIM 0.08 + local 0.1 K/W to the ${sku === "50kw" ? 65 : 70} °C ref) — InfyPower practice; 1600 V vs 1000 V out = 63 %`);
+  }
+  ck("SYNC", "boards.tsx bank filter per rating", /pw === 50 \? \{ nF: 6, nE: 2, lf: "12\.9uH" \} : pw === 40 \? \{ nF: 5, nE: 1, lf: "10\.5uH" \} : \{ nF: 4, nE: 1, lf: "7\.4uH" \}/.test(boards),
+    "30 kW 4× film + 7.4 µH + 1× 330 µF · 40 kW 5× + 10.5 µH + 1× · 50 kW 6× + 12.9 µH + 2× (E67)");
 }
 
 // ---------------- I. DESAT timing vs short-circuit withstand ----------------
@@ -127,7 +152,7 @@ for (const sku of Object.keys(TANKS)) {
 
 // ---------------- J. bank energy into an external output short ----------------
 {
-  const C = 2 * (4 * 470e-6 / 2), R = 0.0125 + 0.010, V = 525;          // 50 kW PAR (worst bank C), ESR + bar/relay path
+  const C = 2 * (4 * 470e-6 / 2), R = 0.0125 + 0.010, V = 500;          // 50 kW LOW mode (worst bank C), ESR + bar/relay path
   const ipk = V / R, i2t = ipk * ipk * (R * C) / 2;
   ck("DUMP", "bank discharge into an external short vs K_OUT and copper", i2t <= 0.1 * 2000 * 2000 * 0.1 && i2t <= 0.01 * (115 * 50) ** 2,
     `Ipk ≈ ${f(ipk / 1e3, 1)} kA, τ ${f(R * C * 1e6, 0)} µs, I²t ${f(i2t, 0)} A²s ≤ 10 % of a 200 A relay's 2 kA/0.1 s class and ≤1 % of the 50 mm² bar — µs-scale, contacts already closed (no arc); the charger-level DC fuse/contactor is the 61851-23 system item`);
@@ -137,10 +162,10 @@ for (const sku of Object.keys(TANKS)) {
 {
   const fsm = rd("firmware/core/fsm.c"), cells = rd("packages/power-primitives/cells.tsx"), boards = rd("packages/common-components/boards.tsx");
   const db = rd("calculations/cost/parts-db.mjs"), prot = rd("docs/protection-thresholds.md");
-  ck("SYNC", "fsm.c per-rating OC classes", /oc_line_a = \(kw == 50u\) \? 195\.0f : \(kw == 40u\) \? 155\.0f : 120\.0f/.test(fsm) && /oc_tank_a = \(kw == 50u\) \? 145\.0f : \(kw == 40u\) \? 115\.0f : 85\.0f/.test(fsm),
-    "HAL programs the CMP DACs from these (120/155/195 line · 85/115/145 tank)");
-  ck("SYNC", "boards.tsx burdens per rating", /burden=\{pw === 50 \? "13" : pw === 40 \? "18" : "22"\}/.test(boards) && /ctBurden=\{pw === 50 \? "0\.68" : pw === 40 \? "0\.82" : "1\.0"\}/.test(boards),
-    "line 22/18/13 Ω · resonant 1.0/0.82/0.68 Ω (E65)");
+  ck("SYNC", "fsm.c per-rating OC classes", /oc_line_a = \(kw == 50u\) \? 195\.0f : \(kw == 40u\) \? 155\.0f : 120\.0f/.test(fsm) && /oc_tank_a = \(kw == 50u\) \? 220\.0f : \(kw == 40u\) \? 180\.0f : 140\.0f/.test(fsm),
+    "HAL programs the CMP DACs from these (120/155/195 line · 140/180/220 tank, E67)");
+  ck("SYNC", "boards.tsx burdens per rating", /burden=\{pw === 50 \? "13" : pw === 40 \? "18" : "22"\}/.test(boards) && /pw === 50 \? \{[^}]*burden: "0\.30"[^}]*\}\s*: pw === 40 \? \{[^}]*burden: "0\.36"[^}]*\} : \{[^}]*burden: "0\.47"/.test(boards) && /ctBurden=\{tank\.burden\}/.test(boards),
+    "line 22/18/13 Ω · resonant 0.47/0.36/0.30 Ω (E67)");
   // E65: the drawn F.11 window ladder must reproduce each rating's F.11 on its burden (ratiometric from V3P3, AVMID = V3P3/2)
   const lad = boards.match(/<F11Window rOut=\{pw === 50 \? "([\d.]+)k" : pw === 40 \? "([\d.]+)k" : "([\d.]+)k"\} rMid=\{pw === 50 \? "([\d.]+)k" : pw === 40 \? "([\d.]+)k" : "([\d.]+)k"\}/);
   const winA = lad ? [["50kw", +lad[1], +lad[4]], ["40kw", +lad[2], +lad[5]], ["30kw", +lad[3], +lad[6]]].map(([k, ro, rm]) => {
@@ -150,7 +175,7 @@ for (const sku of Object.keys(TANKS)) {
     winA.length ? winA.map(([k, a]) => `${k} ${f(a, 1)} A (F.11 ${OC[k].F11})`).join(" · ") + " — ladder ±1 % + comparator offset" : "F11Window ladder MISSING in boards.tsx");
   ck("SYNC", "parts-db burden mpns per rating", Object.values(OC).every((c) => db.includes(c.lineMpn) && db.includes(c.resMpn)),
     Object.entries(OC).filter(([k]) => k !== "50kwa").map(([k, c]) => `${k}: ${c.lineMpn} + ${c.resMpn}`).join(" · "));
-  ck("SYNC", "protection-thresholds carries the E60 class table", /E60 current-coordination classes/.test(prot) && ["120", "155", "195", "85", "115", "145"].every((v) => prot.includes(`${v} A pk`)),
+  ck("SYNC", "protection-thresholds carries the E67 class table", /E67 full-bridge F\.11 classes/.test(prot) && ["120", "155", "195", "140", "180", "220"].every((v) => prot.includes(`${v} A pk`)),
     "per-SKU F.01/F.11 table + DESAT timing note present");
   void cells;
 }

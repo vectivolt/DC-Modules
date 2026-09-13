@@ -93,7 +93,7 @@ flowchart LR
   F["fans 2 / 3 / — / 4<br/>front-to-back"] --> L & T & U
   M -->|bond heat| L
   M -->|bond heat| U
-  C["coldplate pair<br/>50 kW liquid · 6 L/min"] -.-> L & U
+  C["coldplate pair<br/>50 kW liquid · 6.5 L/min"] -.-> L & U
   style T stroke:#f2b705,stroke-width:2.5px
   style M stroke:#f2b705,stroke-width:2.5px
   style C stroke:#5f8fc0,stroke-width:2px

@@ -16,7 +16,7 @@
 //   HR-5 FLT pull-ups · HR-7 MOV+GDT L-PE surge path · MR-1 pulse resistors on axial footprints
 // Pin maps below are the §20 no-silent-reuse artifact (asserted at build; numbers symbolic per A6).
 import {
-  ViennaPhase, LlcHalfBridgeLeg, LlcSection, SplitDcLink, SeriesParallelRelayMatrix,
+  ViennaPhase, LlcHalfBridgeLeg, LlcTank, BankFilter, SplitDcLink, SeriesParallelRelayMatrix,
   IsoVSense, Bias5Module, AnalogMid, F11Window, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
   Interconnect40, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
   DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP,
@@ -437,10 +437,13 @@ return (
 
 // ================= DC-DC BOARD =================
 export const DcDcBoard = ({ channels, w, h, pw = 30, air = false }: { channels: number; w: number; h: number; pw?: number; air?: boolean }) => {
-  const legs = Array.from({ length: 3 * channels }, (_, i) => ({ id: `${i + 1}`, sw: `net.SW${i + 1}`, ch: Math.floor(i / 3) }));
-  const secs = legs.map(l => ({ ...l, star: `net.STAR${l.ch}` }));
+  // E67: ONE full-bridge LLC (legs 1 = SWA, 2 = SWB) per module — the InfyPower REG1K0135A2 architecture (tanks.mjs)
+  const legs = [{ id: "1", sw: "net.SWA" }, { id: "2", sw: "net.SWB" }];
+  const tank = pw === 50 ? { crN: 11, lr: "3.28uH", burden: "0.30", dPar: air ? 3 : 2, fetPar: air ? 3 : 2 }
+    : pw === 40 ? { crN: 9, lr: "4.07uH", burden: "0.36", dPar: 2, fetPar: 2 } : { crN: 7, lr: "5.16uH", burden: "0.47", dPar: 2, fetPar: 2 };
   const relayFb = ["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"];
-  const nBank = pw === 50 ? 4 : pw === 40 ? 3 : channels * 2;   // E41: 3 strings/bank @133 A · E42: 4 @167 A (per-string ≤42 A, same class use as 40)
+  // E67 bank filter per bank: film at the bridge (≤10.5 A rms per 2.2 µF at the simulated worst ripple 34.5/44.9/55.1 A — the PSM corner) · Lf · 550 V electrolytic
+  const bankF = pw === 50 ? { nF: 6, nE: 2, lf: "12.9uH" } : pw === 40 ? { nF: 5, nE: 1, lf: "10.5uH" } : { nF: 4, nE: 1, lf: "7.4uH" };
   // schematic sheet plan: bus row y=40..48 · LLC legs x=2 col (16/row from y=24) · sections x=30
   // · banks/matrix/bleeders x=58 · output+senses x=84 · control row below everything at cYd.
   const cYd = Math.min(24 - (3 * channels - 1) * 16 - 9.5, -25) - 10;
@@ -527,22 +530,22 @@ return (
       <trace from=".JDCP > .P" to="net.DCP" schDisplayLabel="DCP" />
       <trace from=".JDCN > .P" to="net.DCN" schDisplayLabel="DCN" />
       <trace from=".JPEB > .P" to="net.PE" schDisplayLabel="PE" />
-      {Array.from({ length: 3 * channels }, (_, i) => (
+      {Array.from({ length: 4 }, (_, i) => (
         <capacitor key={i} name={`CF${i}`} capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={Q.cfX} pcbY={Q.cfY - i * 26} schX={6 + i * 2.4} schY={44} />
       ))}
-      {Array.from({ length: 3 * channels }, (_, i) => [
+      {Array.from({ length: 4 }, (_, i) => [
         <trace key={`p${i}`} from={`.CF${i} > .pin1`} to="net.DCP" schDisplayLabel="DCP" />,
         <trace key={`n${i}`} from={`.CF${i} > .pin2`} to="net.DCN" schDisplayLabel="DCN" />,
       ])}
 
       {/* CONTROL CARD INTERFACE — same 88-way part and the same generator as the AC-DC slot. */}
       <CardConnector id="B" map={cardMap("module")} x={Q.cardX} y={Q.cardY} sx={70} sy={30} />
-      {/* CARD_RULES: default-OFF held by the BOARD. Seven relay lines plus the enables. */}
-      {["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB", "CTL_QDISBK"].map((n, i) => (
+      {/* CARD_RULES: default-OFF held by the BOARD. Three matrix relay lines, the bleeders and the enables (E67). */}
+      {["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_QDISBK"].map((n, i) => (
         <resistor key={n} name={`RPDB${i}`} resistance="10k" footprint="0603"
           pcbX={Q.cardX - 60 + i * 8} pcbY={Q.cardY - 10} schX={70 + i * 2} schY={23} schSectionName="CARD" />
       ))}
-      {["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB", "CTL_QDISBK"].map((n, i) => [
+      {["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_QDISBK"].map((n, i) => [
         <trace key={`a${i}`} from={`.RPDB${i} > .pin1`} to={`net.${n}`} schDisplayLabel={n} />,
         <trace key={`b${i}`} from={`.RPDB${i} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />,
       ])}
@@ -553,83 +556,27 @@ return (
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
-      {/* LLC legs + sections */}
+      {/* LLC full bridge: two legs + the one tank (E67) */}
       {legs.map((l, i) => (
         <LlcHalfBridgeLeg key={l.id} id={l.id} bus="net.DCP" gnd="net.DCN" sw={l.sw}
-          x={Q.leg[i % 3]} y={Q.legY}
+          x={Q.leg[i]} y={Q.legY}
           pwmH={`net.PWM_L${l.id}H`} pwmL={`net.PWM_L${l.id}L`} flt="net.FLT" en="net.GATE_EN_B"
-          par={pw === 50 && air}
+          par={tank.fetPar}
           sx={2} sy={24 - i * 16} />
       ))}
-      {secs.map((s, i) => (
-        <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
-          crN={pw === 50 ? 8 : pw === 40 ? 6 : 4} crVal={pw === 50 ? "27nF" : pw === 40 ? "33nF" : "46nF"} trim={pw === 50 ? "5.65uH" : pw === 40 ? "6.15uH" : "6.65uH"} ctBurden={pw === 50 ? "0.68" : pw === 40 ? "0.82" : "1.0"}
-          x={Q.sec[i % 3]} y={Q.secY}
-          bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
-          ctOut={`net.I_RES${s.id}`}
-          sx={30} sy={24 - i * 16} />
-      ))}
+      <LlcTank swA="net.SWA" swB="net.SWB" crN={tank.crN} crVal="33nF" lr={tank.lr} ctBurden={tank.burden} dPar={tank.dPar}
+        x={Q.sec[1]} y={Q.secY}
+        rAp="net.RKAP" bkAn="net.BKAN" rBp="net.RKBP" bkBn="net.BKBN"
+        ctOut="net.I_RES1"
+        sx={30} sy={24} />
 
-      {/* bank capacitors — E29/CB-2: two-series 450 V strings (900 V string rating vs ≤525 V bank)
-          + shared string midpoints + balance dividers; film across each bank */}
-      {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`at${i}`} name={`CBA${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[0] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={27} />
-      ))}
-      {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`ab${i}`} name={`CBA${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[1] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={24.2} />
-      ))}
-      {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bt${i}`} name={`CBB${i}T`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[2] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={17} />
-      ))}
-      {Array.from({ length: nBank }, (_, i) => (
-        <capacitor key={`bb${i}`} name={`CBB${i}B`} capacitance="470uF" footprint={<SnapInFP />} pcbX={Q.bankX[i % 4]} pcbY={Q.bankY[3] - Math.floor(i / 4) * 220} schX={58 + i * 2.2} schY={14.2} />
-      ))}
-      {/* HR-20: 2-series 47 k per string half (bank ≤525 V → ≤131 V & 0.37 W per element) */}
-      <resistor name="RBALTA1" resistance="47k" footprint="2512" pcbX={Q.balA[0]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={28} schSectionName="BANKS" />
-      <resistor name="RBALTA2" resistance="47k" footprint="2512" pcbX={Q.balA[1]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={26.6} schSectionName="BANKS" />
-      <resistor name="RBALBA1" resistance="47k" footprint="2512" pcbX={Q.balA[2]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={25.2} schSectionName="BANKS" />
-      <resistor name="RBALBA2" resistance="47k" footprint="2512" pcbX={Q.balA[3]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={23.8} schSectionName="BANKS" />
-      <resistor name="RBALTB1" resistance="47k" footprint="2512" pcbX={Q.balB[0]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={18} schSectionName="BANKS" />
-      <resistor name="RBALTB2" resistance="47k" footprint="2512" pcbX={Q.balB[1]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={16.6} schSectionName="BANKS" />
-      <resistor name="RBALBB1" resistance="47k" footprint="2512" pcbX={Q.balB[2]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={15.2} schSectionName="BANKS" />
-      <resistor name="RBALBB2" resistance="47k" footprint="2512" pcbX={Q.balB[3]} pcbY={Q.balY} schX={58 + nBank * 2.2 + 1.5} schY={13.8} schSectionName="BANKS" />
-      {/* schY 20.2: at the 40 kW bank count the computed x (69.6) sits in JB's column, and one
-          row lower is the RPDB pull-down row — the film cap stacks above its twin CBBF instead
-          (found by running the overlap check on every SKU pair, not just the 30 kW battery pair). */}
-      <capacitor name="CBAF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-180} pcbY={-224} schX={58 + nBank * 2.2 + 5} schY={20.2} schSectionName="BANKS" />
-      <capacitor name="CBBF" capacitance="1uF" footprint={FilmBoxFP(27.5)} pcbX={-120} pcbY={-224} schX={58 + nBank * 2.2 + 5} schY={17} schSectionName="BANKS" />
-      {Array.from({ length: nBank }, (_, i) => [
-        <trace key={`ap${i}`} from={`.CBA${i}T > .pin1`} to="net.BKAP" schDisplayLabel="BKAP" />,
-        <trace key={`am${i}`} from={`.CBA${i}T > .pin2`} to="net.BKAM" schDisplayLabel="BKAM" />,
-        <trace key={`am2${i}`} from={`.CBA${i}B > .pin1`} to="net.BKAM" schDisplayLabel="BKAM" />,
-        <trace key={`an${i}`} from={`.CBA${i}B > .pin2`} to="net.BKAN" schDisplayLabel="BKAN" />,
-        <trace key={`bp${i}`} from={`.CBB${i}T > .pin1`} to="net.BKBP" schDisplayLabel="BKBP" />,
-        <trace key={`bm${i}`} from={`.CBB${i}T > .pin2`} to="net.BKBM" schDisplayLabel="BKBM" />,
-        <trace key={`bm2${i}`} from={`.CBB${i}B > .pin1`} to="net.BKBM" schDisplayLabel="BKBM" />,
-        <trace key={`bn${i}`} from={`.CBB${i}B > .pin2`} to="net.BKBN" schDisplayLabel="BKBN" />,
-      ])}
-      <trace from=".RBALTA1 > .pin1" to="net.BKAP" schDisplayLabel="BKAP" />
-      <trace from=".RBALTA1 > .pin2" to=".RBALTA2 > .pin1" />
-      <trace from=".RBALTA2 > .pin2" to="net.BKAM" schDisplayLabel="BKAM" />
-      <trace from=".RBALBA1 > .pin1" to="net.BKAM" schDisplayLabel="BKAM" />
-      <trace from=".RBALBA1 > .pin2" to=".RBALBA2 > .pin1" />
-      <trace from=".RBALBA2 > .pin2" to="net.BKAN" schDisplayLabel="BKAN" />
-      <trace from=".RBALTB1 > .pin1" to="net.BKBP" schDisplayLabel="BKBP" />
-      <trace from=".RBALTB1 > .pin2" to=".RBALTB2 > .pin1" />
-      <trace from=".RBALTB2 > .pin2" to="net.BKBM" schDisplayLabel="BKBM" />
-      <trace from=".RBALBB1 > .pin1" to="net.BKBM" schDisplayLabel="BKBM" />
-      <trace from=".RBALBB1 > .pin2" to=".RBALBB2 > .pin1" />
-      <trace from=".RBALBB2 > .pin2" to="net.BKBN" schDisplayLabel="BKBN" />
-      <trace from=".CBAF > .pin1" to="net.BKAP" schDisplayLabel="BKAP" />
-      <trace from=".CBAF > .pin2" to="net.BKAN" schDisplayLabel="BKAN" />
-      <trace from=".CBBF > .pin1" to="net.BKBP" schDisplayLabel="BKBP" />
-      <trace from=".CBBF > .pin2" to="net.BKBN" schDisplayLabel="BKBN" />
+      {/* E67 bank filters (BankFilter): rectifier film → Lf (the D6 sendust construction at DC duty) → 330 µF 550 V electrolytic per bank */}
+      <BankFilter id="A" rkp="net.RKAP" bkp="net.BKAP" bkn="net.BKAN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[0]} sx={50} sy={27} />
+      <BankFilter id="B" rkp="net.RKBP" bkp="net.BKBP" bkn="net.BKBN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[2]} sx={50} sy={17} />
 
-      {/* S/P matrix (mirror-contact relays + readback, E30) + coil driver.
-          HR-19: at 120 kW the paralleled second relay per HV function is a real schematic
-          instance (contacts + coil + series mirror), not a BOM multiplier. */}
+      {/* E67 S/P matrix: zero-current PCB power relays + the output blocking diode DOUT (InfyPower practice) */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
-        outp="net.OUTP" dual={channels === 4} dualOut={pw === 50} x={Q.spm[0]} y={Q.spm[1]} sx={58} sy={4} />
+        outp="net.OUTP" x={Q.spm[0]} y={Q.spm[1]} sx={58} sy={4} />
       {/* HR-15: commanded bank bleeders — banks otherwise hold ≤525 V for 3–14 min on the balance
           chains alone (bus discharge never touches them). One GPIO drives both optos; default-OFF
           like the bus chain (E19 rev B pattern). 4× 2.2 k 10 W axial per bank: τ ≈ 4–17 s,
@@ -694,34 +641,12 @@ return (
       <trace from=".UEXCL > .A4" to=".UEXCL > .Y2" />
       <trace from=".UEXCL > .B4" to=".UEXCL > .Y3" />
       <trace from=".UEXCL > .Y4" to="net.KSER_STG1" schDisplayLabel="KSER_STG1" />
-      {/* R5-D second stage: the PRE-INSERTION contacts join the exclusion. KPREA/KPREB bridge
-          the banks through 10 Ω — closed against KSER they put the series stack across those
-          resistors (94 J single-fault class, HR-12). U2.G1 = B = NOR(KPREA,KPREB); G2/G3
-          invert; G4 = NOR(¬STG1, ¬B) = STG1 AND B, so
-            KSER_GATED = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB).
-          Sequencing (ramp → open → 20 ms release → weld-check → flip) stays firmware's job in
-          fsm.c ST_MODESW; this layer only makes the forbidden STATES unreachable. */}
-      <chip name="UEXCL2" footprint="soic14" pinLabels={{ pin1: "Y1", pin2: "A1", pin3: "B1", pin4: "Y2", pin5: "A2", pin6: "B2", pin7: "GND", pin8: "A3", pin9: "B3", pin10: "Y3", pin11: "A4", pin12: "B4", pin13: "Y4", pin14: "VCC" }} pcbX={70} pcbY={-248} schX={34} schY={cYd} schSectionName="COILS" />
-      <trace from=".UEXCL2 > .VCC" to="net.V3P3" schDisplayLabel="V3P3" />
-      <trace from=".UEXCL2 > .GND" to="net.DGND" schDisplayLabel="DGND" />
-      <trace from=".UEXCL2 > .A1" to="net.CTL_KPREA" schDisplayLabel="CTL_KPREA" />
-      <trace from=".UEXCL2 > .B1" to="net.CTL_KPREB" schDisplayLabel="CTL_KPREB" />
-      <trace from=".UEXCL2 > .A2" to="net.KSER_STG1" schDisplayLabel="KSER_STG1" />
-      <trace from=".UEXCL2 > .B2" to="net.KSER_STG1" schDisplayLabel="KSER_STG1" />
-      <trace from=".UEXCL2 > .A3" to=".UEXCL2 > .Y1" />
-      <trace from=".UEXCL2 > .B3" to=".UEXCL2 > .Y1" />
-      <trace from=".UEXCL2 > .A4" to=".UEXCL2 > .Y2" />
-      <trace from=".UEXCL2 > .B4" to=".UEXCL2 > .Y3" />
-      <trace from=".UEXCL2 > .Y4" to="net.KSER_GATED" schDisplayLabel="KSER_GATED" />
-      {/* R5-C: local VCC bypass for both exclusion gates */}
+      {/* R5-C: local VCC bypass for the exclusion gate (E67: the pre-insertion second stage retired with the pre-insertion pair) */}
       <capacitor name="CEXCL" capacitance="100nF" footprint="0603" pcbX={64} pcbY={-236} schX={37} schY={cYd - 3} schSectionName="COILS" />
       <trace from=".CEXCL > .pin1" to=".UEXCL > .VCC" />
       <trace from=".CEXCL > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-      <capacitor name="CEXCL2" capacitance="100nF" footprint="0603" pcbX={64} pcbY={-248} schX={34} schY={cYd - 3} schSectionName="COILS" />
-      <trace from=".CEXCL2 > .pin1" to=".UEXCL2 > .VCC" />
-      <trace from=".CEXCL2 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-      <CoilDriver id="LB" ins={["net.KSER_GATED", "net.CTL_KPARA", "net.CTL_KPARB", "net.CTL_KOUT", "net.CTL_KPREA", "net.CTL_KPREB", "net.DGND", "net.DGND"]}
-        outs={["net.COIL_KSER", "net.COIL_KPARA", "net.COIL_KPARB", "net.COIL_KOUT", "net.COIL_KPREA", "net.COIL_KPREB", "net.NC_O7", "net.NC_O8"]}
+      <CoilDriver id="LB" ins={["net.KSER_STG1", "net.CTL_KPARA", "net.CTL_KPARB", "net.DGND", "net.DGND", "net.DGND", "net.DGND", "net.DGND"]}
+        outs={["net.COIL_KSER", "net.COIL_KPARA", "net.COIL_KPARB", "net.NC_O4", "net.NC_O5", "net.NC_O6", "net.NC_O7", "net.NC_O8"]}
         x={40} y={-236} sx={42} sy={cYd} />
 
       {/* output: shunt in negative, filter, studs, Y caps */}
@@ -754,7 +679,7 @@ return (
       <NtcInput id="TXFR" out="net.T_XFMR" x={Q.ntcX} y={Q.ntcY - 10} sx={94} sy={-10.5} />
       {/* E65: F.11 window ladder for the three section comparators — VH/VL = AVMID ± F.11·Rb/100 (30 kW 85 A·1.0 Ω ·
           40 kW 115 A·0.82 Ω · 50 kW 145 A·0.68 Ω), ratiometric from the V3P3 the card exports */}
-      <F11Window rOut={pw === 50 ? "2k" : pw === 40 ? "2.15k" : "2.43k"} rMid={pw === 50 ? "5.9k" : pw === 40 ? "5.76k" : "5.11k"} x={Q.ntcX} y={Q.ntcY - 20} sx={84} sy={-5} />
+      <F11Window rOut={pw === 50 ? "2k" : pw === 40 ? "2k" : "2k"} rMid={pw === 50 ? "2.67k" : pw === 40 ? "2.61k" : "2.67k"} x={Q.ntcX} y={Q.ntcY - 20} sx={84} sy={-5} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
       <IsolatedCan x={Q.canX} y={Q.canY} sx={48} sy={cYd} />

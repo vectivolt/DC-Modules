@@ -19,12 +19,12 @@
 
 | | |
 |---|---|
-| **Building block** | a ~10 kW **cell pair** — one Vienna PFC phase cell and one 3-φ LLC section — repeated three times per module |
+| **Building block** | three Vienna PFC phase cells feeding **one full-bridge LLC** (E67 — the InfyPower REG1K0135A2 DC-DC architecture) |
 | **Module** | AC-DC board (lower) + DC-DC board (upper), faces inward, semiconductors on the outer heatsinks or coldplates |
 | **Brain** | **one control card per module** (GD32G553VET7) in the DC-DC slot, one CAN port, one 2-button / 2-digit HMI |
 | **Input → output** | 3-φ 285–475 VAC → split DC bus 650–830 V → 150–1000 VDC, 100 / 133 / 167 A |
-| **Switching** | Vienna 50 kHz (750 V SiC pairs, 1200 V JBS) · LLC fr 140 kHz (1200 V SiC half-bridges, ZVS) |
-| **Output stage** | two floating banks with a series/parallel relay matrix, pre-insertion and K_OUT |
+| **Switching** | Vienna 50 kHz (750 V SiC pairs, 1200 V JBS) · LLC fr 140 kHz (1200 V SiC full bridge, ZVS; phase shift at 1.45·fr) |
+| **Output stage** | two floating banks behind Cf–Lf–Ce bank filters; zero-current series/parallel relays — **LOW ≤ 500 V** (parallel) / **HIGH ≥ 500 V** (series), set in standby; output blocking diode |
 | **Family** | 30 · 40 · 50 kW liquid · 50 kW air modules; 100 kW = 2 × 50 and 150 kW = 3 × 50 products (E66: no CSU) |
 
 ```mermaid
@@ -33,14 +33,15 @@ flowchart LR
   EMI --> PRE["precharge<br/>2 × 33 Ω + 2-pole bypass"]
   PRE --> V["VIENNA PFC · 50 kHz<br/>750 V SiC pairs · 1200 V JBS"]
   V --> BUS[("split DC bus<br/>650–830 V · OVP 860")]
-  BUS --> LLC["3-φ LLC · fr 140 kHz<br/>1200 V SiC half-bridges"]
-  LLC --> XF["3 × section transformers<br/>D3 · E60 copper · Lm 63 µH"]
+  BUS --> LLC["full-bridge LLC · fr 140 kHz<br/>1200 V SiC · Cr + D2 external Lr"]
+  LLC --> XF["2 × D3 transformer cells<br/>primaries in series · n 2"]
   XF --> BK["banks A + B<br/>SiC JBS bridges"]
-  BK --> SP["S/P matrix + exclusion<br/>pre-insertion · K_OUT"]
-  SP --> OUT(["150–1000 VDC<br/>100/133/167 A"])
+  BK --> SP["S/P relays at 0 A + exclusion<br/>LOW ≤ 500 V · HIGH ≥ 500 V"]
+  SP --> DO["output blocking diode"]
+  DO --> OUT(["150–1000 VDC<br/>100/133/167 A"])
   CARD["ONE control card<br/>GD32G553VET7 · RATING strap"] -. "40-way harness (PFC bundle)" .-> V
   CARD --- LLC
-  AUX["110 W full-bus aux<br/>NCP1252D · D4 rev D"] --> CARD
+  AUX["110 W full-bus aux<br/>NCP1252D · D4 rev E"] --> CARD
   BUS --> AUX
   style V stroke:#d19a00,stroke-width:2.5px
   style LLC stroke:#1a9fb3,stroke-width:2.5px
@@ -70,10 +71,10 @@ Costs are generated in [`bom-cost.md`](bom-cost.md); the product rationale is in
 | **Vienna PFC** | 3-level, 50 kHz; common-source B3M010C075Z pairs with 1200 V JBS diodes to the rails; RC snubber + RCD clamp per node | D1 chokes (biased inductance governs — see [magnetics](magnetics.md)); pairs paralleled at 40 / 50 kW |
 | **Fast trips on the PFC** | DESAT on the forward polarity (47 pF blank); line CT → on-chip comparator → HRTIMER kill on the reverse | F.01 = 120 / 155 / 195 A pk on 22 / 18 / 13 Ω burdens |
 | **Split DC bus** | 650–830 V commanded, films + 2 × (5 / 6 / 8 × 470 µF) per half, hardware OVP 860 V | two-phase discharge: 640 Ω active to the 321 V aux floor, then passive balance |
-| **3-φ LLC** | SG2M023120LJ half-bridges (paralleled on the 50 kW air), PFM around fr 140 kHz, star-connected primaries | Cr bank 4 × 46 nF / 6 × 33 nF / 8 × 27 nF; binned trim (D2) + transformer leakage = Lr |
-| **Section transformers** | D3: compacted 0.071 mm litz primary, copper-foil secondaries (E51 construction, E60 copper) | 3 × PQ50 7:7:7 · 2 × E70 6:6:6 · 2 × E70 5:5:5; resonant CT F.11 = 85 / 115 / 145 A pk |
-| **Rectifiers & banks** | two secondaries per section → two SiC JBS bridges → floating banks A and B | 2-series electrolytic strings with PV-driven bleeders |
-| **S/P matrix** | K_PAR_A / K_PAR_B with 10 Ω pre-insertion, K_SER, K_OUT (dual at 50 kW); two-stage 74HC02 hardware exclusion | exclusion KSER ∧ ¬KPAR ∧ ¬KPRE (R5-D) |
+| **Full-bridge LLC (E67)** | SG2M023120LJ, two per bridge position (three on the 50 kW air); PFM down to fn ≈ 0.59, phase shift of leg B at 1.45·fr below that | Cr 7 / 9 / 11 × 33 nF · Lr 5.6 / 4.35 / 3.56 µH = D2 rev F 5.16 / 4.07 / 3.28 µH ±3 % + 2 × cell leakage + loop · Ln 10 |
+| **Transformer cells (E67)** | D3 rev D: two cells, primaries in series, each S1–P–S2 with S1 ∥ S2 to one bank; TIW-served litz primary, copper-foil halves, VPI class H, two-face bond | 2 × E70 6:6∥6 (30 kW) · 3 × E70 4:4∥4 (40 / 50 kW); resonant CT F.11 = 140 / 180 / 220 A pk |
+| **Rectifiers & banks** | one secondary per bank → SiC JBS full bridge (2 × 40 A per position, 3 on the 50 kW air) → 2.2 µF film → D8 filter inductor → 330 µF 550 V electrolytic | bank ≤ 500 V; film ripple ≤ 9.2 A per cap at the worst corner |
+| **S/P relays + output diode** | KSER / KPARA / KPARB PCB power relays switched at zero current in standby; 74HC02 hardware exclusion; DOUT 1600 V blocking diode (150 / 200 / 250 A class) — no K_OUT, no pre-insertion | a welded parallel relay shows as F.17 at the SER soft start |
 | **Output** | filter → manganin shunt (positive = delivering, R6-E) → studs | 100 / 133 / 167 A |
 
 ## 3. Control plane — one brain per module (E40)
@@ -117,11 +118,11 @@ flowchart LR
   whole family.
 - **Loops.** Per-phase current (fc ≈ 3 kHz, PM 50°); bus voltage (15 Hz) with
   `bus_ref = clamp(max(2·bank/0.95, 1.08·√2·VLL), 650, 830)`, the E60 FW-R7 line-tracking floor; PFC reference
-  clamp 1.05× (FW-R6); PLL and midpoint balance. The LLC runs CV/CC with a mode map (PFM, phase shift below 260 V
-  per bank, burst). The S/P state machine applies pre-insertion, a weld check, the E12b K_OUT gate, and allows
-  a series start only above 525 V (FW-R8).
+  clamp 1.05× (FW-R6); PLL and midpoint balance. The LLC runs CV/CC: PFM down to fn ≈ 0.59, then phase shift at 1.45·fr (E67). The output
+  mode (LOW / HIGH / AUTO, CAN force-LV / force-HV) is latched in standby; relays switch at zero current behind the
+  output diode, and AUTO crosses PAR → SER above 500 V and back below 480 V (FW-R12 / FW-R13).
 - **Supervisory firmware** (`firmware/`) is the normative logic: 26 scenarios, group share law, codec, fuzz and invariants —
-  **54 / 54 under ASan/UBSan** ([firmware guide](firmware-guide.md)).
+  **60 / 60 under ASan/UBSan** ([firmware guide](firmware-guide.md)).
 - **Pin budget:** 75 of 82 usable MCU pins, 7 spare — the arithmetic is in [control-card scope](control-card-scope.md).
 
 ## 4. Protection — three layers

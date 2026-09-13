@@ -40,10 +40,10 @@ const ACDC: Rule[] = [
   { m: /^DZAUX$/, p1: { peer: "^QAUXFB\\.B$" }, p2: { peer: "^RZFB\\." } }, // R4-3 zener: reverse-biased ref, cathode toward VCC via RZFB
 ];
 const DCDC: Rule[] = [
-  { m: /^CB([AB])\d+T$/, p1: { net: "^BK$1P$" }, p2: { net: "^BK$1M$" } }, // bank string top can
-  { m: /^CB([AB])\d+B$/, p1: { net: "^BK$1M$" }, p2: { net: "^BK$1N$" } }, // bank string bottom can
-  { m: /^D(\d)([AB])[13]$/, p1: { peer: "^T$1\\." }, p2: { net: "^BK$2P$" } }, // sec. bridge top JBS
-  { m: /^D(\d)([AB])[24]$/, p1: { net: "^BK$2N$" }, p2: { peer: "^T$1\\." } }, // sec. bridge bottom JBS
+  { m: /^CE([AB])\d$/, p1: { net: "^BK$1P$" }, p2: { net: "^BK$1N$" } },   // E67 bank electrolytic behind the filter inductor
+  { m: /^DOUT$/, p1: { net: "^BKAP$" }, p2: { net: "^OUTP$" } },           // E67 output blocking diode: bank-A top → output
+  { m: /^D(\d)([AB])[13](P[23])?$/, p1: { peer: "^T$1$2\\." }, p2: { net: "^RK$2P$" } }, // E67 sec. bridge top JBS (cell T1A → rectifier node, film + Lf)
+  { m: /^D(\d)([AB])[24](P[23])?$/, p1: { net: "^BK$2N$" }, p2: { peer: "^T$1$2\\." } }, // E67 sec. bridge bottom JBS
   { m: /^D(\d)CP$/, p1: { net: "^I_RES$1$" }, p2: { net: "^V3P3$" } },
   { m: /^D(\d)CN$/, p1: { net: "^AGND$" }, p2: { net: "^I_RES$1$" } },
 ];
@@ -58,7 +58,8 @@ ACDC.push(
 DCDC.push(
   DESAT_S1,
   { m: /^D(\d)HS2$/, p1: { peer: "^D$1HS1\\.pin2$" }, p2: { net: "^DCP$" } },   // high-side drain
-  { m: /^D(\d)LS2$/, p1: { peer: "^D$1LS1\\.pin2$" }, p2: { net: "^SW$1$" } },  // bridge switch node
+  { m: /^D1LS2$/, p1: { peer: "^D1LS1\\.pin2$" }, p2: { net: "^SWA$" } },   // E67 full bridge: leg A switch node
+  { m: /^D2LS2$/, p1: { peer: "^D2LS1\\.pin2$" }, p2: { net: "^SWB$" } },   // leg B switch node
 );
 const CARD: Rule[] = [];   // no polarized parts on the card today; a new one FAILs until ruled
 

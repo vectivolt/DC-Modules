@@ -45,12 +45,15 @@ own sheet (D3: E65).
 | [PMP-MAG-D1-30](#pmp-mag-d1-30-rev-c-e65--pfc-swing-choke-165-µh-class-ind-pfc-165u--qty-3) | PFC swing choke 165 µH class | B | `IND-PFC-165u` | 3 | 3 × 0077908A7, lot-trim ± 1 turn |
 | [PMP-MAG-D1-40](#pmp-mag-d1-40-rev-c-e65--pfc-swing-choke-40-kw-ind-pfc-116u-40--qty-3) | PFC swing choke 40 kW | B (E51) | `IND-PFC-116u-40` | 3 | 5-stack, N = 26 ± 1 |
 | [PMP-MAG-D1-50](#pmp-mag-d1-50-rev-c-e65--pfc-swing-choke-50-kw-ind-pfc-107u-50--qty-3) | PFC swing choke 50 kW | B (E51) | `IND-PFC-107u-50` | 3 | 5-stack, N = 24 ± 1 |
-| [PMP-MAG-D2-30](#pmp-mag-d2-30-rev-e-e65--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3) | resonant trim bin set 30 kW | **E (E65)** | `IND-TRIM-BIN4` | 3 | 1 × E70, N 8, 6112 × 0.05 litz — 4 bins |
-| [PMP-MAG-D2-40](#pmp-mag-d2-40-rev-e-e65--trim-bin-set-40-kw-ind-trim-e70-40--qty-3) | resonant trim bin set 40 kW | **E (E65)** | `IND-TRIM-E70-40` | 3 | 2 × E70, N 5, 8149 × 0.05 litz — 4 bins |
-| [PMP-MAG-D2-50](#pmp-mag-d2-50-rev-e-e65--trim-bin-set-50-kw-ind-trim-e70-50--qty-3) | resonant trim bin set 50 kW | **E (E65)** | `IND-TRIM-E70-50` | 3 | the D2-40 build with its own bins — liquid and air |
-| [PMP-MAG-D3-30](#pmp-mag-d3-30-rev-c-e65--llc-transformer-10-kw-xfmr-llc-10k--qty-3) | LLC transformer 10 kW | **C (E65)** | `XFMR-LLC-10K` | 3 | 2 × E70, 7:7:7 — reinforced barrier, safety-critical traveler |
-| [PMP-MAG-D3-40](#pmp-mag-d3-40-rev-c-e65--llc-transformer-136-kw-xfmr-llc-2e70-40--qty-3) | LLC transformer 13.6 kW | **C (E65)** | `XFMR-LLC-2E70-40` | 3 | 2 × E70, 6:6:6 — E60 winding, now VPI + two-face bond |
-| [PMP-MAG-D3-50](#pmp-mag-d3-50-rev-c-e65--llc-transformer-17-kw-xfmr-llc-3e70-50--qty-3) | LLC transformer 17 kW | **C (E65)** | `XFMR-LLC-3E70-50` | 3 | 3 × E70, 5:5:5 — custom 3-set former (tooling) |
+| [PMP-MAG-D3-30/40/50 rev D](#pmp-mag-d3-304050-rev-d-e67--full-bridge-transformer-cells-xfmr-llc-cell--qty-2) | full-bridge transformer cells | **D (E67)** | `XFMR-LLC-CELL-2E70-30 / -3E70-40 / -3E70-50` | 2 | primaries in series → n 2 — reinforced barrier, safety-critical hipot |
+| [PMP-MAG-D2-30/40/50 rev F](#pmp-mag-d2-304050-rev-f-e67--external-resonant-inductor-ind-lr-e70--qty-1) | external resonant inductor | **F (E67)** | `IND-LR-E70-30 / -40 / -50` | 1 | gapped E70 pair, ±3 %, no bins |
+| [PMP-MAG-D8-30/40/50](#pmp-mag-d8-304050-e67--bank-filter-inductors-ind-bank--qty-2) | bank filter inductors | **A (E67)** | `IND-BANK-30 / -40 / -50` | 2 | the D6 construction at DC duty |
+| [PMP-MAG-D2-30](#pmp-mag-d2-30-rev-e-e65--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3) | resonant trim bin set 30 kW | ~~E (E65)~~ superseded (E67) | `IND-TRIM-BIN4` | 3 | 1 × E70, N 8, 6112 × 0.05 litz — 4 bins |
+| [PMP-MAG-D2-40](#pmp-mag-d2-40-rev-e-e65--trim-bin-set-40-kw-ind-trim-e70-40--qty-3) | resonant trim bin set 40 kW | ~~E (E65)~~ superseded (E67) | `IND-TRIM-E70-40` | 3 | 2 × E70, N 5, 8149 × 0.05 litz — 4 bins |
+| [PMP-MAG-D2-50](#pmp-mag-d2-50-rev-e-e65--trim-bin-set-50-kw-ind-trim-e70-50--qty-3) | resonant trim bin set 50 kW | ~~E (E65)~~ superseded (E67) | `IND-TRIM-E70-50` | 3 | the D2-40 build with its own bins — liquid and air |
+| [PMP-MAG-D3-30](#pmp-mag-d3-30-rev-c-e65--llc-transformer-10-kw-xfmr-llc-10k--qty-3) | LLC transformer 10 kW | ~~C (E65)~~ superseded (E67) | `XFMR-LLC-10K` | 3 | 2 × E70, 7:7:7 — reinforced barrier, safety-critical traveler |
+| [PMP-MAG-D3-40](#pmp-mag-d3-40-rev-c-e65--llc-transformer-136-kw-xfmr-llc-2e70-40--qty-3) | LLC transformer 13.6 kW | ~~C (E65)~~ superseded (E67) | `XFMR-LLC-2E70-40` | 3 | 2 × E70, 6:6:6 — E60 winding, now VPI + two-face bond |
+| [PMP-MAG-D3-50](#pmp-mag-d3-50-rev-c-e65--llc-transformer-17-kw-xfmr-llc-3e70-50--qty-3) | LLC transformer 17 kW | ~~C (E65)~~ superseded (E67) | `XFMR-LLC-3E70-50` | 3 | 3 × E70, 5:5:5 — custom 3-set former (tooling) |
 | [PMP-MAG-D4](#pmp-mag-d4-rev-e-e65--aux-flyback-transformer-xfmr-aux-fly-e--qty-1) | aux flyback transformer | D (E52) | `XFMR-AUX-FLY-E` | 1 | reinforced — 100 % hipot |
 | [PMP-MAG-D6](#pmp-mag-d6-304050-rev-c--dm-line-chokes-dm-choke-30-40-50--qty-3-each) | DM line chokes | C | `DM-CHOKE-30/-40/-50` | 3 | engine-designed, crest-biased floors |
 | [PMP-MAG-D7](#pmp-mag-d7-30-40-50-rev-b--3-phase-cm-chokes-cmc-3ph-2mh-sku--qty-2-each) | 3-phase CM chokes 40 / 50 kW | A | `CMC-3PH-2mH-SKU` | 2 | 30 kW buys the Schaffner catalog part |
@@ -79,14 +82,14 @@ flowchart LR
 | Thermal basis | Full power to +55 °C ambient, derate to +75 °C (A11). D1 / D4 / D6 / D7: ΔT limits and thermocouple positions per sheet. **D2 / D3 (E65): hot-spot type test, bonded as in service, at the simulated corners named on each sheet** — accept ≤ 125 °C in the 55 °C-inlet full-power state and ≤ 135 °C in the 75 °C-inlet derated state (40 % power: copper scales, core flux does not). Boundary as the `magnetics-envelope` gate models it: air SKUs — web = inlet + 5 K + 20 K × load, air = inlet + 10 K × load at 2.0 / 2.5 / 3.2 m/s (30 / 40 / 50 kW air); 50 kW liquid — plates 65 °C, still internal air 65 °C + 45 K × load (sealed module). Record the gate value beside each reading; a simulation-vs-bench delta above 20 % reopens the gate ([EVT reopen rule](evt-plan.md)). |
 | VPI (E65 — D2, D3) | **Vacuum-pressure impregnation with a solventless Class H resin**; impregnated-winding through-build conductivity **≥ 0.6 W/m·K** (the envelope gate basis — the thermal type test demonstrates it); full penetration of litz and foil stacks, shown on the first-article cross-section; bond faces and termination tips masked. |
 | Two-face bond (E65 — D2, D3) | **Both yoke faces are bond faces:** flat ≤ 0.5 mm, clean ferrite, no varnish, tape, banding or hardware on them. In the module each face is gap-padded (3 W/m·K class) to the upper and lower extrusion webs (air SKUs) or to the two coldplates (50 kW liquid). D3-40 / D3-50 end turns, and D2-50 on the liquid SKU, are potted to the web or plate (≥ 0.8 W/m·K silicone, ≥ 5 mm bridge) — deliver end-turn surfaces free of release agents. |
-| Bonded-face insulation (E65) | Applies to every part bonded to a PE-bonded web or plate. Core and clamps **float**; each bond face carries **basic insulation to PE** through a glass-reinforced insulating gap pad ≥ 0.5 mm with a cut-through rating above the clamp pressure (module bond kit). **100 % hipot at the winder, winding → foil wrapped over the bond faces: 2.5 kV DC for primary / mains windings, ≥ 1.5 kV DC for D3 secondaries.** D2 / D3 windings see ≈ 1.1 kV recurring peak at 77–190 kHz, so both carry a PD sample row. |
-| Over-temperature cutout (E65 — every D2 and D3) | **NC hermetic snap-action thermostat, 130 ±5 °C**, gold dry-circuit contacts, **reinforced-insulated case and leads** (it sits on an HV winding and closes a low-voltage loop). One per D2 and D3 — 6 per module on every SKU — mounted on the part at the hot-spot witness point and series-wired into the T_XFMR NTC loop. An open cutout or a broken lead drives the channel to the rail; firmware reads 150 °C and latches F.22. It covers a lost gap pad: the envelope gate requires it on D3-40 and on D3-50 + D2-50 of the liquid SKU, and it is fitted on all. The thermostat is a module mech line (₹48 each); the winder quotes fitting it. |
+| Bonded-face insulation (E65) | Applies to every part bonded to a PE-bonded web or plate. Core and clamps **float**; each bond face carries **basic insulation to PE** through a glass-reinforced insulating gap pad ≥ 0.5 mm with a cut-through rating above the clamp pressure (module bond kit). **100 % hipot at the winder, winding → foil wrapped over the bond faces: 2.5 kV DC for primary / mains windings, ≥ 1.5 kV DC for D3 secondaries.** D2 / D3 windings see ≈ 1.1 kV recurring peak at 77–190 kHz, so both carry a PD sample row. **E67: 1260–1280 V at 83–203 kHz → PD extinction ≥ 1.9 / 1.9 / 2.0 / 2.0 kV.** |
+| Over-temperature cutout (E65 — every D2 and D3) | **NC hermetic snap-action thermostat, 130 ±5 °C**, gold dry-circuit contacts, **reinforced-insulated case and leads** (it sits on an HV winding and closes a low-voltage loop). One per D2 and D3 — 6 per module on every SKU (**E67: one per D3 cell and one on D2 — 3 per module**) — mounted on the part at the hot-spot witness point and series-wired into the T_XFMR NTC loop. An open cutout or a broken lead drives the channel to the rail; firmware reads 150 °C and latches F.22. It covers a lost gap pad: the envelope gate requires it on D3-40 and on D3-50 + D2-50 of the liquid SKU, and it is fitted on all. The thermostat is a module mech line (₹48 each); the winder quotes fitting it. |
 | Low-temp / environment | **A11 rev C (E60, competitor parity):** operating −30…+55 °C full power (derate to +75), cold start ≥ −30 °C, storage/transport −40…+85 °C — quote adhesives/potting/litz bonding to −40 °C. Humidity 5–95 % RH non-condensing; boards are acrylic conformal-coated (E52 baseline) — parts must accept coated boards adjacent. |
 | Vibration | 2 g 10–500 Hz sine sweep survival (bonded/banded construction; IEC 60068-2-6 class) — toroid stacks epoxy-banded, not tape-only. |
 | Thermal shock and durability (E65) | Workmanship screen on every p/n at first article: IEC 60068-2-14 Na, 5 cycles **−40 ↔ +135 °C**, then re-test the electrical row. **Durability type test** (first article; D1-50 and D3-50 on a PCB coupon as the worst cases): ≥ 500 air-to-air cycles −40 ↔ +135 °C, or ≥ 3,000 on/off power cycles at class current — accept lead-joint resistance change ≤ 10 %, AL / Lm within ±3 %, no crack on cross-section, hipot pass. |
-| Traceability | Lot + date code on every part, traceable to core lot and wire lot. First article: dimensional vs the mechanical row, full electrical vs the acceptance rows, cross-section/teardown for D3 and D4 (reinforced-barrier parts). **D3 carries its measured leakage and D2 its bin on the label — kitting consumes both.** |
+| Traceability | Lot + date code on every part, traceable to core lot and wire lot. First article: dimensional vs the mechanical row, full electrical vs the acceptance rows, cross-section/teardown for D3 and D4 (reinforced-barrier parts). **D3 carries its measured leakage and D2 its bin on the label — kitting consumes both.** **E67: no bins — D2 is gapped to ±3 %, each D3 cell carries its measured leakage for the record; EOL checks fr.** |
 | 100 % tests | Every acceptance-row electrical + every stated hipot, 100 % end-of-line at the winder. Sampled tests marked (S). |
-| Packaging | Individually celled — computed masses (E59 / E65): D1 ≈ 2.2–3.0 kg · D3 ≈ 1.32–1.97 kg · D2 ≈ 0.70–1.27 kg; parts damage each other in bulk packing. |
+| Packaging | Individually celled — computed masses (E59 / E65): D1 ≈ 2.2–3.0 kg · D3 ≈ 1.32–1.97 kg · D2 ≈ 0.70–1.27 kg (E67: D3 cell 1.3 / 1.85 kg · D2 1.3–1.35 kg · D8 as D6); parts damage each other in bulk packing. |
 | Price basis [est] (E65 — D2, D3) | E65 roll-up @1k, **REVIEW at winder RFQ:** E70/33/32 PC95-class set ₹160 · litz 0.05 mm ₹2,600/kg · TIW-served 0.071 mm litz ₹2,210/kg · Cu foil ₹1,050/kg · +10 % leads · former ₹40–105 · insulation ₹30–90 · gap work ₹40–110 · labour + test ₹110–240 · varnish ₹30–40. D1 / D6 / D7 stay on their registered basis until re-based at RFQ. |
 | RoHS/REACH | Required; declare materials on first article. |
 
@@ -106,6 +109,76 @@ flowchart LR
 | Winding houses (10k modules/yr ⇒ ~30k D1+D3 pcs/yr each) | Talema Salem (toroids/CTs, India) · EV-magnetics houses CN (Sumida-class, POCO winding service) | second source mandatory before MP; the D3/D4 reinforced barrier makes the winder a SAFETY-CRITICAL supplier (traveler flag) |
 
 ---
+
+## PMP-MAG-D3-30/40/50 rev D (E67) — full-bridge transformer cells (`XFMR-LLC-CELL`) — qty 2
+
+| Row | D3-30 cell `XFMR-LLC-CELL-2E70-30` | D3-40 cell `XFMR-LLC-CELL-3E70-40` | D3-50 cell `XFMR-LLC-CELL-3E70-50` |
+|---|---|---|---|
+| Function | one of TWO cells in a full-bridge LLC; the two primaries are wired in SERIES (overall n = 2), each secondary feeds one bank · 83–203 kHz across the power-solved corners · flux follows bank voltage, not load | same, 40 kW | same, 50 kW |
+| Ratio / magnetizing | **6:6∥6 exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **28 µH ±7 %** per cell @10 kHz, 0.1 V, secondary open | **4:4∥4** · Lm **21.75 µH ±7 %** | **4:4∥4** · Lm **17.8 µH ±7 %** |
+| Core | 2 × E70/33/32 PC95 / N95 / 3C95-class MnZn | 3 × E70/33/32 | 3 × E70/33/32 |
+| Former | TDK **B66372B2000** (2-set, lN 230.5 mm) | 3-set former, lN 293 mm (custom, tooling in price) | as D3-40 |
+| Gap | centre legs only, ground to AL **0.778 µH/T²** assembled (Σ ≈ 2.2 mm, every set the same gap, no single gap > 0.5 mm) | AL **1.359 µH/T²** (Σ ≈ 1.9 mm) | AL **1.113 µH/T²** (Σ ≈ 2.3 mm) |
+| Windings | S1 inner: 6 T Cu foil 0.10 × 28 mm · P: 6 T TIW-served litz **3850×0.063 mm** (12 mm²), one layer · S2 outer: 6 T foil 0.10 × 28 mm · MLT S1 / P / S2 189 / 211 / 232 mm | S1: 4 T, **2 × foil 0.08 × 28 mm per turn** · P: 4 T litz **3536×0.071 mm** (14 mm²) · S2: as S1 · MLT 253 / 272 / 290 mm | as D3-40 |
+| Leakage | per cell, both halves shorted, 140 kHz, fixture-compensated, after VPI: **0.172 µH ±30 %** — labelled | **0.090 µH ±30 %** | **0.090 µH ±30 %** |
+| Rdc @25 °C (100 %) | P ≤ 2.1 · S1 half ≤ 8.0 · S2 half ≤ 9.8 mΩ | P ≤ 1.55 · S1 ≤ 4.5 · S2 ≤ 5.1 mΩ | as D3-40 |
+| Rac (S) | Rac/Rdc ≤ 1.35 per winding at 203 kHz (computed S 1.23 · P 1.32) | computed S 1.17 · P 1.25 | as D3-40 |
+| Insulation system | Class H — **VPI class H** · TIW grade Class F minimum · pri↔sec REINFORCED, one barrier system (TIW wall + ≥ 3 barrier-tape layers between each shield and its secondary) · shields to the SH pin → **DCN** on the board | same | same |
+| Hipot · PD | **100 %: pri↔sec ≥ 4.25 kV DC 1 s** (safety-critical, witnessed, logged) · P → bonded-face foil 2.5 kV DC · S → foil 1.5 kV DC · PD type test + 5 / lot: extinction **≥ 1.9 kV pk**, ≤ 10 pC after 1.2× pre-stress | same, ≥ 1.9 kV | same, **≥ 2.0 kV** |
+| Flux / loss (magnetics-envelope) | B̂ 159 mT at ENV500-55 (87.7 kHz) · Fe 31.9 W · Cu 45.8 W at SER250-full-bus764 (203 kHz) · runaway margin 116 K | B̂ 159 mT · Fe 47.6 W · Cu 46.1 W · margin 115 K | B̂ 159 mT · Fe 47.5 W · Cu 71.3 W · margin 111 K |
+| Thermal type test | bonded, §C boundary: ≤ 125 °C at 55 °C inlet at SER250-full-bus764 (gate **106 °C**) · ≤ 135 °C at 75 °C inlet derated at ENV500-55 (gate 102 °C) · thermocouples at the winding outer surface and centre leg | gate 102 °C / 103 °C | gate 103 °C liquid · **116 °C air** / 84 · 103 °C |
+| Mounting | two-face gap-pad bond to the upper and lower webs (plates on the liquid 50) + clamp bars, end turns potted to the web · a lost bond is screened by the EOL bonded thermal soak | same | same |
+| Over-temperature cutout | one §C thermostat (130 ±5 °C NC) per cell at the winding hot-spot witness point — required: a lost face is not survivable on D3-30/40/50 liquid (magnetics-envelope `D3-BOND-LOST`) | same | same |
+| Terminations | primary header P1 · P2 · SH on one end-turn face · secondary header SA · SB on the opposite face, ≥ 8 mm plus a slot between groups | same | same |
+| Mechanical (envelope · mass) | ≤ 70.5 × 65.9 × 91 mm plus headers · 65.9 mm yoke-face height controlled · **1.3 kg** (computed — mag-sync) | ≤ 70.5 × 65.9 × 120 mm · **1.85 kg** | as D3-40 |
+| Marking | p/n · rev · lot / date · serial · measured leakage (µH to 0.01) · polarity dots (dot = start, all windings the same sense) | same | same |
+| Production test | 100 %: ratio, Lm, leakage + label, Rdc × 3, pri↔sec and bonded-face hipots · (S): Rac 5 / lot, PD 5 / lot · first article: dimensional, cross-section, impulse, PD type test, thermal type test | same | same |
+| Qty · price | 2 per module · **₹1,169 @1k [est]** per cell (E67 roll-up, §C basis) | 2 per module · **₹1,434 @1k [est]** | 2 per module · **₹1,434 @1k [est]** |
+
+**Winding table (each cell)** — radial order from the centre leg; breadth 41 mm; conductors confined to the 28 mm centre band
+(6.5 mm margins); built with the same barrier discipline as the E65 section transformer, so the insulation qualification carries.
+
+| # | Element | D3-30 | D3-40 / D3-50 | Laid over it |
+|---:|---|---|---|---|
+| 0 | former + base wrap | 1.2 mm wall | 1.2 mm wall | ≥ 2 layers barrier tape |
+| 1 | **S1** (half of the secondary) | 6 T foil 0.10 × 28 mm | 4 T, 2 × foil 0.08 × 28 mm per turn | ≥ 3 layers barrier tape |
+| 2 | shield 1 | 1 T foil, ends insulated | same | 1 layer tape |
+| 3 | **P** | 6 T TIW litz 3850×0.063 mm, one layer | 4 T TIW litz 3536×0.071 mm, one layer | 1 layer tape |
+| 4 | shield 2 | as shield 1 | same | ≥ 3 layers barrier tape |
+| 5 | **S2** (the other half) | 6 T foil 0.10 × 28 mm | as S1 | ≥ 2 layers outer wrap |
+
+## PMP-MAG-D2-30/40/50 rev F (E67) — external resonant inductor (`IND-LR-E70`) — qty 1
+
+| Row | D2-30 `IND-LR-E70-30` | D2-40 `IND-LR-E70-40` | D2-50 `IND-LR-E70-50` |
+|---|---|---|---|
+| Function | the ONE external resonant inductor of the full-bridge tank — Lr 5.6 µH total = this part + 2 × D3 cell leakage + 0.1 µH loop · full AC swing at tank potential, 83–203 kHz | Lr 4.35 µH total | Lr 3.56 µH total |
+| Inductance | **5.16 µH ±3 %** @140 kHz, 0.1 V — no bins | **4.07 µH ±3 %** | **3.28 µH ±3 %** |
+| Core | 2 × E70/33/32 PC95 / N95 / 3C95-class — powder cores PROHIBITED in this slot | same | same |
+| Former | TDK **B66372B2000** | same | same |
+| Winding | N = 5, compacted litz **8000×0.05** mm (15.7 mm²), one layer over a ≥ 3 mm radial spacer | N = 5, litz **10000×0.05** mm (19.6 mm²) | N = 5, litz **12000×0.05** mm (23.6 mm²) |
+| Gap | distributed centre-leg gap Σ ≈ 8.3 mm, every segment ≤ 1.0 mm, outer legs mated | Σ ≈ 10.5 mm | Σ ≈ 13.1 mm |
+| Rdc · Rac | Rdc ≤ 1.35 mΩ @25 °C (100 %) · Rac ≤ 3.35 mΩ @203 kHz, 100 °C (S, 5 / lot) | ≤ 1.1 · ≤ 3.45 mΩ | ≤ 0.92 · ≤ 3.7 mΩ |
+| Flux / loss (magnetics-envelope) | B̂ 88 mT · Fe 30.6 W + Cu 15.1 W at SER250-full-bus764 · fault flux at the F.11 kill ≤ 60 % Bsat(130 °C) | B̂ 91 mT · 33.1 + 27.3 W | B̂ 90 mT · 32.8 + 45 W |
+| Thermal type test | bonded: ≤ 125 °C at 55 °C inlet (gate **95 °C**) · thermocouples beside a gap and on the winding | gate 100 °C | gate 98 °C liquid · 110 °C air |
+| Insulation · hipot | basic insulation to PE through former + spacer + VPI class H · 100 % winding → bonded-face foil 2.5 kV DC · PD 5 / lot ≥ 1.9 kV extinction | same | ≥ 2.0 kV |
+| Over-temperature cutout | one §C thermostat (130 ±5 °C NC) beside a gap — fitted on every SKU; required on D2-50 liquid (lost face runs away) | same | same |
+| Mounting · terminations | two-face bond, end turns potted · 2 litz flying leads out of one end-turn face, tinned 12 mm | same | same |
+| Mechanical · marking | ≤ 70.5 × 65.9 × 59 mm · 1.3 kg · label p/n, rev, lot, serial, measured L | 1.3 kg | 1.35 kg |
+| Qty · price | 1 per module · **₹965 @1k [est]** | **₹1,077 @1k [est]** | **₹1,191 @1k [est]** |
+
+**Lr at kitting (no bins).** D2 is gapped to ±3 %; each D3 cell is labelled with its measured leakage (accept ±30 % of the
+computed value). The stack is inside the ±5 % Lr the tank decks were solved at; EOL confirms fr = 140 kHz ± 5 % on the
+assembled module (resonant CT phase sweep).
+
+## PMP-MAG-D8-30/40/50 (E67) — bank filter inductors (`IND-BANK`) — qty 2
+
+| Row | D8-30 `IND-BANK-30` | D8-40 `IND-BANK-40` | D8-50 `IND-BANK-50` |
+|---|---|---|---|
+| Function | one per bank, between the rectifier film and the 330 µF 550 V electrolytic — DC at 60 A (HIGH-mode floor) with a small 2·fsw ripple | DC 80 A | DC 100 A |
+| Construction | **the PMP-MAG-D6-30 part as drawn** (2 × T48 60µ sendust, N = 7, foil 20 mm²) | the D6-40 part (2 × T57 60µ, N = 8, 26.4 mm²) | the D6-50 part (3 × T57 60µ, N = 8, 26.4 mm²) |
+| Acceptance | L ≥ 7.4 µH at 82 A (the D6 line) · Rdc per D6 · ΔT ≤ 45 K at the DC duty (computed 14 K) | L ≥ 10.5 µH at 109 A · ΔT 17 K | L ≥ 12.9 µH at 136 A · ΔT 22 K |
+| Everything else | per the D6 sheet (insulation, hipot, mounting, marking, production test) | same | same |
+| Qty · price | 2 per module · **₹300 @1k [est]** | **₹465 @1k [est]** | **₹630 @1k [est]** |
 
 ## PMP-MAG-D1-30 rev C (E65) — PFC swing choke, 165 µH class (`IND-PFC-165u`) — qty 3
 

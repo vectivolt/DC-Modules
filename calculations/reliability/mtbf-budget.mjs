@@ -41,12 +41,13 @@ const CLASSES = [
 const PCB_FIT = 5;      // per board (2 power boards + 1 card)
 const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 
-// REGISTERED at E64 — recomputed every run, ±1 % drift fails.
-const REGISTERED = { "30kw": { fit: 3081, mtbfKh: 325 }, "40kw": { fit: 3297, mtbfKh: 303 }, "50kw": { fit: 3396, mtbfKh: 294 }, "50kwa": { fit: 3552, mtbfKh: 282 } };
+// REGISTERED at E67 (full-bridge LLC + zero-current matrix + output diode: fewer parts, E64 was 3081/3297/3396/3552 FIT) —
+// recomputed every run, ±1 % drift fails.
+const REGISTERED = { "30kw": { fit: 2757, mtbfKh: 363 }, "40kw": { fit: 2953, mtbfKh: 339 }, "50kw": { fit: 2999, mtbfKh: 333 }, "50kwa": { fit: 3259, mtbfKh: 307 } };
 // E55 products = N modules. E66: the 150 kW CSU adder (card-class assembly + DIN supply + carrier, 350 FIT) is deleted.
 const PRODUCTS = { "100kw (2×50L)": { n: 2, base: "50kw", csu: 0 }, "100kw air (2×50a)": { n: 2, base: "50kwa", csu: 0 },
                    "150kw (3×50L)": { n: 3, base: "50kw", csu: 0 }, "150kw air (3×50a)": { n: 3, base: "50kwa", csu: 0 } };
-const REG_PRODUCTS = { "100kw (2×50L)": 147, "100kw air (2×50a)": 141, "150kw (3×50L)": 98, "150kw air (3×50a)": 94 };
+const REG_PRODUCTS = { "100kw (2×50L)": 167, "100kw air (2×50a)": 153, "150kw (3×50L)": 111, "150kw air (3×50a)": 102 };   // E67
 
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };

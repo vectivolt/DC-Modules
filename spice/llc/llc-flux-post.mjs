@@ -3,11 +3,11 @@
 // The ngspice .out files are git-ignored (tens of MB); the magnetics gates must not depend on them. This
 // post-processor reads the waveform of every simulated corner (llc-stress.csv + llc-envelope.csv) and writes
 // simulation-results/<sku>/llc-flux.csv carrying, per corner:
-//   · Im_pk / Im_pp — magnetizing current (im = ip1 − isa − isb, section 1) → D3 flux is Lm·im/(N·Ae)
+//   · Im_pk / Im_pp — primary-referred magnetizing current (E67 full bridge: im = ip − (isa + isb)/n) → D3 flux is Lm·im/(Np·Ae)
 //   · k_igse_D3     — iGSE core-loss factor of the SIMULATED magnetizing-flux waveform relative to a sinusoid of
 //                     the same peak and frequency (Venkatachalam et al., COMPEL 2002; α 1.55, β 2.8 — the local
 //                     N95/PC95 exponents at 80–180 kHz, 100–250 mT from the TDK N95 curves)
-//   · k_igse_D2     — the same for the tank current (D2 trim flux follows ip1)
+//   · k_igse_D2     — the same for the tank current (D2 external Lr flux follows ip)
 // The waveform SHAPE factor is independent of N·Ae, so a core or turns change never needs a re-simulation;
 // only a tank change does, and the tank fingerprint in the header catches that (magnetics-envelope gate).
 // Run after llc-run.mjs / llc-envelope.mjs:  node spice/llc/llc-flux-post.mjs [sku ...]
@@ -15,6 +15,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TANKS, fingerprint } from "../../calculations/llc/tanks.mjs";
+import { TOL } from "./llc-run.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
@@ -50,14 +51,17 @@ export const igseFactor = (t, x, fsw, alpha = ALPHA, beta = BETA) => {
   return { k: num / den, pk: Math.max(mx, -mn), pp };
 };
 
-const parseOut = (file) => {
-  const t = [], ip1 = [], im = [];
+const parseOut = (file, n) => {
+  const t = [], ip = [], im = [], ib = [];
   for (const line of readFileSync(file, "utf8").trim().split("\n")) {
-    const p = line.trim().split(/\s+/).map(Number);   // pairs: t ip1 t ip2 t ip3 t isa t isb ...
-    t.push(p[0]); ip1.push(p[1]); im.push(p[1] - p[7] - p[9]);
+    const p = line.trim().split(/\s+/).map(Number);   // pairs: t ip t isa t isb ... t ibka (llc-run.mjs COLS)
+    t.push(p[0]); ip.push(p[1]); im.push(p[1] - (p[3] + p[5]) / n); ib.push(p[21]);
   }
-  return { t, ip1, im };
+  return { t, ip, im, ib };
 };
+// E67: AC (ripple) RMS of the bank-A rectifier current — the full bridge has no interleave cancellation; the bank filter
+// (film → Lf → electrolytic) is sized to this committed column
+const rippleRms = (t, x) => { let s = 0, s2 = 0; const T = t.at(-1) - t[0]; for (let i = 1; i < t.length; i++) { const dt = t[i] - t[i - 1]; s += 0.5 * (x[i] + x[i - 1]) * dt; s2 += 0.5 * (x[i] ** 2 + x[i - 1] ** 2) * dt; } return Math.sqrt(Math.max(s2 / T - (s / T) ** 2, 0)); };
 
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const skus = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(TANKS);
@@ -68,18 +72,18 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
         ? readCsv(join(ROOT, `simulation-results/${sku}/llc-envelope.csv`)).map((r) => ({ src: "envelope", tag: `ENV${r.bank_V}-${Math.round(r.P_frac * 100)}`, r }))
         : []),
     ];
-    const out = [["corner", "source", "bank_V", "P_frac", "fsw_kHz", "Im_pk_A", "Im_pp_A", "k_igse_D3", "Ip_pk_A", "k_igse_D2", "Ip_rms_A", "Isec_rms_A", "lm_scale"]];
+    const out = [["corner", "source", "bank_V", "P_frac", "fsw_kHz", "Im_pk_A", "Im_pp_A", "k_igse_D3", "Ip_pk_A", "k_igse_D2", "Ip_rms_A", "Isec_rms_A", "lm_scale", "Ibank_rip_A"]];
     let missing = 0;
     for (const { src, tag, r } of corners) {
       const file = join(ROOT, `spice/generated/llc-${sku}-${tag}.out`);
       if (!existsSync(file)) { missing++; console.log(`  MISSING waveform ${file} — re-run the runner for ${sku}`); continue; }
-      const w = parseOut(file), fsw = Number(r.fsw_kHz) * 1e3;
-      const d3 = igseFactor(w.t, w.im, fsw), d2 = igseFactor(w.t, w.ip1, fsw);
-      const lmScale = /tolLo|gainWorst/.test(tag) ? 1.07 : /tolHi/.test(tag) ? 0.93 : 1;   // deck tolerance on Lm (llc-run.mjs TOL)
-      out.push([tag, src, r.bank_V, src === "stress" ? 1 : r.P_frac, r.fsw_kHz, d3.pk.toFixed(2), d3.pp.toFixed(2), d3.k.toFixed(3), d2.pk.toFixed(2), d2.k.toFixed(3), r.Ip_rms_A, r.Isec_rms_A, lmScale]);
+      const w = parseOut(file, TANKS[sku].n), fsw = Number(r.fsw_kHz) * 1e3;
+      const d3 = igseFactor(w.t, w.im, fsw), d2 = igseFactor(w.t, w.ip, fsw);
+      const lmScale = /tolLo|gainWorst/.test(tag) ? TOL.lo.lm : /tolHi/.test(tag) ? TOL.hi.lm : 1;   // deck tolerance on Lm
+      out.push([tag, src, r.bank_V, src === "stress" ? 1 : r.P_frac, r.fsw_kHz, d3.pk.toFixed(2), d3.pp.toFixed(2), d3.k.toFixed(3), d2.pk.toFixed(2), d2.k.toFixed(3), r.Ip_rms_A, r.Isec_rms_A, lmScale, rippleRms(w.t, w.ib).toFixed(2)]);
     }
     if (missing) { console.log(`${sku}: ${missing} waveform(s) missing — llc-flux.csv NOT written`); process.exitCode = 1; continue; }
-    // E65: the internal-short race as a committed running-max envelope of |Ip| (all three sections) after the bank
+    // E65: the internal-short race as a committed running-max envelope of |Ip| (E67: the one bridge) after the bank
     // collapse at 300 µs — current-coordination measures its 3 µs kill window from the F.11 CROSSING on this trace
     // (sampling at fixed times after the short under-read the 30/40 kW peaks by 17–21 A)
     const sf = join(ROOT, `spice/generated/llc-${sku}-internal-short.out`);
@@ -87,7 +91,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
       const env = [["t_after_short_us", "ip_abs_runmax_A"]], pts = readFileSync(sf, "utf8").trim().split("\n").map((l) => l.trim().split(/\s+/).map(Number));
       for (let k = 0; k <= 200; k++) {
         const tEnd = 300e-6 + k * 0.05e-6;
-        let m = 0; for (const p of pts) if (p[0] >= 300e-6 && p[0] <= tEnd) m = Math.max(m, Math.abs(p[1]), Math.abs(p[3]), Math.abs(p[5]));
+        let m = 0; for (const p of pts) if (p[0] >= 300e-6 && p[0] <= tEnd) m = Math.max(m, Math.abs(p[1]));
         env.push([(k * 0.05).toFixed(2), m.toFixed(2)]);
       }
       writeFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), `# E65 internal-short |Ip| running max after the 300 µs bank collapse; ${fingerprint(sku)}\n` + env.map((x) => x.join(",")).join("\n") + "\n");

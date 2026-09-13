@@ -30,13 +30,11 @@ const IDS = [
   { id: "D1-30", tokens: { "N = 39": [mag, pack], "150–185 µH": [mag, pack], "≥ 75 µH": [pack], "165uH": [boards], "N=39": [k5, db] } },
   { id: "D1-40", tokens: { "N = 26": [pack], "N=26": [mag, k5, db], "116": [mag, pack, db, boards], "≥61": [mag], "61 µH": [pack] } },
   { id: "D1-50", tokens: { "N = 24": [pack], "N=24": [mag, k5, db], "107": [mag, pack, db, boards], "45 µH": [pack] } },
-  // E65: D2 carries ~all of Lr on E70 (bins from tanks.mjs); D3-30 → 2×E70, D3-50 → 3×E70 (XFMR-LLC-3E70-50)
-  { id: "D2 bins", tokens: { "6.35 / 6.5 / 6.65 / 6.8": [mag], "6.35/6.5/6.65/6.8": [pack, db, k5], "5.85/6.0/6.15/6.3": [pack, db, k5], "5.35/5.5/5.65/5.8": [pack, db, k5], "6112×0.05": [mag, pack, db], "8149x0.05": [k5, db], "IND-TRIM-E70-40": [pack, db], "IND-TRIM-E70-50": [pack, db] } },
-  { id: "D3 copper (E60)", tokens: { "0.10 × 28": [mag, pack], "0.127 × 28": [mag, pack], "0.071": [mag, pack, k5, db], "0.10x28": [k5], "0.127x28": [k5] } },
-  { id: "D3-30", tokens: { "7:7:7": [mag, pack, k5, db], "Lm 63": [mag], "Lm = 63": [pack] } },
-  { id: "D3-40", tokens: { "6:6:6": [mag, pack, k5, db], "B66372B2000": [mag, pack, k5, db] } },
-  { id: "D3-50", tokens: { "5:5:5": [mag, pack, k5, db], "XFMR-LLC-3E70-50": [pack, db] } },
-  { id: "D2/D3 build (E65)", tokens: { "VPI": [mag, pack, db], "130 °C": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
+  // E67: the full-bridge tank — D3 rev D transformer cells (primaries in series), D2 rev F external Lr, D8 bank filter (D6 construction)
+  { id: "D2 rev F external Lr", tokens: { "5.16 µH": [mag, pack, db], "4.07 µH": [mag, pack, db], "3.28 µH": [mag, pack, db], "5.16uH": [boards, k5], "4.07uH": [boards, k5], "3.28uH": [boards, k5], "8000×0.05": [mag, pack, db], "10000×0.05": [mag, pack, db], "12000×0.05": [mag, pack, db], "IND-LR-E70-40": [pack, db], "IND-LR-E70-50": [pack, db] } },
+  { id: "D3 rev D cells", tokens: { "6:6∥6": [mag, pack, db], "4:4∥4": [mag, pack, db], "3850×0.063": [mag, pack, db], "3536×0.071": [mag, pack, db], "XFMR-LLC-CELL-2E70-30": [pack, db], "XFMR-LLC-CELL-3E70-40": [pack, db], "XFMR-LLC-CELL-3E70-50": [pack, db], "B66372B2000": [mag, pack, k5, db] } },
+  { id: "D8 bank filter", tokens: { "IND-BANK-30": [pack, db], "IND-BANK-40": [pack, db], "IND-BANK-50": [pack, db], "7.4uH": [boards, k5], "10.5uH": [boards, k5], "12.9uH": [boards, k5] } },
+  { id: "D2/D3 build (E65/E67)", tokens: { "VPI": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
   { id: "D4", tokens: { "ETD44": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-E": [pack, db], "≤ 4 µH": [pack] } },   // E65 D4 rev E (d4-flyback)
   { id: "D6", tokens: { "N=7": [db], "N=8": [db], "7 T": [mag], "8 T": [mag], "7.4": [mag, db], "10.5": [mag, db], "12.9": [mag, db] } },
 ];
@@ -60,12 +58,13 @@ const MASS = [
   ...Object.entries({ "30kw": 2.2, "40kw": 3.0, "50kw": 2.9 }).map(([sku, doc]) => {
     const c = D1C[sku]; return [`D1-${sku.replace("kw", "")}`, c.stack * CORES.T79.kgCore, CU(d1Geom(c).mlt, c.N, (c.nw * Math.PI * (c.d * 1e3) ** 2) / 4), doc];
   }),
-  // E65: D2/D3 from the envelope construction tables + per-winding mean turns (geometry.mjs)
-  ...Object.entries({ "30kw": 0.70, "40kw": 1.27, "50kw": 1.27 }).map(([sku, doc]) => {
+  // E67: D2 rev F / D3 rev D from the envelope construction tables + per-winding mean turns (geometry.mjs)
+  ...Object.entries({ "30kw": 1.3, "40kw": 1.3, "50kw": 1.35 }).map(([sku, doc]) => {
     const c = D2C[sku]; return [`D2-${sku.replace("kw", "")}`, stack(c.core, c.n).kg, c.N * d2Mlt(c) * (c.strands * Math.PI * c.dS ** 2 / 4) * 8900, doc];
   }),
-  ...Object.entries({ "30kw": 1.32, "40kw": 1.36, "50kw": 1.97 }).map(([sku, doc]) => {
-    const c = D3C[sku], g = d3Build(c); return [`D3-${sku.replace("kw", "")}`, stack(c.core, c.n).kg, c.N * (g.mltP * c.cuP + (g.mltS1 + g.mltS2) * c.foil * c.foilW) * 8900, doc];
+  // E67 D3 rev D: ONE cell (the module carries two)
+  ...Object.entries({ "30kw": 1.3, "40kw": 1.85, "50kw": 1.85 }).map(([sku, doc]) => {
+    const c = D3C[sku], g = d3Build(c); return [`D3-${sku.replace("kw", "")} cell`, stack(c.core, c.n).kg, c.N * (g.mltP * c.cuP + (g.mltS1 + g.mltS2) * c.nf * c.foil * c.foilW) * 8900, doc];
   }),
 ];
 for (const [id, core, cu, doc] of MASS) {

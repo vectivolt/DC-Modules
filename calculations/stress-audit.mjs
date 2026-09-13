@@ -10,8 +10,9 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { TANKS } from "./llc/tanks.mjs";
-import { D2 as D2C, D3 as D3C, excitation, V_AIR } from "./magnetics/magnetics-envelope.mjs";
+import { TANKS, TANK_CLASS, JBS_POS } from "./llc/tanks.mjs";
+import { shortRacePeak } from "../spice/llc/llc-flux-post.mjs";
+import { D2 as D2C, D3 as D3C, D3_CELLS, excitation, V_AIR } from "./magnetics/magnetics-envelope.mjs";
 import { stack, CORES } from "./magnetics/geometry.mjs";
 import { D1 as D1C, D1_REGISTERED, D1_LITZ, d1Temp, d1TypeTest, row as vsRow, VS as D1VS } from "./magnetics/d1-choke.mjs";
 import { mechLines } from "./cost/parts-db.mjs";
@@ -51,38 +52,20 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   ck("Tj", `${sku} PFC FET worst corner`, tjp <= 150, `${tjp} °C vs 150 ceiling (abs max 175) [grid, ${rows.length} pts]`);
   ck("Tj", `${sku} LLC FET worst corner`, tjl <= 150.5, `${tjl} °C vs 150 ceiling (corner folds engage per envelope policy) [grid]`);
 }
-// E42 grid-shape asserts for the liquid variant: the class rev must deliver the FULL envelope —
-// no tank-ceiling clamps at all, folds only in the hot PS corner family and only ONE step (the
-// same family the 40 kW folds on air), and Ip inside the revved 65 A pk ceiling.
-{
-  const r50 = grid.filter(r => r[0] === "50kw" && r[6] !== "IDLE" && r[13] !== "");
-  const ipMax = Math.max(...r50.map(r => +r[10]));
-  const ceilNotes = r50.filter(r => /tank-ceiling/.test(r[16] ?? ""));
-  const foldNotes = r50.filter(r => /thermal derate/.test(r[16] ?? ""));
-  const deepFolds = foldNotes.filter(r => +(r[16].match(/derate to (\d+)%/)?.[1] ?? 100) < 80);
-  // E60: the grid's Ip column is A RMS against the tank CLASS (77.3 A rms) — the pre-E60 "65 A pk"
-  // ceiling was the same RMS quantity mislabelled; and the SER hysteresis band is now evaluated.
-  ck("E42", "50kw tank Ip vs the tank class", ipMax <= 77.3 * 1.02, `${f(ipMax)} A rms vs 77.3 A rms class (ngspice E60 worst nominal 76.6 A; F.11 now 145 A pk — current-coordination gate)`);
-  ck("E42", "50kw envelope: zero tank-ceiling clamps", ceilNotes.length === 0, `${ceilNotes.length} clamped rows — no availability clamp exists in firmware, so none may exist in the grid`);
-  ck("E42", "50kw folds: known families only, ≤2 steps", deepFolds.length === 0 && foldNotes.every(r => (r[4] === "hot" && r[6] === "PS") || (r[5] === "SER" && (+r[2] === 500 || +r[2] === 525))), `${foldNotes.length} fold rows — hot PS corners + the SER hysteresis band (E60: falling-command state only; START selects PAR ≤525 V); deepest 80 % = the triple corner 475 VAC ∧ SER 500 V ∧ hot, where the line-tracking bus floor puts the bank-250 V point into PS`);
+// E42/E44/E67 grid-shape asserts: the full-bridge tank class must deliver the FULL envelope on every SKU — no tank-ceiling clamps
+// (no availability clamp exists in firmware) and no thermal folds at all
+for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
+  const r = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
+  const ipMax = Math.max(...r.map(r => +r[10])), notes = r.filter(r => (r[16] ?? "") !== "");
+  const tjd = Math.max(...r.map(r => +r[17] || 0));
+  ck("E67", `${sku} full envelope: Ip inside the tank class, zero clamps/folds, secondary JBS Tj`, ipMax <= TANK_CLASS[sku] * 1.02 && notes.length === 0 && tjd <= 150.5,
+    `${f(ipMax)} A rms vs ${TANK_CLASS[sku]} A class · ${notes.length} noted rows · worst TjJBS ${tjd} °C (${JBS_POS[sku].n}× ${JBS_POS[sku].cls} A per position) [grid]`);
 }
-// E44 grid-shape asserts for the AIR 50: the paralleled LLC must deliver the full envelope on
-// plain 4-fan air — zero folds, zero clamps (worst corner computes ~107 °C).
-{
-  const ra = grid.filter(r => r[0] === "50kwa" && r[6] !== "IDLE" && r[13] !== "");
-  const ipMax = Math.max(...ra.map(r => +r[10])), notes = ra.filter(r => (r[16] ?? "") !== "" && !(r[5] === "SER" && (+r[2] === 500 || +r[2] === 525) && r[4] === "hot"));
-  const tjl = Math.max(...ra.map(r => +r[14]));
-  ck("E44", "50kwa full envelope on air, derates only hot SER band", notes.length === 0 && ipMax <= 77.3 * 1.02 && tjl <= 150,
-    `${notes.length} noted rows outside the hot SER hysteresis band (E60: that band folds to 93 % on the secondary-JBS Tj, not the LLC) · Ip ${f(ipMax)} A rms ≤ 77.3 class · worst TjLLC ${tjl} °C (paralleled pairs)`);
-}
-// diodes [lb k-scaling]: per-diode dissipation into its position Rth at its reference —
-// air variants: 1.9 K/W to the 70 °C sink · E42 liquid: 1.1 K/W to the 65 °C plate
-const SEC_W = { "30kw": 360, "40kw": 521, "50kw": 701, "50kwa": 701 };    // sec bridge totals [lb rev E44]
+// PFC boost diodes [lb k-scaling]: per-diode dissipation into its position Rth at its reference — air 1.9 K/W to the 70 °C sink ·
+// E42 liquid 1.1 K/W to the 65 °C plate. (E67: the secondary JBS row is the grid column above — per-corner, per-position count.)
 for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70], ["50kw", 5 / 3, 1.1, 65], ["50kwa", 5 / 3, 1.9, 70]]) {
   const pfcD = 12.1 * Math.pow(k, 1.6);                     // Vf + dyn-R blend [lb]
-  const secD = SEC_W[sku] / 24;                             // sec bridge total / 24 diodes [lb]
   ck("Tj", `${sku} PFC boost diode`, ref + rth * pfcD <= 150, `${f(pfcD)} W → Tj ≈ ${f(ref + rth * pfcD, 0)} °C (${rth} K/W to ${ref} °C ref)`);
-  ck("Tj", `${sku} secondary JBS diode`, ref + rth * secD <= 150, `${f(secD)} W avg → Tj ≈ ${f(ref + rth * secD, 0)} °C`);
 }
 
 // ---------------- 3. magnetics vs their OWN acceptance lines ------------------------------------
@@ -166,23 +149,20 @@ for (const [sku, d] of Object.entries(D1)) {
   ck("INS", "bonded magnetics carry their basic-barrier rows at the computed recurring peaks", d1 <= 700 && d6 <= 700 && tank.every((v) => v > 700) && miss.length === 0,
     `D1 ${d1} V · D6-50 ${d6} V (≤700 V: hipot + impulse, no PD) · D2/D3 ${tank.join(" / ")} V (30/40/50/50a — PD sample test at ≥ ${pd.join(" / ")} kV)${miss.length ? ` → MISSING in insulation-coordination.md: ${miss.join(" · ")}` : " → rows present"}`);
 }
-// D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae) at the BIN-MAX inductance and the drawn tank class.
-// E65: D2 carries ~all of Lr (the "engineered 3 µH" transformer leakage was unreachable) — constructions from the
-// magnetics-envelope table, bins from tanks.mjs; thermal proof at every simulated corner lives in magnetics-envelope.
-const IRMS_CLASS = { "30kw": 46.4, "40kw": 61.9, "50kw": 77.3, "50kwa": 77.3 };
+// D2 external resonant inductor [reg formula] (E67): Bpk = Lmax·√2·I_class / (N · Ae) at the +3 % inductance and the tank class;
+// thermal proof at every simulated corner lives in magnetics-envelope, the simulated-peak + fault flux in current-coordination.
 for (const [sku, c] of Object.entries(D2C)) {
-  const t = TANKS[sku], Ae = stack(c.core, c.n).Ae, B = Math.max(...t.bins) * 1e-6 * IRMS_CLASS[sku] * Math.SQRT2 / (c.N * Ae) * 1e3;
-  ck("D2", `${sku} trim Bpk`, B <= 110 && t.nTrim === c.N, `${f(B, 0)} mT at bin-max ${Math.max(...t.bins)} µH × ${IRMS_CLASS[sku]} A rms class vs 110 mT line (N=${c.N} on ${c.n}× E70/33/32 — E65)`);
+  const Ae = stack(c.core, c.n).Ae, B = c.Lmax * TANK_CLASS[sku] * Math.SQRT2 / (c.N * Ae) * 1e3;
+  ck("D2", `${sku} external Lr Bpk`, B <= 110, `${f(B, 0)} mT at Lmax ${f(c.Lmax * 1e6, 2)} µH × ${TANK_CLASS[sku]} A rms class vs 110 mT line (N=${c.N} on ${c.n}× E70/33/32 — E67 D2 rev F)`);
 }
-// D3 transformer — E65: flux from the POWER-SOLVED magnetizing current at every simulated corner (llc-flux.csv), not the
-// 415 V / 140 kHz resonant point: the bus is capped at 830 V, so bank 500–525 V runs gain 1.2–1.27 at 77–88 kHz and
-// flux follows bank voltage, 1.5–2.2× the resonant value (E51's volt-second check was right in form, wrong in corner).
+// D3 transformer cells — flux from the POWER-SOLVED magnetizing current at every simulated corner (llc-flux.csv): each cell carries
+// Lm/2 on its own N turns (primaries in series); flux follows the bank voltage, not load (E65).
 {
   for (const [sku, c] of Object.entries(D3C)) {
     const Ae = stack(c.core, c.n).Ae, rows = excitation(sku).rows;
     const w = rows.reduce((a, r) => (r.Im_pk_A * r.lm_scale > a.Im_pk_A * a.lm_scale ? r : a));
-    const B = 63e-6 * w.Im_pk_A * w.lm_scale / (c.N * Ae) * 1e3;
-    ck("D3", `${sku} Bpk at the worst simulated corner`, B <= 205, `${f(B, 0)} mT at ${w.corner} (${w.fsw_kHz} kHz) on ${c.n}× E70 ${c.N}:${c.N}:${c.N} ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)`);
+    const B = (TANKS[sku].Lm / D3_CELLS) * w.Im_pk_A * w.lm_scale / (c.N * Ae) * 1e3;
+    ck("D3", `${sku} cell Bpk at the worst simulated corner`, B <= 205, `${f(B, 0)} mT at ${w.corner} (${w.fsw_kHz} kHz) on ${c.n}× E70 ${c.N}:${c.N}∥${c.N} ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)`);
   }
 }
 // D6/D7 EMI chokes — E65: read from the engines (the pre-E65 row tested a literal 5.5 for every SKU while the drawn
@@ -212,14 +192,13 @@ for (const [sku, c] of Object.entries(D2C)) {
   ck("EMI", "current loop vs drawn filter [pfc-control]", ss.length === 6 && ss.every((r) => +r[6] >= 0.5) && td.length === 9 && td.every((r) => +r[6] <= 1) && ctl.length === 3 && ctl.every((r) => +r[6] >= 10) && duty.every((r) => +r[6] <= 12.5),
     `modulus margin ≥ ${f(Math.min(...ss.map((r) => +r[6])), 2)} (P/PI, 15 µs, damped) · switched-model 2–45 kHz ≤ ${f(Math.max(...td.map((r) => +r[6])), 2)} % · undamped 30 µs control ≥ ${f(Math.min(...ctl.map((r) => +r[6])), 0)} % · RDMP ≤ ${f(Math.max(...duty.map((r) => +r[6])), 1)} W of 25`);
 }
-// tank capacitors: per-cap current vs the 12 A spec line (13.5 A part class at RFQ)
-const CAP = { "30kw": { n: 4, I: 46.4 }, "40kw": { n: 6, I: 61.9 }, "50kw": { n: 8, I: 77.3 }, "50kwa": { n: 8, I: 77.3 } };
-for (const [sku, c] of Object.entries(CAP))
-  ck("Cr", `${sku} per-cap current`, c.I / c.n <= 12, `${f(c.I / c.n)} A of 12 A line (${c.n}× per section)`);
+// tank capacitors: per-cap current vs the 12 A spec line (13.5 A part class at RFQ) — E67: one Cr bank per module
+for (const [sku, t] of Object.entries(TANKS))
+  ck("Cr", `${sku} per-cap current`, TANK_CLASS[sku] / t.crN <= 12, `${f(TANK_CLASS[sku] / t.crN)} A of 12 A line (${t.crN}× ${t.crNF} nF at the ${TANK_CLASS[sku]} A class)`);
 // CTs
 const db = readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8");
 ck("CT", "line CT class @40 kW", 73.3 <= 150 * 0.95 && /R1206-18R-1%/.test(db), "E60: the 40 kW joins the 150 A class (ACX-1150) — F.01 155 A + 50 A race needs linearity past the ACX-1100's ~179 A at 18 R; 30 kW keeps ACX-1100 (55 A, F.01 120 A on 22 R)");
-ck("CT", "resonant CT class per variant", /CT-RES-1:100-80A/.test(db) && /CT-RES-1:100-100A/.test(db), "30 kW: AS-404 (46.4 of 50 A ✓); 40 kW: 61.9 A → 80 A-class; 50 kW: 77.3 A → 100 A-class — both ORDERED via skuOverrides (RFQ lines, sensor path not power path)");
+ck("CT", "resonant CT class per variant", /CT-RES-1:100-100A/.test(db) && /CT-RES-1:100-150A/.test(db), "E67 one tank CT: 30 kW 78 A class on 100 A (78 %); 40/50 kW 100/120 A class on 150 A (67/80 %) — RFQ lines, sensor path not power path");
 ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(db), "91.6 A worst vs 150 A class (ACX upsize at RFQ; ACX-1100 would run 92%)");
 // E42 burden rail budgets — the catch that re-scaled both burdens: OC observability must stay
 // inside the 3.3 V rail ABOVE the 1.65 V AVMID bias (the R3-proven budget is +1.62 V = 3.27 V).
@@ -227,12 +206,13 @@ ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(
   // E60 re-point: the observability point is now F.0x + the simulated 3 µs fault rise (current-
   // coordination gate owns the per-SKU proof; this row keeps the 50 kW rail arithmetic visible)
   const lineV = 1.65 + (195 + 71.4) / 2500 * 13;            // 50 kW F.01 195 A + D1 soft-sat race
-  const resV = 1.65 + 215.6 / 100 * 0.68;                   // E65: 50 kW air-twin race peak 3 µs after the F.11 crossing (llc-short.csv)
-  const resW = 0.809 ** 2 * 0.68;                           // resonant burden at the 80.9 A rms mismatch corner
+  const monPk = shortRacePeak("50kwa", 220, 3).peak;          // E67: 50 kW air-twin monitor peak 3 µs after the F.11 crossing (llc-short.csv)
+  const resV = 1.65 + monPk / 100 * 0.30;
+  const resW = (TANK_CLASS["50kw"] / 100) ** 2 * 0.30;        // resonant burden at the tank class
   ck("BRD", "50kw line-CT burden rail budget", lineV <= 3.275, `266 A pk (F.01+race) → ${f(lineV, 2)} V on 13 Ω (the E42 21.5 Ω saw only to 187 A)`);
-  ck("BRD", "50kw resonant burden rail budget", resV <= 3.275, `216 A pk (F.11+race, E65 crossing-referenced) → ${f(resV, 2)} V on 0.68 Ω (the E42 1.6 Ω would clip at 104 A; E60 0.75 Ω sat at the rail)`);
+  ck("BRD", "50kw resonant burden rail budget", resV <= 3.275, `${f(monPk, 0)} A pk (F.11 monitor peak, E67 crossing-referenced) → ${f(resV, 2)} V on 0.30 Ω`);
   ck("BRD", "50kw resonant burden dissipation", resW <= 1.0, `${f(resW, 2)} W on the 2 W part = ${f(50 * resW, 0)}%`);
-  ck("BRD", "50kw burden parts ordered", /R2512-0R68-2W-1%/.test(db) && /R1206-13R-1%/.test(db), "both burdens exist as skuOverrides (E65 resonant 0.68 Ω)");
+  ck("BRD", "50kw burden parts ordered", /R2512-0R30-2W-1%/.test(db) && /R1206-13R-1%/.test(db), "both burdens exist as skuOverrides (E67 resonant 0.30 Ω)");
 }
 
 // ---------------- 3b. E43 verification-pass permanent gates -------------------------------------
@@ -246,19 +226,16 @@ ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(
       `${row?.stack}× ${row?.geom?.split(" ")[0]} ${row?.mat} N=${row?.N} → ${row?.Lpk} µH ≥ ${row?.Lfloor} (CX2 4.7 µF rev; lisn per-variant margins ≥ +4.9 dB)`);
   }
 }
-// resonant-cap DIELECTRIC duty: current alone is the wrong invariant — V = I/(ωC) grows as C
-// shrinks, so the 27 nF variant sees MORE volts and watts per cap than the 46 nF at lower current.
-for (const [sku, n, cnF, irms] of [["30kw", 4, 46, 46.4], ["40kw", 6, 33, 61.9], ["50kw", 8, 27, 77.3]]) {
-  const iC = irms / n, vC = iC / (2 * Math.PI * 140e3 * cnF * 1e-9);
-  const wC = iC * iC * (2e-4 / (2 * Math.PI * 140e3 * cnF * 1e-9));
+// resonant-cap DIELECTRIC duty: current alone is the wrong invariant — V = I/(ωC) per cap at 140 kHz and the tank class (E67)
+for (const [sku, t] of Object.entries(TANKS)) {
+  const iC = TANK_CLASS[sku] / t.crN, xc = 1 / (2 * Math.PI * 140e3 * t.crNF * 1e-9), vC = iC * xc, wC = iC * iC * 2e-4 * xc;
   ck("CrV", `${sku} per-cap Vrms/W duty`, vC <= 530 && wC <= 1.0,
     `${f(vC, 0)} V rms @140 kHz · ${f(wC, 2)} W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ ${f(vC * 1.3, 0)} V (942C class)`);
 }
-// D2 trim copper density at the E60 litz (the AC copper + ΔT proof moved to conductor-audit, which
-// computes Sullivan proximity at the simulated corners — the DC×1.15 model this row used hid Fr 4–12)
-for (const [sku, litz, irms, name] of [["30kw", 10.6, 46.4, "1350×0.1"], ["40kw", 16.4, 61.9, "4150×0.071"], ["50kw", 19.6, 77.3, "2500×0.1"], ["50kwa", 19.6, 77.3, "2500×0.1"]]) {
-  ck("D2c", `${sku} trim litz J`, irms / litz <= 5.6,
-    `${name} litz: J ${f(irms / litz, 1)} A/mm² ≤ 5.6 (AC loss/ΔT: conductor-audit)`);
+// D2 litz copper density at the tank class (AC copper + ΔT proof: conductor-audit + magnetics-envelope)
+for (const [sku, c] of Object.entries(D2C)) {
+  const A = (c.strands * Math.PI * c.dS ** 2) / 4 * 1e6;
+  ck("D2c", `${sku} external Lr litz J`, TANK_CLASS[sku] / A <= 5.6, `${c.strands}×${c.dS * 1e3} mm litz (${f(A, 1)} mm²): J ${f(TANK_CLASS[sku] / A, 1)} A/mm² ≤ 5.6 at the ${TANK_CLASS[sku]} A class`);
 }
 // D4 aux flyback — E65 rev E: every row COMPUTED by magnetics/d4-flyback.mjs from the drawn cells.tsx values and the NCP1252/D
 // limits. The E52 row used a 3.2 A clamp; the real limit through the CS filter lag + tILIM put ETD39 at 113 % of Bsat 130 °C.

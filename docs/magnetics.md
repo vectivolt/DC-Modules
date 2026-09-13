@@ -21,6 +21,20 @@
 > two-node thermal and runaway at every power-solved corner).
 
 > [!IMPORTANT]
+> **E67 revision — InfyPower-parity DC-DC.** The three interleaved half-bridge sections (3 × D3 + 3 × D2 trim) are replaced by
+> the REG1K0135A2 architecture: **one full-bridge LLC** driving **one Cr bank → one external Lr (D2 rev F) → one transformer
+> (D3 rev D)**, n = 2, with the charging-module LOW (≤ 500 V, banks parallel) / HIGH (≥ 500 V, banks series) output modes.
+>
+> | Part | E65 | E67 | Why |
+> |---|---|---|---|
+> | **D3** transformer | 3 section transformers, 1:1:1 | **2 cells, primaries in series** (n = 2), each S1–P–S2 with S1 ∥ S2 to its bank | one n:1:1 core cannot carry the one-bridge copper through the E70 window, and nothing taller than the 66 mm set fits the tunnel (MAS shape scan) |
+> | **D2** Lr | 3 binned trims carrying ~all of Lr | **one external Lr** (5.16 / 4.07 / 3.28 µH ±3 %), no bins | InfyPower practice; the ±3 % gap tolerance + ±30 % cell leakage band stays inside the ±5 % Lr the decks were solved at |
+> | **D8** bank filter | — | **2 × the D6 sendust construction at DC duty** | one bridge has no interleave cancellation: 34.5 / 44.9 / 55.1 A rms of 2·fsw ripple per bank (ngspice) is held on the rectifier film |
+>
+> Proof: [`magnetics-envelope`](../calculations/magnetics/magnetics-envelope.mjs) CLEAN at every power-solved corner (D3 cell hot-spot
+> 106 / 102 / 103 / 116 °C, D2 95 / 100 / 98 / 110 °C at 55 °C inlet), `conductor-audit` CLEAN, `current-coordination` CLEAN.
+
+> [!IMPORTANT]
 > **E65 revision — end-to-end magnetics review.** Every D2 and D3 check had been taken at the resonant point, against
 > single-set winding windows, with a lumped thermal model. Each finding below was reproduced by an independent verifier.
 >
@@ -43,21 +57,22 @@
 | Part | Function | 30 kW | 40 kW | 50 kW (liquid and air) | Kept honest by |
 |---|---|---|---|---|---|
 | [**D1**](#d1-rev-c-e65--pfc-boost-chokes--qty-3-per-module) · × 3 | PFC boost choke | 3 × 0077908A7, N = 39 ± 1 | 5 × 0077908A7, N = 26 ± 1 | 5 × 0077908A7, N = 24 ± 1 | `mag-sync` · `stress-audit` · `temp-critique` |
-| [**D2**](#d2-rev-e-e65--resonant-trim-inductor-bin-sets--qty-3-per-module) · × 3 | resonant trim — carries ~all of Lr, binned to the transformer's measured leakage | 1 × E70, N 8 · 6.35 / 6.5 / 6.65 / 6.8 µH | 2 × E70, N 5 · 5.85 / 6.0 / 6.15 / 6.3 µH | 2 × E70, N 5 · 5.35 / 5.5 / 5.65 / 5.8 µH | `magnetics-envelope` · `conductor-audit` · `current-coordination` |
-| [**D3**](#d3-rev-c-e65--llc-section-transformers--qty-3-per-module) · × 3 | LLC section transformer | 2 × E70, 7:7:7 · foil 0.10 mm | 2 × E70, 6:6:6 · foil 0.127 mm | 3 × E70, 5:5:5 · foil 0.127 mm | `magnetics-envelope` · `conductor-audit` · `mag-sync` |
+| [**D2**](#d2-rev-f-e67--external-resonant-inductor--qty-1-per-module) · × 1 | external resonant inductor (E67) | 2 × E70, N 5 · 5.16 µH · litz 8000×0.05 | 2 × E70, N 5 · 4.07 µH · litz 10000×0.05 | 2 × E70, N 5 · 3.28 µH · litz 12000×0.05 | `magnetics-envelope` · `conductor-audit` · `current-coordination` |
+| [**D3**](#d3-rev-d-e67--full-bridge-transformer-cells--qty-2-per-module) · × 2 | full-bridge transformer cell, primaries in series (E67) | 2 × E70, 6:6∥6 · litz 3850×0.063 | 3 × E70, 4:4∥4 · litz 3536×0.071 | 3 × E70, 4:4∥4 · litz 3536×0.071 | `magnetics-envelope` · `conductor-audit` · `mag-sync` |
+| [**D8**](#d8-e67--bank-filter-inductors--qty-2-per-module) · × 2 | bank filter inductor (E67) | D6-30 construction · 7.4 µH | D6-40 construction · 10.5 µH | D6-50 construction · 12.9 µH | `current-coordination` OUT rows |
 | [**D4**](aux-transformer-D4.md) · × 1 | 110 W aux flyback | ETD44 rev E (E65) | = | = | `stress-audit` D4 Bpk |
 | [**D6**](#d6--dm-line-chokes-dm-22u-sku--qty-3-per-module-one-per-phase-hr-9-new-drawing) · × 3 | differential-mode line choke | 2 × T48 60µ, N 7 | 2 × T57 60µ, N 8 | 3 × T57 60µ, N 8 | `dm-choke-design` · `lisn-precompliance` |
 | [**D7**](#d7--cm-chokes-cmc-3ph-2mh-sku--qty-2-rev-b-e65-engine-designed-dm-bias-acceptance) · × 2 | 3-phase common-mode choke | Schaffner RT8131-63-2M8 class | custom 75 A | custom 95 A | ΔT acceptance |
-| [**CT**](#ct--current-transformers--qty-3-each-per-module--catalog-parts-audit-2026-09-08) · × 3 + 3 | line and resonant current sensing | ACX-1100 · 22 Ω / AS-404 · 1.2 Ω | ACX-1150 · 18 Ω / 80 A class · 0.91 Ω | ACX-1150 · 13 Ω / 100 A class · 0.75 Ω | `current-coordination` |
+| [**CT**](#ct--current-transformers--qty-3-each-per-module--catalog-parts-audit-2026-09-08) · × 3 + 1 | line and resonant current sensing | ACX-1100 · 22 Ω / tank 100 A class · 0.47 Ω | ACX-1150 · 18 Ω / tank 150 A class · 0.36 Ω | ACX-1150 · 13 Ω / tank 150 A class · 0.30 Ω | `current-coordination` |
 
 ```mermaid
 flowchart LR
   AC(["3-φ AC"]) --> D7["D7 · CM chokes × 2"] --> D6["D6 · DM chokes × 3"] --> D1["D1 · PFC chokes × 3"]
   D1 --> BUS[("DC bus 650–830 V")]
-  BUS --> TANK["Cr + D2 trim × 3"] --> D3["D3 transformers × 3"] --> BANKS["banks A + B"]
+  BUS --> FB["full bridge"] --> TANK["Cr + D2 external Lr"] --> D3["D3 cells × 2 (primaries in series)"] --> D8["D8 bank filters × 2"] --> BANKS["banks A + B"]
   BUS --> D4["D4 aux flyback × 1"]
   LCT["line CTs × 3"] -.- D1
-  RCT["resonant CTs × 3"] -.- TANK
+  RCT["resonant CT × 1"] -.- TANK
   style D1 stroke:#d19a00,stroke-width:2px
   style D3 stroke:#1a9fb3,stroke-width:2px
   style TANK stroke:#b8732e,stroke-width:2px
@@ -69,6 +84,73 @@ All values trace to `calculations/pfc/pfc-design.mjs` and `calculations/llc/llc-
 rows trace to `calculations/magnetics/magnetics-envelope.mjs`, `conductor-audit.mjs` and `calculations/llc/tanks.mjs`.
 Acceptance limits are the production test spec (EOL §45). Material fits are catalog-class,
 marked VERIFY (A3/A4) — first-article measurement closes them.
+
+## D3 rev D (E67) — full-bridge transformer cells — qty 2 per module
+
+The one-bridge transformer is **two identical cells whose primaries are wired in series**; each cell's secondary feeds one bank.
+Overall ratio n = 2 (Np total : Ns per bank), so the gain policy and the 830 V bus cap are unchanged. Each cell keeps the E65
+S1–P–S2 interleave; S1 and S2 are paralleled at the secondary header and carry half the bank current each.
+
+| Item | D3-30 cell | D3-40 cell | D3-50 cell (liquid and air) |
+|---|---|---|---|
+| Core | 2 × E70/33/32, PC95 / N95 / 3C95 | 3 × E70/33/32 | 3 × E70/33/32 |
+| Former | TDK B66372B2000 (2-set, lN 230.5 mm) | 3-set former, lN 293 mm (custom) | 3-set former |
+| Turns | **6:6∥6** (P : S1 ∥ S2) | **4:4∥4** | **4:4∥4** |
+| Lm per cell (±7 %, gap-ground) | 28 µH (pair 56 µH) | 21.75 µH (pair 43.5 µH) | 17.8 µH (pair 35.6 µH) |
+| Primary | TIW-served litz **3850×0.063 mm** (12 mm²) | TIW-served litz **3536×0.071 mm** (14 mm²) | same as D3-40 |
+| Secondary halves | Cu foil 0.10 × 28 mm, 1 per turn | Cu foil 2 × 0.08 × 28 mm per turn | same as D3-40 |
+| Leakage per cell (computed, accept ±30 %) | 0.172 µH | 0.090 µH | 0.090 µH |
+| Worst flux (magnetics-envelope) | 159 mT at ENV500-55, 87.7 kHz | 159 mT, 87.3 kHz | 159 mT, 87 kHz |
+| Fe · Cu at the worst corners | 31.9 W · 45.8 W | 47.6 W · 46.1 W | 47.5 W · 71.3 W |
+| Hot-spot at 55 °C inlet | 106 °C | 102 °C | 103 °C liquid · 116 °C air |
+| Rdc @25 °C rows (P · S1 · S2 half) | ≤ 2.1 · 8.0 · 9.8 mΩ | ≤ 1.55 · 4.5 · 5.1 mΩ | as D3-40 |
+| Build | VPI class H, both yoke faces bonded, end turns potted, shield to DCN | as D3-30 | plate-bonded (liquid) / web-bonded (air) |
+| Mounting · envelope · mass | two-face gap-pad bond + clamp bars, ≤ 70.5 × 65.9 × 91 mm, 1.3 kg | ≤ 70.5 × 65.9 × 120 mm, 1.85 kg | as D3-40 |
+| Terminations · marking | primary header (P1 · P2 · SH) and secondary header (SA · SB) on opposite faces · label p/n, rev, lot, serial, measured leakage, polarity dot at start | same | same |
+| Insulation · hipot | pri↔sec REINFORCED (TIW + ≥ 3 barrier-tape layers per shield) · 100 % pri↔sec 4.25 kV DC, windings → bonded-face foil 2.5 / 1.5 kV DC · PD ≥ 1.9 kV extinction (insulation-coordination) | same | PD ≥ 2.0 kV |
+| Thermal type test | hotspot thermocouples at the winding outer surface and the centre leg; ≤ 125 °C at 55 °C inlet, operating ambient −40…+55 °C full power (derated to 75 °C) | same | same |
+
+The RFQ sheets with winding tables, insulation, hipot and thermal type tests are in
+[`magnetics-manufacturing-pack.md`](magnetics-manufacturing-pack.md#pmp-mag-d3-304050-rev-d-e67--full-bridge-transformer-cells-xfmr-llc-cell--qty-2).
+
+## D2 rev F (E67) — external resonant inductor — qty 1 per module
+
+InfyPower practice: one gapped litz inductor carries Lr minus the two cells' leakage and the 0.1 µH loop stray. No bins — the
+±3 % gap tolerance plus the ±30 % cell-leakage acceptance band is a worst-case ±4.0–4.6 % stack, inside the ±5 % Lr the
+ngspice decks were solved at (`magnetics-envelope` LR row).
+
+| Item | D2-30 | D2-40 | D2-50 |
+|---|---|---|---|
+| Inductance (±3 %, 140 kHz, 0.1 V) | **5.16 µH** | **4.07 µH** | **3.28 µH** |
+| Core · turns | 2 × E70/33/32 PC95-class, N = 5 | same | same |
+| Litz | **8000×0.05** mm (15.7 mm²) | **10000×0.05** mm (19.6 mm²) | **12000×0.05** mm (23.6 mm²) |
+| Gap | distributed centre-leg Σ 8.3 mm, ≤ 1.0 mm per segment, litz ≥ 3 mm clear | Σ 10.5 mm | Σ 13.1 mm |
+| Worst flux · Fe · Cu | 88 mT · 30.6 W · 15.1 W (764 V-bus PSM corner, 203 kHz) | 91 mT · 33.1 W · 27.3 W | 90 mT · 32.8 W · 45 W |
+| Hot-spot at 55 °C inlet | 95 °C | 100 °C | 98 °C liquid · 110 °C air |
+| Rdc @25 °C · Rac @203 kHz, 100 °C | ≤ 1.35 · ≤ 3.35 mΩ | ≤ 1.1 · ≤ 3.45 mΩ | ≤ 0.92 · ≤ 3.7 mΩ |
+| Fault flux at the F.11 kill | ≤ 60 % Bsat(130 °C) (current-coordination) | same | same |
+| Mounting · envelope · mass | two-face gap-pad bond, end turns potted, ≤ 70.5 × 65.9 × 59 mm, 1.3 kg | 1.3 kg | 1.35 kg |
+| Terminations · marking · qty | 2 litz flying leads, tinned 12 mm · label p/n, rev, lot, serial, measured L · qty 1 per module | same | same |
+| Insulation · hipot · thermal | basic insulation to PE through former + ≥ 3 mm spacer + VPI class H · 100 % winding → bonded-face foil 2.5 kV DC · hotspot thermocouple beside a gap; operating ambient −40…+55 °C | same | same |
+
+Powder cores stay prohibited in this slot (full AC swing at 83–203 kHz).
+
+## D8 (E67) — bank filter inductors — qty 2 per module
+
+One bridge has no interleave cancellation, so each bank gets a film → Lf → electrolytic filter. Lf is the **D6 sendust
+construction** at DC duty (the parts, winders and acceptance lines already exist): D6-30 (2 × T48 60µ, N 7, foil 20 mm²,
+7.4 µH), D6-40 (2 × T57 60µ, N 8, 26.4 mm², 10.5 µH), D6-50 (3 × T57 60µ, N 8, 26.4 mm², 12.9 µH). At the HIGH-mode
+floor each carries 60 / 80 / 100 A DC — inside the 82 / 104 / 130 A crest basis its floor was proven at — dissipating
+2.8 / 5.0 / 7.8 W. Behind it the 330 µF 550 V electrolytic sees ≤ 0.2 A rms of the 2·fsw ripple; the 4 / 5 / 6 × 2.2 µF 630 V
+rectifier films carry ≤ 9.2 A rms each (`current-coordination` OUT rows).
+
+| Item | D8-30 (`IND-BANK-30`) | D8-40 (`IND-BANK-40`) | D8-50 (`IND-BANK-50`) |
+|---|---|---|---|
+| Core · winding | 2 × T48 60µ sendust, N = 7, Cu foil 20 mm² | 2 × T57 60µ sendust, N = 8, foil 26.4 mm² | 3 × T57 60µ sendust, N = 8, foil 26.4 mm² |
+| Inductance acceptance | L ≥ 7.4 µH at 82 A (the D6-30 crest line) | L ≥ 10.5 µH at 109 A | L ≥ 12.9 µH at 136 A |
+| Rdc · ΔT at the DC duty | per the D6-30 row · ΔT 14 K at 60 A | per D6-40 · ΔT 17 K at 80 A | per D6-50 · ΔT 22 K at 100 A |
+| Mounting · envelope · terminations | the D6 mount, pad and flying leads (§0.1 D6 row) | same | same |
+| Insulation · hipot · marking · qty | bank-potential basic insulation, 100 % 2.5 kV DC winding → core clamp · label p/n, lot · operating ambient −40…+55 °C, class F · qty 2 per module (one per bank) | same | same |
 
 ## D1 rev C (E65) — PFC boost chokes — qty 3 per module
 
@@ -105,6 +187,8 @@ bond lost 129 °C, survivable on air)".
 mag-sync tokens preserved by the text above: `N = 39`, `150–185 µH`, `≥ 75 µH`, `N=26` / `N = 26`, `116`, `≥61`, `61 µH`,
 
 ## D2 rev E (E65) — Resonant trim inductor bin sets — qty 3 per module
+
+> **SUPERSEDED by [D2 rev F (E67)](#d2-rev-f-e67--external-resonant-inductor--qty-1-per-module)** — the three-section tank is retired; kept as the record of the E65 review.
 
 **Rev E carries ~all of Lr.** The E60 bins were sized around a 3 µH transformer leakage that an S1–P–S2 interleave on
 these windows cannot produce (it computes 0.14–0.19 µH), so each SKU's trim is now Lr less the measured D3 leakage and a
@@ -168,6 +252,8 @@ History: rev A was a single 4.3 µH ±5 % part; rev B a sendust bin set (powder 
 (30 kW, 2 × PQ50 N 4) and rev D (E60: 40 kW 1 × E70 N 5, 50 kW 2 × E70 N 3) were sized for the unreachable 3 µH leakage.
 
 ## D3 rev C (E65) — LLC section transformers — qty 3 per module
+
+> **SUPERSEDED by [D3 rev D (E67)](#d3-rev-d-e67--full-bridge-transformer-cells--qty-2-per-module)** — the three-section tank is retired; kept as the record of the E65 review.
 
 **Rev C is proven where the transformer actually runs.** With the bus capped at 830 V the gain-critical corners run the
 banks at 500–525 V and 77–88 kHz, and the flux follows bank voltage, not load. [`magnetics-envelope`](../calculations/magnetics/magnetics-envelope.mjs)
