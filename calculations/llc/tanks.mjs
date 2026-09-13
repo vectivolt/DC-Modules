@@ -16,15 +16,20 @@
 //     asserts that split. par = SG2M023120LJ per bridge position (per-package conduction at the current-critical corner).
 export const TANKS = {
   "30kw": { P: 30e3, Imax: 100, n: 2, crN: 7, crNF: 33, Lr: 5.6e-6, Lm: 56e-6, par: 1 },   // E68: one die per position on the clip mount
-  "40kw": { P: 40e3, Imax: 133, n: 2, crN: 9, crNF: 33, Lr: 4.35e-6, Lm: 43.5e-6, par: 2 },
+  "40kw": { P: 40e3, Imax: 133, n: 2, crN: 9, crNF: 33, Lr: 4.35e-6, Lm: 43.5e-6, par: 1, die: "16m" },   // E69a: one 16 mΩ die per position
   "50kw": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 2 },
   "50kwa": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 2 },   // E68: the air twin = the liquid (was 3)
 };
+// E69a: LLC die per SKU — 23 mΩ SG2M023120LJ (35 mΩ hot, 250 pF lumped node C per die) or the 1200 V 16 mΩ class die at 40 kW
+// (24.3 mΩ hot; node C scaled by die area ≈ 23/16 → 360 pF). The fold that single 16 mΩ die accepts is the forced-HIGH 500 V
+// corner at 55 °C only (user decision 2026-09-13).
+export const DIES = { "23m": { rds: 0.023, rHot: 0.035, coss: 250e-12, mpn: "SG2M023120LJ" }, "16m": { rds: 0.016, rHot: 0.0243, coss: 360e-12, mpn: "SIC-1200V-16mR" } };
 for (const t of Object.values(TANKS)) {
   t.Cr = t.crN * t.crNF * 1e-9;
   t.fr = 1 / (2 * Math.PI * Math.sqrt(t.Lr * t.Cr));
-  t.coss = 250e-12 * t.par;          // lumped leg node capacitance (E60 basis: 250 pF per single-FET position)
-  t.gOn = 28.57 * t.par;             // 35 mΩ hot per SG2M023120LJ
+  t.dieP = DIES[t.die ?? "23m"];
+  t.coss = t.dieP.coss * t.par;      // lumped leg node capacitance (E60 basis: 250 pF per 23 mΩ die)
+  t.gOn = t.par / t.dieP.rHot;       // hot channel conductance of the position
 }
 // E67 tank RMS classes (nominal + tolerance corners, A rms) — D2 litz/ΔT, Cr per cap and the resonant CT are sized to these;
 // secondary SiC JBS per bridge position: count × current class (hot V0 0.95 V; rd 45 mΩ for the 20 A class, 22 mΩ for 40 A)

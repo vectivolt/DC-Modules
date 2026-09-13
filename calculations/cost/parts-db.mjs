@@ -94,7 +94,7 @@ export const DB = [
   { m: /^CT\d+$/, mpn: "CT-RES-1:100-100A", mfr: "Talema (Salem, India) AS class — RFQ", desc: "resonant CT 1:100, 100 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary, so tank-potential insulation stays on your wire (E67: ONE CT on the full-bridge tank; 30 kW class 78 A rms = 78 %)", price1k: 75, alt: "AS-407 (1:500) with a 5× burden" },
   // --- capacitors
   { m: /^CD[TB]\d*\d$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C) (split bus: 415 V max per half)", price1k: 150, alt: "ChengX/Nichicon" },
-  { m: /^CF[AB]\d+$/, mpn: "PP-2u2-630", mfr: "Faratronic C3D/CBB class", desc: "2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of the 30/39/49 A rms 2·fsw bridge ripple, ngspice)", price1k: 45, alt: "KEMET R76 / CDE 944U" },
+  { m: /^CF[AB]\d+$/, mpn: "PP-2u2-630", overrides: ["MLCC-1u-0805"],   /* E68c: CFB1/CFB2 also match the driver-bias ^C\w*B[12]$ rule — the film rule owns them */ mfr: "Faratronic C3D/CBB class", desc: "2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of the 30/39/49 A rms 2·fsw bridge ripple, ngspice)", price1k: 45, alt: "KEMET R76 / CDE 944U" },
   { m: /^DOUT$/, mpn: "DIODE-1600V-150A-MOD", mfr: "IXYS/MacMic/Yangjie class — RFQ", desc: "output series blocking diode 1600 V 150 A, insulated-base 2-terminal module (E67 InfyPower practice: back-feed and reverse-battery proof without K_OUT or a matched-voltage make; 100 A = 67 % at 30 kW; ~1.05 V × Iout, heatsink-mounted)", price1k: 420, alt: "MacMic MDD150-16" },
   { m: /^C\d+R\d+$/, mpn: "PP-33n-1200V", mfr: "Faratronic/CDE 942C class", desc: "33 nF 1200 V PP resonant-duty film (E67 full-bridge tank: 7/9/11 in parallel at 30/40/50 kW → ≤ 10.3 A rms per cap of the 12 A line at the 250 V-bank full-power corner; Vcr ≤ 595 V pk = 421 V rms — O-8 RFQ line: published Vrms-vs-f curve ≥ 460 V @140 kHz)", price1k: 68, alt: "CDE 942C20P33K" },
   { m: /^C\w+F[PN]$/, mpn: "PP-1u-600", mfr: "Faratronic", desc: "1 µF 600 V film (Vienna per-phase commutation, CB-9)", price1k: 32, alt: "Songtian" },
@@ -173,6 +173,12 @@ export const DB = [
 // per-SKU overrides: name → { price1k, qtyMul, note }
 export const skuOverrides = {
   "30kw": {
+    QA0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
+    QA0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
+    QB0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
+    QB0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
+    QC0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
+    QC0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
     // audit F6 2026-09-08: 63 A gG at 55.9 A worst continuous = 88% nameplate and NEGATIVE after
     // the ~0.72× enclosed/+55 °C derate → 80 A, 22×58 frame (matching holder; RT28-32 was 10×38/32 A).
     "F1": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F2": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F3": { price1k: 105, mpn: "FUSE-gG-690V-80A" },
@@ -182,6 +188,16 @@ export const skuOverrides = {
   },
   // E41 40 kW hot variant — engine-driven (design-basis/loss-budget rev E41): line 73.3 A worst.
   "40kw": {
+    QA0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
+    QA0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
+    QB0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
+    QB0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
+    QC0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
+    QC0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
+    Q1H: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
+    Q1L: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
+    Q2H: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
+    Q2L: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
     // stress-audit: 100 A x 0.72 enclosed-derate = 72 A < 73.3 A worst — the exact E35/F6 failure
     // class. 125 A (existing family part) derates to 90 A: 23% margin.
     "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
