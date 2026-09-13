@@ -34,9 +34,9 @@ console.log("=== STRESS AUDIT — switches · diodes · magnetics · protection 
 // clamp diode (blocking the same voltage during the on-time) had no row at all.
 const D4W = d4Drawn(), D4R = d4Evaluate(D4, D4W), D4C = d4Evaluate(D4_REGISTERED_E52, DRAWN_E52);
 const V = [
-  ["PFC FET B3M010C075Z", 560, 750, 0.755, "560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule"],
+  ["PFC FET 750 V class (B3M010C075Z 50 kW · 20/15 mΩ class 30/40 kW, E69a)", 560, 750, 0.755, "560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule; 650 V dies are REJECTED (86 %)"],
   ["PFC boost JBS 1200V", 937, 1200, 0.80, "full bus + ring"],
-  ["LLC FET SG2M023120LJ", 876, 1200, 0.80, "830 V bus + DPT 73% ring"],
+  ["LLC FET 1200 V (SG2M023120LJ · 16 mΩ class at 40 kW, E69a)", 876, 1200, 0.80, "830 V bus + DPT 73% ring"],
   ["secondary JBS 1200V", 611, 1200, 0.80, "bank + ring (49% class use)"],
   ["aux switch 1700V SiC", Math.round(D4R.vds), D4W.qauxV, 0.80, `860 V + Vc ${Math.round(D4R.vc)} V (limit ${D4R.ipkClamp.toFixed(2)} A, ${(D4.llkAcc + D4.llkLayout) * 1e6} µH) + ${D4.vOvs} V — d4-flyback`],
   ["aux clamp diode DCLA", Math.round(D4R.vds), D4W.dclaV, 0.80, `blocks 860 V + Vc in the on-time (E52: 1200 V part at ${Math.round(D4C.vds)} V)`],
@@ -54,12 +54,15 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   ck("Tj", `${sku} LLC FET worst corner`, tjl <= 150.5, `${tjl} °C vs 150 ceiling (corner folds engage per envelope policy) [grid]`);
 }
 // E42/E44/E67 grid-shape asserts: the full-bridge tank class must deliver the FULL envelope on every SKU — no tank-ceiling clamps
-// (no availability clamp exists in firmware) and no thermal folds at all
+// (no availability clamp exists in firmware). E69a (user decision 2026-09-13): thermal folds are accepted ONLY at the forced-HIGH
+// 500 V corner (SER at the 500 V mode edge), hot ambient, ≥ 93 %; any other note fails.
 for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const r = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
   const ipMax = Math.max(...r.map(r => +r[10])), notes = r.filter(r => (r[16] ?? "") !== "");
   const tjd = Math.max(...r.map(r => +r[17] || 0));
-  ck("E67", `${sku} full envelope: Ip inside the tank class, zero clamps/folds, secondary JBS Tj`, ipMax <= TANK_CLASS[sku] * 1.02 && notes.length === 0 && tjd <= 150.5,
+  const allowed = (row) => row[2] === "500" && row[5] === "SER" && row[4] === "hot" && /^thermal derate to (9[3-9]|100)% $/.test(row[16]);
+  const bad = notes.filter((row) => !allowed(row));
+  ck("E67", `${sku} full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj`, ipMax <= TANK_CLASS[sku] * 1.02 && bad.length === 0 && tjd <= 150.5,
     `${f(ipMax)} A rms vs ${TANK_CLASS[sku]} A class · ${notes.length} noted rows · worst TjJBS ${tjd} °C (${JBS_POS[sku].n}× ${JBS_POS[sku].cls} A per position) [grid]`);
 }
 // PFC boost diodes [lb k-scaling]: per-diode dissipation into its position Rth at its reference — air 1.9 K/W to the 70 °C sink ·

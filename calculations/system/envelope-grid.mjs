@@ -22,8 +22,8 @@ const TEMPS = [{ n: "cold", amb: -20, hs: 10 }, { n: "room", amb: 25, hs: 45 }, 
 const SKUS = [
   // E67: tRms = the full-bridge tank-current CLASS in A RMS (current-coordination TANK_CLASS); parL = FETs per bridge position
   // (tanks.mjs par). E68: thermal basis from mount.mjs — clip-mounted dies, 0.8 K/W j→base at 70 °C (air) · 0.65 K/W j→plate at 65 °C.
-  { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1 },
-  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1 },   // E68: one PFC die per position (E41 pair retired with the pad basis)
+  { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1, rdsP: 0.020 },   // E69a: 750 V 20 mΩ class PFC die
+  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1, rdsP: 0.015 },   // E68: one PFC die per position · E69a: 750 V 15 mΩ class
   { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, ref: { cold: 10, room: 45, hot: 65 } },   // liquid: plate references
   { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1 },
 ];
@@ -89,10 +89,10 @@ for (const s of SKUS) {
     let TjP = HS + 20, TjL = HS + 15;
     for (let i = 0; i < 25; i++) {
       const par = s.par ?? 1;                               // E41: paralleled devices share the pair current
-      const rdsP = 0.010 * (1 + 0.004 * (TjP - 25));
+      const rdsP = (s.rdsP ?? 0.010) * (1 + 0.004 * (TjP - 25));   // E69a: per-SKU PFC die
       const Pc = (IswR / par) ** 2 * 2 * rdsP, Psw = 17.4e-9 * (bus / 2) * (2 / Math.PI) * (Iline * Math.SQRT2) * 50e3 / par;
       TjP = HS + (Pc / 2 + Psw) * RTH;                      // per-PACKAGE dissipation into the SKU's Rth
-      const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
+      const rdsL = TANKS[s.name].dieP.rds * (1 + 0.004 * (TjL - 25));   // E69a: per-SKU LLC die
       const parL = s.parL ?? 1;                             // E44: paralleled LLC — per-PACKAGE share
       TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PSM" ? 8 : 1) / parL) * RTH;
     }
@@ -107,7 +107,7 @@ for (const s of SKUS) {
       Ip1 = PphE / (0.9 * NT * bank); Ip = Math.hypot(Ip1, im);
       TjL = HS + 15;
       for (let i = 0; i < 25; i++) {
-        const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
+        const rdsL = TANKS[s.name].dieP.rds * (1 + 0.004 * (TjL - 25));   // E69a: per-SKU LLC die
         const parL = s.parL ?? 1;
         TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PSM" ? 8 : 1) / parL) * RTH;
       }
@@ -116,10 +116,10 @@ for (const s of SKUS) {
     if (folds) notes += `thermal derate to ${f(100 * PoutE / Pout, 0)}% `;
     const Pph3 = PphE, Pout3 = PoutE;
     // stage losses (scaled from loss-budget building blocks)
-    const pfcW = s.lanes * 3 * ((IswR ** 2) * 2 * 0.010 * (1 + 0.004 * (TjP - 25)) / (s.par ?? 1) + 17.4e-9 * (bus / 2) * (2 / Math.PI) * Iline * Math.SQRT2 * 50e3 / 3 + 12.1 * (Iline / 54.94) ** 1.6 + 33.5 * (Iline / 54.94) ** 2 * 0.8);
+    const pfcW = s.lanes * 3 * ((IswR ** 2) * 2 * (s.rdsP ?? 0.010) * (1 + 0.004 * (TjP - 25)) / (s.par ?? 1) + 17.4e-9 * (bus / 2) * (2 / Math.PI) * Iline * Math.SQRT2 * 50e3 / 3 + 12.1 * (Iline / 54.94) ** 1.6 + 33.5 * (Iline / 54.94) ** 2 * 0.8);
     // E67: 4 bridge positions × parL packages (each position conducts half-cycle) · magnetics (2 D3 cells + D2) scaled from the
     // rated envelope losses (~2 % of ... see loss-budget MAG_RATED) · tank ESR/wiring 4 mΩ · 2 bank bridges
-    const llcW = 2 * Ip * Ip * 0.035 / (s.parL ?? 1) + MAGW[s.name] * (Pph3 / s.P) ** 1.3 + Ip * Ip * 0.004;
+    const llcW = 2 * Ip * Ip * TANKS[s.name].dieP.rHot / (s.parL ?? 1) + MAGW[s.name] * (Pph3 / s.P) ** 1.3 + Ip * Ip * 0.004;
     const Ib = mode === "SER" ? Pout3 / 0.99 / Vout : Pout3 / 0.99 / Vout / 2, rdJ = s.jbs.cls === 40 ? 0.022 : 0.045;
     const secW = 2 * (2 * 0.95 * Ib + rdJ * Math.PI ** 2 * Ib * Ib / (4 * s.jbs.n));
     const fixW = 20 + 12 * s.lanes + 10 * s.ch + 10 * (s.lanes > 2 ? 2 : 1);

@@ -48,6 +48,13 @@ const valueOf = (c) => c.ftype === "simple_resistor"
   ? (Number(c.resistance) === 0 ? "0R" : eng(Number(c.resistance), ""))
   : c.ftype === "simple_capacitor" ? eng(Number(c.capacitance), "F") : "";
 
+// E69f: China-supplier RFQ-TARGET basis (user directive 2026-09-13) — landed factors (freight + ~10 % duty included) on today's India
+// 10k estimate, by part category. FLAGGED TARGETS, not quotes: they state the price a China RFQ must reach for the parity comparison.
+// Assembly/EOL stays at the India basis (the module is built in India).
+const CN = { semiconductors: 0.75, "drive+control ICs": 0.85, "bias/iso modules": 0.85, magnetics: 0.80, capacitors: 0.80,
+  "resistors/shunts": 0.90, relays: 0.85, protection: 0.85, connectors: 0.90, HMI: 0.90, misc: 0.90 };
+const cnFactor = (cat, desc) => (cat === "capacitors" && /MLCC|C0G|X7R|X5R|pF\b/.test(desc) ? 0.90 : CN[cat] ?? 0.90);
+const cnMech = (desc) => (/^PCB/.test(desc) ? 0.75 : /Assembly|EOL/i.test(desc) ? 1.00 : 0.85);
 const summary = {};
 let anyUnmatched = false;
 for (const sku of SKUS) {
@@ -85,7 +92,7 @@ for (const sku of SKUS) {
   }
   const rows = [...parts.values()].sort((a, b) => b.qty * b.price1k - a.qty * a.price1k);
   const csv = [["mpn", "lcsc", "lcsc_status", "manufacturer", "description", "second_source", "boards", "qty", "unit_100", "unit_1k", "unit_5k", "unit_10k", "ext_1k_INR", "ext_10k_INR", "sample_refs"]];
-  let totE = 0, totE10 = 0;
+  let totE = 0, totE10 = 0, totE10cn = 0;
   const cats = {};
   for (const r of rows) {
     const u10 = r.p10k ?? f(r.price1k * 0.80, 1);
@@ -93,6 +100,7 @@ for (const sku of SKUS) {
     totE += ext; totE10 += ext10;
     const cat = CAT(r.mpn, r.desc);
     cats[cat] = (cats[cat] ?? 0) + ext;
+    totE10cn += ext10 * cnFactor(cat, r.desc);
     const lc = lcscForPart(r.cls ?? r.mpn, r.val ?? "", r.pkg);
     if (!lc.status) throw new Error(`bom-gen: ${r.mpn} has no lcsc_status`);   // E61: five value lines per SKU shipped blank past bom-maturity
     csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && (LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] || r.pkg) ? ` ${r.val}${r.pkg ? ` (${r.pkg} land)` : ""}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
@@ -100,8 +108,8 @@ for (const sku of SKUS) {
   csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
   cats["bias/iso modules"] = (cats["bias/iso modules"] ?? 0) + 2 * biasCommon.price1k;
-  let mechTot = 0;
-  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; csv.push([`MECH`, "", "MECH", "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
+  let mechTot = 0, mech10cn = 0;
+  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; mech10cn += e * 0.87 * cnMech(d); csv.push([`MECH`, "", "MECH", "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
   cats["mechanical/assembly"] = mechTot;
   const grand = totE + mechTot;
   const grand10 = totE10 + mechTot * 0.87;
@@ -109,7 +117,7 @@ for (const sku of SKUS) {
   csv.push(["TOTAL_MODULE", "", "", "", "", "", "", "", "", "", "", "", f(grand), f(grand10), ""]);
   writeFileSync(join(ROOT, "calculations", "out", `bom-${sku}.csv`), csv.map(r => r.join(",")).join("\n") + "\n");
   const [red, stretch] = TARGETS[sku];
-  summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), g10k: f(grand10), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };
+  summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), g10k: f(grand10), g10kCN: f(totE10cn + mech10cn), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };
   console.log(`${sku}: ${rows.length} BOM lines, electronics ₹${f(totE)}, module ₹${f(grand)} @1k / ₹${f(grand10)} @10k (red ₹${red}) ${grand10 <= red ? "10k ≤ RED ✓" : "10k OVER by ₹" + f(grand10 - red)}`);
   if (unmatched.size) console.log(`   UNMATCHED (${unmatched.size}): ${[...unmatched].slice(0, 10).join(", ")}${unmatched.size > 10 ? " …" : ""}`);
 }
@@ -124,7 +132,7 @@ const STACK_TIER = 0;
 {
   const m = summary["50kwa"];
   const [red, stretch] = TARGETS["150kw"];
-  summary["150kw"] = { grand: f(3 * m.grand), g100: f(3 * m.g100), g5k: f(3 * m.g5k), g10k: f(3 * m.g10k),
+  summary["150kw"] = { grand: f(3 * m.grand), g100: f(3 * m.g100), g5k: f(3 * m.g5k), g10k: f(3 * m.g10k), g10kCN: f(3 * m.g10kCN),
     red, stretch, cats: Object.fromEntries(Object.entries(m.cats).map(([k, v]) => [k, 3 * v])),
     nLines: "3x module", unmatched: [], cabinet: "3x 50 kW modules, charger controller = group master (air basis; liquid = 3x 50kw)" };
   console.log(`150kw: CABINET = 3x 50 kW(air) module -> INR ${f(3 * m.grand)} @1k / INR ${f(3 * m.g10k)} @10k (red ${red})`);
@@ -182,9 +190,15 @@ const md = [masthead("docs/bom-cost.md"), `
 
 ## At a glance — cost at 10k against the red-line
 
-| Build | ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict |
-|---|---:|---:|---:|---:|---|
-${[...SKUS, "150kw"].map((k) => { const s = summary[k], kw = k === "150kw" ? 150 : parseInt(k, 10); return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10k / kw)} | ${inr(s.red)} | ${inr(s.stretch)} | ${verdict(s)} |`; }).join("\n")}
+> [!IMPORTANT]
+> **China RFQ target (E69f)** — the same BOM at landed China-supplier TARGET prices (freight + ~10 % duty included), by category:
+> SiC/JBS/diodes × 0.75 · magnetics, film and electrolytic capacitors × 0.80 · gate/iso ICs, bias modules, relays, protection ×
+> 0.85 · passives, connectors, MLCC × 0.90 · PCBs × 0.75 · mechanical × 0.85 · India assembly/EOL × 1.00. These are the prices an
+> RFQ must reach for the InfyPower parity comparison — **flagged targets, not quotes**.
+
+| Build | ₹ @10k | ₹ / kW | China RFQ target ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict (India basis) |
+|---|---:|---:|---:|---:|---:|---:|---|
+${[...SKUS, "150kw"].map((k) => { const s = summary[k], kw = k === "150kw" ? 150 : parseInt(k, 10); return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10k / kw)} | ${inr(s.g10kCN)} | ${inr(s.g10kCN / kw)} | ${inr(s.red)} | ${inr(s.stretch)} | ${verdict(s)} |`; }).join("\n")}
 
 ## The ₹ / kW product ladder
 

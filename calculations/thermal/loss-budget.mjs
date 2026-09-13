@@ -29,7 +29,7 @@ const MAG_RATED = (sku) => {
   return { xfmrCell: a.fe(90) + a.cu(90), lr: b.fe(90) + b.cu(90) };
 };
 const LLC_CH = (ip, sku = "30kW") => ({
-  pri: 2 * ip * ip * 0.035 / TANKS[sku.toLowerCase()].par,   // 4 positions × par packages, each position conducts half-period, Rds_hot 35 mΩ
+  pri: 2 * ip * ip * TANKS[sku.toLowerCase()].dieP.rHot / TANKS[sku.toLowerCase()].par,   // 4 positions × par dies (E69a: per-SKU die), half-period each
   xfmr: D3_CELLS * MAG_RATED(sku).xfmrCell,
   tank: MAG_RATED(sku).lr + ip * ip * 0.0012,               // D2 external Lr (envelope) + Cr ESR
 });
@@ -83,7 +83,8 @@ for (const s of SKUS) {
   //   · transformer D3-40 rewound/upsized at constant J → Cu share (0.65) ∝ k, Fe ≈ flat.
   //   · LLC_CH()/secondary() are already current-parameterized.
   const k = (s.P / s.lanes) / 30e3;
-  const pairW = 43.5 * (0.68 * k * k + 0.32 * k), pairParW = 43.5 * (0.68 * k * k / 2 + 0.32 * k);
+  const rP = { "30kW": 2.0, "40kW": 1.5 }[s.name] ?? 1;   // E69a: PFC die Rds vs the 10 mΩ DPT basis (conduction share scales, switching does not)
+  const pairW = 43.5 * (0.68 * k * k * rP + 0.32 * k), pairParW = 43.5 * (0.68 * k * k / 2 + 0.32 * k);
   const pfcSemis = (3 * pairW + 3 * 24.2 * k) * 0.78 * s.lanes;
   const pfcSemisPar = (3 * pairParW + 3 * 24.2 * k) * 0.78 * s.lanes;
   if (k > 1.01) console.log(`  ${s.name} PFC semi scenarios @330 V corner-scaled: single-FET ${f(pfcSemis / 0.78, 0)} W · 2x-parallel ${f(pfcSemisPar / 0.78, 0)} W (per pair ${f(pairW, 1)} vs ${f(pairParW, 1)} W)`);

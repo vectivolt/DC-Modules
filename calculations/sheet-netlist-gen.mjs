@@ -62,7 +62,7 @@ function transform(c, page, all, warn) {
 
   if (DIODES.has(m)) {
     out.pins = [P(2, "A", byNum[1]), P(1, "C", byNum[2])];
-  } else if (m === "B3M010C075Z" || m === "SG2M023120LJ") {
+  } else if (["B3M010C075Z", "SG2M023120LJ", "SIC-750V-20mR", "SIC-750V-15mR", "SIC-1200V-16mR"].includes(m)) {   // E69a classes share the TO-247-4 map
     // TO-247-4 symbol: 1=D 2=S 3=DS 4=G
     out.pins = [P(4, "G", sig(c, "G")), P(1, "D", sig(c, "D")), P(2, "S", sig(c, "S")), P(3, "DS", sig(c, "KS"))];
   } else if (m === "NSI6611") {
