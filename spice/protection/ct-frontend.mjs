@@ -10,7 +10,7 @@
 //      inside the 3.27 V rail through the simulated 3 µs fault race?
 // Run: node spice/protection/ct-frontend.mjs
 import { runDeck, maxIn, minIn } from "../run.mjs";
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -98,15 +98,19 @@ const push = (c, m, v, l, ok) => { rows.push([c, m, v, l, ok ? "PASS" : "FAIL"])
   rows.push(["avmid-revC-baseline", "steady ripple pk-pk (V)", f(ringPP, 4), "reference (expected ringing)", "REF"]);
   console.log(`avmid-revC-baseline · ripple pk-pk = ${f(ringPP, 4)} V (reference topology — ${ringPP > 0.01 ? "rings as predicted (MR-11 confirmed)" : "note: behavioral model under-predicts ring"})`);
 }
-// 2. E60 per-SKU chains (current-coordination classes): the resonant chain at the power-solved ngspice
+// 2. E60/E67 per-SKU chains (current-coordination classes): the resonant chain at the power-solved ngspice
 // worst nominal peak (in-rails, no clamp conduction), at F.11 (lands at the computed DAC point) and at
 // F.11 + the simulated 3 µs race (still inside the 3.27 V rail); the line chain likewise at 50 Hz.
 const CLS = {
-  // E65: resonant burdens 1.0/0.82/0.68 Ω; race11 = crossing-referenced 3 µs peak − F.11 (llc-short.csv: 148.7/179.9/215.6 A)
-  "30kw": { resRb: 1.0, F11: 85, pkNom: 65.6, race11: 64, lineRb: 22, F01: 120, race01: 46 },
-  "40kw": { resRb: 0.82, F11: 115, pkNom: 87.4, race11: 65, lineRb: 18, F01: 155, race01: 50 },
-  "50kw": { resRb: 0.68, F11: 145, pkNom: 108.8, race11: 71, lineRb: 13, F01: 195, race01: 72 },
+  // E67 full bridge (current-coordination OC table): ONE resonant CT, burdens 0.47/0.36/0.30 Ω, F.11 140/180/220 A.
+  // race11 = crossing-referenced +3 µs monitor peak − F.11 (llc-short.csv via current-coordination: 318.6/417.0/502.7 A).
+  // pkNom is read from the committed power-solved summary, so a tank re-run cannot leave this deck on old peaks.
+  "30kw": { resRb: 0.47, F11: 140, race11: 178.6, lineRb: 22, F01: 120, race01: 46 },
+  "40kw": { resRb: 0.36, F11: 180, race11: 237.0, lineRb: 18, F01: 155, race01: 50 },
+  "50kw": { resRb: 0.30, F11: 220, race11: 282.7, lineRb: 13, F01: 195, race01: 72 },
 };
+for (const [sku, c] of Object.entries(CLS))
+  c.pkNom = JSON.parse(readFileSync(join(HERE, "..", "..", "simulation-results", sku, "llc-stress-summary.json"), "utf8")).ipPkMax;
 const lineDeck = (ipk, rb) => ctDeck(ipk, rb, 2500, 50, "1n", 60e-3);
 for (const [sku, c] of Object.entries(CLS)) {
   for (const [what, ipk, lo, hi] of [["nominal-peak", c.pkNom, 0.1, 3.2], ["F11", c.F11, null, null], ["F11+race", c.F11 + c.race11, 0.1, 3.27]]) {

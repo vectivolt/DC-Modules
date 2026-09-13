@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine: ngspice-46 · node 20"/>
 </p>
 
@@ -26,10 +26,10 @@
 
 ```mermaid
 flowchart TB
-  L5["L5 · hardware (EVT T-00…T-32)<br/>DPT · SC · calorimetric η · chamber EMI · thermal"]
+  L5["L5 · hardware (EVT T-00…T-41)<br/>DPT · SC · calorimetric η · chamber EMI · thermal"]
   L4["L4 · magnetics physics — JS<br/>magnetics-envelope: two-node thermal at 34 power-solved corners · iGSE on ngspice waveforms<br/>conductor-audit (Dowell / Sullivan) · temp-critique (measured 3C95 surfaces)"]
-  L3["L3 · system / statistics — JS + C<br/>envelope grid 5,544 pts · Monte-Carlo 10k · FSM 26 · C host-sim 55 incl. the group share law<br/>current-coordination: F.11 window-comparator race"]
-  L2["L2 · switched stage — ngspice + JS<br/>power-solved 3-φ LLC + magnetics envelope · cycle-by-cycle Vienna · aux flyback · CT front-ends"]
+  L3["L3 · system / statistics — JS + C<br/>envelope grid 4,536 pts · Monte-Carlo 10k · FSM 26 · C host-sim 60 incl. the group share law<br/>current-coordination: F.11 window-comparator race"]
+  L2["L2 · switched stage — ngspice + JS<br/>power-solved full-bridge LLC + magnetics envelope · cycle-by-cycle Vienna · aux flyback · CT front-ends"]
   L1["L1 · device edge — ngspice<br/>double-pulse (behavioral SiC, ±40 % energy band)"]
   L0["L0 · analytic engines — JS<br/>pfc-design · llc-design · loss-budget · fault-energy"]
   L0 --> L1 --> L2 --> L3 --> L4 --> L5

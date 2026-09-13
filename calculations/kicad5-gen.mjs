@@ -483,7 +483,7 @@ const KW = SKU.replace(/kwa$/, "").replace("kw", "").toUpperCase();
 const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "50kwa": "1x air", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "3x module" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
-  dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,
+  dcdc: `${KW} kW DCDC board 2of2 - full-bridge LLC (E67)`,
   card: `Control Card - GD32G553VET7, one card for both converter roles (E35)`,
   cab: `150 kW Cabinet - 3x 50 kW modules, charger controller = group master (E55/E66)`,
 };
@@ -1448,7 +1448,7 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
     + `Title "${SHEET_TITLES[key] ?? page.title ?? page.page}"\n`
     + `Date "${DATE}"\nRev "${REV}"\n`
     + `Comp "DC-Modules ${ident.sku} - board ${ident.board}, sheet ${ident.sheet}"\n`
-    + `Comment1 "Module ${ident.sku} = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"\n`
+    + `Comment1 "Module ${ident.sku} = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"\n`
     + `Comment2 "Content: ${ident.cells}"\n`
     + `Comment3 "${blocks.length} functional sections - ${page.total} components - cross-section links are global net labels; wires are pin stubs only"\n`
     + `Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"\n$EndDescr\n${body}$EndSCHEMATC\n`;
@@ -1471,8 +1471,8 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   const rootSch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User 12000 8000\nencoding utf-8\nSheet 1 1\n`
     + `Title "DC-Modules ${KW} kW module - schematic set"\nDate "${DATE}"\nRev "D.1"\n`
-    + `Comp "DC-Modules"\nComment1 "AC-DC (Vienna PFC) sheets 1-6 - DC-DC (3-phase LLC) sheets 7-12"\n`
-    + `Comment2 "${CELLS} Vienna PFC cells + ${CELLS} 3-phase LLC cells per module"\nComment3 ""\nComment4 ""\n$EndDescr\n`
+    + `Comp "DC-Modules"\nComment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC, E67)"\n`
+    + `Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card (E40)"\nComment3 ""\nComment4 ""\n$EndDescr\n`
     + `${root}$EndSCHEMATC\n`;
   writeFileSync(join(OUT, `dc-modules-${SKU}.sch`), rootSch);
 }

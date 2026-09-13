@@ -7,8 +7,8 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
-  <img src="https://img.shields.io/badge/grid-5544_pts_·_0_fail-2ea44f?style=flat-square" alt="grid: 5544 pts · 0 fail"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/grid-4536_pts_·_0_fail_·_0_folds-2ea44f?style=flat-square" alt="grid: 4536 pts · 0 fail · 0 folds"/>
 </p>
 
 > [!NOTE]
@@ -31,54 +31,64 @@
 > basis — **29.0 / 38.0 / 47.0 A rms** at `PAR400-full`, within 2 % of the grid's own model. The rated point is the
 > efficiency basis only; the thermal corners (525 V bank, SER 250 V) are §4's.
 
+> [!IMPORTANT]
+> **E67–E69 basis.** One full-bridge LLC (E67), clip-mounted single dies on Al2O3 (E68a: `thermal/mount.mjs`,
+> 0.8 K/W junction-to-base at a 70 °C base on air, 0.65 K/W at a 65 °C plate on liquid; EVT T-38), the star-X2 EMI
+> filter with no DM chokes (E68b), film-only output banks with the output diode DOUT (E67/E68c), and the right-sized
+> PFC dies (E69a). Tables §1–§3 and §4.2–§4.5 are the engines' output on that basis.
+
 ## 1. Loss budget at the rated point (400 VAC, full power, JBS secondary)
+
+From `calculations/out/loss-budget.csv`.
 
 | W | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---:|---:|---:|---:|
-| PFC semiconductors | 158.4 | 242.0 | 340.9 | 340.9 |
-| PFC chokes (D1) | 75.2 | 98.5 | 121.8 | 121.8 |
+| PFC semiconductors (one die per position; 20 mΩ · 15 mΩ · B3M010C075Z) | 227.6 | 303.5 | 340.9 | 340.9 |
+| PFC chokes (D1) | 84.1 | 94.5 | 127.2 | 127.2 |
 | DC-link ESR | 12.0 | 17.8 | 27.8 | 27.8 |
-| LLC primary FETs | 88.3 | 151.6 | 231.9 | 116.5 (paralleled) |
-| Transformers (D3, 3 sections) | **53.5** | **72.7** | **85.1** | **83.9** |
-| Tank (Cr + D2 trim) | **21.0** | **29.2** | **41.9** | **42.3** |
-| Secondary SiC JBS | 360.4 | 520.6 | 701.0 | 701.0 |
+| LLC primary FETs (4 · 8 · 8 · 8 × SG2M023120LJ) | 139.9 | 125.2 | 190.6 | 190.6 |
+| Transformer cells (D3 rev D, two cells) | 56.4 | 71.3 | 89.2 | 89.2 |
+| Tank (D2 rev F external Lr + Cr ESR) | 11.7 | 17.5 | 23.8 | 23.8 |
+| Secondary SiC JBS (16 × 40 A) | 325.7 | 492.8 | 695.8 | 695.8 |
+| Output diode DOUT | 105.0 | 139.7 | 175.3 | 175.3 |
 | Busbar + shunt | 1.7 | 3.1 | 4.9 | 4.9 |
-| EMI filter copper (D6 + D7) | 30.2 | 43.8 | 62.7 | 62.7 |
+| EMI filter (2 × D7 + damper) | 26.3 | 43.3 | 68.2 | 68.2 |
 | Aux + gate drive | 38 | 38 | 38 | 38 |
 | Fans | 20 | 20 | 0 | 40 |
-| **Total** | **858.7** | **1,237.3** | **1,656.1** | **1,579.8** |
-| **η (JBS baseline)** | **97.22 %** | **97.00 %** | **96.79 %** | **96.94 %** |
-| η with synchronous rectification (premium variant) | 97.89 % | 97.62 % | 97.36 % | 97.50 % |
-| *E60 figure (resonant-point D3/D2 values)* | *97.19 %* | *96.92 %* | *96.68 %* | *96.82 %* |
+| **Total** | **1,048.5** | **1,366.6** | **1,781.7** | **1,821.7** |
+| **η (JBS baseline)** | **96.62 %** | **96.70 %** | **96.56 %** | **96.48 %** |
+| η with a one-FET-per-position synchronous rectifier (model) | 96.29 % | 96.06 % | 95.62 % | 95.54 % |
+| *E65 figure (three half-bridge sections, paralleled PFC pairs, D6 + bank electrolytics)* | *97.22 %* | *97.00 %* | *96.79 %* | *96.94 %* |
 
-> [!NOTE]
-> **Pending restatement.** The PFC-choke (D1) line still carries its registered copper model. The D1
-> high-frequency copper correction restates that line, and with it the totals and η above.
+The step down from E65 is the price of the InfyPower architecture, and it was taken knowingly: the output diode alone
+is 105–175 W (0.35 pt), and one full bridge per bank carries the whole bank current through each rectifier position
+instead of a third of it per section. InfyPower states "> 96 %" for the REG1K0135A2; the 40 kW module is at 96.70 %.
 
-**Peak efficiency** over the envelope (grid, half load, 475 VAC / 525 V): **98.45 / 98.49 / 98.46 / 98.58 %**, so the
-≥97 % peak specification is met on every SKU. The grid's averaged model omits EMI-filter copper and DC-link ESR,
-which at half load are worth −0.05…−0.07 pt.
+**Peak efficiency** over the envelope (grid, 475 VAC / 750 V out, 25–50 % load): **98.11 / 98.26 / 98.30 / 98.30 %**,
+so the ≥ 97 % peak specification is met on every SKU. The grid's averaged model omits EMI-filter copper and DC-link
+ESR, which at part load are worth −0.05…−0.07 pt.
 
 **Market position:** ahead of the verified mainstream band (95.5–96.5 % peak) and at parity with the newest SiC
 flagships' ≥97 % claim ([`competitive-benchmark-e51.md`](competitive-benchmark-e51.md)).
 
 ```mermaid
-pie showData title 50 kW air module — where 1,580 W goes
-  "Secondary SiC JBS" : 701
+pie showData title 50 kW air module — where 1,822 W goes
+  "Secondary SiC JBS" : 696
   "PFC semiconductors" : 341
-  "PFC chokes D1" : 122
-  "LLC primary FETs" : 117
-  "Transformers D3" : 84
+  "LLC primary FETs" : 191
+  "Output diode DOUT" : 175
+  "PFC chokes D1" : 127
+  "Transformer cells D3" : 89
   "Aux, gate drive, fans" : 78
-  "EMI filter copper" : 63
-  "Tank Cr + D2" : 42
-  "DC link + busbar" : 33
+  "EMI filter" : 68
+  "DC link, tank, busbar" : 57
 ```
 
 > [!NOTE]
-> **Why the JBS secondary stays** (decision unchanged): SR saves 214 W at 30 kW but costs ₹8,670 of extra BOM against
-> a ₹5,981 thermal credit at ₹28/W marginal cooling. SR becomes net-positive above ₹41/W, and remains the qualified
-> premium-η variant.
+> **Why the JBS secondary stays.** On the E67 full bridge the synchronous-rectifier model (one 35 mΩ FET per
+> position) loses **109 W more** than the JBS bridge at 30 kW, because each bridge now carries the whole bank current,
+> and it still costs ₹8,670 more. `loss-budget.mjs` computes the verdict; SR is no longer a premium-η variant on this
+> basis, and paralleled SR FETs would need re-costing before they are offered.
 
 ## 2. How the heat leaves the box
 
@@ -101,30 +111,40 @@ flowchart LR
 
 | SKU | Heat at rated | Face split: lower (AC-DC) / upper (DC-DC) | Cooling | Margin (`fault-energy`) |
 |---|---:|---|---|---|
-| 30 kW | 859 W | 158 / 449 W | 2 fans | **1.45×** air (need 133 m³/h @ ΔT 20 K vs 192) · one fan out covered |
-| 40 kW | 1,237 W | 242 / 672 W | 3 fans | **1.51×** (191 vs 288) · one fan out covered |
-| 50 kW liquid | 1,656 W | 341 / 933 W | coldplates, 0 fans | coolant ΔT **4.7 K** at 6 L/min 50/50 EG (≤ 5 K) |
-| 50 kW air | 1,580 W | 341 / 818 W | 4 fans (all tachs monitored) | **1.57×** (244 vs 384) · one fan out covered |
+| 30 kW | 1,049 W | 228 / 571 W | 2 fans | **1.19×** air (need 162 m³/h @ ΔT 20 K vs 192) · one fan out covered |
+| 40 kW | 1,367 W | 304 / 758 W | 3 fans | **1.36×** (211 vs 288) · one fan out covered |
+| 50 kW liquid | 1,782 W | 341 / 1,062 W | coldplates, 0 fans | coolant ΔT **4.6 K** at 6.5 L/min 50/50 EG (≤ 5 K) |
+| 50 kW air | 1,822 W | 341 / 1,062 W | 4 fans (all tachs monitored) | **1.37×** (281 vs 384) · one fan out covered |
 
-The face split puts PFC semiconductors on the lower extrusion and LLC FETs plus secondary JBS on the upper one; it
-counts silicon only. Since E65 the D2 and D3 stacks also bond to both faces and add their own heat
-([§4.6](#46-heat-delivered-into-the-webs)). **The upper extrusion is the binding sink on every SKU.** At the 30 kW worst continuous corner (330 VAC, full power) the engine computes 947 W total, of which 652 W is
-heatsink-mounted silicon. Split across the two faces at a 20 K sink-to-air rise, that needs **Rth(s-a) ≤ 0.045 K/W**
-on the upper face and ≤ 0.098 K/W on the lower — a silicon-only requirement; §4.6 gives the bond-heat adder. The fan
-operating point is verified on the vendor static-pressure curve at EVT (A8).
+The face split puts the PFC semiconductors on the lower extrusion and the LLC FETs, secondary JBS and DOUT on the upper
+one; it counts silicon only. Since E65 the D2 and D3 stacks also bond to both faces and add their own heat
+([§4.6](#46-heat-delivered-into-the-webs)). **The upper extrusion is the binding sink on every SKU.** At the 30 kW
+worst continuous corner (330 VAC, full power) `loss-budget` computes 1,082 W total, of which 774 W is heatsink-mounted
+silicon; at a 20 K sink-to-air rise that needs **Rth(s-a) ≤ 0.026 K/W** for the pair of extrusions. With the clip
+mount the devices reach their 70 °C base basis at 55 °C inlet only if the extrusion holds that line, so the extrusion
+RFQ carries it, and T-04 / T-38 measure it. The fan operating point is verified on the vendor static-pressure curve at
+EVT (A8).
 
-## 3. Junction temperatures — worst point of the 5,544-point grid
+> [!WARNING]
+> **The 30 kW airflow margin fell from 1.45× to 1.19×** as the E67 architecture added the output diode and the
+> full-bridge rectifier loss. It still covers one fan out (96 m³/h against a derated need of 89), but it is the
+> thinnest air budget in the family; the E68a trial of one JBS per position was rejected because it cut this margin
+> to 1.11×.
 
-| SKU | Vienna SiC (at 285 VAC, 400 V, hot) | LLC SiC | Secondary JBS | Binding corner → action |
+## 3. Junction temperatures — worst point of the 4,536-point grid
+
+| SKU | Vienna SiC | LLC SiC | Secondary JBS | Binding corner |
 |---|---:|---:|---:|---|
-| 30 kW | 139 °C | **144 °C** | 109 °C | LLC at 475 VAC · SER 500 V · PS · hot → one 93 % fold |
-| 40 kW | 107 °C | **150 °C** | 114 °C | LLC at 285 VAC · SER 500 V · hot → 93 % fold |
-| 50 kW liquid | 94 °C | **148 °C** | 106 °C | LLC at 475 VAC · SER 500 V · PS → 93 % fold |
-| 50 kW air | 122 °C | 115 °C | **149 °C** | JBS at 330 VAC · SER 500 V · hot → 93 % fold (JBS joined the fold loop at E60) |
+| 30 kW | 112 °C | **139 °C** | 91 °C | LLC at 330 VAC · HIGH 500 V · PSM · hot (single die per position) |
+| 40 kW | **127 °C** | 98 °C | 103 °C | PFC at 285 VAC · LOW 400 V · hot (15 mΩ class die) |
+| 50 kW liquid | **116 °C** | 99 °C | 102 °C | PFC at 285 VAC · LOW 400 V · hot |
+| 50 kW air | **135 °C** | 114 °C | 116 °C | PFC at 285 VAC · LOW 400 V · hot |
 
-**The SER 500 V hysteresis band binds every SKU.** Banks sit at 250 V there, so they carry twice the PAR current for
-the same output voltage. Policy ceiling is **150 °C** (absolute rating 175 °C). Any point above the ceiling folds
-power in 7 % steps. The folds are commercial derating rows, not failures, and are listed in `envelope-grid.csv`.
+**No point folds.** The policy ceiling is **150 °C** (absolute rating 175 °C), and any point above it would fold power
+in 7 % steps; `stress-audit` allows a fold only at the forced-HIGH 500 V corner at 55 °C (the E69 decision), and none is
+needed on the E68a mount. The LLC binds at 30 kW, where one die per position carries the HIGH-mode 500 V corner; the
+low-line PFC corner binds everywhere else. Every value rests on the clip-mount Rth, which EVT T-38 must confirm
+within +15 %.
 
 ## 4. Magnetics — core and winding temperatures
 
@@ -144,7 +164,8 @@ not relieve it; copper peaks at the SER 250 V corners (176–189 kHz). Construct
 A single part-to-wall resistance hid the two real bottlenecks: MnZn ferrite conducts only **≈ 4 W/m·K** through a
 66 mm set height, and the winding reaches the core only through its former and its own build. The gate therefore
 solves two nodes, core and winding, from the real geometry, with temperature-dependent loss on both, to equilibrium.
-An independent network built by an E65 reviewer from the same geometry agreed within a few K.
+An independent network built by an E65 reviewer from the same geometry agreed within a few K. Since E67 the parts on this
+network are the two D3 rev D cells and the D2 rev F external Lr (§4.2).
 
 ```mermaid
 flowchart LR
@@ -179,13 +200,13 @@ the area: about **8×** in all. On a 2-set E70 (Ae 1,366 mm²) that is **0.77 K/
 
 ### 4.2 Mounting decisions per SKU
 
-| SKU | D3 transformer | D2 trim | Wall (network basis) |
+| SKU | D3 rev D transformer (two cells, primaries in series) | D2 rev F external Lr | Wall (network basis) |
 |---|---|---|---|
-| 30 kW | 2×E70 7:7:7 · VPI · both yoke faces gap-padded to the upper and lower extrusion webs | 1×E70 N 8 · VPI · both faces padded | extrusion webs · inlet + 5 K + 20 K × load |
-| 40 kW | 2×E70 6:6:6 · VPI · both faces padded · end turns potted to the web | 2×E70 N 5 · VPI · both faces padded | extrusion webs |
-| 50 kW liquid | 3×E70 5:5:5 · VPI · both faces padded to the two coldplates · end turns potted | 2×E70 N 5 · VPI · both faces padded to the plates · end turns potted | coldplates · 65 °C |
-| 50 kW air | 3×E70 5:5:5 · VPI · both faces padded · end turns potted to the web | 2×E70 N 5 · VPI · both faces padded | extrusion webs |
-| every SKU | 130 °C cutout on each section (§4.5) | 130 °C cutout on each section | — |
+| 30 kW | 2 × E70 per cell · 6:6∥6 · VPI · both yoke faces gap-padded to the upper and lower extrusion webs | 2 × E70 · N 5 · VPI · both faces padded · end turns potted | extrusion webs · inlet + 5 K + 20 K × load |
+| 40 kW | 3 × E70 per cell · 4:4∥4 (2 foils) · VPI · both faces padded · end turns potted | 2 × E70 · N 5 · VPI · both faces padded · potted | extrusion webs |
+| 50 kW liquid | 3 × E70 per cell · 4:4∥4 · VPI · both faces padded to the two coldplates · potted | 2 × E70 · N 5 · VPI · both faces padded to the plates · potted | coldplates · 65 °C |
+| 50 kW air | = 50 kW liquid on the extrusion webs | = 50 kW liquid on the webs | extrusion webs |
+| every SKU | 130 °C cutout on each cell | 130 °C cutout | — |
 
 - **Two-face yoke bond.** The 66 mm stack spans the 62 mm tunnel through cut-outs in both boards, so each yoke face
   reaches its own extrusion web or coldplate. Silicone gap pads with clamp bars, CTE-compliant: no rigid epoxy to
@@ -219,21 +240,23 @@ load and 40 % load on the same plate.
 
 ### 4.4 Results — D3 and D2 at every simulated corner
 
-| Part (mount) | R core→wall · winding→core | Core corner: B̂ · Fe | Copper corner: Cu | 55 °C inlet, full: core / winding | 75 °C inlet, 40 % | +25 % Rth | Runaway margin | B̂ / hot Bsat |
+From `magnetics-envelope.mjs` on the E67 excitation (`llc-flux.csv`, 32 corners per SKU, tank fingerprint checked).
+
+| Part (mount) | R core→wall · winding→core | Core corner: B̂ · Fe | Copper corner: Cu | 55 °C inlet, full: core / winding | 75 °C inlet, derated | +25 % Rth | Runaway margin | B̂ / hot Bsat |
 |---|---|---|---:|---|---:|---:|---:|---:|
-| D3-30 · 2×E70 7:7:7 (webs) | 0.77 · 0.86 K/W | 142 mT · 22.3 W | 23.9 W | 89 / **104 °C** | 99 °C | 113 °C | 161 K | 34 % |
-| D2-30 · 1×E70 N 8 (webs) | 1.55 · 1.52 K/W | 81 mT · 11.5 W | 10.6 W | 93 / **99 °C** | 97 °C | 106 °C | 163 K | 21 % |
-| D3-40 · 2×E70 6:6:6 (webs, potted) | 0.77 · 0.88 K/W | 176 mT · 37.3 W | 31.5 W | 86 / **97 °C** | 104 °C | 108 °C | 98 K | 44 % |
-| D2-40 · 2×E70 N 5 (webs) | 0.77 · 0.75 K/W | 80 mT · 19.7 W | 9.8 W | 91 / **93 °C** | 97 °C | 99 °C | 163 K | 21 % |
-| D3-50 liquid · 3×E70 5:5:5 (plates, potted) | 0.52 · 0.58 K/W | 158 mT · 38 W | 45.7 W | 78 / **89 °C** | 80 °C | 95 °C | 139 K | 36 % |
-| D2-50 liquid · 2×E70 N 5 (plates, potted) | 0.77 · 0.75 K/W | 91 mT · 26.3 W | 14.9 W | **84** / 81 °C | 81 °C | 89 °C | 176 K | 24 % |
-| D3-50 air · 3×E70 5:5:5 (webs, potted) | 0.52 · 0.58 K/W | 157 mT · 37.9 W | 45.7 W | 87 / **101 °C** | 99 °C | 107 °C | 154 K | 38 % |
-| D2-50 air · 2×E70 N 5 (webs) | 0.77 · 0.75 K/W | 91 mT · 26.3 W | 14.9 W | 96 / **101 °C** | 100 °C | 108 °C | 160 K | 24 % |
+| D3-30 · 2 × E70 6:6∥6 per cell (webs) | 0.77 · 0.88 K/W | 159 mT · 31.9 W | 45.8 W | 90 / **106 °C** | 102 °C | 114 °C | 116 K | 39 % |
+| D2-30 · 2 × E70 N 5 (webs) | 0.77 · 0.75 K/W | 88 mT · 30.5 W | 15.1 W | **95** / 94 °C | 101 °C | 105 °C | 159 K | 21 % |
+| D3-40 · 3 × E70 4:4∥4 per cell (webs, potted) | 0.52 · 0.58 K/W | 159 mT · 47.6 W | 46.1 W | 89 / **102 °C** | 103 °C | 108 °C | 115 K | 39 % |
+| D2-40 · 2 × E70 N 5 (webs) | 0.77 · 0.76 K/W | 91 mT · 33.1 W | 27.3 W | 98 / **100 °C** | 102 °C | 107 °C | 158 K | 22 % |
+| D3-50 liquid · 3 × E70 4:4∥4 (plates, potted) | 0.52 · 0.58 K/W | 159 mT · 47.5 W | 71.3 W | 85 / **103 °C** | 84 °C | 114 °C | 111 K | 37 % |
+| D2-50 liquid · 2 × E70 N 5 (plates, potted) | 0.77 · 0.77 K/W | 90 mT · 32.8 W | 45.0 W | 94 / **98 °C** | 85 °C | 107 °C | 166 K | 22 % |
+| D3-50 air · 3 × E70 4:4∥4 (webs, potted) | 0.52 · 0.58 K/W | 159 mT · 47.5 W | 71.3 W | 94 / **116 °C** | 103 °C | 127 °C | 118 K | 39 % |
+| D2-50 air · 2 × E70 N 5 (webs) | 0.77 · 0.77 K/W | 90 mT · 32.8 W | 45.0 W | 102 / **109 °C** | 102 °C | 119 °C | 158 K | 22 % |
 | **Limit** | | | | **≤ 125 °C** | **≤ 135 °C** | **≤ 155 °C** | **≥ 25 K** | **≤ 50 %** |
 
-Fe and Cu are per section at 100 °C. The D3 core corner is the 525 V bank: `ENV525-55` (83.6 kHz) at 30 kW and
-`PAR525-full-gainWorst` (76.8–79.7 kHz) at 40 and 50 kW. Every D2 core corner, every copper corner and every 55 °C
-hot-spot is `SER250-full-tolLo`. D2 flux is taken at the bin-max inductance (6.8 / 6.3 / 5.8 µH).
+Fe and Cu are per cell (D3) or per part (D2) at 100 °C. The D3 core corner is `ENV500-55` (500 V bank, 55 % load,
+≈ 87 kHz); every copper corner and every 55 °C hot-spot is `SER250-full-bus764` (≈ 203 kHz). The gate also rejects the
+E65 section transformer in this one-bridge cell duty on every SKU (hot-spot 131–169 °C), so the control group can fail.
 
 - **Derated corner.** At 75 °C inlet the air-SKU web runs 8 K warmer and full-load copper falls to 16 %, but iron
   does not derate. Every D3 is then bound by its 525 V-bank core corner, and the iron-heavy 40 kW parts run hotter
@@ -251,28 +274,35 @@ lost (both webs → one web, both plates → one plate) against the same limits:
 
 | Part | One pad lost: 55 °C / 75 °C / +25 % Rth | Verdict |
 |---|---|---|
-| D3-30 | 115 / 113 / 130 °C | survives |
-| D2-30 | 109 / 105 / 124 °C | survives |
-| D3-40 | 108 / 118 / 133 °C | **needs the loop** — runaway margin below 25 K |
-| D2-40 | 103 / 106 / 115 °C | survives |
-| D3-50 liquid | 118 / 106 °C / runaway | **needs the loop** |
-| D2-50 liquid | 110 / 98 / 125 °C | **needs the loop** — runaway margin below 25 K |
-| D3-50 air | 104 / 108 / 115 °C | survives |
-| D2-50 air | 115 / 113 / 135 °C | survives |
+| D3-30 | 110 / 115 / 126 °C | **not survivable** — runaway margin below 25 K |
+| D2-30 | 106 / 112 / 122 °C | survives |
+| D3-40 | 106 / 118 / 133 °C | **not survivable** |
+| D2-40 | 114 / 115 / 129 °C | survives |
+| D3-50 liquid | 133 / 124 °C / runaway | **not survivable** |
+| D2-50 liquid | 161 / 111 °C / runaway | **not survivable** |
+| D3-50 air | 124 / 117 / 139 °C | survives |
+| D2-50 air | 120 / 114 / 139 °C | survives |
 
-On D3-40 and D2-50 liquid the temperatures stay inside the limits and the runaway margin fails: with one face gone
-the core's conduction resistance rises about eightfold (§4.1), and dP_Fe/dT × R_core approaches 1. D3-50 liquid runs
-away outright at +25 % Rth, because the still internal air cannot take over the lost face. The other parts survive
-on the remaining face and the tunnel air.
 
-**The cover:** six NC hermetic snap-action thermostats, **130 ± 5 °C**, gold dry-circuit contacts, reinforced-insulated
-case and leads — one on every D3 and D2 section, wired in series with the T_XFMR NTC. The gate requires the loop on
-the 40 kW and 50 kW liquid SKUs; it is fitted on every SKU.
+> [!IMPORTANT]
+> **E67: a lost bond is screened, not survived.** The taller E67 cells carry more iron per part, so D3 at 30 / 40 / 50 kW
+> and D2 on the liquid plate no longer survive a lost face. The gate therefore makes the **EOL bonded thermal soak
+> mandatory** ([DFM](dfm-production.md)) so a bad bond never ships, and the 130 °C cutout loop below stays the field cover.
+
+With one face gone the core's conduction resistance rises about eightfold (§4.1), and dP_Fe/dT × R_core approaches 1.
+The E67 D3 cells carry 32–48 W of iron each, so on the air webs they lose their runaway margin, and on the sealed
+liquid plate both D3 and D2 run away at +25 % Rth because the still internal air cannot take over the lost face. The
+50 kW air parts survive on the remaining face and the tunnel air.
+
+**The cover:** three NC hermetic snap-action thermostats, **130 ± 5 °C**, gold dry-circuit contacts, reinforced-insulated
+case and leads — one on each D3 cell and one on D2 (six on the E65 sections), wired in series with the T_XFMR NTC. The
+EOL bonded thermal soak keeps a bad bond from shipping; the loop covers a bond that fails in the field. It is fitted
+on every SKU.
 
 ```mermaid
 flowchart LR
   V["Vref · 10 k pull-up"] --- A(["T_XFMR ADC input"])
-  A --- K["6 × NC 130 ± 5 °C<br/>one per D3 and D2 section"]
+  A --- K["3 × NC 130 ± 5 °C<br/>one per D3 cell and on D2"]
   K --- N["10 k B3435 NTC"] --- G["return"]
   A --> Q{"reading ≥ 0.98 of Vref?"}
   Q -->|"no"| T["NTC temperature<br/>normal OT ladder"]
@@ -286,11 +316,17 @@ an open loop reports 150 °C and latches **F.22** instead of reading "very cold"
 10 k pull-up reads ≤ 0.96 of Vref at −40 °C, so the threshold never trips on a cold sensor. `host_sim` proves both
 cases. OT thresholds: [protection thresholds](protection-thresholds.md), row 22.
 
-The cutout's lower tolerance edge, 125 °C, sits above every intact part at every corner (worst 104 °C at 55 °C
-inlet, 113 °C at +25 % Rth), so it does not nuisance-trip; and at a 130 °C core the parts are still far from
+The cutout's lower tolerance edge, 125 °C, sits above every intact part at every corner on the nominal network (worst
+116 °C, D3-50 air at 55 °C inlet), so it does not nuisance-trip. At +25 % Rth the D3-50 air cell reaches 127 °C, so a
+degraded bond on that SKU can open the loop at the hottest corner — the intended response to a degraded bond; and at a 130 °C core the parts are still far from
 saturation (§4.4).
 
 ### 4.6 Heat delivered into the webs
+
+> [!WARNING]
+> **E65 basis — not yet restated for the E67 parts.** The table below was computed for the three E65 sections. The
+> E67 D3 cells and D2 dissipate more per part at their corners (§4.4), and the network does not print its wall heat
+> yet, so read these rises as a lower bound until `magnetics-envelope` reports the E67 bond heat.
 
 Bonding moves D2/D3 heat out of the tunnel air and into the extrusions, so it is part of the upper and lower
 extrusion budgets. Heat through R core→wall plus the potting, at the worst coincident corner (`SER250-full-tolLo`,
@@ -320,7 +356,7 @@ the 110 °C internal air feeds heat through the parts (§4.3).
 
 | Part | Hot equilibrium (55 °C inlet, full / 75 °C inlet, derated) | Runaway margin | Copper basis |
 |---|---|---|---|
-| D4 · ETD39 aux | 78 / 81 °C | ≥ 119 K | — |
+| D4 rev E · ETD44 aux | 76 / 79 °C | 121 K | — |
 | D1 · Kool Mµ stacks | ΔT ≤ 45 K acceptance (Cu 28 / 26 / 38 W) | powder core, µ tempco ≤ ±3 % | 9× / 13× 1.6 mm bundles |
 
 All ferrite parts sit near the material's loss minimum (~80–100 °C). The loss slope is negative below it, so a
@@ -332,14 +368,14 @@ cold start self-warms toward the minimum instead of running away. Details:
 | Case | Result |
 |---|---|
 | −30 °C cold start (A11 rev C, E60 competitor parity) | Rds low, losses −18 %; electrolytic ESR ×2.5 (cans now −40 °C category) → precharge + 60 s soft power limit of 50 % below −10 °C (FW-R3); ferrite Fe 2.05× but cores self-warm (§4.7); IP55 fans rated −30 °C; chamber proof T-32 |
-| +55 °C inlet | full power; grid Tj ≤ 150 °C with computed folds only in the hot SER/PS bands |
+| +55 °C inlet | full power; grid Tj ≤ 139 °C with no folds (E68a clip mount) |
 | +65 °C inlet | derate to 70 % |
 | +75 °C inlet | derate to 40 % — D3/D2 are solved here with copper at 40 % load and iron undiminished, because flux follows bank voltage (§4.4) |
 | Blocked filter (50 %) | airflow −30 % → treated as +8 °C inlet penalty; the firmware ΔT sink-inlet estimator shifts the derate curve left |
 | One fan failed | derate 50 % (F.25); `fault-energy` proves n−1 airflow ≥ the derated need on every air SKU |
 | Fan degradation −20 % | +4 °C sink, inside margin |
 | Coolant flow lost (50 kW liquid) | plate-NTC dry-run ladder → derate → trip; cart-side flow assurance is a system item |
-| One D2/D3 gap pad lost | D3-40, D3-50 liquid and D2-50 liquid lose their runaway margin → the series 130 °C cutout opens → 150 °C reported → F.22 (§4.5); every other part survives on the remaining face |
+| One D2/D3 gap pad lost | D3 at 30 / 40 / 50 kW liquid and D2-50 liquid lose their runaway margin → screened by the EOL bonded thermal soak; in the field the series 130 °C cutout opens → 150 °C reported → F.22 (§4.5); the 50 kW air parts survive on the remaining face |
 | Coolant near the dew point (50 kW liquid) | not permitted: coolant inlet ≥ enclosure-air dew point + 3 K whenever energised — a cooling-cart requirement at the charger level (E42/A13 boundary) |
 
 ```mermaid
@@ -358,6 +394,8 @@ plot `simulation-results/30kw/plots/derating-curve.svg`.
 | Item | Test |
 |---|---|
 | Calorimetric η at the rated point per SKU (closes the ±0.2 pt model band) | T-03 |
+| Clip-mount junction-to-base Rth within +15 % of `mount.mjs` (every Tj above rests on it) | T-38 |
+| Output diode DOUT case temperature at rated current | T-36 |
 | Chamber: grid hot corners, fold behaviour, fan-fail derate | T-04 · T-23 |
 | Tunnel back-pressure with the 50 kW magnetics set (CFD or instrumented) | T-04 |
 | First-article winding Rac and ΔT at the class current | T-31 |

@@ -8,8 +8,8 @@ Title "DC-Modules 40 kW module - schematic set"
 Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules"
-Comment1 "AC-DC (Vienna PFC) sheets 1-6 - DC-DC (3-phase LLC) sheets 7-12"
-Comment2 "1x hot Vienna PFC cells + 1x hot 3-phase LLC cells per module"
+Comment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC, E67)"
+Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card (E40)"
 Comment3 ""
 Comment4 ""
 $EndDescr
@@ -22,7 +22,7 @@ $EndSheet
 $Sheet
 S 6200 1000 4200 1400
 U 5E000250
-F0 "40 kW DCDC board 2of2 - 3-phase LLC (1x hot cells)" 70
+F0 "40 kW DCDC board 2of2 - full-bridge LLC (E67)" 70
 F1 "40kw-dcdc.sch" 70
 $EndSheet
 $EndSCHEMATC

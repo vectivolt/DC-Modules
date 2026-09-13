@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-WORK__INSTRUCTION-b4642a?style=flat-square" alt="status: work instruction"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 > [!NOTE]

@@ -1,4 +1,4 @@
-// 40kw AC-DC board (E41 variant): same 1-lane structure as 30 kW, +33% current —
-// paralleled PFC pairs, 113 uH choke, 125 A gG input class, 12-can link, 3 fans.
+// 40 kW AC-DC board (lower): as 30 kW with one SIC-750V-15mR die per position (E69a), D1 5x T79 N=26,
+// 125 A gG fuses, 12-can split link, 3 fans, RATING strap 1k.
 import { AcDcBoard } from "../../packages/common-components/boards";
 export default () => <AcDcBoard lanes={1} pw={40} w={440} h={500} />;

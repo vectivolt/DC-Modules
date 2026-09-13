@@ -8,7 +8,7 @@ Title "150 kW Cabinet - 3x 50 kW modules, charger controller = group master (E55
 Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 150 kW - board Cabinet interconnect, sheet 1 of 1"
-Comment1 "Module 150 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
+Comment1 "Module 150 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
 Comment2 "Content: 3x 50 kW module + controller CAN port (E55/E66)"
 Comment3 "5 functional sections - 14 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"

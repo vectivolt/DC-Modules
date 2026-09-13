@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 > [!NOTE]
@@ -50,7 +50,7 @@ product in or near its segment.
 
 ## Why a module stops at 50 kW
 
-A module is **one lane**: three Vienna phases and three LLC sections under one control card. A monolithic 60 kW module
+A module is **one lane**: three Vienna phases and one full-bridge LLC (E67; three LLC sections before that) under one control card. A monolithic 60 kW module
 needs a second lane — about 18 PWM and 30 analog signals — which is past any single card (`cardMap()` throws), so it
 would carry two cards and cost what two 30 kW modules already cost. A single-lane 120 kW machine fails on walls that
 cooling cannot move: silicon paralleling count, choke stack feasibility, the fuse-class ladder, the transformer
@@ -62,11 +62,13 @@ built from modules.** → [control-card scope](../docs/control-card-scope.md)
 | | 50 kW liquid (E42) | 50 kW air (E44) |
 |---|---|---|
 | **How it gets the heat out** | two coldplates replace the extrusions; sealed module, zero fans | extrusions + 4 fans (3 front, 1 rear) |
-| **Silicon** | the 40 kW silicon — single LLC FETs at 167 A, made possible by the plate (Rth 1.1 K/W to a 65 °C plate) | PFC **and** LLC pairs paralleled — per-package conduction ÷ 4 |
-| **Thermal proof** | 5,544-point grid, 0 failures; folds only in hot PS and SER-band corners | 0 failures; folds only in the hot SER band (JBS 149 °C) |
-| **Classes** | 160 A NH00 fuses · 250 A precharge frame · dual K_OUT · revved tank classes | identical to the liquid twin by construction |
+| **Silicon** | since E68a identical on both twins: one B3M010C075Z per PFC position, two SG2M023120LJ per LLC position, clip-mounted (0.65 K/W to a 65 °C plate) | = liquid (0.8 K/W to a 70 °C base) |
+| ~~Silicon (E42/E44)~~ | ~~the 40 kW silicon — single LLC FETs at 167 A, made possible by the plate (Rth 1.1 K/W to a 65 °C plate)~~ | ~~PFC **and** LLC pairs paralleled — per-package conduction ÷ 4~~ |
+| **Thermal proof** | 4,536-point grid, 0 failures, 0 folds; worst Tj 116 °C (PFC) | 0 failures, 0 folds; worst Tj 135 °C (PFC) |
+| ~~Thermal proof (E60)~~ | ~~5,544-point grid, 0 failures; folds only in hot PS and SER-band corners~~ | ~~0 failures; folds only in the hot SER band (JBS 149 °C)~~ |
+| **Classes** | 160 A NH00 fuses · 250 A precharge frame · DOUT 1600 V / 250 A output diode (E67, K_OUT retired) · F.11 220 A | identical to the liquid twin by construction |
 | **System boundary** | charger-level cooling cart: coolant ≤ 60 °C, 6.5 L/min per module (E67: 6 L/min before the output diode's 175 W); the plate NTCs and OT ladder are the module's dry-run protection | none beyond airflow |
-| **₹ / kW** | 837 | **830** |
+| **₹ / kW** (India 10k basis) | 810 | **768** |
 
 <details>
 <summary><b>Record — why the air 50 kW was first declined (E42), and what changed at E44</b></summary>
@@ -100,7 +102,7 @@ already designed in:
 | Area | Per-module provision |
 |---|---|
 | **Electrical input** | own AC entry: 160 A gG NH00 fuses, MOV + GDT, EMI filter and precharge. Cabinet input protection is a switch-disconnector or MCB coordinating with N × 160 A branches; own PE stud |
-| **Output paralleling** | modules parallel at the DC output bus through each module's own **dual K_OUT** (2 × 200 A at 167 A, 42 % per relay). Sharing is **commanded constant current** over CAN; the E12b closure gate (stack matches target before close) makes hot-joining a live bus safe; ± 0.5 % voltage accuracy keeps the steady-state share inside CC regulation |
+| **Output paralleling** | modules parallel at the DC output bus through each module's own **output blocking diode DOUT** (E67: 1600 V, 250 A class at 167 A = 67 %), so a module can never back-feed the bus or a failed neighbour; the E60 text that follows described the retired dual K_OUT (2 × 200 A at 167 A, 42 % per relay). Sharing is **commanded constant current** over CAN; the E12b closure gate (stack matches target before close) makes hot-joining a live bus safe; ± 0.5 % voltage accuracy keeps the steady-state share inside CC regulation |
 | **Control** | CAN 2.0B with module address 00–63 and group id set on the HMI; `firmware/core/can_proto` already speaks it |
 | **Thermal** | each module is its own front-to-back airflow unit (or coldplate loop) with its own derating curve — cabinets never share a module's airstream budget |
 | **Service** | commanded bank and bus discharge, touch-safe SELV control face, per-module HMI fault ring |

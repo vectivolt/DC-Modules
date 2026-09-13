@@ -4,12 +4,12 @@ EELAYER END
 $Descr User 35600 29800
 encoding utf-8
 Sheet 1 1
-Title "50 kW DCDC board 2of2 - 3-phase LLC (1x air cells)"
+Title "DC-Modules 50 kW air — DC-DC board (full-bridge LLC)"
 Date "2026-09-06"
 Rev "D.4"
-Comp "DC-Modules 50 kW - board ?, sheet ? of 2"
-Comment1 "Module 50 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
-Comment2 "Content: ?"
+Comp "DC-Modules 50 kW air - board DC-DC (upper), sheet 2 of 3"
+Comment1 "Module 50 kW air = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
+Comment2 "Content: full-bridge LLC: 2x SG2M023120LJ per position, 11x33 nF + D2 rev F, 2 cells, film banks 14x2.2 uF, DOUT (E67/E68)"
 Comment3 "22 functional sections - 276 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
@@ -24,7 +24,7 @@ Wire Notes Line
 Text Notes 28910 23010 0    79   ~ 16
 SHEET INDEX
 Text Notes 28910 23270 0    60   ~ 0
-50 kW ? - ? of 2
+50 kW air DC-DC (upper) - 2 of 3
 Text Notes 28900 23700 0    60   ~ 0
 OUTPUT-SENSING   -   6 sections
 Text Notes 28900 24000 0    60   ~ 0

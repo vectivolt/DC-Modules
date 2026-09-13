@@ -4,7 +4,7 @@
 import { dirname, relative } from "node:path";
 
 export const REV = "E61";
-export const UPDATED = "2026-09-13";
+export const UPDATED = "2026-09-14";
 
 const STATUS = {
   OVERVIEW: ["0969da", "overview"], HUB: ["0969da", "navigation hub"], LIVE_SPEC: ["2ea44f", "live specification"],
@@ -18,17 +18,17 @@ export const PAGES = [
   ["README.md", "hero", "", "DC-Modules", "Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules and the 100 / 150 kW products", "OVERVIEW"],
   ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB"],
   ["docs/architecture.md", "platform", "🏗️", "Platform Architecture", "The module in one read — power path, control plane, protection layers, rails and the product family", "LIVE_SPEC"],
-  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E67, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
+  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E69, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
   ["docs/interconnect.md", "platform", "🔌", "Two-Board Sandwich & Interconnect", "Stud pillars, the 40-way harness, grounding, discharge control and the HMI contract", "LIVE_SPEC", [["gate", "module--interconnect--audit", "2ea44f"]]],
   ["docs/control-card-scope.md", "platform", "🧠", "Control-Card Scope", "Why one card runs one module up to 50 kW — connector ways, HRTIMER units and MCU pins", "LIVE_SPEC", [["gate", "cardMap()_refuses_out--of--scope", "2ea44f"]]],
-  ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["host__sim", "54%2F54_ASan%2FUBSan", "2ea44f"]]],
+  ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["host__sim", "60%2F60_ASan%2FUBSan", "2ea44f"]]],
   ["docs/can-protocol.md", "platform", "📡", "External CAN Protocol", "CAN 2.0B addressing, control and telemetry frames, and the rules a charger controller must follow", "LIVE_SPEC", [["codec", "can__proto.c_fuzzed", "2ea44f"]]],
-  ["boards/README.md", "platform", "🧩", "Boards", "The four module SKUs, the control card, the 150 kW cabinet, and how the release sheets are produced", "OVERVIEW", [["pins", "7784_verified_·_6_targets", "2ea44f"]]],
+  ["boards/README.md", "platform", "🧩", "Boards", "The four module SKUs, the control card, the 150 kW cabinet, and how the release sheets are produced", "OVERVIEW", [["labels", "6901_verified_·_6_targets", "2ea44f"]]],
   ["boards/README-product-structure.md", "platform", "🏢", "Product Structure", "Why the family is 30 / 40 / 50 kW modules plus 100 and 150 kW products — and the multi-module contract", "LIVE_SPEC"],
   ["boards/30kw/README.md", "platform", "📋", "30 kW Module Walkthrough", "The canonical board pair, cell by cell — every cell reused unchanged across the family", "LIVE_SPEC"],
   ["docs/protection-thresholds.md", "power", "🛡️", "Protection Thresholds", "The F.xx fault ladder — hardware-fast and supervisory rows, per-SKU windows and current classes", "LIVE_SPEC", [["gate", "review--checks_·_current--coordination", "2ea44f"]]],
   ["docs/current-coordination.md", "power", "⚡", "Current & Protection Coordination", "The worst simulated current in every magnetic and switch, against the trip, sensor and part that must handle it", "LIVE_SPEC", [["gate", "current--coordination_·_CLEAN", "2ea44f"]]],
-  ["docs/thermal-report.md", "power", "🌡️", "Thermal Report", "Where every watt goes, how it leaves the box, and the temperatures that result", "LIVE_SPEC", [["grid", "5544_pts_·_0_fail", "2ea44f"]]],
+  ["docs/thermal-report.md", "power", "🌡️", "Thermal Report", "Where every watt goes, how it leaves the box, and the temperatures that result", "LIVE_SPEC", [["grid", "4536_pts_·_0_fail_·_0_folds", "2ea44f"]]],
   ["docs/insulation-coordination.md", "power", "🧱", "Insulation Coordination", "The barrier map, creepage and clearance values, the standards matrix and the hipot plan", "LIVE_SPEC"],
   ["docs/busbar-drawings.md", "power", "🔩", "Busbar Drawings & Joint Spec", "Bulk-copper paths, sections, lengths, joints and the torque schedule", "GENERATED", [["owner", "busbar--calc.mjs", "5f8fc0"]]],
   ["docs/magnetics.md", "magnetics", "🧲", "Magnetics Drawings D1–D7", "Every custom magnetic — identity, construction, acceptance lines and the per-SKU variants", "LIVE_SPEC", [["gate", "mag--sync_·_rfq--audit_·_conductor--audit", "2ea44f"]]],
@@ -39,8 +39,8 @@ export const PAGES = [
   ["docs/aux-transformer-D4.md", "magnetics", "🌀", "D4 Aux Flyback Transformer", "The rev D turns sheet for the 110 W full-bus auxiliary supply", "LIVE_SPEC", [["gate", "stress--audit_D4_Bpk", "2ea44f"]]],
   ["docs/simulation-toolchain.md", "verification", "🧪", "Simulation Toolchain", "Which tool proves what, how to run it, how to read the result, and where fidelity ends", "LIVE_SPEC", [["engine", "ngspice--46_·_node_20", "5f8fc0"]]],
   ["docs/simulation-report.md", "verification", "📈", "Simulation Report", "The simulation-truth ledger — every executed run, its result, and what it may be used to claim", "EVIDENCE"],
-  ["docs/verification-matrix.md", "verification", "✅", "Verification Matrix & Risk Register", "Every requirement mapped to its evidence, and the risks still open", "LIVE_SPEC", [["verify--independent", "226%2F226", "2ea44f"]]],
-  ["docs/evt-plan.md", "verification", "🔬", "EVT Test Plan", "The first-hardware campaign T-00…T-32, and the rule that lets bench results reopen a calculation", "LIVE_SPEC"],
+  ["docs/verification-matrix.md", "verification", "✅", "Verification Matrix & Risk Register", "Every requirement mapped to its evidence, and the risks still open", "LIVE_SPEC", [["verify--independent", "227%2F227", "2ea44f"]]],
+  ["docs/evt-plan.md", "verification", "🔬", "EVT Test Plan", "The first-hardware campaign T-00…T-41, and the rule that lets bench results reopen a calculation", "LIVE_SPEC"],
   ["docs/final-validation-e51.md", "verification", "🏁", "End-to-End Validation Verdict", "Verdicts by category from start-up to tolerances, with evidence and the honest open list", "LIVE_SPEC"],
   ["docs/reliability-budget.md", "verification", "🛡️", "Reliability Budget", "Parts-count MTBF prediction with its basis declared, the wear-out clocks, and the no-single-point-of-darkness system view", "LIVE_SPEC", [["gate", "mtbf--budget_·_CONSISTENT", "2ea44f"]]],
   ["calculations/README.md", "verification", "🧮", "Calculations & Gates", "Every engine, audit and generator — and the one command that reproduces the design", "OVERVIEW", [["run--all", "exit_0", "2ea44f"]]],
@@ -53,7 +53,7 @@ export const PAGES = [
   ["docs/prototype-fast-path.md", "production", "🚀", "Prototype Fast Path", "Off-the-shelf parts and wind-in-house routes that cut the custom-magnetics lead time", "SOURCING_GUIDE", [["stock", "read_13_Sep_2026", "8b949e"]]],
   ["docs/dfm-production.md", "production", "🏭", "DFM & Production Flow", "Assembly sequence, kitting, torque schedule, end-of-line test and coating", "LIVE_SPEC"],
   ["docs/competitive-benchmark-e51.md", "production", "📊", "Competitive Benchmark", "Verified market position, the SiC verdict, the density gap, cost levers and harsh-environment parity", "LIVE_SPEC"],
-  ["docs/benchmark-infypower-teardown.md", "production", "🩻", "InfyPower Teardown Benchmark", "Block-by-block audit of our architecture against the REG1K0135A2 40 kW SiC module teardown", "LIVE_SPEC", [["source", "chargerlab_·_read_2026--09--13", "8b949e"], ["verdict", "E67_full_bridge_adopted_·_R18", "2ea44f"]]],
+  ["docs/benchmark-infypower-teardown.md", "production", "🩻", "InfyPower Teardown Benchmark", "Block-by-block audit of our architecture against the REG1K0135A2 40 kW SiC module teardown", "LIVE_SPEC", [["source", "chargerlab_·_read_2026--09--13", "8b949e"], ["verdict", "architecture_and_BOM_cloned_E67–E69_·_cost_gap_open", "d19a00"]]],
   ["docs/footprints-to-draw.md", "production", "✏️", "Footprints to Draw", "The land-pattern queue for the layout phase — what has a land, what must be drawn, what blocks entry", "PARKED", [["audit", "footprint--audit_·_E61_baseline", "8b949e"]]],
   ["docs/pcb-floorplan.md", "production", "🗺️", "PCB Floorplan Basis", "Zones, barriers and airflow — the layout-phase basis, parked since E36", "PARKED"],
   ["docs/history/README.md", "history", "🗄️", "Historical Records", "Dated records kept verbatim, and where their conclusions live now", "HISTORICAL"],

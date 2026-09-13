@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DB, skuOverrides, mechLines, biasCommon, BUILDABLE_SKUS } from "./parts-db.mjs";
+import { DB, skuOverrides, mechLines, mech2U, biasCommon, BUILDABLE_SKUS } from "./parts-db.mjs";
 import { lcscFor, lcscForPart, lcscSummary, LCSC_BY_VALUE } from "./lcsc-map.mjs";
 import { realPackagesFrom } from "../footprint-map.mjs";   // E64: the drawn land decides the part
 import { footer, masthead } from "../doc-chrome.mjs";
@@ -23,6 +23,8 @@ const TARGETS = { "40kw": [33000, 29000],  // E41: 30k red-line x1.33 rounded �
    "50kwa": [43000, 39000],                // E44: air twin, same provisional line
    "30kw": [25000, 22000],
    "150kw": [129000, 117000] };   // E66: derived = 3 x the 50 kW red/stretch (the CSU adder is gone)
+const csvq = (x) => `"${String(x).replace(/"/g, '""')}"`;   // RFC 4180: a 0.56" display or a comma in a maker name must not shift columns
+
 const CAT = (mpn, desc) =>
   /SiC|MOSFET|JBS|FET 1200|650 V 4 A/.test(desc) ? "semiconductors"
     : /driver|iso |LDO|MCU|shift|ULN|flyback controller|transceiver|amplifier/.test(desc) ? "drive+control ICs"
@@ -83,7 +85,7 @@ for (const sku of SKUS) {
       const resolved = lcscForPart(ov.mpn ?? rule.mpn, val, pkgKey ? pkg : undefined);
       // keep the CLASS as well as the resolved part: the row's mpn becomes the catalogue number,
       // and re-resolving from that later cannot find a LCSC_BY_VALUE entry keyed on the class
-      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, cls: ov.mpn ?? rule.mpn, val, pkg: pkgKey ? pkg : undefined, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
+      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, cls: ov.mpn ?? rule.mpn, val, pkg: pkgKey ? pkg : undefined, mfr: rule.mfr, desc: (ov.desc ?? rule.desc) + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
       rec.qty += (ov.qtyMul ?? 1) * mult;
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);
@@ -103,13 +105,13 @@ for (const sku of SKUS) {
     totE10cn += ext10 * cnFactor(cat, r.desc);
     const lc = lcscForPart(r.cls ?? r.mpn, r.val ?? "", r.pkg);
     if (!lc.status) throw new Error(`bom-gen: ${r.mpn} has no lcsc_status`);   // E61: five value lines per SKU shipped blank past bom-maturity
-    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && (LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] || r.pkg) ? ` ${r.val}${r.pkg ? ` (${r.pkg} land)` : ""}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
+    csv.push([r.mpn, lc.lcsc ?? "", lc.status, csvq(r.mfr), csvq(`${r.desc}${r.val && (LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] || r.pkg) ? ` ${r.val}${r.pkg ? ` (${r.pkg} land)` : ""}` : ""}`), csvq(r.alt), [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
-  csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
+  csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", csvq(biasCommon.desc), `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
   cats["bias/iso modules"] = (cats["bias/iso modules"] ?? 0) + 2 * biasCommon.price1k;
   let mechTot = 0, mech10cn = 0;
-  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; mech10cn += e * 0.87 * cnMech(d); csv.push([`MECH`, "", "MECH", "—", `"${d}"`, `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
+  for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; mech10cn += e * 0.87 * cnMech(d); csv.push([`MECH`, "", "MECH", "—", csvq(d), `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
   cats["mechanical/assembly"] = mechTot;
   const grand = totE + mechTot;
   const grand10 = totE10 + mechTot * 0.87;
@@ -117,7 +119,10 @@ for (const sku of SKUS) {
   csv.push(["TOTAL_MODULE", "", "", "", "", "", "", "", "", "", "", "", f(grand), f(grand10), ""]);
   writeFileSync(join(ROOT, "calculations", "out", `bom-${sku}.csv`), csv.map(r => r.join(",")).join("\n") + "\n");
   const [red, stretch] = TARGETS[sku];
-  summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), g10k: f(grand10), g10kCN: f(totE10cn + mech10cn), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };
+  const m2 = mech2U[sku] ? mech2U[sku].reduce((a, [, q, pr]) => a + q * pr, 0) : null;   // E69e scenario: mechanical/assembly lines only
+  const m2cn = mech2U[sku] ? mech2U[sku].reduce((a, [d, q, pr]) => a + q * pr * 0.87 * cnMech(d), 0) : null;
+  summary[sku] = { grand, g100: f(totE * 1.35 + mechTot * 1.15), g5k: f(totE * 0.88 + mechTot * 0.93), g10k: f(grand10), g10kCN: f(totE10cn + mech10cn),
+    s2U: m2 === null ? null : f(totE10 + m2 * 0.87), s2UCN: m2cn === null ? null : f(totE10cn + m2cn), red, stretch, cats, nLines: rows.length, unmatched: [...unmatched] };
   console.log(`${sku}: ${rows.length} BOM lines, electronics ₹${f(totE)}, module ₹${f(grand)} @1k / ₹${f(grand10)} @10k (red ₹${red}) ${grand10 <= red ? "10k ≤ RED ✓" : "10k OVER by ₹" + f(grand10 - red)}`);
   if (unmatched.size) console.log(`   UNMATCHED (${unmatched.size}): ${[...unmatched].slice(0, 10).join(", ")}${unmatched.size > 10 ? " …" : ""}`);
 }
@@ -200,6 +205,18 @@ const md = [masthead("docs/bom-cost.md"), `
 |---|---:|---:|---:|---:|---:|---:|---|
 ${[...SKUS, "150kw"].map((k) => { const s = summary[k], kw = k === "150kw" ? 150 : parseInt(k, 10); return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10k / kw)} | ${inr(s.g10kCN)} | ${inr(s.g10kCN / kw)} | ${inr(s.red)} | ${inr(s.stretch)} | ${verdict(s)} |`; }).join("\n")}
 
+### Scenario — InfyPower-style 2U construction (E69e, not the design basis)
+
+Same electronics; only the mechanical and assembly lines change to the \`mech2U\` estimates in \`parts-db.mjs\`: heatsink chassis
+with the magnetics potted into wells, 4-layer boards at about half today's area, 3 × 80 mm fans. **Prerequisites no gate has proven:**
+the PFC choke must lie in a well (today's T79 stacks stand 60–95 mm; 40 kW needs a flat-core choke), the chassis must hold the
+70 °C device base at 55 °C ambient, and potting must match the two-face magnetics bond. Numbers are estimates until a mechanical
+design and quotes exist.
+
+| Build | Design basis ₹ @10k | 2U scenario ₹ @10k | 2U scenario + China RFQ target |
+|---|---:|---:|---:|
+${SKUS.filter((k) => summary[k].s2U !== null).map((k) => `| ${NAMES[k]} | ${inr(summary[k].g10k)} | ${inr(summary[k].s2U)} | **${inr(summary[k].s2UCN)}** |`).join("\n")}
+
 ## The ₹ / kW product ladder
 
 \`\`\`mermaid
@@ -246,13 +263,15 @@ md.push(`## Red-line closure levers (10k basis)
 | AC-DC board 4-layer (control zones only need 4) | −₹240 | −₹260 | −₹780 | layout phase confirms |
 | Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | −₹1,560 | volume agreement |
 | Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | −₹1,050 | system integrator accepts |
-| **E63:** D6 DM chokes deleted after the EVT LISN scan proves the margin without them — the InfyPower benchmark ships no AC DM chokes (also −13…−24 W of loss) | −₹900 | −₹1,890 | −₹5,670 | EVT T-08 measured; the E43 floors stay until then |
-| **E63/E64:** drop one bank string per bank — computed 2.1 A/can at 30 kW (2→1) and 1.4 A/can at 40/50 (3→2) against the ~2.8 A can class (verify-independent §F) | −₹480 | −₹640 [est] | −₹1,920 [est] | EVT output-ripple + S/P-transient measurement executes it |
+| ~~**E63:** D6 DM chokes deleted~~ **executed at E68b — in totals** (star-X2 filter, DM margin +32.9 / +30.6 / +28.7 dB) | 0 | 0 | 0 | EVT T-08 / T-39 confirm |
+| ~~**E63/E64:** drop one bank string per bank~~ **superseded at E68c — in totals** (film-only banks, no bank electrolytic) | 0 | 0 | 0 | EVT T-40 confirms |
+| **E69:** drive clone — gate-drive transformers on the LLC, opto PFC drivers on aux-winding bias, bridge shunt comparator (approved, not executed) | −₹400 [est] | −₹470 [est] | −₹1,410 [est] | GDT design, D4 re-wind, new trip evidence |
+| **E69:** 900 V half-link aux flyback · 90 A relays · 500 VAC fuses | −₹450 [est] | −₹450 [est] | −₹1,350 [est] | D4 redesign + midpoint duty; relay carry at 89 % vs the 80 % rule |
 | **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | −₹405 | requalified sample |
-| **Sum of levers** | **−₹3,250** | **−₹4,765** | **−₹14,295** | |
+| **Sum of open levers** | **−₹2,720** | **−₹3,155** | **−₹9,465** | |
 
 The E63 rows come from the [InfyPower teardown benchmark](benchmark-infypower-teardown.md) gap audit; the deliberate
-philosophy premium (protection, sensing, 3-φ LLC, relay class ≈ ₹5.2k [est] at 40 kW) is priced there and is **not**
+philosophy premium (protection, sensing, relay class — the E62 estimate also counted the 3-φ LLC, which E67 replaced) is priced there and is **not**
 on this table — spending it down is a product decision, not a lever.
 
 Architecture-level options not taken without a directive (each changes the product): LV/HV fixed variants that delete

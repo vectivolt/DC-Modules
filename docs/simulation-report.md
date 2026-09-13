@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square" alt="status: evidence record"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 > [!NOTE]
@@ -201,6 +201,21 @@ the real IC's UVLO/BR thresholds and thermal. Netlists preserved in `spice/gener
 | **LLC nominal (PAR400-full) → loss budget** | same runner, corner `PAR400-full` | **29.0 / 38.0 / 47.0 / 47.1 A rms** at 149–152 kHz, ZVS 64/64; the grid's FHA reads 29.2 / 38.5 / 47.8 (≤2 %) — the loss budget had carried 23.3 A × k from the withdrawn deck → η restated to 97.19 / 96.92 / 96.68 / 96.82 % | `calculations/out/loss-budget.csv` (reads the CSV row) |
 
 Consumed by the standing gates `current-coordination.mjs` and `conductor-audit.mjs` (both CLEAN in run-all).
+
+## 14. E67–E69 evidence set (2026-09-14) — full-bridge LLC, InfyPower BOM clone
+
+| Suite | Command | Result | Record |
+|---|---|---|---|
+| **LLC stress, power-solved, full bridge per SKU** (12 stress corners + 20-point envelope + internal short + dead short) | `node spice/llc/llc-run.mjs <sku>` → `llc-envelope.mjs` → `llc-flux-post.mjs` | worst tank peak **112.7 / 148.1 / 182.8 / 182.8 A** at SER 250 V on the 764 V bus; tank RMS 70.4 / 93.3 / 116 / 116 A inside the 78 / 100 / 120 A classes; **ZVS 64/64 and legs in rails on every corner**; kill peak 209.1 / 267.1 / 329.7 A | `simulation-results/<sku>/llc-*.csv` (fingerprint `FB n2`) |
+| **CT front-ends at the E67 classes** (0.47 / 0.36 / 0.30 Ω, F.11 140 / 180 / 220 A) | `node spice/protection/ct-frontend.mjs` | comparator node within 12 mV of the computed F11_VH; F.11 + race ADC peak **3.120 / 3.124 / 3.131 V** (≤ 3.27 V) — **ALL PASS**; re-run 2026-09-14, the deck had still carried the E65 burdens | `simulation-results/30kw/ct-frontend.csv` |
+| **Star-X2 EMI filter with the damper** (E68b) | `node calculations/pfc/pfc-control.mjs` · `lisn-precompliance.mjs` | current-loop modulus margin **0.65 / 0.61 / 0.54**, no sustained oscillation at Lg 0 / 30 / 100 µH; damper 3.1 / 4.0 / 5.9 W per resistor; DM margin **+32.9 / +30.6 / +28.7 dB** (E65 control 19.6 / 19.1 / 18.4) | `calculations/out/pfc-filter-stability.csv` · `lisn-precompliance.csv` |
+| **Film-only output banks** (E68c) | `current-coordination.mjs` [OUT] on the stress + envelope corners | 9 / 12 / 14 × 2.2 µF per bank: ≤ 3.93 A per film, output ripple **0.47 / 0.46 / 0.49 % RMS** at PS150-Imax, at −10 % capacitance | run-all log |
+| **Envelope grid on the clip mount** (E68a) | `node calculations/system/envelope-grid.mjs` | **4,536 points, 0 failures, 0 folds**, max Tj 139 °C (30 kW LLC, HIGH 500 V, PSM, hot); peak η 98.11–98.30 % | `calculations/out/envelope-grid.csv` |
+| **Loss budget at the rated point** | `node calculations/thermal/loss-budget.mjs` | η **96.62 / 96.70 / 96.56 / 96.48 %** with DOUT; SR on the full bridge loses 109 W more than JBS at 30 kW | `calculations/out/loss-budget.csv` |
+| **Fault-pulse rule per die** (E69a-2) | `current-coordination.mjs` [F.01] / [F.11] | PFC 165.3 / 204.9 / 266.4 A and LLC 209.1 / 133.6 / 164.8 A per die ≤ 0.8 × IDM at the RFQ acceptance lines | run-all log |
+
+The THD rows of §3 stand: the line-cycle model runs on a stiff 30 µH grid without the EMI filter, so the E68b filter
+does not enter it; the filter's effect on the current loop is the `pfc-control` row above.
 
 ---
 

@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-SOURCING__GUIDE-d19a00?style=flat-square" alt="status: sourcing guide"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/stock-read_13_Sep_2026-8b949e?style=flat-square" alt="stock: read 13 Sep 2026"/>
 </p>
 

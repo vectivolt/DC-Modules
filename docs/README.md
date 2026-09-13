@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-HUB-0969da?style=flat-square" alt="status: navigation hub"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 > [!NOTE]
@@ -88,9 +88,9 @@ inlet or ambient unless labelled Tj or core.
 | 📒 | [Decision register](assumptions.md) | every frozen decision E1–E67 with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
-| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, F.21 semantics | `host_sim` 54/54 · grep-pinned |
+| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, F.21 semantics | `host_sim` 60/60 · grep-pinned |
 | 📡 | [External CAN protocol](can-protocol.md) | addressing, control and telemetry frames, controller rules | `can_proto.c` (fuzzed) |
-| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the 150 kW cabinet, the release sheets | `kicad5-verify` 7,784 pins |
+| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the 150 kW cabinet, the release sheets | `kicad5-verify` 6,901 labels |
 | 🏢 | [Product structure](../boards/README-product-structure.md) | modules vs products, the cabinet contract | `bom-gen` ladder |
 | 📋 | [30 kW module walkthrough](../boards/30kw/README.md) | the canonical board pair, cell by cell | — |
 

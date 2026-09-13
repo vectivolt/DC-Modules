@@ -7,14 +7,14 @@ Sheet 1 1
 Title "DC-Modules — Control Card (GD32G553VET7, one card for both converter roles)"
 Date "2026-09-06"
 Rev "D.4"
-Comp "DC-Modules 30/60 kW - board Control card, sheet 3 of 3"
-Comment1 "Module 30/60 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
+Comp "DC-Modules 30/40/50 kW - board Control card, sheet 3 of 3"
+Comment1 "Module 30/40/50 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
 Comment2 "Content: role-agnostic: AC-DC or DC-DC slot via ROLE straps"
 Comment3 "8 functional sections - 49 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
 Text Notes 600 10850 0    60   ~ 12
-30/60 kW Control card - 3 of 3   ·   rev D.4   ·   8 sections   ·   49 components
+30/40/50 kW Control card - 3 of 3   ·   rev D.4   ·   8 sections   ·   49 components
 Text Notes 600 11150 0    50   ~ 0
 NET NAMING: U<ref>_<PIN> = node at that IC pin   ·   R<stem>_M = series-pair midpoint   ·   R<stem>_<nm> = tap between R<stem>n/m   ·   all others are explicit design nets
 Wire Notes Line

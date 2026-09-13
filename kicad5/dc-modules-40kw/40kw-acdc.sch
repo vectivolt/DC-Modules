@@ -4,12 +4,12 @@ EELAYER END
 $Descr User 49600 26050
 encoding utf-8
 Sheet 1 1
-Title "40 kW ACDC board 1of2 - Vienna PFC (1x hot cells)"
+Title "DC-Modules 40 kW — AC-DC board (Vienna PFC)"
 Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 40 kW - board AC-DC (lower), sheet 1 of 3"
-Comment1 "Module 40 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
-Comment2 "Content: E41 hot variant: paralleled PFC pairs, 124 uH chokes, 12-can link, 3 fans"
+Comment1 "Module 40 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
+Comment2 "Content: Vienna PFC: 1x 750 V SiC die per position, D1 5x T79 N=26, 12-can link, 3 fans (E68/E69)"
 Comment3 "29 functional sections - 320 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr

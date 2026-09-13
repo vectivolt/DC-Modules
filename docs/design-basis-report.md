@@ -97,7 +97,7 @@ Common: 3-phase 285–475 VAC (nominal 400/415), 45–65 Hz, no neutral. Output 
 | Light load | Poor (one big tank circulating) | Channel shedding ×2 | **Channel + phase shedding: 120 kW can idle down to one 3-φ channel** |
 | Control | 3 PWM + sharing | 6 PWM | 3N PWM, common PFM frequency, per-channel enable |
 
-**Preliminary selection: repeatable ~30 kW 3-phase LLC channels** (1/2/4 channels; 3/6/12 identical transformer sections). Interleaving channels (0/60° effective) reduces output ripple; phase/channel shedding directly serves the <10 W standby and light-load efficiency targets. Same caveat: Phase 12 must prove total COGS vs the 2×60 kW alternative for the 120 kW SKU (fewer, larger sections save drivers/board area but break commonality and reintroduce paralleling).
+**Preliminary selection: repeatable ~30 kW 3-phase LLC channels** (1/2/4 channels; 3/6/12 identical transformer sections). → **E67: one full-bridge LLC per module** (the InfyPower REG1K0135A2 DC-DC architecture), see [architecture](architecture.md). Interleaving channels (0/60° effective) reduces output ripple; phase/channel shedding directly serves the <10 W standby and light-load efficiency targets. Same caveat: Phase 12 must prove total COGS vs the 2×60 kW alternative for the 120 kW SKU (fewer, larger sections save drivers/board area but break commonality and reintroduce paralleling).
 
 ## F. Output series/parallel architecture
 
