@@ -1,6 +1,19 @@
-# DRC / ERC Report (§49-23) — generated from tsci builds, rev F (schematic rev D.1, 2026-09-05)
+<img src="../assets/banner-history.svg" alt="" width="100%"/>
 
-> **HISTORICAL RECORD** — kept verbatim as an ERC snapshot of the rev-F builds; the standing gates are run-all's battery (schematic/interconnect/polarity/stress + verify-independent 218).
+# 🗄️ DRC / ERC Report
+
+<sub>The rev F electrical-rule snapshot of the tscircuit builds</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--05-6e7781?style=flat-square" alt="record: 2026-09-05"/>
+</p>
+
+> [!NOTE]
+> **Historical record — the ERC snapshot of the rev F tscircuit builds (2026-09-05), kept verbatim.**
+> **Where it lives now:** the standing battery in [calculations & gates](../../calculations/README.md) — schematic
+> check, interconnect and polarity audits, stress audit and `verify-independent`.
 
 Rev F: the three DC-DC boards rebuilt after ECO-2a (PV-driver bank bleeders replacing the
 opto+bias stacks) — again 0 netlist port errors each (`UPVA/UPVB` in, `PSQDA/B·UQDA/B` out,
@@ -559,3 +572,11 @@ Regenerate after any schematic edit: `tsci build` the board(s) → `schematic-ch
 → `schematic-export` → `kicad5-gen` (rebuilds all three SKUs and re-packages the SHIP zips; a
 clean `git status` afterwards means the committed deliverable is current). New cells/sections must declare a schematic envelope (comment in the cell)
 and a `schSectionName`, per E34.
+
+---
+
+<div align="center">
+<sub><a href="single-card-migration-plan.md">← Single-Card Migration Plan</a> &nbsp;·&nbsp; <a href="../README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="easyeda-transcription.md">EasyEDA Transcription Notes →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

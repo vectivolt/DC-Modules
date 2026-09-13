@@ -1,13 +1,20 @@
-# EasyEDA transcription of the 30 kW schematics (status: PARTIAL — do not treat as authoritative)
+<img src="../assets/banner-history.svg" alt="" width="100%"/>
 
-> **2026-09-06 update — this path is superseded.** The release drawing set is now the KiCad-5
-> import set, `kicad5/DC-Modules-<sku>-SHIP.zip` (see `docs/schematic-drawing-set.md`). That is
-> **option (b) below realised**: a file-based import instead of pin-by-pin port placement, which
-> sidesteps blockers 1-3 entirely. It lands 8053/8053 pins correct where this pin-by-pin
-> transcription peaked at 94.08 %.
->
-> Keep this document for the tool limitations it records — they are reproducible, they are why
-> the approach was abandoned, and anyone who tries the MCP route again will hit them.
+# 🗄️ EasyEDA Transcription Notes
+
+<sub>The superseded pin-by-pin transcription path, kept for the tool limits it recorded</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--06-6e7781?style=flat-square" alt="record: 2026-09-06"/>
+</p>
+
+> [!NOTE]
+> **Historical record — the pin-by-pin EasyEDA transcription route (2026-09-06), kept verbatim** for the tool
+> limits it records: anyone who tries that route again will hit them. It peaked at 94.08 % of pins; the KiCad-5
+> import set replaced it the same day at 100 %, and the EasyEDA layer was removed entirely at E56.
+> **Where it lives now:** [boards](../../boards/README.md) — KiCad-native sheets, 7,784 pins verified.
 
 **The authoritative electrical design remains the tscircuit source** (`packages/`, `boards/`,
 compiled to `dist/boards/*/*/circuit.json`) and the BOM/gate scripts under `calculations/`.
@@ -108,3 +115,11 @@ the three `SHIP D.3` projects (30 kW fp, 60 kW, 120 kW) imported from the SHIP z
 superseded DC-Modules revisions were deleted, and `LEV OBC` plus all 13 non-DC-Modules projects
 were left untouched. `easyeda-verify.mjs` still runs if you need the exact outstanding defects of
 the old transcription.
+
+---
+
+<div align="center">
+<sub><a href="drc-erc-report.md">← DRC / ERC Report</a> &nbsp;·&nbsp; <a href="../README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="mcu-pin-allocation-gd32.md">GD32 Pin Allocation (R3) →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

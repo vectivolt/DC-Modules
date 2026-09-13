@@ -1,11 +1,36 @@
-# Protection Thresholds (§24/§49-19) — rev E49 (R4–R8 external-review closures, 2026-09-09)
+<img src="assets/banner-power.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+# 🛡️ Protection Thresholds
 
-> **Purpose** — The F.xx fault ladder: hardware-fast paths, supervisory windows, per-SKU timings, R4–R8 protection notes.
+<sub>The F.xx fault ladder — hardware-fast and supervisory rows, per-SKU windows and current classes</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/gate-review--checks_·_current--coordination-2ea44f?style=flat-square" alt="gate: review-checks · current-coordination"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the F.xx fault ladder: every protection row with its threshold, response time, layer and action;
+> the hardware-fast paths that act with no firmware in the loop; and the per-SKU classes and windows.
 >
-> **Gate coupling** — review-checks R5-K/R6-B/R6-C greps pin passages of this file — edit additively.
+> **Gate coupling** — `review-checks` (R5-K, R6-B, R6-C, R7-A, R7-E, R8-A), `stress-audit` and `current-coordination`
+> assert passages of this file word for word. Edits are **additive**: superseded values keep an arrow-note.
 
+## At a glance
+
+| Path | 30 kW | 40 kW | 50 kW (liquid · air) | Response |
+|---|---|---|---|---|
+| **F.01** line over-current (CT → comparator → HRTIMER) | 120 A pk | 155 A pk | 195 A pk | ~2–3 µs design target |
+| **F.11** LLC tank over-current | 85 A pk | 115 A pk | 145 A pk | < 2 µs |
+| **F.02 / F.12** DESAT | Vienna 47 pF blank · LLC 22 pF blank | = | = | worst 2.21 µs · 1.44 µs |
+| **F.03** bus OVP | 860 V | = | = | 10–20 µs |
+| **F.21** discharge window | 3 s | 4 s | 5 s | per SKU |
+| **F.21b** bank-bleed window | 10.3 s | 15.5 s | 20.7 s | per SKU |
+| Supervisory rows | 30 rows, 1 ms tick, latched pre-fault snapshot | | | 1 ms – 3 s |
+
+## 1. The fault paths
 
 ```mermaid
 flowchart LR
@@ -20,6 +45,8 @@ flowchart LR
   FSM --> EXCL["two-stage 74HC02 relay exclusion<br/>KSER ∧ ¬KPAR* ∧ ¬KPRE* (R5-D)"]
 ```
 
+## 2. The ladder
+
 HW = comparator/driver hardware, independent of firmware; FW = supervisory firmware.
 Tolerances include sense-chain error (divider 1% + 0.1% bottom, CT 1%+burden 1%, shunt 0.5% + amp).
 Every latched fault stores a pre-fault snapshot (2 kSa ring: Vbus±, Iphase×3, Vout, Iout, fsw, state).
@@ -27,8 +54,8 @@ Display code `F.xx` per docs/interconnect.md HMI.
 
 | # | Fault | Threshold | Act | Layer | Action | Code |
 |---|---|---|---|---|---|---|
-| 1 | PFC phase OC | 105 A pk (CT, per lane-phase; **27 Ω burden → 1.13 V above AVMID = 2.78 V at comparator; 150 A observability ceiling = 3.27 V, inside the rail — R3/audit**) | <2 µs | HW comp→HRTIM kill | PFC PWM off, latch | F.01 |
-| 2 | PFC DESAT | VDS>9 V @on, 2.5 µs blank | <3 µs | HW driver | soft-off, FLT latch | F.02 |
+| 1 | PFC phase OC | 105 A pk (CT, per lane-phase; **27 Ω burden → 1.13 V above AVMID = 2.78 V at comparator; 150 A observability ceiling = 3.27 V, inside the rail — R3/audit**) → **E60: 120 / 155 / 195 A pk on 22 / 18 / 13 Ω** (§4) | <2 µs | HW comp→HRTIM kill | PFC PWM off, latch | F.01 |
+| 2 | PFC DESAT | VDS>9 V @on, 2.5 µs blank → **E60: 47 pF blank, worst response 2.21 µs** (§4) | <3 µs | HW driver | soft-off, FLT latch | F.02 |
 | 3 | Bus OVP | **860 V** total (E2) | <25 µs¹ | HW comp | all PWM kill | F.03 |
 | 4 | Bus OV (fw) | 845 V, 1 ms | 1 ms | FW | controlled stop | F.04 |
 | 5 | Bus UV | <620 V in run | 10 ms | FW | stop, retry ×3 | F.05 |
@@ -37,8 +64,8 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 8 | Input UV / sag | <260 VAC, 100 ms (ride-through below) | 100 ms | FW | derate/stop | F.08 |
 | 9 | Phase loss | line current <10% expected 40 ms (validated `400-phloss` sim) | 40 ms | FW | fold back → stop | F.09 |
 | 10 | Phase sequence | PLL sign at start | start | FW | inhibit start (any rotation accepted, mapped) | F.10 |
-| 11 | LLC resonant OC | 70 A pk per section CT (**2.0 Ω burden → 1.40 V above AVMID = 3.05 V at comparator — R2 CB-16**; full-load 46 A rms = 0.92 V rms) | <2 µs | HW comp | LLC PWM off | F.11 |
-| 12 | LLC DESAT | as #2 | <3 µs | HW | soft-off latch | F.12 |
+| 11 | LLC resonant OC | 70 A pk per section CT (**2.0 Ω burden → 1.40 V above AVMID = 3.05 V at comparator — R2 CB-16**; full-load 46 A rms = 0.92 V rms) → **E60: 85 / 115 / 145 A pk on 1.2 / 0.91 / 0.75 Ω** (§4) | <2 µs | HW comp | LLC PWM off | F.11 |
+| 12 | LLC DESAT | as #2 → **E60: 22 pF blank, worst response 1.44 µs** (§4) | <3 µs | HW | soft-off latch | F.12 |
 | 13 | Output OVP | 1050 V (or mode-max +6%) | <25 µs¹ | HW comp on OV iso-sense | LLC off, K_OUT opens after I≈0 | F.13 |
 | 14 | Output OV (fw) | cmd +4%, 2 ms | 2 ms | FW | CV clamp/stop | F.14 |
 | 15 | Output OC | 102% Imax 100 ms / 130% 2 ms | — | FW (CC loop is primary) | CC fold, then stop | F.15 |
@@ -46,13 +73,13 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 17 | Bank imbalance (series) | |VA−VB|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
 | 18 | Relay weld | ΔV<1.5 V @200 ms, ≥10 A ref (E13) | 200 ms | FW | latch, inhibit mode change | F.18 |
 | 19 | Relay open-fail | mirror-contact readback mismatch 100 ms (hardware path per E30: RELAY_FB_* nets, KPRE series pair) | 100 ms | FW | latch | F.19 |
-| 20 | Precharge fail | **as implemented (fsm.c): abort iff t > 400 ms AND bus < 50% line pk** — tolerant of the per-SKU charge time (t95 ≈ 160/288/576 ms at 30/60/120 kW); the earlier "<90% in 400 ms" wording described the completion check, not the abort (R2 HR-14 doc fix) | — | FW | abort, open KPRE | F.20 |
+| 20 | Precharge fail | **as implemented (fsm.c): abort iff t > 400 ms AND bus < 50% line pk** — tolerant of the per-SKU charge time (t95 ≈ 160/288/576 ms at 30/60/120 kW → **E60 per-SKU deck: 193 / 231 / 310 ms at 30 / 40 / 50 kW**); the earlier "<90% in 400 ms" wording described the completion check, not the abort (R2 HR-14 doc fix) | — | FW | abort, open KPRE | F.20 |
 | 21 | Discharge fail | bus >60 V after per-SKU timeout: **3 / 4 / 5 s** (`PMP_DISCH_TO_MS` rev G; powered-path physics 830→60 V ≈ 2.0/2.4/3.2 s at 640 Ω) — **R6: this timer's REAL coverage is the AC-PRESENT case** (bus held up by the permanent RPRE rectifier path → FC_DISCH = "isolate upstream first"); with AC removed the aux browns out at ~321 V mid-count and the passive path + enclosure label finish the job (R6 note below) | per SKU | FW | latch, discharge stays commanded | F.21 |
-| 21b | Bank discharge fail | either bank >60 V @ **2.5×** bank-bleed τ after `CTL_QDISBK` (E33; τ = 8.8 kΩ·C_bank ≈ 4.1/8.3/16.5 s → timeout 10.3/20.6/41.2 s per SKU; 2.0τ would false-fail a healthy bleed at 525·e⁻² = 71 V — caught by the per-SKU deck) | per SKU | FW | latch, inhibit touch-service bit | F.21 |
+| 21b | Bank discharge fail | either bank >60 V @ **2.5×** bank-bleed τ after `CTL_QDISBK` (E33; τ = 8.8 kΩ·C_bank ≈ 4.1/8.3/16.5 s → timeout 10.3/20.6/41.2 s per SKU → **E60: 10.3 / 15.5 / 20.7 s at 30 / 40 / 50 kW**; 2.0τ would false-fail a healthy bleed at 525·e⁻² = 71 V — caught by the per-SKU deck) | per SKU | FW | latch, inhibit touch-service bit | F.21 |
 | 22 | OT PFC/LLC/XFMR | 95/100/115 °C NTC | 1 s | FW | derate −2%/°C → stop @+10 °C | F.22–24 |
 | 23 | Fan fail | tach < 50% cmd 3 s | 3 s | FW | derate 50%, F-code | F.25 |
 | 24 | Aux UV | V15<12.5 V | <100 µs | HW driver-UVLO chain | gates hold-low (§28) | F.26 |
-| 25 | Internal link loss | 50 ms no valid CRC frame | 50 ms | FW both ends | controlled stop, needs re-ENABLE (§22) | F.27 |
+| 25 | Internal link loss | 50 ms no valid CRC frame → **retired at E40** (one brain, no inter-MCU link; code reserved) | 50 ms | FW both ends | controlled stop, needs re-ENABLE (§22) | F.27 |
 | 26 | External CAN timeout | 1 s no valid ctrl frame (config) | 1 s | FW | ramp to 0, standby (§23) | F.28 |
 | 27 | Sensor implausible | cross-checks (ΣI≈0, Vout vs bank sum ±5%, T range) | 100 ms | FW | stop, latch | F.29 |
 | 28 | EEPROM CRC | at boot | boot | FW | safe defaults, F-code, no output | F.30 |
@@ -66,6 +93,8 @@ tighten, never loosen beyond table max (resistor-set ceilings on comparator refe
 carry a 1 nF filter (pole ≈ 23 kHz) + AMC1311 group delay → total trip path ≈ 10–20 µs. The old
 "<10 µs" figure predated the isolated front-ends. Consequence at trip dV/dt (≈18 V/ms load-dump):
 overshoot ≤ 0.5 V — no margin impact; the number in the table is now the number the hardware has.
+
+## 3. Reverse-polarity coverage and response-time honesty (R4–R7)
 
 **R4 note — Vienna DESAT direction coverage (E45):** each common-source pair's DESAT chain
 senses the PHASE-side drain only; a fault of the opposite current polarity develops V_DS on the
@@ -103,6 +132,12 @@ in BOTH polarities and must demonstrate the MEASURED clearing time against the d
 short-circuit-withstand rating before any protection claim ships on the datasheet.
 
 
+## 3b. The discharge timeline (R6 · R8)
+
+> [!CAUTION]
+> Stored energy in the DC link and banks is lethal. The label and the procedure below are safety requirements, not
+> guidance.
+
 **R6 discharge-timeline honesty (E47):** the active discharge chain (QDISF + 4×160 Ω) is
 powered by V15, which the bus-fed aux flyback stops producing at the **321 V brown-out**
 (1 V × (1 + 4.8 M/15 k)); V15 then collapses in milliseconds (~0.2 A of bias load on 220 µF)
@@ -127,7 +162,7 @@ ceiling at that bus; at 150 V it would need 58%).
 
 ---
 
-## E60 current-coordination classes (2026-09-13) — every trip above every real peak, every trip observable
+## 4. E60 current-coordination classes (2026-09-13) — every trip above every real peak, every trip observable
 
 > [!IMPORTANT]
 > **What changed and why.** The E60 simulation campaign measured the currents the hardware trips
@@ -179,3 +214,11 @@ false-trip. EVT T-xx both-polarity SC test measures the real response against th
 - **Bank-bleed F.21b windows restated for the product SKUs:** 2.5·τ = **10.3 / 15.5 / 20.7 s**
   (30/40/50 kW; the 60/120 kW rows above are retired). Per-SKU deck:
   `spice/protection/prechg-disch.mjs`, all 9 cases PASS.
+
+---
+
+<div align="center">
+<sub><a href="../boards/30kw/README.md">← 30 kW Module Walkthrough</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="current-coordination.md">Current & Protection Coordination →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

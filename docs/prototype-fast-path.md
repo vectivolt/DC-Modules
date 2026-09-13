@@ -1,12 +1,17 @@
-# Prototype Fast Path — off-the-shelf parts and wind-it-ourselves routes for the magnetics (E60)
+<img src="assets/banner-production.svg" alt="" width="100%"/>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/status-SOURCING__GUIDE-b4642a?style=flat-square" alt="guide"/>
-  <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/>
-  <img src="https://img.shields.io/badge/stock_read-13_Sep_2026-555?style=flat-square" alt="date"/>
-  <img src="https://img.shields.io/badge/scope-prototype_only-e3763c?style=flat-square" alt="scope"/>
+# 🚀 Prototype Fast Path
+
+<sub>Off-the-shelf parts and wind-in-house routes that cut the custom-magnetics lead time</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-SOURCING__GUIDE-d19a00?style=flat-square" alt="status: sourcing guide"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/stock-read_13_Sep_2026-8b949e?style=flat-square" alt="stock: read 13 Sep 2026"/>
 </p>
 
+> [!NOTE]
 > **Purpose** — cut the 8–12 week custom-magnetics wait for the first prototypes. Where a catalog part is
 > genuinely equivalent, use it. Where a finished part cannot exist, buy the stocked cores, formers and wire and
 > wind the **E60 construction** in-house per [`magnetics-build-instructions.md`](magnetics-build-instructions.md).
@@ -20,6 +25,51 @@
 > 10–17 kW per LLC section with dual 1:1:1 secondaries. The fast path for those is *stocked cores + in-house
 > winding*, which takes about 1–4 weeks depending on litz and flat-wire lead time. D6, D7, the CTs and the aux supply
 > have real catalog routes.
+
+## At a glance
+
+<table>
+<tr><td valign="top" width="50%">
+
+| Route | Parts |
+|---|---|
+| 🧵 **Wind in-house** on stocked catalogue cores | D1 · D2-30 / 40 / 50 · D3-30 / 40 / 50 |
+| 🔁 **Replace the stage** for bring-up | D4 → MEAN WELL RSDH-150-24 + 24 → 15 V |
+| 📦 **Catalogue** | D6 (Würth, in series) · D7 (Schaffner) · line CT (Talema) |
+| 🧩 **Catalogue + self-wound** | resonant CT — AS-404 / AS-407, 50 kW self-wound on N87 |
+
+</td><td valign="top" width="50%">
+
+```mermaid
+xychart-beta horizontal
+  title "Longest quoted lead (weeks, rounded up)"
+  x-axis ["D1 PFC", "D2 trim", "D3 LLC", "D6 DM", "Line CT", "D4 aux", "D7 CM", "Res CT"]
+  y-axis "weeks" 0 --> 5
+  bar [4, 3, 3, 2, 2, 1, 1, 1]
+```
+
+</td></tr>
+</table>
+
+```mermaid
+flowchart LR
+  P["custom magnetic<br/>or sensor"] --> Q{"a catalogue part<br/>meets the rating?"}
+  Q -- "yes" --> C["buy it<br/>D6 · D7 · line CT"]
+  Q -- "only at reduced power" --> B["bring-up only<br/>D2-30 Würth pair"]
+  Q -- "no" --> W{"stocked core,<br/>former and wire?"}
+  W -- "yes" --> H["wind in-house<br/>E60 construction"]
+  W -- "stage can be swapped" --> R["replace the stage<br/>D4 → RSDH-150-24"]
+  H --> T["first-article checks<br/>then EVT"]
+  C --> T
+  R --> T
+  B --> T
+  style H stroke:#b8732e,stroke-width:2px
+  style C stroke:#2ea44f,stroke-width:2px
+```
+
+> [!TIP]
+> **The critical path is wire, not cores.** Flat wire for D1 and litz, foil and TIW for D2/D3 are not stocked at
+> element14 or Digi-Key India — quote Elektrisola India and Triplex India on day one; that date sets the build.
 
 ## 1. The route per part
 
@@ -48,9 +98,17 @@
 
 ## 3. What the prototype must still prove on these parts
 
-- **D6/D7 catalog parts:** crest-biased L at 82/109/136 A and ΔT at the line current in the real airflow;
-  LISN pre-scan against the D6 floors.
-- **Self-wound D2/D3:** the E60 Rac rows at 140 kHz, the leakage-spacer curve, and ΔT at the class current.
-- **CTs:** saturation margin at the E60 burdens (1.25× (F.xx + race)) and the F.xx DAC landing.
-- **Aux module substitute:** start-up at 342 V and hold-up through the brown-out window. It does not exercise the
-  NCP1252D design, so T-09 still runs on the real D4 before BOM freeze.
+| Parts | Must prove | Why it matters |
+|---|---|---|
+| **D6 / D7 catalogue parts** | crest-biased L at 82 / 109 / 136 A · ΔT at the line current in the real airflow · LISN pre-scan against the D6 floors | catalogue ratings are DC or convection figures, not our ripple and airflow |
+| **Self-wound D2 / D3** | the E60 Rac rows at 140 kHz · the leakage-spacer curve · ΔT at the class current | the in-house wind must match the drawing it stands in for |
+| **CTs** | saturation margin at the E60 burdens (1.25 × (F.xx + race)) · the F.xx DAC landing | a saturating CT hides the fault it exists to see |
+| **Aux module substitute** | start-up at 342 V · hold-up through the brown-out window | it does not exercise the NCP1252D design — **T-09 still runs on the real D4 before BOM freeze** |
+
+---
+
+<div align="center">
+<sub><a href="symbol-pin-map.md">← Symbol → Package Pin Map</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="dfm-production.md">DFM & Production Flow →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

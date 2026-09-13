@@ -1,4 +1,18 @@
-# E40 (PROPOSED) — Single Control Card per Module ("one brain, one source of truth")
+<img src="../assets/banner-history.svg" alt="" width="100%"/>
+
+# 🗄️ Single-Card Migration Plan
+
+<sub>The E40 plan that moved each module to one control card — executed, kept as the decision record</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--08-6e7781?style=flat-square" alt="record: 2026-09-08"/>
+</p>
+
+> [!NOTE]
+> **Historical record — the E40 plan that moved each module to one control card, kept verbatim.**
+> **Where it lives now:** [control-card scope](../control-card-scope.md) · register rows E40–E44.
 
 **Status: EXECUTED (branch `e40-single-card`, register E40).** Outcome beat the plan: the merged
 role fits the EXISTING VET6 and the EXISTING 88-way slot (no ZET6, no new connector — both stay
@@ -119,3 +133,11 @@ baseline; (c) it is accepted that the 60 kW reference boards retire. No-go trigg
 execution: merged pin allocation fails the generator's uniqueness asserts, or the accuracy deck
 shows the harness-crossed metering cannot hold ±0.5 % spec with margin — either reverts to the
 two-card rev (which remains tagged and shippable).
+
+---
+
+<div align="center">
+<sub><a href="review-response-r3.md">← Review Response R3</a> &nbsp;·&nbsp; <a href="../README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="drc-erc-report.md">DRC / ERC Report →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

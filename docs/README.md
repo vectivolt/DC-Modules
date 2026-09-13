@@ -1,86 +1,174 @@
-# Documentation Hub
+<img src="assets/banner-platform.svg" alt="" width="100%"/>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/register-E1–E60-f2b705?style=flat-square" alt="register"/>
-  <img src="https://img.shields.io/badge/battery-run--all_·_226%2F226_·_54%2F54-2ea44f?style=flat-square" alt="battery"/>
-  <img src="https://img.shields.io/badge/coordination-every_trip_≥1.2×_sim_peak-2ea44f?style=flat-square" alt="coordination"/>
-  <img src="https://img.shields.io/badge/docs-live_·_generated_·_history-5f8fc0?style=flat-square" alt="docs"/>
-  <img src="https://img.shields.io/badge/phase-pre--hardware-e3763c?style=flat-square" alt="phase"/>
+# 🧭 Documentation Hub
+
+<sub>Every governing document, what each one decides, and the order to read them in</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-HUB-0969da?style=flat-square" alt="status: navigation hub"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
 </p>
 
-> **Purpose** — every governing document for the four-SKU module platform, one screen. Every
-> claim traces to a runnable artifact: `sh calculations/run-all.sh` reproduces the battery.
->
-> [!IMPORTANT]
-> Three docs are **generated** (`bom-cost`, `symbol-pin-map`, `lcsc-status`) — regenerate, never
-> hand-edit. Two are **grep-pinned by gates** (`protection-thresholds`, `firmware-guide`) — edit
-> additively. Dated records are immutable; corrections land as NEW register rows.
+> [!NOTE]
+> **Purpose** — one screen that shows every governing document, what each one decides, which gate keeps it
+> honest, and the order to read them in. Every claim in these pages traces to a runnable artifact:
+> `sh calculations/run-all.sh` reproduces the lot, and `docs-lint` fails the battery if a link, anchor, masthead or
+> diagram breaks.
 
-## Reading path
+## Reading paths
+
+Pick the path that matches why you are here. Each document also ends with **previous / next** links that walk the
+full reading order below.
 
 ```mermaid
 flowchart LR
-  A["../README.md<br/>platform overview"] --> B["architecture.md<br/>the system in one read"]
-  B --> C["assumptions.md<br/>register E1–E60 — the WHY"]
-  C --> D["../boards/README.md<br/>boards · card · cabinet"]
-  D --> E["magnetics.md + RFQ pack<br/>the custom parts"]
-  E --> Q["current-coordination.md<br/>currents → trips → parts (E60)"]
-  Q --> F["final-validation-e51.md<br/>verdicts + open list"]
-  style C stroke:#f2b705,stroke-width:2.5px
-  style F stroke:#2ea44f,stroke-width:2.5px
+  subgraph NEW["New to the platform"]
+    direction TB
+    N1["Repository overview"] --> N2["Platform architecture"] --> N3["Product structure"] --> N4["Decision register"]
+  end
+  subgraph ENG["Power-stage engineer"]
+    direction TB
+    P1["Current coordination"] --> P2["Protection thresholds"] --> P3["Thermal report"] --> P4["Magnetics drawings"]
+  end
+  subgraph BUY["Buyer / manufacturer"]
+    direction TB
+    B1["Component selection"] --> B2["Magnetics RFQ pack"] --> B3["Prototype fast path"] --> B4["DFM & production"]
+  end
+  subgraph REV["Reviewer / auditor"]
+    direction TB
+    R1["Verification matrix"] --> R2["Simulation toolchain"] --> R3["Validation verdict"] --> R4["EVT test plan"]
+  end
+  style NEW stroke:#d19a00,stroke-width:2px
+  style ENG stroke:#1a9fb3,stroke-width:2px
+  style BUY stroke:#b8732e,stroke-width:2px
+  style REV stroke:#3f7fc4,stroke-width:2px
 ```
 
-## Live specifications
+## How to read these pages
 
-| Document | One-liner | Gate coupling |
-|---|---|---|
-| [`architecture.md`](architecture.md) | family, power path, control plane, protection map — with the platform flowchart | — |
-| [`assumptions.md`](assumptions.md) | decision register **E1–E60** + external assumptions + fidelity policy | rows are the provenance every gate cites |
-| [`interconnect.md`](interconnect.md) | sandwich, stud pillars, 40-way harness, grounding, HMI — with the sandwich diagram | `module-interconnect-audit` walks this contract |
-| [`protection-thresholds.md`](protection-thresholds.md) | the F.xx ladder + fault-path diagram; HW/FW split, per-SKU timings | **grep-pinned** (R5-K/R6-B/R6-C) — additive edits only |
-| [`firmware-guide.md`](firmware-guide.md) | supervisory C99 core: API, HAL contract, boot identity, F.21 semantics | **grep-pinned** (R6-B/R7-E) — additive edits only |
-| [`magnetics.md`](magnetics.md) | drawings **D1–D7** + variant tables (E51/E52 revs + **E60 AC-copper rev** baked in) | `magnetics-rfq-audit` · computed stress families |
-| [`current-coordination.md`](current-coordination.md) | **E60** — simulated worst currents in every magnetic and switch → F.01/F.11 classes, burdens, DESAT vs SCWT, D2 fault flux, part classes; per-SKU charts | `system/current-coordination.mjs` fails a stale or non-physical deck |
-| [`conductor-selection.md`](conductor-selection.md) | **E60** — which copper and why: Dowell foil gauges, Sullivan litz strands, per-winding Rac/Rdc and ΔT | `magnetics/conductor-audit.mjs` + clean-room §B |
-| [`simulation-toolchain.md`](simulation-toolchain.md) | **E60** — which simulator/library proves what, exact commands, how to read each result, where fidelity ends | guards: physicality · power-solve · tank fingerprint |
-| [`prototype-fast-path.md`](prototype-fast-path.md) | **E60** — off-the-shelf and wind-in-house routes (stock read 13 Sep 2026) to cut the custom-magnetics lead time | sourcing guide — production still goes through the RFQ pack |
-| [`magnetics-fmea-e58.md`](magnetics-fmea-e58.md) | **E58 FMEA** — temperature verdict (measured 3C95 surfaces) + 20 failure modes with closures | `magnetics/temp-critique.mjs` recomputes every row |
-| [`magnetics-build-instructions.md`](magnetics-build-instructions.md) | **E59 work instructions** — step-by-step build per magnetic: lay-ups, cut lengths, tapes, terminations, impregnation, hold points | pairs with the pack; mag-sync pins the identities |
-| [`magnetics-manufacturing-pack.md`](magnetics-manufacturing-pack.md) | **RFQ pack** — one quote-ready sheet per magnetic + sourcing directory | rfq-audit: 0 missing fields |
-| [`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) | verified market position, SiC verdict, density gap, cost levers · **§7 E60 harsh-environment parity table** (A11 rev C) | [V] claims = 3-vote verified |
-| [`final-validation-e51.md`](final-validation-e51.md) | end-to-end category verdicts + the honest open list | summarizes the standing battery |
-| [`verification-matrix.md`](verification-matrix.md) | requirement→evidence matrix + risk register — with the battery pipeline diagram | mirror of run-all |
-| [`insulation-coordination.md`](insulation-coordination.md) | barrier map, creepage/clearance values, hipot plan | — |
-| [`evt-plan.md`](evt-plan.md) | bench campaign **T-00…T-32** with the phase-flow diagram (E60: SC timing at the new blanks, first-article Rac, −30 °C cold soak) | sim-vs-bench >20 % reopens the calc |
-| [`control-card-scope.md`](control-card-scope.md) | why one card caps at 50 kW — ways/HRTIMER/pin arithmetic | `cardMap()` throws past it |
-| [`component-selection.md`](component-selection.md) | part table, sourcing policy, second sources, price basis | — |
-| [`can-protocol.md`](can-protocol.md) | CAN 2.0B application contract (IDs, frames, CSU rules) | `can_proto.c` is normative (fuzzed) |
-| [`bom-guide.md`](bom-guide.md) | how the BOM generates + the maturity taxonomy (E57) | `bom-maturity.mjs` fails UNMAPPED/substance-free lines |
-| [`dfm-production.md`](dfm-production.md) | assembly sequence, kitting (D2 bins), travelers, EOL, coating (E52) | — |
-| [`thermal-report.md`](thermal-report.md) | loss budgets, cooling, corners, derating | regenerate via `loss-budget.mjs` |
-| [`busbar-drawings.md`](busbar-drawings.md) | bulk-copper paths, joint + torque schedule | — |
-| [`aux-transformer-D4.md`](aux-transformer-D4.md) | D4 **rev D** turns sheet (ETD39, E52) | stress computes the Bpk line |
-| [`pcb-floorplan.md`](pcb-floorplan.md) | layout-phase basis (parked, E36) — zones, barriers, airflow | reopens with layout |
-| [`footprints-to-draw.md`](footprints-to-draw.md) | land-pattern queue for the layout reopen († set) | — |
+<table>
+<tr><td valign="top" width="50%">
 
-## Generated data (regenerate, never hand-edit)
+**Status badges** — every page carries exactly one.
 
-| Artifact | Owner |
+| Badge | Meaning |
 |---|---|
-| [`bom-cost.md`](bom-cost.md) — COGS + ₹/kW ladder | `calculations/cost/bom-gen.mjs` |
-| [`symbol-pin-map.md`](symbol-pin-map.md) — pin id → package pin | `calculations/pin-map-export.mjs` |
-| [`lcsc-status.md`](lcsc-status.md) — LCSC line adjudication | `calculations/cost/lcsc-from-build.mjs` |
-| [`../calculations/out/`](../calculations/out/) — every CSV (grid, MC, op-maps, BOMs, engines) | run-all |
-| [`../simulation-results/`](../simulation-results/) + [`../spice/generated/`](../spice/generated/) — plots + preserved netlists | sim decks |
+| ![live spec](https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square) | governs the design today; changes follow the register |
+| ![generated](https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square) | written by a tool — regenerate, never hand-edit |
+| ![rfq pack](https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square) ![work instruction](https://img.shields.io/badge/status-WORK__INSTRUCTION-b4642a?style=flat-square) | for suppliers and winders |
+| ![evidence](https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square) | the executed-results ledger |
+| ![sourcing guide](https://img.shields.io/badge/status-SOURCING__GUIDE-d19a00?style=flat-square) | a dated market read, not a spec |
+| ![parked](https://img.shields.io/badge/status-PARKED-8b949e?style=flat-square) | held for a later phase (layout) |
+| ![historical](https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square) | a dated record kept verbatim |
 
-## Evidence & dated records
+</td><td valign="top" width="50%">
 
-| Record | Status |
+**Callouts** — the colour tells you how to act on it.
+
+| Callout | Used for |
 |---|---|
-| [`simulation-report.md`](simulation-report.md) | **EVIDENCE** — the simulation-truth ledger; never claim beyond it |
-| [`design-basis-report.md`](design-basis-report.md) | HISTORICAL (gate-pinned path) — Phase-1 basis |
-| [`design-review-production.md`](design-review-production.md) · [`-r2.md`](design-review-production-r2.md) | HISTORICAL (gate-pinned) — R1/R2 audits, same-day closures |
-| [`history/`](history/README.md) | six more dated records (R3 response, E40 plan, ERC snapshot, the retired EasyEDA-era face notes, R3 pin map, drawing-set era) — moved at E53; the EasyEDA layer itself was removed at E56 |
+| **Note** | purpose, method, context |
+| **Tip** | shortcuts, external anchors, how to use a table |
+| **Important** | decisions, requirements, questions for the product owner |
+| **Warning** | model limits, known failure modes, fidelity boundaries |
+| **Caution** | safety-critical: high voltage, reinforced insulation, withdrawn evidence |
 
-The external rounds **R4–R8** live in register rows E45–E49 with permanent gates
-(`review-checks.mjs` R4-*…R8-*, `verify-independent.mjs` §I/J).
+**Units** — A pk and A rms are always distinguished; ₹ is at the 10k-unit basis unless noted; temperatures are
+inlet or ambient unless labelled Tj or core.
+
+</td></tr>
+</table>
+
+## 🏗️ Platform & product
+
+| | Document | What it decides | Kept honest by |
+|---|---|---|---|
+| 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | — |
+| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E61 with provenance and invalidator | rows cited by every gate |
+| 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
+| 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
+| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, F.21 semantics | `host_sim` 54/54 · grep-pinned |
+| 📡 | [External CAN protocol](can-protocol.md) | addressing, control and telemetry frames, controller rules | `can_proto.c` (fuzzed) |
+| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the 150 kW cabinet, the release sheets | `kicad5-verify` 7,784 pins |
+| 🏢 | [Product structure](../boards/README-product-structure.md) | modules vs products, the cabinet contract | `bom-gen` ladder |
+| 📋 | [30 kW module walkthrough](../boards/30kw/README.md) | the canonical board pair, cell by cell | — |
+
+## ⚡ Power stage & protection
+
+| | Document | What it decides | Kept honest by |
+|---|---|---|---|
+| 🛡️ | [Protection thresholds](protection-thresholds.md) | the F.xx ladder, hardware and supervisory rows, per-SKU windows | `review-checks` · grep-pinned |
+| ⚡ | [Current & protection coordination](current-coordination.md) | worst current in every magnetic and switch against its trip, sensor and part | `current-coordination` |
+| 🌡️ | [Thermal report](thermal-report.md) | loss budgets, cooling margins, junction and core temperatures | `loss-budget` · `envelope-grid` |
+| 🧱 | [Insulation coordination](insulation-coordination.md) | barrier map, creepage and clearance, standards, hipot | — |
+| 🔩 | [Busbar drawings](busbar-drawings.md) | bulk-copper sections, joints, torque | generated by `busbar-calc` |
+
+## 🧲 Magnetics
+
+| | Document | What it decides | Kept honest by |
+|---|---|---|---|
+| 🧲 | [Magnetics drawings D1–D7](magnetics.md) | identity, construction and acceptance of every custom magnetic | `mag-sync` · `magnetics-rfq-audit` |
+| 🧵 | [Conductor selection](conductor-selection.md) | foil gauges, litz strands, Rac at 140 kHz | `conductor-audit` |
+| 📦 | [Magnetics RFQ pack](magnetics-manufacturing-pack.md) | one quote-ready sheet per magnetic + sourcing | `magnetics-rfq-audit` · 0 missing |
+| 🛠️ | [Magnetics build instructions](magnetics-build-instructions.md) | how each part is wound, gapped, impregnated and held | `mag-sync` identities |
+| 🔥 | [Magnetics FMEA & temperature critique](magnetics-fmea-e58.md) | runaway, cold, saturation and every failure mode | `temp-critique` |
+| 🌀 | [D4 aux flyback transformer](aux-transformer-D4.md) | the rev D turns sheet | `stress-audit` D4 Bpk |
+
+## 🧪 Verification & simulation
+
+| | Document | What it decides | Kept honest by |
+|---|---|---|---|
+| 🧪 | [Simulation toolchain](simulation-toolchain.md) | which tool proves what, how to run it, where fidelity ends | physicality · power-solve · fingerprint guards |
+| 📈 | [Simulation report](simulation-report.md) | the executed-runs ledger — never claim beyond it | SPICE result CSVs |
+| ✅ | [Verification matrix](verification-matrix.md) | requirement → evidence, open risks | `run-all` |
+| 🔬 | [EVT test plan](evt-plan.md) | the bench campaign T-00…T-32 | sim-vs-bench > 20 % reopens a calc |
+| 🏁 | [Validation verdict](final-validation-e51.md) | category verdicts and the honest open list | the standing battery |
+| 🧮 | [Calculations & gates](../calculations/README.md) | every engine, audit and generator | `run-all` exit 0 |
+| 🖥️ | [SPICE suites](../spice/README.md) | the ngspice runners and their outputs | result CSVs |
+
+## 🏭 Production & sourcing
+
+| | Document | What it decides | Kept honest by |
+|---|---|---|---|
+| 🏷️ | [Component selection](component-selection.md) | part table, sourcing policy, second sources, price basis | — |
+| 📚 | [BOM guide](bom-guide.md) | how the BOM generates and what each maturity status means | `bom-maturity` |
+| 🧾 | [BOM & cost roll-up](bom-cost.md) | cost per SKU and the ₹/kW ladder | generated by `bom-gen` |
+| 🔎 | [LCSC assignment status](lcsc-status.md) | which parts carry an LCSC number, which deliberately do not, what is still open | `bom-maturity` |
+| 📍 | [Symbol → package pin map](symbol-pin-map.md) | logical pins to physical pins | generated by `pin-map-export` |
+| 🚀 | [Prototype fast path](prototype-fast-path.md) | catalog and wind-in-house routes for the first build | stock read 13 Sep 2026 |
+| 🏭 | [DFM & production flow](dfm-production.md) | assembly, kitting, torque, EOL test, coating | — |
+| 📊 | [Competitive benchmark](competitive-benchmark-e51.md) | market position, SiC verdict, harsh-environment parity | [V] claims 3-vote verified |
+| ✏️ | [Footprints to draw](footprints-to-draw.md) | land-pattern queue and the layout-entry blockers | `footprint-audit` · parked (E36) |
+| 🗺️ | [PCB floorplan basis](pcb-floorplan.md) | zones, barriers, airflow for layout | parked (E36) |
+
+## 🗄️ Historical records
+
+Kept verbatim for provenance; each opens with a pointer to where its conclusions live now.
+
+| Record | Era |
+|---|---|
+| [History index](history/README.md) | six records moved off the live path at E53 |
+| [Design basis report](design-basis-report.md) | Phase 1, 30/60/120 kW monoblocks |
+| [Production design review R1](design-review-production.md) · [R2](design-review-production-r2.md) | rev C / rev D audits |
+| [Review response R3](history/review-response-r3.md) · [Single-card migration plan](history/single-card-migration-plan.md) | R3 · E40 |
+| [DRC / ERC report](history/drc-erc-report.md) · [EasyEDA transcription](history/easyeda-transcription.md) · [GD32 pin allocation](history/mcu-pin-allocation-gd32.md) · [Drawing set](history/schematic-drawing-set.md) | pre-E56 pipelines |
+
+## Standing rules
+
+> [!IMPORTANT]
+> 1. **Generated pages are regenerated, never hand-edited** — `bom-cost`, `symbol-pin-map`, `busbar-drawings`.
+> 2. **Gate-read pages take additive edits only** — `protection-thresholds` and `firmware-guide` carry passages
+>    that `review-checks`, `stress-audit` and `current-coordination` assert word for word; `magnetics`, the RFQ
+>    pack and the D4 sheet are parsed by `mag-sync` and `magnetics-rfq-audit`.
+> 3. **Register rows are immutable** — a correction is a new row, never an edit.
+> 4. **Chrome comes from one registry** — every page's banner, title, badges and footer are produced from
+>    `calculations/doc-chrome.mjs`; `docs-lint` fails if a page drifts, a link breaks or a diagram cannot render.
+
+---
+
+<div align="center">
+<sub><a href="../README.md">← DC-Modules</a> &nbsp;·&nbsp; <a href="../README.md">🏠 Repository overview</a> &nbsp;·&nbsp; <a href="architecture.md">Platform Architecture →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

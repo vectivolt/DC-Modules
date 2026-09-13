@@ -1,7 +1,17 @@
-# Magnetics FMEA — every failure mode, of and due to the magnetics (E58)
+<img src="assets/banner-magnetics.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="live"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/gate-temp--critique_·_CLEAN-2ea44f?style=flat-square" alt="gate"/> <img src="https://img.shields.io/badge/data-3C95_measured_surfaces-5f8fc0?style=flat-square" alt="data"/></p>
+# 🔥 Magnetics FMEA & Temperature Critique
 
+<sub>Runaway, cold start, saturation and every failure mode, computed on measured ferrite data</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/gate-temp--critique_·_CLEAN-2ea44f?style=flat-square" alt="gate: temp-critique · CLEAN"/>
+</p>
+
+> [!NOTE]
 > **Purpose** — the adversarial answer to "will the magnetics work across the whole temperature
 > range, and what are ALL the ways they can fail — alone and with the switches around them."
 > Every quantitative row is COMPUTED each battery run by
@@ -15,6 +25,25 @@
 >
 > **Gate coupling** — `temp-critique.mjs` (run-all) · `verify-independent.mjs` §J flux-walk row ·
 > stress-audit D1–D6 computed families · the pack's E58 hardening rules.
+
+## At a glance
+
+| Question | Verdict today (E60 copper, A11 rev C) |
+|---|---|
+| Thermal runaway at the hot corners? | **No** — D3 equilibria 102–107 °C, loop gain ≤ 0.48, runaway threshold ≥ 200 °C (≥ 93 K away) |
+| Cold start at −30 °C? | **Stable** — Fe 2.05 × the 100 °C basis, but every core self-warms toward its loss minimum |
+| Saturation at a 130 °C hotspot? | **No** — D3 at 30 % of hot Bsat; D2 fault flux 211 / 181 / 153 mT ≤ 217 mT; D4 clamp at 71 % |
+| AC copper? | **Inside every Rac row** after the E60 construction (Rac/Rdc ≤ 1.35) — see [conductor selection](conductor-selection.md) |
+| Failure modes | **26 identified, 26 closed** — by computing gate, construction, specification, layout rule or EVT hook |
+
+```mermaid
+pie showData title How the 26 failure modes are closed
+  "computing gate" : 9
+  "specification / acceptance test" : 8
+  "construction (incl. firmware)" : 5
+  "closed by physics" : 3
+  "layout rule" : 1
+```
 
 ## The temperature verdict (computed, not asserted)
 
@@ -133,3 +162,11 @@ is no longer an assumption anywhere — hot equilibria, runaway distance, cold b
 saturation margins and the fault-race numbers are recomputed on every run, and the two failure
 classes that analysis alone cannot close (workmanship at temperature, powered validation) are
 now explicit acceptance tests in the manufacturing pack.
+
+---
+
+<div align="center">
+<sub><a href="magnetics-build-instructions.md">← Magnetics Build Instructions</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="aux-transformer-D4.md">D4 Aux Flyback Transformer →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

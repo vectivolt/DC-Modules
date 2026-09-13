@@ -1,4 +1,20 @@
-# Drawing set — the release schematics
+<img src="../assets/banner-history.svg" alt="" width="100%"/>
+
+# 🗄️ Schematic Drawing Set (card era)
+
+<sub>The pre-E56 drawing-set notes, superseded by the KiCad-native pipeline</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--07-6e7781?style=flat-square" alt="record: 2026-09-07"/>
+</p>
+
+> [!NOTE]
+> **Historical record — the card-era drawing-set notes (2026-09-07), kept verbatim.** Three SKU zips imported into
+> EasyEDA Pro; superseded by the E56 KiCad-native pipeline — six release targets, no EasyEDA layer.
+> **Where it lives now:** [boards](../../boards/README.md) · the sheet pipeline in
+> [calculations & gates](../../calculations/README.md).
 
 **The deliverable is `kicad5/DC-Modules-<sku>-SHIP.zip`.** Three zips, one per SKU, each holding
 the two board sheets plus the symbol library, description file and project file. They import into
@@ -201,3 +217,11 @@ sheets their void gate).
 - `docs/lcsc-status.md` — what the LCSC field on every symbol means
 - `docs/easyeda-transcription.md` — the older pin-by-pin EasyEDA path and why it was abandoned
 - `calculations/schematic-compose.mjs` — the earlier SVG composer, superseded by this set
+
+---
+
+<div align="center">
+<sub><a href="mcu-pin-allocation-gd32.md">← GD32 Pin Allocation (R3)</a> &nbsp;·&nbsp; <a href="../README.md">🧭 Documentation hub</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

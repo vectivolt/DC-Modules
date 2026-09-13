@@ -147,7 +147,7 @@ R2512-0R75-2W-1%,,CLASS,any,"1.2 Ω 1% 1 W 2512 resonant-CT burden (E60: F.11 85
 RC0805FR-071KL,C95781,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1k","any",acdc+dcdc,7,0.5,0.4,0.4,0.3,3,2,RA0F RB0F RC0F RCSF R1CF R2CF R3CF
 PT1206FR-7W0R31L,C6148847,ORDERABLE,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
 R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc+card,6,0.5,0.4,0.4,0.3,2,2,RAUXRT REN2A RM24A RPVBA RPVBB REN2CARD
-CC0603JRNPO9BN220,,,any,"22 pF 0603 C0G (DESAT blank, LLC ZVS turn-on — E60: 1.44 µs vs the 2 µs discrete-SiC SCWT class; the 100 pF computed 3.39 µs) 22pF","any C0G",dcdc,6,0.5,0.4,0.4,0.3,2,2,C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
+CC0603JRNPO9BN220,,CLASS,any,"22 pF 0603 C0G (DESAT blank, LLC ZVS turn-on — E60: 1.44 µs vs the 2 µs discrete-SiC SCWT class; the 100 pF computed 3.39 µs) 22pF","any C0G",dcdc,6,0.5,0.4,0.4,0.3,2,2,C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
 R2010-1k-0.75W-1%,,CLASS,any thick-film,"1 kΩ 0.75 W 2010, PV-driver LED feed (R8: ≥10 mA guaranteed-point drive held to the 13.5 V rail floor; 0.24 W worst = 31%)","2× 510R 1206 series",dcdc,2,1.6,1.2,1.1,1,2,2,RPVLA RPVLB
 RC0603FR-07220RL,C107696,ORDERABLE,any,"220 Ω segment 220","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 RC0805FR-07100KL,C96346,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100k","any",acdc+card,5,0.5,0.4,0.4,0.3,2,2,RAUXG REN1A RENRCARD RENLCARD REN1CARD
@@ -155,11 +155,11 @@ S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (QAUXFB: R4-3 opto-emulating FB pull-down �
 CC0603KRX7R9BB103,C100042,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10nF","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
 CL21A106KAYNNNE,C15850,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10uF","any",acdc+card,3,0.7,0.5,0.4,0.4,2,1,CBKIA CBKICARD CAVO
 CC0603JRNPO9BN221,C106210,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 220pF","any",dcdc,3,0.7,0.5,0.4,0.4,2,1,C1CF C2CF C3CF
-CC0603JRNPO9BN470,,,any,"47 pF 0603 C0G (DESAT blank, Vienna hard turn-on — E60: NSI66x1A worst response 2.21 µs vs the 4.2 µs SCWT class, ≥0.8 µs blank) 47pF","any C0G",acdc,3,0.5,0.4,0.4,0.3,1,1,CA0GBL CB0GBL CC0GBL
+CC0603JRNPO9BN470,,CLASS,any,"47 pF 0603 C0G (DESAT blank, Vienna hard turn-on — E60: NSI66x1A worst response 2.21 µs vs the 4.2 µs SCWT class, ≥0.8 µs blank) 47pF","any C0G",acdc,3,0.5,0.4,0.4,0.3,1,1,CA0GBL CB0GBL CC0GBL
 RC0805FR-072K2L,C114561,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 2.2k","any",acdc+dcdc,3,0.5,0.4,0.4,0.3,1,1,RZFB RDIG1 RDIG2
-RC1206FR-0713RL,,,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) [E60 line-CT burden (F.01 195 A pk; the E42 21.5 R saw only to 187 A)] 13","any",acdc,1,1.6,1.2,1.1,1,1,1,RA0B
-RC1206FR-0713RL,,,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) 13","any",acdc,1,1.6,1.2,1.1,1,1,1,RB0B
-RC1206FR-0713RL,,,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) 13","any",acdc,1,1.6,1.2,1.1,1,1,1,RC0B
+RC1206FR-0713RL,,CLASS,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) [E60 line-CT burden (F.01 195 A pk; the E42 21.5 R saw only to 187 A)] 13","any",acdc,1,1.6,1.2,1.1,1,1,1,RA0B
+RC1206FR-0713RL,,CLASS,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) 13","any",acdc,1,1.6,1.2,1.1,1,1,1,RB0B
+RC1206FR-0713RL,,CLASS,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) 13","any",acdc,1,1.6,1.2,1.1,1,1,1,RC0B
 GRM21BR61C226ME44L,C86817,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 22uF","any",acdc+card,2,0.7,0.5,0.4,0.4,1,1,CBKOA CBKOCARD
 RC0805FR-071ML,C107700,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1M","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RPET RCGB
 RC0805FR-0715KL,C114559,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 15k","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RBR2 RROLEB

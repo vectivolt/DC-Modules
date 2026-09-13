@@ -1,9 +1,57 @@
-# Component Selection & Sourcing — Phase 2
+<img src="assets/banner-production.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
+# 🏷️ Component Selection
 
-> **Purpose** — RFQ-ready part table, sourcing policy, second-source rules, price basis (A7).
+<sub>The part table, sourcing policy, second-source rules and the price basis</sub>
 
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the parts that make the module: the current selection per function with its order code and the
+> decision that set it, the sourcing policy and second-source rules, and the price basis. Prices are RFQ
+> assumptions until quotes land.
+
+## At a glance — the current part set
+
+| Function | Order code | Maker | Key rating | Set by |
+|---|---|---|---|---|
+| Vienna switch pair | `B3M010C075Z` | BASiC | 750 V · 10 mΩ · TO-247-4 Kelvin (paralleled at 40 / 50 kW) | E3 · E41 |
+| Vienna boost diode | `SICJBS-1200-40` | SiChain | 1200 V · 40 A JBS (blocks the full bus) | E4 |
+| LLC half-bridge | `SG2M023120LJ` | SiChain | 1200 V · 23 mΩ · TO-247-4L (paralleled on the 50 kW air) | E6 · E44 |
+| Secondary rectifier | `SICJBS-1200-20` | SiChain | 1200 V · 20 A JBS bridges (SR stays a premium variant) | E11 |
+| Isolated gate driver | `NSI6611` | NOVOSENSE | 10 A, DESAT, Miller clamp, UVLO, soft-off · blanks 47 pF Vienna / 22 pF LLC | R4-2 · E60 |
+| Gate-bias module | `QA01C-18` | MORNSUN | drawn +18 / −4 V; catalogue part is +18 / −3 V — the −4 V split is open decision **O-11** (§K) · reinforced · **second source required** (OFAC flag) | E23 rev B · E60 |
+| Isolated 5 V bias | `ISO5V-RFC-6K` | MORNSUN class | reinforced, ≥ 5 kVrms test · **second source required** | HR-16 · E60 |
+| Isolated sense | `AMC1350-class` · `AMC1311-class` · `NSI1200-DSWR` | TI / NOVOSENSE | AC ± 5 V · bus / bank 0–2 V · output shunt | E25 · MR-6 |
+| Isolated CAN | `NSI1042-DSWR` | NOVOSENSE | CAN 2.0B / FD-capable, pin map closed against Rev 1.3 | R7-C |
+| MCU | `GD32G553VET7` | GigaDevice | Cortex-M33 216 MHz · HRTIMER · LQFP100 · −40…105 °C | E40 · R5-I |
+| Aux controller | `NCP1252D` | onsemi | current-mode flyback, no start-up delay | R6-G |
+| DC link | `ELH-470u450` | Aishi | 470 µF 450 V snap-in 105 °C, **−40 °C category** | E29 · E60 |
+| Resonant capacitors | `PP-46n-1200` · `PP-33n-1200V` · `PP-27n-1200V` | Faratronic / CDE 942C class | 1200 V PP pulse film, Vrms-rated at 140 kHz | CB-22 · E41 · E42 |
+| EMI capacitors | `X1-2u2-530` · `X1-4u7-530` · `Y1-4n7-440` | Faratronic / Songtian | X1 530 VAC · Y1 440 VAC | CB-1 · E43 · MR-4 |
+| Surge | `S20K550` + `GDT-3k5-20kA` | TDK · Bourns | MOV 550 VAC 20 mm · GDT 3.5 kV to PE | HR-7 · E57 |
+| Input fuse | `FUSE-gG-690V` | Bussmann class | gG 690 VAC — 80 / 125 / 160 A per SKU | E35 · E41 · E42 |
+| Relays | `HF167F-80A-M` · `HFE82V-M-CLASS` · `HFE82V-20-M-CLASS` | Hongfa | precharge bypass · S/P + K_OUT 1000 VDC with mirror · pre-insertion 20 A | E12 · E30 · R8 |
+| Line CT | `ACX-1100` · ACX-1150 | Talema (Salem, India) | 2500:1 · 100 A / 150 A class | E35 · E60 |
+| Resonant CT | `AS-404` · 80 A / 100 A class | Talema | 1:100 · 20–200 kHz · pass-through | E35 · E60 |
+| Magnetics | D1–D7 | custom by drawing | see the [magnetics drawings](magnetics.md) and the [RFQ pack](magnetics-manufacturing-pack.md) | E51 · E60 |
+| Fans | 120 × 38 PWM | Sunon / AVC class | dual ball, L10 ≥ 70 kh, **IP55, −30…+70 °C** | E52 · E60 |
+
+> [!IMPORTANT]
+> **Sourcing flag (E60).** Digi-Key lists Mornsun modules as on the US OFAC sanctions list (not recommended for new
+> designs, non-returnable). Qualify MEAN WELL / RECOM / CUI-class reinforced modules for the QA01C and ISO5V
+> positions before volume.
+
+## Phase 2 candidate tables (record)
+
+> [!NOTE]
+> The tables below are the Phase 2 RFQ candidate set, kept with every dated delta since. Quantity columns are
+> written for the retired 30 / 60 / 120 kW single-board set; the per-module quantities today are the 30 kW column,
+> and the current order codes are in the table above.
 
 Status: CANDIDATE TABLE FOR RFQ. Electrical stress values trace to `calculations/`. **All prices are RFQ *assumptions* (INR, ~6k–24k pcs/yr aggregate across SKUs), marked (A). MOQ/lead-time are typical-industry assumptions (A) until quotes return.** No part is "qualified" until DPT simulation (Phase 4) + sample validation. LCSC is prototype-source only (§42).
 
@@ -168,3 +216,11 @@ Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49
 | D3 secondaries / primaries | foil 0.20/0.25/0.30 mm · 0.1 mm litz | **foil 0.10 / 0.127 / 0.127 mm · 0.071 mm litz** | Dowell/Sullivan: Rac/Rdc 5–7 → ≤1.35 |
 | **Sourcing flag** | — | **Mornsun modules carry a US OFAC-list flag at Digi-Key** (PV-series noted not-recommended/non-returnable) — qualify MEAN WELL / RECOM / CUI-class second sources for QA01C / ISO5V positions before volume | E60 prototype sourcing sweep |
 | Resonant CT alternate | Coilcraft CST2010-100L listed | **struck — not equivalent** (47 A, built-in primary, 1.5 kVrms) | datasheet read |
+
+---
+
+<div align="center">
+<sub><a href="../spice/README.md">← SPICE Simulation Suites</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="bom-guide.md">BOM Guide →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

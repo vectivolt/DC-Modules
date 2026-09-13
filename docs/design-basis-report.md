@@ -1,13 +1,20 @@
-# Design Basis Report — 30/60/120 kW Unidirectional 1000 VDC EV Charging Monoblocks
+<img src="assets/banner-history.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORD-555?style=flat-square" alt="HISTORICAL__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+# 🗄️ Design Basis Report — Phase 1
 
-> **Purpose** — Phase-1 design basis (dated). Superseded values carry arrow-notes; the register is authoritative.
->
-> **Gate coupling** — design-basis.mjs greps this file — gate-pinned path.
+<sub>The original 30/60/120 kW design basis; superseded values carry arrow-notes</sub>
 
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--04-6e7781?style=flat-square" alt="record: 2026-09-04"/>
+</p>
 
-> **HISTORICAL RECORD** — kept verbatim as the Phase-1 basis; the live system is docs/architecture.md (rev E49).
+> [!NOTE]
+> **Historical record — the Phase 1 design basis (2026-09-04), kept verbatim.** Written for the 30 / 60 / 120 kW
+> monoblocks before any simulation ran; superseded values carry arrow-notes.
+> **Where it lives now:** [platform architecture](architecture.md) · [decision register](assumptions.md) ·
+> `calculations/design-basis.mjs`, which every number in sections B, D, E, F and L traces to.
 
 Status: **PHASE 1 DELIVERABLE — ANALYTICAL BASIS ONLY.** No SPICE simulation has been executed yet. Every number below is either a documented assumption or traces to `calculations/design-basis.mjs` (outputs in `calculations/out/*.csv`). Items that require simulation or RFQ confirmation are explicitly marked. Nothing in this document is claimed as verified.
 
@@ -198,3 +205,11 @@ Full register to be maintained in `docs/verification-matrix.md` companion (§49-
 ## Execution order from here (§51)
 
 Phase 2 next: RFQ-ready semiconductor candidate table + GD32G553 resource matrix → Phase 3 PFC analytical design + inductor design (fsw selection by total cost) → Phase 4 DPT decks → … per §51 without skipping. Each phase lands as calculations + SPICE decks + docs in this repo; TSCircuit schematic work begins at Phase 10 only after the 30 kW electrical architecture freezes at Phase 9.
+
+---
+
+<div align="center">
+<sub><a href="history/README.md">← Historical Records</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="design-review-production.md">Production Design Review R1 →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

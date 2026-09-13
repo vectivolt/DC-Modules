@@ -1,18 +1,43 @@
-# PCB Floorplan Plan — sections first, then components (§30 rev B, two-board sandwich)
+<img src="assets/banner-production.svg" alt="" width="100%"/>
 
-Status: **planning**. No PCB exists yet. This document fixes the *zones* — where each schematic
-section lives on each board, which way power flows, where the isolation barriers run, and which
-edges belong to the heatsinks — before any component is placed. Placement follows the zones; the
-zones do not follow the placement.
+# 🗺️ PCB Floorplan Basis
 
-Feasibility numbers are generated: `node calculations/floorplan-budget.mjs`.
+<sub>Zones, barriers and airflow — the layout-phase basis, parked since E36</sub>
 
-Related: [interconnect.md](interconnect.md) (E17 sandwich), [insulation-coordination.md](insulation-coordination.md)
-(creepage table), [thermal-report.md](thermal-report.md) (loss per block),
-[magnetics.md](magnetics.md) (D1–D7 envelopes), [schematic-drawing-set.md](history/schematic-drawing-set.md)
-(the 217 sections this maps).
+<p>
+  <img src="https://img.shields.io/badge/status-PARKED-8b949e?style=flat-square" alt="status: parked phase"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+</p>
 
----
+> [!NOTE]
+> **Purpose** — fix the *zones* before any component is placed: where each schematic section lives on each board,
+> which way power flows, where the isolation barriers run, and which edges belong to the heatsinks. Placement
+> follows the zones; the zones do not follow the placement.
+
+> [!WARNING]
+> **Parked since E36, and written for the retired 30 / 60 / 120 kW single-board set.** The zone logic still holds;
+> many of the numbers do not. Read the page with the corrections below, and reopen it — with the 40 kW and both
+> 50 kW boards added — when layout resumes.
+
+## Read this page with these corrections
+
+| Section | Status at E61 | What to use |
+|---|---|---|
+| §0 19-inch 3U envelope · faces · U-fold power path | ✅ applies | — |
+| §1 rules · §5 standing-device ridges · §7 component rules · §9 stackup | ✅ applies | copper weights: [conductor selection](conductor-selection.md) |
+| §13 horizontal DC-DC barrier · barrier-bounded planes · 440 × 500 outline | ✅ applies — measured on the 30 kW pair | — |
+| §0 airflow table · §2 feasibility · §5 rail percentages | ⚠️ the 60 / 120 kW columns are retired (E55) | products above 50 kW are multi-module — [product structure](../boards/README-product-structure.md) |
+| §2 recommendation "stop building 120 kW as one module" | ✅ executed | E35 card split, then the E55 ladder |
+| §6 magnetics placement | ⚠️ envelopes changed at E51 / E60 | D1-40/50 are 5 × T79 and D3-40/50 are 2 × E70 — the Mechanical rows of the [RFQ pack](magnetics-manufacturing-pack.md) |
+| §8 · §13 "one control card, both roles, 30 and 60 kW" | ⚠️ superseded at E40 | one card per module up to 50 kW — [control-card scope](control-card-scope.md) |
+| §11 open items 1b, 3b and 9 | ⚠️ refer to 120 kW boards or a removed tool | re-baseline at the layout reopen |
+| `floorplan-budget.mjs` · `routing-audit.mjs` | ⚠️ removed from `main` at E54 | preserved on the `archive/pre-focus-E49` branch |
+| Layout-entry queue | ➡️ | [footprints to draw](footprints-to-draw.md) — unnamed packages and MPN / land conflicts |
+
+**Related pages** — [interconnect](interconnect.md) (the E17 sandwich) · [insulation coordination](insulation-coordination.md)
+(creepage table) · [thermal report](thermal-report.md) (loss per block) · [magnetics](magnetics.md) (D1–D7) ·
+[drawing set, card era](history/schematic-drawing-set.md) (the 217 sections this page maps).
 
 ## 0. Envelope and axis convention
 
@@ -890,3 +915,10 @@ inside the class limit. Current state:
 | 30kw-dcdc | 282 | 25.0 % | clean | pass | justified |
 | control card | 43 | — | clean | — | — |
 
+---
+
+<div align="center">
+<sub><a href="footprints-to-draw.md">← Footprints to Draw</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="history/README.md">Historical Records →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

@@ -1,16 +1,32 @@
-# Two-Board Sandwich & Interconnect — rev E49 (E17 directive · E40 single brain)
+<img src="assets/banner-platform.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+# 🔌 Two-Board Sandwich & Interconnect
 
-> **Purpose** — The physical module contract: two-board sandwich, stud pillars, the 40-way harness, grounding, HMI.
+<sub>Stud pillars, the 40-way harness, grounding, discharge control and the HMI contract</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/gate-module--interconnect--audit-2ea44f?style=flat-square" alt="gate: module-interconnect-audit"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the physical module contract: how the two boards stack, how power and control cross between
+> them, how the domains are grounded, how discharge is commanded, and how the HMI behaves.
 >
-> **Gate coupling** — module-interconnect-audit walks every boundary of this contract each battery run.
+> **Gate coupling** — `module-interconnect-audit` walks every boundary of this contract in the built netlists on
+> every battery run (negative-tested: a board swap produces 78 failures).
 
+## At a glance
 
-Each module = **AC-DC board (lower)** + **DC-DC board (upper)**, component faces toward each
-other, heatsink surfaces outward (power semiconductors clamp to the outer extrusions or the E42
-coldplates; magnetics stand in the inter-board volume). One **control card** seats in the DC-DC
-board's 88-way slot and runs the whole module.
+| Boundary | Contract | Verified by |
+|---|---|---|
+| **Power** | 3 × M8 stud pillars — DCP · DCN · PE — 12 N·m, < 50 µΩ per joint, ≥ 14 mm stud-to-stud creepage | EOL milliohm check · interconnect audit |
+| **Control** | 40-way straight-through harness (Micro-Fit 3.0 class, 5 A per contact) | every way, pin for pin, on all four SKUs |
+| **Brain** | one control card in the DC-DC board's 88-way slot | every card way wired and landing on real electronics |
+| **Grounding** | AGND–DGND single-point tie on the card; DGND → PE 1 MΩ ∥ 4.7 nF on the AC-DC board | structural netlist walk |
+| **Identity** | RATING strap encodes the SKU (E24 rev G bands) | strap vs SKU per build |
 
 ```mermaid
 flowchart TB
@@ -23,81 +39,150 @@ flowchart TB
     direction LR
     JICA["40-way harness JICA"] --- VIEN["EMI · precharge · Vienna<br/>split link · aux flyback"]
   end
-  DCDC =="DCP · DCN · PE<br/>M8 stud pillars · 12 N·m · <50 µΩ"==> ACDC
-  CARD -."JICB ↔ JICA harness<br/>3× PWM · 12 senses · AVMID+Kelvin<br/>EN/GATE_EN_A/FLT · V15/V24 · 5 returns · SHLD".-> JICA
+  DCDC =="DCP · DCN · PE<br/>M8 stud pillars · 12 N·m · < 50 µΩ"==> ACDC
+  CARD -."JICB ↔ JICA harness<br/>3× PWM · 12 senses · AVMID + Kelvin<br/>EN / GATE_EN_A / FLT · V15 / V24 · 5 returns · SHLD".-> JICA
   HS1["outer heatsink / coldplate"] --- DCDC
   ACDC --- HS2["outer heatsink / coldplate"]
+  style CARD stroke:#2ea44f,stroke-width:2.5px
 ```
 
-## Board contents
+Each module is an **AC-DC board (lower)** and a **DC-DC board (upper)** with their component faces toward each other
+and their heatsink surfaces outward. Power semiconductors clamp to the outer extrusions or, on the 50 kW liquid SKU,
+the coldplates; the magnetics stand in the volume between the boards.
+
+## 1. What each board carries
 
 | | AC-DC (lower) | DC-DC (upper) |
 |---|---|---|
-| Power | AC studs, per-SKU gG fuses, MOV Δ + GDT, 2-stage CM/DM EMI, precharge (2× 33 Ω + 2-pole bypass, E14 rev B), Vienna phases, split DC link + balance, bus discharge (640 Ω + QDISF) | film commutation caps, LLC legs (paralleled on the air-50), tanks + transformer sections, dual JBS banks, bank caps + bleeders, S/P matrix (+10 Ω pre-insertion, K_OUT — dual at 50 kW), two-stage 74HC02 exclusion, output filter/shunt/studs |
-| Control-side | line CTs, AC/bus HV iso-senses, NTC ×2, fans (2/3/0/4 per SKU), aux flyback (bus-fed DCP→MID), local 3.3 V buck (R4-5), coil driver (KPRE, QDIS), 40-way harness header **JICA** | **88-way card slot (JB)**, resonant CTs, bank/output iso-senses, output shunt amp, NTC ×2, coil driver (6 relays) + exclusion gates, PV bleeder drive (QPVD, R8), isolated CAN (NSI1042-DSWR), local 3.3 V buck, HMI (2 buttons + 2-digit 7-seg), harness header **JICB** |
+| **Power** | AC studs, per-SKU gG fuses, MOV Δ + GDT, two-stage CM/DM EMI, precharge (2 × 33 Ω + 2-pole bypass, E14 rev B), Vienna phases, split DC link + balance, bus discharge (640 Ω + QDISF) | film commutation caps, LLC legs (paralleled on the 50 kW air), tanks + transformer sections, dual JBS banks, bank caps + bleeders, S/P matrix (+10 Ω pre-insertion, K_OUT — dual at 50 kW), two-stage 74HC02 exclusion, output filter / shunt / studs |
+| **Control side** | line CTs, AC and bus isolated senses, NTC × 2, fans (2 / 3 / 0 / 4 per SKU), aux flyback (bus-fed DCP → MID), local 3.3 V buck (R4-5), coil driver (KPRE, QDIS), 40-way harness header **JICA** | **88-way card slot (JB)**, resonant CTs, bank / output isolated senses, output shunt amplifier, NTC × 2, coil driver (6 relays) + exclusion gates, PV bleeder drive (QPVD, R8), isolated CAN (NSI1042-DSWR), local 3.3 V buck, HMI (2 buttons + 2-digit 7-segment), harness header **JICB** |
 
-## Power interconnect (bolted, no connector)
+## 2. The 40-way harness (JICA ↔ JICB, E40)
 
-3× M8 stud pairs, board-to-board pillars: **DCP, DCN, PE** (midpoint stays on the AC-DC board).
-Belleville washers, torque 12 N·m, joint R < 50 µΩ each (EOL milliohm check). Creepage
-stud-to-stud ≥ 14 mm ([`insulation-coordination.md`](insulation-coordination.md)).
+With one brain in the DC-DC slot, the harness carries the whole PFC bundle.
 
-## Signal harness — 40-way straight-through (JICA ↔ JICB, E40)
+<table>
+<tr><td valign="top" width="55%">
 
-One brain in the DC-DC slot, so the harness carries the whole PFC bundle: 3× logic-level 50 kHz
-PWM, 12 senses (CTs, VAC, bus, rails, temps), **AVMID with its Kelvin AGND adjacent**, fans
-(third tach on W38 at 40 kW, fourth on W39 at the air-50), precharge/discharge drives +
-feedback, `EN_PFC`, the `GATE_EN_A` chain, the merged `FLT` wired-OR, `DRV_RDY`, V15/V24,
-**five dedicated returns**, and the shield (PE-bonded at the AC-DC end only — the JICA-pin-40
-vs JICB-NC asymmetry is deliberate, R5-J).
+| Ways | Group | Signals |
+|---|---|---|
+| 1–4 | supply | V15 × 2 · V24 × 2 |
+| 5–9 | returns | DGND × 5 |
+| 10–12 | PWM (logic, 50 kHz) | PWM_A0 · PWM_B0 · PWM_C0 |
+| 13–15 | line currents | I_A0 · I_B0 · I_C0 |
+| 16–22 | voltage senses | SNS_VAC1–3 · SNS_VBUSP · SNS_VMID · SNS_V24 · SNS_V15 |
+| 23–24 | temperatures | T_PFC · T_INLET |
+| 25–26 | analog reference | **AVMID with its Kelvin AGND adjacent** |
+| 27–30 · 38–39 | fans | FAN_PWM1–2 · FAN_TACH1–4 |
+| 31–33 | precharge / discharge | CTL_KPRE · CTL_QDIS · RELAY_FB_KPRE |
+| 34–37 | enables and fault | EN_PFC · GATE_EN_A · FLT (wired-OR) · DRV_RDY |
+| 40 | shield | SHLD — PE-bonded at the AC-DC end only (R5-J) |
 
-The **50 kW liquid module uses the same harness p/n** with its fan ways unloaded: no fan
-headers fitted, tach ways held defined-LOW by board-side 10 k terminators (RFDT1–3 — an
-accidental read reports "stopped", the fail-safe direction), PWM ways MCU-driven-idle.
-Commonality beats a shorter variant harness: one cable drawing, one tested p/n, every way
-audited on all four SKUs.
+</td><td valign="top" width="45%">
 
-Single source: `HARNESS40` in `packages/common-components/umod-map.gen.ts` (generated by
-`calculations/control/umod-pinmap.mts`); every way is verified end-to-end by the
-module-interconnect audit. Connector: Micro-Fit 3.0-class 2×20, 5 A/contact (`MICROFIT3-40`).
-Default-OFF is board-side: pull-downs on both GATE_EN chains, EN lines, relay drives and the
-three PWM lines at their receiving end. Loss of the harness (GATE_EN_A low, V15/V24 missing)
-puts the AC-DC side gates off in hardware; the card's watchdog covers the brain itself
-(WDO ≡ NRST, R5-A).
+```mermaid
+pie showData title 40 harness ways by function
+  "voltage senses" : 7
+  "fans" : 6
+  "returns" : 5
+  "supply" : 4
+  "enables and fault" : 4
+  "PWM" : 3
+  "line currents" : 3
+  "precharge / discharge" : 3
+  "analog reference" : 2
+  "temperatures" : 2
+  "shield" : 1
+```
 
-*(The pre-E40 two-card 16-way harness and its UART link are retired; the migration record is
-[`single-card-migration-plan.md`](history/single-card-migration-plan.md), decision E40.)*
+</td></tr>
+</table>
 
-## Grounding (E25)
+- **One harness part number for every SKU.** The 50 kW liquid module uses the same harness with its fan ways
+  unloaded. Tach ways are held defined-LOW by board-side 10 k terminators (RFDT1–3), so an accidental read reports
+  "stopped", the fail-safe direction. PWM ways are driven idle by the MCU.
+- **Single source.** `HARNESS40` in `packages/common-components/umod-map.gen.ts` is generated by
+  `calculations/control/umod-pinmap.mts`, and the interconnect audit verifies every way end to end.
+- **Default-OFF is board-side.** Pull-downs sit on both GATE_EN chains, the EN lines, the relay drives and the three
+  PWM lines at their receiving end.
 
-AGND–DGND single-point 0 Ω tie on the **card** (RAGTC — deleted from both power boards, a
-second tie is the loop it prevents); DGND→PE 1 MΩ ∥ 4.7 nF on the AC-DC board. The control
-domain is SELV; every HV measurement crosses on an isolated amplifier, so HMI, SWD, fans and
-CAN are touch-safe by architecture. CAN is additionally isolated (CGND domain with static
-bleed) for cabinet bus runs.
+> [!IMPORTANT]
+> **Loss of the harness is a safe state.** With GATE_EN_A low or V15 / V24 missing, the AC-DC gates are off in
+> hardware. The card's watchdog covers the brain itself (WDO ≡ NRST, R5-A).
 
-## Discharge control (E19 rev B / E47 semantics)
+*The pre-E40 two-card 16-way harness and its UART link are retired; the migration record is
+[single-card migration plan](history/single-card-migration-plan.md), decision E40.*
 
-`CTL_QDIS` drives the opto LED active-high (330 Ω); the output stage rides a DCN-referenced
-isolated module and the QDISF gate has a 10 k pulldown to DCN — MCU dead/reset/unprogrammed =
-discharge OFF. Bank bleeders are PV-driven (VOM1271 via QPVD at the guaranteed 10 mA point,
-R8). The discharge timeline is **two-phase** (active to the 321 V aux floor, then passive);
-F.21's real coverage is the AC-present case — see
-[`protection-thresholds.md`](protection-thresholds.md).
+## 3. Grounding (E25)
 
-## HMI behavior (config spec)
+```mermaid
+flowchart LR
+  AGND["AGND<br/>analog reference"] -- "single 0 Ω tie<br/>RAGTC on the card" --- DGND["DGND<br/>control domain (SELV)"]
+  DGND -- "1 MΩ ∥ 4.7 nF<br/>AC-DC board" --- PE["PE"]
+  CGND["CGND<br/>isolated CAN domain"] -. "static bleed" .- PE
+  HV["HV measurements"] -- "isolated amplifiers only" --> DGND
+  style DGND stroke:#2ea44f,stroke-width:2px
+```
 
-2-digit display + SET/▲(SW1) & ▼/ENTER(SW2): short-press pages {module CAN address 00–63,
-group id, fault code ring, fw version}; long-press SET = edit (blink), ▲/▼ change, ENTER save
-to EEPROM (CRC'd). Display timeout 60 s. During faults the display shows the `F.xx` code.
-Driven by the card: 74HC595 (segments, decoupled per R6-D) + 2 NPN digit mux + 2 GPIO buttons.
+The AGND–DGND tie exists **only on the card** — a second tie on a power board would be the ground loop it
+prevents. The control domain is SELV, and every high-voltage measurement crosses on an isolated amplifier, so the
+HMI, SWD, fans and CAN are touch-safe by architecture. CAN is additionally isolated (CGND domain with static bleed)
+for cabinet bus runs.
 
-## Module interconnect audit (permanent gate)
+## 4. Discharge control (E19 rev B, E47 semantics)
 
-`calculations/module-interconnect-audit.mts` (in run-all) walks the BUILT netlists of
-acdc + dcdc + card per SKU across every physical boundary: DCP/DCN/PE studs, all 40 harness
-ways pin-for-pin, every 88-way card way wired on the board AND landing on real electronics on
-the card, and the RATING strap encoding the SKU (E24 rev G bands). Negative-tested (a board
-swap produces 78 FAILs). The cabinet section walks the 150 kW sheet (3 × 50 + CSU, E55): CAN chain with exactly
-two 120 Ω terminations, CSU strap band, PSU feed, per-module AC/DC landings, single-point
-shield bond (E39/E55).
+> [!CAUTION]
+> **High voltage.** The DC link and output banks hold lethal energy. Service label: **isolate, wait 10 min, AND
+> verify < 60 V** — never "or".
+
+`CTL_QDIS` drives the opto LED active-high (330 Ω). The output stage rides a DCN-referenced isolated module, and the
+QDISF gate has a 10 k pull-down to DCN, so a dead, reset or unprogrammed MCU leaves discharge **off**. Bank bleeders
+are PV-driven (VOM1271 via QPVD at the guaranteed 10 mA point, R8). The discharge timeline has **two phases**:
+active down to the 321 V aux floor, then passive. F.21's real coverage is the AC-present case — see
+[protection thresholds](protection-thresholds.md).
+
+## 5. HMI behaviour
+
+```mermaid
+stateDiagram-v2
+  [*] --> Pages
+  state Pages {
+    [*] --> Address
+    Address --> Group : SET short press
+    Group --> FaultRing : SET short press
+    FaultRing --> Firmware : SET short press
+    Firmware --> Address : SET short press
+  }
+  Pages --> Edit : SET long press (value blinks)
+  Edit --> Edit : ▲ / ▼ change value
+  Edit --> Pages : ENTER save (EEPROM, CRC)
+  Pages --> Fault : a fault latches
+  Fault --> Pages : fault cleared
+  Pages --> Off : 60 s idle
+  Off --> Pages : any button
+```
+
+The 2-digit display with SET/▲ (SW1) and ▼/ENTER (SW2) pages through the module CAN address (00–63), the group id,
+the fault-code ring and the firmware version. During a fault the display shows its `F.xx` code. The card drives it
+through a 74HC595 (segments, decoupled per R6-D), two NPN digit multiplexers and two GPIO buttons.
+
+## 6. The module interconnect audit (permanent gate)
+
+`calculations/module-interconnect-audit.mts` (in run-all) walks the **built** netlists of AC-DC + DC-DC + card per
+SKU across every physical boundary:
+
+| Boundary | What is proven |
+|---|---|
+| DCP / DCN / PE studs | both boards land the same nets |
+| 40 harness ways | pin for pin, including crossovers |
+| 88 card ways | wired on the board **and** landing on real electronics on the card |
+| RATING strap | encodes the SKU in its E24 rev G band |
+| 150 kW cabinet (E55) | CAN chain with exactly two 120 Ω terminations, CSU strap band, PSU feed, per-module AC / DC landings, single-point shield bond |
+
+---
+
+<div align="center">
+<sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

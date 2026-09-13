@@ -1,13 +1,19 @@
-# docs/history — dated records off the live path
+<img src="../assets/banner-history.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORDS-555?style=flat-square" alt="historical"/> <img src="https://img.shields.io/badge/moved-E53_(2026--09--12)-f2b705?style=flat-square" alt="moved"/></p>
+# 🗄️ Historical Records
+
+<sub>Dated records kept verbatim, and where their conclusions live now</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+</p>
 
 > [!NOTE]
-> These documents are **kept verbatim** as decision/audit records. They describe superseded
-> phases, pipelines or plans; the live truth is the register ([`../assumptions.md`](../assumptions.md))
-> and the live docs indexed in [`../README.md`](../README.md). Register rows that referenced the
-> old `docs/…` paths are immutable history — the files now live here. Full pre-E50 tree:
-> branch `archive/pre-focus-E49`.
+> **Kept verbatim as decision and audit records.** These pages describe superseded phases, pipelines and plans.
+> The live truth is the [decision register](../assumptions.md) and the pages indexed in the
+> [documentation hub](../README.md). Register rows that cite the old `docs/…` paths are immutable history — the
+> files now live here. The full pre-E50 tree is on the `archive/pre-focus-E49` branch.
 
 | Record | What it was | Superseded by |
 |---|---|---|
@@ -22,3 +28,11 @@ Three more dated records **stay in `../`** because standing gates read them at t
 [`../design-review-production.md`](../design-review-production.md) (R1),
 [`../design-review-production-r2.md`](../design-review-production-r2.md) (R2),
 [`../design-basis-report.md`](../design-basis-report.md) (Phase-1 basis) — all banner-stamped.
+
+---
+
+<div align="center">
+<sub><a href="../pcb-floorplan.md">← PCB Floorplan Basis</a> &nbsp;·&nbsp; <a href="../README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../design-basis-report.md">Design Basis Report — Phase 1 →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

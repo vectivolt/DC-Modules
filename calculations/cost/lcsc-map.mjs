@@ -120,8 +120,8 @@ export const LCSC = {
   "R-small":           { status: "CLASS", spec: "0402–0805 small-signal resistor, value per schematic" },
   "IND-10u-3A":        { lcsc: "C5189958", mpn: "CYA0630-10UH", status: "ORDERABLE", spec: "10 µH 3 A shielded power inductor",
                          note: "SHOU HAN CYA0630 molded shielded metal-composite, 10uH +/-20%, Irms 4A, Isat 5.5A, DCR 71 mOhm, 7.2x6.6mm. Both current ratings clear the 3 A requirement with margin for the 3V3 buck." },
-  "IND-PFC-165u":      { status: "CLASS", spec: "165 µH-class PFC choke, 3× 0077908A7 26µ sendust, N=39±1 lot trim, 18 mm² flat Cu (D1 rev B, audit) — custom wind" },
-  "IND-TRIM-BIN4":     { status: "CLASS", spec: "resonant trim inductor, bin set 3.3/3.65/4.0/4.35 µH ±3%" },
+  "IND-PFC-165u":      { status: "CUSTOM", spec: "165 µH-class PFC choke, 3× 0077908A7 26µ sendust, N=39±1 lot trim, 18 mm² flat Cu (D1 rev B, audit) — custom wind" },
+  "IND-TRIM-BIN4":     { status: "CUSTOM", spec: "resonant trim inductor, bin set 3.3/3.65/4.0/4.35 µH ±3%" },
   "CMC-3PH-2mH-SKU":   { status: "CUSTOM", spec: "3-phase 2 mH nanocrystalline CM choke, current-rated per SKU — no LCSC equivalent. 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH, Digi-Key) as catalog drop-in; custom drawing stays second source (audit)" },
   "XFMR-LLC-10K":      { status: "CUSTOM", spec: "LLC transformer 3× PQ50/50 PC95 7:7:7, Lm 63 µH ±7% — custom wind" },
   "XFMR-AUX-FLY-D":    { status: "CUSTOM", spec: "aux flyback ETD39 PC95, 110 W, 342–860 Vin (D4 rev D, E52 sat-margin rev) — custom wind" },
@@ -260,5 +260,6 @@ export const LCSC_BY_VALUE = {
 export const lcscForPart = (mpn, value) => {
   const hit = LCSC_BY_VALUE[`${mpn}|${value}`];
   if (!hit) return lcscFor(mpn);
-  return hit.status || !hit.lcsc ? hit : { ...hit, status: "ORDERABLE" };
+  if (hit.lcsc) return { ...hit, status: hit.status ?? "ORDERABLE" };
+  return { ...lcscFor(mpn), ...hit };   // E61: a value row with only a candidate mpn keeps its class status (sheets printed "undefined")
 };

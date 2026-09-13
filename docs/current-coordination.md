@@ -1,13 +1,17 @@
-# Current, Stress & Protection Coordination — every current, every trip, every margin (E60)
+<img src="assets/banner-power.svg" alt="" width="100%"/>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="live"/>
-  <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/>
-  <img src="https://img.shields.io/badge/gate-current--coordination_·_CLEAN-2ea44f?style=flat-square" alt="gate"/>
-  <img src="https://img.shields.io/badge/evidence-ngspice_power--solved_·_cycle--by--cycle_Vienna-5f8fc0?style=flat-square" alt="evidence"/>
-  <img src="https://img.shields.io/badge/firmware-54%2F54-2ea44f?style=flat-square" alt="fw"/>
+# ⚡ Current & Protection Coordination
+
+<sub>The worst simulated current in every magnetic and switch, against the trip, sensor and part that must handle it</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/gate-current--coordination_·_CLEAN-2ea44f?style=flat-square" alt="gate: current-coordination · CLEAN"/>
 </p>
 
+> [!NOTE]
 > **Purpose** — the maximum current through every magnetic and every switch, taken from simulation at the
 > worst legal corners. Each is set against the trip that must clear it, the sensor that must see the
 > fault, and the part that must survive it.
@@ -160,3 +164,11 @@ The reverse-polarity Vienna fault (DESAT-blind by topology, R4) is covered by th
 Both-polarity short-circuit timing with the 22/47 pF blanks against the vendor tSC · CT saturation at the
 fitted burdens (acceptance rows in the pack) · LLC load-step overshoot in closed loop (the 1.2× rule's transient
 allowance) · Vienna dip recovery with the real HAL controller (FW-R6 clamp).
+
+---
+
+<div align="center">
+<sub><a href="protection-thresholds.md">← Protection Thresholds</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="thermal-report.md">Thermal Report →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

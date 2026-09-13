@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" width="1200" height="120" role="img" aria-label="DC-Modules documentation · Production and sourcing">
+<style>
+  .lbl{font:600 11px ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;letter-spacing:2.4px;fill:#8B949E}
+  .fam{font:600 17px -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;letter-spacing:.2px}
+  .grat{stroke:#8B949E;stroke-opacity:.22;stroke-width:1;stroke-dasharray:1 5}
+  .axis{stroke:#8B949E;stroke-opacity:.35;stroke-width:1}
+  .tr{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .scroll{animation:scroll var(--dur,12s) linear infinite}
+  @keyframes scroll{to{transform:translateX(var(--shift))}}
+  .sweep{animation:sweep 9s linear infinite}
+  @keyframes sweep{from{transform:translateX(0)}to{transform:translateX(880px)}}
+  .flow{animation:flow 2.8s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-80}}
+  .comet{animation:comet 7s linear infinite}
+  .pulse{animation:pulse 3.2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+  
+  @media (prefers-reduced-motion: reduce){.scroll,.sweep,.flow,.comet,.pulse{animation:none}}
+</style>
+<defs><clipPath id="win"><rect x="300" y="6" width="894" height="108" rx="6"/></clipPath></defs>
+<text class="lbl" x="28" y="48">DC-MODULES · DOCS</text>
+<text class="fam" x="28" y="76" fill="#B8732E">Production &amp; sourcing</text>
+<line x1="28" y1="90" x2="50" y2="90" stroke="#B8732E" stroke-width="3" stroke-linecap="round"/>
+<g clip-path="url(#win)"><line class="grat" x1="300" y1="10" x2="300" y2="110"/><line class="grat" x1="388" y1="10" x2="388" y2="110"/><line class="grat" x1="476" y1="10" x2="476" y2="110"/><line class="grat" x1="564" y1="10" x2="564" y2="110"/><line class="grat" x1="652" y1="10" x2="652" y2="110"/><line class="grat" x1="740" y1="10" x2="740" y2="110"/><line class="grat" x1="828" y1="10" x2="828" y2="110"/><line class="grat" x1="916" y1="10" x2="916" y2="110"/><line class="grat" x1="1004" y1="10" x2="1004" y2="110"/><line class="grat" x1="1092" y1="10" x2="1092" y2="110"/><line class="grat" x1="1180" y1="10" x2="1180" y2="110"/><line class="grat" x1="300" y1="30" x2="1192" y2="30"/><line class="grat" x1="300" y1="60" x2="1192" y2="60"/><line class="grat" x1="300" y1="90" x2="1192" y2="90"/><line class="axis" x1="300" y1="60" x2="1192" y2="60"/><path class="tr" stroke="#B8732E" stroke-opacity=".45" stroke-width="5" d="M300,34 L520,34 L548,62 L760,62 L788,34 L1200,34"/><path class="tr flow" stroke="#D19A00" stroke-width="2" stroke-dasharray="14 66" d="M300,34 L520,34 L548,62 L760,62 L788,34 L1200,34"/><path class="tr" stroke="#B8732E" stroke-opacity=".45" stroke-width="5" d="M300,62 L470,62 L498,90 L690,90 L718,62 L930,62 L958,90 L1200,90"/><path class="tr flow" stroke="#D19A00" stroke-width="2" stroke-dasharray="14 66" d="M300,62 L470,62 L498,90 L690,90 L718,62 L930,62 L958,90 L1200,90"/><path class="tr" stroke="#B8732E" stroke-opacity=".45" stroke-width="5" d="M300,90 L610,90 L638,62 L660,62"/><path class="tr flow" stroke="#D19A00" stroke-width="2" stroke-dasharray="14 66" d="M300,90 L610,90 L638,62 L660,62"/><circle cx="548" cy="62" r="5.5" fill="none" stroke="#B8732E" stroke-width="2"/><circle cx="760" cy="62" r="5.5" fill="none" stroke="#B8732E" stroke-width="2"/><circle cx="498" cy="90" r="5.5" fill="none" stroke="#B8732E" stroke-width="2"/><circle cx="718" cy="62" r="5.5" fill="none" stroke="#B8732E" stroke-width="2"/><circle cx="958" cy="90" r="5.5" fill="none" stroke="#B8732E" stroke-width="2"/><circle cx="660" cy="62" r="5.5" fill="none" stroke="#B8732E" stroke-width="2"/></g>
+</svg>

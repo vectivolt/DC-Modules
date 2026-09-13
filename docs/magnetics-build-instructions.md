@@ -1,7 +1,16 @@
-# Magnetics Build Instructions — how each part is actually made (E59)
+<img src="assets/banner-magnetics.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-WORK__INSTRUCTIONS-b4642a?style=flat-square" alt="wi"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/AC_copper-conductor--audit-2ea44f?style=flat-square" alt="ac"/> <img src="https://img.shields.io/badge/pairs_with-manufacturing__pack-5f8fc0?style=flat-square" alt="pack"/></p>
+# 🛠️ Magnetics Build Instructions
 
+<sub>How each magnetic is actually made — lay-up, cut lengths, gapping, impregnation and hold points</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-WORK__INSTRUCTION-b4642a?style=flat-square" alt="status: work instruction"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+</p>
+
+> [!NOTE]
 > **Purpose** — the step-by-step *process* behind every RFQ sheet: winding sequence, lay-up
 > order, computed wire cut lengths, tape schedules, termination prep, impregnation, and the
 > in-process hold points. The [pack](magnetics-manufacturing-pack.md) says WHAT to build and
@@ -17,8 +26,40 @@
 >
 > Hold points are mandatory: **H1** after winding (pre-impregnation electricals) · **H2** after
 > impregnation/cure (full acceptance row) · **H3** final (hipot + label). A part that fails H1
-> is reworked before varnish — after varnish it is scrap. D3/D4 barrier steps are
-> safety-critical traveler operations (100 % witnessed, never sampled).
+> is reworked before varnish — after varnish it is scrap.
+
+> [!CAUTION]
+> **D3 and D4 carry the reinforced barrier between the bus and the SELV control / output domains.** Their barrier
+> steps are safety-critical traveler operations — 100 % witnessed, never sampled — and the hipot is always the last
+> electrical test, after impregnation.
+
+## Process map
+
+```mermaid
+flowchart LR
+  IN["goods-in<br/>cores · litz · foil · TIW"] --> GAP["gap grind<br/>AL window · cure · re-measure"]
+  GAP --> WIND["wind<br/>lay-up · spacer · terminations"]
+  WIND --> H1{"H1<br/>turns · L / Lm · leakage · Rdc · Rac"}
+  H1 -- "fail → rework" --> WIND
+  H1 -- "pass" --> VAR["vacuum varnish<br/>2 cycles · bake"]
+  VAR --> H2{"H2<br/>full acceptance row"}
+  H2 -- "fail → scrap" --> X["scrap"]
+  H2 -- "pass" --> H3{"H3<br/>hipot LAST · label"}
+  H3 --> SHIP["kitting<br/>D3 leakage label → D2 bin"]
+  style H1 stroke:#d19a00,stroke-width:2px
+  style H2 stroke:#d19a00,stroke-width:2px
+  style H3 stroke:#bc4e9c,stroke-width:2px
+```
+
+| Family | Build | Critical step |
+|---|---|---|
+| [U — universal rules]({a("U —")}) | incoming, litz, foil, tapes, gapping, impregnation | litz solder-pot temperature and time |
+| [D1 PFC chokes]({a("D1 family")}) | sendust toroid stacks, round bundles | lot-trim ± 1 turn against the AL band |
+| [D2 trims]({a("D2 family")}) | gapped PQ50 (30 kW) · E70 (40 / 50 kW) | distributed gaps, ≥ 5 mm litz clearance |
+| [D3 transformers]({a("D3 family")}) | S1 – spacer – P – spacer – S2 lay-up | the leakage spacer; gap split per set; reinforced barrier |
+| [D4 aux flyback]({a("D4 —")}) | ETD39 | reinforced barrier, 100 % hipot |
+| [D6 DM chokes]({a("D6 family")}) | sendust / High-Flux stacks | crest-biased L floor |
+| [D7 CM chokes]({a("D7 family")}) | nanocrystalline, 40 / 50 kW customs | never impregnate nanocrystalline |
 
 ## U — Universal process rules (all parts)
 
@@ -41,7 +82,8 @@
 5. **Tapes**: polyester Class F minimum (Class H system for D3): 3M 1350F-class interlayer,
    glass banding tape for stacks. Half-lap unless stated. No tape over a vent/thermocouple
    witness spot (marked on each drawing).
-6. **Gap grinding (D2, D3, D4)**: grind the CENTRE leg only, both mating faces masked except
+6. **Gap grinding (D2, D3, D4)**: grind the CENTRE leg only (**D3: split the total gap equally on every core set,
+   E60**), both mating faces masked except
    the leg; measure AL on the assembled set after each pass with the drawing's turns-jig;
    stop inside the AL window (Lm ±7 % for D3; bin ±3 % for D2). Glue with the qualified
    Class-F epoxy, clamp, cure per epoxy sheet, RE-MEASURE after cure (cure shifts AL ~1 %).
@@ -161,3 +203,11 @@ Ratio/Lm/leakage BEFORE varnish (reworkable) → varnish → acceptance electric
 values) → hipot/PD LAST (a hipot before varnish stresses un-supported insulation and can
 create the weakness it is looking for) → label. Every measured-per-unit value (D3 leakage,
 D2 bin) is written at final test, from the post-varnish measurement.
+
+---
+
+<div align="center">
+<sub><a href="magnetics-manufacturing-pack.md">← Magnetics RFQ Pack</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-fmea-e58.md">Magnetics FMEA & Temperature Critique →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

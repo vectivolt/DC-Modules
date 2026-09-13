@@ -1,21 +1,39 @@
-# Firmware Guide — supervisory logic that's already been through hell 🧠
+<img src="assets/banner-platform.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+# 💾 Firmware Guide
 
-> **Purpose** — Supervisory C99 core: design, API, HAL contract, boot identity, F.21 semantics, R5–R7 contracts.
+<sub>The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/host__sim-54%2F54_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 54/54 ASan/UBSan"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the supervisory C99 core: its state machine, the HAL contract a port must honour, boot identity,
+> F.21 semantics and the contracts added by the external review rounds R5–R7 and by E60.
 >
-> **Gate coupling** — review-checks R6-B/R7-E greps pin passages of this file — edit additively.
+> **Gate coupling** — `review-checks` (R6-B, R6-C, R6-E) and `stress-audit` assert passages of this file word for
+> word, so edits here are **additive**: superseded values are marked, never deleted.
 
+## At a glance
 
-The `firmware/` tree holds the **normative** control-plane logic in portable C99 — no HAL, no RTOS
-assumptions — verified against the same plant and the same 26 fault scenarios as the design-phase
-model, plus the CSU supervisor, protocol-codec guards, a 100 000-frame fuzz and the R5-D
-exclusion invariant, all under AddressSanitizer + UndefinedBehaviorSanitizer. **50/50 checks
-pass**; run it yourself:
+| | |
+|---|---|
+| **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
+| **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
+| **Verification** | `firmware/test/host_sim.c` — **54 / 54** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` |
+| **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 10 CSU scenarios · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
+| **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air · cabinet CSU — selected by the RATING strap |
+| **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
+
+The `firmware/` tree holds the **normative** control-plane logic, verified against the same plant and the same
+26 fault scenarios as the design-phase model. Run it yourself:
 
 ```bash
 sh firmware/run_tests.sh
-# cc -std=c99 -Wall -Wextra -Werror -fsanitize=address,undefined ... → RESULT: 50/50 checks passed
 ```
 
 ## Files
@@ -49,7 +67,7 @@ stateDiagram-v2
   FAULT --> LOCK : 5 latches / window (F.31)
   STANDBY --> SHUTDOWN : off request
   SHUTDOWN --> DISCH : Q_DISCH on
-  DISCH --> [*] : F.21-supervised (AC-present latch; AC-removed = two-phase, see protection-thresholds)
+  DISCH --> [*] : F.21-supervised · AC-present latch · AC-removed two-phase
 ```
 
 Two rules that exist because verification **broke** their predecessors:
@@ -100,6 +118,18 @@ same `F.xx` codes appear on the HMI and in CAN telemetry (STATUS2/FAULT_EVT).
 ---
 
 ## Board rev C integration notes (2026-09-05)
+
+> [!WARNING]
+> **Dated notes — read with this table.** The passages below are kept word for word because review gates assert
+> them. Where a later decision changed a constant, the current value is here:
+>
+> | Constant in the notes below | Current value | Decided at |
+> |---|---|---|
+> | line CT burden 27 Ω (50 kW: 21.5 Ω) | **22 / 18 / 13 Ω** (30 / 40 / 50 kW) | E60 |
+> | resonant CT burden 2.0 Ω, F.11 70 A pk at DAC 3.05 V (50 kW: 1.6 Ω) | **1.2 / 0.91 / 0.75 Ω · F.11 85 / 115 / 145 A pk** | E60 |
+> | `PMP_DISCH_TO_MS` 3000 / 5500 / 9000 ms | **3000 / 4000 / 5000 ms** from the strap | E41 / E42 |
+> | ROLE0 slot strap, "each MCU drives its own EN" | **removed** — one brain, RATING is the only strap | E40 |
+> | suite 49 / 49 or 50 / 50 | **54 / 54** | E60 |
 
 The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to the rev C hardware:
 
@@ -227,3 +257,11 @@ the old 68k basis clipped at 25.7 V.
 Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥ 1.08·√2·VLL* ·
 *50 kW OC classes 195/145* · *40 kW OC classes 155/115*. Default before the strap is read = the
 30 kW classes (the lowest thresholds — an undecoded strap can only trip earlier, never later).
+
+---
+
+<div align="center">
+<sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">External CAN Protocol →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

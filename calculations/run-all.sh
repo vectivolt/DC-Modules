@@ -32,5 +32,7 @@ node calculations/magnetics/mag-sync.mjs
 node calculations/system/fault-energy.mjs
 node calculations/system/current-coordination.mjs
 node calculations/verify-independent.mjs
+node calculations/footprint-audit.mjs > /dev/null && echo "FOOTPRINT AUDIT HELD"
+node calculations/docs-lint.mjs
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 54/54 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

@@ -1,6 +1,18 @@
-# Simulation Report — Executed Runs (§50 format)
+<img src="assets/banner-verification.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-EVIDENCE__RECORD-e3763c?style=flat-square" alt="EVIDENCE__RECORD"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
+# 📈 Simulation Report
+
+<sub>The simulation-truth ledger — every executed run, its result, and what it may be used to claim</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square" alt="status: evidence record"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the simulation-truth ledger: every executed run, its result, and what it may be used to claim.
+> Nothing in the documentation claims beyond it.
 
 > [!CAUTION]
 > **E60 re-basis — read this before §5 below.** The §5 LLC operating-point record was produced by a deck with **no
@@ -11,8 +23,21 @@
 > within their stated fidelity. The retired-SKU (60/120 kW) rows in §11b and V-21 are superseded by the §13
 > per-SKU runs. How to run and read everything: [`simulation-toolchain.md`](simulation-toolchain.md).
 
-> **Purpose** — The simulation truth ledger (V-xx): never claim beyond it. Dated record backing current claims.
+## Ledger at a glance
 
+| Section | Evidence | Status |
+|---|---|---|
+| [§1](#1-level-1-double-pulse-16--spicedouble-pulsedpt-runmjs) | Level-1 double-pulse — overshoot, dv/dt, gate network | ✅ current (± 40 % energy band) |
+| [§2](#2-pfc-control-loops-2138--calculationspfcpfc-controlmjs--deck-pfc-acloopcir) | PFC control loops | ✅ current |
+| [§3](#3-pfc-line-cycle-213536--spicepfcpfc-phase-runmjs) · [§4](#4-precharge--discharge-25--same-runner) | PFC line-cycle (averaged) · precharge / discharge | ✅ current — precharge per SKU re-run in §13 |
+| [§5](#5-llc-operating-points-1336--spicellcllc-runmjs) | LLC operating points | ⛔ **withdrawn** — no body diodes; replaced by §13 |
+| [§6](#6-sp-transition-536--spicellcsp-transitionmjs) | series / parallel transition | ✅ current |
+| [§7](#7-35-full-envelope-grid--calculationssystemenvelope-gridmjs-closed) · [§8](#8-37-monte-carlo--calculationssystemmonte-carlomjs-closed-drove-rev-d2) | envelope grid · Monte-Carlo | ✅ current (grid re-based to 5,544 points at E60) |
+| [§9](#9-aux-flyback-1828-v-21--spiceauxaux-flybackmjs-closed) · [V-21 rev C](#v-21-rev-c--aux-validation-at-the-per-sku-load-matrix-2026-09-05-e26-rev-c--r2-cb-19cb-20) | aux flyback | ✅ current — per-SKU re-run in §13 ([rev B](#v-21-rev-b--aux-flyback-redesign-validation-2026-09-05-e26--superseded-by-rev-c-above) superseded) |
+| [§10](#10-conducted-pre-compliance-26--calculationsemilisn-precompliancemjs-estimate-20-db) | conducted pre-compliance | 🟡 estimate (± 20 dB) — never a compliance claim |
+| [§11](#11-36-system-scenario-suite--calculationssystemfsm-simmjs-closed-at-logic-fidelity) · [§11b](#11b-r2-g-closure-decks-2026-09-05-rev-d) | system scenarios · R2 closure decks | ✅ current — 60 / 120 kW rows superseded |
+| [§12](#12-remaining-not-simulated-hardware-domain-by-nature) | not simulated (hardware by nature) | 🔬 EVT |
+| [§13](#13-e60-evidence-set-2026-09-13--replaces-5-and-the-60120-kw-rows) | **E60 evidence set** — power-solved LLC per SKU, cycle-by-cycle Vienna, CT, precharge, aux | ✅ **current** |
 
 > **HISTORICAL RECORD** — kept verbatim as the Phase-9 execution record; later variant engines (D6 rev C, per-variant LISN/grids, NCP1252D aux re-basis) live in calculations/ and register rows E41–E49.
 
@@ -176,3 +201,11 @@ the real IC's UVLO/BR thresholds and thermal. Netlists preserved in `spice/gener
 | **LLC nominal (PAR400-full) → loss budget** | same runner, corner `PAR400-full` | **29.0 / 38.0 / 47.0 / 47.1 A rms** at 149–152 kHz, ZVS 64/64; the grid's FHA reads 29.2 / 38.5 / 47.8 (≤2 %) — the loss budget had carried 23.3 A × k from the withdrawn deck → η restated to 97.19 / 96.92 / 96.68 / 96.82 % | `calculations/out/loss-budget.csv` (reads the CSV row) |
 
 Consumed by the standing gates `current-coordination.mjs` and `conductor-audit.mjs` (both CLEAN in run-all).
+
+---
+
+<div align="center">
+<sub><a href="simulation-toolchain.md">← Simulation Toolchain</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="verification-matrix.md">Verification Matrix & Risk Register →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

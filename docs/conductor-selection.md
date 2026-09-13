@@ -1,12 +1,17 @@
-# Copper & Conductor Selection — what every current-carrying path is made of, and why (E60)
+<img src="assets/banner-magnetics.svg" alt="" width="100%"/>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="live"/>
-  <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/>
-  <img src="https://img.shields.io/badge/gate-conductor--audit_·_CLEAN-2ea44f?style=flat-square" alt="gate"/>
-  <img src="https://img.shields.io/badge/models-Dowell_·_Sullivan_·_IEC_60028-5f8fc0?style=flat-square" alt="models"/>
+# 🧵 Conductor Selection
+
+<sub>Which copper each winding uses and why — foil gauge, litz strand and AC resistance at 140 kHz</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/gate-conductor--audit_·_CLEAN-2ea44f?style=flat-square" alt="gate: conductor-audit · CLEAN"/>
 </p>
 
+> [!NOTE]
 > **Purpose** — answer "which copper should we use" for every winding, bar and trace, from
 > physics at the **simulated** currents and frequencies, not from DC current density.
 >
@@ -44,6 +49,19 @@ flowchart LR
   style ACC stroke:#2ea44f,stroke-width:2.5px
 ```
 
+```math
+F_r^{\,\mathrm{Dowell}} = \Delta\left[\zeta_1 + \tfrac{2}{3}\left(m^2-1\right)\zeta_2\right],\qquad
+\Delta = \frac{h}{\delta}\sqrt{\eta},\qquad
+\zeta_1 = \frac{\sinh 2\Delta + \sin 2\Delta}{\cosh 2\Delta - \cos 2\Delta},\qquad
+\zeta_2 = \frac{\sinh \Delta - \sin \Delta}{\cosh \Delta + \cos \Delta}
+```
+
+```math
+F_r^{\,\mathrm{Sullivan}} = 1 + \frac{\pi^2\,\omega^2\,\mu_0^2\,N^2\,n^2\,d^6\,k}{768\,\rho^2\,b^2},\qquad
+\delta = \sqrt{\frac{2\rho}{\omega\,\mu_0}},\qquad
+P_{\mathrm{Cu}} = I_{\mathrm{rms}}^2\,R_{\mathrm{dc}}(T)\,F_r
+```
+
 - **Dowell** (foil, round-wire layers): `m` = layers in a winding portion where the MMF rises from 0 to its
   maximum. `η` = porosity (foil width / window height).
 - **Sullivan** (litz): `N` turns, `n` strands, strand diameter `d`, window breadth `b`. Use `k = 1` for a 0 → NI
@@ -66,6 +84,15 @@ flowchart LR
 | **D3-30/40/50** primaries | profiled litz, **0.071 mm strands** (2475 / 3486 / 4370) at the same Cu area | — | 1.32 / 1.26 / 1.28 | 5.4 / 10.8 / 11.2 W | ≤ 1.35 ✓ | 0.1 mm strands → 1.63 / 1.51 / 1.55 |
 | **D4** aux flyback primary | 2×0.35 mm bifilar (build default) | d/δ 1.2 @65 kHz | ~2.0 | < 1 W | inside the D4 row | 0.5 mm single computes the same — bifilar winds flatter |
 | **D6 / D7** EMI chokes | foil / flat at 50 Hz | δ(50 Hz) 10.7 mm | ≈1.0 | per engine | unchanged | — |
+
+```mermaid
+xychart-beta
+  title "AC / DC resistance ratio — as drawn (line) vs E60 construction (bars)"
+  x-axis ["D2-40", "D2-50", "D3-30 sec", "D3-40 sec", "D3-50 sec", "D3-30 pri", "D3-40 pri", "D3-50 pri"]
+  y-axis "Rac / Rdc" 0 --> 12
+  bar [2.01, 2.02, 1.27, 1.29, 1.20, 1.32, 1.26, 1.28]
+  line [4.3, 11.7, 5.3, 5.1, 6.7, 1.63, 1.51, 1.55]
+```
 
 *SER = the series-mode hysteresis corner (bank 250 V, full power), now a falling-command-only state (FW-R8).
 "cont." = the worst continuous PAR/PS Imax corner.*
@@ -148,3 +175,11 @@ Thinner foil also frees window (the E51 fill margins only improve).
 | Proven every run | EVT / first article closes |
 |---|---|
 | Rac/Rdc and Cu loss per winding at the simulated worst corners · ΔT on the measured-3C95 core basis · equilibrium + runaway (temp-critique) | measured Rac at 140 kHz (±15 % vs model is the reopen trigger) · gap-fringing adders on D2 (Rac test) and D3 S1 (T-31 open-secondary + thermocouple, FEMMT) · thermal type-test at the class current |
+
+---
+
+<div align="center">
+<sub><a href="magnetics.md">← Magnetics Drawings D1–D7</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-manufacturing-pack.md">Magnetics RFQ Pack →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

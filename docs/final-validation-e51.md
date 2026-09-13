@@ -1,18 +1,53 @@
-# End-to-end validation verdict — 30/40/50 kW modules (E51 review, 2026-09-12)
+<img src="assets/banner-verification.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
+# 🏁 End-to-End Validation Verdict
 
-> **Purpose** — End-to-end validation verdict by category — startup through tolerances — with evidence and the honest open list.
+<sub>Verdicts by category from start-up to tolerances, with evidence and the honest open list</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the end-to-end verdict by category, from start-up to tolerances, with the evidence behind each and
+> the honest list of what only hardware can close.
 >
-> **Gate coupling** — summarizes the standing battery; verification-matrix.md carries the requirement rows.
+> **Gate coupling** — summarizes the standing battery; the [verification matrix](verification-matrix.md) carries
+> the requirement rows.
 
+## At a glance — the verdicts today
+
+| # | Category | Status | The deciding evidence |
+|---:|---|---|---|
+| 1 | Start-up | ✅ verified · 🔬 T-29 / T-32 | precharge t₉₅ 193 / 231 / 310 ms; NCP1252D aux cold start ≈ 5–6 s |
+| 2 | Steady state | ✅ gated | grid 5,544 points, 0 failures, folds explicit |
+| 3 | Transients and mode changes | ✅ gated · 🔬 T-07 | pre-insertion, two-stage exclusion, E12b gate; FW-R6 clamp on dips |
+| 4 | Faults | ✅ gated · 🔬 T-30 | F.01 / F.11 ≥ 1.2 × simulated peaks; DESAT inside 75 % of SCWT |
+| 5 | Saturation | ✅ gated | catalog-core D1; D2 fault flux ≤ 217 mT; D3 at 30 % of hot Bsat |
+| 6 | Core and copper loss | ✅ gated · 🔬 T-31 | measured 3C95 surfaces; Rac/Rdc ≤ 1.35 on every winding |
+| 7 | Thermal | ✅ gated · 🔬 T-04 | equilibria ≤ 107 °C; air 1.44–1.51 ×; coolant ΔT 4.8 K |
+| 8 | Switch stress | ✅ gated · 🔬 T-01 | voltage margins ≤ 75 / 80 %; DPT-calibrated ring |
+| 9 | Resonance and tank | ✅ gated · 🔬 T-25 | gain-worst corner at full power with ZVS; binned trim |
+| 10 | Control stability | ✅ verified · 🔬 closed loop | PM 50.2°, GM 8.7 dB; FW-R7 bus floor |
+| 11 | EMI | ✅ pre-compliance · 🔬 T-08 | DM margins + 4.9 / + 5.7 / + 5.6 dB; 150 kHz basis conservative |
+| 12 | Insulation | ✅ specified · 🔬 T-14 | reinforced barriers, 4 kV hipot 100 %, PD sampling |
+| 13 | Worst-case tolerances | ✅ gated | Monte-Carlo 6 × 10k; lot-trim; ± 1 % strap bands |
+| 14 | Manufacturability | ✅ fixed | buildable windows on catalog formers; RFQ pack 0 missing fields; fast path |
+| 15 | Commercial | ✅ benchmarked | peak η leads; full-load parity with SiC flagships; ₹830 / kW |
+| 16 | Environment | ✅ specified · 🔬 T-32 | −30…+75 °C, ≤ 95 % RH, ≤ 2000 m, IP55 fans — competitor parity |
+| 17 | Independent anchors | ✅ gated | Friedli–Kolar ± 0.7 %; Wolfspeed CRD-30DD12N-K −8 % |
+
+## The E51 verdicts (record)
 
 The customer's closing question: *are these modules practical, manufacturable, reliable and
 commercially competitive — not simulations that fail later on magnetics, thermal or unrealistic
 components?* Verdict per category, evidence cited; **V** = verified by executed calc/audit on
 disk, **G** = standing gate re-runs every battery, **EVT** = needs hardware (test id from
-`evt-plan.md`). This complements [`verification-matrix.md`](verification-matrix.md) (rev E49)
-and folds in the E51 magnetics findings.
+`evt-plan.md`). This complements [`verification-matrix.md`](verification-matrix.md) and folds in the E51
+magnetics findings; the E60 addendum below restates the categories that the coordination, copper and simulation
+re-basis changed.
 
 | # | Category | Verdict | Evidence / what changed at E51 |
 |---|---|---|---|
@@ -53,7 +88,7 @@ verification (EVT) and supplier first-articles.
 
 ---
 
-## E60 addendum — the verdicts after current coordination, AC copper and the simulation re-basis (2026-09-13)
+## E60 addendum — what the coordination, copper and simulation re-basis changed (2026-09-13)
 
 > [!WARNING]
 > **One piece of evidence behind the E51 verdicts was not physical.** The LLC ngspice deck behind "ZVS at all
@@ -74,12 +109,20 @@ verification (EVT) and supplier first-articles.
 | 10 | **Control** | V + EVT | FW-R7 line-tracking bus floor. On a 650 V bus, 475/500 VAC simulated 15–40 % THD, reduced to 0.1 % with the floor. FW-R8: SER start only above 525 V |
 | 11 | **EMI** | V(pre) + EVT | Cycle-by-cycle 150 kHz band content is 0.7–1.2 dB **below** the LISN basis, so the D6 floors are conservative (unchanged) |
 | 14 | **Manufacturability** | V + fast path | Constructions re-issued for copper (pack, build instructions, drawings). Prototype fast path with stocked cores and formers plus catalog D6/D7/CT/aux routes ([`prototype-fast-path.md`](prototype-fast-path.md)) |
-| 12 | **Environment (A11 rev C)** | V(spec) + EVT | Matched to the published competitor envelope (Infypower / UUGreen / Tonhe product pages): cold floor **−30 °C** (−40 °C-category DC-link cans, magnetics cold check at −30 °C, T-32 cold soak), IP55 fans, ≤2000 m, 95 % RH. Input range above 475 VAC flagged for a product decision ([`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) §7) |
-| 13 | **Independent anchors** | V/G | Cycle-by-cycle Vienna vs Friedli–Kolar closed forms **±0.7 %**; LLC deck vs the measured Wolfspeed CRD-30DD12N-K worst tank current **−8 % pk / −6 % rms** (`verify-independent` §K, 226 checks) |
 | 15 | **Commercial** | See benchmark | Full-load η now **at parity** with the SiC flagships' ≥97 % claim and ahead of the mainstream band. Peak 98.45–98.58 % |
+| 16 | **Environment (A11 rev C)** | V(spec) + EVT | Matched to the published competitor envelope (Infypower / UUGreen / Tonhe product pages): cold floor **−30 °C** (−40 °C-category DC-link cans, magnetics cold check at −30 °C, T-32 cold soak), IP55 fans, ≤2000 m, 95 % RH. Input range above 475 VAC flagged for a product decision ([`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) §7) |
+| 17 | **Independent anchors** | V/G | Cycle-by-cycle Vienna vs Friedli–Kolar closed forms **±0.7 %**; LLC deck vs the measured Wolfspeed CRD-30DD12N-K worst tank current **−8 % pk / −6 % rms** (`verify-independent` §K, 226 checks) |
 
 **Added to the open list:** T-30 (both-polarity SC timing at the new blanks against vendor tSC; the SCWT classes
 are baselined until then), T-31 (first-article Rac at 140 kHz including the D3 open-secondary fringing check, CT
 saturation at the E60 burdens), T-32 (−30 °C cold soak), a FEMMT run of the D3 S1 foil at PAR-525, an SR-332
 MTBF prediction (competitors publish 300–500 kh), and the terrestrial-neutron FIT of 1200 V SiC at 830 V / 2000 m.
 ([`simulation-toolchain.md`](simulation-toolchain.md) §6)
+
+---
+
+<div align="center">
+<sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../calculations/README.md">Calculations & Gates →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

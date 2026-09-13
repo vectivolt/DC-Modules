@@ -1,118 +1,124 @@
-# 30 kW Module — Board Pair Deep Dive 🔬
+<img src="../../docs/assets/banner-platform.svg" alt="" width="100%"/>
 
-**The canonical cell-level document.** The 40/50 kW variants describe only their deltas (register rows E41/E42/E44 + `docs/magnetics.md` tables);
-every cell explained here is instantiated unchanged across the family.
+# 📋 30 kW Module Walkthrough
 
-| Spec | Value |
+<sub>The canonical board pair, cell by cell — every cell reused unchanged across the family</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+</p>
+
+> [!NOTE]
+> **Purpose** — the canonical cell-level walkthrough of one module. Every cell explained here is instantiated
+> unchanged across the family; the 40 and 50 kW SKUs differ only in the deltas recorded in register rows E41, E42
+> and E44 and in the variant tables of [magnetics](../../docs/magnetics.md).
+
+## At a glance
+
+| | |
 |---|---|
-| Input | 3-φ 285–475 VAC (full power ≥330 V, 86 % @285 V — E1) |
-| Output | 150–1000 VDC · **100 A max** · CV/CC · auto S/P mode |
-| Boards | AC-DC 420×300 mm · DC-DC 460×320 mm |
-| Cells | 1 Vienna lane (3 phases) · 1 LLC channel (3 legs + 3 sections) |
-| COGS @1k | **₹36,066** BOM-exact, rev C ([levers](../../docs/bom-cost.md)) |
-| Exports | [`out/acdc-schematic.svg`](out/acdc-schematic.svg) · [`out/dcdc-schematic.svg`](out/dcdc-schematic.svg) · netlists · [v1 single-board Gerbers](out/) |
+| **Input** | 3-φ 285–475 VAC — full power from 330 VAC, 86 % constant-current derate at 285 VAC (E1) |
+| **Output** | 150–1000 VDC · **100 A max** · CV/CC · automatic series/parallel banks |
+| **Boards** | AC-DC 420 × 300 mm (6-layer) · DC-DC 460 × 320 mm (6-layer), face to face |
+| **Cells** | 1 Vienna lane (3 phases) · 1 LLC channel (3 legs + 3 sections) |
+| **Control** | one control card in the DC-DC slot (JB); the AC-DC board has only the 40-way harness header (JICA) |
+| **Fast trips** | F.01 line 120 A pk · F.11 tank 85 A pk · DESAT on every SiC switch |
+| **Cost** | **₹30,980 @10k** (₹38,279 @1k) — [cost roll-up](../../docs/bom-cost.md) |
+| **Release sheets** | 30 kW AC-DC and DC-DC PDFs in [`boards/out-pdf/`](../out-pdf/) · KiCad-5 set `kicad5/DC-Modules-30kw-SHIP.zip` |
 
----
-
-## 🔻 AC-DC board ([`acdc.tsx`](acdc.tsx) → `AcDcBoard{lanes:1}`)
+## 🔻 AC-DC board — [`acdc.tsx`](acdc.tsx)
 
 ```mermaid
 flowchart LR
-  J["ACL1/2/3 + PE<br/>M8 studs"] --> F["F1–F3 gG fuses"] --> MOV["MOV Δ<br/>3× S20K550"]
-  MOV --> CM1["CMC1<br/>3-φ CM 2 mH"] --> X1["CX11–13<br/>X2 2.2 µF Δ"] --> CM2["CMC2"] --> LDM["LDM1–3<br/>22 µH DM (E22)"] --> X2["CX21–23 + CY1–3"]
-  X2 --> PRE["KPRE1+KPRE2 80 A relays<br/>+ 2× 33 Ω pulse (E14b/CB-8)"]
-  PRE --> PH["3× ViennaPhase<br/>A0 · B0 · C0"]
-  PH --> DC[("SplitDcLink<br/>2×5× 470 µF + balance")]
-  DC --> ST["DCP/DCN/PE<br/>pillars → DC-DC board"]
-  PH -.PWM/FLT.- MCU["control card, AC-DC slot<br/>GD32G553 · 88-way JA"]
-  DC -.iso senses (E25).- MCU
-  AUX["AuxPower flyback 60 W<br/>full bus 342–860 V (E26)"] -.24/15/3.3 V.- MCU
+  J["AC studs<br/>L1 · L2 · L3 · PE"] --> F["gG fuses 80 A<br/>22 × 58"] --> MOV["MOV Δ + GDT<br/>S20K550"]
+  MOV --> CM1["CMC1<br/>3-φ CM 2 mH"] --> X1["CX11–13<br/>X1 2.2 µF"] --> CM2["CMC2"] --> LDM["LDM1–3<br/>DM 14 µH (D6)"] --> X2["CX21–23 X1 4.7 µF<br/>CY1–3 Y1 4.7 nF"]
+  X2 --> PRE["KPRE1 + KPRE2 80 A<br/>2 × 33 Ω pulse"]
+  PRE --> PH["3 × Vienna phase<br/>A0 · B0 · C0"]
+  PH --> DC[("split DC link<br/>2 × 5 × 470 µF + balance")]
+  DC --> ST["DCP · DCN · PE pillars<br/>→ DC-DC board"]
+  PH -. "PWM · FLT" .- HAR["40-way harness JICA<br/>→ card on the DC-DC board"]
+  DC -. "isolated senses" .- HAR
+  AUX["aux flyback 110 W<br/>NCP1252D · full bus"] -. "V24 · V15 · 3.3 V" .- HAR
+  style PH stroke:#d19a00,stroke-width:2.5px
 ```
-
-### Cell-by-cell
 
 | Cell (source) | What it is | The engineering inside |
 |---|---|---|
-| `ViennaPhase` ×3 | one PFC phase | 165 µH sendust choke ([D1](../../docs/magnetics.md)); **common-source 750 V SiC pair** (B3M010C075Z ×2) driven by ONE `DriverCh` — this single choice makes 2 MCUs suffice at 120 kW; two 1200 V/40 A JBS to the rails (they block the **full** bus — calculated, not assumed); 10 Ω+470 pF RC **and** RCD clamp (JBS+100 nF+470 Ω) per node — the exact network that took DPT overshoot from 115 % to **70 %** |
-| `DriverCh` ×3 | isolated gate channel | NSI6611 (DESAT, Miller clamp, UVLO, soft-off) · split Rg **4.7/4.7 Ω** (E5) · +18/−4 V from a bias secondary set (E23) · 2× US1M DESAT chain + 100 pF blanking · 10 k gate-source · Kelvin return |
-| `SplitDcLink` | energy buffer | 2×5× 470 µF/450 V snap-in (415 V max/half ✓), 100 k balancers, midpoint sensed; window 650–830 V, **HW OVP 860 V** (E2); per-phase film caps at the legs (CB-9) |
-| precharge | inrush control | 33 Ω in **two lines** + 2-pole bypass — a single-line resistor is a 3-wire-system fallacy (E14b); 20 A pk, 243 J, t₉₅ ≈ 160 ms (simulated) |
-| discharge | touch safety | 4× 160 Ω + 1200 V SiC FET, ULN-driven with V15 pull-up (fail-engaged logic E19): 850→60 V in **2.0 s** |
-| `CtSensor` ×3 | phase current | 1:2500 line CTs + 33 Ω burden (E18 — beat shunt+iso-amp on cost, isolation and OC speed) |
-| `IsoVSense` ×5 | AC + bus sense | 8× 475 k anti-surge chain **inside the measured domain** + iso amp + iso 5 V bias (E25/CB-3): AC vs artificial star (±5 V class), bus/MID vs DCN (0–2 V class) |
-| `AuxPower` | house power | **rev B (E26)**: full-bus 342–860 V, 1700 V SiC, 60 W, complete controller application (HV startup, aux-winding VCC, BR brown-in, type-II COMP); 24 V/15 V/3.3 V; re-simulated at 342/560/850 V ([V-21 rev B](../../docs/simulation-report.md)) |
-| control-card slot `JA` (88-way) | control | role/RATING straps; way map from `cardMap()` — see below |
+| `ViennaPhase` × 3 | one PFC phase | 165 µH-class sendust choke, 3 × 0077908A7, N = 39 ± 1 lot-trim ([D1](../../docs/magnetics.md)); **common-source 750 V SiC pair** (B3M010C075Z × 2) on one driver channel; two 1200 V / 40 A JBS diodes to the rails, which block the full bus; 10 Ω + 100 pF RC snubber (2 W) **and** an RCD clamp per node — the network that took double-pulse overshoot from 115 % to **70 %** |
+| `DriverCh` × 3 | isolated gate channel | NSI6611 (DESAT, Miller clamp, UVLO, soft-off) · split Rg 4.7 / 4.7 Ω (E5) · +18 / −4 V drawn from a reinforced QA01C-18 bias module (the catalogue part is +18 / −3 V — O-11 open at §K) · two series 1 kV DESAT diodes + **47 pF blank** (E60) + 100 Ω series resistor (R5-B) · gate pull-down · Kelvin return |
+| `SplitDcLink` | energy buffer | 2 × 5 × 470 µF / 450 V snap-in (415 V max per half, −40 °C category), balance resistors, sensed midpoint; window 650–830 V, **hardware OVP 860 V** (E2); per-phase film commutation caps (CB-9) |
+| precharge | inrush control | 33 Ω in **two lines** plus a 2-pole bypass — a single-line resistor is a three-wire fallacy (E14b); t₉₅ ≈ 193 ms on the per-SKU deck |
+| discharge | touch safety | 640 Ω active path with a 1200 V SiC switch, default-OFF through its DCN-referenced pull-down (E19): 830 → 60 V in **2.0 s** with AC present |
+| `CtSensor` × 3 | phase current | Talema ACX-1100 1:2500 line CTs + **22 Ω burden** (E60) → ADC and the on-chip comparators (F.01 120 A pk) |
+| `IsoVSense` × 5 | AC and bus sense | anti-surge resistor chain **inside the measured domain** + isolated amplifier + isolated 5 V bias (E25 / CB-3): AC against an artificial star, bus and midpoint against DCN |
+| `AuxPower` | house power | 110 W full-bus flyback (E26 rev C): NCP1252**D**, 220 µF VCC reservoir, D4 rev D on ETD39; brown-in 321 V; V24 / V15 / 3.3 V; re-simulated per SKU at 342 / 560 / 850 V |
+| harness header `JICA` | control boundary | the 40-way PFC bundle to the card; default-OFF pull-downs on every enable, relay drive and PWM at the receiving end — see [interconnect](../../docs/interconnect.md) |
 
-### Control interface (E35 — the MCU moved to the card)
-
-Since the card split there is **no MCU on this board**: the 88-way `JA` slot carries PWM0–11,
-AIN0–12, temperature, DO/DI, `GATE_EN`/`FLT`, the link UART and the ROLE/RATING straps. The
-normative way map is `cardMap("acdc", lanes)` in
-[`control-card.tsx`](../../packages/common-components/control-card.tsx); the MCU pin allocation
-behind it is [`docs/mcu-pin-allocation-gd32.md`](../../docs/mcu-pin-allocation-gd32.md), and the
-module-interconnect audit proves every expected way lands on real electronics on both sides.
-
----
-
-## 🔺 DC-DC board ([`dcdc.tsx`](dcdc.tsx) → `DcDcBoard{channels:1}`)
+## 🔺 DC-DC board — [`dcdc.tsx`](dcdc.tsx)
 
 ```mermaid
 flowchart LR
-  ST["DCP/DCN/PE<br/>pillars"] --> CF["CF0–2<br/>1 µF/900 V film"]
-  CF --> L1["LlcHalfBridgeLeg ×3<br/>1200 V SiC + 2 DriverCh"]
-  L1 --> TK["LlcSection ×3<br/>4× 46 nF Cr ∥ · 4.0 µH trim<br/>resonant CT · PQ50 stack 7:7:7"]
-  TK --> BR["2× JBS bridges / section<br/>→ bank A + bank B"]
-  BR --> BC["bank caps<br/>2× (2-series 470 µF strings) + film (E29)"]
-  BC --> SP["S/P matrix<br/>KSER · KPARA/B + 10 Ω pre-insert<br/>K_OUT (E12b gate)"]
-  SP --> OF["output filter<br/>2× 4.7 µF + Y caps"] --> SH["manganin shunt<br/>+ NSI1200"] --> OUT["OUT± M8 studs"]
-  SP -.coils.- ULN["ULN2803"]
-  MCU2["control card, DC-DC slot<br/>88-way JB"] -.-> ULN
-  MCU2 -.-> HMI["HMI: 2 buttons<br/>2-digit 7-seg + 74HC595"]
-  MCU2 -.-> CAN["NSI1042 iso CAN<br/>+ choke + TVS + 120 Ω jumper"]
+  ST["DCP · DCN · PE<br/>pillars"] --> CF["film commutation caps"]
+  CF --> L1["3 × LLC half-bridge leg<br/>1200 V SiC + 2 driver channels"]
+  L1 --> TK["3 × LLC section<br/>4 × 46 nF Cr · 4.0 µH trim bin<br/>resonant CT · 3 × PQ50 7:7:7"]
+  TK --> BR["2 × JBS bridges per section<br/>→ bank A + bank B"]
+  BR --> BC["bank caps<br/>2-series 470 µF strings + film"]
+  BC --> SP["S/P matrix<br/>KSER · KPARA / KPARB + 10 Ω pre-insertion<br/>K_OUT with the E12b gate"]
+  SP --> OF["output filter"] --> SH["manganin shunt<br/>+ NSI1200"] --> OUT["OUT± M8 studs"]
+  CARD["control card · 88-way slot JB"] -.-> SP
+  CARD -.-> HMI["HMI · 2 buttons<br/>2-digit 7-segment"]
+  CARD -.-> CAN["isolated CAN<br/>NSI1042-DSWR"]
+  style TK stroke:#1a9fb3,stroke-width:2.5px
+  style CARD stroke:#2ea44f,stroke-width:2.5px
 ```
-
-### Cell-by-cell
 
 | Cell | What it is | The engineering inside |
 |---|---|---|
-| `LlcHalfBridgeLeg` ×3 | resonant legs | SG2M023120LJ 1200 V/23 mΩ pair, Rg **4.7/2.2 Ω** (E6), per-node RC; runs 100–203 kHz PFM around fr = 140 kHz; **ZVS confirmed at every simulated gate edge** |
-| `LlcSection` ×3 | tank + isolation | Cr = 4× 46 nF/1200 V pulse PP ∥ · trim inductor **binned to the mated transformer's measured leakage** (D2 rev B — the §37 Monte-Carlo fix) · resonant CT 1:100 · transformer **3× PQ50/50, 7:7:7**, Lm 63 µH gap-ground ±7 %, dual TIW secondaries, reinforced insulation, PD-sample-tested ([D3](../../docs/magnetics.md)) |
-| dual JBS bridges | rectification | 8× 1200 V/20 A JBS per section (banks A+B) — chose diodes over SR on quantified ₹/W (E11: SR flips only above ₹41/W cooling cost); SR stays a premium variant |
-| `SeriesParallelRelayMatrix` | range extension | K_SER · K_PARA/B **with 10 Ω pulse-rated pre-insertion aux relays** (hard 2 V-mismatch close = 205 A — simulated, E12) · **K_OUT with the E12b gate** · all relays mirror-contact w/ per-relay readback (E30) · weld detect 1.5 V/200 ms **+ hardware F.19 path** |
-| `OutputShunt` | current truth | manganin + NSI1200 iso-amp, Kelvin; ±0.2 % post-cal (Monte-Carlo) |
-| `ConfigHmi` | field config | 2 buttons + 2-digit 7-seg via 74HC595 + 2 NPN mux: CAN address 00–63, group, `F.xx` fault paging ([spec](../../docs/interconnect.md)) |
-| `IsolatedCan` | external world | CAN 2.0B 125 kbps 29-bit, isolated + CM choke + TVS + jumpered 120 Ω ([protocol](../../docs/can-protocol.md)) |
-| `CoilDriver` | relay drive | ULN2803, 24 V coils, flyback-clamped |
+| `LlcHalfBridgeLeg` × 3 | resonant legs | SG2M023120LJ 1200 V / 23 mΩ pair, Rg 4.7 / 2.2 Ω (E6), **22 pF DESAT blank** (E60); PFM from ≈ 80 kHz at the gain-critical corner to ≈ 180 kHz, phase shift at low bank voltage; **ZVS on every edge of every power-solved corner** |
+| `LlcSection` × 3 | tank and isolation | Cr = 4 × 46 nF / 1200 V pulse polypropylene · trim inductor D2-30 (2 × PQ50, N = 4, 1350 × 0.1 litz) **binned against the mated transformer's measured leakage** · resonant CT + **1.2 Ω burden** (F.11 85 A pk) · transformer **3 × PQ50/50, 7:7:7**, Lm 63 µH ± 7 %, 0.071 mm litz primary + 0.10 mm foil secondaries, reinforced barrier, PD-sampled ([D2 / D3](../../docs/magnetics.md)) |
+| JBS bridges | rectification | 24 × C4D20120D 1200 V / 20 A across the three sections — diodes over synchronous rectification on a quantified ₹/W (E11; SR stays a premium variant) |
+| `SeriesParallelRelayMatrix` | range extension | K_SER · K_PARA / K_PARB with **10 Ω pulse-rated pre-insertion** (a hard close across a 2 V mismatch is 205 A — simulated, E12) · **K_OUT with the E12b gate** · mirror contact readback on every relay (E30) · two-stage 74HC02 hardware exclusion (R5-D) |
+| `OutputShunt` | current truth | manganin + NSI1200 isolated amplifier, Kelvin taps; ± 0.2 % after EOL calibration (Monte-Carlo) |
+| `ConfigHmi` | field configuration | 2 buttons + 2-digit display via 74HC595 + 2 NPN multiplexers — address, group, `F.xx` paging |
+| `IsolatedCan` | external world | CAN 2.0B, 125 kbps, 29-bit, isolated + CM choke + TVS + jumpered 120 Ω ([protocol](../../docs/can-protocol.md)) |
+| `CoilDriver` | relay drive | 24 V coils, flyback-clamped, economised to ~40 % hold after pull-in |
 
-### Control interface (E35 — the MCU moved to the card)
+## Control interface (E40 — one brain per module)
 
-Same card p/n in the `JB` slot, DC-DC role: LLC PWM pairs on the HRTIMER, resonant CTs, bank/output
-senses, S/P relay drives + readbacks, HMI, and the isolated CAN. Normative way map:
-`cardMap("dcdc", channels)`; audit and pin allocation as on the AC-DC page.
+The card sits only in the DC-DC board's 88-way `JB` slot and runs both boards: LLC pairs on HRTIMER units, the
+three Vienna PWMs over the harness, resonant and line CTs, bank / output senses, S/P relay drives and readbacks, HMI
+and isolated CAN. The pin map is generated by `calculations/control/umod-pinmap.mts` (75 of 82 MCU pins), and the
+module-interconnect audit proves every way lands on real electronics on both sides.
+
+## Protections on this pair
+
+| Layer | On this module |
+|---|---|
+| **Hardware, µs** | line CT comparators F.01 120 A pk → HRTIMER kill · resonant CT comparators F.11 85 A pk · DESAT on every SiC switch · bus OVP 860 V · output OVP · driver UVLO (aux collapse holds gates low) |
+| **Safety chain** | watchdog WDO ≡ NRST (a hung brain restarts with enables low) · GATE_EN chains with default-OFF pull-downs across the harness · two-stage relay exclusion |
+| **Supervisory** | the full F.xx ladder ([protection thresholds](../../docs/protection-thresholds.md)), exercised by the 26-scenario suite and the C firmware (**54 / 54** under sanitizers) |
+
+## Top cost drivers (@10k, from [`bom-30kw.csv`](../../calculations/out/bom-30kw.csv))
+
+| MPN | Description | Qty | ₹ / unit | ₹ ext |
+|---|---|---:|---:|---:|
+| `IND-PFC-165u` | PFC choke D1-30, 3 × 0077908A7 sendust | 3 | 828 | **2,484** |
+| `ELH-470u450` | 470 µF 450 V snap-in, −40 °C category (DC link + bank strings) | 18 | 120 | **2,160** |
+| `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L | 6 | 312 | **1,872** |
+| `C4D20120D` | SiC JBS 1200 V 20 A (secondary bridges) | 24 | 72 | **1,728** |
+| `XFMR-LLC-10K` | LLC section transformer 3 × PQ50/50, 7:7:7 | 3 | 544 | **1,632** |
+| `B3M010C075Z` | SiC MOSFET 750 V 10 mΩ TO-247-4 | 6 | 264 | **1,584** |
+| `PP-46n-1200` | 46 nF 1200 V pulse film (resonant) | 12 | 54 | **653** |
+
+Mechanical lines (assembly and EOL ₹1,653, heatsinks ₹1,305, the two PCBs ₹2,262, enclosure ₹870) and the lever
+plan are in the [cost roll-up](../../docs/bom-cost.md); the method is in the [BOM guide](../../docs/bom-guide.md).
 
 ---
 
-## Protections living on this pair
+<div align="center">
+<sub><a href="../README-product-structure.md">← Product Structure</a> &nbsp;·&nbsp; <a href="../../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../../docs/protection-thresholds.md">Protection Thresholds →</a></sub>
 
-HW-fast: per-phase CT comparators (105 A pk) → HRTIM kill · DESAT per SiC · bus OVP 860 V ·
-output OVP · driver UVLO chain (aux collapse ⇒ gates held low) · per-board windowed watchdog into the `GATE_EN` wired-AND (E27) across
-the harness. Supervisory: the full 32-row table ([protection-thresholds.md](../../docs/protection-thresholds.md)),
-exercised by the [26-scenario suite](../../docs/simulation-report.md) and the
-[C firmware](../../firmware/) (45/45 under sanitizers).
-
-## Top cost drivers (BOM-exact @1k, from [`bom-30kw.csv`](../../calculations/out/bom-30kw.csv))
-
-| MPN | Description | Qty | ₹/unit | ₹ ext |
-|---|---|---|---|---|
-| `IND-PFC-165u` | PFC choke 165 µH, 3× T79 26µ sendust, N=36 | 3 | 1035 | **3,105** |
-| `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L | 6 | 390 | **2,340** |
-| `SICJBS-1200-20` | SiC JBS 1200 V 20 A (secondary bridges) | 24 | 90 | **2,160** |
-| `ELH-470u450` | 470 µF 450 V snap-in (incl. 2-series bank strings, E29) | 18 | 150 | **2,700** |
-| `XFMR-LLC-10K` | LLC transformer 3× PQ50/50, 7:7:7 | 3 | 680 | **2,040** |
-| `B3M010C075Z` | SiC MOSFET 750 V 10 mΩ TO-247-4 | 6 | 330 | **1,980** |
-| `PP-44n-1200` | 46 nF 1200 V pulse film (resonant) | 12 | 68 | **816** |
-| `NSI6611` | iso gate driver, DESAT/Miller/UVLO | 9 | 85 | **765** |
-| `SICJBS-1200-40` | SiC JBS 1200 V 40 A (boost) | 6 | 120 | **720** |
-| `CMC-3PH-2mH` | 3-φ CM choke, nanocrystalline | 2 | 210 | **420** |
-
-Category split and the red-line lever plan: [`docs/bom-guide.md`](../../docs/bom-guide.md).
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

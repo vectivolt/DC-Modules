@@ -1,13 +1,17 @@
-# Thermal Report — rev E60 (per-SKU loss budgets, cooling, junction and magnetics temperatures)
+<img src="assets/banner-power.svg" alt="" width="100%"/>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/>
-  <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/>
-  <img src="https://img.shields.io/badge/grid-5,544_pts_·_0_fail-2ea44f?style=flat-square" alt="grid"/>
-  <img src="https://img.shields.io/badge/Tj-≤150_°C_every_SKU-2ea44f?style=flat-square" alt="tj"/>
+# 🌡️ Thermal Report
+
+<sub>Where every watt goes, how it leaves the box, and the temperatures that result</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/grid-5544_pts_·_0_fail-2ea44f?style=flat-square" alt="grid: 5544 pts · 0 fail"/>
 </p>
 
+> [!NOTE]
 > **Purpose** — where every watt goes in the four module SKUs, how it leaves the box, and the temperatures that
 > result: semiconductors, magnetics and coolant, with the derating policy.
 >
@@ -178,3 +182,11 @@ plot `simulation-results/30kw/plots/derating-curve.svg`.
   (E55: 100 kW = 2 × 50, 150 kW = 3 × 50 + CSU).
 
 </details>
+
+---
+
+<div align="center">
+<sub><a href="current-coordination.md">← Current & Protection Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="insulation-coordination.md">Insulation Coordination →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

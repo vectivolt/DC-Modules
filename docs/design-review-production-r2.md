@@ -1,11 +1,20 @@
-# Production-Readiness Design Review R2 — Independent Re-Audit of Schematic Rev C 🔎
+<img src="assets/banner-history.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORD-555?style=flat-square" alt="HISTORICAL__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+# 🗄️ Production Design Review R2
 
-> **Purpose** — R2 re-audit (dated record) — 7 CBs + HR/MR set, all closed at rev D.
->
-> **Gate coupling** — review-checks R2-* asserts derive from this record — gate-pinned path.
+<sub>The re-audit of schematic rev C — 7 critical blockers plus the HR/MR set, all closed at rev D</sub>
 
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--05-6e7781?style=flat-square" alt="record: 2026-09-05"/>
+</p>
+
+> [!NOTE]
+> **Historical record — production design review R2 (2026-09-05), kept verbatim.** The re-audit of schematic rev C:
+> 7 critical blockers plus the HR / MR set, all closed at rev D.
+> **Where it lives now:** the rev D rows in the [decision register](assumptions.md) · the `R2-*` asserts in
+> `calculations/review-checks.mjs`, which cite this file by path.
 
 **Date:** 2026-09-05 · **Target:** schematic rev C (cells v3 / boards v3 / parts-db rev C — the
 state that closed all 15 blockers of `design-review-production.md`).
@@ -372,3 +381,11 @@ cheap, local fix; none needs architecture. Fix CB-16…22 + the HR list, extend 
 *classes* can't regress, regenerate BOM/docs/η, re-run the four decks in §G — then this design is
 ready to spend money on boards. The power conversion core has now survived two hostile audits
 without a scratch; the support infrastructure needed a second pass, and got one.
+
+---
+
+<div align="center">
+<sub><a href="design-review-production.md">← Production Design Review R1</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="history/review-response-r3.md">Review Response R3 →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

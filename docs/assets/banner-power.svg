@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" width="1200" height="120" role="img" aria-label="DC-Modules documentation · Power stage and protection">
+<style>
+  .lbl{font:600 11px ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;letter-spacing:2.4px;fill:#8B949E}
+  .fam{font:600 17px -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;letter-spacing:.2px}
+  .grat{stroke:#8B949E;stroke-opacity:.22;stroke-width:1;stroke-dasharray:1 5}
+  .axis{stroke:#8B949E;stroke-opacity:.35;stroke-width:1}
+  .tr{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .scroll{animation:scroll var(--dur,12s) linear infinite}
+  @keyframes scroll{to{transform:translateX(var(--shift))}}
+  .sweep{animation:sweep 9s linear infinite}
+  @keyframes sweep{from{transform:translateX(0)}to{transform:translateX(880px)}}
+  .flow{animation:flow 2.8s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-80}}
+  .comet{animation:comet 7s linear infinite}
+  .pulse{animation:pulse 3.2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+  
+  @media (prefers-reduced-motion: reduce){.scroll,.sweep,.flow,.comet,.pulse{animation:none}}
+</style>
+<defs><clipPath id="win"><rect x="300" y="6" width="894" height="108" rx="6"/></clipPath></defs>
+<text class="lbl" x="28" y="48">DC-MODULES · DOCS</text>
+<text class="fam" x="28" y="76" fill="#1A9FB3">Power stage &amp; protection</text>
+<line x1="28" y1="90" x2="50" y2="90" stroke="#1A9FB3" stroke-width="3" stroke-linecap="round"/>
+<g clip-path="url(#win)"><line class="grat" x1="300" y1="10" x2="300" y2="110"/><line class="grat" x1="388" y1="10" x2="388" y2="110"/><line class="grat" x1="476" y1="10" x2="476" y2="110"/><line class="grat" x1="564" y1="10" x2="564" y2="110"/><line class="grat" x1="652" y1="10" x2="652" y2="110"/><line class="grat" x1="740" y1="10" x2="740" y2="110"/><line class="grat" x1="828" y1="10" x2="828" y2="110"/><line class="grat" x1="916" y1="10" x2="916" y2="110"/><line class="grat" x1="1004" y1="10" x2="1004" y2="110"/><line class="grat" x1="1092" y1="10" x2="1092" y2="110"/><line class="grat" x1="1180" y1="10" x2="1180" y2="110"/><line class="grat" x1="300" y1="30" x2="1192" y2="30"/><line class="grat" x1="300" y1="60" x2="1192" y2="60"/><line class="grat" x1="300" y1="90" x2="1192" y2="90"/><line class="axis" x1="300" y1="60" x2="1192" y2="60"/><line x1="300" y1="22" x2="1192" y2="22" stroke="#BC4E9C" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="1186" y="17" text-anchor="end" style="font:600 10px ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" fill="#BC4E9C">F.11 TRIP · ≥1.2× PEAK</text>
+<g class="scroll" style="--shift:-176px;--dur:6s"><path class="tr" stroke="#1A9FB3" d="M300,64L304,58.1L308,52.5L312,47.7L316,43.8L320,41L324,39.2L328,38.2L332,37.8L336,37.8L340,37.9L344,38L348,37.9L352,37.8L356,37.8L360,38.2L364,39.2L368,41L372,43.8L376,47.7L380,52.5L384,58.1L388,64L392,69.9L396,75.5L400,80.3L404,84.2L408,87L412,88.8L416,89.8L420,90.2L424,90.2L428,90.1L432,90L436,90.1L440,90.2L444,90.2L448,89.8L452,88.8L456,87L460,84.2L464,80.3L468,75.5L472,69.9L476,64L480,58.1L484,52.5L488,47.7L492,43.8L496,41L500,39.2L504,38.2L508,37.8L512,37.8L516,37.9L520,38L524,37.9L528,37.8L532,37.8L536,38.2L540,39.2L544,41L548,43.8L552,47.7L556,52.5L560,58.1L564,64L568,69.9L572,75.5L576,80.3L580,84.2L584,87L588,88.8L592,89.8L596,90.2L600,90.2L604,90.1L608,90L612,90.1L616,90.2L620,90.2L624,89.8L628,88.8L632,87L636,84.2L640,80.3L644,75.5L648,69.9L652,64L656,58.1L660,52.5L664,47.7L668,43.8L672,41L676,39.2L680,38.2L684,37.8L688,37.8L692,37.9L696,38L700,37.9L704,37.8L708,37.8L712,38.2L716,39.2L720,41L724,43.8L728,47.7L732,52.5L736,58.1L740,64L744,69.9L748,75.5L752,80.3L756,84.2L760,87L764,88.8L768,89.8L772,90.2L776,90.2L780,90.1L784,90L788,90.1L792,90.2L796,90.2L800,89.8L804,88.8L808,87L812,84.2L816,80.3L820,75.5L824,69.9L828,64L832,58.1L836,52.5L840,47.7L844,43.8L848,41L852,39.2L856,38.2L860,37.8L864,37.8L868,37.9L872,38L876,37.9L880,37.8L884,37.8L888,38.2L892,39.2L896,41L900,43.8L904,47.7L908,52.5L912,58.1L916,64L920,69.9L924,75.5L928,80.3L932,84.2L936,87L940,88.8L944,89.8L948,90.2L952,90.2L956,90.1L960,90L964,90.1L968,90.2L972,90.2L976,89.8L980,88.8L984,87L988,84.2L992,80.3L996,75.5L1000,69.9L1004,64L1008,58.1L1012,52.5L1016,47.7L1020,43.8L1024,41L1028,39.2L1032,38.2L1036,37.8L1040,37.8L1044,37.9L1048,38L1052,37.9L1056,37.8L1060,37.8L1064,38.2L1068,39.2L1072,41L1076,43.8L1080,47.7L1084,52.5L1088,58.1L1092,64L1096,69.9L1100,75.5L1104,80.3L1108,84.2L1112,87L1116,88.8L1120,89.8L1124,90.2L1128,90.2L1132,90.1L1136,90L1140,90.1L1144,90.2L1148,90.2L1152,89.8L1156,88.8L1160,87L1164,84.2L1168,80.3L1172,75.5L1176,69.9L1180,64L1184,58.1L1188,52.5L1192,47.7L1196,43.8L1200,41L1204,39.2L1208,38.2L1212,37.8L1216,37.8L1220,37.9L1224,38L1228,37.9L1232,37.8L1236,37.8L1240,38.2L1244,39.2L1248,41L1252,43.8L1256,47.7L1260,52.5L1264,58.1L1268,64L1272,69.9L1276,75.5L1280,80.3L1284,84.2L1288,87L1292,88.8L1296,89.8L1300,90.2L1304,90.2L1308,90.1L1312,90L1316,90.1L1320,90.2L1324,90.2L1328,89.8L1332,88.8L1336,87L1340,84.2L1344,80.3L1348,75.5L1352,69.9L1356,64L1360,58.1L1364,52.5L1368,47.7L1372,43.8L1376,41"/></g></g>
+</svg>

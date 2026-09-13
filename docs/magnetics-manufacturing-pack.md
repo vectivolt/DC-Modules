@@ -1,7 +1,17 @@
-# Magnetics Manufacturing Pack — RFQ-ready spec sheets (E51, 2026-09-12)
+<img src="assets/banner-magnetics.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square" alt="RFQ__PACK"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/> <img src="https://img.shields.io/badge/AC_copper-Dowell_·_Sullivan_gated-2ea44f?style=flat-square" alt="ac"/></p>
+# 📦 Magnetics RFQ Pack
 
+<sub>One quote-ready sheet per magnetic, with the sourcing directory and the first-article method</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square" alt="status: RFQ pack"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/rfq--audit-0_missing_fields-2ea44f?style=flat-square" alt="rfq-audit: 0 missing fields"/>
+</p>
+
+> [!NOTE]
 > **Purpose** — One controlled spec sheet per magnetic — quote-ready: electricals, construction, insulation, parasitics, thermal, production tests, sourcing.
 >
 > **Gate coupling** — magnetics-rfq-audit: 0 missing fields · mag-sync (E59) pins every identity + computed mass · **conductor-audit (E60) computes every Rac row at the simulated currents**. Build process: [`magnetics-build-instructions.md`](magnetics-build-instructions.md).
@@ -24,6 +34,38 @@ Drawing numbers: `PMP-MAG-<part>-<sku>` rev letter per row. Common requirements 
 to every sheet. Insulation values follow [`insulation-coordination.md`](insulation-coordination.md)
 (PD2 / material IIIa; reinforced pri↔sec = 12.6 mm creepage / 8.0 mm clearance / 4 kV DC hipot
 100 %).
+
+## Sheet index
+
+| Sheet | Part | Rev | Order code | Qty / module | Quote note |
+|---|---|---|---|---:|---|
+| [PMP-MAG-D1-30](#pmp-mag-d1-30-rev-b--pfc-swing-choke-165-µh-class-ind-pfc-165u--qty-3) | PFC swing choke 165 µH class | B | `IND-PFC-165u` | 3 | 3 × 0077908A7, lot-trim ± 1 turn |
+| [PMP-MAG-D1-40](#pmp-mag-d1-40-rev-b-e51--pfc-swing-choke-40-kw-ind-pfc-116u-40--qty-3) | PFC swing choke 40 kW | B (E51) | `IND-PFC-116u-40` | 3 | 5-stack, N = 26 ± 1 |
+| [PMP-MAG-D1-50](#pmp-mag-d1-50-rev-b-e51--pfc-swing-choke-50-kw-ind-pfc-107u-50--qty-3) | PFC swing choke 50 kW | B (E51) | `IND-PFC-107u-50` | 3 | 5-stack, N = 24 ± 1 |
+| [PMP-MAG-D2-30](#pmp-mag-d2-30-rev-c--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3) | resonant trim bin set | C | `IND-TRIM-BIN4` | 3 | 2 × PQ50, 4 bins |
+| [PMP-MAG-D2-40](#pmp-mag-d2-40-rev-d-e60--trim-bin-set-40-kw-ind-trim-e70-40--qty-3) | resonant trim bin set 40 kW | **D (E60)** | `IND-TRIM-E70-40` | 3 | 1 × E70, 4150 × 0.071 litz |
+| [PMP-MAG-D2-50](#pmp-mag-d2-50-rev-d-e60--trim-bin-set-50-kw-ind-trim-e70-50--qty-3) | resonant trim bin set 50 kW | **D (E60)** | `IND-TRIM-E70-50` | 3 | 2 × E70, 2500 × 0.1 litz |
+| [PMP-MAG-D3-30](#pmp-mag-d3-30-rev-c-e51-construction--llc-transformer-10-kw-xfmr-llc-10k--qty-3) | LLC transformer 10 kW | C (E60 copper) | `XFMR-LLC-10K` | 3 | reinforced barrier — safety-critical traveler |
+| [PMP-MAG-D3-40](#pmp-mag-d3-40-rev-b-e51--llc-transformer-136-kw-xfmr-llc-2e70-40--qty-3) | LLC transformer 13.6 kW | B (E60 copper) | `XFMR-LLC-2E70-40` | 3 | web-bond to the extrusion |
+| [PMP-MAG-D3-50](#pmp-mag-d3-50-rev-b-e51--llc-transformer-17-kw-xfmr-llc-2e70-50--qty-3) | LLC transformer 17 kW | B (E60 copper) | `XFMR-LLC-2E70-50` | 3 | same former as D3-40 |
+| [PMP-MAG-D4](#pmp-mag-d4-rev-d-e52--aux-flyback-transformer-xfmr-aux-fly-d--qty-1) | aux flyback transformer | D (E52) | `XFMR-AUX-FLY-D` | 1 | reinforced — 100 % hipot |
+| [PMP-MAG-D6](#pmp-mag-d6-304050-rev-c--dm-line-chokes-dm-choke-30-40-50--qty-3-each) | DM line chokes | C | `DM-CHOKE-30/-40/-50` | 3 | engine-designed, crest-biased floors |
+| [PMP-MAG-D7](#pmp-mag-d7-40-50-rev-a--3-phase-cm-chokes-cmc-3ph-2mh-sku--qty-2-each) | 3-phase CM chokes 40 / 50 kW | A | `CMC-3PH-2mH-SKU` | 2 | 30 kW buys the Schaffner catalog part |
+| [CT buy specs](#ct-buy-specs-catalog--quote-bare-burden-lives-on-the-pcb) | line and resonant CTs | — | Talema ACX / AS | 3 + 3 | quote bare — the burden lives on the PCB |
+
+## From quote to production
+
+```mermaid
+flowchart LR
+  Q["RFQ<br/>quote this rev"] --> FA["first article<br/>dimensions · electrical · Rac @ 140 kHz"]
+  FA --> TS["thermal type-test<br/>+ thermal shock −40 ↔ +125 °C"]
+  TS --> LK{"D3 only<br/>leakage vs spacer curve"}
+  LK --> EQ{"non-Magnetics sendust?<br/>3-temperature L(I) equivalence"}
+  EQ --> PROD["production<br/>100 % rows · SPC on Lm / leakage / L₀"]
+  PROD --> EVT["EVT hooks gate BOM freeze<br/>T-09 · T-18 · T-31"]
+  style FA stroke:#d19a00,stroke-width:2px
+  style PROD stroke:#2ea44f,stroke-width:2px
+```
 
 ## C — Common requirements (all parts)
 
@@ -244,7 +286,7 @@ hipot. **T57 core p/n must be sample-verified for AL + roll-off before PO (E51 s
    measure leakage @140 kHz, freeze the spacer for 3±0.7 µH, record the curve in the FA report.
    Then production leakage spread feeds the existing D2 bin-kitting flow unchanged.
 3. **Sendust equivalence (any non-Magnetics core):** measure L(I) 0→1.3×Ipk on 5 cores/lot vs the
-   A3 anchors — **at −25 °C, +25 °C and +100 °C (E58: the design carries a ±3 % µ temperature band;
+   A3 anchors — **at −30 °C, +25 °C and +100 °C (E58 at −25 °C, E61 aligned to the A11 rev C −30 °C floor: the design carries a ±3 % µ temperature band;
    a material outside it fails equivalence even if the 25 °C curve matches)**; a lot outside ±8 % AL or softer roll-off is rejected — the drawings lot-trim ±1
    turn, they do not absorb material substitution.
 4. **Production:** 100 %-test rows above; SPC on Lm/leakage (D3) and L₀ (D1) — drift beyond ±1σ
@@ -252,3 +294,11 @@ hipot. **T57 core p/n must be sample-verified for AL + roll-off before PO (E51 s
 5. **EVT hooks that gate BOM freeze:** T-09/T-18 (D4 clamp + thermal) · powered tank validation
    (D2 bins + D3 leakage on real hardware) · harness-injection metering test (E40 risk) ·
    both-polarity SC timing (R5-K/R6-C) · loaded PV-gate Vgs (R8-C).
+
+---
+
+<div align="center">
+<sub><a href="conductor-selection.md">← Conductor Selection</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-build-instructions.md">Magnetics Build Instructions →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

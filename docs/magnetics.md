@@ -1,7 +1,17 @@
-# Magnetics — Designs & Manufacturing Drawings (§11/§14/§49-14/15)
+<img src="assets/banner-magnetics.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/> <img src="https://img.shields.io/badge/gates-conductor--audit_·_current--coordination-2ea44f?style=flat-square" alt="gates"/></p>
+# 🧲 Magnetics Drawings D1–D7
 
+<sub>Every custom magnetic — identity, construction, acceptance lines and the per-SKU variants</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/gate-mag--sync_·_rfq--audit_·_conductor--audit-2ea44f?style=flat-square" alt="gate: mag-sync · rfq-audit · conductor-audit"/>
+</p>
+
+> [!NOTE]
 > **Purpose** — Manufacturing drawings D1–D7 with acceptance lines + per-variant tables. RFQ sheets: magnetics-manufacturing-pack.md.
 >
 > **Gate coupling** — magnetics-rfq-audit (field completeness) · stress-audit D1/D2/D3/D6 families (computed) ·
@@ -24,11 +34,38 @@
 > [`conductor-selection.md`](conductor-selection.md).
 
 
+## At a glance — the magnetics set
+
+| Part | Function | 30 kW | 40 kW | 50 kW (liquid and air) | Kept honest by |
+|---|---|---|---|---|---|
+| [**D1**](#d1-rev-b--pfc-choke-165-µh-swing-pn-ind-pfc-165u--qty-3-per-module) · × 3 | PFC boost choke | 3 × 0077908A7, N = 39 ± 1 | 5 × 0077908A7, N = 26 ± 1 | 5 × 0077908A7, N = 24 ± 1 | `mag-sync` · `stress-audit` · `temp-critique` |
+| [**D2**](#d2-rev-c--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3-per-module) · × 3 | resonant trim, binned to the transformer's leakage | 2 × PQ50, N 4 · 3.3 / 3.65 / 4.0 / 4.35 µH | 1 × E70, N 5 · 3.2 / 3.5 / 3.8 µH | 2 × E70, N 3 · 2.8 / 3.0 / 3.2 µH | `conductor-audit` · `current-coordination` |
+| [**D3**](#d3--llc-section-transformer-10-kw-xfmr-llc-10k--qty-3-per-module) · × 3 | LLC section transformer | 3 × PQ50, 7:7:7 · foil 0.10 mm | 2 × E70, 6:6:6 · foil 0.127 mm | 2 × E70, 5:5:5 · foil 0.127 mm | `conductor-audit` · `temp-critique` |
+| [**D4**](aux-transformer-D4.md) · × 1 | 110 W aux flyback | ETD39 rev D | = | = | `stress-audit` D4 Bpk |
+| [**D6**](#d6--dm-line-chokes-dm-22u-sku--qty-3-per-module-one-per-phase-hr-9-new-drawing) · × 3 | differential-mode line choke | 2 × T48 60µ, N 7 | 2 × T57 60µ, N 8 | 3 × T57 60µ, N 8 | `dm-choke-design` · `lisn-precompliance` |
+| [**D7**](#d7--cm-chokes-cmc-3ph-2mh-sku--qty-2-per-sku-winding-r2-hr-18-new-drawing) · × 2 | 3-phase common-mode choke | Schaffner RT8131-63-2M8 class | custom 75 A | custom 95 A | ΔT acceptance |
+| [**CT**](#ct--current-transformers--qty-3-each-per-module--catalog-parts-audit-2026-09-08) · × 3 + 3 | line and resonant current sensing | ACX-1100 · 22 Ω / AS-404 · 1.2 Ω | ACX-1150 · 18 Ω / 80 A class · 0.91 Ω | ACX-1150 · 13 Ω / 100 A class · 0.75 Ω | `current-coordination` |
+
+```mermaid
+flowchart LR
+  AC(["3-φ AC"]) --> D7["D7 · CM chokes × 2"] --> D6["D6 · DM chokes × 3"] --> D1["D1 · PFC chokes × 3"]
+  D1 --> BUS[("DC bus 650–830 V")]
+  BUS --> TANK["Cr + D2 trim × 3"] --> D3["D3 transformers × 3"] --> BANKS["banks A + B"]
+  BUS --> D4["D4 aux flyback × 1"]
+  LCT["line CTs × 3"] -.- D1
+  RCT["resonant CTs × 3"] -.- TANK
+  style D1 stroke:#d19a00,stroke-width:2px
+  style D3 stroke:#1a9fb3,stroke-width:2px
+  style TANK stroke:#b8732e,stroke-width:2px
+```
+
+## Drawings
+
 All values trace to `calculations/pfc/pfc-design.mjs` and `calculations/llc/llc-design.mjs`.
 Acceptance limits are the production test spec (EOL §45). Material fits are catalog-class,
 marked VERIFY (A3/A4) — first-article measurement closes them.
 
-## D1 rev B — PFC choke, 165 µH swing (p/n IND-PFC-165u) — qty 3/6/12 per SKU
+## D1 rev B — PFC choke, 165 µH swing (p/n IND-PFC-165u) — qty 3 per module
 
 **Rev B (margin audit 2026-09-08, F4):** re-issued against the REAL catalog core and the
 calculator's selected copper. Rev A specified 13.75 mm²/N=36, which fails its own Rdc line
@@ -50,7 +87,7 @@ and 71 µH at 78 A, below acceptance.
 | Mount | center bolt M6 + silicone pad + epoxy band; mass **~2.2 kg (computed — mag-sync gate, E59: core 0.96 + Cu 1.06 + build; the old ~1.0 was eyeballed)** |
 | Hi-pot | none (line-potential part; board-level hipot covers) |
 
-## D2 rev C — Resonant trim inductor bin set (IND-TRIM-BIN4) — qty 3/6/12
+## D2 rev C — Resonant trim inductor bin set (IND-TRIM-BIN4) — qty 3 per module
 
 **Rev C (margin audit 2026-09-08, F1): core technology changed sendust → GAPPED FERRITE.** The
 rev-B sendust toroid (OD33 µ60, N≈9) carries the full tank current — 46 A rms *sinusoidal* at
@@ -123,8 +160,10 @@ Rated windings, D6-style:
 | SKU | I_rms/line | Core | Winding | Cu loss/choke (calc) |
 |---|---|---|---|---|
 | 30 kW | 55 A | nanocrystalline OD62 | 3× 8 T, 10 mm² foil 0.3×33 | ≈ 11 W |
-| 60 kW | 110 A | OD80 | 3× 7 T, 25 mm² foil 0.5×50 | ≈ 16 W |
-| 120 kW | 220 A | OD102 (or 2× OD80 stacked) | 3× 6 T, 50 mm² foil/busbar | ≈ 36 W |
+| 40 kW | 73.3 A | nanocrystalline OD62 (same core) | 3× 8 T, 13.3 mm² foil (CSA × 4/3 at constant J) | ≈ 15 W |
+| 50 kW | 91.6 A | nanocrystalline OD62 (same core) | 3× 8 T, 16.7 mm² foil (CSA × 5/3 at constant J) | ≈ 19 W |
+
+*E61: the 60 / 120 kW rows retired with their boards; the 40 / 50 kW rows restate the E41 / E42 variant windings and the loss-budget CMC lines.*
 
 L_cm ≥ 2 mH @10 kHz all SKUs; leakage (DM) ~9 µH doubles as DM filter stage (re-verify at the new
 turns at EMI rev). ΔT ≤ 45 K at I_rms acceptance (thermocouple, like D1/D6). Hi-pot line–line
@@ -138,10 +177,10 @@ custom drawing then becomes the second source (Schaffner is single-source post-T
 custom-wind fallback cores: VAC T60006 via Mouser singles, or King Magnetics rings). 60/120 kW
 reference windings stay custom — nothing in any catalog reaches 110/220 A at ≥2 mH.
 
-## CT — current transformers — qty 3/6/12 each — **CATALOG PARTS (audit 2026-09-08)**
+## CT — current transformers — qty 3 each per module — **CATALOG PARTS (audit 2026-09-08)**
 
 - Line CT: **Talema ACX-1100** (2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins — made
-  at Talema Salem, India; closes the CT-100A REVIEW line). Burden on PCB **27 Ω → 0.59 V/55 A rms;
+  at Talema Salem, India; closes the CT-100A REVIEW line). Burden on PCB **27 Ω → 0.59 V/55 A rms** (→ **E60: 22 / 18 / 13 Ω for F.01 120 / 155 / 195 A pk; ACX-1150 at 40 / 50 kW**);
   150 A pk OC observability = 1.62 V above AVMID, inside the 3.3 V ADC rail** (R3 fix landed —
   the drawn 33 Ω put 150 A pk at 3.63 V, clipping the top of the protection range). Linearity
   ≤1% to 150 A pk. qty 3/6/12.
@@ -159,7 +198,8 @@ not serve it. Isolation busbar↔secondary 2.5 kV AC 1 min for the line CT (it s
 busbar); the resonant CT is tank-referenced, functional insulation only. Saturation: the line CT must not
 saturate below 150 A peak, CT-RES below 100 A peak — that is the overcurrent observability limit,
 so it is an acceptance test and not a typical. **ΔT ≤ 30 K** at rated primary current. The burden
-resistor is on the PCB, not in the part (33 Ω line, 2.0 Ω resonant) — quote the CT bare.
+resistor is on the PCB, not in the part (33 Ω line, 2.0 Ω resonant → **E60: 22 / 18 / 13 Ω line, 1.2 / 0.91 / 0.75 Ω
+resonant**; saturation acceptance → no saturation below 1.25 × (F.xx + race)) — quote the CT bare.
 
 
 ---
@@ -227,6 +267,13 @@ first article. `calculations/magnetics-rfq-audit.mjs` checks these fields are pr
 These come from `calculations/footprint-gen.mjs` (`MAGNETICS`), which is what the PCB land patterns
 were generated from. **Every toroid is PCB through-hole**: the winding leads are soldered directly
 into plated holes sized for the conductor. Drill is `√(4·CSA/π) + 1.2 mm`, pad = drill + 0.9 mm.
+
+> [!WARNING]
+> **This envelope table predates the E51, E52 and E60 revisions.** Its D6 and D7 rows are sized for the retired
+> 60 / 120 kW boards, its D4 row is the rev C ETD34 part (rev D is ETD39), its D2 conductor is pre-E52, and D1 / D3
+> show only the 30 kW construction — the 40 and 50 kW parts are 5 × T79 and 2 × E70. The current envelope of each
+> part is the **Mechanical** row of its sheet in the [RFQ pack](magnetics-manufacturing-pack.md); the land-pattern
+> queue is [footprints to draw](footprints-to-draw.md).
 
 **Audit 2026-09-08: rows marked (†) changed conductor or construction — their drills/keep-outs
 differ from the land patterns already generated; re-run `footprint-gen.mjs` before layout freeze.**
@@ -331,6 +378,14 @@ The air twin (`50kwa`) uses the **identical D1-50 / D2-50 / D3-50 / D6-50 / D7-5
 classes were set by current, not coolant, and `skuOverrides["50kwa"] = {...skuOverrides["50kw"]}`
 enforces it. Air-specific notes: D1-50's 37 K and D6-50's 19 K convective figures now sit in
 real fan airflow (conservative); D2-50's E44 litz rev (3000×0.1) exists precisely so one trim
-drawing serves both coolings at ≤40 K. The only new POWER part on the air twin is silicon, not
+drawing serves both coolings at ≤40 K (→ **superseded at E60 by D2-50 rev D — 2 × E70, N 3, 2500×0.1 litz — which serves
+both coolings at ≤ 40 K**). The only new POWER part on the air twin is silicon, not
 magnetic: 6× paralleled LLC FETs (E44 register row).
 
+---
+
+<div align="center">
+<sub><a href="busbar-drawings.md">← Busbar Drawings & Joint Spec</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="conductor-selection.md">Conductor Selection →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

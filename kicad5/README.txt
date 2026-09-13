@@ -1,18 +1,34 @@
-IMPORT THIS
-  DC-Modules-30kw-SHIP.zip
-  DC-Modules-60kw-SHIP.zip
-  DC-Modules-120kw-SHIP.zip
+DC-Modules release schematics (KiCad 5.1 legacy format)
+=========================================================
 
-Each is a KiCad 5.1 project (2 sheet .sch + .lib + .dcm + .pro + root .sch),
-the format EasyEDA Pro's "Import > KiCad" accepts.
-They are rebuilt automatically by calculations/kicad5-gen.mjs, so they always
-match the sheets in dc-modules-<sku>/.
+SIX RELEASE TARGETS - one SHIP zip each
+  DC-Modules-30kw-SHIP.zip          30 kW module      AC-DC + DC-DC sheets
+  DC-Modules-40kw-SHIP.zip          40 kW module      AC-DC + DC-DC sheets
+  DC-Modules-50kw-SHIP.zip          50 kW liquid      AC-DC + DC-DC sheets
+  DC-Modules-50kwa-SHIP.zip         50 kW air         AC-DC + DC-DC sheets
+  DC-Modules-control-card-SHIP.zip  control card (GD32G553VET7), one per module
+  DC-Modules-cabinet-SHIP.zip       150 kW cabinet    3 x 50 kW modules + CSU
 
-archive/ holds superseded zips from earlier iterations (final, r5..r8, v2..v4,
-for-EasyEDA). Their names are misleading -- "final" is NOT final. Kept only so
-nothing is lost; safe to delete.
+Each zip holds the root .sch, the board sheets, the symbol library (.lib + .dcm)
+and the .pro file. KiCad 6 and later open the legacy format by converting it on load.
 
-2026-09-08 (E35/E36): the 120 kW single-board sheet set is RETIRED — 120 kW is a cabinet
-(4x 30 kW / 2x 60 kW modules; cardMap() refuses 4 lanes since the card split). The last
-pre-split set is archive/DC-Modules-120kw-SHIP-PRE-CARD-SPLIT-FINAL.zip — reference only,
-it predates the E35 audit fixes (27R burden, D1/D2/D3/D6 magnetics revs, 80 A fuse).
+HOW THEY ARE MADE (never hand-edit - regenerate)
+  node calculations/sheet-pages.mjs <target>
+  node calculations/sheet-netlist-gen.mjs <target>
+  node calculations/kicad5-gen.mjs <target>      writes dc-modules-<target>/ AND re-zips the SHIP file
+  node calculations/kicad5-verify.mjs <target>   re-derives every pin from the files; must read 100.00 %
+  node calculations/kicad5-print.mjs <target>
+  node calculations/sheets-to-pdf.mjs            the 10 PDFs in boards/out-pdf/
+
+  Pins verified at E61: 30 kW 1764 · 40 kW 1850 · 50 kW 1874 · 50 kW air 1938 · card 291 · cabinet 67
+  Every component carries MPN and LCSC fields - see docs/lcsc-status.md.
+
+footprints/
+  Land patterns for the layout phase, parked since E36. The top-level .kicad_mod files
+  are generated from the dimensions in their names (calculations/footprint-gen.mjs).
+  The per-SKU folders (30kw / 60kw / 120kw) hold APPROXIMATE envelopes for the retired
+  30/60/120 kW set - regenerate them from the RFQ pack before layout.
+  Queue and blockers: docs/footprints-to-draw.md (node calculations/footprint-audit.mjs).
+
+The retired 60 kW and 120 kW single-board sheet sets are not on main; the pre-E50
+tree, including them, is on the archive/pre-focus-E49 branch.

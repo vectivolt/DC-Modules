@@ -1,12 +1,17 @@
-# Simulation Toolchain — which tools prove what, how we run them, and how to read the results (E60)
+<img src="assets/banner-verification.svg" alt="" width="100%"/>
 
-<p align="left">
-  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="live"/>
-  <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/>
-  <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine"/>
-  <img src="https://img.shields.io/badge/guards-physicality_·_tank_fingerprint-2ea44f?style=flat-square" alt="guards"/>
+# 🧪 Simulation Toolchain
+
+<sub>Which tool proves what, how to run it, how to read the result, and where fidelity ends</sub>
+
+<p>
+  <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
+  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine: ngspice-46 · node 20"/>
 </p>
 
+> [!NOTE]
 > **Purpose** — one place that says which simulator or library is trusted for which question, the exact command
 > that reproduces each result, what each result means, and where its fidelity ends.
 >
@@ -128,3 +133,11 @@ Result CSVs land in `simulation-results/<sku>/`; raw `.out` waveforms are git-ig
 Absolute switching energy (DPT T-01) · D3 S1-foil gap fringing (FEMMT, then T-31) · Kool Mµ loss under bias (first article) · cold soak −30 °C (T-32) · short-circuit withstand at the chosen blanks (both polarities) · closed-loop
 LLC load steps and Vienna dip recovery with the real HAL · CT saturation at the fitted burdens · Rac of first
 articles at 140 kHz · gap-fringing losses (FEMMT/first article) · EMI chamber (T-08) · thermal chamber.
+
+---
+
+<div align="center">
+<sub><a href="aux-transformer-D4.md">← D4 Aux Flyback Transformer</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="simulation-report.md">Simulation Report →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>

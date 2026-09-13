@@ -1,11 +1,20 @@
-# Production-Readiness Design Review — Independent Adversarial Audit 🔎
+<img src="assets/banner-history.svg" alt="" width="100%"/>
 
-<p align="left"><img src="https://img.shields.io/badge/status-HISTORICAL__RECORD-555?style=flat-square" alt="HISTORICAL__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+# 🗄️ Production Design Review R1
 
-> **Purpose** — R1 adversarial audit (dated record) — 15 blockers, all closed at rev C.
->
-> **Gate coupling** — review-checks derives its R1 asserts from this record — gate-pinned path.
+<sub>The first adversarial audit — 15 blockers, all closed at rev C</sub>
 
+<p>
+  <img src="https://img.shields.io/badge/status-HISTORICAL-6e7781?style=flat-square" alt="status: historical record"/>
+  <img src="https://img.shields.io/badge/indexed-E61-8b949e?style=flat-square" alt="indexed at E61"/>
+  <img src="https://img.shields.io/badge/record-2026--09--05-6e7781?style=flat-square" alt="record: 2026-09-05"/>
+</p>
+
+> [!NOTE]
+> **Historical record — production design review R1 (2026-09-05), kept verbatim.** 15 blockers across the six
+> boards, all closed at schematic rev C.
+> **Where it lives now:** the closures in the [decision register](assumptions.md) · the R1 asserts in
+> `calculations/review-checks.mjs`, which cite this file by path.
 
 **Scope:** complete schematic set (6 boards), BOM, calculations, firmware interfaces, protection
 architecture. **Explicitly excluded:** PCB placement/routing/stack-up (layout dependencies are
@@ -375,3 +384,11 @@ errors; **S** = `spice/aux/aux-flyback.mjs` rev B (342/560/850 V PASS); **G** = 
 **Residual open (by nature, not omission):** §K datasheet verifications (O-1…O-10 + iso-amp
 domain ratings + mirror-contact isolation), ECO-1 (E23 bias transformer), bench EVT T-01…T-18,
 PCB layout follow-ups §P (layout re-opens later per directive).
+
+---
+
+<div align="center">
+<sub><a href="design-basis-report.md">← Design Basis Report — Phase 1</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="design-review-production-r2.md">Production Design Review R2 →</a></sub>
+
+<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+</div>
