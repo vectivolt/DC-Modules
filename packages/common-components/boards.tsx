@@ -17,7 +17,7 @@
 // Pin maps below are the §20 no-silent-reuse artifact (asserted at build; numbers symbolic per A6).
 import {
   ViennaPhase, LlcHalfBridgeLeg, LlcSection, SplitDcLink, SeriesParallelRelayMatrix,
-  IsoVSense, Bias5Module, AnalogMid, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
+  IsoVSense, Bias5Module, AnalogMid, F11Window, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
   Interconnect40, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
   DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP,
   CardConnector,
@@ -519,7 +519,7 @@ return (
       ])}
       {/* RATING is the card's ONE identity strap (E24 rev F): 0R = 30 kW · 1k = 40 kW ·
           10k = 50 kW liquid (the stale two-card-era 10k→"60 kW" mapping is retired — no
-          single-brain 60 exists, E40) · 3.32k = cabinet CSU · open = no host, fault. */}
+          single-brain 60 exists, E40) · 3.32k = reserved (E66: cabinet CSU retired) · open = no host, fault. */}
       <resistor name="RROLEB" resistance={pw === 50 ? (air ? "15k" : "10k") : pw === 40 ? "1k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
@@ -723,6 +723,9 @@ return (
       
       <NtcInput id="TLLC" out="net.T_LLC" x={Q.ntcX} y={Q.ntcY} sx={84} sy={-10.5} />
       <NtcInput id="TXFR" out="net.T_XFMR" x={Q.ntcX} y={Q.ntcY - 10} sx={94} sy={-10.5} />
+      {/* E65: F.11 window ladder for the three section comparators — VH/VL = AVMID ± F.11·Rb/100 (30 kW 85 A·1.0 Ω ·
+          40 kW 115 A·0.82 Ω · 50 kW 145 A·0.68 Ω), ratiometric from the V3P3 the card exports */}
+      <F11Window rOut={pw === 50 ? "2k" : pw === 40 ? "2.15k" : "2.43k"} rMid={pw === 50 ? "5.9k" : pw === 40 ? "5.76k" : "5.11k"} x={Q.ntcX} y={Q.ntcY - 20} sx={84} sy={-5} />
 
       {/* control: MCU-LLC + safety chain + SWD + CAN + HMI + interconnect */}
       <IsolatedCan x={Q.canX} y={Q.canY} sx={48} sy={cYd} />
@@ -808,7 +811,7 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
       <trace from=".RAGTC > .pin2" to="net.DGND" schDisplayLabel="DGND" />
 
       {/* RATING (way ROLE1) is the card's one identity strap, pulled up HERE and coded on the
-          host: 0R = module controller · 3.32k = cabinet CSU · open = fault (E24 rev D). */}
+          host: 0R = module controller · 3.32k = reserved (E66) · open = fault (E24 rev D). */}
       <resistor name="RROLE1" resistance="10k" footprint="0603" pcbX={46} pcbY={-16} schX={32} schY={-12} schSectionName="ID" />
       <trace from=".RROLE1 > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
       <trace from=".RROLE1 > .pin2" to="net.ROLE1" schDisplayLabel="ROLE1" />

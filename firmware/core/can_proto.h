@@ -14,6 +14,7 @@ typedef struct { uint8_t prio, msgtype, dest, src, group; } pmp_can_hdr_t;
 typedef struct { uint32_t v_set_mv, i_set_ma; } pmp_set_output_t;
 typedef struct { bool enable, clear_faults, force_hv, force_lv, locate, walk_in; } pmp_module_ctl_t;
 typedef struct { uint16_t p_avail_10w, i_avail_10ma; uint8_t state, mode; uint16_t fault_lo; } pmp_status2_t;
+#include "group.h"   /* pmp_group_set_t — GROUP_SET 0x12 payload (E66) */
 
 uint32_t pmp_can_id(uint8_t prio, uint8_t msgtype, uint8_t dest, uint8_t src, uint8_t group);
 void pmp_can_id_parse(uint32_t id, pmp_can_hdr_t *h);
@@ -26,4 +27,6 @@ void pmp_enc_status2(uint8_t *d, const pmp_status2_t *s);
 bool pmp_dec_status2(const uint8_t *d, uint8_t dlc, pmp_status2_t *s);
 void pmp_enc_temps(uint8_t *d, int8_t inlet, int8_t pfc, int8_t llc, int8_t xfmr, uint16_t f1_10rpm, uint16_t f2_10rpm);
 void pmp_enc_bus(uint8_t *d, uint16_t vbp_10, uint16_t vbn_10, uint16_t va_10, uint16_t vb_10);
+void pmp_enc_group_set(uint8_t *d, const pmp_group_set_t *g);
+bool pmp_dec_group_set(const uint8_t *d, uint8_t dlc, pmp_group_set_t *g);
 #endif

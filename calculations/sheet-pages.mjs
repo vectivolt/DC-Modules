@@ -55,15 +55,15 @@ const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
     new RegExp(`^C${n}CF$`), new RegExp(`^D${n}C[PN]$`)]]);
 
 const PAGES = {
-  // 120 kW cabinet (E39): one page — 4 module blocks + CAN chain + CSU carrier.
+  // 150 kW cabinet (E39/E55/E66): one page — 3 module blocks + CAN trunk + controller port (no CSU).
   cab: [
     ["CABINET", [
       ["AC-ENTRY", [/^JCAB(L\d|PE)$/]],
       ["MODULES", [/^MOD\d$/]],
       ["DC-BUS", [/^JCABD[PN]$/]],
       ["CAN-CHAIN", [/^RT[12]$/]],
-      ["CSU-CARRIER", [/^(JCSU|RRCSU|PSU1|UCSU|RSHB|RSGB)$/]],
-    ], ["AC-ENTRY", "MODULES", "DC-BUS", "CAN-CHAIN", "CSU-CARRIER"]],
+      ["CTRL-PORT", [/^(CTRL1|RSHB|RSGB)$/]],
+    ], ["AC-ENTRY", "MODULES", "DC-BUS", "CAN-CHAIN", "CTRL-PORT"]],
   ],
   // Control card (E35): one page, the 8 card sections as blocks.
   card: [

@@ -259,8 +259,8 @@ for (const [sku, s] of Object.entries(SK)) {
 }
 ck("G", "card essentials", B.card.byName.has("UCARD") && B.card.byName.has("USUPCARD") && B.card.byName.has("UANDCARD") && Math.abs(B.card.val.get("RROLE1") - 10000) < 1 && B.card.netOfPin.get("RFLTC.pin2") === "FLT",
   "MCU + watchdog + AND chain + 10k RATING pullup + FLT pull-up at the MCU end");
-ck("G", "cabinet essentials", B.cab && [1, 2, 3].every(i => B.cab.byName.has(`MOD${i}`)) && !B.cab.byName.has("MOD4") && B.cab.byName.has("UCSU") && B.cab.byName.has("PSU1") && Math.abs(B.cab.val.get("RRCSU") - 3320) < 1,
-  "3 × 50 kW modules (E55 — and NOT a fourth) + CSU + WDR supply + 3.32 k strap");
+ck("G", "cabinet essentials", B.cab && [1, 2, 3].every(i => B.cab.byName.has(`MOD${i}`)) && !B.cab.byName.has("MOD4") && !["UCSU", "JCSU", "PSU1", "RRCSU"].some((n) => B.cab.byName.has(n)) && B.cab.byName.has("CTRL1") && B.cab.byName.has("RT1") && B.cab.byName.has("RT2"),
+  "3 × 50 kW modules (E55 — and NOT a fourth) · E66: no CSU card/supply/strap — the charger controller port + both fixed trunk terminations");
 
 // ---------- H. firmware coherence ----------
 console.log("\n=== H. FIRMWARE COHERENCE ===");

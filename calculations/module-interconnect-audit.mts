@@ -157,7 +157,7 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
     else console.log(`        module<->card: ${wired} checked, ${dead} dead-ended (see FAILs)`);
   }
 
-  // ---- 4. RATING strap: 0R = module controller (E24 rev D; 3.32k = CSU, open = fault) ----
+  // ---- 4. RATING strap: 0R = module controller (E24 rev D; 3.32k band reserved since E66, open = fault) ----
   {
     const v = dc.val.get("RROLEB");
     const num = v === undefined ? undefined : String(Math.round(Number(v)));
@@ -167,36 +167,32 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
   }
 }
 
-// ---- 5. the 150 kW cabinet sheet (E39 structure · E55 re-base): 3 × 50 kW modules + one CSU ----
+// ---- 5. the 150 kW cabinet sheet (E39 structure · E55 re-base · E66 no CSU): 3 × 50 kW modules + controller port ----
 const cab = load(`${ROOT}/dist/boards/cabinet/circuit.json`);
 if (cab) {
   console.log(`\n== cabinet interconnect — 150 kW (3 × 50) ==`);
   const pinsOn = (net: string) => cab.pinsOfNet.get(net) ?? [];
   const has = (net: string, key: string) => pinsOn(net).includes(key);
-  // every module drop + the CSU card + exactly the two chain terminations
+  // every module drop + the controller port + exactly the two fixed trunk terminations
   for (const net of ["CANH", "CANL"] as const) {
-    const want = [1, 2, 3].map((n) => `MOD${n}.${net}`).concat([`UCSU.${net}`]);
+    const want = [1, 2, 3].map((n) => `MOD${n}.${net}`).concat([`CTRL1.${net}`]);
     const missing = want.filter((k) => !has(net, k));
     const rts = pinsOn(net).filter((k) => /^RT[12]\./.test(k));
     if (missing.length) bad(`cabinet ${net}: missing drops ${missing.join(", ")}`);
     else if (rts.length !== 2) bad(`cabinet ${net}: ${rts.length} termination pins (need both RT1 and RT2)`);
-    else ok(`cabinet ${net}: 3 modules + CSU + 2 terminations`);
+    else ok(`cabinet ${net}: 3 modules + controller port + 2 terminations`);
   }
-  for (const [r, v] of [["RT1", "120"], ["RT2", "120"], ["RRCSU", "3320"], ["RSHB", "0"], ["RSGB", "0"]] as const) {
+  for (const [r, v] of [["RT1", "120"], ["RT2", "120"], ["RSHB", "0"], ["RSGB", "0"]] as const) {
     const got = cab.val.get(r); const num = got === undefined ? undefined : String(Math.round(Number(got)));
     if (num !== v) bad(`cabinet ${r}: value ${got ?? "MISSING"}, want ${v}`); else ok(`cabinet ${r} = ${v} Ω`);
   }
-  // CSU feed: PSU 15 V reaches both V15 ways of the header AND the card; grounds common
-  const v15ok = ["PSU1.V15P", "JCSU.V15A", "JCSU.V15B", "UCSU.V15A", "UCSU.V15B"].every((k) => has("V15", k));
-  const gndok = ["PSU1.V15N", "JCSU.GNDA", "JCSU.GNDB", "JCSU.GNDC"].every((k) => has("DGND", k));
-  const sgok = has("CAN_SGND", "UCSU.SGND") && has("CAN_SGND", "RSGB.pin1") && has("DGND", "RSGB.pin2");
-  sgok ? ok("cabinet CAN_SGND: isolated-domain reference chained + single-point DGND tie via RSGB")
+  // E66: no cabinet card — the SGND reference is tied once to the controller's transceiver ground, and nothing of the
+  // retired CSU carrier (card, DIN supply, strap) may remain on the sheet
+  const sgok = has("CAN_SGND", "RSGB.pin1") && has("CTRL_SGND", "RSGB.pin2") && has("CTRL_SGND", "CTRL1.SGND");
+  sgok ? ok("cabinet CAN_SGND: isolated-domain reference chained + single-point tie to the controller via RSGB")
        : bad("cabinet CAN_SGND: reference wire/tie wrong (isolated NSI1042 domains need the SGND conductor)");
-  v15ok ? ok("cabinet CSU: PSU 15 V feeds header + card") : bad("cabinet CSU: V15 feed incomplete");
-  gndok ? ok("cabinet CSU: grounds common (incl. card SGND)") : bad("cabinet CSU: ground net incomplete");
-  // RATING strap forms the CSU band against the card pullup
-  const roleok = ["JCSU.ROLE1", "UCSU.ROLE1", "RRCSU.pin1"].every((k) => has("ROLE1", k));
-  roleok ? ok("cabinet CSU: ROLE1 strap in place (3.32 k → CSU band)") : bad("cabinet CSU: ROLE1 strap net wrong");
+  const csuGone = !["UCSU", "JCSU", "PSU1", "RRCSU"].some((n) => [...cab.netOfPin.keys()].some((k) => k.startsWith(n + ".")));
+  csuGone ? ok("cabinet: no CSU card / DIN supply / strap (E66 — no cabinet single point of failure)") : bad("cabinet: retired CSU parts still on the sheet");
   // per-module AC + DC bus
   for (const n of [1, 2, 3]) {
     const okm = has("AC_L1", `MOD${n}.L1`) && has("AC_L2", `MOD${n}.L2`) && has("AC_L3", `MOD${n}.L3`)
@@ -204,7 +200,7 @@ if (cab) {
     okm ? ok(`cabinet MOD${n}: AC feed + PE + charging bus + SGND`) : bad(`cabinet MOD${n}: AC/PE/BUS/SGND wiring incomplete`);
   }
   // shield: all drops on CAN_SHLD, bonded to PE through the single 0 R link
-  const shok = [1, 2, 3].every((n) => has("CAN_SHLD", `MOD${n}.SHLD`)) && has("CAN_SHLD", "UCSU.SHLD")
+  const shok = [1, 2, 3].every((n) => has("CAN_SHLD", `MOD${n}.SHLD`)) && has("CAN_SHLD", "CTRL1.SHLD")
     && has("CAN_SHLD", "RSHB.pin1") && has("PE", "RSHB.pin2");
   shok ? ok("cabinet shield: chained + single-point PE bond via RSHB") : bad("cabinet shield: bond/drops wrong");
   // cabinet studs exist

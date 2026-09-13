@@ -1,25 +1,23 @@
-// cabinet.tsx — the 150 kW cabinet as a schematic (E39 structure · E55 re-base 3 × 50 kW).
+// cabinet.tsx — the 150 kW cabinet as a schematic (E39 structure · E55 re-base 3 × 50 kW · E66 no CSU).
 //
-// 150 kW = 3 × 50 kW modules (liquid 50kw or air 50kwa — same interface) + ONE coordinating
-// MCU: the same control card p/n booting in the CSU strap role (RATING band 3.32 k → ~0.82 V).
-// The 100 kW product = 2 × 50 with NO CSU (group-master CAN, E39 claim-by-hearing); the
-// 60/80/120 kW compositions are RETIRED at E55 — the product ladder is 30/40/50/100/150.
-// The card sits on a passive CSU carrier drawn here: 15 V DIN brick into the V15 ways, one strap
-// resistor, done. CAN addressing is UID-claim in firmware, so the harness carries no address pins.
+// 150 kW = 3 × 50 kW modules (liquid 50kw or air 50kwa — same interface). E66: the cabinet supervisor (a control card in
+// a strap role on a DIN-supplied carrier) is DELETED — it was a single point of failure for all three modules, and the
+// 100 kW already ran without one. The charger controller is the group master for BOTH products: it broadcasts GROUP_SET
+// (demand + membership bitmap) and every module card runs the same share law (firmware/core/group.c). 100 kW = this
+// sheet without MOD3. The 60/80/120 kW compositions are RETIRED at E55 — the ladder is 30/40/50/100/150.
 //
-// Modules appear as interface blocks (their internals are the audited 30 kW sheets); this sheet
-// is the cabinet interconnect of record: AC distribution, DC parallel bus, CAN chain with both
-// 120 Ω terminations, PE bonding, and the CSU assembly. Netlist-only build (E36 — no PCB).
+// Modules appear as interface blocks (their internals are the audited module sheets); this sheet is the cabinet
+// interconnect of record: AC distribution, DC parallel bus, the CAN trunk with fixed terminations at both ends, PE
+// bonding and the controller port. Netlist-only build (E36 — no PCB).
 //
 // Section map (E34: nets not wires, every component carries schSectionName):
-//   AC-ENTRY   cabinet studs L1/L2/L3/PE → per-module feeds (each 50 kW module carries its own
-//              160 A gG NH00 input protection)
+//   AC-ENTRY   cabinet studs L1/L2/L3/PE → per-module feeds (each 50 kW module carries its own 160 A gG NH00 protection)
 //   MODULES    MOD1..MOD3 interface blocks
 //   DC-BUS     DCP/DCN parallel bus studs (modules parallel through their own K_OUT + E12b gate)
-//   CAN-CHAIN  linear daisy chain, 120 Ω at BOTH ends (RT1 at CSU end, RT2 at MOD3 end),
-//              shield bonded to PE at the CSU end only
-//   CSU-CARRIER JCSU 88-way header (used ways only; the rest are NC on the carrier) + RRCSU strap
-//              + PSU1 15 V DIN supply + the mated card's external pins (UCSU)
+//   CAN-CHAIN  one trunk, RT1 120 Ω fixed at the controller end, RT2 120 Ω fixed at the far end; every module JCAN is a
+//              short drop with its own termination jumper OFF — pulling a module for N−1 service leaves exactly two
+//   CTRL-PORT  the charger controller's CAN port (A13 interface block) + the single shield-to-PE bond and the single
+//              SGND reference, both at the controller end
 const MODS = [1, 2, 3];
 
 export default () => (
@@ -60,7 +58,8 @@ export default () => (
     <trace from=".JCABDP > .P" to="net.BUS_P" schDisplayLabel="BUS_P" />
     <trace from=".JCABDN > .P" to="net.BUS_N" schDisplayLabel="BUS_N" />
 
-    {/* ---- CAN chain terminations (one per end of the daisy chain) ---- */}
+    {/* ---- CAN trunk terminations: fixed, one at each END of the trunk (RT1 controller end, RT2 far end) — module
+        jumpers OFF in cabinet builds (E66) ---- */}
     <resistor name="RT1" resistance="120" footprint="0603" pcbX={100} pcbY={80} schX={4} schY={24} schSectionName="CAN-CHAIN" />
     <resistor name="RT2" resistance="120" footprint="0603" pcbX={110} pcbY={80} schX={8} schY={24} schSectionName="CAN-CHAIN" />
     <trace from=".RT1 > .pin1" to="net.CANH" schDisplayLabel="CANH" />
@@ -68,60 +67,21 @@ export default () => (
     <trace from=".RT2 > .pin1" to="net.CANH" schDisplayLabel="CANH" />
     <trace from=".RT2 > .pin2" to="net.CANL" schDisplayLabel="CANL" />
 
-    {/* ---- CSU carrier: 15 V feed + strap into the 88-way header; the mated card joins CAN ----
-        PSU input is L1-L2 = 400 VAC LINE-TO-LINE (the entry has no neutral): the part MUST be a
-        wide-range 180-550 VAC type (MeanWell WDR-60-15 class), never an 85-264 VAC MDR class. */}
-    <chip name="PSU1" value="PSU-15V-DIN-WDR" footprint="pinrow5" pinLabels={{ pin1: "L", pin2: "N", pin3: "PE", pin4: "V15P", pin5: "V15N" }}
-      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["L", "N", "PE"] }, rightSide: { direction: "top-to-bottom", pins: ["V15P", "V15N"] } }}
-      pcbX={0} pcbY={120} schX={16} schY={26} schSectionName="CSU-CARRIER" />
-    <trace from=".PSU1 > .L" to="net.AC_L1" schDisplayLabel="AC_L1" />
-    <trace from=".PSU1 > .N" to="net.AC_L2" schDisplayLabel="AC_L2" />
-    <trace from=".PSU1 > .PE" to="net.PE" schDisplayLabel="PE" />
-    <trace from=".PSU1 > .V15P" to="net.V15" schDisplayLabel="V15" />
-    <trace from=".PSU1 > .V15N" to="net.DGND" schDisplayLabel="DGND" />
-
-    {/* used ways of the 88-way carrier header; every other way is NC on the carrier (card-side
-        pulldowns keep the safety/EN inputs defined — that is what the card's RPD bank is for) */}
-    <chip name="JCSU" value="CONN-CARD-88-H" footprint="pinrow6" pinLabels={{ pin1: "V15A", pin2: "V15B", pin3: "GNDA", pin4: "GNDB", pin5: "GNDC", pin6: "ROLE1" }}
-      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["V15A", "V15B", "GNDA", "GNDB", "GNDC", "ROLE1"] } }}
-      pcbX={40} pcbY={120} schX={26} schY={26} schSectionName="CSU-CARRIER" />
-    <trace from=".JCSU > .V15A" to="net.V15" schDisplayLabel="V15" />
-    <trace from=".JCSU > .V15B" to="net.V15" schDisplayLabel="V15" />
-    <trace from=".JCSU > .GNDA" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".JCSU > .GNDB" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".JCSU > .GNDC" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".JCSU > .ROLE1" to="net.ROLE1" schDisplayLabel="ROLE1" />
-    {/* E24 rev D: RATING (ROLE1) is the card's ONLY identity strap — ROLE0 died with the
-        two-card design. 3.32 k here = the CSU band. */}
-
-    {/* CSU RATING strap: 3.32 k against the card's 10 k pullup → ~0.82 V = the CSU band */}
-    <resistor name="RRCSU" resistance="3.32k" footprint="0603" pcbX={60} pcbY={120} schX={26} schY={21} schSectionName="CSU-CARRIER" />
-    <trace from=".RRCSU > .pin1" to="net.ROLE1" schDisplayLabel="ROLE1" />
-    <trace from=".RRCSU > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-
-    {/* the mated control card, external pins as seen by the cabinet: 88-way power/strap side
-        (1:1 with JCSU) and its own JCAN joining the cabinet bus */}
-    <chip name="UCSU" value="CONTROL-CARD-CSU" footprint="pinrow10"
-      pinLabels={{ pin1: "V15A", pin2: "V15B", pin3: "GNDA", pin4: "GNDB", pin5: "GNDC", pin6: "ROLE1", pin7: "CANH", pin8: "CANL", pin9: "SGND", pin10: "SHLD" }}
-      schPortArrangement={{ leftSide: { direction: "top-to-bottom", pins: ["V15A", "V15B", "GNDA", "GNDB", "GNDC", "ROLE1"] }, rightSide: { direction: "top-to-bottom", pins: ["CANH", "CANL", "SGND", "SHLD"] } }}
-      pcbX={90} pcbY={120} schX={36} schY={25} schSectionName="CSU-CARRIER" />
-    <trace from=".UCSU > .V15A" to="net.V15" schDisplayLabel="V15" />
-    <trace from=".UCSU > .V15B" to="net.V15" schDisplayLabel="V15" />
-    <trace from=".UCSU > .GNDA" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".UCSU > .GNDB" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".UCSU > .GNDC" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".UCSU > .ROLE1" to="net.ROLE1" schDisplayLabel="ROLE1" />
-    <trace from=".UCSU > .CANH" to="net.CANH" schDisplayLabel="CANH" />
-    <trace from=".UCSU > .CANL" to="net.CANL" schDisplayLabel="CANL" />
-    <trace from=".UCSU > .SGND" to="net.CAN_SGND" schDisplayLabel="CAN_SGND" />
-    {/* the CAN domain is ISOLATED per card (NSI1042/CGND): the harness must carry the SGND
-        reference wire between all drops; it is referenced to cabinet ground at ONE point (here) */}
-    <resistor name="RSGB" resistance="0" footprint="0603" pcbX={140} pcbY={120} schX={40} schY={19} schSectionName="CSU-CARRIER" />
+    {/* ---- controller port (E66): the charger controller is the group master (GROUP_SET 0x12) — no cabinet card ---- */}
+    <chip name="CTRL1" value="CHARGER-CONTROLLER-CAN-PORT" footprint="pinrow4" pinLabels={{ pin1: "CANH", pin2: "CANL", pin3: "SGND", pin4: "SHLD" }}
+      schPortArrangement={{ rightSide: { direction: "top-to-bottom", pins: ["CANH", "CANL", "SGND", "SHLD"] } }}
+      pcbX={90} pcbY={120} schX={30} schY={25} schSectionName="CTRL-PORT" />
+    <trace from=".CTRL1 > .CANH" to="net.CANH" schDisplayLabel="CANH" />
+    <trace from=".CTRL1 > .CANL" to="net.CANL" schDisplayLabel="CANL" />
+    <trace from=".CTRL1 > .SGND" to="net.CTRL_SGND" schDisplayLabel="CTRL_SGND" />
+    <trace from=".CTRL1 > .SHLD" to="net.CAN_SHLD" schDisplayLabel="CAN_SHLD" />
+    {/* the CAN domain is ISOLATED per module card (NSI1042/CGND): the trunk carries the SGND reference conductor between
+        all drops and it is referenced ONCE, to the controller's transceiver ground, through this liftable 0 R */}
+    <resistor name="RSGB" resistance="0" footprint="0603" pcbX={140} pcbY={120} schX={36} schY={19} schSectionName="CTRL-PORT" />
     <trace from=".RSGB > .pin1" to="net.CAN_SGND" schDisplayLabel="CAN_SGND" />
-    <trace from=".RSGB > .pin2" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".UCSU > .SHLD" to="net.CAN_SHLD" schDisplayLabel="CAN_SHLD" />
-    {/* shield bonded to PE at the CSU end ONLY (single-point, liftable 0 R bond) */}
-    <resistor name="RSHB" resistance="0" footprint="0603" pcbX={130} pcbY={120} schX={36} schY={19} schSectionName="CSU-CARRIER" />
+    <trace from=".RSGB > .pin2" to="net.CTRL_SGND" schDisplayLabel="CTRL_SGND" />
+    {/* shield bonded to PE at the controller end ONLY (single-point, liftable 0 R bond) */}
+    <resistor name="RSHB" resistance="0" footprint="0603" pcbX={130} pcbY={120} schX={32} schY={19} schSectionName="CTRL-PORT" />
     <trace from=".RSHB > .pin1" to="net.CAN_SHLD" schDisplayLabel="CAN_SHLD" />
     <trace from=".RSHB > .pin2" to="net.PE" schDisplayLabel="PE" />
   </board>

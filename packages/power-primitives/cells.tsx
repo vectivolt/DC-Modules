@@ -488,7 +488,7 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
 
 // ---------- LLC section: 4× Cr ∥ + trim Lr + resonant CT + transformer + dual JBS bridges
 // v3/CB-15: CT return + burden biased to AVMID (VREF/2), series R + dual clamp into the ADC net.
-export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "6.65uH", ctBurden = "1.0", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "6.65uH", ctBurden = "1.0", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, vh = "net.F11_VH", vl = "net.F11_VL", flt = "net.FLT", shield = "net.DCN", sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
         resonant-CT measurement chain on its own row below the tank. */}
@@ -515,13 +515,34 @@ export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "6.65uH", ctBur
     <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={34} pcbY={-64} schX={6.6} schY={-4.4} schSectionName={sec} />
     <diode name={`D${id}CP`} footprint="sod323" pcbX={46} pcbY={-44} schX={7.2} schY={-2.6} schSectionName={sec} />
     <diode name={`D${id}CN`} footprint="sod323" pcbX={46} pcbY={-54} schX={9.6} schY={-2.6} schSectionName={sec} />
+    {/* E65 F.11 WINDOW COMPARATOR (both polarities): an internal rectifier short can drive the tank current NEGATIVE first —
+        a single positive threshold then fires 4.5–6.4 µs late and the kill lands at 204–304 A (ngspice internal-short
+        waveforms). Dual 40 ns comparator: A trips above F11_VH, B below F11_VL; push-pull outputs diode-OR (BAT54A common
+        anode) onto the FLT wire-OR = HRTIMER_FLT2 on PB10 — a hardware kill of all outputs in < 1 µs with no MCU comparator
+        pin needed (the on-chip CMP path stays as the secondary). */}
+    <chip name={`U${id}W`} footprint="soic8" pinLabels={{ pin1: "OUTA", pin2: "INAN", pin3: "INAP", pin4: "GND", pin5: "INBP", pin6: "INBN", pin7: "OUTB", pin8: "VCC" }} pcbX={58} pcbY={-49} schX={13} schY={-3.6} schSectionName={sec} />
+    <chip name={`D${id}W`} footprint="sot23" pinLabels={{ pin1: "K1", pin2: "K2", pin3: "A" }} pcbX={68} pcbY={-49} schX={17} schY={-3.2} schSectionName={sec} />
+    <capacitor name={`C${id}WB`} capacitance="100nF" footprint="0603" pcbX={58} pcbY={-58} schX={13} schY={-5.8} schSectionName={sec} />
+    <trace from={`.U${id}W > .INAN`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from={`.U${id}W > .INAP`} to={vh} schDisplayLabel={vh.replace("net.", "")} />
+    <trace from={`.U${id}W > .INBP`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from={`.U${id}W > .INBN`} to={vl} schDisplayLabel={vl.replace("net.", "")} />
+    <trace from={`.U${id}W > .OUTA`} to={`.D${id}W > .K1`} />
+    <trace from={`.U${id}W > .OUTB`} to={`.D${id}W > .K2`} />
+    <trace from={`.D${id}W > .A`} to={flt} schDisplayLabel={flt.replace("net.", "")} />
+    <trace from={`.U${id}W > .VCC`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.U${id}W > .GND`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.C${id}WB > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.C${id}WB > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
     {Array.from({ length: crN }, (_, i) => [
       <trace key={`a${i}`} from={sw} to={`.C${id}R${i} > .pin1`} schDisplayLabel={sw.replace("net.", "")} />,
       <trace key={`b${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .pin1`} />,
     ])}
     <trace from={`.L${id}T > .pin2`} to={`.T${id} > .P1`} />
     <trace from={`.T${id} > .P2`} to={star} schDisplayLabel={star.replace("net.", "")} />
-    <trace from={`.T${id} > .SH`} to={star} schDisplayLabel={star.replace("net.", "")} />
+    {/* E65 (INS-4): the P–S electrostatic shield returns to an HF-stiff PRIMARY rail (DCN, decoupled by the DC link), not to
+        the floating star — the star swings at 3·fsw and nF of shield-to-secondary capacitance on it forms a zero-sequence LC */}
+    <trace from={`.T${id} > .SH`} to={shield} schDisplayLabel={shield.replace("net.", "")} />
     <trace from={`.CT${id} > .S1`} to={`net.CTB${id}`} />
     <trace from={`.CT${id} > .S2`} to="net.AVMID" schDisplayLabel="AVMID" />
     <trace from={`.R${id}CT > .pin1`} to={`net.CTB${id}`} />
@@ -719,6 +740,28 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
 // v4/MR-11: dual-feedback buffer — 4.7 Ω isolates the 10 µF reservoir from the op-amp (no bare
 // op-amp is stable into 10 µF); DC feedback via 10 k from AVMID (accuracy), AC feedback via
 // 100 pF local (stability). Standard cap-load topology, layout note P-12.
+// E65 F.11 window thresholds: one ratiometric ladder from V3P3 (AVMID is V3P3/2, so the window stays centred) serving all
+// three sections — VH/VL = AVMID ± F.11·Rburden/100 per SKU. Envelope 6 × 5.
+export const F11Window = ({ rOut, rMid, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0, lay = "bottom" }: any) => (
+  <group name="f11win" pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    <resistor layer={lay} name="RF11H" resistance={rOut} footprint="0603" pcbX={0} pcbY={0} schX={0} schY={1.8} schSectionName={sec} />
+    <resistor layer={lay} name="RF11M" resistance={rMid} footprint="0603" pcbX={0} pcbY={5} schX={0} schY={0} schSectionName={sec} />
+    <resistor layer={lay} name="RF11L" resistance={rOut} footprint="0603" pcbX={0} pcbY={10} schX={0} schY={-1.8} schSectionName={sec} />
+    <capacitor layer={lay} name="CF11H" capacitance="100nF" footprint="0603" pcbX={6} pcbY={0} schX={2.8} schY={0.9} schSectionName={sec} />
+    <capacitor layer={lay} name="CF11L" capacitance="100nF" footprint="0603" pcbX={6} pcbY={10} schX={2.8} schY={-0.9} schSectionName={sec} />
+    <trace from=".RF11H > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from=".RF11H > .pin2" to="net.F11_VH" schDisplayLabel="F11_VH" />
+    <trace from=".RF11M > .pin1" to="net.F11_VH" schDisplayLabel="F11_VH" />
+    <trace from=".RF11M > .pin2" to="net.F11_VL" schDisplayLabel="F11_VL" />
+    <trace from=".RF11L > .pin1" to="net.F11_VL" schDisplayLabel="F11_VL" />
+    <trace from=".RF11L > .pin2" to="net.AGND" schDisplayLabel="AGND" />
+    <trace from=".CF11H > .pin1" to="net.F11_VH" schDisplayLabel="F11_VH" />
+    <trace from=".CF11H > .pin2" to="net.AGND" schDisplayLabel="AGND" />
+    <trace from=".CF11L > .pin1" to="net.F11_VL" schDisplayLabel="F11_VL" />
+    <trace from=".CF11L > .pin2" to="net.AGND" schDisplayLabel="AGND" />
+  </group>
+);
+
 export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name="avmid" pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 5. CAVF 2.2 nF: its corner (≈7 kHz) must sit BELOW the outer-loop

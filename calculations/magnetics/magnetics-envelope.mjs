@@ -69,14 +69,14 @@ const BsatAt = (T) => N95.Bsat_T_25C + ((N95.Bsat_T_100C - N95.Bsat_T_25C) / 75)
 //   winding → air end turns outside the stack
 // Wall: liquid plate 65 °C; air-SKU extrusion web = inlet + 5 + 20·load (thermal-report 20 K sink rise). Air = inlet + 10·load.
 const K = { fe: 4.0, pad: 3.0, tPad: 0.5e-3, former: 0.3, tFormer: 1.2e-3, wImp: 0.6, wDry: 0.15, resin: 0.4, pot: 0.8, tPot: 5e-3 };
-export const network = (part, c, s, mount, v, impregnated = true) => {
+export const network = (part, c, s, mount, v, impregnated = true, hOverride = null) => {
   const d = CORES[c.core].dims, H = (2 * d.B) / 1000, A = d.A / 1000, D = (c.n * d.C) / 1000;
   const aFace = A * D, faces = /2$/.test(mount) ? 2 : /1$/.test(mount) ? 1 : 0;
   const aCond = faces === 2 ? 2 * s.Ae : s.Ae;                         // one face: far-half centre leg blocked by the gap
   const Rcw = faces ? (faces === 2 ? H / (8 * K.fe * aCond) : H / (2 * K.fe * aCond)) + K.tPad / (K.pad * faces * aFace) : Infinity;
-  const h = v > 0 ? 24 * Math.sqrt(v / 2.5) + 5 : 0;
+  const h = hOverride ?? (v > 0 ? 24 * Math.sqrt(v / 2.5) + 5 : 0);
   const aExp = 2 * H * D + (2 - faces) * aFace + 0.5 * 2 * A * H;        // sides + unbonded yoke faces + half the ends (rest under end turns)
-  const build = part === "D3" ? 2 * c.N * (c.foil + 0.05e-3) + (c.N * c.cuP) / (0.55 * c.b) + 0.6e-3 + 2 * c.gap
+  const build = part === "D3" ? 2 * c.N * (c.foil + 0.05e-3) + (c.N * c.cuP) / (0.55 * CB) + 0.6e-3 + 2 * c.gap
     : (c.strands * Math.PI * c.dS ** 2) / 4 / 0.6 / (c.b / c.N) + 0.3e-3;
   const aIn = 2 * D * c.b, gapFill = Math.max(0.5e-3, s.windowW - K.tFormer - build - (part === "D2" ? 3e-3 : 0));
   const Rf = K.tFormer / ((c.formerK ?? K.former) * aIn);
@@ -99,6 +99,11 @@ const solve2 = (loss, nw, Twall, Tair, cuK, k = 1) => {
 // local air velocity at the magnetics scales with the per-SKU airflow need (thermal-report air budget 128/187/245 m³/h)
 const V_AIR = { "30kw": 2.0, "40kw": 2.5, "50kw": 0, "50kwa": 3.2 };
 const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * frac);
+// E65 (ENV-1): the sealed liquid module has no airflow, but its internal air is NOT cool — never-bondable losses hold it at
+// plate + Q_air·R_air-plate ≈ 110 °C at full load (sweep estimate 95–125 °C); still-air coupling h ≈ 5 W/m²K. The air node
+// can then HEAT a well-bonded part, so it is modelled rather than assumed away.
+const SEALED = { "50kw": { Tfull: 110, h: 5 } };
+const airAt = (sku, Tin, frac) => (SEALED[sku] ? 65 + (SEALED[sku].Tfull - 65) * frac : Tin + 10 * frac);
 
 // ---------------- the E65 constructions (drawings of record after E65) ----------------
 // D3: turns ratio 1:1:1 and Lm 63 µH unchanged from E60 → tank fingerprint and every LLC simulation stay valid.
@@ -131,8 +136,12 @@ export const D2 = {
 for (const [sku, c] of Object.entries(D2)) c.Lmax = Math.max(...TANKS[sku].bins) * 1e-6;
 export const LOOP_STRAY = 0.1e-6;                                  // half-bridge → Cr → D2 → D3 loop on the power PCB (first-article measured)
 // radial build of the S1–P–S2 lay-up → per-winding mean turn (production Rdc rows) and leakage
+// E65 (INS-1): the reinforced barrier is margin-built on the E70 former, so P and S conductors are confined to CB = 28 mm of
+// the 41 mm window (≥6.5 mm margin per side); the field breadth for Dowell/Sullivan stays the window b. 3 barrier-tape layers
+// + shield per side sit in the gap.
+export const CB = 0.028;
 export const d3Build = (c) => {
-  const hS = c.N * (c.foil + 0.05e-3), hP = (c.N * c.cuP) / (0.55 * c.b) + 0.6e-3, w = FORMER_WALL;
+  const hS = c.N * (c.foil + 0.05e-3), hP = (c.N * c.cuP) / (0.55 * CB) + 0.6e-3, w = FORMER_WALL;
   return { hS, hP, mltS1: eTurn(c.core, c.n, w + hS / 2), mltP: eTurn(c.core, c.n, w + hS + c.gap + hP / 2), mltS2: eTurn(c.core, c.n, w + hS + 2 * c.gap + hP + hS / 2) };
 };
 export const d3Leakage = (c) => { const b = d3Build(c); return leakageSPS({ N: c.N, mlt: b.mltP, b: c.b, gap: c.gap, hS: b.hS, hP: b.hP }); };
@@ -187,13 +196,13 @@ const tCrit = (loss, nw, k) => {                                      // core lo
 };
 export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) => {
   const s = stack(c.core, c.n), mount = mountOverride ?? c.mount;
-  const nw = network(part, c, s, mount, V_AIR[sku], impregnated);
+  const nw = network(part, c, s, mount, V_AIR[sku], impregnated, SEALED[sku]?.h ?? null);
   const res = rows.map((r) => {
     const loss = part === "D3" ? d3Loss(sku, c, r) : d2Loss(sku, c, r);
     const frac = r.source === "envelope" ? r.P_frac : 1;
     const cu75 = Math.min(1, (0.4 / frac) ** 2);                  // derated to 40 % power at 75 °C inlet — Cu scales, Fe does not
-    const e55 = solve2(loss, nw, wallAt(sku, 55, frac), 55 + 10 * frac, 1), e75 = solve2(loss, nw, wallAt(sku, 75, 0.4), 75 + 4, cu75);
-    const st = [solve2(loss, nw, wallAt(sku, 55, frac), 55 + 10 * frac, 1, 1.25), solve2(loss, nw, wallAt(sku, 75, 0.4), 79, cu75, 1.25)];
+    const e55 = solve2(loss, nw, wallAt(sku, 55, frac), airAt(sku, 55, frac), 1), e75 = solve2(loss, nw, wallAt(sku, 75, 0.4), airAt(sku, 75, 0.4), cu75);
+    const st = [solve2(loss, nw, wallAt(sku, 55, frac), airAt(sku, 55, frac), 1, 1.25), solve2(loss, nw, wallAt(sku, 75, 0.4), airAt(sku, 75, 0.4), cu75, 1.25)];
     const eol = /mismatch/.test(r.corner);                        // EOL sharing reject: flux/saturation corner, never a thermal state
     const Tstress = eol ? 0 : Math.max(st[0].hot, st[1].hot), hot = Math.max(e55.hot, e75.hot), Tcore = Math.max(e55.Tc, e75.Tc);
     return { corner: r.corner, fsw: r.fsw_kHz, B: loss.B, fe100: eol ? 0 : loss.fe(100), cu100: eol ? 0 : loss.cu(100), T55: eol ? 0 : e55.hot, T75: eol ? 0 : e75.hot, Tw55: e55.Tw, Tc55: e55.Tc, Tstress,

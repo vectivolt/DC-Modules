@@ -485,7 +485,7 @@ const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - 3-phase LLC (${CELLS} cells)`,
   card: `Control Card - GD32G553VET7, one card for both converter roles (E35)`,
-  cab: `150 kW Cabinet - 3x 50 kW modules + CSU (same card, third strap role) (E39/E55)`,
+  cab: `150 kW Cabinet - 3x 50 kW modules, charger controller = group master (E55/E66)`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {
   const page = { page: `${SKU}-${side}`, title: SIDE_TITLE[side],

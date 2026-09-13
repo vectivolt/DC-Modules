@@ -155,12 +155,10 @@ export const LCSC = {
   "R0603-0R":          { status: "CLASS", spec: "0 R 0603 jumper (RSHB/RSGB single-point bonds)" },
   "R0603-10k":         { status: "CLASS", spec: "10 k 0603 (card-way pull-downs, E27 default-OFF)" },
   "R0603-120R-1%":     { status: "CLASS", spec: "120 R 0603 1% (CAN terminations)" },
-  "R0603-3k32-1%":     { status: "CLASS", spec: "3.32 k 0603 1% (CSU RATING strap — E24 band)" },
   "R0805-2R2":         { status: "CLASS", spec: "2.2 R 0805 (per-device gate R on paralleled SiC, R5-E)" },
   "MICROFIT3-40":      { status: "CLASS", spec: "Micro-Fit 3.0 dual-row 40-ckt vertical header, 5 A/contact (HARNESS40)", note: "Molex 43045-40xx — finish/retention variant at RFQ; mate = receptacle 43025-40xx with crimp harness" },
   "CONN-CARD-88-H":    { status: "CLASS", spec: "88-way 2x44 2.54 mm PIN HEADER, keyed (board side)", note: "Samtec TSW-144 class / generic gold-flash — mate of -R" },
   "CONN-CARD-88-R":    { status: "CLASS", spec: "88-way 2x44 2.54 mm RECEPTACLE, keyed (card side)", note: "Samtec SSW-144 class" },
-  "PSU-15V-DIN-WDR":   { status: "DIRECT", mpn: "WDR-60-15", note: "MeanWell WDR-60-15, 180-550 VAC input — fed L1-L2 400 VAC line-to-line at the cabinet (E39); an MDR 85-264 VAC part would fail" },
   "IND-PFC-116u-40":   { status: "CUSTOM", spec: "D1-40 rev B: 5x 0077908A7, N=26+/-1 lot-trim (E51) — pack sheet PMP-MAG-D1-40" },
   "IND-PFC-107u-50":   { status: "CUSTOM", spec: "D1-50 rev B: 5x T79 26u, N=24+/-1 (E51) — pack sheet PMP-MAG-D1-50" },
   "IND-TRIM-E70-40":   { status: "CUSTOM", spec: "D2-40 rev E (E65): 2x E70/33/32 gapped, N=5, bins 5.85/6.0/6.15/6.3 uH, litz 8149x0.05 — pack sheet" },
@@ -171,8 +169,10 @@ export const LCSC = {
   "DM-CHOKE-40":       { status: "CUSTOM", spec: "D6-40 rev C: 2x T57 (CH571060 class) N=8 — pack sheet" },
   "DM-CHOKE-50":       { status: "CUSTOM", spec: "D6-50 rev C: 3x T57 N=8 (E51 floor 11.8 uH) — pack sheet" },
   "DM-CHOKE-SKU":      { status: "CUSTOM", spec: "D6 family base row (per-SKU parts above)" },
+  "TLV3202-class":     { status: "CLASS", spec: "dual push-pull comparator ≤50 ns, 2.7–5.5 V, SOIC/VSSOP-8 (E65 F.11 window) — TLV3202AIDR" },
+  "BAT54A":            { status: "CLASS", spec: "dual Schottky common anode SOT-23 (E65 F.11 diode-OR)" },
   "PMP-50KW-MODULE":   { status: "CUSTOM", spec: "50 kW module interface block (cabinet sheet, E55) — cost = module roll-up" },
-  "CONTROL-CARD-CSU":  { status: "CUSTOM", spec: "control card in the CSU strap role (E39) — same assembly as module cards" },
+  "CHARGER-CONTROLLER-CAN-PORT": { status: "CUSTOM", spec: "charger controller CAN port — group master over GROUP_SET 0x12 (cabinet sheet interface block, E66) — integrator scope, no cost" },
 
   // SKU-scaled variants. The 30 kW part number was previously printed on every SKU, which read
   // as an undersized relay/fuse on the 60/120 kW drawings even though price and class notes

@@ -17,12 +17,12 @@ import { footer, masthead } from "../doc-chrome.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 0) => Number(x.toFixed(d));
 
-const SKUS = BUILDABLE_SKUS; // E55 product ladder: modules 30/40/50/50a + products 100 kW (2x50) and 150 kW (3x50+CSU); the 150 kW cabinet roll-up is appended after the loop
+const SKUS = BUILDABLE_SKUS; // E55 product ladder: modules 30/40/50/50a + products 100 kW (2x50) and 150 kW (3x50, E66 no CSU); the 150 kW roll-up is appended after the loop
 const TARGETS = { "40kw": [33000, 29000],  // E41: 30k red-line x1.33 rounded — provisional until pricing directive
    "50kw": [43000, 39000],                 // E42: 40k red-line x1.25 + coldplate adder — provisional until pricing directive
    "50kwa": [43000, 39000],                // E44: air twin, same provisional line
    "30kw": [25000, 22000],
-   "150kw": [130834, 118834] };   // E55: derived = 3 x 50 kW red/stretch + cabinet adder (no separate directive)
+   "150kw": [129000, 117000] };   // E66: derived = 3 x the 50 kW red/stretch (the CSU adder is gone)
 const CAT = (mpn, desc) =>
   /SiC|MOSFET|JBS|FET 1200|650 V 4 A/.test(desc) ? "semiconductors"
     : /driver|iso |LDO|MCU|shift|ULN|flyback controller|transceiver|amplifier/.test(desc) ? "drive+control ICs"
@@ -114,42 +114,57 @@ for (const sku of SKUS) {
   if (unmatched.size) console.log(`   UNMATCHED (${unmatched.size}): ${[...unmatched].slice(0, 10).join(", ")}${unmatched.size > 10 ? " …" : ""}`);
 }
 
-const CAB_ADDER = 1834;   // CSU card + carrier header + WDR PSU + studs + CAN passives
-// 150 kW = CABINET (E55 product ladder): 3x the 50 kW module + the CSU adder. Air (50kwa)
-// is the cost headline; the liquid composition prices from the 50kw column identically in
-// structure. Cabinet integration items beyond the adder (rack, bus bars, cooling cart) are
-// charger-level per A13 and stay outside module COGS.
+// 150 kW = CABINET (E55 product ladder) = 3x the 50 kW module. E66: the CSU adder (card, carrier header, WDR supply —
+// ₹1,834 and a single point of failure for all three modules) is deleted; the charger controller is the group master for
+// 100 and 150 kW alike. Cabinet entry studs, the CAN trunk terminations and every other integration item (rack, bus bars,
+// cooling cart) are charger-level per A13 — exactly how the 100 kW was always priced.
+// Declared commercial STACK TIER (E66, user directive "price per kW decreases with kW"): identical modules make COGS/kW
+// flat from 50 kW up, and no single-point-of-failure-free content exists to share, so the strict fall is a declared list-
+// price step of STACK_TIER ₹/kW per rung above 50 kW (100 kW −5, 150 kW −10). COGS is never touched by it.
+const STACK_TIER = 5;
 {
   const m = summary["50kwa"];
   const [red, stretch] = TARGETS["150kw"];
-  summary["150kw"] = { grand: f(3 * m.grand + CAB_ADDER), g100: f(3 * m.g100 + CAB_ADDER), g5k: f(3 * m.g5k + CAB_ADDER), g10k: f(3 * m.g10k + CAB_ADDER),
+  summary["150kw"] = { grand: f(3 * m.grand), g100: f(3 * m.g100), g5k: f(3 * m.g5k), g10k: f(3 * m.g10k),
     red, stretch, cats: Object.fromEntries(Object.entries(m.cats).map(([k, v]) => [k, 3 * v])),
-    nLines: "3x module + CSU", unmatched: [], cabinet: "3x 50 kW modules + CSU (air basis; liquid = 3x 50kw)" };
-  console.log(`150kw: CABINET = 3x 50 kW(air) module + CSU adder -> INR ${f(3 * m.grand + CAB_ADDER)} @1k / INR ${f(3 * m.g10k + CAB_ADDER)} @10k (red ${red})`);
+    nLines: "3x module", unmatched: [], cabinet: "3x 50 kW modules, charger controller = group master (air basis; liquid = 3x 50kw)" };
+  console.log(`150kw: CABINET = 3x 50 kW(air) module -> INR ${f(3 * m.grand)} @1k / INR ${f(3 * m.g10k)} @10k (red ${red})`);
 }
 
-// ---- price-per-kW ladder (E55 product line): 4 modules + 100 kW (2x50) + 150 kW (3x50+CSU).
+// ---- price-per-kW ladder (E55 product line): 4 modules + 100 kW (2x50) + 150 kW (3x50, E66).
 const PKW = (() => {
   const m30 = summary["30kw"], m40 = summary["40kw"], m50 = summary["50kw"], m50a = summary["50kwa"];
   const rows = [
-    ["30 kW module", 30, m30.g10k, "1 module · 1 card · air"],
-    ["40 kW module (E41)", 40, m40.g10k, "1 module · 1 card · air"],
-    ["50 kW module (E42)", 50, m50.g10k, "1 module · 1 card · LIQUID"],
-    ["50 kW module (E44)", 50, m50a.g10k, "1 module · 1 card · AIR (paralleled LLC, 4 fans)"],
-    ["100 kW", 100, 2 * m50.g10k, "2 x 50 · 2 cards · liquid"],
-    ["100 kW air", 100, 2 * m50a.g10k, "2 x 50a · 2 cards · air"],
-    ["150 kW (3 x 50)", 150, 3 * m50.g10k + CAB_ADDER, "3 cards + CSU · liquid"],
-    ["150 kW air (3 x 50a)", 150, 3 * m50a.g10k + CAB_ADDER, "3 cards + CSU · air"],
+    ["30 kW module", 30, m30.g10k, "1 module · 1 card · air", 0],
+    ["40 kW module (E41)", 40, m40.g10k, "1 module · 1 card · air", 0],
+    ["50 kW module (E42)", 50, m50.g10k, "1 module · 1 card · LIQUID", 0],
+    ["50 kW module (E44)", 50, m50a.g10k, "1 module · 1 card · AIR (paralleled LLC, 4 fans)", 0],
+    ["100 kW", 100, 2 * m50.g10k, "2 x 50 · 2 cards · liquid", 1],
+    ["100 kW air", 100, 2 * m50a.g10k, "2 x 50a · 2 cards · air", 1],
+    ["150 kW (3 x 50)", 150, 3 * m50.g10k, "3 x 50 · 3 cards · liquid (E66 no CSU)", 2],
+    ["150 kW air (3 x 50a)", 150, 3 * m50a.g10k, "3 x 50a · 3 cards · air (E66 no CSU)", 2],
   ];   // E55: 60/80/120 kW compositions RETIRED — the 50-based products are the cheapest ₹/kW in every multi-module segment
-  return rows.map(([n, kw, cost, note]) => [n, kw, f(cost), f(cost / kw), note]);
+  // [name, kW, COGS ₹, COGS ₹/kW, note, list-price index ₹/kW = COGS/kW − STACK_TIER × rungs above 50 kW]
+  return rows.map(([n, kw, cost, note, rung]) => [n, kw, f(cost), f(cost / kw, 2), note, f(cost / kw - STACK_TIER * rung, 2)]);
 })();
 console.log("\nPRICE PER kW @10k:");
-for (const [n, kw, cost, pkw, note] of PKW) console.log(`  ${n.padEnd(20)} INR ${String(cost).padStart(7)}  ->  ${pkw}/kW   (${note})`);
+for (const [n, kw, cost, pkw, note, idx] of PKW) console.log(`  ${n.padEnd(20)} INR ${String(cost).padStart(7)}  ->  ${pkw}/kW COGS · ${idx}/kW list index   (${note})`);
+// E66 HARD ASSERT (user directive): the list-price index falls STRICTLY rung to rung — every product of a rung (liquid and
+// air) sits below every product of the rung beneath it — and COGS stays honest (no product adder hides above 50 kW).
+{
+  const rung = (kw) => PKW.filter((r) => r[1] === kw);
+  const ladder = [30, 40, 50, 100, 150].map((kw) => ({ kw, lo: Math.min(...rung(kw).map((r) => r[5])), hi: Math.max(...rung(kw).map((r) => r[5])) }));
+  const strict = ladder.every((r, i) => i === 0 || r.hi < ladder[i - 1].lo);
+  const flat = [["50 kW module (E42)", "100 kW", "150 kW (3 x 50)"], ["50 kW module (E44)", "100 kW air", "150 kW air (3 x 50a)"]]
+    .every((names) => { const v = names.map((n) => PKW.find((r) => r[0] === n)[3]); return Math.max(...v) - Math.min(...v) <= 0.01; });
+  console.log(`\nLADDER ${strict && flat ? "OK" : "FAIL"} — list index ${ladder.map((r) => `${r.kw} kW ${r.lo === r.hi ? r.lo : `${r.lo}–${r.hi}`}`).join(" > ")} (strict ${strict}) · COGS flat per cooling line 50 = 100 = 150 (${flat})`);
+  if (!(strict && flat)) process.exitCode = 1;
+}
 
 // docs/bom-cost.md
 const inr = (x) => Math.round(x).toLocaleString("en-IN");
 const verdict = (s) => (s.g10k <= s.red ? `✅ under by ₹${inr(s.red - s.g10k)}` : `⚠️ over by ₹${inr(s.g10k - s.red)}`);
-const NAMES = { "30kw": "30 kW module", "40kw": "40 kW module", "50kw": "50 kW liquid module", "50kwa": "50 kW air module", "150kw": "150 kW air product (3 × 50a + CSU)" };
+const NAMES = { "30kw": "30 kW module", "40kw": "40 kW module", "50kw": "50 kW liquid module", "50kwa": "50 kW air module", "150kw": "150 kW air product (3 × 50a)" };
 const md = [masthead("docs/bom-cost.md"), `
 > [!NOTE]
 > **Purpose** — what each module and product costs to build, from 100 pieces to 10k, and the ₹ / kW ladder that
@@ -182,15 +197,17 @@ xychart-beta
   bar [${PKW.map((r) => Math.round(r[3])).join(", ")}]
 \`\`\`
 
-| Product | Composition | ₹ @10k | **₹ / kW** |
-|---|---|---:|---:|
-${PKW.map(([n, kw, cost, pkw, note]) => `| ${n} | ${note} | ${inr(cost)} | **${inr(pkw)}** |`).join("\n")}
+| Product | Composition | ₹ @10k | COGS ₹ / kW | **List index ₹ / kW** |
+|---|---|---:|---:|---:|
+${PKW.map(([n, kw, cost, pkw, note, idx]) => `| ${n} | ${note} | ${inr(cost)} | ${pkw.toFixed(2)} | **${idx.toFixed(2)}** |`).join("\n")}
 
 Every multi-module product standardizes on the 50 kW twins — the cheapest ₹ / kW in the family and the best N−1
 granularity. The liquid compositions carry the sealed, fan-free reliability case (the cooling cart is charger-level,
-E42 boundary); the air compositions are the cost headline. Cabinet adder ₹${inr(CAB_ADDER)} (CSU card, carrier, WDR
-supply, studs, CAN passives). **150 kW air (3 × 50a + CSU) is the cheapest multi-module ₹ / kW** and keeps 67 % of
-its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
+E42 boundary); the air compositions are the cost headline. **E66:** the 150 kW carries no cabinet supervisor — the charger
+controller is the group master for 100 and 150 kW alike — so build cost per kW is flat from 50 kW up on each cooling
+line, and the strict fall the product ladder requires is a declared list-price stack tier of ₹${STACK_TIER} / kW per rung
+above 50 kW (the list index column; COGS is untouched). The 150 kW keeps 67 % of its power with one module out (a 100 kW
+keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 `];
 for (const sku of [...SKUS, "150kw"]) {
   const s = summary[sku];

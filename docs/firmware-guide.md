@@ -258,6 +258,45 @@ Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥
 *50 kW OC classes 195/145* · *40 kW OC classes 155/115*. Default before the strap is read = the
 30 kW classes (the lowest thresholds — an undecoded strap can only trip earlier, never later).
 
+
+## E65 — magnetics protection and bus-reference control (2026-09-13)
+
+> [!IMPORTANT]
+> Additive. Normative in `firmware/core/fsm.c` / `fsm.h`, proven by `firmware/test/host_sim.c` (**55 / 55** after E66).
+> Thresholds and rows: [`docs/protection-thresholds.md`](protection-thresholds.md) § 5.
+
+| Req | What the code does | Why |
+|---|---|---|
+| **FW-R9** bus reference every tick | `bus_ref_for(mode, max(vcmd, vout_meas), vin_ll)` runs in RUN/DERATE, not only in STANDBY | a session that starts low and climbs kept a 650 V bus under a 525 V bank (gain 1.6, outside the simulated envelope) |
+| **FW-R10** S/P from the battery | start mode uses `vext` when a vehicle is connected; the RUN crossover uses `vout_meas` | an EV's vcmd is often its maximum voltage; SER chosen from it ran banks under the 250 V floor |
+| **FW-R11** NTC open-loop guard | `pmp_ntc_guard_c(t_c, adc_frac)` returns `PMP_NTC_OPEN_C` (150 °C) when `adc_frac ≥ PMP_NTC_OPEN_FRAC` (0.98) — the HAL passes every zone through it before taking `temp_max_c` | the six D3/D2 bond-loss cutouts sit in series with the T_XFMR NTC; an open loop must latch F.22, not read "very cold" |
+| **HAL — F.11 attribution** | on a FLT edge, capture I_RES1–3 (ADC); a capture beyond ±F.11 reports F.11, otherwise F.02 | the E65 window comparators share the FLT wire-OR with the gate-driver DESAT outputs |
+
+Host-sim checks added: *vcmd 800 V / battery 450 V starts PAR* · *bus reference follows a climbing bank (300 → 520 V)* ·
+*open NTC / cutout loop latches F.22* · *the guard passes a healthy −40 °C reading*.
+
+## E66 — group share law on every module card; no cabinet supervisor (2026-09-13)
+
+> [!IMPORTANT]
+> Additive. `firmware/core/csu.c` / `csu.h` are **deleted**; `firmware/core/group.c` / `group.h` replace them and run on every
+> module card. The RATING strap band 3.32 k (0.55–1.24 V) is **reserved** — the HAL treats it as no host, fault. Protocol:
+> [`docs/can-protocol.md`](can-protocol.md) GROUP_SET 0x12.
+
+The charger controller is the group master for 100 kW and 150 kW alike and broadcasts GROUP_SET at 10 Hz. Call
+`pmp_group_frame()` for every decoded frame and `pmp_group_step()` every 1 ms; the result feeds the module's current setpoint and
+its delivery permission (together with ENABLE and a fresh frame — otherwise the FSM's F.28 ramp-off applies).
+
+| Rule | Value | Why |
+|---|---|---|
+| share | own bit set ? min(own I_avail, I_req / members) : 0 | one frame from one observer — no module infers its peers by hearing, so no split brain |
+| lower / raise | lower at once; raise only after `PMP_GRP_HOLD_MS` 1300 ms | a peer still on an older, larger share has missed every frame for > 1 s and already ramped to zero |
+| staggered delivery | own bit present ≥ HOLD + rank × `PMP_GRP_STAGGER_MS` 300 ms (rank = member bits below own) | deterministic start order without an election |
+| stale | no frame for > `PMP_GRP_STALE_MS` 1000 ms → share 0, no delivery | matches `PMP_CAN_TO_MS`; F.28 does the rest |
+
+Host-sim checks (3 nodes on one frame stream): *sum of shares never exceeds I_req through join, drop, partition and re-join* ·
+*staggered first delivery by rank* · *equal share 450 A / 3* · *a node missing frames > 1 s goes to zero* · *2-node share clamps
+at the module cap* · *non-member never delivers* · *GROUP_SET codec round-trip + guards* (+ 100k-frame decoder fuzz).
+
 ---
 
 <div align="center">

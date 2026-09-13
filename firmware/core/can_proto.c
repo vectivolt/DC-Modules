@@ -55,3 +55,12 @@ void pmp_enc_temps(uint8_t *d, int8_t inlet, int8_t pfc, int8_t llc, int8_t xfmr
 void pmp_enc_bus(uint8_t *d, uint16_t vbp_10, uint16_t vbn_10, uint16_t va_10, uint16_t vb_10) {
   put_u16(d, vbp_10); put_u16(d + 2, vbn_10); put_u16(d + 4, va_10); put_u16(d + 6, vb_10);
 }
+/* E66 GROUP_SET 0x12 (8 bytes LE): u16 V_set 0.1 V · u16 I_req 0.1 A · u16 member bitmap · u8 base address · u8 reserved */
+void pmp_enc_group_set(uint8_t *d, const pmp_group_set_t *g) {
+  put_u16(d, g->v_set_dv); put_u16(d + 2, g->i_req_da); put_u16(d + 4, g->members); d[6] = g->base; d[7] = 0;
+}
+bool pmp_dec_group_set(const uint8_t *d, uint8_t dlc, pmp_group_set_t *g) {
+  if (dlc != 8 || !d || !g) return false;
+  g->v_set_dv = get_u16(d); g->i_req_da = get_u16(d + 2); g->members = get_u16(d + 4); g->base = d[6];
+  return g->v_set_dv <= 10000u && d[7] == 0;                            /* ≤1000 V, reserved byte must be zero */
+}

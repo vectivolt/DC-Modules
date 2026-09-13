@@ -39,20 +39,18 @@ export const DB = [
   { m: /^DAUX(15|VC)$/, mpn: "US2G", mfr: "MDD/Yageo", desc: "400 V 2 A ultrafast SMB (aux 15 V / self-supply rectifiers — CB-19: PIV ≈ 157 V + ring)", price1k: 3, alt: "MURS240" },
   { m: /^DTVS24$/, mpn: "SMBJ26A", mfr: "any", desc: "TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)", price1k: 3, alt: "any" },
   { m: /^DTVS15$/, mpn: "SMBJ16A", mfr: "any", desc: "TVS 16 V uni SMB (V15 rail clamp — MR-17)", price1k: 3, alt: "any" },
+  { m: /^D\d+W$/, mpn: "BAT54A", mfr: "any", desc: "dual Schottky SOT-23 common anode (E65 F.11 window comparator diode-OR onto the FLT wire-OR)", price1k: 0.6, alt: "BAT54AW" },
   { m: /^D\w+P$/, mpn: "1N4148WS", mfr: "any", desc: "clamp diode SOD-323 (to 3V3)", price1k: 0.4, alt: "BAS316" },
   { m: /^D\w+N$/, mpn: "1N4148WS", mfr: "any", desc: "clamp diode SOD-323 (from AGND — CB-15 bipolar front-end)", price1k: 0.4, alt: "BAS316" },
   { m: /^(QAUXFB|QPVD)$/, mpn: "S8050", mfr: "CJ", desc: "NPN SOT-23 (QAUXFB: R4-3 opto-emulating FB pull-down · QPVD: R7-B low-side switch for the PV-driver LEDs at the guaranteed 10 mA point)", price1k: 0.4, alt: "MMBT2222" },
   { m: /^QDIG[12]$/, mpn: "S8050", mfr: "CJ", desc: "NPN SOT-23 (display digit driver)", price1k: 0.4, alt: "MMBT2222" },
   // --- gate drive, isolation & safety chain
   { m: /^U([ABC]\d+G|\d+[HL])$/, mpn: "NSI6611", mfr: "NOVOSENSE", desc: "iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16", price1k: 85, alt: "NSI6602B" },
-  // ---- 120 kW cabinet sheet (E39) — interface blocks + CSU carrier ----
+  // ---- 150 kW cabinet sheet (E39/E55; E66 no CSU) — interface blocks + controller CAN port ----
   { m: /^MOD\d$/, mpn: "PMP-50KW-MODULE", mfr: "own", desc: "50 kW module interface block (liquid 50kw or air 50kwa — E55 cabinet re-base; cost is the module roll-up, not a part)", price1k: 0, alt: "—" },
-  { m: /^UCSU$/, mpn: "CONTROL-CARD-CSU", mfr: "own", desc: "control card in the CSU strap role (same p/n as module cards — E39)", price1k: 0, alt: "—" },
-  { m: /^JCSU$/, mpn: "CONN-CARD-88-H", mfr: "generic 2.54 mm", desc: "CSU carrier 88-way PIN HEADER (mates the card receptacle; only V15/GND/ROLE ways used)", price1k: 45, alt: "Samtec TSW-144" },
-  { m: /^PSU1$/, mpn: "PSU-15V-DIN-WDR", mfr: "MeanWell", desc: "15 V DIN supply, WIDE-RANGE 180-550 VAC input (WDR-60-15) — fed L1-L2 at 400 VAC L-L, no neutral at cabinet entry; an MDR 85-264 VAC part would fail", price1k: 1300, alt: "TDK-Lambda DRB/480 V class" },
+  { m: /^CTRL1$/, mpn: "CHARGER-CONTROLLER-CAN-PORT", mfr: "integrator (A13)", desc: "charger controller CAN port — the group master that broadcasts GROUP_SET 0x12 (E66: replaces the cabinet CSU); interface block, not a part", price1k: 0, alt: "—" },
   { m: /^JCAB(L\d|PE|D[PN])$/, mpn: "STUD-M8", mfr: "local", desc: "cabinet entry/bus M8 stud", price1k: 28, alt: "M10 for DC bus" },
   { m: /^RT[12]$/, mpn: "R0603-120R-1%", mfr: "any", desc: "CAN termination 120 Ω (both chain ends)", price1k: 0.4, alt: "any" },
-  { m: /^RRCSU$/, mpn: "R0603-3k32-1%", mfr: "any", desc: "CSU RATING strap 3.32 k → 0.82 V band (E24 rev C)", price1k: 0.4, alt: "any 1%" },
   { m: /^RSHB$/, mpn: "R0603-0R", mfr: "any", desc: "CAN shield single-point PE bond (liftable)", price1k: 0.3, alt: "any" },
   { m: /^PS(CAN|SH)$/, mpn: "ISO5V-RFC-6K", mfr: "MORNSUN QA/URB-grade", desc: "iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test (HR-16: this module IS part of the mains/output→SELV barrier — B1505S 1.5 kV functional grade rejected; certificate class = §K gate)", price1k: 95, p10k: 65, alt: "RECOM RxxP-R / certified eq" },
   // MUST precede the /^PS5\w+$/ rule below. In "PS5AC"/"PS5BUS" the 5 means 5 VOLTS; in "PS5H"
@@ -75,6 +73,7 @@ export const DB = [
   { m: /^USUP(CARD|[AB])$/, mpn: "TPS3430-class", mfr: "TI/eq", desc: "external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window pins; strap values per datasheet at A6/§K)", price1k: 35, alt: "MAX6753" },
   { m: /^UAND(CARD|[AB])$/, mpn: "74HC11", mfr: "any", desc: "triple 3-input AND (gate-enable wired-AND, E27)", price1k: 8, alt: "74LVC1G11 ×1" },
   { m: /^UEXCL2?$/, mpn: "74HC02", mfr: "any", desc: "quad NOR SOIC-14 (R4-8 + R5-D two-stage hardware S/P exclusion — KSER coil = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB); every destructive matrix state involves KSER, so both stages kill all of them)", price1k: 6, alt: "74LVC02A" },
+  { m: /^U\d+W$/, mpn: "TLV3202-class", mfr: "TI/3PEAK", desc: "dual 40 ns push-pull comparator SOIC/VSSOP-8, 2.7–5.5 V (E65 F.11 window: trips above F11_VH and below F11_VL, diode-OR onto FLT = HRTIMER_FLT2)", price1k: 16, alt: "TS3022 / LMV7239 ×2" },
   { m: /^UAVB$/, mpn: "TLV9061-class", mfr: "TI/3PEAK", desc: "rail-to-rail op-amp (AVMID buffer, E31)", price1k: 12, alt: "LMV321" },
   // --- control (card-split 2026-09-08: UCARD/USUPCARD/UANDCARD/UBKCARD/LBKCARD live on the
   //     control card — the audit found the old per-board regexes silently dropped ALL of them,

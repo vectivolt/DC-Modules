@@ -84,12 +84,15 @@ for (const sku of Object.keys(TANKS)) {
   const pkNom = Math.max(...nominal.map((r) => +r.Ip_pk_A)), rmsNom = Math.max(...nominal.map((r) => +r.Ip_rms_A));
   ck("F.11", `${sku} threshold ≥ ${RULE.margin}× simulated worst tank peak`, c.F11 >= RULE.margin * s.ipPkMax,
     `${c.F11} A pk vs ${s.ipPkMax} A (${s.worstCorner}; nominal corners ${f(pkNom)} A) → ${f(c.F11 / s.ipPkMax, 2)}× — the as-drawn 70/70/95 A sat at 1.00/0.74/0.81×`);
-  // E65: the 3 µs kill window starts at the F.11 CROSSING on the committed post-short envelope (llc-short.csv), like F.01
-  const { tX, peak: racePk } = shortRacePeak(sku, c.F11), di = racePk - c.F11, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
-  ck("F.11", `${sku} observability through the internal-short race`, racePk * 1.05 <= ceil && thrV <= RULE.thrMaxV,
-    `F.11 crossed ${f(tX, 2)} µs after the short → peak ${f(racePk)} A 3 µs later (Δi ${f(di)} A) ×1.05 ≤ ceiling ${f(ceil)} A on ${c.resRb} Ω · threshold ${f(thrV, 2)} V (E60 fixed-time sampling said ${f(c.F11 + s.race.at3us - s.race.pre)} A)`);
+  // E65: F.11 is a hardware WINDOW comparator per section (both polarities → HRTIMER_FLT2): the kill lands ≤1 µs after |Ip|
+  // crosses F.11 on the committed post-short envelope (llc-short.csv). The E60 check sampled fixed times after the short and
+  // assumed a positive-only threshold — which the worst section crosses 4.5–6.4 µs late because the fault swings it negative.
+  const { tX, peak: racePk } = shortRacePeak(sku, c.F11), mon = shortRacePeak(sku, c.F11, 3).peak;
+  const di = racePk - c.F11, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
+  ck("F.11", `${sku} window-comparator kill + observability`, racePk * 1.2 <= ceil && mon * 1.05 <= ceil && thrV <= RULE.thrMaxV && 2 * RULE.avmid - thrV >= 0.3,
+    `|Ip| crosses F.11 ${f(tX, 2)} µs after the short → kill peak ${f(racePk)} A (+1 µs, ×1.2 ≤ ${f(ceil)} A on ${c.resRb} Ω) · monitor peak +3 µs ${f(mon)} A ×1.05 in rail · window ${f(2 * RULE.avmid - thrV, 2)}/${f(thrV, 2)} V (E60 fixed-time sampling said ${f(c.F11 + s.race.at3us - s.race.pre)} A)`);
   const Lmax = Math.max(...t.bins) * 1e-6;
-  const bNorm = Lmax * pkNom / (t.nTrim * t.aeTrim), bFault = Lmax * (c.F11 + di) / (t.nTrim * t.aeTrim);
+  const bNorm = Lmax * pkNom / (t.nTrim * t.aeTrim), bFault = Lmax * racePk / (t.nTrim * t.aeTrim);
   ck("D2", `${sku} trim flux: operating + fault`, bNorm <= 0.110 && bFault <= 0.6 * Bsat130,
     `bin-max ${Math.max(...t.bins)} µH: ${f(bNorm * 1e3, 0)} mT at the worst nominal peak (≤110; the pack's 100 mT line was taken at the NOMINAL bin) · ${f(bFault * 1e3, 0)} mT at F.11+race ≤ 60 % Bsat(130 °C) ${f(0.6 * Bsat130 * 1e3, 0)} mT`);
   const perCap = rmsNom / t.crN, vcr = s.vcrAcMax / Math.SQRT2;
@@ -138,6 +141,13 @@ for (const sku of Object.keys(TANKS)) {
     "HAL programs the CMP DACs from these (120/155/195 line · 85/115/145 tank)");
   ck("SYNC", "boards.tsx burdens per rating", /burden=\{pw === 50 \? "13" : pw === 40 \? "18" : "22"\}/.test(boards) && /ctBurden=\{pw === 50 \? "0\.68" : pw === 40 \? "0\.82" : "1\.0"\}/.test(boards),
     "line 22/18/13 Ω · resonant 1.0/0.82/0.68 Ω (E65)");
+  // E65: the drawn F.11 window ladder must reproduce each rating's F.11 on its burden (ratiometric from V3P3, AVMID = V3P3/2)
+  const lad = boards.match(/<F11Window rOut=\{pw === 50 \? "([\d.]+)k" : pw === 40 \? "([\d.]+)k" : "([\d.]+)k"\} rMid=\{pw === 50 \? "([\d.]+)k" : pw === 40 \? "([\d.]+)k" : "([\d.]+)k"\}/);
+  const winA = lad ? [["50kw", +lad[1], +lad[4]], ["40kw", +lad[2], +lad[5]], ["30kw", +lad[3], +lad[6]]].map(([k, ro, rm]) => {
+    const vh = 3.3 * (ro + rm) / (2 * ro + rm); return [k, (vh - 1.65) * 100 / OC[k].resRb];
+  }) : [];
+  ck("SYNC", "boards.tsx F.11 window ladder per rating", winA.length === 3 && winA.every(([k, a]) => Math.abs(a / OC[k].F11 - 1) <= 0.02),
+    winA.length ? winA.map(([k, a]) => `${k} ${f(a, 1)} A (F.11 ${OC[k].F11})`).join(" · ") + " — ladder ±1 % + comparator offset" : "F11Window ladder MISSING in boards.tsx");
   ck("SYNC", "parts-db burden mpns per rating", Object.values(OC).every((c) => db.includes(c.lineMpn) && db.includes(c.resMpn)),
     Object.entries(OC).filter(([k]) => k !== "50kwa").map(([k, c]) => `${k}: ${c.lineMpn} + ${c.resMpn}`).join(" · "));
   ck("SYNC", "protection-thresholds carries the E60 class table", /E60 current-coordination classes/.test(prot) && ["120", "155", "195", "85", "115", "145"].every((v) => prot.includes(`${v} A pk`)),

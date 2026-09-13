@@ -215,6 +215,50 @@ false-trip. EVT T-xx both-polarity SC test measures the real response against th
   (30/40/50 kW; the 60/120 kW rows above are retired). Per-SKU deck:
   `spice/protection/prechg-disch.mjs`, all 9 cases PASS.
 
+
+## 5. E65 fault-coordination update (2026-09-13) — F.11 sees both polarities, bond loss is a trip
+
+> [!IMPORTANT]
+> Additive update to § 2 row 11, § 4 and row 22. Two findings from the E65 end-to-end review, both reproduced from the
+> committed ngspice internal-short waveforms: **(1)** the § 4 race was sampled at fixed times after the short, and **(2)** the
+> F.11 comparator was single-polarity — the worst section's tank current swings **negative first**, so a positive threshold
+> was crossed 4.5–6.4 µs late and the kill would have landed at **204 / 261 / 302 A** (30 / 40 / 50 kW), past the CT
+> observability ceilings and the FET pulse class. Gate: `calculations/system/current-coordination.mjs` (reads
+> `simulation-results/<sku>/llc-short.csv`, the committed |Ip| envelope after the short).
+
+**F.11 hardware path (E65):** one dual 40 ns comparator per LLC section (`U1W`–`U3W`, TLV3202-class) — A trips above
+`F11_VH`, B below `F11_VL`; push-pull outputs diode-OR through `D1W`–`D3W` (BAT54A, common anode) onto the FLT wire-OR =
+**HRTIMER_FLT2 on PB10**, a hardware kill of every output in < 1 µs with no MCU comparator pin required (the on-chip CMP path
+stays as a secondary). One ratiometric ladder per DC-DC board (`RF11H` / `RF11M` / `RF11L`, `CF11H` / `CF11L` 100 nF) sets the
+window around AVMID.
+
+| SKU | F.11 | Resonant burden | Ladder (H / M / L) | Window (V) | Threshold from the drawn ladder | Kill peak (+1 µs after the crossing) | Monitor peak (+3 µs) | Ceiling |
+|---|---|---|---|---|---|---|---|---|
+| 30 kW | **85 A pk** | **1.0 Ω** (was 1.2) | 2.43k / 5.11k / 2.43k | 0.80 / 2.50 | 84.6 A | **104 A** | 151 A | 162 A |
+| 40 kW | **115 A pk** | **0.82 Ω** (was 0.91) | 2.15k / 5.76k / 2.15k | 0.71 / 2.59 | 115.2 A | **132 A** | 181 A | 198 A |
+| 50 kW L/A | **145 A pk** | **0.68 Ω** (was 0.75) | 2k / 5.9k / 2k | 0.66 / 2.64 | 144.6 A | **158 A** | 216 A | 238 A |
+
+D2 fault flux at the kill peak with the E65 trims: **130 / 121 / 134 mT** (≤ 217 mT = 60 % Bsat 130 °C). The E60 statement
+"tank Δi(3 µs) = 44 / 48 / 52 A" in § 4 is superseded by this table.
+
+**Row 22b (E65) — magnetics bond-loss cutout loop.** Six NC hermetic snap-action thermostats, **130 ±5 °C**, one per D3 and D2,
+series-wired in the T_XFMR NTC loop. An open cutout (a lost gap pad or potting) or a broken NTC lead drives the channel to
+the rail; the HAL guard `pmp_ntc_guard_c()` (ADC ≥ 0.98 Vref) reports **150 °C** → **F.22 latch**. A healthy 10 k B3435 NTC
+reads ≤ 0.96 Vref at −40 °C, so the guard never trips on a cold sensor.
+
+| Row | Fault | Threshold | Time | Detector | Action | Code |
+|---|---|---|---|---|---|---|
+| 11 (E65) | LLC resonant OC, both polarities | 85 / 115 / 145 A pk, window comparator per section | < 1 µs | HW comparator → HRTIMER_FLT2 | all PWM off, latch; HAL attributes F.11 vs F.02 from the I_RES capture at the FLT edge | F.11 |
+| 22b (E65) | Magnetics bond loss / T_XFMR loop open | any cutout ≥ 130 ±5 °C, or loop open | 1 s | NTC channel at the rail → 150 °C | stop, latch | F.22 |
+
+**Firmware requirements introduced (E65, `fsm.c` / `fsm.h`, host_sim 55/55):**
+- **FW-R9 — bus reference every tick:** `vbus_ref` is recomputed in RUN/DERATE from max(vcmd, vout_meas). Set only in STANDBY,
+  a session starting at 300 V (bus 650 V) that climbed to a 525 V bank ran gain 1.6, outside every simulated corner.
+- **FW-R10 — S/P from the battery:** with a vehicle connected, the start mode uses `vext` and the RUN crossover uses
+  `vout_meas`. EVs often send their maximum voltage as the command while the pack is far below it; choosing SER from vcmd ran
+  banks under the 250 V SER floor.
+- **FW-R11 — NTC open-loop guard** (row 22b).
+
 ---
 
 <div align="center">

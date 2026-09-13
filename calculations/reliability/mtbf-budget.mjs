@@ -43,12 +43,10 @@ const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 
 // REGISTERED at E64 — recomputed every run, ±1 % drift fails.
 const REGISTERED = { "30kw": { fit: 3081, mtbfKh: 325 }, "40kw": { fit: 3297, mtbfKh: 303 }, "50kw": { fit: 3396, mtbfKh: 294 }, "50kwa": { fit: 3552, mtbfKh: 282 } };
-// E55 products = N modules + (150 kW only) the CSU adder. CSU adder FIT is a declared estimate:
-// one card-class assembly (~250) + DIN supply (~60, Telcordia power-module class) + carrier passives (~40).
-const CSU_ADDER_FIT = 350;
+// E55 products = N modules. E66: the 150 kW CSU adder (card-class assembly + DIN supply + carrier, 350 FIT) is deleted.
 const PRODUCTS = { "100kw (2×50L)": { n: 2, base: "50kw", csu: 0 }, "100kw air (2×50a)": { n: 2, base: "50kwa", csu: 0 },
-                   "150kw (3×50L+CSU)": { n: 3, base: "50kw", csu: CSU_ADDER_FIT }, "150kw air (3×50a+CSU)": { n: 3, base: "50kwa", csu: CSU_ADDER_FIT } };
-const REG_PRODUCTS = { "100kw (2×50L)": 147, "100kw air (2×50a)": 141, "150kw (3×50L+CSU)": 95, "150kw air (3×50a+CSU)": 91 };
+                   "150kw (3×50L)": { n: 3, base: "50kw", csu: 0 }, "150kw air (3×50a)": { n: 3, base: "50kwa", csu: 0 } };
+const REG_PRODUCTS = { "100kw (2×50L)": 147, "100kw air (2×50a)": 141, "150kw (3×50L)": 98, "150kw air (3×50a)": 94 };
 
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };

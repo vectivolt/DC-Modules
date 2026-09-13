@@ -1,5 +1,5 @@
 // control-card.tsx — ONE control card, ONE brain per module (E40). Single p/n, three homes:
-// the module's DC-DC slot (role "module"), and the cabinet CSU carrier (RATING band 3.32 k).
+// the module's DC-DC slot (role "module"); the RATING band 3.32 k is reserved since the E66 CSU retirement.
 //
 // WHY A CARD (unchanged since E35): the control electronics leave the power/EMI environment,
 // one part number instead of many, and the MCU — the most supply-volatile part in the module —
@@ -45,8 +45,8 @@ export const CARD_RULES = [
   // The fault line is safety-critical and its pull-up sets the wired-OR's idle state.
   "the single merged FLT wired-OR is pulled up and filtered ON the card, at the MCU end",
   // Identity is ONE resistor code on an ADC pin — no build variants, no slot strap:
-  //   0 R -> 30 kW module controller · 3.32 k (~0.82 V) -> cabinet CSU · open -> no host, fault
-  "RATING strap: 0R = module, 3.32k = CSU, open = fault (E24 rev D)",
+  //   0 R -> 30 kW module controller · 3.32 k (~0.82 V) -> reserved (E66: CSU retired) · open -> no host, fault
+  "RATING strap: 0R = module, 3.32k = reserved (E66), open = fault (E24 rev D)",
 ] as const;
 
 // ---------------------------------------------------------------------------------------------

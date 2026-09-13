@@ -5,7 +5,7 @@
  * Build/run: firmware/run_tests.sh */
 #include "../core/fsm.h"
 #include "../core/can_proto.h"
-#include "../core/csu.h"
+#include "../core/group.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -226,44 +226,47 @@ int main(void) {
   }
   checks++; puts("PASS decoder fuzz 100k frames (no sanitizer trap)");
 
-  /* ---- CSU (E39): cabinet supervisor — staggered starts, equal share, degrade, estop ---- */
+  /* ---- E66 group share law: 3 module nodes on ONE GROUP_SET stream from the charger controller (no CSU) ---- */
   {
-    pmp_csu_t c; pmp_csu_out_t o2;
-    pmp_csu_init(&c, 100000); c.i_req_ma = 240000;
-    uint32_t en_t[8]; int en_n = 0;
-    for (uint32_t t = 0; t < 5000; t++) {
-      if (t >= 100) for (uint8_t sc = 0; sc < 4; sc++)
-        if (t % 100 == (uint32_t)sc * 10) pmp_csu_hear(&c, (uint8_t)(0x10 + sc), t);
-      pmp_csu_step(&c, t, &o2);
-      if (o2.enable_idx >= 0 && en_n < 8) en_t[en_n++] = t;
-    }
-    ck("csu enables all four modules", en_n == 4);
-    { int stag = 1; for (int i = 1; i < en_n; i++) if (en_t[i] - en_t[i - 1] < PMP_CSU_STAGGER_MS) stag = 0;
-      ck("csu staggers starts >= 300 ms apart", stag); }
-    ck("csu waits the settle window first", en_n > 0 && en_t[0] >= 100 + PMP_CSU_SETTLE_MS);
-    ck("csu equal share 240 A / 4 = 60 A", o2.i_set_ma == 60000);
-    ck("csu reaches RUN", c.st == CSU_RUN);
-    uint32_t t2 = 5000;
-    for (; t2 < 8000; t2++) {
-      for (uint8_t sc = 0; sc < 4; sc++) if (sc != 2 && t2 % 100 == (uint32_t)sc * 10) pmp_csu_hear(&c, (uint8_t)(0x10 + sc), t2);
-      pmp_csu_step(&c, t2, &o2);
-    }
-    ck("csu dropout re-shares 240 A / 3 = 80 A", o2.i_set_ma == 80000 && pmp_csu_alive(&c, t2 - 1) == 3);
-    c.i_req_ma = 500000; pmp_csu_step(&c, t2, &o2);
-    ck("csu clamps at per-module cap 100 A", o2.i_set_ma == 100000);
-    { int re_en = 0;
-      for (uint32_t t3 = t2; t3 < t2 + 2000; t3++) {
-        for (uint8_t sc = 0; sc < 4; sc++) if (t3 % 100 == (uint32_t)sc * 10) pmp_csu_hear(&c, (uint8_t)(0x10 + sc), t3);
-        pmp_csu_step(&c, t3, &o2);
-        if (o2.enable_idx == 2) re_en = 1;
+    pmp_group_t g[3]; pmp_group_out_t go[3];
+    for (int k = 0; k < 3; k++) pmp_group_init(&g[k]);
+    const uint8_t addr[3] = { 0x40, 0x41, 0x42 };
+    const uint32_t cap = 1670;                                /* 167.0 A per 50 kW module */
+    uint32_t first_deliver[3] = { 0, 0, 0 }; int viol = 0, stale_ok = 1;
+    uint32_t max_sum = 0;
+    for (uint32_t t = 0; t < 14000; t++) {
+      pmp_group_set_t m = { .v_set_dv = 4000, .i_req_da = 4500, .members = 0x7, .base = 0x40 };
+      if (t >= 5000 && t < 8000) m.members = 0x3;             /* controller drops node 2 (its STATUS went silent) */
+      if (t % 100 == 0) for (int k = 0; k < 3; k++) {
+        bool rx = !(k == 2 && t >= 5000 && t < 8000)         /* node 2 partitioned while dropped */
+               && !(k == 1 && t >= 8000 && t < 9400);         /* node 1 misses every frame across the re-join */
+        if (rx) pmp_group_frame(&g[k], &m, addr[k], t);
       }
-      ck("csu re-staggers a returning module", re_en); }
-    pmp_csu_estop(&c);
-    pmp_csu_step(&c, t2 + 3000, &o2);
-    ck("csu estop latches disable broadcast", o2.broadcast_estop && o2.enable_idx < 0 && o2.i_set_ma == 0);
-    { pmp_csu_t c1; pmp_csu_init(&c1, 100000); c1.i_req_ma = 240000;
-      for (uint32_t t = 100; t < 3000; t++) { if (t % 100 == 0) pmp_csu_hear(&c1, 0x21, t); pmp_csu_step(&c1, t, &o2); }
-      ck("csu single-module cabinet: RUN at cap", c1.st == CSU_RUN && o2.i_set_ma == 100000); }
+      uint32_t sum = 0;
+      for (int k = 0; k < 3; k++) {
+        pmp_group_step(&g[k], addr[k], cap, t, &go[k]);
+        sum += go[k].i_set_da;
+        if (go[k].deliver && !first_deliver[k]) first_deliver[k] = t;
+      }
+      if (sum > 4500) viol++;
+      if (sum > max_sum) max_sum = sum;
+      if (t == 9300 && go[1].i_set_da != 0) stale_ok = 0;     /* node 1 stale since 9000 → zero */
+    }
+    ck("group: sum of shares never exceeds I_req (join, drop, partition, re-join)", viol == 0);
+    ck("group: staggered first delivery by rank >= 300 ms", first_deliver[0] >= PMP_GRP_HOLD_MS && first_deliver[1] >= first_deliver[0] + PMP_GRP_STAGGER_MS && first_deliver[2] >= first_deliver[1] + PMP_GRP_STAGGER_MS);
+    ck("group: equal share 450 A / 3 = 150 A at full membership", max_sum == 4500);
+    ck("group: node missing frames > 1 s goes to zero", stale_ok);
+    { pmp_group_t a; pmp_group_out_t ao; pmp_group_init(&a);
+      pmp_group_set_t m2 = { .v_set_dv = 4000, .i_req_da = 4500, .members = 0x3, .base = 0x40 };
+      for (uint32_t t = 0; t < 4000; t++) { if (t % 100 == 0) pmp_group_frame(&a, &m2, 0x40, t); pmp_group_step(&a, 0x40, 1670, t, &ao); }
+      ck("group: 2-node share clamps at the module cap (225 A req -> 167 A)", ao.deliver && ao.i_set_da == 1670); }
+    { pmp_group_t a; pmp_group_out_t ao; pmp_group_init(&a);
+      pmp_group_set_t m3 = { .v_set_dv = 4000, .i_req_da = 3000, .members = 0x5, .base = 0x40 };
+      for (uint32_t t = 0; t < 4000; t++) { if (t % 100 == 0) pmp_group_frame(&a, &m3, 0x41, t); pmp_group_step(&a, 0x41, 1670, t, &ao); }
+      ck("group: non-member never delivers", !ao.deliver && ao.i_set_da == 0); }
+    { uint8_t b8[8]; pmp_group_set_t e = { 7500, 4500, 0x7, 0x40 }, d; pmp_enc_group_set(b8, &e);
+      ck("can GROUP_SET roundtrip + guards", pmp_dec_group_set(b8, 8, &d) && d.i_req_da == 4500 && d.members == 7 && d.base == 0x40 && !pmp_dec_group_set(b8, 7, &d)); }
+    for (int i = 0; i < 100000; i++) { uint8_t fb[8]; for (int k = 0; k < 8; k++) fb[k] = (uint8_t)rand(); pmp_group_set_t d; pmp_dec_group_set(fb, (uint8_t)(rand() % 10), &d); }
   }
   (void)buf;
   ck("matrix exclusion invariant (no KSER+KPAR/KPRE tick, all scenarios)", excl_viol == 0);

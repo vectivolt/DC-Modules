@@ -16,22 +16,26 @@
 >
 > **Gate coupling** — magnetics-rfq-audit (field completeness) · stress-audit D1/D2/D3/D6 families (computed) ·
 > **E60:** [`conductor-audit`](../calculations/magnetics/conductor-audit.mjs) (Dowell/Sullivan AC copper at the simulated
-> currents) · [`current-coordination`](../calculations/system/current-coordination.mjs) (CT burdens, trip classes, D2 fault flux).
->
+> currents) · [`current-coordination`](../calculations/system/current-coordination.mjs) (CT burdens, trip classes, D2 fault flux) ·
+> **E65:** [`magnetics-envelope`](../calculations/magnetics/magnetics-envelope.mjs) (D2 / D3 flux, core and copper loss,
+> two-node thermal and runaway at every power-solved corner).
+
 > [!IMPORTANT]
-> **E60 copper revision.** Earlier sizing used DC resistance ×1.15. At 140 kHz the proximity effect governs, and
-> the simulated currents put four constructions outside their own Rac rows. The table below lists the as-drawn
-> AC/DC ratio and loss beside the E60 build:
+> **E65 revision — end-to-end magnetics review.** Every D2 and D3 check had been taken at the resonant point, against
+> single-set winding windows, with a lumped thermal model. Each finding below was reproduced by an independent verifier.
 >
-> | Part | As drawn | Computed Rac/Rdc · Cu at the worst corner | E60 construction | Result |
-> |---|---|---|---|---|
-> | D3 secondaries | Cu foil 0.20 / 0.25 / 0.30 mm, 7/6/5 layers | **5.3 / 5.1 / 6.7** · 18 / 42 / 59 W | foil **0.10 × 28 mm** (30 kW) · **0.127 × 28 mm** (40/50 kW) | 1.27 / 1.29 / 1.20 · 8.7 / 20.7 / 25 W |
-> | D3 primaries | 0.1 mm-strand profiled litz | 1.63 / 1.51 / 1.55 | same copper area in **0.071 mm** strands | 1.32 / 1.26 / 1.28 |
-> | D2-40 trim | 2× PQ50/50, N 5, 2000×0.1 | **4.3** · 13.6 W | **1× E70/33/32, N 5, 4150×0.071** (rev D, 0.54 kg) | Rac 2.29 mΩ · ΔT 32 K cont / 38 K SER |
-> | D2-50 trim | 2× PQ50/50, N 6, 3000×0.1 | **11.7** · 45 W | **2× E70/33/32, N 3, 2500×0.1** (rev D, 1.1 kg — no single-set option held 40 K) | Rac 1.61 mΩ · ΔT 27 K cont / 31 K SER |
+> | Finding | What the review showed | E65 change |
+> |---|---|---|
+> | **Flux checked at the wrong corner** | D3 flux was checked at 415 V / 140 kHz (108 / 90 / 109 mT). The power-solved decks run 77–88 kHz at bank 500–525 V (gain up to 1.265 with the bus capped at 830 V), where flux is volt-second pinned at 153–237 mT and ferrite loss is 2–3×. It follows bank voltage, not load, so a derate cannot relieve it. D2 loss was also taken at 140 kHz; its current corners run 170–190 kHz | [`magnetics-envelope`](../calculations/magnetics/magnetics-envelope.mjs) scores D2 and D3 at all 34 simulated corners. Its control rows reject the E60 D3s: 153 °C (30 kW) and 131 °C (40 kW) at 55 °C inlet, both running away at 75 °C; the 50 kW runs away at both. D3-50 → 3 × E70 5:5:5 (237 → 158 mT) |
+> | **Stacked PQ50/50 cannot be wound** | Side-by-side sets leave 5–6 mm radial build at the leg tips against the 8.1 mm D3-30 lay-up. The real mean turn is 191–229 mm, not the registered 115 mm, so every correctly built unit failed its Rdc rows. D2-30 fitted only with zero gap clearance | D3-30 → 2 × E70 7:7:7 · D2-30 → 1 × E70 N 8 |
+> | **The "engineered 3 µH" leakage is unreachable** | A concentric S1–P–S2 interleave on these windows computes 0.14–0.19 µH. The E60 bins (3.3–4.35 / 3.2–3.8 / 2.8–3.2 µH) would have left Lr about 2.7 µH short, putting fr near 170 kHz | D2 carries ~all of Lr on new bins; D2-40/50 → 2 × E70 N 5. Lr, Cr, Lm and Coss are unchanged, so the tank fingerprint and every LLC simulation stay valid |
+> | **Lumped thermal hid two bottlenecks** | MnZn ferrite conducts ~4 W/m·K through the 66 mm set height, so a one-face bond is 4× worse than two faces. The winding reaches the core only through its former and its own build | Two-node (core, winding) network from real geometry. VPI class H, both yoke faces bonded, end turns potted where the gate needs it, 130 °C cutout loop |
 >
-> D1 bundles (ripple 11 % of rms) and D2-30 (Rac 1.93 mΩ ≤ 4 mΩ, ΔT 36 K) stay as drawn. Guide:
-> [`conductor-selection.md`](conductor-selection.md).
+> Also at E65: one written reinforced barrier on D3, the D3 shield lead moved to DCN, basic insulation to PE on every
+> bonded face, and D2 fault flux taken at the F.11 window-comparator kill. Material basis: TDK N95 datasheet surfaces and
+> OpenMagnetics MAS Steinmetz, calibrated ×1.14 to TU Paderborn LEA measurements
+> ([`magnetics-data.json`](../calculations/magnetics/magnetics-data.json)). The E60 copper revision (foil gauges,
+> 0.071 mm strands) carries into these drawings — [`conductor-selection.md`](conductor-selection.md).
 
 
 ## At a glance — the magnetics set
@@ -39,8 +43,8 @@
 | Part | Function | 30 kW | 40 kW | 50 kW (liquid and air) | Kept honest by |
 |---|---|---|---|---|---|
 | [**D1**](#d1-rev-b--pfc-choke-165-µh-swing-pn-ind-pfc-165u--qty-3-per-module) · × 3 | PFC boost choke | 3 × 0077908A7, N = 39 ± 1 | 5 × 0077908A7, N = 26 ± 1 | 5 × 0077908A7, N = 24 ± 1 | `mag-sync` · `stress-audit` · `temp-critique` |
-| [**D2**](#d2-rev-c--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3-per-module) · × 3 | resonant trim, binned to the transformer's leakage | 2 × PQ50, N 4 · 3.3 / 3.65 / 4.0 / 4.35 µH | 1 × E70, N 5 · 3.2 / 3.5 / 3.8 µH | 2 × E70, N 3 · 2.8 / 3.0 / 3.2 µH | `conductor-audit` · `current-coordination` |
-| [**D3**](#d3--llc-section-transformer-10-kw-xfmr-llc-10k--qty-3-per-module) · × 3 | LLC section transformer | 3 × PQ50, 7:7:7 · foil 0.10 mm | 2 × E70, 6:6:6 · foil 0.127 mm | 2 × E70, 5:5:5 · foil 0.127 mm | `conductor-audit` · `temp-critique` |
+| [**D2**](#d2-rev-e-e65--resonant-trim-inductor-bin-sets--qty-3-per-module) · × 3 | resonant trim — carries ~all of Lr, binned to the transformer's measured leakage | 1 × E70, N 8 · 6.35 / 6.5 / 6.65 / 6.8 µH | 2 × E70, N 5 · 5.85 / 6.0 / 6.15 / 6.3 µH | 2 × E70, N 5 · 5.35 / 5.5 / 5.65 / 5.8 µH | `magnetics-envelope` · `conductor-audit` · `current-coordination` |
+| [**D3**](#d3-rev-c-e65--llc-section-transformers--qty-3-per-module) · × 3 | LLC section transformer | 2 × E70, 7:7:7 · foil 0.10 mm | 2 × E70, 6:6:6 · foil 0.127 mm | 3 × E70, 5:5:5 · foil 0.127 mm | `magnetics-envelope` · `conductor-audit` · `mag-sync` |
 | [**D4**](aux-transformer-D4.md) · × 1 | 110 W aux flyback | ETD39 rev D | = | = | `stress-audit` D4 Bpk |
 | [**D6**](#d6--dm-line-chokes-dm-22u-sku--qty-3-per-module-one-per-phase-hr-9-new-drawing) · × 3 | differential-mode line choke | 2 × T48 60µ, N 7 | 2 × T57 60µ, N 8 | 3 × T57 60µ, N 8 | `dm-choke-design` · `lisn-precompliance` |
 | [**D7**](#d7--cm-chokes-cmc-3ph-2mh-sku--qty-2-per-sku-winding-r2-hr-18-new-drawing) · × 2 | 3-phase common-mode choke | Schaffner RT8131-63-2M8 class | custom 75 A | custom 95 A | ΔT acceptance |
@@ -61,7 +65,8 @@ flowchart LR
 
 ## Drawings
 
-All values trace to `calculations/pfc/pfc-design.mjs` and `calculations/llc/llc-design.mjs`.
+All values trace to `calculations/pfc/pfc-design.mjs` and `calculations/llc/llc-design.mjs`; since E65 the D2 and D3
+rows trace to `calculations/magnetics/magnetics-envelope.mjs`, `conductor-audit.mjs` and `calculations/llc/tanks.mjs`.
 Acceptance limits are the production test spec (EOL §45). Material fits are catalog-class,
 marked VERIFY (A3/A4) — first-article measurement closes them.
 
@@ -87,62 +92,131 @@ and 71 µH at 78 A, below acceptance.
 | Mount | center bolt M6 + silicone pad + epoxy band; mass **~2.2 kg (computed — mag-sync gate, E59: core 0.96 + Cu 1.06 + build; the old ~1.0 was eyeballed)** |
 | Hi-pot | none (line-potential part; board-level hipot covers) |
 
-## D2 rev C — Resonant trim inductor bin set (IND-TRIM-BIN4) — qty 3 per module
+## D2 rev E (E65) — Resonant trim inductor bin sets — qty 3 per module
 
-**Rev C (margin audit 2026-09-08, F1): core technology changed sendust → GAPPED FERRITE.** The
-rev-B sendust toroid (OD33 µ60, N≈9) carries the full tank current — 46 A rms *sinusoidal* at
-140 kHz — i.e. full AC flux swing, ±≈310 mT. On the design's own A3 sendust loss fit that is
-**≈43 W of core loss in a 7 cm³ core** against a ~4 W/section tank budget, and at the 96 Oe peak
-field the permeability falls to ~41%, so L swung 7.4→3 µH across every resonant cycle — the ±3%
-bin concept cannot exist on a powder core at this operating point. **Powder cores are prohibited
-in this slot** (they are for DC-bias + ripple duty, like D1/D6). No core-loss line existed in
-rev B; every magnetic drawing now must state one.
+**Rev E carries ~all of Lr.** The E60 bins were sized around a 3 µH transformer leakage that an S1–P–S2 interleave on
+these windows cannot produce (it computes 0.14–0.19 µH), so each SKU's trim is now Lr less the measured D3 leakage and a
+0.1 µH tank-loop stray. The rows are proven at
+the simulated corners by [`magnetics-envelope`](../calculations/magnetics/magnetics-envelope.mjs) (flux, iGSE core loss,
+Sullivan copper, two-node thermal, runaway), [`conductor-audit`](../calculations/magnetics/conductor-audit.mjs)
+(production rows) and [`current-coordination`](../calculations/system/current-coordination.mjs) (fault flux). Bins and
+turns live in [`tanks.mjs`](../calculations/llc/tanks.mjs). Drawing control: PMP-MAG-D2-30 / -40 / -50, rev E, 2026-09-13.
 
-| Item | Spec |
+| Item | 30 kW | 40 kW | 50 kW (liquid and air) |
+|---|---|---|---|
+| Order code · drawing | `IND-TRIM-BIN4` · PMP-MAG-D2-30 | `IND-TRIM-E70-40` · PMP-MAG-D2-40 | `IND-TRIM-E70-50` · PMP-MAG-D2-50 — one drawing, both coolings |
+| Core · former | 1 × E70/33/32 · TDK B66372B1000 (1-set) | 2 × E70/33/32 · TDK B66372B2000 (2-set) | as 40 kW |
+| Turns · litz | N = 8 · **6112×0.05 mm** (12.0 mm²) | N = 5 · **8149×0.05 mm** (16.0 mm²) | as 40 kW |
+| Tank Lr · bins (±1.5 % grind) | 7.0 µH · **6.35 / 6.5 / 6.65 / 6.8 µH** | 6.5 µH · **5.85 / 6.0 / 6.15 / 6.3 µH** | 6.0 µH · **5.35 / 5.5 / 5.65 / 5.8 µH** |
+| AL target per bin | 99.2 / 101.6 / 103.9 / 106.3 nH/T² | 234 / 240 / 246 / 252 nH/T² | 214 / 220 / 226 / 232 nH/T² |
+| Ideal total gap per set (µ0N²·nAe/L) | 8.1–8.7 mm → ≥ 9 segments | 6.8–7.3 mm → ≥ 8 segments | 7.4–8.0 mm → ≥ 9 segments |
+| Operating flux, bin-max, worst simulated peak | 82 mT | 80 mT | 92 mT liquid · 93 mT air |
+| Fault flux, bin-max at the F.11 window-comparator kill peak | 130 mT (104 A) | 121 mT (132 A) | 134 mT liquid · 135 mT air (158 A) |
+| Loss at the worst corner (SER250-full-tolLo, 100 °C) | Fe 11.5 W · Cu 10.6 W at 188.6 kHz | Fe 19.7 W · Cu 9.8 W at 181.1 kHz | Fe 26.3 W · Cu 14.9 W at 176.2 kHz (air 176.7 kHz) |
+| Loss at the rated point (PAR400-full, ≈ 150 kHz, 90 °C) | Fe 2.6 + Cu 3.4 = 6.0 W | Fe 4.7 + Cu 3.3 = 8.0 W | Fe 6.3 + Cu 5.0 = 11.3 W (air 11.4 W) |
+| Rdc @ 25 °C, 100 % | ≤ 1.95 mΩ (build 1.81, MLT 155 mm) | ≤ 1.3 mΩ (build 1.18, MLT 216 mm) | as 40 kW |
+| Rac @ 140 kHz, 100 °C, sample | ≤ 4.5 mΩ (Sullivan Fr 1.68 → 3.93) | ≤ 2.6 mΩ (Fr 1.47 → 2.25) | as 40 kW |
+| Hot-spot, 55 °C inlet, full power | 99 °C | 93 °C | 84 °C liquid · 101 °C air |
+| 75 °C inlet derated · +25 % Rth · runaway margin | 97 °C · 106 °C · 163 K | 97 °C · 99 °C · 163 K | liquid 81 °C · 89 °C · 176 K · air 100 °C · 108 °C · 160 K |
+| One gap pad lost, 55 °C inlet | 109 °C — survives | 103 °C — survives | liquid 110 °C — **needs the cutout** · air 115 °C — survives |
+| Cooling interface | both yoke faces → upper and lower extrusion webs | as 30 kW | liquid: both yoke faces → the two coldplates, end turns potted to the plate · air: as 30 kW |
+| PD sample, extinction (recurring peak at 77–190 kHz) | ≥ 1.3 kV pk (839 V) | ≥ 1.5 kV pk (976 V) | ≥ 1.65 kV pk (1081 V) |
+| Leads, drill / pad ([§0.1](#01-mechanical-envelope-and-terminations--the-board-is-already-laid-out-to-these) rule) | 5.1 / 6.0 mm | 5.7 / 6.6 mm | 5.7 / 6.6 mm |
+| Mass (computed, `mag-sync`) · qty | 0.70 kg · 3 per module | 1.27 kg · 3 per module | 1.27 kg · 3 per module |
+
+| Item | Spec — all SKUs |
 |---|---|
-| Core | **2× stacked PQ50/50, PC95/DMR95/3C95-class (SAME core p/n as D3** — one more ferrite line-item, zero new supply chain) |
-| Turns | **N = 4**, litz **1350×0.1 mm (10.6 mm² — E52 margin rev**: the frozen 1050×0.1 rode J 5.62 exactly at the 5.6 line; 1350 lands J 4.38 / ΔT ≈ 35 K **and is the same litz as the D3-30 primary — one spool covers both parts**) |
-| Gap | total ≈ 3.3 mm, **distributed 2 positions per leg**, winding kept ≥5 mm clear of gaps (margin tape); **gap GROUND per bin** — same grind-to-AL process the D3 Lm already uses |
-| Bins | four L values **3.3 / 3.65 / 4.0 / 4.35 µH ±3%** (grind targets ≈3.05/3.37/3.70/4.03 mm before fringing; grinding trims fringing out); bin SELECTED against the mated transformer's measured leakage so **Lr(total) = 7.0 µH ±3% (E7 rev D2)** |
-| B_pk @ 65 A pk | ≤ 100 mT at the nominal 4.0 µH bin (calc 99 mT) — **E60: the bin-max 4.35 µH unit at the power-solved SER-250 peak (65.6 A) computes 109 mT**; runaway g 0.17 and ΔT 36 K hold on the measured basis (temp-critique/conductor-audit); fault flux at F.11 + race (129 A) 214 mT ≤ 217 mT |
-| Core loss | ≈1.9 W typical op / ≈6.8 W at the worst envelope corner (bank 245–262 V SER, 46 A rms) — A4 fit |
-| Rac | ≤ 4 mΩ @140 kHz — **E60 Sullivan: Fr 1.97 → 1.93 mΩ hot**, Cu 4.3 W at the simulated 47 A rms SER corner (the ×1.15 basis said 3.3 W); ΔT 36 K on the measured-3C95 core basis |
-| Thermal | ΔT ≤ 40 K at 46 A rms continuous (calc ≈37 K worst corner), thermocouple on core leg |
-| Hipot | winding→core 2.5 kV AC 1 min (functional — part sits at tank potential; the isolation barrier is elsewhere) |
-| Mount | 2× M4 clamp bar (same hardware family as D3); 2 tinned litz flying leads into the board's plated holes |
+| Function | LLC external resonant inductor at tank potential — full AC flux swing, one per section |
+| Material | PC95 / N95 / 3C95-class MnZn ferrite. **Powder cores are prohibited in this slot** — on full AC swing at 140 kHz the rev B sendust part computed ≈ 43 W core loss and L swinging 7.4 → 3 µH every cycle (finding F1) |
+| Winding | one layer of compacted (profile) litz across the 41 mm window, **≥ 3 mm radial clear of the gap**. Sullivan and Dowell are 1-D; the measured Rac includes the fringing |
+| Gap | **distributed centre-leg gap, ≤ 1.0 mm per segment**, outer legs butted, equal on every set; ground per bin to its AL target. Count segments from the ground gap — fringing makes it larger than the ideal value above |
+| Bin rule | kit the bin nearest **Lr − (measured D3 leakage + 0.1 µH tank-loop stray)** — table below; Lr(total) within ±3 % |
+| Impregnation | **VPI**, class H resin, k ≥ 0.6 W/m·K — no dry build (the thermal network assumes it) |
+| Bond and mount | both yoke faces gap-padded (3 W/m·K) through the board cut-outs — the 65.9 mm stack spans the 62 mm tunnel; bonded-face flatness ≤ 0.5 mm; non-magnetic slotted stainless clamp bars ≥ 8 mm from any gap face (E58); no rigid epoxy to aluminium |
+| Insulation to PE | the bonded core makes winding → web or plate **basic insulation to PE**: glass-reinforced insulating gap pad ≥ 0.5 mm with a cut-through rating above clamp pressure · **100 % hipot, winding → foil over the bonded faces, 2.5 kV DC** · PD sample 5/lot at the per-SKU level above · Class H system |
+| Over-temperature cutout | **130 °C** ±5 K NC hermetic snap-action thermostat, gold dry-circuit contacts, reinforced-insulated case and leads, one per part on the winding end turn (the hot-spot node on every D2 except 50 kW liquid, where the core leads by 3 K). Series-wired in the T_XFMR NTC loop: an open loop reads 150 °C and latches F.22 (`pmp_ntc_guard_c()`, [`fsm.h`](../firmware/core/fsm.h)) |
+| Terminations · envelope | 2 tinned litz flying leads into plated holes · core stack 70.5 × 65.9 × 31.6 mm per set (A × 2B × C); the finished envelope with end turns is a first-article dimension; the land pattern and board cut-out are layout items |
+| Marking · traceability | p/n · rev · lot/date · serial · **measured L @ 140 kHz and the bin value on the label** · traceable to core lot and litz lot |
+| Production test | 100 %: L @ 140 kHz 0.1 V (bin), Rdc, hipot to the bonded-face foil · sample 5/lot: Rac @ 140 kHz, PD · first article: thermocouples on the centre leg beside the gap and on the winding at the SER250 corner, thermal-shock screen to ≥ 135 °C, durability type test ≥ 500 cycles −40 ↔ +135 °C or ≥ 3,000 power cycles (joint resistance change ≤ 10 %, AL ±3 %, hipot pass) |
 
-Kitting unchanged: transformer leakage label → trim bin pick at assembly (DFM step 3). History:
-rev A = single 4.3 µH ±5% (pre-MC); rev B = sendust bin set (R2 CB-22 — electrically frozen values
-correct, core technology wrong). The frozen E7 rev D2 tank values are UNCHANGED by rev C.
+**Bin selection at kitting** (DFM step 3). The four bins cover leakage + stray of 0.125–0.725 µH on every SKU:
 
-## D3 — LLC section transformer 10 kW (XFMR-LLC-10K) — qty 3 per module
+| Measured D3 leakage, post-varnish | + 0.1 µH loop | 30 kW bin | 40 kW bin | 50 kW bin |
+|---|---|---|---|---|
+| 0.025 – 0.175 µH | 0.125 – 0.275 µH | 6.8 µH | 6.3 µH | 5.8 µH |
+| 0.175 – 0.325 µH | 0.275 – 0.425 µH | 6.65 µH | 6.15 µH | 5.65 µH |
+| 0.325 – 0.475 µH | 0.425 – 0.575 µH | 6.5 µH | 6.0 µH | 5.5 µH |
+| 0.475 – 0.625 µH | 0.575 – 0.725 µH | 6.35 µH | 5.85 µH | 5.35 µH |
 
-> **E51 window study + construction rev (2026-09-12).** A clean-room re-check against real
-> catalog windows found the as-drawn litz+TIW+**margin** constructions do not wind: this 30 kW
-> part computed **142–172 %** of its available window, the 40 kW 9:9:9 route **242–294 %** of
-> its named former, the 50 kW 3-set route needed a former that does not exist. Fixes: (1) the
-> construction below is revised to **compacted/profile rectangular litz primary + copper-foil
-> secondaries with a TIW/FIW barrier** — TIW **or** 3.2 mm margins, never both (the double
-> barrier was eating ~18 % of the window for no credit); with it this 30 kW wind closes at
-> **~75 %** of the bobbinless 3-stack window (E8 stands); (2) the 40/50 variants move to
-> 2×E70 sets at 6:6:6 / 5:5:5 (their rows below); (3) **leakage is a controlled parameter**
-> (interleave spacer sets it): target **3 ±0.7 µH** primary-referred so the frozen D2 bins and
-> Lr = 7.0/6.5/6.0 µH per-SKU tanks stay untouched. Winder deliverable adds a leakage
-> first-article curve (spacer thickness → measured leakage) before production release.
+A D3 outside 0.025–0.625 µH has no bin that centres Lr and is rejected at kitting. The computed leakage — 0.19 / 0.16 /
+0.14 µH, build spread ×0.5 to ×2.5 — sits inside the window on every SKU; the flux, loss and thermal rows are taken at
+bin-max.
 
-| Item | Spec |
+History: rev A was a single 4.3 µH ±5 % part; rev B a sendust bin set (powder core on full-swing duty, F1); rev C
+(30 kW, 2 × PQ50 N 4) and rev D (E60: 40 kW 1 × E70 N 5, 50 kW 2 × E70 N 3) were sized for the unreachable 3 µH leakage.
+
+## D3 rev C (E65) — LLC section transformers — qty 3 per module
+
+**Rev C is proven where the transformer actually runs.** With the bus capped at 830 V the gain-critical corners run the
+banks at 500–525 V and 77–88 kHz, and the flux follows bank voltage, not load. [`magnetics-envelope`](../calculations/magnetics/magnetics-envelope.mjs)
+scores each part at all 34 power-solved corners, [`conductor-audit`](../calculations/magnetics/conductor-audit.mjs) sets
+the production rows and [`mag-sync`](../calculations/magnetics/mag-sync.mjs) holds every carrier to these identities.
+The 1:1:1 ratio and Lm 63 µH are unchanged from E60, so the tank fingerprint and every LLC simulation stay valid.
+Drawing control: PMP-MAG-D3-30 / -40 / -50, rev C, 2026-09-13.
+
+| Item | 30 kW | 40 kW | 50 kW (liquid and air) |
+|---|---|---|---|
+| Order code · drawing | `XFMR-LLC-10K` · PMP-MAG-D3-30 | `XFMR-LLC-2E70-40` · PMP-MAG-D3-40 | **`XFMR-LLC-3E70-50`** · PMP-MAG-D3-50 — one drawing, both coolings |
+| Cores · former | 2 × E70/33/32 PC95-class · TDK **B66372B2000** (2-set, lN 230.5 mm) — was 3 × PQ50 | 2 × E70/33/32 · B66372B2000 — construction unchanged | **3 × E70/33/32** · 3-set coil former, lN 293 mm (custom — TDK lists 1- and 2-set only; tooling amortised) — was 2 × E70 |
+| Turns Np : Ns1 : Ns2 | **7:7:7** | **6:6:6** | **5:5:5** |
+| Primary | TIW-served compacted litz 2475×0.071 mm (9.8 mm²) | 3486×0.071 mm (13.8 mm²) | 4370×0.071 mm (17.3 mm²) |
+| Secondaries, each | Cu foil **0.10 × 28 mm**, 7 turns | Cu foil **0.127 × 28 mm**, 6 turns | Cu foil 0.127 × 28 mm, 5 turns |
+| Mean turn S1 / P / S2 | 190 / 207 / 223 mm | 190 / 209 / 227 mm | 253 / 271 / 290 mm |
+| Lm gap: AL target · ideal gap per set (µ0N²·nAe/Lm) | 1.286 µH/T² · 1.33 mm → ≥ 3 positions | 1.75 µH/T² · 0.98 mm → ≥ 2 positions | 2.52 µH/T² · 1.02 mm → ≥ 3 positions |
+| Leakage, computed (build spread) | 0.19 µH (0.10–0.49) | 0.16 µH (0.08–0.39) | 0.14 µH (0.07–0.35) |
+| Worst simulated flux | **142 mT** · ENV525-55, 83.6 kHz | **176 mT** · PAR525-full-gainWorst, 79.7 kHz | **158 mT** · PAR525-full-gainWorst, 76.8 kHz (air 157 mT, 77 kHz) |
+| Flux at the rated point (PAR400-full) | 70 mT | 82 mT | 67 mT (air 66 mT) |
+| Loss at the worst corners (100 °C) | Fe 22.3 W (core corner) · Cu 23.9 W (SER250-full-tolLo, 188.6 kHz) | Fe 37.3 W · Cu 31.5 W (181.1 kHz) | Fe 38.0 W (air 37.9 W) · Cu 45.7 W (176.2 kHz) |
+| Loss at the rated point (≈ 150 kHz, 90 °C) | Fe 9.5 + Cu 8.4 = 17.8 W | Fe 13.5 + Cu 10.7 = 24.2 W | Fe 12.6 + Cu 15.8 = 28.4 W (air 28.0 W) |
+| Rdc @ 25 °C P / S1 / S2, 100 % | ≤ 2.8 / ≤ 9.0 / ≤ 10.6 mΩ (build 2.59 / 8.35 / 9.81) | ≤ 1.75 / ≤ 6.1 / ≤ 7.3 mΩ (1.59 / 5.63 / 6.74) | ≤ 1.5 / ≤ 6.75 / ≤ 7.75 mΩ (1.38 / 6.24 / 7.16) |
+| Rac/Rdc @ 140 kHz ≤ 1.35 · computed S / P | 1.15 / 1.18 | 1.29 / 1.26 | 1.20 / 1.28 |
+| Hot-spot, 55 °C inlet (winding node) | 104 °C | 97 °C | 89 °C liquid · 101 °C air |
+| 75 °C inlet derated · +25 % Rth · runaway margin · B̂ / hot Bsat | 99 °C · 113 °C · 161 K · 34 % | 104 °C · 108 °C · 98 K · 44 % | liquid 80 °C · 95 °C · 139 K · 36 % · air 99 °C · 107 °C · 154 K · 38 % |
+| One gap pad lost, 55 °C inlet | 115 °C — survives | 108 °C (118 °C at 75 °C) — **needs the cutout** | liquid 118 °C, runaway at +25 % — **needs the cutout** · air 104 °C — survives |
+| Cooling interface | both yoke faces → the extrusion webs | both yoke faces → the webs, end turns potted to the web | liquid: both yoke faces → the two coldplates, end turns potted · air: as 40 kW |
+| Mass (computed, `mag-sync`) · qty | 1.32 kg · 3 per module | 1.36 kg · 3 per module | 1.97 kg · 3 per module |
+
+| Item | Spec — all SKUs |
 |---|---|
-| Core | 3× PQ50/50 stacked, PC95/DMR95-class, **gapped for Lm = 63 µH (E7 rev D2)** (center-leg grind, glue-stacked) |
-| Turns | Np = 7, Ns1 = 7, Ns2 = 7 — **7:7:7** (ratio 1:1:1) |
-| Primary | **compacted/profiled litz ≥9.8 mm² Cu in 0.071 mm strands (≈2475×0.071 — E60)**, 47 A rms simulated worst — the 0.1 mm-strand build computed Sullivan Rac/Rdc 1.63 against the 1.35 row; audit F5 history: the rev-A "1050×0.1" was 8.25 mm² |
-| Secondaries | **copper foil 0.10 × 28 mm, 7 layers each (E60 Dowell optimum)** with the TIW/FIW barrier system — 22.9 A rms each simulated worst; the E51 0.20 mm foil computed Rac/Rdc 5.3 (17.9 W vs 8.7 W) |
-| Interleave | S1 – P – S2 (leakage target ≤ 3 µH primary-referred; measured leakage recorded per unit) |
-| Shield | 1-turn Cu foil between P and each S, flying lead → primary star (CM control §18/§39) |
-| Insulation | pri↔sec REINFORCED: TIW + 2× 3.2 mm margin tape; pri↔core basic |
-| Hi-pot | pri↔sec 4.0 kV DC 1 s 100%; pri↔core 2.5 kV; **PD sample test**: ≤10 pC @ 1.5 kV pk, 5/lot (§14) |
-| Electrical accept | **Lm 63 µH ±7% (gap ground to AL target — rev B, §37 MC; E7 rev D2 value, R2 doc-alignment)**; leakage measured & labeled per unit (bin input, ±20% window acceptable); turns 1:1:1 ±0; Rdc P ≤ 2.0 mΩ, **S ≤ 5.6 mΩ** (E60 0.10 mm foil; calc 5.05) · **Rac/Rdc ≤ 1.35 @140 kHz (calc 1.27 S / 1.32 P)** |
-| Loss | Fe 13 W (A4; measured-3C95 basis 7.6) + **Cu 10.2 W at the continuous-worst simulated corner** (E60; 14.1 W at the SER-band corner, transient-only since FW-R8) → hot equilibrium 102 °C at 55 °C inlet; hotspot ≤ +55 °C rise (thermocouple under margin tape, type-test) |
-| Mount | 4× M4 clamp bar; mass **~0.75 kg (computed, E60 — thinner secondary foil)** |
+| Function | LLC section transformer, one per section, ratio 1:1:1 exact; the flux is set by bank voltage (volt-seconds), so Fe does not derate with load |
+| Lay-up | S1 (inner) – ≥ 3 barrier tapes – shield – P – shield – ≥ 3 barrier tapes – S2 (outer). Leakage is not engineered: no spacer |
+| Magnetizing | **Lm 63 µH ±7 %** @ 10 kHz, 0.1 V. The sets are magnetically in parallel, so each carries the full centre-leg gap: grind it equally on every set and split it into positions of **≤ 0.5 mm** each — the S1 foil is innermost and must never face one large gap. Count positions from the ground gap, not the ideal value |
+| Leakage | measured @ 140 kHz after varnish and **labelled per unit** — the D2 bin input; accept 0.025–0.625 µH, the window the D2 bins can centre |
+| Reinforced pri ↔ sec barrier — one construction | primary TIW-served: solid insulation, TIW/FIW grade Class F (155 °C) minimum in the winder's UL 1446 system (Furukawa TEX-E, Class B, is not a barrier material) · ≥ 3 barrier-tape layers between every shield and its secondary foil, any two passing the reinforced test · shield and secondary foils ≤ 28 mm wide, centred on the 41 mm former with 6.5 mm margin tapes per side · creepage **shield-to-S ≥ 8.3 mm** and **P-to-S ≥ 14.5 mm** wherever the triple wall is stripped. The shields are primary-referenced, so the TIW alone would leave them unbarriered |
+| Shield | 1-turn Cu foil between P and each S; lead to **DCN** (the HF-stiff primary rail), not the star — [`cells.tsx`](../packages/power-primitives/cells.tsx) `shield = "net.DCN"` |
+| Capacitance | C(P–S) ≤ 150 pF with the shield guarded · C(shield–S) measured and recorded per unit |
+| Barrier tests | routine hipot pri ↔ sec **≥ 4.25 kV DC**, 100 %, witnessed and logged (safety-critical) · PD type test + 5/lot sample: extinction **≥ 2.7 kV pk, ≤ 10 pC** after a 1.2 × pre-stress · one HF PD / ageing sample at operating frequency at first article · **1.2/50 µs impulse type test ≥ 8 kV**, 5 per polarity |
+| Insulation to PE | bonded faces carry basic insulation to the PE-bonded web or plate: glass-reinforced insulating gap pad ≥ 0.5 mm, cut-through rated above clamp pressure · 100 % hipot to a foil over the bonded faces: **P 2.5 kV DC**, **S1 and S2 ≥ 1.5 kV DC** (S1 lies on the former wall over the conductive core) |
+| Terminations | all primary pins (P1, P2, SH) on one face, S1 and S2 on the opposite face, ≥ 8 mm clearance plus a slot between the groups; S1–S2 functional ≥ 1000 V; foil terminations are crimped or soldered foil-to-pin tabs on a moulded header — the land pattern is a layout item |
+| Impregnation · bond · potting | **VPI**, class H resin, k ≥ 0.6 W/m·K · both yoke faces gap-padded (3 W/m·K) through the board cut-outs (65.9 mm stack, 62 mm tunnel), bonded-face flatness ≤ 0.5 mm · non-magnetic slotted stainless clamp bars ≥ 8 mm from any gap face · potting where the table says: ≥ 0.8 W/m·K silicone, ≥ 5 mm bridge to the web or plate |
+| Over-temperature cutout | **130 °C** ±5 K thermostat per part, as D2 — the one-pad-lost result requires it on D3-40 and D3-50 liquid; it is fitted on every SKU |
+| Marking · traceability | p/n · rev · lot/date · serial · post-varnish leakage label · C(shield–S) record · traceable to core, litz, foil and TIW lots (reel spark-test certificate) |
+| First article | open-secondary primary R @ 140 kHz (the magnetizing path — a shorted-secondary Rac cannot see gap fringing) and a thermocouple on S1 at the PAR525 corner · cross-section or teardown of the barrier · thermal-shock screen to ≥ 135 °C · durability type test as D2 |
+| Liquid SKU interface | coolant inlet ≥ enclosure-air dew point + 3 K whenever energised — a system-interface requirement with its EVT row; the bonded parts sit at coolant temperature at idle |
+
+Radial order from the centre leg outward — the reinforced layers sit between each DCN-tied shield and its secondary foil:
+
+```mermaid
+flowchart LR
+  CL["centre leg<br/>former wall + base wrap"] --- S1["S1 foil<br/>≤ 28 mm"] --- BA["≥ 3 barrier tapes<br/>shield → DCN"] --- P["P<br/>TIW-served litz"] --- BB["shield → DCN<br/>≥ 3 barrier tapes"] --- S2["S2 foil<br/>≤ 28 mm"] --- OL["overwrap · VPI<br/>outer leg"]
+  style BA stroke:#d19a00,stroke-width:2px
+  style BB stroke:#d19a00,stroke-width:2px
+  style P stroke:#1a9fb3,stroke-width:2px
+```
+
+History: the E51 constructions (3 × PQ50 at 30 kW, 2 × E70 at 40 / 50 kW, engineered 3 ±0.7 µH leakage), re-coppered at
+E60, are withdrawn at E65 for the findings in the revision note. The E51 barrier rule stands — TIW or margins on one
+barrier path, never both — and E65 pays for the custom 3-set former that E51 declined.
 
 ## D4 — Aux flyback transformer (XFMR-AUX-FLY) — qty 1
 
@@ -269,9 +343,9 @@ were generated from. **Every toroid is PCB through-hole**: the winding leads are
 into plated holes sized for the conductor. Drill is `√(4·CSA/π) + 1.2 mm`, pad = drill + 0.9 mm.
 
 > [!WARNING]
-> **This envelope table predates the E51, E52 and E60 revisions.** Its D6 and D7 rows are sized for the retired
-> 60 / 120 kW boards, its D4 row is the rev C ETD34 part (rev D is ETD39), its D2 conductor is pre-E52, and D1 / D3
-> show only the 30 kW construction — the 40 and 50 kW parts are 5 × T79 and 2 × E70. The current envelope of each
+> **This envelope table predates the E51, E52 and E60 revisions** (its D2 and D3 rows were restated at E65). Its D6 and
+> D7 rows are sized for the retired 60 / 120 kW boards, its D4 row is the rev C ETD34 part (rev D is ETD39), and D1
+> shows only the 30 kW construction — the 40 and 50 kW parts are 5 × T79. The current envelope of each
 > part is the **Mechanical** row of its sheet in the [RFQ pack](magnetics-manufacturing-pack.md); the land-pattern
 > queue is [footprints to draw](footprints-to-draw.md).
 
@@ -281,14 +355,14 @@ differ from the land patterns already generated; re-run `footprint-gen.mjs` befo
 | drawing | core OD/ID/H (mm) | leads | conductor | drill / pad (mm) | max footprint ⌀ | mounting |
 |---|---|---|---|---|---|---|
 | D1 PFC choke † | 79 / 48 / 17 ×3 stacked (H 51) | 2 | 18 mm² (3×6×1 flat) | 6.0 / 6.9 | 87 | **M6 centre bolt** + silicone pad |
-| D2 trim inductor † | 2× PQ50/50 stack (50×64×35) | 2 | 8.25 mm² litz | 4.44 / 5.34 | **68 × 56 envelope** | **2× M4 clamp bar** |
+| D2 trim inductor † (E65) | 1 × E70/33/32 (30 kW) · 2 × E70/33/32 (40 / 50 kW) — 70.5 × 65.9 × 31.6 per set | 2 | 12.0 / 16.0 mm² litz | 5.1 / 6.0 · 5.7 / 6.6 | layout item — [D2 rev E](#d2-rev-e-e65--resonant-trim-inductor-bin-sets--qty-3-per-module) | **two-face web / plate bond** + clamp bars |
 | D6 DM choke 30 kW † | 47 / 24 / 18 | 2 | 9.9 mm² | 4.75 / 5.65 | 55 | bonded |
 | D6 DM choke 60 kW † | 57 / 26 / 20 | 2 | 20 mm² foil | 6.25 / 7.15 | 65 | bonded |
 | D6 DM choke 120 kW † | 79 / 40 / 17 ×2 (H 34) | 2 | 40 mm² foil | 8.34 / 9.24 | 87 | bonded |
 | D7 CM choke 30 kW | 62 / 32 / 25 | **6** (3 windings) | 10 mm² foil | 3.97 / 4.87 | 70 | bonded |
 | D7 CM choke 60 kW | 80 / 45 / 30 | **6** | 25 mm² foil | 6.04 / 6.94 | 88 | bonded |
 | D7 CM choke 120 kW | 102 / 60 / 35 | **6** | 50 mm² foil | 8.38 / 9.28 | 110 | bonded |
-| D3 LLC transformer | 3× PQ50/50 | 7 pins @ 10 mm | ≥9.8 mm² litz (F5) | bobbin pins | 96 × 50 × 50 | **4× M4 clamp bar** |
+| D3 LLC transformer † (E65) | 2 × E70/33/32 (30 / 40 kW) · 3 × E70/33/32 (50 kW) | 7 on a moulded header — primary face / secondary face | litz 9.8–17.3 mm² · foil 0.10–0.127 × 28 mm | foil-to-pin tabs | layout item — [D3 rev C](#d3-rev-c-e65--llc-section-transformers--qty-3-per-module) | **two-face web / plate bond** + clamp bars |
 | D4 rev C aux flyback | ETD34 | 8 pins @ 5.08 mm | 0.8 mm² | bobbin pins | 35 × 26 × 25 | bobbin pins only |
 | Line CT (Talema ACX-1100) | 42 dia / Ø14.6 window | 4 PCB pins | catalog part | per Talema drawing | 44 | PCB pins; busbar through window |
 | Resonant CT (Talema AS-404) | case w/ Ø8 pass-through | 2 PCB pins | catalog part | per Talema drawing | 26 | PCB pins; tank wire is the primary |
@@ -310,26 +384,28 @@ drawing's own rise limit at the *derated* ambient:
 | drawing | rise limit | hotspot at +55 °C | at +75 °C derated | minimum class |
 |---|---|---|---|---|
 | D1, D6, D7 | ΔT ≤ 45 K | 100 °C | 120 °C | **F (155 °C)** |
-| D2 | ΔT ≤ 40 K | 95 °C | 115 °C | **F** |
-| D3 | hotspot ≤ +55 K | 110 °C | 130 °C | **F**, H preferred |
+| D2 (E65) | envelope gate: hot-spot ≤ 125 °C, ≤ 135 °C derated | 84–101 °C | 81–100 °C | **H (180 °C)** — VPI |
+| D3 (E65) | envelope gate, as D2 | 89–104 °C | 80–104 °C | **H** — VPI |
 
-**Class B (130 °C) has no margin anywhere and is negative for D3 at the derated corner.** Specify
+**Class B (130 °C) has no margin anywhere** — the D2 / D3 over-temperature cutout itself trips at 130 ±5 °C. Specify
 a **Class F (155 °C) insulation system minimum**, UL 1446 recognised as a system (not as individual
-materials), H (180 °C) for D3.
+materials), **H (180 °C) for D2 and D3** (VPI, E65).
 
 ## 0.3 Still open — the winder will ask, and these are not ours to assume
 
 - ~~**Low-temperature limit.**~~ **Closed:** A11 rev B (E52) registered −25 °C, and **A11 rev C (E60)** raised it to
   competitor parity: operating and cold start ≥ −30 °C, storage −40 °C. Litz bonding, tape adhesion and
   varnish are quoted to −40 °C.
-- **Humidity / condensation and any conformal or vacuum-impregnation requirement.**
+- **Humidity / condensation and any conformal or vacuum-impregnation requirement.** D2 and D3 are closed at E65 (VPI,
+  class H); on the liquid SKU the coolant inlet stays ≥ enclosure-air dew point + 3 K whenever energised — a
+  system-interface requirement.
 - **Vibration and shock class**, which decides whether the toroids need bonding or banding beyond
   the silicone pad.
 
 ## 0.4 Acceptance, traceability and compliance — applies to every drawing
 
 - **100 % electrical test** of the acceptance line in each section. Sampled tests are called out
-  individually (D3 partial discharge, 5/lot).
+  individually (D2 and D3 partial discharge, 5/lot).
 - **100 % hipot** where a drawing states one. D3 and D4 rev C carry the reinforced primary↔secondary
   barrier that the SELV control domain depends on: flag both in the winder's traveler as a
   **safety-critical winding operation — 100 %, never sampled**.
@@ -340,19 +416,19 @@ materials), H (180 °C) for D3.
 - **First article**: dimensional report against §0.1, full electrical against the acceptance line,
   and a cross-section or teardown for the two reinforced-barrier parts.
 - **RoHS / REACH**; all organic materials UL 94 V-0.
-- **Packaging**: individually separated — the toroids are heavy enough (computed, E59: D1 ≈ 2.2–3.0 kg, D3 ≈ 0.8–1.5 kg)
-  to damage neighbours in bulk packing.
+- **Packaging**: individually separated — the parts are heavy enough (computed, `mag-sync`: D1 ≈ 2.2–3.0 kg,
+  D3 ≈ 1.3–2.0 kg, D2 ≈ 0.7–1.3 kg) to damage neighbours in bulk packing.
 - **Drawing control**: every section above needs a drawing number, revision and date before it is
-  sent out. D2, D3 and D4 have already been revised (rev B / rev D2 / rev C) and the revisions are
-  recorded in prose rather than in a controlled block.
+  sent out. D2 (rev E) and D3 (rev C) state theirs since E65; D4's revisions are still recorded in
+  prose rather than in a controlled block.
 
 ## E41 variant drawings (40 kW module — deltas only, everything else per the rev B/C set)
 
 | Drawing | 40 kW variant | Acceptance |
 |---|---|---|
 | **D1-40 rev B (E51)** PFC choke | **5×** 0077908A7 stack (same core p/n), **N = 26 ±1 lot-trim**, wire 25.8 mm² class (J 2.84) — **re-issued on the CATALOG core (AL 37 ±8%, Ae 2.27 cm²)**: the E41 N=23 was the engine's geometric-Ae output and computes L0 98 µH / 55 µH @104 A on the real part, missing its own floor and inflating the D6/LISN ripple basis to 32 A pp | L0 **116 µH** nom, accept **106–135** (lot-trim window) · **L@104 A pk ≥ 61 µH** · dIpp ≤ 28 A nom · Rdc ≤ 7.0 mΩ · ΔT ≤ 45 K (calc 30) · fill 36 % |
-| **D2-40 rev D (E60)** resonant trim `IND-TRIM-E70-40` | **1× E70/33/32 gapped (N97/PC95-class, single-set former B66372B1000T001), N = 5**, bins 3.2/3.5/3.8 µH ±3 % by distributed gap grind (AL 128/140/152 nH/T²), **litz 4150×0.071 mm (16.4 mm²)** — the E43 2× PQ50/50 N 5 / 2000×0.1 route computed Sullivan Rac/Rdc 4.3 (13.6 W at the SER corner; the DC×1.15 model said 4.3 W) | Bpk 97 mT at the simulated 87.4 A pk · fault flux 181 mT ≤ 217 · **Rac ≤ 2.6 mΩ @140 kHz (calc 2.29)** · **ΔT 32 K continuous / 38 K SER corner** ≤ 40 · mass ~0.55 kg |
-| **D3-40 rev B (E51)** transformer | 2× E70/33/32 sets on TDK stack former **B66372B2000T001** (AN 389 mm², lN 230.5 mm — datasheet Oct-2024), **6:6:6**, compacted-profile litz primary (**E60: ≈3486×0.071 mm**) + **Cu-foil TIW-barrier secondaries (E60: 0.127 × 28 mm, Rac/Rdc 1.29; the 0.25 mm foil computed 5.1)**, leakage ENGINEERED to 3 ±0.7 µH (interleave spacer = the knob; measured & labeled per unit, bins unchanged) | **The registered 9:9:9 was unbuildable**: its litz+TIW+margin wind demands ~2.4× the former window (window study, E51), and the "Bpk 108 mT identical" claim was a ×1.8 error (9:9:9 ran 60 mT). Rev B: **Bpk 90 mT** · Fe 14.4 + Cu 19.9 ≈ 34 W/section (real-MLT) · window 88 % of AN · hotspot ≤ +55 K WITH clamp-to-extrusion web bond (type-test) |
+| **D2-40 rev E (E65)** resonant trim `IND-TRIM-E70-40` | **2 × E70/33/32 on B66372B2000, N = 5**, litz **8149×0.05 mm (16.0 mm²)**, bins **5.85 / 6.0 / 6.15 / 6.3 µH** ±1.5 %, distributed gap — full drawing: [D2 rev E](#d2-rev-e-e65--resonant-trim-inductor-bin-sets--qty-3-per-module). Rev D (1 × E70, N 5, 3.2–3.8 µH) was sized for the unreachable 3 µH leakage | bin-max 80 mT · fault flux 121 mT · Rdc ≤ 1.3 / Rac ≤ 2.6 mΩ · hot-spot 93 °C at 55 °C inlet · two-face web bond · 1.27 kg |
+| **D3-40 rev C (E65)** transformer `XFMR-LLC-2E70-40` | 2 × E70/33/32 on **B66372B2000T001**, **6:6:6**, TIW-served litz 3486×0.071 mm + foil 0.127 × 28 mm — construction unchanged from rev B (E51, re-coppered at E60); E65 adds VPI, the two-face web bond, potted end turns and the 130 °C cutout — full drawing: [D3 rev C](#d3-rev-c-e65--llc-section-transformers--qty-3-per-module) | B̂ 176 mT at PAR525-full-gainWorst (rev B's 90 mT was the resonant-point basis) · Fe 37.3 W · hot-spot 97 °C at 55 °C inlet · Rdc P / S1 / S2 ≤ 1.75 / 6.1 / 7.3 mΩ · 1.36 kg |
 | **D6-40** | **rev C engine row (see D6 section): 2× T57 60µ, N=8, foil 26.4 mm²** — constant-J alone was NOT enough, the core bias was the binder | L(109 A pk) = 10.5 µH ≥ 9.2 floor · 4.4 W · ΔT 14 K |
 | **D7-40** | same construction, CSA × 4/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind (63 A catalog part out of range) |
 | CTs | line: **E60 → 150 A class (Talema ACX-1150) on 18 Ω** — F.01 155 A pk + 50 A race needs linearity past the ACX-1100's ~179 A · resonant: **80 A-class 1:100 on 0.91 Ω** (F.11 115 A pk) | no saturation below 1.25 × (F.xx + race) at 25 °C, or demonstrated at 85 °C |
@@ -361,13 +437,15 @@ materials), H (180 °C) for D3.
 
 Every magnetic below is **gap-pad-bonded to the coldplate webs** (the sealed module has no
 airflow); the convective ΔT figures stay as the conservative acceptance gates, the plate bond is
-the mechanism that beats them — plate thermal RFQ verifies.
+the mechanism that beats them — plate thermal RFQ verifies. **D2 and D3 since E65:** their thermal proof is the
+`magnetics-envelope` two-node network with the sealed box's internal air modelled at 110 °C at full load, not a
+convective ΔT row.
 
 | Drawing | 50 kW variant | Acceptance |
 |---|---|---|
 | **D1-50 rev B (E51)** PFC choke | **5× T79 26µ** (same core p/n as D1-40), **N = 24 ±1 lot-trim**, wire 25.8 mm² (J 3.55) — **re-issued on the CATALOG core**: the E42 N=22 was geometric-Ae output (90 µH real, 44 µH @129.5 A); on catalog AL **no N on the 5-stack** holds both the 34.8 A pp basis and the 0.40 swing floor, so the basis is restated honestly | L0 **107 µH** nom, accept **98–124** · **L@129.5 A pk ≥ 45 µH** · **dIpp basis restated 36.2 A pp nom** (D6-50 equal-margin floor restates to 11.8 µH — the built D6-50 delivers 12.9; LISN DM margin stays ≥ +5.2 dB) · swing 0.405 ≥ 0.40 · ΔT ≤ 45 K (calc 41; plate/web-bonded per E42/E44) |
-| **D2-50 rev D (E60)** resonant trim `IND-TRIM-E70-50` | **2× E70/33/32 gapped, N = 3**, bins **2.8/3.0/3.2 µH** ±3 % (AL 311/333/356 nH/T²), **litz 2500×0.1 mm (19.6 mm²)** — the E44 2× PQ50/50 N 6 / 3000×0.1 route computed **Sullivan Rac/Rdc 11.7 → 45 W at the SER corner** (DC model: 5.4 W); no strand count on the PQ50 held 40 K, the 41 mm E70 window and N 3 cut the winding field 2.6× | Bpk 85 mT at the simulated 108.8 A pk · fault flux 154 mT · **Rac ≤ 2.0 mΩ (calc 1.61)** · Cu 9.4 W + Fe 7.1 W → **ΔT 31 K** ≤ 40 — ONE drawing serves liquid AND air · mass ~1.1 kg |
-| **D3-50 rev B (E51)** transformer | **2× E70/33/32 sets** on the SAME B66372B2000T001 former as D3-40, **5:5:5**, compacted-profile litz primary (**E60: ≈4370×0.071 mm**) + Cu-foil TIW-barrier secondaries (**E60: 0.127 × 28 mm, Rac/Rdc 1.20; the 0.30 mm foil computed 6.7**), leakage engineered 3 ±0.7 µH | **The registered 3×E70 route required a 3-set former that DOES NOT EXIST** (TDK offers 1- and 2-set only) and still demanded ~1.2× its window; and while its N·Ae matched the 40 kW's, both ran 60 mT — the "108 mT" transcription was a ×1.8 error. Rev B: **Bpk 109 mT** (30 kW class) · Fe 24.4 + Cu 20.7 ≈ 45 W/section · window 91 % · **transformer clamp bonds to coldplate/extrusion web MANDATORY** (the D2-50/D1-50 bond practice) · hotspot ≤ +55 K with bond (type-test) |
+| **D2-50 rev E (E65)** resonant trim `IND-TRIM-E70-50` | **2 × E70/33/32 on B66372B2000, N = 5**, litz **8149×0.05 mm (16.0 mm²)**, bins **5.35 / 5.5 / 5.65 / 5.8 µH** ±1.5 %, distributed gap — full drawing: [D2 rev E](#d2-rev-e-e65--resonant-trim-inductor-bin-sets--qty-3-per-module). Rev D (N 3, 2.8–3.2 µH) was sized for the unreachable 3 µH leakage | bin-max 92 mT · fault flux 134 mT · Rdc ≤ 1.3 / Rac ≤ 2.6 mΩ · hot-spot 84 °C (both coldplates, end turns potted) · ONE drawing serves liquid AND air · 1.27 kg |
+| **D3-50 rev C (E65)** transformer `XFMR-LLC-3E70-50` | **3 × E70/33/32** on a 3-set coil former (lN 293 mm, custom), **5:5:5**, TIW-served litz 4370×0.071 mm + foil 0.127 × 28 mm — full drawing: [D3 rev C](#d3-rev-c-e65--llc-section-transformers--qty-3-per-module). The rev B 2-set part ran 237 mT at the 525 V-bank corner and had no equilibrium even plate-bonded | B̂ 158 mT at PAR525-full-gainWorst · Fe 38 W · hot-spot 89 °C · both coldplates + potted end turns **MANDATORY** · Rdc P / S1 / S2 ≤ 1.5 / 6.75 / 7.75 mΩ · 1.97 kg |
 | **D6-50** | **rev C engine row (see D6 section): 3× T57 60µ, N=8, foil 26.4 mm²** | L(136 A pk) = 12.9 µH ≥ 11.4 floor · 8.1 W · ΔT 19 K plate-bonded |
 | **D7-50** | same construction, CSA × 5/3 at constant J ≤ 5.6 A/mm² | ΔT acceptance carried; custom wind 95 A |
 | CTs | line: **150 A-class 2500:1 — Talema ACX-1150** (linear to 200 A at 33 Ω; own 38.1 mm land), **E60 burden 13 Ω** (F.01 195 A pk, observable to 311 A) · resonant: **100 A-class 1:100 on 0.75 Ω** (2 W part; F.11 145 A pk, observable to 216 A) | the E42 21.5 Ω / 1.6 Ω burdens saw only to 187 A / 104 A — current-coordination gate carries the per-SKU race proof |
@@ -377,9 +455,9 @@ the mechanism that beats them — plate thermal RFQ verifies.
 The air twin (`50kwa`) uses the **identical D1-50 / D2-50 / D3-50 / D6-50 / D7-50 set** — the
 classes were set by current, not coolant, and `skuOverrides["50kwa"] = {...skuOverrides["50kw"]}`
 enforces it. Air-specific notes: D1-50's 37 K and D6-50's 19 K convective figures now sit in
-real fan airflow (conservative); D2-50's E44 litz rev (3000×0.1) exists precisely so one trim
-drawing serves both coolings at ≤40 K (→ **superseded at E60 by D2-50 rev D — 2 × E70, N 3, 2500×0.1 litz — which serves
-both coolings at ≤ 40 K**). The only new POWER part on the air twin is silicon, not
+real fan airflow (conservative); **D2-50 rev E and D3-50 rev C bond both yoke faces to the extrusion webs instead of
+the coldplates** (hot-spot 101 °C each at 55 °C inlet — `magnetics-envelope`), so one drawing of each serves both
+coolings. The only new POWER part on the air twin is silicon, not
 magnetic: 6× paralleled LLC FETs (E44 register row).
 
 ---

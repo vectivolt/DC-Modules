@@ -19,8 +19,11 @@ import { TANKS, fingerprint } from "../../calculations/llc/tanks.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 export const ALPHA = 1.55, BETA = 2.8;
-// peak |Ip| a kill of `killUs` µs after the tank current first crosses `thr` (committed llc-short.csv envelope)
-export const shortRacePeak = (sku, thr, killUs = 3) => {
+// peak |Ip| a kill of `killUs` µs after |Ip| first crosses `thr` (committed llc-short.csv envelope). E65: F.11 is a WINDOW
+// comparator (both polarities) diode-ORed onto HRTIMER_FLT2 — 1 µs covers the 220 ns front-end RC, the 40 ns comparator,
+// the fault input, the driver and the SiC fall with margin
+export const F11_KILL_US = 1.0;
+export const shortRacePeak = (sku, thr, killUs = F11_KILL_US) => {
   const env = readFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), "utf8").split("\n").filter((l) => /^\d/.test(l)).map((l) => l.split(",").map(Number));
   const x = env.find(([, ip]) => ip >= thr); if (!x) return { tX: NaN, peak: env.at(-1)[1] };
   return { tX: x[0], peak: (env.find(([t]) => t >= x[0] + killUs) ?? env.at(-1))[1] };

@@ -84,7 +84,7 @@ export const FOOTPRINT = {
   // intended package. Chip classes carry the size their code already names; wound parts and
   // relays point at the placeholder their family already uses (to-draw queue, layout phase);
   // cabinet blocks and the DIN supply are assemblies with no PCB land, and say so.
-  "R0603-10k": "R0603", "R0805-2R2": "R0805", "R0603-120R-1%": "R0603", "R0603-3k32-1%": "R0603",
+  "R0603-10k": "R0603", "R0805-2R2": "R0805", "R0603-120R-1%": "R0603",
   "R0603-0R": "R0603", "R2010-1k-0.75W-1%": "R2010",
   "R2512-0R68-2W-1%": "R2512", "R2512-0R82-1W-1%": "R2512", "R2512-1R00-1W-1%": "R2512",
   "R1206-13R-1%": "R1206", "R1206-18R-1%": "R1206", "R1206-22R-1%": "R1206",
@@ -101,9 +101,9 @@ export const FOOTPRINT = {
   "MICROFIT3-40": "CONN-TH_40P-P3.00_MicroFit",
   "CONN-CARD-88-H": "HDR-TH_88P-2R-P2.54-V-M", // 2×44 keyed header — generated dual-row land
   "CONN-CARD-88-R": "SKT-TH_88P-2R-P2.54-V",   // mating receptacle — per the chosen series drawing
+  "TLV3202-class": "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL", "BAT54A": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
   "PMP-50KW-MODULE": "ASSY_MODULE_INTERFACE",  // cabinet block: a module, not a PCB part
-  "CONTROL-CARD-CSU": "ASSY_CARD_SLOT",        // cabinet block: the card assembly in the CSU role
-  "PSU-15V-DIN-WDR": "DIN_RAIL_MOUNT_ASSY",    // Mean Well WDR-60-15: DIN rail, no PCB land
+  "CHARGER-CONTROLLER-CAN-PORT": "ASSY_MODULE_INTERFACE",  // cabinet block: the controller port (E66), not a PCB part
 };
 export const footprintFor = (mpn) => FOOTPRINT[mpn] ?? "";
 
