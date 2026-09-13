@@ -125,12 +125,12 @@
     "designator": "Q1H",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GH_1"
+      "signal_name": "Q1H_G"
      },
      {
       "pin_number": 1,
@@ -153,12 +153,12 @@
     "designator": "Q1L",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GL_1"
+      "signal_name": "Q1L_G"
      },
      {
       "pin_number": 1,
@@ -174,6 +174,134 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KL_1"
+     }
+    ]
+   },
+   {
+    "designator": "Q1H2",
+    "value": "SG2M023120LJ",
+    "block_name": "LEG-1",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "Q1H2_G"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "SWA"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KH_1"
+     }
+    ]
+   },
+   {
+    "designator": "Q1L2",
+    "value": "SG2M023120LJ",
+    "block_name": "LEG-1",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "Q1L2_G"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "SWA"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KL_1"
+     }
+    ]
+   },
+   {
+    "designator": "RG1H2",
+    "value": "2.2",
+    "block_name": "LEG-1",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q1H2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG1L2",
+    "value": "2.2",
+    "block_name": "LEG-1",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q1L2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG1H1",
+    "value": "2.2",
+    "block_name": "LEG-1",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q1H_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG1L1",
+    "value": "2.2",
+    "block_name": "LEG-1",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q1L_G"
      }
     ]
    },
@@ -821,12 +949,12 @@
     "designator": "Q2H",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GH_2"
+      "signal_name": "Q2H_G"
      },
      {
       "pin_number": 1,
@@ -849,12 +977,12 @@
     "designator": "Q2L",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "GL_2"
+      "signal_name": "Q2L_G"
      },
      {
       "pin_number": 1,
@@ -870,6 +998,134 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KL_2"
+     }
+    ]
+   },
+   {
+    "designator": "Q2H2",
+    "value": "SG2M023120LJ",
+    "block_name": "LEG-2",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "Q2H2_G"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "SWB"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KH_2"
+     }
+    ]
+   },
+   {
+    "designator": "Q2L2",
+    "value": "SG2M023120LJ",
+    "block_name": "LEG-2",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
+    "pins": [
+     {
+      "pin_number": 4,
+      "name": "G",
+      "signal_name": "Q2L2_G"
+     },
+     {
+      "pin_number": 1,
+      "name": "D",
+      "signal_name": "SWB"
+     },
+     {
+      "pin_number": 2,
+      "name": "S",
+      "signal_name": "DCN"
+     },
+     {
+      "pin_number": 3,
+      "name": "DS",
+      "signal_name": "KL_2"
+     }
+    ]
+   },
+   {
+    "designator": "RG2H2",
+    "value": "2.2",
+    "block_name": "LEG-2",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q2H2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG2L2",
+    "value": "2.2",
+    "block_name": "LEG-2",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q2L2_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG2H1",
+    "value": "2.2",
+    "block_name": "LEG-2",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GH_2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q2H_G"
+     }
+    ]
+   },
+   {
+    "designator": "RG2L1",
+    "value": "2.2",
+    "block_name": "LEG-2",
+    "search_query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "GL_2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "Q2L_G"
      }
     ]
    },
@@ -1517,5 +1773,5 @@
  "warnings": [
   "blocks over 24 comps (split risk): LEG-1, LEG-2"
  ],
- "total": 63
+ "total": 75
 }

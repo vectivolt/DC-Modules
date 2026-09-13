@@ -36,7 +36,7 @@ const D4W = d4Drawn(), D4R = d4Evaluate(D4, D4W), D4C = d4Evaluate(D4_REGISTERED
 const V = [
   ["PFC FET 750 V class (B3M010C075Z 50 kW · 20/15 mΩ class 30/40 kW, E69a)", 560, 750, 0.755, "560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule; 650 V dies are REJECTED (86 %)"],
   ["PFC boost JBS 1200V", 937, 1200, 0.80, "full bus + ring"],
-  ["LLC FET 1200 V (SG2M023120LJ · 16 mΩ class at 40 kW, E69a)", 876, 1200, 0.80, "830 V bus + DPT 73% ring"],
+  ["LLC FET SG2M023120LJ", 876, 1200, 0.80, "830 V bus + DPT 73% ring"],
   ["secondary JBS 1200V", 611, 1200, 0.80, "bank + ring (49% class use)"],
   ["aux switch 1700V SiC", Math.round(D4R.vds), D4W.qauxV, 0.80, `860 V + Vc ${Math.round(D4R.vc)} V (limit ${D4R.ipkClamp.toFixed(2)} A, ${(D4.llkAcc + D4.llkLayout) * 1e6} µH) + ${D4.vOvs} V — d4-flyback`],
   ["aux clamp diode DCLA", Math.round(D4R.vds), D4W.dclaV, 0.80, `blocks 860 V + Vc in the on-time (E52: 1200 V part at ${Math.round(D4C.vds)} V)`],

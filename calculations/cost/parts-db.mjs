@@ -26,7 +26,7 @@ export const BUILDABLE_SKUS = ["30kw", "40kw", "50kw", "50kwa"];   // E40 single
 export const DB = [
   // --- power semiconductors
   { m: /^Q[ABC]\d+[AB]2?$/, mpn: "B3M010C075Z", mfr: "BASiC", desc: "SiC MOSFET 750 V 10 mΩ TO-247-4", price1k: 330, alt: "SiChain 750V/10mΩ (RFQ)" },
-  { m: /^Q\d+[HL][23]?$/, mpn: "SG2M023120LJ", mfr: "SiChain", desc: "SiC MOSFET 1200 V 23 mΩ TO-247-4L (E67 full-bridge LLC: tanks.mjs par per position — 2 at 30/40/50 kW liquid, 3 on the air 50 — Q#H2/H3)", price1k: 390, alt: "BASiC B3M020120ZL" },
+  { m: /^Q\d+[HL][23]?$/, mpn: "SG2M023120LJ", mfr: "SiChain", desc: "SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a: the 30 kW single die carries 210 A at the F.11 kill) (E67 full-bridge LLC: tanks.mjs par per position — 2 at 30/40/50 kW liquid, 3 on the air 50 — Q#H2/H3)", price1k: 390, alt: "BASiC B3M020120ZL" },
   { m: /^D[ABC]\d+[TB]$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)", price1k: 120, alt: "BASiC B3D040120H" },
   { m: /^D[ABC]\d+C$/, mpn: "SICJBS-1200-10", mfr: "SiChain", desc: "SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)", price1k: 55, alt: "CR Micro 1200V/10A" },
   { m: /^D\d+[AB][1-4](P[23])?$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (E67 secondary bridge: 2 per position on every SKU, 3 on the air 50 — the InfyPower 16 × 40 A build; exact p/n at RFQ)", price1k: 120, alt: "BASiC B3D40120H" },
@@ -173,12 +173,12 @@ export const DB = [
 // per-SKU overrides: name → { price1k, qtyMul, note }
 export const skuOverrides = {
   "30kw": {
-    QA0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
-    QA0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
-    QB0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
-    QB0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
-    QC0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
-    QC0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target" },
+    QA0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak)" },
+    QA0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak)" },
+    QB0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak)" },
+    QB0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak)" },
+    QC0A: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak)" },
+    QC0B: { price1k: 180, mpn: "SIC-750V-20mR", note: "E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak)" },
     // audit F6 2026-09-08: 63 A gG at 55.9 A worst continuous = 88% nameplate and NEGATIVE after
     // the ~0.72× enclosed/+55 °C derate → 80 A, 22×58 frame (matching holder; RT28-32 was 10×38/32 A).
     "F1": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F2": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F3": { price1k: 105, mpn: "FUSE-gG-690V-80A" },
@@ -188,16 +188,12 @@ export const skuOverrides = {
   },
   // E41 40 kW hot variant — engine-driven (design-basis/loss-budget rev E41): line 73.3 A worst.
   "40kw": {
-    QA0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
-    QA0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
-    QB0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
-    QB0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
-    QC0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
-    QC0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target" },
-    Q1H: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
-    Q1L: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
-    Q2H: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
-    Q2L: { price1k: 520, mpn: "SIC-1200V-16mR", note: "E69a: 1200 V 16 mΩ class TO-247-4, one per position (fold only at forced-HIGH 500 V / 55 °C) — RFQ target; break-even vs 2 × SG2M023120LJ ₹780 @1k" },
+    QA0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target; ACCEPTANCE IDM ≥ 260 A @25 °C (205 A F.01 fault peak)" },
+    QA0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target; ACCEPTANCE IDM ≥ 260 A @25 °C (205 A F.01 fault peak)" },
+    QB0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target; ACCEPTANCE IDM ≥ 260 A @25 °C (205 A F.01 fault peak)" },
+    QB0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target; ACCEPTANCE IDM ≥ 260 A @25 °C (205 A F.01 fault peak)" },
+    QC0A: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target; ACCEPTANCE IDM ≥ 260 A @25 °C (205 A F.01 fault peak)" },
+    QC0B: { price1k: 240, mpn: "SIC-750V-15mR", note: "E69a: 750 V 15 mΩ class single die per position (grid Tj 127 °C) — RFQ target; ACCEPTANCE IDM ≥ 260 A @25 °C (205 A F.01 fault peak)" },
     // stress-audit: 100 A x 0.72 enclosed-derate = 72 A < 73.3 A worst — the exact E35/F6 failure
     // class. 125 A (existing family part) derates to 90 A: 23% margin.
     "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },

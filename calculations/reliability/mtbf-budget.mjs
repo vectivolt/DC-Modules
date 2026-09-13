@@ -44,7 +44,7 @@ const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 // REGISTERED at E68c (single dies E68a · star-X2 filter E68b · film-only banks E68c, and the film caps no longer classed as Si
 // semis — "rectifier-side" in a capacitor's text had put the E67 bank films at 10 FIT each). E68a was 2661/2809/2875/2887 FIT,
 // E67 2757/2953/2999/3259, E64 3081/3297/3396/3552 — recomputed every run, ±1 % drift fails.
-const REGISTERED = { "30kw": { fit: 2613, mtbfKh: 383 }, "40kw": { fit: 2657, mtbfKh: 376 }, "50kw": { fit: 2791, mtbfKh: 358 }, "50kwa": { fit: 2803, mtbfKh: 357 } };   // E69a: 40 kW one LLC die per position (2753 → 2657)
+const REGISTERED = { "30kw": { fit: 2613, mtbfKh: 383 }, "40kw": { fit: 2753, mtbfKh: 363 }, "50kw": { fit: 2791, mtbfKh: 358 }, "50kwa": { fit: 2803, mtbfKh: 357 } };   // E69a: the 40 kW single-die LLC was reverted (fault-pulse rule)
 // E55 products = N modules. E66: the 150 kW CSU adder (card-class assembly + DIN supply + carrier, 350 FIT) is deleted.
 const PRODUCTS = { "100kw (2×50L)": { n: 2, base: "50kw", csu: 0 }, "100kw air (2×50a)": { n: 2, base: "50kwa", csu: 0 },
                    "150kw (3×50L)": { n: 3, base: "50kw", csu: 0 }, "150kw air (3×50a)": { n: 3, base: "50kwa", csu: 0 } };
