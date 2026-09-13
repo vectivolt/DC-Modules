@@ -22,6 +22,7 @@ export const CORES = {
   PQ50: { dims: S["PQ 50/50"], Ae: 328e-6, le: 0.113, Ve: 37.1e-6, kgSet: 0.195,           // TDK/Ferroxcube PQ50/50
           lN1: 0.115, lNstep: 2 * S["PQ 50/50"].C / 1000 },                                  // single-post former lN; side-by-side sets form a racetrack: +2·C per set
   ETD39: { dims: S["ETD 39/20/13"], Ae: 125e-6, le: 0.0922, Ve: 11.5e-6, kgSet: 0.060 },
+  ETD44: { dims: S["ETD 44/22/15"], Ae: 173e-6, le: 0.103, Ve: 17.8e-6, kgSet: 0.094 },       // TDK ETD 44/22/15 (B66365) — D4 rev E (E65)
   T79: { dims: S["T 79/48/17"], Ae: 221e-6, le: 0.196, Ve: 43.4e-6, kgCore: 0.240,         // Magnetics 0077908A7 Kool Mµ 26 (datasheet rev 10/7/2021: 240 g)
          ds: DATA.T79_0077908A7 },                                                            // winding-length table, coated limits, surface areas
   T57: { Ae: 3.10e-4, le: 0.1304, mlt0: 0.075, mltK: 0.020 },                               // dm-choke-design catalog set

@@ -1168,17 +1168,25 @@ export const Interconnect40 = ({ id, map, shldTo = null, sec = "HARNESS", x = 0,
 );
 
 // ---------- aux flyback — v4 (E26 rev C / D4 rev C): closes CB-19/CB-20 on top of CB-5/6/7.
-//  · fed from the FULL unboosted bus (DCP→DCN): 342 V (285 VAC cold start) … 860 V (OVP corner)
-//  · 1700 V SiC switch, **110 W class all SKUs** (Lp 345 µH, Ip clamp 3.2 A via 0.31 Ω CS,
-//    65 kHz DCM, Vor ≈ 157 V, ETD34, Np 38 / N24 6 / N15 4 / Naux 4 — D4 rev C; single p/n keeps
+//  · fed from the FULL unboosted bus (DCP→DCN): runs 321 V brown-out … 860 V (OVP corner), starts ≥ 345 V (E65)
+//  · 1700 V SiC switch, **110 W class all SKUs** (Lp 345 µH, cycle-by-cycle limit via 0.28 Ω CS — E65,
+//    65 kHz DCM, Vor ≈ 157 V, ETD44, Np 38 / N24 6 / N15 4 / Naux 4 — D4 rev E; single p/n keeps
 //    commonization and covers the 120 kW worst load ≈ 84 W steady with ≥20 % corner margin;
 //    DCM proof: t_on 3.2 µs + t_reset 7.0 µs = 10.3 µs < 13.8 µs usable @342 V full load)
 //  · CB-19: output rectifiers are 400 V ultrafast (PIV ≈ 160/152/151 V + leakage ring — the
 //    100 V Schottkys of rev B avalanche at high bus); MR-17: SMBJ TVS on both rails
 //  · controller application = NCP1252A 65 kHz (MR-13): VCC startup Rs, BO divider re-sized for
-//    the 1.0 V BO threshold (brown-in ≈ 322 V), aux-winding self-supply, primary-side FB, COMP,
+//    the 1.0 V BO threshold, aux-winding self-supply, primary-side FB, COMP,
 //    RC-filtered CS, primary RCD clamp, gate pulldown on QAUX for the VCC-charge window.
 //  · relay-coil PWM hold economization is firmware (halves 24 V steady demand — E26).
+//  · E65 D4 rev E (calculations/magnetics/d4-flyback.mjs computes every value below from the NCP1252/D limits):
+//    ETD39 → ETD44 at the same turns and Lp 345 µH (now ±5 %); CS 0.31 Ω → 0.28 Ω with CCSF 470 → 100 pF — the
+//    453 ns filter lag + tILIM let the limit overshoot to 5.1 A = 113 % of Bsat(130 °C) on ETD39, now 71 %;
+//    DCLA 1200 V → 1700 V SiC Schottky (it blocked Vbus + Vc ≈ 1.3 kV); RCLA 2×47k → 3×11k 2 W so Vc stays
+//    ≤ ~470 V at the limit current and 5 µH leakage (QAUX ≤ 80 %); BO divider 2×2.4M/15k → 2×1.2M/7.5k — brown-out
+//    stays 321 V, the IBO hysteresis halves so brown-in is 345 V (the 2.4M set started at 369 V, 390 V worst);
+//    RAUX24 50 mΩ puts every V24 fault behind ≥100 mΩ of loop so a hard short cannot ratchet D4 into
+//    saturation before the 10–20 ms fault latch; TAUX pins 1–4 = primary side, 5–8 = SELV (one row each).
 export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name="aux" pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* R4-3 (external review + NCP1252 datasheet rev 9, Table 1): REAL map — FB=1, BO=2, CS=3,
@@ -1186,11 +1194,14 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
         actually landed on soft-start. */}
     <chip name="UAUX" footprint="soic8" pinLabels={{ pin1: "FB", pin2: "BO", pin3: "CS", pin4: "RT", pin5: "GND", pin6: "DRV", pin7: "VCC", pin8: "SS" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <chip name="QAUX" footprint="to220" pinLabels={{ pin1: "G", pin2: "D", pin3: "S" }} pcbX={22} pcbY={0} schX={5} schY={-1.2} schSectionName={sec} />
-    <resistor name="RAUXCS" resistance="0.31" footprint="1206" pcbX={22} pcbY={8} schX={5} schY={-2.8} schSectionName={sec} />
+    <resistor name="RAUXCS" resistance="0.28" footprint="1206" pcbX={22} pcbY={8} schX={5} schY={-2.8} schSectionName={sec} />
     <resistor name="RAUXG" resistance="100k" footprint="0603" pcbX={28} pcbY={4} schX={3.2} schY={-2.2} schSectionName={sec} />
     <resistor name="RCSF" resistance="1k" footprint="0603" pcbX={16} pcbY={8} schX={6.8} schY={-2.8} schSectionName={sec} />
-    <capacitor name="CCSF" capacitance="470pF" footprint="0603" pcbX={16} pcbY={12} schX={8.4} schY={-3.6} schSectionName={sec} />
-    <chip name="TAUX" footprint={<XfmrAuxFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "S24A", pin4: "S24B", pin5: "S15A", pin6: "S15B", pin7: "AXA", pin8: "AXB" }} pcbX={48} pcbY={0} schX={7.5} schY={0.8} schSectionName={sec} />
+    <capacitor name="CCSF" capacitance="100pF" footprint="0603" pcbX={16} pcbY={12} schX={8.4} schY={-3.6} schSectionName={sec} />
+    {/* E65 pin allocation (reinforced barrier): the bus-side terminals P1/P2/AXA/AXB own one bobbin row and the SELV
+        S24A/S24B/S15A/S15B the other — the E52 map put S24A next to P1 and AXA next to S15A at 1.98 mm pad gap
+        against the 8.0 / 12.6 mm reinforced design values. The land pattern follows at layout (open item). */}
+    <chip name="TAUX" footprint={<XfmrAuxFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "AXA", pin4: "AXB", pin5: "S24A", pin6: "S24B", pin7: "S15A", pin8: "S15B" }} pcbX={48} pcbY={0} schX={7.5} schY={0.8} schSectionName={sec} />
     <diode name="DAUX24" footprint="smb" pcbX={72} pcbY={0} schX={11} schY={2.4} schSectionName={sec} />
     <diode name="DAUX15" footprint="smb" pcbX={72} pcbY={8} schX={11} schY={0.8} schSectionName={sec} />
     <diode name="DAUXVC" footprint="smb" pcbX={72} pcbY={16} schX={11} schY={-0.8} schSectionName={sec} />
@@ -1201,9 +1212,9 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <diode name="DTVS15" footprint="smb" pcbX={108} pcbY={0} schX={15.8} schY={0.8} schSectionName={sec} />
     <resistor name="RAUXST1" resistance="470k" footprint="2512" pcbX={0} pcbY={10} schX={-0.9} schY={3.4} schSectionName={sec} />
     <resistor name="RAUXST2" resistance="470k" footprint="2512" pcbX={10} pcbY={10} schX={0.9} schY={3.4} schSectionName={sec} />
-    <resistor name="RBR1A" resistance="2.4M" footprint="2512" pcbX={0} pcbY={16} schX={-0.9} schY={-3.4} schSectionName={sec} />
-    <resistor name="RBR1B" resistance="2.4M" footprint="2512" pcbX={10} pcbY={16} schX={0.9} schY={-3.4} schSectionName={sec} />
-    <resistor name="RBR2" resistance="15k" footprint="0603" pcbX={22} pcbY={16} schX={2.7} schY={-3.4} schSectionName={sec} />
+    <resistor name="RBR1A" resistance="1.2M" footprint="2512" pcbX={0} pcbY={16} schX={-0.9} schY={-3.4} schSectionName={sec} />
+    <resistor name="RBR1B" resistance="1.2M" footprint="2512" pcbX={10} pcbY={16} schX={0.9} schY={-3.4} schSectionName={sec} />
+    <resistor name="RBR2" resistance="7.5k" footprint="0603" pcbX={22} pcbY={16} schX={2.7} schY={-3.4} schSectionName={sec} />
     {/* R4-3 regulation: NCP1252 FB has an internal pull-up and HIGH FB = MORE demand — the old
         VCC->FB divider was POSITIVE feedback (rails would run to the TVS clamps). The classic
         opto-emulating primary-side loop closes it with the right sign: VCC (aux winding tracks
@@ -1217,8 +1228,10 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <capacitor name="CAUXSS" capacitance="100nF" footprint="0603" pcbX={-16} pcbY={15} schX={-4.6} schY={-1.2} schSectionName={sec} />
     <diode name="DCLA" footprint="smb" pcbX={76} pcbY={-8} schX={4.5} schY={3.4} schSectionName={sec} />
     <capacitor name="CCLA" capacitance="10nF" footprint={FilmBoxFP(15)} pcbX={94} pcbY={-8} schX={6.3} schY={3.4} schSectionName={sec} />
-    <resistor name="RCLA1" resistance="47k" footprint="2512" pcbX={114} pcbY={-8} schX={8.1} schY={3.4} schSectionName={sec} />
-    <resistor name="RCLA2" resistance="47k" footprint="2512" pcbX={126} pcbY={-8} schX={9.9} schY={3.4} schSectionName={sec} />
+    <resistor name="RCLA1" resistance="11k" footprint="2512" pcbX={114} pcbY={-8} schX={8.1} schY={3.4} schSectionName={sec} />
+    <resistor name="RCLA2" resistance="11k" footprint="2512" pcbX={126} pcbY={-8} schX={9.9} schY={3.4} schSectionName={sec} />
+    <resistor name="RCLA3" resistance="11k" footprint="2512" pcbX={138} pcbY={-8} schX={11.7} schY={3.4} schSectionName={sec} />
+    <resistor name="RAUX24" resistance="0.05" footprint="2512" pcbX={90} pcbY={0} schX={14.6} schY={3.4} schSectionName={sec} />
     {/* HV startup: DCP → 2× 470 k → VCC reservoir; aux winding takes over via DAUXVC */}
     <trace from=".RAUXST1 > .pin1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RAUXST1 > .pin2" to=".RAUXST2 > .pin1" />
@@ -1246,7 +1259,7 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <resistor name="RAUXRT" resistance="66.5k" footprint="0603" pcbX={4} pcbY={22} schX={2} schY={-3} schSectionName={sec} />
     <trace from=".RAUXRT > .pin1" to=".UAUX > .RT" />
     <trace from=".RAUXRT > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
-    {/* brown-in program: full-bus divider → BR (start ≈ 330 V, hysteresis per IC) */}
+    {/* brown-in program: full-bus divider → BO — brown-out VBO·(1+Rup/Rlo) = 321 V, brown-in adds IBO·Rup = 24 V (E65) */}
     <trace from=".RBR1A > .pin1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RBR1A > .pin2" to=".RBR1B > .pin1" />
     <trace from=".RBR1B > .pin2" to=".UAUX > .BO" />
@@ -1272,7 +1285,8 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <trace from=".CCLA > .pin2" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RCLA1 > .pin1" to=".CCLA > .pin1" />
     <trace from=".RCLA1 > .pin2" to=".RCLA2 > .pin1" />
-    <trace from=".RCLA2 > .pin2" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
+    <trace from=".RCLA2 > .pin2" to=".RCLA3 > .pin1" />
+    <trace from=".RCLA3 > .pin2" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".UAUX > .DRV" to=".QAUX > .G" />
     <trace from=".RAUXG > .pin1" to=".QAUX > .G" />
     <trace from=".RAUXG > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
@@ -1284,12 +1298,13 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <trace from=".CCSF > .pin2" to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* secondaries */}
     <trace from=".TAUX > .S24A" to=".DAUX24 > .anode" />
-    <trace from=".DAUX24 > .cathode" to="net.V24" schDisplayLabel="V24" />
+    <trace from=".DAUX24 > .cathode" to=".CAUX24 > .pin1" />
+    <trace from=".RAUX24 > .pin1" to=".CAUX24 > .pin1" />
+    <trace from=".RAUX24 > .pin2" to="net.V24" schDisplayLabel="V24" />
     <trace from=".TAUX > .S24B" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".TAUX > .S15A" to=".DAUX15 > .anode" />
     <trace from=".DAUX15 > .cathode" to="net.V15" schDisplayLabel="V15" />
     <trace from=".TAUX > .S15B" to="net.DGND" schDisplayLabel="DGND" />
-    <trace from=".CAUX24 > .pin1" to="net.V24" schDisplayLabel="V24" />
     <trace from=".CAUX24 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".CAUX15 > .pin1" to="net.V15" schDisplayLabel="V15" />
     <trace from=".CAUX15 > .pin2" to="net.DGND" schDisplayLabel="DGND" />

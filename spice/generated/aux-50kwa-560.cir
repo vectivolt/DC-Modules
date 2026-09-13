@@ -1,45 +1,152 @@
-* aux flyback rev C VIN=560 (full bus, E26 rev C, 110 W stage)
+* D4 rev E aux flyback — drawn circuit (matrix) VIN=560 50kwa Lp×1 · D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V
 VIN vin 0 DC 560
-* primary: Lp 345u with switch to ground via sense R; RCD clamp
-LP vin sw 345u
-BSW sw csn I=v(sw,csn)*(1e-7+v(g)*20)
-RCS csn 0 0.31
-RCSF csn csnf 200
-CCSF csnf 0 1n
-DCL sw cl DCLP
-CCL cl vin 10n ic=0
-RCL cl vin 94k
-.model DCLP D(Is=1e-9 N=1.8 Rs=0.1 BV=1200 IBV=1m)
-* secondaries (coupled): N24 6/38 -> 8.6u, N15 4/38 -> 3.82u (D4 rev C)
-LS24 s24a 0 8.6u
-LS15 s15a 0 3.82u
-K1 LP LS24 0.998
-K2 LP LS15 0.998
-K3 LS24 LS15 0.998
-* CB-19 regression: rectifiers modeled WITH breakdown at the specified 400 V rating —
-* PIV ≈ Vo + VIN·n ≈ 160 V at 860 V bus; a 100 V model here would avalanche visibly.
-D24 s24a v24 DSCH
-D15 s15a v15 DSCH
-.model DSCH D(Is=1e-7 N=1.05 Rs=0.02 BV=400 IBV=1m)
-C24 v24 0 220u ic=0
-C15 v15 0 220u ic=0
-* loads (per-SKU): 24 V hold 1 A stepping to 2.4 A; 15 V 1.2 A
+* transformer: primary leakage at the acceptance maximum; the layout allowance sits in the rectifier loops (×n²)
+LLK vin p1 0.000004
+RLLK vin p1 20k
+RPRI p1 p2 0.45
+LM p2 sw 0.000341
+LS24 0 a24 0.000008501385041551247
+LS15 0 a15 0.000003778393351800554
+LSAX 0 aax 0.000003778393351800554
+K1 LM LS24 0.99999
+K2 LM LS15 0.99999
+K3 LM LSAX 0.99999
+K4 LS24 LS15 0.99999
+K5 LS24 LSAX 0.99999
+K6 LS15 LSAX 0.99999
+RS24 a24 b24 0.015
+LL24 b24 c24 2.4930747922437675e-8
+RLL24 b24 c24 20
+RS15 a15 b15 0.012
+LL15 b15 c15 1.1080332409972298e-8
+RLL15 b15 c15 20
+RSAX aax bax 0.05
+VD24 c24 d24 0
+D24 d24 v24c DUF
+VD15 c15 d15 0
+D15 d15 v15 DUF
+VDVC bax dvc 0
+DVC dvc vcc DUF2
+.model DUF D(Is=1e-9 N=1.7 Rs=0.03 BV=1000 IBV=1m Cjo=30p TT=20n)
+.model DUF2 D(Is=1e-9 N=1.7 Rs=0.08 BV=400 IBV=1m Cjo=15p TT=20n)
+C24 v24c 0 220u ic=23.5
+RAUX24 v24c v24 0.05
+CV24 v24 0 10n ic=23.5
+C15 v15 0 220u ic=15.3
+CVCC vcc 0 220u ic=15.4
+IVCC vcc 0 0.0035
 BL24 v24 0 I=max(v(v24),0)/24*(1+1.4*u(time-0.012))
 RL15 v15 0 12.5
-* control: voltage-mode P on 24 V rail, duty 0.03..0.45, soft-start ramp; 65 kHz sawtooth
-BTRI tri 0 V=time*65000-floor(time*65000)
-BDUT dut 0 V=min(max(0.35*(24.5-v(v24f)),0.002),min(0.45,time/5m+0.03))
-* PWM AND cycle-by-cycle CS clamp (1.0 V / 0.31 R = 3.2 A) AND light-load skip (as NCP1252A):
-* the 110 W stage at min duty over-delivers into a 30 kW idle load without cycle skipping
-BGT g 0 V=min(max((v(dut)-v(tri))*60+0.5,0),1)*min(max((1.0-v(csnf))*60+0.5,0),1)*min(max((24.9-v(v24f))*20+0.5,0),1)
-RF1 v24 v24f 1k
-CF1 v24f 0 100n
-.tran 0.4u 0.02 0 0.2u uic
-.option method=gear reltol=2e-3 abstol=1e-6 itl4=100
+* rail TVS as drawn (SMBJ26A / SMBJ16A class, MR-17)
+DTVS24 0 v24 DTV24
+DTVS15 0 v15 DTV15
+.model DTV24 D(Is=1e-12 N=1 BV=28.9 IBV=1m Rs=0.3)
+.model DTV15 D(Is=1e-12 N=1 BV=17.8 IBV=1m Rs=0.2)
+
+.model SWSH SW(Ron=10m Roff=1e9 Vt=0.5 Vh=0.1)
+* QAUX: VSW = drain current, VS1 = channel current (the node capacitance discharges through the channel)
+VSW sw d 0
+VS1 d s1 0
+S1 s1 csn gdrv 0 SWSIC
+.model SWSIC SW(Ron=1.4 Roff=1e9 Vt=1.5 Vh=0.05)
+CSW d csn 60p
+DBODY csn d DBD
+.model DBD D(Is=1e-12 N=1.5 Rs=0.2 BV=2000)
+RCS csn 0 0.28
+* current sense as drawn: RCSF / CCSF + the NCP1252 internal 3.5 V ramp through 26.5 k
+RCSF csn cs 1000
+CCSF cs 0 1e-10
+BRAMP rmp 0 V=3.5*(time*65000-floor(time*65000))
+RRAMP rmp cs 26500
+* RCD clamp as drawn (DCLA breakdown at its voltage class: an avalanche shows, it does not hide)
+VDC sw dca 0
+DCLA dca cl DSIC
+.model DSIC D(Is=1e-14 N=1.4 Rs=0.5 BV=1700 IBV=1u Cjo=20p)
+CCLA cl vin 1e-8
+RCLA cl vin 33000
+* drawn R4-3 loop: VCC → RZFB 2.2k → DZAUX 15 V → QAUXFB base (RBEFB 10k) → FB; CFBF 1 nF; FB pull-up 3.5k / 40k internal
+RZFB vcc zk 2.2k
+DZ qb zk DZ15
+.model DZ15 D(Is=1e-12 N=1 BV=15 IBV=1m Rs=5)
+RBE qb 0 10k
+Q1 fb qb 0 QN
+.model QN NPN(Bf=200 Is=1e-14 Vaf=100 Cjc=5p Cje=5p)
+CFB fb 0 1n
+VFBI fbi 0 6.525
+RPU fbi fb 3.5k
+RZI fb 0 40k
+* soft start completed (SS/4 above the 1 V limit; the cold start itself is bench T-29)
+CSS ss 0 100n ic=4
+ISS 0 ss 10u
+DSS ss ssc DSW
+VSSC ssc 0 4.0
+.model DSW D(Is=1e-14 N=1)
+* NCP1252 PWM latch: clock set · LEB · reset on CS ≥ min(1 V, FB/3, SS/4), DCmax, skip (FB < 0.3 V), fault-off
+VONE one 0 1
+VCLK clk 0 PULSE(0 1 0 1n 1n 30n 0.000015384615384615384)
+VLEB leb 0 PULSE(0 1 0 1n 1n 1.6e-7 0.000015384615384615384)
+VDMX dmx 0 PULSE(0 1 0.000007015384615384615 1n 1n 30n 0.000015384615384615384)
+BRC rcr 0 V=((v(cs) > min(1, min(v(fb)/3, v(ss)/4))) && (v(leb) < 0.5)) || (v(dmx) > 0.5) || (v(fb) < 0.3) || (v(off) > 0.5) ? 1 : 0
+RRC rcr rc 1k
+CRC rc 0 1p
+SSET one q clk 0 SWL
+SHLD one qh q 0 SWL
+RHLD qh q 2k
+SRST q 0 rc 0 SWR
+.model SWL SW(Ron=100 Roff=1e9 Vt=0.5 Vh=0.1)
+.model SWR SW(Ron=20 Roff=1e9 Vt=0.5 Vh=0.1)
+.model SWF SW(Ron=1 Roff=1e9 Vt=0.5 Vh=0.1)
+CQ q 0 10p
+* DRV: fast turn-on (10 Ω), tILIM typ 70 ns turn-off delay (100 Ω · 1 nF from 3 V to the 1.5 V threshold)
+BGD gd0 0 V=v(q) > 0.5 ? 3 : 0
+DGON gd0 gon DSW
+RGON gon gdrv 10
+RGOF gd0 gdrv 100
+CG gdrv 0 1n
+* fault timer: CS > FCS after LEB → flag held 3 periods → Tfault 10 ms (min) → permanent off (latched)
+BFC fc 0 V=((v(cs) > 1) && (v(leb) < 0.5)) ? 1 : 0
+SFL one flag fc 0 SWF
+RFLG flag 0 46154
+CFLG flag 0 1n
+BTIM 0 tim I=(v(flag) > 0.3) ? 1e-9/0.01 : -1e-9*v(tim)/20e-6
+CTIM tim 0 1n ic=0
+SOFF one off tim 0 SWT
+.model SWT SW(Ron=100 Roff=1e9 Vt=1.0 Vh=0.05)
+SOFH one offh off 0 SWL
+ROFH offh off 1k
+COFF off 0 10p
+ROFL off 0 1e8
+.tran 1u 0.02 0 2e-8 uic
+.option method=gear reltol=1e-3 abstol=1e-7 vntol=1e-5 itl4=200
+.save v(vin) v(sw) v(d) v(s1) v(csn) v(cl) v(v24) v(v24c) v(v15) v(vcc) v(off) v(p1) v(p2) v(a24) v(b24) v(a15) v(b15) v(aax) v(bax) v(d24) v(d15) v(dvc) v(dca) i(VIN) i(VS1) i(VD24) i(VD15) i(VDVC) i(VDC) i(LM) i(LLK)
 .control
 set filetype=ascii
 run
-wrdata aux-50kwa-560.out v(v24) v(v15) i(VIN)
+* energy balance on the simulator's own time points: source = channel + sense R + clamp + windings + rectifiers + rail inputs
+let pin = -i(VIN)*v(vin)
+let psw = (v(s1)-v(csn))*i(VS1)
+let pcl = (v(dca)-v(cl))*i(VDC) + (v(cl)-v(vin))*(v(cl)-v(vin))/33000
+let pout = v(v24c)*i(VD24) + v(v15)*i(VD15) + v(vcc)*i(VDVC)
+let psum = psw + v(csn)*v(csn)/0.28 + pcl + (v(p1)-v(p2))*(v(p1)-v(p2))/0.45 + (v(a24)-v(b24))*(v(a24)-v(b24))/0.015 + (v(a15)-v(b15))*(v(a15)-v(b15))/0.012 + (v(aax)-v(bax))*(v(aax)-v(bax))/0.05 + (v(d24)-v(v24c))*i(VD24) + (v(d15)-v(v15))*i(VD15) + (v(dvc)-v(vcc))*i(VDVC) + pout
+let vr = v(cl)-v(sw)
+let vc = v(cl)-v(vin)
+meas tran PIN avg pin from=16m to=20m
+meas tran PSUM avg psum from=16m to=20m
+meas tran POUT avg pout from=16m to=20m
+meas tran PSW avg psw from=16m to=20m
+meas tran PCL avg pcl from=16m to=20m
+meas tran V24S avg v(v24) from=9m to=12m
+meas tran V24DIP min v(v24) from=12m to=14m
+meas tran V24MAX max v(v24) from=9m to=0.02
+meas tran V15MIN min v(v15) from=12m to=16m
+meas tran VDSMAX max v(sw) from=0.004 to=0.02
+meas tran VRMAX max vr from=0.004 to=0.02
+meas tran VCMAX max vc from=0.004 to=0.02
+meas tran ILMMAX max i(LM) from=0.004 to=0.02
+meas tran ILKMAX max i(LLK) from=0.004 to=0.02
+meas tran OFFEND max v(off) from=0.019 to=0.02
+linearize v(v24) v(v15)
+wrdata aux-50kwa-560.out v(v24) v(v15)
 quit
 .endc
 .end

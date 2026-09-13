@@ -90,7 +90,7 @@ flowchart LR
 | T-06 | Protection injection | Each row of protection-thresholds.md: forced trip, measured threshold/latency vs table; DESAT via drain short-pulse jig; OVP via bus pump; watchdog kill line |
 | T-07 | S/P transition | 100 cycles LV↔HV under FSM at 0 A: contact currents (Rogowski) < 30 A; weld-detect provoked with forced stuck relay (jig) |
 | T-08 | EMI pre-scan | LISN conducted 150 k–30 M, CISPR-32-class limits informal; compare interleave on/off (**50 kW — E60 restated from the retired 60 kW board**); gap analysis feeds filter rev |
-| T-09 | Aux robustness | Brown-out/black-out of bus 650→300 V: UVLO chain holds gates low (F.26), no spurious pulses (scope on 6 gates); harness-pull test (R11): safe stop |
+| T-09 | Aux robustness | Brown-out/black-out of bus 650→300 V: UVLO chain holds gates low (F.26), no spurious pulses (scope on 6 gates); harness-pull test (R11): safe stop. **E65 D4 rev E fault matrix at 830 and 860 V:** (a) V24 hard short on the harness side of RAUX24, (c) V15 short, (d) FB open (lift QAUXFB) — QAUX Id peak ≤ 8 A (current probe), D4 search-coil B̂ ≤ 310 mT, Vds ≤ 1360 V and DCLA Vr ≤ 1360 V (HV differential probe), NCP1252D latches within 10–20 ms, no component damage; (b) V24 short AT CAUX24 (no RAUX24 in the loop — the residual component-failure case) at 830 V only, record Id / B̂ / latch time, sacrificial unit; record whether VCC decays to 9 V while latched (latched ICC vs the 0.43–0.90 mA start-up feed) — restart after AC cycling only is the accepted fail-safe. Clamp: Vc ≤ 460 V at the limit current (FB-open) with the first-article leakage |
 | T-10 | Soak + CAN | 48 h at 80% power cycling 25/100%; CAN 1 Hz telemetry integrity, HMI address persistence, fault-snapshot readout; energy counter vs meter ±2% |
 
 ### From EVT to end-of-line
@@ -109,7 +109,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 
 | ID | Test | Pass criterion |
 |---|---|---|
-| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere incl. cold-start ≤8 s (R6-G budget); aux BO brown-in 310–335 V (NCP1252D) |
+| T-11 | Cold-start matrix 285–475 VAC × bus charged/discharged | boots everywhere incl. cold-start ≤13 s at 285 VAC, ≤8.5 s at 400 VAC (E65: VCC(on) 14.9 V max, CVCC +20 %, ICC1 max through the 940 k feed — the R6-G "≈8 s" was typical-only); aux BO (NCP1252D, E65 divider 2×1.2M/7.5k) brown-in 327–363 V, brown-out 306–336 V — the IBO hysteresis source adds 24 V to the 321 V brown-out (the pre-E65 "310–335 V brown-in" row could not pass: the 2.4M set started at 348–390 V) |
 | T-12 | Programming-session thermal watch (SWD attached, bus at 830 V, MCU held in reset 10 min) | discharge chain stays OFF (E19 rev B); no component > 60 °C rise |
 | T-13 | Filter-cap soak 475 VAC 48 h | CX ΔT ≤ 10 K, no capacitance loss > 5 % |
 | T-14 | Hipot + touch-leakage **with all sense chains fitted** | 4 kV pri↔sec < 5 mA (Y-caps dominated), leakage < 3.5 mA |
@@ -132,7 +132,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 | T-26 | PFC fast-trip timing, BOTH current polarities (E47/E48) | measured threshold-crossing → gate-off ≤ the registered budget on every phase; CT polarity ↔ comparator-trip polarity confirmed per phase; DESAT covers the forward direction, CMP the reverse |
 | T-27 | Discharge hold-up waveform (E47/E49) | active phase reaches ≤~330 V before aux brown-out; passive continuation matches the per-SKU 370/222/296 s model ±tolerances; label wait verified with residual-V measurement |
 | T-28 | PV bleeder loaded drive (R8) | loaded V_GS, drain current and FET temperature with the exact orderable QDIS part across the declared ≤70 °C bleed ambient; discharge time per bank model |
-| T-29 | Aux cold-start waveform (R6-G) — **also at −30 °C after cold soak (A11 rev C)** | first switching ≤10 s from AC apply at 320–480 VLL; VCC never crosses VCC(off) during soft-start + takeover; V15 floor during commanded bleed recorded (feeds T-28) |
+| T-29 | Aux cold-start waveform (R6-G) — **also at −30 °C after cold soak (A11 rev C)** | first switching ≤11 s from AC apply at 320–480 VLL (E65 worst-case 10.7 s at 320 VLL); VCC never crosses VCC(off) during soft-start + takeover; V15 floor during commanded bleed recorded (feeds T-28) |
 
 ## 3. Coordination, copper and environment on real hardware (E60 · T-30…T-32)
 

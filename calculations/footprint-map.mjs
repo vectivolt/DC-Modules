@@ -28,15 +28,16 @@ export const FOOTPRINT = {
   "US1M": "SMA_L4.4-W2.8-LS5.4-RD",           "US2G": "SMB_L4.5-W3.6-LS5.3-RD",
   "UF-400V-3A": "SMC_L8.0-W5.9-LS9.0-RD",     "1N4148WS": "SOD-323_L1.8-W1.3-LS2.5-RD",
   "SMBJ26A": "SMB_L4.5-W3.6-LS5.3-RD",        "SMBJ16A": "SMB_L4.5-W3.6-LS5.3-RD",
-  "FAST-1200-1A": "SMB_L4.5-W3.6-LS5.3-RD",   "PESD1CAN": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
+  "SIC-SBD-1700V": "SMB_L4.5-W3.6-LS5.3-RD",     "PESD1CAN": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
   "S20K550": "DISC-20mm_RM10",      "GDT-3k5-20kA": "GDT-8mm_RM6",
   // --- passives ---
   "R-small": "R0805",   "R0603-220": "R0603",
   "R0805-10k": "R0805", "R0805-prec-0.1%": "R0805",
   "R1206-33R-1%": "R1206", "R1206-RG-0.5W": "R1206",
-  "R1206-R31-1%-0.5W": "R1206", "HV73-475k-1%": "R1206",
+  "R1206-R28-1%-0.5W": "R1206", "HV73-475k-1%": "R1206",
   "R2512-47k-HV-AS": "R2512", "R2512-10R-2W": "R2512",
   "R2512-HV": "R2512",  "R2512-2R0-1W-1%": "R2512",
+  "R2512-11k-2W-AS": "R2512", "R2512-R05-1W-1%": "R2512",
   "CER-25W-33R-AX": "RES-TH_L60.0-W9.0-P66.00", "CER-25W-160R-AX": "RES-TH_L60.0-W9.0-P66.00", "CER-50W-33R-AX": "RES-TH_L75.0-W12.0-P82.00", "CER-50W-160R-AX": "RES-TH_L75.0-W12.0-P82.00",
   "CER-2k2-10W-AX": "RES-TH_L48.0-W8.0-P54.00", "SQP-10R-25W": "RES-TH_L60.0-W9.0-P66.00",
   "WW-470R-10W": "RES-TH_L48.0-W8.0-P54.00",
@@ -54,7 +55,7 @@ export const FOOTPRINT = {
   "IND-PFC-165u": "L_Toroid_3xT79_26u_custom", "IND-TRIM-BIN4": "L_Toroid_trim_bin_custom",
   "DM-22u-SKU": "L_Toroid_sendust_per-SKU", "CMC-3PH-2mH-SKU": "L_CMC_3ph_nanocryst_per-SKU",
   "CMC-CAN-51uH": "IND-SMD_L4.5-W3.2_CMC", "XFMR-LLC-10K": "XFMR_3xPQ50-50_custom",
-  "XFMR-AUX-FLY-D": "XFMR_ETD39_custom",
+  "XFMR-AUX-FLY-E": "XFMR_ETD44_custom",   // E65 D4 rev E: land to draw (pins 1–4 primary row / 5–8 SELV row) — layout open item
   "CT-100A-1:2500": "CT_window_100A_1-2500", "CT-RES-1:100": "CT_window_res_1-100",
   // NOT the catalogue HF167F/24-HF land (LCSC C2757422). Tried it; KiCad's DRC rejected it:
   // "Pin has no corresponding pad: 5, 6, 8; Pad has no corresponding pin: 2". The catalogue part

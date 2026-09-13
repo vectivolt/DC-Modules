@@ -1,5 +1,5 @@
-* D4 rev E aux flyback — drawn circuit (matrix) VIN=560 30kw Lp×1 · D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V
-VIN vin 0 DC 560
+* D4 rev E aux flyback — drawn circuit (matrix) VIN=340 50kw Lp×1 · D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V
+VIN vin 0 DC 340
 * transformer: primary leakage at the acceptance maximum; the layout allowance sits in the rectifier loops (×n²)
 LLK vin p1 0.000004
 RLLK vin p1 20k
@@ -35,8 +35,8 @@ CV24 v24 0 10n ic=23.5
 C15 v15 0 220u ic=15.3
 CVCC vcc 0 220u ic=15.4
 IVCC vcc 0 0.0035
-BL24 v24 0 I=max(v(v24),0)/24*(0.7+0.9*u(time-0.012))
-RL15 v15 0 15
+BL24 v24 0 I=max(v(v24),0)/24*(0.45+0.65*u(time-0.012))
+RL15 v15 0 13.636363636363635
 * rail TVS as drawn (SMBJ26A / SMBJ16A class, MR-17)
 DTVS24 0 v24 DTV24
 DTVS15 0 v15 DTV15
@@ -146,7 +146,7 @@ meas tran ILMMAX max i(LM) from=0.004 to=0.02
 meas tran ILKMAX max i(LLK) from=0.004 to=0.02
 meas tran OFFEND max v(off) from=0.019 to=0.02
 linearize v(v24) v(v15)
-wrdata aux-30kw-560.out v(v24) v(v15)
+wrdata aux-50kw-340.out v(v24) v(v15)
 quit
 .endc
 .end

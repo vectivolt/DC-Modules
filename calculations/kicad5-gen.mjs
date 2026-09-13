@@ -819,7 +819,7 @@ const HAND = {
   // these were alphabetical too: all three rectifiers, then all three caps, then both TVS, so no
   // rail was readable as a rail. One column either way, frame identical (span 1, h 4000).
   "AUX-POWER / RAILS": [
-    ["DAUX15", "CAUX15", "DTVS15", "DAUX24", "CAUX24", "DTVS24", "DAUXVC", "CVCC"],
+    ["DAUX15", "CAUX15", "DTVS15", "DAUX24", "CAUX24", "RAUX24", "DTVS24", "DAUXVC", "CVCC"],
   ],
   // Both 3.3 V bucks, read as a buck: input cap and the IC, then bootstrap, inductor, output cap
   // and the feedback divider. Packed, the IC sat alone in column one and all six passives in

@@ -15,6 +15,7 @@ import { D2 as D2C, D3 as D3C, excitation, V_AIR } from "./magnetics/magnetics-e
 import { stack, CORES } from "./magnetics/geometry.mjs";
 import { D1 as D1C, D1_REGISTERED, D1_LITZ, d1Temp, d1TypeTest, row as vsRow, VS as D1VS } from "./magnetics/d1-choke.mjs";
 import { mechLines } from "./cost/parts-db.mjs";
+import { D4, D4_REGISTERED_E52, DRAWN_E52, NCP, drawn as d4Drawn, evaluate as d4Evaluate, fingerprint as d4Fingerprint, leakageEstimate, Bsat as d4Bsat, csTrip, VBUS_MAX } from "./magnetics/d4-flyback.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
 let fails = 0, warns = 0;
@@ -26,12 +27,17 @@ const ck = (sec, name, cond, detail) => {
 console.log("=== STRESS AUDIT — switches · diodes · magnetics · protection classes (30 · 40 · 50 kW) ===");
 
 // ---------------- 1. semiconductor VOLTAGE margins [reg] — identical for both variants ----------
+// E65: the aux rows are COMPUTED (d4-flyback): 860 V + the RCD clamp voltage at the cycle-by-cycle limit current and the
+// leakage acceptance + 25 V overshoot — the E52 row was a typed 1220 V that reproduced only at 1.38 µH / 3.2 A, and the
+// clamp diode (blocking the same voltage during the on-time) had no row at all.
+const D4W = d4Drawn(), D4R = d4Evaluate(D4, D4W), D4C = d4Evaluate(D4_REGISTERED_E52, DRAWN_E52);
 const V = [
   ["PFC FET B3M010C075Z", 560, 750, 0.755, "560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule"],
   ["PFC boost JBS 1200V", 937, 1200, 0.80, "full bus + ring"],
   ["LLC FET SG2M023120LJ", 876, 1200, 0.80, "830 V bus + DPT 73% ring"],
   ["secondary JBS 1200V", 611, 1200, 0.80, "bank + ring (49% class use)"],
-  ["aux switch 1700V SiC", 1220, 1700, 0.80, "860 V + reflected + ring"],
+  ["aux switch 1700V SiC", Math.round(D4R.vds), D4W.qauxV, 0.80, `860 V + Vc ${Math.round(D4R.vc)} V (limit ${D4R.ipkClamp.toFixed(2)} A, ${(D4.llkAcc + D4.llkLayout) * 1e6} µH) + ${D4.vOvs} V — d4-flyback`],
+  ["aux clamp diode DCLA", Math.round(D4R.vds), D4W.dclaV, 0.80, `blocks 860 V + Vc in the on-time (E52: 1200 V part at ${Math.round(D4C.vds)} V)`],
   ["aux rectifiers 400V", 240, 400, 0.80, "160 V + leakage ring"],
 ];
 for (const [n, v, cls, lim, why] of V)
@@ -230,11 +236,43 @@ for (const [sku, litz, irms, name] of [["30kw", 10.6, 46.4, "1350×0.1"], ["40kw
   ck("D2c", `${sku} trim litz J`, irms / litz <= 5.6,
     `${name} litz: J ${f(irms / litz, 1)} A/mm² ≤ 5.6 (AC loss/ΔT: conductor-audit)`);
 }
-// D4 aux flyback saturation margin — E52: computed, not asserted-by-prose (ETD39 Ae 125 mm²)
+// D4 aux flyback — E65 rev E: every row COMPUTED by magnetics/d4-flyback.mjs from the drawn cells.tsx values and the NCP1252/D
+// limits. The E52 row used a 3.2 A clamp; the real limit through the CS filter lag + tILIM put ETD39 at 113 % of Bsat 130 °C.
+// The E52 registered design is the CONTROL GROUP — each physics row must also reject it.
 {
-  const bpk = 345e-6 * 3.2 / (38 * 125e-6);
-  ck("D4", "aux flyback Bpk on ETD39 [computed]", bpk <= 0.24 && bpk * 1.10 <= 0.26 && /ETD39/.test(db),
-    `Lp·Ipclamp/(Np·Ae) = ${f(bpk * 1e3, 0)} mT (${f(bpk * 1.1 * 1e3, 0)} at Lp+10%) vs hot Bsat ~390 — 66% at tolerance (the ETD34 rev C ran 85%; E52 margin rev, electricals/sim unchanged)`);
+  const r = D4R, c = D4C, bs = d4Bsat(130), cells = readFileSync(join(ROOT, "packages/power-primitives/cells.tsx"), "utf8");
+  ck("D4", "flux at the computed cycle-by-cycle limit", r.Bpct <= 0.75 && c.Bpct > 0.75 && new RegExp(`${D4.mpn}", mfr: "[^"]*", desc: "[^"]*${D4.core}`).test(db),
+    `860 V · Lp +${D4.tolL * 100} % · VILIM 1.08 V · CS ${D4W.rcsf / 1e3} k/${f(D4W.ccsf * 1e12, 0)} pF · tILIM 150 ns → ${f(r.ipkLim, 2)} A → ${f(r.B * 1e3, 0)} mT = ${f(100 * r.Bpct, 1)} % of Bsat(130 °C) ≤ 75 % on ${D4.core} (control E52: ${f(c.ipkLim, 2)} A → ${f(100 * c.Bpct, 0)} % on ETD39 — rejected)`);
+  ck("D4", "full load stays under the FCS fault timer at the lowest running bus", r.faultMargin >= 0.05 && r.pDeliver >= 1.10 * r.pOut,
+    `${r.worstSku} ${f(r.pinReq, 1)} W in · Lp −${D4.tolL * 100} % · osc −8 % · Rcs +1 % · ramp max at ${f(r.bo.off[0], 0)} V: CS ${f(r.csFull, 3)} V vs FCS min 0.90 V (${f(100 * r.faultMargin, 1)} % ≥ 5 %) · deliverable ${f(r.pDeliver, 0)} W ≥ 1.1 × ${f(r.pOut, 0)} W (a nuisance latch here would drop the module until AC is cycled)`);
+  ck("D4", "DCM and duty at brown-out min, Lp max", r.dcm <= 0.9 && r.duty <= NCP.dcMax,
+    `t_on + t_reset = ${f(100 * r.dcm, 0)} % of the period ≤ 90 % · duty ${f(100 * r.duty, 1)} % ≤ DCmax(min) ${NCP.dcMax * 100} %`);
+  ck("D4", "RCD clamp resistor + capacitor duty", r.pRclaPart <= 0.5 * D4.pRcla && r.pRclaEvent <= 2.5 * D4.pRcla && r.vRclaPart <= D4.vRcla && r.vc <= 0.8 * 1200 && c.vrPct > 0.8,
+    `${D4W.nRcla}× ${f(D4W.rcla / D4W.nRcla / 1e3, 1)} k: ${f(r.pRclaPart, 2)} W/part at full load and 5 µH (≤ 50 % of ${D4.pRcla} W) · ${f(r.pRclaEvent, 2)} W/part for ≤ 20 ms at the limit (≤ 2.5×) · ${f(r.vRclaPart, 0)} V/part · CCLA ${f(r.vc, 0)} V of 1200 V · idle bleed ${f(r.pBleedIdle, 2)} W (control E52 diode at ${f(100 * c.vrPct, 0)} % of 1200 V — rejected)`);
+  const acc = readFileSync(join(ROOT, "docs/evt-plan.md"), "utf8");
+  ck("D4", "brown-in with the IBO hysteresis source starts at 285 VAC", r.bo.on[2] <= 0.95 * r.bo.startBus && r.bo.hys >= 15 && Math.abs(r.bo.off[1] - 321) < 2 && c.bo.on[2] > 0.95 * c.bo.startBus && /brown-in 327–363 V/.test(acc),
+    `brown-out ${r.bo.off.map((x) => f(x, 0)).join("/")} V (the R6 321 V floor) · brown-in ${r.bo.on.map((x) => f(x, 0)).join("/")} V ≤ 95 % of the ${f(r.bo.startBus, 0)} V bus at 285 VAC · hysteresis ≥ ${f(r.bo.hys, 1)} V (control E52 2.4M set: brown-in ${f(c.bo.on[1], 0)} V typ, ${f(c.bo.on[2], 0)} V worst — the "342 V cold start" could never start; T-11 row carries the band)`);
+  const t285 = r.tStart(Math.SQRT2 * 285), t320 = r.tStart(Math.SQRT2 * 320), t400 = r.tStart(Math.SQRT2 * 400);
+  ck("D4", "cold start inside the EVT acceptance (VCC(on) max, CVCC +20 %, ICC1 max)", t285 <= 13 && t320 <= 11 && t400 <= 8.5 && /cold-start ≤13 s at 285 VAC, ≤8\.5 s at 400 VAC/.test(acc) && /first switching ≤11 s from AC apply at 320–480 VLL/.test(acc),
+    `${f(t285, 1)} s at 285 VAC (≤ 13) · ${f(t320, 1)} s at 320 VLL (≤ 11) · ${f(t400, 1)} s at 400 VLL (≤ 8.5) — the R6 "≈8 s at low line" held only at typical VCC(on) and nominal CVCC`);
+  ck("D4", "V24/V15 hard short at 860 V before the 10–20 ms fault latch", Math.max(r.short24, r.short15) <= 0.8 * D4.idmQaux && r.Bshort <= 0.85 * bs && c.Bshort > bs && D4W.r24 > 0,
+    `ton_min ratchet (LEB + tILIM 150 ns, osc+jitter max, loop ≥ ${D4.rLoopMin * 1e3} mΩ + RAUX24 ${f(D4W.r24 * 1e3, 0)} mΩ): V24 ${f(r.short24, 2)} A · V15 ${f(r.short15, 2)} A ≤ 80 % of the ${D4.idmQaux} A QAUX pulse class · ${f(r.Bshort * 1e3, 0)} mT ≤ 85 % of Bsat(130 °C) (control E52: ${f(c.short24, 1)} A → ${f(c.Bshort * 1e3, 0)} mT, deep saturation — rejected)`);
+  console.log(`  info  [D4] residual: a failure AT the V24 reservoir (CAUX24/DAUX24 short, no RAUX24 in the loop) ratchets to ${f(r.short24bare, 2)} A / ${f(r.BshortBare * 1e3, 0)} mT at the 860 V worst stack — a component-failure event ended by the latch (T-09 short matrix, search coil); harness and load faults all sit behind RAUX24`);
+  const llk = leakageEstimate();
+  ck("D4", "leakage acceptance is buildable", llk * 1.5 <= D4.llkAcc,
+    `P/2–S–P/2 sandwich 1-D estimate ${f(llk * 1e6, 2)} µH ×1.5 ≤ ${D4.llkAcc * 1e6} µH acceptance (+${D4.llkLayout * 1e6} µH rectifier-loop allowance in every clamp row)`);
+  const pins = cells.match(/name="TAUX" footprint=\{<XfmrAuxFP \/>\} pinLabels=\{\{([^}]*)\}\}/)?.[1] ?? "";
+  const lab = Object.fromEntries([...pins.matchAll(/pin(\d): "(\w+)"/g)].map((m) => [+m[1], m[2]]));
+  const rowA = [1, 2, 3, 4].map((i) => lab[i]).sort().join(","), rowB = [5, 6, 7, 8].map((i) => lab[i]).sort().join(",");
+  ck("D4", "reinforced pin allocation: bus-side row / SELV row", rowA === "AXA,AXB,P1,P2" && rowB === "S15A,S15B,S24A,S24B" && /pcbY=\{i < 4 \? -6 : 6\}/.test(cells),
+    `pins 1–4 ${rowA} · pins 5–8 ${rowB} (E52 mixed P1/S24A and AXA/S15A at 1.98 mm vs 8.0/12.6 mm reinforced — land regeneration is a layout open item)`);
+  // SPICE anchor: the drawn-circuit deck must carry this design's fingerprint, pass every row, and agree with the closed forms
+  const sp = readFileSync(join(ROOT, "simulation-results/30kw/aux-flyback.csv"), "utf8").trim().split("\n");
+  const H = sp.find((l) => !l.startsWith("#")).split(","), rows = sp.filter((l) => !l.startsWith("#")).slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [H[i], isNaN(+v) ? v : +v])));
+  const cl = rows.find((x) => x.case === "clamp-fbopen-860"), sh = rows.find((x) => x.case === "short-v24-860");
+  const ipkSp = csTrip({ Vin: VBUS_MAX, L: cl?.Lp_uH * 1e-6, rcs: D4W.rcs, rcsf: D4W.rcsf, ccsf: D4W.ccsf, f: 65e3, vramp: NCP.vramp[1], vth: NCP.vilim[1], tdel: NCP.tILIM[0] }).ipk;
+  ck("D4", "aux SPICE deck: fingerprint, verdicts, anchors [aux-flyback.csv]", sp[0].includes(d4Fingerprint()) && rows.length >= 15 && rows.every((x) => x.verdict === "PASS" || x.verdict === "INFO") && Math.abs(cl.ilm_max_A / ipkSp - 1) <= 0.1 && sh.ilm_max_A <= 0.8 * D4.idmQaux && sh.B_mT <= 850 * d4Bsat(130),
+    `${rows.length} rows, ${rows.filter((x) => x.verdict === "PASS").length} PASS · FB-open limit ${cl?.ilm_max_A} A vs closed form ${f(ipkSp, 2)} A at the deck's typ corner (±10 %) · V24 short ${sh?.ilm_max_A} A / ${sh?.B_mT} mT in the deck (≤ ${0.8 * D4.idmQaux} A · ≤ 85 % Bsat 130 °C) before the fault latch; closed-form worst stack ${f(r.short24, 2)} A`);
 }
 // pulse-resistor single-event energies vs the family class points (25 W accepted ≤160 J at
 // 40 kW; the 50 W part carries the 120 kW's 364–477 J)
@@ -281,8 +319,8 @@ const cellsSrc = readFileSync(join(ROOT, "packages/power-primitives/cells.tsx"),
 const protDoc = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
 const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
 {
-  const VBO = 1 * (1 + 4.8e6 / 15e3);                       // NCP1252 BO: 321 V (RBR 2×2.4M / 15k)
-  ck("R6", "aux brown-out threshold as drawn", Math.abs(VBO - 321) < 2, `1 V × (1+4.8M/15k) = ${f(VBO, 0)} V — the active-discharge floor`);
+  const VBO = D4R.bo.off[1];                                 // NCP1252 BO: 321 V (E65: RBR 2×1.2M / 7.5k, read off cells.tsx)
+  ck("R6", "aux brown-out threshold as drawn", Math.abs(VBO - 321) < 2, `1 V × (1+${D4W.rbrUp / 1e6}M/${D4W.rbrLo / 1e3}k) = ${f(VBO, 0)} V — the active-discharge floor (brown-in ${f(D4R.bo.on[1], 0)} V adds IBO·Rup)`);
   // R8 correction (external review retrace): the 40/50 kW links carry TWO SplitDcLink banks,
   // each with its own 2×47k pair per half → the pairs PARALLEL (47k/half, 94k full-link);
   // only the single-bank 30 kW is 188k. The R7 report dismissed the reviewer's 222 s as an
@@ -304,9 +342,8 @@ const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
   const need = drain * 0.060 / 5.0;                          // 60 ms soft-start+takeover over the hysteresis
   ck("R6", "aux cold-start reservoir (D version)", /mpn: "NCP1252D"/.test(db) && /name="CVCC" capacitance="220uF"/.test(cellsSrc) && 220e-6 >= 2 * need,
     `budget ${f(drain * 1e3, 1)} mA × 60 ms / 5 V = ${f(need * 1e6, 0)} µF → 220 µF fitted (${f(220e-6 / need, 1)}×). The drawn A-version could NOT start: 120 ms mandatory delay vs 1.0 V hysteresis ÷ ${f((1.4e-3 - 0.59e-3) * 1e3, 2)}–${f((2.2e-3 - 0.59e-3) * 1e3, 2)} mA net = 28–60 ms`);
-  const dutyBO = Math.sqrt(2 * 110 / (345e-6 * 65e3)) * 345e-6 * 65e3 / 321; // DCM peak duty at brown-in, full aux load
-  ck("R6", "D-version duty ceiling holds at brown-in", dutyBO < 0.442,
-    `worst DCM duty ${f(dutyBO * 100, 1)}% ≤ 44.2% DCmax(min) — the A-version's 48% ceiling was never the constraint`);
+  ck("R6", "D-version duty ceiling holds at brown-out", D4R.duty < NCP.dcMax,
+    `worst DCM duty ${f(D4R.duty * 100, 1)}% (brown-out min, Lp max, d4-flyback) ≤ 44.2% DCmax(min) — the A-version's 48% ceiling was never the constraint`);
 }
 {
   // R7-B: VOM1271 GUARANTEED numbers only (datasheet Rev 1.9 — the R6 check used a 40 µA
