@@ -1,7 +1,7 @@
 // run.mjs — ngspice batch runner + wrdata parser. Every generated netlist is persisted to
 // spice/generated/<name>.cir for traceability (§49-11, §50). Solver: ngspice-46, method=gear.
 import { writeFileSync, readFileSync, mkdirSync, existsSync } from "node:fs";
-import { spawnSync } from "node:child_process";
+import { spawnSync, spawn } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,8 +17,24 @@ export function runDeck(name, deckText, varLabels, { timeoutMs = 300000 } = {}) 
   writeFileSync(deckPath, deckText);
   const proc = spawnSync("ngspice", ["-b", deckPath], { cwd: GEN, timeout: timeoutMs, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
   const log = (proc.stdout || "") + (proc.stderr || "");
+  return parse(name, outPath, log, varLabels, deckPath);
+}
+// E65: parallel variant (the aux matrix runs 17 drawn-circuit decks); also returns every `.meas` result by lower-case name
+export function runDeckAsync(name, deckText, varLabels, { timeoutMs = 900000 } = {}) {
+  const deckPath = join(GEN, `${name}.cir`);
+  const outPath = join(GEN, `${name}.out`);
+  writeFileSync(deckPath, deckText);
+  return new Promise((resolve, reject) => {
+    const proc = spawn("ngspice", ["-b", deckPath], { cwd: GEN, timeout: timeoutMs });
+    let log = "";
+    proc.stdout.on("data", (d) => (log += d)); proc.stderr.on("data", (d) => (log += d));
+    proc.on("close", () => { try { resolve(parse(name, outPath, log, varLabels, deckPath)); } catch (e) { reject(e); } });
+  });
+}
+function parse(name, outPath, log, varLabels, deckPath) {
   if (!existsSync(outPath)) throw new Error(`ngspice failed for ${name}:\n${log.slice(-3000)}`);
   if (/Timestep too small|simulation\(s\) aborted|fatal/i.test(log)) throw new Error(`ngspice ABORTED for ${name}:\n${log.split("\n").filter(l => /error|abort|too small/i.test(l)).join("\n")}`);
+  const meas = Object.fromEntries([...log.matchAll(/^(\w+)\s+=\s+([-+\d.eE]+)/gm)].map((m) => [m[1].toLowerCase(), +m[2]]));
   const raw = readFileSync(outPath, "utf8").trim().split("\n");
   const nv = varLabels.length;
   const t = [], cols = Object.fromEntries(varLabels.map(v => [v, []]));
@@ -28,7 +44,7 @@ export function runDeck(name, deckText, varLabels, { timeoutMs = 300000 } = {}) 
     t.push(p[0]);
     for (let i = 0; i < nv; i++) cols[varLabels[i]].push(p[2 * i + 1]);
   }
-  return { t, cols, log, deckPath };
+  return { t, cols, log, deckPath, meas };
 }
 
 export const trapz = (t, y, t0 = -Infinity, t1 = Infinity) => {

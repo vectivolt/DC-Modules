@@ -33,7 +33,7 @@ export const LCSC = {
   "1N4148WS":          { lcsc: "C2128",      status: "ORDERABLE", note: "JLCPCB Basic" },
   "SMBJ26A":           { lcsc: "C127562",    status: "ORDERABLE" },
   "SMBJ16A":           { lcsc: "C151859",    status: "ORDERABLE" },
-  "FAST-1200-1A":      { lcsc: "C56792", mpn: "STTH112U",     status: "ORDERABLE", note: "STTH112U 1.2 kV" },
+  "SIC-SBD-1700V":     { status: "CLASS", spec: "SiC Schottky ≥1700 V, IF(AV) ≥1 A, IFRM ≥10 A at tp ≤1 µs, no forward recovery — aux RCD clamp DCLA (E65: blocks 860 V + Vc at ≤80 %)", note: "E65 retired the ORDERABLE STTH112U (C56792, 1.2 kV) — it blocked 1.3 kV. Candidates to qualify at RFQ: GeneSiC GAP3SLT33-214 (3.3 kV SMB — confirm IFRM), Littelfuse LSIC2SD170B-class (1.7 kV TO-247-2), Wolfspeed C3D-170 class; never a guessed C-number" },
   "B3M010C075Z":       { lcsc: "C5713521",   status: "SECOND-SOURCE", note: "C3M0021120K 1200 V/21 mΩ TO-247-4 — BASiC 750 V/10 mΩ not on LCSC; requalify Vds" },
   "SG2M023120LJ":      { lcsc: "C5713523",   status: "SECOND-SOURCE", note: "R3: LCSC C5713523 is Wolfspeed C3M0016120K (1200 V/16 mOhm) — NOT the SiChain part, so vendor/price/RdsOn on this row describe the second source, not the primary. Pinouts are identical (1=D/tab 2=S 3=driver source 4=G) so there is no footprint risk. Gate drive differs: SiChain -4/+18 V for 23 mOhm, Wolfspeed C3M -4/+15 V." },
   "SICJBS-1200-10":    { lcsc: "C7435087", mpn: "GC4D10120H",   status: "ORDERABLE", note: "GC4D10120H 1200 V SiC JBS" },
@@ -110,8 +110,9 @@ export const LCSC = {
   "HV73-475k-1%":      { lcsc: "C4121673", mpn: "HV732BTTD4753F", status: "ORDERABLE", spec: "475 kΩ 1206 1% anti-surge HV divider",
                          note: "KOA HV73 475k 1% 1206 anti-surge HV divider element (MR-3) - the series the class is named for." },
   "R0805-prec-0.1%":   { status: "CLASS", spec: "0.1% precision divider bottom" },
-  "R1206-R31-1%-0.5W": { lcsc: "C6148847", mpn: "PT1206FR-7W0R31L", status: "ORDERABLE", spec: "0.31 Ω 1% 0.5 W 1206 current sense",
-                         note: "YAGEO PT series 0.31 ohm 1% 0.5W 1206 current-sense." },
+  "R1206-R28-1%-0.5W": { status: "CLASS", spec: "0.28 Ω 1% 0.5 W 1206 current sense (aux CS, E65 — PT1206FR-7W0R28L family; the retired 0.31 Ω row was C6148847)", note: "C-number to be read back, never invented" },
+  "R2512-11k-2W-AS":   { status: "CLASS", spec: "11 kΩ 1% 2512 2 W anti-surge, ≥200 V working (aux RCD clamp 3-series, E65)", note: "same anti-surge 2512 family as PS122WF4702T4E (R2512-47k-HV-AS) — value row at read-back" },
+  "R2512-R05-1W-1%":   { status: "CLASS", spec: "50 mΩ 1% 1 W 2512 current-sense class (RAUX24 V24 short-loop resistor, E65)", note: "Yageo PT2512 / UniOhm LRx 2512 families — C-number to be read back" },
   "R1206-27R-1%":      { status: "CLASS", spec: "27 Ω 1206 1% (line-CT burden — R3/audit: 33 Ω clipped 150 A pk observability at the 3.3 V ADC rail)" },
   "R1206-RG-0.5W":     { status: "CLASS", spec: "gate resistor 1206 0.5 W, value per schematic",
                          note: "2026-09-06: tried to resolve to a catalogue part and DELIBERATELY did not. The obvious 1206 thick-film (RC1206FR-074R7L, C137258) is 250 mW — half the specified rating, on a resistor that takes the gate-drive pulse. A generic 1206 is the wrong part here; the 0.5 W class needs a pulse-rated series (ERJ-P / RL-class) selected at RFQ. CLASS is the correct status, not an unfinished lookup." },
@@ -124,7 +125,7 @@ export const LCSC = {
   "IND-TRIM-BIN4":     { status: "CUSTOM", spec: "D2-30 rev E (E65): 1x E70/33/32 gapped, N=8, bins 6.35/6.5/6.65/6.8 µH, litz 6112x0.05 — pack sheet" },
   "CMC-3PH-2mH-SKU":   { status: "CUSTOM", spec: "3-phase 2 mH nanocrystalline CM choke, current-rated per SKU — no LCSC equivalent. 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH, Digi-Key) as catalog drop-in; custom drawing stays second source (audit)" },
   "XFMR-LLC-10K":      { status: "CUSTOM", spec: "D3-30 rev C (E65): 2x E70/33/32 sets, 7:7:7, B66372B2000 former, Lm 63 µH ±7% — pack sheet" },
-  "XFMR-AUX-FLY-D":    { status: "CUSTOM", spec: "aux flyback ETD39 PC95, 110 W, 342–860 Vin (D4 rev D, E52 sat-margin rev) — custom wind" },
+  "XFMR-AUX-FLY-E":    { status: "CUSTOM", spec: "aux flyback ETD44 PC95, 110 W, 321–860 Vin, Np 38/6/4/4, Lp 345 µH ±5 %, leakage ≤4 µH sandwich, pins 1–4 primary / 5–8 SELV (D4 rev E, E65) — custom wind" },
 
 
   // ---- E57 maturation: every mpn the BOM can emit resolves here (statuses honest, no guessed codes) ----
@@ -237,6 +238,7 @@ export const LCSC_BY_VALUE = {
   "R-small|47k":        { lcsc: "C126351", mpn: "RC0805FR-0747KL",  note: "47k 0805 1%" },
   "R-small|68k":        { lcsc: "C114548", mpn: "RC0805FR-0768KL",  note: "68k 0805 1%" },
   "R-small|15k":        { lcsc: "C114559", mpn: "RC0805FR-0715KL",  note: "15k 0805 1%" },
+  "R-small|7.5k":       { mpn: "RC0603FR-077K5L", note: "7.5k 0603 1% — RBR2, the NCP1252D brown-in divider bottom (E65); C-number to be read back, never invented" },
   "R-small|330":        { lcsc: "C110440", mpn: "RC0805FR-07330RL", note: "330R 0805 1%" },
   "R1206-27R-1%|1M":    { lcsc: "C107700", mpn: "RC0805FR-071ML",   note: "1M — these instances are on an 0805 land" },
   "R1206-27R-1%|330":   { lcsc: "C110440", mpn: "RC0805FR-07330RL", note: "330R — 0805 land" },
@@ -247,7 +249,6 @@ export const LCSC_BY_VALUE = {
   "R-small|118k":       { lcsc: "C274001", mpn: "RC0805FR-07118KL", note: "118k 0805 1%" },
   "R-small|120":        { lcsc: "C114928", mpn: "RC1206FR-07120RL", note: "120R 1206 1% 250mW" },
   "MLCC-small|4.7nF":   { lcsc: "C107208", mpn: "CC1206KRX7R9BB472", note: "4.7nF 1206 X7R 50V — CCGB, the CGND/DGND common-mode bridge. Generic (not Y-class) is correct: E25 FROZEN puts CAN inside the touch-safe SELV control domain (\"HMI/SWD/fans/CAN need no additional barriers\", architecture.md), so CGND-DGND is FUNCTIONAL isolation breaking a ground loop to the off-board controller, not a safety barrier. See R11." },
-  "MLCC-small|470pF":   { lcsc: "C107152", mpn: "CC0805KRX7R9BB471", note: "470pF 0805 — CCSF, the aux CS filter; sees only the sense signal" },
   "MLCC-100n-0402|100nF": { lcsc: "C60474", mpn: "CC0402KRX7R7BB104", note: "100nF 0402 X7R 16V — used only on the 3.3 V rail (~5x derating)" },
   // ---- E64: package-keyed rows (family|value|pkg). The value map was land-blind, so 344 sheet
   // positions named a part whose package differed from their own drawn land (footprint-audit).

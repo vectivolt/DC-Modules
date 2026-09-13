@@ -36,7 +36,7 @@ const IDS = [
   { id: "D3-40", tokens: { "6:6:6": [mag, pack, k5, db], "B66372B2000": [mag, pack, k5, db] } },
   { id: "D3-50", tokens: { "5:5:5": [mag, pack, k5, db], "XFMR-LLC-3E70-50": [pack, db] } },
   { id: "D2/D3 build (E65)", tokens: { "VPI": [mag, pack, db], "130 °C": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
-  { id: "D4", tokens: { "ETD39": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-D": [pack, db] } },
+  { id: "D4", tokens: { "ETD44": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-E": [pack, db], "≤ 4 µH": [pack] } },   // E65 D4 rev E (d4-flyback)
   { id: "D6", tokens: { "N=7": [db], "N=8": [db], "7 T": [mag], "8 T": [mag], "7.4": [mag, db], "10.5": [mag, db], "12.9": [mag, db] } },
 ];
 const NAMES = new Map([[mag, "magnetics.md"], [pack, "pack"], [db, "parts-db"], [k5, "kicad5-panel"], [boards, "boards.tsx"]]);

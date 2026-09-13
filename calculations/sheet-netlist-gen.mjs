@@ -48,7 +48,7 @@ const PAGE_TITLES = {
 };
 
 const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SMBJ26A",
-  "FAST-1200-1A", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15"]);
+  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15"]);
 
 const sig = (c, name) => c.pins.find((p) => p.name === name)?.signal_name;
 const P = (n, name, s) => ({ pin_number: n, name, signal_name: s ?? "" });

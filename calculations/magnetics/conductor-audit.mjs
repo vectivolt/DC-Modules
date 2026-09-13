@@ -81,11 +81,12 @@ for (const [sku, row] of Object.entries(D3ROWS)) {
   ck("D3", `${sku} production Rdc rows @25 °C match the ${w.n}×${w.core} build`, r25.p <= row.p && r25.s1 <= row.s1 && r25.s2 <= row.s2 && r25.p >= 0.85 * row.p && r25.s2 >= 0.85 * row.s2,
     `MLT S1/P/S2 ${f(g.mltS1 * 1e3, 0)}/${f(g.mltP * 1e3, 0)}/${f(g.mltS2 * 1e3, 0)} mm → P ${f(r25.p * 1e3)} (≤${f(row.p * 1e3)}) · S1 ${f(r25.s1 * 1e3)} (≤${f(row.s1 * 1e3)}) · S2 ${f(r25.s2 * 1e3)} (≤${f(row.s2 * 1e3)}) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught`);
 }
-// D4 aux flyback primary (65 kHz DCM, 2 layers): informational — the bifilar 2×0.35 mm option is preferred
+// D4 aux flyback primary (65 kHz DCM): informational. E65 rev E = P/2–S–P/2 sandwich on ETD44 — each 19 T half is ONE layer
+// (0.5 mm grade-2 or 2×0.35 mm bifilar both fit the 23.5 mm margin-to-margin breadth), so Dowell m = 1 per half
 {
-  const Fr05 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.5e-3 / delta(65e3, T)) * Math.sqrt(0.8), 2);
-  const Fr035 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.35e-3 / delta(65e3, T)) * Math.sqrt(0.8), 4);
-  console.log(`  info  [D4] primary @65 kHz: 0.5 mm single Fr ${f(Fr05)} vs 2×0.35 mm bifilar (4 sub-layers) Fr ${f(Fr035)} — both inside the ~1 W copper budget at ~1 A rms; bifilar is the build default`);
+  const Fr05 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.5e-3 / delta(65e3, T)) * Math.sqrt(0.8), 1);
+  const Fr035 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.35e-3 / delta(65e3, T)) * Math.sqrt(0.8), 1);
+  console.log(`  info  [D4] primary @65 kHz (rev E sandwich, one layer per half): 0.5 mm single Fr ${f(Fr05)} vs 2×0.35 mm bifilar Fr ${f(Fr035)} — both inside the ~1 W copper budget at ~1 A rms (the E52 two-layer build read Fr ${f(dowell(Math.pow(Math.PI / 4, 0.75) * (0.5e-3 / delta(65e3, T)) * Math.sqrt(0.8), 2))})`);
 }
 console.log("  info  [GAP] Dowell/Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor — D2: distributed gap ≤1.0 mm per segment + ≥3 mm litz clearance (E65), measured Rac includes it · D3: Lm gap split equally per set (≤0.5 mm/position) because S1 foil is innermost; T-31 open-secondary check + S1 thermocouple, FEMMT run closes the number");
 console.log(fails ? `\n${fails} CONDUCTOR FAILURE(S)` : "\nCONDUCTOR AUDIT CLEAN — every winding's AC resistance inside its own acceptance row at the simulated corner");

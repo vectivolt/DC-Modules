@@ -17,6 +17,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { D4, D4_REGISTERED_E52, DRAWN_E52, evaluate as d4Evaluate } from "./d4-flyback.mjs";
+import { CORES } from "./geometry.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const D = JSON.parse(readFileSync(join(HERE, "tempdata-3c95.json"), "utf8"));
 for (const grp of [D.pvT, D.pvB, D.muAmp]) for (const k of Object.keys(grp)) {
@@ -60,11 +62,13 @@ const Bsat = (T) => 0.499 + (0.401 - 0.499) / 75 * (T - 25);   // measured 25/10
 console.log(`=== MAGNETICS TEMPERATURE CRITIQUE (E58) — 3C95 measured surfaces; Bsat(130 °C) = ${f2(Bsat(130) * 1e3, 0)} mT ===`);
 
 // ---- ferrite op-set: {f, B̂, Ve[m3], Pfe_design(A4 basis)W, Pcu W, Rth K/W (ΔTspec/Ptot), hot core °C}
+const D4R = d4Evaluate(), D4C = d4Evaluate(D4_REGISTERED_E52, DRAWN_E52);   // E65: D4 flux from the computed limit, not a typed 3.2 A
 const PARTS = [
   // E65: the D3 and D2 rows (140 kHz resonant-point flux, hand-typed Pcu and lumped Rth) are RETIRED — the simulated corners
   // run 77–88 kHz / 150–237 mT (D3) and 170–190 kHz (D2), so every row understated loss 2–3×. Both parts are now proven by
   // magnetics-envelope: every power-solved corner, iGSE on the ngspice waveform, a core/winding thermal network, runaway.
-  { n: "D4 (ETD39 DCM amp)", f: 65e3, B: 0.1165, Ve: 11.5e-6, PfeA4: 0.6, Pcu: 1.8, Rth: 12.0, Thot: 120 },
+  // E65 rev E: ETD44, full-load DCM swing B̂/2 from d4-flyback; Pfe keeps the ETD39 0.6 W basis (covers the 1.4–2.2× iGSE DCM factor)
+  { n: `D4 (${D4.core} DCM amp)`, f: 65e3, B: D4R.Bfull / 2, Ve: CORES[D4.core].Ve, PfeA4: 0.6, Pcu: 1.8, Rth: 12.0, Thot: 120 },
 ];
 // Core flux is VOLT-SECOND driven — Fe persists at FULL value even when the module derates,
 // while Cu falls with load². The two real hot corners are therefore:
@@ -113,8 +117,8 @@ for (const p of PARTS) {
   ck("BSAT", `D2 fault flux (bin-max L × (F.11 + 3 µs race), worst SKU = ${worst[0]})`, worst[1] <= 0.6 * Bsat(130),
     `${f2(worst[1] * 1e3, 0)} mT at the crossing-referenced race (E65 D2: ${bf.map(([k, v]) => `${k} ${f2(v * 1e3, 0)}`).join(" · ")}) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
 }
-ck("BSAT", "D4 clamp point at Lp+10%, 130 °C", 0.256 <= 0.75 * Bsat(130),
-  `256 mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * 0.256 / Bsat(130), 0)}% absolute) — the E52 ETD39 margin HOLDS at temperature (the ETD34 rev C would sit at ${f2(100 * 0.329 / Bsat(130), 0)}%)`);
+ck("BSAT", `D4 at the computed cycle-by-cycle limit, 130 °C (${D4.core})`, D4R.B <= 0.75 * Bsat(130) && D4C.B > 0.75 * Bsat(130),
+  `${f2(D4R.ipkLim, 2)} A (860 V, Lp +${D4.tolL * 100} %, VILIM max, CS lag + tILIM max) → ${f2(D4R.B * 1e3, 0)} mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * D4R.B / Bsat(130), 0)}% absolute) — E65: the E52 "256 mT at a 3.2 A clamp" row read ${f2(D4C.B * 1e3, 0)} mT (${f2(100 * D4C.B / Bsat(130), 0)}%) once the drawn sense chain was computed`);
 // ---- Lm gap dominance: amplitude-permeability swing must not move Lm beyond its ±7% window ----
 {
   const mu25 = interp(D.muAmp["25C"] ?? D.muAmp[Object.keys(D.muAmp)[0]], 0.108);

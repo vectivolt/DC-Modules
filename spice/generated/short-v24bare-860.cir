@@ -1,13 +1,13 @@
-* D4 rev E aux flyback — drawn circuit (matrix) VIN=560 30kw Lp×1 · D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V
-VIN vin 0 DC 560
+* D4 rev E aux flyback — drawn circuit (short24bare) VIN=860 50kwa Lp×0.95 · D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V
+VIN vin 0 DC 860
 * transformer: primary leakage at the acceptance maximum; the layout allowance sits in the rectifier loops (×n²)
 LLK vin p1 0.000004
 RLLK vin p1 20k
 RPRI p1 p2 0.45
-LM p2 sw 0.000341
-LS24 0 a24 0.000008501385041551247
-LS15 0 a15 0.000003778393351800554
-LSAX 0 aax 0.000003778393351800554
+LM p2 sw 0.00032375
+LS24 0 a24 0.000008071329639889196
+LS15 0 a15 0.0000035872576177285316
+LSAX 0 aax 0.0000035872576177285316
 K1 LM LS24 0.99999
 K2 LM LS15 0.99999
 K3 LM LSAX 0.99999
@@ -35,14 +35,15 @@ CV24 v24 0 10n ic=23.5
 C15 v15 0 220u ic=15.3
 CVCC vcc 0 220u ic=15.4
 IVCC vcc 0 0.0035
-BL24 v24 0 I=max(v(v24),0)/24*(0.7+0.9*u(time-0.012))
-RL15 v15 0 15
+BL24 v24 0 I=max(v(v24),0)/24*1
+RL15 v15 0 12.5
 * rail TVS as drawn (SMBJ26A / SMBJ16A class, MR-17)
 DTVS24 0 v24 DTV24
 DTVS15 0 v15 DTV15
 .model DTV24 D(Is=1e-12 N=1 BV=28.9 IBV=1m Rs=0.3)
 .model DTV15 D(Is=1e-12 N=1 BV=17.8 IBV=1m Rs=0.2)
-
+SSH v24c 0 shc 0 SWSH
+VSHC shc 0 PULSE(0 1 0.012 1u 1u 1 2)
 .model SWSH SW(Ron=10m Roff=1e9 Vt=0.5 Vh=0.1)
 * QAUX: VSW = drain current, VS1 = channel current (the node capacitance discharges through the channel)
 VSW sw d 0
@@ -116,7 +117,7 @@ SOFH one offh off 0 SWL
 ROFH offh off 1k
 COFF off 0 10p
 ROFL off 0 1e8
-.tran 1u 0.02 0 2e-8 uic
+.tran 1u 0.04 0 2e-8 uic
 .option method=gear reltol=1e-3 abstol=1e-7 vntol=1e-5 itl4=200
 .save v(vin) v(sw) v(d) v(s1) v(csn) v(cl) v(v24) v(v24c) v(v15) v(vcc) v(off) v(p1) v(p2) v(a24) v(b24) v(a15) v(b15) v(aax) v(bax) v(d24) v(d15) v(dvc) v(dca) i(VIN) i(VS1) i(VD24) i(VD15) i(VDVC) i(VDC) i(LM) i(LLK)
 .control
@@ -137,16 +138,16 @@ meas tran PSW avg psw from=16m to=20m
 meas tran PCL avg pcl from=16m to=20m
 meas tran V24S avg v(v24) from=9m to=12m
 meas tran V24DIP min v(v24) from=12m to=14m
-meas tran V24MAX max v(v24) from=9m to=0.02
+meas tran V24MAX max v(v24) from=9m to=0.04
 meas tran V15MIN min v(v15) from=12m to=16m
-meas tran VDSMAX max v(sw) from=0.004 to=0.02
-meas tran VRMAX max vr from=0.004 to=0.02
-meas tran VCMAX max vc from=0.004 to=0.02
-meas tran ILMMAX max i(LM) from=0.004 to=0.02
-meas tran ILKMAX max i(LLK) from=0.004 to=0.02
-meas tran OFFEND max v(off) from=0.019 to=0.02
+meas tran VDSMAX max v(sw) from=0.012 to=0.04
+meas tran VRMAX max vr from=0.012 to=0.04
+meas tran VCMAX max vc from=0.012 to=0.04
+meas tran ILMMAX max i(LM) from=0.012 to=0.04
+meas tran ILKMAX max i(LLK) from=0.012 to=0.04
+meas tran OFFEND max v(off) from=0.039 to=0.04
 linearize v(v24) v(v15)
-wrdata aux-30kw-560.out v(v24) v(v15)
+wrdata short-v24bare-860.out v(v24) v(v15)
 quit
 .endc
 .end
