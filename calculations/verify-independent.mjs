@@ -62,7 +62,6 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   B[sku] = { ac: loadNet(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`), dc: loadNet(`${ROOT}/dist/boards/${sku}/dcdc/circuit.json`) };
 }
 B.card = loadNet(`${ROOT}/dist/boards/control-card/circuit.json`);
-B.cab = loadNet(`${ROOT}/dist/boards/cabinet/circuit.json`);
 
 // ---------- A. system currents (first principles) ----------
 console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
@@ -254,13 +253,11 @@ for (const [sku, s] of Object.entries(SK)) {
   // one line open at 1.1 × 475 VAC with +20 % Y tolerance: the two live phases drive ω·1.2·C·Vph into PE
   const cyPh = A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin2`) === "PE").reduce((a, n) => a + A.val.get(n), 0) / 3;
   const iPE = 2 * Math.PI * 50 * 1.2 * cyPh * 1.1 * 475 / Math.sqrt(3);
-  ck("G", `${sku} Y leakage to PE (one line open)`, 3 * iPE <= 3.5e-3, `${f(cyPh * 1e9, 1)} nF/phase → ${f(iPE * 1e3, 2)} mA per module, ${f(3 * iPE * 1e3, 2)} mA for the 3-module 150 kW product ≤ 3.5 mA (EVT T-14)`);
+  ck("G", `${sku} Y leakage to PE (one line open)`, 3 * iPE <= 3.5e-3, `${f(cyPh * 1e9, 1)} nF/phase → ${f(iPE * 1e3, 2)} mA per module ≤ 1.17 mA, so a charger that parallels three modules on one PE conductor stays ≤ 3.5 mA (EVT T-14)`);
   ck("G", `${sku} star + bond`, cnt(A, /^RNS[123][AB]$/) === 6 && A.netOfPin.get("RPET.pin2") === "PE" && A.netOfPin.get("CPET.pin2") === "PE", "2-series star ×3 + soft PE bond");
 }
 ck("G", "card essentials", B.card.byName.has("UCARD") && B.card.byName.has("USUPCARD") && B.card.byName.has("UANDCARD") && Math.abs(B.card.val.get("RROLE1") - 10000) < 1 && B.card.netOfPin.get("RFLTC.pin2") === "FLT",
   "MCU + watchdog + AND chain + 10k RATING pullup + FLT pull-up at the MCU end");
-ck("G", "cabinet essentials", B.cab && [1, 2, 3].every(i => B.cab.byName.has(`MOD${i}`)) && !B.cab.byName.has("MOD4") && !["UCSU", "JCSU", "PSU1", "RRCSU"].some((n) => B.cab.byName.has(n)) && B.cab.byName.has("CTRL1") && B.cab.byName.has("RT1") && B.cab.byName.has("RT2"),
-  "3 × 50 kW modules (E55 — and NOT a fourth) · E66: no CSU card/supply/strap — the charger controller port + both fixed trunk terminations");
 
 // ---------- H. firmware coherence ----------
 console.log("\n=== H. FIRMWARE COHERENCE ===");

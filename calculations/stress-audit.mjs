@@ -306,7 +306,7 @@ ck("K", "matrix legs single @50 kW", 100 / 200 <= 0.70 && 83.5 / 200 <= 0.70, "K
 // ---------------- 5. card consumption (informational) -------------------------------------------
 console.log("\n=== CARD CONSUMPTION (E40/E41/E42 — ONE brain per module, every variant) ===");
 console.log("  30 kW: 1 card (0R) · 40 kW: 1 card (1k) · 50 kW liquid: 1 card (10k) · 50 kW AIR: 1 card (15k) — same p/n, E24 rev G");
-console.log("  products (E55): modules 30/40/50L/50A → 1 card each · 100 kW = 2×50 → 2 cards · 150 kW = 3×50 → 3 cards (E66: no CSU — charger controller is the group master)");
+console.log("  modules: 30 / 40 / 50 kW liquid / 50 kW air → one control card each (E40 single brain)");
 console.log("  card budget @every variant: 74/82 MCU pins · 87/88 ways · 9/12 PWM · 22 analog · 8 spare pins (the 50 kW frees the 5 fan lines — sealed module)");
 
 

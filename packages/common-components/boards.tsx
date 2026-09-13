@@ -544,7 +544,7 @@ return (
       ])}
       {/* RATING is the card's ONE identity strap (E24 rev F): 0R = 30 kW · 1k = 40 kW ·
           10k = 50 kW liquid (the stale two-card-era 10k→"60 kW" mapping is retired — no
-          single-brain 60 exists, E40) · 3.32k = reserved (E66: cabinet CSU retired) · open = no host, fault. */}
+          single-brain 60 exists, E40) · 3.32k = reserved · open = no host, fault. */}
       <resistor name="RROLEB" resistance={pw === 50 ? (air ? "15k" : "10k") : pw === 40 ? "1k" : "0"} footprint="0603" pcbX={Q.cardX + 54} pcbY={Q.cardY - 10} schX={90} schY={23} schSectionName="CARD" />
       <trace from=".RROLEB > .pin1" to="net.RATING" schDisplayLabel="RATING" />
       <trace from=".RROLEB > .pin2" to="net.DGND" schDisplayLabel="DGND" />

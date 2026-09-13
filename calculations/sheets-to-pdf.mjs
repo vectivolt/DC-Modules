@@ -35,8 +35,7 @@ const BOARDS = [
   { k5: "50kwa-acdc", name: "DC-Modules 50kW-Air AC-DC (Vienna PFC, E44)" },
   { k5: "50kwa-dcdc", name: "DC-Modules 50kW-Air DC-DC (full-bridge LLC)" },
   { k5: "control-card-card", name: "DC-Modules Control Card (GD32G553VET7)" },
-  { k5: "cabinet-cab", name: "DC-Modules 150kW Cabinet (3x50kW)" },
-]; // 120 kW retired: cabinet of 30/60 kW modules (E36)
+];
 
 const PX_PER_IN = 96;
 // Chrome 152 headless writes the PDF and then does not exit, so wait for its "bytes written" line

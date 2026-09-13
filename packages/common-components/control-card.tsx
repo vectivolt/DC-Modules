@@ -1,5 +1,5 @@
 // control-card.tsx — ONE control card, ONE brain per module (E40). Single p/n, three homes:
-// the module's DC-DC slot (role "module"); the RATING band 3.32 k is reserved since the E66 CSU retirement.
+// the module's DC-DC slot (role "module"); the RATING band 3.32 k is reserved.
 //
 // WHY A CARD (unchanged since E35): the control electronics leave the power/EMI environment,
 // one part number instead of many, and the MCU — the most supply-volatile part in the module —
@@ -7,17 +7,16 @@
 //
 // WHY ONE CARD PER MODULE (E40, directive 2026-09-08). The two-card split (AC-DC role + DC-DC
 // role + inter-card UART) created its own problems: two brains per module with a link protocol
-// between them, nine CAN nodes in a 120 kW cabinet, and a way/pin budget spent twice. The merged
+// between them, twice the CAN nodes per charger, and a way/pin budget spent twice. The merged
 // 30 kW single-brain fits the SAME GD32G553VET6 with margin (see calculations/control/
 // umod-pinmap.mts — 73 pins used of 82 usable, 22 analog, all nine PWMs on HRTIMER units), so the
 // second card bought nothing physics demanded. The card seats in the DC-DC slot — the LLC fast
 // loops, S/P relays, HMI and CAN stay local — and the PFC bundle (3× 50 kHz logic-level PWM,
 // 12 senses, enables) crosses the 40-way inter-board harness.
 //
-// WHY NOT 60/120 kW ON ONE BRAIN. A 60 kW two-lane machine needs 18 PWM / ~30 analog — past this
-// card on both counts — and 120 kW fails earlier still (board fabrication, magnetics, protection
-// wire-length). Higher ratings are cabinets of 30 kW modules; the CSU is this same card strapped
-// into its third identity. docs/control-card-scope.md carries the arithmetic.
+// WHY A MODULE STOPS AT 50 kW. A two-lane machine needs 18 PWM / ~30 analog — past this card on both
+// counts. Higher-power chargers parallel modules, each with its own card; docs/control-card-scope.md
+// carries the arithmetic.
 import { UMOD_WAYS, UMOD_MODULE_NETS, UMOD_MCU_PINS, UMOD_INTERNAL } from "./umod-map.gen";
 
 export const CARD_SCOPE = ["30kw"] as const;   // the module rating this card controls alone
@@ -45,7 +44,7 @@ export const CARD_RULES = [
   // The fault line is safety-critical and its pull-up sets the wired-OR's idle state.
   "the single merged FLT wired-OR is pulled up and filtered ON the card, at the MCU end",
   // Identity is ONE resistor code on an ADC pin — no build variants, no slot strap:
-  //   0 R -> 30 kW module controller · 3.32 k (~0.82 V) -> reserved (E66: CSU retired) · open -> no host, fault
+  //   0 R -> 30 kW module controller · 3.32 k (~0.82 V) -> reserved · open -> no host, fault
   "RATING strap: 0R = module, 3.32k = reserved (E66), open = fault (E24 rev D)",
 ] as const;
 

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-module--interconnect--audit-2ea44f?style=flat-square" alt="gate: module-interconnect-audit"/>
 </p>
@@ -126,7 +126,7 @@ flowchart LR
 The AGND–DGND tie exists **only on the card** — a second tie on a power board would be the ground loop it
 prevents. The control domain is SELV, and every high-voltage measurement crosses on an isolated amplifier, so the
 HMI, SWD, fans and CAN are touch-safe by architecture. CAN is additionally isolated (CGND domain with static bleed)
-for cabinet bus runs.
+for long bus runs between modules in a charger.
 
 ## 4. Discharge control (E19 rev B, E47 semantics)
 
@@ -176,12 +176,11 @@ SKU across every physical boundary:
 | 40 harness ways | pin for pin, including crossovers |
 | 88 card ways | wired on the board **and** landing on real electronics on the card |
 | RATING strap | encodes the SKU in its E24 rev G band |
-| 150 kW cabinet (E55) | CAN chain with exactly two 120 Ω terminations, CSU strap band, PSU feed, per-module AC / DC landings, single-point shield bond |
 
 ---
 
 <div align="center">
 <sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

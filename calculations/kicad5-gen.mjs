@@ -25,8 +25,8 @@ import { footprintForRef, realPackages } from "./footprint-map.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 // No SKU argument used to mean "30kw" while printing a confident success line, so `node
-// kicad5-gen.mjs` looked like a full rebuild and silently left 60kw and 120kw stale -- the same
-// blind spot that let the zips drift. No argument now means ALL THREE.
+// kicad5-gen.mjs` looked like a full rebuild and silently left the other sets stale -- the same
+// blind spot that let the zips drift. No argument now means every module SKU.
 if (!process.argv[2]) {
   const { execFileSync } = await import("node:child_process");
   const { BUILDABLE_SKUS } = await import("./cost/parts-db.mjs");
@@ -35,16 +35,6 @@ if (!process.argv[2]) {
   process.exit(0);
 }
 const SKU = process.argv[2];
-if (SKU === "60kw") {
-  console.error("60kw: RETIRED (E40) — the 2-lane pair exceeded the single-brain card and the 60 kW "
-    + "product is 2 x 30 kW modules. Last two-card set archived under kicad5/archive/.");
-  process.exit(1);
-}
-if (SKU === "120kw") {
-  console.error("120kw single-board sheets are RETIRED: 120 kW is a cabinet (4x 30 kW / 2x 60 kW; " +
-    "cardMap() refuses 4 lanes). Last pre-split set archived under kicad5/archive/.");
-  process.exit(1);
-}
 const SRC = SKU === "30kw"
   ? join(ROOT, "calculations/out/sheets/apply")
   : join(ROOT, "calculations/out/sheets", SKU, "apply");
@@ -470,20 +460,19 @@ function shapeOf(c) {
 const files = [];
 let totalComps = 0, totalLabels = 0;
 
-const SINGLE = SKU === "control-card" || SKU === "cabinet";
-const BOARDS = SKU === "control-card" ? { card: [] } : SKU === "cabinet" ? { cab: [] } : { acdc: [], dcdc: [] };
+const SINGLE = SKU === "control-card";
+const BOARDS = SKU === "control-card" ? { card: [] } : { acdc: [], dcdc: [] };
 for (const file of readdirSync(SRC).filter((f) => f.endsWith(".json")).sort()) {
   const pg = JSON.parse(readFileSync(join(SRC, file), "utf8"));
-  const side = pg.page.split("-")[0];   // acdc / dcdc / card / cab — page names are side-prefixed
+  const side = pg.page.split("-")[0];   // acdc / dcdc / card — page names are side-prefixed
   BOARDS[side].push(pg);
 }
 const KW = SKU.replace(/kwa$/, "").replace("kw", "").toUpperCase();
-const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "50kwa": "1x air", "60kw": "2x", "120kw": "4x", "control-card": "1x", "cabinet": "3x module" }[SKU] ?? "?";
+const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "50kwa": "1x air", "control-card": "1x" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
   dcdc: `${KW} kW DCDC board 2of2 - full-bridge LLC (E67)`,
   card: `Control Card - GD32G553VET7, one card for both converter roles (E35)`,
-  cab: `150 kW Cabinet - 3x 50 kW modules, charger controller = group master (E55/E66)`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {
   const page = { page: `${SKU}-${side}`, title: SIDE_TITLE[side],

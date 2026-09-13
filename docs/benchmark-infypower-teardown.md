@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
   <img src="https://img.shields.io/badge/verdict-architecture_and_BOM_cloned_E67–E69_·_cost_gap_open-d19a00?style=flat-square" alt="verdict: architecture and BOM cloned E67–E69 · cost gap open"/>
@@ -198,7 +198,7 @@ xychart-beta
 | 15 | Aux power | UCC28C45 flyback, 900 V Si, opto FB [T] | one 110 W 342–860 V flyback, 1700 V SiC, NCP1252D | **1/2** — dearer switch, full-range and balance-neutral |
 | 16 | Thermal / cooling | 3 fans + potted heatsink integration | 3 fans + extrusion tunnel; 50 kW liquid twin | **1**; density consequence in #20 |
 | 17 | EMI / EMC | 2 × CMC, 9 × X2, Y films, MOV + GDT | 2 × CMC, X1-class caps, per-phase DM chokes, MOV Δ + GDT | **1/2** — heavier filter, computed LISN margins |
-| 18 | Modularity / service | potted (non-repairable), 48-module parallel bus | coated boards, card slot, 2–3-module products (E66: no CSU) | **1** — different product philosophy |
+| 18 | Modularity / service | potted (non-repairable), 48-module parallel bus | coated boards, card slot, modules paralleled by the charger's group master | **1** — different service philosophy |
 | 19 | Communication | CAN, iso transceiver (NSi1050) | CAN 2.0B, iso transceiver (NSI1042), fuzzed codec | **same choice — validated** |
 | 20 | Component utilization / density | 3.96 kW/L · 2.58 kW/kg | ~2.1–2.6 kW/L [est] | **2/4 — their clear win**; E36 layout lever |
 | 21 | Reliability philosophy | potting + derate + MTBF 500 kh claim | gates + margins + coating; MTBF unpublished | **1**, with an honesty gap on MTBF |
@@ -312,7 +312,7 @@ P_{cond} \approx 2\cdot R_{hot}(\approx50\ \mathrm{m\Omega})\cdot57^2 \approx 32
 | **InfyPower** | **series blocking diodes** (1600 V / 90 A class) in the output [T]; discharge = 1500 V FET chopping 4 × 75 Ω [T]. |
 | **Why** | the series diode makes reverse-battery, bus back-feed and 48-module parallel racks unconditionally safe with zero firmware — at a permanent conduction cost. |
 | **Ours** | no series diode. Isolation is K_OUT (dual at 50 kW) with mirror weld-check; connection is the E12b matched-voltage make through pre-insertion; discharge is a 640 Ω path on a 1200 V SiC switch, default-OFF (E19), 830 → 60 V in 2.4 s [R], plus passive 2 × 47k pairs; polarity screening before the plug goes live is the dispenser's job in a 61851-23 system. |
-| **Assessment** | their diode costs 0.15 % (750 V) to 0.44 % (300 V full current) of efficiency, forever [C]; ours costs relay discipline and one system assumption. Our own multi-module products (100 = 2 × 50, 150 = 3 × 50 (E66: no CSU)) run commanded-CC with per-module fusing — not a 48-module diode bus — so the assumption is inside our product structure. It is now **recorded as R18** in the [verification matrix](verification-matrix.md) rather than living implicitly. |
+| **Assessment** | their diode costs 0.15 % (750 V) to 0.44 % (300 V full current) of efficiency, forever [C]; ours costs relay discipline and one system assumption. Our modules, when a charger parallels them, run commanded-CC with per-module fusing — not a 48-module diode bus — so the assumption sits inside the module contract. It is now **recorded as R18** in the [verification matrix](verification-matrix.md) rather than living implicitly. |
 | **Verdict** | **1**, with R18 recorded. No diode added — that would be copying a solution to a product architecture we do not have. |
 
 ```math
@@ -385,8 +385,8 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | | |
 |---|---|
 | **InfyPower** | isolated CAN (NSi1050), address by front DIP/display, **up to 48 modules parallel**, current-share imbalance ≤ ±5 % [D] — a droop-plus-blocking-diode rack architecture. |
-| **Ours** | isolated CAN 2.0B (NSI1042), 29-bit ID scheme with fuzzed codec, group field 0–3; products are 2–3 modules with **commanded-CC equal-share** (CSU, 300 ms staggered joins, hot-rejoin) and per-module protection — N−1 by construction. |
-| **Assessment** | different product scales, both internally consistent. Their ±5 % passive share needs the series diode we do not carry; our commanded share needs the CSU we do carry. Adopting their rack scale would mean adopting the diode too — a linked pair of decisions, correctly refused together (R18). |
+| **Ours** | isolated CAN 2.0B (NSI1042), 29-bit ID scheme with fuzzed codec, group field 0–3; paralleled modules run **commanded-CC equal-share** (the charger controller's GROUP_SET, 300 ms staggered joins, hot-rejoin) with per-module protection. |
+| **Assessment** | different paralleling philosophies, both internally consistent. Their ±5 % passive share leans on the series diode; ours commands the share over CAN. Since E67 our modules also carry an output blocking diode, so a module can never back-feed a shared bus. |
 | **Verdict** | **1**. |
 
 ## 17 · Environment and reliability claims
@@ -463,7 +463,6 @@ The [bom-cost lever table](bom-cost.md#red-line-closure-levers-10k-basis) grows 
 | 30 kW | 30,980 | ≈ 27,730 | 25,000 | ⚠️ still +₹2,730 — see below |
 | 40 kW | 35,891 | **≈ 32,640** | 33,000 | ✅ **closable with the philosophy intact** |
 | 50 kW air | 41,516 | ≈ 36,750 (735/kW) | 43,000 | ✅ deep under |
-| 150 kW air | 1,26,382 | ≈ 1,12,090 (747/kW) | 1,30,834 | ✅ under its **stretch** line (1,18,834) |
 
 ### The 30 kW verdict — honest
 
@@ -472,7 +471,7 @@ weighs **22 % at 30 kW and 13 % at 50 kW**. That is structural: the same reason 
 is 40 kW. Post-lever the 30 kW lands ≈ ₹27.7k against a ₹25k red-line, and the remaining ₹2.7k has exactly three
 exits, all product decisions, none free: (1) the not-taken **LV/HV fixed variants** (−₹3k+, deletes the S/P matrix,
 collapses the single 150–1000 V SKU); (2) restate the 30 kW red-line; (3) accept the 30 kW as the entry SKU and
-let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E55 ladder already does. **Recommended:
+let the 50 kW air (₹735/kW post-lever) carry the cost position — which the family's falling cost per kW already does. **Recommended:
 (3), explicitly.** No architecture change closes it without breaking something the register froze on purpose.
 
 ### Efficiency — where we already lead, and the one big lever
@@ -499,7 +498,7 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E
 |---|---|---|
 | **Standby power target ≤ 10 W** | < 10 W [D] | adopted as a spec target. Our R2-era arithmetic reads ≈ 12–17 W [est] (link balance pairs 3.7–7.3 W + dividers + aux idle + card). Measure at EVT bring-up; if over, rescale the 40/50 kW link balance pairs — both have 2× headroom inside the F.21b 2.5·τ and the 10-minute discharge label; the 30 kW is the tight one (6.2 min passive). Firmware sleep (fans off, PWM off) costs nothing. **E64: now a standing gate** — `standby-budget.mjs` parses the drawn 47k network off the sheets, asserts the registered arithmetic, and carries the estimate band (10.5–18.7 W) until EVT measures. |
 | Heatsink-integrated packaging (their patent) | 3.96 kW/L | logged as an E36 layout-phase DFM input — heatsink-as-structure is the density mechanism; potting itself stays declined |
-| 48-module parallel scale | their rack model | not our product ladder (E55); noted, not adopted |
+| 48-module parallel scale | their rack model | outside the module scope; noted, not adopted |
 
 </details>
 
@@ -518,5 +517,5 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E
 <div align="center">
 <sub><a href="dfm-production.md">← DFM & Production Flow</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -2,37 +2,36 @@
 
 # 🧩 Boards
 
-<sub>The four module SKUs, the control card, the 150 kW cabinet, and how the release sheets are produced</sub>
+<sub>The four module SKUs, the control card, and how the release sheets are produced</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/labels-6901_verified_·_6_targets-2ea44f?style=flat-square" alt="labels: 6901 verified · 6 targets"/>
+  <img src="https://img.shields.io/badge/pins-6853_verified_·_5_targets-2ea44f?style=flat-square" alt="pins: 6853 verified · 5 targets"/>
 </p>
 
 > [!NOTE]
-> **Purpose** — what lives in `boards/`: the four buildable module SKUs, the control card, the 150 kW cabinet
-> interconnect, and the pipeline that turns them into audited release sheets.
+> **Purpose** — what lives in `boards/`: the four buildable module SKUs, the control card, and the pipeline that
+> turns them into audited release sheets.
 >
-> **Gate coupling** — `kicad5-verify` checks every label of every release sheet (6,901 across six targets);
+> **Gate coupling** — `kicad5-verify` checks every connected pin of every release sheet (6,853 across five targets);
 > `module-interconnect-audit`, `polarity-audit` and `schematic-check` walk the built netlists in run-all.
 
 ## At a glance
 
-| Source | What it is | Release sheet labels | Components (AC-DC · DC-DC) |
+| Source | What it is | Connected pins verified | Components (AC-DC · DC-DC) |
 |---|---|---:|---|
 | [`30kw/`](30kw/) | the canonical module — [walkthrough](30kw/README.md) | 1,582 | 312 · 250 |
 | [`40kw/`](40kw/) | 40 kW air (E41): 15 mΩ-class PFC dies, 5-stack choke, 9 × 33 nF tank, two LLC dies per position, 125 A class, 3 fans | 1,648 | 320 · 270 |
 | [`50kw/`](50kw/) | 50 kW **liquid** (E42): coldplates, zero fans, 11 × 33 nF tank, DOUT 250 A | 1,658 | 322 · 276 |
 | [`50kwa/`](50kwa/) | 50 kW **air** (E44): electrically the liquid module since E68a, 4 fans | 1,674 | 326 · 276 |
 | [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120 × 80 mm, 88-way) — one part number, every seat | 291 | 49 |
-| [`cabinet.tsx`](cabinet.tsx) | the **150 kW cabinet** interconnect of record (3 × 50 kW, E66 no CSU) | 48 | 14 |
-| [`out-pdf/`](out-pdf/) | the ten release PDFs rendered from the audited KiCad-5 sheets | **6,901 total** | — |
+| [`out-pdf/`](out-pdf/) | the nine release PDFs rendered from the audited KiCad-5 sheets | **6,853 total** | — |
 
 All four SKUs come from one parameterized source, [`boards.tsx`](../packages/common-components/boards.tsx), built
-from the cells in [`cells.tsx`](../packages/power-primitives/cells.tsx). The retired multi-lane 60 / 120 kW
-single-board references left `main` at E50 and live on branch `archive/pre-focus-E49`.
+from the cells in [`cells.tsx`](../packages/power-primitives/cells.tsx); the card learns its SKU from one RATING strap.
+Why the family looks the way it does: [module family](README-module-family.md).
 
 ## The module, physically
 
@@ -67,7 +66,7 @@ TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ign
 ```
 
 ```bash
-# regenerate, verify and print one target (30kw | 40kw | 50kw | 50kwa | control-card | cabinet)
+# regenerate, verify and print one target (30kw | 40kw | 50kw | 50kwa | control-card)
 node calculations/sheet-pages.mjs 30kw && node calculations/sheet-netlist-gen.mjs 30kw && node calculations/kicad5-gen.mjs 30kw && node calculations/kicad5-verify.mjs 30kw && node calculations/kicad5-print.mjs 30kw && node calculations/sheets-to-pdf.mjs
 ```
 
@@ -77,12 +76,12 @@ node calculations/sheet-pages.mjs 30kw && node calculations/sheet-netlist-gen.mj
 > zips open correctly in eeschema.
 
 The 40 and 50 kW deltas are recorded in register rows E41, E42, E44 and E67–E69 and in the variant tables of
-[magnetics](../docs/magnetics.md); the product rationale is in [product structure](README-product-structure.md).
+[magnetics](../docs/magnetics.md); the family rationale is in [module family](README-module-family.md).
 
 ---
 
 <div align="center">
-<sub><a href="../docs/can-protocol.md">← External CAN Protocol</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="README-product-structure.md">Product Structure →</a></sub>
+<sub><a href="../docs/can-protocol.md">← External CAN Protocol</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="README-module-family.md">Module Family →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

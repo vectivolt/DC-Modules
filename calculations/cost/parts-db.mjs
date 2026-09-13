@@ -17,11 +17,8 @@
 // (HR-15), per-SKU CMC + pulse-resistor overrides (HR-18/HR-14).
 // Ordering matters: first matching pattern wins; keep specific patterns above the catch-alls.
 
-// The buildable/deliverable single-board set. 120 kW is a CABINET (4× 30 kW / 2× 60 kW — product
-// structure + E36): its single-board pair cannot exist since the card split (cardMap() correctly
-// refuses 4 lanes — AIN needs 17 of 13), so every pipeline consumer iterates THIS list and the
-// 120 kW product cost is a 4×-module roll-up in bom-gen.
-export const BUILDABLE_SKUS = ["30kw", "40kw", "50kw", "50kwa"];   // E40 single-brain + E41 40 kW air + E42 50 kW liquid + E44 50 kW AIR; 60/80/100/120/150 kW are cabinets
+// The four module SKUs — every pipeline consumer iterates THIS list (E72: the repository carries modules only).
+export const BUILDABLE_SKUS = ["30kw", "40kw", "50kw", "50kwa"];   // E40 single brain · E41 40 kW air · E42 50 kW liquid · E44 50 kW air
 
 export const DB = [
   // --- power semiconductors
@@ -46,12 +43,6 @@ export const DB = [
   { m: /^QDIG[12]$/, mpn: "S8050", mfr: "CJ", desc: "NPN SOT-23 (display digit driver)", price1k: 0.4, alt: "MMBT2222" },
   // --- gate drive, isolation & safety chain
   { m: /^U([ABC]\d+G|\d+[HL])$/, mpn: "NSI6611", mfr: "NOVOSENSE", desc: "iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16", price1k: 85, alt: "NSI6602B" },
-  // ---- 150 kW cabinet sheet (E39/E55; E66 no CSU) — interface blocks + controller CAN port ----
-  { m: /^MOD\d$/, mpn: "PMP-50KW-MODULE", mfr: "own", desc: "50 kW module interface block (liquid 50kw or air 50kwa — E55 cabinet re-base; cost is the module roll-up, not a part)", price1k: 0, alt: "—" },
-  { m: /^CTRL1$/, mpn: "CHARGER-CONTROLLER-CAN-PORT", mfr: "integrator (A13)", desc: "charger controller CAN port — the group master that broadcasts GROUP_SET 0x12 (E66: replaces the cabinet CSU); interface block, not a part", price1k: 0, alt: "—" },
-  { m: /^JCAB(L\d|PE|D[PN])$/, mpn: "STUD-M8", mfr: "local", desc: "cabinet entry/bus M8 stud", price1k: 28, alt: "M10 for DC bus" },
-  { m: /^RT[12]$/, mpn: "R0603-120R-1%", mfr: "any", desc: "CAN termination 120 Ω (both chain ends)", price1k: 0.4, alt: "any" },
-  { m: /^RSHB$/, mpn: "R0603-0R", mfr: "any", desc: "CAN shield single-point PE bond (liftable)", price1k: 0.3, alt: "any" },
   { m: /^PS(CAN|SH)$/, mpn: "ISO5V-RFC-6K", mfr: "MORNSUN QA/URB-grade", desc: "iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test (HR-16: this module IS part of the mains/output→SELV barrier — B1505S 1.5 kV functional grade rejected; certificate class = §K gate)", price1k: 95, p10k: 65, alt: "RECOM RxxP-R / certified eq" },
   // MUST precede the /^PS5\w+$/ rule below. In "PS5AC"/"PS5BUS" the 5 means 5 VOLTS; in "PS5H"
   // the 5 is the LLC LEG INDEX. The 5 V sense rule was swallowing leg 5's two gate-bias modules,
@@ -263,9 +254,6 @@ export const skuOverrides = {
   // E44 50 kW AIR variant: every electrical class IDENTICAL to the liquid 50 kW (same line/tank/
   // output currents — the classes were set by current, not by coolant). Assigned programmatically
   // below (skuOverrides["50kwa"] = { ...skuOverrides["50kw"] }) so the two can never drift.
-  // E50: the 60/120 kW single-board override blocks are retired with their reference boards
-  // (recoverable on branch archive/pre-focus-E49); 60–150 kW products are cabinets of the four
-  // module SKUs and cost as module roll-ups in bom-gen.
 };
 
 skuOverrides["50kwa"] = { ...skuOverrides["50kw"] };   // E44: air-50 shares every class part with the liquid
@@ -349,6 +337,4 @@ export const mechLines = {
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test", 1, 2000],
   ],
-  // E50: 60/120 kW single-board mech lines retired (archive/pre-focus-E49) — cabinet products
-  // carry their own adders in bom-gen/README-product-structure.
 };

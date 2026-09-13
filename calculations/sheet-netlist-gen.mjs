@@ -25,7 +25,6 @@ const MCU_REF = { UPFC: "UPFC", ULLC: "ULLC" };
 // Human-facing page titles: SKU, which board of the pair, position in the set, function.
 const PAGE_TITLES = {
   "card-CONTROL": "Control Card 1of1 CONTROL",
-  "cab-CABINET": "150kW Cabinet 1of1 CABINET",
   "acdc-INPUT-EMI": "30kW ACDC 1of6 INPUT-EMI",
   "acdc-VIENNA-PFC": "30kW ACDC 2of6 VIENNA-PFC",
   "acdc-DC-LINK": "30kW ACDC 3of6 DC-LINK",

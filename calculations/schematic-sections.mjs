@@ -71,5 +71,4 @@ export const SHEET_IDENT = {
   "50kwa/acdc": { sku: "50 kW air", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x B3M010C075Z per position, D1 5x T79 N=24, 16-can link, 4 fans (E68)" },
   "50kwa/dcdc": { sku: "50 kW air", board: "DC-DC (upper)", sheet: "2 of 3", cells: "full-bridge LLC: 2x SG2M023120LJ per position, 11x33 nF + D2 rev F, 2 cells, film banks 14x2.2 uF, DOUT (E67/E68)" },
   "control-card": { sku: "30/40/50 kW", board: "Control card", sheet: "3 of 3", cells: "role-agnostic: AC-DC or DC-DC slot via ROLE straps" },
-  "cabinet": { sku: "150 kW", board: "Cabinet interconnect", sheet: "1 of 1", cells: "3x 50 kW module + controller CAN port (E55/E66)" },
 };

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/host__sim-60%2F60_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 60/60 ASan/UBSan"/>
 </p>
@@ -25,8 +25,8 @@
 | **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
 | **Verification** | `firmware/test/host_sim.c` — **60 / 60** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60; the E66 and E67 cases added six) |
-| **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 10 CSU scenarios · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
-| **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air · cabinet CSU — selected by the RATING strap |
+| **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 7 group share-law checks · the E67 output-mode latch · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
+| **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — selected by the RATING strap (the 3.32 k band is reserved) |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
 
 The `firmware/` tree holds the **normative** control-plane logic, verified against the same plant and the same
@@ -216,16 +216,14 @@ ratings. At boot, before any enable, the HAL must:
    only delay the F.21 report, never miss it. (This step originally read ~1.65 V as "60 kW" —
    two-card era; rev F reassigns that band, see below.)
 
-**E24 rev D (E40): RATING is the only strap — ROLE0 and the inter-card LINK are gone.** Bands: <0.41 V (0 R) → **module controller** (one brain, PFC+LLC) · 0.41–1.24 V (3.32 k) → **CSU** · >2.4 V (open) → no host, fault. Formerly rev C: Board strap 3.32 k against the card 10 k pullup
+**E24 rev D (E40): RATING is the only strap — ROLE0 and the inter-card LINK are gone.** Bands: <0.41 V (0 R) → **module controller** (one brain, PFC+LLC) · 0.41–1.24 V (3.32 k) → reserved · >2.4 V (open) → no host, fault. Formerly rev C: Board strap 3.32 k against the card 10 k pullup
 reads ≈0.82 V. Windows (**rev G, E44**): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** ·
-0.55–1.24 V (3.32k) → **CSU** · 1.24–1.82 V (10k) → **50 kW LIQUID** · 1.82–2.30 V (15k) →
+0.55–1.24 V (3.32k) → reserved (no host, fault) · 1.24–1.82 V (10k) → **50 kW LIQUID** · 1.82–2.30 V (15k) →
 **50 kW AIR** · >2.4 V → no board / fault. (Rev F had retired the stale two-card-era 10 k =
 "60 kW" reading; rev G splits its band for the air twin — ±1 % separations proven by the
 verify-independent gate.) Both 50 kW bands call `pmp_fsm_set_rating_kw(50)` — same 16-can link,
 same 5000 ms F.21 window; ONLY the fan personality differs and it is HAL band-decided. Windows:
-3000/4000/**5000**/5500-legacy ms — suite 49/49. In the CSU band the boot path runs `pmp_csu_*`
-(cabinet supervisor, `firmware/core/csu.h`) instead of the power FSM; ROLE0 is a don't-care.
-Same image, five identities.
+3000/4000/**5000**/5500-legacy ms. ROLE0 is a don't-care. Same image, four identities.
 
 **50 kW AIR HAL notes (E44):** four fans — FAN_PWM1 drives fans 1–2's rail... fans 1/2 on
 PWM1/PWM2 individually, fans 3+4 gang FAN_PWM2 (rear pair). ALL FOUR tachs supervised:
@@ -281,14 +279,14 @@ Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥
 Host-sim checks added: *vcmd 800 V / battery 450 V starts PAR* · *bus reference follows a climbing bank (300 → 520 V)* ·
 *open NTC / cutout loop latches F.22* · *the guard passes a healthy −40 °C reading*.
 
-## E66 — group share law on every module card; no cabinet supervisor (2026-09-13)
+## E66 — group share law on every module card (2026-09-13)
 
 > [!IMPORTANT]
-> Additive. `firmware/core/csu.c` / `csu.h` are **deleted**; `firmware/core/group.c` / `group.h` replace them and run on every
-> module card. The RATING strap band 3.32 k (0.55–1.24 V) is **reserved** — the HAL treats it as no host, fault. Protocol:
+> `firmware/core/group.c` / `group.h` run on every module card. The RATING strap band 3.32 k (0.55–1.24 V) is
+> **reserved** — the HAL treats it as no host, fault. Protocol:
 > [`docs/can-protocol.md`](can-protocol.md) GROUP_SET 0x12.
 
-The charger controller is the group master for 100 kW and 150 kW alike and broadcasts GROUP_SET at 10 Hz. Call
+When a charger runs modules in parallel, its controller is the group master and broadcasts GROUP_SET at 10 Hz. Call
 `pmp_group_frame()` for every decoded frame and `pmp_group_step()` every 1 ms; the result feeds the module's current setpoint and
 its delivery permission (together with ENABLE and a fresh frame — otherwise the FSM's F.28 ramp-off applies).
 
@@ -322,7 +320,7 @@ at the module cap* · *non-member never delivers* · *GROUP_SET codec round-trip
 | **FW-EMI-2** voltage feed-forward | Feed-forward and the resistive-emulation reference use SNS_VAC1..3 as drawn (divider RC τ ≈ 115 µs), with the 50 Hz lag rotated out by mixing the other two phases: v′ₖ = vₖ + ωτ·(vₖ₋₁ − vₖ₊₁)/√3 | without the feed-forward the damped margins drop to 0.36–0.43 |
 | **FW-EMI-3** gain per rating | Current-loop proportional gain = 2π·3 kHz·L_D1 at the simulated crest, lot −8 %: **1.27 / 1.04 / 0.78 V/A** (30/40/50 kW, from the strap); PI zero no higher than the 425 Hz of the loop design | the single PI (1.87 V/A, placed on a 100 µH plant) crosses at 5–7 kHz on the 40/50 kW D1 and is unstable at 30 µs even with the damper |
 
-Not firmware: EVT line — a grid-impedance step test at Lg ≈ 100 µH per phase (and the 3-module cabinet on one
+Not firmware: EVT line — a grid-impedance step test at Lg ≈ 100 µH per phase (and several paralleled modules on one
 transformer) with the loop delay measured on the scope, before the margins above are called verified.
 
 
@@ -363,5 +361,5 @@ F.11 class checks 195 A / 220 A and 155 A / 180 A.
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">External CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

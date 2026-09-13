@@ -1,24 +1,24 @@
-<img src="docs/assets/hero.svg" alt="DC-Modules — 30, 40 and 50 kW SiC EV charging modules; 100 and 150 kW products" width="100%"/>
+<img src="docs/assets/hero.svg" alt="DC-Modules — 30, 40 and 50 kW SiC EV charging modules" width="100%"/>
 
 # DC-Modules
 
-<sub>Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules and the 100 / 150 kW products</sub>
+<sub>Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E71-f2b705?style=for-the-badge" alt="decision register E1 to E71"/>
+  <img src="https://img.shields.io/badge/decision_register-E1–E72-f2b705?style=for-the-badge" alt="decision register E1 to E72"/>
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 4536 points, 0 failures"/>
-  <img src="https://img.shields.io/badge/independent_checks-227%2F227-2ea44f?style=for-the-badge" alt="independent verifier 227 of 227"/>
+  <img src="https://img.shields.io/badge/independent_checks-226%2F226-2ea44f?style=for-the-badge" alt="independent verifier 226 of 226"/>
   <img src="https://img.shields.io/badge/firmware-60%2F60_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 60 of 60"/>
 </p>
 <p align="center">
-  <img src="https://img.shields.io/badge/schematic_labels-6901%2F6901_·_6_targets-2ea44f?style=flat-square" alt="6901 of 6901 schematic labels verified"/>
-  <img src="https://img.shields.io/badge/review_checks-141_pass-2ea44f?style=flat-square" alt="141 review checks pass"/>
+  <img src="https://img.shields.io/badge/schematic_pins-6853%2F6853_·_5_targets-2ea44f?style=flat-square" alt="6853 of 6853 schematic pins verified"/>
+  <img src="https://img.shields.io/badge/review_checks-140_pass-2ea44f?style=flat-square" alt="140 review checks pass"/>
   <img src="https://img.shields.io/badge/BOM-mature_·_10k_basis-2ea44f?style=flat-square" alt="BOM mature"/>
   <img src="https://img.shields.io/badge/stack-TSCircuit_·_ngspice--46_·_C99_·_KiCad--5-5f8fc0?style=flat-square" alt="toolchain"/>
   <img src="https://img.shields.io/badge/phase-pre--hardware_·_EVT--ready-e3763c?style=flat-square" alt="phase: pre-hardware"/>
@@ -30,29 +30,32 @@
 > fast-charging modules, engineered end to end: every number traces to a runnable calculation, every waveform
 > claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated
 > BOM line. **What it is not yet** — bench-validated or certified hardware (see [Honesty boundary](#honesty)).
+>
+> **Scope** — the four modules only (E72). The earlier 100 / 150 kW multi-module product material is preserved on
+> branch `backup/with-100-150kw-products`.
 
 ## ⚡ The platform in sixty seconds
 
 A module is **one AC-DC board (Vienna PFC) and one DC-DC board (full-bridge LLC, E67)** bolted face to face, run by
 **one control card** — a single GD32G553VET7 brain that drives every PWM on the module (E40). Four module SKUs
 share those boards, that card and one firmware image; the card learns which SKU it sits in from a single strap
-resistor. Above the modules there are exactly two products (E55).
+resistor.
 
-| | 30 kW | 40 kW | 50 kW liquid | 50 kW air | 100 kW | 150 kW |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Build** | 1 module | 1 module | 1 module | 1 module | 2 × 50 | 3 × 50 |
-| **Output** | 150–1000 V · 100 A | · 133 A | · 167 A | · 167 A | · 333 A | · 500 A |
-| **Cooling** | air · 2 fans | air · 3 fans | sealed coldplates | air · 4 fans | per module | per module |
-| **₹ @10k** (India basis) | 30,033 | 34,616 | 40,481 | 38,404 | 76,808 (air) | 1,15,212 (air) |
-| **₹ / kW** | 1,001 | 865 | 810 | **768** | 768 | 768 |
-| **China RFQ target ₹ @10k** (E69f) | 24,639 | 28,319 | 33,182 | 31,398 | 62,796 (air) | 94,194 (air) |
+| | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
+|---|:---:|:---:|:---:|:---:|
+| **Output** | 150–1000 V · 100 A | 150–1000 V · 133 A | 150–1000 V · 167 A | 150–1000 V · 167 A |
+| **Cooling** | air · 2 fans | air · 3 fans | sealed coldplates | air · 4 fans |
+| **Efficiency** (full power, 400 VAC) | 96.62 % | 96.70 % | 96.56 % | 96.48 % |
+| **₹ @10k** (India basis) | 30,033 | 34,616 | 40,481 | 38,404 |
+| **₹ / kW** | 1,001 | 865 | 810 | **768** |
+| **China RFQ target ₹ @10k** (E69f) | 24,639 | 28,319 | 33,182 | 31,398 |
 
 ```mermaid
 xychart-beta
   title "Build cost per kW at 10k volume (₹) — generated in docs/bom-cost.md"
-  x-axis ["30", "40", "50 L", "50 A", "100 L", "100 A", "150 L", "150 A"]
+  x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
   y-axis "₹ / kW" 0 --> 1200
-  bar [1001, 865, 810, 768, 810, 768, 810, 768]
+  bar [1001, 865, 810, 768]
 ```
 
 ## 🎯 Results against the specification
@@ -61,7 +64,7 @@ xychart-beta
 |---|---|---|---|
 | Input | 3-φ 285–475 VAC | full power 330–475 VAC; 86 % constant-current derate at 285 VAC (a calculated trade that saves ~16 % of SiC, copper and EMI) | [architecture](docs/architecture.md) |
 | Output | 150–1000 VDC, CV/CC | two output modes (E67): **LOW ≤ 500 V** banks in parallel, **HIGH ≥ 500 V** in series, latched in standby (AUTO crosses above 500 V and back below 480 V); PFM down to fn ≈ 0.59, then phase shift at 1.45·fr; ZVS on every simulated edge | [firmware guide](docs/firmware-guide.md) |
-| Output current | per SKU | **100 / 133 / 167 A**; constant current below the 300 V knee, constant power above | [product structure](boards/README-product-structure.md) |
+| Output current | per SKU | **100 / 133 / 167 A**; constant current below the 300 V knee, constant power above | [module family](boards/README-module-family.md) |
 | THD | ≤ 5 % (stretch 3 %) | **0.59–1.05 %** at full power, 2.55 % at 25 % load (line-cycle control simulation) | [simulation report](docs/simulation-report.md) |
 | Efficiency | peak ≥ 97 % | **peak 98.11–98.30 %** · full power at 400 VAC **96.62 / 96.70 / 96.56 / 96.48 %** (output diode included; InfyPower states > 96 %) | [thermal report](docs/thermal-report.md) |
 | Thermal envelope | full power to +55 °C | 4,536 grid points (1,134 per module) with **0 violations and 0 folds**; worst Tj **139 °C** against the 150 °C ceiling | [thermal report](docs/thermal-report.md) |
@@ -113,10 +116,10 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  E["Engines<br/>PFC · LLC · loss · grid 4,536 pts<br/>Monte-Carlo 6 × 10k · FSM 26/26"] --> B["BOM factory<br/>bom-gen · bom-maturity · China column"]
+  E["Engines<br/>PFC · LLC · loss · grid 4,536 pts<br/>Monte-Carlo 8 × 10k · FSM 26/26"] --> B["BOM factory<br/>bom-gen · bom-maturity · China column"]
   B --> S["Structure audits<br/>schematic · interconnect · polarity"]
-  S --> P["Physics gates<br/>stress 127 · temp-critique 11 · conductor 18 · envelope 20<br/>mag-sync 48 · fault-energy 22 · coordination 72"]
-  P --> I["Clean-room verifier<br/>227 independent checks"]
+  S --> P["Physics gates<br/>stress 126 · temp-critique 11 · conductor 18 · envelope 20<br/>mag-sync 48 · fault-energy 22 · coordination 72"]
+  P --> I["Clean-room verifier<br/>226 independent checks"]
   I --> D["Docs and footprints<br/>docs-lint · footprint-audit"]
   D --> F["Firmware<br/>host_sim 60/60 ASan/UBSan"]
   P --> G["Generated pages<br/>4 module BOMs · 4 module magnetics<br/>from gate evidence"]
@@ -127,8 +130,8 @@ flowchart LR
 
 | Also run on every change | Result |
 |---|---|
-| `review-checks.mjs` — every external-review and audit closure, as assertions | **141 pass** |
-| `kicad5-verify.mjs` — label-level check of the release schematics | **6,901 / 6,901 labels** across 6 targets |
+| `review-checks.mjs` — every external-review and audit closure, as assertions | **140 pass** |
+| `kicad5-verify.mjs` — pin-level check of the release schematics | **6,853 / 6,853 connected pins** across 5 targets |
 | SPICE suites — power-solved LLC per SKU, CT front-ends, precharge / discharge, aux flyback | all pass · [toolchain](docs/simulation-toolchain.md) |
 | `magnetics-rfq-audit.mjs` — every magnetic drawing on the module pages complete enough to order (in run-all since E70) | 0 missing fields · 25 drawings |
 
@@ -146,8 +149,7 @@ flowchart LR
 | R2 re-audit | 7 new criticals — a board with no 3.3 V source, mis-scaled sensing, … | closed the same day (rev D); the assertion suite began |
 | R3 external PDF review | MCU pin numbering from an STM32-derived map | allocation regenerated from the GD32 datasheet |
 | E35 margin audit | trim inductor unbuildable (~43 W core loss); drawings short of their own copper | magnetics rev B/C, catalog CT/CMC adoption |
-| E37 interconnect audit | RATING strap hard-coded; connector bought as two unmateable headers | per-SKU straps, mating pair — cabinet-aware gate in run-all |
-| E39 cabinet re-verification | cabinet bus on the wrong studs; no CAN SGND conductor; CSU supply wrong for a 400 V line-to-line feed | OUTP/OUTN bus, SGND chain, wide-range DIN supply |
+| E37 interconnect audit | RATING strap hard-coded; connector bought as two unmateable headers | per-SKU straps, mating pair — interconnect gate in run-all |
 | E40 single-brain migration | two cards per module doubled every way, pin and link | one card per module; −₹293 per module measured |
 | E41 stress validation | the registered 40 kW choke was unbuildable; the 100 A fuse failed its derate rule | 5-stack D1-40 + 125 A class; stress-audit joins run-all |
 | E42 liquid closure | at the revved 50 kW trip points both CT burdens clipped the 3.3 V ADC rail | burdens re-scaled; BRD check family added |
@@ -166,6 +168,7 @@ flowchart LR
 | **E69 BOM clone II** | the PFC pulse check still assumed the retired paralleled pair; a single 16 mΩ LLC die at 40 kW needed IDM ≥ 334 A; printed title blocks read "Content: ?" (50 kW) and "3-phase LLC"; the CT front-end deck still ran the E65 burdens; the BOM CSV shifted columns on maker names with commas, and the MTBF classifier matched keywords inside words | per-die fault-pulse gate, 40 kW keeps two dies, IDM lines at RFQ; title blocks per board; CT deck re-run at E67 classes; RFC 4180 CSV; whole-word classifier, MTBF re-registered |
 | E70 per-module pages | 40 / 50 kW BOM lines described 30 kW parts; unquoted commas shifted CSV columns; the MTBF classifier matched inside words; the cost categoriser filed the 50 kW resonant inductor as misc; three decks still ran retired values | one generated BOM and magnetics page per module from the gates' own evidence; 51 → 37 documents; classifiers and decks fixed |
 | **E71 second opinion** | the docs said PyOpenMagnetics could not install (the 1.4.0 wheel runs); the D2 gap guide ignored fringing (+14 % L); the D3 Rac/Rdc sample test would reject good parts; MKF reads the D3 foil copper ~30 % above the 1-D model | `mkf-crosscheck.py`; fringing-corrected gap guides; short-circuit R test against the 1-D … MKF bracket; 50 kW air D3 at MKF copper = first-article watch; retired footprint envelopes removed |
+| E72 modules only | the firmware guide still listed 10 CSU host scenarios retired at E66; the interconnect gate's header described a 16-way harness and a 60 kW strap; the control-card scope still described three LLC sections; the README check counts had drifted | the repository narrowed to the four modules, the 100 / 150 kW material preserved on a backup branch, every stale text corrected |
 
 </details>
 
@@ -203,14 +206,13 @@ flowchart LR
 </details>
 
 Since E68a the **two 50 kW modules are electrically identical**: the air twin is the cheapest build per kW, and the
-liquid SKU buys a sealed, fanless module for ₹2,077 more. Multi-module products share current by commanded
-constant current over CAN, with staggered starts and graceful degrade when a module drops out. A 150 keeps 67 % of
-its power with one module out; a 100 keeps 50 %. → [product structure](boards/README-product-structure.md)
+liquid SKU buys a sealed, fanless module for ₹2,077 more. Modules run in parallel through their own output blocking
+diodes, sharing current by commanded constant current over CAN with staggered starts. → [module family](boards/README-module-family.md)
 
 ## 📦 Deliverables
 
 The release face is the audited **KiCad-5 set** in `kicad5/`, rendered to print-fidelity PDFs in
-[`boards/out-pdf/`](boards/out-pdf/):
+[`boards/out-pdf/`](boards/out-pdf/) — nine PDFs:
 
 | PDF | Contents |
 |---|---|
@@ -218,7 +220,6 @@ The release face is the audited **KiCad-5 set** in `kicad5/`, rendered to print-
 | `DC-Modules 40kW AC-DC (Vienna PFC, E41)` · `40kW DC-DC (full-bridge LLC)` | 40 kW air |
 | `DC-Modules 50kW … liquid` · `50kW-Air …` | the two 50 kW twins |
 | `DC-Modules Control Card (GD32G553VET7)` | the one card, every seat |
-| `DC-Modules 150kW Cabinet (3x50kW)` | the cabinet interconnect of record |
 
 ## 🚀 Quickstart
 
@@ -238,7 +239,7 @@ TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ign
 ```
 
 ```bash
-# regenerate release schematics and PDFs for one target (30kw | 40kw | 50kw | 50kwa | control-card | cabinet)
+# regenerate release schematics and PDFs for one target (30kw | 40kw | 50kw | 50kwa | control-card)
 node calculations/sheet-pages.mjs 30kw && node calculations/sheet-netlist-gen.mjs 30kw && node calculations/kicad5-gen.mjs 30kw && node calculations/kicad5-verify.mjs 30kw && node calculations/kicad5-print.mjs 30kw && node calculations/sheets-to-pdf.mjs
 ```
 
@@ -279,12 +280,13 @@ status badge and next/previous navigation.
 | Start here | To understand |
 |---|---|
 | [Platform architecture](docs/architecture.md) | the module in one read |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E71, with provenance and invalidator |
+| [Module family](boards/README-module-family.md) | the four SKUs side by side, the two 50 kW cooling lines, what a charger gets from each module |
+| [Decision register](docs/assumptions.md) | every frozen decision E1–E72, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
 | [Magnetics hub](docs/magnetics.md) · module pages [30](docs/magnetics-30kw.md) · [40](docs/magnetics-40kw.md) · [50 L](docs/magnetics-50kw.md) · [50 A](docs/magnetics-50kwa.md) | every custom magnetic — drawing, gate proof, build, tests, cost |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
 | [EVT test plan](docs/evt-plan.md) | the bench campaign T-00…T-41 |
-| [BOM & cost](docs/bom-cost.md) · module BOMs [30](docs/bom-30kw.md) · [40](docs/bom-40kw.md) · [50 L](docs/bom-50kw.md) · [50 A](docs/bom-50kwa.md) | the generated cost roll-up, China targets, ₹/kW ladder and every line item |
+| [BOM & cost](docs/bom-cost.md) · module BOMs [30](docs/bom-30kw.md) · [40](docs/bom-40kw.md) · [50 L](docs/bom-50kw.md) · [50 A](docs/bom-50kwa.md) | the generated cost roll-up, China targets, cost per kW and every line item |
 
 <a name="honesty"></a>
 
@@ -305,11 +307,11 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 ## 🗺️ Roadmap
 
-- [x] Frozen decision register E1–E71
+- [x] Frozen decision register E1–E72
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
-- [x] Release schematics — six KiCad-5 targets, 6,901 / 6,901 labels, ten board PDFs
+- [x] Release schematics — five KiCad-5 targets, 6,853 / 6,853 connected pins, nine board PDFs
 - [x] InfyPower architecture and BOM clone — full-bridge LLC, two output modes, output diode (E67); clip mount, star-X2 filter, film-only banks (E68); right-sized dies, fault-pulse gate, China cost column (E69)
-- [x] Product structure — 30 / 40 / 50 L / 50 A modules, 100 kW = 2 × 50, 150 kW = 3 × 50 (no CSU, E66)
+- [x] Module family — 30 kW · 40 kW · 50 kW liquid · 50 kW air on one lane, one card and one firmware image
 - [x] Three adversarial audits and five external review rounds answered with executed fixes and permanent gates
 - [ ] Buy and measure one InfyPower REG1K0135A2 → replace the teardown cost and thermal estimates with data
 - [ ] RFQ round 1 (SiC with the IDM acceptance lines, magnetics, relays; India and China suppliers) → cost closure
@@ -323,5 +325,5 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

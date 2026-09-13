@@ -158,9 +158,7 @@ export const LCSC = {
   "SHUNT-50MV-167A":   { status: "CLASS", spec: "manganin shunt 50 mV @ 167 A, Kelvin 4-T (50 kW)", note: "FL-2C class custom tap" },
   "R1206-21R5-1%":     { status: "CLASS", spec: "21.5 R 1% 1206 (50 kW line-CT burden re-scale)", note: "E96 value, any thick-film" },
   "R2010-1k-0.75W-1%": { status: "CLASS", spec: "1 k 0.75 W 2010 (PV-driver LED feed, R8)", note: "any thick-film 2010" },
-  "R0603-0R":          { status: "CLASS", spec: "0 R 0603 jumper (RSHB/RSGB single-point bonds)" },
   "R0603-10k":         { status: "CLASS", spec: "10 k 0603 (card-way pull-downs, E27 default-OFF)" },
-  "R0603-120R-1%":     { status: "CLASS", spec: "120 R 0603 1% (CAN terminations)" },
   "R0805-2R2":         { status: "CLASS", spec: "2.2 R 0805 (per-device gate R on paralleled SiC, R5-E)" },
   "MICROFIT3-40":      { status: "CLASS", spec: "Micro-Fit 3.0 dual-row 40-ckt vertical header, 5 A/contact (HARNESS40)", note: "Molex 43045-40xx — finish/retention variant at RFQ; mate = receptacle 43025-40xx with crimp harness" },
   "CONN-CARD-88-H":    { status: "CLASS", spec: "88-way 2x44 2.54 mm PIN HEADER, keyed (board side)", note: "Samtec TSW-144 class / generic gold-flash — mate of -R" },
@@ -169,8 +167,6 @@ export const LCSC = {
   "IND-PFC-107u-50":   { status: "CUSTOM", spec: "D1-50 rev B: 5x T79 26u, N=24+/-1 (E51) — pack sheet PMP-MAG-D1-50" },
   "TLV3202-class":     { status: "CLASS", spec: "dual push-pull comparator ≤50 ns, 2.7–5.5 V, SOIC/VSSOP-8 (E65 F.11 window) — TLV3202AIDR" },
   "BAT54A":            { status: "CLASS", spec: "dual Schottky common anode SOT-23 (E65 F.11 diode-OR)" },
-  "PMP-50KW-MODULE":   { status: "CUSTOM", spec: "50 kW module interface block (cabinet sheet, E55) — cost = module roll-up" },
-  "CHARGER-CONTROLLER-CAN-PORT": { status: "CUSTOM", spec: "charger controller CAN port — group master over GROUP_SET 0x12 (cabinet sheet interface block, E66) — integrator scope, no cost" },
 
   // SKU-scaled variants. The 30 kW part number was previously printed on every SKU, which read
   // as an undersized relay/fuse on the 60/120 kW drawings even though price and class notes
