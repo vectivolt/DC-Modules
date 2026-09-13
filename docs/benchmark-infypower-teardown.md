@@ -333,6 +333,86 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | 4 | R14 (530 VAC input) gains confirmation: the benchmark module runs 260–530 VAC; our filter is already component-rated for it — the remaining work stays F.07 + bus headroom + ratings sweep | [decision register](assumptions.md) E62 row |
 | 5 | Density/mass bar restated at 40 kW: 3.96 kW/L / 2.58 kW/kg — the E36 layout phase inherits it as its acceptance context | [PCB floorplan basis](pcb-floorplan.md) unchanged (parked) |
 
+## Closing the economic gap — the E63 lever audit
+
+> [!NOTE]
+> **E63 directive** — "close the economic gap and make ours more efficient — or say it is not worth it — end to
+> end, without breaking the existing system." Method: decompose the price gap into *deliberate philosophy* versus
+> *actual levers*, price both, and gate every lever on the check that already owns it. The actionable rows land in
+> the generator-owned lever table of [bom-cost.md](bom-cost.md); nothing here edits a schematic.
+
+### Where the gap actually is — the philosophy premium, priced (40 kW, @10k)
+
+| Line | Ours | Their-style | Premium | What it buys |
+|---|---:|---:|---:|---|
+| 3-φ interleaved LLC (6 FETs ₹1,872 + 3 transformers ₹1,632 + tank film ₹653) | 4,157 | ≈ 2,600 [est] | **≈ +1.5k** | +0.4–0.5 pt full-load η, interleaved ripple, smaller banks |
+| Gate drive with DESAT (9 × NSI6611 ₹612 + 9 × QA01C-18 ₹495) | ≈ 1,150 | ≈ 250 [est] | **≈ +0.9k** | per-device short-circuit off inside SCWT, Miller clamp, soft-off |
+| CT sensing (line + resonant CTs + burdens) | ≈ 700 [est] | ≈ 300 [est] | **≈ +0.4k** | zero-loss, trip-grade bandwidth to the comparators |
+| Mirror-contact 1000 V relay matrix + pre-insertion | ≈ 2,850 | ≈ 1,100 [est] | **≈ +1.3k** | weld-checked isolation — and none of their permanent 0.15–0.44 % series-diode tax |
+| DM chokes + X1-class filter caps | ≈ 1,550 | ≈ 150 [est] | **≈ +1.4k** | computed LISN margin before any hardware exists |
+| One MCU vs two DSPs | 210 | ≈ 450 [est] | **−0.25k** | our win — E40 |
+| **Philosophy premium** | | | **≈ ₹5.2k [est]** | |
+
+Two conclusions fall straight out. First, **the E62 "≈ ₹2.3k LLC silicon premium" refines to ≈ ₹1.5k all-in at
+real 10k BOM prices** — the E62 row used class prices; register rows are immutable, so the correction is recorded
+here and in E63. Second, the 40 kW red-line overshoot (**₹2,891**) is *smaller than the philosophy premium*:
+the overshoot is not waste to be found, it is protection and efficiency that was chosen — so the red-line must be
+closed with philosophy-neutral levers, and it can be.
+
+### The lever ledger after E63 (all gated — nothing executes blind)
+
+The [bom-cost lever table](bom-cost.md#red-line-closure-levers-10k-basis) grows from −₹1,735 to **−₹3,250**
+(30 kW) / **−₹4,765** (50) / **−₹14,295** (150 air):
+
+| New lever (E63) | 30 kW | 50 kW | Gate that decides |
+|---|---:|---:|---|
+| Delete the D6 DM chokes if the EVT LISN scan (T-08) proves the margin without them — the benchmark module ships none; also −13…−24 W of loss (+0.03 pt) | −900 | −1,890 | EVT measurement; E43 floors stay until then |
+| Re-run bank sizing at one string per bank — per-can ripple doubles, the E33 gate and the can's temperature-rated ripple decide | −480 | −640 [est] | `stress-audit` bank rows + datasheet |
+| Gate-bias module second source (OFAC requalification already planned at E60) | −135 | −135 | requalified sample |
+
+| Build | @10k today | After all gated levers | Red-line | Verdict |
+|---|---:|---:|---:|---|
+| 30 kW | 30,980 | ≈ 27,730 | 25,000 | ⚠️ still +₹2,730 — see below |
+| 40 kW | 35,891 | **≈ 32,640** | 33,000 | ✅ **closable with the philosophy intact** |
+| 50 kW air | 41,516 | ≈ 36,750 (735/kW) | 43,000 | ✅ deep under |
+| 150 kW air | 1,26,382 | ≈ 1,12,090 (747/kW) | 1,30,834 | ✅ under its **stretch** line (1,18,834) |
+
+### The 30 kW verdict — honest
+
+The platform overhead — card, drive stack, relay matrix, filter, CTs ≈ ₹6–7k — is the same at every power, so it
+weighs **22 % at 30 kW and 13 % at 50 kW**. That is structural: the same reason the benchmark vendor's sweet spot
+is 40 kW. Post-lever the 30 kW lands ≈ ₹27.7k against a ₹25k red-line, and the remaining ₹2.7k has exactly three
+exits, all product decisions, none free: (1) the not-taken **LV/HV fixed variants** (−₹3k+, deletes the S/P matrix,
+collapses the single 150–1000 V SKU); (2) restate the 30 kW red-line; (3) accept the 30 kW as the entry SKU and
+let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E55 ladder already does. **Recommended:
+(3), explicitly.** No architecture change closes it without breaking something the register froze on purpose.
+
+### Efficiency — where we already lead, and the one big lever
+
+| | Their claim | Ours [R] |
+|---|---|---|
+| Full load, 40 kW | ~95.5–96 % [C, from their parts] | **96.92 %** |
+| Peak | > 97 % | **98.49 %** |
+
+- **Synchronous rectification** is the only large lever left — the secondary JBS drop is 520.6 W of the 40 kW
+  module's 1,273 W. The [thermal report](thermal-report.md) already carries the SR variant: **97.54 % (+0.62 pt)**.
+  Cost: 24 low-R<sub>DS</sub> 1200 V SiC + 12 drive channels − the JBS ≈ **+₹7–9.5k [est] → ₹11–15k per point**.
+  **Declined for the cost SKUs; kept as a tender-driven premium variant.** Revisit trigger: 1200 V ≤ 40 mΩ SiC
+  under ≈ ₹200 @10k.
+- **Not worth it** (breaks a gate or a spec, checked): single-die 40 kW PFC (fails the 5,544-point envelope — the
+  E41 grid is why the pairs exist), 750 V secondary diodes (thins the E11 margin), full-bridge conversion (reopens
+  tanks, card PWM map and protection classes to *save* money while *losing* full-load efficiency).
+- **Everything else is already squeezed**: E51 re-cored the magnetics, E60 re-cut every conductor to Dowell /
+  Sullivan at the simulated corners, the D6 deletion is the last filter gram and it is EVT-gated above.
+
+### Adopted from the benchmark at zero hardware cost
+
+| Item | Their number | Action |
+|---|---|---|
+| **Standby power target ≤ 10 W** | < 10 W [D] | adopted as a spec target. Our R2-era arithmetic reads ≈ 12–17 W [est] (link balance pairs 3.7–7.3 W + dividers + aux idle + card). Measure at EVT bring-up; if over, rescale the 40/50 kW link balance pairs — both have 2× headroom inside the F.21b 2.5·τ and the 10-minute discharge label; the 30 kW is the tight one (6.2 min passive). Firmware sleep (fans off, PWM off) costs nothing. |
+| Heatsink-integrated packaging (their patent) | 3.96 kW/L | logged as an E36 layout-phase DFM input — heatsink-as-structure is the density mechanism; potting itself stays declined |
+| 48-module parallel scale | their rack model | not our product ladder (E55); noted, not adopted |
+
 ## Where the evidence ends
 
 > [!WARNING]

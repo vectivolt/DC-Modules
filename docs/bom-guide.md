@@ -80,6 +80,12 @@ reference so any winder or fabricator can quote.
 
 ## Where each SKU stands against its red-line (10k basis)
 
+> [!TIP]
+> **E63:** the closure levers grew to **−₹3,250 / −₹4,765 / −₹14,295** (30 kW / 50 / 150 air), every row gated —
+> see the [lever table](bom-cost.md#red-line-closure-levers-10k-basis) and the
+> [gap audit](benchmark-infypower-teardown.md#closing-the-economic-gap--the-e63-lever-audit): the 40 kW red-line
+> closes with the protection philosophy intact; the 30 kW residual is platform overhead with three named exits.
+
 | Build | ₹ @10k | Red-line | Gap | ₹ / kW |
 |---|---:|---:|---:|---:|
 | 30 kW module | 30,980 | 25,000 | **+5,980 over** | 1,033 |

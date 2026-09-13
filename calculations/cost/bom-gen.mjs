@@ -212,7 +212,14 @@ md.push(`## Red-line closure levers (10k basis)
 | AC-DC board 4-layer (control zones only need 4) | −₹240 | −₹260 | −₹780 | layout phase confirms |
 | Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | −₹1,560 | volume agreement |
 | Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | −₹1,050 | system integrator accepts |
-| **Sum of levers** | **−₹1,735** | **−₹2,100** | **−₹6,300** | |
+| **E63:** D6 DM chokes deleted after the EVT LISN scan proves the margin without them — the InfyPower benchmark ships no AC DM chokes (also −13…−24 W of loss) | −₹900 | −₹1,890 | −₹5,670 | EVT T-08 measured; the E43 floors stay until then |
+| **E63:** bank-string count re-run at the E33 ripple gate — one string per bank IF the per-can ripple rating holds at double duty | −₹480 | −₹640 [est] | −₹1,920 [est] | engine re-run + can datasheet ripple at temperature |
+| **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | −₹405 | requalified sample |
+| **Sum of levers** | **−₹3,250** | **−₹4,765** | **−₹14,295** | |
+
+The E63 rows come from the [InfyPower teardown benchmark](benchmark-infypower-teardown.md) gap audit; the deliberate
+philosophy premium (protection, sensing, 3-φ LLC, relay class ≈ ₹5.2k [est] at 40 kW) is priced there and is **not**
+on this table — spending it down is a product decision, not a lever.
 
 Architecture-level options not taken without a directive (each changes the product): LV/HV fixed variants that delete
 the S/P matrix (−₹3k+ at 30 kW, collapses the single 150–1000 V SKU), 750 V-class secondary diodes (−₹0.8k, thins the

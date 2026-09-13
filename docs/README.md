@@ -85,7 +85,7 @@ inlet or ambient unless labelled Tj or core.
 | | Document | What it decides | Kept honest by |
 |---|---|---|---|
 | 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | — |
-| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E62 with provenance and invalidator | rows cited by every gate |
+| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E63 with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
 | 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, F.21 semantics | `host_sim` 54/54 · grep-pinned |
@@ -139,7 +139,7 @@ inlet or ambient unless labelled Tj or core.
 | 🚀 | [Prototype fast path](prototype-fast-path.md) | catalog and wind-in-house routes for the first build | stock read 13 Sep 2026 |
 | 🏭 | [DFM & production flow](dfm-production.md) | assembly, kitting, torque, EOL test, coating | — |
 | 📊 | [Competitive benchmark](competitive-benchmark-e51.md) | market position, SiC verdict, harsh-environment parity | [V] claims 3-vote verified |
-| 🩻 | [InfyPower teardown benchmark](benchmark-infypower-teardown.md) | block-level audit against the REG1K0135A2 — verdicts, declined techniques, R18 | teardown + datasheet on file (E62) |
+| 🩻 | [InfyPower teardown benchmark](benchmark-infypower-teardown.md) | block-level audit against the REG1K0135A2, and the E63 gap-closure lever audit | teardown on file · levers gated (E62/E63) |
 | ✏️ | [Footprints to draw](footprints-to-draw.md) | land-pattern queue and the layout-entry blockers | `footprint-audit` · parked (E36) |
 | 🗺️ | [PCB floorplan basis](pcb-floorplan.md) | zones, barriers, airflow for layout | parked (E36) |
 
