@@ -56,6 +56,8 @@ typedef struct {
   bool lock, need_enable;
   uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms;
   uint32_t disch_to_ms;     /* F.21 window — runtime per rating (card strap), default = macro */
+  float oc_line_a, oc_tank_a;  /* E60: F.01 / F.11 hardware-comparator thresholds, A pk, per rating —
+                                  the HAL programs the CMP DACs from these (firmware may tighten, never loosen) */
   float icmd_saved;
   pmp_out_t out;
 } pmp_fsm_t;
@@ -99,6 +101,12 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_MODE_DWELL_MS   30u     /* scaled: 30 s in product, 30 ms in host sim timebase */
 #define PMP_XOVER_UP_V     500.0f   /* E9 rev B */
 #define PMP_XOVER_DN_V     525.0f
+/* E60: bus reference floor tracks the line — a Vienna rectifier cannot regulate below the line-line
+   crest (cycle-by-cycle sim: 475 VAC on a 650 V bus = 75 % overmodulation, 15 % THD; with the floor
+   0.1 % THD). vbus_ref = clamp(max(2·bank/0.95, K·√2·VLL), 650, 830). */
+#define PMP_BUS_MIN_V      650.0f
+#define PMP_BUS_MAX_V      830.0f
+#define PMP_BUS_LINE_K       1.08f
 #define PMP_LOCK_COUNT       5u
 /* F.21 discharge supervision (R2 review: the doc row previously had no implementation).
    Physics scales with bus C: t(<60 V) ≈ 2.0 / 3.6 / 7.2 s at 30/60/120 kW (640 Ω, 850 V) —

@@ -5,7 +5,7 @@
 // BLIND; this gate answers the questions they cannot:
 //   · hot-corner THERMAL RUNAWAY: ferrite loss has a minimum near 60–80 °C and rises above it —
 //     loop gain g = Rth · (dP_fe/dT + dP_cu/dT) must stay < 0.7 at the 130 °C hot-corner core
-//   · COLD (−25 °C) loss uplift and the cold equilibrium (stable by the negative slope below
+//   · COLD (−30 °C, A11 rev C) loss uplift and the cold equilibrium (stable by the negative slope below
 //     the minimum — quantified, not assumed)
 //   · SATURATION vs temperature: Bsat(25 °C)=499 mT → Bsat(100 °C)=401 mT (measured curves;
 //     the digitized T labels were inverted and are corrected by a physics check) — margins for
@@ -61,12 +61,19 @@ console.log(`=== MAGNETICS TEMPERATURE CRITIQUE (E58) — 3C95 measured surfaces
 
 // ---- ferrite op-set: {f, B̂, Ve[m3], Pfe_design(A4 basis)W, Pcu W, Rth K/W (ΔTspec/Ptot), hot core °C}
 const PARTS = [
-  { n: "D3-30 (3×PQ50 7:7:7)", f: 140e3, B: 0.1076, Ve: 111.3e-6, PfeA4: 13.0, Pcu: 8.4, Rth: 2.57, Thot: 130 },
-  { n: "D3-40 (2×E70 6:6:6)", f: 140e3, B: 0.0904, Ve: 204e-6, PfeA4: 14.4, Pcu: 19.9, Rth: 1.60, Thot: 130 },
-  { n: "D3-50 (2×E70 5:5:5)", f: 140e3, B: 0.1085, Ve: 204e-6, PfeA4: 24.4, Pcu: 20.7, Rth: 1.22, Thot: 130 },
-  { n: "D2-30 (bin-max, env worst)", f: 140e3, B: 0.100, Ve: 74.2e-6, PfeA4: 6.8, Pcu: 2.9, Rth: 3.70, Thot: 115 },
-  { n: "D2-40", f: 140e3, B: 0.093, Ve: 74.2e-6, PfeA4: 5.7, Pcu: 3.7, Rth: 3.68, Thot: 115 },
-  { n: "D2-50", f: 140e3, B: 0.083, Ve: 74.2e-6, PfeA4: 4.1, Pcu: 4.6, Rth: 3.37, Thot: 115 },
+  // E60: D3 copper = conductor-audit at the continuous-worst simulated corner with the E60 construction
+  // (Dowell-optimum foil + 0.071 mm primary strands); the E51 as-drawn foils computed 2.3–2.9× these
+  { n: "D3-30 (3×PQ50 7:7:7)", f: 140e3, B: 0.1076, Ve: 111.3e-6, PfeA4: 13.0, Pcu: 10.2, Rth: 2.57, Thot: 130 },
+  { n: "D3-40 (2×E70 6:6:6)", f: 140e3, B: 0.0904, Ve: 204e-6, PfeA4: 14.4, Pcu: 22.4, Rth: 1.60, Thot: 130 },
+  { n: "D3-50 (2×E70 5:5:5)", f: 140e3, B: 0.1085, Ve: 204e-6, PfeA4: 24.4, Pcu: 25.3, Rth: 1.22, Thot: 130 },
+  // E60: D2 flux at the bin-max inductance and the POWER-SOLVED ngspice worst nominal peak (SER bank
+  // 250 V: 65.6 / 87.4 / 108.7 A) — the E58 rows carried 100/93/83 mT taken at the nominal bin and the
+  // pre-E60 (wrong-power) current; A4 Fe re-scaled ∝ B^2.9 so the conservative-fit check stays honest
+  { n: "D2-30 (bin-max, SER-250 worst)", f: 140e3, B: 0.109, Ve: 74.2e-6, PfeA4: 8.7, Pcu: 2.9, Rth: 3.70, Thot: 115 },
+  // E60: D2-40 on 1× E70/33/32 N 5, D2-50 on 2× E70/33/32 N 3 — flux at bin-max L and the simulated worst peak; Rth from the
+  // E70 2-set surface law (266 cm²) at the operating loss; Cu = Sullivan Rac at the continuous corner
+  { n: "D2-40 (1×E70 N5)", f: 140e3, B: 0.097, Ve: 102e-6, PfeA4: 9.0, Pcu: 6.1, Rth: 2.82, Thot: 115 },
+  { n: "D2-50 (2×E70 N3)", f: 140e3, B: 0.085, Ve: 204e-6, PfeA4: 12.1, Pcu: 6.6, Rth: 1.94, Thot: 115 },
   { n: "D4 (ETD39 DCM amp)", f: 65e3, B: 0.1165, Ve: 11.5e-6, PfeA4: 0.6, Pcu: 1.8, Rth: 12.0, Thot: 120 },
 ];
 // Core flux is VOLT-SECOND driven — Fe persists at FULL value even when the module derates,
@@ -83,7 +90,7 @@ const solveEq = (p, amb, cuFrac) => {
 const gAt = (p, T, cuFrac) => p.Rth * (dpvdT(p.f, p.B, T) * p.Ve + p.Pcu * cuFrac * 0.00393);
 const tCrit = (p, cuFrac) => { let T = 60; while (T < 200 && gAt(p, T, cuFrac) < 1) T += 1; return T; };
 for (const p of PARTS) {
-  const fe100 = pv(p.f, p.B, 100) * p.Ve, feM25 = pv(p.f, p.B, -25) * p.Ve;
+  const fe100 = pv(p.f, p.B, 100) * p.Ve, feCold = pv(p.f, p.B, -30) * p.Ve;
   const eqA = solveEq(p, 55, 1), eqB = solveEq(p, 75, 0.16);
   const eq = Math.max(eqA, eqB), cu = eqA >= eqB ? 1 : 0.16;
   const g = gAt(p, eq, cu), Tc = tCrit(p, cu);
@@ -91,16 +98,17 @@ for (const p of PARTS) {
     `hot equilibria ${f2(eqA, 0)} °C (55 amb/full) · ${f2(eqB, 0)} °C (75 amb/derated); worst g(T_eq) = ${f2(g)} ≤ 0.6; runaway threshold T_crit(g=1) ${Tc >= 200 ? "≥200 (search cap)" : Tc} °C — margin ${f2(Tc - eq, 0)} K ≥ 25 (measured pv(T); Fe is volt-second-pinned so it does NOT derate with load — this is why the ΔT acceptance line caps the winder's Rth)`);
   ck("A4-CONSERVATIVE", p.n, fe100 <= p.PfeA4 * 1.10,
     `measured-basis Fe @100 °C = ${f2(fe100, 1)} W vs A4 design ${p.PfeA4} W (design fit must not understate by >10%)`);
-  // cold: equilibrium at −25 °C ambient (fixed point; slope below the minimum is negative → stable)
-  const Tcold = solveEq(p, -25, 1);
-  ck("COLD", p.n, feM25 <= 2.2 * fe100 && Tcold < 120,
-    `Fe(−25 °C) = ${f2(feM25, 1)} W = ${f2(feM25 / fe100, 2)}× the 100 °C basis; cold equilibrium core ${f2(Tcold, 0)} °C at full load (stable — loss slope negative below the ~80 °C minimum, so cold start SELF-WARMS toward the minimum)`);
+  // cold: equilibrium at −30 °C ambient (A11 rev C floor; the digitized surface starts at ~1 °C and is
+  // extrapolated linearly below it; slope below the minimum is negative → stable)
+  const Tcold = solveEq(p, -30, 1);
+  ck("COLD", p.n, feCold <= 2.2 * fe100 && Tcold < 120,
+    `Fe(−30 °C) = ${f2(feCold, 1)} W = ${f2(feCold / fe100, 2)}× the 100 °C basis; cold equilibrium core ${f2(Tcold, 0)} °C at full load (stable — loss slope negative below the ~80 °C minimum, so cold start SELF-WARMS toward the minimum)`);
 }
 // ---- saturation margins vs temperature ----
 ck("BSAT", "D3 volt-second flux at 130 °C core", 0.1085 <= 0.35 * Bsat(130),
   `worst B̂ 108.5 mT ≤ 35% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * 0.1085 / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
-ck("BSAT", "D2 OC-transient flux (bin-max L × 95 A pk)", (4.35e-6 * 95) / (4 * 656e-6) <= 0.6 * Bsat(130),
-  `${f2((4.35e-6 * 95) / (4 * 656e-6) * 1e3, 0)} mT at the tank OC point vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs–ms event, trip-limited (F.11)`);
+ck("BSAT", "D2 fault flux (bin-max L × (F.11 + 3 µs race), worst SKU = 30 kW)", (4.35e-6 * 129) / (4 * 656e-6) <= 0.6 * Bsat(130),
+  `${f2((4.35e-6 * 129) / (4 * 656e-6) * 1e3, 0)} mT at 85 + 44 A (E60 ngspice race) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
 ck("BSAT", "D4 clamp point at Lp+10%, 130 °C", 0.256 <= 0.75 * Bsat(130),
   `256 mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * 0.256 / Bsat(130), 0)}% absolute) — the E52 ETD39 margin HOLDS at temperature (the ETD34 rev C would sit at ${f2(100 * 0.329 / Bsat(130), 0)}%)`);
 // ---- Lm gap dominance: amplitude-permeability swing must not move Lm beyond its ±7% window ----
@@ -115,9 +123,10 @@ ck("BSAT", "D4 clamp point at Lp+10%, 130 °C", 0.256 <= 0.75 * Bsat(130),
 }
 // ---- D1 fault chain: soft-sat di/dt from the OC threshold to the CT ceiling (R6-C/R8) ----
 {
-  const R26 = { a: 2.13e-4, b: 1.637 }, AL = 37e-9, LE = 0.201;
+  const R26 = { a: 2.13e-4, b: 1.637 }, AL = 37e-9, LE = 0.196;   // E60 catalog le
   const muPU = (H) => 1 / (1 + R26.a * Math.pow(Math.max(H / 79.577, 1e-9), R26.b));
-  for (const [sku, stack, N, oc, ceil] of [["30kw", 3, 39, 95, 150], ["40kw", 5, 26, 120, 165], ["50kw", 5, 24, 95, 187]]) {
+  // E60 classes: F.01 120/155/195 A pk on 22/18/13 Ω → observability ceilings 184/225/311 A
+  for (const [sku, stack, N, oc, ceil] of [["30kw", 3, 39, 120, 184], ["40kw", 5, 26, 155, 225], ["50kw", 5, 24, 195, 311]]) {
     const L = (i) => muPU(N * i / LE) * AL * 0.92 * stack * N * N;   // AL −8% worst lot
     let i = oc, t = 0, dt = 0.05e-6, V = 560;                        // 560 V worst across the choke in a shoot-through/reverse fault
     while (i < ceil && t < 6e-6) { i += (V / L(i)) * dt; t += dt; }

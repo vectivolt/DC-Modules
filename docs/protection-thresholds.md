@@ -124,3 +124,58 @@ same hold-up limit applies to the bank bleeders (PV-driven QDISA/B lose their MC
 bank passive balance pairs give the same few-minute class. Do NOT "fix" this by lowering the
 BO divider — 321 V is the flyback's full-load DCM floor (duty 22% of the D-version's 44%
 ceiling at that bus; at 150 V it would need 58%).
+
+---
+
+## E60 current-coordination classes (2026-09-13) — every trip above every real peak, every trip observable
+
+> [!IMPORTANT]
+> **What changed and why.** The E60 simulation campaign measured the currents the hardware trips
+> must coordinate with. Earlier evidence had never measured them for 40/50 kW, and the 30 kW LLC deck
+> was non-physical (no body diodes, legs ±6 kV). Measured with the power-solved ngspice LLC decks and
+> the cycle-by-cycle Vienna model, the as-drawn **F.11 70 A pk sat exactly AT the 30 kW
+> operating peak and BELOW the 40 kW (94 A) and 50 kW (118 A) ones**. **F.01 was undefined for 40/50 kW.**
+> The **100 pF DESAT blank** computed a 3.39 µs worst response against a 2 µs discrete-SiC
+> short-circuit withstand. The standing gate
+> [`current-coordination.mjs`](../calculations/system/current-coordination.mjs) now owns all
+> of it; `fsm.c` `pmp_fsm_set_rating_kw()` carries the classes the HAL programs into the CMP DACs.
+
+**Rule (both hardware OC paths):** threshold ≥ **1.2 ×** the simulated worst peak (tolerance +
+mismatch corners, grid dips/phase jumps) **and** the CT/burden/ADC chain stays inside the 3.27 V rail
+through the simulated **3 µs fault rise** (threshold + Δi), so the latched snapshot shows the real
+fault peak.
+
+| SKU | F.01 line OC | line burden | F.01 V · ceiling | worst line peak (sim) | F.11 tank OC | res. burden | F.11 V · ceiling | worst tank peak (sim) |
+|---|---|---|---|---|---|---|---|---|
+| 30 kW | **120 A pk** | 22 Ω (1206) | 2.71 V · 184 A | 97 A (1.24×) | **85 A pk** | 1.2 Ω (2512 1 W) | 2.67 V · 135 A | 70.2 A (1.21×) |
+| 40 kW | **155 A pk** | 18 Ω · ACX-1150 | 2.77 V · 225 A | 127 A (1.22×) | **115 A pk** | 0.91 Ω (2512 1 W) | 2.70 V · 178 A | 94.0 A (1.22×) |
+| 50 kW L/A | **195 A pk** | 13 Ω · ACX-1150 | 2.66 V · 311 A | 159 A (1.22×) | **145 A pk** | 0.75 Ω (2512 2 W) | 2.74 V · 216 A | 117.9 A (1.23×) |
+
+Fault races (simulated): line Δi(3 µs) = 46 / 50 / 72 A on the soft-saturating D1 at lot AL −8 %;
+tank Δi(3 µs) = 44 / 48 / 52 A after an internal rectifier short. Per-SKU CT front-end decks
+(`spice/protection/ct-frontend.mjs`) land every threshold within 20 mV of the computed DAC point and
+keep F.xx + race ≤ 3.17 V.
+
+**DESAT (F.02/F.12) — timing vs short-circuit withstand (NSI66x1A Rev 1.1 worst-case numbers).**
+
+| Stage | Blank cap | Worst response (blank + 200 ns LEB + 300 ns delay + soft-off) | SCWT class | Share |
+|---|---|---|---|---|
+| LLC 1200 V (ZVS turn-on) | **22 pF** (was 100 pF) | **1.44 µs** (100 pF: 3.39 µs) | 2.0 µs — discrete 1200 V SiC at ≤800 V | 72 % |
+| Vienna 750 V (hard turn-on) | **47 pF** (was 100 pF) | **2.21 µs** (100 pF: 3.53 µs) | 4.2 µs — 1200 V SiC at 50 % rated V (Wolfspeed PRD-08296 Fig. 12, 175 °C) | 53 % |
+
+Minimum blank stays ≥ 0.48 µs (LLC) / ≥ 0.80 µs (Vienna) so the turn-on transient cannot
+false-trip. EVT T-xx both-polarity SC test measures the real response against the vendor tSC
+(RFQ acceptance: tSC ≥ 2 µs at 800 V / 18 V for the 1200 V part).
+
+**Firmware requirements introduced (E60, `fsm.c`/`host_sim.c` 54/54):**
+- **FW-R6 — PFC current-reference amplitude clamp** at 1.05 × the rated crest at 330 VAC: dips can
+  never command more current; with it, 30 %/50 % dip recovery and a 20° phase jump add only ~3 A.
+- **FW-R7 — line-tracking bus floor** `vbus_ref ≥ 1.08·√2·VLL`: a Vienna cannot regulate below the
+  line-line crest. At 475/500 VAC on the old 650 V floor the cycle-by-cycle model showed
+  **75–92 % overmodulation and 15–40 % current THD**; with the floor it shows 0.1 %.
+- **FW-R8 — start-mode threshold = run entry (525 V):** a session starting at 501–525 V now selects
+  PAR. Starting in SER put the bank at 250 V with twice the PAR tank current, a corner the 40 kW
+  single LLC FETs can hold only derated.
+- **Bank-bleed F.21b windows restated for the product SKUs:** 2.5·τ = **10.3 / 15.5 / 20.7 s**
+  (30/40/50 kW; the 60/120 kW rows above are retired). Per-SKU deck:
+  `spice/protection/prechg-disch.mjs`, all 9 cases PASS.

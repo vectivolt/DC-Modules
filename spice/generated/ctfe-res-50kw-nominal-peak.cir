@@ -1,0 +1,19 @@
+* CT front-end: Ipri_pk=108.8 A, 1:100, 0.75 ohm, 140000 Hz
+VAV avmid 0 1.65
+ICT avmid b SIN(0 1.088 140000)
+RB b avmid 0.75
+RF b adc 1k
+CF adc avmid 220p
+VDD vdd 0 3.3
+DP adc vdd DCLMP
+DN 0 adc DCLMP
+.model DCLMP D(Is=1e-9 N=1.05 Rs=1)
+.tran 2e-8 0.0002 0 1e-8 uic
+.option method=gear reltol=1e-4 abstol=1e-9
+.control
+set filetype=ascii
+run
+wrdata ctfe-res-50kw-nominal-peak.out v(adc) v(b)
+quit
+.endc
+.end

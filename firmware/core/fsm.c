@@ -17,6 +17,7 @@ void pmp_fsm_init(pmp_fsm_t *f) {
   /* worst-case-safe default AFTER the zeroing (a zero window would latch F.21 on the first
      ST_DISCH tick); HAL narrows per rating via pmp_fsm_set_rating_kw() */
   f->disch_to_ms = PMP_DISCH_TO_MS;
+  f->oc_line_a = 120.0f; f->oc_tank_a = 85.0f;   /* E60: lowest (30 kW) class until the strap is read */
   f->st = ST_INIT;
   f->out.derate = 1.0f;
   f->out.mode = MODE_PAR;
@@ -83,10 +84,14 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   case ST_STANDBY:
     if (in->enable_req && !f->need_enable && !f->lock && in->can_age_ms < PMP_CAN_TO_MS) {
       o->pfc_en = true;
-      o->vbus_ref = fminf(830.0f, fmaxf(650.0f, 2.0f * (in->vcmd > PMP_XOVER_UP_V ? in->vcmd * 0.5f : in->vcmd) / 0.95f));
+      /* E60: the START decision uses the same 525 V entry threshold as the RUN transition — starting
+       * SER at 500–525 V put the bank at 250 V with twice the PAR tank current (ngspice E60: 86.6 A pk
+       * at 40 kW vs 57.9 A in PAR at 525 V), a corner the 40 kW's single LLC FETs can only hold derated */
+      o->vbus_ref = fminf(PMP_BUS_MAX_V, fmaxf(PMP_BUS_MIN_V, fmaxf(2.0f * (in->vcmd > PMP_XOVER_DN_V ? in->vcmd * 0.5f : in->vcmd) / 0.95f,
+                                                                  PMP_BUS_LINE_K * 1.414f * in->vin_ll)));
       if (in->vbus > 700.0f) {
         if (in->ext_connected && in->vext < 0.0f) { latch(f, FC_BACKFEED); break; }
-        o->mode = (in->vcmd > PMP_XOVER_UP_V) ? MODE_SER : MODE_PAR;
+        o->mode = (in->vcmd > PMP_XOVER_DN_V) ? MODE_SER : MODE_PAR;
         o->llc_en = true;
         bool ready = (o->mode == MODE_SER) ? o->k_ser : (o->k_para && o->k_parb);
         if (!ready) {
@@ -165,6 +170,11 @@ void pmp_fsm_set_rating_kw(pmp_fsm_t *f, uint16_t kw)
   /* E24 rev E (E41): 40 kW carries +2 link cans and heavier banks — window scales with C. */
   f->disch_to_ms = (kw == 30u) ? 3000u : (kw == 40u) ? 4000u : (kw == 50u) ? 5000u
                  : (kw == 60u) ? 5500u : PMP_DISCH_TO_MS;
+  /* E60 current-coordination classes (calculations/system/current-coordination.mjs): threshold =
+   * 1.2 × the simulated worst peak (PFC: cycle-by-cycle incl. dips/phase jumps; LLC: power-solved
+   * ngspice incl. tolerance/mismatch), observability to threshold + the 3 µs fault rise. */
+  f->oc_line_a = (kw == 50u) ? 195.0f : (kw == 40u) ? 155.0f : 120.0f;
+  f->oc_tank_a = (kw == 50u) ? 145.0f : (kw == 40u) ? 115.0f : 85.0f;
   /* E42 50 kW: 16-can link (8/half, 1.88 mF series) into the 640 R chain — 3.16 s to <60 V,
    * 5000 ms window = 58% margin, same policy band as 30/40. 60 kW row is the retired
    * two-lane reference, kept so a legacy strap read stays safe (longer window, never shorter). */

@@ -1,6 +1,6 @@
 # End-to-end validation verdict — 30/40/50 kW modules (E51 review, 2026-09-12)
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
 
 > **Purpose** — End-to-end validation verdict by category — startup through tolerances — with evidence and the honest open list.
 >
@@ -50,3 +50,36 @@ a flux-density fiction guarded by a `true` gate, an aux that could not cold-star
 cores on resonant duty (E35) — are closed with executed fixes and computing gates, not notes.
 The remaining risk is concentrated exactly where it should be at this phase: hardware
 verification (EVT) and supplier first-articles.
+
+---
+
+## E60 addendum — the verdicts after current coordination, AC copper and the simulation re-basis (2026-09-13)
+
+> [!WARNING]
+> **One piece of evidence behind the E51 verdicts was not physical.** The LLC ngspice deck behind "ZVS at all
+> operating points" had no body diodes: legs swung to ±6 kV and its powers missed by −77…+71 %. It was withdrawn and
+> rebuilt with body diodes, per-SKU tanks, power-solved operating points, a physicality guard and a tank fingerprint.
+> The rebuilt deck confirms ZVS (64/64 edges on all 14 corners per SKU). It also exposed trip thresholds that sat
+> below the real peaks, which are now fixed. Rows not listed below are unchanged.
+
+| # | Category | E60 verdict | What changed |
+|---|---|---|---|
+| 2 | **Steady state** | V/G | Grid re-based to per-SKU tanks with the S/P hysteresis band evaluated: **5,544 pts, 0 FAIL**. Its "65/48 A pk" ceilings were rms, now tank classes 46.4/61.9/77.3 A rms. Secondary JBS joined the fold loop. The SER 500 V band binds every SKU, with 93 % folds |
+| 3 | **Transients** | V/G + EVT | Cycle-by-cycle Vienna: dips and a 20° phase jump add only 2.6–3 A **with** the FW-R6 reference clamp (without it +43 %). host_sim **54/54** |
+| 4 | **Faults** | **V — coordination closed at E60** | Every hardware trip ≥ 1.2 × the simulated worst peak: **F.01 120/155/195 A pk** (22/18/13 Ω) and **F.11 85/115/145 A pk** (1.2/0.91/0.75 Ω). Both are observable through the simulated 3 µs races. **DESAT blanks 22 pF LLC / 47 pF Vienna**: worst response 1.44 / 2.21 µs inside 75 % of the SiC SCWT class (the as-drawn 100 pF computed 3.39 µs on the LLC). EVT T-30 measures it |
+| 5 | **Saturation** | V/G | D2 fault flux at F.11 + race **211 / 181 / 153 / 154 mT** ≤ 60 % Bsat(130 °C) = 217 mT on the E60 geometry. D1 at F.01 on the soft-saturated catalog curve at AL −8 % stays observable (µ ≥ 0.15) |
+| 6 | **Core + copper loss** | **V — copper added at E60** | Dowell/Sullivan at the simulated currents: the E51 foils (0.20/0.25/0.30 mm) computed Rac/Rdc 5.1–6.7, and D2-50 PQ50 litz had Fr 11.7 (45 W). Now foils **0.10/0.127/0.127 mm**, **0.071 mm litz**, **D2-40 = 1× E70 N5**, **D2-50 = 2× E70 N3**: Rac/Rdc ≤ 1.35, ΔT ≤ 40 K. T-31 first-article Rac |
+| 7 | **Thermal** | V/G | Magnetics equilibria restated with AC copper: D3 **102–107 °C** (≥93 K from runaway). Loss budget re-based on the power-solved LLC current: η **97.19 / 96.92 / 96.68 / 96.82 %**, loss 866–1,717 W. Air margins 1.44–1.51×, coolant ΔT 4.8 K |
+| 9 | **Resonance / tank** | V/G | Gain-worst tolerance corner (Lr +3 %, Cr −5 %, Lm +7 %) reaches full power at 77–82 kHz with ZVS on every SKU. Tank rms classes hold on nominal + tolerance corners. The ±3/5 % mismatch corner (+8 % peak) is the EOL current-sharing reject |
+| 10 | **Control** | V + EVT | FW-R7 line-tracking bus floor. On a 650 V bus, 475/500 VAC simulated 15–40 % THD, reduced to 0.1 % with the floor. FW-R8: SER start only above 525 V |
+| 11 | **EMI** | V(pre) + EVT | Cycle-by-cycle 150 kHz band content is 0.7–1.2 dB **below** the LISN basis, so the D6 floors are conservative (unchanged) |
+| 14 | **Manufacturability** | V + fast path | Constructions re-issued for copper (pack, build instructions, drawings). Prototype fast path with stocked cores and formers plus catalog D6/D7/CT/aux routes ([`prototype-fast-path.md`](prototype-fast-path.md)) |
+| 12 | **Environment (A11 rev C)** | V(spec) + EVT | Matched to the published competitor envelope (Infypower / UUGreen / Tonhe product pages): cold floor **−30 °C** (−40 °C-category DC-link cans, magnetics cold check at −30 °C, T-32 cold soak), IP55 fans, ≤2000 m, 95 % RH. Input range above 475 VAC flagged for a product decision ([`competitive-benchmark-e51.md`](competitive-benchmark-e51.md) §7) |
+| 13 | **Independent anchors** | V/G | Cycle-by-cycle Vienna vs Friedli–Kolar closed forms **±0.7 %**; LLC deck vs the measured Wolfspeed CRD-30DD12N-K worst tank current **−8 % pk / −6 % rms** (`verify-independent` §K, 226 checks) |
+| 15 | **Commercial** | See benchmark | Full-load η now **at parity** with the SiC flagships' ≥97 % claim and ahead of the mainstream band. Peak 98.45–98.58 % |
+
+**Added to the open list:** T-30 (both-polarity SC timing at the new blanks against vendor tSC; the SCWT classes
+are baselined until then), T-31 (first-article Rac at 140 kHz including the D3 open-secondary fringing check, CT
+saturation at the E60 burdens), T-32 (−30 °C cold soak), a FEMMT run of the D3 S1 foil at PAR-525, an SR-332
+MTBF prediction (competitors publish 300–500 kh), and the terrestrial-neutron FIT of 1200 V SiC at 830 V / 2000 m.
+([`simulation-toolchain.md`](simulation-toolchain.md) §6)

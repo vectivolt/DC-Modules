@@ -207,3 +207,23 @@ boundary. Sense calibration constants for the re-scaled CT burdens (21.5 Ω line
 resonant) are rating-keyed like every other cal row. **R4-7:** the V24 monitor divider is
 82k/10k on every variant (24 V reads 2.609 V, full-scale 30.4 V) — update the cal constant;
 the old 68k basis clipped at 25.7 V.
+
+---
+
+## E60 — current coordination in firmware (2026-09-13)
+
+> [!IMPORTANT]
+> Four normative changes land in `firmware/core/fsm.c` and are proven by `firmware/test/host_sim.c`
+> (**54/54**, four new checks). Source of the numbers: [`docs/protection-thresholds.md`](protection-thresholds.md)
+> § "E60 current-coordination classes" and the standing gate `calculations/system/current-coordination.mjs`.
+
+| Req | What the code does | Why (simulated) |
+|---|---|---|
+| **FW-R6** PFC reference clamp | HAL current loop clamps the reference **amplitude** at 1.05 × the rated crest at 330 VAC | cycle-by-cycle Vienna: dips/phase jumps then add ≈3 A, not a trip |
+| **FW-R7** bus floor | `vbus_ref = clamp(max(2·bank/0.95, 1.08·√2·VLL), 650, 830)` (`PMP_BUS_LINE_K`) | 475/500 VAC on a 650 V floor: 75–92 % overmodulation, 15–40 % THD → 0.1 % with the floor |
+| **FW-R8** start mode | STANDBY selects SER only above `PMP_XOVER_DN_V` (525 V), the same threshold RUN uses | SER at 500–525 V = bank 250 V = 2× PAR tank current; the 40 kW LLC folds to 75–93 % there |
+| **OC DAC classes** | `pmp_fsm_set_rating_kw()` sets `oc_line_a` / `oc_tank_a` = **120/85 · 155/115 · 195/145 A pk** (30/40/50); HAL writes the CMP DACs from these — firmware may tighten, never loosen | 1.2 × simulated worst peak; observability through the 3 µs race on the E60 burdens |
+
+Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥ 1.08·√2·VLL* ·
+*50 kW OC classes 195/145* · *40 kW OC classes 155/115*. Default before the strap is read = the
+30 kW classes (the lowest thresholds — an undecoded strap can only trip earlier, never later).

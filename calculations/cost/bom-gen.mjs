@@ -192,8 +192,7 @@ dominated per-kW by a 50-based product in or near its segment.
 ${PKW.map(([n, kw, cost, pkw, note]) => `| ${n} | ${note} | ${cost.toLocaleString("en-IN")} | **${pkw.toLocaleString("en-IN")}** |`).join("\n")}
 
 Cabinet adder ₹${CAB_ADDER.toLocaleString("en-IN")} (CSU card + carrier + WDR supply + studs + CAN passives). The
-**3×40 cabinet is the cheapest 120 kW** by ~₹${f(4 * summary["30kw"].g10k - 3 * summary["40kw"].g10k).toLocaleString("en-IN")}; choose the runner at the volume decision
-(N−1 granularity: 4×30 keeps 75% on a module loss, 3×40 keeps 67%).
+**150 kW air (3 × 50a + CSU) is the cheapest multi-module ₹/kW** and keeps 67 % of its power on a module loss (a 100 kW keeps 50 %).
 `);
 md.push(`## Directive cost impacts (recorded)
 - Two-board sandwich (E17): +1 PCB, interconnect studs/harness — ≈ +₹1,450/-module @30 kW vs single-board baseline.

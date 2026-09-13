@@ -480,9 +480,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "22pF",
+   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
+   "mpn": "MLCC-22p-0603"
   },
   {
    "designator": "R1HDS",
@@ -825,9 +825,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "22pF",
+   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
+   "mpn": "MLCC-22p-0603"
   },
   {
    "designator": "R1LDS",
@@ -1230,9 +1230,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "22pF",
+   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
+   "mpn": "MLCC-22p-0603"
   },
   {
    "designator": "R2HDS",
@@ -1575,9 +1575,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "22pF",
+   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
+   "mpn": "MLCC-22p-0603"
   },
   {
    "designator": "R2LDS",
@@ -1980,9 +1980,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "22pF",
+   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
+   "mpn": "MLCC-22p-0603"
   },
   {
    "designator": "R3HDS",
@@ -2325,9 +2325,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "22pF",
+   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
+   "mpn": "MLCC-22p-0603"
   },
   {
    "designator": "R3LDS",

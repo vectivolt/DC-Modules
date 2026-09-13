@@ -1,6 +1,6 @@
 # Magnetics Build Instructions — how each part is actually made (E59)
 
-<p align="left"><img src="https://img.shields.io/badge/status-WORK__INSTRUCTIONS-b4642a?style=flat-square" alt="wi"/> <img src="https://img.shields.io/badge/rev-E59-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/pairs_with-manufacturing__pack-5f8fc0?style=flat-square" alt="pack"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-WORK__INSTRUCTIONS-b4642a?style=flat-square" alt="wi"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/AC_copper-conductor--audit-2ea44f?style=flat-square" alt="ac"/> <img src="https://img.shields.io/badge/pairs_with-manufacturing__pack-5f8fc0?style=flat-square" alt="pack"/></p>
 
 > **Purpose** — the step-by-step *process* behind every RFQ sheet: winding sequence, lay-up
 > order, computed wire cut lengths, tape schedules, termination prep, impregnation, and the
@@ -10,6 +10,11 @@
 > `temp-critique`, stress-audit) — nothing in this file is a new number source.
 >
 > [!IMPORTANT]
+> **E60 copper revision is built here:** D3 secondaries on **0.10 × 28 mm** (30 kW) / **0.127 × 28 mm** (40/50 kW)
+> foil, D3 primaries in **0.071 mm** strands, D2-40 on **1× E70 N 5 (4150×0.071)**, D2-50 on **2× E70 N 3
+> (2500×0.1)**. Foil gauge and strand size are **electrical** parameters (Dowell/Sullivan, see
+> [`conductor-selection.md`](conductor-selection.md)). A substitution at equal copper area is a construction change.
+>
 > Hold points are mandatory: **H1** after winding (pre-impregnation electricals) · **H2** after
 > impregnation/cure (full acceptance row) · **H3** final (hipot + label). A part that fails H1
 > is reworked before varnish — after varnish it is scrap. D3/D4 barrier steps are
@@ -17,20 +22,22 @@
 
 ## U — Universal process rules (all parts)
 
-1. **Incoming**: cores per the pack's equivalence tests (AL band; sendust L(I) at −25/+25/
+1. **Incoming**: cores per the pack's equivalence tests (AL band; sendust L(I) at −30/+25/
    +100 °C; ferrite lot cert vs the A4 loss line). Wire: litz continuity + strand count spot
    check (resistance per metre vs table); TIW/FIW spark-test cert on the reel.
 2. **Litz handling**: minimum bend radius 5× bundle OD; never draw litz over a sharp edge
    (broken inner strands are invisible and shift Rac); serve ends with heat-shrink before
    cutting so the rope cannot bird-cage.
 3. **Litz termination** (every litz part): strip serving 12 mm → solder-pot tin at
-   **400 ±20 °C, 3–5 s** with rosin flux until strands wet through (enamel burns off in the
-   pot — grade-1 0.1 mm needs no pre-strip); wick excess; inspect the cut face: 100 % strands
+   **400 ±20 °C, 3–5 s** (Class 155 solderable PU; **Class 180 PU needs 420–440 °C** — follow the reel's
+   solderability sheet) with rosin flux until strands wet through (enamel burns off in the pot, so no pre-strip);
+   **0.071 mm strands (E60): 2–3 s** to avoid strand erosion. Wick excess; inspect the cut face: 100 % strands
    bonded, no dry core. TIW litz: strip the triple wall back **exactly to the drawing's strip
    window** with a thermal stripper — never a blade (nicked wall = failed barrier).
 4. **Foil windings**: deburr slit edges (finger test + 10× visual); fold-back terminations
    (no soldered joint inside the winding body); interlayer insulation overhangs foil edge
-   ≥2 mm both sides.
+   ≥2 mm both sides. **Never stack two foils in one turn position** — Dowell counts them as two
+   layers; the gauge on the traveler (0.10 / 0.127 mm, ±8 %) is verified with a micrometer at goods-in.
 5. **Tapes**: polyester Class F minimum (Class H system for D3): 3M 1350F-class interlayer,
    glass banding tape for stacks. Half-lap unless stated. No tape over a vent/thermocouple
    witness spot (marked on each drawing).
@@ -72,9 +79,20 @@
 | 1. Pre-grind | Assemble the 2-core stack UNGAPPED on the winding fixture (no catalog former — the taped-tube fixture IS the former); measure baseline AL. |
 | 2. Grind to bin | Grind centre legs toward the bin target (3.05–4.03 mm class total, distributed 2 positions/leg); iterate grind→assemble→measure with the N-turn jig until inside the ordered bin ±3 %. Glue, clamp, cure, re-measure (U6). |
 | 3. Wrap | Margin tape both chamber ends so the winding stays **≥5 mm from every gap face**; 1 layer 0.13 mm over the legs. |
-| 4. Wind | Litz per SKU (**30: 0.9 m of 1350×0.1 · 40: 0.95 m of 2000×0.1 · 50: 1.05 m of 3000×0.1**), N = 4/5/6 spread evenly across the centre-leg window; tape each turn's crossing. |
+| 4. Wind | **D2-30:** 0.9 m of 1350×0.1, N = 4 spread evenly across the centre-leg window; tape each turn's crossing. **D2-40/50 (E60 rev D) — see the E70 table below.** |
 | 5. Leads | Tin per U3, 60 mm flying leads. **H1**: L @140 kHz inside bin, Rdc. |
 | 6. Finish | Impregnate (U7, gap faces already glued — mask nothing but leads); fit the **stainless slotted clamp bars (E58 rule: non-magnetic, ≥8 mm from gap faces, no closed loop)**. **H2**: L re-check @140 kHz + Rac ≤ row · **H3**: 2.5 kV winding→core, bin letter + label. |
+
+### D2-40 / D2-50 rev D (E60) — gapped E70/33/32 builds
+
+| Step | D2-40 (`IND-TRIM-E70-40`) | D2-50 (`IND-TRIM-E70-50`) |
+|---|---|---|
+| 1. Core + former | 1× E70/33/32 set, single-set former **B66372B1000T001** | 2× E70/33/32 sets, stack former **B66372B2000T001** |
+| 2. Gap | **distributed, 3 positions** on the centre leg (spacers or ground steps). Grind to AL **128 / 140 / 152 nH/T²** for bins 3.2 / 3.5 / 3.8 µH | same method, AL **311 / 333 / 356 nH/T²** for bins 2.8 / 3.0 / 3.2 µH |
+| 3. Wrap | build **≥8 mm radial clearance** over the gap plane (margin tape), 1 layer 0.13 mm over the leg | same |
+| 4. Wind | **1.15 m of 4150×0.071**, N = 5, single layer spread across the 41 mm window | **1.0 m of 2500×0.1**, N = 3, single layer spread across the window |
+| 5. **H1** | L @140 kHz inside the bin ±3 % · Rdc · **(first article) Rac @140 kHz ≤ 2.6 mΩ** | L in bin · Rdc · **(FA) Rac ≤ 2.0 mΩ** |
+| 6. Finish | impregnate (U7) · stainless slotted clamps ≥8 mm from gap faces · **H2** L re-check · **H3** 2.5 kV winding→core, bin label | same · ≥1 kg: centre clamp + 2-point banding |
 
 ## D3 family — LLC section transformers (the safety-critical build)
 
@@ -83,20 +101,21 @@
 copper-foil secondaries with the TIW/FIW barrier system** (barrier = TIW/FIW OR margins —
 per the pack, never both).
 
-Cut lengths: pri **30: 1.25 m** (profiled 1250×0.1-class) · **40: 1.9 m** · **50: 1.65 m**;
-secondary foil per winding **30: 0.90 m of 0.20×28** · **40: 1.5 m of 0.25×28** ·
-**50: 1.25 m of 0.30×28**; shields 2× (MLT + 15 mm) foil with a 100 mm lead tail.
+Cut lengths: pri **30: 1.25 m** of profiled **2475×0.071** · **40: 1.9 m** of **3486×0.071** · **50: 1.65 m** of
+**4370×0.071** (E60 strand size — same copper area as the E51 0.1 mm builds); secondary foil per winding
+**30: 0.90 m of 0.10×28** · **40: 1.5 m of 0.127×28** · **50: 1.25 m of 0.127×28** (E60 Dowell gauges — the E51
+0.20/0.25/0.30 mm foils computed Rac/Rdc 5–7); shields 2× (MLT + 15 mm) foil with a 100 mm lead tail.
 
 | Step | Instruction |
 |---|---|
-| 1. Core prep | Grind the centre leg to the Lm AL target (63 µH ±7 % at the part's N — jig-measured), glue-stack (30 kW: the 3-set stack on the winding fixture; 40/50: standard 2-set into the B2000 former), cure, re-measure. |
+| 1. Core prep | Grind the centre leg to the Lm AL target (63 µH ±7 % at the part's N — jig-measured) **equally on every set (E60: 3 positions on the PQ 3-stack, 2 on the E70 2-set, ≤0.5 mm each — the innermost S1 foil must never face one large gap)**, glue-stack (30 kW: the 3-set stack on the winding fixture; 40/50: standard 2-set into the B2000 former), cure, re-measure. |
 | 2. Base wrap | Former/fixture tube: 1 layer barrier tape. Mark the three winding zones. |
 | 3. **S1** | Wind secondary-1 foil, N turns edge-aligned, interlayer 0.05 mm film each turn, fold-back start/finish tails exiting the SAME side (bank A side). Overwrap 2 layers barrier tape. |
 | 4. Shield 1 | 1 turn Cu foil, ends insulated from each other (NO shorted turn — overlap gap 3 mm taped), lead tail out to the primary-star side. Overwrap 1 layer. |
 | 5. **Spacer** | Wind the LEAKAGE SPACER — plain polyester build-up to the thickness on the leakage card (first-article curve sets it; target total leakage 3 ±0.7 µH). This spacer is a controlled dimension: gauge it. |
 | 6. **P** | Primary profiled litz, N turns in one layer (7/6/5), even tension (profiled litz kinks — use the guided shuttle), both tails tinned per U3 and dressed to the primary side. Overwrap 1 layer. |
 | 7. Spacer 2 + Shield 2 + **S2** | Mirror of steps 5→4→3 (spacer, shield with tail to star, S2 foil with tails to bank-B side). Final overwrap 2 layers. |
-| 8. **H1** (pre-varnish, all of): | turns ratio 1:1:1 exact (ratiometer) · Lm in window · **leakage @140 kHz measured → write the unit's leakage on the traveler** (this drives the D2 bin at kitting AND the spacer feedback loop) · Rdc all three · polarity dots verified against the drawing. |
+| 8. **H1** (pre-varnish, all of): | turns ratio 1:1:1 exact (ratiometer) · Lm in window · **leakage @140 kHz measured → write the unit's leakage on the traveler** (this drives the D2 bin at kitting AND the spacer feedback loop) · Rdc all three (E60 lines: S ≤ 5.6 / 7.5 / 6.3 mΩ) · polarity dots verified against the drawing · **first article: Rac/Rdc @140 kHz ≤ 1.35 per winding** (shorted-secondary method). |
 | 9. Impregnate | U7. Bond-face masked on 40/50 (the clamp face that takes the web gap-pad). |
 | 10. Terminate | Foil tails to the pin/lug pattern (§0.1), litz tails tinned-trimmed; clamp bars fitted (E58 stainless/slotted rule). |
 | 11. **H2/H3** | Full acceptance row: Lm, leakage re-check (varnish shifts it ≤2 % — the label states the POST-varnish value), Rdc, **hipot pri↔sec 4.0 kV DC 1 s — 100 %, witnessed, logged** (SAFETY-CRITICAL: this barrier is the SELV domain's life), pri↔core 2.5 kV, PD sample 5/lot @1.5 kV pk ≤10 pC, leakage label + serial. |

@@ -1,0 +1,29 @@
+{
+  "fingerprint": "50kwa:Lr6u/Cr8x27n/Lm63u/Coss500p",
+  "worstCorner": "SER250-full-mismatch",
+  "ipPkMax": 117.7,
+  "ipRmsMax": 80.8,
+  "imPkMax": 24.8,
+  "vcrAcMax": 664,
+  "isRmsMax": 40.2,
+  "isPkMax": 58.9,
+  "idAvgMax": 18,
+  "fetRmsMax": 57.1,
+  "fetToffMax": 93,
+  "shareMax": 8.15,
+  "zvsAll": true,
+  "legsInRails": true,
+  "capability": true,
+  "race": {
+    "pre": 114.218331,
+    "at2us": 157.034455,
+    "at3us": 166.369989,
+    "at5us": 232.655979,
+    "at10us": 304.165173,
+    "at40us": 370.4779
+  },
+  "shortFmax": {
+    "rms": 73.6,
+    "pk": 124.7
+  }
+}

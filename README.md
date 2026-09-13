@@ -3,13 +3,14 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/design-E1–E51_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
-  <img src="https://img.shields.io/badge/envelope_grid-6048_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
+  <img src="https://img.shields.io/badge/design-E1–E60_frozen-f2b705?style=for-the-badge" alt="design frozen"/>
+  <img src="https://img.shields.io/badge/envelope_grid-5544_pts_·_0_fail-2ea44f?style=for-the-badge" alt="grid"/>
   <img src="https://img.shields.io/badge/fault_scenarios-26%2F26-2ea44f?style=for-the-badge" alt="scenarios"/>
-  <img src="https://img.shields.io/badge/firmware_logic-50%2F50_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
+  <img src="https://img.shields.io/badge/firmware_logic-54%2F54_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware"/>
+  <img src="https://img.shields.io/badge/coordination-F.01_·_F.11_·_DESAT_gated-2ea44f?style=for-the-badge" alt="coordination"/>
 </p>
 <p align="center">
-  <img src="https://img.shields.io/badge/schematics-6_sets_·_7794%2F7794_pins-2ea44f?style=flat-square" alt="pins"/>
+  <img src="https://img.shields.io/badge/schematics-6_targets_·_7784%2F7784_pins-2ea44f?style=flat-square" alt="pins"/>
   <img src="https://img.shields.io/badge/BOM-100%25_matched_·_10k_basis-2ea44f?style=flat-square" alt="bom"/>
   <img src="https://img.shields.io/badge/audits-interconnect_·_polarity_·_symbols-2ea44f?style=flat-square" alt="audits"/>
   <img src="https://img.shields.io/badge/toolchain-TSCircuit_·_ngspice--46_·_C99_·_KiCad--5-5f8fc0?style=flat-square" alt="stack"/>
@@ -37,10 +38,13 @@ A commercial family of **unidirectional 30–150 kW AC→DC charging products** 
 | Output | 150–1000 VDC CV/CC | Series/parallel banks, crossover **500/525 V** + 30 s dwell; PS-mode below 260 V bank; ZVS held at **every** simulated edge |
 | Output current | 100 / 200 / 400 A | constant-current below the 300 V knee, constant-power above; 130 % for 2 ms before CC fold |
 | THD | ≤5 % (stretch 3 %) | **0.59–1.05 %** full power, 2.55 % @25 % (line-cycle sim, THD-40) |
-| Peak efficiency | ≥97 % | **97.32 / 97.06 / 96.85 / 96.92 %** full-power @nominal (30/40/50L/50A; peaks 98.4–**98.55 %**) — loss budget rev E51 (real per-SKU transformer rows; the E44 40/50 figures had understated D3 copper) |
-| Envelope | full power to +55 °C | 1008 grid points per module: **0 violations**, worst Tj 138 °C vs 150 ceiling |
+| Peak efficiency | ≥97 % | peaks **98.45–98.58 %** (grid, half load) · full power @nominal **97.19 / 96.92 / 96.68 / 96.82 %** (30/40/50L/50A) — loss budget rev E60: LLC current now from the power-solved nominal (the withdrawn deck's 23.3 A basis read ~20 % low) |
+| Envelope | full power to +55 °C | 1,386 grid points per module incl. the S/P hysteresis band: **0 violations**, worst Tj ≤150 °C with computed folds (E60) |
+| Environment (A11 rev C) | match the market | **−30…+75 °C** (full power to 55 °C), storage −40…+85 °C, ≤95 % RH non-condensing, ≤2000 m, conformal coating, IP55 fans — the published Infypower / UUGreen / Tonhe envelope ([benchmark §7](docs/competitive-benchmark-e51.md)) |
 | Accuracy | ±0.5 % V / ±1 % I | **±0.18 % / ±0.2 %** post-cal (10 k-sample Monte-Carlo, EOL 2-pt cal mandatory) |
 | Protections | §24 catalogue | **32-row threshold table**, HW-fast + supervisory, all 26 fault scenarios executed green |
+| Current coordination (E60) | trips above every real peak | **F.01 120/155/195 · F.11 85/115/145 A pk ≥ 1.2×** the simulated worst peaks (power-solved ngspice LLC + cycle-by-cycle Vienna); DESAT 1.44 µs vs 2 µs SiC withstand |
+| AC copper (E60) | windings inside their Rac rows | Dowell/Sullivan at simulated currents: D3 foils 0.10/0.127 mm, 0.071 mm litz, D2-40/50 on E70 — **Rac/Rdc ≤ 1.35**, ΔT ≤ 40 K |
 
 <p align="center"><img src="docs/assets/verification-scoreboard.svg" width="92%" alt="verification scoreboard"/></p>
 
@@ -82,13 +86,13 @@ what buys single LLC FETs at 167 A), revved tank/protection classes, full envelo
 | Product | Composition | Output | Cooling | Cards | ₹ @10k | **₹/kW** |
 |---|---|---|---|---|---|---|
 | **30 kW** | 1 module | 150–1000 V · 100 A | air | 1 | 30,980 | 1,033 |
-| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,727 | 893 |
-| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,773 | **835** |
-| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 41,425 | **829** — cheapest module |
-| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 83,546 | **835** |
-| **100 kW** | 2 × 50a | · 333 A | air | 2 | 82,850 | **822** |
-| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **127,153** | **848** |
-| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **126,109** | **841** |
+| **40 kW** (E41) | 1 module | 150–1000 V · 133 A | air | 1 | 35,891 | 897 |
+| **50 kW** (E42) | 1 module | 150–1000 V · 167 A | **liquid** | 1 | 41,865 | **837** |
+| **50 kW** (E44) | 1 module | 150–1000 V · 167 A | **air · 4 fans** | 1 | 41,516 | **830** — cheapest module |
+| **100 kW** | 2 × 50 | · 333 A | liquid | 2 | 83,730 | **837** |
+| **100 kW** | 2 × 50a | · 333 A | air | 2 | 83,032 | **830** |
+| **150 kW** | **3 × 50 + CSU** | · 500 A | liquid | 3 + 1 | **127,429** | **850** |
+| **150 kW** | **3 × 50a + CSU** | · 500 A | air | 3 + 1 | **126,382** | **843** |
 
 Full power from 300 V out / 330 VAC in on every variant; multi-module products share current by
 commanded-CC over CAN with staggered starts and graceful module-dropout degrade. The liquid line
@@ -98,7 +102,7 @@ The generated ladder lives in [`docs/bom-cost.md`](docs/bom-cost.md). **E55 prod
 60/80/120 kW compositions are retired — every multi-module product standardizes on the 50 kW
 twins (cheapest ₹/kW in the family; a 150 keeps 67 % on a module loss, a 100 keeps 50 %).
 
-### Module variant specifications (rev E46 — every number engine-derived and gate-verified)
+### Module variant specifications (rev E60 — every number engine-derived and gate-verified)
 
 | Specification | **30 kW** | **40 kW** (E41) | **50 kW** (E42 · liquid) | **50 kW** (E44 · air) |
 |---|---|---|---|---|
@@ -106,16 +110,17 @@ twins (cheapest ₹/kW in the family; a 150 keeps 67 % on a module loss, a 100 k
 | Input (all) | 3-φ 285–475 VAC | full power ≥330 VAC | 86 % CC derate @285 V | — common |
 | Output (all) | 150–1000 VDC | S/P crossover 500/525 V + 30 s dwell | full power ≥300 V out | — common |
 | Worst continuous line current | 55.9 A | 73.3 A | 91.6 A | 91.6 A |
-| Efficiency — full power @400 VAC | 97.32 % | 97.06 % | 96.85 % | **96.92 %** |
-| Efficiency — peak over envelope | 98.43 % | 98.47 % | 98.44 % | **98.55 %** |
-| Total loss at rated | 827 W | 1,183 W | 1,580 W | 1,541 W |
-| Cooling | forced air · 2 fans | forced air · 3 fans | **sealed liquid** · 2 coldplates · 0 fans (≤60 °C coolant · 6 L/min · ΔT ≈ 4 K) | forced air · **4 fans** (3 front + 1 rear; all tachs monitored) |
-| Envelope proof (grid, 1008 pts each) | 0 fail · worst Tj 139 °C | 0 fail · worst Tj 147 °C | 0 fail · worst Tj 140 °C — full envelope, zero tank clamps | 0 fail · worst Tj **107 °C** — **zero folds anywhere** |
+| Efficiency — full power @400 VAC (E60 loss budget) | 97.19 % | 96.92 % | 96.68 % | **96.82 %** |
+| Efficiency — peak over envelope | 98.45 % | 98.49 % | 98.46 % | **98.58 %** |
+| Total loss at rated | 866 W | 1,273 W | 1,717 W | 1,642 W |
+| Cooling | forced air · 2 fans | forced air · 3 fans | **sealed liquid** · 2 coldplates · 0 fans (≤60 °C coolant · 6 L/min · ΔT ≈ 5 K) | forced air · **4 fans** (3 front + 1 rear; all tachs monitored) |
+| Envelope proof (grid, 1,386 pts each, E60) | 0 fail · worst Tj 144 °C | 0 fail · Tj ≤150 °C with folds in the SER band | 0 fail · Tj ≤148 °C, folds hot PS + SER band | 0 fail · LLC 115 °C · folds only hot SER band (JBS 149 °C) |
 | Vienna PFC (3-φ · 50 kHz) | single 750 V SiC pair/position | **paralleled pairs** | paralleled pairs (same silicon as 40) | paralleled pairs |
-| PFC choke D1 | 3× 0077908A7 · N=39 · 165 µH | 5× T79 26µ · N=23 · 113 µH | 5× T79 26µ · N=22 · 103 µH | same D1-50 part |
+| PFC choke D1 | 3× 0077908A7 · N=39 · 165 µH | 5× 0077908A7 · N=26 · 116 µH (E51) | 5× 0077908A7 · N=24 · 107 µH (E51) | same D1-50 part |
 | LLC silicon | 6× single SG2M | 6× single | 6× single (the coldplate buys it) | **12× — paralleled pairs** (per-package conduction ÷4) |
-| LLC tank (fr 140 kHz) | 4×46 nF + 4.0 µH bins | 6×33 nF + 3.5 µH bins | 8×27 nF + 3.0 µH bins · revved class (65 A pk / 95 A pk OC) | identical to E42 (by construction) |
-| Transformer (per section) | 3× PQ50/50 | 2× E70/33/32 | 3× E70/33/32 (Bpk identical 108 mT) | 3× E70/33/32 |
+| LLC tank (fr 140 kHz) | 4×46 nF + 4.0 µH bins (2×PQ50) | 6×33 nF + 3.5 µH bins (**1×E70 N5**, E60) | 8×27 nF + 3.0 µH bins (**2×E70 N3**, E60) | identical to E42 (by construction) |
+| Protection classes (E60) | F.01 120 · F.11 85 A pk | F.01 155 · F.11 115 A pk | F.01 195 · F.11 145 A pk | = 50 kW |
+| Transformer (per section) | 3× PQ50/50 · 7:7:7 · foil 0.10 mm | 2× E70/33/32 · 6:6:6 · foil 0.127 mm | 2× E70/33/32 · 5:5:5 · foil 0.127 mm | same D3-50 part |
 | DM stage D6 + CX2 (E43 engine) | 2× T48 60µ N=7 · 4.7 µF | 2× T57 60µ N=8 · 4.7 µF | 3× T57 60µ N=8 · 4.7 µF | same D6-50 |
 | Conducted-EMI worst DM margin | +4.9 dB (crest-biased) | +5.7 dB | +5.6 dB | +5.6 dB |
 | Input protection (gG) | 80 A · 22×58 | 125 A · 22×58 | 160 A · NH00 | 160 A · NH00 |
@@ -125,10 +130,10 @@ twins (cheapest ₹/kW in the family; a 150 keeps 67 % on a module loss, a 100 k
 | Bus discharge to <60 V | 2.0 s (3.0 s F.21 window) | 2.4 s (4.0 s) | 3.2 s (5.0 s) | 3.2 s (5.0 s) |
 | Control | 1 card · RATING 0R | 1 card · 1 k | 1 card · 10 k | 1 card · **15 k** — same p/n, same image (E24 rev G) |
 | Boards (all) | AC-DC + DC-DC | both 440 × 500 mm | two-board sandwich | 40-way harness — common |
-| **BOM @10k · ₹/kW** | **₹30,980 · 1,033/kW** | **₹35,727 · 893/kW** | **₹41,773 · 835/kW** | **₹41,425 · 829/kW — cheapest** |
+| **BOM @10k · ₹/kW** | **₹30,980 · 1,033/kW** | **₹35,891 · 897/kW** | **₹41,865 · 837/kW** | **₹41,516 · 830/kW — cheapest** |
 | Builds products | — (single-module segment) | — (single-module segment) | 100 kW (2×) · 150 kW (3×+CSU) | 100 kW air (829/kW) · **150 kW air (841/kW)** |
 
-The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the 120 kW interconnect of record: AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
+The 120 kW *single-board* pair is retired by physics — a 4-lane machine is 2× over one card's PWM units, analog inputs and connector ways simultaneously, and its DC-DC board would be 872×1062 mm. The cabinet sheet ([`boards/cabinet.tsx`](boards/cabinet.tsx) → `kicad5/dc-modules-cabinet/`) is the **150 kW (3 × 50 + CSU)** interconnect of record (E55): AC distribution, DC parallel bus, CAN chain with both terminations and its isolated-domain SGND conductor, and the CSU carrier (15 V wide-range DIN supply + one 3.32 k strap). Full contract: [`boards/README-product-structure.md`](boards/README-product-structure.md).
 
 ---
 
@@ -146,7 +151,7 @@ mindmap
       common-components/boards.tsx + control-card.tsx
     firmware/
       core/ fsm.c · can_proto.c · csu.c — normative C99
-      test/ host_sim.c — 49/49 under ASan/UBSan
+      test/ host_sim.c — 54/54 under ASan/UBSan
     spice/
       models/ behavioral SiC lib (provenance headers)
       40+ preserved netlists in generated/
@@ -155,11 +160,11 @@ mindmap
       kicad5-gen/verify/visual/print · audits
     kicad5/
       DC-Modules-<target>-SHIP.zip — release schematics
-      8 sheets · 5298/5298 pins verified
+      6 targets · 7,784/7,784 pins verified
     simulation-results/
-      metrics CSVs + SVG plots
+      <sku>/ power-solved LLC stress · CT · precharge · aux (E60)
     docs/
-      33 governing documents — start at docs/README.md
+      36 governing documents — start at docs/README.md
 ```
 
 ---
@@ -168,14 +173,15 @@ mindmap
 
 The **release face is the audited KiCad-5 set** (`kicad5/`), rendered to print-fidelity PDFs in [`boards/out-pdf/`](boards/out-pdf/):
 
-| PDF set | Pages |
+| PDF (one per board) | What it is |
 |---|---|
-| `DC-Modules 30kW — Schematic Set` | AC-DC · DC-DC · Control Card |
-| `DC-Modules 40kW — Schematic Set` (E41) | AC-DC · DC-DC · Control Card |
-| `DC-Modules 50kW — Schematic Set` (E42 liquid) | AC-DC · DC-DC · Control Card |
-| `DC-Modules 120kW — Cabinet Set` | Cabinet interconnect · + the 30 kW module sheets it instantiates |
+| `DC-Modules 30kW AC-DC (Vienna PFC)` · `… DC-DC (3-phase LLC)` | the 30 kW module pair |
+| `DC-Modules 40kW AC-DC / DC-DC (E41)` | 40 kW air |
+| `DC-Modules 50kW AC-DC / DC-DC (E42 liquid)` · `DC-Modules 50kW-Air AC-DC / DC-DC (E44)` | the two 50 kW twins |
+| `DC-Modules Control Card (GD32G553VET7)` | the one card, every seat |
+| `DC-Modules 150kW Cabinet (3x50kW + CSU)` | cabinet interconnect (E55) |
 
-Every sheet passes the same battery before it ships: pin-level verification (5298/5298 across all eight sheets), ink-collision audit, symbol-glyph review, and the semantic audits below. The EasyEDA payloads under `calculations/out/easyeda/` are **internal pipeline inputs only** — the EasyEDA face is frozen by directive; KiCad is the record.
+Every sheet passes the same battery before it ships: pin-level verification (7,784/7,784 across six targets), ink-collision audit, cell uniformity and the semantic audits below. KiCad-5 is the terminal face — the EasyEDA layer was removed at E56.
 
 ---
 
@@ -190,7 +196,8 @@ npm install
 # reproduce EVERY calculation, simulation-derived table, BOM, audit gate and the firmware suite
 sh calculations/run-all.sh
 # → MODULE INTERCONNECT CLEAN · POLARITY CLEAN · ALL REVIEW CHECKS PASS
-# → FIRMWARE LOGIC 45/45 OK · ALL CALCULATIONS REPRODUCED OK
+# → CURRENT COORDINATION CLEAN · CONDUCTOR AUDIT CLEAN · 226 checks — ALL CLEAN
+# → FIRMWARE LOGIC 54/54 OK · ALL CALCULATIONS REPRODUCED OK
 ```
 
 ```bash
@@ -199,15 +206,20 @@ TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ign
 ```
 
 ```bash
-# regenerate the release schematics + PDFs for one target (30kw | 40kw | control-card | cabinet)
-node calculations/easyeda-pages.mjs 30kw && node calculations/easyeda-apply-gen.mjs 30kw
-node calculations/kicad5-gen.mjs 30kw
-node calculations/kicad5-verify.mjs 30kw && node calculations/kicad5-visual.mjs 30kw
+# regenerate the release schematics + PDFs for one target (30kw | 40kw | 50kw | 50kwa | control-card | cabinet)
+node calculations/sheet-pages.mjs 30kw && node calculations/sheet-netlist-gen.mjs 30kw
+node calculations/kicad5-gen.mjs 30kw && node calculations/kicad5-verify.mjs 30kw
 node calculations/kicad5-print.mjs 30kw && node calculations/sheets-to-pdf.mjs
 ```
 
 ```bash
-# firmware verification alone (26 scenarios + rating windows + CSU supervisor + codec + 100k fuzz)
+# the SPICE evidence suites (E60 power-solved LLC per SKU, CT front-ends, precharge/discharge, aux)
+node spice/llc/llc-run.mjs 30kw 40kw 50kw 50kwa
+node spice/protection/ct-frontend.mjs && node spice/protection/prechg-disch.mjs && node spice/aux/aux-flyback.mjs
+```
+
+```bash
+# firmware verification alone (26 scenarios + rating windows + E60 coordination + CSU supervisor + codec + 100k fuzz)
 sh firmware/run_tests.sh
 ```
 
@@ -226,7 +238,7 @@ This platform was **designed by iteration against its own simulations and audits
 | C firmware port | model masked a blind K_OUT closure → guaranteed OVP | **E12b gate** before K_OUT closes |
 | R1 adversarial audit | **15 critical blockers** | closed same day as rev C |
 | R2 re-audit | **7 new criticals** (no 3.3 V source on a board, mis-scaled sensing, …) | closed same day as rev D; gate suite grew to 60+ asserts |
-| R3 external PDF review | GD32 pin numbering from an STM32-derived map | pin allocation regenerated from the datasheet ([docs](docs/mcu-pin-allocation-gd32.md)) |
+| R3 external PDF review | GD32 pin numbering from an STM32-derived map | pin allocation regenerated from the datasheet (`calculations/control/mcu-matrix.mjs`) |
 | E35 margin audit | trim inductor unbuildable as drawn (~43 W core loss); three drawings short of their own copper; fuse over-derated | magnetics rev B/C set, 80 A fuse, catalog CT/CMC adoption — all re-gated |
 | E37 interconnect audit | RATING strap hardcoded (a 60 kW machine boots as 30 kW); connector bought as two unmateable headers; a dead Kelvin way | per-SKU straps, mating pair, runtime rating — 17-check cabinet-aware gate in run-all |
 | E38 polarity audit | *(nothing — 259/259 polarized parts proven correct, gate keeps it so)* | +/anode = pin 1, netlist-to-glyph |
@@ -239,9 +251,13 @@ This platform was **designed by iteration against its own simulations and audits
 | **R7 external review response** | reviewer closes R6 (and the CAN pin-map hold, with the definitive Rev 1.3 datasheet), then catches that phases B/C sat on OPPOSITE INPUTS of ONE comparator (my "CMP-capable pin" rule was instance-blind) and that the PV-bleeder proof used a TYPICAL current as worst case | **AIN9↔AIN11** swapped in the one generator (A/B/C → CMP7/CMP1/CMP2, all on IP inputs — verified against Fig 2-3); PV LEDs re-fed from V15 at the guaranteed 10 mA point behind QPVD + 6.8 M gate bleed (chord ≥5.8 V); NSI1042-**DSWR** closed; biased-L and Lm 63 µH on the sheet panels; "wait AND verify" label; gates R7-A..E |
 | **R6 external review response** | reviewer confirms the R5 wave, then reads the sheets and the shutdown path deeper: the R5 watchdog merge was INVISIBLE on the drawing (pin-less net-net trace — netlist right, face wrong, the R4-1 class again); the aux controller's A-suffix **could not cold-start** (120 ms mandatory delay vs 1 V hysteresis = 28–60 ms of reservoir); active discharge is powered from the link it discharges (aux dies at 321 V); shunt sign reads negative when delivering | WDO net **renamed** onto NRST_CARD (one label, every pin); **NCP1252A→D** + 220 µF reservoir (3× the 67 µF budget); two-phase discharge timeline computed per-SKU + 62477-1 label + honest F.21 semantics; µs reverse-OC path designated (CMP→HRTIMER FLT, A6 pin constraint); shunt differential flipped (positive = delivering); magnetics construction printed in sheet NOTES; gates R6-A..H |
 | **R5 external review response** | reviewer confirms all R4 majors closed, then finds the watchdog only INHIBITED (a hung MCU re-armed ~ms after WDO release), missing DESAT series Rs and local bypass, exclusion not covering pre-insertion, asymmetric pair gates, and an MCU order code that does not exist (VET6) | **WDO wire-ORed onto NRST** (hung brain restarts with enables low); 100 Ω DESAT R ×9; bypass at every flagged pin; **second 74HC02 stage** (KSER excluded vs KPRE too) + per-tick sim invariant; symmetric 2.2 Ω branches; value-carrying order codes (33R/160R/shunt-per-SKU); **VET7**; gates R5-A..K + verify-independent section J |
+| **E51 magnetics recompute** | D3 windings unbuildable against real formers (142–294 % of window); D1-40/50 selections from a geometric core model | compacted litz + foil secondaries on 2× E70; D1 re-issued on the catalog core; stress rows computed, never hand-copied |
+| **E56 KiCad-native face** | a mirrored-symbol importer silently mis-wired 454 pins | EasyEDA layer removed; native-convention library; 7,784/7,784 pins verified |
+| **E58 temperature critique** | design fits temperature-blind; digitized B-H labels inverted | measured 3C95 surfaces; equilibria, runaway distance, hot Bsat computed every run |
+| **E60 current coordination + AC copper** | the LLC SPICE deck had **no body diodes** (legs ±6 kV — evidence withdrawn); F.11 sat at/below real peaks on every SKU; F.01 undefined for 40/50 kW; 100 pF DESAT blank slower than SiC SCWT; D3 foils and D2-40/50 litz at Rac/Rdc 5–12 vs their own 1.35 rows; high-line bus policy overmodulated the Vienna | power-solved per-SKU ngspice + cycle-by-cycle Vienna; F.01 120/155/195 · F.11 85/115/145 A pk with re-scaled burdens; 22/47 pF blanks; D3 foil 0.10/0.127 mm + 0.071 mm litz; D2-40 1× E70 N5, D2-50 2× E70 N3; FW-R6/R7/R8; **current-coordination + conductor-audit join run-all** |
 | **E43 full-family verification** | clean-room recompute of every board (118 checks) found the D6 DM choke had NO engine: the inherited "22 µH" cannot exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH LISN floor — at EVERY variant); also 50 kW pulse-resistor energies past the 25 W family point, trim-litz J over-line at 40/50, and the 27 nF caps' Vrms duty unstated | **dm-choke-design.mjs joins the engine set** (per-variant crest-biased floors, CX2 trio → 4.7 µF X1, LISN model rebuilt per-variant: +4.9/+5.7/+5.6 dB); 50 W pulse class at 50 kW; 2000×0.1 trim litz; O-8 Vrms lines on every tank cap; **stress-audit grows D6/CrV/D2c/Epulse/Xbleed families** |
 
-Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E51** in [`docs/assumptions.md`](docs/assumptions.md).
+Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · every netlist in `spice/generated/` · every decision **E1–E60** in [`docs/assumptions.md`](docs/assumptions.md).
 
 ---
 
@@ -249,13 +265,13 @@ Full provenance: [`docs/simulation-report.md`](docs/simulation-report.md) · eve
 
 <p align="center"><img src="docs/assets/cogs-chart.svg" width="92%" alt="COGS vs targets"/></p>
 
-The BOM is **generated from the built schematics** — every line matched with manufacturer, second source, and 100/1k/5k/10k price breaks (10k is the planning basis, A7 rev B). @10k: **₹30,079 / ₹60,158 / ≈₹122.0k** vs red-lines 25/42/78k — honestly over, with the remaining levers quantified in [`docs/bom-cost.md`](docs/bom-cost.md) (winder RFQ, relay frame, fuse→MCB) and the architecture-level options (LV/HV variants, 750 V secondaries) recorded as decisions-not-taken. Deep dive: [`docs/bom-guide.md`](docs/bom-guide.md).
+The BOM is **generated from the built schematics** — every line matched with manufacturer, second source, and 100/1k/5k/10k price breaks (10k is the planning basis, A7 rev B). @10k: **₹30,980 / ₹35,891 / ₹41,865 / ₹41,516** (30/40/50L/50A — 1,033 / 897 / 837 / 830 ₹/kW; 150 kW air ₹1,26,382 = 843 ₹/kW) — the 30 kW is honestly over its red-line, the 50s are under; E60's coordination and copper fixes cost +₹0 / +₹164 / +₹92 per module. Remaining levers are quantified in [`docs/bom-cost.md`](docs/bom-cost.md) (winder RFQ, relay frame, fuse→MCB). Deep dive: [`docs/bom-guide.md`](docs/bom-guide.md).
 
 ---
 
 ## Supervisory firmware 🧠
 
-Portable **C99**, zero HAL dependency (`firmware/core/`): the module FSM + protection evaluator + CAN 2.0B codec, plus the **CSU cabinet supervisor** (`csu.c`) — equal-share commanded-CC, staggered starts, graceful module-dropout degrade, ESTOP latch. One image serves every role: the card reads its RATING strap at boot (`pmp_fsm_set_rating_kw()` / CSU band, E24 rev C). 45/45 checks under ASan/UBSan: 26 fault scenarios, rating windows, 10 CSU scenarios, codec guards, 100k-frame fuzz.
+Portable **C99**, zero HAL dependency (`firmware/core/`): the module FSM + protection evaluator + CAN 2.0B codec, plus the **CSU cabinet supervisor** (`csu.c`) — equal-share commanded-CC, staggered starts, graceful module-dropout degrade, ESTOP latch. One image serves every role: the card reads its RATING strap at boot (`pmp_fsm_set_rating_kw()` / CSU band, E24 rev C). 54/54 checks under ASan/UBSan: 26 fault scenarios, rating windows, E60 coordination (start-mode threshold, bus floor, per-rating OC classes), 10 CSU scenarios, codec guards, 100k-frame fuzz.
 
 ```mermaid
 stateDiagram-v2
@@ -288,16 +304,19 @@ Everything lives in [`docs/`](docs/README.md). Highlights:
 | Read this… | …to understand |
 |---|---|
 | [`architecture.md`](docs/architecture.md) | the frozen platform, power path, control plane, scaling |
-| [`assumptions.md`](docs/assumptions.md) | **every decision E1–E42** with provenance and its invalidator |
+| [`assumptions.md`](docs/assumptions.md) | **every decision E1–E60** with provenance and its invalidator |
+| [`current-coordination.md`](docs/current-coordination.md) | **E60** — max current through every magnetic and switch, trip classes, DESAT vs SCWT |
+| [`conductor-selection.md`](docs/conductor-selection.md) | **E60** — which copper, foil gauge and litz strand, and why (Dowell/Sullivan) |
+| [`simulation-toolchain.md`](docs/simulation-toolchain.md) | **E60** — which simulator proves what, how to run it, how to read it |
+| [`prototype-fast-path.md`](docs/prototype-fast-path.md) | **E60** — off-the-shelf and wind-in-house routes to cut magnetics lead time |
 | [`boards/README-product-structure.md`](boards/README-product-structure.md) | module vs cabinet, the 100/150 kW products, the CSU, the cabinet adder |
 | [`control-card-scope.md`](docs/control-card-scope.md) | why one card caps at the 50 kW single-lane envelope — the arithmetic behind the module ceiling |
-| [`schematic-drawing-set.md`](docs/schematic-drawing-set.md) | the release schematics and the audits that gate them |
 | [`magnetics.md`](docs/magnetics.md) | manufacturing drawings D1–D7 (rev B/C set) with acceptance limits |
 | [`interconnect.md`](docs/interconnect.md) | sandwich, stud pillars, 40-way harness, the 88-way card slot, cabinet audit |
 | [`simulation-report.md`](docs/simulation-report.md) | all executed runs in §50 format |
 | [`thermal-report.md`](docs/thermal-report.md) | loss budgets, sandwich cooling, derating curves |
 | [`pcb-floorplan.md`](docs/pcb-floorplan.md) | the zone plan the layout phase will inherit |
-| [`evt-plan.md`](docs/evt-plan.md) | the bench campaign this repo is ready for (T-01…T-25) |
+| [`evt-plan.md`](docs/evt-plan.md) | the bench campaign this repo is ready for (T-00…T-32) |
 | [`verification-matrix.md`](docs/verification-matrix.md) | requirement → evidence, risk register |
 | [`dfm-production.md`](docs/dfm-production.md) | assembly sequence, torque table, EOL test flow |
 
@@ -308,21 +327,21 @@ Everything lives in [`docs/`](docs/README.md). Highlights:
 This project runs under a strict **no-fake-verification rule**: nothing is called *verified* without an executed artifact in this repo, and the words *bench-validated*, *certified* or *production-released* appear nowhere as claims. Concretely, the following are **specified and packaged but not executed**, because they physically require hardware, labs, or third parties:
 
 - 🔧 **PCB layout/placement/routing** — parked by directive (E36); schematics carry the layout rules ready for that phase, and the †-marked land patterns in [`docs/magnetics.md`](docs/magnetics.md) queue for it.
-- 🧪 **EVT bench campaign T-01…T-25** — DPT bench, thermal/EMI chambers, protection injection, relay qualification, cabinet-level CAN/stagger tests.
+- 🧪 **EVT bench campaign T-00…T-32** — DPT bench, both-polarity short-circuit timing vs the E60 blanks, thermal/EMI chambers, protection injection, first-article Rac of every D2/D3 winding, relay qualification, cabinet-level CAN/stagger tests.
 - 📜 **Compliance certification** — design-for-compliance checklist exists; certification is a lab + body activity.
 - 🤝 **Vendor RFQ pricing** — BOM prices are RFQ-target assumptions ±25 % until quotes land (film-cap V<sub>rms</sub> curve, relay mirror variant, MOV part, winder quotes).
 - 🖥️ **MCU HAL bring-up** — the C99 logic is host-proven; binding to real peripherals happens on silicon.
 
 ## Roadmap
 
-- [x] Design basis → frozen decision register **E1–E42**
-- [x] Simulation matrix closed (grid · Monte-Carlo · scenarios · aux · EMI estimate)
-- [x] Release schematics: 8 audited sheets, 5298/5298 pins, five PDF sets (30 · 40 · 50 L · 50 A · 150 kW Cabinet)
-- [x] Product structure closed: 30 kW module · 60 = 2× · 120 = 4× + CSU — **one brain per module (E40), 1/2/5 MCUs family-wide**
+- [x] Design basis → frozen decision register **E1–E60**
+- [x] Simulation matrix closed (grid · Monte-Carlo · scenarios · aux · EMI estimate) — **E60: power-solved per-SKU LLC, cycle-by-cycle Vienna, current coordination + AC copper gates**
+- [x] Release schematics: six KiCad-5 targets, 7,784/7,784 pins, ten board PDFs (30 · 40 · 50 L · 50 A · card · 150 kW cabinet)
+- [x] Product structure closed (E55): 30 / 40 / 50 L / 50 A modules · 100 kW = 2 × 50 · 150 kW = 3 × 50 + CSU — **one brain per module (E40)**
 - [x] Three adversarial audits + external review answered with executed fixes and permanent gates
 - [ ] RFQ round 1 (SiC + magnetics + relays) → cost closure
 - [ ] PCB layout under the sandwich mechanical envelope
-- [ ] Prototype build → EVT T-01…T-25 → model recalibration
+- [ ] Prototype build ([fast path](docs/prototype-fast-path.md)) → EVT T-00…T-32 → model recalibration
 - [ ] Compliance lab campaign → certification
 
 ---

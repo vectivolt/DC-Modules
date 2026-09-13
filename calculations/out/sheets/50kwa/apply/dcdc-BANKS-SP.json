@@ -13,7 +13,7 @@
     "designator": "CBA0T",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -31,7 +31,7 @@
     "designator": "CBA1T",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -49,7 +49,7 @@
     "designator": "CBA2T",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -67,7 +67,7 @@
     "designator": "CBA3T",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -85,7 +85,7 @@
     "designator": "CBA0B",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -103,7 +103,7 @@
     "designator": "CBA1B",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -121,7 +121,7 @@
     "designator": "CBA2B",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -139,7 +139,7 @@
     "designator": "CBA3B",
     "value": "470uF",
     "block_name": "BANK-A",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -249,7 +249,7 @@
     "designator": "CBB0T",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -267,7 +267,7 @@
     "designator": "CBB1T",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -285,7 +285,7 @@
     "designator": "CBB2T",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -303,7 +303,7 @@
     "designator": "CBB3T",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -321,7 +321,7 @@
     "designator": "CBB0B",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -339,7 +339,7 @@
     "designator": "CBB1B",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -357,7 +357,7 @@
     "designator": "CBB2B",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,
@@ -375,7 +375,7 @@
     "designator": "CBB3B",
     "value": "470uF",
     "block_name": "BANK-B",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in — 2-series string, 900 V vs ≤525 V bank",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
     "pins": [
      {
       "pin_number": 1,

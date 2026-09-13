@@ -27,7 +27,8 @@ const IDS = [
   { id: "D1-30", tokens: { "N = 39": [mag, pack], "150–185 µH": [mag, pack], "≥ 75 µH": [pack], "165uH": [boards], "N=39": [k5, db] } },
   { id: "D1-40", tokens: { "N = 26": [pack], "N=26": [mag, k5, db], "116": [mag, pack, db, boards], "≥61": [mag], "61 µH": [pack] } },
   { id: "D1-50", tokens: { "N = 24": [pack], "N=24": [mag, k5, db], "107": [mag, pack, db, boards], "45 µH": [pack] } },
-  { id: "D2 bins", tokens: { "3.3 / 3.65 / 4.0 / 4.35": [mag], "3.3/3.65/4.0/4.35": [pack], "1350×0.1": [mag, pack, db], "2000x0.1": [k5], "3000x0.1": [k5] } },
+  { id: "D2 bins", tokens: { "3.3 / 3.65 / 4.0 / 4.35": [mag], "3.3/3.65/4.0/4.35": [pack], "1350×0.1": [mag, pack, db], "2500x0.1": [k5, db], "IND-TRIM-E70-40": [pack, db], "IND-TRIM-E70-50": [pack, db] } },
+  { id: "D3 copper (E60)", tokens: { "0.10 × 28": [mag, pack], "0.127 × 28": [mag, pack], "0.071": [mag, pack, k5, db], "0.10x28": [k5], "0.127x28": [k5] } },
   { id: "D3-30", tokens: { "7:7:7": [mag, k5, db], "Lm 63": [mag], "Lm = 63": [pack] } },   // magnetics.md now carries the compact 7:7:7 identity too (E59)
   { id: "D3-40", tokens: { "6:6:6": [mag, pack, k5, db], "B66372B2000": [mag, pack, k5, db] } },
   { id: "D3-50", tokens: { "5:5:5": [mag, pack, k5, db] } },
@@ -54,9 +55,11 @@ const MASS = [
   ["D1-40", 5 * 45.6 * RHO.sendust / 1000, CU(0.190, 26, 25.8), 3.0],
   ["D1-50", 5 * 45.6 * RHO.sendust / 1000, CU(0.190, 24, 25.8), 2.9],
   ["D2-30", 2 * 37.1 * RHO.ferrite / 1000, CU(0.115, 4, 10.6), 0.45],
-  ["D3-30", 3 * 37.1 * RHO.ferrite / 1000, CU(0.115, 7 + 14 * 0.49, 10.4), 0.8],   // sec CSA 5.05≈0.49×pri
-  ["D3-40", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 6 + 12 * 0.49, 13.8), 1.45],
-  ["D3-50", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 5 + 10 * 0.49, 17.3), 1.45],
+  ["D2-40", 102 * RHO.ferrite / 1000, CU(0.166, 5, 16.4), 0.55],                    // E60 1×E70 N5
+  ["D2-50", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 3, 19.6), 1.1],                // E60 2×E70 N3
+  ["D3-30", 3 * 37.1 * RHO.ferrite / 1000, CU(0.115, 7 + 14 * 0.286, 9.8), 0.75],   // E60 sec foil 0.10×28 = 2.8 mm² ≈ 0.286×pri
+  ["D3-40", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 6 + 12 * 0.258, 13.8), 1.35],  // sec 0.127×28 = 3.56 mm²
+  ["D3-50", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 5 + 10 * 0.206, 17.3), 1.35],
 ];
 for (const [id, core, cu, doc] of MASS) {
   const m = (core + cu) * 1.10;

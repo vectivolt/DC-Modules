@@ -1,0 +1,11 @@
+* bus-discharge: 0.00141 F from 850 V into 640 ohm
+CB p 0 0.00141 ic=850
+RD p 0 640
+.tran 0.0014 5.6 0 0.0028 uic
+.control
+set filetype=ascii
+run
+wrdata dis-40kw.out v(p)
+quit
+.endc
+.end

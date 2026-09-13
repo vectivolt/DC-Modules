@@ -1,6 +1,6 @@
 # Magnetics FMEA — every failure mode, of and due to the magnetics (E58)
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="live"/> <img src="https://img.shields.io/badge/rev-E58-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/gate-temp--critique_·_CLEAN-2ea44f?style=flat-square" alt="gate"/> <img src="https://img.shields.io/badge/data-3C95_measured_surfaces-5f8fc0?style=flat-square" alt="data"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="live"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/gate-temp--critique_·_CLEAN-2ea44f?style=flat-square" alt="gate"/> <img src="https://img.shields.io/badge/data-3C95_measured_surfaces-5f8fc0?style=flat-square" alt="data"/></p>
 
 > **Purpose** — the adversarial answer to "will the magnetics work across the whole temperature
 > range, and what are ALL the ways they can fail — alone and with the switches around them."
@@ -77,6 +77,49 @@ ladder (derate 0.6 → trip), every fan tach is monitored (E44), and a magnetics
 pad is registered for the layout reopen (E59) so the transformer tunnel gets its own eye.
 **Nothing in the heat path is an assumption anymore: need, margin, n−1, coolant ΔT, core
 equilibria and runaway distance are all standing computed gates.**
+
+## E60 addendum — corrected copper, five new failure modes (2026-09-13)
+
+> [!WARNING]
+> **Correction to the verdict table above.** E58/E59 solved the equilibria with DC-basis copper (×1.15). With the
+> AC copper computed by [`conductor-audit`](../calculations/magnetics/conductor-audit.mjs) at the simulated
+> currents, **and** the E60 construction that makes it acceptable, the hot equilibria move up. They stay far from
+> runaway:
+
+| Part (E60 construction) | Cu used (was) | Hot equilibrium 55 °C / 75 °C inlet | g(T_eq) | Runaway margin |
+|---|---|---|---|---|
+| D3-30 · 0.10 mm foil + 0.071 mm litz | 10.2 W (8.4) | **102 / 99 °C** | 0.39 | ≥98 K |
+| D3-40 · 0.127 mm foil + 0.071 mm litz | 22.4 W (19.9) | **107 / 93 °C** | 0.43 | ≥93 K |
+| D3-50 · 0.127 mm foil + 0.071 mm litz | 25.3 W (20.7) | **106 / 97 °C** | 0.48 | ≥94 K |
+| D2-30 · bin-max at the SER-250 peak (109 mT) | 2.9 W | 83 / 96 °C | 0.17 | ≥104 K |
+| D2-40 · 1× E70 N 5 | 6.1 W | 85 / 91 °C | 0.09 | ≥109 K |
+| D2-50 · 2× E70 N 3 | 6.6 W | 79 / 90 °C | 0.07 | ≥110 K |
+
+*As drawn, the E51 foils would have put D3 copper at 2.3–2.9× these values, and the D2-50 PQ50 route at 45 W. Those
+constructions are superseded; the drawings above are the ones to build.*
+
+> [!NOTE]
+> **Module heat restated (E60).** The loss budget now takes the LLC current from the power-solved nominal corner
+> (29.0 / 38.0 / 47.0 A rms; the withdrawn deck's 23.3 A basis read ~20 % low): **866 / 1,273 / 1,717 / 1,642 W**.
+> `fault-energy` reads that CSV directly (the E59 hand copy is gone): air margins **1.44× / 1.47× / 1.51×**, one-fan-out
+> covered on every air SKU, liquid coolant ΔT **4.8 K** ≤ 5 K.
+
+> [!NOTE]
+> **Cold floor moved to −30 °C (A11 rev C, competitor parity).** The COLD rows now solve at −30 °C: Fe is 2.05× the
+> 100 °C basis (was 1.98× at −25 °C), and every core self-warms to a stable equilibrium (D3 14–16 °C, D2 0–7 °C at
+> full load). The digitized 3C95 surface starts at ≈1 °C and is extrapolated linearly below that; T-32 measures it.
+>
+> **D3 gap split (fringing).** The S1 foil is innermost, so the Lm gap is now ground equally on every set. This is
+> **failure mode 26** (fringing eddies across a wide foil that 1-D Dowell cannot see). Closure: **CONSTRUCTION**
+> (gap split, ≤0.5 mm per position) · **EVT** T-31 open-secondary check + S1 thermocouple · optional FEMMT run.
+
+| # | Mechanism | Effect if it happened | Closure |
+|---|---|---|---|
+| 21 | **Proximity-effect copper loss understated** (DC ×1.15 sizing at 140 kHz) | windings 2–9× hotter than budget → insulation aging, first-article Rac rejects | **GATE** — conductor-audit (Dowell foil / Sullivan litz at the simulated currents); **SPEC** — Rac @140 kHz first-article row on every D2/D3 winding |
+| 22 | **Tank / line OC trip below the real operating peak** | nuisance F.11/F.01 trips at full power (40/50 kW in the 150–300 V and 500 V bands) | **GATE** — current-coordination: F.xx ≥ 1.2 × the simulated worst peak |
+| 23 | **CT/ADC clipping before the gate kill lands** | fault snapshot under-reads; comparator input clamped | **GATE** — observability through the simulated 3 µs race (burdens 22/18/13 Ω · 1.2/0.91/0.75 Ω); per-SKU CT decks ≤3.17 V |
+| 24 | **DESAT response slower than the SiC short-circuit withstand** | device destruction on a shoot-through | **GATE** — NSI66x1A worst timing vs SCWT class (22/47 pF blanks); **EVT** — both-polarity SC test vs vendor tSC |
+| 25 | **Vienna overmodulation at high line** (bus floor below the line-line crest) | 15–40 % THD, midpoint stress, D1 ripple excursions | **CONSTRUCTION (firmware)** — FW-R7 line-tracking bus floor; host_sim check; cycle-by-cycle proof in current-coordination |
 
 ## What only hardware can close (EVT hooks — unchanged list, now with sharper targets)
 

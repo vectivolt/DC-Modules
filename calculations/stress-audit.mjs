@@ -48,19 +48,21 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const ipMax = Math.max(...r50.map(r => +r[10]));
   const ceilNotes = r50.filter(r => /tank-ceiling/.test(r[16] ?? ""));
   const foldNotes = r50.filter(r => /thermal derate/.test(r[16] ?? ""));
-  const deepFolds = foldNotes.filter(r => +(r[16].match(/derate to (\d+)%/)?.[1] ?? 100) < 93);
-  ck("E42", "50kw tank Ip vs revved ceiling", ipMax <= 65.05, `${f(ipMax)} A pk vs 65 A envelope / 95 A pk OC (ratio 0.68, same as the frozen 48/70 class)`);
-  ck("E42", "50kw envelope: zero tank-ceiling clamps", ceilNotes.length === 0, `${ceilNotes.length} clamped rows — the E42 class rev exists precisely so this is zero`);
-  ck("E42", "50kw folds: single-step, hot-PS-corner family only", deepFolds.length === 0 && foldNotes.every(r => r[4] === "hot" && r[6] === "PS"), `${foldNotes.length} rows fold ×0.93 once (Vout 150/200 hot — the 40 kW's own corner family), none deeper`);
+  const deepFolds = foldNotes.filter(r => +(r[16].match(/derate to (\d+)%/)?.[1] ?? 100) < 80);
+  // E60: the grid's Ip column is A RMS against the tank CLASS (77.3 A rms) — the pre-E60 "65 A pk"
+  // ceiling was the same RMS quantity mislabelled; and the SER hysteresis band is now evaluated.
+  ck("E42", "50kw tank Ip vs the tank class", ipMax <= 77.3 * 1.02, `${f(ipMax)} A rms vs 77.3 A rms class (ngspice E60 worst nominal 76.6 A; F.11 now 145 A pk — current-coordination gate)`);
+  ck("E42", "50kw envelope: zero tank-ceiling clamps", ceilNotes.length === 0, `${ceilNotes.length} clamped rows — no availability clamp exists in firmware, so none may exist in the grid`);
+  ck("E42", "50kw folds: known families only, ≤2 steps", deepFolds.length === 0 && foldNotes.every(r => (r[4] === "hot" && r[6] === "PS") || (r[5] === "SER" && (+r[2] === 500 || +r[2] === 525))), `${foldNotes.length} fold rows — hot PS corners + the SER hysteresis band (E60: falling-command state only; START selects PAR ≤525 V); deepest 80 % = the triple corner 475 VAC ∧ SER 500 V ∧ hot, where the line-tracking bus floor puts the bank-250 V point into PS`);
 }
 // E44 grid-shape asserts for the AIR 50: the paralleled LLC must deliver the full envelope on
 // plain 4-fan air — zero folds, zero clamps (worst corner computes ~107 °C).
 {
   const ra = grid.filter(r => r[0] === "50kwa" && r[6] !== "IDLE" && r[13] !== "");
-  const ipMax = Math.max(...ra.map(r => +r[10])), notes = ra.filter(r => (r[16] ?? "") !== "");
+  const ipMax = Math.max(...ra.map(r => +r[10])), notes = ra.filter(r => (r[16] ?? "") !== "" && !(r[5] === "SER" && (+r[2] === 500 || +r[2] === 525) && r[4] === "hot"));
   const tjl = Math.max(...ra.map(r => +r[14]));
-  ck("E44", "50kwa full envelope on air, zero derates", notes.length === 0 && ipMax <= 65.05 && tjl <= 150,
-    `${notes.length} noted rows · Ip ${f(ipMax)} ≤ 65 · worst TjLLC ${tjl} °C (paralleled pairs — per-package conduction quarters)`);
+  ck("E44", "50kwa full envelope on air, derates only hot SER band", notes.length === 0 && ipMax <= 77.3 * 1.02 && tjl <= 150,
+    `${notes.length} noted rows outside the hot SER hysteresis band (E60: that band folds to 93 % on the secondary-JBS Tj, not the LLC) · Ip ${f(ipMax)} A rms ≤ 77.3 class · worst TjLLC ${tjl} °C (paralleled pairs)`);
 }
 // diodes [lb k-scaling]: per-diode dissipation into its position Rth at its reference —
 // air variants: 1.9 K/W to the 70 °C sink · E42 liquid: 1.1 K/W to the 65 °C plate
@@ -73,10 +75,11 @@ for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70]
 }
 
 // ---------------- 3. magnetics vs their OWN acceptance lines ------------------------------------
-// D1 PFC choke — E51: COMPUTED from the CATALOG core (0077908A7: AL 37 nH/T² ±8%, le 201 mm),
+// D1 PFC choke — E51: COMPUTED from the CATALOG core (0077908A7: AL 37 nH/T² ±8%, le 196 mm — E60
+// catalog sync from the datasheet rev 10/7/2021; the engines had carried 201 mm/227 mm²),
 // not hand-copied engine output (the E41/E42 rows had inherited the geometric-Ae model and two
 // stress rows here were stale rev-A copies — three sources, three answers, none the drawing).
-const AL79 = 37e-9, LE79 = 0.201, R26 = { a: 2.13e-4, b: 1.637 };
+const AL79 = 37e-9, LE79 = 0.196, R26 = { a: 2.13e-4, b: 1.637 };
 const mu26 = (H) => 1 / (1 + R26.a * Math.pow(Math.max(H / 79.577, 1e-9), R26.b));
 const D1 = {
   "30kw": { stack: 3, N: 39, cu: 18.0, Irms: 54.94, Ibias: 78, Lfloor: 75, dT: 36, note: "D1 rev B: N=39±1 lot-trim, 18 mm² (drawing of record)" },
@@ -93,12 +96,12 @@ for (const [sku, d] of Object.entries(D1)) {
   ck("D1", `${sku} ΔT`, d.dT <= 45, `${d.dT} K vs 45 K acceptance`);
   ck("D1", `${sku} current density`, J <= 5.5, `${f(J, 2)} A/mm² ≤ 5.5`);
 }
-// D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae(2×PQ50/50)=656 µm²·1e-6)
-const AE2 = 2 * 328e-6;
-const D2 = { "30kw": { L: 4.0e-6, Irms: 46.4, N: 4 }, "40kw": { L: 3.5e-6, Irms: 61.9, N: 5 }, "50kw": { L: 3.0e-6, Irms: 77.3, N: 6 }, "50kwa": { L: 3.0e-6, Irms: 77.3, N: 6 } };
+// D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae). E60: D2-40 = 1× E70/33/32 N 5 (Ae 683 mm²),
+// D2-50 = 2× E70/33/32 N 3 (1366 mm²) — the PQ50 N 5/6 routes computed Fr 4.3/11.7 (conductor-audit owns the AC proof)
+const D2 = { "30kw": { L: 4.0e-6, Irms: 46.4, N: 4, Ae: 656e-6 }, "40kw": { L: 3.5e-6, Irms: 61.9, N: 5, Ae: 683e-6 }, "50kw": { L: 3.0e-6, Irms: 77.3, N: 3, Ae: 1366e-6 }, "50kwa": { L: 3.0e-6, Irms: 77.3, N: 3, Ae: 1366e-6 } };
 for (const [sku, d] of Object.entries(D2)) {
-  const B = d.L * d.Irms * Math.SQRT2 / (d.N * AE2) * 1e3;
-  ck("D2", `${sku} trim Bpk`, B <= 100.5, `${f(B, 0)} mT vs 100 mT loss line (N=${d.N} — 40 kW at N=4 computes 115 mT: that is WHY the variant is N=5; 50 kW: BIN6 3.0 µH keeps trim = 50% of Lr so leakage tolerance stays binnable, fr = 139.8 kHz with 8×27 nF)`);
+  const B = d.L * d.Irms * Math.SQRT2 / (d.N * d.Ae) * 1e3;
+  ck("D2", `${sku} trim Bpk`, B <= 100.5, `${f(B, 0)} mT vs 100 mT loss line (N=${d.N} on ${d.Ae > 1e-3 ? "2× E70/33/32 — E60" : d.Ae > 6.7e-4 ? "1× E70/33/32 — E60" : "2× PQ50/50"}; trim = ~50 % of Lr so leakage tolerance stays binnable)`);
 }
 // D3 transformer — E51: the old check here was literally `true` while the register carried a
 // ×1.8 flux-claim error ("108 mT identical" — the E70 routes actually ran 60 mT) and windings
@@ -125,20 +128,22 @@ const CAP = { "30kw": { n: 4, I: 46.4 }, "40kw": { n: 6, I: 61.9 }, "50kw": { n:
 for (const [sku, c] of Object.entries(CAP))
   ck("Cr", `${sku} per-cap current`, c.I / c.n <= 12, `${f(c.I / c.n)} A of 12 A line (${c.n}× per section)`);
 // CTs
-ck("CT", "line CT ACX-1100 (100 A) @40 kW", 73.3 <= 100, "73.3 A worst vs 100 A class (30 kW: 55 A)");
 const db = readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8");
+ck("CT", "line CT class @40 kW", 73.3 <= 150 * 0.95 && /R1206-18R-1%/.test(db), "E60: the 40 kW joins the 150 A class (ACX-1150) — F.01 155 A + 50 A race needs linearity past the ACX-1100's ~179 A at 18 R; 30 kW keeps ACX-1100 (55 A, F.01 120 A on 22 R)");
 ck("CT", "resonant CT class per variant", /CT-RES-1:100-80A/.test(db) && /CT-RES-1:100-100A/.test(db), "30 kW: AS-404 (46.4 of 50 A ✓); 40 kW: 61.9 A → 80 A-class; 50 kW: 77.3 A → 100 A-class — both ORDERED via skuOverrides (RFQ lines, sensor path not power path)");
 ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(db), "91.6 A worst vs 150 A class (ACX upsize at RFQ; ACX-1100 would run 92%)");
 // E42 burden rail budgets — the catch that re-scaled both burdens: OC observability must stay
 // inside the 3.3 V rail ABOVE the 1.65 V AVMID bias (the R3-proven budget is +1.62 V = 3.27 V).
 {
-  const lineV = 1.65 + 187.5 / 2500 * 21.5;                 // 50 kW line OC observability point
-  const resV = 1.65 + 95 / 100 * 1.6;                       // 50 kW tank OC (95 A pk) at the comparator
-  const resW = 0.773 ** 2 * 1.6;                            // resonant burden dissipation at 77.3 A rms
-  ck("BRD", "50kw line-CT burden rail budget", lineV <= 3.275, `187.5 A pk → ${f(lineV, 2)} V (21.5 Ω re-scale; the frozen 27 Ω computes 3.67 V — PAST the rail)`);
-  ck("BRD", "50kw resonant burden rail budget", resV <= 3.275, `95 A pk OC → ${f(resV, 2)} V (1.6 Ω re-scale; the frozen 2.0 Ω computes 3.55 V — PAST the rail)`);
-  ck("BRD", "50kw resonant burden dissipation", resW <= 1.0, `${f(resW, 2)} W on the 2 W part = ${f(50 * resW, 0)}% (the 1 W frozen part would run 96%)`);
-  ck("BRD", "50kw burden parts ordered", /R2512-1R6-2W-1%/.test(db) && /R1206-21R5-1%/.test(db), "both re-scaled burdens exist as skuOverrides");
+  // E60 re-point: the observability point is now F.0x + the simulated 3 µs fault rise (current-
+  // coordination gate owns the per-SKU proof; this row keeps the 50 kW rail arithmetic visible)
+  const lineV = 1.65 + (195 + 71.4) / 2500 * 13;            // 50 kW F.01 195 A + D1 soft-sat race
+  const resV = 1.65 + (145 + 50.4) / 100 * 0.75;            // 50 kW F.11 145 A + ngspice race
+  const resW = 0.809 ** 2 * 0.75;                           // resonant burden at the 80.9 A rms mismatch corner
+  ck("BRD", "50kw line-CT burden rail budget", lineV <= 3.275, `266 A pk (F.01+race) → ${f(lineV, 2)} V on 13 Ω (the E42 21.5 Ω saw only to 187 A)`);
+  ck("BRD", "50kw resonant burden rail budget", resV <= 3.275, `195 A pk (F.11+race) → ${f(resV, 2)} V on 0.75 Ω (the E42 1.6 Ω would clip at 104 A)`);
+  ck("BRD", "50kw resonant burden dissipation", resW <= 1.0, `${f(resW, 2)} W on the 2 W part = ${f(50 * resW, 0)}%`);
+  ck("BRD", "50kw burden parts ordered", /R2512-0R75-2W-1%/.test(db) && /R1206-13R-1%/.test(db), "both E60 burdens exist as skuOverrides");
 }
 
 // ---------------- 3b. E43 verification-pass permanent gates -------------------------------------
@@ -160,13 +165,11 @@ for (const [sku, n, cnF, irms] of [["30kw", 4, 46, 46.4], ["40kw", 6, 33, 61.9],
   ck("CrV", `${sku} per-cap Vrms/W duty`, vC <= 530 && wC <= 1.0,
     `${f(vC, 0)} V rms @140 kHz · ${f(wC, 2)} W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ ${f(vC * 1.3, 0)} V (942C class)`);
 }
-// D2 trim copper at the E43 litz (constant-J discipline the E41/E42 rows missed): 2000×0.1 mm
-// at 40/50; the 30 kW keeps its frozen rev-C basis (its own Rac/ΔT lines pass at J 5.62).
-for (const [sku, N, litz, irms, core] of [["30kw", 4, 10.6, 46.4, 6.8], ["40kw", 5, 15.7, 61.9, 6.5], ["50kw", 6, 23.6, 77.3, 5.0], ["50kwa", 6, 23.6, 77.3, 5.0]]) {
-  const rdc = 1.5e-3 * (N / 4) * (8.25 / litz) * 1.15, pcu = irms * irms * rdc;
-  const dT = 5.44 * Math.pow(pcu + core, 0.833);
-  ck("D2c", `${sku} trim litz J/ΔT`, irms / litz <= 5.6 && dT <= 40.5,
-    `${litz === 23.6 ? "3000" : litz === 15.7 ? "2000" : "1350"}×0.1 litz: J ${f(irms / litz, 1)} · Cu ${f(pcu, 1)} W → ΔT ${f(dT, 0)} K ≤ 40 (E52: 30 kW upsized 1050→1350 — the frozen wind rode J 5.62 AT the line; now 4.38, same litz as the D3-30 primary)`);
+// D2 trim copper density at the E60 litz (the AC copper + ΔT proof moved to conductor-audit, which
+// computes Sullivan proximity at the simulated corners — the DC×1.15 model this row used hid Fr 4–12)
+for (const [sku, litz, irms, name] of [["30kw", 10.6, 46.4, "1350×0.1"], ["40kw", 16.4, 61.9, "4150×0.071"], ["50kw", 19.6, 77.3, "2500×0.1"], ["50kwa", 19.6, 77.3, "2500×0.1"]]) {
+  ck("D2c", `${sku} trim litz J`, irms / litz <= 5.6,
+    `${name} litz: J ${f(irms / litz, 1)} A/mm² ≤ 5.6 (AC loss/ΔT: conductor-audit)`);
 }
 // D4 aux flyback saturation margin — E52: computed, not asserted-by-prose (ETD39 Ae 125 mm²)
 {

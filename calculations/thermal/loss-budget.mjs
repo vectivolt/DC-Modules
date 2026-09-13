@@ -2,7 +2,7 @@
 // requirements, thermal corners, derating curve. All inputs trace to pfc-design/llc-design/DPT.
 // Run: node calculations/thermal/loss-budget.mjs
 
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { plotSVG } from "../plot.mjs";
@@ -11,8 +11,11 @@ const f = (x, d = 1) => Number(x.toFixed(d));
 
 // ---------------- per-lane / per-channel building blocks (from Phase 3/6/7 outputs)
 const PFC_LANE = { semis: 3 * (43.5 + 24.2), mag: 3 * 34.8, note: "3 pairs @43.5 W + 3 diode-pairs 24.2 W (per-diode 12.1 W ×2) + 3 chokes 34.8 W @330 V corner (D1 rev B: N=39/18 mm² on the real 0077908A7 core — audit F4; Cu 32.4 + Fe 2.4)" };
-// LLC per channel at 30 kW nominal (bank 400, Ip 23.3 A sim / 33 A envelope-worst; use 400 V full-power pt):
-const IP_NOM = 23.3, IP_WORST = 45.6;
+// LLC phase current at the nominal full-power point = the power-solved ngspice PAR400-full corner
+// (bank 400 V, bus 830). E60: the pre-E60 23.3 A came from the withdrawn no-body-diode deck and
+// understated the nominal current by ~20 % (sim 29.0 A at 30 kW).
+const IP_NOM = (sku) => +readFileSync(join(OUT, "..", "..", "simulation-results", sku.toLowerCase(), "llc-stress.csv"), "utf8")
+  .split("\n").find((l) => l.startsWith("PAR400-full,")).split(",")[9];
 const LLC_CH = (ip) => ({
   pri: 6 * (ip / Math.SQRT2) ** 2 * 0.035,          // 6 FETs, each conducts half-period, Rds_hot 35 mΩ
   xfmr: 3 * 20.5,
@@ -64,7 +67,7 @@ for (const s of SKUS) {
   if (k > 1.01) console.log(`  ${s.name} PFC semi scenarios @330 V corner-scaled: single-FET ${f(pfcSemis / 0.78, 0)} W · 2x-parallel ${f(pfcSemisPar / 0.78, 0)} W (per pair ${f(pairW, 1)} vs ${f(pairParW, 1)} W)`);
   const pfcMag = 3 * (32.4 * k + 2.4) * 0.72 * s.lanes;
   const dclink = 12 * s.lanes * k * k * (10 / (10 * k > 10 ? 12 : 10)) * (s.lanes > 1 ? 1 : 1);
-  const llc = LLC_CH(IP_NOM * k);
+  const llc = LLC_CH(IP_NOM(s.name));
   // E51: transformer per-section losses from the re-issued D3 drawings (real former MLT 230.5 mm
   // on the E70 routes — the old 0.65k+0.35 scaling of the PQ number understated 40/50 by 9-16 W/section):
   // 30 kW = 3×PQ50 7:7:7 (llc-design 20.5 W) · 40 = 2×E70 6:6:6 (34.3) · 50 = 2×E70 5:5:5 (45.1, web-bonded)
@@ -104,8 +107,8 @@ console.log(`fan-life field costs are priced in — revisit at Phase 17 with rea
 
 // ---------------- heatsink requirement + corners + derating
 // Worst continuous: 330 VAC full power, JBS baseline, +55 °C ambient.
-const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM).pri + 3 * 20.5 + LLC_CH(IP_NOM).tank + secondary(100).jbsW + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
-const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM).pri + secondary(100).jbsW;
+const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + 3 * 20.5 + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
+const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + secondary(100).jbsW;
 console.log(`\n30 kW worst-corner dissipation ≈ ${f(totalWorst30, 0)} W, of which heatsink-mounted semis ≈ ${f(semisShare, 0)} W`);
 const RthReq = 20 / semisShare;                       // allow 20 K sink-to-air rise at 55 °C ambient → sink ≤75 °C
 console.log(`Heatsink Rth(sink-air) ≤ ${f(RthReq, 3)} K/W @ rated airflow → forced-air extrusion, ~${f(semisShare * 1, 0)} cm² base, 2× 120×38 fans on static-pressure curve (fan calc: ~110 Pa @ 160 m³/h class, VERIFY vendor curve)`);

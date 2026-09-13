@@ -87,7 +87,7 @@ function step(m, ev = {}) {
         if (m.bus > 700) {
           // backfeed policy: match stack to external voltage before K_OUT
           if (m.extConn && m.vext < 0) { latch(m, F.BACKFEED); break; }
-          m.mode = m.vcmd > 500 ? "SER" : "PAR";
+          m.mode = m.vcmd > 525 ? "SER" : "PAR";   // E60: start threshold = RUN entry (525 V) — no SER bank-250 starts
           m.llcOn = true;
           const ready = m.mode === "SER" ? m.kser : m.kpara && m.kparb;
           if (!ready) {

@@ -249,7 +249,7 @@ export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, 
 // 10 k PWM pulldown (HR-6, defined low during MCU reset), en parameterized (CB-10 per-board chain).
 // Schematic envelope (layout-polish rev): 13 wide × 6 tall, origin = driver IC center.
 // Logic/PWM enters left, gate network exits right, DESAT chain top-right, bias row below.
-export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, en, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0, lay = "top" }: any) => (
+export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, en, cBlank, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0, lay = "top" }: any) => (
   <group name={`drv${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB, ordered by the driver's OWN pin geometry (SOIC-16W, body 7.5 x 10.3, pins at x +/-2.15):
         primary pins face LEFT, secondary pins face RIGHT, and everything is placed by which pin it
@@ -282,7 +282,11 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <resistor layer={lay} name={`R${id}ON`} resistance={rgOn} footprint="1206" pcbX={7.5} pcbY={1.6} schX={2.6} schY={0.9} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}OFF`} resistance={rgOff} footprint="1206" pcbX={7.5} pcbY={-1.6} schX={2.6} schY={-0.4} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}GS`} resistance="10k" footprint="0805" pcbX={8} pcbY={-5.5} schX={4.2} schY={-0.4} schSectionName={sec} />
-    <capacitor layer={lay} name={`C${id}BL`} capacitance="100pF" footprint="0603" pcbX={14} pcbY={-4.5} schX={1.4} schY={1.9} schSectionName={sec} />
+    {/* E60: DESAT blank is per stage, no default — NSI66x1A worst response (blank + 200 ns LEB +
+        300 ns sense-to-OUT + soft-off) must sit inside 75 % of the SiC short-circuit withstand:
+        LLC 22 pF → 1.44 µs vs 2 µs (ZVS turn-on tolerates the short blank) · Vienna 47 pF → 2.21 µs
+        vs 4.2 µs (hard turn-on keeps ≥0.8 µs of blank). The IGBT-style 100 pF computed 3.39 µs. */}
+    <capacitor layer={lay} name={`C${id}BL`} capacitance={cBlank} footprint="0603" pcbX={14} pcbY={-4.5} schX={1.4} schY={1.9} schSectionName={sec} />
     {/* R5-B: 100 Ω in series with the DESAT pin (standard NSI66x1 practice) — limits the pin
         current during the switch-node dv/dt kick and the diode-capacitance discharge; the
         blanking cap stays driver-side of it, directly on DST–Kelvin. */}
@@ -385,7 +389,7 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
     {par ? <trace from={`.Q${id}B2 > .KS`} to={`net.KS_${id}`} /> : null}
     <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-36} pcbY={-14} schX={3} schY={0} schSectionName={sec} />
     <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-18} pcbY={-14} schX={6} schY={0} schSectionName={sec} />
-    <DriverCh id={`${id}G`} pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
+    <DriverCh id={`${id}G`} cBlank="47pF" pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
     <diode name={`D${id}T`} footprint={<TO247_2 />} pcbX={0} pcbY={-14} schX={9.5} schY={1.4} schSectionName={sec} />
     <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={18} pcbY={-14} schX={9.5} schY={-1.4} schSectionName={sec} />
     <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={-30} pcbY={-2} schX={12.5} schY={1.4} schSectionName={sec} />
@@ -461,8 +465,8 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
       <trace key="l2s" from={`.Q${id}L2 > .S`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />,
       <trace key="l2k" from={`.Q${id}L2 > .KS`} to={`net.KL_${id}`} />,
     ] : null}
-    <DriverCh id={`${id}H`} pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
-    <DriverCh id={`${id}L`} pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
+    <DriverCh id={`${id}H`} cBlank="22pF" pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
+    <DriverCh id={`${id}L`} cBlank="22pF" pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
     <trace from={`.Q${id}H > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     {par ? [
@@ -484,7 +488,7 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
 
 // ---------- LLC section: 4× Cr ∥ + trim Lr + resonant CT + transformer + dual JBS bridges
 // v3/CB-15: CT return + burden biased to AVMID (VREF/2), series R + dual clamp into the ADC net.
-export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", ctBurden = "2", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", ctBurden = "1.2", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
         resonant-CT measurement chain on its own row below the tank. */}
@@ -500,9 +504,11 @@ export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", ctBurden
       <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-27 + i * 18} pcbY={-216} schX={11 + i * 2.4} schY={0.6} schSectionName={sec} />
     ))}
     {/* measurement row: CT → burden → RC filter → clamps (CB-16 values).
-        E42: `ctBurden` re-scales with the tank protection class — the 50 kW OC at 95 A pk on
-        the frozen 2.0 Ω would read 3.55 V (past the rail); 1.6 Ω puts it at 3.17 V and holds
-        the SAME 1.24 V rms metering signal as the 40 kW (2 W part — 0.96 W worst = 48%). */}
+        E42: `ctBurden` re-scales with the tank protection class.
+        E60 (current-coordination gate): F.11 = 85/115/145 A pk at 30/40/50 kW (1.2× the power-solved
+        ngspice worst tank peak) on 1.2/0.91/0.75 Ω — threshold 2.67–2.74 V and observable through
+        the simulated 3 µs internal-short rise (ceilings 135/178/216 A); the old 2.0 Ω/70 A class sat
+        AT the 30 kW operating peak and below the 40/50 kW ones. Metering ≈0.55 V rms at full load. */}
     <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={-52} schX={0} schY={-3.4} schSectionName={sec} />
     <resistor name={`R${id}CT`} resistance={ctBurden} footprint="2512" pcbX={34} pcbY={-44} schX={2.6} schY={-3.4} schSectionName={sec} />
     <resistor name={`R${id}CF`} resistance="1k" footprint="0603" pcbX={34} pcbY={-54} schX={4.6} schY={-3.4} schSectionName={sec} />
@@ -751,7 +757,7 @@ export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = 
 );
 
 // ---------- line/lane CT sensor (E18) — v3/CB-15: burden + return biased to AVMID, dual clamps
-export const CtSensor = ({ id, out, burden = "27", sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const CtSensor = ({ id, out, burden = "22", sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`cts${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB: the CT body is 25 mm across, so the burden and clamps sit to its RIGHT, not on top
         of it. Envelope 57 × 25, one measurement row per phase. */}
@@ -760,7 +766,10 @@ export const CtSensor = ({ id, out, burden = "27", sec = "CT", x = 0, y = 0, sx 
         limit 150 A pk reads 1.62 V above AVMID = 3.27 V, inside the 3.3 V rail. The previous
         33 Ω put 150 A pk at 3.63 V — the top of the protection range clipped at the ADC.
         E42: `burden` re-scales per variant — the SAME 1.62 V-above-AVMID rail budget at the
-        variant's own observability point (50 kW: 187 A pk on 21.5 Ω = 3.26 V). */}
+        variant's own observability point.
+        E60: F.01 = 120/155/195 A pk (1.2× the cycle-by-cycle Vienna worst peak incl. dips and phase
+        jumps) on 22/18/13 Ω — observable through the D1 soft-saturation 3 µs race (ceilings
+        184/225/311 A). The 27/21.5 Ω values could not see past 150/187 A. */}
     <resistor layer={lay} name={`R${id}B`} resistance={burden} footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />

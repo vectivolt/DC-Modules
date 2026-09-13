@@ -293,7 +293,7 @@ return (
       ))}
       {/* per-phase line CTs (primary = line conductor through aperture; §19/E18) */}
       {phases.map((p, i) => (
-        <CtSensor key={p.id} id={p.id} out={`net.I_${p.id}`} burden={pw === 50 ? "21.5" : "27"} x={P.ctsX} y={P.ctsY[i % 3]} sx={40} sy={26 - i * 4.5} />
+        <CtSensor key={p.id} id={p.id} out={`net.I_${p.id}`} burden={pw === 50 ? "13" : pw === 40 ? "18" : "22"} x={P.ctsX} y={P.ctsY[i % 3]} sx={40} sy={26 - i * 4.5} />
       ))}
 
       {/* DC link banks + balance. key/pos were constant across instances (audit, 60/120 kW
@@ -534,7 +534,7 @@ return (
       ))}
       {secs.map((s, i) => (
         <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
-          crN={pw === 50 ? 8 : pw === 40 ? 6 : 4} crVal={pw === 50 ? "27nF" : pw === 40 ? "33nF" : "46nF"} trim={pw === 50 ? "3uH" : pw === 40 ? "3.5uH" : "4uH"} ctBurden={pw === 50 ? "1.6" : "2"}
+          crN={pw === 50 ? 8 : pw === 40 ? 6 : 4} crVal={pw === 50 ? "27nF" : pw === 40 ? "33nF" : "46nF"} trim={pw === 50 ? "3uH" : pw === 40 ? "3.5uH" : "4uH"} ctBurden={pw === 50 ? "0.75" : pw === 40 ? "0.91" : "1.2"}
           x={Q.sec[i % 3]} y={Q.secY}
           bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
           ctOut={`net.I_RES${s.id}`}

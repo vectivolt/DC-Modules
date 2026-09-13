@@ -1,5 +1,6 @@
 #!/bin/sh
-# Reproduce every machine-readable calculation (§48). SPICE suites are separate (see spice/*/**.mjs).
+# Reproduce every machine-readable calculation (§48). SPICE suites are separate (see spice/*/**.mjs);
+# E60: their result CSVs are pinned by tank fingerprint — current-coordination FAILS if a tank changes without a re-run.
 set -e
 cd "$(dirname "$0")/.."
 node calculations/design-basis.mjs
@@ -9,6 +10,7 @@ node calculations/pfc/pfc-control.mjs
 node calculations/llc/llc-design.mjs
 node calculations/thermal/loss-budget.mjs
 node calculations/system/envelope-grid.mjs
+node calculations/pfc/vienna-switched.mjs
 node calculations/system/monte-carlo.mjs
 node calculations/system/fsm-sim.mjs
 node calculations/emi/dm-choke-design.mjs
@@ -25,8 +27,10 @@ if [ -f dist/boards/control-card/circuit.json ]; then npx tsx calculations/modul
 npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
 node calculations/magnetics/temp-critique.mjs
+node calculations/magnetics/conductor-audit.mjs
 node calculations/magnetics/mag-sync.mjs
 node calculations/system/fault-energy.mjs
+node calculations/system/current-coordination.mjs
 node calculations/verify-independent.mjs
-sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 50/50 OK"
+sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 54/54 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

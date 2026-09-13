@@ -14,10 +14,12 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const RES = join(HERE, "..", "..", "simulation-results", "30kw");
 const f = (x, d = 1) => Number(x.toFixed(d));
 
+// E60: the product SKUs (link halves 5/6/8 × 470 µF in series · bank strings 2/3/4 × 235 µF ·
+// PMP_DISCH_TO_MS 3000/4000/5000 · F.21b = 2.5·τ, τ = 8.8 k·C_bank) — the retired 60/120 kW rows are gone
 const SKUS = [
-  { name: "30kw", Cs: 1.175e-3, Cbank: 470e-6, dischTO: 3.0, bleedTO: 10.3 },
-  { name: "60kw", Cs: 2.115e-3, Cbank: 940e-6, dischTO: 5.5, bleedTO: 20.6 },
-  { name: "120kw", Cs: 4.23e-3, Cbank: 1880e-6, dischTO: 9.0, bleedTO: 41.2 },
+  { name: "30kw", Cs: 5 * 470e-6 / 2, Cbank: 2 * 235e-6, dischTO: 3.0, bleedTO: 2.5 * 8800 * 2 * 235e-6 },
+  { name: "40kw", Cs: 6 * 470e-6 / 2, Cbank: 3 * 235e-6, dischTO: 4.0, bleedTO: 2.5 * 8800 * 3 * 235e-6 },
+  { name: "50kw", Cs: 8 * 470e-6 / 2, Cbank: 4 * 235e-6, dischTO: 5.0, bleedTO: 2.5 * 8800 * 4 * 235e-6 },   // 50kwa identical link/banks
 ];
 
 const prechgDeck = (Cs) => `* precharge per-SKU: 475 VAC, 2x33R in L1/L2, 6-pulse into ${Cs * 1e3} mF eq

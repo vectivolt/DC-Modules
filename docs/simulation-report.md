@@ -1,6 +1,15 @@
 # Simulation Report — Executed Runs (§50 format)
 
-<p align="left"><img src="https://img.shields.io/badge/status-EVIDENCE__RECORD-e3763c?style=flat-square" alt="EVIDENCE__RECORD"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-EVIDENCE__RECORD-e3763c?style=flat-square" alt="EVIDENCE__RECORD"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
+
+> [!CAUTION]
+> **E60 re-basis — read this before §5 below.** The §5 LLC operating-point record was produced by a deck with **no
+> MOSFET body diodes**. Its legs swung to ±6 kV on a 650 V bus, so its ZVS, power and current figures are
+> **non-physical and withdrawn**. It also ran only the 30 kW tank and missed target power by −77…+71 %. The
+> replacement evidence is §13 (E60): power-solved per-SKU LLC stress decks with a physicality guard and tank
+> fingerprints, the cycle-by-cycle Vienna model, and per-SKU CT/precharge/aux decks. §1–§4 and §6–§12 stand
+> within their stated fidelity. The retired-SKU (60/120 kW) rows in §11b and V-21 are superseded by the §13
+> per-SKU runs. How to run and read everything: [`simulation-toolchain.md`](simulation-toolchain.md).
 
 > **Purpose** — The simulation truth ledger (V-xx): never claim beyond it. Dated record backing current claims.
 
@@ -152,3 +161,18 @@ Step = 24 V load 0.5→1.8 A (all relays pull-in + fans, the CB-7 worst case) wi
 Input-side average power is not resolvable at the behavioral switch's transition band (documented
 in-file); Pout is measured from the rail waveforms, Pin ≈ Pout/0.82 est. Bench T-09/T-18 validate
 the real IC's UVLO/BR thresholds and thermal. Netlists preserved in `spice/generated/aux-*.cir`.
+
+---
+
+## 13. E60 evidence set (2026-09-13) — replaces §5 and the 60/120 kW rows
+
+| Suite | Command | Result | Record |
+|---|---|---|---|
+| **LLC stress, power-solved, per SKU** (14 corners + internal short + dead short) | `node spice/llc/llc-run.mjs <sku>` | worst tank peak **70.2 / 94.0 / 117.9 / 117.7 A**, rms class held (46.3 / 61.6 / 76.6 / 76.0 A), **ZVS 64/64 and legs in rails on every corner**, gain-worst capability at 77–82 kHz, race +42…+52 A in 3 µs | `simulation-results/<sku>/llc-stress.csv` · `-summary.json` · `plots/llc-worst-corner.svg` |
+| **Vienna cycle-by-cycle** (steady, dips, 20° jump, high line) | `node calculations/pfc/vienna-switched.mjs` | peaks **97.0 / 127.2 / 159.4 A** incl. transients; high line on a 650 V bus 15–40 % THD → 0.1 % with the FW-R7 floor; 150 kHz band 0.7–1.2 dB under the LISN basis | `calculations/out/vienna-switched.csv` |
+| **CT front-ends per SKU** (resonant + line) | `node spice/protection/ct-frontend.mjs` | F.11/F.01 within 20 mV of the DAC point; F.xx + race ≤ 3.17 V — **ALL PASS** | `simulation-results/30kw/ct-frontend.csv` |
+| **Precharge / discharge / bank bleed per product SKU** | `node spice/protection/prechg-disch.mjs` | 9/9 PASS (30/40/50 kW) | `simulation-results/30kw/prechg-disch-sku.csv` |
+| **Aux flyback per product SKU** | `node spice/aux/aux-flyback.mjs` | 12/12 PASS (57 / 68 / 46 / 80 W) | `simulation-results/30kw/aux-flyback.csv` |
+| **LLC nominal (PAR400-full) → loss budget** | same runner, corner `PAR400-full` | **29.0 / 38.0 / 47.0 / 47.1 A rms** at 149–152 kHz, ZVS 64/64; the grid's FHA reads 29.2 / 38.5 / 47.8 (≤2 %) — the loss budget had carried 23.3 A × k from the withdrawn deck → η restated to 97.19 / 96.92 / 96.68 / 96.82 % | `calculations/out/loss-budget.csv` (reads the CSV row) |
+
+Consumed by the standing gates `current-coordination.mjs` and `conductor-audit.mjs` (both CLEAN in run-all).

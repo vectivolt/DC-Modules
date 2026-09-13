@@ -291,7 +291,7 @@
     "designator": "CDT00",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -309,7 +309,7 @@
     "designator": "CDT01",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -327,7 +327,7 @@
     "designator": "CDT02",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -345,7 +345,7 @@
     "designator": "CDT03",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -363,7 +363,7 @@
     "designator": "CDT04",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -381,7 +381,7 @@
     "designator": "CDB00",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -399,7 +399,7 @@
     "designator": "CDB01",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -417,7 +417,7 @@
     "designator": "CDB02",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -435,7 +435,7 @@
     "designator": "CDB03",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -453,7 +453,7 @@
     "designator": "CDB04",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -545,7 +545,7 @@
     "designator": "CDT10",
     "value": "470uF",
     "block_name": "LINK-BANK-1",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -563,7 +563,7 @@
     "designator": "CDT11",
     "value": "470uF",
     "block_name": "LINK-BANK-1",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -581,7 +581,7 @@
     "designator": "CDT12",
     "value": "470uF",
     "block_name": "LINK-BANK-1",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -599,7 +599,7 @@
     "designator": "CDB10",
     "value": "470uF",
     "block_name": "LINK-BANK-1",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -617,7 +617,7 @@
     "designator": "CDB11",
     "value": "470uF",
     "block_name": "LINK-BANK-1",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -635,7 +635,7 @@
     "designator": "CDB12",
     "value": "470uF",
     "block_name": "LINK-BANK-1",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C",
+    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,

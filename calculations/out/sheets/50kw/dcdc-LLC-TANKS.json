@@ -455,9 +455,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "1.6",
-   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
-   "mpn": "R2512-2R0-1W-1%"
+   "value": "750m",
+   "query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-1R2-1W-1%"
   },
   {
    "designator": "R1CF",
@@ -960,9 +960,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "1.6",
-   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
-   "mpn": "R2512-2R0-1W-1%"
+   "value": "750m",
+   "query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-1R2-1W-1%"
   },
   {
    "designator": "R2CF",
@@ -1465,9 +1465,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "1.6",
-   "query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden ",
-   "mpn": "R2512-2R0-1W-1%"
+   "value": "750m",
+   "query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden ",
+   "mpn": "R2512-1R2-1W-1%"
   },
   {
    "designator": "R3CF",

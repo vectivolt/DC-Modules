@@ -374,9 +374,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "47pF",
+   "query": "MLCC-47p-0603 47 pF 0603 C0G ",
+   "mpn": "MLCC-47p-0603"
   },
   {
    "designator": "RA0GDS",
@@ -979,9 +979,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "47pF",
+   "query": "MLCC-47p-0603 47 pF 0603 C0G ",
+   "mpn": "MLCC-47p-0603"
   },
   {
    "designator": "RB0GDS",
@@ -1584,9 +1584,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "MLCC-100p-0603 100 pF 0603 ",
-   "mpn": "MLCC-100p-0603"
+   "value": "47pF",
+   "query": "MLCC-47p-0603 47 pF 0603 C0G ",
+   "mpn": "MLCC-47p-0603"
   },
   {
    "designator": "RC0GDS",

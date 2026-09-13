@@ -115,6 +115,8 @@ SCRIPT(sc_sag) { sc_en(s); if (s->t == 1500) s->in.vin_ll = 250; }
 SCRIPT(sc_busov) { sc_en(s); if (s->t == 1500) s->p.bus = 870; }
 SCRIPT(sc_mid) { sc_en(s); if (s->t == 1500) s->in.vmid_frac = 0.44f; }
 SCRIPT(sc_modesw) { sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
+SCRIPT(sc_start510) { if (s->t == 1) s->in.vcmd = 510; sc_en(s); }
+SCRIPT(sc_hiline) { if (s->t == 1) { s->in.vin_ll = 475; s->in.vcmd = 300; } sc_en(s); }
 SCRIPT(sc_weld) { if (s->t == 1) s->welded_para = true; sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
 SCRIPT(sc_fan) { sc_en(s); if (s->t == 1500) s->in.fan_ok = false; }
 SCRIPT(sc_ot) { sc_en(s); if (s->t == 1500) s->p.temp = 118; }
@@ -151,6 +153,8 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_busov, 3000);  expect("bus OVP F.03", &s, "|FAULT|LOCK|", FC_BUS_OVP, 1);
   sim_init(&s); runsim(&s, sc_mid, 3000);    expect("midpoint F.06", &s, "|FAULT|LOCK|", FC_MID_IMB, 1);
   sim_init(&s); runsim(&s, sc_modesw, 3000); expect("S/P transition w/ dwell", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.out.k_ser);
+  sim_init(&s); runsim(&s, sc_start510, 3000); expect("E60 start at 510 V selects PAR (entry = 525 V)", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser);
+  sim_init(&s); runsim(&s, sc_hiline, 3000); expect("E60 bus floor at 475 VAC >= 1.08*sqrt2*VLL", &s, "|RUN|", -1, s.f.out.vbus_ref >= 1.08f * 1.414f * 475.0f - 0.5f);
   sim_init(&s); runsim(&s, sc_weld, 3000);   expect("welded K_PARA F.18", &s, "|FAULT|LOCK|", FC_WELD, 1);
   sim_init(&s); runsim(&s, sc_fan, 3000);    expect("fan fail derate 50%", &s, "|DERATE|", -1, s.f.out.derate == 0.5f);
   sim_init(&s); runsim(&s, sc_ot, 3000);     expect("OT F.22", &s, "|FAULT|LOCK|", FC_OT, 1);
@@ -174,6 +178,10 @@ int main(void) {
   runsim(&s, sc_dstuck, 4600);               expect("stuck discharge, 50 kW window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
   sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);
   runsim(&s, sc_dstuck, 6600);               expect("stuck discharge, 50 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);
+  checks++; if (s.f.oc_line_a != 195.0f || s.f.oc_tank_a != 145.0f) { fails++; puts("FAIL E60 50 kW OC classes"); } else puts("PASS E60 50 kW OC classes 195/145 A pk");
+  pmp_fsm_set_rating_kw(&s.f, 40);
+  checks++; if (s.f.oc_line_a != 155.0f || s.f.oc_tank_a != 115.0f) { fails++; puts("FAIL E60 40 kW OC classes"); } else puts("PASS E60 40 kW OC classes 155/115 A pk");
   sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
 

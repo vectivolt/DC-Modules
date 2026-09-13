@@ -1,6 +1,6 @@
 # Competitive benchmark — 30/40/50 kW modules vs the market (E51, 2026-09-12)
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
 
 > **Purpose** — Verified market position: reference designs, Chinese modules, SiC economics, density gap, cost levers.
 >
@@ -11,6 +11,14 @@ Method: deep-research pass (105 agents, 3-vote adversarial verification per clai
 manufacturer documents only — every number below labeled **[V]** survived that process; numbers
 labeled **[est]** are our estimates or the user's own market intelligence and carry no external
 verification). Full provenance in the E51 session record.
+
+
+> [!NOTE]
+> **E60 restatement (2026-09-13).** Our efficiency rows below were calculated with an LLC current taken from a
+> simulation deck that E60 withdrew. On the power-solved current the full-load figures are **97.19 / 96.92 / 96.68 /
+> 96.82 %** (30/40/50L/50A) and the peaks **98.45–98.58 %**. The position statement changes by one word: **ahead** of the
+> verified mainstream band (95.5–96.5 %) at full load and peak, and at **parity** with the SiC flagships' ≥97 % full-load
+> claim rather than ahead of it. The [V] market rows are unchanged.
 
 ## 1. Topology verdict: our architecture IS current reference practice
 
@@ -118,3 +126,55 @@ already engineered (+0.68 η pt at +₹2.7k — sell it as the SiC-G2 answer, do
 (4) relay matrix: the S/P contactor set (₹2.3–3.4k) is the one BOM block Chinese fixed-topology
 modules don't carry — a 300–1000 V CP window without S/P (link-tracking, Infineon-style) would
 shed it but re-opens the whole tank design; registered as a next-platform question, not this one.
+
+---
+
+## 7. E60 — harsh-environment parity (manufacturer product pages read 13 Sep 2026)
+
+> [!NOTE]
+> **Method.** The competitor rows were read directly from each manufacturer's product page, plus one independent
+> teardown. They are published specifications, not field measurements. The E60 deep-research run found these
+> sources, but its 3-vote verification budget was spent on the simulation and current-stress angles, so these rows
+> carry **[P]** (primary page, read) rather than [V].
+
+| Specification | Infypower REG1K0135G2 40 kW [P] | UUGreen UR100040-IP65 40 kW [P] | Tonhe THWT40F10028C8EUR 40 kW [P] | **Ours — A11 rev C (E60)** | Verdict |
+|---|---|---|---|---|---|
+| Operating temperature | −40…+75 °C, derating from 55 °C | −30…+75 °C, derating from 55 °C | −30…+70 °C | **−30…+75 °C, full power to 55 °C** (100 % → 40 % at 75 °C) | **match** (was −25 °C at rev B → raised) |
+| Storage | −40…+70 °C | −40…+85 °C | — | −40…+85 °C | match |
+| Humidity | ≤95 % RH, non-condensing | ≤95 % RH, non-condensing | ≤95 %, non-condensing | 5–95 % RH, non-condensing | match |
+| Altitude | ≤2000 m | 79–106 kPa (≈2000 m) | ≤2000 m, derating above | ≤2000 m (IEC 60664-1 basis) | match |
+| Board protection | conformal coating **+ glue filling** | IP65 sealed module | — | acrylic conformal coating (air SKUs) · **sealed, fanless** (50 kW liquid) | match. Potting is not adopted (see note) |
+| Fans | IP55 (teardown of the SiC sibling) | fan-cooled | fan-cooled | **IP55, −30…+70 °C**, dual ball, L10 ≥ 70 kh (E60 spec line) | **match** (IP rating added) |
+| DC-link electrolytics | Jianghai CD296 long-life (teardown) | — | — | 450 V snap-in 105 °C, **−40 °C category** (E60 class spec) | match |
+| Input voltage | 260–530 VAC | UV 255 V / OV 530 V | UV 323–335 V / OV 531–543 V | 285–475 VAC (full power ≥ 330 V) | **narrower at the top** — decision below |
+| Output | 150–1000 V | 150–1000 V class | 200–1000 V, 1–143 A | 150–1000 V, CP ≥ 300 V | match |
+| Efficiency | peak ≥ 97.3 % · full load ≥ 96.5 % @1000 V | peak > 96 % · rated > 95 % | peak ≥ 96 % | peak 98.45–98.58 % · full load 96.7–97.2 % | **ahead / parity** |
+| Output short circuit | shutdown and latch (power cycle) | constant-current foldback, auto-recover | — | hardware trip latch (F.11 / F.01) + CC fold | match |
+| MTBF | > 300,000 h | — | 500,000 h | **not yet predicted** | open — SR-332 prediction at DVT |
+
+**What E60 changed to match** (no over-guarding):
+- **Cold floor −25 → −30 °C** operating and cold start. This matches UUGreen and Tonhe; Infypower goes to −40 °C.
+  The DC-link class now requires a −40 °C category, because many 450 V snap-in series stop at −25 °C. The magnetics
+  cold check now runs at −30 °C: Fe 2.05× the 100 °C basis, and the cores self-warm to a stable equilibrium. FW-R3
+  (soft power limit below −10 °C) already covers electrolytic ESR. EVT T-32 proves it in the chamber.
+- **Fans IP55, −30…+70 °C.** This matches the leading module's teardown and hardens against dust, the #1 field
+  killer of fan-cooled modules (A11 rev B).
+- **Cost watch:** the IP55 fans and −40 °C-category cans are not yet priced into the ₹ ladder. Estimated
+  +₹0.5–0.9k per module [est], to be closed at RFQ.
+
+**Deliberately not changed:**
+- **Potting.** Infypower pots its PCBA and Winline advertises a fully potted build. Our air SKUs rely on coating
+  inside a filtered cabinet, which is the IP20 class that Sinexcel publishes. The sealed 50 kW liquid SKU covers the
+  IP65 use case, the role UUGreen's IP65 module plays.
+- **Altitude above 2000 m.** No competitor rates above it without derating.
+
+> [!IMPORTANT]
+> **Decision for the product owner — input range.** Competitors run to 525–530 VAC so one SKU covers 480 V grids.
+> Ours stops at 475 VAC, which covers 380/400/415 V grids at +10–15 %. The FW-R7 bus floor already regulates the
+> Vienna up to ≈530 VAC (a bus of 809 V fits the 830 V ceiling). Widening the input range is a component
+> re-rating, not a topology change: MOV continuous voltage, X capacitors, and Y capacitors at 306 V line-to-PE.
+> Nothing has been changed until this is decided.
+
+**Still open (not answered by any verified source):** terrestrial-neutron FIT of 1200 V SiC held at 830 V and
+2000 m; published derating slopes (every vendor states only the 55 °C knee); field return data for the named
+modules.

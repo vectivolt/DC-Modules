@@ -298,9 +298,9 @@
    },
    {
     "designator": "CA0GBL",
-    "value": "100pF",
+    "value": "47pF",
     "block_name": "PHASE-A0",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-47p-0603 47 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -855,9 +855,9 @@
    },
    {
     "designator": "CB0GBL",
-    "value": "100pF",
+    "value": "47pF",
     "block_name": "PHASE-B0",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-47p-0603 47 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1412,9 +1412,9 @@
    },
    {
     "designator": "CC0GBL",
-    "value": "100pF",
+    "value": "47pF",
     "block_name": "PHASE-C0",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-47p-0603 47 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,

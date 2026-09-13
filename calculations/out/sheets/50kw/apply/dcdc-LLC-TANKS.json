@@ -377,9 +377,9 @@
    },
    {
     "designator": "R1CT",
-    "value": "1.6",
+    "value": "750m",
     "block_name": "TANK-1",
-    "search_query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden",
+    "search_query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,
@@ -836,9 +836,9 @@
    },
    {
     "designator": "R2CT",
-    "value": "1.6",
+    "value": "750m",
     "block_name": "TANK-2",
-    "search_query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden",
+    "search_query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,
@@ -1295,9 +1295,9 @@
    },
    {
     "designator": "R3CT",
-    "value": "1.6",
+    "value": "750m",
     "block_name": "TANK-3",
-    "search_query": "R2512-2R0-1W-1% 2.0 Ω 1% 1 W 2512 resonant-CT burden",
+    "search_query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,

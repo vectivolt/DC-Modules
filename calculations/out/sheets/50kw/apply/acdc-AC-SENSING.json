@@ -1653,9 +1653,9 @@
    },
    {
     "designator": "RA0B",
-    "value": "21.5",
+    "value": "13",
     "block_name": "LINE-CTS-0",
-    "search_query": "R1206-27R-1% 27 Ω CT burden 1%",
+    "search_query": "R1206-22R-1% 22 Ω line-CT burden 1%",
     "pins": [
      {
       "pin_number": 1,
@@ -1761,9 +1761,9 @@
    },
    {
     "designator": "RB0B",
-    "value": "21.5",
+    "value": "13",
     "block_name": "LINE-CTS-0",
-    "search_query": "R1206-27R-1% 27 Ω CT burden 1%",
+    "search_query": "R1206-22R-1% 22 Ω line-CT burden 1%",
     "pins": [
      {
       "pin_number": 1,
@@ -1869,9 +1869,9 @@
    },
    {
     "designator": "RC0B",
-    "value": "21.5",
+    "value": "13",
     "block_name": "LINE-CTS-0",
-    "search_query": "R1206-27R-1% 27 Ω CT burden 1%",
+    "search_query": "R1206-22R-1% 22 Ω line-CT burden 1%",
     "pins": [
      {
       "pin_number": 1,

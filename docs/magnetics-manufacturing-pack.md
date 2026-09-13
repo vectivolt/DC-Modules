@@ -1,10 +1,16 @@
 # Magnetics Manufacturing Pack — RFQ-ready spec sheets (E51, 2026-09-12)
 
-<p align="left"><img src="https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square" alt="RFQ__PACK"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square" alt="RFQ__PACK"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/> <img src="https://img.shields.io/badge/AC_copper-Dowell_·_Sullivan_gated-2ea44f?style=flat-square" alt="ac"/></p>
 
 > **Purpose** — One controlled spec sheet per magnetic — quote-ready: electricals, construction, insulation, parasitics, thermal, production tests, sourcing.
 >
-> **Gate coupling** — magnetics-rfq-audit: 0 missing fields · mag-sync (E59) pins every identity + computed mass. Build process: [`magnetics-build-instructions.md`](magnetics-build-instructions.md).
+> **Gate coupling** — magnetics-rfq-audit: 0 missing fields · mag-sync (E59) pins every identity + computed mass · **conductor-audit (E60) computes every Rac row at the simulated currents**. Build process: [`magnetics-build-instructions.md`](magnetics-build-instructions.md).
+>
+> [!IMPORTANT]
+> **E60 copper revision — quote THIS rev.** D3 secondaries go to **0.10 × 28 mm** (30 kW) and **0.127 × 28 mm** (40/50 kW) foil,
+> and D3 primaries to **0.071 mm** litz strands. D2-40 becomes **1× E70/33/32, N 5, 4150×0.071**. D2-50 becomes **2× E70/33/32, N 3, 2500×0.1**.
+> The superseded constructions computed Rac/Rdc 5–12 against their own ≤1.35 / Rac rows, so first articles would have failed.
+> Reasoning and numbers: [`conductor-selection.md`](conductor-selection.md).
 
 
 **Scope:** every magnetic on the 30 / 40 / 50 kW modules, one controlled sheet each, written so a
@@ -25,7 +31,7 @@ to every sheet. Insulation values follow [`insulation-coordination.md`](insulati
 |---|---|
 | Insulation system | **UL 1446-recognised SYSTEM, Class F (155 °C) minimum**; Class H (180 °C) for D3. Organic materials UL 94 V-0. |
 | Thermal basis | Full power to +55 °C ambient, derate to +75 °C (A11). ΔT acceptance limits are per-sheet; thermocouple positions stated per-sheet. |
-| Low-temp / environment | **A11 rev B (E52, registered):** operating −25…+55 °C full power (derate to +75), cold start ≥ −25 °C, storage/transport −40…+85 °C — quote adhesives/potting/litz bonding to −40 °C. Humidity 5–95 % RH non-condensing; boards are acrylic conformal-coated (E52 baseline) — parts must accept coated boards adjacent. |
+| Low-temp / environment | **A11 rev C (E60, competitor parity):** operating −30…+55 °C full power (derate to +75), cold start ≥ −30 °C, storage/transport −40…+85 °C — quote adhesives/potting/litz bonding to −40 °C. Humidity 5–95 % RH non-condensing; boards are acrylic conformal-coated (E52 baseline) — parts must accept coated boards adjacent. |
 | Vibration | 2 g 10–500 Hz sine sweep survival (bonded/banded construction; IEC 60068-2-6 class) — toroid stacks epoxy-banded, not tape-only. |
 | Traceability | Lot + date code on every part, traceable to core lot and wire lot. First article: dimensional vs the mechanical row, full electrical vs the acceptance rows, cross-section/teardown for D3 and D4 (reinforced-barrier parts). |
 | 100 % tests | Every acceptance-row electrical + every stated hipot, 100 % end-of-line at the winder. Sampled tests marked (S). |
@@ -39,8 +45,9 @@ to every sheet. Insulation values follow [`insulation-coordination.md`](insulati
 | Sendust (Kool Mµ-class) toroids 26µ/60µ | Magnetics Inc 0077908A7 (T79 26µ), 0077439A7 (T48 60µ) | Chang Sung (KR) CS series · POCO (CN) KS series · DMEGC sendust — **AL and roll-off curve must match the Magnetics part within ±8 % / anchors in A3** |
 | T57 60µ toroid (OD57/ID26/H20) | **Chang Sung CH571060** (High Flux µ60; cross: Magnetics 58192-A2) — the core Microchip's 30 kW Vienna reference runs at 46 A rms/140 kHz (deep-research verified 2026-09-12) | POCO KS-571060-class sendust — High Flux rides HIGHER than the sendust design anchors (better bias, Bsat 1.5 T), so the D6 floors only gain margin; sample-measure L(I) before PO either way |
 | PC95-class MnZn ferrite (PQ50/50, E70/33/32, ETD34) | TDK PC95 / Ferroxcube 3C95 | DMEGC DMR95/DMR96A · TDG · Acme — loss ≤ A4 fit (396 mW/cm³ @100 kHz/±200 mT/100 °C; DMEGC PQ50/50 DMR95 guarantees ≤23.95 W/set = 580 max / ~300 typ kW/m³ at that point — verified from the DMEGC datasheet 2026-09-12). **Vendor PQ50/50 geometries differ** (DMEGC Ae 363.8 mm² vs Ferroxcube/TDK 328): the gap is ground to an AL target, so geometry substitution is absorbed — but re-check Bpk if the winder proposes the larger-Ae part. Cosmo Ferrites (India) = N87-class only; PC95-class stays import (recorded) |
-| E70 formers | TDK **B66372B2000T001** (2-set stack, AN 389 mm², lN 230.5 mm) · B66372B1000T001 (1-set) | mechanically-equivalent CN former tooling — dimensioned per TDK drawing, Class F material |
-| Litz (served, compacted/profile) | Elektrisola (incl. Elektrisola India for bare litz) | Pack Litz · New England Wire — 0.1 mm strands (grade 1), profile/compacted rectangular where the sheet says so |
+| E70 formers | TDK **B66372B2000T001** (2-set stack, AN 389 mm², lN 230.5 mm — D3-40/50 and **D2-50 rev D**) · **B66372B1000T001** (1-set — **D2-40 rev D**) | mechanically-equivalent CN former tooling — dimensioned per TDK drawing, Class F material |
+| Litz (served, compacted/profile) | Elektrisola (incl. Elektrisola India for bare litz) | Pack Litz · New England Wire — **0.1 mm strands (D2-30, D2-50) and 0.071 mm / AWG 41 strands (D3 primaries, D2-40 — E60)**, grade 1–2 solderable polyurethane (Class 155/180), profile/compacted rectangular where the sheet says so |
+| Copper foil (D3 secondaries) | Cu-ETP/Cu-OF annealed foil **0.10 mm (30 kW) · 0.127 mm (40/50 kW)** × 28 mm, deburred slit edges | any EN 13599/ASTM B152 mill — thickness tolerance ±8 %; the foil gauge is an electrical parameter (Dowell), not a mechanical choice |
 | TIW / FIW barrier | Furukawa TEX-E (TIW) · FIW per IEC 60317-56 | Rubadue Tri-Ins. — TIW on litz = served litz inside extruded triple wall |
 | Nanocrystalline CMC cores | VAC VITROPERM 500F (T60006 class) | King Magnetics · Qingdao Yunlu · AT&M — Schaffner RT8131-63-2M8 is the 30 kW catalog part |
 | CTs | Talema ACX-1100 (line) / AS-404 (resonant), Salem India | ZEMCT/HCT class (line) · Coilcraft CST2010-100L (resonant) |
@@ -104,16 +111,36 @@ As D1-40 except:
 | Mechanical | 68 × 56 envelope, 2× M4 clamp bar — **non-magnetic stainless (A2/A4), slotted over the gap plane, no closed conductive loop, ≥8 mm from any gap face (E58 fringing-eddy rule)**; 2 tinned litz flying leads, drill 4.44/pad 5.34 |
 | Production test | 100 %: L@bin (140 kHz), Rdc, hipot, bin label. (S) Rac @140 kHz 5/lot, ΔT first-article |
 
-## PMP-MAG-D2-40 rev C — trim bin set 40 kW (`IND-TRIM-BIN5-40`) — qty 3
+## PMP-MAG-D2-40 rev D (E60) — trim bin set 40 kW (`IND-TRIM-E70-40`) — qty 3
 
-As D2-30 except: **N = 5**, bins **3.2 / 3.5 / 3.8 µH ±3 %**, litz **2000×0.1 mm (15.7 mm²)**;
-Bpk ≤ 100 mT @87.5 A pk (calc 93); 61.9 A rms; ΔT ≤ 40 K (calc 35); Rac ≤ 3 mΩ.
+| Row | Spec |
+|---|---|
+| Function | LLC external resonant inductor, full AC swing, **61.9 A rms class** (simulated worst 61.5 A rms / 87.4 A pk), tank potential |
+| Core | **1× E70/33/32 set, PC95/N97/DMR95-class**, on single-set former **B66372B1000T001** (the D3-40 core family — no new supply chain) |
+| Winding | **N = 5**, litz **4150×0.071 mm served (16.4 mm² Cu)**, single layer across the 41 mm window, ≥5 mm radial clearance to the gap plane (margin tape) |
+| Gap / bins | **distributed, 3 positions on the centre leg**, ground per bin to AL **128 / 140 / 152 nH/T²** → **3.2 / 3.5 / 3.8 µH ±3 % @140 kHz**; bin selected at kitting against the mated D3-40 leakage label |
+| Flux / loss | Bpk **97 mT** at 87.4 A pk (bin-max) · fault flux 181 mT at F.11 + race (163 A) · Fe ≈5.3 W (measured-3C95 basis) |
+| Parasitics | **Rac ≤ 2.6 mΩ @140 kHz, 100 °C (computed 2.29 — Sullivan Fr 2.0)** · SRF ≥ 700 kHz · winding–core C ≤ 100 pF |
+| Insulation | winding→core hipot 2.5 kV AC 1 min (functional); Class F system |
+| Thermal | **ΔT ≤ 40 K at 61.9 A rms (computed 38 K SER corner, 32 K continuous-worst)**; thermocouple on the centre-leg winding surface |
+| Mechanical | E70 single-set envelope (≈70 × 66 × 40 mm incl. former) — **E36 layout input** (the shared TrimFP placeholder is PQ50-sized); non-magnetic stainless slotted clamps ≥8 mm from gap faces; 2 tinned litz flying leads (drill 5.8 mm/pad 6.7 mm for 16.4 mm²); mass **~0.55 kg** |
+| Production test | 100 %: L@bin (140 kHz), Rdc, hipot, bin label. (S) **Rac @140 kHz 5/lot vs the 2.6 mΩ row**, ΔT first-article at 61.9 A rms |
+| History | rev C (E43): 2× PQ50/50, N 5, 2000×0.1 — computed Rac/Rdc 4.3, 13.6 W Cu at the SER corner (the DC×1.15 basis said 4.3 W) |
 
-## PMP-MAG-D2-50 rev C — trim bin set 50 kW (`IND-TRIM-BIN6-50`) — qty 3
+## PMP-MAG-D2-50 rev D (E60) — trim bin set 50 kW (`IND-TRIM-E70-50`) — qty 3
 
-As D2-30 except: **N = 6**, bins **2.8 / 3.0 / 3.2 µH ±3 %**, litz **3000×0.1 mm (23.6 mm²)**;
-Bpk ≤ 100 mT @109.3 A pk (calc 83); 77.3 A rms; ΔT ≤ 40 K (calc 33) — one drawing serves the
-liquid AND air 50 (plate bond belt-and-suspenders on the sealed module).
+As D2-40 rev D except:
+
+| Row | Spec |
+|---|---|
+| Core / former | **2× E70/33/32 sets** on **B66372B2000T001** (the D3-50 former) |
+| Winding | **N = 3**, litz **2500×0.1 mm (19.6 mm²)** |
+| Gap / bins | AL **311 / 333 / 356 nH/T²** → **2.8 / 3.0 / 3.2 µH ±3 %** (distributed 3 positions) |
+| Flux / loss | Bpk **85 mT** at 108.8 A pk · fault flux 154 mT at 197 A · Fe ≈7.1 W measured basis |
+| Parasitics | **Rac ≤ 2.0 mΩ @140 kHz (computed 1.61)** |
+| Thermal | **ΔT ≤ 40 K at 77.3 A rms (computed 31 K SER / 27 K continuous)** — one drawing serves liquid AND air |
+| Mechanical | E70 2-set envelope ≈70 × 66 × 72 mm (E36 layout input); drill 6.2/pad 7.1 mm; mass **~1.1 kg** (centre-bolt clamp + 2-point banding per the ≥1 kg rule) |
+| History | rev C (E44): 2× PQ50/50, N 6, 3000×0.1 — computed **Rac/Rdc 11.7 → 45 W Cu** (DC basis 5.4 W); no strand count on the PQ50 held 40 K; single-E70 options computed 41–56 K |
 
 ## PMP-MAG-D3-30 rev C (E51 construction) — LLC transformer 10 kW (`XFMR-LLC-10K`) — qty 3
 
@@ -121,15 +148,15 @@ liquid AND air 50 (plate bond belt-and-suspenders on the sealed module).
 |---|---|
 | Function | LLC section transformer, 10.2 kW, 140 kHz square-wave excitation, 415 V half-cycle volt-seconds (1.48 mVs), bidirectional flux |
 | Ratio / magnetizing | **7 : 7 : 7 exactly** (Np : Ns1 : Ns2) · **Lm = 63 µH ±7 %** (centre-leg grind to AL 1.286 µH/T², glue-stacked) · leakage **3 ±0.7 µH primary-referred — ENGINEERED, see lay-up** |
-| Core | 3× PQ50/50 sets PC95-class, bobbinless 3-stack (no catalog stacked former — winder fixture; centre posts aligned, grind on centre legs only) |
-| Windings (E51 construction rev) | Primary: **compacted/profile rectangular litz ≥9.8 mm² Cu** (e.g. 1250×0.1 profiled). Secondaries: **copper foil ≥4.9 mm²/turn equivalent (0.20 × 28 mm foil), 7 turns each**, TIW/FIW barrier wrap OR 3.2 mm margins — **never both** (double barrier ate 18 % of the window; window closes at ~75 % with this construction). Lay-up S1–spacer–P–spacer–S2; **spacer thickness is the leakage knob** (first-article curve: spacer → measured leakage, then frozen) |
+| Core | 3× PQ50/50 sets PC95-class, bobbinless 3-stack (no catalog stacked former — winder fixture; centre posts aligned, grind on centre legs only) — **E60: the Lm gap is ground EQUALLY on all three sets (3 positions, ≈0.32 mm each; never the whole gap on one set)** — the S1 foil is innermost and a single ≈1 mm gap would drive fringing eddies across its 28 mm width, which 1-D Dowell cannot see |
+| Windings (E60 copper rev of the E51 construction) | Primary: **compacted/profile rectangular litz ≥9.8 mm² Cu in 0.071 mm strands (≈2475×0.071)** — the 0.1 mm strands computed Rac/Rdc 1.63. Secondaries: **copper foil 0.10 × 28 mm, 7 turns each** (Dowell optimum; the E51 0.20 mm foil computed Rac/Rdc 5.3 → 17.9 W vs 8.7 W), TIW/FIW barrier wrap OR 3.2 mm margins — **never both**. Lay-up S1–spacer–P–spacer–S2; **spacer thickness is the leakage knob** (first-article curve: spacer → measured leakage, then frozen) |
 | Shield | 1-turn Cu foil between P and each S, flying lead → primary star |
 | Insulation | pri↔sec **REINFORCED**: TIW/FIW barrier (solid-insulation route per IEC 62477-1) or margin construction; hipot **4.0 kV DC 1 s 100 %**; pri↔core 2.5 kV; **PD sample ≤10 pC @1.5 kV pk, 5/lot**; Class H preferred; creepage over surface 12.6 mm where margins used |
-| Electrical acceptance (100 %) | turns 1:1:1 exact · Lm 63 µH ±7 % @10 kHz 0.1 V · **leakage measured @140 kHz and LABELED per unit** (kitting input — a part without its label is unusable) · Rdc P ≤ 2.0 mΩ, S ≤ 4.2 mΩ each |
-| Parasitics | Rac/Rdc ≤ 1.35 @140 kHz (interleave keeps proximity down) · **C(pri↔sec) ≤ 150 pF with shield grounded** · C(pri self) ≤ 60 pF |
-| Loss / thermal | ~21 W at design point (Fe 13 + Cu 8) · hotspot ≤ +55 K, thermocouple under barrier wrap (type-test); clamp in airflow |
-| Mechanical | ≤ 96 × 50 × 52 mm; 4× M4 clamp bar — **non-magnetic stainless, slotted, ≥8 mm from any gap face (E58)**; 7 flying litz/foil terminations onto pins @10 mm pitch; mass **~0.8 kg (computed, E59)** |
-| Production test | 100 %: ratio, Lm, leakage+label, Rdc×3, hipot 4 kV, pri-core 2.5 kV. (S): PD 5/lot, Rac 5/lot, thermal first-article + yearly |
+| Electrical acceptance (100 %) | turns 1:1:1 exact · Lm 63 µH ±7 % @10 kHz 0.1 V · **leakage measured @140 kHz and LABELED per unit** (kitting input — a part without its label is unusable) · Rdc P ≤ 2.0 mΩ, **S ≤ 5.6 mΩ each** (E60 foil; calc 5.05 @25 °C) |
+| Parasitics | **Rac/Rdc ≤ 1.35 @140 kHz per winding (E60 computed: S 1.27, P 1.32)** · **C(pri↔sec) ≤ 150 pF with shield grounded** · C(pri self) ≤ 60 pF |
+| Loss / thermal | Fe 13 W (A4; 7.6 W measured basis) + **Cu 10.2 W at the continuous-worst simulated corner** (14.1 W at the SER-band corner, transient-only per FW-R8) · hot equilibrium 102 °C at 55 °C inlet (temp-critique) · hotspot ≤ +55 K, thermocouple under barrier wrap (type-test); clamp in airflow |
+| Mechanical | ≤ 96 × 50 × 52 mm; 4× M4 clamp bar — **non-magnetic stainless, slotted, ≥8 mm from any gap face (E58)**; 7 flying litz/foil terminations onto pins @10 mm pitch; mass **~0.75 kg (computed, E60 — thinner foil)** |
+| Production test | 100 %: ratio, Lm, leakage+label, Rdc×3, hipot 4 kV, pri-core 2.5 kV. (S): PD 5/lot, **Rac @140 kHz 5/lot per winding vs the 1.35 row**, thermal first-article + yearly · **first article (E60): open-secondary primary R @140 kHz (magnetizing path — the shorted-secondary Rac cannot see gap fringing) and a thermocouple on S1 at the PAR-525 corner** |
 
 ## PMP-MAG-D3-40 rev B (E51) — LLC transformer 13.6 kW (`XFMR-LLC-2E70-40`) — qty 3
 
@@ -138,17 +165,18 @@ As D3-30 except:
 | Row | Spec |
 |---|---|
 | Core / former | **2× E70/33/32 core sets** (TDK B66371, PC95/N97/DMR95-class) on stack former **B66372B2000T001** (AN 389 mm², lN 230.5 mm) — catalog former, Class F |
-| Turns / flux | **6 : 6 : 6** · Bpk 90 mT · Lm 63 µH ±7 % (grind to AL 1.75 µH/T²) |
-| Windings | Primary compacted litz ≥13.8 mm² (e.g. 1750×0.1 profiled) · secondaries foil 0.25 × 28 mm, 6 turns each · window 88 % — **the registered 9:9:9 litz+TIW+margin wind demands ~2.4× this former's window; do not quote it** |
-| Loss / thermal | ~34 W/section (Fe 14 + Cu 20) · hotspot ≤ +55 K WITH clamp bonded to extrusion web (gap pad) — bond is part of the module assembly, flatness ≤0.5 mm on the bonded face |
-| Mass | **~1.45 kg (computed, E59)** |
-| Acceptance deltas | Rdc P ≤ 2.4 mΩ · S ≤ 5.2 mΩ · leakage 3 ±0.7 µH labeled |
+| Turns / flux | **6 : 6 : 6** · Bpk 90 mT · Lm 63 µH ±7 % (grind to AL 1.75 µH/T², **split equally across both sets — 2 positions, ≤0.5 mm each (E60 fringing rule)**) |
+| Windings | Primary compacted litz ≥13.8 mm² **in 0.071 mm strands (≈3486×0.071 — E60; 0.1 mm computed Rac/Rdc 1.51)** · secondaries **foil 0.127 × 28 mm (E60 Dowell optimum; the 0.25 mm foil computed 5.1 → 42 W vs 20.7 W)**, 6 turns each · window < 88 % — **the registered 9:9:9 litz+TIW+margin wind demands ~2.4× this former's window; do not quote it** |
+| Loss / thermal | Fe 14 + **Cu 22.4 W at the continuous-worst simulated corner** (31.5 W SER-band, transient-only) · hot equilibrium 107 °C at 55 °C inlet · hotspot ≤ +55 K WITH clamp bonded to extrusion web (gap pad) — bond is part of the module assembly, flatness ≤0.5 mm on the bonded face |
+| Mass | **~1.35 kg (computed, E60)** |
+| Acceptance deltas | Rdc P ≤ 2.4 mΩ · **S ≤ 7.5 mΩ** (calc 6.84 @25 °C) · Rac/Rdc ≤ 1.35 (calc S 1.29 / P 1.26) · leakage 3 ±0.7 µH labeled |
 
 ## PMP-MAG-D3-50 rev B (E51) — LLC transformer 17 kW (`XFMR-LLC-2E70-50`) — qty 3
 
-As D3-40 except: **5 : 5 : 5** (Bpk 109 mT — the 30 kW class) · primary ≥17.3 mm² compacted litz ·
-secondaries foil 0.30 × 28 mm · window 91 % · ~45 W/section (Fe 24 + Cu 21) · **web bond
-MANDATORY on both 50 variants** · Lm grind AL 2.52 µH/T² · Rdc P ≤ 1.9 mΩ / S ≤ 4.4 mΩ.
+As D3-40 except: **5 : 5 : 5** (Bpk 109 mT — the 30 kW class) · primary ≥17.3 mm² compacted litz **in 0.071 mm
+strands (≈4370×0.071)** · secondaries **foil 0.127 × 28 mm** (E60 — the 0.30 mm foil computed Rac/Rdc 6.7 → 59 W vs 25 W) ·
+Fe 24 + **Cu 25.3 W continuous-worst** (hot equilibrium 106 °C) · **web bond MANDATORY on both 50 variants** ·
+Lm grind AL 2.52 µH/T² · Rdc P ≤ 1.9 mΩ / **S ≤ 6.3 mΩ** · Rac/Rdc ≤ 1.35 (calc S 1.20 / P 1.28) · mass ~1.35 kg.
 (The registered 3×E70 route is withdrawn: its 3-set former does not exist as a catalog part and
 the wind still computed ~1.2× window.)
 
@@ -200,11 +228,14 @@ hipot. **T57 core p/n must be sample-verified for AL + roll-off before PO (E51 s
 
 | Part | Spec to quote | Acceptance |
 |---|---|---|
-| Line CT — Talema ACX-1100 (30/40 kW) · 150 A 2500:1 class (50 kW, RFQ) | 2500:1, ±1 %, Ø14.6 window, 4 kV hipot, PCB pins | ratio ±0.5 % 100 % · no sat below 150 A pk (187 A pk @50 kW class) — **acceptance at 25 °C carries a ×1.25 factor OR is demonstrated at 85 °C core (E58: CT core Bsat falls with temperature; the OC observability ceiling must hold hot)** · phase ≤1° @50/60 Hz · sec Rdc recorded per unit (EOL cal input) · ΔT ≤ 30 K |
-| Resonant CT — Talema AS-404 (30 kW) · 80 A-class (40 kW) · 100 A-class (50 kW) | 1:100, 20–200 kHz, Ø8 pass-through (tank wire = primary) | ratio ±0.5 % **at 140 kHz** · no sat below 100 A pk (×1.25 at 25 °C or shown at 85 °C — E58) · ΔT ≤ 30 K at rated tank current — a line-frequency core does NOT serve this slot |
+| Line CT — **Talema ACX-1100** (30 kW, burden **22 Ω**) · **Talema ACX-1150** 150 A class (40 kW on **18 Ω**, 50 kW on **13 Ω** — E60) | 2500:1, ±1 %, Ø14.6 window, 4 kV hipot, PCB pins (ACX-1150: 38.1×38.1 mm body, 33.0 mm pin row — its own land) | ratio ±0.5 % 100 % · **no saturation below 1.25 × F.01 at 25 °C on the fitted burden: 150 / 194 / 244 A pk** (or F.01 demonstrated at 85 °C core — E58 hot rule) · report the linear limit vs the observability target F.01 + race = 166 / 205 / 266 A · phase ≤1° @50/60 Hz · sec Rdc per unit (EOL cal) · ΔT ≤ 30 K |
+| Resonant CT — Talema AS-404 (30 kW, **1.2 Ω**) · 80 A-class (40 kW, **0.91 Ω**; catalog AS-407 1:500 on 4.55 Ω) · 100 A-class (50 kW, **0.75 Ω**) | 1:100, 20–200 kHz, Ø8 pass-through (tank wire = primary) — **Coilcraft CST2010-100L is NOT an equivalent (47 A, built-in primary, 1.5 kVrms)** | ratio ±0.5 % **at 140 kHz** · **no saturation below 1.25 × (F.11 + race) = 161 / 204 / 246 A pk at 25 °C on the fitted burden** (or shown at 85 °C) · ΔT ≤ 30 K at the tank class current — a line-frequency core does NOT serve this slot |
 
 ## Build & validation method (applies to quotes)
 
+0. **E60 — AC resistance is an acceptance measurement, not a calculation input:** every D2/D3 winding's Rac is
+   measured at 140 kHz on the first article (impedance analyser, winding shorted-secondary method for D3) and
+   compared with the conductor-audit row. A miss is a construction error (strand size, foil gauge, lay-up), not a tolerance.
 1. **First article (every p/n):** dimensional vs mechanical row → full electrical vs acceptance →
    L(I) or leakage curve as stated → thermal type-test at the operating row → **thermal shock
    IEC 60068-2-14 Na, 5 cycles −40 ↔ +125 °C, then re-test the electrical row (E58 — litz bonds,

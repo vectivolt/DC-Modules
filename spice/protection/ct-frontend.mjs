@@ -6,7 +6,8 @@
 //      The rev-C topology (op-amp OUT hard-tied to the 10 µF) is run side-by-side as the
 //      regression baseline — it is expected to ring/oscillate.
 //   2. Does the corrected resonant chain (46 A rms → 1:100 → 2.0 Ω → 1 k/1 nF) keep the ADC
-//      node inside the rails with F.11 (70 A pk) representable at 3.05 V?
+//      node inside the rails at the worst operating peak, land F.11/F.01 at the DAC point, and stay
+//      inside the 3.27 V rail through the simulated 3 µs fault race?
 // Run: node spice/protection/ct-frontend.mjs
 import { runDeck, maxIn, minIn } from "../run.mjs";
 import { writeFileSync } from "node:fs";
@@ -54,19 +55,19 @@ quit
 .end`;
 }
 
-function ctDeck(ipk) {
-  // resonant primary ipk A at 140 kHz → CT 1:100 → 2.0 Ω burden biased at AVMID 1.65 V stiff
-  return `* resonant CT front-end, corrected burden (CB-16): Ipri_pk=${ipk} A
+function ctDeck(ipk, rb = 2.0, ratio = 100, fq = 140e3, cf = "220p", tstop = 200e-6) {
+  // primary ipk A → CT 1:ratio → burden rb biased at AVMID 1.65 V stiff → 1 k / cf filter → dual clamp
+  return `* CT front-end: Ipri_pk=${ipk} A, 1:${ratio}, ${rb} ohm, ${fq} Hz
 VAV avmid 0 1.65
-ICT avmid b SIN(0 ${ipk / 100} 140k)
-RB b avmid 2.0
+ICT avmid b SIN(0 ${ipk / ratio} ${fq})
+RB b avmid ${rb}
 RF b adc 1k
-CF adc avmid 220p
+CF adc avmid ${cf}
 VDD vdd 0 3.3
 DP adc vdd DCLMP
 DN 0 adc DCLMP
 .model DCLMP D(Is=1e-9 N=1.05 Rs=1)
-.tran 20n 200u 0 10n uic
+.tran ${tstop / 10000} ${tstop} 0 ${tstop / 20000} uic
 .option method=gear reltol=1e-4 abstol=1e-9
 .control
 set filetype=ascii
@@ -97,18 +98,29 @@ const push = (c, m, v, l, ok) => { rows.push([c, m, v, l, ok ? "PASS" : "FAIL"])
   rows.push(["avmid-revC-baseline", "steady ripple pk-pk (V)", f(ringPP, 4), "reference (expected ringing)", "REF"]);
   console.log(`avmid-revC-baseline · ripple pk-pk = ${f(ringPP, 4)} V (reference topology — ${ringPP > 0.01 ? "rings as predicted (MR-11 confirmed)" : "note: behavioral model under-predicts ring"})`);
 }
-// 2a. full-load resonant: 46 A rms = 65 A pk → ADC within rails, no clamp conduction
-{
-  const r = runDeck("ctfe-res-65", ctDeck(65).replace("NAME.out", "ctfe-res-65.out"), ["adc", "b"]);
-  const hi = maxIn(r.t, r.cols.adc, 50e-6, 200e-6), lo = minIn(r.t, r.cols.adc, 50e-6, 200e-6);
-  push("res-fullload-65Apk", "ADC max (V)", f(hi), "≤3.2", hi <= 3.2);
-  push("res-fullload-65Apk", "ADC min (V)", f(lo), "≥0.1", lo >= 0.1);
-}
-// 2b. F.11 threshold: 70 A pk must land at ~3.05 V (representable, above full-load peak)
-{
-  const r = runDeck("ctfe-res-70", ctDeck(70).replace("NAME.out", "ctfe-res-70.out"), ["adc", "b"]);
-  const hi = maxIn(r.t, r.cols.adc, 50e-6, 200e-6);
-  push("res-F11-70Apk", "ADC peak (V)", f(hi), "3.02±0.1 & ≤3.3", Math.abs(hi - 3.02) < 0.1 && hi <= 3.3);
+// 2. E60 per-SKU chains (current-coordination classes): the resonant chain at the power-solved ngspice
+// worst nominal peak (in-rails, no clamp conduction), at F.11 (lands at the computed DAC point) and at
+// F.11 + the simulated 3 µs race (still inside the 3.27 V rail); the line chain likewise at 50 Hz.
+const CLS = {
+  "30kw": { resRb: 1.2, F11: 85, pkNom: 65.6, race11: 44, lineRb: 22, F01: 120, race01: 46 },
+  "40kw": { resRb: 0.91, F11: 115, pkNom: 87.4, race11: 48, lineRb: 18, F01: 155, race01: 50 },
+  "50kw": { resRb: 0.75, F11: 145, pkNom: 108.8, race11: 52, lineRb: 13, F01: 195, race01: 72 },
+};
+const lineDeck = (ipk, rb) => ctDeck(ipk, rb, 2500, 50, "1n", 60e-3);
+for (const [sku, c] of Object.entries(CLS)) {
+  for (const [what, ipk, lo, hi] of [["nominal-peak", c.pkNom, 0.1, 3.2], ["F11", c.F11, null, null], ["F11+race", c.F11 + c.race11, 0.1, 3.27]]) {
+    const tag = `ctfe-res-${sku}-${what}`;
+    const r = runDeck(tag, ctDeck(ipk, c.resRb, 100, 140e3, "220p", 200e-6).replace("NAME.out", `${tag}.out`), ["adc", "b"]);
+    const vmax = maxIn(r.t, r.cols.adc, 50e-6, 200e-6), vmin = minIn(r.t, r.cols.adc, 50e-6, 200e-6);
+    if (what === "F11") { const want = 1.65 + c.F11 / 100 * c.resRb; push(tag, "comparator peak (V)", f(vmax), `${f(want)}±0.08`, Math.abs(vmax - want) <= 0.08); }
+    else push(tag, "ADC max/min (V)", `${f(vmax)}/${f(vmin)}`, `≤${hi} & ≥${lo}`, vmax <= hi && vmin >= lo);
+  }
+  for (const [what, ipk] of [["F01", c.F01], ["F01+race", c.F01 + c.race01]]) {
+    const tag = `ctfe-line-${sku}-${what}`;
+    const r = runDeck(tag, lineDeck(ipk, c.lineRb).replace("NAME.out", `${tag}.out`), ["adc", "b"]);
+    const vmax = maxIn(r.t, r.cols.adc, 20e-3, 60e-3), want = 1.65 + ipk / 2500 * c.lineRb;
+    push(tag, "ADC peak (V)", f(vmax), what === "F01" ? `${f(want)}±0.05` : "≤3.27", what === "F01" ? Math.abs(vmax - want) <= 0.05 : vmax <= 3.27);
+  }
 }
 writeFileSync(join(RES, "ct-frontend.csv"),
   "# ngspice-46; R2 §G closure deck — AVMID dual-feedback stability (MR-11) + corrected resonant burden (CB-16); behavioral 10 MHz op-amp\n" +

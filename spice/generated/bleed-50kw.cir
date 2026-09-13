@@ -1,0 +1,11 @@
+* bank-bleed: 0.00094 F from 525 V into 8800 ohm
+CB p 0 0.00094 ic=525
+RD p 0 8800
+.tran 0.006721 26.884 0 0.013442 uic
+.control
+set filetype=ascii
+run
+wrdata bleed-50kw.out v(p)
+quit
+.endc
+.end

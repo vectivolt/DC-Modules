@@ -1,0 +1,19 @@
+* CT front-end: Ipri_pk=155 A, 1:2500, 18 ohm, 50 Hz
+VAV avmid 0 1.65
+ICT avmid b SIN(0 0.062 50)
+RB b avmid 18
+RF b adc 1k
+CF adc avmid 1n
+VDD vdd 0 3.3
+DP adc vdd DCLMP
+DN 0 adc DCLMP
+.model DCLMP D(Is=1e-9 N=1.05 Rs=1)
+.tran 0.000006 0.06 0 0.000003 uic
+.option method=gear reltol=1e-4 abstol=1e-9
+.control
+set filetype=ascii
+run
+wrdata ctfe-line-40kw-F01.out v(adc) v(b)
+quit
+.endc
+.end

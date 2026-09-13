@@ -1,11 +1,14 @@
-# ngspice-46; rev C (E26 rev C 110 W, per-SKU load matrix — R2/CB-20); behavioral VM control (bench T-09 validates NCP1252A UVLO/BO); netlists spice/generated/aux-*.cir
+# ngspice-46; 110 W stage (E26 rev C electricals = D4 rev D), per-SKU load matrix 30/40/50L/50A (E60); behavioral VM control (bench T-09 validates NCP1252A UVLO/BO); netlists spice/generated/aux-*.cir
 case,VIN,sku,v24_settle,v24_dip_at_step,v24_recover_ms,v15_at_step_min,Pout_full_W,verdict
 aux-30kw-342,342,30kw,24.46,23.91,0.2,15.7,56.5,PASS
 aux-30kw-560,560,30kw,24.76,23.99,0.22,15.87,56.8,PASS
 aux-30kw-850,850,30kw,25.18,23.73,0.22,15.03,57.4,PASS
-aux-60kw-342,342,60kw,24.42,23.71,0.2,14.98,71.6,PASS
-aux-60kw-560,560,60kw,24.64,23.81,0.21,15.58,72,PASS
-aux-60kw-850,850,60kw,25.19,23.28,0.28,14.79,73.2,PASS
-aux-120kw-342,342,120kw,24.36,23.87,0.2,15.37,106.2,PASS
-aux-120kw-560,560,120kw,24.43,23.68,0.2,15.54,106.8,PASS
-aux-120kw-850,850,120kw,24.4,23.31,0.2,15.6,107.3,PASS
+aux-40kw-342,342,40kw,25.24,23.89,0.39,15.48,68,PASS
+aux-40kw-560,560,40kw,24.79,23.9,0.2,15.94,68.2,PASS
+aux-40kw-850,850,40kw,24.69,23.7,0.2,15.76,68.8,PASS
+aux-50kw-342,342,50kw,24.45,24.05,0.2,15.65,45.8,PASS
+aux-50kw-560,560,50kw,24.63,24.11,0.2,15.74,46.2,PASS
+aux-50kw-850,850,50kw,25.55,24.2,0.36,15.76,47.1,PASS
+aux-50kwa-342,342,50kwa,24.54,23.85,0.2,16.02,79.4,PASS
+aux-50kwa-560,560,50kwa,24.66,23.81,0.2,15.49,79.6,PASS
+aux-50kwa-850,850,50kwa,24.55,23.84,0.2,15.95,79.7,PASS

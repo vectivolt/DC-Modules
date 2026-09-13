@@ -6,6 +6,7 @@
 // Companion references (already gated elsewhere, not duplicated): pulse-resistor J vs class
 // (stress Epulse), bank-bleeder ≤32 J (E33), discharge timelines (R8-A), magnetics runaway
 // (temp-critique E58), Tj ceilings (grid).  Run: node calculations/system/fault-energy.mjs
+import { readFileSync } from "node:fs";
 const f = (x, d = 1) => Number(x.toFixed(d));
 let fails = 0;
 const ck = (sec, name, cond, detail) => {
@@ -15,11 +16,14 @@ const ck = (sec, name, cond, detail) => {
 console.log("=== FAULT-ENERGY / BURN-SAFETY AUDIT (E59) ===");
 
 // ---- 1. energy reservoirs and their dump paths (J at the worst legal voltage) ----
+// E60: module heat read from the loss-budget output (was hand-copied and went stale when the
+// LLC current basis was re-solved)
+const LB = Object.fromEntries(readFileSync(new URL("../out/loss-budget.csv", import.meta.url), "utf8").trim().split("\n").slice(1).map((l) => l.split(",")).map((c) => [c[0].toLowerCase(), +c[13]]));
 const SKUS = {
-  "30kw": { linkCans: 10, bankStrPerBank: 2, Pworst: 827, fans: 2, out: 100 },
-  "40kw": { linkCans: 12, bankStrPerBank: 3, Pworst: 1211, fans: 3, out: 133 },
-  "50kw": { linkCans: 16, bankStrPerBank: 4, Pworst: 1627, fans: 0, out: 167 },   // liquid
-  "50kwa": { linkCans: 16, bankStrPerBank: 4, Pworst: 1588, fans: 4, out: 167 },
+  "30kw": { linkCans: 10, bankStrPerBank: 2, Pworst: LB["30kw"], fans: 2, out: 100 },
+  "40kw": { linkCans: 12, bankStrPerBank: 3, Pworst: LB["40kw"], fans: 3, out: 133 },
+  "50kw": { linkCans: 16, bankStrPerBank: 4, Pworst: LB["50kw"], fans: 0, out: 167 },   // liquid
+  "50kwa": { linkCans: 16, bankStrPerBank: 4, Pworst: LB["50kwa"], fans: 4, out: 167 },
 };
 for (const [sku, s] of Object.entries(SKUS)) {
   const Clink = (s.linkCans / 2) * 470e-6 / 1;            // 2-series strings paralleled
@@ -34,8 +38,10 @@ for (const [sku, s] of Object.entries(SKUS)) {
 }
 ck("RESERVOIR", "tank caps (per section, worst)", 0.5 * 216e-9 * 865 ** 2 < 0.2,
   `${f(0.5 * 216e-9 * 865 ** 2 * 1000, 0)} mJ — three orders below any pulse rating; rings down in the tank R`);
-ck("RESERVOIR", "D1 magnetic energy at the CT ceiling", 0.5 * 45e-6 * 187 ** 2 < 2,
-  `${f(0.5 * 45e-6 * 187 ** 2, 2)} J → freewheels into the DC link through the boost diodes (their normal path); link absorbs it as ${f(0.5 * 45e-6 * 187 ** 2 / 434 * 100, 2)}% of one link-charge`);
+// E60: at the 50 kW observability ceiling (311 A on 13 Ω) the D1-50 is soft-saturated — L(311 A,
+// lot −8 %) ≈ 15.8 µH on the catalog 26µ curve (current-coordination owns the per-SKU race)
+ck("RESERVOIR", "D1 magnetic energy at the CT ceiling", 0.5 * 15.8e-6 * 311 ** 2 < 2,
+  `${f(0.5 * 15.8e-6 * 311 ** 2, 2)} J → freewheels into the DC link through the boost diodes (their normal path); link absorbs it as ${f(0.5 * 15.8e-6 * 311 ** 2 / 434 * 100, 2)}% of one link-charge`);
 
 // ---- 2. surge: 61000-4-5 class 4 (4 kV line-line, 2 Ω source) into the MOV Δ ----
 {
@@ -64,9 +70,9 @@ ck("VENT", "bank/link can strings", 900 >= 525 * 1.55 && true,
 const need = (P) => 3600 * P / (1.16 * 1005 * 20);
 for (const [sku, s] of Object.entries(SKUS)) {
   if (s.fans === 0) {
-    const dT = 1627 / (0.1 * 1042 * 3.4);   // 6 L/min = 0.1 L/s × ρ1042 × cp3.4 J/gK (50/50 EG)
+    const dT = s.Pworst / (0.1 * 1042 * 3.4);   // 6 L/min = 0.1 L/s × ρ1042 × cp3.4 J/gK (50/50 EG)
     ck("AIR", `${sku} liquid loop`, dT <= 5,
-      `1,627 W into 6 L/min 50/50 EG-water → coolant ΔT ${f(dT, 1)} K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder`);
+      `${f(s.Pworst, 0)} W into 6 L/min 50/50 EG-water → coolant ΔT ${f(dT, 1)} K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder`);
     continue;
   }
   const req = need(s.Pworst), have = s.fans * 160 * 0.6;

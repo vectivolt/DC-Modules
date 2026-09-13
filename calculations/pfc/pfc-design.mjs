@@ -76,10 +76,11 @@ const Pdiode = 1.35 * (Id_avg / 2) + (Id_rms / Math.SQRT2) ** 2 * 0.012; // Vf +
 // 77439 60µ gives 139.7 nH/T² vs 135 catalog — 3.5% agreement validates the method).
 const GEOMS = [
   { name: "T48 (77439-class)", Ae: 1.99e-4, le: 0.1074, Vc: 21.3, win: 4.27, Asurf: 95, mlt0: 0.062, mltK: 0.016, cost: 95 },
-  // E51: Ae pinned to the CATALOG 0077908A7 value (2.27 cm2, AL 37 nH/T2 at 26u) — the 2.62 cm2
+  // E60: catalog datasheet rev 10/7/2021 = Ae 2.21 cm2 / le 196 mm (E51 had pinned 2.27/201).
+  // E51: Ae pinned to the CATALOG 0077908A7 value (AL 37 nH/T2 at 26u) — the 2.62 cm2
   // geometric idealisation overstated L ~15% (A3/E35) and the E41/E42 D1 selections inherited
   // that error; drawings are re-issued at N=26/24 and this engine now shares the core truth.
-  { name: "T79 (OD79/ID49/H17 sendust)", Ae: 2.27e-4, le: 0.201, Vc: 45.6, win: 18.6, Asurf: 280, mlt0: 0.098, mltK: 0.036, cost: 210 },
+  { name: "T79 (OD79/ID49/H17 sendust)", Ae: 2.21e-4, le: 0.196, Vc: 43.4, win: 18.2, Asurf: 280, mlt0: 0.098, mltK: 0.036, cost: 210 },
 ];
 const MATS = [
   { name: "60u", mu: 60, a: 1.455e-3, b: 1.513 },

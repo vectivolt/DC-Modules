@@ -1,0 +1,29 @@
+{
+  "fingerprint": "30kw:Lr7u/Cr4x46n/Lm63u/Coss250p",
+  "worstCorner": "SER250-full-mismatch",
+  "ipPkMax": 70.2,
+  "ipRmsMax": 47.9,
+  "imPkMax": 20.2,
+  "vcrAcMax": 441,
+  "isRmsMax": 23.8,
+  "isPkMax": 35,
+  "idAvgMax": 10.6,
+  "fetRmsMax": 33.9,
+  "fetToffMax": 64.6,
+  "shareMax": 6.13,
+  "zvsAll": true,
+  "legsInRails": true,
+  "capability": true,
+  "race": {
+    "pre": 68.8076886,
+    "at2us": 99.65252,
+    "at3us": 111.047354,
+    "at5us": 162.509815,
+    "at10us": 216.59879,
+    "at40us": 235.908118
+  },
+  "shortFmax": {
+    "rms": 62.8,
+    "pk": 105.2
+  }
+}

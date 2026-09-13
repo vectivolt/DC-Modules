@@ -8,14 +8,14 @@ Price breaks: 100 pc = ×1.35 electronics / ×1.15 mech; 5000 pc = ×0.88 / ×0.
 2026-09-05 (≥10k units/yr): the 10k column is the planning basis; heuristics resolve at RFQ round 1.
 Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k columns included).
 
-## 30KW — module COGS **₹30980 @10k** (1k ₹38280, 5k ₹34138, 100 pc ₹49873) vs red-line ₹25000 / stretch ₹22000 → **@10k OVER red-line by ₹5980**
+## 30KW — module COGS **₹30980 @10k** (1k ₹38279, 5k ₹34137, 100 pc ₹49872) vs red-line ₹25000 / stretch ₹22000 → **@10k OVER red-line by ₹5980**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 10526 | 27.5% |
+| magnetics | 10525 | 27.5% |
 | mechanical/assembly | 9026 | 23.6% |
-| semiconductors | 7955 | 20.8% |
-| capacitors | 5051 | 13.2% |
+| semiconductors | 7957 | 20.8% |
+| capacitors | 5048 | 13.2% |
 | drive+control ICs | 3746 | 9.8% |
 | resistors/shunts | 707 | 1.8% |
 | protection | 457 | 1.2% |
@@ -24,15 +24,15 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
-## 40KW — module COGS **₹35727 @10k** (1k ₹44143, 5k ₹39338, 100 pc ₹57624) vs red-line ₹33000 / stretch ₹29000 → **@10k OVER red-line by ₹2727**
+## 40KW — module COGS **₹35891 @10k** (1k ₹44347, 5k ₹39517, 100 pc ₹57900) vs red-line ₹33000 / stretch ₹29000 → **@10k OVER red-line by ₹2891**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 11921 | 27% |
-| semiconductors | 9941 | 22.5% |
-| mechanical/assembly | 9842 | 22.3% |
-| capacitors | 6359 | 14.4% |
-| drive+control ICs | 3746 | 8.5% |
+| magnetics | 12125 | 27.3% |
+| semiconductors | 9943 | 22.4% |
+| mechanical/assembly | 9842 | 22.2% |
+| capacitors | 6356 | 14.3% |
+| drive+control ICs | 3746 | 8.4% |
 | protection | 772 | 1.7% |
 | resistors/shunts | 727 | 1.6% |
 | connectors | 436 | 1% |
@@ -40,53 +40,53 @@ Full line-item CSVs: `calculations/out/bom-{sku}.csv` (second-source + 10k colum
 | HMI | 24 | 0.1% |
 | bias/iso modules | 0 | 0% |
 
-## 50KW — module COGS **₹41773 @10k** (1k ₹51415, 5k ₹45900, 100 pc ₹66790) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1227**
+## 50KW — module COGS **₹41865 @10k** (1k ₹51529, 5k ₹46001, 100 pc ₹66944) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1135**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 13911 | 27.1% |
-| mechanical/assembly | 13102 | 25.5% |
-| semiconductors | 9941 | 19.3% |
-| capacitors | 7967 | 15.5% |
+| magnetics | 14190 | 27.5% |
+| mechanical/assembly | 13102 | 25.4% |
+| semiconductors | 9943 | 19.3% |
+| capacitors | 7964 | 15.5% |
 | drive+control ICs | 3746 | 7.3% |
 | protection | 922 | 1.8% |
 | resistors/shunts | 844 | 1.6% |
 | connectors | 418 | 0.8% |
 | misc | 375 | 0.7% |
-| bias/iso modules | 165 | 0.3% |
 | HMI | 24 | 0% |
+| bias/iso modules | 0 | 0% |
 
-## 50KWA — module COGS **₹41425 @10k** (1k ₹51205, 5k ₹45586, 100 pc ₹67022) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1575**
+## 50KWA — module COGS **₹41516 @10k** (1k ₹51319, 5k ₹45687, 100 pc ₹67176) vs red-line ₹43000 / stretch ₹39000 → **@10k UNDER red-line by ₹1484**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 13911 | 27.2% |
-| semiconductors | 12287 | 24% |
+| magnetics | 14190 | 27.6% |
+| semiconductors | 12289 | 23.9% |
 | mechanical/assembly | 10522 | 20.5% |
-| capacitors | 7967 | 15.6% |
+| capacitors | 7964 | 15.5% |
 | drive+control ICs | 3746 | 7.3% |
 | protection | 922 | 1.8% |
 | resistors/shunts | 844 | 1.6% |
 | connectors | 442 | 0.9% |
 | misc | 375 | 0.7% |
-| bias/iso modules | 165 | 0.3% |
 | HMI | 24 | 0% |
+| bias/iso modules | 0 | 0% |
 
-## 150KW — **CABINET: 3x 50 kW modules + CSU (air basis; liquid = 3x 50kw)** — cabinet COGS **₹126109 @10k** (1k ₹155449, 5k ₹138592, 100 pc ₹202900) vs red-line ₹130834 / stretch ₹118834 → **@10k UNDER red-line by ₹4725**
+## 150KW — **CABINET: 3x 50 kW modules + CSU (air basis; liquid = 3x 50kw)** — cabinet COGS **₹126382 @10k** (1k ₹155791, 5k ₹138895, 100 pc ₹203362) vs red-line ₹130834 / stretch ₹118834 → **@10k UNDER red-line by ₹4452**
 
 | Category | ₹ @1k | share |
 |---|---|---|
-| magnetics | 41732 | 26.8% |
-| semiconductors | 36861 | 23.7% |
+| magnetics | 42569 | 27.3% |
+| semiconductors | 36868 | 23.7% |
 | mechanical/assembly | 31566 | 20.3% |
-| capacitors | 23900 | 15.4% |
+| capacitors | 23893 | 15.3% |
 | drive+control ICs | 11239 | 7.2% |
 | protection | 2766 | 1.8% |
 | resistors/shunts | 2533 | 1.6% |
 | connectors | 1326 | 0.9% |
 | misc | 1126 | 0.7% |
-| bias/iso modules | 495 | 0.3% |
 | HMI | 72 | 0% |
+| bias/iso modules | 0 | 0% |
 
 ## Red-line closure levers (R12 rev D — 10k basis; the generic volume break is ALREADY in the 10k column, so the old "5k-break" lever is retired to avoid double-counting)
 
@@ -118,17 +118,16 @@ dominated per-kW by a 50-based product in or near its segment.
 | Product | Composition | ₹ @10k | **₹ / kW** |
 |---|---|---|---|
 | 30 kW module | 1 module · 1 card · air | 30,980 | **1,033** |
-| 40 kW module (E41) | 1 module · 1 card · air | 35,727 | **893** |
-| 50 kW module (E42) | 1 module · 1 card · LIQUID | 41,773 | **835** |
-| 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 41,425 | **829** |
-| 100 kW | 2 x 50 · 2 cards · liquid | 83,546 | **835** |
-| 100 kW air | 2 x 50a · 2 cards · air | 82,850 | **829** |
-| 150 kW (3 x 50) | 3 cards + CSU · liquid | 1,27,153 | **848** |
-| 150 kW air (3 x 50a) | 3 cards + CSU · air | 1,26,109 | **841** |
+| 40 kW module (E41) | 1 module · 1 card · air | 35,891 | **897** |
+| 50 kW module (E42) | 1 module · 1 card · LIQUID | 41,865 | **837** |
+| 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 41,516 | **830** |
+| 100 kW | 2 x 50 · 2 cards · liquid | 83,730 | **837** |
+| 100 kW air | 2 x 50a · 2 cards · air | 83,032 | **830** |
+| 150 kW (3 x 50) | 3 cards + CSU · liquid | 1,27,429 | **850** |
+| 150 kW air (3 x 50a) | 3 cards + CSU · air | 1,26,382 | **843** |
 
 Cabinet adder ₹1,834 (CSU card + carrier + WDR supply + studs + CAN passives). The
-**3×40 cabinet is the cheapest 120 kW** by ~₹16,739; choose the runner at the volume decision
-(N−1 granularity: 4×30 keeps 75% on a module loss, 3×40 keeps 67%).
+**150 kW air (3 × 50a + CSU) is the cheapest multi-module ₹/kW** and keeps 67 % of its power on a module loss (a 100 kW keeps 50 %).
 
 ## Directive cost impacts (recorded)
 - Two-board sandwich (E17): +1 PCB, interconnect studs/harness — ≈ +₹1,450/-module @30 kW vs single-board baseline.

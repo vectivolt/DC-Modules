@@ -9,7 +9,7 @@
 // Run:    node calculations/sheets-to-pdf.mjs
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
-import { execFileSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -39,6 +39,18 @@ const BOARDS = [
 ]; // 120 kW retired: cabinet of 30/60 kW modules (E36)
 
 const PX_PER_IN = 96;
+// Chrome 152 headless writes the PDF and then does not exit, so wait for its "bytes written" line
+// instead of the process; an isolated profile keeps it off the user's running browser.
+const printPdf = (args) => new Promise((resolve, reject) => {
+  const p = spawn(CHROME, args, { stdio: ["ignore", "ignore", "pipe"] });
+  let err = "";
+  const timer = setTimeout(() => { p.kill("SIGKILL"); reject(new Error(`Chrome print timed out\n${err.slice(-600)}`)); }, 180000);
+  p.stderr.on("data", (d) => {
+    err += d;
+    if (/bytes written to file/.test(err)) { clearTimeout(timer); p.kill("SIGKILL"); resolve(); }
+  });
+  p.on("exit", () => { clearTimeout(timer); resolve(); });
+});
 for (const b of BOARDS) {
   const svgPath = join(ROOT, "calculations", "out", "print", `${b.k5}.svg`);
   if (!existsSync(svgPath)) { console.log(`!! ${b.f}: no sheet`); continue; }
@@ -58,10 +70,10 @@ ${svg}`;
   writeFileSync(htmlPath, html);
 
   const pdfPath = join(OUT, `${b.name}.pdf`);
-  execFileSync(CHROME, [
-    "--headless", "--disable-gpu", "--no-pdf-header-footer",
+  await printPdf([
+    "--headless", "--disable-gpu", "--no-pdf-header-footer", "--no-first-run", `--user-data-dir=${join(TMP, "chrome-profile")}`,
     `--print-to-pdf=${pdfPath}`, `file://${htmlPath}`,
-  ], { stdio: ["ignore", "ignore", "pipe"], timeout: 180000 });
+  ]);
 
   const size = existsSync(pdfPath) ? (readFileSync(pdfPath).length / 1048576).toFixed(2) : "0";
   console.log(`${b.name}.pdf  ${w}×${h}px → ${(w / PX_PER_IN).toFixed(1)}×${(h / PX_PER_IN).toFixed(1)} in · ${size} MB`);

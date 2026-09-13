@@ -1,6 +1,6 @@
 # Component Selection & Sourcing — Phase 2
 
-<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E52-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--12-555?style=flat-square" alt="updated"/></p>
+<p align="left"><img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="LIVE__SPEC"/> <img src="https://img.shields.io/badge/rev-E60-f2b705?style=flat-square" alt="rev"/> <img src="https://img.shields.io/badge/updated-2026--09--13-555?style=flat-square" alt="updated"/></p>
 
 > **Purpose** — RFQ-ready part table, sourcing policy, second-source rules, price basis (A7).
 
@@ -152,3 +152,19 @@ Full quantities/pricing authority: `calculations/out/bom-*.csv` (generated; §49
 | Resonant ADC filter | 1 nF (25 % attenuation at 140 kHz → F.11 drift) | **220 pF** (F.11 crisp at 3.02 V) | CB-16 refinement |
 | Loss budget | EMI filter unbudgeted | **emi_filter_W column (49/132/248 W); η restated 97.26–97.29 %** | HR-18 executed |
 | F.21b timeout | 2.0×τ (false-fails at 71 V) | **2.5×τ** (10.3/20.6/41.2 s) | per-SKU deck catch |
+
+---
+
+## Rev E60 deltas (2026-09-13, current coordination + AC copper)
+
+| Change | Was | Now | Driver |
+|---|---|---|---|
+| Line-CT burden | 27 Ω (30/40) · 21.5 Ω (50) | **22 / 18 / 13 Ω** | F.01 120/155/195 A pk observable through the D1 race |
+| Resonant-CT burden | 2.0 Ω (30/40) · 1.6 Ω (50) | **1.2 Ω 1 W / 0.91 Ω 1 W / 0.75 Ω 2 W** | F.11 85/115/145 A pk (the 70/95 A class sat at/below real peaks) |
+| 40 kW line CT | ACX-1100 (100 A) | **ACX-1150 (150 A class)** | F.01 155 A + 50 A race exceeds the ACX-1100's linear range at 18 Ω |
+| DESAT blanking cap | 100 pF all channels | **22 pF LLC · 47 pF Vienna** (C0G 0603) | NSI66x1A worst response inside 75 % of SiC SCWT |
+| D2-40 trim | 2× PQ50/50 N5 2000×0.1 (`IND-TRIM-BIN5-40`) | **1× E70/33/32 N5 4150×0.071 (`IND-TRIM-E70-40`)** | Sullivan Fr 4.3 → 2.0 |
+| D2-50 trim | 2× PQ50/50 N6 3000×0.1 (`IND-TRIM-BIN6-50`) | **2× E70/33/32 N3 2500×0.1 (`IND-TRIM-E70-50`)** | Fr 11.7 (45 W) → 2.0 (9 W) |
+| D3 secondaries / primaries | foil 0.20/0.25/0.30 mm · 0.1 mm litz | **foil 0.10 / 0.127 / 0.127 mm · 0.071 mm litz** | Dowell/Sullivan: Rac/Rdc 5–7 → ≤1.35 |
+| **Sourcing flag** | — | **Mornsun modules carry a US OFAC-list flag at Digi-Key** (PV-series noted not-recommended/non-returnable) — qualify MEAN WELL / RECOM / CUI-class second sources for QA01C / ISO5V positions before volume | E60 prototype sourcing sweep |
+| Resonant CT alternate | Coilcraft CST2010-100L listed | **struck — not equivalent** (47 A, built-in primary, 1.5 kVrms) | datasheet read |

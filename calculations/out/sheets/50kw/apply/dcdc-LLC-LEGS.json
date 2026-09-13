@@ -376,9 +376,9 @@
    },
    {
     "designator": "C1HBL",
-    "value": "100pF",
+    "value": "22pF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -695,9 +695,9 @@
    },
    {
     "designator": "C1LBL",
-    "value": "100pF",
+    "value": "22pF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1072,9 +1072,9 @@
    },
    {
     "designator": "C2HBL",
-    "value": "100pF",
+    "value": "22pF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1391,9 +1391,9 @@
    },
    {
     "designator": "C2LBL",
-    "value": "100pF",
+    "value": "22pF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1768,9 +1768,9 @@
    },
    {
     "designator": "C3HBL",
-    "value": "100pF",
+    "value": "22pF",
     "block_name": "LEG-3",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -2087,9 +2087,9 @@
    },
    {
     "designator": "C3LBL",
-    "value": "100pF",
+    "value": "22pF",
     "block_name": "LEG-3",
-    "search_query": "MLCC-100p-0603 100 pF 0603",
+    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,

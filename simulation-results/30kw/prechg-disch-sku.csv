@@ -2,10 +2,10 @@
 case,t95_or_t60_s,Ipk_A,E_per_R_J,fw_limit_s,verdict
 precharge-30kw,0.193,17.7,113,F.20 50%@0.4s,PASS
 discharge-30kw,1.99,1.33,106,3,PASS
-bankbleed-30kw,9,0.06,16,10.3,PASS
-precharge-60kw,0.347,18.8,202,F.20 50%@0.4s,PASS
-discharge-60kw,3.59,1.33,191,5.5,PASS
-bankbleed-60kw,17.9,0.06,32,20.6,PASS
-precharge-120kw,0.694,19.5,402,F.20 50%@0.4s,PASS
-discharge-120kw,7.18,1.33,382,9,PASS
-bankbleed-120kw,35.9,0.06,65,41.2,PASS
+bankbleed-30kw,9,0.06,16,10.34,PASS
+precharge-40kw,0.231,18.1,135,F.20 50%@0.4s,PASS
+discharge-40kw,2.39,1.33,127,4,PASS
+bankbleed-40kw,13.5,0.06,24,15.51,PASS
+precharge-50kw,0.31,18.6,180,F.20 50%@0.4s,PASS
+discharge-50kw,3.19,1.33,170,5,PASS
+bankbleed-50kw,18,0.06,32,20.68,PASS

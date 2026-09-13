@@ -117,7 +117,7 @@ const Rs = ((2.3e-8 * Ns * CORE.MLT) / (Acu_s * 1e-6)) * 1.15;
 const Pcu = IpDesign ** 2 * Rp + 2 * IsDesign ** 2 * Rs;
 const leakEst = 3e-6;                                           // interleaved P-S-P: low leakage; external trim completes Lr
 console.log(`\nTRANSFORMER (per section, 3× PQ50/50 PC95-class): Np=Ns=${Np}, ΔB=${f(dBact * 1e3, 0)} mT, Pfe=${f(Pfe, 1)} W, Pcu=${f(Pcu, 1)} W → ${f(Pfe + Pcu, 1)} W (${f((Pfe + Pcu) / (P_PH * 0.98) * 100, 2)}%)`);
-console.log(`  Ip=${f(IpDesign, 1)} A litz ${f(Acu_p, 1)} mm² (0.1 mm strands, δ=${f(delta * 1e3, 3)} mm); Is=${f(IsDesign, 1)} A/wdg ×2; fill=${f(fill * 100, 0)}% of usable window ${fill <= 1 ? "OK" : "OVER — bobbin study required"}`);
+console.log(`  Ip=${f(IpDesign, 1)} A litz ${f(Acu_p, 1)} mm² (first-pass DC×1.15 area, δ=${f(delta * 1e3, 3)} mm — strand size and foil gauge are set by conductor-audit: 0.071 mm litz, 0.10 mm foil at E60); Is=${f(IsDesign, 1)} A/wdg ×2; fill=${f(fill * 100, 0)}% of usable window ${fill <= 1 ? "OK" : "OVER — bobbin study required"}`);
 console.log(`  Leakage target ${f(leakEst * 1e6, 0)} µH (interleaved) + external trim ${f((Lr - leakEst) * 1e6, 1)} µH bin set (D2 rev C: GAPPED FERRITE 2×PQ50/50 — powder cores prohibited at full AC swing, audit F1) = Lr`);
 console.log(`  Insulation: pri-sec REINFORCED 4 kV_pk class; triple-insulated secondary litz + 3.2 mm margins; interwinding shield → primary star`);
 
