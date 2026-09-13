@@ -395,6 +395,8 @@ for (const name of [...wanted].sort()) {
   if (mf) { writeFileSync(join(OUT, `${name}.kicad_mod`), row(name, +mf[1], +mf[2], HOLE.MicroFit, true, "Molex Micro-Fit 3.0 header")); made.push(name); n++; continue; }
   const hd = name.match(/^HDR-TH_(\d+)P-P([\d.]+)-V-M$/);
   if (hd) { writeFileSync(join(OUT, `${name}.kicad_mod`), row(name, +hd[1], +hd[2], HOLE.HDR, false, "Vertical male pin header")); made.push(name); n++; continue; }
+  const hd2 = name.match(/^HDR-TH_(\d+)P-2R-P([\d.]+)-V-M$/);   // E64: dual-row (2×n/2) keyed header — the 88-way card slot
+  if (hd2) { writeFileSync(join(OUT, `${name}.kicad_mod`), row(name, +hd2[1], +hd2[2], HOLE.HDR, true, "Vertical dual-row male pin header, keyed")); made.push(name); n++; continue; }
   const ds = name.match(/^DISC-(\d+)mm_RM(\d+)$/);
   if (ds) { writeFileSync(join(OUT, `${name}.kicad_mod`), disc(name, +ds[1], +ds[2], "Radial disc MOV")); made.push(name); n++; continue; }
   const gd = name.match(/^GDT-(\d+)mm_RM(\d+)$/);

@@ -75,14 +75,14 @@ its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compos
 | semiconductors | 7,957 | 20.8 % |
 | magnetics | 7,421 | 19.4 % |
 | capacitors | 5,192 | 13.6 % |
-| drive+control ICs | 3,746 | 9.8 % |
+| drive+control ICs | 3,741 | 9.8 % |
 | relays | 2,960 | 7.7 % |
 | resistors/shunts | 707 | 1.8 % |
 | protection | 457 | 1.2 % |
 | connectors | 430 | 1.1 % |
 | misc | 359 | 0.9 % |
 | HMI | 24 | 0.1 % |
-| bias/iso modules | 0 | 0 % |
+| bias/iso modules | 5 | 0 % |
 
 </details>
 
@@ -98,14 +98,14 @@ its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compos
 | mechanical/assembly | 9,842 | 22.2 % |
 | magnetics | 8,941 | 20.2 % |
 | capacitors | 6,500 | 14.7 % |
-| drive+control ICs | 3,746 | 8.4 % |
+| drive+control ICs | 3,741 | 8.4 % |
 | relays | 3,040 | 6.9 % |
 | protection | 772 | 1.7 % |
 | resistors/shunts | 727 | 1.6 % |
 | connectors | 436 | 1 % |
 | misc | 375 | 0.8 % |
 | HMI | 24 | 0.1 % |
-| bias/iso modules | 0 | 0 % |
+| bias/iso modules | 5 | 0 % |
 
 </details>
 
@@ -122,13 +122,13 @@ its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compos
 | semiconductors | 9,943 | 19.3 % |
 | capacitors | 8,108 | 15.7 % |
 | relays | 3,940 | 7.6 % |
-| drive+control ICs | 3,746 | 7.3 % |
+| drive+control ICs | 3,741 | 7.3 % |
 | protection | 922 | 1.8 % |
 | resistors/shunts | 844 | 1.6 % |
 | connectors | 418 | 0.8 % |
 | misc | 375 | 0.7 % |
 | HMI | 24 | 0 % |
-| bias/iso modules | 0 | 0 % |
+| bias/iso modules | 5 | 0 % |
 
 </details>
 
@@ -145,13 +145,13 @@ its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compos
 | magnetics | 10,106 | 19.7 % |
 | capacitors | 8,108 | 15.8 % |
 | relays | 3,940 | 7.7 % |
-| drive+control ICs | 3,746 | 7.3 % |
+| drive+control ICs | 3,741 | 7.3 % |
 | protection | 922 | 1.8 % |
 | resistors/shunts | 844 | 1.6 % |
 | connectors | 442 | 0.9 % |
 | misc | 375 | 0.7 % |
 | HMI | 24 | 0 % |
-| bias/iso modules | 0 | 0 % |
+| bias/iso modules | 5 | 0 % |
 
 </details>
 
@@ -168,13 +168,13 @@ its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compos
 | magnetics | 30,317 | 19.5 % |
 | capacitors | 24,325 | 15.6 % |
 | relays | 11,820 | 7.6 % |
-| drive+control ICs | 11,239 | 7.2 % |
+| drive+control ICs | 11,224 | 7.2 % |
 | protection | 2,766 | 1.8 % |
 | resistors/shunts | 2,533 | 1.6 % |
 | connectors | 1,326 | 0.9 % |
 | misc | 1,126 | 0.7 % |
 | HMI | 72 | 0 % |
-| bias/iso modules | 0 | 0 % |
+| bias/iso modules | 14 | 0 % |
 
 </details>
 
@@ -192,7 +192,7 @@ its power with one module out (a 100 kW keeps 50 %). The 60 / 80 / 120 kW compos
 | Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | −₹1,560 | volume agreement |
 | Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | −₹1,050 | system integrator accepts |
 | **E63:** D6 DM chokes deleted after the EVT LISN scan proves the margin without them — the InfyPower benchmark ships no AC DM chokes (also −13…−24 W of loss) | −₹900 | −₹1,890 | −₹5,670 | EVT T-08 measured; the E43 floors stay until then |
-| **E63:** bank-string count re-run at the E33 ripple gate — one string per bank IF the per-can ripple rating holds at double duty | −₹480 | −₹640 [est] | −₹1,920 [est] | engine re-run + can datasheet ripple at temperature |
+| **E63/E64:** drop one bank string per bank — computed 2.1 A/can at 30 kW (2→1) and 1.4 A/can at 40/50 (3→2) against the ~2.8 A can class (verify-independent §F) | −₹480 | −₹640 [est] | −₹1,920 [est] | EVT output-ripple + S/P-transient measurement executes it |
 | **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | −₹405 | requalified sample |
 | **Sum of levers** | **−₹3,250** | **−₹4,765** | **−₹14,295** | |
 

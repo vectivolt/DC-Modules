@@ -249,6 +249,25 @@ export const LCSC_BY_VALUE = {
   "MLCC-small|4.7nF":   { lcsc: "C107208", mpn: "CC1206KRX7R9BB472", note: "4.7nF 1206 X7R 50V — CCGB, the CGND/DGND common-mode bridge. Generic (not Y-class) is correct: E25 FROZEN puts CAN inside the touch-safe SELV control domain (\"HMI/SWD/fans/CAN need no additional barriers\", architecture.md), so CGND-DGND is FUNCTIONAL isolation breaking a ground loop to the off-board controller, not a safety barrier. See R11." },
   "MLCC-small|470pF":   { lcsc: "C107152", mpn: "CC0805KRX7R9BB471", note: "470pF 0805 — CCSF, the aux CS filter; sees only the sense signal" },
   "MLCC-100n-0402|100nF": { lcsc: "C60474", mpn: "CC0402KRX7R7BB104", note: "100nF 0402 X7R 16V — used only on the 3.3 V rail (~5x derating)" },
+  // ---- E64: package-keyed rows (family|value|pkg). The value map was land-blind, so 344 sheet
+  // positions named a part whose package differed from their own drawn land (footprint-audit).
+  // The DRAWN LAND is the authority (it is what layout will place); the part follows it.
+  // Same-series siblings in the drawn size; C-numbers to be read back, never invented.
+  "MLCC-small|100nF|0805":  { mpn: "CC0805KRX7R9BB104", note: "100nF 0805 X7R 50V — land-matched (E64); C-number to be read back" },
+  "MLCC-small|1nF|0805":    { mpn: "CC0805KRX7R9BB102", note: "1nF 0805 X7R 50V — land-matched (E64); C-number to be read back" },
+  "MLCC-small|10nF|0805":   { mpn: "CC0805KRX7R9BB103", note: "10nF 0805 X7R 50V — land-matched (E64); C-number to be read back" },
+  "MLCC-small|220pF|0805":  { mpn: "CC0805JRNPO9BN221", note: "220pF 0805 NP0 50V — land-matched (E64); C-number to be read back" },
+  "MLCC-small|2.2nF|0603":  { mpn: "CC0603KRX7R9BB222", note: "2.2nF 0603 X7R 50V — land-matched (E64); C-number to be read back" },
+  "MLCC-small|10uF|0603":   { mpn: "CL10A106KP8NNNC",   note: "10uF 0603 X5R 10V — card analog nodes <=3.3 V ONLY; the V15 positions stay on the 0805 25 V row (E64); C-number to be read back" },
+  "MLCC-small|1uF|0402":    { mpn: "CL05A105KO5NNNC",   note: "1uF 0402 X5R >=16 V (driver 5 V logic side) — verify suffix at read-back (E64)" },
+  "MLCC-small|1uF|0603":    { mpn: "CL10A105KB8NNNC",   note: "1uF 0603 X7R 25V — land-matched (E64); C-number to be read back" },
+  "MLCC-1u-0805|1uF|0402":  { mpn: "CL05A105KO5NNNC",   note: "1uF 0402 X5R >=16 V (driver 5 V logic side) — verify suffix at read-back (E64)" },
+  "MLCC-1u-0805|1uF|0603":  { mpn: "CL10A105KB8NNNC",   note: "1uF 0603 X7R 25V — land-matched (E64); C-number to be read back" },
+  "MLCC-22p-0603|22pF|0805": { mpn: "CC0805JRNPO9BN220", note: "22pF 0805 C0G 50V (DESAT blank, LLC — E60 value unchanged; the drawn land is 0805) — C-number to be read back (E64)" },
+  "MLCC-47p-0603|47pF|0805": { mpn: "CC0805JRNPO9BN470", note: "47pF 0805 C0G 50V (DESAT blank, Vienna — E60 value unchanged; the drawn land is 0805) — C-number to be read back (E64)" },
+  "R0603-220|220|0805":     { mpn: "RC0805FR-07220RL",  note: "220R 0805 1% (7-seg segment feeds drawn 0805) — land-matched (E64); C-number to be read back" },
+  "R-small|1M|1206":        { mpn: "RC1206FR-071ML",    note: "1M 1206 1% 200 V working (CGND bleed / PE-tie class drawn 1206) — land-matched (E64); C-number to be read back" },
+  "R1206-27R-1%|1M|1206":   { mpn: "RC1206FR-071ML",    note: "1M 1206 1% — land-matched (E64); C-number to be read back" },
 };
 
 // Resolve by family AND value where we have a real catalogue part, else fall back to the
@@ -257,8 +276,10 @@ export const LCSC_BY_VALUE = {
 // number against a BLANK status — unreadable as sourcing state. In this taxonomy a mapped
 // C-number IS the orderable state, so default it rather than leave the column empty. An entry
 // that sets its own status (REVIEW, SECOND-SOURCE) keeps it.
-export const lcscForPart = (mpn, value) => {
-  const hit = LCSC_BY_VALUE[`${mpn}|${value}`];
+export const lcscForPart = (mpn, value, pkg) => {
+  // E64: land-aware — a package-keyed row (family|value|pkg) beats the package-blind row, so the
+  // named part always matches the drawn land. pkg is the chip size ("0402".."2512") or undefined.
+  const hit = (pkg && LCSC_BY_VALUE[`${mpn}|${value}|${pkg}`]) ?? LCSC_BY_VALUE[`${mpn}|${value}`];
   if (!hit) return lcscFor(mpn);
   if (hit.lcsc) return { ...hit, status: hit.status ?? "ORDERABLE" };
   return { ...lcscFor(mpn), ...hit };   // E61: a value row with only a candidate mpn keeps its class status (sheets printed "undefined")

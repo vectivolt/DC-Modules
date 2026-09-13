@@ -80,6 +80,30 @@ export const FOOTPRINT = {
   "HDR-1x5-2.54": "HDR-TH_5P-P2.54-V-M", "TACT-6x6": "KEY-SMD_4P-L6.0-W6.0",
   "LED-2DIG-0.56CC": "LED-SEG-TH_2DIG-0.56", "STUD-M8": "TERM_Stud_M8",
   "TAB-M4": "TERM_Tab_M4",
+  // ---- E64: the R17 unnamed-package queue, closed. Every class added E55–E60 now states its
+  // intended package. Chip classes carry the size their code already names; wound parts and
+  // relays point at the placeholder their family already uses (to-draw queue, layout phase);
+  // cabinet blocks and the DIN supply are assemblies with no PCB land, and say so.
+  "R0603-10k": "R0603", "R0805-2R2": "R0805", "R0603-120R-1%": "R0603", "R0603-3k32-1%": "R0603",
+  "R0603-0R": "R0603", "R2010-1k-0.75W-1%": "R2010",
+  "R2512-0R75-2W-1%": "R2512", "R2512-0R91-1W-1%": "R2512", "R2512-1R2-1W-1%": "R2512",
+  "R1206-13R-1%": "R1206", "R1206-18R-1%": "R1206", "R1206-22R-1%": "R1206",
+  "MLCC-22p-0603": "C0603", "MLCC-47p-0603": "C0603",
+  "X1-4u7-530": "CAP-TH_L31.5-W17.0-P27.50",   // class-typical X1 4.7 µF 530 VAC box (C424W class); confirm at part choice
+  "QA01C-18": "PWRM-TH_QA01C",                 // same catalogue land family as QA01C
+  "74HC02": "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
+  "BZT52-C15": "SOD-123_L2.7-W1.6-LS3.7-RD",
+  "CT-LINE-2500-150A": "CT_window_150A_1-2500",   // ACX-1150 38.1 mm body — its own land, per Talema drawing
+  "CT-RES-1:100-100A": "CT_window_res_1-100", "CT-RES-1:100-80A": "CT_window_res_1-100",
+  "ACX-1100": "CT_window_100A_1-2500", "AS-404": "CT_window_res_1-100",
+  "DM-CHOKE-30": "L_Toroid_sendust_per-SKU", "DM-CHOKE-40": "L_Toroid_sendust_per-SKU", "DM-CHOKE-50": "L_Toroid_sendust_per-SKU",
+  "HFE82V-20-M-CLASS": "RELAY_HFE82V-20_PCB",  // pre-insertion frame to confirm — its own land, per Hongfa drawing
+  "MICROFIT3-40": "CONN-TH_40P-P3.00_MicroFit",
+  "CONN-CARD-88-H": "HDR-TH_88P-2R-P2.54-V-M", // 2×44 keyed header — generated dual-row land
+  "CONN-CARD-88-R": "SKT-TH_88P-2R-P2.54-V",   // mating receptacle — per the chosen series drawing
+  "PMP-50KW-MODULE": "ASSY_MODULE_INTERFACE",  // cabinet block: a module, not a PCB part
+  "CONTROL-CARD-CSU": "ASSY_CARD_SLOT",        // cabinet block: the card assembly in the CSU role
+  "PSU-15V-DIN-WDR": "DIN_RAIL_MOUNT_ASSY",    // Mean Well WDR-60-15: DIN rail, no PCB land
 };
 export const footprintFor = (mpn) => FOOTPRINT[mpn] ?? "";
 
@@ -102,10 +126,9 @@ export const footprintForRef = (designator, mpnHint) => {
 // that for chip packages and keep the class map for everything else.
 const LAND_MM = { "0402": 1.55, "0603": 2.0, "0805": 2.85, "1206": 4.0, "1210": 4.3, "1812": 5.5, "2512": 7.0 };
 
-export const realPackages = (sku) => {
+export const realPackagesFrom = (files) => {   // E64: explicit-file variant (bom-gen needs the card too)
   const out = new Map();
-  for (const side of ["acdc", "dcdc"]) {
-    const p = join(ROOT, "dist/boards", sku, side, "circuit.json");
+  for (const p of files) {
     if (!existsSync(p)) continue;
     const j = JSON.parse(readFileSync(p, "utf8"));
     const name = new Map();
@@ -122,3 +145,7 @@ export const realPackages = (sku) => {
   }
   return out;
 };
+
+export const realPackages = (sku) =>
+  realPackagesFrom(["acdc", "dcdc"].map((side) => join(ROOT, "dist/boards", sku, side, "circuit.json")));
+

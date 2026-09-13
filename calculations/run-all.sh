@@ -31,8 +31,10 @@ node calculations/magnetics/conductor-audit.mjs
 node calculations/magnetics/mag-sync.mjs
 node calculations/system/fault-energy.mjs
 node calculations/system/current-coordination.mjs
+node calculations/system/standby-budget.mjs > /dev/null && echo "STANDBY BUDGET CONSISTENT"
+node calculations/reliability/mtbf-budget.mjs > /dev/null && echo "MTBF BUDGET CONSISTENT"
 node calculations/verify-independent.mjs
-node calculations/footprint-audit.mjs > /dev/null && echo "FOOTPRINT AUDIT HELD"
+node calculations/footprint-audit.mjs > /dev/null && echo "FOOTPRINT AUDIT CLEAN (0 unnamed - 0 mismatched)"
 node calculations/docs-lint.mjs
 sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 54/54 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

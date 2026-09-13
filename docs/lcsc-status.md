@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
   <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
-  <img src="https://img.shields.io/badge/sheets-2662_instances_·_67%25_C--number-2ea44f?style=flat-square" alt="sheets: 2662 instances · 67% C-number"/>
+  <img src="https://img.shields.io/badge/sheets-2662_instances_·_54%25_C--number_·_land--matched-2ea44f?style=flat-square" alt="sheets: 2662 instances · 54% C-number · land-matched"/>
   <img src="https://img.shields.io/badge/gate-bom--maturity_·_MATURE-2ea44f?style=flat-square" alt="gate: bom-maturity · MATURE"/>
 </p>
 
@@ -32,8 +32,8 @@ node calculations/cost/bom-gen.mjs && node calculations/cost/bom-maturity.mjs   
 
 | Field on the sheet | Instances | Share | MPNs |
 |---|---:|---:|---:|
-| real LCSC C-number | **1,781** | 67 % | 75 |
-| `CLASS` | 705 | 26 % | 47 |
+| real LCSC C-number | **1,437** | 54 % | 70 |
+| `CLASS` | 1,049 | 39 % | 57 |
 | `CUSTOM` | 64 | 2 % | 16 |
 | `DIRECT` | 55 | 2 % | 9 |
 | `REVIEW` | 41 | 2 % | 3 |
@@ -45,8 +45,8 @@ node calculations/cost/bom-gen.mjs && node calculations/cost/bom-maturity.mjs   
 ```mermaid
 pie showData
   title Sheet LCSC fields
-  "C-number" : 1781
-  "CLASS" : 705
+  "C-number" : 1437
+  "CLASS" : 1049
   "CUSTOM" : 64
   "DIRECT" : 55
   "REVIEW" : 41
@@ -95,13 +95,13 @@ flowchart LR
 
 | Target | Instances | C-number | CLASS | CUSTOM | DIRECT | REVIEW | ORDERABLE | C-number share |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 30 kW module | 610 | 423 | 145 | 15 | 14 | 9 | 4 | 69 % |
-| 40 kW module | 646 | 435 | 169 | 15 | 14 | 9 | 4 | 67 % |
-| 50 kW module · liquid | 659 | 433 | 183 | 15 | 13 | 11 | 4 | 66 % |
-| 50 kW module · air | 681 | 443 | 195 | 15 | 13 | 11 | 4 | 65 % |
-| Control card | 49 | 46 | 2 | — | — | 1 | — | 94 % |
+| 30 kW module | 610 | 338 | 230 | 15 | 14 | 9 | 4 | 55 % |
+| 40 kW module | 646 | 350 | 254 | 15 | 14 | 9 | 4 | 54 % |
+| 50 kW module · liquid | 659 | 348 | 268 | 15 | 13 | 11 | 4 | 53 % |
+| 50 kW module · air | 681 | 358 | 280 | 15 | 13 | 11 | 4 | 53 % |
+| Control card | 49 | 42 | 6 | — | — | 1 | — | 86 % |
 | 150 kW cabinet | 17 | 1 | 11 | 4 | 1 | — | — | 6 % |
-| **All sheets** | **2,662** | **1,781** | **705** | **64** | **55** | **41** | **16** | **67 %** |
+| **All sheets** | **2,662** | **1,437** | **1,049** | **64** | **55** | **41** | **16** | **54 %** |
 
 The cabinet sheet is mostly blocks and bulk copper — three module interfaces, the CSU card and six M8 studs — so
 a low C-number share there is expected, not a gap.
@@ -140,18 +140,32 @@ lines replaced it.
 
 ## Read-back queue — named candidates without a C-number
 
-The E60 current-coordination rows name a real order code but keep `CLASS` until its LCSC number is read back.
-A number is never invented.
+Two sources feed this queue, and a number is never invented for either: the **E60 coordination rows** (new burden
+and blank values) and the **E64 land-matching pass** — the value map became land-aware (`family|value|package`),
+so 380 positions whose old part number contradicted their own drawn land now name the same-series part in the
+drawn size, pending catalogue read-back. This is why C-number coverage moved 67 % → 54 %: those fields were
+*wrong-package* numbers, and a wrong number is worse than a pending one.
 
-| Candidate MPN | Class spec | Role | Sheet instances |
+| Candidate MPN | Spec | Role | Sheet instances |
 |---|---|---|---:|
-| `CC0603JRNPO9BN220` | 22 pF 0603 C0G 50 V | DESAT blank · LLC | 24 |
-| `CC0603JRNPO9BN470` | 47 pF 0603 C0G 50 V | DESAT blank · Vienna | 12 |
+| `CC0805KRX7R9BB104` | 100 nF 0805 X7R 50 V | driver-bias and sense filters (drawn 0805) | 168 |
+| `CL05A105KO5NNNC` | 1 µF 0402 X5R ≥ 16 V | driver 5 V logic-side decoupling | 72 |
+| `CC0805KRX7R9BB102` | 1 nF 0805 X7R 50 V | sense filters | 36 |
+| `RC0805FR-07220RL` | 220 Ω 0805 1 % | 7-seg segment feeds | 32 |
+| `CC0805JRNPO9BN220` | 22 pF 0805 C0G 50 V | DESAT blank · LLC (E60 value unchanged) | 24 |
+| `CC0805KRX7R9BB103` | 10 nF 0805 X7R 50 V | sense filters | 12 |
+| `CC0805JRNPO9BN470` | 47 pF 0805 C0G 50 V | DESAT blank · Vienna (E60 value unchanged) | 12 |
+| `CC0805JRNPO9BN221` | 220 pF 0805 C0G 50 V | CT filters | 12 |
+| `RC1206FR-071ML` | 1 MΩ 1206 1 % | CGND bleed / PE-tie class (drawn 1206) | 8 |
+| `RC1206FR-0713RL` | 13 Ω 1206 1 % | line-CT burden · 50 kW (E60) | 6 |
 | `RC1206FR-0722RL` | 22 Ω 1206 1 % | line-CT burden · 30 kW (F.01 120 A pk) | 3 |
 | `RC1206FR-0718RL` | 18 Ω 1206 1 % | line-CT burden · 40 kW | 3 |
-| `RC1206FR-0713RL` | 13 Ω 1206 1 % | line-CT burden · 50 kW | 6 |
+| `CL10A106KP8NNNC` | 10 µF 0603 X5R 10 V | card analog nodes ≤ 3.3 V only | 2 |
+| `CL10A105KB8NNNC` | 1 µF 0603 | card rail | 1 |
+| `CC0603KRX7R9BB222` | 2.2 nF 0603 X7R 50 V | card AVMID filter | 1 |
+| **Total** | | **15 MPNs — one distributor read-back session closes all of them** | **392** |
 
-## Why CLASS is not "unfinished" — 705 instances, 47 MPNs
+## Why CLASS is not "unfinished" — 1,049 instances, 57 MPNs
 
 Substituting a generic catalogue part silently drops a rating the design depends on. Two attempts proved it and
 were both reverted:
@@ -204,6 +218,17 @@ The cabinet sheet adds two blocks: `PMP-50KW-MODULE` (3) — costed as the modul
 
 The three `ORDERABLE` parts without an LCSC line are wide-distribution logic: `74HC02D` (8), `NCP1252DDR2G` (4)
 and `BZT52C15` (4).
+
+## What E64 changed
+
+> [!IMPORTANT]
+> - **The value map is land-aware.** `lcscForPart(family, value, package)` consults a `family|value|package` row
+>   first, so the sheet can never again name a part whose package contradicts its own drawn land — the 344
+>   conflicts the E61 audit counted are **0**, and `footprint-audit` holds both queue counts at zero.
+> - **Coverage is honest now, not padded:** 380 wrong-package C-numbers left the sheets (67 % → 54 % real-number
+>   coverage) in favour of land-correct candidates in the read-back queue above. One distributor session restores
+>   the coverage with numbers that are actually orderable against the drawn lands.
+> - The 30 kW D1 / D2 magnetics and every named-candidate row keep their E61 semantics unchanged.
 
 ## What E61 corrected
 

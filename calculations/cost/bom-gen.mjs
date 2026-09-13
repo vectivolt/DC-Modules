@@ -12,6 +12,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DB, skuOverrides, mechLines, biasCommon, BUILDABLE_SKUS } from "./parts-db.mjs";
 import { lcscFor, lcscForPart, lcscSummary, LCSC_BY_VALUE } from "./lcsc-map.mjs";
+import { realPackagesFrom } from "../footprint-map.mjs";   // E64: the drawn land decides the part
 import { footer, masthead } from "../doc-chrome.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 0) => Number(x.toFixed(d));
@@ -58,6 +59,7 @@ for (const sku of SKUS) {
     const p = pth ?? join(ROOT, "dist", "boards", sku, side, "circuit.json");
     if (!existsSync(p)) { console.log(`!! missing build: ${sku}/${side} — run tsci build first`); continue; }
     const j = JSON.parse(readFileSync(p, "utf8"));
+    const landOf = realPackagesFrom([p]);        // E64: chip-size per designator, read off the built land
     for (const c of j.filter(e => e.type === "source_component")) {
       const name = c.name;
       if (/^NC_/.test(name)) continue;
@@ -67,12 +69,14 @@ for (const sku of SKUS) {
       // Split a generic family into per-value lines where a real catalogue part exists for that
       // value (LCSC_BY_VALUE) — "R-small" is two different orderable parts at 10k and at 1k.
       const val = valueOf(c);
-      const vKey = LCSC_BY_VALUE[`${ov.mpn ?? rule.mpn}|${val}`] ? `#${val}` : "";
-      const key = ((ov.price1k || ov.mpn) ? `${ov.mpn ?? rule.mpn}@${name}` : rule.mpn) + vKey;
-      const resolved = lcscForPart(ov.mpn ?? rule.mpn, val);
+      const pkg = landOf.get(name);              // E64: one family|value can be two parts by land
+      const pkgKey = pkg && LCSC_BY_VALUE[`${ov.mpn ?? rule.mpn}|${val}|${pkg}`] ? `#${pkg}` : "";
+      const vKey = (LCSC_BY_VALUE[`${ov.mpn ?? rule.mpn}|${val}`] || pkgKey) ? `#${val}` : "";
+      const key = ((ov.price1k || ov.mpn) ? `${ov.mpn ?? rule.mpn}@${name}` : rule.mpn) + vKey + pkgKey;
+      const resolved = lcscForPart(ov.mpn ?? rule.mpn, val, pkgKey ? pkg : undefined);
       // keep the CLASS as well as the resolved part: the row's mpn becomes the catalogue number,
       // and re-resolving from that later cannot find a LCSC_BY_VALUE entry keyed on the class
-      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, cls: ov.mpn ?? rule.mpn, val, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
+      const rec = parts.get(key) ?? { mpn: resolved.mpn ?? ov.mpn ?? rule.mpn, cls: ov.mpn ?? rule.mpn, val, pkg: pkgKey ? pkg : undefined, mfr: rule.mfr, desc: rule.desc + (ov.note ? ` [${ov.note}]` : ""), alt: rule.alt, qty: 0, price1k: ov.price1k ?? rule.price1k, p10k: ov.p10k ?? rule.p10k, sides: new Set(), refs: [] };
       rec.qty += (ov.qtyMul ?? 1) * mult;
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);
@@ -89,9 +93,9 @@ for (const sku of SKUS) {
     totE += ext; totE10 += ext10;
     const cat = CAT(r.mpn, r.desc);
     cats[cat] = (cats[cat] ?? 0) + ext;
-    const lc = lcscForPart(r.cls ?? r.mpn, r.val ?? "");
+    const lc = lcscForPart(r.cls ?? r.mpn, r.val ?? "", r.pkg);
     if (!lc.status) throw new Error(`bom-gen: ${r.mpn} has no lcsc_status`);   // E61: five value lines per SKU shipped blank past bom-maturity
-    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] ? ` ${r.val}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
+    csv.push([r.mpn, lc.lcsc ?? "", lc.status, r.mfr, `"${r.desc}${r.val && (LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] || r.pkg) ? ` ${r.val}${r.pkg ? ` (${r.pkg} land)` : ""}` : ""}"`, `"${r.alt}"`, [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
   csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", `"${biasCommon.desc}"`, `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
   totE += 2 * biasCommon.price1k;
@@ -213,7 +217,7 @@ md.push(`## Red-line closure levers (10k basis)
 | Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | −₹1,560 | volume agreement |
 | Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | −₹1,050 | system integrator accepts |
 | **E63:** D6 DM chokes deleted after the EVT LISN scan proves the margin without them — the InfyPower benchmark ships no AC DM chokes (also −13…−24 W of loss) | −₹900 | −₹1,890 | −₹5,670 | EVT T-08 measured; the E43 floors stay until then |
-| **E63:** bank-string count re-run at the E33 ripple gate — one string per bank IF the per-can ripple rating holds at double duty | −₹480 | −₹640 [est] | −₹1,920 [est] | engine re-run + can datasheet ripple at temperature |
+| **E63/E64:** drop one bank string per bank — computed 2.1 A/can at 30 kW (2→1) and 1.4 A/can at 40/50 (3→2) against the ~2.8 A can class (verify-independent §F) | −₹480 | −₹640 [est] | −₹1,920 [est] | EVT output-ripple + S/P-transient measurement executes it |
 | **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | −₹405 | requalified sample |
 | **Sum of levers** | **−₹3,250** | **−₹4,765** | **−₹14,295** | |
 

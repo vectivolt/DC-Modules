@@ -367,7 +367,7 @@ The [bom-cost lever table](bom-cost.md#red-line-closure-levers-10k-basis) grows 
 | New lever (E63) | 30 kW | 50 kW | Gate that decides |
 |---|---:|---:|---|
 | Delete the D6 DM chokes if the EVT LISN scan (T-08) proves the margin without them — the benchmark module ships none; also −13…−24 W of loss (+0.03 pt) | −900 | −1,890 | EVT measurement; E43 floors stay until then |
-| Re-run bank sizing at one string per bank — per-can ripple doubles, the E33 gate and the can's temperature-rated ripple decide | −480 | −640 [est] | `stress-audit` bank rows + datasheet |
+| Drop one bank string per bank — **computed at E64**: 2.1 A/can at 30 kW (2→1) and 1.4 A/can at 40/50 (3→2) vs the ~2.8 A can class (`verify-independent` §F) — feasible on ripple | −480 | −640 [est] | EVT output-ripple + S/P-transient measurement executes it |
 | Gate-bias module second source (OFAC requalification already planned at E60) | −135 | −135 | requalified sample |
 
 | Build | @10k today | After all gated levers | Red-line | Verdict |
@@ -409,7 +409,7 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E
 
 | Item | Their number | Action |
 |---|---|---|
-| **Standby power target ≤ 10 W** | < 10 W [D] | adopted as a spec target. Our R2-era arithmetic reads ≈ 12–17 W [est] (link balance pairs 3.7–7.3 W + dividers + aux idle + card). Measure at EVT bring-up; if over, rescale the 40/50 kW link balance pairs — both have 2× headroom inside the F.21b 2.5·τ and the 10-minute discharge label; the 30 kW is the tight one (6.2 min passive). Firmware sleep (fans off, PWM off) costs nothing. |
+| **Standby power target ≤ 10 W** | < 10 W [D] | adopted as a spec target. Our R2-era arithmetic reads ≈ 12–17 W [est] (link balance pairs 3.7–7.3 W + dividers + aux idle + card). Measure at EVT bring-up; if over, rescale the 40/50 kW link balance pairs — both have 2× headroom inside the F.21b 2.5·τ and the 10-minute discharge label; the 30 kW is the tight one (6.2 min passive). Firmware sleep (fans off, PWM off) costs nothing. **E64: now a standing gate** — `standby-budget.mjs` parses the drawn 47k network off the sheets, asserts the registered arithmetic, and carries the estimate band (10.5–18.7 W) until EVT measures. |
 | Heatsink-integrated packaging (their patent) | 3.96 kW/L | logged as an E36 layout-phase DFM input — heatsink-as-structure is the density mechanism; potting itself stays declined |
 | 48-module parallel scale | their rack model | not our product ladder (E55); noted, not adopted |
 

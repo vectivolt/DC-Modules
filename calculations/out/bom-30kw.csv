@@ -63,18 +63,18 @@ CONN-CARD-88-H,,CLASS,any 2×44 0.1in,"88-way 2×44 2.54 mm card interface, PIN 
 TLP152,C17255258,ORDERABLE,Toshiba/eq,"opto gate driver (isolated bus-discharge control, default-OFF — CB-11)","1ED31xx lite",acdc,1,56.7,42,37,33.6,42,34,UQD
 TPS3430WDRCR,C2870545,ORDERABLE,TI/eq,"external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window pins; strap values per datasheet at A6/§K)","MAX6753",card,1,47.3,35,30.8,28,35,28,USUPCARD
 TPS54202DDCR,C191884,ORDERABLE,TI/eq,"15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; on the card since the split, exporting V3P3 over the 88-way)","MP2451/SY8113",acdc+card,2,20.3,15,13.2,12,30,24,UBKA UBKCARD
-CC0603KRX7R9BB104,C14663,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 100nF","any",acdc+dcdc+card,55,0.7,0.5,0.4,0.4,28,22,CA0GBV CB0GBV CC0GBV CQD CV1VA CV1VB CV2VA CV2VB CV3VA CV3VB CBPVA CBPVB
 RC1206FR-7W4R7L,C859161,ORDERABLE,any thick-film HP,"gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%) 4.7","2× 0805 parallel",acdc+dcdc,12,2.7,2,1.8,1.6,24,19,RA0GON RA0GOFF RB0GON RB0GOFF RC0GON RC0GOFF R1HON R1LON R2HON R2LON R3HON R3LON
 NCP1252DDR2G,,ORDERABLE,onsemi,"current-mode flyback controller, RT-set 65 kHz (66.5 kΩ, datasheet Rev 9), SOIC-8. R6-G: D-suffix REPLACES the drawn A — the A version has a mandatory 120 ms pre-soft-start delay with only 1.0 V UVLO hysteresis, and the 940 k startup feed (0.59 mA) minus ICC (1.4–2.2 mA) crashes VCC in 28–60 ms → cold start would HICCUP FOREVER. D: no delay, VCC(on) 14 V / 5.0 V hysteresis, DCmax 45.6% vs the 22% worst duty this DCM flyback needs at the 321 V brown-in. Startup budget: ≈5.6 mA × 60 ms soft-start+takeover = 336 µC → CVCC ≥ 67 µF → 220 µF fitted (3× margin, cold-start ≈ 5–6 s at 565 V precharged bus — boot-time spec note, firmware-guide)","UCC28C43 + RT/CT & BO rework",acdc,1,32.4,24,21.1,19.2,24,19,UAUX
+CC0805KRX7R9BB104,,CLASS,any,"filter/decoupling MLCC 0402–0805 100nF (0805 land)","any",acdc+dcdc+card,47,0.7,0.5,0.4,0.4,24,19,CA0GBV CB0GBV CC0GBV CQD CV1VA CV1VB CV2VA CV2VB CV3VA CV3VB CBPVA CBPVB
 US1M,C412437,ORDERABLE,Yageo/MDD,"1 kV 1 A fast diode SMA (DESAT chain)","M7/US1M any",acdc+dcdc,18,1.6,1.2,1.1,1,22,18,DA0GS1 DA0GS2 DB0GS1 DB0GS2 DC0GS1 DC0GS2 D1HS1 D1HS2 D1LS1 D1LS2 D2HS1 D2HS2
 CC1812JKNPODBN101,C577319,ORDERABLE,any MLCC,"100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W)","film 630V",acdc,3,9.5,7,6.2,5.6,21,17,CA0SN CB0SN CC0SN
-CL21B105KBFNNNE,C28323,ORDERABLE,any,"1 µF 0805 (driver bias) 1uF","any",acdc+dcdc,24,1.1,0.8,0.7,0.6,19,14,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 C5BAC C5BBUS C1HB1 C1HB2 C1LB1 C1LB2
 CRM2512-FX-10R0ELF,C840605,ORDERABLE,any,"10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual)","any",acdc,3,8.1,6,5.3,4.8,18,14,RA0SN RB0SN RC0SN
 ULN2803A,C2865085,ORDERABLE,any,"8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8)","TBD62083",acdc+dcdc,2,12.2,9,7.9,7.2,18,14,UPA ULB
 LED-2DIG-0.56CC,C9900021773,REVIEW,any,"2-digit 7-seg 0.56" common-cathode (HMI)","any",dcdc,1,24.3,18,15.8,14.4,18,14,DISP1
 RC0805FR-0710KL,C84376,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 10k","any",acdc+dcdc+card,41,0.5,0.4,0.4,0.3,16,12,RKFBP RA0GPD RB0GPD RC0GPD RQDPD RTPFCP RTINLP RBEFB RBKF2A RM24B RM15B RFT1
 B2B-PH-K-S,C20504437,ORDERABLE,JST,"2-way header (NTC/term)","any",acdc+dcdc,5,4.1,3,2.6,2.4,15,12,JTPFC JTINL JTLLC JTXFR JTERM
 R2512-HV,,CLASS,UniOhm,"2512 HV-rated (aux startup/brown-in/clamp — 2-series per 860 V)","any 500V-rated",acdc,6,3.4,2.5,2.2,2,15,12,RAUXST1 RAUXST2 RBR1A RBR1B RCLA1 RCLA2
+CL05A105KO5NNNC,,CLASS,any,"1 µF 0805 (driver bias) 1uF (0402 land)","any",acdc+dcdc,18,1.1,0.8,0.7,0.6,14,11,CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 C1HB1 C1HB2 C1LB1 C1LB2 C2HB1 C2HB2
 ARG05BTC6801,C3033907,ORDERABLE,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC) 6.8k","any 0.1%",acdc+dcdc,5,3.4,2.5,2.2,2,13,10,RBPDL RBMDL ROADL ROBDL ROVDL
 GR227M035F12RR0VL4FP0,C45078,ORDERABLE,Aishi,"220 µF 35 V","any",acdc,3,5.4,4,3.5,3.2,12,10,CAUX24 CAUX15 CVCC
 CYA0630-10UH,C5189958,ORDERABLE,any shielded,"10 µH 3 A shielded power inductor (3V3 buck)","any",acdc+card,2,8.1,6,5.3,4.8,12,10,LBKA LBKCARD
@@ -89,36 +89,38 @@ B4B-PH-K-S,C131334,ORDERABLE,JST,"CAN connector 4-way","any",dcdc,1,10.8,8,7,6.4
 PZ254V-11-05P,C492404,ORDERABLE,any,"SWD/boot header (EOL programming — CB-13; LV-only test state §45)","TC2030 pads",card,1,10.8,8,7,6.4,8,6,JSWDCARD
 74HC11,C5524384,ORDERABLE,any,"triple 3-input AND (gate-enable wired-AND, E27)","74LVC1G11 ×1",card,1,10.8,8,7,6.4,8,6,UANDCARD
 RT0805BRD0711K5L,C865153,ORDERABLE,UniOhm,"divider bottom 0.1% (6.8 k unipolar / 11.5 k AC) 11.5k","any 0.1%",acdc,3,3.4,2.5,2.2,2,8,6,RV1DL RV2DL RV3DL
-CC0603KRX7R9BB102,C100040,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 1nF","any",acdc+dcdc+card,12,0.7,0.5,0.4,0.4,6,5,CA0F CB0F CC0F CBPDF CBMDF CFBF COADF COBDF COVDF CWDCARD CRSTCARD CFLTC
+CC0805KRX7R9BB102,,CLASS,any,"filter/decoupling MLCC 0402–0805 1nF (0805 land)","any",acdc+dcdc+card,12,0.7,0.5,0.4,0.4,6,5,CA0F CB0F CC0F CBPDF CBMDF CFBF COADF COBDF COVDF CWDCARD CRSTCARD CFLTC
 TAB-M4,,CLASS,local,"discharge FET heatsink tab stud","—",acdc,1,8.1,6,5.3,4.8,6,5,QDIS
 US2G,C49263,ORDERABLE,MDD/Yageo,"400 V 2 A ultrafast SMB (aux 15 V / self-supply rectifiers — CB-19: PIV ≈ 157 V + ring)","MURS240",acdc,2,4.1,3,2.6,2.4,6,5,DAUX15 DAUXVC
 STTH112U,C56792,ORDERABLE,MDD/eq,"1200 V 1 A fast diode SMB (aux RCD clamp)","US1M ×2 series",acdc,1,8.1,6,5.3,4.8,6,5,DCLA
 TACT-6x6,C318884,REVIEW,any,"tactile switch 6×6 (HMI; pinout pairing VERIFY at BOM freeze, MR-10)","any",dcdc,2,4.1,3,2.6,2.4,6,5,SW1 SW2
 US3M,C3039981,ORDERABLE,onsemi/MDD (MURS340 class),"400 V 3 A ultrafast, SMC pad (aux 24 V rectifier — CB-19: PIV ≈ 176 V + leakage ring; 100 V Schottky avalanched)","ES3 series 400 V",acdc,1,6.8,5,4.4,4,5,4,DAUX24
 1N4148WS,C2128,ORDERABLE,any,"clamp diode SOD-323 (to 3V3)","BAS316",acdc+dcdc,12,0.5,0.4,0.4,0.3,5,4,DA0P DA0N DB0P DB0N DC0P DC0N D1CP D1CN D2CP D2CN D3CP D3CN
+CL21B105KBFNNNE,C28323,ORDERABLE,any,"1 µF 0805 bulk on module-fed floating rails (R5-C: Bias5/shunt-amp/CAN 5 V) 1uF","any",acdc+dcdc,6,1.1,0.8,0.7,0.6,5,4,C5BAC C5BBUS CSHB C5BBKA C5BBKB CCB5
 R0603-10k,,CLASS,any,"10 kΩ 0603 card-interface pull-down (board-side default-OFF on GATE_EN/EN/DO ways — CARD_RULES/E27)","any",acdc+dcdc,16,0.4,0.3,0.3,0.2,5,3,RPD0 RPD1 RPD2 RPD3 RPD4 RPD5 RPD6 RPDB0 RPDB1 RPDB2 RPDB3 RPDB4
 RC0805FR-0710KL,C84376,ORDERABLE,any,"10 kΩ gate-source 10k","any",acdc+dcdc,9,0.7,0.5,0.4,0.4,5,4,RA0GGS RB0GGS RC0GGS R1HGS R1LGS R2HGS R2LGS R3HGS R3LGS
 RC0805FR-07100RL,C105577,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100","any",acdc+dcdc,10,0.5,0.4,0.4,0.3,4,3,RA0GDS RB0GDS RC0GDS RQDG R1HDS R1LDS R2HDS R2LDS R3HDS R3LDS
 PESD1CAN,C143073,ORDERABLE,Nexperia/eq,"CAN TVS","any",dcdc,1,5.4,4,3.5,3.2,4,3,TVSCAN
 74HC595,C19192516,ORDERABLE,any,"shift register SOIC-16 (HMI segments)","TPIC6C595",dcdc,1,5.4,4,3.5,3.2,4,3,USR1
+CC0603KRX7R9BB104,C14663,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 100nF","any",card,8,0.7,0.5,0.4,0.4,4,3,CCARDD0 CCARDD1 CCARDD2 CCARDD3 CCARDD4 CCARDA2 CCARDVR CSFCARD
 RC1206FR-0722RL,,CLASS,any,"22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A) 22","any",acdc,3,1.6,1.2,1.1,1,4,3,RA0B RB0B RC0B
 SMBJ26A,C127562,ORDERABLE,any,"TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS24
 SMBJ16A,C151859,ORDERABLE,any,"TVS 16 V uni SMB (V15 rail clamp — MR-17)","any",acdc,1,4.1,3,2.6,2.4,3,2,DTVS15
 RC0805FR-071KL,C95781,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1k","any",acdc+dcdc,7,0.5,0.4,0.4,0.3,3,2,RA0F RB0F RC0F RCSF R1CF R2CF R3CF
 PT1206FR-7W0R31L,C6148847,ORDERABLE,any current-sense,"0.31 Ω 1% 0.5 W 1206 current-sense (aux Ip clamp 3.2 A — was misclassified into the small-signal catch-all)","any CS 1206",acdc,1,3.4,2.5,2.2,2,3,2,RAUXCS
 R-small,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback)","any",acdc+dcdc+card,6,0.5,0.4,0.4,0.3,2,2,RAUXRT REN2A RM24A RPVBA RPVBB REN2CARD
-CC0603JRNPO9BN220,,CLASS,any,"22 pF 0603 C0G (DESAT blank, LLC ZVS turn-on — E60: 1.44 µs vs the 2 µs discrete-SiC SCWT class; the 100 pF computed 3.39 µs) 22pF","any C0G",dcdc,6,0.5,0.4,0.4,0.3,2,2,C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
+CC0805JRNPO9BN220,,CLASS,any,"22 pF 0603 C0G (DESAT blank, LLC ZVS turn-on — E60: 1.44 µs vs the 2 µs discrete-SiC SCWT class; the 100 pF computed 3.39 µs) 22pF (0805 land)","any C0G",dcdc,6,0.5,0.4,0.4,0.3,2,2,C1HBL C1LBL C2HBL C2LBL C3HBL C3LBL
 R2010-1k-0.75W-1%,,CLASS,any thick-film,"1 kΩ 0.75 W 2010, PV-driver LED feed (R8: ≥10 mA guaranteed-point drive held to the 13.5 V rail floor; 0.24 W worst = 31%)","2× 510R 1206 series",dcdc,2,1.6,1.2,1.1,1,2,2,RPVLA RPVLB
-RC0603FR-07220RL,C107696,ORDERABLE,any,"220 Ω segment 220","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
+RC0805FR-07220RL,,CLASS,any,"220 Ω segment 220 (0805 land)","any",dcdc,8,0.4,0.3,0.3,0.2,2,2,RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7
 RC0805FR-07100KL,C96346,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 100k","any",acdc+card,5,0.5,0.4,0.4,0.3,2,2,RAUXG REN1A RENRCARD RENLCARD REN1CARD
 S8050,C2146,ORDERABLE,CJ,"NPN SOT-23 (QAUXFB: R4-3 opto-emulating FB pull-down · QPVD: R7-B low-side switch for the PV-driver LEDs at the guaranteed 10 mA point)","MMBT2222",acdc+dcdc,4,0.5,0.4,0.4,0.3,2,1,QAUXFB QPVD QDIG1 QDIG2
-CC0603KRX7R9BB103,C100042,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10nF","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
+CC0805KRX7R9BB103,,CLASS,any,"filter/decoupling MLCC 0402–0805 10nF (0805 land)","any",acdc,3,0.7,0.5,0.4,0.4,2,1,CV1DF CV2DF CV3DF
 CL21A106KAYNNNE,C15850,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 10uF","any",acdc+card,3,0.7,0.5,0.4,0.4,2,1,CBKIA CBKICARD CAVO
-CC0603JRNPO9BN221,C106210,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 220pF","any",dcdc,3,0.7,0.5,0.4,0.4,2,1,C1CF C2CF C3CF
-CC0603JRNPO9BN470,,CLASS,any,"47 pF 0603 C0G (DESAT blank, Vienna hard turn-on — E60: NSI66x1A worst response 2.21 µs vs the 4.2 µs SCWT class, ≥0.8 µs blank) 47pF","any C0G",acdc,3,0.5,0.4,0.4,0.3,1,1,CA0GBL CB0GBL CC0GBL
+CC0805JRNPO9BN221,,CLASS,any,"filter/decoupling MLCC 0402–0805 220pF (0805 land)","any",dcdc,3,0.7,0.5,0.4,0.4,2,1,C1CF C2CF C3CF
+CC0805JRNPO9BN470,,CLASS,any,"47 pF 0603 C0G (DESAT blank, Vienna hard turn-on — E60: NSI66x1A worst response 2.21 µs vs the 4.2 µs SCWT class, ≥0.8 µs blank) 47pF (0805 land)","any C0G",acdc,3,0.5,0.4,0.4,0.3,1,1,CA0GBL CB0GBL CC0GBL
 RC0805FR-072K2L,C114561,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 2.2k","any",acdc+dcdc,3,0.5,0.4,0.4,0.3,1,1,RZFB RDIG1 RDIG2
 GRM21BR61C226ME44L,C86817,ORDERABLE,any,"filter/decoupling MLCC 0402–0805 22uF","any",acdc+card,2,0.7,0.5,0.4,0.4,1,1,CBKOA CBKOCARD
-RC0805FR-071ML,C107700,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1M","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RPET RCGB
+RC1206FR-071ML,,CLASS,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 1M (1206 land)","any",acdc+dcdc,2,0.5,0.4,0.4,0.3,1,1,RPET RCGB
 BZT52C15,,ORDERABLE,any,"15 V zener SOD-123 (R4-3: primary-side regulation reference — VCC regulates at VZ+VBE ≈ 15.7 V, aux winding tracks the rails)","MMSZ5245B",acdc,1,1.1,0.8,0.7,0.6,1,1,DZAUX
 RC0805FR-0745K3L,C273885,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 45.3k","any",acdc+card,2,0.5,0.4,0.4,0.3,1,1,RBKF1A RBKF1CARD
 RC0805JR-070RL,C96345,ORDERABLE,any,"small-signal resistor 0402–0805 (pulls/filters/feedback) 0R","any",dcdc+card,2,0.5,0.4,0.4,0.3,1,1,RROLEB RAGTC

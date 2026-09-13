@@ -41,7 +41,7 @@ flowchart TB
   end
   subgraph PHY["4 · Physics gates"]
     direction LR
-    SA["stress-audit"] --> TC["temp-critique"] --> CA["conductor-audit"] --> MS["mag-sync"] --> FE["fault-energy"] --> CC["current-coordination"]
+    SA["stress-audit"] --> TC["temp-critique"] --> CA["conductor-audit"] --> MS["mag-sync"] --> FE["fault-energy"] --> CC["current-coordination"] --> SBY["standby-budget"] --> MTB["mtbf-budget"]
   end
   subgraph IND["5 · Independent and documentation"]
     direction LR
@@ -87,8 +87,10 @@ flowchart TB
 | `magnetics/mag-sync.mjs` | one magnetics identity table asserted across five carriers; computed masses | 50 |
 | `system/fault-energy.mjs` | stored energy, wire vs fuse, surge, air and coolant budget | 22 |
 | `system/current-coordination.mjs` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux | 58 |
+| `system/standby-budget.mjs` | the drawn HV passive network (parsed off the sheets) vs the registered standby arithmetic and the ≤ 10 W target (E64) | — |
+| `reliability/mtbf-budget.mjs` | parts-count MTBF prediction vs the registered table — a BOM change that moves reliability re-registers consciously (E64) | — |
 | `verify-independent.mjs` | clean-room recompute — own netlist parser, own physics, external anchors (§K) | 226 |
-| `footprint-audit.mjs` | the layout-entry queue — unnamed packages and MPN / land conflicts — does not grow past its E61 baseline | 307 · 344 |
+| `footprint-audit.mjs` | the naming queue stays CLOSED — zero unnamed packages, zero MPN / land conflicts (E64) | 0 · 0 |
 | `docs-lint.mjs` | every link and anchor resolves, page chrome matches `doc-chrome.mjs`, diagrams render (E61) | — |
 | `review-checks.mjs` *(run after any schematic edit)* | every audit and review closure R1…R8, E35…E60 as an assertion | 142 |
 | `magnetics-rfq-audit.mjs` *(run after any drawing edit)* | every magnetic drawing complete enough to order | 0 missing |
@@ -133,7 +135,7 @@ Outputs land in `out/`; the CSVs are committed because documents cite them.
 ---
 
 <div align="center">
-<sub><a href="../docs/final-validation-e51.md">← End-to-End Validation Verdict</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../spice/README.md">SPICE Simulation Suites →</a></sub>
+<sub><a href="../docs/reliability-budget.md">← Reliability Budget</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../spice/README.md">SPICE Simulation Suites →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

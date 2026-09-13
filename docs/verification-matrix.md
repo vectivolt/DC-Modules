@@ -33,7 +33,9 @@
 | `review-checks` | every audit and external-review closure as an assertion | **142 pass** |
 | `kicad5-verify` | release-sheet pins against the netlists | **7,784 / 7,784 · 6 targets** |
 | `docs-lint` | links, anchors, page chrome, diagram types | **clean** |
-| `footprint-audit` | unnamed packages and MPN / land conflicts on the release sheets | **held at the E61 baseline · 307 · 344** |
+| `footprint-audit` | unnamed packages and MPN / land conflicts on the release sheets | **0 · 0 — queue closed (E64), ratchet at zero** |
+| `standby-budget` | drawn HV passive network vs the registered standby arithmetic and the ≤ 10 W target (E64) | **consistent · EVT measures** |
+| `mtbf-budget` | parts-count reliability prediction vs the registered table (E64) | **282–325 kh · consistent** |
 
 ```mermaid
 flowchart LR
@@ -139,7 +141,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | R14 | 480 V grid customers need 530 VAC input | M × M | product-owner decision — filter already X1 530 VAC / Y1 440 VAC / MOV 550 VAC; F.07 trip at 500 VAC and 21 V of bus headroom are the real work | open (decision) |
 | R15 | Sourcing restrictions on bias / isolation modules (Mornsun OFAC flag) | M × M | qualify MEAN WELL / RECOM / CUI-class second sources before volume | open |
 | R16 | BOM busbar line below the computed set at 40 / 50 kW (₹953 / ₹1,188 vs ₹810 / ₹850) | L × H | reconcile at the mechanical RFQ | open (cost) |
-| R17 | Release sheets not layout-ready: 307 components name no package; 344 carry an MPN whose package differs from its land | M × H | resolve at layout entry, reading each new C-number back; `footprint-audit` fails if either count grows — [footprints to draw](footprints-to-draw.md) | open (layout entry) |
+| R17 | ~~Release sheets not layout-ready: 307 components named no package; 344 carried an MPN whose package differed from its land~~ | M × H | **resolved at E64** — every part names its package, the value map is land-aware, `footprint-audit` holds both counts at zero; the 392-instance C-number [read-back queue](lcsc-status.md#read-back-queue--named-candidates-without-a-c-number) is purchasing work, not a design gap | **resolved (E64)** |
 | R18 | No series output blocking diode (the InfyPower benchmark fits 1600 V / 90 A ones at 0.15–0.44 % permanent efficiency cost): reverse-battery and bus back-feed are held by K_OUT isolation, the E12b matched-voltage make and mirror weld-check; polarity screening before the plug goes live is the dispenser's job (61851-23 system scope) | L × M | assumption recorded at E62 — [teardown benchmark](benchmark-infypower-teardown.md); module-side relay behaviour already lives in the EVT relay tests | accepted (E62) |
 
 The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).

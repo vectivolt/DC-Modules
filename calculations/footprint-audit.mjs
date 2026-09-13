@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const BLANK_MAX = 307, MISMATCH_MAX = 344;   // E61 baseline — lower these as the layout-entry queue closes
+const BLANK_MAX = 0, MISMATCH_MAX = 0;   // E64: queue CLOSED — every part names its package, every named part matches its land
 
 const LIB = join(ROOT, "kicad5/footprints");
 const lands = new Map(readdirSync(LIB).filter((f) => f.endsWith(".kicad_mod"))
@@ -32,12 +32,12 @@ for (const dir of readdirSync(join(ROOT, "kicad5")).filter((d) => d.startsWith("
     }
   }
 }
-const kind = (name) => lands.get(name) ?? (STANDARD.test(name) ? "standard" : "to draw");
+const kind = (name) => lands.get(name) ?? (STANDARD.test(name) ? "standard" : /^(ASSY_|DIN_)/.test(name) ? "assembly (no PCB land)" : "to draw");
 const sum = (m) => [...m.values()].reduce((a, b) => a + b, 0);
 const byKind = {};
 for (const [name, { n }] of fp) byKind[kind(name)] = (byKind[kind(name)] ?? 0) + n;
 
-console.log("=== FOOTPRINT AUDIT (E61) ===");
+console.log("=== FOOTPRINT AUDIT (E61 gate · E64 queue closed) ===");
 console.log(`  ${fp.size} package names · ${sum(new Map([...fp].map(([k, v]) => [k, v.n])))} instances named · ` +
   Object.entries(byKind).map(([k, v]) => `${k} ${v}`).join(" · "));
 console.log("  TO DRAW:");
@@ -48,5 +48,5 @@ for (const [m, n] of [...blank].sort((a, b) => b[1] - a[1])) console.log(`    ${
 console.log(`  MPN PACKAGE ≠ LAND: ${sum(mismatch)} instances · ${mismatch.size} pairs`);
 for (const [m, n] of [...mismatch].sort((a, b) => b[1] - a[1])) console.log(`    ${String(n).padStart(4)}  ${m}`);
 const grew = sum(blank) > BLANK_MAX || sum(mismatch) > MISMATCH_MAX;
-console.log(grew ? `\nFOOTPRINT QUEUE GREW (baseline ${BLANK_MAX} unnamed · ${MISMATCH_MAX} mismatched)` : "\nFOOTPRINT AUDIT HELD — queue at or below the E61 baseline");
+console.log(grew ? `\nFOOTPRINT QUEUE REOPENED (E64 closed it at ${BLANK_MAX} unnamed · ${MISMATCH_MAX} mismatched — a new part shipped without a package, or a value row lost its land)` : "\nFOOTPRINT AUDIT CLEAN — every component names its package and every named part matches its drawn land (E64)");
 process.exit(grew ? 1 : 0);

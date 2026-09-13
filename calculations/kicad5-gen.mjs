@@ -248,7 +248,8 @@ const partOf = (designator, value) => {
   const ov = (skuOverrides[SKU] ?? {})[designator] ?? {};
   const mpn = ov.mpn ?? rule?.mpn ?? "";
   if (!mpn) return { mpn: "", lc: { status: "UNMAPPED" } };
-  const hit = lcscForPart(mpn, value);          // family+value first, then the per-MPN map
+  const pkg = fpFor(designator, mpn).match(/^[RCL](\d{4})$/)?.[1];   // E64: the drawn land decides the part
+  const hit = lcscForPart(mpn, value, pkg);     // family+value+land first, then value, then the per-MPN map
   return { mpn: hit.mpn ?? mpn, lc: hit };
 };
 
