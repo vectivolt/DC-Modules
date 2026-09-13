@@ -40,6 +40,7 @@ flowchart LR
   BUS -- "REINFORCED<br/>D4 aux transformer" --- CTRL
   CTRL -- "1 MΩ ∥ 4.7 nF Y1<br/>soft bond" --- PE
   CTRL -- "iso CAN ≥ 5 kV" --- CAN["CGND<br/>external CAN"]
+  BUS -- "basic (E65)<br/>bonded magnetics D1 · D2 · D3 · D6-50<br/>gap pad / clamp cap / bore sleeve" --- PE
   style OUT stroke:#bc4e9c,stroke-width:2px
   style CTRL stroke:#2ea44f,stroke-width:2px
 ```
@@ -53,6 +54,9 @@ flowchart LR
 | Output ↔ PE | basic (IT-side per 61851-23 system: IMD at charger level, excluded scope §1) | 1000 VDC | hipot 1.5 kV; creepage per 62477-1 D2 table |
 | Bus (830 V) ↔ control (primary-referenced) | functional | 830 V | spacing per functional table; HV dividers = 8× series 1206 (per-resistor ≤104 V working, 200 V rated) |
 | Board-to-board studs | same domain (bus) | 830 V | stud-stud spacing ≥14 mm |
+| **E65** D1 PFC choke winding ↔ PE-bonded web / plate / M6 bolt (gap pad, insulating clamp cap, bore sleeve) | basic (in series with AC line/bus ↔ PE) | D1 Û_rp ≤ 540 V recurring peak (switch end vs neutral, 50 kHz ripple) | 4 kV impulse type test on the bonded assembly · 100 % part hipot 2.5 kV DC 1 min winding ↔ bond-face + bore electrodes · no PD test (Û_rp ≤ 700 V) |
+| **E65** D6-50 DM choke winding ↔ web / plate (gap pad) | basic (AC line ↔ PE) | D6-50 Û_rp ≤ 410 V (line peak at the 500 VAC edge) | as D1 |
+| **E65** D2 trim and D3 primary winding ↔ gap-padded ferrite core (core treated as PE) | basic (bus ↔ PE) | D2/D3 Û_rp 1140 / 1240 / 1350 / 1350 V at 77–190 kHz (30 / 40 / 50 / 50a) | 100 % winding ↔ core hipot at the drawing level (≥ 2.5 kV DC 1 min class) · PD sample test 5/lot: PD extinction ≥ 1.8 / 1.9 / 2.1 / 2.1 kV, ≤ 10 pC |
 
 ## 3. Creepage and clearance design values (PD2, mat IIIa — from 62477-1-class tables, VERIFY at DQ)
 
@@ -62,6 +66,9 @@ flowchart LR
 | 830 VDC bus (functional) | 4.0 mm | 5.5 mm (slot under TO-247 rows where <5.5) |
 | 1000 VDC output (basic to PE) | 4.5 mm | 6.3 mm |
 | Reinforced pri↔sec (board area under transformer/iso parts) | 8.0 mm | 12.6 mm + routed slots under iso ICs |
+| **E65** D1 winding ↔ bolt, washer, web edge (switch end rides the bus node) | 4.0 mm | 5.5 mm — clamp cap and sleeve set it, not the layout |
+| **E65** D6-50 winding ↔ web / plate hardware | 3.0 mm | 4.0 mm |
+| **E65** D2 / D3 winding ↔ core over the former flanges | 4.0 mm | 8.0 mm, or VPI-cemented joints qualified as solid insulation by the PD sample test — VERIFY at DQ (> 30 kHz: IEC 60664-4) |
 
 Layout rules bank (for the later PCB phase): slots under every iso component; guard the S/P relay
 area (banks float — both banks treated at 1000 V class to PE); Y-caps only across defined barriers
@@ -78,6 +85,7 @@ rev-D 1 MΩ ∥ 4.7 nF static bleed to DGND.
 - [ ] Leakage current budget through Y network (calc pending with final Y values, EMI rev)
 - [ ] 61851-23 system items delegated to charger integrator documented in manual (IMD, output contactors, gun lock)
 - [ ] EMC immunity plan (surge 61000-4-5 on MOV/fuse network — §27 energy calc at EMI rev)
+- [ ] **E65** bonded magnetics: gap-pad dielectric type test at compressed thickness · D2/D3 PD sample test · per-core common-mode capacitance counted in the LISN budget
 
 
 ---
@@ -98,6 +106,29 @@ rev-D 1 MΩ ∥ 4.7 nF static bleed to DGND.
 - Mirror contacts (E30) are separated from main contacts per the relay's internal construction —
   basic isolation minimum at 1000 VDC; VERIFY in the relay datasheet at RFQ (§K).
 - Control domain to PE: 1 MΩ ∥ 4.7 nF Y1 soft bond (no hard earth loop; leakage < 1 mA budget).
+
+---
+
+## Record — E65 bonded magnetics (2026-09-13)
+
+A magnetic that is gap-padded or clamped to PE-bonded metal is part of the **basic** barrier to PE. The E60 drawings classed
+D1 as functional (500 VAC winding–core, "core floats on mount", no hipot) and D2 winding–core as functional, while E42/E65 bond
+D1-50, every D2/D3 and D6-50 to the PE-bonded webs and coldplates. The module EOL hipot (2.5 kV DC line ↔ PE) stressed
+those paths at 3.5× the part level, and no solid insulation on them was specified.
+
+- **Recurring peaks are computed, not assumed** — `stress-audit.mjs` [INS] reads `vienna-switched.csv` (D1 switch end vs grid
+  neutral, recurring cases) and every `llc-stress.csv` corner (D2/D3: bus/2 + resonant-cap peak + the Vienna midpoint-to-neutral
+  peak, ideal switches, CM filter not credited), and fails if the rows above stop matching.
+- **D1 build-up** (the pad touches the winding, not the core): fiberglass-reinforced silicone gap pad 1.0 mm, ≥ 3 W/mK, ≥ 5 kVAC
+  (ASTM D149), qualified at its 0.8 mm compressed thickness for 2.5 kV DC 1 min and 4 kV impulse, RTI ≥ 150 °C, UL 94 V-0; a
+  GF-PPS clamp cap (≥ 4.0 mm clearance / 5.5 mm creepage winding ↔ bolt head and washer) and a bore sleeve (≥ 1.0 mm wall) on
+  the M6 bolt. The 0.13 mm wrap and enamel stay functional. The D1 winding does not reach 700 V recurring, so no PD test.
+- **D2/D3**: the core is conductive and touches the pad, so the winding ↔ core insulation (former, tapes, VPI) is the basic
+  barrier; the pads are specified for heat and low dissipation factor, not credited as insulation. Û_rp > 700 V at 77–190 kHz
+  puts a PD sample test on every lot.
+- **D6-50**: foil winding on the pad at AC-line potential — the D1 pad spec, no PD.
+- **Open** (not insulation-coordination's to close): the pad's common-mode capacitance on the D2/D3 tank node (~50–70 pF per
+  core) in the LISN budget, and the D1/D6 keep-outs to earthed metal in the layout.
 
 ---
 

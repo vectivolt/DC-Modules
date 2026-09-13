@@ -11,8 +11,10 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TANKS } from "./llc/tanks.mjs";
-import { D2 as D2C, D3 as D3C, excitation } from "./magnetics/magnetics-envelope.mjs";
-import { stack } from "./magnetics/geometry.mjs";
+import { D2 as D2C, D3 as D3C, excitation, V_AIR } from "./magnetics/magnetics-envelope.mjs";
+import { stack, CORES } from "./magnetics/geometry.mjs";
+import { D1 as D1C, D1_REGISTERED, D1_LITZ, d1Temp, d1TypeTest, row as vsRow, VS as D1VS } from "./magnetics/d1-choke.mjs";
+import { mechLines } from "./cost/parts-db.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
 let fails = 0, warns = 0;
@@ -85,10 +87,10 @@ for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70]
 const AL79 = 37e-9, LE79 = 0.196, R26 = { a: 2.13e-4, b: 1.637 };
 const mu26 = (H) => 1 / (1 + R26.a * Math.pow(Math.max(H / 79.577, 1e-9), R26.b));
 const D1 = {
-  "30kw": { stack: 3, N: 39, cu: 18.0, Irms: 54.94, Ibias: 78, Lfloor: 75, dT: 36, note: "D1 rev B: N=39±1 lot-trim, 18 mm² (drawing of record)" },
-  "40kw": { stack: 5, N: 26, cu: 25.8, Irms: 73.25, Ibias: 104, Lfloor: 61, dT: 30, note: "D1-40 rev B (E51): N=26±1 on CATALOG AL — the E41 N=23 missed its floor on the real core" },
-  "50kw": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, dT: 41, note: "D1-50 rev B (E51): N=24±1, dIpp basis restated 36.2 A pp (D6-50 floor 11.8 ≤ built 12.9); plate/web-bonded" },
-  "50kwa": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, dT: 41, note: "same D1-50 rev B part (E44 twin)" },
+  "30kw": { stack: 3, N: 39, cu: 18.0, Irms: 54.94, Ibias: 78, Lfloor: 75, note: "D1 rev B: N=39±1 lot-trim, 18 mm² (drawing of record)" },
+  "40kw": { stack: 5, N: 26, cu: 25.8, Irms: 73.25, Ibias: 104, Lfloor: 61, note: "D1-40 rev B (E51): N=26±1 on CATALOG AL — the E41 N=23 missed its floor on the real core" },
+  "50kw": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, note: "D1-50 rev B (E51): N=24±1, dIpp basis restated 36.2 A pp (D6-50 floor 11.8 ≤ built 12.9); plate/web-bonded" },
+  "50kwa": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, note: "same D1-50 rev B part (E44 twin)" },
 };
 for (const [sku, d] of Object.entries(D1)) {
   const L0 = AL79 * d.stack * d.N * d.N * 1e6;
@@ -96,8 +98,67 @@ for (const [sku, d] of Object.entries(D1)) {
   const J = d.Irms / d.cu;
   ck("D1", `${sku} biased-L floor [catalog AL]`, Lb >= d.Lfloor, `L0 ${f(L0, 0)} µH → ${f(Lb, 1)} µH @${d.Ibias} A ≥ ${d.Lfloor} (${d.note})`);
   ck("D1", `${sku} swing floor`, Lb / L0 >= 0.40 || sku === "30kw", `L@Ibias/L0 = ${f(Lb / L0, 2)} (30 kW swing-choke basis exempt: drawing governs via its own biased-L line)`);
-  ck("D1", `${sku} ΔT`, d.dT <= 45, `${d.dT} K vs 45 K acceptance`);
   ck("D1", `${sku} current density`, J <= 5.5, `${f(J, 2)} A/mm² ≤ 5.5`);
+}
+// E65 D1: temperature COMPUTED, not typed (the 36/30/41 K rows came from a 280 cm²/core surface model and a ×1.08 AC factor) —
+// d1-choke: vienna-switched excitation (fundamental, 50 kHz ripple, iGSE Kool Mµ 26 at the datasheet max), datasheet MLT, 2-D-anchored
+// proximity copper, wound surfaces, forced air ∥ gap-pad bond at the magnetics-envelope boundary conditions.
+// Criteria (Class F 155 °C system, proper margin): hot-spot ≤120 °C at the 330 VAC continuous corner, 55 °C inlet · ≤130 °C at
+// 75 °C inlet derated to 40 % (ripple copper and core loss do not derate) · ≤145 °C with every thermal resistance +25 % · one lost
+// bond (the credible single failure) ≤155 °C or a cutout thermostat on the part.
+{
+  const LIM = { hot55: 120, hot75: 130, stress: 145, classF: 155 }, T = (x) => (Number.isFinite(x) ? `${f(x, 0)} °C` : "RUNAWAY");
+  for (const [sku, c] of Object.entries(D1C)) {
+    const r = vsRow(sku, "330-full-bus830-lot92"), a = d1Temp(c, r), b = d1Temp(c, r, { Tin: 75, frac: 0.4, lfK: 0.16 }), s = d1Temp(c, r, { k: 1.25 });
+    const L = a.L, lost = d1Temp(c, r, { mount: "air" }), cut = (mechLines[sku] ?? []).find(([t]) => /D1 over-temperature cutout/i.test(t));
+    ck("D1", `${sku} ${c.stack}×T79 N ${c.N} ${c.nw}×${c.d * 1e3} mm · ${c.mount} — hot-spot at the 330 VAC continuous corner [computed]`, L.fd.ok && a.hot <= LIM.hot55 && b.hot <= LIM.hot75 && s.hot <= LIM.stress,
+      `Cu ${f(L.lf, 1)} W @50 Hz + ${f(L.hf, 1)} W ripple (${L.Ihf} A rms, Fr ${f(L.Fr, 1)} = Ferreira ${f(L.FrFerreira, 1)} × 2-D ${f(L.fd.k2D, 3)}) + Fe ${f(L.fe, 1)} W → hot-spot ${T(a.hot)} @55 °C (winding ${T(a.Tw)}, air ${a.air} °C, web/plate ${a.wall} °C, ${f(a.bondW, 0)} W into it) · ${T(b.hot)} @75 °C derated · +25 % Rth ${T(s.hot)} · limits ${LIM.hot55}/${LIM.hot75}/${LIM.stress} °C [${L.fd.src}]`);
+    ck("D1", `${sku} one lost bond survivable or cut out`, !/1$/.test(c.mount) || lost.hot <= LIM.classF || (cut && cut[1] >= 3),
+      `pad lost → ${c.sku === "50kw" ? "no air path in the sealed module" : `convection only`}: ${T(lost.hot)} vs Class F ${LIM.classF} °C${lost.hot <= LIM.classF ? " — survives" : ` → parts-db D1 cutout line ${cut ? `× ${cut[1]}` : "MISSING"}`}`);
+  }
+  const r30 = vsRow("30kw", "330-full-bus830-lot92"), reg = d1Temp(D1C["30kw"], r30, { mount: D1_REGISTERED["30kw"] });
+  ck("CONTROL", "D1-30 as registered (air-cooled, centre bolt on a silicone pad) is rejected", reg.hot > LIM.hot55,
+    `${T(reg.hot)} hot-spot @55 °C (${f(reg.hot - reg.air, 0)} K over tunnel air, the drawing's own line was ≤45 K) → ${reg.hot > LIM.hot55 ? "rejected" : "PASSES — the gate is blind"}`);
+  // the two fixes evaluated for the air-cooled SKUs (₹/kg [est]: enamelled Cu 950 — the pfc-design basis; Type-2 litz 0.2 mm 1,800)
+  for (const sku of ["30kw", "40kw"]) {
+    const r = vsRow(sku, "330-full-bus830-lot92"), air = d1Temp(D1C[sku], r, { mount: "air" }), litz = d1Temp(D1_LITZ[sku], r), bond = d1Temp(D1C[sku], r);
+    const kgCu = D1C[sku].N * bond.g.mlt * (D1C[sku].nw * Math.PI * D1C[sku].d ** 2 / 4) * 8900, pad = (mechLines[sku] ?? []).find(([t]) => /D1 choke mount kit/.test(t));
+    console.log(`  info  [D1-COOLING] ${sku}: air-cooled as registered ${T(air.hot)} (+25 % ${T(d1Temp(D1C[sku], r, { mount: "air", k: 1.25 }).hot)}; at half the assumed ${V_AIR[sku]} m/s ${T(d1Temp(D1C[sku], r, { mount: "air", vK: 0.5 }).hot)} — the tunnel is not settled, D1-F2) · Type-2 litz ${D1_LITZ[sku].nw}×0.2 mm air-cooled ${T(litz.hot)} (ripple Cu ${f(litz.L.hf, 1)} W, +₹${f(kgCu * (1800 - 950), 0)} of wire per choke) · web gap-pad bond ${T(bond.hot)} (the pad of the ₹${pad?.[2]} mount kit — its insulating cap and sleeve are needed for D1-F3 either way) → bond`);
+  }
+  // D1-F5 mount: the clamp (M6 A4-70 through an insulating cap, Belleville-held) must keep the stack seated on its pad at the 2 g
+  // sweep with a Q of 10 at resonance — preload ≥ 2× the edge lift-off force 4·M/D — without over-pressing the pad (≤ 0.7 MPa)
+  const CLAMP = { torque: 4.5, K: 0.2, d: 6e-3, proof: 9.0e3, padMax: 0.7e6 }, Fp = CLAMP.torque / (CLAMP.K * CLAMP.d);
+  for (const [sku, c] of Object.entries(D1C)) {
+    if (sku === "50kwa") continue;
+    const g = d1Temp(c, vsRow(sku, "330-full-bus830-lot92")).g, kg = 1.1 * (c.stack * CORES.T79.kgCore + c.N * g.mlt * (c.nw * Math.PI * c.d ** 2 / 4) * 8900);
+    const Mo = kg * 9.81 * 2 * 10 * (g.H / 2), need = 2 * (4 * Mo) / g.OD, p = Fp / g.area.face;
+    ck("D1", `${sku} clamp holds the stack at 2 g × Q 10 [computed]`, Fp >= need && p <= CLAMP.padMax && Fp <= 0.5 * CLAMP.proof,
+      `${f(kg, 2)} kg, CG ${f(g.H * 500, 0)} mm → overturning ${f(Mo, 1)} N·m → preload needed ${f(need / 1e3, 2)} kN vs ${f(Fp / 1e3, 2)} kN at ${CLAMP.torque} N·m (K ${CLAMP.K}) · pad ${f(p / 1e6, 2)} MPa ≤ 0.7 · bolt ${f(100 * Fp / CLAMP.proof, 0)} % of proof`);
+  }
+  for (const [sku, c] of Object.entries(D1C)) {
+    const g = d1Temp(c, vsRow(sku, "330-full-bus830-lot92")).g, tt = d1TypeTest(c, vsRow(sku, "330-full-bus830-lot92"));
+    const cut = Math.max(g.mlt, g.mltLayers) * (c.N + 1) * 1.05 + 0.30;                  // lot-trim N+1, the longer turn model, 2 × 150 mm leads
+    console.log(`  info  [D1-BUILD] ${sku}: MLT ${f(g.mlt * 1e3, 0)} mm (layer model ${f(g.mltLayers * 1e3, 0)}) · bore layers ${g.layers.join("/")} of ⌀${f(g.Db * 1e3, 1)} mm bundles → finished ⌀${f(g.OD * 1e3, 0)} × H ${f(g.H * 1e3, 0)} mm (layout open item — tunnel/keep-out rows) · bundle cut ≥ ${f(cut, 1)} m · bonded type test: ${f(tt.Idc, 1)} A DC (= ${f(tt.P, 1)} W) → hot-spot ≤ ${f(tt.rise + 10, 0)} K above the plate (calc ${f(tt.rise, 1)} K + 10)`);
+  }
+}
+// E65 bonded magnetics (D1-F3 · D2-04): a winding gap-padded or clamped to PE-bonded metal is part of the BASIC barrier to PE, at
+// its recurring peak voltage — D1 switch end vs grid neutral (vienna-switched, recurring cases only); D2/D3 tank node = bus/2 + the
+// resonant-cap peak (llc-stress, every corner) + the Vienna midpoint-to-neutral peak (ideal switches, CM filter not credited);
+// D6-50 at line peak (500 VAC edge). PD verification where Û_rp > 700 V at extinction ≥ 1.5·Û_rp (IEC 60664-1 F1·F2, basic).
+// insulation-coordination.md must carry the computed values (tokens rounded up: 10 V, 0.1 kV).
+{
+  const ins = readFileSync(join(ROOT, "docs/insulation-coordination.md"), "utf8").replace(/\s/g, "");
+  const up = (x, s) => Math.ceil(x / s - 1e-9) * s, recurring = (r) => !/dip|jump/.test(r.case) && !(/bus650/.test(r.case) && +r.VLL >= 475);
+  const vRec = (sku, col) => Math.max(...D1VS.filter((r) => r.sku === (sku === "50kwa" ? "50kw" : sku) && recurring(r)).map((r) => +r[col]));
+  const llcTank = (sku) => { const L = readFileSync(join(ROOT, `simulation-results/${sku}/llc-stress.csv`), "utf8").split("\n").filter((l) => l && !l.startsWith("#")), h = L[0].split(",");
+    return Math.max(...L.slice(1).map((l) => { const r = Object.fromEntries(l.split(",").map((v, i) => [h[i], v])); return +r.bus_V / 2 + +r.Vcr_ac_pk_V; })); };
+  const SK = ["30kw", "40kw", "50kw", "50kwa"];
+  const d1 = up(Math.max(...SK.map((s) => vRec(s, "vSwN_pk_V"))), 10), d6 = up((500 * Math.SQRT2) / Math.sqrt(3), 10);
+  const tank = SK.map((s) => up(llcTank(s) + vRec(s, "vMN_pk_V"), 10)), pd = tank.map((v) => up((1.5 * v) / 1000, 0.1).toFixed(1));
+  const tok = [`D1Û_rp≤${d1}V`, `D6-50Û_rp≤${d6}V`, `D2/D3Û_rp${tank.join("/")}V`, `PDextinction≥${pd.join("/")}kV`];
+  const miss = tok.filter((t) => !ins.includes(t));
+  ck("INS", "bonded magnetics carry their basic-barrier rows at the computed recurring peaks", d1 <= 700 && d6 <= 700 && tank.every((v) => v > 700) && miss.length === 0,
+    `D1 ${d1} V · D6-50 ${d6} V (≤700 V: hipot + impulse, no PD) · D2/D3 ${tank.join(" / ")} V (30/40/50/50a — PD sample test at ≥ ${pd.join(" / ")} kV)${miss.length ? ` → MISSING in insulation-coordination.md: ${miss.join(" · ")}` : " → rows present"}`);
 }
 // D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae) at the BIN-MAX inductance and the drawn tank class.
 // E65: D2 carries ~all of Lr (the "engineered 3 µH" transformer leakage was unreachable) — constructions from the

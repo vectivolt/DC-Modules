@@ -97,8 +97,8 @@ const solve2 = (loss, nw, Twall, Tair, cuK, k = 1) => {
   return { Tc, Tw, hot: Math.max(Tc, Tw) };
 };
 // local air velocity at the magnetics scales with the per-SKU airflow need (thermal-report air budget 128/187/245 m³/h)
-const V_AIR = { "30kw": 2.0, "40kw": 2.5, "50kw": 0, "50kwa": 3.2 };
-const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * frac);
+export const V_AIR = { "30kw": 2.0, "40kw": 2.5, "50kw": 0, "50kwa": 3.2 };
+export const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * frac);
 // E65 (ENV-1): the sealed liquid module has no airflow, but its internal air is NOT cool — never-bondable losses hold it at
 // plate + Q_air·R_air-plate ≈ 110 °C at full load (sweep estimate 95–125 °C); still-air coupling h ≈ 5 W/m²K. The air node
 // can then HEAT a well-bonded part, so it is modelled rather than assumed away.

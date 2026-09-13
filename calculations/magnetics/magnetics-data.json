@@ -3,6 +3,8 @@
   "N95_datasheet_curves": "TDK N95 datasheet curves digitized in upb-lea/materialdatabase (04fff8e 2026-08-27); units f Hz, T degC, b T (amplitude, sinusoidal), p_v W/m3",
   "N95_measured": "upb-lea/materialdatabase complex_permeability/LEA_MTB/N95.csv (04fff8e 2026-08-27) \u2014 TU Paderborn LEA measurement, R29.5x19x14.9 toroid, sinusoidal, 30/50/70 degC; p_v = pi f mu'' b^2 / (mu0 |mu|^2)",
   "MAS": "OpenMagnetics/MAS data (901af03 2026-09-13) \u2014 core_shapes (IEC 63093 nominal dimensions) and core_materials (Steinmetz fits with temperature polynomial, saturation)",
+  "KoolMu_MAS": "OpenMagnetics/MAS core_materials.ndjson (901af03 2026-09-13) \u2014 Magnetics Kool Mu 26/60 published loss equation, method 'magnetics': Pv [W/m3] = a * Bpk[T]^b * f[Hz]^c (sinusoidal); density, heat conductivity, saturation",
+  "T79_0077908A7": "Magnetics 0077908A7 datasheet rev 10/7/2021 (mag-inc.com, read E65): coated limits, window, effective parameters, weight, winding length per turn vs winding factor, wound coil dimensions, surface areas, max loss at 100 kHz/100 mT",
   "note": "PC95/DMR95/3C95 are the drawings' material class; N95 is the prototype E70 material (fast-path stock) and is used as the loss reference. MAS Steinmetz at 80 kHz/200 mT/100 degC: N95 238, 3C95 250 kW/m3 vs datasheet interpolation 249 \u2014 the classes agree within 5 %."
  },
  "N95": {
@@ -1102,6 +1104,103 @@
    "A": 47.63,
    "B": 23.3,
    "C": 19.0
+  }
+ },
+ "KoolMu_MAS": {
+  "26": {
+   "method": "magnetics",
+   "a": 1.24738247415621,
+   "b": 1.988,
+   "c": 1.541,
+   "density_kg_m3": 5500,
+   "k_W_mK": 2.6,
+   "Bsat_T_100C": 1.0
+  },
+  "60": {
+   "method": "magnetics",
+   "a": 1.0553675249259,
+   "b": 1.988,
+   "c": 1.541,
+   "density_kg_m3": 5500,
+   "k_W_mK": 2.6,
+   "Bsat_T_100C": 1.0
+  }
+ },
+ "T79_0077908A7": {
+  "coated_mm": {
+   "OD_max": 78.94,
+   "ID_min": 48.21,
+   "HT_max": 17.02
+  },
+  "window_mm2": 1820,
+  "Ae_mm2": 221,
+  "le_mm": 196,
+  "Ve_mm3": 43400,
+  "AL_nH": 37,
+  "AL_tol": 0.08,
+  "weight_g": 240,
+  "loss_max_mW_cm3_100kHz_100mT": 900,
+  "dc_bias_min_Oe": {
+   "80pct": 95,
+   "50pct": 205
+  },
+  "coating_breakdown_min_VAC": 3000,
+  "coating_continuous_C": 200,
+  "winding_length_per_turn_mm": [
+   [
+    0,
+    64.8
+   ],
+   [
+    0.2,
+    77.3
+   ],
+   [
+    0.25,
+    80.1
+   ],
+   [
+    0.3,
+    83.1
+   ],
+   [
+    0.35,
+    86.5
+   ],
+   [
+    0.4,
+    89.2
+   ],
+   [
+    0.45,
+    93.2
+   ],
+   [
+    0.5,
+    97.0
+   ],
+   [
+    0.6,
+    104
+   ],
+   [
+    0.7,
+    113
+   ]
+  ],
+  "wound_mm": {
+   "wf40": {
+    "OD": 86.6,
+    "HT": 32.3
+   },
+   "full": {
+    "OD": 113,
+    "HT": 57.7
+   }
+  },
+  "surface_area_mm2": {
+   "unwound": 13000,
+   "wf40": 24000
   }
  }
 }

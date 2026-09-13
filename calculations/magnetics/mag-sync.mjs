@@ -12,7 +12,8 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
-import { stack } from "./geometry.mjs";
+import { stack, CORES } from "./geometry.mjs";
+import { D1 as D1C, geom as d1Geom } from "./d1-choke.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const mag = readFileSync(join(ROOT, "docs/magnetics.md"), "utf8");
 const pack = readFileSync(join(ROOT, "docs/magnetics-manufacturing-pack.md"), "utf8");
@@ -55,9 +56,10 @@ const RHO = { sendust: 7.0, ferrite: 4.85 };   // g/cm3 (Kool Mµ ~7.0; MnZn ~4.
 const CU = (mlt, n, csa) => mlt * n * csa * 8.9 / 1000;   // kg (mlt m · csa mm2)
 const MASS = [
   // [id, core kg, cu kg, doc'd kg in pack, where]
-  ["D1-30", 3 * 45.6 * RHO.sendust / 1000, CU(0.170, 39, 18.0), 2.2],
-  ["D1-40", 5 * 45.6 * RHO.sendust / 1000, CU(0.190, 26, 25.8), 3.0],
-  ["D1-50", 5 * 45.6 * RHO.sendust / 1000, CU(0.190, 24, 25.8), 2.9],
+  // E65 D1: datasheet core weight (240 g per 0077908A7 — the 45.6 cm³ × 7.0 g/cm³ basis read 330 g) and the Magnetics-table MLT
+  ...Object.entries({ "30kw": 2.2, "40kw": 3.0, "50kw": 2.9 }).map(([sku, doc]) => {
+    const c = D1C[sku]; return [`D1-${sku.replace("kw", "")}`, c.stack * CORES.T79.kgCore, CU(d1Geom(c).mlt, c.N, (c.nw * Math.PI * (c.d * 1e3) ** 2) / 4), doc];
+  }),
   // E65: D2/D3 from the envelope construction tables + per-winding mean turns (geometry.mjs)
   ...Object.entries({ "30kw": 0.70, "40kw": 1.27, "50kw": 1.27 }).map(([sku, doc]) => {
     const c = D2C[sku]; return [`D2-${sku.replace("kw", "")}`, stack(c.core, c.n).kg, c.N * d2Mlt(c) * (c.strands * Math.PI * c.dS ** 2 / 4) * 8900, doc];

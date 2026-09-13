@@ -10,12 +10,16 @@
 //   · split-cap bus (the drawn link cans per half) + constant-power LLC load
 //   · regular-sampled triangular PWM, P current loop + resistive emulation, PI voltage loop,
 //     min-max zero-sequence injection + midpoint balancing (the averaged deck's control family)
+//   · E65 D1 excitation: 50 kHz ripple rms (phase A minus its fundamental), core loss by iGSE on the SIMULATED flux
+//     (B = ∫v_L dt/(N·Ae·stack) per switching period — Faraday, exact under the L(i) roll-off) with the Magnetics Kool Mµ 26
+//     published equation (MAS), and the recurring switch-end-to-grid-neutral peak (insulation-coordination D1 row)
 // Fidelity: devices ideal (no Rds/Vf, no dead time), control is a reference implementation (the HAL
 // is not in this repo) — peaks, ripple and device current SHAPES are what this level proves.
 // Run: node calculations/pfc/vienna-switched.mjs            (→ calculations/out/vienna-switched.csv)
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CORES, DATA } from "../magnetics/geometry.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const f = (x, d = 1) => Number(x.toFixed(d));
 
@@ -29,6 +33,13 @@ export const D1 = {   // drawn D1 rev B parts (magnetics pack) + link cans per h
 // (catalog minimums are 80 %@95 Oe / 50 %@205 Oe)
 const AL = 37e-9, LE = 0.196, R26 = { a: 2.13e-4, b: 1.637 };
 export const Ld1 = (d, i, lot = 1) => lot * AL * d.stack * d.N * d.N / (1 + R26.a * Math.pow(Math.max(d.N * Math.abs(i) / LE / 79.577, 1e-9), R26.b));
+// iGSE (Venkatachalam 2002) on the Magnetics form Pv = a·B̂^b·f^c: ki = a / ((2π)^(c−1) · ∫₀^2π |cos θ|^c dθ · 2^(b−c)), ΔB peak-to-peak
+const KM = DATA.KoolMu_MAS["26"], KI = KM.a / (Math.pow(2 * Math.PI, KM.c - 1) * Array.from({ length: 4096 }, (_, j) => Math.pow(Math.abs(Math.cos(2 * Math.PI * (j + 0.5) / 4096)), KM.c) * 2 * Math.PI / 4096).reduce((a, x) => a + x) * Math.pow(2, KM.b - KM.c));
+{ // self-check: iGSE on a pure sine must return the published equation
+  const f0 = 50e3, B0 = 0.05, n = 2000; let e = 0;
+  for (let j = 0; j < n; j++) e += Math.pow(Math.abs(2 * Math.PI * f0 * B0 * Math.cos((2 * Math.PI * (j + 0.5)) / n)), KM.c) / (n * f0);
+  if (Math.abs((KI * Math.pow(2 * B0, KM.b - KM.c) * e * f0) / (KM.a * B0 ** KM.b * f0 ** KM.c) - 1) > 0.01) throw new Error("vienna-switched: iGSE ki does not reproduce the sine equation");
+}
 
 // event: { type: "dip", t0, t1, depth } (grid amplitude × depth between t0..t1) | { type: "jump", t0, deg }
 export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, Rg = 0.01, event = null, clamp = 1.05 }) {
@@ -44,7 +55,9 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
   const Iclamp = clamp * (d.P / 0.965) / (Math.sqrt(3) * 330) * Math.SQRT2;
   const Kpi = 2 * Math.PI * 3000 * Ld1(d, Iph * Math.SQRT2, lot);   // ~3 kHz current loop at the crest L
   // records over the LAST line cycle
-  const rec = { pk: [0, 0, 0], sq: [0, 0, 0], swSq: 0, dAvg: 0, dSq: 0, dPk: 0, clip: 0, n: 0, re: [0, 0, 0], im: [0, 0, 0], err: 0, vbMin: 1e9, vbMax: 0, mid: 0, hsum: 0 };
+  const rec = { pk: [0, 0, 0], sq: [0, 0, 0], swSq: 0, dAvg: 0, dSq: 0, dPk: 0, clip: 0, n: 0, re: [0, 0, 0], im: [0, 0, 0], err: 0, vbMin: 1e9, vbMax: 0, mid: 0, hsum: 0, vMN: 0, vSw: 0 };
+  const recStart = event ? Math.round((event.t0 - 0.005) / dt) : nTot - nPer;
+  const NAe = d.N * CORES.T79.Ae * d.stack, fx = { B: 0, hi: 0, lo: 0, int: 0, E: 0, T: 0, dBmax: 0 };   // phase-A flux, per switching period
   const iHist = new Float64Array(2000);                        // resampled phase-A current for THD
   const iHf = new Float64Array(20000);                         // 1 MHz samples for the 150 kHz CISPR-band content
   let hIdx = 0, fIdx = 0;
@@ -71,6 +84,10 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       }
     }
     const car = (s % 800) / 800, tri = car < 0.5 ? 2 * car : 2 - 2 * car;
+    if (s % 800 === 0 && s >= recStart) {                    // close one switching period of phase-A flux
+      if (s > recStart) { const dB = fx.hi - fx.lo; fx.E += KI * Math.pow(dB, KM.b - KM.c) * fx.int; fx.T += Ts; fx.dBmax = Math.max(fx.dBmax, dB); }
+      fx.hi = fx.lo = fx.B; fx.int = 0;
+    }
     // ---- leg states: switch OFF (node at a rail) while carrier below the modulation fraction
     let num = 0, den = 0;
     for (let k = 0; k < 3; k++) {
@@ -91,8 +108,9 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
     let iP = 0, iN = 0;
     for (let k = 0; k < 3; k++) {
       if (blocked[k]) continue;
-      const L = Ld1(d, i[k], lot);
-      const ni = i[k] + (vg[k] - Rg * i[k] - node[k] - vMN) / L * dt;
+      const L = Ld1(d, i[k], lot), vL = vg[k] - Rg * i[k] - node[k] - vMN;
+      const ni = i[k] + vL / L * dt;
+      if (k === 0 && s >= recStart) { fx.B += vL * dt / NAe; fx.hi = Math.max(fx.hi, fx.B); fx.lo = Math.min(fx.lo, fx.B); fx.int += Math.pow(Math.abs(vL / NAe), KM.c) * dt; }
       i[k] = (!on[k] && ni * i[k] < 0) ? 0 : ni;               // diode stops conduction at zero
       if (!on[k] && node[k] > 0) iP += i[k];
       if (!on[k] && node[k] < 0) iN += i[k];
@@ -101,8 +119,10 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
     Vp += (iP - iLoad) / d.cHalf * dt;
     Vn += (-iLoad - iN) / d.cHalf * dt;
     // ---- records (last cycle)
-    if (s >= (event ? Math.round((event.t0 - 0.005) / dt) : nTot - nPer)) {
+    if (s >= recStart) {
       rec.n++;
+      rec.vMN = Math.max(rec.vMN, Math.abs(vMN));
+      for (let k = 0; k < 3; k++) rec.vSw = Math.max(rec.vSw, Math.abs(blocked[k] ? vg[k] : node[k] + vMN));   // switch end vs grid neutral
       for (let k = 0; k < 3; k++) {
         rec.pk[k] = Math.max(rec.pk[k], Math.abs(i[k]));
         rec.sq[k] += i[k] * i[k];
@@ -139,6 +159,8 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
     ripHalf: Math.max(...rec.pk) - Math.max(...i1), Isw: Math.sqrt(rec.swSq / n), Id: { avg: rec.dAvg / n, rms: Math.sqrt(rec.dSq / n), pk: rec.dPk },
     L_at_pk: Ld1(d, Math.max(...rec.pk), lot), thd: 100 * Math.sqrt(hh) / h1, track: Math.sqrt(rec.err / n) / (Math.max(...i1) / Math.SQRT2),
     clipPct: 100 * rec.clip / (n / 400), vbusMin: rec.vbMin, vbusMax: rec.vbMax, midDev: rec.mid,
+    Ihf: Math.sqrt(Math.max(0, rec.sq[0] / n - (2 * Math.hypot(rec.re[0], rec.im[0]) / n) ** 2 / 2)), dBpp: fx.dBmax,
+    PfeW: fx.E / fx.T * CORES.T79.Ve * d.stack, vMNpk: rec.vMN, vSwNpk: rec.vSw,
   };
 }
 
@@ -152,20 +174,21 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const CASES = [
     ["330-full-bus830-lot92", { VLL: 330, vbus: 830, lot: 0.92 }, "worst ripple + softest lot (F.01 basis)"],
     ["330-full-bus800-nom", { VLL: 330, vbus: 800, lot: 1 }, "design point (pack operating row)"],
+    ["400-full-bus830-nom", { VLL: 400, vbus: 830, lot: 1 }, "E65 rated point (loss budget: 400 VAC, bank 400 V puts the bus at the 830 V cap)"],
     ["285-derated-bus650", { VLL: 285, vbus: 650, lot: 0.92, pf: 285 / 330 }, "low-line derate floor"],
     ["475-full-bus650", { VLL: 475, vbus: 650, lot: 1 }, "AS-IS policy at high line: bus BELOW line-line peak 672 V"],
     ["475-full-busFloor", { VLL: 475, lot: 1, fix: true }, "E60 line-tracking floor 1.08·√2·VLL"],
     ["500-full-bus650", { VLL: 500, vbus: 650, lot: 1 }, "F.07 edge, AS-IS: 707 V line peak"],
     ["500-full-busFloor", { VLL: 500, lot: 1, fix: true }, "F.07 edge with the floor"],
   ];
-  const rows = [["sku", "case", "VLL", "bus_V", "lot_AL", "Pout_W", "Irms_A", "I1pk_A", "Ipk_A", "ripple_half_A", "L_at_pk_uH", "Isw_rms_A", "Id_avg_A", "Id_rms_A", "Id_pk_A", "THD40_pct", "track_err", "overmod_pct", "vbus_min", "vbus_max", "mid_dev_V", "band150_pk_A", "lisn_basis_150_pk_A", "note"]];
+  const rows = [["sku", "case", "VLL", "bus_V", "lot_AL", "Pout_W", "Irms_A", "I1pk_A", "Ipk_A", "ripple_half_A", "L_at_pk_uH", "Isw_rms_A", "Id_avg_A", "Id_rms_A", "Id_pk_A", "THD40_pct", "track_err", "overmod_pct", "vbus_min", "vbus_max", "mid_dev_V", "band150_pk_A", "lisn_basis_150_pk_A", "Ihf_rms_A", "dBpp_max_mT", "Pfe_igse_W", "vMN_pk_V", "vSwN_pk_V", "note"]];
   const LISN_DIPP = { "30kw": 21.4, "40kw": 28.0, "50kw": 34.8 };   // lisn-precompliance/dm-choke-design triangular ripple basis
   for (const sku of Object.keys(D1)) for (const [tag, c, note] of [...CASES, ...EV]) {
     const vbus = c.fix ? floor(c.VLL) : c.vbus;
     const r = vienna(sku, { VLL: c.VLL, vbus, lot: c.lot, Pout: D1[sku].P * (c.pf ?? 1), cycles: c.cycles ?? 4, event: c.event ?? null });
-    rows.push([sku, tag, c.VLL, f(vbus, 0), c.lot, f(r.Pout, 0), f(r.Irms), f(r.I1pk), f(r.Ipk), f(r.ripHalf), f(r.L_at_pk * 1e6), f(r.Isw), f(r.Id.avg), f(r.Id.rms), f(r.Id.pk), f(r.thd, 2), f(r.track, 3), f(r.clipPct, 1), f(r.vbusMin, 0), f(r.vbusMax, 0), f(r.midDev, 1), f(r.band150pk, 3), f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3), `"${note}"`]);
-    console.log(`${sku} ${tag.padEnd(24)} Irms ${f(r.Irms)} · I1pk ${f(r.I1pk)} · Ipk ${f(r.Ipk)} A (ripple/2 ${f(r.ripHalf)}; L@pk ${f(r.L_at_pk * 1e6)} µH) · sw ${f(r.Isw)} · diode avg ${f(r.Id.avg)}/pk ${f(r.Id.pk)} · THD ${f(r.thd, 2)}% · overmod ${f(r.clipPct, 1)}% · mid ${f(r.midDev, 1)} V · 150 kHz band ${f(r.band150pk, 3)} A pk-eq vs LISN basis ${f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3)}`);
+    rows.push([sku, tag, c.VLL, f(vbus, 0), c.lot, f(r.Pout, 0), f(r.Irms), f(r.I1pk), f(r.Ipk), f(r.ripHalf), f(r.L_at_pk * 1e6), f(r.Isw), f(r.Id.avg), f(r.Id.rms), f(r.Id.pk), f(r.thd, 2), f(r.track, 3), f(r.clipPct, 1), f(r.vbusMin, 0), f(r.vbusMax, 0), f(r.midDev, 1), f(r.band150pk, 3), f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3), f(r.Ihf, 2), f(r.dBpp * 1e3, 1), f(r.PfeW, 2), f(r.vMNpk, 0), f(r.vSwNpk, 0), `"${note}"`]);
+    console.log(`${sku} ${tag.padEnd(24)} Irms ${f(r.Irms)} · I1pk ${f(r.I1pk)} · Ipk ${f(r.Ipk)} A (ripple/2 ${f(r.ripHalf)}; L@pk ${f(r.L_at_pk * 1e6)} µH) · sw ${f(r.Isw)} · diode avg ${f(r.Id.avg)}/pk ${f(r.Id.pk)} · THD ${f(r.thd, 2)}% · overmod ${f(r.clipPct, 1)}% · mid ${f(r.midDev, 1)} V · 150 kHz band ${f(r.band150pk, 3)} A pk-eq vs LISN basis ${f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3)} · D1 ripple ${f(r.Ihf, 2)} A rms, ΔB ${f(r.dBpp * 1e3, 1)} mT pp, Fe ${f(r.PfeW, 2)} W · switch end ${f(r.vSwNpk, 0)} V pk to N`);
   }
-  writeFileSync(join(OUT, "vienna-switched.csv"), "# E60 cycle-by-cycle Vienna (calculations/pfc/vienna-switched.mjs): ideal devices, catalog 26µ L(i), stiff grid\n" + rows.map((r) => r.join(",")).join("\n") + "\n");
+  writeFileSync(join(OUT, "vienna-switched.csv"), "# E60 cycle-by-cycle Vienna (calculations/pfc/vienna-switched.mjs): ideal devices, catalog 26µ L(i), stiff grid; E65 D1 excitation (ripple rms, iGSE Kool Mµ 26, switch-end peak)\n" + rows.map((r) => r.join(",")).join("\n") + "\n");
   console.log("→ calculations/out/vienna-switched.csv");
 }
