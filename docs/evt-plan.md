@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
+  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -67,7 +67,7 @@ flowchart LR
   D --> H["T-08<br/>EMI pre-scan"]
   E --> I["T-09 / T-11–T-13 / T-18 / T-19 / T-27–T-29<br/>aux · discharge · PV drive"]
   G --> J["T-10 / T-14 / T-15<br/>soak · hipot · thermography"]
-  M["T-31<br/>magnetics first articles<br/>Rac @ 140 kHz"] --> K
+  M["T-31<br/>magnetics first articles<br/>short-circuit R @ 203 kHz"] --> K
   VB["T-33<br/>D1 as-mounted<br/>vibration + bond"] --> K
   IP["T-34…T-41<br/>InfyPower-parity hardware<br/>tank · modes · DOUT · clip mount · filter · films · die pulse"] --> K
   H --> K(["BOM freeze gates<br/>loaded PV Vgs · both-polarity trip<br/>D4 clamp · magnetics first articles"])
@@ -140,7 +140,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 | Test | Procedure | Pass criterion |
 |---|---|---|
 | T-30 | **DESAT / short-circuit timing with the E60 blanks (22 pF LLC, 47 pF Vienna)** — SC type I (turn-on into short) and type II (fault under load) at 830 V (LLC) / 415 V half-bus (Vienna), Tj 25 °C and hot, both current polarities; Rogowski + Vds/Vgs capture | measured fault-to-gate-off ≤ **75 % of the vendor tSC** (and ≤ 1.5 µs LLC / ≤ 3.15 µs Vienna); no false DESAT over 10⁴ normal turn-ons at the hot corner; F.11/F.01 comparator trips land within ±5 % of 85/115/145 · 120/155/195 A pk |
-| T-31 | **First-article AC resistance + class-current thermal** — every D2/D3 winding at 140 kHz (impedance analyser; D3 shorted-secondary method), then ΔT at the class current (46.4 / 61.9 / 77.3 A rms) | Rac within **+15 %** of the conductor-audit row (D3 Rac/Rdc ≤ 1.35 per winding; D2 ≤ 4.0 / 2.6 / 2.0 mΩ); ΔT ≤ 40 K (D2) / hotspot ≤ +55 K (D3). **D3 adds an open-secondary 140 kHz check and an S1 thermocouple at PAR-525** (gap fringing is invisible to shorted-secondary Rac); S1 within +10 K of the S2 reading. A miss is a construction error: re-check strand size, foil gauge, lay-up, gap split |
+| T-31 | **First-article AC resistance + class-current thermal** — D3 short-circuit R at 203 kHz, both halves shorted (the leakage fixture, impedance analyser, 25 °C); D2 Rac at 203 kHz; then the bonded thermal type test at the copper corner (70.4 / 93.3 / 116 A rms tank current) | D3 short-circuit R inside the **1-D … MKF bracket** on the module magnetics page (8.3–10.4 mΩ at 30 kW · 4.7–6.1 mΩ at 40 / 50 kW) — the reading decides which copper model the D3 thermal margin rests on, and sets the lot line at the first-article median + 10 %; D2 Rac inside its drawing row; hot-spot ≤ 125 °C at 55 °C inlet (D2, D3). **50 kW air D3:** at MKF's copper the hot-spot computes 130 °C — if the reading lands near the MKF end, widen the foil band (32 mm → 125 °C, 36 mm → 121 °C) after an insulation-coordination check. **D3 adds an open-secondary 140 kHz check and an S1 thermocouple at the core corner (ENV500-55)** (gap fringing is invisible to shorted-secondary Rac); S1 within +10 K of the S2 reading. A miss is a construction error: re-check strand size, foil gauge, lay-up, gap split |
 | T-32 | **Cold soak −30 °C, 4 h, then start and ramp (A11 rev C competitor parity)** — per SKU in the chamber, 330 and 475 VAC | aux starts per T-29; precharge inside the EOL window ×1.3; FW-R3 soft limit engages and releases; no F.xx trip; e-cap ESR/ripple, fan start and magnetics self-warming logged |
 
 ## 4. Bonded PFC chokes on real hardware (E65 · T-33)
@@ -170,5 +170,5 @@ right-sized dies each carry a model basis that only hardware can confirm. Each r
 <div align="center">
 <sub><a href="verification-matrix.md">← Verification Matrix & Risk Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

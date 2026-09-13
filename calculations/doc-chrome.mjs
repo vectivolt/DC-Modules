@@ -3,7 +3,7 @@
 // docs-lint asserts every tracked page is registered here and carries exactly this chrome.
 import { dirname, relative } from "node:path";
 
-export const REV = "E70";
+export const REV = "E71";
 export const UPDATED = "2026-09-14";
 
 const STATUS = {
@@ -18,7 +18,7 @@ export const PAGES = [
   ["README.md", "hero", "", "DC-Modules", "Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules and the 100 / 150 kW products", "OVERVIEW"],
   ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB"],
   ["docs/architecture.md", "platform", "🏗️", "Platform Architecture", "The module in one read — power path, control plane, protection layers, rails and the product family", "LIVE_SPEC"],
-  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E70, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
+  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E71, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
   ["docs/interconnect.md", "platform", "🔌", "Two-Board Sandwich & Interconnect", "Stud pillars, the 40-way harness, grounding, discharge control and the HMI contract", "LIVE_SPEC", [["gate", "module--interconnect--audit", "2ea44f"]]],
   ["docs/control-card-scope.md", "platform", "🧠", "Control-Card Scope", "Why one card runs one module up to 50 kW — connector ways, HRTIMER units and MCU pins", "LIVE_SPEC", [["gate", "cardMap()_refuses_out--of--scope", "2ea44f"]]],
   ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["host__sim", "60%2F60_ASan%2FUBSan", "2ea44f"]]],

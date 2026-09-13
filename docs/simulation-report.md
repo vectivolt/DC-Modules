@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square" alt="status: evidence record"/>
-  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
+  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -29,6 +29,7 @@
 | CT front ends | ngspice at the E67 burdens | F.11 + race ADC peak ≤ 3.131 V | ✅ current |
 | Precharge, discharge, bank bleed | ngspice per SKU | t95 193 / 231 / 310 ms · bus 1.99 / 2.39 / 3.19 s · banks 0.37 / 0.49 / 0.58 s | ✅ current |
 | Aux flyback | drawn-circuit ngspice per SKU, D4 rev E | 16 PASS rows + 1 recorded residual | ✅ current |
+| Magnetics second opinion | PyOpenMagnetics 1.4.0 (MKF), by hand | Rdc ± 2.5 % · D3 copper × 1.29–1.32 of 1-D · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line | 🟡 watch — first-article short-circuit R decides (T-31) |
 | Envelope grid | averaged, temperature-iterated | 4,536 points · 0 failures · 0 folds · max Tj 139 °C | ✅ current |
 | Conducted pre-compliance | per-phase LISN ladder | DM + 32.9 / + 30.6 / + 28.7 dB · CM + 8 dB at 200 pF | 🟡 estimate — never a compliance claim |
 | System scenarios | JS FSM + C host suite | 26 / 26 · 60 / 60 under ASan / UBSan | ✅ current at logic fidelity |
@@ -117,7 +118,7 @@ Every result row carries the tank fingerprint (`FB n2/Lr…/Cr…/Lm…/Coss…`
 ## 9. What simulation does not close
 
 Real switching energy and ring (T-01), both-polarity short-circuit timing (T-30), thermal chamber and fold behaviour (T-04, T-23),
-the EMI chamber (T-08, T-39), first-article magnetics — Rac, leakage, fr (T-31, T-34) — the clip-mount Rth (T-38), the die pulse
+the EMI chamber (T-08, T-39), first-article magnetics — short-circuit R against the 1-D … MKF bracket, leakage, fr (T-31, T-34) — the clip-mount Rth (T-38), the die pulse
 class (T-41), relay life and partial discharge. These are hardware by nature; nothing else remains unrun.
 
 ---
@@ -125,5 +126,5 @@ class (T-41), relay life and partial discharge. These are hardware by nature; no
 <div align="center">
 <sub><a href="simulation-toolchain.md">← Simulation Toolchain</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="verification-matrix.md">Verification Matrix & Risk Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

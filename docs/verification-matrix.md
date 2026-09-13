@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
+  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/verify--independent-227%2F227-2ea44f?style=flat-square" alt="verify-independent: 227/227"/>
 </p>
@@ -35,6 +35,7 @@
 | `docs-lint` | links, anchors, page chrome, diagram types | **clean · 37 documents** |
 | `magnetics-rfq-audit` | every magnetic drawing on the module pages carries every field a winder quotes against (E70: in run-all) | **0 missing · 25 drawings** |
 | `bom-gen` · `mag-docs` | the per-module BOM and magnetics pages, generated from the built boards and the gate evidence (E70) | **4 + 4 pages** |
+| `mkf-crosscheck` *(by hand)* | PyOpenMagnetics second opinion on D2 / D3: Rdc from MKF's turn layout, gap fringing, 2-D copper, the thermal network at that copper (E71) | **Rdc ± 2.5 % · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line → T-31 watch** |
 | `footprint-audit` | unnamed packages and MPN / land conflicts on the release sheets | **0 · 0 — queue closed (E64), ratchet at zero** |
 | `standby-budget` | drawn HV passive network vs the registered standby arithmetic and the ≤ 10 W target (E64) | **consistent · EVT measures** |
 | `mtbf-budget` | parts-count reliability prediction vs the registered table (E64) | **394–422 kh · consistent** (re-registered at E69 on the corrected classifier) |
@@ -161,5 +162,5 @@ The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).
 <div align="center">
 <sub><a href="simulation-report.md">← Simulation Report</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="evt-plan.md">EVT Test Plan →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

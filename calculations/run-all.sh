@@ -44,6 +44,9 @@ echo "MTBF BUDGET CONSISTENT"
 node calculations/verify-independent.mjs
 node calculations/footprint-audit.mjs > /dev/null
 echo "FOOTPRINT AUDIT CLEAN (0 unnamed - 0 mismatched)"
+# E71: the last two generated pages outside the battery — regenerated here so a chrome or revision change never strands them
+node calculations/busbar/busbar-calc.mjs > /dev/null
+node calculations/pin-map-export.mjs > /dev/null
 node calculations/docs-lint.mjs
 sh firmware/run_tests.sh > /dev/null
 echo "FIRMWARE LOGIC 60/60 OK"
