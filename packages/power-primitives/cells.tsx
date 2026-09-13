@@ -80,16 +80,16 @@ export const Cm3FP = () => (
     <courtyardcircle pcbX={0} pcbY={0} radius="36mm" />
     </footprint>
 );
-export const XfmrFP = () => (
+// E67 D3 rev D cell: P1 P2 SH on the primary edge, SA SB on the secondary edge (≥ reinforced creepage across the body)
+export const XfmrCellFP = () => (
   <footprint>
     {["pin1", "pin2", "pin3"].map((h, i) => (
-      <platedhole key={h} portHints={[h]} pcbX={-8 + i * 8} pcbY={-20} holeDiameter="1.6mm" outerDiameter="2.6mm" shape="circle" />
+      <platedhole key={h} portHints={[h]} pcbX={-8 + i * 8} pcbY={-20} holeDiameter="2.6mm" outerDiameter="3.6mm" shape="circle" />
     ))}
-    {["pin4", "pin5", "pin6", "pin7"].map((h, i) => (
-      <platedhole key={h} portHints={[h]} pcbX={-12 + i * 8} pcbY={20} holeDiameter="1.6mm" outerDiameter="2.6mm" shape="circle" />
+    {["pin4", "pin5"].map((h, i) => (
+      <platedhole key={h} portHints={[h]} pcbX={-6 + i * 12} pcbY={20} holeDiameter="2.6mm" outerDiameter="3.6mm" shape="circle" />
     ))}
-  
-    <courtyardrect pcbX={0} pcbY={0} width="40mm" height="35mm" />
+    <courtyardrect pcbX={0} pcbY={0} width="78mm" height="72mm" />
     </footprint>
 );
 export const SnapInFP = () => (
@@ -126,6 +126,14 @@ export const RelayMFP = () => (
     ))}
   
     <courtyardrect pcbX={0} pcbY={-2} width="52mm" height="36mm" />
+    </footprint>
+);
+// E67 output blocking diode: 2-terminal insulated-base module (M5 screw terminals, 34 mm span — MDD/DSEI class)
+export const DiodeModFP = () => (
+  <footprint>
+    <platedhole portHints={["anode", "pin1"]} pcbX={-17} pcbY={0} holeDiameter="5.5mm" outerDiameter="10mm" shape="circle" />
+    <platedhole portHints={["cathode", "pin2"]} pcbX={17} pcbY={0} holeDiameter="5.5mm" outerDiameter="10mm" shape="circle" />
+    <courtyardrect pcbX={0} pcbY={0} width="94mm" height="36mm" />
     </footprint>
 );
 export const StudFP = () => (
@@ -436,47 +444,46 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
 // ---------- LLC half-bridge leg: 2 FETs + 2 driver channels.
 // v3/E28: node RC snubbers DELETED — ZVS topology needs none and CV²f at 140 kHz (≈45 W for
 // 470 pF/830 V) is untenable; ringing containment is the DPT-frozen gate drive + ≤15 nH loop (§P-2).
-export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = false, sec = "LLC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 1, sec = "LLC", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+  // E44 → E67: `par` SG2M023120LJ per position (1–3) — paralleled devices share the one driver channel (per-device 2.2 Ω gate R
+  // off the shared gate net, Kelvin shared, DESAT watching the common drain node), same practice as the E41 Vienna pairs.
+  const np = par === true ? 2 : Number(par) || 1, extra = Array.from({ length: np - 1 }, (_, k) => k + 2);
+  return (
   <group name={`leg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 24 × 15: half-bridge pair stacked at right, its two driver channels in two
-        clean rows to the left (H above L, matching the bridge order).
-        E44 (air-50): `par` PARALLELS a second proven SG2M per position — same practice as the
-        E41 Vienna pair (per-device 2.2 Ω gate R off the shared gate net, Kelvin shared, DESAT
-        shared via the one driver watching the common drain node). Per-package conduction
-        quarters: the air worst corner drops 232 → 99 °C — fans become sufficient. */}
+    {/* Envelope 24 × 15: half-bridge devices stacked at right, the two driver channels in two clean rows to the left (H above L). */}
     <chip name={`Q${id}H`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={17} schY={1.4} schSectionName={sec} />
     <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={0} schX={17} schY={-5.6} schSectionName={sec} />
-    {par ? <chip name={`Q${id}H2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={9} schX={20} schY={1.4} schSectionName={sec} /> : null}
-    {par ? <chip name={`Q${id}L2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={9} schX={20} schY={-5.6} schSectionName={sec} /> : null}
-    {par ? <resistor name={`RG${id}H2`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={9} schX={19} schY={0.4} schSectionName={sec} /> : null}
-    {par ? <resistor name={`RG${id}L2`} resistance="2.2" footprint="0805" pcbX={10} pcbY={9} schX={19} schY={-6.6} schSectionName={sec} /> : null}
+    {extra.map((k) => [
+      <chip key={`h${k}`} name={`Q${id}H${k}`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={9 * (k - 1)} schX={17 + 3 * (k - 1)} schY={1.4} schSectionName={sec} />,
+      <chip key={`l${k}`} name={`Q${id}L${k}`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={9 * (k - 1)} schX={17 + 3 * (k - 1)} schY={-5.6} schSectionName={sec} />,
+      <resistor key={`rh${k}`} name={`RG${id}H${k}`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={9 * (k - 1)} schX={16 + 3 * (k - 1)} schY={0.4} schSectionName={sec} />,
+      <resistor key={`rl${k}`} name={`RG${id}L${k}`} resistance="2.2" footprint="0805" pcbX={10} pcbY={9 * (k - 1)} schX={16 + 3 * (k - 1)} schY={-6.6} schSectionName={sec} />,
+      <trace key={`h${k}g`} from={`.RG${id}H${k} > .pin1`} to={`net.GH_${id}`} />,
+      <trace key={`h${k}g2`} from={`.RG${id}H${k} > .pin2`} to={`.Q${id}H${k} > .G`} />,
+      <trace key={`h${k}d`} from={`.Q${id}H${k} > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />,
+      <trace key={`h${k}s`} from={`.Q${id}H${k} > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />,
+      <trace key={`h${k}k`} from={`.Q${id}H${k} > .KS`} to={`net.KH_${id}`} />,
+      <trace key={`l${k}g`} from={`.RG${id}L${k} > .pin1`} to={`net.GL_${id}`} />,
+      <trace key={`l${k}g2`} from={`.RG${id}L${k} > .pin2`} to={`.Q${id}L${k} > .G`} />,
+      <trace key={`l${k}d`} from={`.Q${id}L${k} > .D`} to={sw} schDisplayLabel={sw.replace("net.", "")} />,
+      <trace key={`l${k}s`} from={`.Q${id}L${k} > .S`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />,
+      <trace key={`l${k}k`} from={`.Q${id}L${k} > .KS`} to={`net.KL_${id}`} />,
+    ])}
     {/* R5-E: matching 2.2 Ω on the ORIGINAL device of each paralleled position (see ViennaPhase) */}
-    {par ? <resistor name={`RG${id}H1`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={0} schX={16} schY={0.4} schSectionName={sec} /> : null}
-    {par ? <resistor name={`RG${id}L1`} resistance="2.2" footprint="0805" pcbX={26} pcbY={0} schX={16} schY={-6.6} schSectionName={sec} /> : null}
-    {par ? [
-      <trace key="h2g" from={`.RG${id}H2 > .pin1`} to={`net.GH_${id}`} />,
-      <trace key="h2g2" from={`.RG${id}H2 > .pin2`} to={`.Q${id}H2 > .G`} />,
-      <trace key="h2d" from={`.Q${id}H2 > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />,
-      <trace key="h2s" from={`.Q${id}H2 > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />,
-      <trace key="h2k" from={`.Q${id}H2 > .KS`} to={`net.KH_${id}`} />,
-      <trace key="l2g" from={`.RG${id}L2 > .pin1`} to={`net.GL_${id}`} />,
-      <trace key="l2g2" from={`.RG${id}L2 > .pin2`} to={`.Q${id}L2 > .G`} />,
-      <trace key="l2d" from={`.Q${id}L2 > .D`} to={sw} schDisplayLabel={sw.replace("net.", "")} />,
-      <trace key="l2s" from={`.Q${id}L2 > .S`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />,
-      <trace key="l2k" from={`.Q${id}L2 > .KS`} to={`net.KL_${id}`} />,
-    ] : null}
+    {np > 1 ? <resistor name={`RG${id}H1`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={0} schX={16} schY={0.4} schSectionName={sec} /> : null}
+    {np > 1 ? <resistor name={`RG${id}L1`} resistance="2.2" footprint="0805" pcbX={26} pcbY={0} schX={16} schY={-6.6} schSectionName={sec} /> : null}
     <DriverCh id={`${id}H`} cBlank="22pF" pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
     <DriverCh id={`${id}L`} cBlank="22pF" pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
     <trace from={`.Q${id}H > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
-    {par ? [
+    {np > 1 ? [
       <trace key="h1a" from={`.RG${id}H1 > .pin1`} to={`net.GH_${id}`} />,
       <trace key="h1b" from={`.RG${id}H1 > .pin2`} to={`.Q${id}H > .G`} />,
     ] : <trace from={`.Q${id}H > .G`} to={`net.GH_${id}`} />}
     <trace from={`.Q${id}H > .KS`} to={`net.KH_${id}`} />
     <trace from={`.Q${id}L > .D`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     <trace from={`.Q${id}L > .S`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />
-    {par ? [
+    {np > 1 ? [
       <trace key="l1a" from={`.RG${id}L1 > .pin1`} to={`net.GL_${id}`} />,
       <trace key="l1b" from={`.RG${id}L1 > .pin2`} to={`.Q${id}L > .G`} />,
     ] : <trace from={`.Q${id}L > .G`} to={`net.GL_${id}`} />}
@@ -484,95 +491,93 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
     <trace from={`net.KH_${id}`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     <trace from={`net.KL_${id}`} to={gnd} schDisplayLabel={gnd.replace("net.", "")} />
   </group>
-);
+  );
+};
 
-// ---------- LLC section: 4× Cr ∥ + trim Lr + resonant CT + transformer + dual JBS bridges
+// ---------- E67 full-bridge LLC tank: Cr bank → external Lr → two series-primary transformer cells → one SiC bridge per bank
 // v3/CB-15: CT return + burden biased to AVMID (VREF/2), series R + dual clamp into the ADC net.
-export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "6.65uH", ctBurden = "1.0", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, vh = "net.F11_VH", vl = "net.F11_VL", flt = "net.FLT", shield = "net.DCN", sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
-  <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
-        resonant-CT measurement chain on its own row below the tank. */}
+export const LlcTank = ({ crN = 9, crVal = "33nF", lr = "4.07uH", ctBurden = "0.36", dPar = 2, swA, swB, rAp, bkAn, rBp, bkBn, ctOut, vh = "net.F11_VH", vl = "net.F11_VL", flt = "net.FLT", shield = "net.DCN", sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+  const pos = [1, 2, 3, 4], par = Array.from({ length: dPar }, (_, k) => (k ? `P${k + 1}` : ""));
+  return (
+  <group name="tank" pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    {/* Envelope 26 × 12: tank L→R (Cr bank → Lr → T1A + T1B → rectifier bridges), resonant-CT measurement chain on its own row.
+        E67: one bridge (legs SWA/SWB) drives the whole tank — the InfyPower REG1K0135A2 architecture. The transformer is two
+        identical E70-stack cells with primaries in series (D3 rev D: the one-bridge copper does not fit one E70 window and
+        nothing taller fits the tunnel); each cell's secondary (S1 ∥ S2 halves around its primary) feeds one bank. */}
     {Array.from({ length: crN }, (_, i) => (
-      <capacitor key={i} name={`C${id}R${i}`} capacitance={crVal} footprint={FilmBoxFP(27.5)} pcbX={(i % 2) * 36 - 18} pcbY={-Math.floor(i / 2) * 16} schX={0} schY={3 - i * 1.4} schSectionName={sec} />
+      <capacitor key={i} name={`C1R${i}`} capacitance={crVal} footprint={FilmBoxFP(27.5)} pcbX={(i % 2) * 36 - 18} pcbY={-Math.floor(i / 2) * 16} schX={(i % 3) * 1.5 - 1.5} schY={3 - Math.floor(i / 3) * 1.4} schSectionName={sec} />
     ))}
-    <inductor name={`L${id}T`} inductance={trim} footprint={<TrimFP />} pcbX={0} pcbY={-100} schX={3} schY={3} schSectionName={sec} />
-    <chip name={`T${id}`} footprint={<XfmrFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "S1A", pin5: "S1B", pin6: "S2A", pin7: "S2B" }} pcbX={0} pcbY={-152} schX={7} schY={1.5} schSectionName={sec} />
-    {["A1", "A2", "A3", "A4"].map((d, i) => (
-      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-27 + i * 18} pcbY={-196} schX={11 + i * 2.4} schY={3} schSectionName={sec} />
-    ))}
-    {["B1", "B2", "B3", "B4"].map((d, i) => (
-      <diode key={d} name={`D${id}${d}`} footprint={<TO247_2 />} pcbX={-27 + i * 18} pcbY={-216} schX={11 + i * 2.4} schY={0.6} schSectionName={sec} />
-    ))}
+    <inductor name="L1R" inductance={lr} footprint={<TrimFP />} pcbX={0} pcbY={-100} schX={3.5} schY={3} schSectionName={sec} />
+    <chip name="T1A" footprint={<XfmrCellFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "SA", pin5: "SB" }} pcbX={-40} pcbY={-152} schX={7} schY={2} schSectionName={sec} />
+    <chip name="T1B" footprint={<XfmrCellFP />} pinLabels={{ pin1: "P1", pin2: "P2", pin3: "SH", pin4: "SA", pin5: "SB" }} pcbX={40} pcbY={-152} schX={7} schY={-1.8} schSectionName={sec} />
+    {["A", "B"].flatMap((bk, j) => pos.flatMap((p) => par.map((q, k) => (
+      <diode key={`${bk}${p}${q}`} name={`D1${bk}${p}${q}`} footprint={<TO247_2 />} pcbX={-27 + (p - 1) * 18} pcbY={-196 - (j * dPar + k) * 22} schX={11 + (p - 1) * 2.4} schY={j ? -1 - k * 1.2 : 3 - k * 1.2} schSectionName={sec} />
+    ))))}
     {/* measurement row: CT → burden → RC filter → clamps (CB-16 values).
-        E42: `ctBurden` re-scales with the tank protection class.
-        E60 (current-coordination gate): F.11 = 85/115/145 A pk at 30/40/50 kW (1.2× the power-solved
-        ngspice worst tank peak) on 1.2/0.91/0.75 Ω — threshold 2.67–2.74 V and observable through
-        the simulated 3 µs internal-short rise (ceilings 135/178/216 A); the old 2.0 Ω/70 A class sat
-        AT the 30 kW operating peak and below the 40/50 kW ones. Metering ≈0.55 V rms at full load. */}
-    <chip name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={-52} schX={0} schY={-3.4} schSectionName={sec} />
-    <resistor name={`R${id}CT`} resistance={ctBurden} footprint="2512" pcbX={34} pcbY={-44} schX={2.6} schY={-3.4} schSectionName={sec} />
-    <resistor name={`R${id}CF`} resistance="1k" footprint="0603" pcbX={34} pcbY={-54} schX={4.6} schY={-3.4} schSectionName={sec} />
-    <capacitor name={`C${id}CF`} capacitance="220pF" footprint="0603" pcbX={34} pcbY={-64} schX={6.6} schY={-4.4} schSectionName={sec} />
-    <diode name={`D${id}CP`} footprint="sod323" pcbX={46} pcbY={-44} schX={7.2} schY={-2.6} schSectionName={sec} />
-    <diode name={`D${id}CN`} footprint="sod323" pcbX={46} pcbY={-54} schX={9.6} schY={-2.6} schSectionName={sec} />
+        E67 (current-coordination gate): F.11 = 140/180/220 A pk at 30/40/50 kW (1.2× the power-solved worst tank peak, the
+        PSM-at-f_max 764 V-bus corner) on 0.47/0.36/0.30 Ω — the post-short race reaches 328/417/503 A 3 µs after the bank
+        collapse, and the burden keeps that monitor peak on the ADC rail. */}
+    <chip name="CT1" footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={-52} schX={0} schY={-6} schSectionName={sec} />
+    <resistor name="R1CT" resistance={ctBurden} footprint="2512" pcbX={34} pcbY={-44} schX={2.6} schY={-6} schSectionName={sec} />
+    <resistor name="R1CF" resistance="1k" footprint="0603" pcbX={34} pcbY={-54} schX={4.6} schY={-6} schSectionName={sec} />
+    <capacitor name="C1CF" capacitance="220pF" footprint="0603" pcbX={34} pcbY={-64} schX={6.6} schY={-7} schSectionName={sec} />
+    <diode name="D1CP" footprint="sod323" pcbX={46} pcbY={-44} schX={7.2} schY={-5.2} schSectionName={sec} />
+    <diode name="D1CN" footprint="sod323" pcbX={46} pcbY={-54} schX={9.6} schY={-5.2} schSectionName={sec} />
     {/* E65 F.11 WINDOW COMPARATOR (both polarities): an internal rectifier short can drive the tank current NEGATIVE first —
-        a single positive threshold then fires 4.5–6.4 µs late and the kill lands at 204–304 A (ngspice internal-short
-        waveforms). Dual 40 ns comparator: A trips above F11_VH, B below F11_VL; push-pull outputs diode-OR (BAT54A common
-        anode) onto the FLT wire-OR = HRTIMER_FLT2 on PB10 — a hardware kill of all outputs in < 1 µs with no MCU comparator
-        pin needed (the on-chip CMP path stays as the secondary). */}
-    <chip name={`U${id}W`} footprint="soic8" pinLabels={{ pin1: "OUTA", pin2: "INAN", pin3: "INAP", pin4: "GND", pin5: "INBP", pin6: "INBN", pin7: "OUTB", pin8: "VCC" }} pcbX={58} pcbY={-49} schX={13} schY={-3.6} schSectionName={sec} />
-    <chip name={`D${id}W`} footprint="sot23" pinLabels={{ pin1: "K1", pin2: "K2", pin3: "A" }} pcbX={68} pcbY={-49} schX={17} schY={-3.2} schSectionName={sec} />
-    <capacitor name={`C${id}WB`} capacitance="100nF" footprint="0603" pcbX={58} pcbY={-58} schX={13} schY={-5.8} schSectionName={sec} />
-    <trace from={`.U${id}W > .INAN`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
-    <trace from={`.U${id}W > .INAP`} to={vh} schDisplayLabel={vh.replace("net.", "")} />
-    <trace from={`.U${id}W > .INBP`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
-    <trace from={`.U${id}W > .INBN`} to={vl} schDisplayLabel={vl.replace("net.", "")} />
-    <trace from={`.U${id}W > .OUTA`} to={`.D${id}W > .K1`} />
-    <trace from={`.U${id}W > .OUTB`} to={`.D${id}W > .K2`} />
-    <trace from={`.D${id}W > .A`} to={flt} schDisplayLabel={flt.replace("net.", "")} />
-    <trace from={`.U${id}W > .VCC`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.U${id}W > .GND`} to="net.AGND" schDisplayLabel="AGND" />
-    <trace from={`.C${id}WB > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.C${id}WB > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
+        a single positive threshold then fires late. Dual 40 ns comparator: A trips above F11_VH, B below F11_VL; push-pull
+        outputs diode-OR (BAT54A common anode) onto the FLT wire-OR = HRTIMER_FLT2 on PB10 — a hardware kill of all outputs in
+        < 1 µs with no MCU comparator pin needed (the on-chip CMP path stays as the secondary). */}
+    <chip name="U1W" footprint="soic8" pinLabels={{ pin1: "OUTA", pin2: "INAN", pin3: "INAP", pin4: "GND", pin5: "INBP", pin6: "INBN", pin7: "OUTB", pin8: "VCC" }} pcbX={58} pcbY={-49} schX={13} schY={-6.2} schSectionName={sec} />
+    <chip name="D1W" footprint="sot23" pinLabels={{ pin1: "K1", pin2: "K2", pin3: "A" }} pcbX={68} pcbY={-49} schX={17} schY={-5.8} schSectionName={sec} />
+    <capacitor name="C1WB" capacitance="100nF" footprint="0603" pcbX={58} pcbY={-58} schX={13} schY={-8.4} schSectionName={sec} />
+    <trace from=".U1W > .INAN" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from=".U1W > .INAP" to={vh} schDisplayLabel={vh.replace("net.", "")} />
+    <trace from=".U1W > .INBP" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from=".U1W > .INBN" to={vl} schDisplayLabel={vl.replace("net.", "")} />
+    <trace from=".U1W > .OUTA" to=".D1W > .K1" />
+    <trace from=".U1W > .OUTB" to=".D1W > .K2" />
+    <trace from=".D1W > .A" to={flt} schDisplayLabel={flt.replace("net.", "")} />
+    <trace from=".U1W > .VCC" to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from=".U1W > .GND" to="net.AGND" schDisplayLabel="AGND" />
+    <trace from=".C1WB > .pin1" to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from=".C1WB > .pin2" to="net.AGND" schDisplayLabel="AGND" />
     {Array.from({ length: crN }, (_, i) => [
-      <trace key={`a${i}`} from={sw} to={`.C${id}R${i} > .pin1`} schDisplayLabel={sw.replace("net.", "")} />,
-      <trace key={`b${i}`} from={`.C${id}R${i} > .pin2`} to={`.L${id}T > .pin1`} />,
+      <trace key={`a${i}`} from={swA} to={`.C1R${i} > .pin1`} schDisplayLabel={swA.replace("net.", "")} />,
+      <trace key={`b${i}`} from={`.C1R${i} > .pin2`} to=".L1R > .pin1" />,
     ])}
-    <trace from={`.L${id}T > .pin2`} to={`.T${id} > .P1`} />
-    <trace from={`.T${id} > .P2`} to={star} schDisplayLabel={star.replace("net.", "")} />
-    {/* E65 (INS-4): the P–S electrostatic shield returns to an HF-stiff PRIMARY rail (DCN, decoupled by the DC link), not to
-        the floating star — the star swings at 3·fsw and nF of shield-to-secondary capacitance on it forms a zero-sequence LC */}
-    <trace from={`.T${id} > .SH`} to={shield} schDisplayLabel={shield.replace("net.", "")} />
-    <trace from={`.CT${id} > .S1`} to={`net.CTB${id}`} />
-    <trace from={`.CT${id} > .S2`} to="net.AVMID" schDisplayLabel="AVMID" />
-    <trace from={`.R${id}CT > .pin1`} to={`net.CTB${id}`} />
-    <trace from={`.R${id}CT > .pin2`} to="net.AVMID" schDisplayLabel="AVMID" />
-    <trace from={`.R${id}CF > .pin1`} to={`net.CTB${id}`} />
-    <trace from={`.R${id}CF > .pin2`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
-    <trace from={`.C${id}CF > .pin1`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
-    <trace from={`.C${id}CF > .pin2`} to="net.AVMID" schDisplayLabel="AVMID" />
-    <trace from={`.D${id}CP > .anode`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
-    <trace from={`.D${id}CP > .cathode`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.D${id}CN > .anode`} to="net.AGND" schDisplayLabel="AGND" />
-    <trace from={`.D${id}CN > .cathode`} to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
-    <trace from={`.D${id}A1 > .anode`} to={`.T${id} > .S1A`} />
-    <trace from={`.D${id}A1 > .cathode`} to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
-    <trace from={`.D${id}A2 > .cathode`} to={`.T${id} > .S1A`} />
-    <trace from={`.D${id}A2 > .anode`} to={bkAn} schDisplayLabel={bkAn.replace("net.", "")} />
-    <trace from={`.D${id}A3 > .anode`} to={`.T${id} > .S1B`} />
-    <trace from={`.D${id}A3 > .cathode`} to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
-    <trace from={`.D${id}A4 > .cathode`} to={`.T${id} > .S1B`} />
-    <trace from={`.D${id}A4 > .anode`} to={bkAn} schDisplayLabel={bkAn.replace("net.", "")} />
-    <trace from={`.D${id}B1 > .anode`} to={`.T${id} > .S2A`} />
-    <trace from={`.D${id}B1 > .cathode`} to={bkBp} schDisplayLabel={bkBp.replace("net.", "")} />
-    <trace from={`.D${id}B2 > .cathode`} to={`.T${id} > .S2A`} />
-    <trace from={`.D${id}B2 > .anode`} to={bkBn} schDisplayLabel={bkBn.replace("net.", "")} />
-    <trace from={`.D${id}B3 > .anode`} to={`.T${id} > .S2B`} />
-    <trace from={`.D${id}B3 > .cathode`} to={bkBp} schDisplayLabel={bkBp.replace("net.", "")} />
-    <trace from={`.D${id}B4 > .cathode`} to={`.T${id} > .S2B`} />
-    <trace from={`.D${id}B4 > .anode`} to={bkBn} schDisplayLabel={bkBn.replace("net.", "")} />
+    <trace from=".L1R > .pin2" to=".T1A > .P1" />
+    <trace from=".T1A > .P2" to=".T1B > .P1" />
+    <trace from=".T1B > .P2" to={swB} schDisplayLabel={swB.replace("net.", "")} />
+    {/* E65 (INS-4): each cell's P–S electrostatic shield returns to an HF-stiff PRIMARY rail (DCN, decoupled by the DC link) */}
+    <trace from=".T1A > .SH" to={shield} schDisplayLabel={shield.replace("net.", "")} />
+    <trace from=".T1B > .SH" to={shield} schDisplayLabel={shield.replace("net.", "")} />
+    <trace from=".CT1 > .S1" to="net.CTB1" />
+    <trace from=".CT1 > .S2" to="net.AVMID" schDisplayLabel="AVMID" />
+    <trace from=".R1CT > .pin1" to="net.CTB1" />
+    <trace from=".R1CT > .pin2" to="net.AVMID" schDisplayLabel="AVMID" />
+    <trace from=".R1CF > .pin1" to="net.CTB1" />
+    <trace from=".R1CF > .pin2" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from=".C1CF > .pin1" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from=".C1CF > .pin2" to="net.AVMID" schDisplayLabel="AVMID" />
+    <trace from=".D1CP > .anode" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    <trace from=".D1CP > .cathode" to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from=".D1CN > .anode" to="net.AGND" schDisplayLabel="AGND" />
+    <trace from=".D1CN > .cathode" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
+    {/* E67: the bridges feed the RECTIFIER nodes RKAP/RKBP — the bank filter (film → Lf → electrolytic, BankFilter) sits between
+        them and the banks, because one bridge has no interleave cancellation (ngspice: 30/39/49 A rms at 2·fsw per bank) */}
+    {[["A", "T1A", rAp, bkAn], ["B", "T1B", rBp, bkBn]].flatMap(([bk, t, bp, bn]) => par.flatMap((q) => [
+      <trace key={`${bk}1a${q}`} from={`.D1${bk}1${q} > .anode`} to={`.${t} > .SA`} />,
+      <trace key={`${bk}1c${q}`} from={`.D1${bk}1${q} > .cathode`} to={bp} schDisplayLabel={bp.replace("net.", "")} />,
+      <trace key={`${bk}2c${q}`} from={`.D1${bk}2${q} > .cathode`} to={`.${t} > .SA`} />,
+      <trace key={`${bk}2a${q}`} from={`.D1${bk}2${q} > .anode`} to={bn} schDisplayLabel={bn.replace("net.", "")} />,
+      <trace key={`${bk}3a${q}`} from={`.D1${bk}3${q} > .anode`} to={`.${t} > .SB`} />,
+      <trace key={`${bk}3c${q}`} from={`.D1${bk}3${q} > .cathode`} to={bp} schDisplayLabel={bp.replace("net.", "")} />,
+      <trace key={`${bk}4c${q}`} from={`.D1${bk}4${q} > .cathode`} to={`.${t} > .SB`} />,
+      <trace key={`${bk}4a${q}`} from={`.D1${bk}4${q} > .anode`} to={bn} schDisplayLabel={bn.replace("net.", "")} />,
+    ]))}
   </group>
-);
+  );
+};
 
 // ---------- split DC link
 export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
@@ -613,65 +618,51 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
 // (2× ~70 mA on one ULN channel), mirrors in SERIES with the primary's → RELAY_FB reads
 // "both mains open" (same semantics as the KPRE chain). Sharing note: contact-R-matched pairs
 // or 250 A-class contacts — §K; symmetric busbar per layout note P-16.
-export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, dual = false, dualOut = false, sec = "SPMATRIX", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
-  const HV = ["KSER", "KPARA", "KPARB", "KOUT"];
-  const contacts: Record<string, [string, string]> = { KSER: [bkAn, bkBp], KPARA: [bkAp, bkBp], KPARB: [bkAn, bkBn], KOUT: [bkAp, outp] };
-  // E42: `dualOut` pairs ONLY K_OUT (the one matrix position that carries full output current in
-  // every mode — 167 A at 50 kW = 84% of one 200 A class). KSER (SER-mode ≤100 A) and KPARA/B
-  // (per-bank ≤84 A) stay inside their class single. `dual` (120 kW reference) pairs all four.
-  const paired = dual ? HV : dualOut ? ["KOUT"] : [];
+// ---------- E67 bank filter (one per bank): rectifier film → filter inductor → electrolytic — the InfyPower output build
+// (film at the bridge, enamelled filter choke, 550 V electrolytics). The film takes the 2·fsw ripple of the full-bridge rectifier
+// (≤ 10 A rms per 2.2 µF part at the simulated corners); Lf holds it off the electrolytic (≤ 2 A rms into Ce); Ce is the bank.
+export const BankFilter = ({ id, rkp, bkp, bkn, nF = 4, nE = 1, lf = "10uH", sec = "BANKS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+  <group name={`bank${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
+    {Array.from({ length: nF }, (_, i) => (
+      <capacitor key={`f${i}`} name={`CF${id}${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={i * 34} pcbY={0} schX={i * 1.6} schY={0} schSectionName={sec} />
+    ))}
+    <inductor name={`LF${id}`} inductance={lf} footprint={<ChokeFP />} pcbX={nF * 34 + 40} pcbY={0} schX={nF * 1.6 + 1.2} schY={0} schSectionName={sec} />
+    {Array.from({ length: nE }, (_, i) => (
+      <capacitor key={`e${i}`} name={`CE${id}${i}`} capacitance="330uF" footprint={<SnapInFP />} pcbX={nF * 34 + 100 + i * 42} pcbY={0} schX={nF * 1.6 + 3.4 + i * 1.6} schY={0} schSectionName={sec} />
+    ))}
+    {Array.from({ length: nF }, (_, i) => [
+      <trace key={`fp${i}`} from={`.CF${id}${i} > .pin1`} to={rkp} schDisplayLabel={rkp.replace("net.", "")} />,
+      <trace key={`fn${i}`} from={`.CF${id}${i} > .pin2`} to={bkn} schDisplayLabel={bkn.replace("net.", "")} />,
+    ])}
+    <trace from={`.LF${id} > .pin1`} to={rkp} schDisplayLabel={rkp.replace("net.", "")} />
+    <trace from={`.LF${id} > .pin2`} to={bkp} schDisplayLabel={bkp.replace("net.", "")} />
+    {Array.from({ length: nE }, (_, i) => [
+      <trace key={`ep${i}`} from={`.CE${id}${i} > .pin1`} to={bkp} schDisplayLabel={bkp.replace("net.", "")} />,
+      <trace key={`en${i}`} from={`.CE${id}${i} > .pin2`} to={bkn} schDisplayLabel={bkn.replace("net.", "")} />,
+    ])}
+  </group>
+);
+
+// ---------- E67 series/parallel matrix — InfyPower practice: PCB power relays switched at ZERO current (mode changes only in standby,
+// LLC stopped) and a series blocking diode on the output. The E30 mirror relays, K_OUT, the pre-insertion pair and their second
+// exclusion stage are retired: the diode makes a battery or a paralleled module unable to back-feed, so the output needs no
+// matched-voltage make; a welded matrix contact shows as a bank imbalance at the next SER start (F.17).
+export const SeriesParallelRelayMatrix = ({ bkAp, bkAn, bkBp, bkBn, outp, sec = "SPMATRIX", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+  const contacts: Record<string, [string, string]> = { KSER: [bkAn, bkBp], KPARA: [bkAp, bkBp], KPARB: [bkAn, bkBn] };
   return (
   <group name="spmatrix" pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 22 × 14 (single) / 22 × 22 (dual): relays in a 3-column grid, each with its
-        readback pull-up beside it; pre-insertion resistors in their own column at right. */}
-    {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
-      <chip key={k} name={k} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 2) * 58} pcbY={Math.floor(i / 2) * 42} schX={(i % 3) * 6} schY={-Math.floor(i / 3) * 5} schSectionName={sec} />
+    {Object.keys(contacts).map((k, i) => (
+      <chip key={k} name={k} footprint={<RelayFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B" }} pcbX={i * 58} pcbY={0} schX={i * 6} schY={0} schSectionName={sec} />
     ))}
-    {paired.map((k, i) => (
-      <chip key={`${k}2`} name={`${k}2`} footprint={<RelayMFP />} pinLabels={{ pin1: "C1", pin2: "C2", pin3: "A", pin4: "B", pin5: "M1", pin6: "M2" }} pcbX={(i % 2) * 58} pcbY={138 + Math.floor(i / 2) * 42} schX={(i % 3) * 6} schY={-10 - Math.floor(i / 3) * 5} schSectionName={sec} />
-    ))}
-    {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map((k, i) => (
-      <resistor key={`r${k}`} name={`RKPU${k}`} resistance="10k" footprint="0603" pcbX={(i % 2) * 58 + 26} pcbY={Math.floor(i / 2) * 42 + 20} schX={(i % 3) * 6 + 2.6} schY={-Math.floor(i / 3) * 5 + 1.6} schSectionName={sec} />
-    ))}
-    <chip name="RPREA" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={29} pcbY={-32} schX={17} schY={0} schSectionName={sec} />
-    <chip name="RPREB" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={29} pcbY={-46} schX={17} schY={-5} schSectionName={sec} />
-    {["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"].map(k => [
+    {Object.entries(contacts).map(([k, [a, b]]) => [
       <trace key={`c1${k}`} from={`.${k} > .C1`} to="net.V24" schDisplayLabel="V24" />,
       <trace key={`c2${k}`} from={`.${k} > .C2`} to={`net.COIL_${k}`} schDisplayLabel={`COIL_${k}`} />,
-      <trace key={`m1${k}`} from={`.${k} > .M1`} to="net.DGND" schDisplayLabel="DGND" />,
-      <trace key={`pu${k}`} from={`.RKPU${k} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />,
-      <trace key={`pu2${k}`} from={`.RKPU${k} > .pin2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />,
+      <trace key={`a${k}`} from={`.${k} > .A`} to={a} schDisplayLabel={a.replace("net.", "")} />,
+      <trace key={`b${k}`} from={`.${k} > .B`} to={b} schDisplayLabel={b.replace("net.", "")} />,
     ])}
-    {/* mirror chain: single → M2 to FB; paired → M2 into the pair relay's mirror, then FB —
-        ONE readback line proves BOTH relays released (series mirror = welded-contact detect
-        covers the pair; E30 logic unchanged in firmware) */}
-    {["KPREA", "KPREB"].map(k => (
-      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />
-    ))}
-    {HV.map(k => paired.includes(k) ? [
-      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`.${k}2 > .M1`} />,
-      <trace key={`m3${k}`} from={`.${k}2 > .M2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />,
-      <trace key={`c12${k}`} from={`.${k}2 > .C1`} to="net.V24" schDisplayLabel="V24" />,
-      <trace key={`c22${k}`} from={`.${k}2 > .C2`} to={`net.COIL_${k}`} schDisplayLabel={`COIL_${k}`} />,
-      <trace key={`a2${k}`} from={`.${k}2 > .A`} to={contacts[k][0]} schDisplayLabel={contacts[k][0].replace("net.", "")} />,
-      <trace key={`b2${k}`} from={`.${k}2 > .B`} to={contacts[k][1]} schDisplayLabel={contacts[k][1].replace("net.", "")} />,
-    ] : [
-      <trace key={`m2${k}`} from={`.${k} > .M2`} to={`net.RELAY_FB_${k}`} schDisplayLabel={`RELAY_FB_${k}`} />,
-    ])}
-    <trace from=".KSER > .A" to={bkAn} schDisplayLabel={bkAn.replace("net.", "")} />
-    <trace from=".KSER > .B" to={bkBp} schDisplayLabel={bkBp.replace("net.", "")} />
-    <trace from=".KPARA > .A" to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
-    <trace from=".KPARA > .B" to={bkBp} schDisplayLabel={bkBp.replace("net.", "")} />
-    <trace from=".KPARB > .A" to={bkAn} schDisplayLabel={bkAn.replace("net.", "")} />
-    <trace from=".KPARB > .B" to={bkBn} schDisplayLabel={bkBn.replace("net.", "")} />
-    <trace from=".KPREA > .A" to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
-    <trace from=".KPREA > .B" to=".RPREA > .A" />
-    <trace from=".RPREA > .B" to={bkBp} schDisplayLabel={bkBp.replace("net.", "")} />
-    <trace from=".KPREB > .A" to={bkAn} schDisplayLabel={bkAn.replace("net.", "")} />
-    <trace from=".KPREB > .B" to=".RPREB > .A" />
-    <trace from=".RPREB > .B" to={bkBn} schDisplayLabel={bkBn.replace("net.", "")} />
-    <trace from=".KOUT > .A" to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
-    <trace from=".KOUT > .B" to={outp} schDisplayLabel={outp.replace("net.", "")} />
+    <diode name="DOUT" footprint={<DiodeModFP />} pcbX={0} pcbY={-40} schX={18} schY={0} schSectionName={sec} />
+    <trace from=".DOUT > .anode" to={bkAp} schDisplayLabel={bkAp.replace("net.", "")} />
+    <trace from=".DOUT > .cathode" to={outp} schDisplayLabel={outp.replace("net.", "")} />
   </group>
   );
 };

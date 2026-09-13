@@ -7,35 +7,26 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { TANKS } from "../llc/tanks.mjs";
+import { TANKS, TANK_CLASS, JBS_POS } from "../llc/tanks.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 mkdirSync(OUT, { recursive: true });
 const f = (x, d = 2) => Number(x.toFixed(d));
+// E67 rated-point LLC magnetics loss per module (2 D3 cells + D2 at PAR400-full, windings 90 °C — magnetics-envelope rows)
+const MAGW = { "30kw": 2 * (13.5 + 15.0) + 4.8 + 5.2, "40kw": 2 * (20.2 + 14.7) + 5.2 + 8.2, "50kw": 2 * (20.7 + 22.6) + 5.1 + 12.0, "50kwa": 2 * (20.6 + 22.7) + 5.2 + 12.1 };
 
 const VINS = [285, 300, 330, 400, 450, 475];
-const VOUTS = [150, 200, 250, 300, 400, 500, 525, 750, 1000];   // E60: 525 = PAR top / SER hysteresis band
+const VOUTS = [150, 200, 250, 300, 400, 500, 750, 1000];   // E67: 500 V = the LOW/HIGH mode edge (both modes legal)
 const LOADS = [0, 0.05, 0.10, 0.25, 0.50, 0.75, 1.0];
 const TEMPS = [{ n: "cold", amb: -20, hs: 10 }, { n: "room", amb: 25, hs: 45 }, { n: "hot", amb: 55, hs: 70 }];
 const SKUS = [
-  // E60: tRms = each SKU's tank-current CLASS in A RMS (D2 litz/ΔT, Cr per-cap, resonant CT all
-  // sized to it). The pre-E60 grid compared this RMS quantity against ceilings LABELLED "A pk"
-  // (48/65) and clamped the 40 kW envelope to one — a clamp the firmware never implemented.
-  { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1, tRms: 46.4 },
-  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1, par: 2, tRms: 61.9 },   // E41: paralleled PFC pair
-  // E42 LIQUID variant: same silicon as 40 kW (paralleled PFC pairs, SINGLE LLC FETs — the
-  // coldplate is what buys that). Thermal model: rth = j→plate ≈ 0.55 die + 0.35 TIM + 0.2
-  // local plate constriction = 1.1 K/W into `ref` = plate temp at the device (coolant inlet
-  // ≤60 °C + ~5 K spread at hot; cold = chiller floor; VERIFY both at plate thermal RFQ).
-  // Tank class REVVED (E42): ceiling 65 A pk / OC 95 A pk / 100 A-class CT / 8×27 nF + BIN6 —
-  // same 0.68 ceiling:OC ratio as the frozen 48/70 class the 30/40 share.
-  { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, rth: 1.1, ref: { cold: 10, room: 45, hot: 65 }, tRms: 77.3 },
-  // E44 AIR variant: same tank class + PFC pairs as the liquid; the LLC half-bridges PARALLEL
-  // (parL: per-package conduction quarters) so plain 4-fan air holds the full envelope — worst
-  // corner ~99 °C, no folds. Air thermal defaults (1.9 K/W to the 70 °C sink ref).
-  { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, parL: 2, tRms: 77.3 },
-  // E50: 60/120 kW single-board rows retired with their reference boards (archive/pre-focus-E49);
-  // 60–150 kW products are cabinets of these four modules.
+  // E67: tRms = the full-bridge tank-current CLASS in A RMS (current-coordination TANK_CLASS); parL = FETs per bridge position
+  // (tanks.mjs par). Air thermal default 1.9 K/W j→air-sink at the 70 °C sink ref; liquid 1.1 K/W j→plate (E42).
+  { name: "30kw", P: 30e3, Imax: 100, lanes: 1, ch: 1 },
+  { name: "40kw", P: 40e3, Imax: 133, lanes: 1, ch: 1, par: 2 },   // E41: paralleled PFC pair
+  { name: "50kw", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2, rth: 1.1, ref: { cold: 10, room: 45, hot: 65 } },
+  { name: "50kwa", P: 50e3, Imax: 167, lanes: 1, ch: 1, par: 2 },
 ];
+for (const s of SKUS) { s.tRms = TANK_CLASS[s.name]; s.parL = TANKS[s.name].par; s.jbs = JBS_POS[s.name]; }
 // E60: each SKU's OWN tank (tanks.mjs — the drawn crN×crVal / trim+leakage / Lm), not the 30 kW
 // tank for all four; and the PFC bus reference carries the line-tracking floor (a Vienna cannot
 // regulate below the line-line crest: 475 VAC on a 650 V bus simulated 15 % THD, 75 % overmod).
@@ -43,60 +34,47 @@ const gain = (fn, Q, LN) => 1 / Math.hypot(1 + (1 / LN) * (1 - 1 / (fn * fn)), Q
 function solveFn(M, Q, LN) { let lo = 0.45, hi = 1.45; for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; gain(m, Q, LN) > M ? lo = m : hi = m; } return (lo + hi) / 2; }
 export const busRef = (bank, Vin) => Math.min(830, Math.max(650, (2 * bank) / 0.95, 1.08 * Math.SQRT2 * Vin));
 
-// E60: secondary SiC JBS junction per corner. The stress-audit row used the rated-point loss budget
-// only; per-winding DC is Ibank/3 with Ibank = Iout (SER — both banks carry the output current) or
-// Iout/2 (PAR), so the SER hysteresis band carries +20 % over any Imax-bound PAR corner. Half-wave
-// sine per diode: avg = Iw/2, rms = π·Iw/4. Hot-class JBS model (1200 V/20 A, Tj ~150 °C):
-// V0 0.95 V, rd 45 mΩ — RFQ acceptance, verified at the JBS datasheet pick.
-const JBS = { V0: 0.95, rd: 0.045 };
-const jbsW = (Iout, mode) => { const Iw = (mode === "SER" ? Iout : Iout / 2) / 3; return JBS.V0 * Iw / 2 + JBS.rd * (Math.PI * Iw / 4) ** 2; };
+// Secondary SiC JBS per corner (E67 full bridge): one bridge per bank, `n` diodes per position. Bank DC current Ib = Iout (SER)
+// or Iout/2 (PAR); each position conducts a half-sine: per diode avg Ib/(2n), rms π·Ib/(4n). Hot class: V0 0.95 V, rd 45 mΩ
+// (20 A) / 22 mΩ (40 A) — RFQ acceptance.
+const jbsW = (Iout, mode, j) => { const Ib = mode === "SER" ? Iout : Iout / 2, rd = j.cls === 40 ? 0.022 : 0.045; return 0.95 * Ib / (2 * j.n) + rd * (Math.PI * Ib / (4 * j.n)) ** 2; };
 const rows = [["sku","Vin","Vout","load","temp","mode","ctl","Pout_W","bus_V","fn","Ip_rms_A","Iline_A","eta_pct","Tj_pfc_C","Tj_llc_C","PASS","notes","Tj_jbs_C"]];
 let fails = 0, worst = { eta: 100 }, tjMax = 0;
 for (const s of SKUS) {
-  const { Lr: LR, Cr: CR, Lm: LM, fr: FR } = TANKS[s.name], LN = LM / LR;
-  for (const Vin of VINS) for (const Vout of VOUTS) for (const mode of Vout < 500 ? ["PAR"] : Vout <= 525 ? ["PAR", "SER"] : ["SER"]) for (const load of LOADS) for (const T of TEMPS) {
+  const { Lr: LR, Cr: CR, Lm: LM, fr: FR, n: NT } = TANKS[s.name], LN = LM / LR;
+  for (const Vin of VINS) for (const Vout of VOUTS) for (const mode of Vout < 500 ? ["PAR"] : Vout === 500 ? ["PAR", "SER"] : ["SER"]) for (const load of LOADS) for (const T of TEMPS) {
     const availIn = Vin >= 330 ? 1 : Vin / 330;
     const Pcap = Math.min(s.P * availIn, Vout * s.Imax);
     const Pout = Pcap * load;
-    // E60: inside the 500–525 V hysteresis band BOTH modes are legal FSM states (SER is reached on
-    // a falling command) — the pre-E60 grid evaluated PAR only and never saw the SER bank-250 V
-    // corner, which carries twice the PAR tank current at the same output voltage.
+    // E67: at the 500 V mode edge BOTH modes are legal (a HIGH session starts at 500 V; AUTO returns to LOW only below 480 V) —
+    // SER at 500 V puts the bank at 250 V with twice the PAR tank current: the current-critical corner
     const bank = mode === "PAR" ? Vout : Vout / 2;
     const bus = busRef(bank, Vin);
-    const M = bank / (bus / 2);
+    const M = (NT * bank) / bus;
     let notes = "";
     if (Pout === 0) { rows.push([s.name, Vin, Vout, load, T.n, mode, "IDLE", 0, f(bus, 0), "", 0, 0, "", "", "", "PASS", "standby"]); continue; }
     const HS = s.ref?.[T.n] ?? T.hs;              // E42: liquid SKUs reference the PLATE temp
     const RTH = s.rth ?? 1.9;                     // E42: 1.1 K/W j→plate vs 1.9 K/W j→air-sink
-    const CEIL = s.tRms;                          // E60: tank-current CLASS, A RMS
-    const Pph = Pout / 0.98 / (3 * s.ch);
-    const Rac = (8 / Math.PI ** 2) * bank * bank / Pph;
+    const CEIL = s.tRms;                          // E67: full-bridge tank-current CLASS, A RMS
+    const Pph = Pout / 0.98;                      // E67: ONE bridge carries the module
+    const Rac = ((8 * NT * NT) / Math.PI ** 2) * bank * bank / Pph;
     const Q = Math.sqrt(LR / CR) / Rac;
     let ctl = "PFM", fn = 1;
-    if (M < 0.72) { ctl = "PS"; fn = 1; }
-    else { fn = solveFn(M, Q, LN); if (gain(1.45, Q, LN) > M) { ctl = load <= 0.1 ? "BURST" : "PFM-hi"; fn = 1.45; } }
-    let Ip1 = Pph / (0.9 * bank);
-    let im = bus / 2 / (4 * fn * FR * LM) / Math.SQRT2;
+    if (gain(1.45, Q, LN) > M) { ctl = "PSM"; fn = 1.45; }   // E67: phase shift at f_max below the PFM gain floor
+    else fn = solveFn(M, Q, LN);
+    let Ip1 = Pph / (0.9 * NT * bank);
+    let im = (NT * bank) / (4 * fn * FR * LM) / Math.SQRT2;
     let Ip = Math.hypot(Ip1, im);
-    // E41 corner policy: the tank hardware (CT class, trim bins, F.11 OC at 70 A pk, the 48 A pk
-    // envelope ceiling) is IDENTICAL on the 30/40 — availability CLAMPS to the ceiling instead
-    // of growing the tank. At 30 kW this never engages (grid unchanged); at 40 kW it derates the
-    // low-line x low-output corners, exactly the commercial envelope-curve shape. Two-pass
-    // re-solve so fn/Q/im are consistent at the clamped power.
-    // E42: the 50 kW REVS the class instead (ipCeil 65 / OC 95 / 100 A CT / 8-cap tank) because
-    // its Imax-bound region sits at Ip1 = 167/(0.98·3·0.9) = 63.1 A — clamping to 48 would fold
-    // a third of the commercial envelope, which is a class-selection problem, not a physics one.
     let PoutE = Pout, PphE = Pph;
-    if (Ip > CEIL) {
+    if (Ip > CEIL) {                              // availability clamps to the tank class (never engaged by the E67 classes)
       for (let it = 0; it < 2; it++) {
         const Ip1max = Math.sqrt(Math.max(CEIL * CEIL - im * im, 1));
-        const kx = Math.min(1, (Ip1max * 0.9 * bank) / PphE);
+        const kx = Math.min(1, (Ip1max * 0.9 * NT * bank) / PphE);
         PphE = PphE * kx; PoutE = PoutE * kx;
-        const RacE = (8 / Math.PI ** 2) * bank * bank / PphE;
-        const QE = Math.sqrt(LR / CR) / RacE;
-        if (M >= 0.72) { fn = solveFn(M, QE, LN); if (gain(1.45, QE, LN) > M) fn = 1.45; }
-        im = bus / 2 / (4 * fn * FR * LM) / Math.SQRT2;
-        Ip1 = PphE / (0.9 * bank);
+        const QE = Math.sqrt(LR / CR) / (((8 * NT * NT) / Math.PI ** 2) * bank * bank / PphE);
+        if (gain(1.45, QE, LN) > M) fn = 1.45; else fn = solveFn(M, QE, LN);
+        im = (NT * bank) / (4 * fn * FR * LM) / Math.SQRT2;
+        Ip1 = PphE / (0.9 * NT * bank);
         Ip = Math.hypot(Ip1, im);
       }
       notes = `tank-ceiling derate to ${f(100 * PoutE / Pout, 0)}% `;
@@ -115,31 +93,34 @@ for (const s of SKUS) {
       TjP = HS + (Pc / 2 + Psw) * RTH;                      // per-PACKAGE dissipation into the SKU's Rth
       const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
       const parL = s.parL ?? 1;                             // E44: paralleled LLC — per-PACKAGE share
-      TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PS" ? 8 : 1) / parL) * RTH;
+      TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PSM" ? 8 : 1) / parL) * RTH;
     }
     // E41: thermal fold — the FSM's DERATE ladder in grid form. If the LLC package exceeds its
     // ceiling at the (already tank-clamped) corner, availability folds back until it holds; the
     // 30 kW grid never engages this, the 40 kW hot PS corners do — exactly like the shipping
     // derating curve (100% <=55C -> linear fold).
     let folds = 0;
-    let TjD = HS + RTH * jbsW(PoutE / Vout, mode);
+    let TjD = HS + RTH * jbsW(PoutE / Vout, mode, s.jbs);
     while ((TjL > 150 || TjD > 150) && folds < 10) {
       PphE *= 0.93; PoutE *= 0.93; folds++;
-      Ip1 = PphE / (0.9 * bank); Ip = Math.hypot(Ip1, im);
+      Ip1 = PphE / (0.9 * NT * bank); Ip = Math.hypot(Ip1, im);
       TjL = HS + 15;
       for (let i = 0; i < 25; i++) {
         const rdsL = 0.023 * (1 + 0.004 * (TjL - 25));
         const parL = s.parL ?? 1;
-        TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PS" ? 8 : 1) / parL) * RTH;
+        TjL = HS + ((Ip / Math.SQRT2 / parL) ** 2 * rdsL + (ctl === "PSM" ? 8 : 1) / parL) * RTH;
       }
-      TjD = HS + RTH * jbsW(PoutE / Vout, mode);
+      TjD = HS + RTH * jbsW(PoutE / Vout, mode, s.jbs);
     }
     if (folds) notes += `thermal derate to ${f(100 * PoutE / Pout, 0)}% `;
     const Pph3 = PphE, Pout3 = PoutE;
     // stage losses (scaled from loss-budget building blocks)
     const pfcW = s.lanes * 3 * ((IswR ** 2) * 2 * 0.010 * (1 + 0.004 * (TjP - 25)) / (s.par ?? 1) + 17.4e-9 * (bus / 2) * (2 / Math.PI) * Iline * Math.SQRT2 * 50e3 / 3 + 12.1 * (Iline / 54.94) ** 1.6 + 33.5 * (Iline / 54.94) ** 2 * 0.8);
-    const llcW = s.ch * (6 * (Ip / Math.SQRT2) ** 2 * 0.035 / (s.parL ?? 1) + 3 * (20.5 * (Pph3 / 10.2e3) ** 1.3) + 3 * Ip * Ip * 0.008);
-    const secW = s.ch * 2 * (2 * 1.35 * (Pout3 / 0.99 / (2 * s.ch)) / bank + 2 * 0.022 * ((Pout3 / (2 * s.ch) / bank) * 1.11) ** 2 / 3);
+    // E67: 4 bridge positions × parL packages (each position conducts half-cycle) · magnetics (2 D3 cells + D2) scaled from the
+    // rated envelope losses (~2 % of ... see loss-budget MAG_RATED) · tank ESR/wiring 4 mΩ · 2 bank bridges
+    const llcW = 2 * Ip * Ip * 0.035 / (s.parL ?? 1) + MAGW[s.name] * (Pph3 / s.P) ** 1.3 + Ip * Ip * 0.004;
+    const Ib = mode === "SER" ? Pout3 / 0.99 / Vout : Pout3 / 0.99 / Vout / 2, rdJ = s.jbs.cls === 40 ? 0.022 : 0.045;
+    const secW = 2 * (2 * 0.95 * Ib + rdJ * Math.PI ** 2 * Ib * Ib / (4 * s.jbs.n));
     const fixW = 20 + 12 * s.lanes + 10 * s.ch + 10 * (s.lanes > 2 ? 2 : 1);
     const loss = pfcW + llcW + secW + fixW;
     const eta = 100 * Pout3 / (Pout3 + loss);
@@ -153,7 +134,7 @@ for (const s of SKUS) {
   }
 }
 writeFileSync(join(OUT, "envelope-grid.csv"),
-  "# §35 full grid (E60 rev: per-SKU tanks, SER hysteresis band, line-tracking bus floor), averaged fidelity; PASS = Tj<=150, Ip_rms<=tank class (46.4/61.9/77.3 A rms), fn in [0.45,1.45], eta floor\n" +
+  "# §35 full grid (E67 rev: full-bridge tanks, LOW/HIGH mode edge at 500 V, PSM at f_max, line-tracking bus floor), averaged fidelity; PASS = Tj<=150, Ip_rms<=tank class (78/100/120 A rms), fn in [0.45,1.45], eta floor\n" +
   rows.map(r => r.join(",")).join("\n") + "\n");
 console.log(`Grid: ${rows.length - 1} points evaluated (${SKUS.length}×${VINS.length}×${VOUTS.length}×${LOADS.length}×${TEMPS.length}).`);
 console.log(`FAILURES: ${fails}`);

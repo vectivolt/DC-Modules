@@ -44,15 +44,6 @@ const lineCtBlocks = (names) => idxOf(names, /^CTA(\d)$/).map((n) =>
 const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
   [`LINK-BANK-${n}`, [new RegExp(`^CD[TB]${n}\\d$`), new RegExp(`^RBAL[TB]${n}[AB]$`)]]);
 
-/** LLC half-bridge legs: 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
-const legBlocks = (names) => idxOf(names, /^Q(\d+)H$/).map((n) =>
-  [`LEG-${n}`, [new RegExp(`^(Q|U|PS|R|D|C)${n}[HL]`), new RegExp(`^RG${n}[HL][12]$`)]]);   /* E44 pair gate Rs */
-
-/** LLC resonant tanks + rectifiers, one per leg */
-const tankBlocks = (names) => idxOf(names, /^L(\d+)T$/).map((n) =>
-  [`TANK-${n}`, [new RegExp(`^C${n}R\\d$`), new RegExp(`^L${n}T$`), new RegExp(`^T${n}$`),
-    new RegExp(`^D${n}[AB][1-4]$`), new RegExp(`^CT${n}$`), new RegExp(`^R${n}C[TF]$`),
-    new RegExp(`^C${n}CF$`), new RegExp(`^D${n}C[PN]$`)]]);
 
 const PAGES = {
   // 150 kW cabinet (E39/E55/E66): one page — 3 module blocks + CAN trunk + controller port (no CSU).
@@ -126,15 +117,14 @@ const PAGES = {
   dcdc: [
     ["LLC-LEGS", [
       ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/]],
-      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL][12]$/]],
-      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL][12]$/]],
-      ["LEG-3", [/^(Q|U|PS|R|D|C)3[HL]/, /^RG3[HL][12]$/]],   /* E44 paralleled-pair gate Rs */
-    ], ["BUS-IN", "LEG-1", "LEG-2", "LEG-3"]],
+      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL][123]$/]],   /* E67 full bridge: leg A (SWA) */
+      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL][123]$/]],   /* E67 full bridge: leg B (SWB) */
+    ], ["BUS-IN", "LEG-1", "LEG-2"]],
     ["LLC-TANKS", [
-      ["TANK-1", [/^C1R\d$/, /^L1T$/, /^T1$/, /^D1[AB][1-4]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/]],
-      ["TANK-2", [/^C2R\d$/, /^L2T$/, /^T2$/, /^D2[AB][1-4]$/, /^CT2$/, /^R2C[TF]$/, /^C2CF$/, /^D2C[PN]$/]],
-      ["TANK-3", [/^C3R\d$/, /^L3T$/, /^T3$/, /^D3[AB][1-4]$/, /^CT3$/, /^R3C[TF]$/, /^C3CF$/, /^D3C[PN]$/]],
-    ], ["TANK-1", "TANK-2", "TANK-3"]],
+      ["TANK", [/^C1R\d+$/, /^L1R$/, /^T1[AB]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/, /^U1W$/, /^D1W$/, /^C1WB$/]],
+      ["RECT-A", [/^D1A[1-4](P[23])?$/]],
+      ["RECT-B", [/^D1B[1-4](P[23])?$/]],
+    ], ["TANK", "RECT-A", "RECT-B"]],
     ["BANKS-SP", [
       ["BANK-A", [/^CBA\d[TB]$/, /^RBALT?A[12]$/, /^RBALBA[12]$/, /^CBAF$/]],
       ["BANK-B", [/^CBB\d[TB]$/, /^RBALT?B[12]$/, /^RBALBB[12]$/, /^CBBF$/]],
@@ -164,7 +154,7 @@ const PAGES = {
 };
 
 // nets drawn as wires (path carries meaning) — everything else crossing blocks becomes a name
-const WIRE_NETS = [/^PH[ABC]0$/, /^G_/, /^KS_/, /^GH_/, /^GL_/, /^KH_/, /^KL_/, /^CTB\d$/, /^NSTAR$/, /^AVREF_MID$/, /^SW\d$/, /^STAR\d$/, /^BKAM$/, /^BKBM$/, /^G_QDIS/];
+const WIRE_NETS = [/^PH[ABC]0$/, /^G_/, /^KS_/, /^GH_/, /^GL_/, /^KH_/, /^KL_/, /^CTB\d$/, /^NSTAR$/, /^AVREF_MID$/, /^SW[AB\d]$/, /^STAR\d$/, /^BKAM$/, /^BKBM$/, /^G_QDIS/];
 const RAILS = ["V3P3", "V15", "V24", "DGND", "AGND", "PE", "DCP", "DCN", "MID", "AVMID", "BKAP", "BKAN", "BKBP", "BKBN", "OUTP", "OUTN", "CGND", "B5OUT"];
 
 const f2 = (x) => JSON.stringify(x);
@@ -267,8 +257,7 @@ for (const side of (SKU === "control-card" ? ["card"] : SKU === "cabinet" ? ["ca
   };
   const seen = new Set();
   const pagesOut = [];
-  // 30 kW has one Vienna lane and three LLC legs; 60/120 kW replicate them x2/x4. Expand the
-  // indexed blocks from the netlist so no lane above 0 is silently dropped on the bigger SKUs.
+  // Expand the indexed Vienna/line-CT/link blocks from the netlist (E67: the LLC is one full bridge — fixed pages).
   const names = comps.map((c) => c.name);
   const pagesForSide = PAGES[side].map(([page, blocks, flow]) => {
     let bl = blocks, fl = flow;
@@ -283,8 +272,6 @@ for (const side of (SKU === "control-card" ? ["card"] : SKU === "cabinet" ? ["ca
     if (page === "VIENNA-PFC") { bl = []; fl = []; swap("PHASE", viennaBlocks); }
     if (page === "AC-SENSING") swap("LINE-CTS", lineCtBlocks);
     if (page === "DC-LINK") swap("LINK-BANK", dcLinkBlocks);
-    if (page === "LLC-LEGS") swap("LEG-", legBlocks);
-    if (page === "LLC-TANKS") { bl = []; fl = []; swap("TANK-", tankBlocks); }
     return [page, bl, fl];
   });
   for (const [page, blocks, flow] of pagesForSide) {

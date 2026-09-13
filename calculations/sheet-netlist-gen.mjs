@@ -140,9 +140,8 @@ function transform(c, page, all, warn) {
   } else if (m === "CMC-CAN-51uH") {
     // ACT45B windings 1-4 and 2-3
     out.pins = [P(1, "A1", sig(c, "A1")), P(4, "A2", sig(c, "A2")), P(2, "B1", sig(c, "B1")), P(3, "B2", sig(c, "B2"))];
-  } else if (m === "XFMR-LLC-10K") {
+  } else if (/^XFMR-LLC-CELL-/.test(m)) {   /* E67 D3 rev D cell: P1 P2 SH SA SB, all five bound */
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
-    out.nc = [8];
   } else if (m === "CMC-3PH-2mH-SKU") {
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
     out.nc = [7, 8];

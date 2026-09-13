@@ -1,24 +1,36 @@
-// tanks.mjs — E60: the ONE per-SKU LLC tank table (D2 trim turns/Ae = the E60 rev D drawings;
-// protection classes live in current-coordination.mjs OC). Before E60 the grid, the
-// Monte-Carlo and the SPICE op-point runner all carried the 30 kW tank for every SKU, while the
-// drawings (boards.tsx crN/crVal/trim/ctBurden) carried per-SKU values — three engines, one tank.
-// mag-sync asserts this table against the drawing strings; SPICE result CSVs carry its fingerprint.
-// E65: the "engineered 3 µH" transformer leakage was not physically reachable — a concentric S1–P–S2 interleave on
-// these windows computes 0.15–0.22 µH (winding-physics leakageSPS; three independent verifiers agreed). D2 therefore
-// carries ~all of Lr: bins = Lr − (0.20/0.35/0.50/0.65 µH), covering measured transformer leakage + 0.1 µH tank-loop
-// stray from 0.125 to 0.725 µH (magnetics-envelope asserts the computed leakage sits inside that window).
-// Lr, Cr, Lm and Coss are unchanged, so the fingerprint — and every LLC simulation — stays valid.
+// tanks.mjs — the ONE per-SKU LLC tank table (mag-sync asserts the drawing strings against it; every SPICE result CSV
+// carries its fingerprint, so a tank change invalidates the simulations that were run on the old one).
+//
+// E67: the InfyPower REG1K0135A2-class SINGLE FULL-BRIDGE LLC replaces the E60–E66 three interleaved half-bridge sections
+// (3 × D3 transformer + 3 × D2 trim). One bridge drives one Cr bank → one external Lr (D2) → one transformer n:1:1 (D3,
+// two secondaries into bank A / bank B).
+//   · Gain is unchanged by construction: M = n·Vbank/Vbus with n = 2 equals the half-bridge Vbank/(Vbus/2), so the 830 V
+//     bus cap and the busFor() policy stand.
+//   · Output follows the charging-module convention (UUGreen/ENR "set high or low voltage mode", Tonhe "low/high voltage
+//     section", NIUERA 0xA0/0xA1/0xA2): LOW mode 150–500 V (banks parallel), HIGH mode 500–1000 V (banks series), mode set
+//     only in standby. The bank therefore tops out at 500 V (M ≤ 1.205, was 525 V / 1.265 with the E60 in-run hysteresis).
+//   · Design: Ln = Lm/Lr = 10, Q = Z0/Rac ≈ 0.19 at a 500 V bank, fr 140 kHz — chosen by the E67 ngspice scan (Ln 8/10/12 ×
+//     Q 0.15–0.35): Ln 10 held Vcr ≤ 584 V pk at the gain-worst corner with the lowest nominal RMS; lower Q/Ln pushed Im.
+//   · Cr = crN × 33 nF 1200 V resonant film (the E41 part): ≤ 10.3 A rms per cap at the 250 V-bank full-power corner (12 A line).
+//   · Lr is the TOTAL series inductance; the D2 external inductor carries Lr − (D3 leakage + loop stray) — magnetics-envelope
+//     asserts that split. par = SG2M023120LJ per bridge position (per-package conduction at the current-critical corner).
 export const TANKS = {
-  "30kw": { P: 30e3, Imax: 100, crN: 4, crNF: 46, Lr: 7.0e-6, trim: 6.65e-6, bins: [6.35, 6.5, 6.65, 6.8], nTrim: 8, aeTrim: 683e-6, Lm: 63e-6, coss: 250e-12, gOn: 28.57 },
-  "40kw": { P: 40e3, Imax: 133, crN: 6, crNF: 33, Lr: 6.5e-6, trim: 6.15e-6, bins: [5.85, 6.0, 6.15, 6.3], nTrim: 5, aeTrim: 1366e-6, Lm: 63e-6, coss: 250e-12, gOn: 28.57 },
-  "50kw": { P: 50e3, Imax: 167, crN: 8, crNF: 27, Lr: 6.0e-6, trim: 5.65e-6, bins: [5.35, 5.5, 5.65, 5.8], nTrim: 5, aeTrim: 1366e-6, Lm: 63e-6, coss: 250e-12, gOn: 28.57 },
-  "50kwa": { P: 50e3, Imax: 167, crN: 8, crNF: 27, Lr: 6.0e-6, trim: 5.65e-6, bins: [5.35, 5.5, 5.65, 5.8], nTrim: 5, aeTrim: 1366e-6, Lm: 63e-6, coss: 500e-12, gOn: 57.14 },   // E44: paralleled LLC FETs
+  "30kw": { P: 30e3, Imax: 100, n: 2, crN: 7, crNF: 33, Lr: 5.6e-6, Lm: 56e-6, par: 2 },
+  "40kw": { P: 40e3, Imax: 133, n: 2, crN: 9, crNF: 33, Lr: 4.35e-6, Lm: 43.5e-6, par: 2 },
+  "50kw": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 2 },
+  "50kwa": { P: 50e3, Imax: 167, n: 2, crN: 11, crNF: 33, Lr: 3.56e-6, Lm: 35.6e-6, par: 3 },   // air: a third FET per position
 };
 for (const t of Object.values(TANKS)) {
   t.Cr = t.crN * t.crNF * 1e-9;
   t.fr = 1 / (2 * Math.PI * Math.sqrt(t.Lr * t.Cr));
+  t.coss = 250e-12 * t.par;          // lumped leg node capacitance (E60 basis: 250 pF per single-FET position)
+  t.gOn = 28.57 * t.par;             // 35 mΩ hot per SG2M023120LJ
 }
+// E67 tank RMS classes (nominal + tolerance corners, A rms) — D2 litz/ΔT, Cr per cap and the resonant CT are sized to these;
+// secondary SiC JBS per bridge position: count × current class (hot V0 0.95 V; rd 45 mΩ for the 20 A class, 22 mΩ for 40 A)
+export const TANK_CLASS = { "30kw": 78, "40kw": 100, "50kw": 120, "50kwa": 120 };
+export const JBS_POS = { "30kw": { n: 2, cls: 40 }, "40kw": { n: 2, cls: 40 }, "50kw": { n: 2, cls: 40 }, "50kwa": { n: 3, cls: 40 } };   // one 40 A part everywhere (InfyPower: 16 × 40 A)
 export const fingerprint = (sku) => {
   const t = TANKS[sku];
-  return `${sku}:Lr${t.Lr * 1e6}u/Cr${t.crN}x${t.crNF}n/Lm${t.Lm * 1e6}u/Coss${Math.round(t.coss * 1e12)}p`;
+  return `${sku}:FB n${t.n}/Lr${+(t.Lr * 1e6).toFixed(3)}u/Cr${t.crN}x${t.crNF}n/Lm${+(t.Lm * 1e6).toFixed(3)}u/Coss${Math.round(t.coss * 1e12)}p`;
 };

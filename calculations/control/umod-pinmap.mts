@@ -116,20 +116,20 @@ const WAYS: [string, number | null][] = [
 // ---- module-role board-side nets, way by way (the DC-DC slot hosts the card) -------------------
 const MODULE_NETS: Record<string, string | null> = {
   // LLC legs pair on ST0..ST2 (H=CH0 way, L=CH1 way); PFC phases single-ended on ST3..ST5 CH0
-  PWM0: "PWM_L1H", PWM6: "PWM_L1L", PWM1: "PWM_L2H", PWM7: "PWM_L2L", PWM2: "PWM_L3H", PWM8: "PWM_L3L",
+  PWM0: "PWM_L1H", PWM6: "PWM_L1L", PWM1: "PWM_L2H", PWM7: "PWM_L2L", PWM2: null, PWM8: null,   // E67: one full bridge (legs A/B)
   PWM3: "PWM_A0", PWM4: "PWM_B0", PWM5: "PWM_C0", PWM9: null, PWM10: null, PWM11: null,
   // local fast loops keep the rank-0 ADC pins
-  AIN0: "I_RES1", AIN1: "I_RES2", AIN2: "I_RES3",
+  AIN0: "I_RES1", AIN1: null, AIN2: null,   // E67: one tank CT
   AIN3: "SNS_VOUT", AIN4: "SNS_IOUT", AIN5: "SNS_IOUTN", AIN6: "SNS_VBKA", AIN7: "SNS_VBKB",
   AIN8: "I_A0", AIN9: "I_B0", AIN10: "I_C0", AIN11: "SNS_VAC1", AIN12: "SNS_VAC2",
   ANA13: "SNS_VAC3", ANA14: "SNS_VBUSP", ANA15: "SNS_VMID", ANA16: "SNS_V24", ANA17: "SNS_V15",
   ANA18: "T_PFC", ANA19: "T_INLET",
   TSNS0: "T_LLC", TSNS1: "T_XFMR", AVMID: "AVMID", AGND_2: "AGND",
-  DO0: "CTL_KSER", DO1: "CTL_KPARA", DO2: "CTL_KPARB", DO3: "CTL_KOUT", DO4: "CTL_KPREA",
-  DO5: "CTL_KPREB", DO6: "CTL_QDISBK",
+  DO0: "CTL_KSER", DO1: "CTL_KPARA", DO2: "CTL_KPARB", DO3: null, DO4: null,   // E67: K_OUT + pre-insertion retired (output diode)
+  DO5: null, DO6: "CTL_QDISBK",
   DO7: "FAN_PWM1", DO8: "FAN_PWM2", DO9: "CTL_KPRE", DO10: "CTL_QDIS",
-  DI0: "RELAY_FB_KSER", DI1: "RELAY_FB_KPARA", DI2: "RELAY_FB_KPARB", DI3: "RELAY_FB_KOUT",
-  DI4: "RELAY_FB_KPREA", DI5: "RELAY_FB_KPREB",
+  DI0: null, DI1: null, DI2: null, DI3: null,   // E67: zero-current PCB relays carry no mirror contacts (weld → F.17 bank imbalance)
+  DI4: null, DI5: null,
   DI6: "FAN_TACH1", DI7: "FAN_TACH2", DI8: "RELAY_FB_KPRE", DI9: "FAN_TACH3", DI10: "FAN_TACH4",
   GATE_EN: "GATE_EN_B", GATE_EN_A: "GATE_EN_A",
   FLT: "FLT", EN_A: "EN_PFC", EN_B: "EN_LLC", DRV_RDY: "DRV_RDY",

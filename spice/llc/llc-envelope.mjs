@@ -1,4 +1,4 @@
-// llc-envelope.mjs — E65: the D3/D2 MAGNETICS ENVELOPE of the 3-phase LLC, power-solved in ngspice.
+// llc-envelope.mjs — E65: the D3/D2 MAGNETICS ENVELOPE of the LLC (E67: full bridge), power-solved in ngspice.
 //
 // Why it exists: every D3 flux and core-loss check before E65 was evaluated at resonance
 // (140 kHz, 415 V half-cycle → ~108 mT). The E60 power-solved decks show the LLC running BELOW
@@ -22,7 +22,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const RESROOT = join(HERE, "..", "..", "simulation-results");
 const f = (x, d = 2) => (Number.isFinite(x) ? Number(x.toFixed(d)) : "NaN");
 
-export const ENVELOPE_BANKS = [425, 450, 475, 500, 525];
+export const ENVELOPE_BANKS = [400, 425, 450, 475, 500];   // E67: 2-mode output caps the bank at 500 V
 export const ENVELOPE_LOADS = [1.0, 0.85, 0.7, 0.55];
 const HDR = ["bank_V", "bus_V", "P_frac", "P_target_W", "P_sim_W", "P_err_pct", "mode", "fsw_kHz", "Im_pk_A", "Ip_rms_A", "Ip_pk_A", "Isec_rms_A", "Vcr_ac_pk_V", "ZVS", "legs_in_rails"];
 

@@ -26,6 +26,7 @@ import { fileURLToPath } from "node:url";
 import { DATA, CORES, stack, eTurn, FORMER_WALL } from "./geometry.mjs";
 import { rho, delta, dowell, litzFr, leakageSPS } from "./winding-physics.mjs";
 import { fingerprint, TANKS } from "../llc/tanks.mjs";
+import { TOL } from "../../spice/llc/llc-run.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
@@ -75,7 +76,7 @@ export const network = (part, c, s, mount, v, impregnated = true, hOverride = nu
   const Rcw = faces ? (faces === 2 ? H / (8 * K.fe * aCond) : H / (2 * K.fe * aCond)) + K.tPad / (K.pad * faces * aFace) : Infinity;
   const h = hOverride ?? (v > 0 ? 24 * Math.sqrt(v / 2.5) + 5 : 0);
   const aExp = 2 * H * D + (2 - faces) * aFace + 0.5 * 2 * A * H;        // sides + unbonded yoke faces + half the ends (rest under end turns)
-  const build = part === "D3" ? 2 * c.N * (c.foil + 0.05e-3) + (c.N * c.cuP) / (0.55 * CB) + 0.6e-3 + 2 * c.gap
+  const build = part === "D3" ? 2 * c.N * c.nf * (c.foil + 0.05e-3) + (c.N * c.cuP) / (0.55 * CB) + 0.6e-3 + 2 * c.gap
     : (c.strands * Math.PI * c.dS ** 2) / 4 / 0.6 / (c.b / c.N) + 0.3e-3;
   const aIn = 2 * D * c.b, gapFill = Math.max(0.5e-3, s.windowW - K.tFormer - build - (part === "D2" ? 3e-3 : 0));
   const Rf = K.tFormer / ((c.formerK ?? K.former) * aIn);
@@ -104,46 +105,56 @@ export const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * 
 const SEALED = { "50kw": { Tfull: 110, h: 5 } };
 const airAt = (sku, Tin, frac) => (SEALED[sku] ? 65 + (SEALED[sku].Tfull - 65) * frac : Tin + 10 * frac);
 
-// ---------------- the E65 constructions (drawings of record after E65) ----------------
-// D3: turns ratio 1:1:1 and Lm 63 µH unchanged from E60 → tank fingerprint and every LLC simulation stay valid.
-// Build heights for the leakage estimate: foil turns + 2×25 µm film; compacted TIW-served litz at 0.55 Cu fill + 0.6 mm
-// serving; barrier gap = shield foil + tapes. former: TDK B66372B2000 (2-set, lN 230.5 mm) or a 3-set former (lN 293 mm,
-// custom — TDK lists 1- and 2-set only; tooling at RFQ).
+// ---------------- the E67 constructions (drawings of record after E67) ----------------
+// D3 rev D: the full-bridge transformer is TWO identical E70-stack cells with their primaries in SERIES — one cell per bank.
+// A single n:1:1 core cannot carry the one-bridge copper through the E70 window (13.55 × 44.5 mm) and nothing taller than the
+// 66 mm set fits the inter-board tunnel (MAS shape scan: only PM 87/70 and a powder E 130 sit at 2B ≤ 70 mm with a larger
+// window), so the one-bridge current is split across two cores instead — same bridge, same tank, same n = 2 overall (each cell
+// 1:1, Np:Ns = N:N). Each cell keeps the E65 S1–P–S2 lay-up with S1 ∥ S2 feeding its bank (half the bank current per half).
+// Cell magnetizing inductance Lm/2 referred to its own N turns; flux linkage Lm/2·Im ≈ 1.3 mV·s on every SKU (volt-second set
+// at the 500 V bank). Foil halves: nf parallel foils per turn (Dowell with N·nf layers). former: TDK B66372 (1-set lN 166 mm,
+// 2-set 230.5 mm) or a 3-set former (lN 293 mm, custom — TDK lists 1- and 2-set only; tooling at RFQ).
 export const D3 = {
-  "30kw": { core: "E70", n: 2, N: 7, cuP: 9.8e-6, strands: 2475, dS: 0.071e-3, foil: 0.10e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: false, former: "B66372B2000" },
-  "40kw": { core: "E70", n: 2, N: 6, cuP: 13.8e-6, strands: 3486, dS: 0.071e-3, foil: 0.127e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "B66372B2000" },
-  "50kw": { core: "E70", n: 3, N: 5, cuP: 17.3e-6, strands: 4370, dS: 0.071e-3, foil: 0.127e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "plate2", pot: true, former: "3-set custom" },
-  "50kwa": { core: "E70", n: 3, N: 5, cuP: 17.3e-6, strands: 4370, dS: 0.071e-3, foil: 0.127e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "3-set custom" },
+  "30kw": { core: "E70", n: 2, N: 6, cuP: 12e-6, strands: 3850, dS: 0.063e-3, foil: 0.10e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "B66372B2000" },
+  "40kw": { core: "E70", n: 3, N: 4, cuP: 14e-6, strands: 3536, dS: 0.071e-3, foil: 0.08e-3, nf: 2, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "3-set custom" },
+  "50kw": { core: "E70", n: 3, N: 4, cuP: 14e-6, strands: 3536, dS: 0.071e-3, foil: 0.08e-3, nf: 2, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "plate2", pot: true, former: "3-set custom" },
+  "50kwa": { core: "E70", n: 3, N: 4, cuP: 14e-6, strands: 3536, dS: 0.071e-3, foil: 0.08e-3, nf: 2, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "3-set custom" },
 };
-// the E60 drawings as registered — the CONTROL GROUP: this gate must reject them (a gate that cannot fail proves nothing)
-export const D3_REGISTERED_E60 = {
-  "30kw": { core: "PQ50", n: 3, N: 7, cuP: 9.8e-6, strands: 2475, dS: 0.071e-3, foil: 0.10e-3, foilW: 0.028, b: 0.0304, gap: 0.3e-3, mount: "air" },
-  "40kw": { core: "E70", n: 2, N: 6, cuP: 13.8e-6, strands: 3486, dS: 0.071e-3, foil: 0.127e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "air" },
-  "50kw": { core: "E70", n: 2, N: 5, cuP: 17.3e-6, strands: 4370, dS: 0.071e-3, foil: 0.127e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "plate1" },
-  "50kwa": { core: "E70", n: 2, N: 5, cuP: 17.3e-6, strands: 4370, dS: 0.071e-3, foil: 0.127e-3, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "air" },
+export const D3_CELLS = 2;
+// CONTROL GROUP: the E65 section transformer (2×E70 6:6:6, one-third-power duty) dropped into the one-bridge cell duty — this gate
+// must reject it (a gate that cannot fail proves nothing)
+export const D3_CONTROL_E65 = {
+  "30kw": { core: "E70", n: 2, N: 7, cuP: 9.8e-6, strands: 2475, dS: 0.071e-3, foil: 0.10e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: false },
+  "40kw": { core: "E70", n: 2, N: 6, cuP: 13.8e-6, strands: 3486, dS: 0.071e-3, foil: 0.127e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true },
+  "50kw": { core: "E70", n: 2, N: 6, cuP: 13.8e-6, strands: 3486, dS: 0.071e-3, foil: 0.127e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "plate2", pot: true },
+  "50kwa": { core: "E70", n: 2, N: 6, cuP: 13.8e-6, strands: 3486, dS: 0.071e-3, foil: 0.127e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true },
 };
-// D2: carries ~all of Lr (tanks.mjs bins), 0.05 mm compacted litz, single layer ≥3 mm clear of a distributed centre-leg gap
-// Every D3/D2: vacuum-impregnated (class H, k ≥0.6 W/mK); mount web2 = BOTH yoke faces gap-padded to the upper and lower
-// extrusion webs (the 66 mm stack spans the 62 mm tunnel through the board cut-outs), plate2 = both coldplates; pot = end
-// turns encapsulated in ≥0.8 W/mK silicone bridged ≥5 mm to the web/plate
+// D2 rev F: the EXTERNAL resonant inductor (InfyPower practice — one gapped litz inductor, no trim bins) carries Lr minus the two
+// cells' leakage and the loop stray, gapped to ±3 %; 0.05 mm compacted litz, single layer ≥3 mm clear of a distributed centre-leg
+// gap. Every D3/D2: vacuum-impregnated (class H, k ≥0.6 W/mK); mount web2 = BOTH yoke faces gap-padded to the upper and lower
+// extrusion webs (the 66 mm stack spans the 62 mm tunnel through the board cut-outs), plate2 = both coldplates; pot = end turns
+// encapsulated in ≥0.8 W/mK silicone bridged ≥5 mm to the web/plate
 export const D2 = {
-  "30kw": { core: "E70", n: 1, N: 8, strands: 6112, dS: 0.05e-3, b: 0.041, mount: "web2", pot: false, former: "B66372B1000" },
-  "40kw": { core: "E70", n: 2, N: 5, strands: 8149, dS: 0.05e-3, b: 0.041, mount: "web2", pot: false, former: "B66372B2000" },
-  "50kw": { core: "E70", n: 2, N: 5, strands: 8149, dS: 0.05e-3, b: 0.041, mount: "plate2", pot: true, former: "B66372B2000" },
-  "50kwa": { core: "E70", n: 2, N: 5, strands: 8149, dS: 0.05e-3, b: 0.041, mount: "web2", pot: false, former: "B66372B2000" },
+  "30kw": { core: "E70", n: 2, N: 5, strands: 8000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372B2000" },
+  "40kw": { core: "E70", n: 2, N: 5, strands: 10000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372B2000" },
+  "50kw": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "plate2", pot: true, former: "B66372B2000" },
+  "50kwa": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372B2000" },
 };
-for (const [sku, c] of Object.entries(D2)) c.Lmax = Math.max(...TANKS[sku].bins) * 1e-6;
-export const LOOP_STRAY = 0.1e-6;                                  // half-bridge → Cr → D2 → D3 loop on the power PCB (first-article measured)
+export const LOOP_STRAY = 0.1e-6;                                  // bridge → Cr → D2 → D3 loop on the power PCB (first-article measured)
+export const D2_TOL = 0.03, LEAK_SPREAD = 0.3;                     // D2 gap tolerance; D3 leakage acceptance band (drawing: ±30 % of computed)
 // radial build of the S1–P–S2 lay-up → per-winding mean turn (production Rdc rows) and leakage
 // E65 (INS-1): the reinforced barrier is margin-built on the E70 former, so P and S conductors are confined to CB = 28 mm of
 // the 41 mm window (≥6.5 mm margin per side); the field breadth for Dowell/Sullivan stays the window b. 3 barrier-tape layers
 // + shield per side sit in the gap.
 export const CB = 0.028;
 export const d3Build = (c) => {
-  const hS = c.N * (c.foil + 0.05e-3), hP = (c.N * c.cuP) / (0.55 * CB) + 0.6e-3, w = FORMER_WALL;
+  const hS = c.N * c.nf * (c.foil + 0.05e-3), hP = (c.N * c.cuP) / (0.55 * CB) + 0.6e-3, w = FORMER_WALL;
   return { hS, hP, mltS1: eTurn(c.core, c.n, w + hS / 2), mltP: eTurn(c.core, c.n, w + hS + c.gap + hP / 2), mltS2: eTurn(c.core, c.n, w + hS + 2 * c.gap + hP + hS / 2) };
 };
+// per-cell leakage referred to the cell's N turns; the two cells' primaries are in series, so the tank sees D3_CELLS × this
 export const d3Leakage = (c) => { const b = d3Build(c); return leakageSPS({ N: c.N, mlt: b.mltP, b: c.b, gap: c.gap, hS: b.hS, hP: b.hP }); };
+export const d2Lext = (sku) => TANKS[sku].Lr - D3_CELLS * d3Leakage(D3[sku]) - LOOP_STRAY;
+for (const [sku, c] of Object.entries(D2)) { c.Lnom = d2Lext(sku); c.Lmax = c.Lnom * (1 + D2_TOL); }
 // D2 single layer of compacted litz (0.6 Cu fill) ≥3 mm clear of the distributed gap
 export const d2Mlt = (c) => { const A = (c.strands * Math.PI * c.dS ** 2) / 4, h = A / 0.6 / (c.b / c.N); return eTurn(c.core, c.n, FORMER_WALL + 3e-3 + h / 2); };
 
@@ -158,26 +169,25 @@ export const excitation = (sku) => {
   const flux = readCsv(join(ROOT, `simulation-results/${sku}/llc-flux.csv`));
   const stress = readCsv(join(ROOT, `simulation-results/${sku}/llc-stress.csv`));
   const env = readCsv(join(ROOT, `simulation-results/${sku}/llc-envelope.csv`));
-  const share = Object.fromEntries(stress.rows.map((r) => [r.corner, 1 + Math.max(0, Number(r.share_pct) || 0) / 100]));
   return { fp: flux.hdr.includes(fingerprint(sku)) && stress.hdr.includes(fingerprint(sku)) && env.hdr.includes(fingerprint(sku)),
     aligned: flux.rows.length === stress.rows.length + env.rows.length &&
       stress.rows.every((r) => flux.rows.some((x) => x.corner === r.corner && Math.abs(x.fsw_kHz - r.fsw_kHz) < 0.05)),
-    rows: flux.rows.map((r) => ({ ...r, share: share[r.corner] ?? 1 })) };
+    rows: flux.rows };
 };
 
 // ---------------- per-part evaluation ----------------
 const T_WIND = 100;
-export const d3Loss = (sku, c, r) => {
+export const d3Loss = (sku, c, r) => {                           // ONE cell (both cells carry identical duty)
   const s = stack(c.core, c.n), fq = r.fsw_kHz * 1e3;
-  const B = (63e-6 * r.lm_scale * r.Im_pk_A) / (c.N * s.Ae);
+  const B = ((TANKS[sku].Lm / D3_CELLS) * r.lm_scale * r.Im_pk_A) / (c.N * s.Ae);
   const fe = (T) => pvSine(fq, B, T) * r.k_igse_D3 * s.Ve;
   const g = d3Build(c);                                           // E65: per-winding mean turns (S1 inner, P, S2 outer)
   const RpDc = (rho(T_WIND) * c.N * g.mltP) / c.cuP;
   const FrP = litzFr({ fq, T: T_WIND, N: c.N, n: c.strands, d: c.dS, b: c.b, k: 0.25 });
-  const RsDc = (rho(T_WIND) * c.N * (g.mltS1 + g.mltS2) / 2) / (c.foil * c.foilW);
-  const FrS = dowell((c.foil / delta(fq, T_WIND)) * Math.sqrt(c.foilW / c.b), c.N);
-  const Is = r.Isec_rms_A * r.share;
-  const cu = (T) => (RpDc * FrP * r.Ip_rms_A ** 2 + 2 * RsDc * FrS * Is ** 2) * (1 + 0.00393 * (T - T_WIND));
+  const RsDc = (rho(T_WIND) * c.N * (g.mltS1 + g.mltS2) / 2) / (c.nf * c.foil * c.foilW);
+  const FrS = dowell((c.foil / delta(fq, T_WIND)) * Math.sqrt(c.foilW / c.b), c.N * c.nf);
+  const Ih = r.Isec_rms_A / 2;                                    // S1 ∥ S2: half the bank current each
+  const cu = (T) => (RpDc * FrP * r.Ip_rms_A ** 2 + 2 * RsDc * FrS * Ih ** 2) * (1 + 0.00393 * (T - T_WIND));
   return { s, B, fe, cu, FrP, FrS };
 };
 export const d2Loss = (sku, c, r) => {
@@ -202,10 +212,9 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
     const cu75 = Math.min(1, (0.4 / frac) ** 2);                  // derated to 40 % power at 75 °C inlet — Cu scales, Fe does not
     const e55 = solve2(loss, nw, wallAt(sku, 55, frac), airAt(sku, 55, frac), 1), e75 = solve2(loss, nw, wallAt(sku, 75, 0.4), airAt(sku, 75, 0.4), cu75);
     const st = [solve2(loss, nw, wallAt(sku, 55, frac), airAt(sku, 55, frac), 1, 1.25), solve2(loss, nw, wallAt(sku, 75, 0.4), airAt(sku, 75, 0.4), cu75, 1.25)];
-    const eol = /mismatch/.test(r.corner);                        // EOL sharing reject: flux/saturation corner, never a thermal state
-    const Tstress = eol ? 0 : Math.max(st[0].hot, st[1].hot), hot = Math.max(e55.hot, e75.hot), Tcore = Math.max(e55.Tc, e75.Tc);
-    return { corner: r.corner, fsw: r.fsw_kHz, B: loss.B, fe100: eol ? 0 : loss.fe(100), cu100: eol ? 0 : loss.cu(100), T55: eol ? 0 : e55.hot, T75: eol ? 0 : e75.hot, Tw55: e55.Tw, Tc55: e55.Tc, Tstress,
-      margin: eol ? 999 : tCrit(loss, nw, 1.25) - Math.min(Tcore, 300), bsat: loss.B / BsatAt(Math.min(eol ? 100 : Tcore, 200)) };
+    const Tstress = Math.max(st[0].hot, st[1].hot), Tcore = Math.max(e55.Tc, e75.Tc);
+    return { corner: r.corner, fsw: r.fsw_kHz, B: loss.B, fe100: loss.fe(100), cu100: loss.cu(100), T55: e55.hot, T75: e75.hot, Tw55: e55.Tw, Tc55: e55.Tc, Tstress,
+      margin: tCrit(loss, nw, 1.25) - Math.min(Tcore, 300), bsat: loss.B / BsatAt(Math.min(Tcore, 200)) };
   });
   const pick = (key, lo = false) => res.reduce((a, x) => ((lo ? x[key] < a[key] : x[key] > a[key]) ? x : a));
   const w55 = pick("T55"), w75 = pick("T75"), wS = pick("Tstress"), wB = pick("bsat"), wM = pick("margin", true), fe = pick("fe100"), cu = pick("cu100");
@@ -215,24 +224,22 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
 
 const T = (x) => (Number.isFinite(x) ? `${f(x, 0)} °C` : "RUNAWAY");
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
-  console.log("=== MAGNETICS ENVELOPE (E65) — D3 / D2 at every power-solved corner (stress + bank-voltage × load envelope) ===");
+  console.log("=== MAGNETICS ENVELOPE (E65 gate, E67 full bridge) — D3 cells / D2 external Lr at every power-solved corner (stress + bank-voltage × load envelope) ===");
   for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
     const ex = excitation(sku), t = TANKS[sku];
     ck("DATA", `${sku} excitation table current`, ex.fp && ex.aligned,
       `llc-flux.csv ${ex.rows.length} corners · tank fingerprint ${ex.fp ? "matches" : "STALE — re-run llc-run / llc-envelope / llc-flux-post"} · rows ${ex.aligned ? "aligned with llc-stress + llc-envelope" : "MISALIGNED"}`);
     const k = ex.rows.map((r) => r.k_igse_D3);
     console.log(`  info  [${sku}] iGSE waveform factor D3 ${f(Math.min(...k), 2)}–${f(Math.max(...k), 2)} · D2 ${f(Math.min(...ex.rows.map((r) => r.k_igse_D2)), 2)}–${f(Math.max(...ex.rows.map((r) => r.k_igse_D2)), 2)}`);
-    // Lr split: the D2 bins must cover the transformer leakage the construction can actually produce (build spread ×0.5…×2.5)
-    const llk = d3Leakage(D3[sku]), lo = 0.5 * llk + LOOP_STRAY, hi = 2.5 * llk + LOOP_STRAY;
-    const cover = [t.Lr - Math.max(...t.bins) * 1e-6, t.Lr - Math.min(...t.bins) * 1e-6];
-    ck("LR", `${sku} D2 bins cover the real transformer leakage`, lo >= cover[0] - 0.05e-6 && hi <= cover[1] + 0.05e-6,
-      `D3 S1–P–S2 leakage ${f(llk * 1e6, 2)} µH computed (build spread ${f(0.5 * llk * 1e6, 2)}–${f(2.5 * llk * 1e6, 2)}) + ${f(LOOP_STRAY * 1e6, 2)} µH loop → ${f(lo * 1e6, 2)}–${f(hi * 1e6, 2)} µH vs bins covering ${f(cover[0] * 1e6, 2)}–${f(cover[1] * 1e6, 2)} µH (Lr ${t.Lr * 1e6} µH)`);
-    ck("LR", `${sku} tank table carries the D2 construction`, t.nTrim === D2[sku].N && Math.abs(t.aeTrim - stack(D2[sku].core, D2[sku].n).Ae) < 1e-9,
-      `tanks.mjs nTrim ${t.nTrim} / aeTrim ${f(t.aeTrim * 1e6, 0)} mm² vs D2 ${D2[sku].n}×${D2[sku].core} N ${D2[sku].N}`);
+    // Lr split (E67): the external D2 carries Lr − 2 cells' leakage − loop stray; its ±3 % gap tolerance plus the leakage acceptance
+    // band (±30 % of computed) must stay inside the ±5 % Lr the tank decks were run at (llc-run.mjs TOL)
+    const llk = d3Leakage(D3[sku]), leak = D3_CELLS * llk, dL = D2_TOL * D2[sku].Lnom + LEAK_SPREAD * leak;
+    ck("LR", `${sku} D2 + D3 leakage stack inside the simulated Lr tolerance`, D2[sku].Lnom > 0.7 * t.Lr && dL <= (1 - TOL.lo.lr) * t.Lr + 1e-12,
+      `D3 cell S1–P–S2 leakage ${f(llk * 1e6, 3)} µH × ${D3_CELLS} + ${f(LOOP_STRAY * 1e6, 2)} µH loop → D2 ${f(D2[sku].Lnom * 1e6, 2)} µH of Lr ${f(t.Lr * 1e6, 2)} µH · worst-case stack ±${f((dL / t.Lr) * 100, 1)} % (D2 ±${D2_TOL * 100} % + leakage ±${LEAK_SPREAD * 100} %) vs ±${f((1 - TOL.lo.lr) * 100, 0)} % simulated`);
     const unprotected = [];
     for (const [part, table] of [["D3", D3], ["D2", D2]]) {
       const c = table[sku], e = evaluate(sku, part, c, ex.rows);
-      ck(part, `${sku} ${c.n}×${c.core} ${part === "D3" ? `${c.N}:${c.N}:${c.N}` : `N ${c.N} · ${f(c.Lmax * 1e6, 2)} µH bin-max`} · ${e.mount} · R core→wall ${f(e.nw.Rcw, 2)} · winding→core ${f(e.nw.Rwc, 2)} K/W`, e.ok,
+      ck(part, `${sku} ${c.n}×${c.core} ${part === "D3" ? `${D3_CELLS} cells ${c.N}:${c.N}∥${c.N}${c.nf > 1 ? ` (${c.nf} foils)` : ""}` : `N ${c.N} · ${f(c.Lmax * 1e6, 2)} µH max`} · ${e.mount} · R core→wall ${f(e.nw.Rcw, 2)} · winding→core ${f(e.nw.Rwc, 2)} K/W`, e.ok,
         `core corner ${e.fe.corner} ${e.fe.fsw} kHz B̂ ${f(e.fe.B * 1e3, 0)} mT Fe ${f(e.fe.fe100)} W · copper corner ${e.cu.corner} ${e.cu.fsw} kHz Cu ${f(e.cu.cu100)} W · hot-spot ${T(e.w55.T55)} @55 °C (${e.w55.corner}; core ${T(e.w55.Tc55)} / winding ${T(e.w55.Tw55)}) / ${T(e.w75.T75)} @75 °C derated (${e.w75.corner}) · +25 % Rth ${T(e.wS.Tstress)} · runaway margin ${f(e.wM.margin, 0)} K · B̂ ${f(e.wB.bsat * 100, 0)} % of hot Bsat`);
       // a failed bond: one gap pad delaminated (the credible single failure) — the other face + convection must carry it
       const lost = c.mount.replace(/2$/, "1"), a = evaluate(sku, part, c, ex.rows, lost);
@@ -242,10 +249,10 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     // bond loss is a PROCESS defect (VPI + gap pad + potting, as InfyPower-class modules pot their magnetics): it is screened by
     // the EOL bonded thermal soak on every module (T_XFMR NTC rise at a fixed load), not by a sensor per part — informational here
     if (unprotected.length) console.log(`  info  [BOND] ${sku}: ${unprotected.join(" + ")} cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md)`);
-    const reg = D3_REGISTERED_E60[sku], er = evaluate(sku, "D3", reg, ex.rows);
-    ck("CONTROL", `${sku} gate rejects the E60 D3 as registered (${reg.n}×${reg.core} ${reg.N}:${reg.N}:${reg.N} ${reg.mount})`, !er.ok,
-      `hot-spot ${T(er.w55.T55)} @55 / ${T(er.w75.T75)} @75 · Fe ${f(er.fe.fe100)} W at B̂ ${f(er.fe.B * 1e3, 0)} mT · MLT ${f(stack(reg.core, reg.n).mlt * 1e3, 0)} mm → ${er.ok ? "PASSES — the gate is blind" : "rejected"}`);
+    const reg = D3_CONTROL_E65[sku], er = evaluate(sku, "D3", reg, ex.rows);
+    ck("CONTROL", `${sku} gate rejects the E65 section transformer in the one-bridge cell duty (${reg.n}×${reg.core} ${reg.N}:${reg.N}:${reg.N})`, !er.ok,
+      `hot-spot ${T(er.w55.T55)} @55 / ${T(er.w75.T75)} @75 · Fe ${f(er.fe.fe100)} W at B̂ ${f(er.fe.B * 1e3, 0)} mT · Cu ${f(er.cu.cu100)} W → ${er.ok ? "PASSES — the gate is blind" : "rejected"}`);
   }
-  console.log(fails ? `\n${fails} MAGNETICS ENVELOPE FAILURE(S)` : "\nMAGNETICS ENVELOPE CLEAN — every D3 and D2 holds temperature, runaway margin and saturation margin at every simulated corner; the Lr split is physical");
+  console.log(fails ? `\n${fails} MAGNETICS ENVELOPE FAILURE(S)` : "\nMAGNETICS ENVELOPE CLEAN — every D3 cell and D2 holds temperature, runaway margin and saturation margin at every simulated corner; the Lr split is inside the simulated tolerance");
   process.exit(fails ? 1 : 0);
 }

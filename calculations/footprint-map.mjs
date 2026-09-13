@@ -46,15 +46,15 @@ export const FOOTPRINT = {
   "MLCC-10u-0805": "C0805", "C1812-100p-1k": "C1812",
   "EL-47u-35": "CAP-TH_L6.3-W6.3-P2.50", "EL-220u-35": "CAP-TH_L8.0-W8.0-P3.50",
   "ELH-470u450": "CAP-TH_L30.0-W30.0-P10.00",
-  "PP-46n-1200": "CAP-TH_L31.5-W13.0-P27.50", "PP-1u-600": "CAP-TH_L26.5-W11.0-P22.50",
-  "PP-1u-1100": "CAP-TH_L31.5-W13.0-P27.50", "PP-4u7-1200": "CAP-TH_L41.5-W20.0-P37.50",
+  "PP-33n-1200V": "CAP-TH_L31.5-W13.0-P27.50", "PP-1u-600": "CAP-TH_L26.5-W11.0-P22.50",
+  "PP-1u-1100": "CAP-TH_L31.5-W13.0-P27.50", "PP-2u2-630": "CAP-TH_L31.5-W13.0-P27.50", "ELH-330u550": "CAP-TH_L30.0-W30.0-P10.00", "IND-BANK-30": "L_Toroid_sendust_stack_custom", "IND-BANK-40": "L_Toroid_sendust_stack_custom", "IND-BANK-50": "L_Toroid_sendust_stack_custom", "DIODE-1600V-150A-MOD": "DIODE_MOD_2T_34mm", "DIODE-1600V-200A-MOD": "DIODE_MOD_2T_34mm", "DIODE-1600V-250A-MOD": "DIODE_MOD_2T_34mm", "PP-4u7-1200": "CAP-TH_L41.5-W20.0-P37.50",
   "PP-10n-1200": "CAP-TH_L18.0-W5.0-P15.00", "FILM-100n-250": "CAP-TH_L7.2-W3.5-P5.00",
   "X1-2u2-530": "CAP-TH_L26.5-W11.0-P22.50", "Y1-4n7-440": "CAP-TH_L11.0-W5.0-P10.00",
   "FB-600R-0805": "L0805", "IND-10u-3A": "IND-SMD_L6.0-W6.0",
   // --- magnetics / electromechanical (custom or class-level) ---
-  "IND-PFC-165u": "L_Toroid_3xT79_26u_custom", "IND-TRIM-BIN4": "L_Toroid_trim_bin_custom",
+  "IND-PFC-165u": "L_Toroid_3xT79_26u_custom", "IND-LR-E70-30": "L_E70_2set_gapped_custom", "IND-LR-E70-40": "L_E70_2set_gapped_custom", "IND-LR-E70-50": "L_E70_2set_gapped_custom",
   "DM-22u-SKU": "L_Toroid_sendust_per-SKU", "CMC-3PH-2mH-SKU": "L_CMC_3ph_nanocryst_per-SKU",
-  "CMC-CAN-51uH": "IND-SMD_L4.5-W3.2_CMC", "XFMR-LLC-10K": "XFMR_3xPQ50-50_custom",
+  "CMC-CAN-51uH": "IND-SMD_L4.5-W3.2_CMC", "XFMR-LLC-CELL-2E70-30": "XFMR_E70_cell_custom", "XFMR-LLC-CELL-3E70-40": "XFMR_E70_cell_custom", "XFMR-LLC-CELL-3E70-50": "XFMR_E70_cell_custom",
   "XFMR-AUX-FLY-E": "XFMR_ETD44_custom",   // E65 D4 rev E: land to draw (pins 1–4 primary row / 5–8 SELV row) — layout open item
   "CT-100A-1:2500": "CT_window_100A_1-2500", "CT-RES-1:100": "CT_window_res_1-100",
   // NOT the catalogue HF167F/24-HF land (LCSC C2757422). Tried it; KiCad's DRC rejected it:
@@ -63,7 +63,7 @@ export const FOOTPRINT = {
   // are the mirror used for readback. Different part, different land; the placeholder stays until
   // the mirror-contact p/n is confirmed (lcsc-map already flags it REVIEW).
   "HF167F-80A-M": "RELAY_HF167F_PCB", "HF167F-120A-M": "RELAY_HF167F_PCB",
-  "HF167F-250A-M": "RELAY_contactor_250A_stud", "HFE82V-M-CLASS": "RELAY_HFE82V_PCB",
+  "HF167F-250A-M": "RELAY_contactor_250A_stud", "RELAY-PCB-120A-24V": "RELAY_PCB_120A_4pin", "RELAY-PCB-150A-24V": "RELAY_PCB_120A_4pin",
   "HFE9-10A-1kV-M": "RELAY_HFE9_PCB",
   // R9: the holder must match the LINK size, and RT28-32 takes only 10x38 mm / 2-32 A. A 63 A gG
   // link is 14x51 and a 125 A is 22x58, so each SKU needs its own holder; 250 A leaves the RT28
@@ -87,7 +87,7 @@ export const FOOTPRINT = {
   // cabinet blocks and the DIN supply are assemblies with no PCB land, and say so.
   "R0603-10k": "R0603", "R0805-2R2": "R0805", "R0603-120R-1%": "R0603",
   "R0603-0R": "R0603", "R2010-1k-0.75W-1%": "R2010",
-  "R2512-0R68-2W-1%": "R2512", "R2512-0R82-1W-1%": "R2512", "R2512-1R00-1W-1%": "R2512",
+  "R2512-0R30-2W-1%": "R2512", "R2512-0R36-1W-1%": "R2512", "R2512-0R47-1W-1%": "R2512",
   "R1206-13R-1%": "R1206", "R1206-18R-1%": "R1206", "R1206-22R-1%": "R1206",
   "MLCC-22p-0603": "C0603", "MLCC-47p-0603": "C0603",
   "X1-4u7-530": "CAP-TH_L31.5-W17.0-P27.50",   // class-typical X1 4.7 µF 530 VAC box (C424W class); confirm at part choice
@@ -95,10 +95,9 @@ export const FOOTPRINT = {
   "74HC02": "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
   "BZT52-C15": "SOD-123_L2.7-W1.6-LS3.7-RD",
   "CT-LINE-2500-150A": "CT_window_150A_1-2500",   // ACX-1150 38.1 mm body — its own land, per Talema drawing
-  "CT-RES-1:100-100A": "CT_window_res_1-100", "CT-RES-1:100-80A": "CT_window_res_1-100",
+  "CT-RES-1:100-100A": "CT_window_res_1-100", "CT-RES-1:100-150A": "CT_window_res_1-100",
   "ACX-1100": "CT_window_100A_1-2500", "AS-404": "CT_window_res_1-100",
   "DM-CHOKE-30": "L_Toroid_sendust_per-SKU", "DM-CHOKE-40": "L_Toroid_sendust_per-SKU", "DM-CHOKE-50": "L_Toroid_sendust_per-SKU",
-  "HFE82V-20-M-CLASS": "RELAY_HFE82V-20_PCB",  // pre-insertion frame to confirm — its own land, per Hongfa drawing
   "MICROFIT3-40": "CONN-TH_40P-P3.00_MicroFit",
   "CONN-CARD-88-H": "HDR-TH_88P-2R-P2.54-V-M", // 2×44 keyed header — generated dual-row land
   "CONN-CARD-88-R": "SKT-TH_88P-2R-P2.54-V",   // mating receptacle — per the chosen series drawing

@@ -23,11 +23,11 @@ const T = 100;                                                      // winding h
 // simulated currents
 const llc = (sku) => {
   const L = readFileSync(join(ROOT, `simulation-results/${sku}/llc-stress.csv`), "utf8").split("\n").filter((l) => l && !l.startsWith("#"));
-  const h = L[0].split(","); return L.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [h[i], v]))).filter((r) => !/mismatch/.test(r.corner));
+  const h = L[0].split(","); return L.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [h[i], v])));
 };
 const vs = readFileSync(join(ROOT, "calculations/out/vienna-switched.csv"), "utf8").split("\n").filter((l) => l && !l.startsWith("#"));
 const vh = vs[0].split(","), VS = vs.slice(1).map((l) => { const c = l.match(/("[^"]*"|[^,]+)/g); return Object.fromEntries(c.map((v, i) => [vh[i], v])); });
-console.log("=== CONDUCTOR AUDIT (E60 · E65 constructions) — Dowell/Sullivan AC copper at the simulated currents ===");
+console.log("=== CONDUCTOR AUDIT (E60 gate · E67 full-bridge constructions) — Dowell/Sullivan AC copper at the simulated currents ===");
 console.log(`  info  Cu IEC 60028: ρ(100 °C) = ${f(rho(100) * 1e8, 3)}e-8 Ω·m · δ(50 kHz) ${f(delta(50e3, T) * 1e3, 3)} mm · δ(140 kHz) ${f(delta(140e3, T) * 1e3, 3)} mm · δ(190 kHz) ${f(delta(190e3, T) * 1e3, 3)} mm`);
 
 // ---------------- D1: taped round-wire bundles at 50 Hz + 50 kHz ripple ----------------
@@ -48,11 +48,11 @@ for (const [sku, row] of Object.entries(D1ROWS)) {
     `build ${f(L.Rdc25 * 1e3)} mΩ · row ≤${f(row.rdc25 * 1e3)} mΩ (${f(100 * (row.rdc25 / L.Rdc25 - 1), 0)} % above; worst good part ${f(good * 1e3)}; 2 strands open ${f(twoOpen * 1e3)}) · lot window ±${D1_LOT_WINDOW * 100} % vs one open strand +${f(100 * oneOpen, 1)} % — the E60 lines ≤11 / 7.0 / 6.5 mΩ passed a third of the strands open`);
 }
 
-// ---------------- D2: litz trim inductors at the tank current ----------------
-// E65 construction (magnetics-envelope D2): D2-30 1×E70 N 8, 6112×0.05 mm; D2-40/50 2×E70 N 5, 8149×0.05 mm — each
-// carries ~all of Lr. Proximity ∝ N²n²d⁶/b²: 0.05 mm strands in the 41 mm E70 window. Thermal: magnetics-envelope.
-// Production rows: Rdc @25 °C (catches a wrong strand count) and Rac @100 °C at the worst nominal corner.
-export const D2ROWS = { "30kw": { rdc25: 1.95e-3, rac: 4.5e-3 }, "40kw": { rdc25: 1.3e-3, rac: 2.6e-3 }, "50kw": { rdc25: 1.3e-3, rac: 2.6e-3 } };
+// ---------------- D2: the external resonant inductor at the tank current (E67 rev F) ----------------
+// Construction from magnetics-envelope D2: 2×E70, N 5, compacted 0.05 mm litz single layer ≥3 mm clear of a distributed gap. Proximity
+// ∝ N²n²d⁶/b²; Rac is minimal near Sullivan Fr ≈ 2 at the worst corner. Thermal: magnetics-envelope.
+// Production rows: Rdc @25 °C (catches a wrong strand count) and Rac @100 °C at the worst simulated RMS corner.
+export const D2ROWS = { "30kw": { rdc25: 1.35e-3, rac: 3.35e-3 }, "40kw": { rdc25: 1.1e-3, rac: 3.45e-3 }, "50kw": { rdc25: 0.92e-3, rac: 3.7e-3 } };
 for (const [sku, row] of Object.entries(D2ROWS)) {
   const c = D2C[sku], rows = llc(sku), worst = rows.reduce((a, r) => (+r.Ip_rms_A > +a.Ip_rms_A ? r : a));
   const fq = +worst.fsw_kHz * 1e3, I = +worst.Ip_rms_A, A = (c.strands * Math.PI * c.dS ** 2) / 4, mlt = d2Mlt(c);
@@ -61,29 +61,28 @@ for (const [sku, row] of Object.entries(D2ROWS)) {
     `MLT ${f(mlt * 1e3, 0)} mm · Rdc ${f(Rdc25 * 1e3)} mΩ @25 °C (row ≤${f(row.rdc25 * 1e3)}) · Sullivan Fr ${f(Fr)} → Rac ${f(Rdc * Fr * 1e3)} mΩ hot (row ≤${f(row.rac * 1e3)}) → Cu ${f(I * I * Rdc * Fr, 1)} W at ${f(I, 1)} A rms (${worst.corner}) — thermal proof: magnetics-envelope`);
 }
 
-// ---------------- D3: profiled-litz primary + copper-foil secondaries ----------------
+// ---------------- D3 cells: profiled-litz primary + copper-foil secondary halves (E67 rev D) ----------------
 const FOILS = [0.05, 0.08, 0.10, 0.127, 0.15, 0.20, 0.25, 0.30].map((x) => x * 1e-3);
-// E60 secondaries at the Dowell optimum over standard foils (0.10 mm @30 kW, 0.127 mm @40/50), primaries in 0.071 mm
-// strands; E65 per-winding mean turns from the radial build (S1 inner, P, S2 outer) on the E70 formers.
-// Production rows at 25 °C: Rdc P / S1 / S2 (S2 is the longest turn) and Rac/Rdc ≤ 1.35 at the worst nominal corner.
-export const D3ROWS = { "30kw": { p: 2.8e-3, s1: 9.0e-3, s2: 10.6e-3 }, "40kw": { p: 1.75e-3, s1: 6.1e-3, s2: 7.3e-3 }, "50kw": { p: 1.5e-3, s1: 6.75e-3, s2: 7.75e-3 } };
-const WAS_FOIL = { "30kw": 0.20e-3, "40kw": 0.25e-3, "50kw": 0.30e-3 };
+// Two identical cells, primaries in series; each cell's secondary is S1 ∥ S2 around the primary, so each half carries HALF the bank
+// current in nf foils per turn (Dowell m = N·nf). Primaries in TIW-served litz. Per-winding mean turns from the radial build.
+// Production rows at 25 °C per cell: Rdc P / S1 half / S2 half (S2 is the longest turn) and Rac/Rdc ≤ 1.35 at the worst corner.
+export const D3ROWS = { "30kw": { p: 2.1e-3, s1: 8.0e-3, s2: 9.8e-3 }, "40kw": { p: 1.55e-3, s1: 4.5e-3, s2: 5.1e-3 }, "50kw": { p: 1.55e-3, s1: 4.5e-3, s2: 5.1e-3 } };
 export const RECOMMEND = {};
 for (const [sku, row] of Object.entries(D3ROWS)) {
   const w = D3C[sku], g = d3Build(w), rows = llc(sku), worst = rows.reduce((a, r) => (+r.Isec_rms_A > +a.Isec_rms_A ? r : a));
-  const fq = +worst.fsw_kHz * 1e3, Ip = +worst.Ip_rms_A, Is = +worst.Isec_rms_A, dl = delta(fq, T), eta = w.foilW / w.b;
-  const secP = (h) => { const R1 = rho(T) * w.N * g.mltS1 / (h * w.foilW), R2 = rho(T) * w.N * g.mltS2 / (h * w.foilW); const Fr = dowell((h / dl) * Math.sqrt(eta), w.N); return { Fr, P: Is * Is * (R1 + R2) * Fr }; };
-  const built = secP(w.foil), asDrawn = secP(WAS_FOIL[sku]);
+  const fq = +worst.fsw_kHz * 1e3, Ip = +worst.Ip_rms_A, Is = +worst.Isec_rms_A, Ih = Is / 2, dl = delta(fq, T), eta = w.foilW / w.b;
+  const secP = (h) => { const R1 = rho(T) * w.N * g.mltS1 / (w.nf * h * w.foilW), R2 = rho(T) * w.N * g.mltS2 / (w.nf * h * w.foilW); const Fr = dowell((h / dl) * Math.sqrt(eta), w.N * w.nf); return { Fr, P: Ih * Ih * (R1 + R2) * Fr }; };
+  const built = secP(w.foil);
   const priR = rho(T) * w.N * g.mltP / w.cuP;
   const priFr = litzFr({ fq, T, N: w.N, n: w.strands, d: w.dS, b: w.b, k: 0.25 });
   const best = FOILS.map((h) => ({ h, ...secP(h) })).reduce((a, x) => (x.P < a.P ? x : a));
-  const r25 = { p: rho(25) * w.N * g.mltP / w.cuP, s1: rho(25) * w.N * g.mltS1 / (w.foil * w.foilW), s2: rho(25) * w.N * g.mltS2 / (w.foil * w.foilW) };
-  RECOMMEND[sku] = { foil: w.foil, Fr: built.Fr, Psec: built.P, PsecAsDrawn: asDrawn.P, priFr, Ppri: Ip * Ip * priR * priFr, worst: worst.corner, fq, nP: w.strands, optimum: best.h };
-  ck("D3", `${sku} foil secondaries ${w.foil * 1e3} mm × ${w.foilW * 1e3} mm, ${w.N} layers each @${f(fq / 1e3, 0)} kHz`, built.Fr <= 1.35 && built.P <= 1.1 * best.P,
-    `h/δ ${f(w.foil / dl)} (η ${f(eta)}) → Dowell Fr ${f(built.Fr)} ≤ 1.35 → both secondaries ${f(built.P, 1)} W at ${f(Is, 1)} A rms each (${worst.corner}; optimum ${f(best.h * 1e3, 3)} mm = ${f(best.P, 1)} W) · the E51 ${WAS_FOIL[sku] * 1e3} mm foil computed Fr ${f(asDrawn.Fr, 1)} → ${f(asDrawn.P, 1)} W`);
-  ck("D3", `${sku} profiled-litz primary ${w.strands}×${f(w.dS * 1e3, 3)} mm`, priFr <= 1.35,
+  const r25 = { p: rho(25) * w.N * g.mltP / w.cuP, s1: rho(25) * w.N * g.mltS1 / (w.nf * w.foil * w.foilW), s2: rho(25) * w.N * g.mltS2 / (w.nf * w.foil * w.foilW) };
+  RECOMMEND[sku] = { foil: w.foil, nf: w.nf, Fr: built.Fr, Psec: built.P, priFr, Ppri: Ip * Ip * priR * priFr, worst: worst.corner, fq, nP: w.strands, optimum: best.h };
+  ck("D3", `${sku} cell foil halves ${w.nf}× ${w.foil * 1e3} mm × ${w.foilW * 1e3} mm, ${w.N} turns @${f(fq / 1e3, 0)} kHz`, built.Fr <= 1.35 && built.P <= 1.1 * best.P,
+    `h/δ ${f(w.foil / dl)} (η ${f(eta)}) → Dowell Fr ${f(built.Fr)} (m ${w.N * w.nf}) ≤ 1.35 → both halves ${f(built.P, 1)} W at ${f(Ih, 1)} A rms each (${worst.corner}; optimum ${f(best.h * 1e3, 3)} mm = ${f(best.P, 1)} W)`);
+  ck("D3", `${sku} cell profiled-litz primary ${w.strands}×${f(w.dS * 1e3, 3)} mm`, priFr <= 1.35,
     `Sullivan (interleaved k 0.25) Fr ${f(priFr)} → ${f(Ip * Ip * priR * priFr, 1)} W at ${f(Ip, 1)} A rms`);
-  ck("D3", `${sku} production Rdc rows @25 °C match the ${w.n}×${w.core} build`, r25.p <= row.p && r25.s1 <= row.s1 && r25.s2 <= row.s2 && r25.p >= 0.85 * row.p && r25.s2 >= 0.85 * row.s2,
+  ck("D3", `${sku} production Rdc rows @25 °C match the ${w.n}×${w.core} cell build`, r25.p <= row.p && r25.s1 <= row.s1 && r25.s2 <= row.s2 && r25.p >= 0.85 * row.p && r25.s2 >= 0.85 * row.s2,
     `MLT S1/P/S2 ${f(g.mltS1 * 1e3, 0)}/${f(g.mltP * 1e3, 0)}/${f(g.mltS2 * 1e3, 0)} mm → P ${f(r25.p * 1e3)} (≤${f(row.p * 1e3)}) · S1 ${f(r25.s1 * 1e3)} (≤${f(row.s1 * 1e3)}) · S2 ${f(r25.s2 * 1e3)} (≤${f(row.s2 * 1e3)}) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught`);
 }
 // D4 aux flyback primary (65 kHz DCM): informational. E65 rev E = P/2–S–P/2 sandwich on ETD44 — each 19 T half is ONE layer

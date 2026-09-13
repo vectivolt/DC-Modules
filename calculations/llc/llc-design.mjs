@@ -1,134 +1,79 @@
-// llc-design.mjs — Phase 6 (§13/§14): 3-phase LLC tank synthesis + transformer section design. REV B.
-// Rev A → B (design iteration, documented): gain-critical Rac corrected to the bank-518 V point;
-// (Ln,Q) solved jointly maximizing Lm under peak-gain + ZVS + Im ceiling; PC95 loss fit rescaled
-// (3.2e-5 — calibrates to ~350 mW/cm³ @100 kHz/±200 mT); per-winding secondary currents halved
-// (two banks share section current); transformer moved to 2-stack PQ50/50 (window-limited).
-// Per-phase FHA (half-bridge equivalent; star point ≈ virtual mid — Phase 7 SPICE validates).
-// Bus policy: bus_ref = clamp(2·bank/0.95, 650, 830) → PFM sits slightly above resonance (M≈0.95
-// nominal); M_max 1.25 at bank 518/bus 830; PS mode below M 0.72 floor (bank < ~245 V at bus 650).
-// Run: node calculations/llc/llc-design.mjs
-
-import { writeFileSync } from "node:fs";
+// llc-design.mjs — Phase 6 (§13/§14): LLC tank synthesis check + operating map + magnetics summary. REV E (E67 full bridge).
+// The tank of record lives in tanks.mjs (chosen by the E67 ngspice scan); this engine is its first-harmonic cross-check:
+//   · gain at the gain-critical mode edge (500 V bank, bus 830 → M 1.205): FHA floor + the ngspice gain-worst corner solved
+//   · an FHA operating map over both output modes (LOW 150–500 V banks parallel · HIGH 500–1000 V banks series)
+//   · the D3 cell / D2 external-Lr constructions and their rated-point losses from magnetics-envelope
+// FHA (full bridge, n = Np/Ns): Rac = (8 n²/π²)·Vbank²/P, M = n·Vbank/Vbus, fundamental of the ±Vbus square wave.
+// Bus policy: bus_ref = clamp(2·bank/0.95, 650, 830) (fsm.c bus_ref_for). Run: node calculations/llc/llc-design.mjs
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { plotSVG } from "../plot.mjs";
-import { D3 as D3C, D2 as D2C, d3Leakage, excitation, d3Loss, d2Loss } from "../magnetics/magnetics-envelope.mjs";
+import { D3 as D3C, D2 as D2C, D3_CELLS, d3Leakage, excitation, d3Loss, d2Loss, LOOP_STRAY } from "../magnetics/magnetics-envelope.mjs";
 import { stack } from "../magnetics/geometry.mjs";
 import { TANKS } from "./tanks.mjs";
+import { TOL } from "../../spice/llc/llc-run.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const f = (x, d = 2) => Number(x.toFixed(d));
-
-const P_PH = 30e3 / 0.98 / 3;                 // ≈10.2 kW into each section at 30 kW rating
-const N_RATIO = 1, FR = 140e3;
-const COSS_NODE = 250e-12, TDEAD = 120e-9;
-const IMAX_MODULE = 100;                      // 30 kW SKU output current cap (per-SKU scaling keeps per-section identical)
+let fails = 0;
+const ck = (name, cond, detail) => { console.log(`${cond ? "  ok  " : "  FAIL"}  ${name} — ${detail}`); if (!cond) fails++; };
 
 const gain = (fn, Q, Ln) => 1 / Math.hypot(1 + (1 / Ln) * (1 - 1 / (fn * fn)), Q * (fn - 1 / fn));
-const rac = (Vbank, Pph) => (8 / Math.PI ** 2) * (Vbank * Vbank) / Pph;
+const busFor = (bank) => Math.min(830, Math.max(650, (2 * bank) / 0.95));
+const peak = (Q, Ln) => { let m = 0, at = 1; for (let fn = 0.55; fn <= 1.2; fn += 0.001) { const g = gain(fn, Q, Ln); if (g > m) { m = g; at = fn; } } return { m, at }; };
 
-// ---------------- joint (Ln, Q) solve
-// Requirement rev D: M ≥ 1.36 attainable at bank 525 V (hysteresis top), full power — set by §37 MC yield.
-// Objective: maximize Lm (minimize circulating current); constraints: ZVS at bus 830, Im_pk ≤ 13 A.
-const RacCrit = rac(525, P_PH);   // rev D: hysteresis 500/525 (E9 rev B)
-let best = null;
-for (let Ln = 3; Ln <= 9; Ln += 0.5) {
-  for (let Q = 0.9; Q >= 0.1; Q -= 0.005) {
-    let mpk = 0;
-    for (let fn = 0.4; fn < 1.2; fn += 0.002) mpk = Math.max(mpk, gain(fn, Q * RacCrit / RacCrit, Ln)); // Q here defined at RacCrit
-    if (mpk < 1.38) continue;      // rev D2: MC yield margin (§37, p1 clearance)
-    const Lr = (Q * RacCrit) / (2 * Math.PI * FR);
-    const Lm = Ln * Lr;
-    const imPk830 = 415 / (4 * FR * Lm);
-    if (imPk830 > 14) continue;    // rev D: 14 A pk = 31% of load rms — justified in llc-tank.csv note
-    if (imPk830 * TDEAD < 2 * COSS_NODE * 830) continue;    // ZVS
-    if (!best || Lm > best.Lm) best = { Ln, Q, Lr, Cr: 1 / ((2 * Math.PI * FR) ** 2 * Lr), Lm, mpk, imPk830 };
-    break;                                                  // largest Q meeting gain at this Ln → largest Lr·Ln
-  }
-}
-const { Ln, Q, Lr, Cr, Lm } = best;
-console.log(`TANK (per phase): fr=140 kHz  Ln=${Ln}  Q_crit=${f(Q, 3)} → Lr=${f(Lr * 1e6, 1)} µH  Cr=${f(Cr * 1e9, 1)} nF  Lm=${f(Lm * 1e6, 0)} µH  (peak gain ${f(best.mpk, 2)}, Im_pk@830=${f(best.imPk830, 1)} A)`);
-
-// ---------------- operating map with bus policy + envelope caps
-const mapRows = [["mode","out_V","bank_V","bus_V","load_frac","M","fn","fsw_kHz","ctl","Ip_rms_A","Is_rms_per_wdg_A","Vcr_pk_V","Im_pk_A","Pph_W"]];
-const points = [];
-for (const mode of ["PAR", "SER"]) {
-  const outs = mode === "PAR" ? [150, 200, 260, 300, 400, 500] : [500, 600, 700, 800, 900, 1000];
-  for (const out of outs) {
-    const bank = mode === "PAR" ? out : out / 2;
-    if (mode === "SER" && bank < 245) continue;
-    for (const ld of [0.1, 0.25, 0.5, 0.75, 1.0]) {
-      const Pcap = Math.min(30e3, out * IMAX_MODULE) / 0.98 / 3;   // envelope: min(P, V·Imax)
-      const Pph = Math.max(Pcap * ld, 150);
-      const bus = Math.min(830, Math.max(650, (2 * bank) / 0.95));
-      const M = bank / (bus / 2);
-      const Rl = rac(bank, Pph), Qop = Math.sqrt(Lr / Cr) / Rl;
-      let ctl = "PFM", fn = 1;
-      if (M >= 0.72) {                                            // PFM reachable (floor incl. light-load limit 1.45·fr)
+console.log("=== LLC DESIGN (E67 full bridge) — FHA cross-check of tanks.mjs, operating map, magnetics summary ===");
+const mapRows = [["sku", "mode", "out_V", "bank_V", "bus_V", "load_frac", "M", "fn", "fsw_kHz", "ctl", "Ip_rms_A", "Is_rms_A", "Vcr_pk_V"]];
+const tankRows = ["sku,param,value,unit,tolerance,note"];
+for (const [sku, t] of Object.entries(TANKS)) {
+  const Z0 = Math.sqrt(t.Lr / t.Cr), Ln = t.Lm / t.Lr, racOf = (bank, P) => ((8 * t.n * t.n) / Math.PI ** 2) * bank * bank / P;
+  const Q500 = Z0 / racOf(500, t.P), Mneed = (t.n * 500) / 830;
+  // gain-worst corner: Lr +5 %, Cr −5 %, Lm +7 % → Q scales with √(Lr/Cr), Ln with Lm/Lr
+  const gw = TOL.gainWorst, Qw = Q500 * Math.sqrt(gw.lr / gw.cr), Lnw = Ln * gw.lm / gw.lr, pk = peak(Qw, Lnw);
+  // FHA under-reads LLC gain below resonance (the harmonic content grows as fn falls), so it is a floor, not the proof: the
+  // ngspice gain-worst corner must also have SOLVED in PFM at full power
+  const gwRow = readFileSync(join(OUT, "..", "..", "simulation-results", sku, "llc-stress.csv"), "utf8").split("\n").find((l) => l.startsWith("PAR500-full-gainWorst,"))?.split(",");
+  ck(`${sku} gain at the 500 V-bank mode edge`, pk.m >= Mneed && gwRow?.[3] === "PFM" && Math.abs(+gwRow[8]) <= 2.5,
+    `fr ${f(t.fr / 1e3, 1)} kHz · Ln ${f(Ln, 1)} · Q ${f(Q500, 3)} (gain-worst ${f(Qw, 3)}, Ln ${f(Lnw, 1)}) → FHA ${f(pk.m, 3)} at fn ≥ 0.55 vs M ${f(Mneed, 3)} · ngspice gain-worst ${gwRow?.[3]} at ${gwRow?.[4]} kHz, P err ${gwRow?.[8]} %`);
+  for (const mode of ["LOW", "HIGH"]) {
+    const outs = mode === "LOW" ? [150, 200, 250, 300, 400, 500] : [500, 600, 700, 800, 900, 1000];
+    for (const out of outs) for (const ld of [0.25, 0.5, 1.0]) {
+      const bank = mode === "LOW" ? out : out / 2, bus = busFor(bank), P = Math.min(t.P, out * t.Imax) * ld, M = (t.n * bank) / bus;
+      const Qop = Z0 / racOf(bank, P);
+      let fn = 1.45, ctl = "PSM@fmax";
+      if (gain(1.45, Qop, Ln) <= M) {
         let lo = 0.45, hi = 1.45;
         for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; (gain(mid, Qop, Ln) > M) ? (lo = mid) : (hi = mid); }
-        fn = (lo + hi) / 2;
-        if (gain(1.45, Qop, Ln) > M) { ctl = "PFM+burst"; fn = 1.45; }
-      } else ctl = "PS";
-      const fsw = fn * FR;
-      // fundamental transfer: V1_rms(eff) = (√2/π)·bus·(PS duty factor); at PFM full square
-      const V1 = (Math.SQRT2 / Math.PI) * bus * (ctl === "PS" ? (Math.PI / (Math.SQRT2)) * ((2 * Math.SQRT2 / Math.PI) * bank) / ((2 / Math.PI) * bus) : 1);
-      const Ipload = Pph / ((Math.SQRT2 / Math.PI) * bus * (ctl === "PS" ? ((2 * Math.SQRT2 / Math.PI) * bank) / ((2 / Math.PI) * bus / 1) : Math.min(M / gain(fn, Qop, Ln), 1)) || 1);
-      // simpler robust estimate: Ip1_rms = Pph / (0.9·bank) (secondary fundamental), n=1 → primary equal; add Im quadrature
-      const Ip1 = Pph / (0.9 * bank);
-      const im = bus / 2 / (4 * fsw * Lm) / Math.SQRT2;
-      const IpRms = Math.hypot(Ip1, im);
-      const IsW = (Math.PI / (2 * Math.SQRT2)) * (Pph * 0.98 / bank) / 2;
-      const VcrPk = (IpRms * Math.SQRT2) / (2 * Math.PI * fsw * Cr) + bus / 2;
-      mapRows.push([mode, out, bank, f(bus, 0), ld, f(M, 3), f(fn, 3), f(fsw / 1e3, 1), ctl, f(IpRms, 1), f(IsW, 1), f(VcrPk, 0), f(im * Math.SQRT2, 1), f(Pph, 0)]);
-      points.push({ mode, out, bank, bus, ld, M, fn, ctl, IpRms, IsW, VcrPk, Pph });
+        fn = (lo + hi) / 2; ctl = "PFM";
+      }
+      const fsw = fn * t.fr, Iload = P / (0.9 * t.n * bank), Im = (t.n * bank) / (4 * fsw * t.Lm) / Math.SQRT2;
+      const Ip = Math.hypot(Iload, Im), Is = (Math.PI / (2 * Math.SQRT2)) * (P / bank) / 2, Vcr = (Ip * Math.SQRT2) / (2 * Math.PI * fsw * t.Cr);
+      mapRows.push([sku, mode, out, bank, f(bus, 0), ld, f(M, 3), f(fn, 3), f(fsw / 1e3, 1), ctl, f(Ip, 1), f(Is, 1), f(Vcr, 0)]);
     }
   }
+  const c3 = D3C[sku], c2 = D2C[sku], rated = excitation(sku).rows.find((r) => r.corner === "PAR400-full");
+  const a = d3Loss(sku, c3, rated), b = d2Loss(sku, c2, rated), llk = d3Leakage(c3);
+  console.log(`  info  ${sku} D3 rev D: ${D3_CELLS} cells ${c3.n}×E70 ${c3.N}:${c3.N}∥${c3.N} (primaries in series → n ${t.n}) · leakage ${f(llk * 1e6, 3)} µH/cell · rated PAR400 Pfe ${f(a.fe(90), 1)} + Pcu ${f(a.cu(90), 1)} W per cell`);
+  console.log(`  info  ${sku} D2 rev F: ${c2.n}×E70 N ${c2.N} litz ${c2.strands}×0.05 · ${f(c2.Lnom * 1e6, 2)} µH = Lr ${f(t.Lr * 1e6, 2)} − ${D3_CELLS}×${f(llk * 1e6, 3)} − ${f(LOOP_STRAY * 1e6, 1)} loop · rated Pfe ${f(b.fe(90), 1)} + Pcu ${f(b.cu(90), 1)} W · gap Σ ${f((4e-7 * Math.PI * c2.N ** 2 * stack(c2.core, c2.n).Ae / c2.Lnom) * 1e3, 1)} mm (distributed, ≤1.0 mm per segment)`);
+  tankRows.push(
+    `${sku},fr,${f(t.fr / 1e3, 1)},kHz,±5%,Lr ±5 % (D2 ±3 % + leakage band) with Cr ±5 %`,
+    `${sku},n,${t.n},,exact,${D3_CELLS} cells ${c3.N}:${c3.N} with primaries in series`,
+    `${sku},Lr,${f(t.Lr * 1e6, 2)},µH,±5%,D2 ${f(c2.Lnom * 1e6, 2)} µH + ${D3_CELLS}× cell leakage + ${f(LOOP_STRAY * 1e6, 1)} µH loop`,
+    `${sku},Cr,${f(t.Cr * 1e9, 0)},nF,±5%,${t.crN}× 33 nF 1200 V resonant-duty film in parallel`,
+    `${sku},Lm,${f(t.Lm * 1e6, 1)},µH,±7%,primary-referred; ${f(t.Lm / D3_CELLS * 1e6, 2)} µH per cell`,
+    `${sku},Ln,${f(Ln, 1)},,,E67 ngspice scan`, `${sku},Q_500V,${f(Q500, 3)},,,at a 500 V bank full power`);
 }
-writeFileSync(join(OUT, "llc-opmap.csv"), mapRows.map(r => r.join(",")).join("\n") + "\n");
-const worst = points.reduce((a, p) => (p.IpRms > a.IpRms ? p : a));
-const psPts = points.filter(p => p.ctl === "PS");
-console.log(`Map: ${points.length} pts; PS-mode region: output ${Math.min(...psPts.map(p => p.out))}–${Math.max(...psPts.map(p => p.out))} V parallel (${psPts.length} pts)`);
-console.log(`Worst primary RMS = ${f(worst.IpRms, 1)} A @ ${worst.mode} out ${worst.out} V, load ${worst.ld} (${worst.ctl}) — envelope keeps it ~flat`);
-const worstCr = points.reduce((a, p) => (p.VcrPk > a.VcrPk ? p : a));
-console.log(`Resonant cap: ${f(Cr * 1e9, 0)} nF ±5%, Irms_max=${f(worst.IpRms, 1)} A, Vpk=${f(worstCr.VcrPk, 0)} V → 4× ${f(Cr * 1e9 / 4, 0)} nF/1200 V resonant-duty film in parallel per phase (≤12 A rms each; series must carry a Vrms-vs-f curve at 140 kHz — CDE 942C class / Faratronic eq, §K O-8)`);
-
-// gain curves
-const curves = [650, 740, 800, 830].map(vb => {
-  const Rl = rac(400, P_PH), Qop = Math.sqrt(Lr / Cr) / Rl;
-  const x = [], y = [];
-  for (let fn = 0.4; fn <= 1.5; fn += 0.01) { x.push(fn); y.push(gain(fn, Qop, Ln) * (vb / 2)); }
-  return { label: `bank @ bus ${vb}`, x, y };
+writeFileSync(join(OUT, "llc-opmap.csv"), mapRows.map((r) => r.join(",")).join("\n") + "\n");
+writeFileSync(join(OUT, "llc-tank.csv"), tankRows.join("\n") + "\n");
+const t40 = TANKS["40kw"], Ln40 = t40.Lm / t40.Lr, Z40 = Math.sqrt(t40.Lr / t40.Cr);
+plotSVG({
+  title: `40 kW full-bridge LLC — reachable bank voltage vs fn at full load (Ln ${f(Ln40, 1)}, n 2)`, xlabel: "fn = fsw/fr", ylabel: "bank V",
+  path: join(OUT, "..", "..", "simulation-results", "40kw", "plots", "llc-gain-curves.svg"),
+  series: [650, 740, 830].map((vb) => {
+    const x = [], y = [];
+    for (let fn = 0.4; fn <= 1.5; fn += 0.01) { x.push(fn); y.push(gain(fn, Z40 / (((8 * 4) / Math.PI ** 2) * 400 * 400 / t40.P), Ln40) * vb / t40.n); }
+    return { label: `bus ${vb} V`, x, y };
+  }),
 });
-plotSVG({ title: `LLC reachable bank voltage vs fn (full load, Ln=${Ln}, Q=${f(Q, 2)})`, xlabel: "fn = fsw/fr", ylabel: "bank V", path: join(OUT, "..", "..", "simulation-results", "30kw", "plots", "llc-gain-curves.svg"), series: curves });
-
-// ---------------- transformer section — E65: the drawing of record, not a resonant-point sizing ----------------
-// This engine used to pick Np from the 415 V / 140 kHz volt-seconds; the power-solved decks run 77–88 kHz at bank
-// 500–525 V (gain 1.2–1.27 with the bus capped at 830 V), so that sizing understated flux 1.5–2.2×. The construction now
-// comes from magnetics-envelope (proven at every simulated corner) and the losses printed here are its rated point.
-const X30 = D3C["30kw"], AeT = stack(X30.core, X30.n).Ae, Np = X30.N, Ns = Np;
-const dBact = (415 / (2 * FR)) / (Np * AeT);                    // resonant-point swing, informational only
-const rated = excitation("30kw").rows.find((r) => r.corner === "PAR400-full");
-const Pfe = d3Loss("30kw", X30, rated).fe(90), Pcu = d3Loss("30kw", X30, rated).cu(90);
-const IpDesign = Math.max(worst.IpRms, 38), IsDesign = Math.max(...points.map(p => p.IsW));
-const leakEst = d3Leakage(X30), trimNom = TANKS["30kw"].trim;
-console.log(`\nTRANSFORMER (per section, E65 D3-30: ${X30.n}× E70/33/32, ${Np}:${Ns}:${Ns}): resonant-point ΔB ${f(dBact * 1e3, 0)} mT pp (the 525 V-bank corner is 142 mT pk — magnetics-envelope) · rated PAR400 Pfe ${f(Pfe, 1)} W + Pcu ${f(Pcu, 1)} W → ${f(Pfe + Pcu, 1)} W (${f((Pfe + Pcu) / (P_PH * 0.98) * 100, 2)}%)`);
-console.log(`  Ip=${f(IpDesign, 1)} A · Is=${f(IsDesign, 1)} A/wdg ×2 · primary TIW litz ${X30.strands}×0.071 mm, secondaries Cu foil ${X30.foil * 1e3}×28 mm (conductor-audit)`);
-console.log(`  Lr split: transformer leakage ${f(leakEst * 1e6, 2)} µH (S1–P–S2, computed) + 0.1 µH loop + D2 trim bin ~${f(trimNom * 1e6, 2)} µH (${D2C["30kw"].n}× E70 N ${D2C["30kw"].N}) = Lr ${f(Lr * 1e6, 1)} µH — the E51 "engineered 3 µH" leakage was not buildable`);
-console.log(`  Insulation: pri-sec REINFORCED 4 kV_pk class; TIW-served primary litz; interwinding shield → primary star`);
-
-writeFileSync(join(OUT, "llc-tank.csv"), [
-  "param,value,unit,tolerance,note",
-  `fr,140,kHz,±4%,from Lr+trim ±5% + Cr ±5%`,
-  `Lr,${f(Lr * 1e6, 1)},µH,±3%,${f(leakEst * 1e6, 2)} leakage + 0.1 loop + D2 bin (E65 bins 6.35–6.8 µH)`,
-  `Cr,${f(Cr * 1e9, 1)},nF,±5%,4× parallel 46 nF 1200 V resonant-duty film (Vrms-vs-f curve at 140 kHz — §K O-8)`,
-  `Lm,${f(Lm * 1e6, 0)},µH,±7%,gapped 2×E70/33/32 (E7 rev D2 tolerance; E65 core)`,
-  `Ln,${Ln},,,joint solve`, `Q_crit,${f(Q, 3)},,,at bank 518 full load`,
-  `Np=Ns,${Np},turns,exact,2 secondaries (bank A/B)`,
-  `dB_pp_resonant,${f(dBact * 1e3, 0)},mT,,informational — worst simulated corner in llc-flux.csv`,
-  `Pfe,${f(Pfe, 1)},W,,rated PAR400 iGSE (magnetics-envelope)`, `Pcu,${f(Pcu, 1)},W,,rated PAR400 Dowell/Sullivan`,
-  `Ip_rms_design,${f(IpDesign, 1)},A,,envelope-flat worst`,
-  `Is_rms_per_winding,${f(IsDesign, 1)},A,,two windings share section current`,
-  `Im_pk_830,${f(best.imPk830, 1)},A,,ZVS OK / ≤13 A ceiling`,
-  `Vcr_pk,${f(worstCr.VcrPk, 0)},V,,worst map point`,
-].join("\n") + "\n");
-console.log("→ calculations/out/llc-tank.csv, llc-opmap.csv, plots/llc-gain-curves.svg");
+console.log(fails ? `\n${fails} LLC DESIGN FAILURE(S)` : "\n→ calculations/out/llc-tank.csv, llc-opmap.csv, simulation-results/40kw/plots/llc-gain-curves.svg");
+process.exit(fails ? 1 : 0);
