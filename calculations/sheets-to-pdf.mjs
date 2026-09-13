@@ -27,13 +27,13 @@ if (!existsSync(CHROME)) { console.error("Google Chrome not found — needed for
 // net labels, junctions, frames and title block. Run kicad5-print for each SKU before this tool.
 const BOARDS = [
   { k5: "30kw-acdc", name: "DC-Modules 30kW AC-DC (Vienna PFC)" },
-  { k5: "30kw-dcdc", name: "DC-Modules 30kW DC-DC (3-phase LLC)" },
+  { k5: "30kw-dcdc", name: "DC-Modules 30kW DC-DC (full-bridge LLC)" },
   { k5: "40kw-acdc", name: "DC-Modules 40kW AC-DC (Vienna PFC, E41)" },
-  { k5: "40kw-dcdc", name: "DC-Modules 40kW DC-DC (3-phase LLC, E41)" },
+  { k5: "40kw-dcdc", name: "DC-Modules 40kW DC-DC (full-bridge LLC)" },
   { k5: "50kw-acdc", name: "DC-Modules 50kW AC-DC (Vienna PFC, E42 liquid)" },
-  { k5: "50kw-dcdc", name: "DC-Modules 50kW DC-DC (3-phase LLC, E42 liquid)" },
+  { k5: "50kw-dcdc", name: "DC-Modules 50kW DC-DC (full-bridge LLC, liquid)" },
   { k5: "50kwa-acdc", name: "DC-Modules 50kW-Air AC-DC (Vienna PFC, E44)" },
-  { k5: "50kwa-dcdc", name: "DC-Modules 50kW-Air DC-DC (3-phase LLC, E44)" },
+  { k5: "50kwa-dcdc", name: "DC-Modules 50kW-Air DC-DC (full-bridge LLC)" },
   { k5: "control-card-card", name: "DC-Modules Control Card (GD32G553VET7)" },
   { k5: "cabinet-cab", name: "DC-Modules 150kW Cabinet (3x50kW)" },
 ]; // 120 kW retired: cabinet of 30/60 kW modules (E36)

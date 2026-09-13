@@ -4,12 +4,12 @@ EELAYER END
 $Descr User 49600 27550
 encoding utf-8
 Sheet 1 1
-Title "50 kW ACDC board 1of2 - Vienna PFC (1x liquid cells)"
+Title "DC-Modules 50 kW liquid — AC-DC board (Vienna PFC)"
 Date "2026-09-06"
 Rev "D.4"
-Comp "DC-Modules 50 kW - board ?, sheet ? of 2"
-Comment1 "Module 50 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
-Comment2 "Content: ?"
+Comp "DC-Modules 50 kW liquid - board AC-DC (lower), sheet 1 of 3"
+Comment1 "Module 50 kW liquid = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
+Comment2 "Content: Vienna PFC: 1x B3M010C075Z per position, D1 5x T79 N=24, 16-can link, coldplates, 0 fans (E68)"
 Comment3 "29 functional sections - 322 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
@@ -24,7 +24,7 @@ Wire Notes Line
 Text Notes 43210 8810 0    79   ~ 16
 SHEET INDEX
 Text Notes 43210 9070 0    60   ~ 0
-50 kW ? - ? of 2
+50 kW liquid AC-DC (lower) - 1 of 3
 Text Notes 43200 9500 0    60   ~ 0
 AC-SENSING   -   9 sections
 Text Notes 43200 9800 0    60   ~ 0

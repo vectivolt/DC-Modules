@@ -7,9 +7,9 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
-  <img src="https://img.shields.io/badge/verdict-E67_full_bridge_adopted_·_R18-2ea44f?style=flat-square" alt="verdict: E67 full bridge adopted · R18"/>
+  <img src="https://img.shields.io/badge/verdict-architecture_and_BOM_cloned_E67–E69_·_cost_gap_open-d19a00?style=flat-square" alt="verdict: architecture and BOM cloned E67–E69 · cost gap open"/>
 </p>
 
 > [!NOTE]
@@ -28,6 +28,11 @@
 > full-load efficiency and a three-layer protection stack; they spend less and package ~1.6–1.9× denser. **No
 > schematic change results from this audit.** One risk-register row (R18), two RFQ cost levers and one EVT
 > datapoint are recorded below.
+>
+> **Superseded by E67–E69.** The customer then directed a clone of InfyPower's architecture and BOM. E67 adopted
+> the full-bridge LLC, the two output modes and the output diode (R18 resolved); E68 the clip mount, the star-X2
+> EMI filter and film-only banks; E69 right-sized dies. The result and the remaining cost gap are in
+> [the clone addendum](#e67e69-clone-addendum--what-was-copied-what-was-not-and-the-gap-that-remains).
 
 ## How to read the evidence
 
@@ -93,7 +98,7 @@ brain count (1 vs 2), and packaging density. Each is audited below.
 
 | # | Area | REG1K0135A2 | Ours | Verdict |
 |--:|---|---|---|---|
-| 1 | Topology selection | 3-level boost PFC + resonant isolated DC-DC | Vienna + 3-φ LLC | **same choice — validated** |
+| 1 | Topology selection | 3-level boost PFC + resonant isolated DC-DC | Vienna + 3-φ LLC (→ E67: Vienna + full-bridge LLC, as theirs) | **same choice — validated** |
 | 2 | Power-stage architecture | single full-bridge LLC | three interleaved half-bridge sections | **1** — Wolfspeed-reference architecture, buys full-load η and ripple |
 | 3 | AC-DC structure | 3-level, SiC switch + SiC boost diode | same, paralleled 750 V pairs | **same choice — validated** |
 | 4 | Switching strategy | PFM LLC (fsw unpublished) · PFC hard-switched 3-level | LLC PFM about fr 140 kHz, ZVS proven · Vienna 50 kHz | **1** |
@@ -105,7 +110,7 @@ brain count (1 vs 2), and packaging density. Each is audited below.
 | 10 | Precharge / discharge | AC-side R + relays · 1500 V chopper + 300 Ω | AC-side 33 Ω × 2 + 2-pole bypass · 640 Ω + SiC switch + passive 47k | **same choice — validated** |
 | 11 | V / I sensing | shunts + AMC1200 iso-amps, muxed | CTs (line + resonant) + output shunt + AMC1350/1311 | **1** — zero-loss, trip-grade bandwidth |
 | 12 | Hardware protection | shunt comparators + DSP, no DESAT seen [T] | DESAT + CMP/DAC trips + supervisory ladder | **1** — three layers by directive |
-| 13 | Fault handling | datasheet: SCP self-rollback, alarms [D] | F.xx ladder, per-SKU windows, host-proven 54/54 | **1** (their firmware not inspectable) |
+| 13 | Fault handling | datasheet: SCP self-rollback, alarms [D] | F.xx ladder, per-SKU windows, host-proven 54/54 (60/60 since E67) | **1** (their firmware not inspectable) |
 | 14 | Gate drive | 3 iso-driver ICs + gate transformers, no Miller clamp seen | 9 × NSI6611 (DESAT, clamp, soft-off) + QA01C-18 ±bias | **1**, cost noted (~₹1k+) |
 | 15 | Aux power | UCC28C45 flyback, 900 V Si, opto FB [T] | one 110 W 342–860 V flyback, 1700 V SiC, NCP1252D | **1/2** — dearer switch, full-range and balance-neutral |
 | 16 | Thermal / cooling | 3 fans + potted heatsink integration | 3 fans + extrusion tunnel; 50 kW liquid twin | **1**; density consequence in #20 |
@@ -413,6 +418,95 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E
 | Heatsink-integrated packaging (their patent) | 3.96 kW/L | logged as an E36 layout-phase DFM input — heatsink-as-structure is the density mechanism; potting itself stays declined |
 | 48-module parallel scale | their rack model | not our product ladder (E55); noted, not adopted |
 
+## E67–E69 clone addendum — what was copied, what was not, and the gap that remains
+
+> [!NOTE]
+> **Directive (2026-09-13)** — "use exactly their architecture and their BOM end to end (except where ours is better
+> or cheaper) … it is tested and running in production and economically viable, so we should not reinvent the
+> wheel at premium prices", with per-SKU values allowed for minimal cost and risk, and a target within 2–5 % of
+> InfyPower's cost. Register rows [E67 · E68 · E69](assumptions.md).
+
+### What was copied, block by block
+
+| Block | InfyPower REG1K0135A2 [T] | Ours now | Row |
+|---|---|---|---|
+| DC-DC topology | single full-bridge LLC, external litz Lr | **copied** — one full-bridge LLC, D2 rev F external Lr, two D3 cells in series (the 66 mm tunnel forbids one tall stack) | E67 |
+| Output range | relay series / parallel banks | **copied** — LOW ≤ 500 V parallel / HIGH ≥ 500 V series, latched in standby, zero-current relays | E67 |
+| Output protection | 1600 V series blocking diodes | **copied** — DOUT 1600 V, 150 / 200 / 250 A class; K_OUT and pre-insertion retired | E67 |
+| Device mounting | clip-mounted discrete TO-247 | **copied** — clip on Al2O3; single dies per position where the fault-pulse rule allows | E68a |
+| EMI filter | two CM chokes + 9 × 4.7 µF X2, no DM chokes | **copied** — 2 CMC + 12 × 4.7 µF X2 in three star stages; the damper stays (without it the current loop is unstable with either filter) | E68b |
+| Output banks | film only | **copied** — 9 / 12 / 14 × 2.2 µF 630 V per bank | E68c |
+| PFC switches | 600 V 22 mΩ class | **adapted** — 750 V 20 / 15 mΩ class (650 V would be 86 % of rating at our 560 V worst switch stress; the house rule is 75 %) | E69a |
+| LLC switches | 4 × 1200 V 35 mΩ | **not copied** — one 23 mΩ die per position at 30 kW, two at 40 / 50 kW; a single 35 mΩ die fails our 55 °C HIGH-mode corner, and a single 16 mΩ die at 40 kW fails the fault-pulse rule | E68a / E69a-2 |
+| Gate drive and protection | gate-drive transformers + basic iso drivers, no DESAT | **approved, not executed** — about −₹470 at 40 kW against a protection-philosophy change (GDT design, D4 re-wind, new trip evidence) | E69 (e) |
+| Control | two TMS320F28035 | **kept ours** — one GD32G553 (cheaper by ≈ ₹170) | E40 |
+| Sensing | shunt + iso amp | **kept ours** — isolated senses on every domain (≈ ₹1.2k premium, a safety-architecture choice) | E25 |
+| Aux | 900 V Si flyback on half the link | **kept ours** — full-bus SiC flyback (a half-link aux saves ≈ ₹250 but needs a D4 redesign and midpoint duty) | E52 |
+| Packaging | 2U potted heatsink chassis, 3 × 80 mm fans | **scenario only** — the design stays a 3U card; the 2U table in [BOM & cost](bom-cost.md) is flagged, unproven | E69e |
+
+### The tank, side by side (40 kW, same power-solved ngspice method)
+
+| Corner | InfyPower-reading tank (fr 99.8 kHz, Ln 8) Ip rms | Ours (fr 140 kHz, Ln 10) Ip rms | ZVS |
+|---|---:|---:|---|
+| PAR 500 V, gain-worst tolerance | 66.5 A | 60.1 A | 64/64 both |
+| SER 250 V, rated power | 92.1 A | 90.5 A | 64/64 both |
+| PAR 400 V, rated point | 63.9 A | 59.8 A | 64/64 both |
+
+The tank reading from the teardown carries 2–10 % more current than ours at the same corners; ours stays on the E67
+values.
+
+### Where the cost gap is now (40 kW, @10k, India price list)
+
+InfyPower's column is the E62 teardown parts list priced on our own 10k price list (±20 %). It is an estimate of
+what their BOM would cost us, not their real cost.
+
+| Section | Ours (E69) ₹ | InfyPower est. ₹ | Gap ₹ | What would close it |
+|---|---:|---:|---:|---|
+| Heatsinks, fans, enclosure | 5,348 | ~3,560 | +1,788 | 2U potted chassis (E69e scenario) — a mechanical design, not a schematic change |
+| PFC stage | 5,132 | ~4,600 | +532 | dies right-sized (E69a); a flat-core D1 is the open item |
+| LLC transformer cells + external Lr | 3,228 | ~2,450 | +778 | one transformer needs the 2U height |
+| LLC bridge | 2,800 | ~900 | +1,900 | blocked by physics at our rules: 55 °C HIGH-mode corner and the fault-pulse rule |
+| EMI filter | 2,790 | ~2,050 | +740 | cloned; the rest is the two CMCs and the damper |
+| DC link, precharge, tank caps | 2,755 | ~2,280 | +475 | about parity |
+| PCBs | 2,349 | ~1,450 | +899 | 4-layer boards at half the area (E69e scenario) |
+| Sensing | 1,975 | ~740 | +1,235 | a safety-architecture decision, not taken |
+| Relays, fuses, aux | 1,867 | ~1,210 | +657 | 90 A relays and 500 VAC fuses (< ₹200); 900 V half-link aux (≈ ₹250) |
+| Assembly + EOL | 1,697 | ~1,000 | +697 | production process |
+| Secondary diodes | 1,536 | ~1,536 | 0 | parity |
+| Gate drive | 1,054 | ~260 | +794 | the approved drive clone (≈ −₹470) |
+| Output banks | 864 | ~400 | +464 | cloned (film only); the rest is film count at our 0.5 % ripple rule |
+| Busbars, studs, harness | 705 | in mechanical | — | — |
+| Control | 516 | ~690 | −174 | ours is cheaper |
+| **Module** | **34,616** | **≈ 23,600** | **≈ +11,000 (+47 %)** | |
+
+```mermaid
+xychart-beta
+  title "40 kW build cost at 10k (₹) — ours vs the InfyPower teardown estimate"
+  x-axis ["E65", "E67", "E68a", "E68b", "E68c", "E69", "E69 + 2U", "Infy est."]
+  y-axis "₹ @10k" 0 --> 45000
+  bar [42505, 38048, 36686, 35560, 35048, 34616, 32680, 23600]
+```
+
+> [!IMPORTANT]
+> **The honest verdict.** The architecture is now InfyPower's, and the clone took ₹7.9k (−19 %) out of the 40 kW
+> module since E65. On the India price list the module is still ≈ 47 % above the teardown estimate (≈ 38 % with the
+> unproven 2U construction). The China RFQ-target column (E69f) puts the 40 kW module at ₹28,320 (₹26,736 with 2U),
+> but that compares a landed China target with an estimate priced in India, so it is not a like-for-like gap. The
+> 2–5 % target is not met by any change the gates can prove today. The largest single unknown is whether the
+> estimate itself is right: **buy one REG1K0135A2 and measure it** (thermals at SER 500 V, device temperatures, gate
+> waveforms, BOM by weight and marking), then re-run this table on data instead of a teardown reading.
+
+### Levers left, ranked by rupees per unit of risk
+
+| Lever | ₹ at 40 kW | Risk / prerequisite |
+|---|---:|---|
+| Buy and measure one REG1K0135A2 | — | none — turns the estimate into data |
+| 2U construction (potted heatsink chassis, 4-layer PCBs, 80 mm fans) | ≈ −1,900 | a flat-core D1 (a 3-core D1 fails F.01 at 40 kW) and a mechanical design that holds the 70 °C base at 55 °C |
+| China sourcing at the RFQ-target factors | ≈ −6,300 | quotes; duty per HSN code confirmed by a customs broker |
+| Drive clone (GDTs on the LLC, opto PFC drivers on aux-winding bias, shunt comparator) | ≈ −470 | protection-philosophy change; needs a GDT design, a D4 re-wind and new trip evidence |
+| 900 V half-link aux | ≈ −250 | D4 redesign, midpoint duty |
+| 90 A relays, 500 VAC fuses | < −200 | relay carry at 89 % of rating (InfyPower's practice) versus our 80 % rule |
+
 ## Where the evidence ends
 
 > [!WARNING]
@@ -420,7 +514,7 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the E
 > curves and EMC margins are invisible, and their ">96 % comprehensive" efficiency is a load-weighted marketing
 > figure, not a measured full-load point. Symmetrically, our numbers here are engine outputs and simulation —
 > reproducible to the digit, but pre-hardware. The comparison is therefore architecture-against-architecture and
-> spec-against-computation; EVT (T-00…T-32) is where our side of this table becomes measured. Counts marked
+> spec-against-computation; EVT (T-00…T-41) is where our side of this table becomes measured. Counts marked
 > **[T?]** could not be resolved from the article text and were not guessed.
 
 ---

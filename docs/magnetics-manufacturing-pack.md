@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-RFQ__PACK-b4642a?style=flat-square" alt="status: RFQ pack"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/rfq--audit-0_missing_fields-2ea44f?style=flat-square" alt="rfq-audit: 0 missing fields"/>
 </p>
 

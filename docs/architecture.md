@@ -7,13 +7,13 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 > [!NOTE]
 > **Purpose** — the platform in one read: the product family, the power path stage by stage, the control plane,
 > the protection layers, the auxiliary rails and the thermal snapshot. Values are the frozen set in the
-> [decision register](assumptions.md) (E1–E64), and every number reproduces from `calculations/run-all.sh`.
+> [decision register](assumptions.md) (E1–E69), and every number reproduces from `calculations/run-all.sh`.
 
 ## At a glance
 
@@ -23,19 +23,19 @@
 | **Module** | AC-DC board (lower) + DC-DC board (upper), faces inward, semiconductors on the outer heatsinks or coldplates |
 | **Brain** | **one control card per module** (GD32G553VET7) in the DC-DC slot, one CAN port, one 2-button / 2-digit HMI |
 | **Input → output** | 3-φ 285–475 VAC → split DC bus 650–830 V → 150–1000 VDC, 100 / 133 / 167 A |
-| **Switching** | Vienna 50 kHz (750 V SiC pairs, 1200 V JBS) · LLC fr 140 kHz (1200 V SiC full bridge, ZVS; phase shift at 1.45·fr) |
-| **Output stage** | two floating banks behind Cf–Lf–Ce bank filters; zero-current series/parallel relays — **LOW ≤ 500 V** (parallel) / **HIGH ≥ 500 V** (series), set in standby; output blocking diode |
+| **Switching** | Vienna 50 kHz (one clip-mounted 750 V SiC die per position, 1200 V JBS) · LLC fr 140 kHz (1200 V SiC full bridge, ZVS; phase shift at 1.45·fr) |
+| **Output stage** | two floating banks with film-only filters (E68c); zero-current series/parallel relays — **LOW ≤ 500 V** (parallel) / **HIGH ≥ 500 V** (series), set in standby; output blocking diode |
 | **Family** | 30 · 40 · 50 kW liquid · 50 kW air modules; 100 kW = 2 × 50 and 150 kW = 3 × 50 products (E66: no CSU) |
 
 ```mermaid
 flowchart LR
-  AC(["3-φ 285–475 VAC"]) --> EMI["gG fuse · MOV Δ + GDT<br/>2 × CM + DM EMI stages"]
+  AC(["3-φ 285–475 VAC"]) --> EMI["gG fuse · MOV Δ + GDT<br/>2 × CMC + three star-X2 stages (E68b)"]
   EMI --> PRE["precharge<br/>2 × 33 Ω + 2-pole bypass"]
-  PRE --> V["VIENNA PFC · 50 kHz<br/>750 V SiC pairs · 1200 V JBS"]
+  PRE --> V["VIENNA PFC · 50 kHz<br/>750 V SiC, one die per position · 1200 V JBS"]
   V --> BUS[("split DC bus<br/>650–830 V · OVP 860")]
   BUS --> LLC["full-bridge LLC · fr 140 kHz<br/>1200 V SiC · Cr + D2 external Lr"]
   LLC --> XF["2 × D3 transformer cells<br/>primaries in series · n 2"]
-  XF --> BK["banks A + B<br/>SiC JBS bridges"]
+  XF --> BK["banks A + B<br/>SiC JBS bridges · film only (E68c)"]
   BK --> SP["S/P relays at 0 A + exclusion<br/>LOW ≤ 500 V · HIGH ≥ 500 V"]
   SP --> DO["output blocking diode"]
   DO --> OUT(["150–1000 VDC<br/>100/133/167 A"])
@@ -53,27 +53,28 @@ flowchart LR
 
 | Module | Silicon relative to 30 kW | Cooling | ₹ @10k · ₹/kW |
 |---|---|---|---|
-| **30 kW** | baseline — single B3M pair per phase, single SG2M per LLC position | air, 2 fans | 30,980 · 1,033 |
-| **40 kW** (E41) | PFC pairs **paralleled** (2 × B3M per position, each behind its own 2.2 Ω) | air, 3 fans | 35,891 · 897 |
-| **50 kW liquid** (E42) | the 40 kW silicon — single LLC FETs, which the coldplate makes possible | **liquid**, 0 fans | 41,865 · 837 |
-| **50 kW air** (E44) | PFC **and** LLC paralleled (per-package conduction ÷ 4) | air, 4 fans | 41,516 · **830 — cheapest** |
-| **Products** (E55) | **100 kW = 2 × 50** (no CSU) · **150 kW = 3 × 50** (E66: charger controller = group master, no CSU) | per module | 100 kW air 83,032 (830) · 150 kW air 1,26,382 (843) |
+| **30 kW** | baseline — one 750 V 20 mΩ class die per PFC position, one SG2M023120LJ per LLC position | air, 2 fans | 30,033 · 1,001 |
+| **40 kW** (E41) | 750 V 15 mΩ class PFC dies; two SG2M023120LJ per LLC position (the fault-pulse rule, E69a-2) | air, 3 fans | 34,616 · 865 |
+| **50 kW liquid** (E42) | B3M010C075Z PFC dies; two SG2M023120LJ per LLC position | **liquid**, 0 fans | 40,481 · 810 |
+| **50 kW air** (E44) | electrically identical to the liquid module since E68a | air, 4 fans | 38,404 · **768 — cheapest** |
+| **Products** (E55) | **100 kW = 2 × 50** (no CSU) · **150 kW = 3 × 50** (E66: charger controller = group master, no CSU) | per module | 100 kW air 76,808 (768) · 150 kW air 1,15,212 (768) |
 
-Costs are generated in [`bom-cost.md`](bom-cost.md); the product rationale is in
+Costs are the India 10k basis generated in [`bom-cost.md`](bom-cost.md), which also carries the China RFQ-target column
+(E69f: ₹24,640 / 28,320 / 33,183 / 31,399) and the 2U construction scenario (E69e); the product rationale is in
 [product structure](../boards/README-product-structure.md).
 
 ## 2. The power path, stage by stage
 
 | Stage | What it does | Per-SKU detail (30 / 40 / 50 kW) |
 |---|---|---|
-| **Input protection** | gG fuses, MOV Δ + GDT, two-stage common-mode + differential-mode EMI filter | fuses 80 / 125 / 160 A; D6 DM chokes and D7 CMCs sized per SKU |
+| **Input protection** | gG fuses, MOV Δ + GDT, two CM chokes with three star-X2 stages (4.7 µF on the line side, between the chokes, and 2 × at the converter) plus the Rd–Cd damper on the AC node — no DM chokes (E68b, InfyPower practice) | fuses 80 / 125 / 160 A; D7 CMCs sized per SKU; DM margin +32.9 / +30.6 / +28.7 dB |
 | **Precharge** | 2 × 33 Ω pulse resistors with a 2-pole bypass relay (E14 rev B) | 50 W pulse class at 50 kW |
-| **Vienna PFC** | 3-level, 50 kHz; common-source B3M010C075Z pairs with 1200 V JBS diodes to the rails; RC snubber + RCD clamp per node | D1 chokes (biased inductance governs — see [magnetics](magnetics.md)); pairs paralleled at 40 / 50 kW |
-| **Fast trips on the PFC** | DESAT on the forward polarity (47 pF blank); line CT → on-chip comparator → HRTIMER kill on the reverse | F.01 = 120 / 155 / 195 A pk on 22 / 18 / 13 Ω burdens |
+| **Vienna PFC** | 3-level, 50 kHz; one common-source 750 V SiC pair per phase, clip-mounted on Al2O3 (E68a), with 1200 V JBS diodes to the rails; RC snubber + RCD clamp per node | dies per SKU (E69a): 20 mΩ class · 15 mΩ class · B3M010C075Z; D1 chokes (biased inductance governs — see [magnetics](magnetics.md)) |
+| **Fast trips on the PFC** | DESAT on the forward polarity (47 pF blank); line CT → on-chip comparator → HRTIMER kill on the reverse | F.01 = 120 / 155 / 195 A pk on 22 / 18 / 13 Ω burdens; each die ≤ 0.8 × IDM at the fault peak (E69a-2) |
 | **Split DC bus** | 650–830 V commanded, films + 2 × (5 / 6 / 8 × 470 µF) per half, hardware OVP 860 V | two-phase discharge: 640 Ω active to the 321 V aux floor, then passive balance |
-| **Full-bridge LLC (E67)** | SG2M023120LJ, two per bridge position (three on the 50 kW air); PFM down to fn ≈ 0.59, phase shift of leg B at 1.45·fr below that | Cr 7 / 9 / 11 × 33 nF · Lr 5.6 / 4.35 / 3.56 µH = D2 rev F 5.16 / 4.07 / 3.28 µH ±3 % + 2 × cell leakage + loop · Ln 10 |
+| **Full-bridge LLC (E67)** | SG2M023120LJ, clip-mounted: one per bridge position at 30 kW, two at 40 / 50 kW (E68a; a single 16 mΩ die at 40 kW failed the E69a-2 fault-pulse rule); PFM down to fn ≈ 0.59, phase shift of leg B at 1.45·fr below that | Cr 7 / 9 / 11 × 33 nF · Lr 5.6 / 4.35 / 3.56 µH = D2 rev F 5.16 / 4.07 / 3.28 µH ±3 % + 2 × cell leakage + loop · Ln 10 |
 | **Transformer cells (E67)** | D3 rev D: two cells, primaries in series, each S1–P–S2 with S1 ∥ S2 to one bank; TIW-served litz primary, copper-foil halves, VPI class H, two-face bond | 2 × E70 6:6∥6 (30 kW) · 3 × E70 4:4∥4 (40 / 50 kW); resonant CT F.11 = 140 / 180 / 220 A pk |
-| **Rectifiers & banks** | one secondary per bank → SiC JBS full bridge (2 × 40 A per position, 3 on the 50 kW air) → 2.2 µF film → D8 filter inductor → 330 µF 550 V electrolytic | bank ≤ 500 V; film ripple ≤ 9.2 A per cap at the worst corner |
+| **Rectifiers & banks** | one secondary per bank → SiC JBS full bridge (2 × 40 A per position) → n × 2.2 µF 630 V film straight across the bank (E68c: the D8 inductor and the electrolytic are retired) | 9 / 12 / 14 films per bank; ≤ 3.9 A per film and ≤ 0.5 % RMS output ripple at −10 % C on every simulated corner |
 | **S/P relays + output diode** | KSER / KPARA / KPARB PCB power relays switched at zero current in standby; 74HC02 hardware exclusion; DOUT 1600 V blocking diode (150 / 200 / 250 A class) — no K_OUT, no pre-insertion | a welded parallel relay shows as F.17 at the SER soft start |
 | **Output** | filter → manganin shunt (positive = delivering, R6-E) → studs | 100 / 133 / 167 A |
 
@@ -83,7 +84,7 @@ Costs are generated in [`bom-cost.md`](bom-cost.md); the product rationale is in
 flowchart LR
   subgraph CARD["Control card · GD32G553VET7"]
     direction TB
-    HR["HRTIMER<br/>ST0–ST2 LLC pairs (hardware dead-time)<br/>ST3–ST5 PFC singles"]
+    HR["HRTIMER<br/>LLC legs A + B on two pairs (hardware dead-time)<br/>ST3–ST5 PFC singles"]
     CMP["on-chip comparators<br/>CMP7 · CMP1 · CMP2 (phase A · B · C)"]
     ADC["22 analog channels"]
     FLT["merged FLT → HRTIMER_FLT2"]
@@ -109,7 +110,7 @@ flowchart LR
   style CARD stroke:#2ea44f,stroke-width:2.5px
 ```
 
-- **One card in the DC-DC slot runs the Vienna and the LLC together.** All nine PWMs sit on HRTIMER units, 22
+- **One card in the DC-DC slot runs the Vienna and the LLC together.** Every PWM sits on an HRTIMER unit (since E67 the full bridge uses two of the card's three LLC pairs), 22
   analog channels are used, and one merged fault line lands on HRTIMER_FLT2. The 88-way slot carries the DC-DC
   side; a **40-way straight-through harness** (HARNESS40, generated) carries the whole PFC bundle to the AC-DC
   board. There is no inter-MCU link.
@@ -169,13 +170,14 @@ are [current coordination](current-coordination.md).
 
 | | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---:|---:|---:|---:|
-| η at 400 VAC, full load | 97.19 % | 96.92 % | 96.68 % | 96.82 % |
-| Peak η | 98.45 % | 98.49 % | 98.46 % | 98.58 % |
-| Loss at rated | 866 W | 1,273 W | 1,717 W | 1,642 W |
-| Worst Tj on the 5,544-point grid | 144 °C | 150 °C (fold) | 148 °C (fold) | 149 °C (fold) |
+| η at 400 VAC, full load (output diode included) | 96.62 % | 96.70 % | 96.56 % | 96.48 % |
+| Peak η | 98.11 % | 98.26 % | 98.30 % | 98.30 % |
+| Loss at rated | 1,049 W | 1,367 W | 1,782 W | 1,822 W |
+| Worst Tj on the 4,536-point grid (PFC · LLC · JBS) | 112 · **139** · 91 °C | 127 · 98 · 103 °C | 116 · 99 · 102 °C | **135** · 114 · 116 °C |
+| Mount basis (E68a) | 0.8 K/W · 70 °C base | 0.8 K/W · 70 °C | 0.65 K/W · 65 °C plate | 0.8 K/W · 70 °C |
 
-Every device sits inside its own acceptance line (`stress-audit.mjs`, in run-all); folds are explicit derating
-rows. Details: [thermal report](thermal-report.md).
+The grid has no failures and no folds. Every device sits inside its own acceptance line (`stress-audit.mjs`, in
+run-all). Details: [thermal report](thermal-report.md).
 
 ## 7. How the platform got here
 
@@ -188,6 +190,7 @@ timeline
   External reviews · E45–E49 : five rounds R4–R8, each closed with executed fixes and gates
   Focus and hardening · E50–E59 : magnetics recompute, KiCad-native face, BOM maturity, temperature FMEA
   Coordination · E60–E64 : power-solved simulation, trip classes, AC copper, harsh-environment parity, documentation standard, teardown benchmark, gap levers, hardening
+  InfyPower parity · E65–E69 : simulated-corner magnetics, full-bridge LLC with two output modes and an output diode, clip mount, star-X2 filter, film-only banks, right-sized dies, China cost column
 ```
 
 Each decision is recorded row by row in the [decision register](assumptions.md). Dated fix logs live in the

@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-bom--gen.mjs-5f8fc0?style=flat-square" alt="owner: bom-gen.mjs"/>
 </p>
 
@@ -38,9 +38,22 @@
 |---|---:|---:|---:|---:|---:|---:|---|
 | 30 kW module | **30,033** | 1,001 | 24,640 | 821 | 25,000 | 22,000 | ⚠️ over by ₹5,033 |
 | 40 kW module | **34,616** | 865 | 28,320 | 708 | 33,000 | 29,000 | ⚠️ over by ₹1,616 |
-| 50 kW liquid module | **40,481** | 810 | 33,183 | 664 | 43,000 | 39,000 | ✅ under by ₹2,519 |
-| 50 kW air module | **38,404** | 768 | 31,399 | 628 | 43,000 | 39,000 | ✅ under by ₹4,596 |
-| 150 kW air product (3 × 50a) | **1,15,212** | 768 | 94,197 | 628 | 1,29,000 | 1,17,000 | ✅ under by ₹13,788 |
+| 50 kW liquid module | **40,481** | 810 | 33,278 | 666 | 43,000 | 39,000 | ✅ under by ₹2,519 |
+| 50 kW air module | **38,404** | 768 | 31,495 | 630 | 43,000 | 39,000 | ✅ under by ₹4,596 |
+| 150 kW air product (3 × 50a) | **1,15,212** | 768 | 94,485 | 630 | 1,29,000 | 1,17,000 | ✅ under by ₹13,788 |
+
+### Scenario — InfyPower-style 2U construction (E69e, not the design basis)
+
+Same electronics; only the mechanical and assembly lines change to the `mech2U` estimates in `parts-db.mjs`: heatsink chassis
+with the magnetics potted into wells, 4-layer boards at about half today's area, 3 × 80 mm fans. **Prerequisites no gate has proven:**
+the PFC choke must lie in a well (today's T79 stacks stand 60–95 mm; 40 kW needs a flat-core choke), the chassis must hold the
+70 °C device base at 55 °C ambient, and potting must match the two-face magnetics bond. Numbers are estimates until a mechanical
+design and quotes exist.
+
+| Build | Design basis ₹ @10k | 2U scenario ₹ @10k | 2U scenario + China RFQ target |
+|---|---:|---:|---:|
+| 30 kW module | 30,033 | 28,442 | **23,349** |
+| 40 kW module | 34,616 | 32,680 | **26,736** |
 
 ## The ₹ / kW product ladder
 
@@ -126,16 +139,16 @@ keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 | Category | ₹ @1k | Share |
 |---|---:|---:|
 | mechanical/assembly | 13,846 | 27.9 % |
-| magnetics | 10,166 | 20.5 % |
+| magnetics | 8,975 | 18.1 % |
 | semiconductors | 8,651 | 17.4 % |
 | capacitors | 5,787 | 11.6 % |
 | bias/iso modules | 3,493 | 7 % |
 | drive+control ICs | 3,378 | 6.8 % |
 | relays | 1,880 | 3.8 % |
+| misc | 1,515 | 3 % |
 | protection | 922 | 1.9 % |
 | resistors/shunts | 792 | 1.6 % |
 | connectors | 418 | 0.8 % |
-| misc | 324 | 0.7 % |
 | HMI | 24 | 0 % |
 
 </details>
@@ -149,16 +162,16 @@ keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 | Category | ₹ @1k | Share |
 |---|---:|---:|
 | mechanical/assembly | 11,437 | 24.2 % |
-| magnetics | 10,166 | 21.5 % |
+| magnetics | 8,975 | 19 % |
 | semiconductors | 8,651 | 18.3 % |
 | capacitors | 5,787 | 12.2 % |
 | bias/iso modules | 3,493 | 7.4 % |
 | drive+control ICs | 3,378 | 7.1 % |
 | relays | 1,880 | 4 % |
+| misc | 1,515 | 3.2 % |
 | protection | 922 | 1.9 % |
 | resistors/shunts | 792 | 1.7 % |
 | connectors | 442 | 0.9 % |
-| misc | 324 | 0.7 % |
 | HMI | 24 | 0.1 % |
 
 </details>
@@ -172,16 +185,16 @@ keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 | Category | ₹ @1k | Share |
 |---|---:|---:|
 | mechanical/assembly | 34,311 | 24.2 % |
-| magnetics | 30,497 | 21.5 % |
+| magnetics | 26,924 | 19 % |
 | semiconductors | 25,952 | 18.3 % |
 | capacitors | 17,360 | 12.2 % |
 | bias/iso modules | 10,478 | 7.4 % |
 | drive+control ICs | 10,135 | 7.1 % |
 | relays | 5,640 | 4 % |
+| misc | 4,546 | 3.2 % |
 | protection | 2,766 | 1.9 % |
 | resistors/shunts | 2,377 | 1.7 % |
 | connectors | 1,326 | 0.9 % |
-| misc | 973 | 0.7 % |
 | HMI | 72 | 0.1 % |
 
 </details>
@@ -199,13 +212,15 @@ keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 | AC-DC board 4-layer (control zones only need 4) | −₹240 | −₹260 | −₹780 | layout phase confirms |
 | Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | −₹1,560 | volume agreement |
 | Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | −₹1,050 | system integrator accepts |
-| **E63:** D6 DM chokes deleted after the EVT LISN scan proves the margin without them — the InfyPower benchmark ships no AC DM chokes (also −13…−24 W of loss) | −₹900 | −₹1,890 | −₹5,670 | EVT T-08 measured; the E43 floors stay until then |
-| **E63/E64:** drop one bank string per bank — computed 2.1 A/can at 30 kW (2→1) and 1.4 A/can at 40/50 (3→2) against the ~2.8 A can class (verify-independent §F) | −₹480 | −₹640 [est] | −₹1,920 [est] | EVT output-ripple + S/P-transient measurement executes it |
+| ~~**E63:** D6 DM chokes deleted~~ **executed at E68b — in totals** (star-X2 filter, DM margin +32.9 / +30.6 / +28.7 dB) | 0 | 0 | 0 | EVT T-08 / T-39 confirm |
+| ~~**E63/E64:** drop one bank string per bank~~ **superseded at E68c — in totals** (film-only banks, no bank electrolytic) | 0 | 0 | 0 | EVT T-40 confirms |
+| **E69:** drive clone — gate-drive transformers on the LLC, opto PFC drivers on aux-winding bias, bridge shunt comparator (approved, not executed) | −₹400 [est] | −₹470 [est] | −₹1,410 [est] | GDT design, D4 re-wind, new trip evidence |
+| **E69:** 900 V half-link aux flyback · 90 A relays · 500 VAC fuses | −₹450 [est] | −₹450 [est] | −₹1,350 [est] | D4 redesign + midpoint duty; relay carry at 89 % vs the 80 % rule |
 | **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | −₹405 | requalified sample |
-| **Sum of levers** | **−₹3,250** | **−₹4,765** | **−₹14,295** | |
+| **Sum of open levers** | **−₹2,720** | **−₹3,155** | **−₹9,465** | |
 
 The E63 rows come from the [InfyPower teardown benchmark](benchmark-infypower-teardown.md) gap audit; the deliberate
-philosophy premium (protection, sensing, 3-φ LLC, relay class ≈ ₹5.2k [est] at 40 kW) is priced there and is **not**
+philosophy premium (protection, sensing, relay class — the E62 estimate also counted the 3-φ LLC, which E67 replaced) is priced there and is **not**
 on this table — spending it down is a product decision, not a lever.
 
 Architecture-level options not taken without a directive (each changes the product): LV/HV fixed variants that delete

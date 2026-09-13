@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/run--all-exit_0-2ea44f?style=flat-square" alt="run-all: exit 0"/>
 </p>
 

@@ -148,6 +148,6 @@ ck("BSAT", `D4 at the computed cycle-by-cycle limit, 130 °C (${D4.core})`, D4R.
   }
 }
 // ---- sendust temperature band (no LEA powder data — catalog-class band, VERIFY first-article) ----
-console.log("  info  [SENDUST] Kool Mµ-class µ tempco ≤ ±3% (−55…+125 °C catalog class) — D6 floors carry ≥+9% margin (12.9 vs 11.8 µH) and D1 lot-trim ±1 turn absorbs it; first-article L(I) at −25/+100 °C is the pack's material-equivalence test");
+console.log("  info  [SENDUST] Kool Mµ-class µ tempco ≤ ±3% (−55…+125 °C catalog class) — the D1 biased-L floors carry the lot band and the ±1 turn lot-trim absorbs it (D6, the other sendust part, retired at E68b); first-article L(I) at −25/+100 °C is the pack's material-equivalence test");
 console.log(fails ? `\n${fails} TEMP-CRITIQUE FAILURE(S)` : "\nMAGNETICS TEMP CRITIQUE CLEAN — runaway-stable at every hot corner, sat margins hold at 130 °C, cold equilibria stable, fault chain observed end-to-end");
 process.exit(fails ? 1 : 0);

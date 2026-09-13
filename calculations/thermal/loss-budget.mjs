@@ -123,7 +123,9 @@ console.log(`\n=== SECONDARY DECISION (30 kW): JBS ${f(d30.jbsW, 0)} W vs SR ${f
 console.log(`SR extra BOM ₹${srCost - jbsCost}; thermal credit ₹${f(heatsinkSave, 0)}; net ₹${f(srCost - jbsCost - heatsinkSave, 0)} AGAINST SR`);
 console.log(`+ MCU matrix showed SR timer-infeasible at 120 kW (needs SR-controller ICs, +₹~700).`);
 console.log(`DECISION: SiC JBS bridge baseline on all SKUs — net ₹ against SR at ₹28/W marginal thermal cost,`);
-console.log(`commonization across SKUs, and 120 kW SR drive infeasibility. SR = qualified premium-η variant (+0.68 pt).`);
+console.log(`commonization across SKUs, and 120 kW SR drive infeasibility. ${dW > 0
+  ? `SR = qualified premium-η variant (saves ${f(dW, 0)} W at 30 kW).`
+  : `SR is NOT a premium-η variant on the E67 full bridge: one 35 mΩ FET per position loses ${f(-dW, 0)} W more than the JBS bridge at 30 kW (whole bank current per bridge) — paralleled SR FETs would need re-costing.`}`);
 console.log(`SENSITIVITY (documented): SR becomes net-positive above ₹41/W marginal cooling cost or if EOL fan-noise/`);
 console.log(`fan-life field costs are priced in — revisit at Phase 17 with real heatsink quotes.`);
 

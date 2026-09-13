@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-mtbf--budget_·_CONSISTENT-2ea44f?style=flat-square" alt="gate: mtbf-budget · CONSISTENT"/>
 </p>
 
@@ -33,19 +33,26 @@
 
 | SKU | Σ failure rate | **MTBF (random-failure)** | Top drivers |
 |---|---:|---:|---|
-| 30 kW | 3,081 FIT | **≈ 325 kh** (≈ 37 y) | SiC dies 32 % · analog/logic ICs 15 % · Si semis 15 % · iso drive 10 % |
-| 40 kW | 3,297 FIT | **≈ 303 kh** | SiC dies 33 % (paralleled PFC) · same tail |
-| 50 kW liquid | 3,396 FIT | **≈ 294 kh** | SiC dies 32 % · no fans in the wear table |
-| 50 kW air | 3,552 FIT | **≈ 282 kh** | SiC dies 34 % (paralleled PFC + LLC) |
+| 30 kW | 2,368 FIT | **≈ 422 kh** (≈ 48 y) | SiC dies 34 % · Si semis 16 % · iso drive 9 % · film caps 5 % |
+| 40 kW | 2,490 FIT | **≈ 402 kh** | SiC dies 35 % (two LLC dies per position) · same tail |
+| 50 kW liquid | 2,525 FIT | **≈ 396 kh** | SiC dies 35 % · no fans in the wear table |
+| 50 kW air | 2,537 FIT | **≈ 394 kh** | SiC dies 35 % — electrically the liquid module since E68a |
+
+> [!NOTE]
+> **E69 re-registration.** The E64–E68 figures (325 → 383 kh at 30 kW) came from a classifier that matched keywords
+> inside words and from a BOM CSV whose maker names with commas shifted the custom magnetics and CT rows out of the
+> count. PFC chokes and line CTs were filed as isolators, MLCCs as ICs and bias modules, the gate-bias modules as Si
+> semis. The corrected classifier reads each part's own noun phrase with whole words; the fall from E64 to E69 is
+> the single dies, the deleted DM chokes and bank electrolytics, and the corrected classes together.
 
 ### The products (E55 ladder) — first failure of the set vs going dark
 
 | Product | Σ FIT | To the FIRST random failure | What that failure means |
 |---|---:|---:|---|
-| 100 kW (2 × 50 L) | 6,792 | ≈ 147 kh | the product drops to **50 % power**, not zero |
-| 100 kW air (2 × 50a) | 7,104 | ≈ 141 kh | 50 % power |
-| 150 kW (3 × 50 L, E66 no CSU) | 10,188 | ≈ 98 kh | **67 % power** — group share law re-shares on hot-rejoin |
-| 150 kW air (3 × 50a, E66) | 10,656 | ≈ 94 kh | 67 % power |
+| 100 kW (2 × 50 L) | 5,050 | ≈ 198 kh | the product drops to **50 % power**, not zero |
+| 100 kW air (2 × 50a) | 5,074 | ≈ 197 kh | 50 % power |
+| 150 kW (3 × 50 L, E66 no CSU) | 7,575 | ≈ 132 kh | **67 % power** — group share law re-shares on hot-rejoin |
+| 150 kW air (3 × 50a, E66) | 7,611 | ≈ 131 kh | 67 % power |
 
 A series-sum MTBF answers "when does the *first* service call happen", not "when is the charger down" —
 availability at N−1 is the number a site cares about, and the ladder was shaped for it (E55). The E39 CSU adder
@@ -53,12 +60,13 @@ availability at N−1 is the number a site cares about, and the ladder was shape
 
 ```mermaid
 pie showData
-  title 40 kW module — where the 3,297 FIT sit
-  "SiC power dies" : 1100
-  "Analog / logic ICs" : 464
-  "Si power semis" : 460
-  "Iso drivers / iso amps" : 300
-  "Everything else" : 973
+  title 40 kW module — where the 2,490 FIT sit
+  "SiC power dies" : 880
+  "Si power semis" : 370
+  "Iso drivers / iso amps" : 220
+  "Film capacitors" : 146
+  "Relays" : 125
+  "Everything else" : 749
 ```
 
 > [!IMPORTANT]

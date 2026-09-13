@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-busbar--calc.mjs-5f8fc0?style=flat-square" alt="owner: busbar-calc.mjs"/>
 </p>
 
@@ -23,9 +23,9 @@ flowchart LR
   AC["AC studs<br/>L1 · L2 · L3"] -->|"Cu mandated<br/>EMI zone"| PFC["Vienna PFC<br/>AC-DC board"]
   PFC -->|"DC+ / DC− laminated pair<br/>≤ 40 nH / 300 mm"| STUD["B2B stud pillars<br/>DCP · DCN · PE"]
   PFC -.- MID["midpoint bar<br/>AC-DC board only · lane ripple"]
-  STUD --> LLC["3-φ LLC<br/>DC-DC board"]
+  STUD --> LLC["full-bridge LLC<br/>DC-DC board"]
   LLC --> BANKS["banks A + B"]
-  BANKS -->|"OUT+ via relays"| OUT["output studs"]
+  BANKS -->|"OUT+ via relays + DOUT"| OUT["output studs"]
   BANKS -->|"OUT− via shunt<br/>Kelvin zone"| OUT
   style STUD stroke:#d19a00,stroke-width:2px
 ```

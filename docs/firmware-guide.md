@@ -7,8 +7,8 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
-  <img src="https://img.shields.io/badge/host__sim-54%2F54_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 54/54 ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/host__sim-60%2F60_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 60/60 ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -24,7 +24,7 @@
 |---|---|
 | **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
-| **Verification** | `firmware/test/host_sim.c` — **54 / 54** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` |
+| **Verification** | `firmware/test/host_sim.c` — **60 / 60** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60; the E66 and E67 cases added six) |
 | **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 10 CSU scenarios · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
 | **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air · cabinet CSU — selected by the RATING strap |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |

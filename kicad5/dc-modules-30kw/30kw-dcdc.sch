@@ -4,12 +4,12 @@ EELAYER END
 $Descr User 42600 24800
 encoding utf-8
 Sheet 1 1
-Title "DC-Modules 30 kW — DC-DC board (3-phase LLC)"
+Title "DC-Modules 30 kW — DC-DC board (full-bridge LLC)"
 Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 30 kW - board DC-DC (upper), sheet 2 of 3"
-Comment1 "Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 16-way control harness"
-Comment2 "Content: 1x Vienna PFC cell + 1x 3-ph LLC cell"
+Comment1 "Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
+Comment2 "Content: full-bridge LLC: 1x SG2M023120LJ per position, 7x33 nF + D2 rev F, 2 cells, film banks 9x2.2 uF, DOUT (E67/E68)"
 Comment3 "22 functional sections - 250 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr

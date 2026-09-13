@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/codec-can__proto.c_fuzzed-2ea44f?style=flat-square" alt="codec: can proto.c fuzzed"/>
 </p>
 
@@ -16,7 +16,7 @@
 > 29-bit identifiers, control and telemetry frames, and the rules that decide when a module may deliver power.
 >
 > **Gate coupling** — `firmware/core/can_proto.c` is the normative codec: bounds-checked, little-endian, round-trip
-> tested and fuzzed with 100 000 frames inside the 54 / 54 host suite. Where this page and the code disagree, the
+> tested and fuzzed with 100 000 frames inside the 60 / 60 host suite. Where this page and the code disagree, the
 > code wins and this page is wrong.
 
 ## At a glance

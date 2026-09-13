@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-PARKED-8b949e?style=flat-square" alt="status: parked phase"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 > [!NOTE]

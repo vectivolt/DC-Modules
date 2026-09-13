@@ -7,7 +7,7 @@
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--13-8b949e?style=flat-square" alt="updated 2026-09-13"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-review--checks_·_current--coordination-2ea44f?style=flat-square" alt="gate: review-checks · current-coordination"/>
 </p>
 
@@ -305,6 +305,45 @@ tank, never through a desaturated device).
   HIGH with a start voltage below 480 V is refused. AUTO RUN crossover PAR → SER above 500 V, SER → PAR below 480 V.
 - **FW-R13 — diode output:** no K_OUT, no pre-insertion. The relays close at zero current before the soft start; F.17 during
   the SER ramp is the weld screen.
+
+
+## 7. E68–E69 update (2026-09-14) — single dies, the fault-pulse rule, a filter without DM chokes
+
+> [!IMPORTANT]
+> Additive update to § 4, § 6 and row 1b. Nothing in the trip classes changes: F.01 stays **120 / 155 / 195 A pk** and
+> F.11 **140 / 180 / 220 A pk**. What changes is how many dies share each fault peak and the rule that judges them.
+> Gate: `calculations/system/current-coordination.mjs` ([F.01] and [F.11] pulse rows).
+
+**Dies per position (E68a clip mount, E69a right-sizing).** PFC: one die per position on every SKU — 750 V 20 mΩ class
+(30 kW), 750 V 15 mΩ class (40 kW), B3M010C075Z (50 kW); the E41 paralleled pair is retired. LLC: one SG2M023120LJ per
+position at 30 kW, two at 40 / 50 kW liquid and air (the § 6 "3 FETs" row for the 50 kW air is superseded).
+
+**The fault-pulse rule (E69a-2) replaces the § 6 60 % line.** A trip-limited, non-repetitive µs pulse at low VDS may reach
+**80 % of the die's 25 °C pulsed rating IDM**; the 20 % covers a hot start. It is checked per die at the F.01 fault peak
+(PFC) and at the F.11 kill peak (LLC):
+
+| SKU | PFC die at the F.01 fault peak | limit (0.8 × IDM) | LLC per die at the F.11 kill peak | limit (0.8 × IDM) |
+|---|---|---|---|---|
+| 30 kW | 165.3 A · one 20 mΩ class die | 168 A at **IDM ≥ 210 A** | 209.1 A · one die | 212 A at **IDM ≥ 265 A** |
+| 40 kW | 204.9 A · one 15 mΩ class die | 208 A at **IDM ≥ 260 A** | 133.6 A · two dies | 212 A |
+| 50 kW liquid | 266.4 A · B3M010C075Z | 384 A (IDM 480 A listing) | 164.8 A · two dies | 212 A |
+| 50 kW air | = 50 kW liquid | = | 164.8 A · two dies | 212 A |
+
+**RFQ acceptance lines (bold above) are part of the protection design.** Three margins are under 2 % by construction, so
+a die listed at the common 250 A class fails its SKU. A lot or part that misses its line reverts that SKU to two LLC dies
+or to B3M010C075Z, and EVT T-41 samples the pulse class on incoming dies. The rule rejected a single 16 mΩ LLC die at
+40 kW (267 A per die would need IDM ≥ 334 A).
+
+**DESAT (E68a):** unchanged — one NSI6611-class driver per position, 22 pF (LLC) / 47 pF (PFC) blanks, 1.44 / 2.21 µs worst
+response. A single-die position has one DESAT diode on one drain; a two-die position shares it as in § 6.
+
+**EMI filter (E68b) and output banks (E68c):** no protection row changes. The star-X2 filter has no DM choke to saturate,
+and the damper resistor's power is gated in `pfc-control` (≤ 50 % of rating). The film-only banks hold 2–4 J at 500 V,
+so the bank-bleeder pulse rows of § 3b keep their margin.
+
+**CT front end (re-run 2026-09-14 at the E67 burdens):** ADC peak at F.11 + the +3 µs race 3.120 / 3.124 / 3.131 V
+(≤ 3.27 V); comparator node at F.11 2.296 / 2.286 / 2.298 V against the computed 2.308 / 2.298 / 2.310 V (± 0.08 V).
+The deck had been simulating the E65 burdens; it now reads its operating peaks from the committed stress summary.
 
 ---
 
