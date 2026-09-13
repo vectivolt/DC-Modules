@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-HUB-0969da?style=flat-square" alt="status: navigation hub"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -25,7 +25,7 @@ full reading order below.
 flowchart LR
   subgraph NEW["New to the platform"]
     direction TB
-    N1["Repository overview"] --> N2["Platform architecture"] --> N3["Product structure"] --> N4["Decision register"]
+    N1["Repository overview"] --> N2["Platform architecture"] --> N3["Module family"] --> N4["Decision register"]
   end
   subgraph ENG["Power-stage engineer"]
     direction TB
@@ -89,18 +89,18 @@ inlet or ambient unless labelled Tj or core.
 </td></tr>
 </table>
 
-## 🏗️ Platform & product
+## 🏗️ Platform & modules
 
 | | Document | What it decides | Kept honest by |
 |---|---|---|---|
 | 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | — |
-| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E71 with provenance and invalidator | rows cited by every gate |
+| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E72 with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
 | 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, output modes, F.21 semantics | `host_sim` 60/60 · grep-pinned |
 | 📡 | [External CAN protocol](can-protocol.md) | addressing, control and telemetry frames, controller rules | `can_proto.c` (fuzzed) |
-| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the 150 kW cabinet, the release sheets | `kicad5-verify` 6,901 labels |
-| 🏢 | [Product structure](../boards/README-product-structure.md) | modules vs products, the cabinet contract | `bom-gen` ladder |
+| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the release sheets | `kicad5-verify` 6,853 pins |
+| 🔋 | [Module family](../boards/README-module-family.md) | the four SKUs side by side, why 50 kW is the top module, the two cooling lines, the module-to-charger contract | `bom-gen` · `loss-budget` · `mtbf-budget` |
 | 📋 | [30 kW module walkthrough](../boards/30kw/README.md) | the canonical board pair, cell by cell | — |
 
 ## ⚡ Power stage & protection
@@ -162,5 +162,5 @@ inlet or ambient unless labelled Tj or core.
 <div align="center">
 <sub><a href="../README.md">← DC-Modules</a> &nbsp;·&nbsp; <a href="../README.md">🏠 Repository overview</a> &nbsp;·&nbsp; <a href="architecture.md">Platform Architecture →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

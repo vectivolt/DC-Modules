@@ -17,12 +17,11 @@ import { footer, masthead } from "../doc-chrome.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 0) => Number(x.toFixed(d));
 
-const SKUS = BUILDABLE_SKUS; // E55 product ladder: modules 30/40/50/50a + products 100 kW (2x50) and 150 kW (3x50, E66 no CSU); the 150 kW roll-up is appended after the loop
+const SKUS = BUILDABLE_SKUS; // the four module SKUs: 30 kW · 40 kW · 50 kW liquid · 50 kW air (E72: modules only)
 const TARGETS = { "40kw": [33000, 29000],  // E41: 30k red-line x1.33 rounded — provisional until pricing directive
    "50kw": [43000, 39000],                 // E42: 40k red-line x1.25 + coldplate adder — provisional until pricing directive
    "50kwa": [43000, 39000],                // E44: air twin, same provisional line
-   "30kw": [25000, 22000],
-   "150kw": [129000, 117000] };   // E66: derived = 3 x the 50 kW red/stretch (the CSU adder is gone)
+   "30kw": [25000, 22000] };
 const csvq = (x) => `"${String(x).replace(/"/g, '""')}"`;   // RFC 4180: a 0.56" display or a comma in a maker name must not shift columns
 
 const CAT = (mpn, desc) =>
@@ -163,60 +162,30 @@ for (const sku of SKUS) {
   if (unmatched.size) console.log(`   UNMATCHED (${unmatched.size}): ${[...unmatched].slice(0, 10).join(", ")}${unmatched.size > 10 ? " …" : ""}`);
 }
 
-// 150 kW = CABINET (E55 product ladder) = 3x the 50 kW module. E66: the CSU adder (card, carrier header, WDR supply —
-// ₹1,834 and a single point of failure for all three modules) is deleted; the charger controller is the group master for
-// 100 and 150 kW alike. Cabinet entry studs, the CAN trunk terminations and every other integration item (rack, bus bars,
-// cooling cart) are charger-level per A13 — exactly how the 100 kW was always priced.
-// E66 ladder rule (user directive, 2026-09-13): ₹/kW must fall 30 → 40 → 50 and may stay FLAT from 50 kW up — identical
-// modules make COGS/kW flat by construction, and a flat price per kW is accepted rather than over-engineering shared content.
-const STACK_TIER = 0;
-{
-  const m = summary["50kwa"];
-  const [red, stretch] = TARGETS["150kw"];
-  summary["150kw"] = { grand: f(3 * m.grand), g100: f(3 * m.g100), g5k: f(3 * m.g5k), g10k: f(3 * m.g10k), g10kCN: f(3 * m.g10kCN),
-    red, stretch, cats: Object.fromEntries(Object.entries(m.cats).map(([k, v]) => [k, 3 * v])),
-    nLines: "3x module", unmatched: [], cabinet: "3x 50 kW modules, charger controller = group master (air basis; liquid = 3x 50kw)" };
-  console.log(`150kw: CABINET = 3x 50 kW(air) module -> INR ${f(3 * m.grand)} @1k / INR ${f(3 * m.g10k)} @10k (red ${red})`);
-}
-
-// ---- price-per-kW ladder (E55 product line): 4 modules + 100 kW (2x50) + 150 kW (3x50, E66).
-const PKW = (() => {
-  const m30 = summary["30kw"], m40 = summary["40kw"], m50 = summary["50kw"], m50a = summary["50kwa"];
-  const rows = [
-    ["30 kW module", 30, m30.g10k, "1 module · 1 card · air", 0],
-    ["40 kW module (E41)", 40, m40.g10k, "1 module · 1 card · air", 0],
-    ["50 kW module (E42)", 50, m50.g10k, "1 module · 1 card · LIQUID", 0],
-    ["50 kW module (E44)", 50, m50a.g10k, "1 module · 1 card · AIR (paralleled LLC, 4 fans)", 0],
-    ["100 kW", 100, 2 * m50.g10k, "2 x 50 · 2 cards · liquid", 1],
-    ["100 kW air", 100, 2 * m50a.g10k, "2 x 50a · 2 cards · air", 1],
-    ["150 kW (3 x 50)", 150, 3 * m50.g10k, "3 x 50 · 3 cards · liquid (E66 no CSU)", 2],
-    ["150 kW air (3 x 50a)", 150, 3 * m50a.g10k, "3 x 50a · 3 cards · air (E66 no CSU)", 2],
-  ];   // E55: 60/80/120 kW compositions RETIRED — the 50-based products are the cheapest ₹/kW in every multi-module segment
-  // [name, kW, COGS ₹, COGS ₹/kW, note, list-price index ₹/kW = COGS/kW − STACK_TIER × rungs above 50 kW]
-  return rows.map(([n, kw, cost, note, rung]) => [n, kw, f(cost), f(cost / kw, 2), note, f(cost / kw - STACK_TIER * rung, 2)]);
-})();
+// ---- price per kW: ₹ / kW must fall 30 → 40 → 50 kW (E55 rule), with both 50 kW twins below the 40 kW module ----
+const PKW = [
+  ["30 kW module", 30, summary["30kw"].g10k, "air · 2 fans"],
+  ["40 kW module", 40, summary["40kw"].g10k, "air · 3 fans"],
+  ["50 kW liquid module", 50, summary["50kw"].g10k, "two coldplates · no fans"],
+  ["50 kW air module", 50, summary["50kwa"].g10k, "air · 4 fans"],
+].map(([n, kw, cost, note]) => [n, kw, f(cost), f(cost / kw, 2), note]);
 console.log("\nPRICE PER kW @10k:");
-for (const [n, kw, cost, pkw, note, idx] of PKW) console.log(`  ${n.padEnd(20)} INR ${String(cost).padStart(7)}  ->  ${pkw}/kW   (${note})`);
-// E66 HARD ASSERT (user directive): the list-price index falls STRICTLY rung to rung — every product of a rung (liquid and
-// air) sits below every product of the rung beneath it — and COGS stays honest (no product adder hides above 50 kW).
+for (const [n, , cost, pkw, note] of PKW) console.log(`  ${n.padEnd(20)} INR ${String(cost).padStart(7)}  ->  ${pkw}/kW   (${note})`);
 {
-  const rung = (kw) => PKW.filter((r) => r[1] === kw);
-  const ladder = [30, 40, 50, 100, 150].map((kw) => ({ kw, lo: Math.min(...rung(kw).map((r) => r[5])), hi: Math.max(...rung(kw).map((r) => r[5])) }));
-  const strict = ladder.every((r, i) => i === 0 || (r.kw <= 50 ? r.hi < ladder[i - 1].lo : r.hi <= ladder[i - 1].hi + 0.01));
-  const flat = [["50 kW module (E42)", "100 kW", "150 kW (3 x 50)"], ["50 kW module (E44)", "100 kW air", "150 kW air (3 x 50a)"]]
-    .every((names) => { const v = names.map((n) => PKW.find((r) => r[0] === n)[3]); return Math.max(...v) - Math.min(...v) <= 0.01; });
-  console.log(`\nLADDER ${strict && flat ? "OK" : "FAIL"} — COGS ₹/kW ${ladder.map((r) => `${r.kw} kW ${r.lo === r.hi ? r.lo : `${r.lo}–${r.hi}`}`).join(" > ")} (falls to 50 kW, flat after: ${strict}) · COGS flat per cooling line 50 = 100 = 150 (${flat})`);
-  if (!(strict && flat)) process.exitCode = 1;
+  const at = (kw) => PKW.filter((r) => r[1] === kw).map((r) => r[3]);
+  const falls = Math.max(...at(40)) < Math.min(...at(30)) && Math.max(...at(50)) < Math.min(...at(40));
+  console.log(`\nLADDER ${falls ? "OK" : "FAIL"} — ₹/kW ${PKW.map((r) => `${r[0]} ${r[3]}`).join(" · ")} (falls 30 → 40 → 50: ${falls})`);
+  if (!falls) process.exitCode = 1;
 }
 
 // docs/bom-cost.md
 const inr = (x) => Math.round(x).toLocaleString("en-IN");
 const verdict = (s) => (s.g10k <= s.red ? `✅ under by ₹${inr(s.red - s.g10k)}` : `⚠️ over by ₹${inr(s.g10k - s.red)}`);
-const NAMES = { "30kw": "30 kW module", "40kw": "40 kW module", "50kw": "50 kW liquid module", "50kwa": "50 kW air module", "150kw": "150 kW air product (3 × 50a)" };
+const NAMES = { "30kw": "30 kW module", "40kw": "40 kW module", "50kw": "50 kW liquid module", "50kwa": "50 kW air module" };
 const md = [masthead("docs/bom-cost.md"), `
 > [!NOTE]
-> **Purpose** — what each module and product costs to build, from 100 pieces to 10k, and the ₹ / kW ladder that
-> sets the product line. **Generated by \`calculations/cost/bom-gen.mjs\` on every battery run — do not hand-edit.**
+> **Purpose** — what each of the four modules costs to build, from 100 pieces to 10k, how that cost falls per kW from
+> 30 to 50 kW, and the levers still open. **Generated by \`calculations/cost/bom-gen.mjs\` on every battery run — do not hand-edit.**
 >
 > **Basis** — schematic-exact quantities from the built boards plus ONE control card per module (E40), parts-db
 > RFQ-target pricing (A7 rev B, ±25 %), and mechanical/assembly lines from the thermal and DFM calculations.
@@ -239,7 +208,7 @@ const md = [masthead("docs/bom-cost.md"), `
 
 | Build | ₹ @10k | ₹ / kW | China RFQ target ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict (India basis) |
 |---|---:|---:|---:|---:|---:|---:|---|
-${[...SKUS, "150kw"].map((k) => { const s = summary[k], kw = k === "150kw" ? 150 : parseInt(k, 10); return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10k / kw)} | ${inr(s.g10kCN)} | ${inr(s.g10kCN / kw)} | ${inr(s.red)} | ${inr(s.stretch)} | ${verdict(s)} |`; }).join("\n")}
+${SKUS.map((k) => { const s = summary[k], kw = parseInt(k, 10); return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10k / kw)} | ${inr(s.g10kCN)} | ${inr(s.g10kCN / kw)} | ${inr(s.red)} | ${inr(s.stretch)} | ${verdict(s)} |`; }).join("\n")}
 
 ### Scenario — InfyPower-style 2U construction (E69e, not the design basis)
 
@@ -253,27 +222,23 @@ design and quotes exist.
 |---|---:|---:|---:|
 ${SKUS.filter((k) => summary[k].s2U !== null).map((k) => `| ${NAMES[k]} | ${inr(summary[k].g10k)} | ${inr(summary[k].s2U)} | **${inr(summary[k].s2UCN)}** |`).join("\n")}
 
-## The ₹ / kW product ladder
+## Cost per kW across the family
 
 \`\`\`mermaid
 xychart-beta
   title "Build cost per kW at 10k volume (₹)"
-  x-axis ["30", "40", "50 L", "50 A", "100 L", "100 A", "150 L", "150 A"]
+  x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
   y-axis "₹ / kW" 0 --> ${Math.ceil(Math.max(...PKW.map((r) => r[3])) / 100) * 100 + 100}
   bar [${PKW.map((r) => Math.round(r[3])).join(", ")}]
 \`\`\`
 
-| Product | Composition | ₹ @10k | **₹ / kW** |
+| Module | Cooling | ₹ @10k | **₹ / kW** |
 |---|---|---:|---:|
-${PKW.map(([n, kw, cost, pkw, note]) => `| ${n} | ${note} | ${inr(cost)} | **${pkw.toFixed(0)}** |`).join("\n")}
+${PKW.map(([n, , cost, pkw, note]) => `| ${n} | ${note} | ${inr(cost)} | **${pkw.toFixed(0)}** |`).join("\n")}
 
-Every multi-module product standardizes on the 50 kW twins — the cheapest ₹ / kW in the family and the best N−1
-granularity. The liquid compositions carry the sealed, fan-free reliability case (the cooling cart is charger-level,
-E42 boundary); the air compositions are the cost headline. **E66:** the 150 kW carries no cabinet supervisor — the charger
-controller is the group master for 100 and 150 kW alike — so build cost per kW is flat from 50 kW up on each cooling
-line — a flat price per kW above 50 kW is accepted (E66 directive) rather than adding shared cabinet content, which would
-reintroduce a single point of failure. The 150 kW keeps 67 % of its power with one module out (a 100 kW
-keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
+Cost per kW falls from 30 to 40 to 50 kW because the control card, the enclosure, the AC entry and the auxiliary supply are
+shared content that does not grow with power. The two 50 kW twins share their electronics; the air twin is the cost headline,
+and the liquid twin carries the sealed, fan-free reliability case with its cooling loop at the charger level (E42 boundary).
 `];
 md.push(`## Per-module BOM pages
 
@@ -283,7 +248,6 @@ its sourcing status.
 | Module | ₹ @10k | China target | 1k · 5k · 100 pcs | Lines | Page |
 |---|---:|---:|---|---:|---|
 ${SKUS.map((k) => { const s = summary[k]; return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10kCN)} | ${inr(s.grand)} · ${inr(s.g5k)} · ${inr(s.g100)} | ${s.nLines} | [bom-${k}.md](bom-${k}.md) |`; }).join("\n")}
-| ${NAMES["150kw"]} | **${inr(summary["150kw"].g10k)}** | ${inr(summary["150kw"].g10kCN)} | ${inr(summary["150kw"].grand)} · ${inr(summary["150kw"].g5k)} · ${inr(summary["150kw"].g100)} | 3 × module | [bom-50kwa.md](bom-50kwa.md) |
 `);
 for (const sku of SKUS) if (summary[sku].unmatched.length) md.push(`> [!CAUTION]\n> **${NAMES[sku]}: UNMATCHED PARTS (${summary[sku].unmatched.length}) — BOM incomplete:** ${summary[sku].unmatched.join(", ")}\n`);
 md.push(`## Red-line closure levers (10k basis)
@@ -291,20 +255,20 @@ md.push(`## Red-line closure levers (10k basis)
 > [!TIP]
 > The generic volume break is already inside the 10k column, so no "5k break" lever is counted twice.
 
-| Lever | Δ 30 kW module | Δ 50 kW module (est.) | Δ 150 kW product (est.) | Condition |
-|---|---:|---:|---:|---|
-| ~~Custom gate-bias transformer (E23/ECO-1)~~ **retired** — at 10k the module p10k (₹55) beats the custom set's risk-adjusted saving | 0 | 0 | 0 | closed decision, E23 rev B |
-| ~~ECO-2a/2b (PV bleeder drivers, reinforced-module volume pricing)~~ **executed — in totals** | 0 | 0 | 0 | done at rev D |
-| Magnetics winder RFQ below target (choke / transformer 10k prices) | −₹880 | −₹970 | −₹2,910 | quotes at committed volume |
-| AC-DC board 4-layer (control zones only need 4) | −₹240 | −₹260 | −₹780 | layout phase confirms |
-| Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | −₹1,560 | volume agreement |
-| Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | −₹1,050 | system integrator accepts |
-| ~~**E63:** D6 DM chokes deleted~~ **executed at E68b — in totals** (star-X2 filter, DM margin +32.9 / +30.6 / +28.7 dB) | 0 | 0 | 0 | EVT T-08 / T-39 confirm |
-| ~~**E63/E64:** drop one bank string per bank~~ **superseded at E68c — in totals** (film-only banks, no bank electrolytic) | 0 | 0 | 0 | EVT T-40 confirms |
-| **E69:** drive clone — gate-drive transformers on the LLC, opto PFC drivers on aux-winding bias, bridge shunt comparator (approved, not executed) | −₹400 [est] | −₹470 [est] | −₹1,410 [est] | GDT design, D4 re-wind, new trip evidence |
-| **E69:** 900 V half-link aux flyback · 90 A relays · 500 VAC fuses | −₹450 [est] | −₹450 [est] | −₹1,350 [est] | D4 redesign + midpoint duty; relay carry at 89 % vs the 80 % rule |
-| **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | −₹405 | requalified sample |
-| **Sum of open levers** | **−₹2,720** | **−₹3,155** | **−₹9,465** | |
+| Lever | Δ 30 kW module | Δ 50 kW module (est.) | Condition |
+|---|---:|---:|---|
+| ~~Custom gate-bias transformer (E23/ECO-1)~~ **retired** — at 10k the module p10k (₹55) beats the custom set's risk-adjusted saving | 0 | 0 | closed decision, E23 rev B |
+| ~~ECO-2a/2b (PV bleeder drivers, reinforced-module volume pricing)~~ **executed — in totals** | 0 | 0 | done at rev D |
+| Magnetics winder RFQ below target (choke / transformer 10k prices) | −₹880 | −₹970 | quotes at committed volume |
+| AC-DC board 4-layer (control zones only need 4) | −₹240 | −₹260 | layout phase confirms |
+| Relay direct RFQ (Hongfa annual frame) | −₹400 | −₹520 | volume agreement |
+| Fuse → MCB-coordinated external protection (charger-level) | −₹215 | −₹350 | system integrator accepts |
+| ~~**E63:** D6 DM chokes deleted~~ **executed at E68b — in totals** (star-X2 filter, DM margin +32.9 / +30.6 / +28.7 dB) | 0 | 0 | EVT T-08 / T-39 confirm |
+| ~~**E63/E64:** drop one bank string per bank~~ **superseded at E68c — in totals** (film-only banks, no bank electrolytic) | 0 | 0 | EVT T-40 confirms |
+| **E69:** drive clone — gate-drive transformers on the LLC, opto PFC drivers on aux-winding bias, bridge shunt comparator (approved, not executed) | −₹400 [est] | −₹470 [est] | GDT design, D4 re-wind, new trip evidence |
+| **E69:** 900 V half-link aux flyback · 90 A relays · 500 VAC fuses | −₹450 [est] | −₹450 [est] | D4 redesign + midpoint duty; relay carry at 89 % vs the 80 % rule |
+| **E63:** gate-bias module second source (the OFAC requalification is already planned, E60) | −₹135 | −₹135 | requalified sample |
+| **Sum of open levers** | **−₹2,720** | **−₹3,155** | |
 
 The E63 rows come from the [InfyPower teardown benchmark](benchmark-infypower-teardown.md) gap audit; the deliberate
 philosophy premium (protection, sensing, relay class — the E62 estimate also counted the 3-φ LLC, which E67 replaced) is priced there and is **not**
@@ -444,7 +408,7 @@ ${Object.keys(STATUS_BADGE).filter((k) => counts[k]).map((k) => `| ![${k}](https
 ${review.length ? `
 **Open REVIEW lines:** ${review.map((r) => `\`${r.mpn}\``).join(" · ")} — each carries its action note in \`lcsc-map.mjs\`.` : ""}
 
-Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family roll-up and ₹ / kW ladder: [BOM & cost](bom-cost.md).
+Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family roll-up and cost per kW: [BOM & cost](bom-cost.md).
 
 ${footer(path)}`];
   writeFileSync(join(ROOT, path), pg.join("\n") + "\n");

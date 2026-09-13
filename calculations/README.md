@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/run--all-exit_0-2ea44f?style=flat-square" alt="run-all: exit 0"/>
 </p>
@@ -82,7 +82,7 @@ flowchart TB
 |---|---|---:|
 | `cost/bom-maturity.mjs` | every BOM line resolves to an orderable, class, direct, custom or tracked-review status; `bom-gen` itself refuses a line with no status (E61) | — |
 | `schematic-check.mjs` | 0 symbol overlaps on every built SKU pair | — |
-| `module-interconnect-audit.mts` | studs · all 40 harness ways · the 88-way slot · RATING straps · cabinet section | — |
+| `module-interconnect-audit.mts` | studs · all 40 harness ways · the 88-way slot · RATING straps | — |
 | `polarity-audit.mts` | every polarized part has its + / anode on pin 1, proven from the netlist | — |
 | `stress-audit.mjs` | every device, magnetic, pulse part and protection class against its own line | 127 |
 | `magnetics/temp-critique.mjs` | hot equilibria, runaway distance, cold start, saturation at temperature on measured 3C95 | 11 |
@@ -117,7 +117,7 @@ flowchart LR
 
 | Tool | Measures |
 |---|---|
-| `kicad5-verify.mjs` | every label against an independent netlist — **6,901 / 6,901 across six targets** |
+| `kicad5-verify.mjs` | every connected pin against an independent netlist — **6,853 / 6,853 across five targets** |
 | `kicad5-visual.mjs` | ink collisions |
 | `alignment-audit.mjs` · `wiring-audit.mjs` · `frame-padding.mjs` · `void-audit.mjs` | near-miss alignment · wiring rules · frame padding · worst enclosed hole |
 | `cell-uniformity.mjs` | every replicated cell identical to its twins (per-SKU families) |
@@ -144,5 +144,5 @@ Outputs land in `out/`; the CSVs are committed because documents cite them.
 <div align="center">
 <sub><a href="../docs/reliability-budget.md">← Reliability Budget</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../spice/README.md">SPICE Simulation Suites →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

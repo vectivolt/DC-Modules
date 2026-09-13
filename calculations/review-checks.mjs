@@ -384,21 +384,6 @@ ck("AUD-CARD-AGND2", /\["AGND_2",null\]/.test(umodGen) && /AGND_2" \? "net\.AGND
 ck("AUD-CARD-HRTIMER", /"FLT":47/.test(umodGen) && /"PWM0":69/.test(umodGen) && /"PWM6":70/.test(umodGen) && /CARD_PWM_CONTRACT/.test(card),
   "card PWM group on the HRTIMER with FLT on HRTIMER_FLT2 (decision executed; PA6 break-input conflict dissolved)");
 
-// AUD-CAB-COMPLETE: every cabinet netlist component reaches the cabinet apply payload.
-// The silent-drop class (HFE82V, CTs, JA/JB, RSGB) has now bitten four times; the module SKUs
-// are covered by APPLY-COMPLETE-<sku>, the cabinet was not — this closes it.
-try {
-  const cabNet = JSON.parse(readFileSync(join(ROOT, "dist/boards/cabinet/circuit.json"), "utf8"))
-    .filter((e) => e.type === "source_component").map((e) => e.name);
-  const cabAp = JSON.parse(readFileSync(join(ROOT, "calculations/out/sheets/cabinet/apply/cab-CABINET.json"), "utf8"))
-    .chunks.flat().map((c) => c.designator);
-  const dropped = cabNet.filter((n) => !cabAp.includes(n));
-  ck("AUD-CAB-COMPLETE", dropped.length === 0,
-    dropped.length ? `cabinet apply DROPPED ${dropped.join(", ")}` : `cabinet: all ${cabNet.length} components reach the apply payload`);
-} catch (e) {
-  ck("AUD-CAB-COMPLETE", false, "cabinet build/apply missing: " + e.message);
-}
-
 // ===== E42 (2026-09-08): 50 kW LIQUID variant — structural asserts for every deliberate delta.
 // Each is the grep that WOULD have found the defect had the delta been half-applied.
 ck("E42-FANS", /pw === 50 \? \(air \? 4 : 0\)/.test(boards) && /RFDT/.test(boards) && /pw === 50 \? 8 : pw === 40 \? 6 :/.test(boards),

@@ -73,8 +73,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in);   /* call every 1 ms */
  * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND) — E24 rev G bands:
  *   <0.15 V  (0R)    -> 30 kW module
  *   0.15-0.55 (1k)   -> 40 kW module (E41)
- *   0.55-1.24 (3.32k)-> RESERVED (E66: the cabinet CSU role is retired — the charger controller is the group master
- *                       over GROUP_SET; HAL treats this band as no host, fault)
+ *   0.55-1.24 (3.32k)-> RESERVED (HAL treats this band as no host, fault)
  *   1.24-1.82 (10k)  -> 50 kW LIQUID module (E42 — HAL ties fan_ok = true: sealed, zero fans,
  *                       tach inputs held defined-low by the board)
  *   1.82-2.30 (15k)  -> 50 kW AIR module (E44 — 4 fans, all four tachs supervised incl. the

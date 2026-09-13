@@ -55,11 +55,6 @@ const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 // E69 RE-REGISTERED on the corrected classifier and a column-true BOM CSV (maker names with commas had shifted the custom
 // magnetics and CT rows out of the count; MLCCs had been filed as ICs and bias modules). E68c read 2613/2753/2791/2803.
 const REGISTERED = { "30kw": { fit: 2368, mtbfKh: 422 }, "40kw": { fit: 2490, mtbfKh: 402 }, "50kw": { fit: 2525, mtbfKh: 396 }, "50kwa": { fit: 2537, mtbfKh: 394 } };
-// E55 products = N modules. E66: the 150 kW CSU adder (card-class assembly + DIN supply + carrier, 350 FIT) is deleted.
-const PRODUCTS = { "100kw (2×50L)": { n: 2, base: "50kw", csu: 0 }, "100kw air (2×50a)": { n: 2, base: "50kwa", csu: 0 },
-                   "150kw (3×50L)": { n: 3, base: "50kw", csu: 0 }, "150kw air (3×50a)": { n: 3, base: "50kwa", csu: 0 } };
-const REG_PRODUCTS = { "100kw (2×50L)": 198, "100kw air (2×50a)": 197, "150kw (3×50L)": 132, "150kw air (3×50a)": 131 };   // E69
-
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };
 const f0 = (x) => Math.round(x);
@@ -90,16 +85,10 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
     .map(([k, v]) => `${k} ${f0(v)} (${f0((100 * v) / fit)}%)`).join(" · ");
   console.log(`        drivers: ${top}`);
 }
-for (const [name, p] of Object.entries(PRODUCTS)) {
-  const fit = p.n * results[p.base].fit + p.csu;
-  const kh = f0(1e9 / fit / 1000);
-  ck(`${name} product roll-up`, Math.abs(kh - REG_PRODUCTS[name]) <= 2,
-    `ΣFIT ${f0(fit)} → ≈ ${kh} kh to the FIRST random failure of the set (registered ${REG_PRODUCTS[name]}) — a module failure degrades the product to n−1 power (50 % / 67 %), it does not take it dark; availability ≠ series MTBF`);
-}
 console.log(`  wear-out (separate clocks, not in the MTBF): fans L10 ≥70 kh @40 °C (dual-ball spec, E52) — the
   first scheduled maintenance item; DC-link/bank electrolytics ≥ ~8 y at the E29 ripple/endurance basis and
   55 °C-corner duty; HV relays are cycle-limited (session-rated, mirror-checked at every operation, E30);
-  acrylic coating re-inspection at service. System view: 100/150 kW products degrade to N−1, never to zero.
+  acrylic coating re-inspection at service.
   Benchmark context: the REG1K0135A2 family publishes "MTBF 500 kh" with no stated basis [D] — a 25 °C
   ground-benign Telcordia figure is routinely 3–5× a 40 °C one on identical hardware; the honest comparison is
   method-for-method at EVT/field, not number-for-number.`);

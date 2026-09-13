@@ -63,11 +63,6 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const verdict = hi <= 10 ? "inside the target" : lo > 10 ? "OVER the target — lever needed" : "straddles the target — EVT T-00 measurement decides";
   console.log(`        ${sku} standby estimate ${f(lo, 1)}–${f(hi, 1)} W vs ≤10 W target → ${verdict}`);
 }
-// E55 products: N modules (E66: the 150 kW has no cabinet base any more — the CSU card and its DIN supply are deleted).
-for (const [name, n, lo1, hi1] of [["100kw air (2×50a)", 2, 13.9, 18.7], ["150kw air (3×50a)", 3, 13.9, 18.7]]) {
-  const cab = [0, 0];
-  console.log(`        ${name} standby estimate ${f(n * lo1 + cab[0], 1)}–${f(n * hi1 + cab[1], 1)} W (${n} × module${cab[0] ? " + cabinet base" : ""}) — the same module levers scale it`);
-}
 console.log(`  levers if EVT reads high (registered E63/E64, in order): aux burst/skip at no-load (biggest term),
   then rescale the 40/50 kW link balance pairs 47k→82k (−2.9 W; passive bleed 3.7/5.0 → 6.4/8.6 min, still
   inside the 10-minute label; the 30 kW stays at 47k — its passive bleed is already 6.2 min).`);

@@ -1,7 +1,6 @@
 /* group.h — E66: charger-controller-mastered group share law, run on EVERY module card.
- * Replaces the E39 cabinet supervisor (csu.c): the 150 kW cabinet carried one card + one L1–L2-fed DIN supply whose loss
- * dropped all three modules, while the 100 kW already ran without it. The charger controller (A13, outside module scope)
- * is the group master and broadcasts GROUP_SET (0x12) at 10 Hz: demand + membership bitmap. Each module derives its own
+ * When a charger runs several modules in parallel, the charger controller (A13, outside module scope) is the group
+ * master — there is no supervisor card to lose — and broadcasts GROUP_SET (0x12) at 10 Hz: demand + membership bitmap. Each module derives its own
  * share from that ONE frame, so no module infers its peers by hearing (no split brain):
  *   share   = own bit ? min(own I_avail, I_req / popcount(members)) : 0
  *   lower   at once; RAISE only after PMP_GRP_HOLD_MS — a peer still on an older, larger share must have missed every

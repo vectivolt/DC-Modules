@@ -49,7 +49,6 @@ const SKUS = [
   { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
   { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6.5 L/min)
   { name: "50kWa", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 4, parL: 2 },   // E44 AIR: 4 fans; LLC paralleled (pri conduction halves)
-  // E50: 60/120 kW single-board rows retired (products are cabinets of the four modules above)
 ];
 // rev D (R2 HR-18): EMI-filter copper — previously entirely unbudgeted. As-drawn D6/D7 windings
 // at the design-point line currents (Rdc from turn-length/section; D6/D7 ΔT acceptances bind the

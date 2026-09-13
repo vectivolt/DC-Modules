@@ -20,7 +20,6 @@ const SKUS = [
   { name: "30kw", Iac: 54.9, Idc: 39, Iout: 100, len: { ac: 0.25, dc: 0.30, out: 0.30 } },
   { name: "40kw", Iac: 73.2, Idc: 52, Iout: 133, len: { ac: 0.25, dc: 0.30, out: 0.30 } },
   { name: "50kw", Iac: 91.6, Idc: 65, Iout: 167, len: { ac: 0.25, dc: 0.30, out: 0.30 } },   // E61: 50 kW row added (liquid and air share every bulk current)
-  // E54: 60/120 kW single-board rows retired (products are cabinets; archive/pre-focus-E49)
 ];
 const bars = (s) => [
   { path: "AC L1/L2/L3 (each)", I: s.Iac, l: s.len.ac, mat: "Cu", crit: "EMI zone: keep short, no Al joints in filter loop" },

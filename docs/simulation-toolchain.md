@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine: ngspice-46 · node 20"/>
 </p>
@@ -45,7 +45,7 @@ flowchart TB
 | L0 analytic | sizing, trends, budgets | peaks, ripple shape, ZVS |
 | L1 DPT | overshoot, dv/dt, Eon/Eoff trend, gate-network choice | absolute switching energy (±40 % until vendor models or the bench) |
 | L2 switched | **instantaneous currents**, ZVS, Cr voltage, ripple on the real L(i), the magnetizing-current waveform at every corner, the post-short current envelope | thermal, EMI spectra beyond the carrier band |
-| L3 system | envelope coverage, tolerance yield, protection logic and trip races, the multi-module share law | waveform detail |
+| L3 system | envelope coverage, tolerance yield, protection logic and trip races, the parallel-operation share law | waveform detail |
 | L4 magnetics | D3 / D2 flux, core and AC copper loss, core and winding hot-spot at **every power-solved corner**, runaway and saturation margin, bond-loss survivability, the Lr split; a second, 2-D copper and gap opinion from MKF | a built part's measured Rth and AC resistance, foil edge loss beyond the two models' bracket, Kool Mµ loss under DC bias |
 | L5 hardware | everything that has a meter | — |
 
@@ -312,5 +312,5 @@ copper corner. Read it in this order:
 <div align="center">
 <sub><a href="magnetics-50kwa.md">← 50 kW Air Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="simulation-report.md">Simulation Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -20,9 +20,9 @@ import { footer, masthead } from "./doc-chrome.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // physical: designator -> [{num,name}] from the apply payloads. The flat apply/ dir is the
-// 30 kW set; the card, cabinet and 50kwa (superset: paralleled-pair parts) live per-target.
+// 30 kW set; the card and 50kwa (superset: paralleled-pair parts) live per-target.
 const phys = new Map(), mpnOf = new Map();
-for (const dir of ["apply", "control-card/apply", "cabinet/apply", "50kwa/apply"]) {
+for (const dir of ["apply", "control-card/apply", "50kwa/apply"]) {
   const APPLY = join(ROOT, "calculations/out/sheets", dir);
   for (const f of readdirSync(APPLY).filter((x) => x.endsWith(".json"))) {
     for (const c of JSON.parse(readFileSync(join(APPLY, f), "utf8")).chunks.flat()) {
@@ -33,7 +33,7 @@ for (const dir of ["apply", "control-card/apply", "cabinet/apply", "50kwa/apply"
 }
 // logical: designator -> [{num,name}] from the built netlist
 const logi = new Map();
-for (const path of ["30kw/acdc", "30kw/dcdc", "50kwa/acdc", "50kwa/dcdc", "control-card", "cabinet"]) {
+for (const path of ["30kw/acdc", "30kw/dcdc", "50kwa/acdc", "50kwa/dcdc", "control-card"]) {
   const j = JSON.parse(readFileSync(join(ROOT, "dist/boards", path, "circuit.json"), "utf8"));
   const nm = new Map(j.filter((e) => e.type === "source_component").map((c) => [c.source_component_id, c.name]));
   for (const p of j.filter((e) => e.type === "source_port")) {

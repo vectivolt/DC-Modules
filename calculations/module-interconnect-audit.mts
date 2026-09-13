@@ -3,17 +3,15 @@
 // Walks one MODULE (acdc board + dcdc board + control card, from the BUILT netlists) across every
 // physical interface and asserts both sides of each boundary exist and agree:
 //
-//   1. DCP / DCN / PE stud pillars       — present with real pins on BOTH boards
-//   2. 16-way JICA<->JICB harness        — pin-for-pin semantic table incl. the deliberate
-//                                          TX/RX crossover on the DC-DC side; one-sided wires flagged
-//   3. 88-way JA/JB <-> JCARD card slots — for BOTH roles: every way the role map expects is wired
-//                                          on the board AND lands on real electronics on the card;
-//                                          ways wired on one side only are flagged; power-way audit
-//   4. RATING strap                      — the resistor code the card reads at boot must encode the
-//                                          SKU (0R = 30 kW, 10k = 60 kW). Found hardcoded 0R on all
-//                                          boards: a 60 kW machine identifying as 30 kW.
+//   1. DCP / DCN / PE stud pillars   — present with real pins on BOTH boards
+//   2. 40-way harness (E40)          — straight-through against the single source HARNESS40; SHLD bonded at the
+//                                      AC-DC end only; one-sided wires flagged
+//   3. the 88-way card slot (E40)    — every way the module role map expects is wired on the board AND lands on
+//                                      real electronics on the card; ways wired on one side only are flagged
+//   4. RATING strap                  — the resistor code the card reads at boot encodes the SKU
+//                                      (0R = 30 kW · 1k = 40 kW · 10k = 50 kW liquid · 15k = 50 kW air)
 //
-// Run: npx tsx calculations/module-interconnect-audit.mts [30kw|60kw]   (default: both)
+// Run: npx tsx calculations/module-interconnect-audit.mts [30kw|40kw|50kw|50kwa]   (default: all four)
 import { readFileSync, existsSync } from "node:fs";
 const ROOT = process.cwd();
 const { cardMap } = await import(ROOT + "/packages/common-components/control-card.tsx");
@@ -157,7 +155,7 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
     else console.log(`        module<->card: ${wired} checked, ${dead} dead-ended (see FAILs)`);
   }
 
-  // ---- 4. RATING strap: 0R = module controller (E24 rev D; 3.32k band reserved since E66, open = fault) ----
+  // ---- 4. RATING strap: the SKU code the card reads at boot (3.32k band reserved, open = fault) ----
   {
     const v = dc.val.get("RROLEB");
     const num = v === undefined ? undefined : String(Math.round(Number(v)));
@@ -167,46 +165,6 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
   }
 }
 
-// ---- 5. the 150 kW cabinet sheet (E39 structure · E55 re-base · E66 no CSU): 3 × 50 kW modules + controller port ----
-const cab = load(`${ROOT}/dist/boards/cabinet/circuit.json`);
-if (cab) {
-  console.log(`\n== cabinet interconnect — 150 kW (3 × 50) ==`);
-  const pinsOn = (net: string) => cab.pinsOfNet.get(net) ?? [];
-  const has = (net: string, key: string) => pinsOn(net).includes(key);
-  // every module drop + the controller port + exactly the two fixed trunk terminations
-  for (const net of ["CANH", "CANL"] as const) {
-    const want = [1, 2, 3].map((n) => `MOD${n}.${net}`).concat([`CTRL1.${net}`]);
-    const missing = want.filter((k) => !has(net, k));
-    const rts = pinsOn(net).filter((k) => /^RT[12]\./.test(k));
-    if (missing.length) bad(`cabinet ${net}: missing drops ${missing.join(", ")}`);
-    else if (rts.length !== 2) bad(`cabinet ${net}: ${rts.length} termination pins (need both RT1 and RT2)`);
-    else ok(`cabinet ${net}: 3 modules + controller port + 2 terminations`);
-  }
-  for (const [r, v] of [["RT1", "120"], ["RT2", "120"], ["RSHB", "0"], ["RSGB", "0"]] as const) {
-    const got = cab.val.get(r); const num = got === undefined ? undefined : String(Math.round(Number(got)));
-    if (num !== v) bad(`cabinet ${r}: value ${got ?? "MISSING"}, want ${v}`); else ok(`cabinet ${r} = ${v} Ω`);
-  }
-  // E66: no cabinet card — the SGND reference is tied once to the controller's transceiver ground, and nothing of the
-  // retired CSU carrier (card, DIN supply, strap) may remain on the sheet
-  const sgok = has("CAN_SGND", "RSGB.pin1") && has("CTRL_SGND", "RSGB.pin2") && has("CTRL_SGND", "CTRL1.SGND");
-  sgok ? ok("cabinet CAN_SGND: isolated-domain reference chained + single-point tie to the controller via RSGB")
-       : bad("cabinet CAN_SGND: reference wire/tie wrong (isolated NSI1042 domains need the SGND conductor)");
-  const csuGone = !["UCSU", "JCSU", "PSU1", "RRCSU"].some((n) => [...cab.netOfPin.keys()].some((k) => k.startsWith(n + ".")));
-  csuGone ? ok("cabinet: no CSU card / DIN supply / strap (E66 — no cabinet single point of failure)") : bad("cabinet: retired CSU parts still on the sheet");
-  // per-module AC + DC bus
-  for (const n of [1, 2, 3]) {
-    const okm = has("AC_L1", `MOD${n}.L1`) && has("AC_L2", `MOD${n}.L2`) && has("AC_L3", `MOD${n}.L3`)
-      && has("PE", `MOD${n}.PE`) && has("BUS_P", `MOD${n}.OUTP`) && has("BUS_N", `MOD${n}.OUTN`) && has("CAN_SGND", `MOD${n}.SGND`);
-    okm ? ok(`cabinet MOD${n}: AC feed + PE + charging bus + SGND`) : bad(`cabinet MOD${n}: AC/PE/BUS/SGND wiring incomplete`);
-  }
-  // shield: all drops on CAN_SHLD, bonded to PE through the single 0 R link
-  const shok = [1, 2, 3].every((n) => has("CAN_SHLD", `MOD${n}.SHLD`)) && has("CAN_SHLD", "CTRL1.SHLD")
-    && has("CAN_SHLD", "RSHB.pin1") && has("PE", "RSHB.pin2");
-  shok ? ok("cabinet shield: chained + single-point PE bond via RSHB") : bad("cabinet shield: bond/drops wrong");
-  // cabinet studs exist
-  for (const j of ["JCABL1", "JCABL2", "JCABL3", "JCABPE", "JCABDP", "JCABDN"])
-    if (![...cab.netOfPin.keys()].some((k) => k.startsWith(j + "."))) bad(`cabinet stud ${j} missing`);
-} else console.log("\n(cabinet build absent — cabinet checks skipped)");
 
 console.log(fails ? `\n${fails} INTERCONNECT FAILURE(S), ${warns} warning(s)` : `\nMODULE INTERCONNECT CLEAN (${warns} warning(s))`);
 process.exit(fails ? 1 : 0);

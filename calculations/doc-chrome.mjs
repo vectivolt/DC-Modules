@@ -3,7 +3,7 @@
 // docs-lint asserts every tracked page is registered here and carries exactly this chrome.
 import { dirname, relative } from "node:path";
 
-export const REV = "E71";
+export const REV = "E72";
 export const UPDATED = "2026-09-14";
 
 const STATUS = {
@@ -15,16 +15,16 @@ const STATUS = {
 
 // Reading order = footer prev/next order. [path, family, icon, title, subtitle, status, extra badges [label, message, color]]
 export const PAGES = [
-  ["README.md", "hero", "", "DC-Modules", "Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules and the 100 / 150 kW products", "OVERVIEW"],
+  ["README.md", "hero", "", "DC-Modules", "Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules", "OVERVIEW"],
   ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB"],
   ["docs/architecture.md", "platform", "🏗️", "Platform Architecture", "The module in one read — power path, control plane, protection layers, rails and the product family", "LIVE_SPEC"],
-  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E71, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
+  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E72, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
   ["docs/interconnect.md", "platform", "🔌", "Two-Board Sandwich & Interconnect", "Stud pillars, the 40-way harness, grounding, discharge control and the HMI contract", "LIVE_SPEC", [["gate", "module--interconnect--audit", "2ea44f"]]],
   ["docs/control-card-scope.md", "platform", "🧠", "Control-Card Scope", "Why one card runs one module up to 50 kW — connector ways, HRTIMER units and MCU pins", "LIVE_SPEC", [["gate", "cardMap()_refuses_out--of--scope", "2ea44f"]]],
   ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["host__sim", "60%2F60_ASan%2FUBSan", "2ea44f"]]],
   ["docs/can-protocol.md", "platform", "📡", "External CAN Protocol", "CAN 2.0B addressing, control and telemetry frames, and the rules a charger controller must follow", "LIVE_SPEC", [["codec", "can__proto.c_fuzzed", "2ea44f"]]],
-  ["boards/README.md", "platform", "🧩", "Boards", "The four module SKUs, the control card, the 150 kW cabinet, and how the release sheets are produced", "OVERVIEW", [["labels", "6901_verified_·_6_targets", "2ea44f"]]],
-  ["boards/README-product-structure.md", "platform", "🏢", "Product Structure", "Why the family is 30 / 40 / 50 kW modules plus 100 and 150 kW products — and the multi-module contract", "LIVE_SPEC"],
+  ["boards/README.md", "platform", "🧩", "Boards", "The four module SKUs, the control card, and how the release sheets are produced", "OVERVIEW", [["pins", "6853_verified_·_5_targets", "2ea44f"]]],
+  ["boards/README-module-family.md", "platform", "🔋", "Module Family", "Four SKUs on one lane, one card and one firmware image — why 50 kW is the top module, the two cooling lines, and what a charger gets from every module", "LIVE_SPEC"],
   ["boards/30kw/README.md", "platform", "📋", "30 kW Module Walkthrough", "The canonical board pair, cell by cell — every cell reused unchanged across the family", "LIVE_SPEC"],
   ["docs/protection-thresholds.md", "power", "🛡️", "Protection Thresholds", "The F.xx fault ladder — hardware-fast and supervisory rows, per-SKU windows and current classes", "LIVE_SPEC", [["gate", "review--checks_·_current--coordination", "2ea44f"]]],
   ["docs/current-coordination.md", "power", "⚡", "Current & Protection Coordination", "The worst simulated current in every magnetic and switch, against the trip, sensor and part that must handle it", "LIVE_SPEC", [["gate", "current--coordination_·_CLEAN", "2ea44f"]]],
@@ -40,10 +40,10 @@ export const PAGES = [
   ["docs/simulation-report.md", "verification", "📈", "Simulation Report", "The simulation-truth ledger — every executed run, its result, and what it may be used to claim", "EVIDENCE"],
   ["docs/verification-matrix.md", "verification", "✅", "Verification Matrix & Risk Register", "Every requirement mapped to its evidence, and the risks still open", "LIVE_SPEC", [["verify--independent", "227%2F227", "2ea44f"]]],
   ["docs/evt-plan.md", "verification", "🔬", "EVT Test Plan", "The first-hardware campaign T-00…T-41, and the rule that lets bench results reopen a calculation", "LIVE_SPEC"],
-  ["docs/reliability-budget.md", "verification", "🛡️", "Reliability Budget", "Parts-count MTBF prediction with its basis declared, the wear-out clocks, and the no-single-point-of-darkness system view", "LIVE_SPEC", [["gate", "mtbf--budget_·_CONSISTENT", "2ea44f"]]],
+  ["docs/reliability-budget.md", "verification", "🛡️", "Reliability Budget", "Parts-count MTBF prediction with its basis declared, the wear-out clocks, and how a module fails safe", "LIVE_SPEC", [["gate", "mtbf--budget_·_CONSISTENT", "2ea44f"]]],
   ["calculations/README.md", "verification", "🧮", "Calculations & Gates", "Every engine, audit and generator — and the one command that reproduces the design", "OVERVIEW", [["run--all", "exit_0", "2ea44f"]]],
   ["spice/README.md", "verification", "🖥️", "SPICE Simulation Suites", "The ngspice runners, what each one proves, and where its results land", "OVERVIEW"],
-  ["docs/bom-cost.md", "production", "🧾", "BOM & Cost Roll-up", "Module and product cost from 100 pcs to 10k, and the ₹ / kW ladder", "GENERATED", [["owner", "bom--gen.mjs", "5f8fc0"]]],
+  ["docs/bom-cost.md", "production", "🧾", "BOM & Cost Roll-up", "Module cost from 100 pcs to 10k, the China RFQ targets and the cost per kW", "GENERATED", [["owner", "bom--gen.mjs", "5f8fc0"]]],
   ["docs/bom-30kw.md", "production", "🧾", "30 kW Module BOM", "Every line of the 30 kW module — cost by schematic section, SKU-specific parts and sourcing status", "GENERATED", [["owner", "bom--gen.mjs", "5f8fc0"]]],
   ["docs/bom-40kw.md", "production", "🧾", "40 kW Module BOM", "Every line of the 40 kW module — cost by schematic section, SKU-specific parts and sourcing status", "GENERATED", [["owner", "bom--gen.mjs", "5f8fc0"]]],
   ["docs/bom-50kw.md", "production", "🧾", "50 kW Liquid Module BOM", "Every line of the 50 kW liquid module — cost by schematic section, SKU-specific parts and sourcing status", "GENERATED", [["owner", "bom--gen.mjs", "5f8fc0"]]],
@@ -64,7 +64,7 @@ export function masthead(path) {
   if (!p) throw new Error(`doc-chrome: ${path} is not registered in PAGES`);
   const [color, words] = STATUS[p.status];
   const art = p.family === "hero"
-    ? `<img src="${up(path, "docs/assets/hero.svg")}" alt="DC-Modules — 30, 40 and 50 kW SiC EV charging modules; 100 and 150 kW products" width="100%"/>`
+    ? `<img src="${up(path, "docs/assets/hero.svg")}" alt="DC-Modules — 30, 40 and 50 kW SiC EV charging modules" width="100%"/>`
     : `<img src="${up(path, `docs/assets/banner-${p.family}.svg`)}" alt="" width="100%"/>`;
   const badges = [
     badge("status", p.status.replace(/_/g, "__"), color, `status: ${words}`),

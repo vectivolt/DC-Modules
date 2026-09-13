@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-pin--map--export.mjs-5f8fc0?style=flat-square" alt="owner: pin-map-export.mjs"/>
 </p>
@@ -20,7 +20,7 @@
 
 | Part families | Families with a logical → physical remap | Pins mapped | Verification |
 |---:|---:|---:|---|
-| **121** | **28** | **680** | `kicad5-verify.mjs` — 100 % pin-by-pin across the six SHIP targets |
+| **119** | **28** | **666** | `kicad5-verify.mjs` — 100 % pin-by-pin across the six SHIP targets |
 
 > [!TIP]
 > A drawing that shows logical numbering is not a pinout error — it is a drawing that has not applied this map.
@@ -61,7 +61,7 @@
 
 ## Families drawn with their physical numbering
 
-<details><summary>93 families — logical and physical numbering are identical</summary>
+<details><summary>91 families — logical and physical numbering are identical</summary>
 
 | Part | Example ref | Logical (as drawn) | Physical (as built) | LCSC |
 |---|---|---|---|---|
@@ -126,7 +126,6 @@
 | `CER-25W-160R-AX` | RDIS0 | _(same)_ | 1=A 2=B | CLASS |
 | `CER-25W-33R-AX` | RPRE1 | _(same)_ | 1=A 2=B | CLASS |
 | `CER-2k2-10W-AX` | RBDA0 | _(same)_ | 1=A 2=B | CLASS |
-| `CHARGER-CONTROLLER-CAN-PORT` | CTRL1 | _(same)_ | 1=CANH 2=CANL 3=SGND 4=SHLD | CUSTOM |
 | `CMC-3PH-2mH-SKU` | CMC1 | _(same)_ | 1=A1 2=B1 3=A2 4=B2 5=A3 6=B3 | CUSTOM |
 | `CT-RES-1:100-100A` | CT1 | _(same)_ | 1=S1 2=S2 | DIRECT |
 | `FUSE-gG-690V` | F1 | _(same)_ | 1=A 2=B | CLASS |
@@ -143,7 +142,6 @@
 | `PH-2` | JTPFC | _(same)_ | 1=P1 2=P2 | C20504437 |
 | `PH-4` | JCAN | _(same)_ | 1=CANH 2=CANL 3=SGND | C131334 |
 | `PH-4-FAN` | JFAN1 | _(same)_ | 1=GND 2=V24 3=TACH 4=PWM | C131334 |
-| `PMP-50KW-MODULE` | MOD1 | _(same)_ | 1=L1 2=L2 3=L3 4=PE 5=OUTP 6=OUTN 7=CANH 8=CANL 9=SGND 10=SHLD | CUSTOM |
 | `RELAY-PCB-120A-24V` | KSER | _(same)_ | 1=C1 2=C2 3=A 4=B | DIRECT |
 | `S20K550` | MOV1 | _(same)_ | 1=A 2=B | CLASS |
 | `S8050` | QAUXFB | _(same)_ | 1=B 2=E 3=C | C2146 |
@@ -166,5 +164,5 @@
 <div align="center">
 <sub><a href="bom-guide.md">← BOM Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="dfm-production.md">DFM & Production Flow →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

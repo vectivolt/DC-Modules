@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-bom--maturity_·_MATURE-2ea44f?style=flat-square" alt="gate: bom-maturity · MATURE"/>
 </p>
@@ -60,7 +60,7 @@ Never LCSC retail. Every line carries a **second source**, and every custom part
 | ![SECOND-SOURCE](https://img.shields.io/badge/-SECOND--SOURCE-2ea44f?style=flat-square) | the equivalent's C-number | the primary is off-catalogue; a verified equivalent is named — requalify before switching | purchasing and qualification |
 | ![DIRECT](https://img.shields.io/badge/-DIRECT-1a9fb3?style=flat-square) | `DIRECT` | a vendor-direct order code (Talema, Hongfa, Mean Well class) | purchasing, on a direct account |
 | ![CLASS](https://img.shields.io/badge/-CLASS-d19a00?style=flat-square) | `CLASS` | the rating **is** the specification; purchasing selects to the spec line | purchasing, to the spec line |
-| ![CUSTOM](https://img.shields.io/badge/-CUSTOM-b8732e?style=flat-square) | `CUSTOM` | built to our drawing — a module magnetics page or the cabinet block | winder or assembler, to the drawing |
+| ![CUSTOM](https://img.shields.io/badge/-CUSTOM-b8732e?style=flat-square) | `CUSTOM` | built to our drawing — a module magnetics page | winder or assembler, to the drawing |
 | ![REVIEW](https://img.shields.io/badge/-REVIEW-bc4e9c?style=flat-square) | the C-number or `REVIEW` | a tracked open decision; the map entry carries its action note | engineering, before release |
 
 A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part number from `LCSC_BY_VALUE` in
@@ -90,5 +90,5 @@ A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part nu
 <div align="center">
 <sub><a href="bom-50kwa.md">← 50 kW Air Module BOM</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="symbol-pin-map.md">Symbol → Package Pin Map →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

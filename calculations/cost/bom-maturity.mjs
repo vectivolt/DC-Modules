@@ -5,7 +5,7 @@
 //   DIRECT         vendor-direct order code documented (Talema/Hongfa/MeanWell/Schaffner class)
 //   CLASS          the design specifies a rating; purchasing selects — the entry MUST carry the
 //                  spec line (and candidates where the class is non-trivial)
-//   CUSTOM         built to our drawing (magnetics pack / cabinet blocks)
+//   CUSTOM         built to our drawing (the module magnetics pages)
 //   REVIEW         tracked open decision — allowed only WITH an actionable note
 // FAIL conditions: any mpn the BOM can emit that resolves UNMAPPED, or an entry with no
 // spec/note/lcsc/mpn substance. This is the "generic, widely available, properly matured"

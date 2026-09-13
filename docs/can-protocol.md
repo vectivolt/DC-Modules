@@ -6,13 +6,13 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/codec-can__proto.c_fuzzed-2ea44f?style=flat-square" alt="codec: can proto.c fuzzed"/>
 </p>
 
 > [!NOTE]
-> **Purpose** — the contract between a module and a charger controller (the group master for 100 / 150 kW, E66): the physical layer,
+> **Purpose** — the contract between a module and a charger controller (the group master when modules run in parallel, E66): the physical layer,
 > 29-bit identifiers, control and telemetry frames, and the rules that decide when a module may deliver power.
 >
 > **Gate coupling** — `firmware/core/can_proto.c` is the normative codec: bounds-checked, little-endian, round-trip
@@ -99,18 +99,18 @@ Default rate 1 Hz; on-change frames 0x2x at up to 10 Hz.
 | **Configuration** | address, group and calibration frames are committed to EEPROM with a CRC and echoed back for verification |
 
 > [!TIP]
-> **In a 100 or 150 kW cabinet (E66)** the charger controller is the group master: it broadcasts `GROUP_SET` 0x12 at
+> **Modules in parallel (E66)** — the charger controller is the group master: it broadcasts `GROUP_SET` 0x12 at
 > 10 Hz — 8 bytes LE: u16 V_set 0.1 V · u16 I_req 0.1 A · u16 member bitmap (bit k = address base+k; set only for modules
 > heard within 1 s and not FAULT/LOCK) · u8 base address · u8 reserved = 0. Each module runs `firmware/core/group.c`:
 > share = min(own I_avail, I_req ÷ members); lower at once, raise after 1.3 s; deliver after the own bit has been present
 > 1.3 s + rank × 300 ms; no frame for 1 s → zero (F.28). No module infers its peers by hearing, so there is no split brain.
 > `SET_OUTPUT` 0x10 stays for controllers that water-fill unequal shares — one command form per group per session.
-> See [product structure](../boards/README-product-structure.md).
+> See [module family](../boards/README-module-family.md#running-modules-in-parallel).
 
 ---
 
 <div align="center">
 <sub><a href="firmware-guide.md">← Firmware Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../boards/README.md">Boards →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

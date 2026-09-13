@@ -238,7 +238,7 @@ int main(void) {
   }
   checks++; puts("PASS decoder fuzz 100k frames (no sanitizer trap)");
 
-  /* ---- E66 group share law: 3 module nodes on ONE GROUP_SET stream from the charger controller (no CSU) ---- */
+  /* ---- E66 group share law: 3 module nodes on ONE GROUP_SET stream from the charger controller ---- */
   {
     pmp_group_t g[3]; pmp_group_out_t go[3];
     for (int k = 0; k < 3; k++) pmp_group_init(&g[k]);

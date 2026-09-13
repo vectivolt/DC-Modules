@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -25,7 +25,7 @@
 | **Input → output** | 3-φ 285–475 VAC → split DC bus 650–830 V → 150–1000 VDC, 100 / 133 / 167 A |
 | **Switching** | Vienna 50 kHz (one clip-mounted 750 V SiC die per position, 1200 V JBS) · LLC fr 140 kHz (1200 V SiC full bridge, ZVS; phase shift at 1.45·fr) |
 | **Output stage** | two floating banks with film-only filters (E68c); zero-current series/parallel relays — **LOW ≤ 500 V** (parallel) / **HIGH ≥ 500 V** (series), set in standby; output blocking diode |
-| **Family** | 30 · 40 · 50 kW liquid · 50 kW air modules; 100 kW = 2 × 50 and 150 kW = 3 × 50 products (E66: no CSU) |
+| **Family** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — one lane, one card and one firmware image each; chargers above 50 kW run modules in parallel |
 
 ```mermaid
 flowchart LR
@@ -57,11 +57,10 @@ flowchart LR
 | **40 kW** (E41) | 750 V 15 mΩ class PFC dies; two SG2M023120LJ per LLC position (the fault-pulse rule, E69a-2) | air, 3 fans | 34,616 · 865 |
 | **50 kW liquid** (E42) | B3M010C075Z PFC dies; two SG2M023120LJ per LLC position | **liquid**, 0 fans | 40,481 · 810 |
 | **50 kW air** (E44) | electrically identical to the liquid module since E68a | air, 4 fans | 38,404 · **768 — cheapest** |
-| **Products** (E55) | **100 kW = 2 × 50** (no CSU) · **150 kW = 3 × 50** (E66: charger controller = group master, no CSU) | per module | 100 kW air 76,808 (768) · 150 kW air 1,15,212 (768) |
 
 Costs are the India 10k basis generated in [`bom-cost.md`](bom-cost.md), which also carries the China RFQ-target column
-(E69f: ₹24,639 / 28,319 / 33,182 / 31,398) and the 2U construction scenario (E69e); the product rationale is in
-[product structure](../boards/README-product-structure.md).
+(E69f: ₹24,639 / 28,319 / 33,182 / 31,398) and the 2U construction scenario (E69e); the family rationale is in
+[module family](../boards/README-module-family.md).
 
 ## 2. The power path, stage by stage
 
@@ -200,5 +199,5 @@ Each decision is recorded row by row in the [decision register](assumptions.md);
 <div align="center">
 <sub><a href="README.md">← Documentation Hub</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="assumptions.md">Decision Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

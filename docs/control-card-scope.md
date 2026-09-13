@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
+  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-cardMap()_refuses_out--of--scope-2ea44f?style=flat-square" alt="gate: cardMap() refuses out-of-scope"/>
 </p>
@@ -38,10 +38,10 @@ xychart-beta
 ```
 
 > [!IMPORTANT]
-> **Why the family stops at 50 kW per module.** A module is one lane: 3 Vienna phases and 3 LLC sections. A monolithic
-> 60 kW module needs a second lane — about 18 PWM and ~30 analog signals — which no single card can carry, so it would
-> ship with two cards and cost what two 30 kW modules already cost. Power above 50 kW is therefore built from modules:
-> **100 kW = 2 × 50** and **150 kW = 3 × 50** — E66: no cabinet card; the charger controller is the group master and the 3.32 k strap band is reserved.
+> **Why the family stops at 50 kW per module.** A module is one lane: three Vienna phases and one full-bridge LLC
+> (E67). A monolithic 60 kW module needs a second lane — about 18 PWM and ~30 analog signals — which no single card can
+> carry, so it would ship with two cards and cost what two smaller modules already cost. Chargers above 50 kW therefore
+> run modules in parallel, each with its own card; the 3.32 k strap band is reserved.
 
 ## What one card does
 
@@ -154,15 +154,10 @@ LLC leg would have had a floating low-side gate. The board built, passed DRC and
 
 #### 5. Where the ceiling actually is
 
-**60 kW DC-DC**, and it is a hard edge, not a comfortable one: the PWM group is at 12 of 12. Any
-growth in leg count needs a bigger connector *and* a different timer story *and* more pins — which
-is the same conclusion the mechanical analysis reached independently: 120 kW is **2 × 60 kW or
-4 × 30 kW in a cabinet**, not one board pair (`boards/120kw/*.tsx`, `docs/pcb-floorplan.md` §2).
-
-If a single 120 kW card were ever required, the minimum change set is: a ≥104-way connector, an MCU
-with ≥24 timer outputs and a hardware break input per timer group, and a re-run of the analogue
-budget. That is a different card and a different part number — which is the thing having one card
-was meant to avoid.
+**One lane per card**, and it is a hard edge, not a comfortable one: a second lane needs a bigger
+connector *and* a different timer story *and* more pins. That is a different card and a different part
+number — which is the thing having one card was meant to avoid — so the family tops out at 50 kW and
+higher-power chargers parallel modules.
 
 
 #### 6. Open item the scope restriction actually *unlocks*
@@ -198,5 +193,5 @@ is frozen. Flagged, not decided.
 <div align="center">
 <sub><a href="interconnect.md">← Two-Board Sandwich & Interconnect</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-guide.md">Firmware Guide →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
