@@ -43,6 +43,12 @@ const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 
 // REGISTERED at E64 — recomputed every run, ±1 % drift fails.
 const REGISTERED = { "30kw": { fit: 3081, mtbfKh: 325 }, "40kw": { fit: 3297, mtbfKh: 303 }, "50kw": { fit: 3396, mtbfKh: 294 }, "50kwa": { fit: 3552, mtbfKh: 282 } };
+// E55 products = N modules + (150 kW only) the CSU adder. CSU adder FIT is a declared estimate:
+// one card-class assembly (~250) + DIN supply (~60, Telcordia power-module class) + carrier passives (~40).
+const CSU_ADDER_FIT = 350;
+const PRODUCTS = { "100kw (2×50L)": { n: 2, base: "50kw", csu: 0 }, "100kw air (2×50a)": { n: 2, base: "50kwa", csu: 0 },
+                   "150kw (3×50L+CSU)": { n: 3, base: "50kw", csu: CSU_ADDER_FIT }, "150kw air (3×50a+CSU)": { n: 3, base: "50kwa", csu: CSU_ADDER_FIT } };
+const REG_PRODUCTS = { "100kw (2×50L)": 147, "100kw air (2×50a)": 141, "150kw (3×50L+CSU)": 95, "150kw air (3×50a+CSU)": 91 };
 
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };
@@ -73,6 +79,12 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const top = Object.entries(byClass).sort((a, b) => b[1] - a[1]).slice(0, 4)
     .map(([k, v]) => `${k} ${f0(v)} (${f0((100 * v) / fit)}%)`).join(" · ");
   console.log(`        drivers: ${top}`);
+}
+for (const [name, p] of Object.entries(PRODUCTS)) {
+  const fit = p.n * results[p.base].fit + p.csu;
+  const kh = f0(1e9 / fit / 1000);
+  ck(`${name} product roll-up`, Math.abs(kh - REG_PRODUCTS[name]) <= 2,
+    `ΣFIT ${f0(fit)} → ≈ ${kh} kh to the FIRST random failure of the set (registered ${REG_PRODUCTS[name]}) — a module failure degrades the product to n−1 power (50 % / 67 %), it does not take it dark; availability ≠ series MTBF`);
 }
 console.log(`  wear-out (separate clocks, not in the MTBF): fans L10 ≥70 kh @40 °C (dual-ball spec, E52) — the
   first scheduled maintenance item; DC-link/bank electrolytics ≥ ~8 y at the E29 ripple/endurance basis and

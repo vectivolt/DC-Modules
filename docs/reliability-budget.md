@@ -38,6 +38,19 @@
 | 50 kW liquid | 3,396 FIT | **≈ 294 kh** | SiC dies 32 % · no fans in the wear table |
 | 50 kW air | 3,552 FIT | **≈ 282 kh** | SiC dies 34 % (paralleled PFC + LLC) |
 
+### The products (E55 ladder) — first failure of the set vs going dark
+
+| Product | Σ FIT | To the FIRST random failure | What that failure means |
+|---|---:|---:|---|
+| 100 kW (2 × 50 L) | 6,792 | ≈ 147 kh | the product drops to **50 % power**, not zero |
+| 100 kW air (2 × 50a) | 7,104 | ≈ 141 kh | 50 % power |
+| 150 kW (3 × 50 L + CSU) | 10,538 | ≈ 95 kh | **67 % power** — CSU re-shares on hot-rejoin |
+| 150 kW air (3 × 50a + CSU) | 11,006 | ≈ 91 kh | 67 % power |
+
+A series-sum MTBF answers "when does the *first* service call happen", not "when is the charger down" —
+availability at N−1 is the number a site cares about, and the ladder was shaped for it (E55). The CSU adder
+carries a declared-estimate 350 FIT (card-class assembly + DIN supply + carrier).
+
 ```mermaid
 pie showData
   title 40 kW module — where the 3,297 FIT sit
