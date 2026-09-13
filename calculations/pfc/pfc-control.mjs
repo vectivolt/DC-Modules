@@ -103,7 +103,8 @@ console.log("→ calculations/out/pfc-loops.csv");
 
 // ---------- E65 (EMI-2): the current loop against the DRAWN input filter and the grid ----------
 // Both loop models above (and vienna-switched) closed the current loop on a bare inductor / stiff grid. The drawn
-// filter (CMC1 leakage · CX1 2.2 µF Δ · CMC2 leakage + D6 L(i) · CX2 4.7 µF Δ) peaks at 3–25 kHz, beside the 3 kHz
+// filter (E68: CX0 4.7 µF★ · CMC1 leakage · CX1 4.7 µF★ · CMC2 leakage · CX2 4.7 µF★ — the InfyPower star-X2 filter, no DM choke;
+// E65 was CMC1 leakage · CX1 2.2 µF Δ · CMC2 leakage + D6 L(i) · CX2 4.7 µF Δ) peaks at 3–25 kHz, beside the 3 kHz
 // crossover, and nothing damped it. Two checks, both able to fail:
 //  (1) small-signal — converter admittance Y(s) = [1 − e^(−sTd)·H(s)·(ff − C(s)·G0)] / [s·L1 + C(s)·e^(−sTd)] (P or
 //      PI current controller C, resistive emulation G0, feed-forward of the SENSED phase voltage through the drawn
@@ -120,11 +121,12 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
   const cmul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
   const cdiv = (a, b) => { const q = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / q, (a[1] * b[0] - a[0] * b[1]) / q]; };
   const cpar = (a, b) => cdiv(cmul(a, b), cadd(a, b));
-  // drawn values (verify-independent proves them on every netlist): CX1 2.2 µF Δ, CX2 4.7 µF Δ, E65 damper CDMP 2.2 µF +
-  // RDMP 10 Ω Δ across AC1..3; SNS_VAC divider 8×475 k over 11.5 k with 10 nF (cells.tsx IsoVSense)
-  const CX1 = 2.2e-6, CX2d = 4.7e-6, CD = 2.2e-6, RD = 10, TAUV = (11.5e3 * 3.8e6 / (11.5e3 + 3.8e6)) * 10e-9;
+  // drawn values (verify-independent proves them on every netlist): E68 X bank = 4.7 µF★ X2 at LF, AC·M and 2 × 4.7 µF★ at AC (one at
+  // the converter node left 24 W in each damper R); E65 damper CDMP 2.2 µF + RDMP 10 Ω Δ across AC1..3; SNS_VAC divider 8×475 k
+  // over 11.5 k with 10 nF (cells.tsx IsoVSense)
+  const X2 = 4.7e-6, C2X = 2 * 4.7e-6, CD = 2.2e-6, RD = 10, TAUV = (11.5e3 * 3.8e6 / (11.5e3 + 3.8e6)) * 10e-9;
   const VPH = 330 / Math.sqrt(3), FWDELAY = 15e-6, GRIDS = [[0, 0.01], [30e-6, 0.02], [100e-6, 0.02]];
-  const margin = ({ L1, Ld6, Lg, Rg, Llk, Rcm, Rf, Kp, wz, Td, G0, ff, damp }) => {
+  const margin = ({ L1, Lg, Rg, Llk, Rcm, Kp, wz, Td, G0, ff, damp }) => {
     let wind = 0, prev = null, md = Infinity, fAt = 0;
     const NPTS = 6000;
     for (let k = -NPTS; k <= NPTS; k++) {
@@ -133,10 +135,11 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
       const e = cx(Math.cos(w * Td), -Math.sin(w * Td)), H = cdiv(cx(1), cx(1, w * TAUV));
       const Cc = cmul(cx(Kp), cadd(cx(1), cdiv(cx(wz), s)));
       const Y = cdiv(csub(cx(1), cmul(cmul(e, H), csub(cx(ff), cmul(Cc, cx(G0))))), cadd(cmul(cx(L1), s), cmul(Cc, e)));
-      const Z1 = cpar(cadd(cx(Rg + Rcm), cmul(cx(Lg + Llk), s)), cdiv(cx(1), cmul(cx(3 * CX1), s)));
-      let Zc2 = cdiv(cx(1), cmul(cx(3 * CX2d), s));
+      const Z0 = cpar(cadd(cx(Rg), cmul(cx(Lg), s)), cdiv(cx(1), cmul(cx(X2), s)));                 // E68: star X2 stages, no D6
+      const Z1 = cpar(cadd(Z0, cadd(cx(Rcm), cmul(cx(Llk), s))), cdiv(cx(1), cmul(cx(X2), s)));
+      let Zc2 = cdiv(cx(1), cmul(cx(C2X), s));                                                           // E68: converter-side star X2 bank
       if (damp) Zc2 = cpar(Zc2, cadd(cx(RD / 3), cdiv(cx(1), cmul(cx(3 * CD), s))));
-      const T = cadd(cx(1), cmul(Y, cpar(cadd(Z1, cadd(cx(Rf), cmul(cx(Llk + Ld6), s))), Zc2)));
+      const T = cadd(cx(1), cmul(Y, cpar(cadd(Z1, cadd(cx(Rcm), cmul(cx(Llk), s))), Zc2)));
       const a = Math.atan2(T[1], T[0]);
       if (prev !== null) wind += ((a - prev + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
       prev = a;
@@ -148,10 +151,9 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
   let bad = 0;
   console.log("\nE65 CURRENT LOOP vs DRAWN INPUT FILTER (modulus margin min|1+Y·Zo|; 0 = unstable)");
   for (const sku of ["30kw", "40kw", "50kw"]) {
-    const d = D1[sku], d6 = CH[sku], d7 = CH.d7[sku];
-    const Rcm = d7.P / (3 * 1.05 * { "30kw": 55.9, "40kw": 73.3, "50kw": 91.6 }[sku] ** 2), Rf = Rcm + d6.Rdc_mR * 1e-3;   // hot winding R: one D7 winding · + one D6
+    const d = D1[sku], d7 = CH.d7[sku];
+    const Rcm = d7.P / (3 * 1.05 * { "30kw": 55.9, "40kw": 73.3, "50kw": 91.6 }[sku] ** 2);   // hot winding R: one D7 winding (E68: no D6)
     const Ipk = d7.Ipk, G0 = (d.P / 0.965) / (3 * VPH * VPH);
-    const L6 = (i) => d6.L0 * 1e-6 / (1 + d6.roll[0] * Math.pow(Math.max(d6.roll[2] * i / 79.577, 1e-9), d6.roll[1]));
     // P = the vienna-switched reference (3 kHz at the crest L); PI = the same proportional gain with the zero placed above
     // (KiI/KpI). The single-gain PI above was placed on a 100 µH plant: on the 40/50 kW D1 (crest 50–42 µH at lot −8 %) its
     // 1.87 V/A crosses at 5–7 kHz — FW-EMI-3 scales the gain per rating instead (printed below, not gated).
@@ -161,7 +163,7 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
       let worst = { m: Infinity };
       const ctl = ff ? ctl0 : `${ctl0} noFF`;
       for (const [Lg, Rg] of GRIDS) for (const Llk of d7.Llk_band_uH.map((x) => x * 1e-6)) for (const i of [0, Ipk]) {
-        const r = margin({ L1: Ld1(d, i, 0.92), Ld6: L6(i), Lg, Rg, Llk, Rcm, Rf, Kp: c.Kp, wz: c.wz, Td, G0, ff, damp });
+        const r = margin({ L1: Ld1(d, i, 0.92), Lg, Rg, Llk, Rcm, Kp: c.Kp, wz: c.wz, Td, G0, ff, damp });
         if (r.m < worst.m) worst = { ...r, at: `Lg ${Lg * 1e6} µH · L_lk ${Llk * 1e6} µH · ${i ? "crest" : "zero-crossing"} L`, };
       }
       const gated = ff && damp && Td === FWDELAY && ctl0 !== "PI@1.87", ok = worst.m >= 0.5;
@@ -172,7 +174,7 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
     console.log(`  ${sku} FW-EMI-3 current-loop proportional gain 2π·3 kHz·L_D1(${Ipk} A, lot −8 %) = ${f(CTL.P.Kp, 2)} V/A (L ${f(Ld1(d, Ipk, 0.92) * 1e6, 1)} µH; the single PI carries ${f(KpI * VHALF, 2)} V/A)`);
     // (2) time-domain confirmation on the switched model (P structure, the vienna-switched reference controller)
     const run = (Lg, Rg, damp, upd) => vienna(sku, { VLL: 330, vbus: 830, lot: 0.92, Pout: d.P, cycles: 4,
-      filter: { Lg, Rg: Rg + Rcm, Llk: 12e-6, Rf, C1: CX1, C2: CX2d, Cd: damp ? CD : 0, Rd: RD, d6, tauV: TAUV, upd, lag: 1 } });
+      filter: { Lg, Rg, Rcm, Llk: 12e-6, Rf: Rcm, C0: X2, C1: X2, C2: C2X, star: true, Cd: damp ? CD : 0, Rd: RD, d6: null, tauV: TAUV, upd, lag: 1 } });
     let pD = 0;
     for (const [Lg, Rg] of GRIDS) {
       const r = run(Lg, Rg, true, 400), ok = r.oscPct <= 1;

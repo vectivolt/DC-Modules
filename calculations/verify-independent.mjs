@@ -144,10 +144,10 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("C", `${sku} bank bleeder window (E67 bank C)`, tauB >= 2 && tauB <= 17 && 0.5 * cBank * 500 * 500 / 4 <= 65,
     `${f(cBank * 1e6, 0)} µF per bank → τ ${f(tauB, 1)} s (family 2–17 s) · ${f(0.5 * cBank * 500 * 500 / 4, 0)} J/resistor ≤ 65`);
 }
-{ // X-bleed with the E43 4.7 µF CX2 and the E65 damper cap (its 10 Ω is ≪ the bleed star, it discharges with the bank)
-  const A30 = B["30kw"].ac, cX = (A30.val.get("CX11") + A30.val.get("CX21") + (A30.val.get("CDMP1") ?? 0)) * 1e6;
+{ // X-bleed (E68): three star X2 stages (a star C is C/3 line-to-line) + the Δ damper cap (its 10 Ω is ≪ the bleed star)
+  const A30 = B["30kw"].ac, cX = ((A30.val.get("CX01") + A30.val.get("CX11") + A30.val.get("CX21") + A30.val.get("CX24")) / 3 + (A30.val.get("CDMP1") ?? 0)) * 1e6;
   const tauX = 0.42 * cX / (2.2 + 2.2);
-  ck("C", "X-cap bleed after CX2 4.7 µF + damper", tauX <= 1.0, `τ ${f(tauX, 2)} s for ${f(cX, 1)} µF Δ per phase pair (netlist) ≤ 1 s pluggable rule (star unchanged)`);
+  ck("C", "X-cap bleed after the star X2 stages + damper", tauX <= 1.0, `τ ${f(tauX, 2)} s for ${f(cX, 1)} µF line-to-line equivalent (netlist) ≤ 1 s pluggable rule (star unchanged)`);
 }
 { // RATING bands with 1% parts
   const v = (R) => 3.3 * R / (R + 10e3);
@@ -211,9 +211,6 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("G", `${sku} link cans`, cnt(A, /^CD[TB]\d*\d$/) === s.nHalf * 2, `${s.nHalf * 2} × 470 µF (${s.nHalf}/half)`);
   ck("G", `${sku} fans + tach terminators`, cnt(A, /^JFAN\d$/) === s.fans && cnt(A, /^RFDT\d$/) === (s.fans === 0 ? 4 : 0),
     `${s.fans} fans${s.fans === 0 ? " + 4 defined-low tach terminators (sealed; incl. the E44 TACH4 way)" : ""}`);
-  ck("G", `${sku} CX2 trio at the E43 value`, [1, 2, 3].every(i => Math.abs(A.val.get(`CX2${i}`) - 4.7e-6) < 1e-8) && [1, 2, 3].every(i => Math.abs(A.val.get(`CX1${i}`) - 2.2e-6) < 1e-8), "CX1 2.2 µF · CX2 4.7 µF");
-  const ldmWant = { "30kw": 14e-6, "40kw": 23e-6, "50kw": 34e-6, "50kwa": 34e-6 }[sku];
-  ck("G", `${sku} LDM engine value`, [1, 2, 3].every(i => Math.abs(A.val.get(`LDM${i}`) - ldmWant) < 1e-6), `${f(ldmWant * 1e6, 0)} µH L0 (D6 rev C)`);
   ck("G", `${sku} line-CT burden`, [["A"], ["B"], ["C"]].every(([p]) => Math.abs(A.val.get(`R${p}0B`) - s.lineB) < 0.1), `${s.lineB} Ω`);
   // precharge + discharge paths
   ck("G", `${sku} precharge path`, A.netOfPin.get("RPRE1.A") === A.netOfPin.get("KPRE1.A") && A.netOfPin.get("RPRE1.B") === A.netOfPin.get("KPRE1.B"),
@@ -249,6 +246,11 @@ for (const [sku, s] of Object.entries(SK)) {
     "Y1 4.7 nF L-PE on AC1..3 and on AC1M..3M between CMC1 and CMC2");
   ck("G", `${sku} CX2-node damper`, [1, 2, 3].every((p) => A.netOfPin.get(`CDMP${p}.pin1`) === `AC${p}` && A.netOfPin.get(`CDMP${p}.pin2`) === A.netOfPin.get(`RDMP${p}.pin1`)
     && A.netOfPin.get(`RDMP${p}.pin2`) === `AC${p % 3 + 1}` && Math.abs(A.val.get(`CDMP${p}`) - 2.2e-6) < 1e-8 && Math.abs(A.val.get(`RDMP${p}`) - 10) < 0.01), "2.2 µF + 10 Ω in series, delta across AC1..3");
+  // E68: the InfyPower filter — three star X2 stages (4.7 µF each, own floating star), no DM choke
+  const starOk = (pre, node, star) => [1, 2, 3].every((p) => A.netOfPin.get(`${pre}${p}.pin1`) === node(p) && A.netOfPin.get(`${pre}${p}.pin2`) === star && Math.abs(A.val.get(`${pre}${p}`) - 4.7e-6) < 1e-8);
+  ck("G", `${sku} star X2 stages, no DM choke`, starOk("CX0", (p) => `LF${p}`, "XSTAR0") && starOk("CX1", (p) => `AC${p}M`, "XSTAR1") && starOk("CX2", (p) => `AC${p}`, "XSTAR2")
+    && [4, 5, 6].every((q) => A.netOfPin.get(`CX2${q}.pin1`) === `AC${q - 3}` && A.netOfPin.get(`CX2${q}.pin2`) === "XSTAR2" && Math.abs(A.val.get(`CX2${q}`) - 4.7e-6) < 1e-8)
+    && !A.byName.has("LDM1") && [1, 2, 3].every((p) => A.netOfPin.get(`CMC2.B${p}`) === `AC${p}`), "CX0x on LF · CX1x on AC·M · 2 × CX2x on AC — 4.7 µF★ each, CMC2 straight to the converter");
   // one line open at 1.1 × 475 VAC with +20 % Y tolerance: the two live phases drive ω·1.2·C·Vph into PE
   const cyPh = A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin2`) === "PE").reduce((a, n) => a + A.val.get(n), 0) / 3;
   const iPE = 2 * Math.PI * 50 * 1.2 * cyPh * 1.1 * 475 / Math.sqrt(3);

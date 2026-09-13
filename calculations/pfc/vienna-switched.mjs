@@ -48,6 +48,8 @@ const KM = DATA.KoolMu_MAS["26"], KI = KM.a / (Math.pow(2 * Math.PI, KM.c - 1) *
 // SNS_VAC divider RC (tauV), its 50 Hz lag rotated out with the other two phases (αβ, a memoryless mix), sampled every `upd`
 // fine steps and applied `lag` updates later (upd 400/lag 1 = double update, 15 µs; upd 800/lag 1 = 1.5·Tsw, 30 µs).
 //   filter = { Lg, Rg, Llk, Rf, C1, C2, Cd, Rd, d6: { L0 µH, roll: [a, b, N/le] }, tauV, upd, lag }
+// E68 (InfyPower filter): `C0` adds the line-side X stage (grid Lg+Rg → C0 → CMC1 Llk+Rcm → C1), `star: true` takes C0/C1/C2 as
+// per-phase star values (no 3·C), and `d6: null` drops the DM choke (CMC2 leakage + Rf alone).
 export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, Rg = 0.01, event = null, clamp = 1.05, filter: F = null }) {
   const d = D1[sku], W = 2 * Math.PI * 50, Vpk = VLL * Math.SQRT2 / Math.sqrt(3);
   const Ts = 1 / fsw, dt = Ts / 800, nPer = Math.round(0.02 / dt), nTot = cycles * nPer;
@@ -69,12 +71,14 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
   let hIdx = 0, fIdx = 0;
   const upd = F?.upd ?? 400, lag = F?.lag ?? 0, mNext = [0, 0, 0];
   const iG = [0, 0, 0], iF = [0, 0, 0], v1 = [0, 0, 0], v2 = [0, 0, 0], vd = [0, 0, 0], vm = [0, 0, 0], vff = [0, 0, 0], LF = [0, 0, 0];
+  const v0 = [0, 0, 0], iA = [0, 0, 0], cs = F?.star ? 1 : 3;   // E68: line-side stage states · star/Δ capacitance factor
   const gHist = new Float64Array(2000);
   let pDamp = 0;
   if (F) for (let k = 0; k < 3; k++) {                          // start on the no-load sinusoidal steady state
     const th = -2 * Math.PI / 3 * [0, 1, -1][k], dv = Vpk * W * Math.cos(th);
-    v1[k] = v2[k] = vd[k] = vm[k] = Vpk * Math.sin(th);
-    iF[k] = 3 * (F.C2 + F.Cd) * dv; iG[k] = iF[k] + 3 * F.C1 * dv;
+    v0[k] = v1[k] = v2[k] = vd[k] = vm[k] = Vpk * Math.sin(th);
+    iF[k] = cs * F.C2 * dv + 3 * F.Cd * dv; iA[k] = iF[k] + cs * F.C1 * dv; iG[k] = iA[k] + (F.C0 ?? 0) * dv;
+    if (!F.C0) iG[k] = iA[k];
   }
   const sub3 = (a) => { const c = (a[0] + a[1] + a[2]) / 3; a[0] -= c; a[1] -= c; a[2] -= c; };   // 3-wire: no zero sequence
   for (let s = 0; s < nTot; s++) {
@@ -135,11 +139,20 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       if (!on[k] && node[k] < 0) iN += i[k];
     }
     if (F) {                                                   // filter states (symplectic: currents, then node voltages)
-      for (let k = 0; k < 3; k++) iG[k] += (vg[k] - v1[k] - F.Rg * iG[k]) / (F.Lg + F.Llk) * dt;
-      sub3(iG);
+      if (F.C0) {                                               // E68: grid → C0 → CMC1 leakage → C1 (2 µH wiring floor on a stiff grid)
+        for (let k = 0; k < 3; k++) iG[k] += (vg[k] - v0[k] - F.Rg * iG[k]) / Math.max(F.Lg, 2e-6) * dt;
+        for (let k = 0; k < 3; k++) iA[k] += (v0[k] - v1[k] - F.Rcm * iA[k]) / F.Llk * dt;
+        sub3(iG); sub3(iA);
+        for (let k = 0; k < 3; k++) v0[k] += (iG[k] - iA[k]) / F.C0 * dt;
+        sub3(v0);
+      } else {
+        for (let k = 0; k < 3; k++) iG[k] += (vg[k] - v1[k] - F.Rg * iG[k]) / (F.Lg + F.Llk) * dt;
+        sub3(iG);
+        for (let k = 0; k < 3; k++) iA[k] = iG[k];
+      }
       let nu = 0, de = 0;
       for (let k = 0; k < 3; k++) {
-        LF[k] = F.Llk + F.d6.L0 * 1e-6 / (1 + F.d6.roll[0] * Math.pow(Math.max(F.d6.roll[2] * Math.abs(iF[k]) / 79.577, 1e-9), F.d6.roll[1]));
+        LF[k] = F.Llk + (F.d6 ? F.d6.L0 * 1e-6 / (1 + F.d6.roll[0] * Math.pow(Math.max(F.d6.roll[2] * Math.abs(iF[k]) / 79.577, 1e-9), F.d6.roll[1])) : 0);
         nu += (v1[k] - v2[k] - F.Rf * iF[k]) / LF[k]; de += 1 / LF[k];
       }
       for (let k = 0; k < 3; k++) iF[k] += (v1[k] - v2[k] - F.Rf * iF[k] - nu / de) / LF[k] * dt;
@@ -147,8 +160,8 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
         const id = F.Cd ? (v2[k] - vd[k]) / (F.Rd / 3) : 0;
         if (F.Cd) vd[k] += id / (3 * F.Cd) * dt;
         if (s >= nTot - nPer) pDamp += id * id * (F.Rd / 3);
-        v1[k] += (iG[k] - iF[k]) / (3 * F.C1) * dt;
-        v2[k] += (iF[k] - i[k] - id) / (3 * F.C2) * dt;
+        v1[k] += (iA[k] - iF[k]) / (cs * F.C1) * dt;
+        v2[k] += (iF[k] - i[k] - id) / (cs * F.C2) * dt;
         vm[k] += (v2[k] - vm[k]) * dt / F.tauV;
       }
       sub3(v1); sub3(v2); sub3(vd); sub3(vm);

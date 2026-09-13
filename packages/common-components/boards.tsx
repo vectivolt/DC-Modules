@@ -174,15 +174,20 @@ return (
       ))}
       <chip name="CMC1" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={P.cmc1[0]} pcbY={P.cmc1[1]} schX={26} schY={43} schSectionName="EMI" />
       <chip name="CMC2" footprint={<Cm3FP />} pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "A3", pin6: "B3" }} pcbX={P.cmc2[0]} pcbY={P.cmc2[1]} schX={36} schY={43} schSectionName="EMI" />
+      {/* E68 (InfyPower filter): nine X2 4.7 µF / 305 VAC film caps in three STAR stages — line side (CX0x on LF1..3, behind
+          the fuses and the MOV Δ), between the CM chokes (CX1x on AC1M..3M) and at the converter (CX2x on AC1..3) — each
+          stage with its own floating star node; the D6 DM chokes are deleted. A star cap sees 475/√3 = 274 VAC (X2 rated). The
+          converter node takes TWO per phase (9.4 µF★): with one, the 50 kHz ripple left 24 W in each E65 damper resistor at 50 kW.
+          The line-side stage is what carries it: on the per-phase ladder the filter holds 5–13 dB MORE DM margin than the
+          E65 drawn Δ filter with D6 at every CM-leakage band edge (lisn-precompliance E68 block). */}
       {[1, 2, 3].map(i => (
-        <capacitor key={`x1${i}`} name={`CX1${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx1X} pcbY={P.cxY[i - 1]} schX={31} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+        <capacitor key={`x0${i}`} name={`CX0${i}`} capacitance="4.7uF" footprint={FilmBoxFP(27.5)} pcbX={P.ldmX} pcbY={P.ldmY[i - 1]} schX={23} schY={46 - (i - 1) * 3} schSectionName="EMI" />
       ))}
-      {/* E43: CX2 trio 2.2 → 4.7 µF X1 (all variants) — the 3rd DM stage attenuates as L·C and
-          the cap is the cheap half: the crest-biased D6 rev + this cap hold ≥ +4.9 dB conducted
-          margin at every variant (lisn-precompliance per-variant block). X-bleed τ 0.42 → 0.66 s
-          through the RNS star — still inside the 1 s pluggable-discharge rule. */}
       {[1, 2, 3].map(i => (
-        <capacitor key={`x2${i}`} name={`CX2${i}`} capacitance="4.7uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx2X} pcbY={P.cx2Y[i - 1]} schX={46} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+        <capacitor key={`x1${i}`} name={`CX1${i}`} capacitance="4.7uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx1X} pcbY={P.cxY[i - 1]} schX={31} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+      ))}
+      {[1, 2, 3, 4, 5, 6].map(i => (
+        <capacitor key={`x2${i}`} name={`CX2${i}`} capacitance="4.7uF" footprint={FilmBoxFP(27.5)} pcbX={P.cx2X + (i > 3 ? 34 : 0)} pcbY={P.cx2Y[(i - 1) % 3]} schX={i > 3 ? 44 : 46} schY={46 - ((i - 1) % 3) * 3} schSectionName="EMI" />
       ))}
       {[1, 2, 3].map(i => (
         <capacitor key={`y${i}`} name={`CY${i}`} capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={P.cyX} pcbY={P.cyY[i - 1]} schX={51} schY={46 - (i - 1) * 3} />
@@ -228,36 +233,22 @@ return (
       <trace from=".CMC1 > .B1" to="net.AC1M" schDisplayLabel="AC1M" />
       <trace from=".CMC1 > .B2" to="net.AC2M" schDisplayLabel="AC2M" />
       <trace from=".CMC1 > .B3" to="net.AC3M" schDisplayLabel="AC3M" />
-      <trace from=".CX11 > .pin1" to="net.AC1M" schDisplayLabel="AC1M" />
-      <trace from=".CX11 > .pin2" to="net.AC2M" schDisplayLabel="AC2M" />
-      <trace from=".CX12 > .pin1" to="net.AC2M" schDisplayLabel="AC2M" />
-      <trace from=".CX12 > .pin2" to="net.AC3M" schDisplayLabel="AC3M" />
-      <trace from=".CX13 > .pin1" to="net.AC3M" schDisplayLabel="AC3M" />
-      <trace from=".CX13 > .pin2" to="net.AC1M" schDisplayLabel="AC1M" />
+      {[1, 2, 3].map(i => [
+        <trace key={`x0a${i}`} from={`.CX0${i} > .pin1`} to={`net.LF${i}`} schDisplayLabel={`LF${i}`} />,
+        <trace key={`x0b${i}`} from={`.CX0${i} > .pin2`} to="net.XSTAR0" schDisplayLabel="XSTAR0" />,
+        <trace key={`x1a${i}`} from={`.CX1${i} > .pin1`} to={`net.AC${i}M`} schDisplayLabel={`AC${i}M`} />,
+        <trace key={`x1b${i}`} from={`.CX1${i} > .pin2`} to="net.XSTAR1" schDisplayLabel="XSTAR1" />,
+        <trace key={`x2a${i}`} from={`.CX2${i} > .pin1`} to={`net.AC${i}`} schDisplayLabel={`AC${i}`} />,
+        <trace key={`x2b${i}`} from={`.CX2${i} > .pin2`} to="net.XSTAR2" schDisplayLabel="XSTAR2" />,
+        <trace key={`x2c${i}`} from={`.CX2${i + 3} > .pin1`} to={`net.AC${i}`} schDisplayLabel={`AC${i}`} />,
+        <trace key={`x2d${i}`} from={`.CX2${i + 3} > .pin2`} to="net.XSTAR2" schDisplayLabel="XSTAR2" />,
+      ])}
       <trace from=".CMC2 > .A1" to="net.AC1M" schDisplayLabel="AC1M" />
       <trace from=".CMC2 > .A2" to="net.AC2M" schDisplayLabel="AC2M" />
       <trace from=".CMC2 > .A3" to="net.AC3M" schDisplayLabel="AC3M" />
-      <trace from=".CMC2 > .B1" to="net.AC1D" schDisplayLabel="AC1D" />
-      <trace from=".CMC2 > .B2" to="net.AC2D" schDisplayLabel="AC2D" />
-      <trace from=".CMC2 > .B3" to="net.AC3D" schDisplayLabel="AC3D" />
-      {/* E43: D6 is engine-designed per variant (dm-choke-design.mjs) — the inherited "22 µH"
-          could not exist at the line crest on the drawn core (7–8 µH at 82 A pk vs the 15 µH
-          LISN floor). Values are the engine L0 (crest-biased Lpk meets each variant's floor). */}
-      {[1, 2, 3].map(i => (
-        <inductor key={`ldm${i}`} name={`LDM${i}`} inductance={pw === 50 ? "34uH" : pw === 40 ? "23uH" : "14uH"} footprint={FilmBoxFP(20)} pcbX={P.ldmX} pcbY={P.ldmY[i - 1]} schX={41} schY={46 - (i - 1) * 3} schSectionName="EMI" />
-      ))}
-      <trace from=".LDM1 > .pin1" to="net.AC1D" schDisplayLabel="AC1D" />
-      <trace from=".LDM1 > .pin2" to="net.AC1" schDisplayLabel="AC1" />
-      <trace from=".LDM2 > .pin1" to="net.AC2D" schDisplayLabel="AC2D" />
-      <trace from=".LDM2 > .pin2" to="net.AC2" schDisplayLabel="AC2" />
-      <trace from=".LDM3 > .pin1" to="net.AC3D" schDisplayLabel="AC3D" />
-      <trace from=".LDM3 > .pin2" to="net.AC3" schDisplayLabel="AC3" />
-      <trace from=".CX21 > .pin1" to="net.AC1" schDisplayLabel="AC1" />
-      <trace from=".CX21 > .pin2" to="net.AC2" schDisplayLabel="AC2" />
-      <trace from=".CX22 > .pin1" to="net.AC2" schDisplayLabel="AC2" />
-      <trace from=".CX22 > .pin2" to="net.AC3" schDisplayLabel="AC3" />
-      <trace from=".CX23 > .pin1" to="net.AC3" schDisplayLabel="AC3" />
-      <trace from=".CX23 > .pin2" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".CMC2 > .B1" to="net.AC1" schDisplayLabel="AC1" />
+      <trace from=".CMC2 > .B2" to="net.AC2" schDisplayLabel="AC2" />
+      <trace from=".CMC2 > .B3" to="net.AC3" schDisplayLabel="AC3" />
       <trace from=".CY1 > .pin1" to="net.AC1" schDisplayLabel="AC1" />
       <trace from=".CY1 > .pin2" to="net.PE" schDisplayLabel="PE" />
       <trace from=".CY2 > .pin1" to="net.AC2" schDisplayLabel="AC2" />

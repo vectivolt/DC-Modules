@@ -73,7 +73,7 @@ const PAGES = {
     ["INPUT-EMI", [
       ["AC-ENTRY", [/^JACL\d$/, /^JPE$/, /^F[123]$/]],
       ["SURGE", [/^MOV[123]$/, /^MOVP[123]$/, /^GDT[123]$/]],
-      ["EMI-FILTER", [/^CMC[12]$/, /^CX\d\d$/, /^CY[1-6]$/, /^LDM[123]$/, /^[CR]DMP[123]$/]],
+      ["EMI-FILTER", [/^CMC[12]$/, /^CX\d\d$/, /^CY[1-6]$/, /^[CR]DMP[123]$/]],   /* E68: D6 LDM deleted, CX0x star stage added */
       ["PRECHARGE", [/^KPRE[12]$/, /^RPRE[12]$/, /^RKFBP$/]],
     ], ["AC-ENTRY", "SURGE", "EMI-FILTER", "PRECHARGE"]],
     ["VIENNA-PFC", [

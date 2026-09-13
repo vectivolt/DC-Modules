@@ -374,7 +374,7 @@
     {
      "pin_number": 2,
      "name": "B1",
-     "signal_name": "AC1D"
+     "signal_name": "AC1"
     },
     {
      "pin_number": 3,
@@ -384,7 +384,7 @@
     {
      "pin_number": 4,
      "name": "B2",
-     "signal_name": "AC2D"
+     "signal_name": "AC2"
     },
     {
      "pin_number": 5,
@@ -394,13 +394,73 @@
     {
      "pin_number": 6,
      "name": "B3",
-     "signal_name": "AC3D"
+     "signal_name": "AC3"
     }
    ],
    "nc_pins": [],
    "value": "CMC-3PH-2mH-SKU",
    "query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, line-current-rated windin",
    "mpn": "CMC-3PH-2mH-SKU"
+  },
+  {
+   "designator": "CX01",
+   "block_name": "EMI-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "LF1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "XSTAR0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
+  },
+  {
+   "designator": "CX02",
+   "block_name": "EMI-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "LF2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "XSTAR0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
+  },
+  {
+   "designator": "CX03",
+   "block_name": "EMI-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "LF3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "XSTAR0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CX11",
@@ -414,13 +474,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AC2M"
+     "signal_name": "XSTAR1"
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
-   "mpn": "X1-2u2-530"
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CX12",
@@ -434,13 +494,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AC3M"
+     "signal_name": "XSTAR1"
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
-   "mpn": "X1-2u2-530"
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CX13",
@@ -454,13 +514,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AC1M"
+     "signal_name": "XSTAR1"
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
-   "mpn": "X1-2u2-530"
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CX21",
@@ -474,13 +534,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AC2"
+     "signal_name": "XSTAR2"
     }
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X1-4u7-530 X1 4.7 µF 530 VAC ",
-   "mpn": "X1-4u7-530"
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CX22",
@@ -494,13 +554,13 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AC3"
+     "signal_name": "XSTAR2"
     }
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X1-4u7-530 X1 4.7 µF 530 VAC ",
-   "mpn": "X1-4u7-530"
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CX23",
@@ -514,13 +574,73 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AC1"
+     "signal_name": "XSTAR2"
     }
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X1-4u7-530 X1 4.7 µF 530 VAC ",
-   "mpn": "X1-4u7-530"
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
+  },
+  {
+   "designator": "CX24",
+   "block_name": "EMI-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "XSTAR2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
+  },
+  {
+   "designator": "CX25",
+   "block_name": "EMI-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "XSTAR2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
+  },
+  {
+   "designator": "CX26",
+   "block_name": "EMI-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AC3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "XSTAR2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7uF",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "mpn": "X2-4u7-305"
   },
   {
    "designator": "CY1",
@@ -761,66 +881,6 @@
    "value": "10",
    "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
    "mpn": "SQP-10R-25W"
-  },
-  {
-   "designator": "LDM1",
-   "block_name": "EMI-FILTER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "AC1D"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "AC1"
-    }
-   ],
-   "nc_pins": [],
-   "value": "DM-CHOKE-SKU",
-   "query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
-   "mpn": "DM-CHOKE-SKU"
-  },
-  {
-   "designator": "LDM2",
-   "block_name": "EMI-FILTER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "AC2D"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "AC2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "DM-CHOKE-SKU",
-   "query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
-   "mpn": "DM-CHOKE-SKU"
-  },
-  {
-   "designator": "LDM3",
-   "block_name": "EMI-FILTER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "AC3D"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "AC3"
-    }
-   ],
-   "nc_pins": [],
-   "value": "DM-CHOKE-SKU",
-   "query": "DM-CHOKE-SKU DM line choke, 60µ sendust stack, crest-biased L",
-   "mpn": "DM-CHOKE-SKU"
   },
   {
    "designator": "KPRE1",

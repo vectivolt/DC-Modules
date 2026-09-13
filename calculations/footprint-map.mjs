@@ -90,14 +90,13 @@ export const FOOTPRINT = {
   "R2512-0R30-2W-1%": "R2512", "R2512-0R36-1W-1%": "R2512", "R2512-0R47-1W-1%": "R2512",
   "R1206-13R-1%": "R1206", "R1206-18R-1%": "R1206", "R1206-22R-1%": "R1206",
   "MLCC-22p-0603": "C0603", "MLCC-47p-0603": "C0603",
-  "X1-4u7-530": "CAP-TH_L31.5-W17.0-P27.50",   // class-typical X1 4.7 µF 530 VAC box (C424W class); confirm at part choice
+  "X2-4u7-305": "CAP-TH_L31.5-W17.0-P27.50",   // class-typical X2 4.7 µF 305 VAC box (E68 star stages); confirm at part choice
   "QA01C-18": "PWRM-TH_QA01C",                 // same catalogue land family as QA01C
   "74HC02": "SOIC-14_L8.7-W3.9-P1.27-LS6.0-BL",
   "BZT52-C15": "SOD-123_L2.7-W1.6-LS3.7-RD",
   "CT-LINE-2500-150A": "CT_window_150A_1-2500",   // ACX-1150 38.1 mm body — its own land, per Talema drawing
   "CT-RES-1:100-100A": "CT_window_res_1-100", "CT-RES-1:100-150A": "CT_window_res_1-100",
   "ACX-1100": "CT_window_100A_1-2500", "AS-404": "CT_window_res_1-100",
-  "DM-CHOKE-30": "L_Toroid_sendust_per-SKU", "DM-CHOKE-40": "L_Toroid_sendust_per-SKU", "DM-CHOKE-50": "L_Toroid_sendust_per-SKU",
   "MICROFIT3-40": "CONN-TH_40P-P3.00_MicroFit",
   "CONN-CARD-88-H": "HDR-TH_88P-2R-P2.54-V-M", // 2×44 keyed header — generated dual-row land
   "CONN-CARD-88-R": "SKT-TH_88P-2R-P2.54-V",   // mating receptacle — per the chosen series drawing
