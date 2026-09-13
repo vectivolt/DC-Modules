@@ -94,9 +94,7 @@ export const DB = [
   { m: /^CT\d+$/, mpn: "CT-RES-1:100-100A", mfr: "Talema (Salem, India) AS class — RFQ", desc: "resonant CT 1:100, 100 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary, so tank-potential insulation stays on your wire (E67: ONE CT on the full-bridge tank; 30 kW class 78 A rms = 78 %)", price1k: 75, alt: "AS-407 (1:500) with a 5× burden" },
   // --- capacitors
   { m: /^CD[TB]\d*\d$/, mpn: "ELH-470u450", mfr: "Aishi", desc: "470 µF 450 V snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C) (split bus: 415 V max per half)", price1k: 150, alt: "ChengX/Nichicon" },
-  { m: /^CE[AB]\d$/, mpn: "ELH-330u550", mfr: "Aishi/Jianghai CD29 class", desc: "330 µF 550 V snap-in 105 °C, −40 °C category (E67 bank capacitor after the bank filter inductor — bank ≤ 500 V = 91 %; ≤ 2 A rms HF ripple behind Lf; InfyPower builds 550 V 220 + 47 µF per bank)", price1k: 170, alt: "Jianghai CD294 / ChengX" },
-  { m: /^CF[AB]\d$/, mpn: "PP-2u2-630", mfr: "Faratronic C3D/CBB class", desc: "2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of the 30/39/49 A rms 2·fsw bridge ripple, ngspice)", price1k: 45, alt: "KEMET R76 / CDE 944U" },
-  { m: /^LF[AB]$/, mpn: "IND-BANK-30", mfr: "custom (D8 — sendust stack, E67)", desc: "D8-30 bank filter inductor (E67): the D6-30 construction at DC duty — 2× T48 60µ sendust stack, N=7, foil 20 mm², 7.4 µH at 82 A pk (≥ 60 A DC at the HIGH-mode floor); holds the full-bridge 2·fsw ripple on the rectifier film", price1k: 300, alt: "DMEGC/Chang Sung eq cores" },
+  { m: /^CF[AB]\d+$/, mpn: "PP-2u2-630", mfr: "Faratronic C3D/CBB class", desc: "2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of the 30/39/49 A rms 2·fsw bridge ripple, ngspice)", price1k: 45, alt: "KEMET R76 / CDE 944U" },
   { m: /^DOUT$/, mpn: "DIODE-1600V-150A-MOD", mfr: "IXYS/MacMic/Yangjie class — RFQ", desc: "output series blocking diode 1600 V 150 A, insulated-base 2-terminal module (E67 InfyPower practice: back-feed and reverse-battery proof without K_OUT or a matched-voltage make; 100 A = 67 % at 30 kW; ~1.05 V × Iout, heatsink-mounted)", price1k: 420, alt: "MacMic MDD150-16" },
   { m: /^C\d+R\d+$/, mpn: "PP-33n-1200V", mfr: "Faratronic/CDE 942C class", desc: "33 nF 1200 V PP resonant-duty film (E67 full-bridge tank: 7/9/11 in parallel at 30/40/50 kW → ≤ 10.3 A rms per cap of the 12 A line at the 250 V-bank full-power corner; Vcr ≤ 595 V pk = 421 V rms — O-8 RFQ line: published Vrms-vs-f curve ≥ 460 V @140 kHz)", price1k: 68, alt: "CDE 942C20P33K" },
   { m: /^C\w+F[PN]$/, mpn: "PP-1u-600", mfr: "Faratronic", desc: "1 µF 600 V film (Vienna per-phase commutation, CB-9)", price1k: 32, alt: "Songtian" },
@@ -192,7 +190,6 @@ export const skuOverrides = {
     RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A" },
     // E67 output: DOUT 133 A = 67 % of the 200 A class module; bank filter = the D6-40 construction at DC duty
     DOUT: { price1k: 520, mpn: "DIODE-1600V-200A-MOD", note: "E67: 133 A out → 200 A class insulated module (150 A would run 89 %)" },
-    LFA: { price1k: 465, mpn: "IND-BANK-40", note: "D8-40 (E67): the D6-40 construction at DC duty — 2× T57 60µ N=8, 26.4 mm², 10.5 uH at 109 A pk (≥ 80 A DC at the HIGH-mode floor)" }, LFB: { price1k: 465, mpn: "IND-BANK-40" },
     // E67 full-bridge LLC classes (tanks.mjs · magnetics-envelope · current-coordination)
     T1A: { price1k: 1434, mpn: "XFMR-LLC-CELL-3E70-40", note: "D3-40 rev D (E67): cell 3× E70/33/32 on a 3-set former (lN 293 mm, custom), 4:4∥4, Lm 21.75 µH per cell, TIW-served litz 3536×0.071 (14 mm²) + secondary halves 2 × Cu foil 0.08 × 28 mm per turn; leakage 0.090 µH (±30 %). Envelope gate: Fe 47.6 W at 159 mT · Cu 49.8 W at the PSM corner · hot-spot 104 °C at 55 °C inlet. Roll-up: 3 × E70 ₹480 + litz ₹302 + foil ₹115 (+10 %) + 3-set former/insulation/shield/gap/labour/test ₹495 → ₹1,434 [est, REVIEW at winder RFQ]" },
     T1B: { price1k: 1434, mpn: "XFMR-LLC-CELL-3E70-40" },
@@ -221,7 +218,6 @@ export const skuOverrides = {
     // continuous-current part — 200 A insulated module)
     KSER: { price1k: 280, mpn: "RELAY-PCB-150A-24V" }, KPARA: { price1k: 280, mpn: "RELAY-PCB-150A-24V" }, KPARB: { price1k: 280, mpn: "RELAY-PCB-150A-24V" },
     DOUT: { price1k: 620, mpn: "DIODE-1600V-250A-MOD", note: "E67: 167 A out → 250 A class insulated module (200 A would run 84 %)" },
-    LFA: { price1k: 630, mpn: "IND-BANK-50", note: "D8-50 (E67): the D6-50 construction at DC duty — 3× T57 60µ N=8, 26.4 mm², 12.9 µH at 136 A pk (≥ 100 A DC at the HIGH-mode floor)" }, LFB: { price1k: 630, mpn: "IND-BANK-50" },
     // precharge bypass: 120 A class = 76% of class at 91.6 A — over the 75% line. Next existing
     // family part is the 250 A frame (37%); no new p/n invented.
     KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },

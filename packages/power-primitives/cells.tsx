@@ -594,24 +594,16 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
 // ---------- E67 bank filter (one per bank): rectifier film → filter inductor → electrolytic — the InfyPower output build
 // (film at the bridge, enamelled filter choke, 550 V electrolytics). The film takes the 2·fsw ripple of the full-bridge rectifier
 // (≤ 10 A rms per 2.2 µF part at the simulated corners); Lf holds it off the electrolytic (≤ 2 A rms into Ce); Ce is the bank.
-export const BankFilter = ({ id, rkp, bkp, bkn, nF = 4, nE = 1, lf = "10uH", sec = "BANKS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const BankFilter = ({ id, bkp, bkn, nF = 10, sec = "BANKS", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+  // E68 (InfyPower practice): FILM-ONLY bank — nF × 2.2 µF 630 V straight across the rectifier output. The E67 Cf–Lf–Ce filter
+  // (D8 sendust inductor + 330 µF electrolytic) is retired: the count is set by 0.5 % RMS output ripple at the 150 V / Imax PSM corner.
   <group name={`bank${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {Array.from({ length: nF }, (_, i) => (
-      <capacitor key={`f${i}`} name={`CF${id}${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={i * 34} pcbY={0} schX={i * 1.6} schY={0} schSectionName={sec} />
-    ))}
-    <inductor name={`LF${id}`} inductance={lf} footprint={<ChokeFP />} pcbX={nF * 34 + 40} pcbY={0} schX={nF * 1.6 + 1.2} schY={0} schSectionName={sec} />
-    {Array.from({ length: nE }, (_, i) => (
-      <capacitor key={`e${i}`} name={`CE${id}${i}`} capacitance="330uF" footprint={<SnapInFP />} pcbX={nF * 34 + 100 + i * 42} pcbY={0} schX={nF * 1.6 + 3.4 + i * 1.6} schY={0} schSectionName={sec} />
+      <capacitor key={`f${i}`} name={`CF${id}${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={(i % 7) * 34} pcbY={-Math.floor(i / 7) * 36} schX={(i % 7) * 1.6} schY={-Math.floor(i / 7) * 2.2} schSectionName={sec} />
     ))}
     {Array.from({ length: nF }, (_, i) => [
-      <trace key={`fp${i}`} from={`.CF${id}${i} > .pin1`} to={rkp} schDisplayLabel={rkp.replace("net.", "")} />,
+      <trace key={`fp${i}`} from={`.CF${id}${i} > .pin1`} to={bkp} schDisplayLabel={bkp.replace("net.", "")} />,
       <trace key={`fn${i}`} from={`.CF${id}${i} > .pin2`} to={bkn} schDisplayLabel={bkn.replace("net.", "")} />,
-    ])}
-    <trace from={`.LF${id} > .pin1`} to={rkp} schDisplayLabel={rkp.replace("net.", "")} />
-    <trace from={`.LF${id} > .pin2`} to={bkp} schDisplayLabel={bkp.replace("net.", "")} />
-    {Array.from({ length: nE }, (_, i) => [
-      <trace key={`ep${i}`} from={`.CE${id}${i} > .pin1`} to={bkp} schDisplayLabel={bkp.replace("net.", "")} />,
-      <trace key={`en${i}`} from={`.CE${id}${i} > .pin2`} to={bkn} schDisplayLabel={bkn.replace("net.", "")} />,
     ])}
   </group>
 );

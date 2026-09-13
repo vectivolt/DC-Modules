@@ -30,7 +30,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     },
     {
      "pin_number": 2,
@@ -50,7 +50,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     },
     {
      "pin_number": 2,
@@ -70,7 +70,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     },
     {
      "pin_number": 2,
@@ -90,7 +90,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     },
     {
      "pin_number": 2,
@@ -110,7 +110,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     },
     {
      "pin_number": 2,
@@ -130,7 +130,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     },
     {
      "pin_number": 2,
@@ -144,27 +144,7 @@
    "mpn": "PP-2u2-630"
   },
   {
-   "designator": "LFA",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "RKAP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "IND-BANK-30",
-   "query": "IND-BANK-30 D8-30 bank filter inductor ",
-   "mpn": "IND-BANK-30"
-  },
-  {
-   "designator": "CEA0",
+   "designator": "CFA6",
    "block_name": "BANK-A",
    "pins": [
     {
@@ -179,12 +159,12 @@
     }
    ],
    "nc_pins": [],
-   "value": "330uF",
-   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-330u550"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
-   "designator": "CEA1",
+   "designator": "CFA7",
    "block_name": "BANK-A",
    "pins": [
     {
@@ -199,9 +179,129 @@
     }
    ],
    "nc_pins": [],
-   "value": "330uF",
-   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-330u550"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA8",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA9",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA10",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA11",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA12",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA13",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
    "designator": "CFB0",
@@ -210,7 +310,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     },
     {
      "pin_number": 2,
@@ -230,7 +330,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     },
     {
      "pin_number": 2,
@@ -250,7 +350,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     },
     {
      "pin_number": 2,
@@ -270,7 +370,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     },
     {
      "pin_number": 2,
@@ -290,7 +390,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     },
     {
      "pin_number": 2,
@@ -310,7 +410,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     },
     {
      "pin_number": 2,
@@ -324,27 +424,7 @@
    "mpn": "PP-2u2-630"
   },
   {
-   "designator": "LFB",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "RKBP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "IND-BANK-30",
-   "query": "IND-BANK-30 D8-30 bank filter inductor ",
-   "mpn": "IND-BANK-30"
-  },
-  {
-   "designator": "CEB0",
+   "designator": "CFB6",
    "block_name": "BANK-B",
    "pins": [
     {
@@ -359,12 +439,12 @@
     }
    ],
    "nc_pins": [],
-   "value": "330uF",
-   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-330u550"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
-   "designator": "CEB1",
+   "designator": "CFB7",
    "block_name": "BANK-B",
    "pins": [
     {
@@ -379,9 +459,129 @@
     }
    ],
    "nc_pins": [],
-   "value": "330uF",
-   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-330u550"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB8",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB9",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB10",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB11",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB12",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB13",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
    "designator": "KSER",

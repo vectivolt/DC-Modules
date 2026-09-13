@@ -435,7 +435,8 @@ export const DcDcBoard = ({ channels, w, h, pw = 30, air = false }: { channels: 
     : pw === 40 ? { crN: 9, lr: "4.07uH", burden: "0.36", dPar: 2, fetPar: 2 } : { crN: 7, lr: "5.16uH", burden: "0.47", dPar: 2, fetPar: 1 };
   const relayFb = ["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"];
   // E67 bank filter per bank: film at the bridge (≤10.5 A rms per 2.2 µF at the simulated worst ripple 34.5/44.9/55.1 A — the PSM corner) · Lf · 550 V electrolytic
-  const bankF = pw === 50 ? { nF: 6, nE: 2, lf: "12.9uH" } : pw === 40 ? { nF: 5, nE: 1, lf: "10.5uH" } : { nF: 4, nE: 1, lf: "7.4uH" };
+  // E68: film-only banks — 2.2 µF count per bank from 0.5 % RMS ripple at the 150 V / Imax PSM corner (current-coordination OUT)
+  const bankF = pw === 50 ? { nF: 14 } : pw === 40 ? { nF: 12 } : { nF: 9 };   // −10 % film tolerance inside the 0.5 % line
   // schematic sheet plan: bus row y=40..48 · LLC legs x=2 col (16/row from y=24) · sections x=30
   // · banks/matrix/bleeders x=58 · output+senses x=84 · control row below everything at cYd.
   const cYd = Math.min(24 - (3 * channels - 1) * 16 - 9.5, -25) - 10;
@@ -558,13 +559,13 @@ return (
       ))}
       <LlcTank swA="net.SWA" swB="net.SWB" crN={tank.crN} crVal="33nF" lr={tank.lr} ctBurden={tank.burden} dPar={tank.dPar}
         x={Q.sec[1]} y={Q.secY}
-        rAp="net.RKAP" bkAn="net.BKAN" rBp="net.RKBP" bkBn="net.BKBN"
+        rAp="net.BKAP" bkAn="net.BKAN" rBp="net.BKBP" bkBn="net.BKBN"
         ctOut="net.I_RES1"
         sx={30} sy={24} />
 
-      {/* E67 bank filters (BankFilter): rectifier film → Lf (the D6 sendust construction at DC duty) → 330 µF 550 V electrolytic per bank */}
-      <BankFilter id="A" rkp="net.RKAP" bkp="net.BKAP" bkn="net.BKAN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[0]} sx={50} sy={27} />
-      <BankFilter id="B" rkp="net.RKBP" bkp="net.BKBP" bkn="net.BKBN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[2]} sx={50} sy={17} />
+      {/* E68 film-only banks (BankFilter): nF × 2.2 µF 630 V across each rectifier output — no D8 inductor, no electrolytic */}
+      <BankFilter id="A" bkp="net.BKAP" bkn="net.BKAN" nF={bankF.nF} x={Q.bankX[0]} y={Q.bankY[0]} sx={50} sy={27} />
+      <BankFilter id="B" bkp="net.BKBP" bkn="net.BKBN" nF={bankF.nF} x={Q.bankX[0]} y={Q.bankY[2]} sx={50} sy={17} />
 
       {/* E67 S/P matrix: zero-current PCB power relays + the output blocking diode DOUT (InfyPower practice) */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"

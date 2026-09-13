@@ -264,7 +264,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     }
    ],
    "nc_pins": [],
@@ -284,7 +284,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     }
    ],
    "nc_pins": [],
@@ -344,7 +344,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     }
    ],
    "nc_pins": [],
@@ -364,7 +364,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKAP"
+     "signal_name": "BKAP"
     }
    ],
    "nc_pins": [],
@@ -424,7 +424,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     }
    ],
    "nc_pins": [],
@@ -444,7 +444,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     }
    ],
    "nc_pins": [],
@@ -504,7 +504,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     }
    ],
    "nc_pins": [],
@@ -524,7 +524,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "RKBP"
+     "signal_name": "BKBP"
     }
    ],
    "nc_pins": [],

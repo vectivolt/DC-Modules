@@ -67,10 +67,10 @@ B.cab = loadNet(`${ROOT}/dist/boards/cabinet/circuit.json`);
 // ---------- A. system currents (first principles) ----------
 console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
 const SK = {   // E67 full bridge: crN × 33 nF · external Lr (D2 rev F) · tank class (A rms) · 0.05 mm litz area · bank film/electrolytic counts
-  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 1, nHalf: 5, fans: 2, crN: 7, crV: 33e-9, lr: 5.16e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 4, nE: 1, dPar: 2, dout: 150 },
-  "40kw": { P: 40e3, Imax: 133, par: 1, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 4.07e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 5, nE: 1, dPar: 2, dout: 200 },
-  "50kw": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 2, dout: 250 },
-  "50kwa": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 2, dout: 250 },
+  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 1, nHalf: 5, fans: 2, crN: 7, crV: 33e-9, lr: 5.16e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 9, nE: 0, dPar: 2, dout: 150 },
+  "40kw": { P: 40e3, Imax: 133, par: 1, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 4.07e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 12, nE: 0, dPar: 2, dout: 200 },
+  "50kw": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 14, nE: 0, dPar: 2, dout: 250 },
+  "50kwa": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 14, nE: 0, dPar: 2, dout: 250 },
 };
 for (const [sku, s] of Object.entries(SK)) {
   s.Iline = (s.P / 0.965) / (Math.sqrt(3) * 330 * 0.99);
@@ -141,8 +141,8 @@ for (const [sku, s] of Object.entries(SK)) {
     `F.01 ${s.F01} A on ${s.lineB} Ω → ${f(obs, 2)} V · F.11 ${s.F11} A on ${s.resB} Ω → ${f(res, 2)} V (≤3.0, headroom for the kill race)`);
   // bank bleeders
   const cBank = s.nE * 330e-6 + s.nF * 2.2e-6, tauB = 4 * 2200 * cBank;
-  ck("C", `${sku} bank bleeder window (E67 bank C)`, tauB >= 2 && tauB <= 17 && 0.5 * cBank * 500 * 500 / 4 <= 65,
-    `${f(cBank * 1e6, 0)} µF per bank → τ ${f(tauB, 1)} s (family 2–17 s) · ${f(0.5 * cBank * 500 * 500 / 4, 0)} J/resistor ≤ 65`);
+  ck("C", `${sku} bank bleeder window (E68 film bank)`, tauB <= 17 && 0.5 * cBank * 500 * 500 / 4 <= 65,
+    `${f(cBank * 1e6, 1)} µF per bank → τ ${f(tauB, 2)} s (≤ 17 s; film-only banks bleed in well under a second) · ${f(0.5 * cBank * 500 * 500 / 4, 2)} J/resistor ≤ 65`);
 }
 { // X-bleed (E68): three star X2 stages (a star C is C/3 line-to-line) + the Δ damper cap (its 10 Ω is ≪ the bleed star)
   const A30 = B["30kw"].ac, cX = ((A30.val.get("CX01") + A30.val.get("CX11") + A30.val.get("CX21") + A30.val.get("CX24")) / 3 + (A30.val.get("CDMP1") ?? 0)) * 1e6;
@@ -233,8 +233,8 @@ for (const [sku, s] of Object.entries(SK)) {
       && D.netOfPin.get("C1R0.pin2") === D.netOfPin.get("L1R.pin1") && D.netOfPin.get("L1R.pin2") === D.netOfPin.get("T1A.P1") && D.netOfPin.get("T1A.P2") === D.netOfPin.get("T1B.P1") && D.netOfPin.get("T1B.P2") === D.netOfPin.get("Q2H.S") && D.netOfPin.get("C1R0.pin1") === D.netOfPin.get("Q1H.S") && D.netOfPin.get("Q1H.S") !== D.netOfPin.get("Q2H.S"),
     `SWA → ${s.crN} × ${f(s.crV * 1e9, 0)} nF → ${f(s.lr * 1e6, 2)} µH → T1A.P → T1B.P → SWB (Cr strictly in series: flux-walk blocked)`);
   ck("G", `${sku} resonant burden`, Math.abs(D.val.get("R1CT") - s.resB) < 0.01 && !D.byName.has("CT2"), `${s.resB} Ω on the one tank CT`);
-  ck("G", `${sku} bank filters`, cnt(D, /^CF[AB]\d$/) === 2 * s.nF && cnt(D, /^LF[AB]$/) === 2 && cnt(D, /^CE[AB]\d$/) === 2 * s.nE && D.netOfPin.get("LFA.pin1") === "RKAP" && D.netOfPin.get("LFA.pin2") === "BKAP" && D.netOfPin.get("CFA0.pin1") === "RKAP" && D.netOfPin.get("CEA0.pin1") === "BKAP" && !D.byName.has("CBA0T"),
-    `per bank ${s.nF}× 2.2 µF film at RK·P → Lf → ${s.nE}× 330 µF at BK·P (E67)`);
+  ck("G", `${sku} film-only banks`, cnt(D, /^CF[AB]\d+$/) === 2 * s.nF && !D.byName.has("LFA") && !D.byName.has("CEA0") && D.netOfPin.get("CFA0.pin1") === "BKAP" && D.netOfPin.get("CFB0.pin2") === "BKBN" && D.netOfPin.get("D1A1.pin2") === "BKAP",
+    `per bank ${s.nF}× 2.2 µF film across BK·P–BK·N, JBS cathodes straight onto the bank (E68)`);
   ck("G", `${sku} secondary bridges`, cnt(D, /^D1[AB][1-4](P[23])?$/) === 8 * s.dPar, `${8 * s.dPar} JBS (2 bridges × 4 positions × ${s.dPar})`);
   ck("G", `${sku} output: blocking diode, no K_OUT / pre-insertion`, D.netOfPin.get("DOUT.pin1") === "BKAP" && D.netOfPin.get("DOUT.pin2") === "OUTP" && !D.byName.has("KOUT") && !D.byName.has("KPREA") && !D.byName.has("RPREA") && !D.byName.has("UEXCL2"),
     "BKAP → DOUT → OUTP · matrix KSER/KPARA/KPARB only (E67)");

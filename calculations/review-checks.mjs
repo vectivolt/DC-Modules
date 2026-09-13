@@ -24,8 +24,8 @@ const ck = (id, cond, what) => {
 
 // --- Critical blockers
 ck("CB-1", /mpn: "X1-2u2-530"/.test(db) && /\^CDMP\\d\$/.test(db) && /m: \/\^CX\[012\]\\d\$\/, mpn: "X2-4u7-305"/.test(db) && !/X2-2u2-310/.test(db), "E68 re-point: line-to-line (Δ) caps stay X1 530 VAC (CDMP damper); the InfyPower X bank is X2 305 VAC in STAR (274 VAC per cap at 475 VAC)");
-ck("CB-2", /CE\[AB\]\\d/.test(db) && /name=\{`CE\$\{id\}\$\{i\}`\}/.test(cells) && /ELH-330u550/.test(db) && /BankFilter id="A"/.test(boards), "E67 re-point: one 550 V electrolytic per bank position behind the bank filter inductor (bank ≤ 500 V) — the 2-series 450 V strings, midpoint and balance chains retired with the 525 V hysteresis bank");
-ck("CB-3", /IsoVSense id="OA" hv="net.BKAP" ref="net.BKAN"/.test(boards) && /IsoVSense id="OV" hv="net.OUTP" ref="net.OUTN"/.test(boards) && !/HvDivider/.test(boards), "bank/output senses are in-domain IsoVSense (no HvDivider left)");
+ck("CB-2", /\^CF\[AB\]\\d\+\$/.test(db) && !/ELH-330u550/.test(db) && !/IND-BANK/.test(db) && /BankFilter = \(\{ id, bkp, bkn, nF/.test(cells),
+  "E68 re-point: film-only banks (nF × 2.2 µF per bank, InfyPower practice) — the E67 D8 inductor and 330 µF electrolytic are retired; 0.5 % RMS ripple gated in current-coordination");
 ck("CB-4", /name="RAGTC"/.test(boards) && !/name="RAGT[AB]"/.test(boards), "AGND–DGND single-point tie lives on the card (RAGTC); RAGTA/RAGTB deleted from power boards (card-split rev)");
 ck("CB-5", /RAUXST2 > \.pin2" to="\.UAUX > \.VCC"/.test(cells) && /\.UAUX > \.BO/.test(cells) && /\.UAUX > \.SS/.test(cells) && /\.TAUX > \.AXA/.test(cells) && !/"\.UAUX > \.FB" to="net\.V15"/.test(cells), "aux controller fully wired on the REAL NCP1252 map (VCC startup, BO, SS, aux winding — R4-3)");
 ck("CB-6", /AuxPower dcp="net.DCP" dcn="net.DCN"/.test(boards) && /SIC-1700/.test(db), "aux fed from full bus with 1700 V switch");
@@ -48,8 +48,8 @@ ck("HR-5", /name="RFLTC"/.test(boards) && /name="CFLTC"/.test(boards), "FLT wire
 ck("HR-6", /R\$\{id\}PD/.test(cells), "PWM pulldowns per channel");
 ck("HR-7", /GDT[123]?/.test(boards) && /MOVP/.test(boards), "L-PE MOV+GDT surge path");
 ck("HR-8", /PP-4u7-1200/.test(db), "output film 1200 V");
-ck("HR-9", !/DM-CHOKE/.test(db) && !/\^LDM/.test(db) && /IND-BANK-30/.test(db) && /IND-BANK-40/.test(db) && /IND-BANK-50/.test(db),
-  "E68 re-point: the AC-side D6 DM chokes are deleted (the star-X2 filter out-attenuates the E65 filter with them); the engine-designed D6 construction lives on per SKU as the D8 bank inductor");
+ck("HR-9", !/DM-CHOKE/.test(db) && !/\^LDM/.test(db) && !/IND-BANK/.test(db),
+  "E68 re-point: the AC-side D6 DM chokes are deleted (the star-X2 filter out-attenuates the E65 filter with them); E68c retires the D8 bank inductor too, so no sendust DM/bank choke remains in the BOM");
 // R3: the assertion previously grepped "QA01C-15S18" — a part number that does not exist at
 // MORNSUN (real variants: QA01C = +20/-4 V, QA01C-18 = +18/-3 V). The gate was pinning a typo.
 ck("HR-10", /QA01C\b/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0)");
@@ -373,8 +373,8 @@ ck("AUD-D2-FERRITE", /GAPPED FERRITE/.test(db) && /E70\/33\/32/.test(db.match(/I
   "D2 trim is gapped ferrite (F1: sendust at full 140 kHz AC swing = ~43 W core loss, 2:1 L swing)");
 ck("AUD-D1-REVB", /N=39/.test(db) && /18 mm²/.test(db) && /0077908A7/.test(db),
   "D1 re-issued against the real core (AL 37) with the calculator's copper (F4)");
-ck("AUD-D6-REVC", /2× T48 60µ sendust stack, N=7/.test(db) && /2× T57 60µ N=8/.test(db) && /3× T57 60µ N=8/.test(db),
-  "D6 rev C supersedes F7's wire-gauge fix: crest-biased L was the real binder (E43 — all three engine rows in the DB; F7 history lives in magnetics.md)");
+ck("AUD-D6-REVC", !/DM-CHOKE|IND-BANK|sendust stack/.test(db) && /dm-choke-design/.test(readFileSync(join(ROOT, "calculations/emi/lisn-precompliance.mjs"), "utf8")),
+  "E68: the D6 construction (E43 crest-biased rev C) is out of the BOM — AC DM chokes and D8 bank inductors retired; the D6 engine survives only as the E65 control row of the LISN gate");
 ck("AUD-FUSE80", /FUSE-gG-690V-80A/.test(db) && !/mpn: "FUSE-gG-690V-63A"/.test(db),
   "30 kW fuse is 80 A gG 22x58 (F6: 63 A was 88% loaded and negative after enclosure/ambient derate)");
 ck("AUD-CT-CATALOG", /ACX-1100/.test(db) && /CT-RES-1:100-100A/.test(db) && /AS-407/.test(db),
