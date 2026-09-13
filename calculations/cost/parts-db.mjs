@@ -24,7 +24,7 @@ export const DB = [
   // --- power semiconductors
   { m: /^Q[ABC]\d+[AB]2?$/, mpn: "B3M010C075Z", mfr: "BASiC", desc: "SiC MOSFET 750 V 10 mΩ TO-247-4", price1k: 330, alt: "SiChain 750V/10mΩ (RFQ)" },
   { m: /^Q\d+[HL][23]?$/, mpn: "SG2M023120LJ", mfr: "SiChain", desc: "SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a-2: the 30 kW single die carries 209 A at the F.11 kill) (E67 full-bridge LLC, clip-mounted: tanks.mjs par per position — 1 at 30 kW, 2 at 40 / 50 kW liquid and air — Q#H2/Q#L2)", price1k: 390, alt: "BASiC B3M020120ZL" },
-  { m: /^D[ABC]\d+[TB]$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ)", price1k: 120, alt: "BASiC B3D040120H" },
+  { m: /^D[ABC]\d+[TB]$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 bypass-closure surge)", price1k: 120, alt: "BASiC B3D040120H" },
   { m: /^D[ABC]\d+C$/, mpn: "SICJBS-1200-10", mfr: "SiChain", desc: "SiC JBS 1200 V 10 A TO-247-2 (RCD clamp)", price1k: 55, alt: "CR Micro 1200V/10A" },
   { m: /^D\d+[AB][1-4](P[23])?$/, mpn: "SICJBS-1200-40", mfr: "SiChain", desc: "SiC JBS 1200 V 40 A TO-247-2 (E67 secondary bridge: 2 per position on every SKU, 3 on the air 50 — the InfyPower 16 × 40 A build; exact p/n at RFQ)", price1k: 120, alt: "BASiC B3D40120H" },
   { m: /^QDIS[FAB]$/, mpn: "SIC-1200-5A", mfr: "CR Micro", desc: "SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15; R7-B/R8 gate spec for the PV-driven bleeders: Vth(max) ≤ 3.5 V, Igss ≤ 100 nA. The 6.8 MΩ load-line figure (≈5.8 V after leakage) is a 25 °C-ENDPOINT MODEL, not an all-temperature guarantee — VOM1271 Voc(typ) falls to ~5.4 V at 100 °C; declared bleed-interval local ambient ≤ 70 °C, and EVT loaded-Vgs/discharge measurement with the exact orderable FET gates the BOM freeze)", price1k: 120, alt: "BASiC small 1200V" },
@@ -173,7 +173,7 @@ export const skuOverrides = {
     // audit F6 2026-09-08: 63 A gG at 55.9 A worst continuous = 88% nameplate and NEGATIVE after
     // the ~0.72× enclosed/+55 °C derate → 80 A, 22×58 frame (matching holder; RT28-32 was 10×38/32 A).
     "F1": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F2": { price1k: 105, mpn: "FUSE-gG-690V-80A" }, "F3": { price1k: 105, mpn: "FUSE-gG-690V-80A" },
-    KPRE1: { price1k: 260, note: "80 A class (55 A line)" , mpn: "HF167F-80A-M"}, KPRE2: { price1k: 260 , mpn: "HF167F-80A-M"},
+    KPRE1: { price1k: 260, note: "80 A class (55 A line) · make ≥ 260 A pk (E73 30 kW bypass-closure inrush, ≤ 70 V across the contacts, ≥ 30 000 makes)" , mpn: "HF167F-80A-M"}, KPRE2: { price1k: 260 , mpn: "HF167F-80A-M"},
     CMC1: { price1k: 1327, note: "D7-30 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 9.9 W, ΔT 20 K — second source to the Schaffner catalog part [est roll-up]" }, CMC2: { price1k: 1327 },
     RSHO: { price1k: 120 },
   },
@@ -188,7 +188,7 @@ export const skuOverrides = {
     // stress-audit: 100 A x 0.72 enclosed-derate = 72 A < 73.3 A worst — the exact E35/F6 failure
     // class. 125 A (existing family part) derates to 90 A: 23% margin.
     "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
-    KPRE1: { price1k: 300, note: "100 A class (73 A line)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
+    KPRE1: { price1k: 300, note: "100 A class (73 A line) · make ≥ 280 A pk (E73 40 kW bypass-closure inrush, ≤ 70 V across the contacts, ≥ 30 000 makes)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
     CMC1: { price1k: 1327, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here) · D7-40 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 17.0 W, ΔT 32 K [est roll-up]", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 1327, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A" },
     // E67 output: DOUT 133 A = 67 % of the 200 A class module; bank filter = the D6-40 construction at DC duty
@@ -223,7 +223,7 @@ export const skuOverrides = {
     DOUT: { price1k: 620, desc: "output series blocking diode 1600 V 250 A, insulated-base 2-terminal module (E67 InfyPower practice; 167 A = 67 % at 50 kW; ~1.05 V × Iout, heatsink-mounted)", mpn: "DIODE-1600V-250A-MOD", note: "E67: 167 A out → 250 A class insulated module (200 A would run 84 %)" },
     // precharge bypass: 120 A class = 76% of class at 91.6 A — over the 75% line. Next existing
     // family part is the 250 A frame (37%); no new p/n invented.
-    KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
+    KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%) · make ≥ 360 A pk (E73 50 kW bypass-closure inrush, ≤ 70 V across the contacts, ≥ 30 000 makes)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
     CMC1: { price1k: 2065, note: "D7-50 custom wind 95 A · D7-50 rev B (E65 engine): T 90/50/30, A_Fe ≥ 450 mm², 3×8 T 25 mm², 26.7 W, ΔT 38 K [est roll-up]", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 2065, mpn: "CMC-3PH-2mH-SKU" },
     RSHO: { price1k: 155, mpn: "SHUNT-50MV-167A" },
     // E67 full-bridge LLC classes (tanks.mjs · magnetics-envelope · current-coordination) — the air twin copies these

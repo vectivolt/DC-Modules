@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 import { D1 } from "./d1-choke.mjs";
 import { D2, D3 } from "./magnetics-envelope.mjs";
 import { TANKS } from "../llc/tanks.mjs";
+import { SKUS as AUX_LOADS } from "./d4-flyback.mjs";
 import { masthead, footer } from "../doc-chrome.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -33,6 +34,15 @@ const rows = (gate, pred) => EV[gate].rows.filter(pred).map((r) => ({ gate, ...r
 const MKF_PATH = join(OUT, "evidence", "mkf-crosscheck.json"), MKF = existsSync(MKF_PATH) ? JSON.parse(readFileSync(MKF_PATH, "utf8")) : null;
 if (MKF && MKF.exit !== 0) throw new Error("mag-docs: mkf-crosscheck did not pass — re-run it or remove its evidence file");
 const mkfRows = (pred) => (MKF ? MKF.rows.filter(pred).map((r) => ({ gate: "mkf-crosscheck", ...r })) : []);
+// E73 review matrix: one number per (part, mechanism), read from the gate rows — a missing row stops the page, a missing optional MKF row reads "—"
+const grab = (gate, pred, re, optional = false) => {
+  const src = gate === "mkf-crosscheck" ? MKF?.rows ?? [] : EV[gate].rows;
+  const r = src.find(pred), m = r && `${r.name} — ${r.detail}`.match(re);
+  if (!m && !(optional || gate === "mkf-crosscheck")) throw new Error(`mag-docs: review matrix cannot read ${gate} ${re}`);
+  return m;
+};
+const EV2 = Object.fromEntries(["stress-audit", "fault-energy"].map((g) => [g, JSON.parse(readFileSync(join(OUT, "evidence", `${g}.json`), "utf8"))]));
+EV["fault-energy"] = EV2["fault-energy"];
 const skuRe = (sku) => new RegExp(`^${sku}\\b`);
 const proof = (list) => `| Gate | Check | Result | |
 |---|---|---|:---:|
@@ -80,6 +90,90 @@ const DRAW = {
 const D7 = JSON.parse(readFileSync(join(OUT, "dm-choke-design.json"), "utf8")).d7;
 const D7_ACC = { "30kw": { irms: 55.9, dm: 83, od: 95, h: 40 }, "40kw": { irms: 73.3, dm: 110, od: 95, h: 40 }, "50kw": { irms: 91.6, dm: 138, od: 106, h: 46 } };
 
+
+// ---- E73: every magnetic × every failure mechanism, one number each ----
+function reviewMatrix(sku) {
+  const b = base(sku), n = (x) => (x ? x : "—"), S = skuRe(sku), B = skuRe(b), W2 = DRAW.D2[b], W3 = DRAW.D3[b], CT = DRAW.CT[b];
+  const sum = JSON.parse(readFileSync(join(ROOT, "simulation-results", sku, "llc-stress-summary.json"), "utf8"));
+  const g = (gate, pred, re, fmt, opt) => { const m = grab(gate, pred, re, opt); return m ? fmt(m) : "—"; };
+  const st = (tag, pat, re, fmt, key = S) => g("stress-audit", (r) => r.tag === tag && key.test(r.name) && pat.test(r.name), re, fmt);
+  const env = (tag, part, re, fmt) => g("magnetics-envelope", (r) => r.tag === tag && S.test(r.name) && (!part || r.name.includes(` ${part} `) || r.name.includes(`${part} `)), re, fmt);
+  const mk = (tag, part, re, fmt, key = S) => g("mkf-crosscheck", (r) => r.tag === tag && key.test(r.name) && r.name.includes(` ${part} `), re, fmt);
+  const cellJ = (i, a) => `${(i / a).toFixed(1)} A/mm²`;
+  const d3 = D3[sku];
+  const rows = [
+    ["Saturation · flux margin",
+      st("D1", /biased-L floor/, /→ ([\d.]+) µH @([\d.]+) A ≥ (\d+)/, (m) => `L ${m[1]} µH @ ${m[2]} A ≥ ${m[3]} µH`),
+      `${env("D2", "", /B̂ (\d+) % of hot Bsat/, (m) => `B̂ ${m[1]} % of hot Bsat`)} · ${g("current-coordination", (r) => r.tag === "D2" && S.test(r.name), /(\d+) mT at the F\.11 kill peak/, (m) => `${m[1]} mT at the F.11 kill ≤ 217`)}`,
+      `${env("D3", "", /B̂ (\d+) % of hot Bsat/, (m) => `B̂ ${m[1]} % of hot Bsat`)} · ${g("temp-critique", (r) => r.tag === "BSAT" && /D3/.test(r.name), /\((\d+)%\)/, (m) => `family worst ${m[1]} % of Bsat(130 °C)`)}`,
+      g("stress-audit", (r) => r.tag === "D4" && /flux at the computed/.test(r.name), /(\d+) mT = ([\d.]+) % of Bsat/, (m) => `${m[1]} mT = ${m[2]} % of Bsat(130 °C) at the current limit ≤ 75 %`),
+      `${st("D7", /DM-leakage flux/, /= ([\d.]+) T ≤ 0\.6/, (m) => `DM ${m[1]} T ≤ 0.6`, B)} · ${st("D7", /common-mode flux/, /= (\d+) mT/, (m) => `CM ${m[1]} mT`, B)}`,
+      `no saturation below ${CT.sat01} (1.25 × F.01)`],
+    ["Core loss · thermal runaway",
+      st("D1", /hot-spot|web|plate|air/, /Fe ([\d.]+) W/, (m) => `Fe ${m[1]} W at the 50 kHz ripple`),
+      env("D2", "", /Fe ([\d.]+) W.*runaway margin (\d+) K/, (m) => `Fe ${m[1]} W · runaway margin ${m[2]} K`),
+      env("D3", "", /Fe ([\d.]+) W.*runaway margin (\d+) K/, (m) => `Fe ${m[1]} W · runaway margin ${m[2]} K`),
+      g("temp-critique", (r) => r.tag === "RUNAWAY" && /D4/.test(r.name), /margin (\d+) K/, (m) => `runaway margin ${m[1]} K · cold start self-warms`),
+      "nanocrystalline at line frequency — negligible", "—"],
+    ["Copper · skin · proximity",
+      st("D1", /hot-spot|web|plate|air/, /Cu ([\d.]+) W @50 Hz \+ ([\d.]+) W ripple \(([\d.]+) A rms, Fr ([\d.]+)/, (m) => `Cu ${m[1]} + ${m[2]} W · ripple Fr ${m[4]}`),
+      `${g("conductor-audit", (r) => r.tag === "D2" && B.test(r.name), /Sullivan Fr ([\d.]+).*Cu ([\d.]+) W/, (m) => `Fr ${m[1]} · Cu ${m[2]} W`)} · ${mk("MKF-CU", "D2", /→ ×([\d.]+)/, (m) => `MKF ×${m[1]}`)}`,
+      `${g("conductor-audit", (r) => r.tag === "D3" && B.test(r.name) && /foil halves/.test(r.name), /Dowell Fr ([\d.]+)/, (m) => `foil Fr ${m[1]}`)} · ${env("D3", "", /Cu ([\d.]+) W/, (m) => `Cu ${m[1]} W`)} · ${mk("MKF-CU", "D3", /→ ×([\d.]+)/, (m) => `MKF ×${m[1]}`)}`,
+      g("conductor-audit", (r) => r.tag === "D4", /2×0\.35 mm bifilar Fr ([\d.]+)/, (m) => `primary Fr ${m[1]} (sandwich)`),
+      st("D7", /hot-copper/, /([\d.]+) W\/choke/, (m) => `${m[1]} W per choke`, B), "—"],
+    ["Winding temperature",
+      st("D1", /hot-spot|web|plate|air/, /hot-spot (\d+) °C @55/, (m) => `${m[1]} °C @ 55 °C ≤ 120`),
+      env("D2", "", /hot-spot (\d+) °C @55 °C.*\+25 % Rth (\d+) °C/, (m) => `${m[1]} °C @ 55 °C ≤ 125 · +25 % Rth ${m[2]} ≤ 155`),
+      env("D3", "", /hot-spot (\d+) °C @55 °C.*\+25 % Rth (\d+) °C/, (m) => `${m[1]} °C @ 55 °C ≤ 125 · +25 % Rth ${m[2]} ≤ 155`),
+      "ΔT ≤ 45 K at 110 W (type test)", st("D7", /hot-copper/, /ΔT (\d+) K ≤ 45/, (m) => `ΔT ${m[1]} K ≤ 45`, B), "ΔT ≤ 30 K at class current"],
+    ["Current rating · density",
+      st("D1", /current density/, /([\d.]+) A\/mm² ≤ ([\d.]+)/, (m) => `${m[1]} A/mm² ≤ ${m[2]}`),
+      `${sum.ipRmsMax} A rms · ${sum.ipPkMax} A pk · ${st("D2c", /litz J/, /J ([\d.]+) A\/mm²/, (m) => `${m[1]} A/mm²`)}`,
+      `P ${sum.ipRmsMax} A rms (${cellJ(sum.ipRmsMax, d3.cuP * 1e6)}) · each half ${(sum.isRmsMax / 2).toFixed(1)} A rms (${cellJ(sum.isRmsMax / 2, d3.nf * d3.foil * d3.foilW * 1e6)}) — loss-governed`,
+      `≤ 4.67 A pk primary · V24 ${AUX_LOADS[sku].i24s} A · V15 ${AUX_LOADS[sku].i15} A`,
+      st("D7", /winding J/, /→ ([\d.]+) A\/mm² ≤ ([\d.]+)/, (m) => `${m[1]} A/mm² ≤ ${m[2]}`, B), `${CT.line.match(/\d+ A/)?.[0] ?? "class"} line · ${CT.res.match(/\d+ A rms class/)?.[0] ?? "class"} resonant`],
+    ["Insulation · HV stress",
+      "basic to PE · 2.5 kV DC hipot · impulse 4 kV", `basic to PE · PD extinction ${W2.pd}`, `**reinforced** · 4.25 kV DC 100 % · PD ${W3.pd}`,
+      "**reinforced** · 4.25 kV DC 100 % · 8.0 / 12.6 mm", "2.5 kV AC winding ↔ winding", "4 kV catalogue hipot"],
+    ["Leakage · coupling",
+      "—", "carries the tank Lr (± 3 %)", env("LR", "", /leakage ([\d.]+) µH × 2.*stack ±([\d.]+) %/, (m) => `cell ${m[1]} µH · Lr stack ± ${m[2]} % ≤ 5 %`),
+      g("stress-audit", (r) => r.tag === "D4" && /leakage acceptance/.test(r.name), /estimate ([\d.]+) µH ×1\.5 ≤ (\d+) µH/, (m) => `1-D ${m[1]} µH · accept ≤ ${m[2]} µH`),
+      "6–12 µH, measured at first article", "—"],
+    ["DC bias",
+      mk("MKF-DCBIAS", "D1", /floor [\d.]+ A = \d+ Oe: MKF ([\d.]+) % vs engine ([\d.]+) %/, (m) => `engine ${m[2]} % ≤ material data ${m[1]} % at the floor`, B),
+      "series Cr blocks DC (flux-walk proof)", "series Cr blocks DC (flux-walk proof)", "DCM — resets every cycle", "3-wire Σi = 0; DM rides as leakage flux", "—"],
+    ["Current imbalance · circulating current",
+      "one choke per phase", "—", env("IMBALANCE", "", /rises ([\d.]+) % rms/, (m) => `${m[1]} % between cells in LOW mode; HIGH mode balanced`),
+      "—", "3-wire, Σi = 0", "—"],
+    ["Resonance · switching transients",
+      g("stress-audit", (r) => r.tag === "EMI" && /current loop/.test(r.name), /modulus margin ≥ ([\d.]+)/, (m) => `filter–loop modulus margin ≥ ${m[1]}`),
+      g("current-coordination", (r) => r.tag === "SIM" && S.test(r.name) && /physical/.test(r.name), /ZVS on all 4 switches every corner/, () => "ZVS on every edge at 32 corners"),
+      g("stress-audit", (r) => r.tag === "V" && /secondary JBS/.test(r.name), /(\d+) V of 1200 V = (\d+)%/, (m) => `secondary ring ${m[1]} V = ${m[2]} % of the 1200 V rectifiers`),
+      g("stress-audit", (r) => r.tag === "V" && /aux switch/.test(r.name), /(\d+) V of 1700 V = (\d+)%/, (m) => `switch ${m[1]} V = ${m[2]} % with the clamp · SRF ≥ 650 kHz`), "—", "—"],
+    ["Faults · abnormal operation",
+      `${g("current-coordination", (r) => r.tag === "INRUSH" && B.test(r.name) && /precharge-bypass/.test(r.name), /^[^—]*— (\d+) A pk/, (m) => `bypass closure ${m[1]} A pk (F.01 blanked)`)} · ${g("temp-critique", (r) => r.tag === "D1-FAULT" && B.test(r.name), /Δi\(3 µs\)=(\d+) A ≤ ceiling−threshold (\d+) A/, (m) => `OC race Δi ${m[1]} A ≤ ${m[2]}`)}`,
+      g("current-coordination", (r) => r.tag === "F.11" && S.test(r.name) && /kill/.test(r.name), /kill peak ([\d.]+) A/, (m) => `F.11 kill ${m[1]} A pk — flux in row 1`),
+      `${g("magnetics-envelope", (r) => r.tag === "FAN-OUT" && S.test(r.name) && / D3 /.test(r.name), /hot-spot (\d+) °C/, (m) => `one fan out ${m[1]} °C`, true) ?? ""}${sku === "50kw" ? "no fans" : ""} · ${g("magnetics-envelope", (r) => r.tag === "D3-BOND-LOST" && S.test(r.name), /→ (\d+|RUNAWAY)/, (m) => `bond lost ${m[1]}${/\d/.test(m[1]) ? " °C" : ""} → EOL soak`)}`,
+      g("stress-audit", (r) => r.tag === "D4" && /hard short/.test(r.name), /V24 ([\d.]+) A · V15 ([\d.]+) A/, (m) => `hard short V24 ${m[1]} A · V15 ${m[2]} A before the latch`),
+      g("fault-energy", (r) => r.tag === "SURGE", /BEFORE the chokes/, () => "surge clamped before the chokes"),
+      g("current-coordination", (r) => r.tag === "F.01" && B.test(r.name) && /observability/.test(r.name), /→ ([\d.]+) A ≤ ceiling ([\d.]+) A/, (m) => `F.01 race ${m[1]} A ≤ ${m[2]} A ceiling`)],
+    ["Second opinion — PyOpenMagnetics",
+      mk("MKF-RDC", "D1", /\(([+-][\d.]+) %\)/, (m) => `Rdc ${m[1]} %`, B),
+      `${mk("MKF-RDC", "D2", /\(([+-][\d.]+) %\)/, (m) => `Rdc ${m[1]} %`)} · ${mk("MKF-GAP", "D2", /Σ ≈ ([\d.]+) mm/, (m) => `gap guide ${m[1]} mm`)}`,
+      `${mk("MKF-RDC", "D3", /\(([+-][\d.]+) %\)/, (m) => `Rdc ${m[1]} %`)} · ${mk("MKF-THERMAL", "D3", /hot-spot (\d+) °C/, (m) => `${m[1]} °C at MKF copper`)}`,
+      g("mkf-crosscheck", (r) => r.tag === "MKF-RDC" && / D4 /.test(r.name), /\(([+-][\d.]+) %\)/, (m) => `Rdc ${m[1]} %`),
+      mk("MKF-MU", "D7", /\(([+-][\d.]+) %\)/, (m) => `L_cm ${m[1]} %`, B), "catalogue parts"],
+  ];
+  return `## Critical review at a glance
+
+Every magnetic on this module against every failure mechanism, one governing number each — read from the proof rows below and the
+PyOpenMagnetics cross-check; the drawing lines each number is held to sit in the specification tables.
+
+| Mechanism | D1 PFC choke | D2 resonant L | D3 transformer cells | D4 aux flyback | D7 CM choke | CTs |
+|---|---|---|---|---|---|---|
+${rows.map((r) => `| **${r[0]}** | ${r.slice(1).map((c) => cell(n(c))).join(" | ")} |`).join("\n")}`;
+}
+
 // ---- page ----
 function page(sku) {
   const b = base(sku), path = `docs/magnetics-${sku}.md`, P = bom(sku), air = sku !== "50kw";
@@ -100,6 +194,8 @@ function page(sku) {
   const total10 = bill.reduce((a, r) => a + r.qty * r.u10k, 0);
 
   const V = MKF?.values?.[sku];
+  const LS = JSON.parse(readFileSync(join(ROOT, "simulation-results", sku, "llc-stress-summary.json"), "utf8"));
+  const KILL = grab("current-coordination", (r) => r.tag === "F.11" && skuRe(sku).test(r.name) && /kill/.test(r.name), /kill peak ([\d.]+) A/)[1];
   const mkfPart = (part) => mkfRows((r) => skuRe(sku).test(r.name) && r.name.includes(` ${part} `));
   const envD = (part) => rows("magnetics-envelope", (r) => r.tag === part && skuRe(sku).test(r.name));
   const envLost = (part) => rows("magnetics-envelope", (r) => r.tag === `${part}-BOND-LOST` && skuRe(sku).test(r.name));
@@ -129,6 +225,8 @@ flowchart LR
   style D3 stroke:#1a9fb3,stroke-width:2px
   style TANK stroke:#b8732e,stroke-width:2px
 \`\`\`
+
+${reviewMatrix(sku)}
 
 ## How to read the proof tables
 
@@ -170,6 +268,8 @@ ${proof([
   ...rows("stress-audit", (r) => (r.tag === "D1" || r.tag === "D1-BUILD" || r.tag === "D1-COOLING") && skuRe(sku).test(r.name)),
   ...rows("conductor-audit", (r) => r.tag === "D1" && skuRe(b).test(r.name)),
   ...rows("temp-critique", (r) => r.tag === "D1-FAULT" && skuRe(b).test(r.name)),
+  ...rows("current-coordination", (r) => r.tag === "INRUSH" && skuRe(b).test(r.name)),
+  ...mkfRows((r) => skuRe(b).test(r.name) && r.name.includes(" D1 ")),
 ])}
 
 </details>
@@ -188,6 +288,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 | Row | Specification — ${W2.dwg} |
 |---|---|
 | Inductance | **${W2.L} ± 3 %** @ 140 kHz, 0.1 V (100 %) |
+| Current rating | **${LS.ipRmsMax} A rms** at the copper corner (203 kHz) · **${LS.ipPkMax} A pk** at the worst simulated corner · ${KILL} A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
 | Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372B2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **${d2.strands}×0.05** mm (${((d2.strands * Math.PI * 0.05 ** 2) / 4).toFixed(1)} mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
 | Gap | distributed centre-leg gap **${V ? `Σ ≈ ${V.d2GapMm.toFixed(1)} mm in ${V.d2GapSegments} segments` : W2.gap}**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives ${W2.L} at N 5${V ? "; Σ is the fringing-corrected first-grind guide (MKF)" : ""} |
@@ -206,6 +307,7 @@ ${proof([
   ...rows("stress-audit", (r) => (r.tag === "D2" || r.tag === "D2c") && skuRe(sku).test(r.name)),
   ...rows("conductor-audit", (r) => r.tag === "D2" && skuRe(b).test(r.name)),
   ...rows("current-coordination", (r) => r.tag === "D2" && skuRe(sku).test(r.name)),
+  ...rows("magnetics-envelope", (r) => r.tag === "FAN-OUT" && skuRe(sku).test(r.name) && r.name.includes(" D2 ")),
   ...mkfPart("D2"),
 ])}
 
@@ -228,6 +330,7 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 | Ratio · magnetizing | **${W3.turns} exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **${W3.Lm} ± 7 %** per cell @ 10 kHz, 0.1 V |
 | Core · former | **${W3.sets} × E70/33/32** PC95 / N95 / 3C95-class · ${W3.former} |
 | Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **${V ? W3.AL.replace(/Σ gap ≈ [\d.]+ mm/, `Σ gap ≈ ${V.d3GapMm.toFixed(1)} mm with fringing`) : W3.AL}** on the assembled cell |
+| Current rating | primary **${LS.ipRmsMax} A rms** / **${LS.ipPkMax} A pk** · each secondary half **${(LS.isRmsMax / 2).toFixed(1)} A rms** / ${(LS.isPkMax / 2).toFixed(1)} A pk at the worst simulated corner · 83–203 kHz |
 | Primary | **${W3.pri}**, one layer |
 | Secondary halves | ${W3.sec} · MLT S1 / P / S2 ${W3.mlt} |
 | Leakage | per cell, both halves shorted, 140 kHz, after VPI: **${W3.llk} ± 30 %** — measured and labelled |
@@ -260,6 +363,7 @@ ${proof([
   ...rows("stress-audit", (r) => r.tag === "D3" && skuRe(sku).test(r.name)),
   ...rows("conductor-audit", (r) => r.tag === "D3" && skuRe(b).test(r.name)),
   ...rows("temp-critique", (r) => r.tag === "BSAT" && /D3/.test(r.name)),
+  ...rows("magnetics-envelope", (r) => (r.tag === "FAN-OUT" && r.name.includes(" D3 ") || r.tag === "IMBALANCE") && skuRe(sku).test(r.name)),
   ...mkfPart("D3"), ...mkfRows((r) => r.tag === "MKF-LEAK"),
 ])}
 
@@ -291,7 +395,7 @@ line, not a typical.${b === "30kw" ? " **At 30 kW the catalog Schaffner RT8131-6
 
 <details><summary><b>Proof at the simulated crest</b></summary>
 
-${proof(rows("stress-audit", (r) => r.tag === "D7" && skuRe(b).test(r.name)))}
+${proof([...rows("stress-audit", (r) => r.tag === "D7" && skuRe(b).test(r.name)), ...mkfRows((r) => skuRe(b).test(r.name) && r.name.includes(" D7 "))])}
 
 </details>
 
@@ -301,11 +405,11 @@ seal only. **H2/H3** hipots, label.
 
 ## D4 — aux flyback transformer · qty 1 · \`XFMR-AUX-FLY-E\`
 
-The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per module — core, windings, outline, terminations and acceptance rows on the [magnetics hub](magnetics.md#d4--aux-flyback-transformer-rev-e).
+The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per module — core, windings, outline, terminations and acceptance rows on the [magnetics hub](magnetics.md#d4--aux-flyback-transformer-rev-e). **Current rating on this module:** primary ≤ 4.67 A pk at the cycle-by-cycle limit · V24 ${AUX_LOADS[sku].i24s} A DC · V15 ${AUX_LOADS[sku].i15} A DC at the heaviest load.
 
 <details><summary><b>Proof</b></summary>
 
-${proof([...rows("stress-audit", (r) => r.tag === "D4"), ...rows("temp-critique", (r) => /D4/.test(r.name))])}
+${proof([...rows("stress-audit", (r) => r.tag === "D4"), ...rows("temp-critique", (r) => /D4/.test(r.name)), ...mkfRows((r) => r.name.includes(" D4 "))])}
 
 </details>
 

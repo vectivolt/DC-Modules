@@ -6,15 +6,15 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E72-f2b705?style=for-the-badge" alt="decision register E1 to E72"/>
+  <img src="https://img.shields.io/badge/decision_register-E1–E73-f2b705?style=for-the-badge" alt="decision register E1 to E73"/>
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 4536 points, 0 failures"/>
   <img src="https://img.shields.io/badge/independent_checks-226%2F226-2ea44f?style=for-the-badge" alt="independent verifier 226 of 226"/>
-  <img src="https://img.shields.io/badge/firmware-60%2F60_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 60 of 60"/>
+  <img src="https://img.shields.io/badge/firmware-63%2F63_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 63 of 63"/>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/schematic_pins-6853%2F6853_·_5_targets-2ea44f?style=flat-square" alt="6853 of 6853 schematic pins verified"/>
@@ -70,7 +70,7 @@ xychart-beta
 | Thermal envelope | full power to +55 °C | 4,536 grid points (1,134 per module) with **0 violations and 0 folds**; worst Tj **139 °C** against the 150 °C ceiling | [thermal report](docs/thermal-report.md) |
 | Environment | match the market | **−30…+75 °C** (full power to 55 °C), ≤ 95 % RH non-condensing, ≤ 2000 m, conformal coating, IP55 fans | [teardown benchmark](docs/benchmark-infypower-teardown.md) |
 | Accuracy | ±0.5 % V · ±1 % I | **±0.18 % / ±0.2 %** after the mandatory 2-point EOL calibration (10k-sample Monte-Carlo) | [verification matrix](docs/verification-matrix.md) |
-| Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak (E69); DESAT response 1.44 µs against a 2 µs SiC withstand | [current coordination](docs/current-coordination.md) |
+| Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak (E69); the precharge-bypass closure pulse (200 / 218 / 280 A) blanked 60 ms with relays, diodes and fuses sized to it (E73); DESAT response 1.44 µs against a 2 µs SiC withstand | [current coordination](docs/current-coordination.md) |
 | Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet; PyOpenMagnetics second opinion: Rdc ± 2.5 %, class lines hold at its higher D3 copper (50 kW air D3 130 °C vs the 125 °C design line — first-article watch) | [magnetics hub](docs/magnetics.md) |
 | EMI | CISPR-class conducted pre-compliance | InfyPower star-X2 filter (E68b): DM margin **+32.9 / +30.6 / +28.7 dB**, CM +8 dB at 200 pF switch-node capacitance; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
 | Build cost at 10k | red-line ₹25k / 33k / 43k | **₹30,033 / 34,616 / 40,481 / 38,404** India basis · **₹24,639 / 28,319 / 33,182 / 31,398** China RFQ target | [BOM & cost](docs/bom-cost.md) |
@@ -118,10 +118,10 @@ flowchart LR
 flowchart LR
   E["Engines<br/>PFC · LLC · loss · grid 4,536 pts<br/>Monte-Carlo 8 × 10k · FSM 26/26"] --> B["BOM factory<br/>bom-gen · bom-maturity · China column"]
   B --> S["Structure audits<br/>schematic · interconnect · polarity"]
-  S --> P["Physics gates<br/>stress 126 · temp-critique 11 · conductor 18 · envelope 20<br/>mag-sync 48 · fault-energy 22 · coordination 72"]
+  S --> P["Physics gates<br/>stress 130 · temp-critique 11 · conductor 18 · envelope 30<br/>mag-sync 48 · fault-energy 22 · coordination 81"]
   P --> I["Clean-room verifier<br/>226 independent checks"]
   I --> D["Docs and footprints<br/>docs-lint · footprint-audit"]
-  D --> F["Firmware<br/>host_sim 60/60 ASan/UBSan"]
+  D --> F["Firmware<br/>host_sim 63/63 ASan/UBSan"]
   P --> G["Generated pages<br/>4 module BOMs · 4 module magnetics<br/>from gate evidence"]
   G --> D
   style I stroke:#2ea44f,stroke-width:2.5px
@@ -169,6 +169,7 @@ flowchart LR
 | E70 per-module pages | 40 / 50 kW BOM lines described 30 kW parts; unquoted commas shifted CSV columns; the MTBF classifier matched inside words; the cost categoriser filed the 50 kW resonant inductor as misc; three decks still ran retired values | one generated BOM and magnetics page per module from the gates' own evidence; 51 → 37 documents; classifiers and decks fixed |
 | **E71 second opinion** | the docs said PyOpenMagnetics could not install (the 1.4.0 wheel runs); the D2 gap guide ignored fringing (+14 % L); the D3 Rac/Rdc sample test would reject good parts; MKF reads the D3 foil copper ~30 % above the 1-D model | `mkf-crosscheck.py`; fringing-corrected gap guides; short-circuit R test against the 1-D … MKF bracket; 50 kW air D3 at MKF copper = first-article watch; retired footprint envelopes removed |
 | E72 modules only | the firmware guide still listed 10 CSU host scenarios retired at E66; the interconnect gate's header described a 16-way harness and a 60 kW strap; the control-card scope still described three LLC sections; the README check counts had drifted | the repository narrowed to the four modules, the 100 / 150 kW material preserved on a backup branch, every stale text corrected |
+| **E73 magnetics review** | closing the precharge bypass at 90 % of line peak drove 200–280 A through D1 — above F.01 on every SKU, a fault at every high-line start; the D4 sheet named no wire sizes and its Rdc rows passed a wrong gauge and rejected a good aux winding; fan-out, D3 cell imbalance and D7 CM flux had no computed check | F.01 blanked 60 ms at closure with no PFC enable inside (host_sim 63/63, negative-tested); relay make and JBS IFSM RFQ lines; [INRUSH] · [FAN-OUT] · [IMBALANCE] · D7 CM-flux · D4 Rdc gates; PyOpenMagnetics on D1 / D4 / D7; a critical-review matrix on every module page |
 
 </details>
 
@@ -281,7 +282,7 @@ status badge and next/previous navigation.
 |---|---|
 | [Platform architecture](docs/architecture.md) | the module in one read |
 | [Module family](boards/README-module-family.md) | the four SKUs side by side, the two 50 kW cooling lines, what a charger gets from each module |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E72, with provenance and invalidator |
+| [Decision register](docs/assumptions.md) | every frozen decision E1–E73, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
 | [Magnetics hub](docs/magnetics.md) · module pages [30](docs/magnetics-30kw.md) · [40](docs/magnetics-40kw.md) · [50 L](docs/magnetics-50kw.md) · [50 A](docs/magnetics-50kwa.md) | every custom magnetic — drawing, gate proof, build, tests, cost |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
@@ -307,7 +308,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 ## 🗺️ Roadmap
 
-- [x] Frozen decision register E1–E72
+- [x] Frozen decision register E1–E73
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
 - [x] Release schematics — five KiCad-5 targets, 6,853 / 6,853 connected pins, nine board PDFs
 - [x] InfyPower architecture and BOM clone — full-bridge LLC, two output modes, output diode (E67); clip mount, star-X2 filter, film-only banks (E68); right-sized dies, fault-pulse gate, China cost column (E69)
@@ -325,5 +326,5 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

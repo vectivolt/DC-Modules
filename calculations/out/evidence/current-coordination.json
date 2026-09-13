@@ -84,7 +84,7 @@
    "status": "ok",
    "tag": "F.01",
    "name": "30kw boost-diode repetitive peak",
-   "detail": "diode peak 96.5 A (sim) ≤ F.01 120 A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point"
+   "detail": "diode peak 96.5 A (sim) ≤ F.01 120 A — anything above is a fault by definition; the surge class is the parts-db IFSM line, held against the bypass-closure pulse in [INRUSH]"
   },
   {
    "status": "ok",
@@ -120,7 +120,7 @@
    "status": "ok",
    "tag": "F.01",
    "name": "40kw boost-diode repetitive peak",
-   "detail": "diode peak 126.5 A (sim) ≤ F.01 155 A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point"
+   "detail": "diode peak 126.5 A (sim) ≤ F.01 155 A — anything above is a fault by definition; the surge class is the parts-db IFSM line, held against the bypass-closure pulse in [INRUSH]"
   },
   {
    "status": "ok",
@@ -156,7 +156,7 @@
    "status": "ok",
    "tag": "F.01",
    "name": "50kw boost-diode repetitive peak",
-   "detail": "diode peak 158.5 A (sim) ≤ F.01 195 A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point"
+   "detail": "diode peak 158.5 A (sim) ≤ F.01 195 A — anything above is a fault by definition; the surge class is the parts-db IFSM line, held against the bypass-closure pulse in [INRUSH]"
   },
   {
    "status": "ok",
@@ -403,6 +403,60 @@
    "tag": "DUMP",
    "name": "bank discharge into an external short vs K_OUT and copper",
    "detail": "Ipk ≈ 22.2 kA, τ 42 µs, I²t 10444 A²s ≤ 10 % of a 200 A relay's 2 kA/0.1 s class and ≤1 % of the 50 mm² bar — µs-scale, contacts already closed (no arc); the charger-level DC fuse/contactor is the 61851-23 system item"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "30kw precharge-bypass closure at 90 % of line peak · F.01 blanked, D1, link",
+   "detail": "200 A pk through D1 and the rectifier (above F.01 120 A) · D1 falls to 24 µH from 155 µH at the peak — soft powder saturation for 1.4 ms, winding +0 K adiabatic · bus 605 → 726 V ≤ 860 V OVP · F.01 blanked 60 ms ≥ relay 25 + bounce 5 + pulse 1.4 ms, no PFC enable inside (fsm.c)"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "30kw rectifier diode surge at bypass closure",
+   "detail": "20 A²s per diode vs 50 % of the RFQ line IFSM ≥ 250 A (10 ms half-sine → 313 A²s)"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "30kw bypass relay make and gG fuse at closure",
+   "detail": "make 200 A pk at ≤ 67 V across the contacts vs the RFQ make line 260 A pk (≥ 1.25×) · fuse 20 A²s ≤ 10 % of the gG pre-arc 1500 A²s — no melting, no ageing"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "40kw precharge-bypass closure at 90 % of line peak · F.01 blanked, D1, link",
+   "detail": "218 A pk through D1 and the rectifier (above F.01 155 A) · D1 falls to 27 µH from 115 µH at the peak — soft powder saturation for 1.4 ms, winding +0 K adiabatic · bus 605 → 725 V ≤ 860 V OVP · F.01 blanked 60 ms ≥ relay 25 + bounce 5 + pulse 1.4 ms, no PFC enable inside (fsm.c)"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "40kw rectifier diode surge at bypass closure",
+   "detail": "27 A²s per diode vs 50 % of the RFQ line IFSM ≥ 250 A (10 ms half-sine → 313 A²s)"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "40kw bypass relay make and gG fuse at closure",
+   "detail": "make 218 A pk at ≤ 67 V across the contacts vs the RFQ make line 280 A pk (≥ 1.25×) · fuse 27 A²s ≤ 10 % of the gG pre-arc 4000 A²s — no melting, no ageing"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "50kw precharge-bypass closure at 90 % of line peak · F.01 blanked, D1, link",
+   "detail": "280 A pk through D1 and the rectifier (above F.01 195 A) · D1 falls to 18 µH from 98 µH at the peak — soft powder saturation for 1.5 ms, winding +0 K adiabatic · bus 605 → 722 V ≤ 860 V OVP · F.01 blanked 60 ms ≥ relay 25 + bounce 5 + pulse 1.5 ms, no PFC enable inside (fsm.c)"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "50kw rectifier diode surge at bypass closure",
+   "detail": "45 A²s per diode vs 50 % of the RFQ line IFSM ≥ 250 A (10 ms half-sine → 313 A²s)"
+  },
+  {
+   "status": "ok",
+   "tag": "INRUSH",
+   "name": "50kw bypass relay make and gG fuse at closure",
+   "detail": "make 280 A pk at ≤ 67 V across the contacts vs the RFQ make line 360 A pk (≥ 1.25×) · fuse 45 A²s ≤ 10 % of the gG pre-arc 7000 A²s — no melting, no ageing"
   },
   {
    "status": "ok",

@@ -85,7 +85,7 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
     `${f(c.F01 + di)} A per die (one ${pd.mpn} per position) vs 80 % of IDM ${pd.idm} A (${pd.src})`);
   const dpk = Math.max(...legal.map((r) => +r.Id_pk_A));
   ck("F.01", `${sku} boost-diode repetitive peak`, dpk <= c.F01,
-    `diode peak ${f(dpk)} A (sim) ≤ F.01 ${c.F01} A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point`);
+    `diode peak ${f(dpk)} A (sim) ≤ F.01 ${c.F01} A — anything above is a fault by definition; the surge class is the parts-db IFSM line, held against the bypass-closure pulse in [INRUSH]`);
 }
 
 // ---------------- E/F/G/H. LLC: F.11, flux, caps, rectifiers ----------------
@@ -171,6 +171,62 @@ for (const sku of Object.keys(TANKS)) {
   const ipk = V / R, i2t = ipk * ipk * (R * C) / 2;
   ck("DUMP", "bank discharge into an external short vs K_OUT and copper", i2t <= 0.1 * 2000 * 2000 * 0.1 && i2t <= 0.01 * (115 * 50) ** 2,
     `Ipk ≈ ${f(ipk / 1e3, 1)} kA, τ ${f(R * C * 1e6, 0)} µs, I²t ${f(i2t, 0)} A²s ≤ 10 % of a 200 A relay's 2 kA/0.1 s class and ≤1 % of the 50 mm² bar — µs-scale, contacts already closed (no arc); the charger-level DC fuse/contactor is the 61851-23 system item`);
+}
+
+// ---------------- L. E73 startup: precharge-bypass closure ----------------
+// fsm.c closes the bypass when the bus reaches 90 % of line peak. The ≤ 10 % that is left drives an LC pulse through the CMC leakage,
+// D1 (catalog L(i) at lot −8 %) and the passive rectifier into the link — the PFC is not switching yet. Worst case: 475 VAC, stiff
+// grid, CMC leakage at the band minimum (2 × 6 µH), closure instant swept every 2° over the 60° six-pulse period; link = the series
+// halves.
+const RELAY_OPERATE_MS = 25, RELAY_BOUNCE_MS = 5;
+const GG_PREARC = { "30kw": 1500, "40kw": 4000, "50kw": 7000 };  // A²s — gG 80 / 125 / 160 A pre-arcing I²t, low end of the class data
+const bypassClosure = (sku, angDeg, { VLL = 475, lot = 0.92, Llk = 12e-6, R = 0.01, dt = 2e-7, after = 0.02 } = {}) => {
+  // the bus sits at the firmware threshold (90 % of peak) when the contacts close — no credit for the relay's operate time, during
+  // which the resistors keep charging — and the closure instant is the swept variable (the peak is sharply sensitive to it)
+  const d = D1[sku], C = d.cHalf / 2, w = 2 * Math.PI * 50, Vph = (VLL * Math.SQRT2) / Math.sqrt(3), pk = VLL * Math.SQRT2, ang = (angDeg * Math.PI) / 180;
+  let i = [0, 0, 0], vb = 0.9 * pk, t = 0, ipk = 0, Lpk = Ld1(d, 0, lot), i2t = [0, 0, 0], tOn = 0, vmax = vb;
+  const vbc = vb;
+  while (t < after) {
+    const e = [0, 1, 2].map((k) => Vph * Math.sin(w * t + ang - (k * 2 * Math.PI) / 3));
+    const Lk = [0, 1, 2].map((k) => Llk + Ld1(d, i[k], lot));
+    let sg = i.map((x) => Math.sign(x));
+    if (sg.filter(Boolean).length < 2) {                         // no path yet: the largest line-line voltage above the bus starts one
+      const kx = e.indexOf(Math.max(...e)), kn = e.indexOf(Math.min(...e));
+      sg = [0, 0, 0]; if (e[kx] - e[kn] > vb) { sg[kx] = 1; sg[kn] = -1; }
+    }
+    const on = [0, 1, 2].filter((k) => sg[k]);
+    if (on.length >= 2) {
+      const u = sg.map((x) => (x * vb) / 2);
+      const vn = on.reduce((a, k) => a + (e[k] - R * i[k] - u[k]) / Lk[k], 0) / on.reduce((a, k) => a + 1 / Lk[k], 0);
+      const old = i.slice();
+      i = i.map((x, k) => (sg[k] ? (x || sg[k] * 1e-9) + ((e[k] - R * x - u[k] - vn) / Lk[k]) * dt : 0));
+      i = i.map((x, k) => (old[k] && Math.sign(x) !== Math.sign(old[k]) ? 0 : x));   // a diode stops at its zero crossing
+      for (const k of [0, 1, 2]) if (!sg[k]) { const v = e[k] - vn; if (v > vb / 2) i[k] = 1e-9; else if (v < -vb / 2) i[k] = -1e-9; }
+      vb += ((i.reduce((a, x) => a + Math.max(x, 0), 0)) / C) * dt;
+    }
+    t += dt;
+    const m = Math.max(...i.map(Math.abs));
+    if (m > ipk) { ipk = m; Lpk = Ld1(d, m, lot); }
+    i2t = i2t.map((a, k) => a + i[k] * i[k] * dt);
+    if (m > 10) tOn = t;
+    vmax = Math.max(vmax, vb);
+  }
+  return { ipk, Lpk, L0: Ld1(d, 0, lot), i2t: Math.max(...i2t), tPulse: tOn * 1e3, vbc, vmax, pk };
+};
+const fsmH = rd("firmware/core/fsm.h"), fsmC = rd("firmware/core/fsm.c"), dbL = rd("calculations/cost/parts-db.mjs");
+const blankMs = Number(fsmH.match(/#define PMP_PRE_BLANK_MS\s+(\d+)u/)?.[1] ?? 0);
+const blankWired = /oc_pfc_flt && f->pre_blank_ms == 0/.test(fsmC) && /f->pre_blank_ms = PMP_PRE_BLANK_MS/.test(fsmC) && /if \(f->pre_blank_ms\) break;/.test(fsmC);
+const ifsmLine = Number(dbL.match(/IFSM ≥ (\d+) A \(10 ms half-sine/)?.[1] ?? 0);
+for (const sku of ["30kw", "40kw", "50kw"]) {
+  const r = Array.from({ length: 30 }, (_, j) => bypassClosure(sku, 2 * j)).reduce((a, x) => (x.ipk > a.ipk ? x : a));
+  const make = Number(dbL.match(new RegExp(`KPRE1: \\{[^}]*make ≥ (\\d+) A pk \\(E73 ${sku.replace("kw", "")} kW`))?.[1] ?? 0);
+  ck("INRUSH", `${sku} precharge-bypass closure at 90 % of line peak · F.01 blanked, D1, link`, blankWired && blankMs >= RELAY_OPERATE_MS + RELAY_BOUNCE_MS + r.tPulse && r.vmax <= 860,
+    `${f(r.ipk, 0)} A pk through D1 and the rectifier (${r.ipk > OC[sku].F01 ? "above" : "below"} F.01 ${OC[sku].F01} A) · D1 falls to ${f(r.Lpk * 1e6, 0)} µH from ${f(r.L0 * 1e6, 0)} µH at the peak — ` +
+    `soft powder saturation for ${f(r.tPulse, 1)} ms, winding +${f((r.i2t * 0.006) / (2.2 * 385), 3)} K adiabatic · bus ${f(r.vbc, 0)} → ${f(r.vmax, 0)} V ≤ 860 V OVP · F.01 blanked ${blankMs} ms ≥ relay ${RELAY_OPERATE_MS} + bounce ${RELAY_BOUNCE_MS} + pulse ${f(r.tPulse, 1)} ms, no PFC enable inside (fsm.c)`);
+  ck("INRUSH", `${sku} rectifier diode surge at bypass closure`, ifsmLine > 0 && r.i2t <= 0.5 * (ifsmLine ** 2 * 0.01) / 2,
+    `${f(r.i2t, 0)} A²s per diode vs 50 % of the RFQ line IFSM ≥ ${ifsmLine} A (10 ms half-sine → ${f((ifsmLine ** 2 * 0.01) / 2, 0)} A²s)`);
+  ck("INRUSH", `${sku} bypass relay make and gG fuse at closure`, make >= 1.25 * r.ipk && r.i2t <= 0.1 * GG_PREARC[sku],
+    `make ${f(r.ipk, 0)} A pk at ≤ ${f(r.pk - r.vbc, 0)} V across the contacts vs the RFQ make line ${make} A pk (≥ 1.25×) · fuse ${f(r.i2t, 0)} A²s ≤ 10 % of the gG pre-arc ${GG_PREARC[sku]} A²s — no melting, no ageing`);
 }
 
 // ---------------- K. carriers agree with the classes ----------------

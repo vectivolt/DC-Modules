@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/host__sim-60%2F60_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 60/60 ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/host__sim-63%2F63_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 63/63 ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -24,7 +24,7 @@
 |---|---|
 | **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
-| **Verification** | `firmware/test/host_sim.c` — **60 / 60** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60; the E66 and E67 cases added six) |
+| **Verification** | `firmware/test/host_sim.c` — **63 / 63** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60; the E66 and E67 cases added six, E73 three) |
 | **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 7 group share-law checks · the E67 output-mode latch · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
 | **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — selected by the RATING strap (the 3.32 k band is reserved) |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
@@ -356,10 +356,27 @@ stateDiagram-v2
 Host tests added (host_sim 60/60): `start490`, `start510`, `lowforced`, `highlow`, `reqrun`, `hyst` (510 → 490 V), and the
 F.11 class checks 195 A / 220 A and 155 A / 180 A.
 
+
+## E73 — precharge-bypass closure window (2026-09-14)
+
+> [!IMPORTANT]
+> Additive. The bypass closure at 90 % of line peak drives a 200 / 218 / 280 A pk pulse through D1 while the PFC is idle —
+> above F.01 on every SKU at 475 VAC ([protection thresholds § 8](protection-thresholds.md#8-e73-startup-coordination-2026-09-14--f01-blanked-while-the-precharge-bypass-closes)).
+
+| Item | Code | Why |
+|---|---|---|
+| Window | `PMP_PRE_BLANK_MS` = 60 ms, loaded when `k_pre` is commanded in `ST_PRECHG` | relay operate ≤ 25 ms + bounce ≤ 5 ms + the ≤ 2 ms pulse, with margin |
+| F.01 mirror | `if (in->oc_pfc_flt && f->pre_blank_ms == 0) latch(f, FC_OC_PFC)` | the inrush flag is read-clear and ignored inside the window only |
+| PFC enable | `ST_STANDBY` returns early while `pre_blank_ms` is non-zero | F.01 is never blanked while the PFC switches |
+| HAL contract | clear the HRTIMER FLT2 event latch when the window ends, before the first PWM | the hardware break stays armed throughout |
+
+Host tests added (host_sim **63 / 63**): *E73 bypass-closure inrush on F.01 is blanked* · *no PFC enable inside the blank
+window* · *F.01 line OC while switching latches*. Negative test: with the blank removed, the inrush scenario latches F.01.
+
 ---
 
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">External CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

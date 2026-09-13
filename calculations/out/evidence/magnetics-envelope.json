@@ -52,6 +52,24 @@
   },
   {
    "status": "ok",
+   "tag": "FAN-OUT",
+   "name": "30kw D3 with one of 2 fans dead at 55 °C inlet (F.25 derate 50 %)",
+   "detail": "airflow ×0.5 · web 77 °C · air 65 °C → hot-spot 92 °C (ENV500-55) ≤ 135 °C derated line · runaway margin 120 K ≥ 25 — core loss does not derate, copper does"
+  },
+  {
+   "status": "ok",
+   "tag": "FAN-OUT",
+   "name": "30kw D2 with one of 2 fans dead at 55 °C inlet (F.25 derate 50 %)",
+   "detail": "airflow ×0.5 · web 77 °C · air 65 °C → hot-spot 91 °C (SER250-full-bus764) ≤ 135 °C derated line · runaway margin 169 K ≥ 25 — core loss does not derate, copper does"
+  },
+  {
+   "status": "ok",
+   "tag": "IMBALANCE",
+   "name": "30kw D3 cell current share with a ±7 % Lm mismatch between the two cells",
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 8.3 % rms at ENV500-55 · its copper at the worst LOW corner 33.9 W (PS150-Imax) ≤ the 45.8 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
+  },
+  {
+   "status": "ok",
    "tag": "CONTROL",
    "name": "30kw gate rejects the E65 section transformer in the one-bridge cell duty (2×E70 7:7:7)",
    "detail": "hot-spot 165 °C @55 / 99 °C @75 · Fe 20.7 W at B̂ 136 mT · Cu 60.8 W → rejected"
@@ -103,6 +121,24 @@
    "tag": "BOND",
    "name": "40kw",
    "detail": "D3 cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md)"
+  },
+  {
+   "status": "ok",
+   "tag": "FAN-OUT",
+   "name": "40kw D3 with one of 3 fans dead at 55 °C inlet (F.25 derate 50 %)",
+   "detail": "airflow ×0.67 · web 74 °C · air 63 °C → hot-spot 89 °C (ENV500-55) ≤ 135 °C derated line · runaway margin 125 K ≥ 25 — core loss does not derate, copper does"
+  },
+  {
+   "status": "ok",
+   "tag": "FAN-OUT",
+   "name": "40kw D2 with one of 3 fans dead at 55 °C inlet (F.25 derate 50 %)",
+   "detail": "airflow ×0.67 · web 74 °C · air 63 °C → hot-spot 89 °C (SER250-full-bus764) ≤ 135 °C derated line · runaway margin 171 K ≥ 25 — core loss does not derate, copper does"
+  },
+  {
+   "status": "ok",
+   "tag": "IMBALANCE",
+   "name": "40kw D3 cell current share with a ±7 % Lm mismatch between the two cells",
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 8 % rms at ENV500-55 · its copper at the worst LOW corner 34 W (PS150-Imax) ≤ the 46.1 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
   },
   {
    "status": "ok",
@@ -160,6 +196,12 @@
   },
   {
    "status": "ok",
+   "tag": "IMBALANCE",
+   "name": "50kw D3 cell current share with a ±7 % Lm mismatch between the two cells",
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 7.9 % rms at ENV500-55 · its copper at the worst LOW corner 53 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
+  },
+  {
+   "status": "ok",
    "tag": "CONTROL",
    "name": "50kw gate rejects the E65 section transformer in the one-bridge cell duty (2×E70 6:6:6)",
    "detail": "hot-spot 156 °C @55 / 84 °C @75 · Fe 31.7 W at B̂ 159 mT · Cu 128.9 W → rejected"
@@ -205,6 +247,24 @@
    "tag": "D2-BOND-LOST",
    "name": "50kwa",
    "detail": "one face lost (web1) → 120 °C @55 / 114 °C @75 · +25 % 139 °C → survives"
+  },
+  {
+   "status": "ok",
+   "tag": "FAN-OUT",
+   "name": "50kwa D3 with one of 4 fans dead at 55 °C inlet (F.25 derate 50 %)",
+   "detail": "airflow ×0.75 · web 73 °C · air 62 °C → hot-spot 88 °C (ENV500-55) ≤ 135 °C derated line · runaway margin 130 K ≥ 25 — core loss does not derate, copper does"
+  },
+  {
+   "status": "ok",
+   "tag": "FAN-OUT",
+   "name": "50kwa D2 with one of 4 fans dead at 55 °C inlet (F.25 derate 50 %)",
+   "detail": "airflow ×0.75 · web 73 °C · air 62 °C → hot-spot 88 °C (SER250-full-bus764) ≤ 135 °C derated line · runaway margin 172 K ≥ 25 — core loss does not derate, copper does"
+  },
+  {
+   "status": "ok",
+   "tag": "IMBALANCE",
+   "name": "50kwa D3 cell current share with a ±7 % Lm mismatch between the two cells",
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 7.9 % rms at ENV500-55 · its copper at the worst LOW corner 53 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
   },
   {
    "status": "ok",

@@ -2,11 +2,11 @@
 
 # 🔬 EVT Test Plan
 
-<sub>The first-hardware campaign T-00…T-41, and the rule that lets bench results reopen a calculation</sub>
+<sub>The first-hardware campaign T-00…T-42, and the rule that lets bench results reopen a calculation</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -26,7 +26,7 @@
 
 | Domain | Tests |
 |---|---|
-| Device and protection | T-01 · T-06 · T-16 · T-17 · T-20 · T-26 · **T-30** · **T-37** · **T-41** |
+| Device and protection | T-01 · T-06 · T-16 · T-17 · T-20 · T-26 · **T-30** · **T-37** · **T-41** · **T-42** |
 | Bring-up and power quality | T-00 · T-02 · T-03 · T-10 · T-19 |
 | Pulse parts and discharge | T-05 · T-21 · T-22 · T-27 · T-28 |
 | Aux supply | T-09 · T-11 · T-12 · T-18 · T-29 |
@@ -69,7 +69,7 @@ flowchart LR
   G --> J["T-10 / T-14 / T-15<br/>soak · hipot · thermography"]
   M["T-31<br/>magnetics first articles<br/>short-circuit R @ 203 kHz"] --> K
   VB["T-33<br/>D1 as-mounted<br/>vibration + bond"] --> K
-  IP["T-34…T-41<br/>InfyPower-parity hardware<br/>tank · modes · DOUT · clip mount · filter · films · die pulse"] --> K
+  IP["T-34…T-42<br/>InfyPower-parity hardware<br/>tank · modes · DOUT · clip mount · filter · films · die pulse · bypass closure"] --> K
   H --> K(["BOM freeze gates<br/>loaded PV Vgs · both-polarity trip<br/>D4 clamp · magnetics first articles"])
   I --> K
   J --> K
@@ -149,7 +149,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 |---|---|---|
 | T-33 | **D1 as-mounted resonance search and endurance (IEC 60068-2-6)** — one module per SKU with the E65 D1 mount (gap pad, GF-PPS clamp cap, bore sleeve, M6 at 4.5 N·m on a Belleville, 2-point banding, strain-relieved leads): pre-test L₀, 4-wire Rdc and bonded-face thermal (the `stress-audit` [D1-BUILD] type-test current); 0.5 g sine search 10–500 Hz, 1 oct/min, 3 axes, accelerometers on the clamp cap and the stack top; 2 g sweep; 10 min dwell at each resonance with transmissibility > 2; final 0.5 g search. Then the D1 rows of T-04 at 330 VAC / 55 °C inlet with a thermocouple at the inner bore | no mode shift > 10 % between searches (nothing loosened); no pad walk, fretting or cap cracking; lead joints intact (cross-section one joint per SKU); L₀ and Rdc inside ±5 % of the pre-test values; residual bolt torque ≥ 80 %; bonded thermal rise within the pre-test value + 3 K; T-04 bore hot-spot ≤ the `stress-audit` D1 value + 10 K |
 
-## 5. InfyPower-parity hardware (E67–E69 · T-34…T-41)
+## 5. InfyPower-parity hardware and startup (E67–E73 · T-34…T-42)
 
 The full-bridge LLC, the two output modes, the output diode, the clip mount, the star-X2 filter, the film-only banks and the
 right-sized dies each carry a model basis that only hardware can confirm. Each row names the engine line it closes.
@@ -164,11 +164,12 @@ right-sized dies each carry a model basis that only hardware can confirm. Each r
 | T-39 | **Star-X2 EMI filter (E68b)** — LISN conducted scan 150 kHz–30 MHz at 400 VAC full power per SKU; damper resistor thermography; line impedance steps Lg 0 / 30 / 100 µH; X2 star-node voltage at 475 VAC | DM margin within 6 dB of `lisn-precompliance` (32.9 / 30.6 / 28.7 dB) and ≥ +3 dB to the limit; damper resistor ≤ 50 % of its rating (3.1 / 4.0 / 5.9 W model); no sustained oscillation at any Lg; star node ≤ 274 VAC per cap |
 | T-40 | **Film-only output banks (E68c)** — output ripple at PS150-Imax (150 V, Imax) and SER 250 V full power with a 20 MHz-limited differential probe; film case thermocouples | output ripple **≤ 0.5 % RMS** (model 0.47 / 0.46 / 0.49 %); per-film current ≤ 10.5 A (model ≤ 4.3 A); film ΔT ≤ 15 K |
 | T-41 | **SiC die pulse class on incoming samples (E69a-2)** — 5 dies per lot per MPN, single 10 µs pulse at 80 % of the RFQ IDM line, VDS 50 V, 25 °C | no parametric shift (Rds(on) ±5 %, Vth ±0.2 V, IDSS within datasheet) at SG2M023120LJ 212 A (IDM ≥ 265 A) · 750 V 20 mΩ class 168 A (≥ 210 A) · 15 mΩ class 208 A (≥ 260 A). A lot or MPN that fails reverts that SKU (two LLC dies / B3M010C075Z) |
+| T-42 | **Precharge-bypass closure (E73)** — per SKU at 475 VAC on the stiffest available source (≥ 500 kVA, short cable), 20 cold starts with the closure instant uncontrolled; Rogowski on one line, bus voltage, FLT line and relay coil current captured | peak ≤ the [INRUSH] row + 20 % (200 / 218 / 280 A) · no F.01 latch and no PFC PWM inside the 60 ms window · bus ≤ 860 V · relay contact resistance after 1 000 closures ≤ 1.2 × initial · fuse element intact (no pre-arc discolouration) |
 
 ---
 
 <div align="center">
 <sub><a href="verification-matrix.md">← Verification Matrix & Risk Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

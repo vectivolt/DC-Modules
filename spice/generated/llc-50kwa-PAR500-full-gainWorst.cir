@@ -6,8 +6,8 @@ VBUS bus 0 DC 830
 VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 5.91669e-6 1.21134e-5)
 VGLA glA 0 PULSE(0 1 6.05669e-6 20n 20n 5.91669e-6 1.21134e-5)
 VHSA bus bhA DC 0
-BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*57.14)
-BSLA legA 0 I=v(legA)*(2e-5+v(glA)*57.14)
+BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*57.14285714285714)
+BSLA legA 0 I=v(legA)*(2e-5+v(glA)*57.14285714285714)
 DBHA legA bhA DBODY
 DBLA 0 legA DBODY
 CPARA legA 0 5e-10
@@ -15,8 +15,8 @@ CPARA legA 0 5e-10
 VGHB ghB 0 PULSE(0 1 6.05669e-6 20n 20n 5.91669e-6 1.21134e-5)
 VGLB glB 0 PULSE(0 1 0.00000e+0 20n 20n 5.91669e-6 1.21134e-5)
 VHSB bus bhB DC 0
-BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*57.14)
-BSLB legB 0 I=v(legB)*(2e-5+v(glB)*57.14)
+BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*57.14285714285714)
+BSLB legB 0 I=v(legB)*(2e-5+v(glB)*57.14285714285714)
 DBHB legB bhB DBODY
 DBLB 0 legB DBODY
 CPARB legB 0 5e-10

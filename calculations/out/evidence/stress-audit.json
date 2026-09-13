@@ -389,6 +389,12 @@
   {
    "status": "ok",
    "tag": "D7",
+   "name": "30kw common-mode flux from the switch-node edges",
+   "detail": "Cp 200 pF × 425 V → 6 V on the 14.1 nF Y trio for ½ × 50 kHz across 8 T × 281 mm² = 27 mT ≤ 10 % of the hot Bsat (1.155 T) — the 150 Hz midpoint component closes through pF and is negligible"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
    "name": "30kw hot-copper ΔT",
    "detail": "9.9 W/choke at 100 °C Cu → ΔT 20 K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)"
   },
@@ -413,6 +419,12 @@
   {
    "status": "ok",
    "tag": "D7",
+   "name": "40kw common-mode flux from the switch-node edges",
+   "detail": "Cp 200 pF × 425 V → 6 V on the 14.1 nF Y trio for ½ × 50 kHz across 8 T × 281 mm² = 27 mT ≤ 10 % of the hot Bsat (1.155 T) — the 150 Hz midpoint component closes through pF and is negligible"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
    "name": "40kw hot-copper ΔT",
    "detail": "17 W/choke at 100 °C Cu → ΔT 32 K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)"
   },
@@ -433,6 +445,12 @@
    "tag": "D7",
    "name": "50kw DM-leakage flux at the simulated crest",
    "detail": "12 µH × 137.1 A / (8 T × 450 mm²) = 0.46 T ≤ 0.6 (hot Bsat 1.155 T) · L_cm 3.38 mH ≥ 2 at µ −30 % (T 90/50/30)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "50kw common-mode flux from the switch-node edges",
+   "detail": "Cp 200 pF × 425 V → 6 V on the 14.1 nF Y trio for ½ × 50 kHz across 8 T × 450 mm² = 17 mT ≤ 10 % of the hot Bsat (1.155 T) — the 150 Hz midpoint component closes through pF and is negligible"
   },
   {
    "status": "ok",
@@ -618,13 +636,19 @@
    "status": "ok",
    "tag": "D4",
    "name": "V24/V15 hard short at 860 V before the 10–20 ms fault latch",
-   "detail": "ton_min ratchet (LEB + tILIM 150 ns, osc+jitter max, loop ≥ 50 mΩ + RAUX24 50 mΩ): V24 5.23 A · V15 4.98 A ≤ 80 % of the 10 A QAUX pulse class · 288 mT ≤ 85 % of Bsat(130 °C) (control E52: 10.5 A → 835 mT, deep saturation — rejected)"
+   "detail": "ton_min ratchet (LEB + tILIM 150 ns, osc+jitter max, loop ≥ 44.5 mΩ + RAUX24 50 mΩ): V24 5.31 A · V15 5.07 A ≤ 80 % of the 10 A QAUX pulse class · 292 mT ≤ 85 % of Bsat(130 °C) (control E52: 11.1 A → 883 mT, deep saturation — rejected)"
   },
   {
    "status": "info",
    "tag": "D4",
    "name": "residual",
-   "detail": "a failure AT the V24 reservoir (CAUX24/DAUX24 short, no RAUX24 in the loop) ratchets to 8.63 A / 476 mT at the 860 V worst stack — a component-failure event ended by the latch (T-09 short matrix, search coil); harness and load faults all sit behind RAUX24"
+   "detail": "a failure AT the V24 reservoir (CAUX24/DAUX24 short, no RAUX24 in the loop) ratchets to 9.64 A / 531 mT at the 860 V worst stack — a component-failure event ended by the latch (T-09 short matrix, search coil); harness and load faults all sit behind RAUX24"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "production Rdc rows match the drawn build",
+   "detail": "pri build 217.5 → row ≤ 250 mΩ · 24 V build 8.6 → row ≤ 10 mΩ · 15 V build 5.7 → row ≤ 6.5 mΩ · aux build 58.9 → row ≤ 68 mΩ — rows within 1.0–1.25× of the build catch a wrong gauge or an open strand · hard-short loop floor 44.5 mΩ from the cold secondary"
   },
   {
    "status": "ok",
@@ -642,7 +666,7 @@
    "status": "ok",
    "tag": "D4",
    "name": "aux SPICE deck: fingerprint, verdicts, anchors [aux-flyback.csv]",
-   "detail": "17 rows, 16 PASS · FB-open limit 4.11 A vs closed form 4.1 A at the deck's typ corner (±10 %) · V24 short 5.81 A / 286 mT in the deck (≤ 8 A · ≤ 85 % Bsat 130 °C) before the fault latch; closed-form worst stack 5.23 A"
+   "detail": "17 rows, 16 PASS · FB-open limit 4.11 A vs closed form 4.1 A at the deck's typ corner (±10 %) · V24 short 5.81 A / 286 mT in the deck (≤ 8 A · ≤ 85 % Bsat 130 °C) before the fault latch; closed-form worst stack 5.31 A"
   },
   {
    "status": "ok",

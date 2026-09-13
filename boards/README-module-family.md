@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -38,7 +38,7 @@ flowchart LR
     direction TB
     SRC["boards.tsx + cells.tsx<br/>one parameterized source"]
     CARD["one control card<br/>GD32G553VET7 · 88-way slot"]
-    FW["one firmware image<br/>C99 · host_sim 60/60"]
+    FW["one firmware image<br/>C99 · host_sim 63/63"]
   end
   STRAP{"RATING strap<br/>read at boot"}
   SHARED --> STRAP
@@ -139,5 +139,5 @@ Controllers that prefer to set unequal shares keep the per-module `SET_OUTPUT` f
 <div align="center">
 <sub><a href="README.md">← Boards</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="30kw/README.md">30 kW Module Walkthrough →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

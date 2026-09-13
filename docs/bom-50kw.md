@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-bom--gen.mjs-5f8fc0?style=flat-square" alt="owner: bom-gen.mjs"/>
 </p>
@@ -78,7 +78,7 @@ pie showData title 50 kW liquid module — ₹ @10k by section
 | 2 | `IND-PFC-107u-50` | PFC choke 107 µH class, 5× OD79 26µ sendust (Magnetics 0077908A7 / Chang Sung KS eq, … | 3 | 992 | **2,976** | 2,381 | CUSTOM |
 | 3 | `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a-2: the 30 kW … | 8 | 312 | **2,496** | 1,872 | SECOND-SOURCE |
 | 4 | `XFMR-LLC-CELL-3E70-50` | D3-50 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n … | 2 | 1,147 | **2,294** | 1,950 | CUSTOM |
-| 5 | `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ) | 22 | 96 | **2,112** | 1,584 | ORDERABLE |
+| 5 | `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — … | 22 | 96 | **2,112** | 1,584 | ORDERABLE |
 | 6 | `ELH-470u450` | 470 µF 450 V snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C) (split bus: 415 … | 16 | 120 | **1,920** | 1,536 | CLASS |
 | 7 | `B3M010C075Z` | SiC MOSFET 750 V 10 mΩ TO-247-4 | 6 | 264 | **1,584** | 1,188 | SECOND-SOURCE |
 | 8 | `PP-2u2-630` | 2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of … | 28 | 36 | **1,008** | 806 | CLASS |
@@ -139,7 +139,7 @@ These lines replace the shared-cell default on the 50 kW liquid module (`skuOver
 |---|---|---|---:|---:|---:|---|---|
 | `IND-PFC-107u-50` | PFC choke 107 µH class, 5× OD79 26µ sendust (Magnetics 0077908A7 / Chang Sung KS eq, catalog AL 37 nH/T² ±8%), … | LA0 LB0 LC0 | 3 | 992 | 2,976 | — | CUSTOM |
 | `B3M010C075Z` | SiC MOSFET 750 V 10 mΩ TO-247-4 | QA0A QA0B QB0A QB0B QC0A QC0B | 6 | 264 | 1,584 | C5713521 | SECOND-SOURCE |
-| `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ) | DA0T DA0B DB0T DB0B DC0T DC0B | 6 | 96 | 576 | C7435099 | ORDERABLE |
+| `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 bypass-closure … | DA0T DA0B DB0T DB0B DC0T DC0B | 6 | 96 | 576 | C7435099 | ORDERABLE |
 | `NSI6611` | iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16 | UA0G UB0G UC0G | 3 | 68 | 204 | C7470934 | ORDERABLE |
 | `QA01C-18` | iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs … | PSA0G PSB0G PSC0G | 3 | 55 | 165 | — | REVIEW |
 | `PP-1u-600` | 1 µF 600 V film (Vienna per-phase commutation, CB-9) | CA0FP CA0FN CB0FP CB0FN CC0FP CC0FN | 6 | 26 | 154 | — | CLASS |
@@ -282,7 +282,7 @@ These lines replace the shared-cell default on the 50 kW liquid module (`skuOver
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
 | `XFMR-LLC-CELL-3E70-50` | D3-50 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n = 2 overall) — the … | T1A T1B | 2 | 1,147 | 2,294 | — | CUSTOM |
-| `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ) | D1A1 D1A1P2 D1A2 D1A2P2 D1A3 D1A3P2 D1A4 D1A4P2 … | 16 | 96 | 1,536 | C7435099 | ORDERABLE |
+| `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 bypass-closure … | D1A1 D1A1P2 D1A2 D1A2P2 D1A3 D1A3P2 D1A4 D1A4P2 … | 16 | 96 | 1,536 | C7435099 | ORDERABLE |
 | `IND-LR-E70-50` | D2-50 rev F (E67): EXTERNAL resonant inductor 3.28 µH ±3% on 2× E70/33/32 PC95-class (TDK former B66372B2000), … | L1R | 1 | 953 | 953 | — | CUSTOM |
 | `PP-33n-1200V` | 33 nF 1200 V PP resonant-duty film (E67 full-bridge tank: 7/9/11 in parallel at 30/40/50 kW → ≤ 10.3 A rms per … | C1R0 C1R1 C1R2 C1R3 C1R4 C1R5 C1R6 C1R7 … | 11 | 54 | 598 | — | CLASS |
 | `CT-RES-1:100-150A` | resonant CT 1:100, 150 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary (E67: ONE CT … | CT1 | 1 | 72 | 72 | — | DIRECT |
@@ -445,5 +445,5 @@ Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family r
 <div align="center">
 <sub><a href="bom-40kw.md">← 40 kW Module BOM</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="bom-50kwa.md">50 kW Air Module BOM →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
