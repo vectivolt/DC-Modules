@@ -82,7 +82,8 @@ for (const [sku, s] of Object.entries(SKUS)) {
         const cost = stack * g.cost + N * MLT * aw * 8900 * 950;
         const cand = { geom: g.name, mat: mat.name, stack, N, aw_mm2: f(aw * 1e6, 1), J: f(J, 2),
           L0: f(L0 * 1e6, 1), Lpk: f(Lpk * 1e6, 1), Rdc_mR: f(Rdc * 1e3, 2), P: f(P, 1), dT: f(dT, 0),
-          fill: f((N * aw * 1e4) / g.win, 2), cost: Math.round(cost) };
+          fill: f((N * aw * 1e4) / g.win, 2), cost: Math.round(cost),
+          roll: [mat.a, mat.b, N / g.le] };            // E65: L(i) = L0/(1 + a·(roll[2]·i/79.577)^b) — the filter-stability model reads it
         if (!best || P + cand.cost / 60 < best.P + best.cost / 60) best = cand;
       }
     }
@@ -101,6 +102,66 @@ for (const [sku, s] of Object.entries(SKUS)) {
     console.log(`  [as-drawn control] 1× T48 ${mat.name} N=14: L0=${f(L0 * 1e6, 1)} µH, L@82A=${f(Lpk * 1e6, 1)} µH`
       + ` — ${Lpk >= L_FLOOR30 ? "meets" : "MISSES"} the ORIGINAL 15 µH/2.2 µF floor (drawing claims 22 µH ≥70%)`);
   }
+}
+// ---- E65: D7 3-phase CM chokes through the same engine (EMI-3/EMI-4). The registered D7 rows were
+// 20 °C copper on a one-layer turn the OD62 core cannot hold (11.5/15.3/19.2 W) and had no DM-bias
+// line. A CM choke carries ALL the line current: its DM leakage flux Φ = L_lk·I/N rides the nano-
+// crystalline core at every crest (Heldwein/Kolar bound B = (L_cm·I_cm + L_lk·I_dm)/(N·A_Fe), the CM
+// term is mA), so the design lines are:
+//   L_cm(10 kHz) ≥ 2 mH on the CATALOG-MINIMUM µ (−30 %) · B_DM = L_lk,max·I1pk/(N·A_Fe) ≤ 0.6 T
+//   (hot Bsat 1.155 T ÷ ~1.25 sector-ring peaking ÷ 1.5) · J ≤ 5.6 · ΔT ≤ 40 K (5 K under the 45 K
+//   acceptance) on the platform toroid convection formula · windable in ≤ 2 layers.
+// N = 8 and the leakage band 6–12 µH stay the registered basis (leakage is MEASURED at first article;
+// the A_Fe floor is set against the band maximum). I1pk = the simulated fundamental crest incl. dips and
+// the 20° jump (vienna-switched.csv), not a hand basis.
+import { readFileSync } from "node:fs";
+import { rho } from "../magnetics/winding-physics.mjs";
+{
+  const vs = readFileSync(join(OUT, "vienna-switched.csv"), "utf8").split("\n").filter((l) => l && !l.startsWith("#") && !l.startsWith("sku,")).map((l) => l.split(","));
+  // nanocrystalline toroids listed in OpenMagnetics/MAS cores.ndjson (dims OD/ID/H mm) — AT&M 1K107 CC-series, Magnetec Nanoperm M-series
+  const NCORES = [["T 65/50/25", 65, 50, 25, "AT&M CC197"], ["T 63/50/30", 63, 50, 30, "Magnetec M-112"], ["T 80/63/30", 80, 63, 30, "Magnetec M-113"],
+    ["T 80/50/25", 80, 50, 25, "AT&M CC050"], ["T 90/60/20", 90, 60, 20, "AT&M CC051"], ["T 90/50/30", 90, 50, 30, "AT&M CC243"],
+    ["T 100/80/30", 100, 80, 30, "Magnetec M-114"], ["T 102/76/25", 102, 76, 25, "AT&M CC204"]];
+  const MU10K = 29300, MU_MIN = 0.70 * MU10K;          // MAS Nanoperm 30000 µi at 10 kHz; catalog AL tolerance −30 %
+  const N = 8, LLK_MAX = 12e-6, B_LINE = 0.6, KFE = 0.75, CASE = 1.0, GAP = 3.0;   // mm: trough/insulation wall, sector spacing (pack)
+  const d7 = {}, grade = (od, id, h, A, s) => {
+    const w = (od - id) / 2, AFe = w * h * KFE, le = Math.PI * (od + id) / 2, d = Math.sqrt(4 * A / Math.PI) + 0.25;
+    let placed = 0, layers = 0, mlt = 0;
+    for (let j = 0; j < 2 && placed < 3 * N; j++) {                // nested layers at 0.87·d pitch, 3 sector gaps per layer
+      const r = id / 2 - CASE - d / 2 - j * 0.87 * d; if (r <= d) break;
+      const n = Math.min(Math.floor((2 * Math.PI * r - 3 * GAP) / d), 3 * N - placed); placed += n; layers++;
+      mlt += n * (2 * (w + 2 * CASE + (2 * j + 1) * d) + 2 * (h + 2 * CASE + (2 * j + 1) * d));
+    }
+    const MLT = mlt / Math.max(placed, 1), P = 3 * s.Irms ** 2 * rho(100) * N * MLT * 1e-3 / (A * 1e-6) * 1.05;
+    const ODw = od + 2 * CASE + 2 * d, IDw = Math.max(id - 2 * CASE - 2 * layers * d, 0), Hw = h + 2 * CASE + 2 * d;
+    const Acm2 = (Math.PI / 2 * (ODw ** 2 - IDw ** 2) + Math.PI * (ODw + IDw) * Hw) / 100;
+    const kg = AFe * le * 7.3e-6 + 3 * N * MLT * A * 8.9e-6;
+    return { AFe, le, fits: placed >= 3 * N, layers, MLT, P, dT: Math.pow(P * 1000 / Acm2, 0.833), Lcm: MU0 * MU_MIN * AFe * 1e-6 / (le * 1e-3) * N * N, ODw, Hw, R20: rho(20) * N * MLT / A * 1e6,
+      B: LLK_MAX * s.Ipk / (N * AFe * 1e-6), kg, cost: AFe * le * 7.3e-6 * 1500 + 3 * N * MLT * A * 8.9e-6 * 1050 + 200 };   // ₹1,500/kg cased nanocrystalline [est] · Cu ₹1,050/kg (E65 basis) · ₹200 wind+test [est]
+  };
+  console.log("=== D7 3-phase CM choke (E65) — N=8, L_lk ≤ 12 µH band max, catalog-minimum µ, simulated crest ===");
+  for (const [sku, s0] of Object.entries(SKUS)) {
+    if (only && sku !== only) continue;
+    const s = { Irms: s0.Irms, Ipk: Math.max(...vs.filter((r) => r[0] === sku).map((r) => +r[7])) };
+    let best = null;
+    for (const [name, od, id, h, ref] of NCORES) for (const A of [10, 13.3, 16.7, 20, 25, 30]) {
+      if (s.Irms / A > 5.6) continue;
+      const g = grade(od, id, h, A, s);
+      if (!g.fits || g.Lcm < 2e-3 || g.B > B_LINE || g.dT > 40) continue;
+      if (!best || g.P + g.cost / 60 < best.P + best.cost / 60)
+        best = { core: name, ref, N, aw_mm2: A, J: f(s.Irms / A, 2), layers: g.layers, MLT_mm: f(g.MLT, 0), AFe_mm2: f(g.AFe, 0), le_mm: f(g.le, 0),
+          Lcm10k_mH: f(g.Lcm * 1e3, 2), Llk_band_uH: [6, 12], Ipk: s.Ipk, B_T: f(g.B, 2), P: f(g.P, 1), dT: f(g.dT, 0), kg: f(g.kg, 2), cost: Math.round(g.cost),
+          Rdc20_mR: f(g.R20, 2), ODw_mm: f(g.ODw, 0), Hw_mm: f(g.Hw, 0) };
+    }
+    if (!best) { console.log(`${sku}: D7 NO FEASIBLE DESIGN`); process.exitCode = 1; continue; }
+    d7[sku] = best;
+    console.log(`${sku}: D7 ${best.core} (${best.ref} class, A_Fe ≥ ${best.AFe_mm2} mm²) 3×${N} T ${best.aw_mm2} mm² (J ${best.J}, ${best.layers} layer)  L_cm ≥ ${best.Lcm10k_mH} mH @µmin`
+      + `  B_DM ${best.B_T} T @ ${s.Ipk} A pk × 12 µH  P=${best.P} W  ΔT=${best.dT} K  ${best.kg} kg  ₹${best.cost}`);
+    // the as-registered part on the same model (the control row — proves the EMI-4 finding)
+    const reg = { "30kw": 10, "40kw": 13.3, "50kw": 16.7 }[sku], g = grade(62, 32, 25, reg, s);
+    console.log(`  [as-registered control] OD62/32/25 3×8 T ${reg} mm²: ${g.fits ? g.layers + " layer" : "DOES NOT FIT in 2 layers"}, P=${f(g.P, 1)} W (registered ${{ "30kw": 11.5, "40kw": 15.3, "50kw": 19.2 }[sku]}), ΔT=${f(g.dT, 0)} K, J ${f(s.Irms / reg, 2)}, B_DM ${f(g.B, 2)} T`);
+  }
+  all.d7 = d7;
 }
 writeFileSync(join(OUT, "dm-choke-design.json"), JSON.stringify(all, null, 2));
 console.log("→ calculations/out/dm-choke-design.json");

@@ -14,7 +14,7 @@ export const SECTIONS = {
   ],
   acdc: [
     ["AC INPUT & PROTECTION", /^(JACL\d|JPE$|F[123]$|MOV[123]$|MOVP[123]$|GDT[123]$)/],
-    ["EMI FILTER", /^(CMC[12]$|CX\d\d$|CY[123]$|LDM[123]$)/],
+    ["EMI FILTER", /^(CMC[12]$|CX\d\d$|CY[1-6]$|LDM[123]$|[CR]DMP[123]$)/],
     ["PRECHARGE", /^(KPRE[12]$|RPRE[12]$|RKFBP$)/],
     ["LINE CTs", /^(CT[ABC]\d$|R[ABC]\d[BF]$|C[ABC]\dF$|D[ABC]\d[PN]$)/],
     ["VIENNA PFC LANES", /^(?:L|Q|D|C|R|U|PS)[ABC]\d/],

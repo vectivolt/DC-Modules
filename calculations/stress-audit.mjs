@@ -185,9 +185,33 @@ for (const [sku, c] of Object.entries(D2C)) {
     ck("D3", `${sku} Bpk at the worst simulated corner`, B <= 205, `${f(B, 0)} mT at ${w.corner} (${w.fsw_kHz} kHz) on ${c.n}× E70 ${c.N}:${c.N}:${c.N} ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)`);
   }
 }
-// D6/D7 EMI chokes: constant-J rewind at 40/50 kW [lb]
-for (const [sku, J] of [["30kw", 5.5], ["40kw", 5.5], ["50kw", 5.5]])
-  ck("D6/D7", `${sku} winding J`, J <= 5.6, `${J} A/mm² (CSA scales with current — same density, ΔT acceptance carried)`);
+// D6/D7 EMI chokes — E65: read from the engines (the pre-E65 row tested a literal 5.5 for every SKU while the drawn
+// D7-30 foil was 9.9 mm² = 5.65 A/mm²). D7: DM-leakage flux at the SIMULATED crest (vienna-switched I1pk, dips +
+// 20° jump) against the 0.6 T line on the A_Fe floor, hot-copper ΔT, and the catalog-minimum-µ L_cm floor.
+{
+  const ch = JSON.parse(readFileSync(join(ROOT, "calculations/out/dm-choke-design.json"), "utf8"));
+  const vs = readFileSync(join(ROOT, "calculations/out/vienna-switched.csv"), "utf8").split("\n").filter((l) => /^\d/.test(l)).map((l) => l.split(","));
+  for (const sku of ["30kw", "40kw", "50kw"]) {
+    const d6 = ch[sku], d7 = ch.d7[sku], i1pk = Math.max(...vs.filter((r) => r[0] === sku).map((r) => +r[7]));
+    const B = d7.Llk_band_uH[1] * 1e-6 * i1pk / (d7.N * d7.AFe_mm2 * 1e-6);
+    ck("D6/D7", `${sku} winding J [engines]`, d6.J <= 5.6 && d7.J <= 5.6, `D6 ${d6.aw_mm2} mm² → ${d6.J} · D7 ${d7.aw_mm2} mm² → ${d7.J} A/mm² ≤ 5.6`);
+    ck("D7", `${sku} DM-leakage flux at the simulated crest`, B <= 0.6 && d7.Lcm10k_mH >= 2,
+      `${d7.Llk_band_uH[1]} µH × ${i1pk} A / (${d7.N} T × ${d7.AFe_mm2} mm²) = ${f(B, 2)} T ≤ 0.6 (hot Bsat 1.155 T) · L_cm ${d7.Lcm10k_mH} mH ≥ 2 at µ −30 % (${d7.core})`);
+    ck("D7", `${sku} hot-copper ΔT`, d7.dT <= 45, `${d7.P} W/choke at 100 °C Cu → ΔT ${d7.dT} K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)`);
+    ck("D7", `${sku} parts-db carries the engine core`, new RegExp(`D7-${sku.slice(0, 2)} rev B \\(E65 engine[^"]*${d7.core}, A_Fe ≥ ${d7.AFe_mm2}`).test(readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8")), `${d7.core} · A_Fe ≥ ${d7.AFe_mm2} mm² in the CMC override note`);
+  }
+  const i30 = Math.max(...vs.filter((r) => r[0] === "30kw").map((r) => +r[7]));
+  ck("D7", "30kw catalog Schaffner RT8131-63-2M8 vs the crest", i30 <= 63 * Math.SQRT2, `${i30} A pk ≤ 63 A × √2 = ${f(63 * Math.SQRT2, 1)} A (vendor rating covers its own leakage flux)`);
+  // E65 input filter as a system: conducted margin (DM + the drawn two-stage CM ladder) and current-loop stability
+  const lisn = readFileSync(join(ROOT, "calculations/out/lisn-precompliance.csv"), "utf8").split("\n").filter((l) => /^\d/.test(l)).map((l) => l.split(","));
+  const cmMin = Math.min(...lisn.map((r) => +r[5] - +r[4]));
+  ck("EMI", "CM conducted margin on the drawn ladder [lisn]", cmMin >= 3, `${f(cmMin)} dB worst vs Class A QP at Cp 200 pF (±20 dB estimate; the single-trio control row lives in lisn-precompliance)`);
+  const fs = readFileSync(join(ROOT, "calculations/out/pfc-filter-stability.csv"), "utf8").split("\n").slice(1).filter(Boolean).map((l) => l.split(","));
+  const ss = fs.filter((r) => r[1] === "small-signal" && r[3] === "15" && r[4] !== "none" && (r[2] === "P" || r[2] === "PI")), td = fs.filter((r) => r[1] === "time-domain" && r[3] === "15");
+  const ctl = fs.filter((r) => r[1] === "time-domain" && r[4] === "none"), duty = fs.filter((r) => r[1] === "damper-duty");
+  ck("EMI", "current loop vs drawn filter [pfc-control]", ss.length === 6 && ss.every((r) => +r[6] >= 0.5) && td.length === 9 && td.every((r) => +r[6] <= 1) && ctl.length === 3 && ctl.every((r) => +r[6] >= 10) && duty.every((r) => +r[6] <= 12.5),
+    `modulus margin ≥ ${f(Math.min(...ss.map((r) => +r[6])), 2)} (P/PI, 15 µs, damped) · switched-model 2–45 kHz ≤ ${f(Math.max(...td.map((r) => +r[6])), 2)} % · undamped 30 µs control ≥ ${f(Math.min(...ctl.map((r) => +r[6])), 0)} % · RDMP ≤ ${f(Math.max(...duty.map((r) => +r[6])), 1)} W of 25`);
+}
 // tank capacitors: per-cap current vs the 12 A spec line (13.5 A part class at RFQ)
 const CAP = { "30kw": { n: 4, I: 46.4 }, "40kw": { n: 6, I: 61.9 }, "50kw": { n: 8, I: 77.3 }, "50kwa": { n: 8, I: 77.3 } };
 for (const [sku, c] of Object.entries(CAP))
@@ -284,8 +308,8 @@ for (const [sku, nHalf, cls] of [["30kw", 5, 160], ["40kw", 6, 160], ["50kw", 8,
 }
 ck("Epulse", "50 kW 50 W parts ordered", /CER-50W-33R-AX/.test(db) && /CER-50W-160R-AX/.test(db),
   "RPRE1/2 + RDIS0-3 skuOverrides at 50 kW carry the 50 W VALUE codes (R5-G)");
-// X-cap bleed with the E43 CX2 4.7 µF (star unchanged)
-ck("Xbleed", "X discharge τ after CX2 rev", 0.42 * (2.2 + 4.7) / 4.4 <= 1.0, `τ ${f(0.42 * 6.9 / 4.4, 2)} s ≤ 1 s pluggable rule`);
+// X-cap bleed with the E43 CX2 4.7 µF + the E65 CX2-node damper 2.2 µF (star unchanged; verify-independent reads the netlist)
+ck("Xbleed", "X discharge τ after CX2 rev + damper", 0.42 * (2.2 + 4.7 + 2.2) / 4.4 <= 1.0, `τ ${f(0.42 * 9.1 / 4.4, 2)} s ≤ 1 s pluggable rule`);
 
 // ---------------- 4. protection classes [reg + E35/F6 derate rule] ------------------------------
 const FUSE = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 125, I: 73.3 }, "50kw": { A: 160, I: 91.6 }, "50kwa": { A: 160, I: 91.6 } };

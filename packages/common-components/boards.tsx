@@ -81,6 +81,8 @@ export const AcDcBoard = ({ lanes, w, h, pw = 30, air = false }: { lanes: number
     // DM chokes, Y caps and the neutral-star dividers sit in the strip ABOVE the bank
     ldmX: -78, ldmY: [-60, -78, -96].map((d) => bandTop + d) as any,
     cyX: -78, cyY: [-4, -22, -40].map((d) => bandTop + d) as any,
+    // E65 schematic adds (CY4-6 on AC1M..3M, Rd-Cd damper across AC1..3): PROVISIONAL placement — layout reopen owns it
+    cymX: -98, dmpX: [-98, -56] as const,
     rnsX: [-48, -34] as const, rnsY: -24,
     kpreX: 40, kpre: [bandTop, bandTop] as any, rpre: [-60, -76] as const,
     // right column, clear of the Vienna row (which ends at x 139.5)
@@ -185,6 +187,24 @@ return (
       {[1, 2, 3].map(i => (
         <capacitor key={`y${i}`} name={`CY${i}`} capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={P.cyX} pcbY={P.cyY[i - 1]} schX={51} schY={46 - (i - 1) * 3} />
       ))}
+      {/* E65 (EMI-1): the second Y1 trio, L-PE on AC1M..3M between the CM chokes. With one trio CMC1+CMC2 were
+          4 mH in series against 14.1 nF — one CM stage, +0.3 dB at 150 kHz (−6 dB on the nanocrystalline µ(f)),
+          where the pre-compliance model had assumed two. Two trios: +8.0 dB (lisn-precompliance CM gate). PE
+          current stays 0 balanced; one phase open at 1.1 × 475 VAC: 1.07 mA per module (verify-independent). */}
+      {[4, 5, 6].map(i => (
+        <capacitor key={`ym${i}`} name={`CY${i}`} capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={P.cymX} pcbY={P.cxY[i - 4]} schX={33.5} schY={46 - (i - 4) * 3} schSectionName="EMI" />
+      ))}
+      {/* E65 (EMI-2): parallel Rd–Cd damper across the CX2 node (delta, 2.2 µF X1 + 10 Ω 25 W). Undamped, the
+          filter's LCL modes (9–23 kHz) sit where the sampled current loop's converter admittance turns negative:
+          the switched model oscillates at the 1.5·Tsw delay and the small-signal modulus margin at 15 µs is 0.
+          Damped: ≥ 0.53 at the FW-EMI-1 15 µs delay for P and PI (pfc-control), 2–3 W per resistor, CX2 kept
+          whole so the E43 DM attenuation is untouched; X-bleed τ 0.87 s. */}
+      {[1, 2, 3].map(i => (
+        <capacitor key={`cd${i}`} name={`CDMP${i}`} capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={P.dmpX[0]} pcbY={P.cx2Y[i - 1]} schX={48.5} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+      ))}
+      {[1, 2, 3].map(i => (
+        <resistor key={`rd${i}`} name={`RDMP${i}`} resistance="10" footprint={FilmBoxFP(25)} pcbX={P.dmpX[1]} pcbY={P.cx2Y[i - 1]} schX={53.5} schY={46 - (i - 1) * 3} schSectionName="EMI" />
+      ))}
       <trace from=".JACL1 > .P" to=".F1 > .A" />
       <trace from=".JACL2 > .P" to=".F2 > .A" />
       <trace from=".JACL3 > .P" to=".F3 > .A" />
@@ -244,6 +264,15 @@ return (
       <trace from=".CY2 > .pin2" to="net.PE" schDisplayLabel="PE" />
       <trace from=".CY3 > .pin1" to="net.AC3" schDisplayLabel="AC3" />
       <trace from=".CY3 > .pin2" to="net.PE" schDisplayLabel="PE" />
+      {[4, 5, 6].map(i => [
+        <trace key={`yma${i}`} from={`.CY${i} > .pin1`} to={`net.AC${i - 3}M`} schDisplayLabel={`AC${i - 3}M`} />,
+        <trace key={`ymb${i}`} from={`.CY${i} > .pin2`} to="net.PE" schDisplayLabel="PE" />,
+      ])}
+      {[1, 2, 3].map(i => [
+        <trace key={`dma${i}`} from={`.CDMP${i} > .pin1`} to={`net.AC${i}`} schDisplayLabel={`AC${i}`} />,
+        <trace key={`dmb${i}`} from={`.CDMP${i} > .pin2`} to={`.RDMP${i} > .pin1`} />,
+        <trace key={`dmc${i}`} from={`.RDMP${i} > .pin2`} to={`net.AC${(i % 3) + 1}`} schDisplayLabel={`AC${(i % 3) + 1}`} />,
+      ])}
       <trace from=".JPE > .P" to="net.PE" schDisplayLabel="PE" />
       {/* precharge (E14 rev): 33 Ω pulse resistors in L1/L2; CB-8: bypass = 2× line-rated power
           relays w/ mirror contacts (series readback chain — both-open proof before precharge) */}

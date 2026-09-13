@@ -42,7 +42,13 @@ const KM = DATA.KoolMu_MAS["26"], KI = KM.a / (Math.pow(2 * Math.PI, KM.c - 1) *
 }
 
 // event: { type: "dip", t0, t1, depth } (grid amplitude × depth between t0..t1) | { type: "jump", t0, deg }
-export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, Rg = 0.01, event = null, clamp = 1.05 }) {
+// E65 (EMI-2): `filter` inserts the DRAWN input filter between the grid EMF and D1 (default null = the E60 stiff grid,
+// bit-identical): grid Lg+Rg and CMC1 leakage → CX1 (Δ → star 3·C) → CMC2 leakage + D6 L(i) (floating-neutral solve, like
+// D1) → CX2 ∥ damper Rd–Cd (Δ) → D1. The controller then sees what the hardware gives it: the CX2-node voltage through the
+// SNS_VAC divider RC (tauV), its 50 Hz lag rotated out with the other two phases (αβ, a memoryless mix), sampled every `upd`
+// fine steps and applied `lag` updates later (upd 400/lag 1 = double update, 15 µs; upd 800/lag 1 = 1.5·Tsw, 30 µs).
+//   filter = { Lg, Rg, Llk, Rf, C1, C2, Cd, Rd, d6: { L0 µH, roll: [a, b, N/le] }, tauV, upd, lag }
+export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, Rg = 0.01, event = null, clamp = 1.05, filter: F = null }) {
   const d = D1[sku], W = 2 * Math.PI * 50, Vpk = VLL * Math.SQRT2 / Math.sqrt(3);
   const Ts = 1 / fsw, dt = Ts / 800, nPer = Math.round(0.02 / dt), nTot = cycles * nPer;
   const Pin = Pout / 0.965;                                    // design-basis chain efficiency (54.94 A @330 V/30 kW)
@@ -61,26 +67,39 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
   const iHist = new Float64Array(2000);                        // resampled phase-A current for THD
   const iHf = new Float64Array(20000);                         // 1 MHz samples for the 150 kHz CISPR-band content
   let hIdx = 0, fIdx = 0;
+  const upd = F?.upd ?? 400, lag = F?.lag ?? 0, mNext = [0, 0, 0];
+  const iG = [0, 0, 0], iF = [0, 0, 0], v1 = [0, 0, 0], v2 = [0, 0, 0], vd = [0, 0, 0], vm = [0, 0, 0], vff = [0, 0, 0], LF = [0, 0, 0];
+  const gHist = new Float64Array(2000);
+  let pDamp = 0;
+  if (F) for (let k = 0; k < 3; k++) {                          // start on the no-load sinusoidal steady state
+    const th = -2 * Math.PI / 3 * [0, 1, -1][k], dv = Vpk * W * Math.cos(th);
+    v1[k] = v2[k] = vd[k] = vm[k] = Vpk * Math.sin(th);
+    iF[k] = 3 * (F.C2 + F.Cd) * dv; iG[k] = iF[k] + 3 * F.C1 * dv;
+  }
+  const sub3 = (a) => { const c = (a[0] + a[1] + a[2]) / 3; a[0] -= c; a[1] -= c; a[2] -= c; };   // 3-wire: no zero sequence
   for (let s = 0; s < nTot; s++) {
     const t = s * dt;
     const amp = event?.type === "dip" && t >= event.t0 && t < event.t1 ? Vpk * event.depth : Vpk;
     const ph = event?.type === "jump" && t >= event.t0 ? event.deg * Math.PI / 180 : 0;
     const vg = [amp * Math.sin(W * t + ph), amp * Math.sin(W * t + ph - 2 * Math.PI / 3), amp * Math.sin(W * t + ph + 2 * Math.PI / 3)];
+    const vq = F ? v2 : vg;                                    // the voltage D1 actually sees
+    let vc = vg;
+    if (F) { for (let k = 0; k < 3; k++) vff[k] = vm[k] + W * F.tauV * (vm[(k + 2) % 3] - vm[(k + 1) % 3]) / Math.sqrt(3); vc = vff; }
     // ---- control update at carrier peak and valley (regular sampling, 2×fsw)
-    if (s % 400 === 0) {
+    if (s % upd === 0) {
       const e = vbus - (Vp + Vn);
       Gint += 0.02 * e * (Ts / 2) * G0;                         // voltage PI (slow, ~15 Hz class)
       const Gmax = Iclamp / Math.max(amp, 1);
       if (Gint > Gmax - G0) Gint = Gmax - G0;                   // anti-windup at the clamp
       const G = Math.min(G0 * (1 + 0.004 * e) + Gint, Gmax);
       const vs = [0, 0, 0];
-      for (let k = 0; k < 3; k++) vs[k] = vg[k] - Kpi * (G * vg[k] - i[k]);
+      for (let k = 0; k < 3; k++) vs[k] = vc[k] - Kpi * (G * vc[k] - i[k]);
       const v0 = -(Math.max(...vs) + Math.min(...vs)) / 2 - 0.5 * (Vp - Vn);
       for (let k = 0; k < 3; k++) {
-        const v = vs[k] + v0, pos = (Math.abs(i[k]) > 0.5 ? i[k] : G * vg[k]) >= 0;
+        const v = vs[k] + v0, pos = (Math.abs(i[k]) > 0.5 ? i[k] : G * vc[k]) >= 0;
         let mk = pos ? v / Vp : -v / Vn;
         if (mk > 1) { mk = 1; if (s >= nTot - nPer) rec.clip++; }
-        m[k] = Math.max(0, mk);
+        if (lag) { m[k] = mNext[k]; mNext[k] = Math.max(0, mk); } else m[k] = Math.max(0, mk);
       }
     }
     const car = (s % 800) / 800, tri = car < 0.5 ? 2 * car : 2 - 2 * car;
@@ -97,23 +116,42 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       else if (i[k] > 0) { node[k] = Vp; blocked[k] = false; }
       else if (i[k] < 0) { node[k] = -Vn; blocked[k] = false; }
       else blocked[k] = true;
-      if (!blocked[k]) { num += (vg[k] - Rg * i[k] - node[k]) / L; den += 1 / L; }
+      if (!blocked[k]) { num += (vq[k] - Rg * i[k] - node[k]) / L; den += 1 / L; }
     }
     vMN = den > 0 ? num / den : 0;
     // un-block a DCM phase whose diode becomes forward-biased
     for (let k = 0; k < 3; k++) if (blocked[k]) {
-      const vd = vg[k] - vMN;
-      if (vd > Vp || vd < -Vn) { node[k] = vd > Vp ? Vp : -Vn; blocked[k] = false; const L = Ld1(d, 0, lot); num += (vg[k] - node[k]) / L; den += 1 / L; vMN = num / den; }
+      const vD = vq[k] - vMN;
+      if (vD > Vp || vD < -Vn) { node[k] = vD > Vp ? Vp : -Vn; blocked[k] = false; const L = Ld1(d, 0, lot); num += (vq[k] - node[k]) / L; den += 1 / L; vMN = num / den; }
     }
     let iP = 0, iN = 0;
     for (let k = 0; k < 3; k++) {
       if (blocked[k]) continue;
-      const L = Ld1(d, i[k], lot), vL = vg[k] - Rg * i[k] - node[k] - vMN;
+      const L = Ld1(d, i[k], lot), vL = vq[k] - Rg * i[k] - node[k] - vMN;
       const ni = i[k] + vL / L * dt;
       if (k === 0 && s >= recStart) { fx.B += vL * dt / NAe; fx.hi = Math.max(fx.hi, fx.B); fx.lo = Math.min(fx.lo, fx.B); fx.int += Math.pow(Math.abs(vL / NAe), KM.c) * dt; }
       i[k] = (!on[k] && ni * i[k] < 0) ? 0 : ni;               // diode stops conduction at zero
       if (!on[k] && node[k] > 0) iP += i[k];
       if (!on[k] && node[k] < 0) iN += i[k];
+    }
+    if (F) {                                                   // filter states (symplectic: currents, then node voltages)
+      for (let k = 0; k < 3; k++) iG[k] += (vg[k] - v1[k] - F.Rg * iG[k]) / (F.Lg + F.Llk) * dt;
+      sub3(iG);
+      let nu = 0, de = 0;
+      for (let k = 0; k < 3; k++) {
+        LF[k] = F.Llk + F.d6.L0 * 1e-6 / (1 + F.d6.roll[0] * Math.pow(Math.max(F.d6.roll[2] * Math.abs(iF[k]) / 79.577, 1e-9), F.d6.roll[1]));
+        nu += (v1[k] - v2[k] - F.Rf * iF[k]) / LF[k]; de += 1 / LF[k];
+      }
+      for (let k = 0; k < 3; k++) iF[k] += (v1[k] - v2[k] - F.Rf * iF[k] - nu / de) / LF[k] * dt;
+      for (let k = 0; k < 3; k++) {
+        const id = F.Cd ? (v2[k] - vd[k]) / (F.Rd / 3) : 0;
+        if (F.Cd) vd[k] += id / (3 * F.Cd) * dt;
+        if (s >= nTot - nPer) pDamp += id * id * (F.Rd / 3);
+        v1[k] += (iG[k] - iF[k]) / (3 * F.C1) * dt;
+        v2[k] += (iF[k] - i[k] - id) / (3 * F.C2) * dt;
+        vm[k] += (v2[k] - vm[k]) * dt / F.tauV;
+      }
+      sub3(v1); sub3(v2); sub3(vd); sub3(vm);
     }
     const iLoad = Pin / (Vp + Vn);
     Vp += (iP - iLoad) / d.cHalf * dt;
@@ -134,7 +172,7 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       rec.err += (i[0] - (G0 + Gint) * vg[0]) ** 2;
       rec.vbMin = Math.min(rec.vbMin, Vp + Vn); rec.vbMax = Math.max(rec.vbMax, Vp + Vn);
       rec.mid = Math.max(rec.mid, Math.abs(Vp - Vn));
-      if (s % Math.round(10e-6 / dt) === 0 && hIdx < iHist.length) iHist[hIdx++] = i[0];
+      if (s % Math.round(10e-6 / dt) === 0 && hIdx < iHist.length) { gHist[hIdx] = iG[0]; iHist[hIdx++] = i[0]; }
       if (s % Math.round(1e-6 / dt) === 0 && fIdx < iHf.length) iHf[fIdx++] = i[0];
     }
   }
@@ -154,7 +192,16 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
     for (let j = 0; j < fIdx; j++) { const w = 2 * Math.PI * fq * j * 1e-6; a += iHf[j] * Math.cos(w); b += iHf[j] * Math.sin(w); }
     band += (2 * Math.hypot(a, b) / fIdx) ** 2 / 2;
   }
+  // E65: sustained-oscillation detector — grid-current content between h40 (2 kHz) and h900 (45 kHz) of the last line
+  // cycle against the fundamental; the filter/loop modes sit at 3–25 kHz, a stable loop leaves only PWM residue there
+  let g1 = 0, gh = 0;
+  if (F) for (let h = 1; h < 900; h = h === 1 ? 40 : h + 1) {
+    let a = 0, b = 0;
+    for (let j = 0; j < hIdx; j++) { const w = 2 * Math.PI * h * j / hIdx; a += gHist[j] * Math.cos(w); b += gHist[j] * Math.sin(w); }
+    if (h === 1) g1 = a * a + b * b; else gh += a * a + b * b;
+  }
   return {
+    oscPct: F ? 100 * Math.sqrt(gh / g1) : 0, pDamp: F ? pDamp / nPer : 0,
     VLL, vbus, lot, Pout, band150pk: Math.sqrt(band) * Math.SQRT2, Irms: Math.sqrt(rec.sq[0] / n), I1pk: Math.max(...i1), Ipk: Math.max(...rec.pk),
     ripHalf: Math.max(...rec.pk) - Math.max(...i1), Isw: Math.sqrt(rec.swSq / n), Id: { avg: rec.dAvg / n, rms: Math.sqrt(rec.dSq / n), pk: rec.dPk },
     L_at_pk: Ld1(d, Math.max(...rec.pk), lot), thd: 100 * Math.sqrt(hh) / h1, track: Math.sqrt(rec.err / n) / (Math.max(...i1) / Math.SQRT2),
