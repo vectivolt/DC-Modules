@@ -6,12 +6,12 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
+  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E70-f2b705?style=for-the-badge" alt="decision register E1 to E70"/>
+  <img src="https://img.shields.io/badge/decision_register-E1–E71-f2b705?style=for-the-badge" alt="decision register E1 to E71"/>
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 4536 points, 0 failures"/>
   <img src="https://img.shields.io/badge/independent_checks-227%2F227-2ea44f?style=for-the-badge" alt="independent verifier 227 of 227"/>
   <img src="https://img.shields.io/badge/firmware-60%2F60_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 60 of 60"/>
@@ -68,7 +68,7 @@ xychart-beta
 | Environment | match the market | **−30…+75 °C** (full power to 55 °C), ≤ 95 % RH non-condensing, ≤ 2000 m, conformal coating, IP55 fans | [teardown benchmark](docs/benchmark-infypower-teardown.md) |
 | Accuracy | ±0.5 % V · ±1 % I | **±0.18 % / ±0.2 %** after the mandatory 2-point EOL calibration (10k-sample Monte-Carlo) | [verification matrix](docs/verification-matrix.md) |
 | Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak (E69); DESAT response 1.44 µs against a 2 µs SiC withstand | [current coordination](docs/current-coordination.md) |
-| Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet | [magnetics hub](docs/magnetics.md) |
+| Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet; PyOpenMagnetics second opinion: Rdc ± 2.5 %, class lines hold at its higher D3 copper (50 kW air D3 130 °C vs the 125 °C design line — first-article watch) | [magnetics hub](docs/magnetics.md) |
 | EMI | CISPR-class conducted pre-compliance | InfyPower star-X2 filter (E68b): DM margin **+32.9 / +30.6 / +28.7 dB**, CM +8 dB at 200 pF switch-node capacitance; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
 | Build cost at 10k | red-line ₹25k / 33k / 43k | **₹30,033 / 34,616 / 40,481 / 38,404** India basis · **₹24,639 / 28,319 / 33,182 / 31,398** China RFQ target | [BOM & cost](docs/bom-cost.md) |
 
@@ -164,6 +164,8 @@ flowchart LR
 | E67 InfyPower parity | the first loss roll-up omitted the output diode and bank filter (109–188 W); the land classifier had named every 0603 part 0805; the F.11 ladder was missing from every sheet since E65 | loss roll-up fixed; 0603 value rows; sheet-pages fails on any unassigned part |
 | E68 BOM clone I | `run-all` gates on `a && b` lines could not fail (the MTBF gate had failed silently); the MTBF classifier counted bank films as silicon | every gate is its own command; classifier fixed |
 | **E69 BOM clone II** | the PFC pulse check still assumed the retired paralleled pair; a single 16 mΩ LLC die at 40 kW needed IDM ≥ 334 A; printed title blocks read "Content: ?" (50 kW) and "3-phase LLC"; the CT front-end deck still ran the E65 burdens; the BOM CSV shifted columns on maker names with commas, and the MTBF classifier matched keywords inside words | per-die fault-pulse gate, 40 kW keeps two dies, IDM lines at RFQ; title blocks per board; CT deck re-run at E67 classes; RFC 4180 CSV; whole-word classifier, MTBF re-registered |
+| E70 per-module pages | 40 / 50 kW BOM lines described 30 kW parts; unquoted commas shifted CSV columns; the MTBF classifier matched inside words; the cost categoriser filed the 50 kW resonant inductor as misc; three decks still ran retired values | one generated BOM and magnetics page per module from the gates' own evidence; 51 → 37 documents; classifiers and decks fixed |
+| **E71 second opinion** | the docs said PyOpenMagnetics could not install (the 1.4.0 wheel runs); the D2 gap guide ignored fringing (+14 % L); the D3 Rac/Rdc sample test would reject good parts; MKF reads the D3 foil copper ~30 % above the 1-D model | `mkf-crosscheck.py`; fringing-corrected gap guides; short-circuit R test against the 1-D … MKF bracket; 50 kW air D3 at MKF copper = first-article watch; retired footprint envelopes removed |
 
 </details>
 
@@ -277,7 +279,7 @@ status badge and next/previous navigation.
 | Start here | To understand |
 |---|---|
 | [Platform architecture](docs/architecture.md) | the module in one read |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E70, with provenance and invalidator |
+| [Decision register](docs/assumptions.md) | every frozen decision E1–E71, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
 | [Magnetics hub](docs/magnetics.md) · module pages [30](docs/magnetics-30kw.md) · [40](docs/magnetics-40kw.md) · [50 L](docs/magnetics-50kw.md) · [50 A](docs/magnetics-50kwa.md) | every custom magnetic — drawing, gate proof, build, tests, cost |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
@@ -303,7 +305,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 ## 🗺️ Roadmap
 
-- [x] Frozen decision register E1–E70
+- [x] Frozen decision register E1–E71
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
 - [x] Release schematics — six KiCad-5 targets, 6,901 / 6,901 labels, ten board PDFs
 - [x] InfyPower architecture and BOM clone — full-bridge LLC, two output modes, output diode (E67); clip mount, star-X2 filter, film-only banks (E68); right-sized dies, fault-pulse gate, China cost column (E69)
@@ -321,5 +323,5 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

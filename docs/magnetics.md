@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
+  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-mag--sync_·_rfq--audit_·_magnetics--envelope-2ea44f?style=flat-square" alt="gate: mag-sync · rfq-audit · magnetics-envelope"/>
 </p>
@@ -69,7 +69,7 @@ flowchart LR
 | **vienna-switched** (JS, cycle-by-cycle) | D1 current with the soft-saturating catalog L(i) at lot AL − 8 %, dips and phase jumps included | `calculations/pfc/vienna-switched.mjs` | the peak column sets F.01; the ripple column sets D1 copper and core loss |
 | **upb-lea materialdatabase** (frozen) | TDK N95 loss over f, B and T; LEA-measured N95 permeability; 3C95 surfaces for Bsat(T) | `magnetics-data.json` · `tempdata-3c95.json` | the envelope applies × 1.14 (LEA-measured over datasheet) in the high-flux window; `temp-critique` reads Bsat(130 °C) = 362 mT from the 3C95 set |
 | **OpenMagnetics MAS** (data) | core shapes and a second Steinmetz surface with temperature terms | `geometry.mjs` · `magnetics-envelope.mjs` | the loss used is the larger of the datasheet surface and MAS — the conservative side |
-| **PyOpenMagnetics / MKF** | geometry-level Rac and leakage cross-check | evaluated at E65 | no macOS wheel on the build host — the frozen data above carries the battery; see [simulation toolchain](simulation-toolchain.md) |
+| **PyOpenMagnetics 1.4.0 / MKF** | a second, independent opinion on the D2 / D3 builds: Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper | `calculations/magnetics/mkf-crosscheck.py` by hand, in a Python 3.12 venv (the 1.4.0 macOS arm64 wheel) → the module pages quote its evidence | Rdc agrees within ±2.5 % · the D3 foils read ×1.29–1.32 the 1-D copper, so the drawings test short-circuit R against the 1-D … MKF bracket · the D2 gap guide is fringing-corrected · leakage with foil turns is non-physical in 1.4.0 and is not used — [how to read it](simulation-toolchain.md#55-the-pyopenmagnetics-second-opinion) |
 | **FEMMT · FEMM 4.2** | 2-D fringing and leakage at the D3 S1 foil and the D2 distributed gap | first article | a 1-D model under-reads fringing loss; the construction rules (split and distributed gaps, litz clearance) and T-31 close it |
 | **winding-physics.mjs** | Dowell (foil), Sullivan (litz), Ferreira + 2-D field factor (round bundles) | `conductor-audit.mjs` | Rac / Rdc per winding at the simulated switching frequency against the drawing's row |
 | **magnetics-envelope.mjs** | flux, core and copper loss and the two-node thermal network for D2 and D3 | run-all | read the hot-spot at 55 °C inlet, the 75 °C-inlet derated value, the +25 % Rth value, the runaway margin and B̂ as % of hot Bsat — all five must pass |
@@ -256,5 +256,5 @@ flowchart LR
 <div align="center">
 <sub><a href="busbar-drawings.md">← Busbar Drawings & Joint Spec</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-30kw.md">30 kW Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

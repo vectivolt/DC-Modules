@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
+  <img src="https://img.shields.io/badge/rev-E71-f2b705?style=flat-square" alt="revision E71"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-mag--docs.mjs-5f8fc0?style=flat-square" alt="owner: mag-docs.mjs"/>
 </p>
@@ -58,6 +58,7 @@ gate reports, and a failing gate stops the battery before this page is written.
 | `temp-critique` | saturation at the 130 °C cutout, cold equilibria and the fault chain on measured 3C95 surfaces | B̂ ≤ 50 % Bsat(130 °C) · fault flux ≤ 60 % |
 | `current-coordination` | D2 flux at the F.11 kill peak and CT observability through each trip's race | ≤ 217 mT · the kill lands inside the ADC rail |
 | `mag-sync` | the identity of every part against every carrier, and the computed mass | tokens present · mass within ± 20 % |
+| `mkf-crosscheck` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
 
 ## D1 — PFC boost choke · qty 3 · `IND-PFC-107u-50`
 
@@ -111,7 +112,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 | Inductance | **3.28 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
 | Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372B2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **12000×0.05** mm (23.6 mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
-| Gap | distributed centre-leg gap **Σ ≈ 13.1 mm**, every segment ≤ 1.0 mm, outer legs mated |
+| Gap | distributed centre-leg gap **Σ ≈ 15.0 mm in 15 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 3.28 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
 | Rdc · Rac | Rdc **≤ 0.92 mΩ** @ 25 °C (100 %) · Rac **≤ 3.7 mΩ** @ 203 kHz, 100 °C (sample 5 / lot) |
 | Insulation · hipot · PD | basic insulation to PE through former + spacer + VPI class H · 100 % winding → bonded-face foil 2.5 kV DC · PD 5 / lot, extinction **≥ 2.0 kV**, ≤ 10 pC |
 | Thermal | both yoke faces gap-padded to the two coldplates, end turns potted to the plate · hot-spot ≤ 125 °C at 55 °C inlet (type test, thermocouples beside a gap and on the winding) |
@@ -130,6 +131,9 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 | `stress-audit` | 50kw external Lr litz J | 12000×0.05 mm litz (23.6 mm²): J 5.1 A/mm² ≤ 5.6 at the 120 A class | ✅ |
 | `conductor-audit` | 50kw 2×E70 N 5, litz 12000×0.05 @203 kHz | MLT 221 mm · Rdc 0.82 mΩ @25 °C (row ≤0.92) · Sullivan Fr 3.15 → Rac 3.34 mΩ hot (row ≤3.7) → Cu 45 W at 116 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope | ✅ |
 | `current-coordination` | 50kw external Lr flux: operating + fault | Lmax 3.38 µH (2×E70 N 5): 90 mT at the worst simulated peak (≤110) · 163 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT | ✅ |
+| `mkf-crosscheck` | MKF-GAP · 50kw D2 L from the drawn gap Σ 13.11 mm in 14 × 0.94 mm | Zhang 3.73 µH (+13.7 %) · Muehlethaler 3.73 · Partridge 3.57 · Balakrishnan 3.60 · Stenglein 5.86 vs 3.28 µH ± 3 % → with fringing Σ ≈ 15.0 mm (15 × 1.00 mm) reaches the target — ground to AL either way; this is the first-grind guide | ℹ️ |
+| `mkf-crosscheck` | 50kw D2 Rdc @25 °C from MKF's turn layout | 0.83 vs 0.82 mΩ (+1.0 %) — acceptance ±5 % | ✅ |
+| `mkf-crosscheck` | MKF-CU · 50kw D2 copper at SER250-full-bus764 203.0 kHz, 100 °C | MKF 18.0 W (14.5 ohmic + 0.0 skin + 3.5 prox) vs Sullivan 45.0 W → ×0.40 — the gate's D2 copper is the conservative figure | ℹ️ |
 
 </details>
 
@@ -149,18 +153,19 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 |---|---|
 | Ratio · magnetizing | **4:4∥4 exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **17.8 µH ± 7 %** per cell @ 10 kHz, 0.1 V |
 | Core · former | **3 × E70/33/32** PC95 / N95 / 3C95-class · 3-set former, lN 293 mm (custom — shared with D3-40) |
-| Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **1.113 µH/T² (Σ gap ≈ 2.3 mm)** on the assembled cell |
+| Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **1.113 µH/T² (Σ gap ≈ 2.4 mm with fringing)** on the assembled cell |
 | Primary | **TIW-served litz 3536×0.071 mm (14 mm²)**, one layer |
 | Secondary halves | 2 × Cu foil 0.08 × 28 mm per turn · MLT S1 / P / S2 253 / 272 / 290 mm |
 | Leakage | per cell, both halves shorted, 140 kHz, after VPI: **0.090 µH ± 30 %** — measured and labelled |
-| Rdc @ 25 °C (100 %) | P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ · Rac/Rdc ≤ 1.35 per winding at 203 kHz (sample 5 / lot) |
+| Rdc @ 25 °C (100 %) | P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ |
+| AC resistance (sample 5 / lot) | short-circuit R at 203 kHz with both halves shorted (the leakage fixture), referred to P, 25 °C — expected **4.65–6.12 mΩ** (1-D … MKF); the first article fixes the lot line at its median + 10 %. Not a per-winding open-circuit Rac/Rdc: that loses the interleaved field cancellation and rejects good parts |
 | Insulation system | Class H — VPI class H · TIW grade Class F minimum · pri ↔ sec **reinforced**, one barrier system: TIW wall + ≥ 3 barrier-tape layers between each shield and its secondary · shields to SH → DCN on the board |
 | Hipot · PD | **100 %: pri ↔ sec ≥ 4.25 kV DC 1 s, witnessed and logged** · P → bonded-face foil 2.5 kV DC · S → foil 1.5 kV DC · PD type test + 5 / lot: extinction **≥ 2.0 kV**, ≤ 10 pC after 1.2 × pre-stress |
 | Thermal | both yoke faces gap-padded to the two coldplates, end turns potted to the plate · type test at the named corners: ≤ 125 °C at 55 °C inlet, ≤ 135 °C at 75 °C derated (thermocouples at the winding outer surface and the centre leg) |
 | Over-temperature cutout | one NC 130 ± 5 °C thermostat per cell at the winding hot-spot witness point — a lost bond is screened at EOL by the bonded thermal soak |
 | Terminations | primary header P1 · P2 · SH on one end-turn face · secondary header SA · SB on the opposite face, ≥ 8 mm plus a slot between groups |
 | Mechanical · marking | ≤ 70.5 × 65.9 × 120 mm plus headers · the 65.9 mm yoke-face height is controlled · **1.85 kg** per cell · label p/n, rev, lot, serial, measured leakage, polarity dots |
-| Production test | 100 %: ratio, Lm, leakage + label, Rdc × 3, pri ↔ sec and bonded-face hipots · sample: Rac 5 / lot, PD 5 / lot · first article: dimensions, cross-section, impulse, PD and thermal type tests |
+| Production test | 100 %: ratio, Lm, leakage + label, Rdc × 3, pri ↔ sec and bonded-face hipots · sample: short-circuit R 5 / lot, PD 5 / lot · first article: dimensions, cross-section, impulse, PD and thermal type tests |
 
 **Winding table (each cell)** — radial order from the centre leg; breadth 41 mm; conductors confined to the 28 mm centre band.
 
@@ -185,6 +190,11 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 | `conductor-audit` | 50kw cell profiled-litz primary 3536×0.071 mm | Sullivan (interleaved k 0.25) Fr 1.25 → 29.5 W at 116 A rms | ✅ |
 | `conductor-audit` | 50kw production Rdc rows @25 °C match the 3×E70 cell build | MLT S1/P/S2 253/272/290 mm → P 1.36 (≤1.55) · S1 3.97 (≤4.5) · S2 4.55 (≤5.1) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught | ✅ |
 | `temp-critique` | D3 simulated worst flux at 130 °C core | worst B̂ 159 mT (50kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited | ✅ |
+| `mkf-crosscheck` | 50kw D3 cell Lm from the drawn gap Σ 2.32 mm in 5 × 0.46 mm | Zhang 18.64 µH (+4.7 %) · Muehlethaler 18.70 · Partridge 18.15 · Balakrishnan 18.43 · Stenglein 23.06 vs 17.80 µH ± 7 % → with fringing Σ ≈ 2.4 mm (5 × 0.49 mm) reaches the target — ground to AL either way; this is the first-grind guide | ✅ |
+| `mkf-crosscheck` | 50kw D3 cell Rdc per winding @25 °C from MKF's turn layout | P 1.35 vs 1.36 mΩ (-0.8 %) · S1 3.89 vs 3.97 mΩ (-2.1 %) · S2 4.57 vs 4.55 mΩ (+0.4 %) — acceptance ±5 % | ✅ |
+| `mkf-crosscheck` | MKF-CU · 50kw D3 cell copper at SER250-full-bus764 203.0 kHz, 100 °C | MKF 94.1 W (P 23.6 ohmic + 0.0 skin + 11.2 prox · S1 16.4 ohmic + 10.8 skin + 0.0 prox · S2 19.3 ohmic + 12.7 skin + 0.0 prox) vs 1-D 71.3 W (litz 29.5 Sullivan + foils 41.9 Dowell) → ×1.32: MKF resolves the edge current where the 28 mm foil stops short of the window, which the 1-D porosity factor reads low · short-circuit R at 203 kHz, halves shorted, 25 °C: 1-D 4.65 · MKF 6.12 mΩ | ℹ️ |
+| `mkf-crosscheck` | 50kw D3 cell with MKF copper ×1.32 in the magnetics-envelope network | hot-spot 117 °C @55 °C (core 91 / winding 117) vs 125 · 85 °C @75 °C derated vs 135 · +25 % Rth 134 °C vs 155 · runaway margin 110 K vs 25 | ✅ |
+| `mkf-crosscheck` | MKF-LEAK · leakage is not taken from MKF 1.4.0 | foil and rectangular turns return 90–170 µH per D3 cell and the value rises with foil height (physically it falls); litz stand-ins give 1–2 µH. The 1-D S1–P–S2 figure (0.09–0.17 µH) and the first-article leakage measurement stand | ℹ️ |
 
 </details>
 
@@ -296,7 +306,7 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 
 | Test | What it closes for these magnetics |
 |---|---|
-| T-31 | first-article Rac at 140 kHz and ΔT at the class current for every D2 / D3 winding |
+| T-31 | first-article D3 short-circuit R at 203 kHz against the 1-D … MKF bracket — it decides which copper model the D3 thermal margin rests on — plus D2 Rac and ΔT at the class current for every D2 / D3 winding |
 | T-33 | D1 as-mounted resonance search and endurance |
 | T-34 | the assembled tank: D2 ± 3 %, cell leakage ± 30 %, fr within ± 5 % |
 | T-37 | D2 flux at the F.11 kill with a search coil |
@@ -307,5 +317,5 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 <div align="center">
 <sub><a href="magnetics-40kw.md">← 40 kW Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-50kwa.md">50 kW Air Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E71 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

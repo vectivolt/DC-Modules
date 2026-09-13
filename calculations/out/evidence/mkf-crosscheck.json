@@ -1,0 +1,215 @@
+{
+ "gate": "mkf-crosscheck",
+ "exit": 0,
+ "rows": [
+  {
+   "status": "ok",
+   "tag": "MKF-GAP",
+   "name": "30kw D3 cell Lm from the drawn gap Σ 2.21 mm in 5 × 0.44 mm",
+   "detail": "Zhang 29.39 µH (+5.0 %) · Muehlethaler 29.49 · Partridge 28.74 · Balakrishnan 28.90 · Stenglein 35.85 vs 28.00 µH ± 7 % → with fringing Σ ≈ 2.3 mm (5 × 0.47 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "30kw D3 cell Rdc per winding @25 °C from MKF's turn layout",
+   "detail": "P 1.81 vs 1.85 mΩ (-2.2 %) · S1 7.00 vs 7.14 mΩ (-1.9 %) · S2 8.52 vs 8.74 mΩ (-2.5 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "30kw D3 cell copper at SER250-full-bus764 202.9 kHz, 100 °C",
+   "detail": "MKF 59.1 W (P 11.6 ohmic + 0.0 skin + 5.8 prox · S1 10.9 ohmic + 7.9 skin + 0.0 prox · S2 13.2 ohmic + 9.6 skin + 0.0 prox) vs 1-D 45.8 W (litz 15.6 Sullivan + foils 30.2 Dowell) → ×1.29: MKF resolves the edge current where the 28 mm foil stops short of the window, which the 1-D porosity factor reads low · short-circuit R at 203 kHz, halves shorted, 25 °C: 1-D 8.33 · MKF 10.39 mΩ"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-THERMAL",
+   "name": "30kw D3 cell with MKF copper ×1.29 in the magnetics-envelope network",
+   "detail": "hot-spot 115 °C @55 °C (core 94 / winding 115) vs 125 · 102 °C @75 °C derated vs 135 · +25 % Rth 126 °C vs 155 · runaway margin 116 K vs 25"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-GAP",
+   "name": "30kw D2 L from the drawn gap Σ 8.34 mm in 9 × 0.93 mm",
+   "detail": "Zhang 5.84 µH (+13.2 %) · Muehlethaler 5.85 · Partridge 5.60 · Balakrishnan 5.65 · Stenglein 7.29 vs 5.16 µH ± 3 % → with fringing Σ ≈ 9.5 mm (10 × 0.95 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "30kw D2 Rdc @25 °C from MKF's turn layout",
+   "detail": "1.22 vs 1.21 mΩ (+1.3 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "30kw D2 copper at SER250-full-bus764 202.9 kHz, 100 °C",
+   "detail": "MKF 9.2 W (7.9 ohmic + 0.0 skin + 1.3 prox) vs Sullivan 15.1 W → ×0.61 — the gate's D2 copper is the conservative figure"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-GAP",
+   "name": "40kw D3 cell Lm from the drawn gap Σ 1.90 mm in 4 × 0.47 mm",
+   "detail": "Zhang 22.67 µH (+4.2 %) · Muehlethaler 22.75 · Partridge 22.08 · Balakrishnan 22.42 · Stenglein 26.80 vs 21.75 µH ± 7 % → with fringing Σ ≈ 2.0 mm (4 × 0.50 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "40kw D3 cell Rdc per winding @25 °C from MKF's turn layout",
+   "detail": "P 1.35 vs 1.36 mΩ (-0.8 %) · S1 3.89 vs 3.97 mΩ (-2.1 %) · S2 4.57 vs 4.55 mΩ (+0.4 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "40kw D3 cell copper at SER250-full-bus764 203.0 kHz, 100 °C",
+   "detail": "MKF 60.7 W (P 15.3 ohmic + 0.0 skin + 7.2 prox · S1 10.6 ohmic + 7.0 skin + 0.0 prox · S2 12.5 ohmic + 8.2 skin + 0.0 prox) vs 1-D 46.1 W (litz 19.1 Sullivan + foils 27.0 Dowell) → ×1.32: MKF resolves the edge current where the 28 mm foil stops short of the window, which the 1-D porosity factor reads low · short-circuit R at 203 kHz, halves shorted, 25 °C: 1-D 4.65 · MKF 6.12 mΩ"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-THERMAL",
+   "name": "40kw D3 cell with MKF copper ×1.32 in the magnetics-envelope network",
+   "detail": "hot-spot 110 °C @55 °C (core 92 / winding 110) vs 125 · 103 °C @75 °C derated vs 135 · +25 % Rth 119 °C vs 155 · runaway margin 115 K vs 25"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-GAP",
+   "name": "40kw D2 L from the drawn gap Σ 10.56 mm in 11 × 0.96 mm",
+   "detail": "Zhang 4.63 µH (+13.8 %) · Muehlethaler 4.64 · Partridge 4.43 · Balakrishnan 4.47 · Stenglein 7.44 vs 4.07 µH ± 3 % → with fringing Σ ≈ 12.0 mm (12 × 1.00 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "40kw D2 Rdc @25 °C from MKF's turn layout",
+   "detail": "0.99 vs 0.98 mΩ (+1.2 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "40kw D2 copper at SER250-full-bus764 203.0 kHz, 100 °C",
+   "detail": "MKF 13.4 W (11.2 ohmic + 0.0 skin + 2.3 prox) vs Sullivan 27.3 W → ×0.49 — the gate's D2 copper is the conservative figure"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-GAP",
+   "name": "50kw D3 cell Lm from the drawn gap Σ 2.32 mm in 5 × 0.46 mm",
+   "detail": "Zhang 18.64 µH (+4.7 %) · Muehlethaler 18.70 · Partridge 18.15 · Balakrishnan 18.43 · Stenglein 23.06 vs 17.80 µH ± 7 % → with fringing Σ ≈ 2.4 mm (5 × 0.49 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "50kw D3 cell Rdc per winding @25 °C from MKF's turn layout",
+   "detail": "P 1.35 vs 1.36 mΩ (-0.8 %) · S1 3.89 vs 3.97 mΩ (-2.1 %) · S2 4.57 vs 4.55 mΩ (+0.4 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "50kw D3 cell copper at SER250-full-bus764 203.0 kHz, 100 °C",
+   "detail": "MKF 94.1 W (P 23.6 ohmic + 0.0 skin + 11.2 prox · S1 16.4 ohmic + 10.8 skin + 0.0 prox · S2 19.3 ohmic + 12.7 skin + 0.0 prox) vs 1-D 71.3 W (litz 29.5 Sullivan + foils 41.9 Dowell) → ×1.32: MKF resolves the edge current where the 28 mm foil stops short of the window, which the 1-D porosity factor reads low · short-circuit R at 203 kHz, halves shorted, 25 °C: 1-D 4.65 · MKF 6.12 mΩ"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-THERMAL",
+   "name": "50kw D3 cell with MKF copper ×1.32 in the magnetics-envelope network",
+   "detail": "hot-spot 117 °C @55 °C (core 91 / winding 117) vs 125 · 85 °C @75 °C derated vs 135 · +25 % Rth 134 °C vs 155 · runaway margin 110 K vs 25"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-GAP",
+   "name": "50kw D2 L from the drawn gap Σ 13.11 mm in 14 × 0.94 mm",
+   "detail": "Zhang 3.73 µH (+13.7 %) · Muehlethaler 3.73 · Partridge 3.57 · Balakrishnan 3.60 · Stenglein 5.86 vs 3.28 µH ± 3 % → with fringing Σ ≈ 15.0 mm (15 × 1.00 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "50kw D2 Rdc @25 °C from MKF's turn layout",
+   "detail": "0.83 vs 0.82 mΩ (+1.0 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "50kw D2 copper at SER250-full-bus764 203.0 kHz, 100 °C",
+   "detail": "MKF 18.0 W (14.5 ohmic + 0.0 skin + 3.5 prox) vs Sullivan 45.0 W → ×0.40 — the gate's D2 copper is the conservative figure"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-GAP",
+   "name": "50kwa D3 cell Lm from the drawn gap Σ 2.32 mm in 5 × 0.46 mm",
+   "detail": "Zhang 18.64 µH (+4.7 %) · Muehlethaler 18.70 · Partridge 18.15 · Balakrishnan 18.43 · Stenglein 23.06 vs 17.80 µH ± 7 % → with fringing Σ ≈ 2.4 mm (5 × 0.49 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "50kwa D3 cell Rdc per winding @25 °C from MKF's turn layout",
+   "detail": "P 1.35 vs 1.36 mΩ (-0.8 %) · S1 3.89 vs 3.97 mΩ (-2.1 %) · S2 4.57 vs 4.55 mΩ (+0.4 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "50kwa D3 cell copper at SER250-full-bus764 203.0 kHz, 100 °C",
+   "detail": "MKF 94.1 W (P 23.6 ohmic + 0.0 skin + 11.2 prox · S1 16.4 ohmic + 10.8 skin + 0.0 prox · S2 19.3 ohmic + 12.7 skin + 0.0 prox) vs 1-D 71.3 W (litz 29.5 Sullivan + foils 41.9 Dowell) → ×1.32: MKF resolves the edge current where the 28 mm foil stops short of the window, which the 1-D porosity factor reads low · short-circuit R at 203 kHz, halves shorted, 25 °C: 1-D 4.65 · MKF 6.12 mΩ"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-THERMAL",
+   "name": "50kwa D3 cell with MKF copper ×1.32 in the magnetics-envelope network",
+   "detail": "hot-spot 130 °C @55 °C (core 100 / winding 130) vs 125 · 103 °C @75 °C derated vs 135 · +25 % Rth 146 °C vs 155 · runaway margin 118 K vs 25 → the design line is exceeded only under MKF's copper; the class lines hold. First article decides (short-circuit R and the bonded thermal type test); a wider foil band restores the line under MKF copper: 32 mm band 125 °C · 36 mm band 121 °C (the side margins shrink — an insulation-coordination change)"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-GAP",
+   "name": "50kwa D2 L from the drawn gap Σ 13.11 mm in 14 × 0.94 mm",
+   "detail": "Zhang 3.73 µH (+13.7 %) · Muehlethaler 3.73 · Partridge 3.57 · Balakrishnan 3.60 · Stenglein 5.86 vs 3.28 µH ± 3 % → with fringing Σ ≈ 15.0 mm (15 × 1.00 mm) reaches the target — ground to AL either way; this is the first-grind guide"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "50kwa D2 Rdc @25 °C from MKF's turn layout",
+   "detail": "0.83 vs 0.82 mΩ (+1.0 %) — acceptance ±5 %"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-CU",
+   "name": "50kwa D2 copper at SER250-full-bus764 203.0 kHz, 100 °C",
+   "detail": "MKF 18.0 W (14.5 ohmic + 0.0 skin + 3.5 prox) vs Sullivan 45.0 W → ×0.40 — the gate's D2 copper is the conservative figure"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-LEAK",
+   "name": "leakage is not taken from MKF 1.4.0",
+   "detail": "foil and rectangular turns return 90–170 µH per D3 cell and the value rises with foil height (physically it falls); litz stand-ins give 1–2 µH. The 1-D S1–P–S2 figure (0.09–0.17 µH) and the first-article leakage measurement stand"
+  }
+ ],
+ "values": {
+  "30kw": {
+   "d3GapMm": 2.3,
+   "d3GapSegments": 5,
+   "rsc1dMohm": 8.33,
+   "rscMkfMohm": 10.39,
+   "d2GapMm": 9.5,
+   "d2GapSegments": 10
+  },
+  "40kw": {
+   "d3GapMm": 2.0,
+   "d3GapSegments": 4,
+   "rsc1dMohm": 4.65,
+   "rscMkfMohm": 6.12,
+   "d2GapMm": 12.0,
+   "d2GapSegments": 12
+  },
+  "50kw": {
+   "d3GapMm": 2.4,
+   "d3GapSegments": 5,
+   "rsc1dMohm": 4.65,
+   "rscMkfMohm": 6.12,
+   "d2GapMm": 15.0,
+   "d2GapSegments": 15
+  },
+  "50kwa": {
+   "d3GapMm": 2.4,
+   "d3GapSegments": 5,
+   "rsc1dMohm": 4.65,
+   "rscMkfMohm": 6.12,
+   "watch": true,
+   "d2GapMm": 15.0,
+   "d2GapSegments": 15
+  }
+ }
+}

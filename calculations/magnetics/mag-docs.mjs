@@ -28,6 +28,11 @@ const EV = Object.fromEntries(["stress-audit", "conductor-audit", "magnetics-env
   .map((g) => { const p = join(OUT, "evidence", `${g}.json`); if (!existsSync(p)) throw new Error(`mag-docs: ${g} evidence missing — run the gate first`); return [g, JSON.parse(readFileSync(p, "utf8"))]; }));
 for (const [g, e] of Object.entries(EV)) if (e.exit !== 0) throw new Error(`mag-docs: ${g} did not pass (exit ${e.exit}) — a failing gate cannot be published as proof`);
 const rows = (gate, pred) => EV[gate].rows.filter(pred).map((r) => ({ gate, ...r }));
+// E71: the PyOpenMagnetics second opinion runs by hand in a Python venv (calculations/magnetics/mkf-crosscheck.py) — optional here,
+// but a failing run is never published
+const MKF_PATH = join(OUT, "evidence", "mkf-crosscheck.json"), MKF = existsSync(MKF_PATH) ? JSON.parse(readFileSync(MKF_PATH, "utf8")) : null;
+if (MKF && MKF.exit !== 0) throw new Error("mag-docs: mkf-crosscheck did not pass — re-run it or remove its evidence file");
+const mkfRows = (pred) => (MKF ? MKF.rows.filter(pred).map((r) => ({ gate: "mkf-crosscheck", ...r })) : []);
 const skuRe = (sku) => new RegExp(`^${sku}\\b`);
 const proof = (list) => `| Gate | Check | Result | |
 |---|---|---|:---:|
@@ -94,6 +99,8 @@ function page(sku) {
   ].map(([id, fn, mpn, what]) => ({ id, fn, mpn, what, ...price(mpn) }));
   const total10 = bill.reduce((a, r) => a + r.qty * r.u10k, 0);
 
+  const V = MKF?.values?.[sku];
+  const mkfPart = (part) => mkfRows((r) => skuRe(sku).test(r.name) && r.name.includes(` ${part} `));
   const envD = (part) => rows("magnetics-envelope", (r) => r.tag === part && skuRe(sku).test(r.name));
   const envLost = (part) => rows("magnetics-envelope", (r) => r.tag === `${part}-BOND-LOST` && skuRe(sku).test(r.name));
   const out = [masthead(path), `
@@ -136,6 +143,7 @@ gate reports, and a failing gate stops the battery before this page is written.
 | \`temp-critique\` | saturation at the 130 °C cutout, cold equilibria and the fault chain on measured 3C95 surfaces | B̂ ≤ 50 % Bsat(130 °C) · fault flux ≤ 60 % |
 | \`current-coordination\` | D2 flux at the F.11 kill peak and CT observability through each trip's race | ≤ 217 mT · the kill lands inside the ADC rail |
 | \`mag-sync\` | the identity of every part against every carrier, and the computed mass | tokens present · mass within ± 20 % |
+| \`mkf-crosscheck\` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
 
 ## D1 — PFC boost choke · qty 3 · \`${W1.mpn}\`
 
@@ -182,7 +190,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 | Inductance | **${W2.L} ± 3 %** @ 140 kHz, 0.1 V (100 %) |
 | Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372B2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **${d2.strands}×0.05** mm (${((d2.strands * Math.PI * 0.05 ** 2) / 4).toFixed(1)} mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
-| Gap | distributed centre-leg gap **${W2.gap}**, every segment ≤ 1.0 mm, outer legs mated |
+| Gap | distributed centre-leg gap **${V ? `Σ ≈ ${V.d2GapMm.toFixed(1)} mm in ${V.d2GapSegments} segments` : W2.gap}**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives ${W2.L} at N 5${V ? "; Σ is the fringing-corrected first-grind guide (MKF)" : ""} |
 | Rdc · Rac | Rdc **${W2.rdc}** @ 25 °C (100 %) · Rac **${W2.rac}** @ 203 kHz, 100 °C (sample 5 / lot) |
 | Insulation · hipot · PD | basic insulation to PE through former + spacer + VPI class H · 100 % winding → bonded-face foil 2.5 kV DC · PD 5 / lot, extinction **${W2.pd}**, ≤ 10 pC |
 | Thermal | ${mount} · hot-spot ≤ 125 °C at 55 °C inlet (type test, thermocouples beside a gap and on the winding) |
@@ -198,6 +206,7 @@ ${proof([
   ...rows("stress-audit", (r) => (r.tag === "D2" || r.tag === "D2c") && skuRe(sku).test(r.name)),
   ...rows("conductor-audit", (r) => r.tag === "D2" && skuRe(b).test(r.name)),
   ...rows("current-coordination", (r) => r.tag === "D2" && skuRe(sku).test(r.name)),
+  ...mkfPart("D2"),
 ])}
 
 </details>
@@ -218,18 +227,19 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 |---|---|
 | Ratio · magnetizing | **${W3.turns} exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **${W3.Lm} ± 7 %** per cell @ 10 kHz, 0.1 V |
 | Core · former | **${W3.sets} × E70/33/32** PC95 / N95 / 3C95-class · ${W3.former} |
-| Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **${W3.AL}** on the assembled cell |
+| Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **${V ? W3.AL.replace(/Σ gap ≈ [\d.]+ mm/, `Σ gap ≈ ${V.d3GapMm.toFixed(1)} mm with fringing`) : W3.AL}** on the assembled cell |
 | Primary | **${W3.pri}**, one layer |
 | Secondary halves | ${W3.sec} · MLT S1 / P / S2 ${W3.mlt} |
 | Leakage | per cell, both halves shorted, 140 kHz, after VPI: **${W3.llk} ± 30 %** — measured and labelled |
-| Rdc @ 25 °C (100 %) | ${W3.rdc} · Rac/Rdc ≤ 1.35 per winding at 203 kHz (sample 5 / lot) |
+| Rdc @ 25 °C (100 %) | ${W3.rdc} |
+| AC resistance (sample 5 / lot) | short-circuit R at 203 kHz with both halves shorted (the leakage fixture), referred to P, 25 °C${V ? ` — expected **${V.rsc1dMohm}–${V.rscMkfMohm} mΩ** (1-D … MKF)` : ""}; the first article fixes the lot line at its median + 10 %. Not a per-winding open-circuit Rac/Rdc: that loses the interleaved field cancellation and rejects good parts |
 | Insulation system | Class H — VPI class H · TIW grade Class F minimum · pri ↔ sec **reinforced**, one barrier system: TIW wall + ≥ 3 barrier-tape layers between each shield and its secondary · shields to SH → DCN on the board |
 | Hipot · PD | **100 %: pri ↔ sec ≥ 4.25 kV DC 1 s, witnessed and logged** · P → bonded-face foil 2.5 kV DC · S → foil 1.5 kV DC · PD type test + 5 / lot: extinction **${W3.pd}**, ≤ 10 pC after 1.2 × pre-stress |
 | Thermal | ${mount} · type test at the named corners: ≤ 125 °C at 55 °C inlet, ≤ 135 °C at 75 °C derated (thermocouples at the winding outer surface and the centre leg) |
 | Over-temperature cutout | one NC 130 ± 5 °C thermostat per cell at the winding hot-spot witness point — a lost bond is screened at EOL by the bonded thermal soak |
 | Terminations | primary header P1 · P2 · SH on one end-turn face · secondary header SA · SB on the opposite face, ≥ 8 mm plus a slot between groups |
 | Mechanical · marking | ${W3.size} · the 65.9 mm yoke-face height is controlled · **${W3.mass}** per cell · label p/n, rev, lot, serial, measured leakage, polarity dots |
-| Production test | 100 %: ratio, Lm, leakage + label, Rdc × 3, pri ↔ sec and bonded-face hipots · sample: Rac 5 / lot, PD 5 / lot · first article: dimensions, cross-section, impulse, PD and thermal type tests |
+| Production test | 100 %: ratio, Lm, leakage + label, Rdc × 3, pri ↔ sec and bonded-face hipots · sample: short-circuit R 5 / lot, PD 5 / lot · first article: dimensions, cross-section, impulse, PD and thermal type tests |
 
 **Winding table (each cell)** — radial order from the centre leg; breadth 41 mm; conductors confined to the 28 mm centre band.
 
@@ -250,6 +260,7 @@ ${proof([
   ...rows("stress-audit", (r) => r.tag === "D3" && skuRe(sku).test(r.name)),
   ...rows("conductor-audit", (r) => r.tag === "D3" && skuRe(b).test(r.name)),
   ...rows("temp-critique", (r) => r.tag === "BSAT" && /D3/.test(r.name)),
+  ...mkfPart("D3"), ...mkfRows((r) => r.tag === "MKF-LEAK"),
 ])}
 
 </details>
@@ -331,7 +342,7 @@ ${proof([
 
 | Test | What it closes for these magnetics |
 |---|---|
-| T-31 | first-article Rac at 140 kHz and ΔT at the class current for every D2 / D3 winding |
+| T-31 | first-article D3 short-circuit R at 203 kHz against the 1-D … MKF bracket — it decides which copper model the D3 thermal margin rests on — plus D2 Rac and ΔT at the class current for every D2 / D3 winding${V?.watch ? " · **watch:** at MKF's copper this D3 cell exceeds its 125 °C design line (class lines hold) — the D3 proof table carries the computed foil-band fallback" : ""} |
 | T-33 | D1 as-mounted resonance search and endurance |
 | T-34 | the assembled tank: D2 ± 3 %, cell leakage ± 30 %, fr within ± 5 % |
 | T-37 | D2 flux at the F.11 kill with a search coil |
