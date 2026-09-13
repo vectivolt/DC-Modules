@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -60,7 +60,7 @@ flowchart LR
 | **Products** (E55) | **100 kW = 2 × 50** (no CSU) · **150 kW = 3 × 50** (E66: charger controller = group master, no CSU) | per module | 100 kW air 76,808 (768) · 150 kW air 1,15,212 (768) |
 
 Costs are the India 10k basis generated in [`bom-cost.md`](bom-cost.md), which also carries the China RFQ-target column
-(E69f: ₹24,640 / 28,320 / 33,183 / 31,399) and the 2U construction scenario (E69e); the product rationale is in
+(E69f: ₹24,639 / 28,319 / 33,182 / 31,398) and the 2U construction scenario (E69e); the product rationale is in
 [product structure](../boards/README-product-structure.md).
 
 ## 2. The power path, stage by stage
@@ -193,13 +193,12 @@ timeline
   InfyPower parity · E65–E69 : simulated-corner magnetics, full-bridge LLC with two output modes and an output diode, clip mount, star-X2 filter, film-only banks, right-sized dies, China cost column
 ```
 
-Each decision is recorded row by row in the [decision register](assumptions.md). Dated fix logs live in the
-[historical records](history/README.md).
+Each decision is recorded row by row in the [decision register](assumptions.md); the git history keeps every earlier record.
 
 ---
 
 <div align="center">
 <sub><a href="README.md">← Documentation Hub</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="assumptions.md">Decision Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

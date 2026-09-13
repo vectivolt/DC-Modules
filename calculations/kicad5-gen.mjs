@@ -160,12 +160,10 @@ const CAT = (value, mpn, pins, designator = "") => {
 const lib = new Map();
 const libName = (s) => String(s).replace(/[^A-Za-z0-9_.+-]/g, "_");
 
-// E56: the library is emitted in NATIVE KiCad legacy convention — sheet position of a pin is
-// (ux + px, uy − py) under the standard "1 0 0 -1" matrix every instance uses. (History: through
-// E55 the lib was pre-mirrored about Y because the then-consumer applied (ux+px, uy+py); with the
-// EasyEDA layer removed, KiCad itself is the terminal face and the recorded LATENT mirror defect
-// — IC pin rows flipped in real eeschema — is retired by construction. kicad5-verify models the
-// native matrix against an independent netlist, so a regression here fails 7,000+ pin checks.)
+// The library is emitted in NATIVE KiCad legacy convention — sheet position of a pin is
+// (ux + px, uy − py) under the standard "1 0 0 -1" matrix every instance uses. KiCad is the terminal
+// face; kicad5-verify models the native matrix against an independent netlist, so a regression here
+// fails thousands of label checks.
 // Largest empty rectangle on the sheet, as a fraction of sheet area. "Density" and "ragged bottom"
 // both missed the defect the eye sees first: a big blank channel THROUGH the middle of a sheet.
 // A short column is invisible to a bottom-edge measure, and a sheet can be 70% full and still have

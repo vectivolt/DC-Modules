@@ -1,0 +1,126 @@
+{
+ "gate": "conductor-audit",
+ "exit": 0,
+ "rows": [
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw bundle 9× 1.6 mm, 39 T on 3×T79",
+   "detail": "MLT 161 mm (Magnetics table, K 44 %) · 50 Hz 54.7 A → 23.4 W · 50 kHz ripple 6.3 A rms at Fr 47.5 (Ferreira 69.2 × 2-D 0.686; a flat untwisted bundle computes 7.7 W) → 14.8 W · Cu 38.2 W hot — the E60 m = 2 model read 3.6 W ripple copper [d1-fd N39·nw9·d1.6·x3·L21/15/3]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw production Rdc row @25 °C catches open strands",
+   "detail": "build 6.08 mΩ · row ≤6.9 mΩ (13 % above; worst good part 6.57; 2 strands open 7.82) · lot window ±5 % vs one open strand +12.5 % — the E60 lines ≤11 / 7.0 / 6.5 mΩ passed a third of the strands open"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw bundle 13× 1.6 mm, 26 T on 5×T79",
+   "detail": "MLT 227 mm (Magnetics table, K 42 %) · 50 Hz 72.9 A → 27.2 W · 50 kHz ripple 7.83 A rms at Fr 43.2 (Ferreira 65.1 × 2-D 0.664; a flat untwisted bundle computes 6.2 W) → 13.6 W · Cu 40.8 W hot — the E60 m = 2 model read 3.6 W ripple copper [d1-fd N26·nw13·d1.6·x5·L17/9]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw production Rdc row @25 °C catches open strands",
+   "detail": "build 3.97 mΩ · row ≤4.55 mΩ (14 % above; worst good part 4.35; 2 strands open 4.7) · lot window ±5 % vs one open strand +8.3 % — the E60 lines ≤11 / 7.0 / 6.5 mΩ passed a third of the strands open"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw bundle 13× 1.6 mm, 24 T on 5×T79",
+   "detail": "MLT 225 mm (Magnetics table, K 39 %) · 50 Hz 91.2 A → 38.9 W · 50 kHz ripple 10.16 A rms at Fr 37.1 (Ferreira 54.6 × 2-D 0.68; a flat untwisted bundle computes 8.3 W) → 17.9 W · Cu 56.9 W hot — the E60 m = 2 model read 5.5 W ripple copper [d1-fd N24·nw13·d1.6·x5·L17/7]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw production Rdc row @25 °C catches open strands",
+   "detail": "build 3.63 mΩ · row ≤4.15 mΩ (14 % above; worst good part 3.98; 2 strands open 4.29) · lot window ±5 % vs one open strand +8.3 % — the E60 lines ≤11 / 7.0 / 6.5 mΩ passed a third of the strands open"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "30kw 2×E70 N 5, litz 8000×0.05 @203 kHz",
+   "detail": "MLT 216 mm · Rdc 1.21 mΩ @25 °C (row ≤1.35) · Sullivan Fr 1.96 → Rac 3.04 mΩ hot (row ≤3.35) → Cu 15.1 W at 70.4 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "40kw 2×E70 N 5, litz 10000×0.05 @203 kHz",
+   "detail": "MLT 218 mm · Rdc 0.98 mΩ @25 °C (row ≤1.1) · Sullivan Fr 2.49 → Rac 3.14 mΩ hot (row ≤3.45) → Cu 27.3 W at 93.3 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "50kw 2×E70 N 5, litz 12000×0.05 @203 kHz",
+   "detail": "MLT 221 mm · Rdc 0.82 mΩ @25 °C (row ≤0.92) · Sullivan Fr 3.15 → Rac 3.34 mΩ hot (row ≤3.7) → Cu 45 W at 116 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "30kw cell foil halves 1× 0.1 mm × 28 mm, 6 turns @203 kHz",
+   "detail": "h/δ 0.59 (η 0.68) → Dowell Fr 1.23 (m 6) ≤ 1.35 → both halves 30.2 W at 34.6 A rms each (SER250-full-bus764; optimum 0.1 mm = 30.2 W)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "30kw cell profiled-litz primary 3850×0.063 mm",
+   "detail": "Sullivan (interleaved k 0.25) Fr 1.32 → 15.6 W at 70.4 A rms"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "30kw production Rdc rows @25 °C match the 2×E70 cell build",
+   "detail": "MLT S1/P/S2 189/211/232 mm → P 1.85 (≤2.1) · S1 7.14 (≤8) · S2 8.74 (≤9.8) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "40kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz",
+   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.9 A rms each (SER250-full-bus764; optimum 0.1 mm = 26.1 W)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "40kw cell profiled-litz primary 3536×0.071 mm",
+   "detail": "Sullivan (interleaved k 0.25) Fr 1.25 → 19.1 W at 93.3 A rms"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "40kw production Rdc rows @25 °C match the 3×E70 cell build",
+   "detail": "MLT S1/P/S2 253/272/290 mm → P 1.36 (≤1.55) · S1 3.97 (≤4.5) · S2 4.55 (≤5.1) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "50kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz",
+   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 41.9 W at 57.1 A rms each (SER250-full-bus764; optimum 0.1 mm = 40.5 W)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "50kw cell profiled-litz primary 3536×0.071 mm",
+   "detail": "Sullivan (interleaved k 0.25) Fr 1.25 → 29.5 W at 116 A rms"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "50kw production Rdc rows @25 °C match the 3×E70 cell build",
+   "detail": "MLT S1/P/S2 253/272/290 mm → P 1.36 (≤1.55) · S1 3.97 (≤4.5) · S2 4.55 (≤5.1) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught"
+  },
+  {
+   "status": "info",
+   "tag": "D4",
+   "name": "primary @65 kHz (rev E sandwich, one layer per half): 0.5 mm single Fr 1.2 vs 2×0.35 mm bifilar Fr 1.05",
+   "detail": "both inside the ~1 W copper budget at ~1 A rms (the E52 two-layer build read Fr 1.95)"
+  },
+  {
+   "status": "info",
+   "tag": "GAP",
+   "name": "Dowell/Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor",
+   "detail": "D2: distributed gap ≤1.0 mm per segment + ≥3 mm litz clearance (E65), measured Rac includes it · D3: Lm gap split equally per set (≤0.5 mm/position) because S1 foil is innermost; T-31 open-secondary check + S1 thermocouple, FEMMT run closes the number"
+  }
+ ]
+}

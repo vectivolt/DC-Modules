@@ -17,6 +17,8 @@ import { TANKS, TANK_CLASS, JBS_POS, fingerprint } from "../llc/tanks.mjs";
 import { D2 as D2C } from "../magnetics/magnetics-envelope.mjs";
 import { stack } from "../magnetics/geometry.mjs";
 import { D1, Ld1 } from "../pfc/vienna-switched.mjs";
+import { captureEvidence } from "../evidence.mjs";
+captureEvidence("current-coordination");
 // E69a: pulsed rating IDM (25 °C) per die — listings where they exist, otherwise the RFQ acceptance line the part must meet
 const PFC_DIE = { "30kw": { mpn: "SIC-750V-20mR", idm: 210, src: "RFQ acceptance IDM ≥ 210 A" }, "40kw": { mpn: "SIC-750V-15mR", idm: 260, src: "RFQ acceptance IDM ≥ 260 A" },
   "50kw": { mpn: "B3M010C075Z", idm: 480, src: "TME listing" }, "50kwa": { mpn: "B3M010C075Z", idm: 480, src: "TME listing" } };

@@ -14,7 +14,6 @@
     "designator": "UAUX",
     "value": "NCP1252D",
     "block_name": "FLYBACK",
-    "search_query": "NCP1252D current-mode flyback controller, RT-set 65 kHz",
     "pins": [
      {
       "pin_number": 1,
@@ -62,7 +61,6 @@
     "designator": "QAUX",
     "value": "SIC-1700-1R",
     "block_name": "FLYBACK",
-    "search_query": "SIC-1700-1R SiC FET 1700 V ~1 Ω",
     "pins": [
      {
       "pin_number": 1,
@@ -85,7 +83,6 @@
     "designator": "RAUXCS",
     "value": "280m",
     "block_name": "FLYBACK",
-    "search_query": "R1206-R28-1%-0.5W 0.28 Ω 1% 0.5 W 1206 current-sense",
     "pins": [
      {
       "pin_number": 1,
@@ -103,7 +100,6 @@
     "designator": "RAUXG",
     "value": "100k",
     "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -121,7 +117,6 @@
     "designator": "RCSF",
     "value": "1k",
     "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -139,7 +134,6 @@
     "designator": "CCSF",
     "value": "100pF",
     "block_name": "FLYBACK",
-    "search_query": "MLCC-100p-0603 100 pF 0603 C0G ±5 %",
     "pins": [
      {
       "pin_number": 1,
@@ -157,7 +151,6 @@
     "designator": "TAUX",
     "value": "XFMR-AUX-FLY-E",
     "block_name": "FLYBACK",
-    "search_query": "XFMR-AUX-FLY-E aux flyback transformer ETD44 PC95, 110 W class, 321–860 V input,",
     "pins": [
      {
       "pin_number": 1,
@@ -205,7 +198,6 @@
     "designator": "RAUXST1",
     "value": "470k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -223,7 +215,6 @@
     "designator": "RAUXST2",
     "value": "470k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -241,7 +232,6 @@
     "designator": "RBR1A",
     "value": "1.2M",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -259,7 +249,6 @@
     "designator": "RBR1B",
     "value": "1.2M",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -277,7 +266,6 @@
     "designator": "RBR2",
     "value": "7.5k",
     "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -295,7 +283,6 @@
     "designator": "DZAUX",
     "value": "BZT52-C15",
     "block_name": "FLYBACK",
-    "search_query": "BZT52-C15 15 V zener SOD-123",
     "pins": [
      {
       "pin_number": 2,
@@ -313,7 +300,6 @@
     "designator": "RZFB",
     "value": "2.2k",
     "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -331,7 +317,6 @@
     "designator": "QAUXFB",
     "value": "S8050",
     "block_name": "FLYBACK",
-    "search_query": "S8050 NPN SOT-23",
     "pins": [
      {
       "pin_number": 1,
@@ -354,7 +339,6 @@
     "designator": "RBEFB",
     "value": "10k",
     "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -372,7 +356,6 @@
     "designator": "CFBF",
     "value": "1nF",
     "block_name": "FLYBACK",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -390,7 +373,6 @@
     "designator": "CAUXSS",
     "value": "100nF",
     "block_name": "FLYBACK",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -408,7 +390,6 @@
     "designator": "DCLA",
     "value": "SIC-SBD-1700V",
     "block_name": "FLYBACK",
-    "search_query": "SIC-SBD-1700V SiC Schottky ≥1700 V, IF",
     "pins": [
      {
       "pin_number": 2,
@@ -426,7 +407,6 @@
     "designator": "CCLA",
     "value": "10nF",
     "block_name": "FLYBACK",
-    "search_query": "PP-10n-1200 10 nF 1200 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -444,7 +424,6 @@
     "designator": "RCLA1",
     "value": "11k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working",
     "pins": [
      {
       "pin_number": 1,
@@ -462,7 +441,6 @@
     "designator": "RCLA2",
     "value": "11k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working",
     "pins": [
      {
       "pin_number": 1,
@@ -480,7 +458,6 @@
     "designator": "RCLA3",
     "value": "11k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working",
     "pins": [
      {
       "pin_number": 1,
@@ -498,7 +475,6 @@
     "designator": "RAUXRT",
     "value": "66.5k",
     "block_name": "FLYBACK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -518,7 +494,6 @@
     "designator": "DAUX24",
     "value": "UF-400V-3A",
     "block_name": "RAILS",
-    "search_query": "UF-400V-3A 400 V 3 A ultrafast, SMC pad",
     "pins": [
      {
       "pin_number": 2,
@@ -536,7 +511,6 @@
     "designator": "DAUX15",
     "value": "US2G",
     "block_name": "RAILS",
-    "search_query": "US2G 400 V 2 A ultrafast SMB",
     "pins": [
      {
       "pin_number": 2,
@@ -554,7 +528,6 @@
     "designator": "DAUXVC",
     "value": "US2G",
     "block_name": "RAILS",
-    "search_query": "US2G 400 V 2 A ultrafast SMB",
     "pins": [
      {
       "pin_number": 2,
@@ -572,7 +545,6 @@
     "designator": "CAUX24",
     "value": "220uF",
     "block_name": "RAILS",
-    "search_query": "EL-220u-35 220 µF 35 V",
     "pins": [
      {
       "pin_number": 1,
@@ -590,7 +562,6 @@
     "designator": "CAUX15",
     "value": "220uF",
     "block_name": "RAILS",
-    "search_query": "EL-220u-35 220 µF 35 V",
     "pins": [
      {
       "pin_number": 1,
@@ -608,7 +579,6 @@
     "designator": "CVCC",
     "value": "220uF",
     "block_name": "RAILS",
-    "search_query": "EL-220u-35 220 µF 35 V",
     "pins": [
      {
       "pin_number": 1,
@@ -626,7 +596,6 @@
     "designator": "DTVS24",
     "value": "SMBJ26A",
     "block_name": "RAILS",
-    "search_query": "SMBJ26A TVS 26 V uni SMB",
     "pins": [
      {
       "pin_number": 2,
@@ -644,7 +613,6 @@
     "designator": "DTVS15",
     "value": "SMBJ16A",
     "block_name": "RAILS",
-    "search_query": "SMBJ16A TVS 16 V uni SMB",
     "pins": [
      {
       "pin_number": 2,
@@ -662,7 +630,6 @@
     "designator": "RAUX24",
     "value": "50m",
     "block_name": "RAILS",
-    "search_query": "R2512-R05-1W-1% 50 mΩ 1 % 1 W 2512 in the V24 distribution after CAUX24",
     "pins": [
      {
       "pin_number": 1,
@@ -680,7 +647,6 @@
     "designator": "CVCCB",
     "value": "100nF",
     "block_name": "RAILS",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -700,7 +666,6 @@
     "designator": "UBKA",
     "value": "TPS54202-class",
     "block_name": "BUCK-3V3",
-    "search_query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6",
     "pins": [
      {
       "pin_number": 3,
@@ -738,7 +703,6 @@
     "designator": "LBKA",
     "value": "IND-10u-3A",
     "block_name": "BUCK-3V3",
-    "search_query": "IND-10u-3A 10 µH 3 A shielded power inductor",
     "pins": [
      {
       "pin_number": 1,
@@ -756,7 +720,6 @@
     "designator": "CBKIA",
     "value": "10uF",
     "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -774,7 +737,6 @@
     "designator": "CBKOA",
     "value": "22uF",
     "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -792,7 +754,6 @@
     "designator": "CBSTA",
     "value": "100nF",
     "block_name": "BUCK-3V3",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -810,7 +771,6 @@
     "designator": "REN1A",
     "value": "100k",
     "block_name": "BUCK-3V3",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -828,7 +788,6 @@
     "designator": "REN2A",
     "value": "27k",
     "block_name": "BUCK-3V3",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -846,7 +805,6 @@
     "designator": "RBKF1A",
     "value": "45.3k",
     "block_name": "BUCK-3V3",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -864,7 +822,6 @@
     "designator": "RBKF2A",
     "value": "10k",
     "block_name": "BUCK-3V3",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -884,7 +841,6 @@
     "designator": "JFAN1",
     "value": "PH-4-FAN",
     "block_name": "FANS",
-    "search_query": "PH-4-FAN fan header 4-way",
     "pins": [
      {
       "pin_number": 1,
@@ -912,7 +868,6 @@
     "designator": "RFT1",
     "value": "10k",
     "block_name": "FANS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -930,7 +885,6 @@
     "designator": "JFAN2",
     "value": "PH-4-FAN",
     "block_name": "FANS",
-    "search_query": "PH-4-FAN fan header 4-way",
     "pins": [
      {
       "pin_number": 1,
@@ -958,7 +912,6 @@
     "designator": "RFT2",
     "value": "10k",
     "block_name": "FANS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -976,7 +929,6 @@
     "designator": "JFAN3",
     "value": "PH-4-FAN",
     "block_name": "FANS",
-    "search_query": "PH-4-FAN fan header 4-way",
     "pins": [
      {
       "pin_number": 1,
@@ -1004,7 +956,6 @@
     "designator": "RFT3",
     "value": "10k",
     "block_name": "FANS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1022,7 +973,6 @@
     "designator": "JFAN4",
     "value": "PH-4-FAN",
     "block_name": "FANS",
-    "search_query": "PH-4-FAN fan header 4-way",
     "pins": [
      {
       "pin_number": 1,
@@ -1050,7 +1000,6 @@
     "designator": "RFT4",
     "value": "10k",
     "block_name": "FANS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1070,7 +1019,6 @@
     "designator": "JICA",
     "value": "MICROFIT3-40",
     "block_name": "INTERCONNECT",
-    "search_query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact",
     "pins": [
      {
       "pin_number": 1,

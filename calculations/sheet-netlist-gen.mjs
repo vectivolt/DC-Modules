@@ -2,8 +2,7 @@
 // sheet-netlist-gen.mjs — transform calculations/out/sheets/{side}-{page}.json section tables
 // into sheet payloads with REAL physical package pins per part (the vendor pin maps live in the
 // translation branches below — R3/R4 provenance). kicad5-gen consumes these payloads; the
-// KiCad-5 SHIP set is the terminal face (E56: the EasyEDA app layer — uuids, page ids, rotate
-// hints — is removed; nothing here talks to any external tool).
+// KiCad-5 SHIP set is the terminal face; nothing here talks to any external tool.
 // Output: out/sheets/{sku}/apply/{side}-{page}.json  { page, chunks: [[comp,...],...], nc, warnings }
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
@@ -18,16 +17,10 @@ mkdirSync(outDir, { recursive: true });
 
 // GD32G553VET7 LQFP100 physical pin allocation (R3). The previous map was STM32G474-derived and
 // symbolic: it put a fault output on pin 74 (VSS) and BOOT0 on pin 100 (VDD) — two hard shorts —
-// and SWD on PA6/PA7. Allocated against GD32G553xx Rev 2.0 Table 2-4 and adversarially audited;
-// see docs/history/mcu-pin-allocation-gd32.md for the open architecture decisions.
+// and SWD on PA6/PA7. Allocated against GD32G553xx Rev 2.0 Table 2-4 and adversarially audited
+// (control-card-scope.md).
 const MCU_ALLOC = JSON.parse(readFileSync(join(here, "out/mcu-pin-allocation.json"), "utf8"));
 const MCU_REF = { UPFC: "UPFC", ULLC: "ULLC" };
-
-// Live page UUIDs. page-uuids-new.json is rewritten whenever the pages are recreated
-// and is the authoritative map (pages rebuilt 2026-09-06 in canonical signal order).
-const PAGE_UUIDS = SKU === "30kw"
-  ? JSON.parse(readFileSync(join(srcDir, "page-uuids-new.json"), "utf8"))
-  : new Proxy({}, { get: (_, k) => `sku-${SKU}-${String(k)}`, has: () => true });
 
 // Human-facing page titles: SKU, which board of the pair, position in the set, function.
 const PAGE_TITLES = {
@@ -57,7 +50,7 @@ const P = (n, name, s) => ({ pin_number: n, name, signal_name: s ?? "" });
 function transform(c, page, all, warn) {
   const m = c.mpn || c.value;
   const out = { designator: c.designator, value: c.value, block_name: c.block_name,
-    search_query: (c.query || m).trim(), pins: [], nc: [] };   // E56: no part_uuid — every classified component is ALWAYS emitted (the skip-on-missing-uuid path was the entire silent-drop bug family, occurrences 1–7)
+    pins: [], nc: [] };   // every classified component is ALWAYS emitted — a skip path was the entire silent-drop bug family
   const byNum = Object.fromEntries(c.pins.map((p) => [p.pin_number, p.signal_name]));
 
   if (DIODES.has(m)) {

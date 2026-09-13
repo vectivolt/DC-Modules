@@ -4,7 +4,7 @@
 //   · precharge (475 VAC worst, 2×33 Ω in L1/L2, 6-pulse): t95, Ipk, per-resistor energy
 //   · firmware F.20 as coded (abort iff t>400 ms AND bus<50 % line pk): must NOT trip
 //   · bus discharge 640 Ω from 850 V: t(<60 V) vs per-SKU PMP_DISCH_TO_MS (3.0/5.5/9.0 s)
-//   · bank bleed 8.8 kΩ from 525 V: t(<60 V) vs the F.21b 2.5·τ timeout (10.3/20.6/41.2 s)
+//   · bank bleed 8.8 kΩ from 500 V (film-only banks, E68c): t(<60 V) vs the registered F.21b window
 // Run: node spice/protection/prechg-disch.mjs
 import { runDeck } from "../run.mjs";
 import { writeFileSync } from "node:fs";
@@ -17,9 +17,11 @@ const f = (x, d = 1) => Number(x.toFixed(d));
 // E60: the product SKUs (link halves 5/6/8 × 470 µF in series · bank strings 2/3/4 × 235 µF ·
 // PMP_DISCH_TO_MS 3000/4000/5000 · F.21b = 2.5·τ, τ = 8.8 k·C_bank) — the retired 60/120 kW rows are gone
 const SKUS = [
-  { name: "30kw", Cs: 5 * 470e-6 / 2, Cbank: 2 * 235e-6, dischTO: 3.0, bleedTO: 2.5 * 8800 * 2 * 235e-6 },
-  { name: "40kw", Cs: 6 * 470e-6 / 2, Cbank: 3 * 235e-6, dischTO: 4.0, bleedTO: 2.5 * 8800 * 3 * 235e-6 },
-  { name: "50kw", Cs: 8 * 470e-6 / 2, Cbank: 4 * 235e-6, dischTO: 5.0, bleedTO: 2.5 * 8800 * 4 * 235e-6 },   // 50kwa identical link/banks
+  // E68c: the banks are film-only — 9 / 12 / 14 × 2.2 µF — and top out at 500 V (E67). The bleed limit stays the registered F.21b
+  // window (2.5·τ of the retired E60 strings, protection-thresholds): it now holds by a wide margin.
+  { name: "30kw", Cs: 5 * 470e-6 / 2, Cbank: 9 * 2.2e-6, dischTO: 3.0, bleedTO: 10.34 },
+  { name: "40kw", Cs: 6 * 470e-6 / 2, Cbank: 12 * 2.2e-6, dischTO: 4.0, bleedTO: 15.51 },
+  { name: "50kw", Cs: 8 * 470e-6 / 2, Cbank: 14 * 2.2e-6, dischTO: 5.0, bleedTO: 20.68 },   // 50kwa identical link/banks
 ];
 
 const prechgDeck = (Cs) => `* precharge per-SKU: 475 VAC, 2x33R in L1/L2, 6-pulse into ${Cs * 1e3} mF eq
@@ -90,11 +92,11 @@ for (const s of SKUS) {
   }
   // --- bank bleed
   {
-    const r = runDeck(`bleed-${s.name}`, rcDeck("bank-bleed", s.Cbank, 8800, 525, s.bleedTO * 1.3).replace("NAME.out", `bleed-${s.name}.out`), ["vbank"]);
+    const r = runDeck(`bleed-${s.name}`, rcDeck("bank-bleed", s.Cbank, 8800, 500, 8800 * s.Cbank * 6).replace("NAME.out", `bleed-${s.name}.out`), ["vbank"]);
     let t60 = NaN;
     for (let i = 0; i < r.t.length; i++) if (r.cols.vbank[i] < 60) { t60 = r.t[i]; break; }
-    const eR = 0.5 * s.Cbank * 525 * 525 / 4;
-    push(`bankbleed-${s.name}`, f(t60, 1), "0.06", f(eR, 0), s.bleedTO, !isNaN(t60) && t60 < s.bleedTO);
+    const eR = 0.5 * s.Cbank * 500 * 500 / 4;
+    push(`bankbleed-${s.name}`, f(t60, 2), "0.06", f(eR, 0), s.bleedTO, !isNaN(t60) && t60 < s.bleedTO);
   }
 }
 writeFileSync(join(RES, "prechg-disch-sku.csv"),

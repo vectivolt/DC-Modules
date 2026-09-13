@@ -7,6 +7,8 @@
 // (stress Epulse), bank-bleeder ≤32 J (E33), discharge timelines (R8-A), magnetics runaway
 // (temp-critique E58), Tj ceilings (grid).  Run: node calculations/system/fault-energy.mjs
 import { readFileSync } from "node:fs";
+import { captureEvidence } from "../evidence.mjs";
+captureEvidence("fault-energy");
 const f = (x, d = 1) => Number(x.toFixed(d));
 let fails = 0;
 const ck = (sec, name, cond, detail) => {

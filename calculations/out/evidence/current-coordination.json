@@ -1,0 +1,438 @@
+{
+ "gate": "current-coordination",
+ "exit": 0,
+ "rows": [
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "30kw LLC deck pinned to the drawn tank",
+   "detail": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss250p vs tanks.mjs 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss250p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "30kw deck physical + capable",
+   "detail": "legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 4 switches every corner · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "40kw LLC deck pinned to the drawn tank",
+   "detail": "40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss500p vs tanks.mjs 40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss500p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "40kw deck physical + capable",
+   "detail": "legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 4 switches every corner · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "50kw LLC deck pinned to the drawn tank",
+   "detail": "50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss500p vs tanks.mjs 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss500p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "50kw deck physical + capable",
+   "detail": "legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 4 switches every corner · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "50kwa LLC deck pinned to the drawn tank",
+   "detail": "50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss500p vs tanks.mjs 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss500p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+  },
+  {
+   "status": "ok",
+   "tag": "SIM",
+   "name": "50kwa deck physical + capable",
+   "detail": "legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 4 switches every corner · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "30kw threshold ≥ 1.2× simulated worst line peak",
+   "detail": "120 A pk vs 97 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.24×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "30kw high-line bus floor proven",
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.76/40.36 %, overmod 74.1/90.5 % → with 1.08·√2·VLL floor: THD 0.12/0.1 % (fsm.c E60)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "30kw observability through the 3 µs kill race",
+   "detail": "Δi(3 µs, 560 V, L(i) at AL−8 %) = 45.3 A → 165.3 A ≤ ceiling 184.1 A on 22 Ω · threshold at 2.71 V ≤ 3 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "30kw D1 stays soft at the fault peak",
+   "detail": "µ(165.3 A) = 0.197 of initial (sendust soft-sat — di/dt grows 5.1×, never a hard collapse; Kool Mµ Tc 500 °C)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "30kw PFC FET pulse class at the fault peak",
+   "detail": "165.3 A per die (one SIC-750V-20mR per position) vs 80 % of IDM 210 A (RFQ acceptance IDM ≥ 210 A)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "30kw boost-diode repetitive peak",
+   "detail": "diode peak 96.5 A (sim) ≤ F.01 120 A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "40kw threshold ≥ 1.2× simulated worst line peak",
+   "detail": "155 A pk vs 127.2 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "40kw high-line bus floor proven",
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.61/39.93 %, overmod 75.3/91.7 % → with 1.08·√2·VLL floor: THD 0.11/0.1 % (fsm.c E60)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "40kw observability through the 3 µs kill race",
+   "detail": "Δi(3 µs, 560 V, L(i) at AL−8 %) = 49.9 A → 204.9 A ≤ ceiling 225 A on 18 Ω · threshold at 2.77 V ≤ 3 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "40kw D1 stays soft at the fault peak",
+   "detail": "µ(204.9 A) = 0.251 of initial (sendust soft-sat — di/dt grows 4×, never a hard collapse; Kool Mµ Tc 500 °C)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "40kw PFC FET pulse class at the fault peak",
+   "detail": "204.9 A per die (one SIC-750V-15mR per position) vs 80 % of IDM 260 A (RFQ acceptance IDM ≥ 260 A)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "40kw boost-diode repetitive peak",
+   "detail": "diode peak 126.5 A (sim) ≤ F.01 155 A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "50kw threshold ≥ 1.2× simulated worst line peak",
+   "detail": "195 A pk vs 159.4 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "50kw high-line bus floor proven",
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.6/39.82 %, overmod 75/91.4 % → with 1.08·√2·VLL floor: THD 0.12/0.09 % (fsm.c E60)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "50kw observability through the 3 µs kill race",
+   "detail": "Δi(3 µs, 560 V, L(i) at AL−8 %) = 71.4 A → 266.4 A ≤ ceiling 311.5 A on 13 Ω · threshold at 2.66 V ≤ 3 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "50kw D1 stays soft at the fault peak",
+   "detail": "µ(266.4 A) = 0.199 of initial (sendust soft-sat — di/dt grows 5×, never a hard collapse; Kool Mµ Tc 500 °C)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "50kw PFC FET pulse class at the fault peak",
+   "detail": "266.4 A per die (one B3M010C075Z per position) vs 80 % of IDM 480 A (TME listing)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.01",
+   "name": "50kw boost-diode repetitive peak",
+   "detail": "diode peak 158.5 A (sim) ≤ F.01 195 A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "30kw threshold ≥ 1.2× simulated worst tank peak",
+   "detail": "140 A pk vs 112.7 A (SER250-full-bus764) → 1.24×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "30kw window-comparator kill + observability",
+   "detail": "|Ip| crosses F.11 1.45 µs after the short → kill peak 209.1 A (+1 µs, ×1.2 ≤ 344.7 A on 0.47 Ω) · monitor peak +3 µs 318.6 A ×1.05 in rail · window 0.99/2.31 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "30kw LLC FET pulse class at the kill peak",
+   "detail": "209.1 A per die (1× SG2M023120LJ per position) vs 80 % of IDM 265 A (RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)) — non-repetitive µs pulse at low VDS"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "30kw external Lr flux: operating + fault",
+   "detail": "Lmax 5.31 µH (2×E70 N 5): 88 mT at the worst simulated peak (≤110) · 163 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "30kw resonant caps at the simulated corners",
+   "detail": "10.06 A rms per cap (7× 33 nF) ≤ 12 · Vcr 565 V pk = 400 V rms ≤ 530 (O-8 RFQ line; max sits at the gain-critical 77–82 kHz corner, not at fr)"
+  },
+  {
+   "status": "ok",
+   "tag": "TANK",
+   "name": "30kw tank RMS inside the drawn class",
+   "detail": "70.4 A rms (nominal + tolerance corners) vs class 78 A — D2 litz/ΔT, Cr and the resonant CT are sized to it"
+  },
+  {
+   "status": "ok",
+   "tag": "JBS",
+   "name": "30kw secondary diodes (2× 40 A per position) at the HIGH-mode floor",
+   "detail": "sim 15 A avg / 24.5 A rms per diode → 27.4 W → Tj 92 °C (hot JBS V0 0.95 V / rd 22 mΩ — RFQ acceptance)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "40kw threshold ≥ 1.2× simulated worst tank peak",
+   "detail": "180 A pk vs 148.1 A (SER250-full-bus764) → 1.22×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "40kw window-comparator kill + observability",
+   "detail": "|Ip| crosses F.11 1.35 µs after the short → kill peak 267.1 A (+1 µs, ×1.2 ≤ 450 A on 0.36 Ω) · monitor peak +3 µs 417 A ×1.05 in rail · window 1/2.3 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "40kw LLC FET pulse class at the kill peak",
+   "detail": "133.6 A per die (2× SG2M023120LJ per position) vs 80 % of IDM 265 A (RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)) — non-repetitive µs pulse at low VDS"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "40kw external Lr flux: operating + fault",
+   "detail": "Lmax 4.19 µH (2×E70 N 5): 91 mT at the worst simulated peak (≤110) · 164 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "40kw resonant caps at the simulated corners",
+   "detail": "10.37 A rms per cap (9× 33 nF) ≤ 12 · Vcr 580 V pk = 410 V rms ≤ 530 (O-8 RFQ line; max sits at the gain-critical 77–82 kHz corner, not at fr)"
+  },
+  {
+   "status": "ok",
+   "tag": "TANK",
+   "name": "40kw tank RMS inside the drawn class",
+   "detail": "93.3 A rms (nominal + tolerance corners) vs class 100 A — D2 litz/ΔT, Cr and the resonant CT are sized to it"
+  },
+  {
+   "status": "ok",
+   "tag": "JBS",
+   "name": "40kw secondary diodes (2× 40 A per position) at the HIGH-mode floor",
+   "detail": "sim 20 A avg / 32.4 A rms per diode → 42.1 W → Tj 104 °C (hot JBS V0 0.95 V / rd 22 mΩ — RFQ acceptance)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "50kw threshold ≥ 1.2× simulated worst tank peak",
+   "detail": "220 A pk vs 182.8 A (SER250-full-bus764) → 1.2×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "50kw window-comparator kill + observability",
+   "detail": "|Ip| crosses F.11 1.35 µs after the short → kill peak 329.7 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 502.7 A ×1.05 in rail · window 0.99/2.31 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "50kw LLC FET pulse class at the kill peak",
+   "detail": "164.8 A per die (2× SG2M023120LJ per position) vs 80 % of IDM 265 A (RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)) — non-repetitive µs pulse at low VDS"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "50kw external Lr flux: operating + fault",
+   "detail": "Lmax 3.38 µH (2×E70 N 5): 90 mT at the worst simulated peak (≤110) · 163 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "50kw resonant caps at the simulated corners",
+   "detail": "10.55 A rms per cap (11× 33 nF) ≤ 12 · Vcr 595 V pk = 421 V rms ≤ 530 (O-8 RFQ line; max sits at the gain-critical 77–82 kHz corner, not at fr)"
+  },
+  {
+   "status": "ok",
+   "tag": "TANK",
+   "name": "50kw tank RMS inside the drawn class",
+   "detail": "116 A rms (nominal + tolerance corners) vs class 120 A — D2 litz/ΔT, Cr and the resonant CT are sized to it"
+  },
+  {
+   "status": "ok",
+   "tag": "JBS",
+   "name": "50kw secondary diodes (2× 40 A per position) at the HIGH-mode floor",
+   "detail": "sim 25.1 A avg / 40.4 A rms per diode → 59.7 W → Tj 104 °C (hot JBS V0 0.95 V / rd 22 mΩ — RFQ acceptance)"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "50kwa threshold ≥ 1.2× simulated worst tank peak",
+   "detail": "220 A pk vs 182.8 A (SER250-full-bus764) → 1.2×"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "50kwa window-comparator kill + observability",
+   "detail": "|Ip| crosses F.11 1.35 µs after the short → kill peak 329.7 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 502.7 A ×1.05 in rail · window 0.99/2.31 V"
+  },
+  {
+   "status": "ok",
+   "tag": "F.11",
+   "name": "50kwa LLC FET pulse class at the kill peak",
+   "detail": "164.8 A per die (2× SG2M023120LJ per position) vs 80 % of IDM 265 A (RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)) — non-repetitive µs pulse at low VDS"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "50kwa external Lr flux: operating + fault",
+   "detail": "Lmax 3.38 µH (2×E70 N 5): 90 mT at the worst simulated peak (≤110) · 163 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "50kwa resonant caps at the simulated corners",
+   "detail": "10.55 A rms per cap (11× 33 nF) ≤ 12 · Vcr 595 V pk = 421 V rms ≤ 530 (O-8 RFQ line; max sits at the gain-critical 77–82 kHz corner, not at fr)"
+  },
+  {
+   "status": "ok",
+   "tag": "TANK",
+   "name": "50kwa tank RMS inside the drawn class",
+   "detail": "116 A rms (nominal + tolerance corners) vs class 120 A — D2 litz/ΔT, Cr and the resonant CT are sized to it"
+  },
+  {
+   "status": "ok",
+   "tag": "JBS",
+   "name": "50kwa secondary diodes (2× 40 A per position) at the HIGH-mode floor",
+   "detail": "sim 25.1 A avg / 40.4 A rms per diode → 59.7 W → Tj 118 °C (hot JBS V0 0.95 V / rd 22 mΩ — RFQ acceptance)"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "30kw film-only bank: ripple current per film + output ripple voltage",
+   "detail": "9× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 34.4 A rms at SER250-full-bus764 → 3.83 A per film (≤10.5) · worst ripple 0.47 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "30kw output blocking diode DOUT",
+   "detail": "100 A of the 150 A class (67 %) · 105 W at Vf 1.05 V → Tj 115 °C (Rjc 0.25 + TIM 0.08 + local 0.1 K/W to the 70 °C ref) — InfyPower practice; 1600 V vs 1000 V out = 63 %"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "40kw film-only bank: ripple current per film + output ripple voltage",
+   "detail": "12× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 44.9 A rms at SER250-full-bus764 → 3.74 A per film (≤10.5) · worst ripple 0.46 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "40kw output blocking diode DOUT",
+   "detail": "133 A of the 200 A class (67 %) · 140 W at Vf 1.05 V → Tj 120 °C (Rjc 0.18 + TIM 0.08 + local 0.1 K/W to the 70 °C ref) — InfyPower practice; 1600 V vs 1000 V out = 63 %"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "50kw film-only bank: ripple current per film + output ripple voltage",
+   "detail": "14× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 55.1 A rms at SER250-full-bus764 → 3.93 A per film (≤10.5) · worst ripple 0.49 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "50kw output blocking diode DOUT",
+   "detail": "167 A of the 250 A class (67 %) · 175 W at Vf 1.05 V → Tj 123 °C (Rjc 0.15 + TIM 0.08 + local 0.1 K/W to the 65 °C ref) — InfyPower practice; 1600 V vs 1000 V out = 63 %"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "50kwa film-only bank: ripple current per film + output ripple voltage",
+   "detail": "14× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 55.1 A rms at SER250-full-bus764 → 3.93 A per film (≤10.5) · worst ripple 0.49 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+  },
+  {
+   "status": "ok",
+   "tag": "OUT",
+   "name": "50kwa output blocking diode DOUT",
+   "detail": "167 A of the 250 A class (67 %) · 175 W at Vf 1.05 V → Tj 128 °C (Rjc 0.15 + TIM 0.08 + local 0.1 K/W to the 70 °C ref) — InfyPower practice; 1600 V vs 1000 V out = 63 %"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "boards.tsx film-only bank per rating",
+   "detail": "30 kW 9× · 40 kW 12× · 50 kW 14× 2.2 µF film per bank (E68)"
+  },
+  {
+   "status": "ok",
+   "tag": "DESAT",
+   "name": "LLC 1200 V (ZVS turn-on) response inside 75 % of SCWT",
+   "detail": "22 pF: worst blank+LEB+delay+soft-off = 1.44 µs ≤ 1.5 µs (SCWT class 2 µs) · min blank 0.48 µs ≥ 0.4 µs noise floor — the as-drawn 100 pF computed 3.39 µs (170 % of SCWT)"
+  },
+  {
+   "status": "ok",
+   "tag": "DESAT",
+   "name": "PFC 750 V (hard turn-on) response inside 75 % of SCWT",
+   "detail": "47 pF: worst blank+LEB+delay+soft-off = 2.21 µs ≤ 3.15 µs (SCWT class 4.2 µs) · min blank 0.8 µs ≥ 0.8 µs noise floor — the as-drawn 100 pF computed 3.53 µs (84 % of SCWT)"
+  },
+  {
+   "status": "ok",
+   "tag": "DESAT",
+   "name": "blanking caps carried by the drawing",
+   "detail": "DriverCh takes cBlank per channel: Vienna pairs 47 pF, LLC half-bridges 22 pF"
+  },
+  {
+   "status": "ok",
+   "tag": "DUMP",
+   "name": "bank discharge into an external short vs K_OUT and copper",
+   "detail": "Ipk ≈ 22.2 kA, τ 42 µs, I²t 10444 A²s ≤ 10 % of a 200 A relay's 2 kA/0.1 s class and ≤1 % of the 50 mm² bar — µs-scale, contacts already closed (no arc); the charger-level DC fuse/contactor is the 61851-23 system item"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "fsm.c per-rating OC classes",
+   "detail": "HAL programs the CMP DACs from these (120/155/195 line · 140/180/220 tank, E67)"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "boards.tsx burdens per rating",
+   "detail": "line 22/18/13 Ω · resonant 0.47/0.36/0.30 Ω (E67)"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "boards.tsx F.11 window ladder per rating",
+   "detail": "50kw 220.2 A (F.11 220) · 40kw 181 A (F.11 180) · 30kw 140.5 A (F.11 140) — ladder ±1 % + comparator offset"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "parts-db burden mpns per rating",
+   "detail": "30kw: R1206-22R-1% + R2512-0R47-1W-1% · 40kw: R1206-18R-1% + R2512-0R36-1W-1% · 50kw: R1206-13R-1% + R2512-0R30-2W-1%"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "protection-thresholds carries the E67 class table",
+   "detail": "per-SKU F.01/F.11 table + DESAT timing note present"
+  }
+ ]
+}

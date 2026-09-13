@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-module--interconnect--audit-2ea44f?style=flat-square" alt="gate: module-interconnect-audit"/>
 </p>
@@ -54,7 +54,7 @@ the coldplates; the magnetics stand in the volume between the boards.
 
 | | AC-DC (lower) | DC-DC (upper) |
 |---|---|---|
-| **Power** | AC studs, per-SKU gG fuses, MOV Δ + GDT, two-stage CM/DM EMI, precharge (2 × 33 Ω + 2-pole bypass, E14 rev B), Vienna phases, split DC link + balance, bus discharge (640 Ω + QDISF) | film commutation caps, LLC legs (paralleled on the 50 kW air), tanks + transformer sections, dual JBS banks, bank caps + bleeders, S/P matrix (+10 Ω pre-insertion, K_OUT — dual at 50 kW), two-stage 74HC02 exclusion, output filter / shunt / studs |
+| **Power** | AC studs, per-SKU gG fuses, MOV Δ + GDT, two CM chokes with star-X2 EMI stages (E68b), precharge (2 × 33 Ω + 2-pole bypass, E14 rev B), Vienna phases, split DC link + balance, bus discharge (640 Ω + QDISF) | film commutation caps, LLC legs (paralleled on the 50 kW air), tanks + transformer sections, dual JBS banks, bank caps + bleeders, S/P matrix (+10 Ω pre-insertion, K_OUT — dual at 50 kW), two-stage 74HC02 exclusion, output filter / shunt / studs |
 | **Control side** | line CTs, AC and bus isolated senses, NTC × 2, fans (2 / 3 / 0 / 4 per SKU), aux flyback (bus-fed DCP → MID), local 3.3 V buck (R4-5), coil driver (KPRE, QDIS), 40-way harness header **JICA** | **88-way card slot (JB)**, resonant CTs, bank / output isolated senses, output shunt amplifier, NTC × 2, coil driver (6 relays) + exclusion gates, PV bleeder drive (QPVD, R8), isolated CAN (NSI1042-DSWR), local 3.3 V buck, HMI (2 buttons + 2-digit 7-segment), harness header **JICB** |
 
 ## 2. The 40-way harness (JICA ↔ JICB, E40)
@@ -110,8 +110,7 @@ pie showData title 40 harness ways by function
 > **Loss of the harness is a safe state.** With GATE_EN_A low or V15 / V24 missing, the AC-DC gates are off in
 > hardware. The card's watchdog covers the brain itself (WDO ≡ NRST, R5-A).
 
-*The pre-E40 two-card 16-way harness and its UART link are retired; the migration record is
-[single-card migration plan](history/single-card-migration-plan.md), decision E40.*
+*The pre-E40 two-card 16-way harness and its UART link are retired (decision E40).*
 
 ## 3. Grounding (E25)
 
@@ -184,5 +183,5 @@ SKU across every physical boundary:
 <div align="center">
 <sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -3,12 +3,12 @@
 // Two kinds of entry, deliberately kept apart — a purchasable part number must never be
 // guessed:
 //   ORDERABLE  a specific LCSC part that meets the design rating, verified against the LCSC
-//              library during the EasyEDA transcription (2026-09-05/06).
+//              catalogue (2026-09-05/06).
 //   CLASS      the design specifies a rating, not a part (film/X/Y capacitors, MLCCs, power
 //              ceramics, precision dividers). A generic symbol stands in on the schematic.
 //              Purchasing selects against the stated rating; codes here would be fiction.
 //
-// Generated seed: calculations/out/easyeda/part-uuid-map.json. Edit here, not there.
+// This file is the source — edit here.
 
 export const LCSC = {
   // ---- ORDERABLE: semiconductors ----
@@ -53,7 +53,7 @@ export const LCSC = {
   "PH-4-FAN":          { lcsc: "C131334", mpn: "B4B-PH-K-S",    status: "ORDERABLE", note: "JST B4B-PH-K-S" },
   "HDR-1x5-2.54":      { lcsc: "C492404", mpn: "PZ254V-11-05P",    status: "ORDERABLE", note: "PZ254V-11-05P" },
   "TACT-6x6":          { lcsc: "C318884",    status: "REVIEW" , note: "TS-1187A, JLCPCB Basic — 2026-09-06: two candidate series checked and BOTH rejected on size — TS-1088-AR02016 (C720477) is 3.9x3.0 mm and ALPS SKQG is 5.2x5.2 mm; the design specifies a 6.0x6.0 mm body. Schurter's 6x6 tact family is the right size and has a published land pattern (schurter.com/en/datasheet/typ_6x6_mm_tact_switches.pdf) — start there. No footprint drawn: a 4-pad tactile land is NOT determined by the body size alone, it varies by series, so it needs the chosen part's own drawing." },
-  "LED-2DIG-0.56CC":   { lcsc: "C9900021773", status: "REVIEW" , note: "05621G 2-digit 0.56in CC — 2026-09-06 PIN MAP NEEDS VALIDATION. The industry-standard 0.56in 2-digit CC part (XLITX 5621AS, 10-pin multiplexed variant: body 25.0x19.0x8.0, two rows of 5 on 2.54 pitch, 15.24 row spacing) has pinout A=10 B=9 C=1 D=4 E=3 F=6 G=5 DP=2 DIG1=8 DIG2=7. Our remap in easyeda-apply-gen is A=10 B=7 C=4 D=2 E=1 F=9 G=5 DP=3 DIG1=8 DIG2=6 -- only A, G and DIG1 agree. 2-digit displays vary by maker, so ours may match a different part, but the BOM p/n is generic so there is nothing to check it against. Pick the part, then make the remap match it. Consequence if wrong: segments light in the wrong places (visible HMI fault, not a safety issue). No footprint drawn until the pinout is fixed -- pads must match the symbol or EasyEDA will not bind them." },
+  "LED-2DIG-0.56CC":   { lcsc: "C9900021773", status: "REVIEW" , note: "05621G 2-digit 0.56in CC — 2026-09-06 PIN MAP NEEDS VALIDATION. The industry-standard 0.56in 2-digit CC part (XLITX 5621AS, 10-pin multiplexed variant: body 25.0x19.0x8.0, two rows of 5 on 2.54 pitch, 15.24 row spacing) has pinout A=10 B=9 C=1 D=4 E=3 F=6 G=5 DP=2 DIG1=8 DIG2=7. Our sheet pin map (sheet-netlist-gen) is A=10 B=7 C=4 D=2 E=1 F=9 G=5 DP=3 DIG1=8 DIG2=6 -- only A, G and DIG1 agree. 2-digit displays vary by maker, so ours may match a different part, but the BOM p/n is generic so there is nothing to check it against. Pick the part, then make the remap match it. Consequence if wrong: segments light in the wrong places (visible HMI fault, not a safety issue). No footprint drawn until the pinout is fixed -- pads must match the symbol pin numbers or the KiCad netlist will land on the wrong pads." },
   "CMC-CAN-51uH":      { lcsc: "C55213551", mpn: "ACT45B-510-2P-TL003",  status: "ORDERABLE" , note: "ACT45B-510-2P 51 µH — 2026-09-06 RESOLVED from the TDK ACT45B datasheet: ACT45B-510-2P-TL003 — 51 uH common-mode, 200 mA, 50 V DC, Rmax 1.0 ohm, EIA 1812 (4.5x3.2x2.8), AEC-Q200, purpose-built for CAN bus. Land from TDK layout recommendation. NOTE: cells.tsx declares footprint=\"soic8\" for LCAN, which is wrong for a 4-terminal 1812 part — harmless for the schematic (the F2 name comes from footprint-map) but should be corrected if the tscircuit PCB is ever used." },
   "FB-600R-0805":      { lcsc: "C1017", mpn: "GZ2012D601TF",      status: "ORDERABLE", note: "GZ2012D601TF, JLCPCB Basic" },
   "S20K550":           { status: "CLASS", mpn: "B72220S0551K101", spec: "550 VAC 20 mm MOV (delta line-line + GDT series)", note: "E57: B72220S0551K101 IS the TDK order code for S20K550; Chinese eq JVR-20N551K class. The earlier C317868 (350 VAC) must NOT be fitted." },
@@ -196,7 +196,7 @@ export const lcscSummary = () => {
 // ---- value-resolved ordinary passives ----------------------------------------------------
 // Generic families like `R-small` / `MLCC-small` cover several values, so a per-MPN LCSC number
 // cannot express them — the part depends on (family, value). Every entry below was read back
-// from EasyEDA's own LCSC catalogue via component_search; none is from memory.
+// from the LCSC catalogue; none is from memory.
 // Deliberately NOT resolved: anything whose CLASS *is* the specification — HV73 high-voltage
 // dividers, PP film caps rated by voltage class, WW/CER power resistors, custom magnetics.
 // Substituting a generic part there would silently drop a rating the design depends on.
@@ -220,7 +220,7 @@ export const LCSC_BY_VALUE = {
   "R1206-18R-1%|18":    { mpn: "RC1206FR-0718RL", note: "18R 1206 1% (YAGEO RC) — C-number to be read back" },
   "R1206-13R-1%|13":    { mpn: "RC1206FR-0713RL", note: "13R 1206 1% (YAGEO RC) — C-number to be read back" },
   "R1206-27R-1%|10k":   { lcsc: "C132649", mpn: "RC1206FR-0710KL",   note: "10k 1206 1% 250mW" },
-  "R1206-27R-1%|27":    { mpn: "RC1206FR-0727RL", note: "27R 1206 1% — C-number to be read back via component_search at the next EasyEDA session (convention: never invent an LCSC code); the old 33R C137308 must NOT be fitted" },
+  "R1206-27R-1%|27":    { mpn: "RC1206FR-0727RL", note: "27R 1206 1% — C-number to be read back from the LCSC catalogue (convention: never invent an LCSC code); the old 33R C137308 must NOT be fitted" },
   "R-small|100":        { lcsc: "C105577", mpn: "RC0805FR-07100RL",  note: "100R 0805 1%" },
   "R-small|100k":       { lcsc: "C96346",  mpn: "RC0805FR-07100KL",  note: "100k 0805 1%" },
   "MLCC-small|10nF":    { lcsc: "C100042", mpn: "CC0603KRX7R9BB103", note: "10nF 0603 X7R 50V" },

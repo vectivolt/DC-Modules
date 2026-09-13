@@ -15,7 +15,6 @@
     "designator": "RSHO",
     "value": "SHUNT-50MV-100A",
     "block_name": "OUTPUT",
-    "search_query": "SHUNT-50MV-100A manganin shunt, 50 mV @ 100 A",
     "pins": [
      {
       "pin_number": 1,
@@ -43,7 +42,6 @@
     "designator": "USHO",
     "value": "NSI1200-DSWR",
     "block_name": "OUTPUT",
-    "search_query": "NSI1200-DSWR iso shunt amplifier SOIC-8",
     "pins": [
      {
       "pin_number": 1,
@@ -91,7 +89,6 @@
     "designator": "PSSH",
     "value": "ISO5V-RFC-6K",
     "block_name": "OUTPUT",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test",
     "pins": [
      {
       "pin_number": 2,
@@ -119,7 +116,6 @@
     "designator": "CSH1",
     "value": "100nF",
     "block_name": "OUTPUT",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -137,7 +133,6 @@
     "designator": "CSH2",
     "value": "100nF",
     "block_name": "OUTPUT",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -155,7 +150,6 @@
     "designator": "CSHB",
     "value": "1uF",
     "block_name": "OUTPUT",
-    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
     "pins": [
      {
       "pin_number": 1,
@@ -173,7 +167,6 @@
     "designator": "COF1",
     "value": "4.7uF",
     "block_name": "OUTPUT",
-    "search_query": "PP-4u7-1200 4.7 µF 1200 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -191,7 +184,6 @@
     "designator": "COF2",
     "value": "4.7uF",
     "block_name": "OUTPUT",
-    "search_query": "PP-4u7-1200 4.7 µF 1200 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -209,7 +201,6 @@
     "designator": "CYO1",
     "value": "4.7nF",
     "block_name": "OUTPUT",
-    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
     "pins": [
      {
       "pin_number": 1,
@@ -227,7 +218,6 @@
     "designator": "CYO2",
     "value": "4.7nF",
     "block_name": "OUTPUT",
-    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
     "pins": [
      {
       "pin_number": 1,
@@ -245,7 +235,6 @@
     "designator": "JOUTP",
     "value": "STUD-M8",
     "block_name": "OUTPUT",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -258,7 +247,6 @@
     "designator": "JOUTN",
     "value": "STUD-M8",
     "block_name": "OUTPUT",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -273,7 +261,6 @@
     "designator": "ROAD0",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -291,7 +278,6 @@
     "designator": "ROAD1",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -309,7 +295,6 @@
     "designator": "ROAD2",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -327,7 +312,6 @@
     "designator": "ROAD3",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -345,7 +329,6 @@
     "designator": "ROAD4",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -363,7 +346,6 @@
     "designator": "ROAD5",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -381,7 +363,6 @@
     "designator": "ROAD6",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -399,7 +380,6 @@
     "designator": "ROAD7",
     "value": "475k",
     "block_name": "SENSE-VBKA",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -417,7 +397,6 @@
     "designator": "ROADL",
     "value": "6.8k",
     "block_name": "SENSE-VBKA",
-    "search_query": "R0805-prec-0.1% divider bottom 0.1%",
     "pins": [
      {
       "pin_number": 1,
@@ -435,7 +414,6 @@
     "designator": "COADF",
     "value": "1nF",
     "block_name": "SENSE-VBKA",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -453,7 +431,6 @@
     "designator": "UIVOA",
     "value": "AMC1311-class",
     "block_name": "SENSE-VBKA",
-    "search_query": "AMC1311-class iso voltage-sense amp 0–2 V input",
     "pins": [
      {
       "pin_number": 1,
@@ -496,7 +473,6 @@
     "designator": "COAVA",
     "value": "100nF",
     "block_name": "SENSE-VBKA",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -514,7 +490,6 @@
     "designator": "COAVB",
     "value": "100nF",
     "block_name": "SENSE-VBKA",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -534,7 +509,6 @@
     "designator": "ROBD0",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -552,7 +526,6 @@
     "designator": "ROBD1",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -570,7 +543,6 @@
     "designator": "ROBD2",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -588,7 +560,6 @@
     "designator": "ROBD3",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -606,7 +577,6 @@
     "designator": "ROBD4",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -624,7 +594,6 @@
     "designator": "ROBD5",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -642,7 +611,6 @@
     "designator": "ROBD6",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -660,7 +628,6 @@
     "designator": "ROBD7",
     "value": "475k",
     "block_name": "SENSE-VBKB",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -678,7 +645,6 @@
     "designator": "ROBDL",
     "value": "6.8k",
     "block_name": "SENSE-VBKB",
-    "search_query": "R0805-prec-0.1% divider bottom 0.1%",
     "pins": [
      {
       "pin_number": 1,
@@ -696,7 +662,6 @@
     "designator": "COBDF",
     "value": "1nF",
     "block_name": "SENSE-VBKB",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -714,7 +679,6 @@
     "designator": "UIVOB",
     "value": "AMC1311-class",
     "block_name": "SENSE-VBKB",
-    "search_query": "AMC1311-class iso voltage-sense amp 0–2 V input",
     "pins": [
      {
       "pin_number": 1,
@@ -757,7 +721,6 @@
     "designator": "COBVA",
     "value": "100nF",
     "block_name": "SENSE-VBKB",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -775,7 +738,6 @@
     "designator": "COBVB",
     "value": "100nF",
     "block_name": "SENSE-VBKB",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -795,7 +757,6 @@
     "designator": "ROVD0",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -813,7 +774,6 @@
     "designator": "ROVD1",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -831,7 +791,6 @@
     "designator": "ROVD2",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -849,7 +808,6 @@
     "designator": "ROVD3",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -867,7 +825,6 @@
     "designator": "ROVD4",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -885,7 +842,6 @@
     "designator": "ROVD5",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -903,7 +859,6 @@
     "designator": "ROVD6",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -921,7 +876,6 @@
     "designator": "ROVD7",
     "value": "475k",
     "block_name": "SENSE-VOUT",
-    "search_query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge",
     "pins": [
      {
       "pin_number": 1,
@@ -939,7 +893,6 @@
     "designator": "ROVDL",
     "value": "6.8k",
     "block_name": "SENSE-VOUT",
-    "search_query": "R0805-prec-0.1% divider bottom 0.1%",
     "pins": [
      {
       "pin_number": 1,
@@ -957,7 +910,6 @@
     "designator": "COVDF",
     "value": "1nF",
     "block_name": "SENSE-VOUT",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -975,7 +927,6 @@
     "designator": "UIVOV",
     "value": "AMC1311-class",
     "block_name": "SENSE-VOUT",
-    "search_query": "AMC1311-class iso voltage-sense amp 0–2 V input",
     "pins": [
      {
       "pin_number": 1,
@@ -1018,7 +969,6 @@
     "designator": "COVVA",
     "value": "100nF",
     "block_name": "SENSE-VOUT",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1036,7 +986,6 @@
     "designator": "COVVB",
     "value": "100nF",
     "block_name": "SENSE-VOUT",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1056,7 +1005,6 @@
     "designator": "PS5BKA",
     "value": "ISO5V-RFC-6K",
     "block_name": "ISO-BIAS",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
     "pins": [
      {
       "pin_number": 2,
@@ -1084,7 +1032,6 @@
     "designator": "C5BBKA",
     "value": "1uF",
     "block_name": "ISO-BIAS",
-    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
     "pins": [
      {
       "pin_number": 1,
@@ -1102,7 +1049,6 @@
     "designator": "PS5BKB",
     "value": "ISO5V-RFC-6K",
     "block_name": "ISO-BIAS",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated",
     "pins": [
      {
       "pin_number": 2,
@@ -1130,7 +1076,6 @@
     "designator": "C5BBKB",
     "value": "1uF",
     "block_name": "ISO-BIAS",
-    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
     "pins": [
      {
       "pin_number": 1,
@@ -1150,7 +1095,6 @@
     "designator": "JTLLC",
     "value": "PH-2",
     "block_name": "NTC",
-    "search_query": "PH-2 2-way header",
     "pins": [
      {
       "pin_number": 1,
@@ -1168,7 +1112,6 @@
     "designator": "RTLLCP",
     "value": "10k",
     "block_name": "NTC",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1186,7 +1129,6 @@
     "designator": "CTLLCF",
     "value": "100nF",
     "block_name": "NTC",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1204,7 +1146,6 @@
     "designator": "JTXFR",
     "value": "PH-2",
     "block_name": "NTC",
-    "search_query": "PH-2 2-way header",
     "pins": [
      {
       "pin_number": 1,
@@ -1222,7 +1163,6 @@
     "designator": "RTXFRP",
     "value": "10k",
     "block_name": "NTC",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1240,7 +1180,6 @@
     "designator": "CTXFRF",
     "value": "100nF",
     "block_name": "NTC",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,

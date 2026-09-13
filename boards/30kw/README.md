@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -26,7 +26,7 @@
 | **Control** | one control card in the DC-DC slot (JB); the AC-DC board has only the 40-way harness header (JICA) |
 | **Fast trips** | F.01 line 120 A pk · F.11 tank 140 A pk (one window comparator) · DESAT on every SiC switch |
 | **Performance** | η 96.62 % at 400 VAC full power · peak 98.11 % · worst Tj 139 °C on the 4,536-point grid · MTBF ≈ 422 kh |
-| **Cost** | **₹30,033 @10k** (₹36,984 @1k) · China RFQ target ₹24,640 — [cost roll-up](../../docs/bom-cost.md) |
+| **Cost** | **₹30,033 @10k** (₹36,984 @1k) · China RFQ target ₹24,639 — [cost roll-up](../../docs/bom-cost.md) |
 | **Release sheets** | `DC-Modules 30kW AC-DC (Vienna PFC)` and `30kW DC-DC (full-bridge LLC)` in [`boards/out-pdf/`](../out-pdf/) · KiCad-5 set `kicad5/DC-Modules-30kw-SHIP.zip` |
 
 ## 🔻 AC-DC board — [`acdc.tsx`](acdc.tsx)
@@ -129,5 +129,5 @@ Mechanical lines (assembly and EOL ₹1,653 · heatsinks ₹1,305 · the two PCB
 <div align="center">
 <sub><a href="../README-product-structure.md">← Product Structure</a> &nbsp;·&nbsp; <a href="../../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../../docs/protection-thresholds.md">Protection Thresholds →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

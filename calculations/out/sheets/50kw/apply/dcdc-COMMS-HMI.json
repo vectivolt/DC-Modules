@@ -11,7 +11,6 @@
     "designator": "UCAN",
     "value": "NSI1042-DSWR",
     "block_name": "CAN",
-    "search_query": "NSI1042-DSWR iso CAN transceiver SO-16",
     "pins": [
      {
       "pin_number": 1,
@@ -74,7 +73,6 @@
     "designator": "PSCAN",
     "value": "ISO5V-RFC-6K",
     "block_name": "CAN",
-    "search_query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test",
     "pins": [
      {
       "pin_number": 2,
@@ -102,7 +100,6 @@
     "designator": "LCAN",
     "value": "CMC-CAN-51uH",
     "block_name": "CAN",
-    "search_query": "CMC-CAN-51uH CAN common-mode choke",
     "pins": [
      {
       "pin_number": 1,
@@ -130,7 +127,6 @@
     "designator": "JCAN",
     "value": "PH-4",
     "block_name": "CAN",
-    "search_query": "PH-4 CAN connector 4-way",
     "pins": [
      {
       "pin_number": 1,
@@ -153,7 +149,6 @@
     "designator": "RTERM",
     "value": "120",
     "block_name": "CAN",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -171,7 +166,6 @@
     "designator": "JTERM",
     "value": "PH-2",
     "block_name": "CAN",
-    "search_query": "PH-2 2-way header",
     "pins": [
      {
       "pin_number": 1,
@@ -189,7 +183,6 @@
     "designator": "TVSCAN",
     "value": "PESD1CAN",
     "block_name": "CAN",
-    "search_query": "PESD1CAN CAN TVS",
     "pins": [
      {
       "pin_number": 1,
@@ -212,7 +205,6 @@
     "designator": "RCGB",
     "value": "1M",
     "block_name": "CAN",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -230,7 +222,6 @@
     "designator": "CCGB",
     "value": "4.7nF",
     "block_name": "CAN",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -248,7 +239,6 @@
     "designator": "CCV1",
     "value": "100nF",
     "block_name": "CAN",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -266,7 +256,6 @@
     "designator": "CCV2",
     "value": "100nF",
     "block_name": "CAN",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -284,7 +273,6 @@
     "designator": "CCB5",
     "value": "1uF",
     "block_name": "CAN",
-    "search_query": "MLCC-1u-0805 1 µF 0805 bulk on module-fed floating rails",
     "pins": [
      {
       "pin_number": 1,
@@ -304,7 +292,6 @@
     "designator": "DISP1",
     "value": "LED-2DIG-0.56CC",
     "block_name": "HMI",
-    "search_query": "LED-2DIG-0.56CC 2-digit 7-seg 0.56\" common-cathode",
     "pins": [
      {
       "pin_number": 10,
@@ -362,7 +349,6 @@
     "designator": "USR1",
     "value": "74HC595",
     "block_name": "HMI",
-    "search_query": "74HC595 shift register SOIC-16",
     "pins": [
      {
       "pin_number": 1,
@@ -445,7 +431,6 @@
     "designator": "RSEG0",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -463,7 +448,6 @@
     "designator": "RSEG1",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -481,7 +465,6 @@
     "designator": "RSEG2",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -499,7 +482,6 @@
     "designator": "RSEG3",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -517,7 +499,6 @@
     "designator": "RSEG4",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -535,7 +516,6 @@
     "designator": "RSEG5",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -553,7 +533,6 @@
     "designator": "RSEG6",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -571,7 +550,6 @@
     "designator": "RSEG7",
     "value": "220",
     "block_name": "HMI",
-    "search_query": "R0603-220 220 Ω segment",
     "pins": [
      {
       "pin_number": 1,
@@ -589,7 +567,6 @@
     "designator": "QDIG1",
     "value": "S8050",
     "block_name": "HMI",
-    "search_query": "S8050 NPN SOT-23",
     "pins": [
      {
       "pin_number": 1,
@@ -612,7 +589,6 @@
     "designator": "QDIG2",
     "value": "S8050",
     "block_name": "HMI",
-    "search_query": "S8050 NPN SOT-23",
     "pins": [
      {
       "pin_number": 1,
@@ -635,7 +611,6 @@
     "designator": "RDIG1",
     "value": "2.2k",
     "block_name": "HMI",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -653,7 +628,6 @@
     "designator": "RDIG2",
     "value": "2.2k",
     "block_name": "HMI",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -671,7 +645,6 @@
     "designator": "SW1",
     "value": "TACT-6x6",
     "block_name": "HMI",
-    "search_query": "TACT-6x6 tactile switch 6×6",
     "pins": [
      {
       "pin_number": 1,
@@ -689,7 +662,6 @@
     "designator": "SW2",
     "value": "TACT-6x6",
     "block_name": "HMI",
-    "search_query": "TACT-6x6 tactile switch 6×6",
     "pins": [
      {
       "pin_number": 1,
@@ -707,7 +679,6 @@
     "designator": "RSW1",
     "value": "10k",
     "block_name": "HMI",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -725,7 +696,6 @@
     "designator": "RSW2",
     "value": "10k",
     "block_name": "HMI",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -743,7 +713,6 @@
     "designator": "CSW1",
     "value": "100nF",
     "block_name": "HMI",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -761,7 +730,6 @@
     "designator": "CSW2",
     "value": "100nF",
     "block_name": "HMI",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -779,7 +747,6 @@
     "designator": "CSR1",
     "value": "100nF",
     "block_name": "HMI",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,

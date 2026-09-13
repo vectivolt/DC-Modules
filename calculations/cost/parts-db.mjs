@@ -9,7 +9,7 @@
 // parts (CB-10), isolated discharge driver (CB-11), SWD headers (CB-13), Vienna phase films (CB-9),
 // snubber re-rating (E28/HR-2/HR-3), pulse resistors on axial footprints (MR-1/HR-12), bias modules
 // reverted to packaged p/n (HR-10 — custom E23 transformer deferred to cost ECO-1).
-// rev D (2026-09-05): R2 review closure (docs/design-review-production-r2.md) — resonant burden
+// rev D (2026-09-05): R2 review closure — resonant burden
 // 2 Ω (CB-16), Cr mpn 46 nF + binned trim (CB-22), buck 3V3 (CB-17/18), 400 V aux rectifiers
 // (CB-19), 110 W aux (CB-20/E26 rev C), NCP1252 primary (MR-13; A→D suffix at R6-G for cold-start), VET6 MCU suffix (MR-12),
 // reinforced iso-5V modules (HR-16), 6-pin WD (HR-13), 47 k 2-series HV balance/star (HR-20),

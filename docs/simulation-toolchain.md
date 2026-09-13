@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine: ngspice-46 · node 20"/>
 </p>
@@ -108,7 +108,7 @@ chain, step by step, is [§5.3](#53-the-pipeline-step-by-step).
 |---|---|
 | peak 94.4 / 124.3 / 156.5 A at 330 VAC, bus 830, lot −8 % | the ripple rides the **soft-saturated** inductance at the true peak (61 / 51 / 38 µH), ~40 % above the pack's nominal-L ripple |
 | dips and a 20° jump add only 2.6–3 A | valid **with** the FW-R6 reference clamp; without it a dip recovery commands +43 % current |
-| 150 kHz band content 0.7–1.2 dB **below** the LISN basis | the triangular worst-θ EMI basis is conservative, so D6 stays unchanged |
+| 150 kHz band content 0.7–1.2 dB **below** the LISN basis | the triangular worst-θ EMI basis is conservative |
 | 475/500 VAC on a 650 V bus: 15–40 % THD | a **design** defect (bus policy), not a simulation artifact → FW-R7 floor |
 
 ### 4.3 Protection & aux decks
@@ -116,7 +116,7 @@ chain, step by step, is [§5.3](#53-the-pipeline-step-by-step).
 | Deck | Result | Meaning |
 |---|---|---|
 | `ct-frontend` per SKU | F.xx lands within 20 mV of the computed comparator point; operating peak 0.92–2.38 V; F.xx + race ≤ 3.13 V (limit 3.27 V) | the E65 resonant burdens (1.0 / 0.82 / 0.68 Ω) and the E60 line burdens are right at the ADC and the comparator |
-| `prechg-disch` per SKU | t95 193 / 231 / 310 ms · discharge 1.99 / 2.39 / 3.19 s vs 3 / 4 / 5 s · bleed 9 / 13.5 / 18 s vs 2.5·τ | F.20/F.21/F.21b windows correct for the **product** SKUs (the deck carried 60/120 kW rows until E60) |
+| `prechg-disch` per SKU | t95 193 / 231 / 310 ms · discharge 1.99 / 2.39 / 3.19 s vs 3 / 4 / 5 s · film-bank bleed 0.37 / 0.49 / 0.58 s vs the F.21b windows | F.20 / F.21 / F.21b windows hold for the product SKUs on the E68c film-only banks |
 | `aux-flyback` per SKU | 57 / 68 / 46 / 80 W, V24 22.5–26.4 V consumer window, V15 ≥ 15 V | 110 W stage covers every SKU; the 50 kW-liquid light load at 850 V regulates +6 % (behavioral skip — bench T-09) |
 
 ### 4.4 External anchors — the models against something they did not produce (`verify-independent` §K)
@@ -217,7 +217,7 @@ flowchart TB
 |---|---|---|---|
 | 1 | `node spice/llc/llc-run.mjs 30kw 40kw 50kw 50kwa` | 14 power-solved stress corners per SKU (tolerance, mismatch, gain-worst, bus-floor PS, Imax); the internal short from the worst tank-peak corner; a dead short at 1.45·fr | `llc-stress.csv` · `llc-stress-summary.json` · `plots/llc-worst-corner.svg` · decks `spice/generated/llc-<sku>-<corner>.cir` (the `.out` waveforms stay local) |
 | 2 | `node spice/llc/llc-envelope.mjs 30kw 40kw 50kw 50kwa` | the same deck, power solver and guards over bank 425 / 450 / 475 / 500 / 525 V × load 100 / 85 / 70 / 55 %, bus = min(830, max(650, 2·bank/0.95)) | `llc-envelope.csv` — 20 rows: fsw, Im pk, Ip rms / pk, Isec rms, Vcr, ZVS, legs in rails |
-| 3 | `node spice/llc/llc-flux-post.mjs 30kw 40kw 50kw 50kwa` | reads both corner tables and the waveform of every one of their 34 corners: magnetizing current Im = ip1 − isa − isb; the iGSE factor of Im (D3) and of the tank current (D2) against a sine of the same peak and frequency (α 1.55, β 2.8); the post-short running maximum of the tank current over all three sections | `llc-flux.csv` — 34 rows · `llc-short.csv` — 201 samples, 0–10 µs after the 300 µs bank collapse. **Writes nothing and exits 1 if a waveform is missing** |
+| 3 | `node spice/llc/llc-flux-post.mjs 30kw 40kw 50kw 50kwa` | reads both corner tables and the waveform of every one of their 32 corners: magnetizing current Im = ip1 − isa − isb; the iGSE factor of Im (D3) and of the tank current (D2) against a sine of the same peak and frequency (α 1.55, β 2.8); the post-short running maximum of the tank current over all three sections | `llc-flux.csv` — 34 rows · `llc-short.csv` — 201 samples, 0–10 µs after the 300 µs bank collapse. **Writes nothing and exits 1 if a waveform is missing** |
 | 4 | `node calculations/magnetics/magnetics-envelope.mjs` | reads `llc-flux`, `llc-stress` and `llc-envelope`: D3 and D2 at every corner — [§5.4](#54-inside-the-envelope-gate), [§5.5](#55-reading-the-gate-output) | console → `MAGNETICS ENVELOPE CLEAN` |
 | 5 | `node calculations/magnetics/conductor-audit.mjs` | reads `llc-stress` and the envelope gate's D2 / D3 tables: every winding's Rdc and Rac against its drawing's production rows | console → `CONDUCTOR AUDIT CLEAN` |
 | 6 | `node calculations/magnetics/temp-critique.mjs` | reads `llc-flux` and `llc-short`: saturation margins at 130 °C from the simulated flux and the fault race; D4 runaway and cold | console → `MAGNETICS TEMP CRITIQUE CLEAN` |
@@ -344,7 +344,7 @@ Each row is a question no tool in this repository settles; the right-hand column
 ---
 
 <div align="center">
-<sub><a href="aux-transformer-D4.md">← D4 Aux Flyback Transformer</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="simulation-report.md">Simulation Report →</a></sub>
+<sub><a href="magnetics-50kwa.md">← 50 kW Air Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="simulation-report.md">Simulation Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

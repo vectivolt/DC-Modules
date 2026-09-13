@@ -1,5 +1,5 @@
 // review-checks.mjs — machine-checkable closure gate for the production reviews
-// (docs/design-review-production.md R1 + design-review-production-r2.md R2). Each check is the
+// (R1 adversarial audit + R2 re-audit, register E32–E34, and every later round). Each check is the
 // grep that FOUND the defect, inverted into an assertion against the schematic source / parts DB.
 // Run: node calculations/review-checks.mjs — exit 1 on any failure.
 // R2 lesson: the gate also carries CLASS checks (rail sourcing, FLT/CTL nets reaching pin maps)
@@ -62,7 +62,7 @@ ck("MR-6", /SNS_IOUTN/.test(boards) && /OUTN/.test(cells.split("OutputShunt")[1]
 ck("MR-7", /FB\$\{id\}A/.test(cells) && /VDDA_/.test(cells), "VDDA ferrite + caps");
 ck("MR-8", !/net\.NC_U\d/.test(boards), "ULN spare inputs grounded");
 
-// ===== R2 review closure (docs/design-review-production-r2.md, 2026-09-05) =====
+// ===== R2 review closure (2026-09-05) =====
 const fsmH = readFileSync(join(ROOT, "firmware/core/fsm.h"), "utf8");
 const fsmC = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
 ck("R2-CB16", cells.includes('ctBurden = "0.36"') && cells.includes('name="R1CT" resistance={ctBurden}') && /R2512-0R47-1W-1%/.test(db) && db.includes("R\\d+CT"), "resonant CT burden per tank class (E67 re-point of CB-16: 0.47/0.36/0.30 Ω for F.11 140/180/220 A pk on the one full-bridge tank CT; current-coordination proves the per-SKU race)");

@@ -19,6 +19,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { D4, D4_REGISTERED_E52, DRAWN_E52, evaluate as d4Evaluate } from "./d4-flyback.mjs";
 import { CORES } from "./geometry.mjs";
+import { captureEvidence } from "../evidence.mjs";
+captureEvidence("temp-critique");
 const HERE = dirname(fileURLToPath(import.meta.url));
 const D = JSON.parse(readFileSync(join(HERE, "tempdata-3c95.json"), "utf8"));
 for (const grp of [D.pvT, D.pvB, D.muAmp]) for (const k of Object.keys(grp)) {

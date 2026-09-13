@@ -13,7 +13,6 @@
     "designator": "CFA0",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -31,7 +30,6 @@
     "designator": "CFA1",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -49,7 +47,6 @@
     "designator": "CFA2",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -67,7 +64,6 @@
     "designator": "CFA3",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -85,7 +81,6 @@
     "designator": "CFA4",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -103,7 +98,6 @@
     "designator": "CFA5",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -121,7 +115,6 @@
     "designator": "CFA6",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -139,7 +132,6 @@
     "designator": "CFA7",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -157,7 +149,6 @@
     "designator": "CFA8",
     "value": "2.2uF",
     "block_name": "BANK-A",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -177,7 +168,6 @@
     "designator": "CFB0",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -195,7 +185,6 @@
     "designator": "CFB1",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -213,7 +202,6 @@
     "designator": "CFB2",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -231,7 +219,6 @@
     "designator": "CFB3",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -249,7 +236,6 @@
     "designator": "CFB4",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -267,7 +253,6 @@
     "designator": "CFB5",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -285,7 +270,6 @@
     "designator": "CFB6",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -303,7 +287,6 @@
     "designator": "CFB7",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -321,7 +304,6 @@
     "designator": "CFB8",
     "value": "2.2uF",
     "block_name": "BANK-B",
-    "search_query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -341,7 +323,6 @@
     "designator": "KSER",
     "value": "RELAY-PCB-120A-24V",
     "block_name": "SP-MATRIX",
-    "search_query": "RELAY-PCB-120A-24V PCB power relay 120 A, 24 V coil, no mirror contact",
     "pins": [
      {
       "pin_number": 1,
@@ -369,7 +350,6 @@
     "designator": "KPARA",
     "value": "RELAY-PCB-120A-24V",
     "block_name": "SP-MATRIX",
-    "search_query": "RELAY-PCB-120A-24V PCB power relay 120 A, 24 V coil, no mirror contact",
     "pins": [
      {
       "pin_number": 1,
@@ -397,7 +377,6 @@
     "designator": "KPARB",
     "value": "RELAY-PCB-120A-24V",
     "block_name": "SP-MATRIX",
-    "search_query": "RELAY-PCB-120A-24V PCB power relay 120 A, 24 V coil, no mirror contact",
     "pins": [
      {
       "pin_number": 1,
@@ -425,7 +404,6 @@
     "designator": "DOUT",
     "value": "DIODE-1600V-150A-MOD",
     "block_name": "SP-MATRIX",
-    "search_query": "DIODE-1600V-150A-MOD output series blocking diode 1600 V 150 A, insulated-base 2",
     "pins": [
      {
       "pin_number": 2,
@@ -445,7 +423,6 @@
     "designator": "RBDA0",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -463,7 +440,6 @@
     "designator": "RBDA1",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -481,7 +457,6 @@
     "designator": "RBDA2",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -499,7 +474,6 @@
     "designator": "RBDA3",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -517,7 +491,6 @@
     "designator": "RBDB0",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -535,7 +508,6 @@
     "designator": "RBDB1",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -553,7 +525,6 @@
     "designator": "RBDB2",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -571,7 +542,6 @@
     "designator": "RBDB3",
     "value": "CER-2k2-10W-AX",
     "block_name": "BLEEDERS",
-    "search_query": "CER-2k2-10W-AX 2.2 kΩ 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -589,7 +559,6 @@
     "designator": "QDISA",
     "value": "SIC-1200-5A",
     "block_name": "BLEEDERS",
-    "search_query": "SIC-1200-5A SiC FET 1200 V 5 A",
     "pins": [
      {
       "pin_number": 1,
@@ -612,7 +581,6 @@
     "designator": "QDISB",
     "value": "SIC-1200-5A",
     "block_name": "BLEEDERS",
-    "search_query": "SIC-1200-5A SiC FET 1200 V 5 A",
     "pins": [
      {
       "pin_number": 1,
@@ -635,7 +603,6 @@
     "designator": "UPVA",
     "value": "VOM1271T",
     "block_name": "BLEEDERS",
-    "search_query": "VOM1271T photovoltaic MOSFET driver w/ integrated turn-off",
     "pins": [
      {
       "pin_number": 1,
@@ -663,7 +630,6 @@
     "designator": "RPVLA",
     "value": "1k",
     "block_name": "BLEEDERS",
-    "search_query": "R2010-1k-0.75W-1% 1 kΩ 0.75 W 2010, PV-driver LED feed",
     "pins": [
      {
       "pin_number": 1,
@@ -681,7 +647,6 @@
     "designator": "RPVBA",
     "value": "6.8M",
     "block_name": "BLEEDERS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -699,7 +664,6 @@
     "designator": "UPVB",
     "value": "VOM1271T",
     "block_name": "BLEEDERS",
-    "search_query": "VOM1271T photovoltaic MOSFET driver w/ integrated turn-off",
     "pins": [
      {
       "pin_number": 1,
@@ -727,7 +691,6 @@
     "designator": "RPVLB",
     "value": "1k",
     "block_name": "BLEEDERS",
-    "search_query": "R2010-1k-0.75W-1% 1 kΩ 0.75 W 2010, PV-driver LED feed",
     "pins": [
      {
       "pin_number": 1,
@@ -745,7 +708,6 @@
     "designator": "RPVBB",
     "value": "6.8M",
     "block_name": "BLEEDERS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -763,7 +725,6 @@
     "designator": "QPVD",
     "value": "S8050",
     "block_name": "BLEEDERS",
-    "search_query": "S8050 NPN SOT-23",
     "pins": [
      {
       "pin_number": 1,
@@ -786,7 +747,6 @@
     "designator": "RPVDB",
     "value": "4.7k",
     "block_name": "BLEEDERS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -804,7 +764,6 @@
     "designator": "RPVDP",
     "value": "10k",
     "block_name": "BLEEDERS",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,

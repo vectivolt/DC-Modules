@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-bom--gen.mjs-5f8fc0?style=flat-square" alt="owner: bom-gen.mjs"/>
 </p>
@@ -36,11 +36,11 @@
 
 | Build | ₹ @10k | ₹ / kW | China RFQ target ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict (India basis) |
 |---|---:|---:|---:|---:|---:|---:|---|
-| 30 kW module | **30,033** | 1,001 | 24,640 | 821 | 25,000 | 22,000 | ⚠️ over by ₹5,033 |
-| 40 kW module | **34,616** | 865 | 28,320 | 708 | 33,000 | 29,000 | ⚠️ over by ₹1,616 |
-| 50 kW liquid module | **40,481** | 810 | 33,278 | 666 | 43,000 | 39,000 | ✅ under by ₹2,519 |
-| 50 kW air module | **38,404** | 768 | 31,495 | 630 | 43,000 | 39,000 | ✅ under by ₹4,596 |
-| 150 kW air product (3 × 50a) | **1,15,212** | 768 | 94,485 | 630 | 1,29,000 | 1,17,000 | ✅ under by ₹13,788 |
+| 30 kW module | **30,033** | 1,001 | 24,639 | 821 | 25,000 | 22,000 | ⚠️ over by ₹5,033 |
+| 40 kW module | **34,616** | 865 | 28,319 | 708 | 33,000 | 29,000 | ⚠️ over by ₹1,616 |
+| 50 kW liquid module | **40,481** | 810 | 33,182 | 664 | 43,000 | 39,000 | ✅ under by ₹2,519 |
+| 50 kW air module | **38,404** | 768 | 31,398 | 628 | 43,000 | 39,000 | ✅ under by ₹4,596 |
+| 150 kW air product (3 × 50a) | **1,15,212** | 768 | 94,194 | 628 | 1,29,000 | 1,17,000 | ✅ under by ₹13,788 |
 
 ### Scenario — InfyPower-style 2U construction (E69e, not the design basis)
 
@@ -52,8 +52,8 @@ design and quotes exist.
 
 | Build | Design basis ₹ @10k | 2U scenario ₹ @10k | 2U scenario + China RFQ target |
 |---|---:|---:|---:|
-| 30 kW module | 30,033 | 28,442 | **23,349** |
-| 40 kW module | 34,616 | 32,680 | **26,736** |
+| 30 kW module | 30,033 | 28,442 | **23,348** |
+| 40 kW module | 34,616 | 32,680 | **26,735** |
 
 ## The ₹ / kW product ladder
 
@@ -84,120 +84,18 @@ line — a flat price per kW above 50 kW is accepted (E66 directive) rather than
 reintroduce a single point of failure. The 150 kW keeps 67 % of its power with one module out (a 100 kW
 keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 
-## 30 kW module — ₹30,033 @10k
+## Per-module BOM pages
 
-**1k ₹36,984 · 5k ₹33,030 · 100 pcs ₹47,990** · red-line ₹25,000 / stretch ₹22,000 → ⚠️ over by ₹5,033
+Each module has its own generated page — cost by schematic section, the parts that make that SKU different, every line item and
+its sourcing status.
 
-<details><summary>Cost by category (₹ @1k)</summary>
-
-| Category | ₹ @1k | Share |
-|---|---:|---:|
-| mechanical/assembly | 9,691 | 26.2 % |
-| magnetics | 7,744 | 20.9 % |
-| semiconductors | 6,187 | 16.7 % |
-| capacitors | 4,165 | 11.3 % |
-| drive+control ICs | 3,378 | 9.1 % |
-| bias/iso modules | 2,763 | 7.5 % |
-| relays | 1,180 | 3.2 % |
-| resistors/shunts | 655 | 1.8 % |
-| protection | 457 | 1.2 % |
-| connectors | 430 | 1.2 % |
-| misc | 311 | 0.8 % |
-| HMI | 24 | 0.1 % |
-
-</details>
-
-## 40 kW module — ₹34,616 @10k
-
-**1k ₹42,616 · 5k ₹38,042 · 100 pcs ₹55,372** · red-line ₹33,000 / stretch ₹29,000 → ⚠️ over by ₹1,616
-
-<details><summary>Cost by category (₹ @1k)</summary>
-
-| Category | ₹ @1k | Share |
-|---|---:|---:|
-| mechanical/assembly | 10,797 | 25.3 % |
-| magnetics | 8,576 | 20.1 % |
-| semiconductors | 8,111 | 19 % |
-| capacitors | 4,871 | 11.4 % |
-| bias/iso modules | 3,393 | 8 % |
-| drive+control ICs | 3,378 | 7.9 % |
-| relays | 1,260 | 3 % |
-| protection | 772 | 1.8 % |
-| resistors/shunts | 675 | 1.6 % |
-| connectors | 436 | 1 % |
-| misc | 324 | 0.8 % |
-| HMI | 24 | 0.1 % |
-
-</details>
-
-## 50 kW liquid module — ₹40,481 @10k
-
-**1k ₹49,681 · 5k ₹44,411 · 100 pcs ₹64,300** · red-line ₹43,000 / stretch ₹39,000 → ✅ under by ₹2,519
-
-<details><summary>Cost by category (₹ @1k)</summary>
-
-| Category | ₹ @1k | Share |
-|---|---:|---:|
-| mechanical/assembly | 13,846 | 27.9 % |
-| magnetics | 8,975 | 18.1 % |
-| semiconductors | 8,651 | 17.4 % |
-| capacitors | 5,787 | 11.6 % |
-| bias/iso modules | 3,493 | 7 % |
-| drive+control ICs | 3,378 | 6.8 % |
-| relays | 1,880 | 3.8 % |
-| misc | 1,515 | 3 % |
-| protection | 922 | 1.9 % |
-| resistors/shunts | 792 | 1.6 % |
-| connectors | 418 | 0.8 % |
-| HMI | 24 | 0 % |
-
-</details>
-
-## 50 kW air module — ₹38,404 @10k
-
-**1k ₹47,296 · 5k ₹42,192 · 100 pcs ₹61,562** · red-line ₹43,000 / stretch ₹39,000 → ✅ under by ₹4,596, meets stretch
-
-<details><summary>Cost by category (₹ @1k)</summary>
-
-| Category | ₹ @1k | Share |
-|---|---:|---:|
-| mechanical/assembly | 11,437 | 24.2 % |
-| magnetics | 8,975 | 19 % |
-| semiconductors | 8,651 | 18.3 % |
-| capacitors | 5,787 | 12.2 % |
-| bias/iso modules | 3,493 | 7.4 % |
-| drive+control ICs | 3,378 | 7.1 % |
-| relays | 1,880 | 4 % |
-| misc | 1,515 | 3.2 % |
-| protection | 922 | 1.9 % |
-| resistors/shunts | 792 | 1.7 % |
-| connectors | 442 | 0.9 % |
-| HMI | 24 | 0.1 % |
-
-</details>
-
-## 150 kW air product (3 × 50a) — ₹1,15,212 @10k
-
-**1k ₹1,41,887 · 5k ₹1,26,576 · 100 pcs ₹1,84,686** · red-line ₹1,29,000 / stretch ₹1,17,000 → ✅ under by ₹13,788, meets stretch · composition: 3x 50 kW modules, charger controller = group master (air basis; liquid = 3x 50kw)
-
-<details><summary>Cost by category (₹ @1k)</summary>
-
-| Category | ₹ @1k | Share |
-|---|---:|---:|
-| mechanical/assembly | 34,311 | 24.2 % |
-| magnetics | 26,924 | 19 % |
-| semiconductors | 25,952 | 18.3 % |
-| capacitors | 17,360 | 12.2 % |
-| bias/iso modules | 10,478 | 7.4 % |
-| drive+control ICs | 10,135 | 7.1 % |
-| relays | 5,640 | 4 % |
-| misc | 4,546 | 3.2 % |
-| protection | 2,766 | 1.9 % |
-| resistors/shunts | 2,377 | 1.7 % |
-| connectors | 1,326 | 0.9 % |
-| HMI | 72 | 0.1 % |
-
-</details>
+| Module | ₹ @10k | China target | 1k · 5k · 100 pcs | Lines | Page |
+|---|---:|---:|---|---:|---|
+| 30 kW module | **30,033** | 24,639 | 36,984 · 33,030 · 47,990 | 142 | [bom-30kw.md](bom-30kw.md) |
+| 40 kW module | **34,616** | 28,319 | 42,616 · 38,042 · 55,372 | 149 | [bom-40kw.md](bom-40kw.md) |
+| 50 kW liquid module | **40,481** | 33,182 | 49,681 · 44,411 · 64,300 | 149 | [bom-50kw.md](bom-50kw.md) |
+| 50 kW air module | **38,404** | 31,398 | 47,296 · 42,192 · 61,562 | 151 | [bom-50kwa.md](bom-50kwa.md) |
+| 150 kW air product (3 × 50a) | **1,15,212** | 94,194 | 1,41,887 · 1,26,576 · 1,84,686 | 3 × module | [bom-50kwa.md](bom-50kwa.md) |
 
 ## Red-line closure levers (10k basis)
 
@@ -234,13 +132,13 @@ flag (R12).
 |---|---|
 | Two-board sandwich (E17) | +1 PCB, studs and harness — ≈ +₹1,450 per module at 30 kW |
 | HMI (2 buttons + 2-digit display + driver) | ≈ +₹45 |
-| Pre-insertion relays + K_OUT (E12, safety-mandatory) | ≈ +₹800 at 30 kW |
+| Output blocking diode DOUT replacing K_OUT and the pre-insertion relays (E67, InfyPower practice) | the E12 relay set (≈ ₹800 at 30 kW) removed; DOUT ₹336–496 @10k added |
 | CTs replacing shunt + isolated-amplifier phase sensing (E18) | −₹240 net at 30 kW |
 
 ---
 
 <div align="center">
-<sub><a href="bom-guide.md">← BOM Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="lcsc-status.md">LCSC Assignment Status →</a></sub>
+<sub><a href="../spice/README.md">← SPICE Simulation Suites</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="bom-30kw.md">30 kW Module BOM →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/host__sim-60%2F60_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 60/60 ASan/UBSan"/>
 </p>
@@ -69,6 +69,12 @@ stateDiagram-v2
   SHUTDOWN --> DISCH : Q_DISCH on
   DISCH --> [*] : F.21-supervised · AC-present latch · AC-removed two-phase
 ```
+
+> [!WARNING]
+> **E67 supersedes the K_OUT rows of this section.** The output blocking diode replaced K_OUT and the pre-insertion relays:
+> the output mode is latched in standby and the S/P relays close at zero current before the soft start — see
+> [E67 — two output modes and a diode output](#e67--two-output-modes-and-a-diode-output-2026-09-13). The E12b text below
+> stays as the record of why a blind close was dangerous.
 
 Two rules that exist because verification **broke** their predecessors:
 
@@ -357,5 +363,5 @@ F.11 class checks 195 A / 220 A and 155 A / 180 A.
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">External CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
