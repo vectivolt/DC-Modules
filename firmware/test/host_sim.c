@@ -136,6 +136,11 @@ SCRIPT(sc_ot) { sc_en(s); if (s->t == 1500) s->p.temp = 118; }
 SCRIPT(sc_sensor) { sc_en(s); if (s->t == 1600) { s->vout_stuck_en = true; s->vout_stuck = 12; } }
 SCRIPT(sc_aux) { sc_en(s); if (s->t == 1500) s->in.aux_ok = false; }
 SCRIPT(sc_desat) { sc_en(s); if (s->t == 1500) s->in.desat_flt = true; }
+/* E73: the precharge-bypass inrush trips the F.01 comparator for a few ms after k_pre closes — blanked, and no PFC enable inside */
+static int blank_hits = 0, pfc_in_blank = 0;
+SCRIPT(sc_inrush) { if (s->t == 1) { blank_hits = 0; pfc_in_blank = 0; s->in.enable_req = true; }
+  if (s->f.out.k_pre && s->f.pre_blank_ms > 5) { s->in.oc_pfc_flt = true; blank_hits++; if (s->f.out.pfc_en) pfc_in_blank++; } }
+SCRIPT(sc_ocpfc) { sc_en(s); if (s->t == 1500) s->in.oc_pfc_flt = true; }
 SCRIPT(sc_wdt) { sc_en(s); if (s->t == 1500) s->in.wdt_ok = false; }
 SCRIPT(sc_canto) { sc_en(s); if (s->t > 900) s->in.can_age_ms += 2; }
 SCRIPT(sc_link) { sc_en(s); if (s->t > 1500) s->in.link_age_ms += 2; }
@@ -183,6 +188,9 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_sensor, 3000); expect("stuck Vout sensor F.29", &s, "|FAULT|LOCK|", FC_SENSOR, 1);
   sim_init(&s); runsim(&s, sc_aux, 3000);    expect("aux collapse -> SAFE path", &s, "|SAFE|STANDBY|", -1, !s.f.out.pfc_en && !s.f.out.llc_en);
   sim_init(&s); runsim(&s, sc_desat, 3000);  expect("DESAT F.02", &s, "|FAULT|LOCK|", FC_DESAT, 1);
+  sim_init(&s); runsim(&s, sc_inrush, 3000); expect("E73 bypass-closure inrush on F.01 is blanked", &s, "|RUN|", -1, blank_hits > 20 && s.f.latched == FC_NONE);
+  checks++; if (pfc_in_blank) { fails++; puts("FAIL E73 no PFC enable inside the blank window"); } else puts("PASS E73 no PFC enable inside the blank window");
+  sim_init(&s); runsim(&s, sc_ocpfc, 3000);  expect("F.01 line OC while switching latches", &s, "|FAULT|LOCK|", FC_OC_PFC, 1);
   sim_init(&s); runsim(&s, sc_wdt, 3000);    expect("watchdog F.32", &s, "|FAULT|LOCK|", FC_WDT, 1);
   sim_init(&s); runsim(&s, sc_canto, 3000);  expect("CAN timeout -> standby+re-enable", &s, "|STANDBY|", -1, s.f.need_enable);
   sim_init(&s); runsim(&s, sc_link, 3000);   expect("link loss F.27", &s, "|FAULT|LOCK|", FC_LINK, 1);

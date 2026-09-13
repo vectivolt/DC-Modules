@@ -45,7 +45,8 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   /* ---------------- hardware-fast mirror (comparators do this in <µs; firmware re-asserts) */
   if (in->vbus > PMP_BUS_OVP_V) latch(f, FC_BUS_OVP);
   if (in->desat_flt) latch(f, FC_DESAT);
-  if (in->oc_pfc_flt) latch(f, FC_OC_PFC);
+  if (in->oc_pfc_flt && f->pre_blank_ms == 0) latch(f, FC_OC_PFC);   /* E73: blanked while the precharge bypass closes */
+  if (f->pre_blank_ms) f->pre_blank_ms--;
   if (!in->wdt_ok) latch(f, FC_WDT);
   if (!in->aux_ok) {
     o->pfc_en = false; o->llc_en = false;
@@ -91,11 +92,12 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   case ST_PRECHG:
     f->prechg_ms++;
     o->k_pre = false;
-    if (in->vbus >= 0.9f * in->vin_ll * 1.414f) { o->k_pre = true; f->st = ST_STANDBY; }
+    if (in->vbus >= 0.9f * in->vin_ll * 1.414f) { o->k_pre = true; f->pre_blank_ms = PMP_PRE_BLANK_MS; f->st = ST_STANDBY; }
     else if (f->prechg_ms > 400 && in->vbus < 0.5f * in->vin_ll * 1.414f) latch(f, FC_PRECHG);
     break;
   case ST_STANDBY:
     f->omode = in->omode_req;                                      /* E67: the mode can change only here */
+    if (f->pre_blank_ms) break;                                    /* E73: no PFC enable until the bypass-closure window ends */
     if (in->enable_req && !f->need_enable && !f->lock && in->can_age_ms < PMP_CAN_TO_MS) {
       /* E65: a connected battery sets the operating voltage — EVs often send their MAXIMUM as vcmd while the pack sits far
        * below it; choosing SER from vcmd then ran banks under the 250 V SER floor */

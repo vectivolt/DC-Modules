@@ -9,6 +9,8 @@
 #                 reaches the target — the parts are ground to AL, so this corrects the first-grind guide, not the part
 #   [MKF-CU]      copper loss at the gate's copper corner (MKF 2-D field: ohmic + skin + proximity) vs Dowell / Sullivan,
 #                 and the D3 short-circuit resistance both models predict for the production test fixture
+#   [MKF-DCBIAS]  D1: the Kool Mµ 26 DC-bias roll-off from MKF's material data against the engines' fit (floor + inrush points)
+#   [MKF-MU]      D7: L_cm from MKF's nanocrystalline permeability on the engine's iron area and path
 #   [MKF-THERMAL] the magnetics-envelope thermal network re-run with MKF's copper: ok = design lines hold · info = only the
 #                 125 / 135 °C design lines are exceeded (the foil band that restores them is computed) · FAIL = the class
 #                 lines break (+25 % Rth > 155 °C or runaway margin < 25 K)
@@ -33,7 +35,9 @@ def row(status, tag, name, detail):
 
 
 def node(code):
-    out = subprocess.run(["node", "--input-type=module", "-e", code], cwd=ROOT, capture_output=True, text=True, check=True)
+    out = subprocess.run(["node", "--input-type=module", "-e", code], cwd=ROOT, capture_output=True, text=True)
+    if out.returncode:
+        sys.exit("node helper failed:\n" + out.stderr[-1500:])
     return json.loads(out.stdout)
 
 
@@ -202,6 +206,77 @@ for sku, d in DATA.items():
     row("info", "MKF-CU", f"{sku} D2 copper at {d['d2corner']} {d['fq'] / 1e3:.1f} kHz, 100 °C",
         f"MKF {t2:.1f} W ({p2[0][1]:.1f} ohmic + {p2[0][2]:.1f} skin + {p2[0][3]:.1f} prox) vs Sullivan {d['d2cu']:.1f} W → ×{t2 / d['d2cu']:.2f} — the gate's D2 copper is the conservative figure")
     values[sku] = v
+
+# ---- D1, D4, D7 (E73): the magnetics PyOpenMagnetics can hold — the toroid geometry, the Kool Mµ DC-bias curve, the gapped ETD44,
+# the nanocrystalline permeability ----
+OTHER = node("""
+const { D1 } = await import("./calculations/magnetics/d1-choke.mjs");
+const { D4, leakageEstimate } = await import("./calculations/magnetics/d4-flyback.mjs");
+const { CORES, FORMER_WALL } = await import("./calculations/magnetics/geometry.mjs");
+const W = await import("./calculations/magnetics/winding-physics.mjs");
+const fs = await import("node:fs");
+const ev = (g) => JSON.parse(fs.readFileSync(`calculations/out/evidence/${g}.json`, "utf8")).rows;
+const d1 = {};
+for (const sku of ["30kw", "40kw", "50kw"]) {
+  const c = D1[sku], ca = ev("conductor-audit").find((r) => r.tag === "D1" && r.name.startsWith(sku) && /production Rdc/.test(r.name));
+  const fl = ev("stress-audit").find((r) => r.tag === "D1" && r.name.startsWith(sku) && /biased-L floor/.test(r.name));
+  const ir = ev("current-coordination").find((r) => r.tag === "INRUSH" && r.name.startsWith(sku) && /precharge-bypass closure/.test(r.name));
+  d1[sku] = { N: c.N, stack: c.stack, nw: c.nw, d: c.d, rdcBuild: +ca.detail.match(/build ([\\d.]+) mΩ/)[1], iFloor: +fl.detail.match(/@([\\d.]+) A/)[1], iInrush: +ir.detail.match(/^(\\d+) A pk/)[1] };
+}
+const b = D4.build, F = CORES[D4.core].dims.F / 1000, mltP = Math.PI * (F + 2 * FORMER_WALL + b.hHalfP);
+const d7 = JSON.parse(fs.readFileSync("calculations/out/dm-choke-design.json", "utf8")).d7;
+console.log(JSON.stringify({ d1, d4: { Np: D4.Np, Lp: D4.Lp, tolL: D4.tolL, rdcP: (W.rho(25) * D4.Np * mltP) / (Math.PI * 0.5e-3 ** 2 / 4), mltP }, d7 }));
+""")
+ROLL = lambda H_oe: 1 / (1 + 2.13e-4 * max(H_oe, 1e-9) ** 1.637)   # the engines' conservative Kool Mµ 26 fit (vienna-switched R26)
+for sku, d in OTHER["d1"].items():
+    tc, _ = core_toroid = (P.calculate_core_data({"functionalDescription": {"type": "toroidal", "material": "Kool Mµ 26", "shape": "T 79/48/17", "numberStacks": d["stack"], "gapping": []}, "name": "D1"}, False), None)
+    w = quiet(P.wind, {"bobbin": P.create_simple_bobbin_from_core(tc), "functionalDescription": [
+        {"name": "L", "numberTurns": d["N"], "numberParallels": d["nw"], "isolationSide": "primary", "wire": "Round %.2f - Grade 2" % (d["d"] * 1e3)}]}, 1, [1.0], [0], [[0.0, 0.0]])
+    r = P.calculate_dc_resistance_per_winding(w, 25)[0]
+    row("ok" if abs(r / (d["rdcBuild"] * 1e-3) - 1) <= 0.05 else "FAIL", "MKF-RDC", f"{sku} D1 Rdc @25 °C from MKF's toroid winding",
+        f"{r * 1e3:.2f} vs build {d['rdcBuild']:.2f} mΩ ({(r / (d['rdcBuild'] * 1e-3) - 1) * 100:+.1f} %) — {d['stack']} × T 79/48/17, N {d['N']}, {d['nw']} × {d['d'] * 1e3:.1f} mm · acceptance ±5 %")
+    le = 0.196
+    cells = []
+    for tag, I in (("floor", d["iFloor"]), ("inrush", d["iInrush"])):
+        H = d["N"] * I / le
+        mk = P.get_material_permeability("Kool Mµ 26", 100, H, 50e3) / P.get_material_permeability("Kool Mµ 26", 100, 0.0, 50e3)
+        cells.append((tag, I, H / 79.577, mk, ROLL(H / 79.577)))
+    ok = all(ours <= mk + 1e-9 for _, _, _, mk, ours in cells)
+    row("ok" if ok else "FAIL", "MKF-DCBIAS", f"{sku} D1 Kool Mµ 26 DC-bias roll-off (MKF material data, 100 °C) vs the engines' fit",
+        " · ".join(f"{tag} {I:.0f} A = {h:.0f} Oe: MKF {mk * 100:.1f} % vs engine {ours * 100:.1f} %" for tag, I, h, mk, ours in cells)
+        + " — the engines' L(i) sits at or below the material data, so every biased-L floor and the inrush peak are conservative")
+
+d4 = OTHER["d4"]
+g4 = drawn_gap_etd = None
+c4a, _ = (P.calculate_core_data({"functionalDescription": {"type": "two-piece set", "material": "PC95", "shape": "ETD 44", "numberStacks": 1,
+                                                          "gapping": [{"type": "residual", "length": 1e-5}] * 3}, "name": "x"}, False), None)
+ae4 = c4a["processedDescription"]["columns"][0]["area"]
+g4 = MU0 * ae4 * d4["Np"] ** 2 / d4["Lp"]
+c4 = P.calculate_core_data({"functionalDescription": {"type": "two-piece set", "material": "PC95", "shape": "ETD 44", "numberStacks": 1,
+                                                       "gapping": [{"type": "subtractive", "length": g4}, {"type": "residual", "length": 1e-5}, {"type": "residual", "length": 1e-5}]}, "name": "D4"}, False)
+w4 = quiet(P.wind, {"bobbin": P.create_simple_bobbin_from_core(c4), "functionalDescription": [
+    {"name": "P", "numberTurns": d4["Np"], "numberParallels": 1, "isolationSide": "primary", "wire": "Round 0.5 - Grade 2"}]}, 1, [1.0], [0], [[0.0, 0.0]])
+L4 = {m: inductance(c4, w4, m) for m in GAP_MODELS}
+dz = L4["ZHANG"] / d4["Lp"] - 1
+lo4, hi4 = g4, g4 * 2.0                                   # the single centre gap that reaches Lp with fringing (Zhang)
+for _ in range(30):
+    mid = (lo4 + hi4) / 2
+    cm = P.calculate_core_data({"functionalDescription": {"type": "two-piece set", "material": "PC95", "shape": "ETD 44", "numberStacks": 1,
+                                                           "gapping": [{"type": "subtractive", "length": mid}, {"type": "residual", "length": 1e-5}, {"type": "residual", "length": 1e-5}]}, "name": "x"}, False)
+    lo4, hi4 = (mid, hi4) if inductance(cm, w4, "ZHANG") > d4["Lp"] else (lo4, mid)
+row("ok" if abs(dz) <= 0.10 else "info", "MKF-GAP", f"{sku if False else 'family'} D4 Lp from the drawn centre-leg gap {g4 * 1e3:.2f} mm (AL {d4['Lp'] / d4['Np'] ** 2 * 1e9:.0f} nH/T², Np {d4['Np']})",
+    f"Zhang {L4['ZHANG'] * 1e6:.0f} µH ({dz * 100:+.1f} %) · Muehlethaler {L4['MUEHLETHALER'] * 1e6:.0f} · Partridge {L4['PARTRIDGE'] * 1e6:.0f} vs {d4['Lp'] * 1e6:.0f} µH — "
+    f"with fringing ≈ {lo4 * 1e3:.2f} mm reaches it (first-grind guide) — the part is ground to its AL with a 100 % Lp test at ± {d4['tolL'] * 100:.0f} %, so fringing moves the grind depth, not the flux stack")
+r4 = P.calculate_dc_resistance_per_winding(w4, 25)[0]
+row("ok" if abs(r4 / d4["rdcP"] - 1) <= 0.10 else "FAIL", "MKF-RDC", "family D4 primary Rdc @25 °C from MKF's ETD 44 layout",
+    f"{r4 * 1e3:.0f} vs 1-D {d4['rdcP'] * 1e3:.0f} mΩ ({(r4 / d4['rdcP'] - 1) * 100:+.1f} %) — 38 T of 0.5 mm; MKF lays one bobbin section, the drawing splits P/2–S–P/2 · acceptance ±10 %")
+
+mu_n = P.get_material_permeability("Nanoperm 30000", 100, 0.0, 10e3)
+for sku, d in OTHER["d7"].items():
+    L = MU0 * mu_n * 0.7 * d["N"] ** 2 * d["AFe_mm2"] * 1e-6 / (d["le_mm"] * 1e-3)
+    row("ok" if abs(L * 1e3 / d["Lcm10k_mH"] - 1) <= 0.10 and L >= 2.0e-3 else "FAIL", "MKF-MU", f"{sku} D7 L_cm from MKF's Nanoperm 30000 permeability (10 kHz, 100 °C, −30 %)",
+        f"µ {mu_n:.0f} → {L * 1e3:.2f} mH on A_Fe {d['AFe_mm2']} mm² / le {d['le_mm']} mm, N {d['N']} vs engine {d['Lcm10k_mH']} mH ({(L * 1e3 / d['Lcm10k_mH'] - 1) * 100:+.1f} %) and the ≥ 2.0 mH line — "
+        f"the cased {d['core']} is not in the MKF shape database, so this checks the material basis, not the geometry")
 
 row("info", "MKF-LEAK", "leakage is not taken from MKF 1.4.0",
     "foil and rectangular turns return 90–170 µH per D3 cell and the value rises with foil height (physically it falls); litz stand-ins give 1–2 µH. "

@@ -58,7 +58,7 @@ typedef struct {
   pmp_fault_t latched;
   uint8_t fault_count;
   bool lock, need_enable;
-  uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms;
+  uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms, pre_blank_ms;
   uint32_t disch_to_ms;     /* F.21 window — runtime per rating (card strap), default = macro */
   float oc_line_a, oc_tank_a;  /* E60: F.01 / F.11 hardware-comparator thresholds, A pk, per rating —
                                   the HAL programs the CMP DACs from these (firmware may tighten, never loosen) */
@@ -101,6 +101,11 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_OC_FRAC          1.30f
 #define PMP_CAN_TO_MS     1000u
 #define PMP_LINK_TO_MS      50u
+/* E73: the precharge bypass closes at 90 % of line peak (fsm.c) and the remaining ≤ 10 % step drives an LC pulse through D1,
+ * the CMC leakage and the rectifier into the link — 199 / 218 / 231 A pk simulated at 475 VAC on a stiff grid (current-coordination
+ * [INRUSH]), above F.01. The PFC is not switching then, so F.01 is blanked for this window: relay operate ≤ 25 ms + bounce ≤ 5 ms +
+ * the ≤ 10 ms pulse, with margin. PFC enable waits for the window to end. The HAL clears the HRTIMER fault latch at its end. */
+#define PMP_PRE_BLANK_MS    60u
 #define PMP_WELD_DV_V        1.5f
 #define PMP_WELD_MS        200u
 #define PMP_MODE_DWELL_MS   30u     /* scaled: 30 s in product, 30 ms in host sim timebase */

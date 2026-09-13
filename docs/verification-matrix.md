@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/verify--independent-227%2F227-2ea44f?style=flat-square" alt="verify-independent: 227/227"/>
 </p>
@@ -24,10 +24,10 @@
 |---|---|---|
 | `envelope-grid` | 4 SKUs × 6 input voltages × 8 output voltages × 7 loads × 3 temperatures (E67 LOW/HIGH modes) | **4,536 points · 0 failures · max Tj 139 °C** |
 | `monte-carlo` | tank gain per SKU on the E67 tanks, choke lots, voltage and current chains, full-bridge dead time | **8 batches × 10k samples · pass** |
-| `fsm-sim` + `host_sim` | fault scenarios · C firmware under ASan/UBSan | **26 / 26 · 60 / 60** |
-| `stress-audit` | every device, magnetic, pulse part and protection class against its acceptance line | **127 checks · clean** (incl. the E69a PFC die classes and the E67 grid-shape assert) |
-| `current-coordination` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux, **per-die fault pulse ≤ 0.8 × IDM (E69a-2)**, film-bank ripple (E68c), output diode | **72 checks · clean** |
-| `temp-critique` · `conductor-audit` · `magnetics-envelope` · `mag-sync` | core temperature, AC copper, D3 cells / D2 at every simulated corner, identity sync across five carriers | **11 · 18 · 20 · 48 · clean** |
+| `fsm-sim` + `host_sim` | fault scenarios · C firmware under ASan/UBSan | **26 / 26 · 63 / 63** |
+| `stress-audit` | every device, magnetic, pulse part and protection class against its acceptance line | **130 checks · clean** (incl. the E69a PFC die classes, the E67 grid-shape assert, and the E73 D7 CM-flux and D4 Rdc rows) |
+| `current-coordination` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux, **per-die fault pulse ≤ 0.8 × IDM (E69a-2)**, film-bank ripple (E68c), output diode, **precharge-bypass closure (E73)** | **81 checks · clean** |
+| `temp-critique` · `conductor-audit` · `magnetics-envelope` · `mag-sync` | core temperature, AC copper, D3 cells / D2 at every simulated corner, identity sync across five carriers | **11 · 18 · 30 · 48 · clean** (E73: fan-out and cell-imbalance rows) |
 | `fault-energy` | stored energy, wire vs fuse, surge, air and coolant budget | **22 checks · clean** |
 | `verify-independent` | clean-room recompute from its own netlist parser and physics | **226 / 226** |
 | `review-checks` | every audit and external-review closure as an assertion | **140 pass** |
@@ -35,7 +35,7 @@
 | `docs-lint` | links, anchors, page chrome, diagram types | **clean · 37 documents** |
 | `magnetics-rfq-audit` | every magnetic drawing on the module pages carries every field a winder quotes against (E70: in run-all) | **0 missing · 25 drawings** |
 | `bom-gen` · `mag-docs` | the per-module BOM and magnetics pages, generated from the built boards and the gate evidence (E70) | **4 + 4 pages** |
-| `mkf-crosscheck` *(by hand)* | PyOpenMagnetics second opinion on D2 / D3: Rdc from MKF's turn layout, gap fringing, 2-D copper, the thermal network at that copper (E71) | **Rdc ± 2.5 % · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line → T-31 watch** |
+| `mkf-crosscheck` *(by hand)* | PyOpenMagnetics second opinion on every custom magnetic: D1 toroid Rdc and Kool Mµ DC bias, D2 / D3 Rdc, gap fringing, 2-D copper and thermal, D4 gap and copper, D7 permeability (E71 · E73) | **40 rows · Rdc within 6 % · D1 DC-bias conservative · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line → T-31 watch** |
 | `footprint-audit` | unnamed packages and MPN / land conflicts on the release sheets | **0 · 0 — queue closed (E64), ratchet at zero** |
 | `standby-budget` | drawn HV passive network vs the registered standby arithmetic and the ≤ 10 W target (E64) | **consistent · EVT measures** |
 | `mtbf-budget` | parts-count reliability prediction vs the registered table (E64) | **394–422 kh · consistent** (re-registered at E69 on the corrected classifier) |
@@ -49,7 +49,7 @@ flowchart LR
   IND --> REV["review-checks<br/>140 assertions"]
   REV --> SHIP["KiCad-5 SHIP zips × 5<br/>pin-verify · uniformity"]
   SHIP --> PDF["10 release PDFs"]
-  FW["firmware host_sim<br/>60 / 60"] --> REV
+  FW["firmware host_sim<br/>63 / 63"] --> REV
   style GATES stroke:#d19a00,stroke-width:2.5px
   style IND stroke:#2ea44f,stroke-width:2.5px
 ```
@@ -97,7 +97,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | Polarity | every polarized part has its + / anode on pin 1 as the glyphs draw it (E38 gate + R4-1 seating fix) |
 | Driver channels | one `DriverCh` cell for all 7 channels per module — 3 Vienna + 4 full-bridge LLC since E67 (real NSI6611 map R4-2, DESAT series R R5-B, per-stage blank E60) |
 | BOM coverage | 0 unmatched designators; every class part carries a value-carrying order code; `bom-maturity` MATURE |
-| Supervisory logic | C99 FSM + CAN codec + group share law: **60 / 60** under ASan/UBSan |
+| Supervisory logic | C99 FSM + CAN codec + group share law + the E73 bypass-closure window: **63 / 63** under ASan/UBSan |
 | PCB layout | **N** — out of scope: the design face ends at the audited KiCad-5 schematics (E36, E70) |
 
 ## 3. Simulation matrix
@@ -162,5 +162,5 @@ The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).
 <div align="center">
 <sub><a href="simulation-report.md">← Simulation Report</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="evt-plan.md">EVT Test Plan →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

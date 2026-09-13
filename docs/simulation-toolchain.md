@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine: ngspice-46 · node 20"/>
 </p>
@@ -30,7 +30,7 @@
 flowchart TB
   L5["L5 · hardware (EVT T-00…T-41)<br/>DPT · SC · calorimetric η · chamber EMI · thermal"]
   L4["L4 · magnetics physics<br/>magnetics-envelope: two-node thermal at 32 power-solved corners · iGSE on ngspice waveforms<br/>conductor-audit (Dowell / Sullivan) · temp-critique (measured 3C95) · mkf-crosscheck (PyOpenMagnetics, by hand)"]
-  L3["L3 · system / statistics — JS + C<br/>envelope grid 4,536 pts · Monte-Carlo 8 × 10k · FSM 26 · C host-sim 60<br/>current-coordination: F.11 window-comparator race"]
+  L3["L3 · system / statistics — JS + C<br/>envelope grid 4,536 pts · Monte-Carlo 8 × 10k · FSM 26 · C host-sim 63<br/>current-coordination: F.11 race · bypass-closure inrush"]
   L2["L2 · switched stage — ngspice + JS<br/>power-solved full-bridge LLC + magnetics envelope · cycle-by-cycle Vienna · aux flyback · CT front ends"]
   L1["L1 · device edge — ngspice<br/>double-pulse (behavioural SiC, ±40 % energy band)"]
   L0["L0 · analytic engines — JS<br/>pfc-design · llc-design · loss-budget · fault-energy"]
@@ -55,7 +55,7 @@ flowchart TB
 |---|---|---|---|---|
 | **ngspice-46** (KLU) | L1 / L2 decks | `node spice/<suite>/<runner>.mjs` → `spice/run.mjs` batch + wrdata parser; decks kept in `spice/generated/` | open, scriptable, deterministic; the whole suite reruns unattended | vendor **encrypted** PSpice SiC models do not load → behavioural devices (L1 band) |
 | **Node.js engines** | L0 / L3 / L4 + the cycle-by-cycle Vienna | `sh calculations/run-all.sh` | no install beyond node; exact reproducibility; gates import the same constants | model fidelity is stated in each file header |
-| **C host-sim** | L3 production logic: FSM scenarios, CAN codec with a 100k-frame fuzz, the group share law on three nodes | `sh firmware/run_tests.sh` → **60/60** under Address / UB sanitizers | runs the shipped C99 core itself, not a model of it | no HAL, no real peripheral timing |
+| **C host-sim** | L3 production logic: FSM scenarios, CAN codec with a 100k-frame fuzz, the group share law on three nodes | `sh firmware/run_tests.sh` → **63/63** under Address / UB sanitizers | runs the shipped C99 core itself, not a model of it | no HAL, no real peripheral timing |
 | **upb-lea materialdatabase** (frozen extracts) | L4 ferrite loss vs f, B and T · Bsat(T) · µa(T) | `tempdata-3c95.json` → temp-critique · `magnetics-data.json` (TDK N95 curves + LEA-measured N95, upstream commit recorded) → magnetics-envelope | measured datasheet surfaces and a university measurement, not a fit | PC95 / DMR95 / 3C95 / N95 treated as one class; ferrites at zero DC bias — it covers **D2 / D3, not the DC-biased Kool Mµ D1** · calibration and a data defect in [§5.2](#52-materials-and-calibration) |
 | **OpenMagnetics MAS** (data) | L4 core geometry + a second loss surface | `core_shapes` / `core_materials` frozen into `magnetics-data.json` → `geometry.mjs`, magnetics-envelope | vendor-neutral, versioned NDJSON — the database behind MKF, usable without MKF | nominal dimensions; sine-excited, zero-bias Steinmetz fits |
 | **Dowell / Sullivan** (in-repo) | L4 AC copper · 1-D leakage | `winding-physics.mjs`, shared by conductor-audit and magnetics-envelope; clean-room copy in `verify-independent.mjs` §B | closed-form, fast, textbook-validated; the right tool to choose foil gauge and strand count | 1-D fields: gap fringing and foil edge current are under-read — bracketed by MKF ([§5.5](#55-the-pyopenmagnetics-second-opinion)) |
@@ -224,6 +224,8 @@ module pages quote them row by row.
 | `[D3]` / `[D2]` | temperature, runaway and saturation margins at every corner | field guide below |
 | `info [D3-BOND-LOST]` / `[D2-BOND-LOST]` | the same evaluation with one gap pad delaminated | informational — "not survivable" parts rely on the EOL bonded thermal soak ([DFM](dfm-production.md)) |
 | `info [BOND]` | which parts cannot survive a lost bond on that SKU | make the soak mandatory, or make the part survive the lost pad |
+| `[FAN-OUT]` (air SKUs) | D2 and D3 with one fan dead at 55 °C inlet: airflow × (n−1)/n, the F.25 derate to 50 %, a hotter web, full core loss | a hot-spot above 135 °C or a runaway margin under 25 K — work on the bond or the core loss, not the fans |
+| `[IMBALANCE]` | the share between the two D3 cells in LOW mode with a ± 7 % Lm mismatch, and that the heavier cell's copper stays inside the proven copper corner | more than 10 % imbalance or copper above the corner — tighten the Lm window or re-balance the cells |
 | `[CONTROL]` | the gate still rejects the E65 section transformer when it is put in the one-bridge cell duty | "PASSES — the gate is blind": a constant or boundary change has removed the gate's ability to fail. Treat every `ok` as unproven until the control is rejected again |
 
 **Field guide — a `[D3]` line** (40 kW, from the current evidence):
@@ -254,6 +256,9 @@ ok    [D3] 40kw 3×E70 2 cells 4:4∥4 (2 foils) · web2 · R core→wall 0.52 �
 | temp-critique `[BSAT] D2 fault flux` | L(max) × the window-comparator kill peak against 60 % of Bsat(130 °C) = 217 mT: **163–164 mT** | a faster kill or more D2 N·Ae |
 | current-coordination `[F.11] window-comparator kill + observability` | when |Ip| crosses F.11 on `llc-short.csv`; the kill peak 1 µs later ×1.2 must stay under the CT ceiling (**209.1 A → 344.7 A limit** at 30 kW); the +3 µs monitor peak ×1.05 inside the rail; both window thresholds inside the ADC span | re-burden or re-threshold, then re-run `ct-frontend`. Never return to fixed-time sampling |
 | current-coordination `[F.11] LLC FET pulse class at the kill peak` | the kill peak per die against 80 % of the RFQ IDM acceptance line | parallel a die or tighten the trip |
+| current-coordination `[INRUSH]` | the precharge-bypass closure at 90 % of line peak (475 VAC, stiff grid, closure instant swept every 2°): peak through D1, D1 inductance at the peak, bus overshoot, the F.01 blank window, JBS I²t against the IFSM line, relay make and fuse pre-arc | an unblanked F.01, a relay or diode line below the pulse — change the window or the RFQ line, never the trip class |
+| stress-audit `[D7] common-mode flux` | Cp·V_sw pushed into the converter-side Y trio for half a switching period, across the D7 turns and iron | above 10 % of the hot Bsat — more Y capacitance or turns |
+| stress-audit `[D4] production Rdc rows` | the drawing's Rdc rows against the build computed from the drawn wire sizes | a row outside 1.0–1.25 × the build — fix the drawing, not the build |
 
 ### 5.5 The PyOpenMagnetics second opinion
 
@@ -261,7 +266,7 @@ ok    [D3] 40kw 3×E70 2 cells 4:4∥4 (2 foils) · web2 · R core→wall 0.52 �
 the distributed gap, served litz and foil turns wound S1–P–S2 with the 0.3 mm interwinding spacer — and runs the same
 copper corner. Read it in this order:
 
-| Row | What it proves | Result at E71 | How to read it |
+| Row | What it proves | Result at E73 | How to read it |
 |---|---|---|---|
 | `[MKF-RDC]` | MKF's own turn layout gives the same DC resistance as the production build rows | every D2 and D3 winding within **±2.5 %** | the mean turns and copper areas on the drawings are right; a miss here is a geometry or area slip |
 | `[MKF-GAP]` D3 | Lm from the drawn gap (no position > 0.5 mm) under Zhang, Muehlethaler, Partridge, Balakrishnan and Stenglein | Zhang **+4.2 … +5.0 %** — inside Lm ± 7 %; Σ that reaches the target **2.3 / 2.0 / 2.4 mm** | the cells are ground to AL; the corrected Σ is the first-grind guide on the drawings. Stenglein reads high on short distributed gaps — the other four agree within 3 % |
@@ -269,6 +274,10 @@ copper corner. Read it in this order:
 | `[MKF-CU]` D3 | 2-D copper at the copper corner, with the short-circuit resistance both models predict | MKF **×1.29–1.32** of the 1-D figure; short-circuit R at 203 kHz, 25 °C: **8.3–10.4 mΩ** (30 kW) · **4.7–6.1 mΩ** (40 / 50 kW) | MKF resolves edge current where the 28 mm foil stops short of the 41 mm breadth; Dowell's porosity factor reads it low. The drawings now test short-circuit R against this bracket |
 | `[MKF-CU]` D2 | 2-D copper of the single-layer litz | MKF **×0.40–0.61** of Sullivan | the gate's D2 copper is the conservative figure |
 | `[MKF-THERMAL]` | the gate's thermal network re-run with the D3 copper scaled to MKF | 30 kW 115 °C · 40 kW 110 °C · 50 kW liquid 117 °C — design lines hold · **50 kW air 130 °C vs 125 °C** (ℹ️), +25 % Rth 146 °C ≤ 155, runaway 118 K | class lines hold everywhere. The 50 kW air cell moves past its design line only under MKF's copper: first article decides (short-circuit R + bonded thermal type test); a 32 mm foil band computes 125 °C and 36 mm 121 °C, at the cost of the side margins (an insulation-coordination change) |
+| `[MKF-RDC]` D1 · D4 | the toroid and ETD 44 windings from MKF's own layouts against the builds | D1 **−1.4 … −3.2 %** · D4 primary **+6.2 %** | the D1 bundle mean turns and the D4 drawn wire sizes are right |
+| `[MKF-DCBIAS]` D1 | the Kool Mµ 26 DC-bias roll-off from MKF's material data (100 °C) against the engines' fit, at the biased floor and at the bypass-closure peak | material **55.5–61.6 %** vs engine **44.7–50.4 %** at the floors · **19–30 %** vs **15–23 %** at the inrush peaks | the engines' L(i) sits below the material data everywhere — every biased-L floor and the inrush simulation are conservative |
+| `[MKF-GAP]` D4 | Lp from the no-fringing centre gap | Zhang **+20.7 %** over 345 µH; ≈ **1.15 mm** reaches it | ground to AL with a 100 % Lp test at ± 5 %, so the fringing only moves the grind depth |
+| `[MKF-MU]` D7 | L_cm from MKF's Nanoperm 30000 permeability on the engine's iron area and path, at −30 % | **+0.6 … +0.8 %** of the engine's 2.27 / 3.38 mH | the permeability basis holds; the cased cores are not in the MKF shape database, so geometry stays with the engine |
 | `[MKF-LEAK]` | why leakage is not taken from MKF | foil turns return 90–170 µH per cell, rising with foil height | a defect in 1.4.0 — the 1-D figure and the measured, labelled leakage stand |
 
 ## 6. Where fidelity ends (and the bench takes over)
@@ -284,6 +293,7 @@ copper corner. Read it in this order:
 | Magnetics Rth, bond and impregnation quality; ferrite loss above 70 °C | two-node network · +25 % Rth row · runaway margin · CAL conservative in the D2 window | first-article temperature rise on the bonded mount; the EOL bonded thermal soak screens a lost bond on every module |
 | Kool Mµ D1 loss and L(I) under DC bias | catalog DC-bias curve at lot AL −8 % | first-article L(I) at −30 / +25 / +100 °C |
 | Cold soak −30 °C | temp-critique cold rows | T-32 |
+| Precharge-bypass closure pulse (relay operate spread, real grid impedance) | `current-coordination` [INRUSH] on a stiff grid with no relay-delay credit | T-42 |
 | EMI | LISN pre-compliance engine | chamber T-08 |
 | Module thermal | envelope grid · magnetics envelope | thermal chamber |
 
@@ -303,7 +313,8 @@ copper corner. Read it in this order:
 | **control group** — the E65 section transformer in the one-bridge duty must be rejected on every SKU | `magnetics-envelope.mjs` → `[CONTROL]` | a model or constant change that leaves the gate unable to fail |
 | **no partial excitation table** | `llc-flux-post.mjs` exits 1 without writing when a waveform is missing; `[DATA]` checks alignment | a magnetics table built from a subset of corners |
 | **race from the crossing, both polarities** | `current-coordination.mjs` → `shortRacePeak` + the window comparator | fixed-time sampling against a positive-only threshold |
-| **a second field model** — MKF Rdc ±5 % and class lines at MKF's copper | `mkf-crosscheck.py` | a 1-D copper model that reads a real 2-D loss low |
+| **a second field model** — MKF Rdc ±5 %, class lines at MKF's copper, the D1 DC-bias curve against material data | `mkf-crosscheck.py` | a 1-D copper model that reads a real 2-D loss low; a DC-bias fit that flatters the choke |
+| **sweep the instant, not the case** — the bypass closure swept every 2° over the six-pulse period | `current-coordination.mjs` [INRUSH] | a 10° sweep read the 30 kW peak 17 % low (166 vs 200 A) |
 | **a failing gate is never published** — evidence JSON carries the exit code | `evidence.mjs` · `mag-docs.mjs` | proof pages quoting a run that failed |
 | **deck writes no docs** · **main-guard for paths with spaces** | `aux-flyback.mjs` · `fileURLToPath(import.meta.url) === process.argv[1]` | a re-run overwriting a maintained drawing · runners that silently do nothing |
 
@@ -312,5 +323,5 @@ copper corner. Read it in this order:
 <div align="center">
 <sub><a href="magnetics-50kwa.md">← 50 kW Air Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="simulation-report.md">Simulation Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

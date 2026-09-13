@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-review--checks_·_current--coordination-2ea44f?style=flat-square" alt="gate: review-checks · current-coordination"/>
 </p>
@@ -345,10 +345,35 @@ so the bank-bleeder pulse rows of § 3b keep their margin.
 (≤ 3.27 V); comparator node at F.11 2.296 / 2.286 / 2.298 V against the computed 2.308 / 2.298 / 2.310 V (± 0.08 V).
 The deck had been simulating the E65 burdens; it now reads its operating peaks from the committed stress summary.
 
+
+## 8. E73 startup coordination (2026-09-14) — F.01 blanked while the precharge bypass closes
+
+> [!IMPORTANT]
+> Additive. Nothing in the trip classes changes. `fsm.c` closes the precharge bypass when the bus reaches 90 % of line
+> peak; the ≤ 10 % that is left drives an LC pulse through the CMC leakage, D1 and the rectifier into the link while the
+> PFC is **not switching**. At 475 VAC on a stiff grid that pulse is above F.01 on every SKU, so the start would latch
+> F.01 and succeed only on a retry. Gate: `calculations/system/current-coordination.mjs` [INRUSH] rows.
+
+| SKU | Worst closure peak (475 VAC, stiff grid, CMC leakage 12 µH, lot AL −8 %, instant swept) | F.01 | D1 at the peak | Pulse | Bus overshoot |
+|---|---|---|---|---|---|
+| 30 kW | **200 A pk** | 120 A | 24 µH of 155 µH | 1.4 ms | 605 → 726 V |
+| 40 kW | **218 A pk** | 155 A | 27 µH of 115 µH | 1.4 ms | 605 → 725 V |
+| 50 kW liquid · air | **280 A pk** | 195 A | 18 µH of 98 µH | 1.5 ms | 605 → 722 V |
+
+**Rule (FW-E73):** F.01 is not latched for `PMP_PRE_BLANK_MS` = **60 ms** after the bypass command (relay operate ≤ 25 ms +
+bounce ≤ 5 ms + the pulse, with margin), and PFC enable waits for the window to end. The HRTIMER break stays armed; the HAL
+clears its fault latch when the window ends. A genuine short in that window is cleared by the gG fuses. Host tests: *inrush
+on F.01 blanked*, *no PFC enable inside the window*, *F.01 while switching latches* (host_sim 63 / 63).
+
+**Parts held to the pulse (RFQ lines in parts-db):** precharge relays **make ≥ 260 / 280 / 360 A pk** at ≤ 70 V across the
+contacts and ≥ 30 000 makes · Vienna JBS **IFSM ≥ 250 A** (10 ms half-sine) — the pulse I²t is 20 / 27 / 45 A²s per diode,
+≤ 15 % of that class · gG fuses see ≤ 3 % of their pre-arc I²t · D1 saturates softly for about 1.5 ms (Kool Mµ), winding
+temperature rise negligible.
+
 ---
 
 <div align="center">
 <sub><a href="../boards/30kw/README.md">← 30 kW Module Walkthrough</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="current-coordination.md">Current & Protection Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

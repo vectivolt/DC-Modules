@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/run--all-exit_0-2ea44f?style=flat-square" alt="run-all: exit 0"/>
 </p>
@@ -47,7 +47,7 @@ flowchart TB
     direction LR
     VI["verify-independent 227"] --> FA["footprint-audit"] --> DL["docs-lint"]
   end
-  FW["6 · firmware run_tests.sh 60/60"]
+  FW["6 · firmware run_tests.sh 63/63"]
   ENG --> BOM --> STR --> PHY --> IND --> FW
   style PHY stroke:#d19a00,stroke-width:2px
   style IND stroke:#2ea44f,stroke-width:2px
@@ -98,7 +98,7 @@ flowchart TB
 | `docs-lint.mjs` | every link and anchor resolves, page chrome matches `doc-chrome.mjs`, diagrams render (E61) | — |
 | `review-checks.mjs` *(run after any schematic edit)* | every audit and review closure R1…R8, E35…E69 as an assertion | 141 |
 | `magnetics-rfq-audit.mjs` | every magnetic drawing on the module pages complete enough to order (E70: in run-all) | 0 missing |
-| `magnetics/mkf-crosscheck.py` *(by hand, Python 3.12 venv with PyOpenMagnetics 1.4.0)* | the D2 / D3 builds re-made in OpenMagnetics MKF: Rdc from its turn layout, gap fringing, 2-D copper, thermal at that copper; evidence quoted by the module pages (E71) | Rdc ± 5 % · class lines |
+| `magnetics/mkf-crosscheck.py` *(by hand, Python 3.12 venv with PyOpenMagnetics 1.4.0)* | every custom magnetic re-made in OpenMagnetics MKF: D1 toroid Rdc and Kool Mµ DC bias, D2 / D3 Rdc, gap fringing, 2-D copper and thermal, D4 gap and copper, D7 permeability; evidence quoted by the module pages (E71 · E73) | Rdc ± 5 % · class lines |
 
 ## 3. Release-sheet pipeline — KiCad-5 is the record
 
@@ -144,5 +144,5 @@ Outputs land in `out/`; the CSVs are committed because documents cite them.
 <div align="center">
 <sub><a href="../docs/reliability-budget.md">← Reliability Budget</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../spice/README.md">SPICE Simulation Suites →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

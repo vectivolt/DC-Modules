@@ -56,6 +56,12 @@ const FIELDS = [
   ["hipot",       /hi-?pot|hipot|kV|VAC\/1|dielectric/i],
   ["marking",     /marking|label|traceab|lot|serial|polarity dot|dot at start/i],
   ["qty",         /qty|quantity|per SKU|qty \d/i],
+  // E73: the fields a winder also needs to hold a part to its rating — the third element limits a field to the parts it applies to
+  ["current",     /A rms|A pk|A DC|current rating|A class/],
+  ["temp class",  /Class [BFH]\b|Class 200|class [FH]\b|155 °C|180 °C/],
+  ["tolerance",   /±|tolerance/],
+  ["gap",         /\bgap\b|gapped|no grinding/i, /^(D1|D2|D3|D4)$/],
+  ["wind order",  /winding table|radial order|sandwich|P\/2–S–P\/2|sectors|lay-up/i, /^(D3|D4|D7)$/],
 ];
 
 // §0 is a COMMON-REQUIREMENTS section ("unless otherwise specified"), which is how drawing sets
@@ -76,14 +82,14 @@ const w = Math.max(...FIELDS.map(([n]) => n.length));
 console.log("  " + "drawing".padEnd(34) + FIELDS.map(([n]) => n.slice(0, 5).padEnd(6)).join(""));
 for (const p of parts) {
   const scope = p.body + "\n" + commonFor(p.title);
-  const row = FIELDS.map(([, re]) => re.test(scope));
-  miss += row.filter((x) => !x).length;
-  console.log("  " + p.title.slice(0, 33).padEnd(34) + row.map((x) => (x ? "  ok  " : "  --  ")).join(""));
+  const row = FIELDS.map(([, re, only]) => (only && !only.test(partId(p.title)) ? null : re.test(scope)));
+  miss += row.filter((x) => x === false).length;
+  console.log("  " + p.title.slice(0, 33).padEnd(34) + row.map((x) => (x === null ? "  na  " : x ? "  ok  " : "  --  ")).join(""));
 }
 console.log(`\n  legend: ${FIELDS.map(([n]) => `${n.slice(0, 5)}=${n}`).join("  ")}`);
 console.log(`\n  ${miss} missing field(s) across ${parts.length} drawings\n`);
 for (const p of parts) {
-  const gaps = FIELDS.filter(([, re]) => !re.test(p.body + "\n" + commonFor(p.title))).map(([n]) => n);
+  const gaps = FIELDS.filter(([, re, only]) => !(only && !only.test(partId(p.title))) && !re.test(p.body + "\n" + commonFor(p.title))).map(([n]) => n);
   if (gaps.length) console.log(`  ${p.title.split("—")[0].trim().padEnd(12)} missing: ${gaps.join(", ")}`);
 }
 console.log(miss ? `\nRFQ AUDIT: ${miss} MISSING FIELD(S) — a drawing that cannot be quoted` : "RFQ AUDIT CLEAN — every magnetic drawing carries every field a winder quotes against");

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square" alt="status: evidence record"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -28,11 +28,12 @@
 | Tank tolerance | Monte-Carlo 10k per SKU on the E67 tanks | FHA peak gain p1 1.212–1.217 vs 1.205 · ZVS fail 0 % | ✅ current |
 | CT front ends | ngspice at the E67 burdens | F.11 + race ADC peak ≤ 3.131 V | ✅ current |
 | Precharge, discharge, bank bleed | ngspice per SKU | t95 193 / 231 / 310 ms · bus 1.99 / 2.39 / 3.19 s · banks 0.37 / 0.49 / 0.58 s | ✅ current |
+| Precharge-bypass closure | JS switched model: D1 L(i), CMC leakage, rectifier, link | 200 / 218 / 280 A pk ≈ 1.5 ms · F.01 blanked 60 ms (E73) · relays, diodes, fuses inside their lines | ✅ current |
 | Aux flyback | drawn-circuit ngspice per SKU, D4 rev E | 16 PASS rows + 1 recorded residual | ✅ current |
 | Magnetics second opinion | PyOpenMagnetics 1.4.0 (MKF), by hand | Rdc ± 2.5 % · D3 copper × 1.29–1.32 of 1-D · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line | 🟡 watch — first-article short-circuit R decides (T-31) |
 | Envelope grid | averaged, temperature-iterated | 4,536 points · 0 failures · 0 folds · max Tj 139 °C | ✅ current |
 | Conducted pre-compliance | per-phase LISN ladder | DM + 32.9 / + 30.6 / + 28.7 dB · CM + 8 dB at 200 pF | 🟡 estimate — never a compliance claim |
-| System scenarios | JS FSM + C host suite | 26 / 26 · 60 / 60 under ASan / UBSan | ✅ current at logic fidelity |
+| System scenarios | JS FSM + C host suite | 26 / 26 · 63 / 63 under ASan / UBSan | ✅ current at logic fidelity |
 | Series / parallel physics | ngspice closure deck | 205 A through a contact at a 2 V bank mismatch | ✅ current — why the relays close only at 0 A |
 
 Solver for every SPICE run: **ngspice-46 (KLU), method = gear**, macOS arm64. Generated netlists are kept under
@@ -98,6 +99,7 @@ Every result row carries the tank fingerprint (`FB n2/Lr…/Cr…/Lm…/Coss…`
 |---|---|
 | **CT front ends** (`spice/protection/ct-frontend.mjs`) | at the E67 burdens 0.47 / 0.36 / 0.30 Ω: comparator node within 12 mV of the computed F11_VH; F.11 + race ADC peak **3.120 / 3.124 / 3.131 V** (≤ 3.27 V); line chain F.01 + race 3.111 / 3.126 / 3.038 V; AVMID buffer ripple ≈ 0, clamp-pulse dip 1.639 V |
 | **Precharge, discharge, bank bleed** (`spice/protection/prechg-disch.mjs`) | precharge t95 **193 / 231 / 310 ms** (Ipk ≤ 18.6 A, ≤ 180 J per resistor) · bus < 60 V in **1.99 / 2.39 / 3.19 s** vs 3 / 4 / 5 s · film-only banks < 60 V in **0.37 / 0.49 / 0.58 s** vs the F.21b windows |
+| **Precharge-bypass closure** (`current-coordination.mjs` [INRUSH], E73) | closure at 90 % of line peak, 475 VAC stiff grid, instant swept every 2°: **200 / 218 / 280 A pk** through D1 for ≈ 1.5 ms, D1 down to 24 / 27 / 18 µH, bus to 726 / 725 / 722 V — above F.01, so the latch is blanked for 60 ms (FW-E73) and the relays, JBS and fuses carry RFQ lines sized to the pulse |
 | **Aux flyback** (`spice/aux/aux-flyback.mjs`, D4 rev E) | per SKU at 340 / 560 / 860 V: V24 22.6–23.1 V, V15 ≥ 14.1 V, η 0.86–0.90; FB-open limit and V24 / V15 hard shorts bounded at ≤ 286 mT before the fault latch; the short at the V24 reservoir itself is recorded as a residual component-failure case |
 
 ## 8. System — grid, EMI and scenarios
@@ -110,7 +112,7 @@ Every result row carries the tank fingerprint (`FB n2/Lr…/Cr…/Lm…/Coss…`
   CM margin stays ≥ + 3 dB only while that capacitance is ≤ 350 pF. The chamber (T-08, T-39) arbitrates.
 - **Scenario suite** (`system/fsm-sim.mjs`, C `firmware/test/host_sim.c`): **26 / 26** scripted scenarios — start-up chain, load steps,
   CV ↔ CC, open and short, back-feed, phase loss, swell and sag, OVP, midpoint, output-mode changes, welded relay, fan fail, OT, stuck
-  sensor, aux collapse, DESAT, watchdog, CAN timeout, shutdown discharge, 5-fault lockout — and **60 / 60** host cases under ASan /
+  sensor, aux collapse, DESAT, watchdog, CAN timeout, shutdown discharge, 5-fault lockout — and **63 / 63** host cases under ASan /
   UBSan including the output-mode latch and hysteresis and a 100k-frame malformed-input fuzz.
 - **Series / parallel physics** (`spice/llc/sp-transition.mjs`): closing a parallel contact across a 2 / 5 / 10 / 20 V bank mismatch
   drives 205 / 512 / 1,023 / 2,047 A — the reason the E67 relays only ever close in standby at zero current.
@@ -126,5 +128,5 @@ class (T-41), relay life and partial discharge. These are hardware by nature; no
 <div align="center">
 <sub><a href="simulation-toolchain.md">← Simulation Toolchain</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="verification-matrix.md">Verification Matrix & Risk Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

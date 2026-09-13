@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-current--coordination_·_CLEAN-2ea44f?style=flat-square" alt="gate: current-coordination · CLEAN"/>
 </p>
@@ -316,10 +316,45 @@ injection of each polarity to gates-off inside the 1 µs kill budget, with the F
 CT saturation at the fitted burdens (acceptance rows in the pack) · LLC load-step overshoot in closed loop (the 1.2×
 rule's transient allowance) · Vienna dip recovery with the real HAL controller (FW-R6 clamp).
 
+
+## 10. Startup — the precharge-bypass closure (E73)
+
+The only startup event with real current is the bypass closure. `fsm.c` closes the relays at 90 % of line peak; the rest of
+the step charges the link through the CMC leakage and D1 in a single pulse while the PFC is idle. The gate simulates it on
+the drawn path — stiff 475 VAC grid, CMC leakage at the band minimum, D1 on its catalog L(i) at lot AL −8 %, passive rectifier,
+link at the threshold — and sweeps the closure instant every 2° over the six-pulse period, because the peak is sharply
+sensitive to it.
+
+```mermaid
+sequenceDiagram
+  participant FSM as fsm.c
+  participant K as Precharge relays
+  participant D1 as D1 + rectifier
+  participant L as DC link
+  FSM->>FSM: bus ≥ 90 % of line peak
+  FSM->>K: close · F.01 blanked 60 ms · no PFC enable
+  K-->>D1: contacts make (≤ 25 ms)
+  D1->>L: 200 / 218 / 280 A pk for ≈ 1.5 ms · D1 soft-saturates
+  L-->>FSM: bus 722–726 V (≤ 860 V OVP)
+  FSM->>FSM: window ends · HAL clears the HRTIMER latch · PFC may start
+```
+
+| Check | 30 kW | 40 kW | 50 kW |
+|---|---|---|---|
+| Peak through D1 and the rectifier | 200 A | 218 A | 280 A |
+| D1 inductance at the peak (catalog roll-off, lot −8 %) | 24 of 155 µH | 27 of 115 µH | 18 of 98 µH |
+| JBS pulse I²t vs 50 % of the IFSM ≥ 250 A line | 20 ≤ 156 A²s | 27 ≤ 156 A²s | 45 ≤ 156 A²s |
+| Relay make vs the RFQ line (≥ 1.25×) | 200 ≤ 260 A | 218 ≤ 280 A | 280 ≤ 360 A |
+| gG fuse — pulse vs 10 % of pre-arc I²t | 20 ≤ 150 A²s | 27 ≤ 400 A²s | 45 ≤ 700 A²s |
+| F.01 blank window vs relay + bounce + pulse | 60 ≥ 31 ms | 60 ≥ 31 ms | 60 ≥ 32 ms |
+
+PyOpenMagnetics' Kool Mµ 26 DC-bias data keeps 19–30 % of the permeability at those peaks against the engines' 15–23 %, so
+the simulated peaks are conservative. The bench confirms the pulse and the blank at EVT T-42.
+
 ---
 
 <div align="center">
 <sub><a href="protection-thresholds.md">← Protection Thresholds</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="thermal-report.md">Thermal Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

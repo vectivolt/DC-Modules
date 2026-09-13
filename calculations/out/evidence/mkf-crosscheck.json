@@ -171,6 +171,72 @@
    "detail": "MKF 18.0 W (14.5 ohmic + 0.0 skin + 3.5 prox) vs Sullivan 45.0 W → ×0.40 — the gate's D2 copper is the conservative figure"
   },
   {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "30kw D1 Rdc @25 °C from MKF's toroid winding",
+   "detail": "5.89 vs build 6.08 mΩ (-3.2 %) — 3 × T 79/48/17, N 39, 9 × 1.6 mm · acceptance ±5 %"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-DCBIAS",
+   "name": "30kw D1 Kool Mµ 26 DC-bias roll-off (MKF material data, 100 °C) vs the engines' fit",
+   "detail": "floor 78 A = 195 Oe: MKF 56.5 % vs engine 45.6 % · inrush 200 A = 500 Oe: MKF 19.0 % vs engine 15.2 % — the engines' L(i) sits at or below the material data, so every biased-L floor and the inrush peak are conservative"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "40kw D1 Rdc @25 °C from MKF's toroid winding",
+   "detail": "3.88 vs build 3.97 mΩ (-2.3 %) — 5 × T 79/48/17, N 26, 13 × 1.6 mm · acceptance ±5 %"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-DCBIAS",
+   "name": "40kw D1 Kool Mµ 26 DC-bias roll-off (MKF material data, 100 °C) vs the engines' fit",
+   "detail": "floor 104 A = 173 Oe: MKF 61.6 % vs engine 50.4 % · inrush 218 A = 363 Oe: MKF 29.5 % vs engine 23.2 % — the engines' L(i) sits at or below the material data, so every biased-L floor and the inrush peak are conservative"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "50kw D1 Rdc @25 °C from MKF's toroid winding",
+   "detail": "3.58 vs build 3.63 mΩ (-1.4 %) — 5 × T 79/48/17, N 24, 13 × 1.6 mm · acceptance ±5 %"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-DCBIAS",
+   "name": "50kw D1 Kool Mµ 26 DC-bias roll-off (MKF material data, 100 °C) vs the engines' fit",
+   "detail": "floor 130 A = 199 Oe: MKF 55.5 % vs engine 44.7 % · inrush 280 A = 431 Oe: MKF 23.5 % vs engine 18.6 % — the engines' L(i) sits at or below the material data, so every biased-L floor and the inrush peak are conservative"
+  },
+  {
+   "status": "info",
+   "tag": "MKF-GAP",
+   "name": "family D4 Lp from the drawn centre-leg gap 0.90 mm (AL 239 nH/T², Np 38)",
+   "detail": "Zhang 416 µH (+20.7 %) · Muehlethaler 568 · Partridge 421 vs 345 µH — with fringing ≈ 1.15 mm reaches it (first-grind guide) — the part is ground to its AL with a 100 % Lp test at ± 5 %, so fringing moves the grind depth, not the flux stack"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-RDC",
+   "name": "family D4 primary Rdc @25 °C from MKF's ETD 44 layout",
+   "detail": "201 vs 1-D 190 mΩ (+6.2 %) — 38 T of 0.5 mm; MKF lays one bobbin section, the drawing splits P/2–S–P/2 · acceptance ±10 %"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-MU",
+   "name": "30kw D7 L_cm from MKF's Nanoperm 30000 permeability (10 kHz, 100 °C, −30 %)",
+   "detail": "µ 29517 → 2.29 mH on A_Fe 281 mm² / le 204 mm, N 8 vs engine 2.27 mH (+0.8 %) and the ≥ 2.0 mH line — the cased T 80/50/25 is not in the MKF shape database, so this checks the material basis, not the geometry"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-MU",
+   "name": "40kw D7 L_cm from MKF's Nanoperm 30000 permeability (10 kHz, 100 °C, −30 %)",
+   "detail": "µ 29517 → 2.29 mH on A_Fe 281 mm² / le 204 mm, N 8 vs engine 2.27 mH (+0.8 %) and the ≥ 2.0 mH line — the cased T 80/50/25 is not in the MKF shape database, so this checks the material basis, not the geometry"
+  },
+  {
+   "status": "ok",
+   "tag": "MKF-MU",
+   "name": "50kw D7 L_cm from MKF's Nanoperm 30000 permeability (10 kHz, 100 °C, −30 %)",
+   "detail": "µ 29517 → 3.40 mH on A_Fe 450 mm² / le 220 mm, N 8 vs engine 3.38 mH (+0.6 %) and the ≥ 2.0 mH line — the cased T 90/50/30 is not in the MKF shape database, so this checks the material basis, not the geometry"
+  },
+  {
    "status": "info",
    "tag": "MKF-LEAK",
    "name": "leakage is not taken from MKF 1.4.0",

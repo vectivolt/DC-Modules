@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E72-f2b705?style=flat-square" alt="revision E72"/>
+  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/gate-mag--sync_·_rfq--audit_·_magnetics--envelope-2ea44f?style=flat-square" alt="gate: mag-sync · rfq-audit · magnetics-envelope"/>
 </p>
@@ -25,6 +25,10 @@
 | **40 kW** | 5 × T79, N = 26 | 4.07 µH · litz 10000×0.05 | 3 × E70 · 4:4∥4 | T 80/50/25 | [magnetics-40kw.md](magnetics-40kw.md) |
 | **50 kW liquid** | 5 × T79, N = 24 · cutout | 3.28 µH · litz 12000×0.05 · plate-bonded | 3 × E70 · 4:4∥4 · plate-bonded | T 90/50/30 | [magnetics-50kw.md](magnetics-50kw.md) |
 | **50 kW air** | 5 × T79, N = 24 | 3.28 µH · web-bonded | 3 × E70 · 4:4∥4 · web-bonded | T 90/50/30 | [magnetics-50kwa.md](magnetics-50kwa.md) |
+
+Each module page opens with a **critical review at a glance** — every magnetic against every failure mechanism (saturation,
+core loss and runaway, copper and proximity, winding temperature, current rating, insulation, leakage, DC bias, imbalance,
+resonance, faults and the PyOpenMagnetics second opinion), one governing number each, read from that battery's gate evidence.
 
 Every module also carries one **D4** aux flyback transformer (below), three line CTs, one resonant CT, two catalog buck
 inductors and one catalog CAN choke. There are no DM line chokes (retired at E68b — the star-X2 filter carries the
@@ -69,11 +73,11 @@ flowchart LR
 | **vienna-switched** (JS, cycle-by-cycle) | D1 current with the soft-saturating catalog L(i) at lot AL − 8 %, dips and phase jumps included | `calculations/pfc/vienna-switched.mjs` | the peak column sets F.01; the ripple column sets D1 copper and core loss |
 | **upb-lea materialdatabase** (frozen) | TDK N95 loss over f, B and T; LEA-measured N95 permeability; 3C95 surfaces for Bsat(T) | `magnetics-data.json` · `tempdata-3c95.json` | the envelope applies × 1.14 (LEA-measured over datasheet) in the high-flux window; `temp-critique` reads Bsat(130 °C) = 362 mT from the 3C95 set |
 | **OpenMagnetics MAS** (data) | core shapes and a second Steinmetz surface with temperature terms | `geometry.mjs` · `magnetics-envelope.mjs` | the loss used is the larger of the datasheet surface and MAS — the conservative side |
-| **PyOpenMagnetics 1.4.0 / MKF** | a second, independent opinion on the D2 / D3 builds: Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper | `calculations/magnetics/mkf-crosscheck.py` by hand, in a Python 3.12 venv (the 1.4.0 macOS arm64 wheel) → the module pages quote its evidence | Rdc agrees within ±2.5 % · the D3 foils read ×1.29–1.32 the 1-D copper, so the drawings test short-circuit R against the 1-D … MKF bracket · the D2 gap guide is fringing-corrected · leakage with foil turns is non-physical in 1.4.0 and is not used — [how to read it](simulation-toolchain.md#55-the-pyopenmagnetics-second-opinion) |
+| **PyOpenMagnetics 1.4.0 / MKF** | a second, independent opinion on every custom magnetic: D1 toroid Rdc and the Kool Mµ 26 DC-bias curve; D2 / D3 Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss and the thermal network at that copper; D4 gap and primary copper; D7 nanocrystalline permeability | `calculations/magnetics/mkf-crosscheck.py` by hand, in a Python 3.12 venv (the 1.4.0 macOS arm64 wheel) → the module pages quote its evidence | Rdc agrees within ±3.2 % on D1 / D2 / D3 and +6 % on D4 · the engines' D1 DC-bias roll-off sits below the material data at every floor and at the inrush peak · D7 permeability basis within 1 % · the D3 foils read ×1.29–1.32 the 1-D copper, so the drawings test short-circuit R against the 1-D … MKF bracket · the D2 / D4 gap guides are fringing-corrected · leakage with foil turns is non-physical in 1.4.0 and is not used — [how to read it](simulation-toolchain.md#55-the-pyopenmagnetics-second-opinion) |
 | **FEMMT · FEMM 4.2** | 2-D fringing and leakage at the D3 S1 foil and the D2 distributed gap | first article | a 1-D model under-reads fringing loss; the construction rules (split and distributed gaps, litz clearance) and T-31 close it |
 | **winding-physics.mjs** | Dowell (foil), Sullivan (litz), Ferreira + 2-D field factor (round bundles) | `conductor-audit.mjs` | Rac / Rdc per winding at the simulated switching frequency against the drawing's row |
 | **magnetics-envelope.mjs** | flux, core and copper loss and the two-node thermal network for D2 and D3 | run-all | read the hot-spot at 55 °C inlet, the 75 °C-inlet derated value, the +25 % Rth value, the runaway margin and B̂ as % of hot Bsat — all five must pass |
-| **stress-audit / temp-critique** | D1 biased-L floor, bonded thermal, clamp and bond loss; D7 DM-bias flux; saturation at 130 °C; cold equilibria | run-all | each row prints its own acceptance line; `temp-critique` shows the loop gain g(T) — below 1 means a disturbance decays |
+| **stress-audit / temp-critique** | D1 biased-L floor, bonded thermal, clamp and bond loss; D7 DM-leakage and common-mode flux; D4 limit flux and Rdc rows against its build; saturation at 130 °C; cold equilibria | run-all | each row prints its own acceptance line; `temp-critique` shows the loop gain g(T) — below 1 means a disturbance decays |
 
 ### Reading one gate row
 
@@ -151,6 +155,12 @@ F_r^{\,\mathrm{Sullivan}} = 1 + \frac{\pi^2\,\omega^2\,\mu_0^2\,N^2\,n^2\,d^6\,k
 | 24 | A lost gap-pad bond on D2 / D3 | runaway on the sealed plate or on a single web | **gate + construction** — `magnetics-envelope` bond-lost rows; EOL bonded thermal soak; 130 °C cutout loop → F.22 |
 | 25 | Fringing eddies across the innermost D3 foil | foil hot-spot a 1-D model misses | **construction** — gap split equally per set, ≤ 0.5 mm per position; T-31 open-secondary check |
 | 26 | Cold start at −30 °C | loss doubles, slow warm-up | **gate** — `temp-critique` COLD rows: every core self-warms toward its loss minimum |
+| 27 | D1 inrush when the precharge bypass closes (E73) | 200 / 218 / 280 A pk through D1 — F.01 nuisance latch, relay and diode stress | **gate + firmware** — `current-coordination` [INRUSH] on the drawn path; F.01 blanked 60 ms with no PFC enable inside (FW-E73); relay make and JBS IFSM RFQ lines; EVT T-42 |
+| 28 | One fan dead on an air SKU (E73) | D2 / D3 run on reduced airflow while core loss does not derate | **gate** — `magnetics-envelope` [FAN-OUT]: 88–92 °C with the F.25 derate, runaway margin ≥ 120 K |
+| 29 | Current imbalance between the two D3 cells (E73) | the heavier cell runs hotter in LOW mode | **gate** — `magnetics-envelope` [IMBALANCE]: ± 7 % Lm mismatch moves ≤ 8.3 %, inside the copper corner already proven; HIGH mode balances by equal charge |
+| 30 | D7 saturated by common-mode volt-seconds (E73) | CM attenuation lost at the switching frequency | **gate** — `stress-audit` D7 CM flux: 17–27 mT on 1.155 T |
+| 31 | A drawing acceptance row that passes a wrong build or rejects a good one (E73) | wrong gauge shipped, or good parts scrapped | **gate** — D4 Rdc rows held within 1.0–1.25 × the computed build; D3 short-circuit R bracket; RFQ audit now requires current rating, thermal class, tolerance, gap and winding order |
+| 32 | 1-D copper model reads foil edge loss low (E71) | D3 winding hotter than the thermal proof | **second opinion + EVT** — PyOpenMagnetics copper ×1.29–1.32 keeps every class line; the 50 kW air cell's 125 °C design line is a T-31 watch with a computed foil-band fallback |
 
 ## Common requirements — every magnetic
 
@@ -195,11 +205,12 @@ potential and the SELV control domain depends on its **reinforced barrier** — 
 |---|---|
 | Function | 110 W-class DCM flyback, 306–860 VDC running range, 65 kHz, Vor ≈ 157 V, NCP1252D cycle-by-cycle limit |
 | Core | **ETD44 PC95-class** (Ae 173 mm²), gapped to **AL 239 nH/T²** — rev E re-core: at the computed limit (860 V · Lp + 5 % · VILIM max · CS filter lag → 4.67 A) the flux is 257 mT = 71 % of Bsat(130 °C); the ETD39 rev D reached 113 % |
-| Windings | **Np 38** / N24 = 6 / N15 = 4 / Naux = 4, P/2–S–P/2 sandwich; secondaries TIW Class F minimum; Lp **345 µH ± 5 %** (100 %) |
+| Windings | **Np 38** / N24 = 6 / N15 = 4 / Naux = 4, P/2–S–P/2 sandwich on the 29.5 mm ETD44 former: primary 19 T + 19 T of **Ø 0.50 mm grade-2** enamelled wire (Class 200) inside 3 mm margins · S24 and S15 side by side in one layer of **TIW 0.8 mm²** (OD 1.4 mm, Class F minimum) · Naux 4 T of **Ø 0.30 mm grade 2** · 0.1 mm polyester tape between layers; Lp **345 µH ± 5 %** (100 %) |
+| Current rating | primary **≤ 4.67 A pk** at the cycle-by-cycle limit (860 V, Lp + 5 %), ≈ 0.75 A rms at full load and 306 V · V24 **≤ 2.4 A DC** and V15 **≤ 1.2 A DC** at the heaviest module load (50 kW air) |
 | Leakage | **≤ 4 µH** primary-referred, all secondaries shorted @ 10 kHz (1-D estimate 1.7 µH) — sets the RCD clamp |
 | Terminations | pins 1–4 AXA, AXB, P1, P2 (bus side) · pins 5–8 S15A, S15B, S24A, S24B (SELV) on opposite rows — reinforced 8.0 mm clearance / 12.6 mm creepage |
 | Insulation · hipot | pri ↔ all secondaries **reinforced**; 100 % hipot ≥ 4.25 kV DC; PD sample 5 / lot; 1.2/50 µs impulse type test ≥ 8 kV |
-| Acceptance | Lp 345 µH ± 5 % · turns exact · Rdc pri ≤ 900 mΩ / 24 V ≤ 60 mΩ / 15 V ≤ 45 mΩ / aux ≤ 45 mΩ · leakage ≤ 4 µH · C(pri ↔ sec) ≤ 50 pF · SRF ≥ 650 kHz |
+| Acceptance | Lp 345 µH ± 5 % · turns exact · Rdc @ 25 °C pri ≤ 250 mΩ · 24 V ≤ 10 mΩ · 15 V ≤ 6.5 mΩ · aux ≤ 68 mΩ (4-wire) · leakage ≤ 4 µH · C(pri ↔ sec) ≤ 50 pF · SRF ≥ 650 kHz |
 | Thermal · environment | ΔT ≤ 45 K at 110 W throughput (thermocouple on the primary margin) · Class F system · operating ambient −40 … +55 °C |
 | Mechanical · mounting · marking | outline per the ETD44 core and 8-pin former drawing (dimensional first-article report against it) · bobbin pins into the PCB, secured by the bobbin clip · label p/n, rev, lot, date |
 | Production test | 100 %: Lp, turns, Rdc × 4, leakage, hipot · sample: PD 5 / lot · first article: impulse and thermal |
@@ -244,17 +255,13 @@ flowchart LR
 | E67 | one full-bridge LLC: two D3 cells in series and one external D2 Lr, no bins | the InfyPower REG1K0135A2 architecture |
 | E68 | D6 DM chokes and D8 bank inductors retired | star-X2 EMI filter and film-only output banks |
 | E70 | one generated magnetics page per module; the RFQ pack, build instructions, FMEA, D4 sheet and conductor page merged here | each SKU's parts differ — one page per module, proof quoted from the gates |
-
----
-
-<div align="center">
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
-</div>
+| E71 | PyOpenMagnetics cross-check of D2 / D3; fringing-corrected gap guides; D3 short-circuit R test | the docs said the tool could not install; the D2 gap guide ignored fringing |
+| E73 | critical-review matrix per module; startup inrush, fan-out, cell imbalance and CM-flux gates; D1 / D4 / D7 in the PyOpenMagnetics cross-check; D4 wire sizes, current rating and Rdc rows corrected | a closure event and three abnormal conditions had no computed check; the D4 sheet named no gauges and its Rdc rows did not match its build |
 
 ---
 
 <div align="center">
 <sub><a href="busbar-drawings.md">← Busbar Drawings & Joint Spec</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-30kw.md">30 kW Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E72 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

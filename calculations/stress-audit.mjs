@@ -17,7 +17,7 @@ import { D2 as D2C, D3 as D3C, D3_CELLS, excitation, V_AIR } from "./magnetics/m
 import { stack, CORES } from "./magnetics/geometry.mjs";
 import { D1 as D1C, D1_REGISTERED, D1_LITZ, d1Temp, d1TypeTest, row as vsRow, VS as D1VS } from "./magnetics/d1-choke.mjs";
 import { mechLines } from "./cost/parts-db.mjs";
-import { D4, D4_REGISTERED_E52, DRAWN_E52, NCP, drawn as d4Drawn, evaluate as d4Evaluate, fingerprint as d4Fingerprint, leakageEstimate, Bsat as d4Bsat, csTrip, VBUS_MAX } from "./magnetics/d4-flyback.mjs";
+import { D4, D4_REGISTERED_E52, DRAWN_E52, NCP, drawn as d4Drawn, evaluate as d4Evaluate, fingerprint as d4Fingerprint, leakageEstimate, Bsat as d4Bsat, csTrip, VBUS_MAX, d4Rdc } from "./magnetics/d4-flyback.mjs";
 import { captureEvidence } from "./evidence.mjs";
 captureEvidence("stress-audit");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -184,6 +184,13 @@ for (const [sku, c] of Object.entries(D2C)) {
     ck("D7", `${sku} winding J [engine]`, d7.J <= 5.6, `D7 ${d7.aw_mm2} mm² → ${d7.J} A/mm² ≤ 5.6 (E68: no AC-side D6)`);
     ck("D7", `${sku} DM-leakage flux at the simulated crest`, B <= 0.6 && d7.Lcm10k_mH >= 2,
       `${d7.Llk_band_uH[1]} µH × ${i1pk} A / (${d7.N} T × ${d7.AFe_mm2} mm²) = ${f(B, 2)} T ≤ 0.6 (hot Bsat 1.155 T) · L_cm ${d7.Lcm10k_mH} mH ≥ 2 at µ −30 % (${d7.core})`);
+    // E73: common-mode flux — each switch-node edge pushes Cp·V_sw into the converter-side Y trio (CY1-3) before CMC2's impedance lets
+    // it through; the trio then holds ΔV = Cp·V_sw / C_Y across CMC2 for up to half a 50 kHz period. Constants read from the LISN engine.
+    const lisn = readFileSync(join(ROOT, "calculations/emi/lisn-precompliance.mjs"), "utf8");
+    const CP = Number(lisn.match(/CP = ([\d.e-]+)/)[1]), VSW = Number(lisn.match(/VSW = (\d+)/)[1]), CY = 3 * Number(lisn.match(/CY3 = 3 \* ([\d.e-]+)/)[1]);
+    const Bcm = ((CP * VSW) / CY) * (1 / (2 * 50e3)) / (d7.N * d7.AFe_mm2 * 1e-6);
+    ck("D7", `${sku} common-mode flux from the switch-node edges`, Bcm <= 0.1 * 1.155,
+      `Cp ${f(CP * 1e12, 0)} pF × ${VSW} V → ${f((CP * VSW) / CY, 1)} V on the ${f(CY * 1e9, 1)} nF Y trio for ½ × 50 kHz across ${d7.N} T × ${d7.AFe_mm2} mm² = ${f(Bcm * 1e3, 0)} mT ≤ 10 % of the hot Bsat (1.155 T) — the 150 Hz midpoint component closes through pF and is negligible`);
     ck("D7", `${sku} hot-copper ΔT`, d7.dT <= 45, `${d7.P} W/choke at 100 °C Cu → ΔT ${d7.dT} K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)`);
     ck("D7", `${sku} parts-db carries the engine core`, new RegExp(`D7-${sku.slice(0, 2)} rev B \\(E65 engine[^"]*${d7.core}, A_Fe ≥ ${d7.AFe_mm2}`).test(readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8")), `${d7.core} · A_Fe ≥ ${d7.AFe_mm2} mm² in the CMC override note`);
   }
@@ -256,8 +263,16 @@ for (const [sku, c] of Object.entries(D2C)) {
   ck("D4", "cold start inside the EVT acceptance (VCC(on) max, CVCC +20 %, ICC1 max)", t285 <= 13 && t320 <= 11 && t400 <= 8.5 && /cold-start ≤13 s at 285 VAC, ≤8\.5 s at 400 VAC/.test(acc) && /first switching ≤11 s from AC apply at 320–480 VLL/.test(acc),
     `${f(t285, 1)} s at 285 VAC (≤ 13) · ${f(t320, 1)} s at 320 VLL (≤ 11) · ${f(t400, 1)} s at 400 VLL (≤ 8.5) — the R6 "≈8 s at low line" held only at typical VCC(on) and nominal CVCC`);
   ck("D4", "V24/V15 hard short at 860 V before the 10–20 ms fault latch", Math.max(r.short24, r.short15) <= 0.8 * D4.idmQaux && r.Bshort <= 0.85 * bs && c.Bshort > bs && D4W.r24 > 0,
-    `ton_min ratchet (LEB + tILIM 150 ns, osc+jitter max, loop ≥ ${D4.rLoopMin * 1e3} mΩ + RAUX24 ${f(D4W.r24 * 1e3, 0)} mΩ): V24 ${f(r.short24, 2)} A · V15 ${f(r.short15, 2)} A ≤ 80 % of the ${D4.idmQaux} A QAUX pulse class · ${f(r.Bshort * 1e3, 0)} mT ≤ 85 % of Bsat(130 °C) (control E52: ${f(c.short24, 1)} A → ${f(c.Bshort * 1e3, 0)} mT, deep saturation — rejected)`);
+    `ton_min ratchet (LEB + tILIM 150 ns, osc+jitter max, loop ≥ ${f(D4.rLoopMin * 1e3, 1)} mΩ + RAUX24 ${f(D4W.r24 * 1e3, 0)} mΩ): V24 ${f(r.short24, 2)} A · V15 ${f(r.short15, 2)} A ≤ 80 % of the ${D4.idmQaux} A QAUX pulse class · ${f(r.Bshort * 1e3, 0)} mT ≤ 85 % of Bsat(130 °C) (control E52: ${f(c.short24, 1)} A → ${f(c.Bshort * 1e3, 0)} mT, deep saturation — rejected)`);
   console.log(`  info  [D4] residual: a failure AT the V24 reservoir (CAUX24/DAUX24 short, no RAUX24 in the loop) ratchets to ${f(r.short24bare, 2)} A / ${f(r.BshortBare * 1e3, 0)} mT at the 860 V worst stack — a component-failure event ended by the latch (T-09 short matrix, search coil); harness and load faults all sit behind RAUX24`);
+  { // E73: the drawing's Rdc acceptance rows against the drawn build (the pre-E73 rows, pri ≤ 900 mΩ and aux ≤ 45 mΩ, passed a wrong gauge
+    // and rejected a good aux winding)
+    const b = d4Rdc(D4), hubD4 = readFileSync(join(ROOT, "docs/magnetics.md"), "utf8");
+    const a = hubD4.match(/Rdc @ 25 °C pri ≤ (\d+) mΩ · 24 V ≤ ([\d.]+) mΩ · 15 V ≤ ([\d.]+) mΩ · aux ≤ (\d+) mΩ/);
+    const rows = [["pri", b.p, a && +a[1]], ["24 V", b.s24, a && +a[2]], ["15 V", b.s15, a && +a[3]], ["aux", b.aux, a && +a[4]]];
+    ck("D4", "production Rdc rows match the drawn build", Boolean(a) && rows.every(([, x, row]) => row >= x * 1e3 && row <= 1.25 * x * 1e3),
+      rows.map(([n, x, row]) => `${n} build ${f(x * 1e3, 1)} → row ≤ ${row ?? "MISSING"} mΩ`).join(" · ") + ` — rows within 1.0–1.25× of the build catch a wrong gauge or an open strand · hard-short loop floor ${f(D4.rLoopMin * 1e3, 1)} mΩ from the cold secondary`);
+  }
   const llk = leakageEstimate();
   ck("D4", "leakage acceptance is buildable", llk * 1.5 <= D4.llkAcc,
     `P/2–S–P/2 sandwich 1-D estimate ${f(llk * 1e6, 2)} µH ×1.5 ≤ ${D4.llkAcc * 1e6} µH acceptance (+${D4.llkLayout * 1e6} µH rectifier-loop allowance in every clamp row)`);

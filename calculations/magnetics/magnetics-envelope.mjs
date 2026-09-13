@@ -223,6 +223,32 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
   return { s, nw, mount, w55, w75, wS, wB, wM, fe, cu, ok, res };
 };
 
+// E73 abnormal-condition rows. FAN-OUT: one fan dead on an air SKU — airflow (n−1)/n, the F.25 derate to 50 % halves the current,
+// the extrusion web (the magnetics wall) runs hotter on the reduced flow (sink rise ∝ flow^−0.8), core loss stays at every corner.
+export const FANS = { "30kw": 2, "40kw": 3, "50kwa": 4 };          // fault-energy air budget; the liquid SKU has no fans
+export const fanOut = (sku, part, c, rows) => {
+  const vK = (FANS[sku] - 1) / FANS[sku], s = stack(c.core, c.n), nw = network(part, c, s, c.mount, V_AIR[sku] * vK);
+  const wall = 55 + 5 + 20 * 0.5 * Math.pow(1 / vK, 0.8), air = 55 + (10 * 0.5) / vK;
+  const res = rows.map((r) => {
+    const loss = part === "D3" ? d3Loss(sku, c, r) : d2Loss(sku, c, r), frac = r.source === "envelope" ? r.P_frac : 1;
+    const e = solve2(loss, nw, wall, air, Math.min(1, (0.5 / frac) ** 2));
+    return { corner: r.corner, hot: e.hot, Tc: e.Tc, margin: tCrit(loss, nw, 1.25) - Math.min(e.Tc, 300) };
+  });
+  return { vK, wall, air, w: res.reduce((a, x) => (x.hot > a.hot ? x : a)), m: res.reduce((a, x) => (x.margin < a.margin ? x : a)) };
+};
+// IMBALANCE: the two cells' primaries are in series (one current), their secondaries feed banks that are PARALLEL in LOW mode, so the
+// cell voltages are common and a ±7 % Lm mismatch moves (1/0.93 − 1/1.07) = 14 % of the magnetizing current from one secondary to the
+// other. In HIGH mode the banks are in series and take equal charge from equal currents, so the cells balance by construction.
+export const cellImbalance = (sku, c, rows) => {
+  const k = 1 / 0.93 - 1 / 1.07;
+  const low = rows.filter((r) => r.source === "envelope" || /^PAR|^PS/.test(r.corner)).map((r) => {
+    const d = (k * (r.Im_pk_A / Math.sqrt(3))) / 2 / r.Isec_rms_A;   // heavier cell's secondary rms rise (triangular magnetizing current)
+    const loss = d3Loss(sku, c, r);
+    return { corner: r.corner, d, cu: loss.cu(100) * (1 + d) ** 2 };
+  });
+  return { worst: low.reduce((a, x) => (x.d > a.d ? x : a)), hottest: low.reduce((a, x) => (x.cu > a.cu ? x : a)) };
+};
+
 const T = (x) => (Number.isFinite(x) ? `${f(x, 0)} °C` : "RUNAWAY");
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   captureEvidence("magnetics-envelope");
@@ -251,6 +277,16 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     // bond loss is a PROCESS defect (VPI + gap pad + potting, as InfyPower-class modules pot their magnetics): it is screened by
     // the EOL bonded thermal soak on every module (T_XFMR NTC rise at a fixed load), not by a sensor per part — informational here
     if (unprotected.length) console.log(`  info  [BOND] ${sku}: ${unprotected.join(" + ")} cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md)`);
+    if (FANS[sku]) for (const [part, table] of [["D3", D3], ["D2", D2]]) {
+      const fo = fanOut(sku, part, table[sku], ex.rows);
+      ck("FAN-OUT", `${sku} ${part} with one of ${FANS[sku]} fans dead at 55 °C inlet (F.25 derate 50 %)`, fo.w.hot <= 135 && fo.m.margin >= 25,
+        `airflow ×${f(fo.vK, 2)} · web ${f(fo.wall, 0)} °C · air ${f(fo.air, 0)} °C → hot-spot ${T(fo.w.hot)} (${fo.w.corner}) ≤ 135 °C derated line · runaway margin ${f(fo.m.margin, 0)} K ≥ 25 — core loss does not derate, copper does`);
+    }
+    {
+      const im = cellImbalance(sku, D3[sku], ex.rows), cuMax = evaluate(sku, "D3", D3[sku], ex.rows).cu.cu100;
+      ck("IMBALANCE", `${sku} D3 cell current share with a ±7 % Lm mismatch between the two cells`, im.worst.d <= 0.1 && im.hottest.cu <= cuMax,
+        `LOW mode (banks parallel): the heavier cell's secondary rises ${f(im.worst.d * 100, 1)} % rms at ${im.worst.corner} · its copper at the worst LOW corner ${f(im.hottest.cu, 1)} W (${im.hottest.corner}) ≤ the ${f(cuMax, 1)} W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge`);
+    }
     const reg = D3_CONTROL_E65[sku], er = evaluate(sku, "D3", reg, ex.rows);
     ck("CONTROL", `${sku} gate rejects the E65 section transformer in the one-bridge cell duty (${reg.n}×${reg.core} ${reg.N}:${reg.N}:${reg.N})`, !er.ok,
       `hot-spot ${T(er.w55.T55)} @55 / ${T(er.w75.T75)} @75 · Fe ${f(er.fe.fe100)} W at B̂ ${f(er.fe.B * 1e3, 0)} mT · Cu ${f(er.cu.cu100)} W → ${er.ok ? "PASSES — the gate is blind" : "rejected"}`);
