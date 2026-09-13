@@ -12,7 +12,6 @@
     "designator": "LA0",
     "value": "IND-PFC-165u",
     "block_name": "PHASE-A0",
-    "search_query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust",
     "pins": [
      {
       "pin_number": 1,
@@ -30,7 +29,6 @@
     "designator": "QA0A",
     "value": "B3M010C075Z",
     "block_name": "PHASE-A0",
-    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
     "pins": [
      {
       "pin_number": 4,
@@ -58,7 +56,6 @@
     "designator": "QA0B",
     "value": "B3M010C075Z",
     "block_name": "PHASE-A0",
-    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
     "pins": [
      {
       "pin_number": 4,
@@ -86,7 +83,6 @@
     "designator": "UA0G",
     "value": "NSI6611",
     "block_name": "PHASE-A0",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -174,7 +170,6 @@
     "designator": "RA0GPD",
     "value": "10k",
     "block_name": "PHASE-A0",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -192,7 +187,6 @@
     "designator": "CA0GBV",
     "value": "100nF",
     "block_name": "PHASE-A0",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -210,7 +204,6 @@
     "designator": "CA0GB1",
     "value": "1uF",
     "block_name": "PHASE-A0",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -228,7 +221,6 @@
     "designator": "CA0GB2",
     "value": "1uF",
     "block_name": "PHASE-A0",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -246,7 +238,6 @@
     "designator": "RA0GON",
     "value": "4.7",
     "block_name": "PHASE-A0",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -264,7 +255,6 @@
     "designator": "RA0GOFF",
     "value": "4.7",
     "block_name": "PHASE-A0",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -282,7 +272,6 @@
     "designator": "RA0GGS",
     "value": "10k",
     "block_name": "PHASE-A0",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -300,7 +289,6 @@
     "designator": "CA0GBL",
     "value": "47pF",
     "block_name": "PHASE-A0",
-    "search_query": "MLCC-47p-0603 47 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -318,7 +306,6 @@
     "designator": "RA0GDS",
     "value": "100",
     "block_name": "PHASE-A0",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -336,7 +323,6 @@
     "designator": "DA0GS1",
     "value": "US1M",
     "block_name": "PHASE-A0",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -354,7 +340,6 @@
     "designator": "DA0GS2",
     "value": "US1M",
     "block_name": "PHASE-A0",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -372,7 +357,6 @@
     "designator": "PSA0G",
     "value": "QA01C-18",
     "block_name": "PHASE-A0",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,
@@ -405,7 +389,6 @@
     "designator": "DA0T",
     "value": "SICJBS-1200-40",
     "block_name": "PHASE-A0",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -423,7 +406,6 @@
     "designator": "DA0B",
     "value": "SICJBS-1200-40",
     "block_name": "PHASE-A0",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -441,7 +423,6 @@
     "designator": "CA0FP",
     "value": "1uF",
     "block_name": "PHASE-A0",
-    "search_query": "PP-1u-600 1 µF 600 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -459,7 +440,6 @@
     "designator": "CA0FN",
     "value": "1uF",
     "block_name": "PHASE-A0",
-    "search_query": "PP-1u-600 1 µF 600 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -477,7 +457,6 @@
     "designator": "RA0SN",
     "value": "10",
     "block_name": "PHASE-A0",
-    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
     "pins": [
      {
       "pin_number": 1,
@@ -495,7 +474,6 @@
     "designator": "CA0SN",
     "value": "100pF",
     "block_name": "PHASE-A0",
-    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
     "pins": [
      {
       "pin_number": 1,
@@ -513,7 +491,6 @@
     "designator": "DA0C",
     "value": "SICJBS-1200-10",
     "block_name": "PHASE-A0",
-    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -531,7 +508,6 @@
     "designator": "CA0C",
     "value": "100nF",
     "block_name": "PHASE-A0",
-    "search_query": "FILM-100n-250 100 nF 250 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -549,7 +525,6 @@
     "designator": "RA0C",
     "value": "WW-470R-10W",
     "block_name": "PHASE-A0",
-    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -569,7 +544,6 @@
     "designator": "LB0",
     "value": "IND-PFC-165u",
     "block_name": "PHASE-B0",
-    "search_query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust",
     "pins": [
      {
       "pin_number": 1,
@@ -587,7 +561,6 @@
     "designator": "QB0A",
     "value": "B3M010C075Z",
     "block_name": "PHASE-B0",
-    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
     "pins": [
      {
       "pin_number": 4,
@@ -615,7 +588,6 @@
     "designator": "QB0B",
     "value": "B3M010C075Z",
     "block_name": "PHASE-B0",
-    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
     "pins": [
      {
       "pin_number": 4,
@@ -643,7 +615,6 @@
     "designator": "UB0G",
     "value": "NSI6611",
     "block_name": "PHASE-B0",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -731,7 +702,6 @@
     "designator": "RB0GPD",
     "value": "10k",
     "block_name": "PHASE-B0",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -749,7 +719,6 @@
     "designator": "CB0GBV",
     "value": "100nF",
     "block_name": "PHASE-B0",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -767,7 +736,6 @@
     "designator": "CB0GB1",
     "value": "1uF",
     "block_name": "PHASE-B0",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -785,7 +753,6 @@
     "designator": "CB0GB2",
     "value": "1uF",
     "block_name": "PHASE-B0",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -803,7 +770,6 @@
     "designator": "RB0GON",
     "value": "4.7",
     "block_name": "PHASE-B0",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -821,7 +787,6 @@
     "designator": "RB0GOFF",
     "value": "4.7",
     "block_name": "PHASE-B0",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -839,7 +804,6 @@
     "designator": "RB0GGS",
     "value": "10k",
     "block_name": "PHASE-B0",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -857,7 +821,6 @@
     "designator": "CB0GBL",
     "value": "47pF",
     "block_name": "PHASE-B0",
-    "search_query": "MLCC-47p-0603 47 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -875,7 +838,6 @@
     "designator": "RB0GDS",
     "value": "100",
     "block_name": "PHASE-B0",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -893,7 +855,6 @@
     "designator": "DB0GS1",
     "value": "US1M",
     "block_name": "PHASE-B0",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -911,7 +872,6 @@
     "designator": "DB0GS2",
     "value": "US1M",
     "block_name": "PHASE-B0",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -929,7 +889,6 @@
     "designator": "PSB0G",
     "value": "QA01C-18",
     "block_name": "PHASE-B0",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,
@@ -962,7 +921,6 @@
     "designator": "DB0T",
     "value": "SICJBS-1200-40",
     "block_name": "PHASE-B0",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -980,7 +938,6 @@
     "designator": "DB0B",
     "value": "SICJBS-1200-40",
     "block_name": "PHASE-B0",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -998,7 +955,6 @@
     "designator": "CB0FP",
     "value": "1uF",
     "block_name": "PHASE-B0",
-    "search_query": "PP-1u-600 1 µF 600 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -1016,7 +972,6 @@
     "designator": "CB0FN",
     "value": "1uF",
     "block_name": "PHASE-B0",
-    "search_query": "PP-1u-600 1 µF 600 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -1034,7 +989,6 @@
     "designator": "RB0SN",
     "value": "10",
     "block_name": "PHASE-B0",
-    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
     "pins": [
      {
       "pin_number": 1,
@@ -1052,7 +1006,6 @@
     "designator": "CB0SN",
     "value": "100pF",
     "block_name": "PHASE-B0",
-    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
     "pins": [
      {
       "pin_number": 1,
@@ -1070,7 +1023,6 @@
     "designator": "DB0C",
     "value": "SICJBS-1200-10",
     "block_name": "PHASE-B0",
-    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -1088,7 +1040,6 @@
     "designator": "CB0C",
     "value": "100nF",
     "block_name": "PHASE-B0",
-    "search_query": "FILM-100n-250 100 nF 250 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -1106,7 +1057,6 @@
     "designator": "RB0C",
     "value": "WW-470R-10W",
     "block_name": "PHASE-B0",
-    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,
@@ -1126,7 +1076,6 @@
     "designator": "LC0",
     "value": "IND-PFC-165u",
     "block_name": "PHASE-C0",
-    "search_query": "IND-PFC-165u PFC choke 165 µH class, 3× OD79 26µ sendust",
     "pins": [
      {
       "pin_number": 1,
@@ -1144,7 +1093,6 @@
     "designator": "QC0A",
     "value": "B3M010C075Z",
     "block_name": "PHASE-C0",
-    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
     "pins": [
      {
       "pin_number": 4,
@@ -1172,7 +1120,6 @@
     "designator": "QC0B",
     "value": "B3M010C075Z",
     "block_name": "PHASE-C0",
-    "search_query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
     "pins": [
      {
       "pin_number": 4,
@@ -1200,7 +1147,6 @@
     "designator": "UC0G",
     "value": "NSI6611",
     "block_name": "PHASE-C0",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -1288,7 +1234,6 @@
     "designator": "RC0GPD",
     "value": "10k",
     "block_name": "PHASE-C0",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1306,7 +1251,6 @@
     "designator": "CC0GBV",
     "value": "100nF",
     "block_name": "PHASE-C0",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1324,7 +1268,6 @@
     "designator": "CC0GB1",
     "value": "1uF",
     "block_name": "PHASE-C0",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1342,7 +1285,6 @@
     "designator": "CC0GB2",
     "value": "1uF",
     "block_name": "PHASE-C0",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1360,7 +1302,6 @@
     "designator": "RC0GON",
     "value": "4.7",
     "block_name": "PHASE-C0",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -1378,7 +1319,6 @@
     "designator": "RC0GOFF",
     "value": "4.7",
     "block_name": "PHASE-C0",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -1396,7 +1336,6 @@
     "designator": "RC0GGS",
     "value": "10k",
     "block_name": "PHASE-C0",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -1414,7 +1353,6 @@
     "designator": "CC0GBL",
     "value": "47pF",
     "block_name": "PHASE-C0",
-    "search_query": "MLCC-47p-0603 47 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1432,7 +1370,6 @@
     "designator": "RC0GDS",
     "value": "100",
     "block_name": "PHASE-C0",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1450,7 +1387,6 @@
     "designator": "DC0GS1",
     "value": "US1M",
     "block_name": "PHASE-C0",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -1468,7 +1404,6 @@
     "designator": "DC0GS2",
     "value": "US1M",
     "block_name": "PHASE-C0",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -1486,7 +1421,6 @@
     "designator": "PSC0G",
     "value": "QA01C-18",
     "block_name": "PHASE-C0",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,
@@ -1519,7 +1453,6 @@
     "designator": "DC0T",
     "value": "SICJBS-1200-40",
     "block_name": "PHASE-C0",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -1537,7 +1470,6 @@
     "designator": "DC0B",
     "value": "SICJBS-1200-40",
     "block_name": "PHASE-C0",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -1555,7 +1487,6 @@
     "designator": "CC0FP",
     "value": "1uF",
     "block_name": "PHASE-C0",
-    "search_query": "PP-1u-600 1 µF 600 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -1573,7 +1504,6 @@
     "designator": "CC0FN",
     "value": "1uF",
     "block_name": "PHASE-C0",
-    "search_query": "PP-1u-600 1 µF 600 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -1591,7 +1521,6 @@
     "designator": "RC0SN",
     "value": "10",
     "block_name": "PHASE-C0",
-    "search_query": "R2512-10R-2W 10 Ω 2512 2 W",
     "pins": [
      {
       "pin_number": 1,
@@ -1609,7 +1538,6 @@
     "designator": "CC0SN",
     "value": "100pF",
     "block_name": "PHASE-C0",
-    "search_query": "C1812-100p-1k 100 pF 1 kV C0G 1812",
     "pins": [
      {
       "pin_number": 1,
@@ -1627,7 +1555,6 @@
     "designator": "DC0C",
     "value": "SICJBS-1200-10",
     "block_name": "PHASE-C0",
-    "search_query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -1645,7 +1572,6 @@
     "designator": "CC0C",
     "value": "100nF",
     "block_name": "PHASE-C0",
-    "search_query": "FILM-100n-250 100 nF 250 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -1663,7 +1589,6 @@
     "designator": "RC0C",
     "value": "WW-470R-10W",
     "block_name": "PHASE-C0",
-    "search_query": "WW-470R-10W 470 Ω 10 W wirewound axial",
     "pins": [
      {
       "pin_number": 1,

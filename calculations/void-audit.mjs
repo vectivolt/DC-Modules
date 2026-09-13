@@ -13,7 +13,7 @@
 //
 // Informational by default — it exits non-zero only past FAIL, so it guards against a future
 // packing change blowing a hole open without crying wolf about the ones that are already there
-// and already judged acceptable (see docs/history/schematic-drawing-set.md).
+// and already judged acceptable (recorded at E56).
 //
 // Run: node calculations/void-audit.mjs [sku]
 

@@ -12,7 +12,6 @@
     "designator": "RDIS0",
     "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "pins": [
      {
       "pin_number": 1,
@@ -30,7 +29,6 @@
     "designator": "RDIS1",
     "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "pins": [
      {
       "pin_number": 1,
@@ -48,7 +46,6 @@
     "designator": "RDIS2",
     "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "pins": [
      {
       "pin_number": 1,
@@ -66,7 +63,6 @@
     "designator": "RDIS3",
     "value": "CER-25W-160R-AX",
     "block_name": "DISCHARGE",
-    "search_query": "CER-25W-160R-AX 160 Ω 25 W ceramic pulse resistor, axial",
     "pins": [
      {
       "pin_number": 1,
@@ -84,14 +80,12 @@
     "designator": "QDIS",
     "value": "TAB-M4",
     "block_name": "DISCHARGE",
-    "search_query": "TAB-M4 discharge FET heatsink tab stud",
     "pins": []
    },
    {
     "designator": "QDISF",
     "value": "SIC-1200-5A",
     "block_name": "DISCHARGE",
-    "search_query": "SIC-1200-5A SiC FET 1200 V 5 A",
     "pins": [
      {
       "pin_number": 1,
@@ -114,7 +108,6 @@
     "designator": "UQD",
     "value": "TLP152-class",
     "block_name": "DISCHARGE",
-    "search_query": "TLP152-class opto gate driver",
     "pins": [
      {
       "pin_number": 1,
@@ -147,7 +140,6 @@
     "designator": "PSQD",
     "value": "QA01C",
     "block_name": "DISCHARGE",
-    "search_query": "QA01C iso 15→18 V module ≥6 kVDC",
     "pins": [
      {
       "pin_number": 1,
@@ -175,7 +167,6 @@
     "designator": "RQDL",
     "value": "330",
     "block_name": "DISCHARGE",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -193,7 +184,6 @@
     "designator": "RQDG",
     "value": "100",
     "block_name": "DISCHARGE",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -211,7 +201,6 @@
     "designator": "RQDPD",
     "value": "10k",
     "block_name": "DISCHARGE",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -229,7 +218,6 @@
     "designator": "CQD",
     "value": "100nF",
     "block_name": "DISCHARGE",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -249,7 +237,6 @@
     "designator": "JDCP",
     "value": "STUD-M8",
     "block_name": "BUS-STUDS",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -262,7 +249,6 @@
     "designator": "JDCN",
     "value": "STUD-M8",
     "block_name": "BUS-STUDS",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -275,7 +261,6 @@
     "designator": "JPEB",
     "value": "STUD-M8",
     "block_name": "BUS-STUDS",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -290,7 +275,6 @@
     "designator": "CDT00",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -308,7 +292,6 @@
     "designator": "CDT01",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -326,7 +309,6 @@
     "designator": "CDT02",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -344,7 +326,6 @@
     "designator": "CDT03",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -362,7 +343,6 @@
     "designator": "CDT04",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -380,7 +360,6 @@
     "designator": "CDB00",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -398,7 +377,6 @@
     "designator": "CDB01",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -416,7 +394,6 @@
     "designator": "CDB02",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -434,7 +411,6 @@
     "designator": "CDB03",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -452,7 +428,6 @@
     "designator": "CDB04",
     "value": "470uF",
     "block_name": "LINK-BANK-0",
-    "search_query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category",
     "pins": [
      {
       "pin_number": 1,
@@ -470,7 +445,6 @@
     "designator": "RBALT0A",
     "value": "47k",
     "block_name": "LINK-BANK-0",
-    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "pins": [
      {
       "pin_number": 1,
@@ -488,7 +462,6 @@
     "designator": "RBALT0B",
     "value": "47k",
     "block_name": "LINK-BANK-0",
-    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "pins": [
      {
       "pin_number": 1,
@@ -506,7 +479,6 @@
     "designator": "RBALB0A",
     "value": "47k",
     "block_name": "LINK-BANK-0",
-    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "pins": [
      {
       "pin_number": 1,
@@ -524,7 +496,6 @@
     "designator": "RBALB0B",
     "value": "47k",
     "block_name": "LINK-BANK-0",
-    "search_query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
     "pins": [
      {
       "pin_number": 1,

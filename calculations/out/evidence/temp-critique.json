@@ -1,0 +1,78 @@
+{
+ "gate": "temp-critique",
+ "exit": 0,
+ "rows": [
+  {
+   "status": "ok",
+   "tag": "MODEL",
+   "name": "Steinmetz (f,B) scaling vs the 3 independent digitized series",
+   "detail": "worst deviation 0% at  (≤35% band — the gate margins below absorb it; A4 stays the conservative design fit)"
+  },
+  {
+   "status": "ok",
+   "tag": "RUNAWAY",
+   "name": "D4 (ETD44 DCM amp)",
+   "detail": "hot equilibria 76 °C (55 amb/full) · 79 °C (75 amb/derated); worst g(T_eq) = 0.01 ≤ 0.6; runaway threshold T_crit(g=1) ≥200 (search cap) °C — margin 121 K ≥ 25 (measured pv(T); Fe is volt-second-pinned so it does NOT derate with load — this is why the ΔT acceptance line caps the winder's Rth)"
+  },
+  {
+   "status": "ok",
+   "tag": "A4-CONSERVATIVE",
+   "name": "D4 (ETD44 DCM amp)",
+   "detail": "measured-basis Fe @100 °C = 0.1 W vs A4 design 0.6 W (design fit must not understate by >10%)"
+  },
+  {
+   "status": "ok",
+   "tag": "COLD",
+   "name": "D4 (ETD44 DCM amp)",
+   "detail": "Fe(−30 °C) = 0.2 W = 2.05× the 100 °C basis; cold equilibrium core -16 °C at full load (stable — loss slope negative below the ~80 °C minimum, so cold start SELF-WARMS toward the minimum)"
+  },
+  {
+   "status": "ok",
+   "tag": "BSAT",
+   "name": "D3 simulated worst flux at 130 °C core",
+   "detail": "worst B̂ 159 mT (50kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited"
+  },
+  {
+   "status": "ok",
+   "tag": "BSAT",
+   "name": "D2 fault flux (Lmax × F.11 kill peak, worst SKU = 40kw)",
+   "detail": "164 mT at the crossing-referenced kill (E67 D2 rev F: 30kw 163 · 40kw 164 · 50kw 163 · 50kwa 163) vs 60% of Bsat(130) = 217 mT — µs event, trip-limited (per-SKU rows in current-coordination)"
+  },
+  {
+   "status": "ok",
+   "tag": "BSAT",
+   "name": "D4 at the computed cycle-by-cycle limit, 130 °C (ETD44)",
+   "detail": "4.67 A (860 V, Lp +5 %, VILIM max, CS lag + tILIM max) → 257 mT vs 75% of Bsat(130)=271 mT (71% absolute) — E65: the E52 \"256 mT at a 3.2 A clamp\" row read 407 mT (113%) once the drawn sense chain was computed"
+  },
+  {
+   "status": "ok",
+   "tag": "LM",
+   "name": "gap-ground Lm vs amplitude-µ swing 25↔100 °C",
+   "detail": "µa(108 mT): 3948 → 4380; Lm shift 0.2% on the smallest cell gap Σ 1.89 mm (gap-dominated) ≤ 3% — inside the ±7% window with the grind tolerance"
+  },
+  {
+   "status": "ok",
+   "tag": "D1-FAULT",
+   "name": "30kw OC→ceiling time / 3 µs adder",
+   "detail": "L(120 A)=45.4 µH (AL−8%) · Δi(3 µs)=46 A ≤ ceiling−threshold 64 A · ceiling reached in 4 µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1-FAULT",
+   "name": "40kw OC→ceiling time / 3 µs adder",
+   "detail": "L(155 A)=39.8 µH (AL−8%) · Δi(3 µs)=50 A ≤ ceiling−threshold 70 A · ceiling reached in 4 µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1-FAULT",
+   "name": "50kw OC→ceiling time / 3 µs adder",
+   "detail": "L(195 A)=28.7 µH (AL−8%) · Δi(3 µs)=72 A ≤ ceiling−threshold 116 A · ceiling reached in 4.5 µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)"
+  },
+  {
+   "status": "info",
+   "tag": "SENDUST",
+   "name": "Kool Mµ-class µ tempco ≤ ±3% (−55…+125 °C catalog class)",
+   "detail": "the D1 biased-L floors carry the lot band and the ±1 turn lot-trim absorbs it (D6, the other sendust part, retired at E68b); first-article L(I) at −25/+100 °C is the pack's material-equivalence test"
+  }
+ ]
+}

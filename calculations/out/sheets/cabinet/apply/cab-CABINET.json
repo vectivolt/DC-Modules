@@ -14,7 +14,6 @@
     "designator": "JCABL1",
     "value": "STUD-M8",
     "block_name": "AC-ENTRY",
-    "search_query": "STUD-M8 cabinet entry/bus M8 stud",
     "pins": [
      {
       "pin_number": 1,
@@ -27,7 +26,6 @@
     "designator": "JCABL2",
     "value": "STUD-M8",
     "block_name": "AC-ENTRY",
-    "search_query": "STUD-M8 cabinet entry/bus M8 stud",
     "pins": [
      {
       "pin_number": 1,
@@ -40,7 +38,6 @@
     "designator": "JCABL3",
     "value": "STUD-M8",
     "block_name": "AC-ENTRY",
-    "search_query": "STUD-M8 cabinet entry/bus M8 stud",
     "pins": [
      {
       "pin_number": 1,
@@ -53,7 +50,6 @@
     "designator": "JCABPE",
     "value": "STUD-M8",
     "block_name": "AC-ENTRY",
-    "search_query": "STUD-M8 cabinet entry/bus M8 stud",
     "pins": [
      {
       "pin_number": 1,
@@ -68,7 +64,6 @@
     "designator": "MOD1",
     "value": "PMP-50KW-MODULE",
     "block_name": "MODULES",
-    "search_query": "PMP-50KW-MODULE 50 kW module interface block",
     "pins": [
      {
       "pin_number": 1,
@@ -126,7 +121,6 @@
     "designator": "MOD2",
     "value": "PMP-50KW-MODULE",
     "block_name": "MODULES",
-    "search_query": "PMP-50KW-MODULE 50 kW module interface block",
     "pins": [
      {
       "pin_number": 1,
@@ -184,7 +178,6 @@
     "designator": "MOD3",
     "value": "PMP-50KW-MODULE",
     "block_name": "MODULES",
-    "search_query": "PMP-50KW-MODULE 50 kW module interface block",
     "pins": [
      {
       "pin_number": 1,
@@ -244,7 +237,6 @@
     "designator": "JCABDP",
     "value": "STUD-M8",
     "block_name": "DC-BUS",
-    "search_query": "STUD-M8 cabinet entry/bus M8 stud",
     "pins": [
      {
       "pin_number": 1,
@@ -257,7 +249,6 @@
     "designator": "JCABDN",
     "value": "STUD-M8",
     "block_name": "DC-BUS",
-    "search_query": "STUD-M8 cabinet entry/bus M8 stud",
     "pins": [
      {
       "pin_number": 1,
@@ -272,7 +263,6 @@
     "designator": "RT1",
     "value": "120",
     "block_name": "CAN-CHAIN",
-    "search_query": "R0603-120R-1% CAN termination 120 Ω",
     "pins": [
      {
       "pin_number": 1,
@@ -290,7 +280,6 @@
     "designator": "RT2",
     "value": "120",
     "block_name": "CAN-CHAIN",
-    "search_query": "R0603-120R-1% CAN termination 120 Ω",
     "pins": [
      {
       "pin_number": 1,
@@ -310,7 +299,6 @@
     "designator": "CTRL1",
     "value": "CHARGER-CONTROLLER-CAN-PORT",
     "block_name": "CTRL-PORT",
-    "search_query": "CHARGER-CONTROLLER-CAN-PORT charger controller CAN port — the group master that",
     "pins": [
      {
       "pin_number": 1,
@@ -338,7 +326,6 @@
     "designator": "RSGB",
     "value": "0R",
     "block_name": "CTRL-PORT",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -356,7 +343,6 @@
     "designator": "RSHB",
     "value": "0R",
     "block_name": "CTRL-PORT",
-    "search_query": "R0603-0R CAN shield single-point PE bond",
     "pins": [
      {
       "pin_number": 1,

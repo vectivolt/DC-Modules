@@ -18,6 +18,8 @@ const ck = (sec, name, cond, detail) => { console.log(`${cond ? "  ok  " : "  FA
 import { rho, delta, dowell, litzFr } from "./winding-physics.mjs";
 import { D1 as D1C, d1Loss } from "./d1-choke.mjs";
 import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
+import { captureEvidence } from "../evidence.mjs";
+captureEvidence("conductor-audit");
 const T = 100;                                                      // winding hot-spot class basis, °C
 
 // simulated currents

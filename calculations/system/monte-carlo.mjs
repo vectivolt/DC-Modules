@@ -1,18 +1,19 @@
 // monte-carlo.mjs — §37 tolerance analysis, executed (not nominal-only sign-off).
 // Batches (10,000 samples each unless noted):
-//  A) Resonant tank REV B (design iteration from rev-A MC fail 17.7%):
-//     leakage measured per transformer, trim inductor BINNED to compensate (4 bins) → residual
-//     Lr ±3%; Lm gap-ground to AL target ±7% (D3 rev); Cr ±5% batch. Requirement ≥1.25 @bank 518.
+//  A) Resonant tank, E67 full bridge per SKU (tanks.mjs): Lr = D2 external inductor ±3 % + two D3 cells' leakage ±30 % + loop
+//     stray ±20 %; Cr ±5 %; Lm gap-ground ±7 %. Requirement: FHA peak gain ≥ M = n·500/830 at the 500 V-bank mode edge, and
+//     the magnetizing current at fr charges a leg's node capacitance inside the dead time (ZVS). (The E7 batch sampled the
+//     retired 3-section tank — 7 µH / 185 nF — and passed on a design that no longer existed.)
 //  B) PFC choke ±12% (core AL lot + turns) → worst-θ ripple + soft-sat floor.
 //  C) Output-V sense chain: 8× 1% top (independent) + 0.1% bottom + iso 0.5% + ADC ref 0.5%
 //     + drift 50 ppm/°C×40 °C → pre-cal and post-2-pt-cal accuracy vs ±0.5% spec.
 //  D) Output-I chain: shunt 0.5% + amp gain 1% + offset 100 µV/50 mV → vs ±1% spec (post-cal).
-//  E) Lane current sharing 60/120 kW: per-lane PI integrators null static error; residual from
-//     CT gain ±1% → sharing error distribution.
-//  F) Dead-time/Vth/driver-delay spread on LLC half-bridge: shoot-through margin check.
+//  F) Dead-time/Vth/driver-delay spread on the LLC full-bridge legs: shoot-through margin check.
 // Run: node calculations/system/monte-carlo.mjs
 
 import { writeFileSync, mkdirSync } from "node:fs";
+import { TANKS } from "../llc/tanks.mjs";
+import { D2, D3, D3_CELLS, d3Leakage, LOOP_STRAY } from "../magnetics/magnetics-envelope.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
@@ -27,24 +28,24 @@ const gain = (fn, Q, Ln) => 1 / Math.hypot(1 + (1 / Ln) * (1 - 1 / (fn * fn)), Q
 const pct = (arr, p) => arr.slice().sort((a, b) => a - b)[Math.floor(p / 100 * (arr.length - 1))];
 
 const report = [];
-// ---- A: tank
-{
+// ---- A: tank (E67 full bridge, per SKU)
+for (const [sku, t] of Object.entries(TANKS)) {
   let frArr = [], gpkArr = [], imArr = [], zvsFail = 0, gainFail = 0;
+  const Mneed = (t.n * 500) / 830, llk = d3Leakage(D3[sku]), L2 = D2[sku].Lnom;
   for (let i = 0; i < N; i++) {
-    const Lr = 7.0e-6 * unif(0.97, 1.03);          // leakage-compensating trim binning (D2 rev B)
-    const Cr = 185.4e-9 * unif(0.95, 1.05);
-    const Lm = 63e-6 * unif(0.93, 1.07);            // gap ground to AL target (D3 rev B)
+    const Lr = L2 * unif(0.97, 1.03) + D3_CELLS * llk * unif(0.7, 1.3) + LOOP_STRAY * unif(0.8, 1.2);
+    const Cr = t.Cr * unif(0.95, 1.05);
+    const Lm = t.Lm * unif(0.93, 1.07);
     const fr = 1 / (2 * Math.PI * Math.sqrt(Lr * Cr));
-    const Rac = (8 / Math.PI ** 2) * 525 * 525 / 10.42e3;
-    const Q = Math.sqrt(Lr / Cr) / Rac;
-    const Ln = Lm / Lr;
-    let gpk = 0; for (let fn = 0.45; fn < 1.2; fn += 0.005) gpk = Math.max(gpk, gain(fn, Q, Ln));
-    const im = 415 / (4 * fr * Lm);
+    const Rac = ((8 * t.n * t.n) / Math.PI ** 2) * 500 * 500 / t.P;
+    const Q = Math.sqrt(Lr / Cr) / Rac, Ln = Lm / Lr;
+    let gpk = 0; for (let fn = 0.55; fn < 1.2; fn += 0.005) gpk = Math.max(gpk, gain(fn, Q, Ln));
+    const im = (t.n * 500) / (4 * fr * Lm);
     frArr.push(fr / 1e3); gpkArr.push(gpk); imArr.push(im);
-    if (gpk < 1.265) gainFail++;   // bank 525 @ bus 830 (E9 rev B)
-    if (im * 120e-9 < 2 * 250e-12 * 830) zvsFail++;
+    if (gpk < Mneed) gainFail++;
+    if (im * 120e-9 < 2 * t.coss * 830) zvsFail++;   // a leg's two node capacitances swung inside the 120 ns dead time
   }
-  report.push(["A tank", `fr ${f(pct(frArr, 1), 1)}–${f(pct(frArr, 99), 1)} kHz (1–99%)`, `peak gain p1=${f(pct(gpkArr, 1))} (need 1.265) → fail ${100 * gainFail / N}%`, `Im p99=${f(pct(imArr, 99), 1)} A (≤14) · ZVS fail ${100 * zvsFail / N}%`, (gainFail / N <= 0.001 && zvsFail === 0) ? "PASS (residual ≤0.1% covered by per-unit EOL gain-cal fallback, E7)" : "MARGIN-FAIL"]);
+  report.push([`A tank ${sku}`, `fr ${f(pct(frArr, 1), 1)}–${f(pct(frArr, 99), 1)} kHz (1–99%)`, `FHA peak gain p1=${f(pct(gpkArr, 1))} (need ${f(Mneed)}) → fail ${f(100 * gainFail / N, 2)}%`, `Im p1=${f(pct(imArr, 1), 1)} A · ZVS fail ${f(100 * zvsFail / N, 2)}%`, (gainFail / N <= 0.001 && zvsFail === 0) ? "PASS (FHA floor — the ngspice gain-worst corner is the proof)" : "MARGIN-FAIL"]);
 }
 // ---- B: PFC choke — E60 re-point to the DRAWN D1-30 rev B (3× 0077908A7 catalog core, AL 37 nH/T²
 // ±8 % lot, le 196 mm, N = 39 with the winder's ±1-turn lot-trim) against its OWN acceptance rows
@@ -98,12 +99,6 @@ const report = [];
     post.push(100 * drift);
   }
   report.push(["D Iout chain", `post-cal ±${f(Math.max(-pct(post, 0.5), pct(post, 99.5)), 2)}% (99% CI, ±40 °C)`, "shunt tempco 30 ppm class + amp drift", "spec ±1%", Math.max(-pct(post, 0.5), pct(post, 99.5)) <= 1 ? "PASS (with EOL cal)" : "FAIL"]);
-}
-// ---- E: lane sharing
-{
-  let err = [];
-  for (let i = 0; i < N; i++) err.push(100 * (gauss(0, 0.01 / 3) - gauss(0, 0.01 / 3)) / 2);
-  report.push(["E lane sharing", `static error nulled by per-lane PI; residual from CT gain: ±${f(Math.max(-pct(err, 0.5), pct(err, 99.5)), 2)}% (99% CI)`, "≤ ±2% budget for thermal symmetry", "", "PASS"]);
 }
 // ---- F: dead-time margin
 {

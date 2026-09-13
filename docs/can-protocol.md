@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/codec-can__proto.c_fuzzed-2ea44f?style=flat-square" alt="codec: can proto.c fuzzed"/>
 </p>
@@ -49,14 +49,14 @@ sequenceDiagram
   participant M as Module (address A)
   C->>M: MODULE_CTL (0x11) · ENABLE
   C->>M: SET_OUTPUT (0x10) · V_set, I_set
-  Note over M: precharge → standby → banks sequenced → K_OUT gate (E12b)
+  Note over M: precharge → standby → output mode latched, S/P relays closed at 0 A → soft start behind the output diode (E67)
   loop at least every 1 s
     C->>M: SET_OUTPUT (0x10)
     M-->>C: STATUS1 (0x20) · V_out, I_out
     M-->>C: STATUS2 (0x21) · state, mode, available P and I
   end
   Note over C,M: controller silent > timeout (default 1 s)
-  M->>M: F.28 · ramp to zero · open K_OUT at I ≈ 0 · IDLE
+  M->>M: F.28 · ramp to zero · IDLE (the output diode blocks the battery)
   M-->>C: FAULT_EVT (0x2E) · code, snapshot
   C->>M: MODULE_CTL · fresh ENABLE (required after > 10 s loss)
 ```
@@ -112,5 +112,5 @@ Default rate 1 Hz; on-change frames 0x2x at up to 10 Hz.
 <div align="center">
 <sub><a href="firmware-guide.md">← Firmware Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../boards/README.md">Boards →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

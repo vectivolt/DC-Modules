@@ -1,7 +1,7 @@
 // mcu-matrix.mjs — Phase 2 formal MCU resource matrix (§20, risk R3).
 // Computes REQUIRED resources per SKU and compares against ASSUMED-AVAILABLE GD32G553 resources.
 // PROVENANCE: HRTIMER and timer counts are CONFIRMED against GD32G553xx Datasheet Rev 2.0 (gate
-// item A6, closed at R3 — docs/history/mcu-pin-allocation-gd32.md). The rest are still family-datasheet
+// item A6, closed at R3 — control-card-scope.md). The rest are still family-datasheet
 // values as understood 2026-09.
 // The pin-level table is NO LONGER STM32G474-derived: that assumption ("GD32G5 mirrors them") is
 // what put FLT on pin 74 (VSS) and BOOT0 on pin 100 (VDD). The authoritative pin map is

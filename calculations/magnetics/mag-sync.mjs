@@ -14,9 +14,13 @@ import { fileURLToPath } from "node:url";
 import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
 import { stack, CORES } from "./geometry.mjs";
 import { D1 as D1C, geom as d1Geom } from "./d1-choke.mjs";
+import { captureEvidence } from "../evidence.mjs";
+captureEvidence("mag-sync");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const mag = readFileSync(join(ROOT, "docs/magnetics.md"), "utf8");
-const pack = readFileSync(join(ROOT, "docs/magnetics-manufacturing-pack.md"), "utf8");
+// E70: the magnetics carriers are the hub plus the four generated module pages (the RFQ pack was merged into them)
+const docs = ["magnetics.md", "magnetics-30kw.md", "magnetics-40kw.md", "magnetics-50kw.md", "magnetics-50kwa.md"]
+  .map((f) => readFileSync(join(ROOT, "docs", f), "utf8")).join("\n");
+const mag = docs, pack = docs;
 const db = readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8");
 const k5 = readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8");
 const boards = readFileSync(join(ROOT, "packages/common-components/boards.tsx"), "utf8");
@@ -37,15 +41,16 @@ const IDS = [
   { id: "D2/D3 build (E65/E67)", tokens: { "VPI": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
   { id: "D4", tokens: { "ETD44": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-E": [pack, db], "≤ 4 µH": [pack] } },   // E65 D4 rev E (d4-flyback)
 ];
-const NAMES = new Map([[mag, "magnetics.md"], [pack, "pack"], [db, "parts-db"], [k5, "kicad5-panel"], [boards, "boards.tsx"]]);
+const NAMES = new Map([[docs, "magnetics docs"], [db, "parts-db"], [k5, "kicad5-panel"], [boards, "boards.tsx"]]);
 // whitespace-normalized matching: carriers legitimately write "N = 26 ±1" / "6 : 6 : 6" — the
 // gate hunts VALUE drift, not typography. (First run false-failed 8 spelling variants.)
 const norm = (t) => t.replace(/[\s±]/g, "");
-const normed = new Map([[mag, norm(mag)], [pack, norm(pack)], [db, norm(db)], [k5, norm(k5)], [boards, norm(boards)]]);
+const normed = new Map([[docs, norm(docs)], [db, norm(db)], [k5, norm(k5)], [boards, norm(boards)]]);
 for (const { id, tokens } of IDS)
   for (const [tok, carriers] of Object.entries(tokens)) {
-    const missing = carriers.filter((c) => !normed.get(c).includes(norm(tok))).map((c) => NAMES.get(c));
-    ck(`${id} "${tok}"`, missing.length === 0, missing.length ? `MISSING in ${missing.join(", ")}` : `present in ${carriers.map((c) => NAMES.get(c)).join(" + ")}`);
+    const uniq = [...new Set(carriers)];
+    const missing = uniq.filter((c) => !normed.get(c).includes(norm(tok))).map((c) => NAMES.get(c));
+    ck(`${id} "${tok}"`, missing.length === 0, missing.length ? `MISSING in ${missing.join(", ")}` : `present in ${uniq.map((c) => NAMES.get(c)).join(" + ")}`);
   }
 
 // ---- computed masses (kg): core Ve[cm3]×ρ + Cu(MLT[m]×Neff×CSA[mm2])×8.9g/cm3, ×1.10 build ----

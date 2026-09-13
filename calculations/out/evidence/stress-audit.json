@@ -1,0 +1,804 @@
+{
+ "gate": "stress-audit",
+ "exit": 0,
+ "rows": [
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "PFC FET 750 V class (B3M010C075Z 50 kW · 20/15 mΩ class 30/40 kW, E69a)",
+   "detail": "560 V of 750 V = 75% (limit 76%) — 560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule; 650 V dies are REJECTED (86 %)"
+  },
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "PFC boost JBS 1200V",
+   "detail": "937 V of 1200 V = 78% (limit 80%) — full bus + ring"
+  },
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "LLC FET SG2M023120LJ",
+   "detail": "876 V of 1200 V = 73% (limit 80%) — 830 V bus + DPT 73% ring"
+  },
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "secondary JBS 1200V",
+   "detail": "611 V of 1200 V = 51% (limit 80%) — bank + ring (49% class use)"
+  },
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "aux switch 1700V SiC",
+   "detail": "1344 V of 1700 V = 79% (limit 80%) — 860 V + Vc 459 V (limit 4.75 A, 5 µH) + 25 V — d4-flyback"
+  },
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "aux clamp diode DCLA",
+   "detail": "1344 V of 1700 V = 79% (limit 80%) — blocks 860 V + Vc in the on-time (E52: 1200 V part at 2077 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "V",
+   "name": "aux rectifiers 400V",
+   "detail": "240 V of 400 V = 60% (limit 80%) — 160 V + leakage ring"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "30kw PFC FET worst corner",
+   "detail": "112 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "30kw LLC FET worst corner",
+   "detail": "139 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "40kw PFC FET worst corner",
+   "detail": "127 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "40kw LLC FET worst corner",
+   "detail": "98 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kw PFC FET worst corner",
+   "detail": "116 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kw LLC FET worst corner",
+   "detail": "99 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kwa PFC FET worst corner",
+   "detail": "135 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kwa LLC FET worst corner",
+   "detail": "114 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "E67",
+   "name": "30kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
+   "detail": "68.5 A rms vs 78 A class · 0 noted rows · worst TjJBS 91 °C (2× 40 A per position) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "E67",
+   "name": "40kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
+   "detail": "91.3 A rms vs 100 A class · 0 noted rows · worst TjJBS 103 °C (2× 40 A per position) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "E67",
+   "name": "50kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
+   "detail": "114 A rms vs 120 A class · 0 noted rows · worst TjJBS 102 °C (2× 40 A per position) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "E67",
+   "name": "50kwa full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
+   "detail": "114 A rms vs 120 A class · 0 noted rows · worst TjJBS 116 °C (2× 40 A per position) [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "30kw PFC boost diode",
+   "detail": "12.1 W → Tj ≈ 80 °C (0.8 K/W to 70 °C ref)"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "40kw PFC boost diode",
+   "detail": "19.2 W → Tj ≈ 85 °C (0.8 K/W to 70 °C ref)"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kw PFC boost diode",
+   "detail": "27.4 W → Tj ≈ 83 °C (0.65 K/W to 65 °C ref)"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kwa PFC boost diode",
+   "detail": "27.4 W → Tj ≈ 92 °C (0.8 K/W to 70 °C ref)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw biased-L floor [catalog AL]",
+   "detail": "L0 169 µH → 76.9 µH @78 A ≥ 75 (D1 rev B: N=39±1 lot-trim, 18 mm² (drawing of record))"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw swing floor",
+   "detail": "L@Ibias/L0 = 0.46 (30 kW swing-choke basis exempt: drawing governs via its own biased-L line)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw current density",
+   "detail": "3.05 A/mm² ≤ 5.5"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw biased-L floor [catalog AL]",
+   "detail": "L0 125 µH → 63 µH @104 A ≥ 61 (D1-40 rev B (E51): N=26±1 on CATALOG AL — the E41 N=23 missed its floor on the real core)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw swing floor",
+   "detail": "L@Ibias/L0 = 0.5 (30 kW swing-choke basis exempt: drawing governs via its own biased-L line)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw current density",
+   "detail": "2.84 A/mm² ≤ 5.5"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw biased-L floor [catalog AL]",
+   "detail": "L0 107 µH → 47.6 µH @129.5 A ≥ 45 (D1-50 rev B (E51): N=24±1, dIpp basis 36.2 A pp; plate-bonded (liquid) / web-bonded (air))"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw swing floor",
+   "detail": "L@Ibias/L0 = 0.45 (30 kW swing-choke basis exempt: drawing governs via its own biased-L line)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw current density",
+   "detail": "3.55 A/mm² ≤ 5.5"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kwa biased-L floor [catalog AL]",
+   "detail": "L0 107 µH → 47.6 µH @129.5 A ≥ 45 (same D1-50 rev B part (E44 twin))"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kwa swing floor",
+   "detail": "L@Ibias/L0 = 0.45 (30 kW swing-choke basis exempt: drawing governs via its own biased-L line)"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kwa current density",
+   "detail": "3.55 A/mm² ≤ 5.5"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw 3×T79 N 39 9×1.6 mm · web1",
+   "detail": "hot-spot at the 330 VAC continuous corner [computed] — Cu 22.4 W @50 Hz + 14.5 W ripple (6.3 A rms, Fr 48.9 = Ferreira 71.3 × 2-D 0.686) + Fe 4.7 W → hot-spot 87 °C @55 °C (winding 85 °C, air 65 °C, web/plate 80 °C, 28 W into it) · 92 °C @75 °C derated · +25 % Rth 89 °C · limits 120/130/145 °C [d1-fd N39·nw9·d1.6·x3·L21/15/3]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw one lost bond survivable or cut out",
+   "detail": "pad lost → convection only: 131 °C vs Class F 155 °C — survives"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw 5×T79 N 26 13×1.6 mm · web1",
+   "detail": "hot-spot at the 330 VAC continuous corner [computed] — Cu 26 W @50 Hz + 13.3 W ripple (7.83 A rms, Fr 44.5 = Ferreira 67 × 2-D 0.664) + Fe 6.4 W → hot-spot 88 °C @55 °C (winding 85 °C, air 65 °C, web/plate 80 °C, 27 W into it) · 92 °C @75 °C derated · +25 % Rth 91 °C · limits 120/130/145 °C [d1-fd N26·nw13·d1.6·x5·L17/9]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw one lost bond survivable or cut out",
+   "detail": "pad lost → convection only: 116 °C vs Class F 155 °C — survives"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw 5×T79 N 24 13×1.6 mm · plate1",
+   "detail": "hot-spot at the 330 VAC continuous corner [computed] — Cu 36.1 W @50 Hz + 17.4 W ripple (10.16 A rms, Fr 38.9 = Ferreira 57.2 × 2-D 0.68) + Fe 7.5 W → hot-spot 81 °C @55 °C (winding 76 °C, air 65 °C, web/plate 65 °C, 61 W into it) · 73 °C @75 °C derated · +25 % Rth 85 °C · limits 120/130/145 °C [d1-fd N24·nw13·d1.6·x5·L17/7]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw one lost bond survivable or cut out",
+   "detail": "pad lost → no air path in the sealed module: RUNAWAY vs Class F 155 °C → parts-db D1 cutout line × 3"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kwa 5×T79 N 24 13×1.6 mm · web1",
+   "detail": "hot-spot at the 330 VAC continuous corner [computed] — Cu 37.4 W @50 Hz + 17.7 W ripple (10.16 A rms, Fr 38 = Ferreira 55.9 × 2-D 0.68) + Fe 7.5 W → hot-spot 92 °C @55 °C (winding 87 °C, air 65 °C, web/plate 80 °C, 39 W into it) · 94 °C @75 °C derated · +25 % Rth 96 °C · limits 120/130/145 °C [d1-fd N24·nw13·d1.6·x5·L17/7]"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kwa one lost bond survivable or cut out",
+   "detail": "pad lost → convection only: 129 °C vs Class F 155 °C — survives"
+  },
+  {
+   "status": "ok",
+   "tag": "CONTROL",
+   "name": "D1-30 as registered (air-cooled, centre bolt on a silicone pad) is rejected",
+   "detail": "131 °C hot-spot @55 °C (66 K over tunnel air, the drawing's own line was ≤45 K) → rejected"
+  },
+  {
+   "status": "info",
+   "tag": "D1-COOLING",
+   "name": "30kw",
+   "detail": "air-cooled as registered 131 °C (+25 % 148 °C; at half the assumed 2 m/s 152 °C — the tunnel is not settled, D1-F2) · Type-2 litz 576×0.2 mm air-cooled 112 °C (ripple Cu 1.7 W, +₹857 of wire per choke) · web gap-pad bond 87 °C (the pad of the ₹105 mount kit — its insulating cap and sleeve are needed for D1-F3 either way) → bond"
+  },
+  {
+   "status": "info",
+   "tag": "D1-COOLING",
+   "name": "40kw",
+   "detail": "air-cooled as registered 116 °C (+25 % 130 °C; at half the assumed 2.5 m/s 134 °C — the tunnel is not settled, D1-F2) · Type-2 litz 832×0.2 mm air-cooled 104 °C (ripple Cu 1.6 W, +₹1169 of wire per choke) · web gap-pad bond 88 °C (the pad of the ₹105 mount kit — its insulating cap and sleeve are needed for D1-F3 either way) → bond"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "30kw clamp holds the stack at 2 g × Q 10 [computed]",
+   "detail": "1.9 kg, CG 44 mm → overturning 16.5 N·m → preload needed 1.44 kN vs 3.75 kN at 4.5 N·m (K 0.2) · pad 0.58 MPa ≤ 0.7 · bolt 42 % of proof"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "40kw clamp holds the stack at 2 g × Q 10 [computed]",
+   "detail": "2.83 kg, CG 57 mm → overturning 31.9 N·m → preload needed 2.72 kN vs 3.75 kN at 4.5 N·m (K 0.2) · pad 0.57 MPa ≤ 0.7 · bolt 42 % of proof"
+  },
+  {
+   "status": "ok",
+   "tag": "D1",
+   "name": "50kw clamp holds the stack at 2 g × Q 10 [computed]",
+   "detail": "2.7 kg, CG 57 mm → overturning 30.4 N·m → preload needed 2.6 kN vs 3.75 kN at 4.5 N·m (K 0.2) · pad 0.57 MPa ≤ 0.7 · bolt 42 % of proof"
+  },
+  {
+   "status": "info",
+   "tag": "D1-BUILD",
+   "name": "30kw",
+   "detail": "MLT 161 mm (layer model 163) · bore layers 21/15/3 of ⌀6.2 mm bundles → finished ⌀92 × H 88 mm (layout open item — tunnel/keep-out rows) · bundle cut ≥ 7.1 m · bonded type test: 74 A DC (= 42.9 W) → hot-spot ≤ 19 K above the plate (calc 9.4 K + 10)"
+  },
+  {
+   "status": "info",
+   "tag": "D1-BUILD",
+   "name": "40kw",
+   "detail": "MLT 227 mm (layer model 232) · bore layers 17/9 of ⌀7.2 mm bundles → finished ⌀94 × H 115 mm (layout open item — tunnel/keep-out rows) · bundle cut ≥ 6.9 m · bonded type test: 95.9 A DC (= 47.2 W) → hot-spot ≤ 22 K above the plate (calc 11.6 K + 10)"
+  },
+  {
+   "status": "info",
+   "tag": "D1-BUILD",
+   "name": "50kw",
+   "detail": "MLT 225 mm (layer model 231) · bore layers 17/7 of ⌀7.2 mm bundles → finished ⌀94 × H 115 mm (layout open item — tunnel/keep-out rows) · bundle cut ≥ 6.4 m · bonded type test: 117.3 A DC (= 64.4 W) → hot-spot ≤ 26 K above the plate (calc 16.3 K + 10)"
+  },
+  {
+   "status": "info",
+   "tag": "D1-BUILD",
+   "name": "50kwa",
+   "detail": "MLT 225 mm (layer model 231) · bore layers 17/7 of ⌀7.2 mm bundles → finished ⌀94 × H 115 mm (layout open item — tunnel/keep-out rows) · bundle cut ≥ 6.4 m · bonded type test: 117.3 A DC (= 64.4 W) → hot-spot ≤ 26 K above the plate (calc 16.3 K + 10)"
+  },
+  {
+   "status": "ok",
+   "tag": "INS",
+   "name": "bonded magnetics carry their basic-barrier rows at the computed recurring peaks",
+   "detail": "D1 540 V (≤700 V: hipot + impulse, no PD) · D2/D3 1270 / 1260 / 1280 / 1280 V (30/40/50/50a — PD sample test at ≥ 2.0 / 1.9 / 2.0 / 2.0 kV) → rows present"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "30kw external Lr Bpk",
+   "detail": "86 mT at Lmax 5.31 µH × 78 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "40kw external Lr Bpk",
+   "detail": "87 mT at Lmax 4.19 µH × 100 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "50kw external Lr Bpk",
+   "detail": "84 mT at Lmax 3.38 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+  },
+  {
+   "status": "ok",
+   "tag": "D2",
+   "name": "50kwa external Lr Bpk",
+   "detail": "84 mT at Lmax 3.38 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "30kw cell Bpk at the worst simulated corner",
+   "detail": "159 mT at ENV500-55 (87.5 kHz) on 2× E70 6:6∥6 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "40kw cell Bpk at the worst simulated corner",
+   "detail": "159 mT at ENV500-55 (87.3 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "50kw cell Bpk at the worst simulated corner",
+   "detail": "159 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+  },
+  {
+   "status": "ok",
+   "tag": "D3",
+   "name": "50kwa cell Bpk at the worst simulated corner",
+   "detail": "159 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "30kw winding J [engine]",
+   "detail": "D7 20 mm² → 2.79 A/mm² ≤ 5.6 (E68: no AC-side D6)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "30kw DM-leakage flux at the simulated crest",
+   "detail": "12 µH × 82.6 A / (8 T × 281 mm²) = 0.44 T ≤ 0.6 (hot Bsat 1.155 T) · L_cm 2.27 mH ≥ 2 at µ −30 % (T 80/50/25)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "30kw hot-copper ΔT",
+   "detail": "9.9 W/choke at 100 °C Cu → ΔT 20 K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "30kw parts-db carries the engine core",
+   "detail": "T 80/50/25 · A_Fe ≥ 281 mm² in the CMC override note"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "40kw winding J [engine]",
+   "detail": "D7 20 mm² → 3.67 A/mm² ≤ 5.6 (E68: no AC-side D6)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "40kw DM-leakage flux at the simulated crest",
+   "detail": "12 µH × 109.9 A / (8 T × 281 mm²) = 0.59 T ≤ 0.6 (hot Bsat 1.155 T) · L_cm 2.27 mH ≥ 2 at µ −30 % (T 80/50/25)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "40kw hot-copper ΔT",
+   "detail": "17 W/choke at 100 °C Cu → ΔT 32 K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "40kw parts-db carries the engine core",
+   "detail": "T 80/50/25 · A_Fe ≥ 281 mm² in the CMC override note"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "50kw winding J [engine]",
+   "detail": "D7 25 mm² → 3.66 A/mm² ≤ 5.6 (E68: no AC-side D6)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "50kw DM-leakage flux at the simulated crest",
+   "detail": "12 µH × 137.1 A / (8 T × 450 mm²) = 0.46 T ≤ 0.6 (hot Bsat 1.155 T) · L_cm 3.38 mH ≥ 2 at µ −30 % (T 90/50/30)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "50kw hot-copper ΔT",
+   "detail": "26.7 W/choke at 100 °C Cu → ΔT 38 K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "50kw parts-db carries the engine core",
+   "detail": "T 90/50/30 · A_Fe ≥ 450 mm² in the CMC override note"
+  },
+  {
+   "status": "ok",
+   "tag": "D7",
+   "name": "30kw catalog Schaffner RT8131-63-2M8 vs the crest",
+   "detail": "82.6 A pk ≤ 63 A × √2 = 89.1 A (vendor rating covers its own leakage flux)"
+  },
+  {
+   "status": "ok",
+   "tag": "EMI",
+   "name": "CM conducted margin on the drawn ladder [lisn]",
+   "detail": "8 dB worst vs Class A QP at Cp 200 pF (±20 dB estimate; the single-trio control row lives in lisn-precompliance)"
+  },
+  {
+   "status": "ok",
+   "tag": "EMI",
+   "name": "current loop vs drawn filter [pfc-control]",
+   "detail": "modulus margin ≥ 0.54 (P/PI, 15 µs, damped) · switched-model 2–45 kHz ≤ 0.11 % · undamped 30 µs control ≥ 59 % · RDMP ≤ 5.9 W of 25"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "30kw per-cap current",
+   "detail": "11.1 A of 12 A line (7× 33 nF at the 78 A class)"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "40kw per-cap current",
+   "detail": "11.1 A of 12 A line (9× 33 nF at the 100 A class)"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "50kw per-cap current",
+   "detail": "10.9 A of 12 A line (11× 33 nF at the 120 A class)"
+  },
+  {
+   "status": "ok",
+   "tag": "Cr",
+   "name": "50kwa per-cap current",
+   "detail": "10.9 A of 12 A line (11× 33 nF at the 120 A class)"
+  },
+  {
+   "status": "ok",
+   "tag": "CT",
+   "name": "line CT class @40 kW",
+   "detail": "E60: the 40 kW joins the 150 A class (ACX-1150) — F.01 155 A + 50 A race needs linearity past the ACX-1100's ~179 A at 18 R; 30 kW keeps ACX-1100 (55 A, F.01 120 A on 22 R)"
+  },
+  {
+   "status": "ok",
+   "tag": "CT",
+   "name": "resonant CT class per variant",
+   "detail": "E67 one tank CT: 30 kW 78 A class on 100 A (78 %); 40/50 kW 100/120 A class on 150 A (67/80 %) — RFQ lines, sensor path not power path"
+  },
+  {
+   "status": "ok",
+   "tag": "CT",
+   "name": "line CT class @50 kW",
+   "detail": "91.6 A worst vs 150 A class (ACX upsize at RFQ; ACX-1100 would run 92%)"
+  },
+  {
+   "status": "ok",
+   "tag": "BRD",
+   "name": "50kw line-CT burden rail budget",
+   "detail": "266 A pk (F.01+race) → 3.04 V on 13 Ω (the E42 21.5 Ω saw only to 187 A)"
+  },
+  {
+   "status": "ok",
+   "tag": "BRD",
+   "name": "50kw resonant burden rail budget",
+   "detail": "503 A pk (F.11 monitor peak, E67 crossing-referenced) → 3.16 V on 0.30 Ω"
+  },
+  {
+   "status": "ok",
+   "tag": "BRD",
+   "name": "50kw resonant burden dissipation",
+   "detail": "0.43 W on the 2 W part = 22%"
+  },
+  {
+   "status": "ok",
+   "tag": "BRD",
+   "name": "50kw burden parts ordered",
+   "detail": "both burdens exist as skuOverrides (E67 resonant 0.30 Ω)"
+  },
+  {
+   "status": "ok",
+   "tag": "CrV",
+   "name": "30kw per-cap Vrms/W duty",
+   "detail": "384 V rms @140 kHz · 0.86 W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ 499 V (942C class)"
+  },
+  {
+   "status": "ok",
+   "tag": "CrV",
+   "name": "40kw per-cap Vrms/W duty",
+   "detail": "383 V rms @140 kHz · 0.85 W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ 498 V (942C class)"
+  },
+  {
+   "status": "ok",
+   "tag": "CrV",
+   "name": "50kw per-cap Vrms/W duty",
+   "detail": "376 V rms @140 kHz · 0.82 W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ 489 V (942C class)"
+  },
+  {
+   "status": "ok",
+   "tag": "CrV",
+   "name": "50kwa per-cap Vrms/W duty",
+   "detail": "376 V rms @140 kHz · 0.82 W dielectric — O-8 RFQ line: published Vrms-vs-f curve ≥ 489 V (942C class)"
+  },
+  {
+   "status": "ok",
+   "tag": "D2c",
+   "name": "30kw external Lr litz J",
+   "detail": "8000×0.05 mm litz (15.7 mm²): J 5 A/mm² ≤ 5.6 at the 78 A class"
+  },
+  {
+   "status": "ok",
+   "tag": "D2c",
+   "name": "40kw external Lr litz J",
+   "detail": "10000×0.05 mm litz (19.6 mm²): J 5.1 A/mm² ≤ 5.6 at the 100 A class"
+  },
+  {
+   "status": "ok",
+   "tag": "D2c",
+   "name": "50kw external Lr litz J",
+   "detail": "12000×0.05 mm litz (23.6 mm²): J 5.1 A/mm² ≤ 5.6 at the 120 A class"
+  },
+  {
+   "status": "ok",
+   "tag": "D2c",
+   "name": "50kwa external Lr litz J",
+   "detail": "12000×0.05 mm litz (23.6 mm²): J 5.1 A/mm² ≤ 5.6 at the 120 A class"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "flux at the computed cycle-by-cycle limit",
+   "detail": "860 V · Lp +5 % · VILIM 1.08 V · CS 1 k/100 pF · tILIM 150 ns → 4.67 A → 257 mT = 71.1 % of Bsat(130 °C) ≤ 75 % on ETD44 (control E52: 5.1 A → 113 % on ETD39 — rejected)"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "full load stays under the FCS fault timer at the lowest running bus",
+   "detail": "50kwa 89.8 W in · Lp −5 % · osc −8 % · Rcs +1 % · ramp max at 306 V: CS 0.828 V vs FCS min 0.90 V (8 % ≥ 5 %) · deliverable 93 W ≥ 1.1 × 79 W (a nuisance latch here would drop the module until AC is cycled)"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "DCM and duty at brown-out min, Lp max",
+   "detail": "t_on + t_reset = 68 % of the period ≤ 90 % · duty 22.1 % ≤ DCmax(min) 44.2 %"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "RCD clamp resistor + capacitor duty",
+   "detail": "3× 11 k: 0.94 W/part at full load and 5 µH (≤ 50 % of 2 W) · 2.13 W/part for ≤ 20 ms at the limit (≤ 2.5×) · 153 V/part · CCLA 459 V of 1200 V · idle bleed 0.75 W (control E52 diode at 173 % of 1200 V — rejected)"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "brown-in with the IBO hysteresis source starts at 285 VAC",
+   "detail": "brown-out 306/321/336 V (the R6 321 V floor) · brown-in 327/345/363 V ≤ 95 % of the 403 V bus at 285 VAC · hysteresis ≥ 20.9 V (control E52 2.4M set: brown-in 369 V typ, 390 V worst — the \"342 V cold start\" could never start; T-11 row carries the band)"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "cold start inside the EVT acceptance (VCC(on) max, CVCC +20 %, ICC1 max)",
+   "detail": "12.4 s at 285 VAC (≤ 13) · 10.7 s at 320 VLL (≤ 11) · 8.1 s at 400 VLL (≤ 8.5) — the R6 \"≈8 s at low line\" held only at typical VCC(on) and nominal CVCC"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "V24/V15 hard short at 860 V before the 10–20 ms fault latch",
+   "detail": "ton_min ratchet (LEB + tILIM 150 ns, osc+jitter max, loop ≥ 50 mΩ + RAUX24 50 mΩ): V24 5.23 A · V15 4.98 A ≤ 80 % of the 10 A QAUX pulse class · 288 mT ≤ 85 % of Bsat(130 °C) (control E52: 10.5 A → 835 mT, deep saturation — rejected)"
+  },
+  {
+   "status": "info",
+   "tag": "D4",
+   "name": "residual",
+   "detail": "a failure AT the V24 reservoir (CAUX24/DAUX24 short, no RAUX24 in the loop) ratchets to 8.63 A / 476 mT at the 860 V worst stack — a component-failure event ended by the latch (T-09 short matrix, search coil); harness and load faults all sit behind RAUX24"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "leakage acceptance is buildable",
+   "detail": "P/2–S–P/2 sandwich 1-D estimate 1.7 µH ×1.5 ≤ 4 µH acceptance (+1 µH rectifier-loop allowance in every clamp row)"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "reinforced pin allocation: bus-side row / SELV row",
+   "detail": "pins 1–4 AXA,AXB,P1,P2 · pins 5–8 S15A,S15B,S24A,S24B (E52 mixed P1/S24A and AXA/S15A at 1.98 mm vs 8.0/12.6 mm reinforced — land regeneration is a layout open item)"
+  },
+  {
+   "status": "ok",
+   "tag": "D4",
+   "name": "aux SPICE deck: fingerprint, verdicts, anchors [aux-flyback.csv]",
+   "detail": "17 rows, 16 PASS · FB-open limit 4.11 A vs closed form 4.1 A at the deck's typ corner (±10 %) · V24 short 5.81 A / 286 mT in the deck (≤ 8 A · ≤ 85 % Bsat 130 °C) before the fault latch; closed-form worst stack 5.23 A"
+  },
+  {
+   "status": "ok",
+   "tag": "Epulse",
+   "name": "30kw RPRE/RDIS event energies",
+   "detail": "discharge 101 J · precharge 132 J per resistor vs 160 J class"
+  },
+  {
+   "status": "ok",
+   "tag": "Epulse",
+   "name": "40kw RPRE/RDIS event energies",
+   "detail": "discharge 121 J · precharge 159 J per resistor vs 160 J class"
+  },
+  {
+   "status": "ok",
+   "tag": "Epulse",
+   "name": "50kw RPRE/RDIS event energies",
+   "detail": "discharge 162 J · precharge 212 J per resistor vs 480 J class (CER-50W class — E43: 162/212 J cross the 25 W family point)"
+  },
+  {
+   "status": "ok",
+   "tag": "Epulse",
+   "name": "50kwa RPRE/RDIS event energies",
+   "detail": "discharge 162 J · precharge 212 J per resistor vs 480 J class"
+  },
+  {
+   "status": "ok",
+   "tag": "Epulse",
+   "name": "50 kW 50 W parts ordered",
+   "detail": "RPRE1/2 + RDIS0-3 skuOverrides at 50 kW carry the 50 W VALUE codes (R5-G)"
+  },
+  {
+   "status": "ok",
+   "tag": "Xbleed",
+   "name": "X discharge τ after CX2 rev + damper",
+   "detail": "τ 0.87 s ≤ 1 s pluggable rule"
+  },
+  {
+   "status": "ok",
+   "tag": "F",
+   "name": "30kw gG fuse 80 A",
+   "detail": "derated capacity 57.6 A ≥ 55.9 A worst (the 40 kW 100 A first pick FAILED this at 72 < 73.3; 50 kW 125 A computes 90 < 91.6 — same class, hence 160 A NH00)"
+  },
+  {
+   "status": "ok",
+   "tag": "F",
+   "name": "40kw gG fuse 125 A",
+   "detail": "derated capacity 90 A ≥ 73.3 A worst (the 40 kW 100 A first pick FAILED this at 72 < 73.3; 50 kW 125 A computes 90 < 91.6 — same class, hence 160 A NH00)"
+  },
+  {
+   "status": "ok",
+   "tag": "F",
+   "name": "50kw gG fuse 160 A",
+   "detail": "derated capacity 115.2 A ≥ 91.6 A worst (the 40 kW 100 A first pick FAILED this at 72 < 73.3; 50 kW 125 A computes 90 < 91.6 — same class, hence 160 A NH00)"
+  },
+  {
+   "status": "ok",
+   "tag": "F",
+   "name": "50kwa gG fuse 160 A",
+   "detail": "derated capacity 115.2 A ≥ 91.6 A worst (the 40 kW 100 A first pick FAILED this at 72 < 73.3; 50 kW 125 A computes 90 < 91.6 — same class, hence 160 A NH00)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "30kw precharge bypass 80 A",
+   "detail": "70% of class (E35 accepted 70% at 30 kW; the 120 A family part computes 76% at 50 kW — over the line, hence the 250 A frame)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "40kw precharge bypass 100 A",
+   "detail": "73% of class (E35 accepted 70% at 30 kW; the 120 A family part computes 76% at 50 kW — over the line, hence the 250 A frame)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "50kw precharge bypass 250 A",
+   "detail": "37% of class (E35 accepted 70% at 30 kW; the 120 A family part computes 76% at 50 kW — over the line, hence the 250 A frame)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "50kwa precharge bypass 250 A",
+   "detail": "37% of class (E35 accepted 70% at 30 kW; the 120 A family part computes 76% at 50 kW — over the line, hence the 250 A frame)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "K_OUT 200 A class @40 kW",
+   "detail": "133 A = 67% (30 kW: 50%)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "K_OUT dual pair @50 kW",
+   "detail": "167 A across 2× 200 A = 42% per relay (single would be 84% — over the 70% line)"
+  },
+  {
+   "status": "ok",
+   "tag": "K",
+   "name": "matrix legs single @50 kW",
+   "detail": "KSER ≤100 A SER-mode = 50% · KPARA/B ≤83.5 A per-bank = 42% — no pointless doubling"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "aux brown-out threshold as drawn",
+   "detail": "1 V × (1+2.4M/7.5k) = 321 V — the active-discharge floor (brown-in 345 V adds IBO·Rup)"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "30kw discharge timeline (AC removed)",
+   "detail": "active 830→321 V in 0.71 s, then PASSIVE 1×(2×47k)/half: +370 s → total 6.2 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "40kw discharge timeline (AC removed)",
+   "detail": "active 830→321 V in 0.86 s, then PASSIVE 2×(2×47k)/half: +222 s → total 3.7 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "50kw discharge timeline (AC removed)",
+   "detail": "active 830→321 V in 1.14 s, then PASSIVE 2×(2×47k)/half: +296 s → total 5 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "50kwa discharge timeline (AC removed)",
+   "detail": "active 830→321 V in 1.14 s, then PASSIVE 2×(2×47k)/half: +296 s → total 5 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "discharge honesty lives in the docs",
+   "detail": "protection-thresholds two-phase note + 62477-1 label text + firmware-guide F.21 real-coverage note"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "aux cold-start reservoir (D version)",
+   "detail": "budget 5.6 mA × 60 ms / 5 V = 67 µF → 220 µF fitted (3.3×). The drawn A-version could NOT start: 120 ms mandatory delay vs 1.0 V hysteresis ÷ 0.81–1.61 mA net = 28–60 ms"
+  },
+  {
+   "status": "ok",
+   "tag": "R6",
+   "name": "D-version duty ceiling holds at brown-out",
+   "detail": "worst DCM duty 22.1% (brown-out min, Lp max, d4-flyback) ≤ 44.2% DCmax(min) — the A-version's 48% ceiling was never the constraint"
+  },
+  {
+   "status": "ok",
+   "tag": "R7",
+   "name": "bank-bleeder PV gate drive (25 °C-endpoint model)",
+   "detail": "IF 11.58 mA ≥ 10 mA at the 13.5 V rail floor (R8: 1 k/2010, 0.23 W worst ≤ 50% of 0.75 W); chord 5.87 V ≥ Vth(max)+2 — a 25 °C-ENDPOINT MODEL (Voc typ ~5.4 V at 100 °C): bleed-interval ambient declared ≤70 °C, EVT loaded-Vgs gates the BOM freeze"
+  }
+ ]
+}

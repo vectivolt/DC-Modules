@@ -15,14 +15,21 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const md = readFileSync(join(ROOT, "docs/magnetics.md"), "utf8")
-  + "\n" + readFileSync(join(ROOT, "docs/aux-transformer-D4.md"), "utf8");
+// E70: the drawings live on the four generated module pages; the hub carries D4 and the common requirements.
+const hub = readFileSync(join(ROOT, "docs/magnetics.md"), "utf8");
+const pages = ["30kw", "40kw", "50kw", "50kwa"].map((k) => [k, readFileSync(join(ROOT, `docs/magnetics-${k}.md`), "utf8")]);
 
-// Split on the drawing headings.
+// Split each document on its drawing headings; a section ends at the next level-2 heading.
 const parts = [];
-for (const m of md.matchAll(/^##+\s+(D\d[^\n]*|CTs?\b[^\n]*)$/gm)) parts.push({ title: m[1].trim(), at: m.index });
-for (let i = 0; i < parts.length; i++)
-  parts[i].body = md.slice(parts[i].at, i + 1 < parts.length ? parts[i + 1].at : md.length);
+for (const [doc, md] of [["hub", hub], ...pages]) {
+  const heads = [...md.matchAll(/^## .*$/gm)];
+  heads.forEach((h, i) => {
+    const t = h[0].replace(/^##\s+/, "").trim();
+    if (!/^(D\d|CTs?\b|Current transformers)/.test(t)) return;
+    parts.push({ title: `${doc} ${t}`, body: md.slice(h.index, i + 1 < heads.length ? heads[i + 1].index : md.length) });
+  });
+}
+const md = hub;
 // A superseded drawing is not quotable by definition, so holding it to ordering completeness would
 // report a defect that does not exist. It must still SAY it is superseded -- that is the check.
 const live = parts.filter((p) => {
@@ -55,9 +62,9 @@ const FIELDS = [
 // are normally organised -- and §0.1 carries a per-part mechanical table. So a field counts as
 // specified for a part if it appears in the part's own section, OR in §0 on a line that names that
 // part. Requiring every field in every section would report a correctly-organised set as broken.
-const c0 = md.indexOf("# §0");
-const common = c0 >= 0 ? md.slice(c0) : "";
-const partId = (t) => (t.match(/^(D\d|CT)/) ?? [])[1] ?? t.slice(0, 2);
+const c0 = md.indexOf("## Common requirements");
+const common = c0 >= 0 ? md.slice(c0, md.indexOf("\n## D4", c0)) : "";
+const partId = (t) => (t.replace(/^\S+\s+/, "").match(/^(D\d|CT|Current)/) ?? [])[1] ?? t.slice(0, 2);
 const commonFor = (t) => {
   const id = partId(t);
   return common.split("\n").filter((l) => !l.startsWith("|") || new RegExp(`\\b${id}\\b`).test(l)).join("\n");
@@ -79,4 +86,5 @@ for (const p of parts) {
   const gaps = FIELDS.filter(([, re]) => !re.test(p.body + "\n" + commonFor(p.title))).map(([n]) => n);
   if (gaps.length) console.log(`  ${p.title.split("—")[0].trim().padEnd(12)} missing: ${gaps.join(", ")}`);
 }
-console.log();
+console.log(miss ? `\nRFQ AUDIT: ${miss} MISSING FIELD(S) — a drawing that cannot be quoted` : "RFQ AUDIT CLEAN — every magnetic drawing carries every field a winder quotes against");
+process.exit(miss ? 1 : 0);

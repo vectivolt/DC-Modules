@@ -1,0 +1,138 @@
+{
+ "gate": "fault-energy",
+ "exit": 0,
+ "rows": [
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "30kw DC link 869 J @860 V",
+   "detail": "C=2.35 mF → 217 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "30kw bank 2 J @500 V",
+   "detail": "per bleeder-chain resistor 0.6 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "40kw DC link 1043 J @860 V",
+   "detail": "C=2.82 mF → 261 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "40kw bank 3 J @500 V",
+   "detail": "per bleeder-chain resistor 0.8 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "50kw DC link 1390 J @860 V",
+   "detail": "C=3.76 mF → 348 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "50kw bank 4 J @500 V",
+   "detail": "per bleeder-chain resistor 1 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "50kwa DC link 1390 J @860 V",
+   "detail": "C=3.76 mF → 348 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "50kwa bank 4 J @500 V",
+   "detail": "per bleeder-chain resistor 1 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "tank caps (E67 full bridge, 11 × 33 nF worst)",
+   "detail": "136 mJ — three orders below any pulse rating; rings down in the tank R"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
+   "name": "D1 magnetic energy at the CT ceiling",
+   "detail": "0.76 J → freewheels into the DC link through the boost diodes (their normal path); link absorbs it as 0.18% of one link-charge"
+  },
+  {
+   "status": "ok",
+   "tag": "SURGE",
+   "name": "MOV single-shot energy vs class",
+   "detail": "Ipk ≈ 1550 A, E ≈ 39 J vs S20K550 class (Wmax ~160 J, Imax 6.5 kA 8/20) — and the MOV Δ + series GDT sits BEFORE the chokes (HR-7 netlist gate), so no magnetics see the un-clamped front"
+  },
+  {
+   "status": "ok",
+   "tag": "COORD",
+   "name": "D1 winding 18 mm² (30 kW, 80 A gG)",
+   "detail": "wire I²t 4.3·10⁶ ≥ 10× fuse clearing 0.12·10⁶ A²s — the gG element always melts first"
+  },
+  {
+   "status": "ok",
+   "tag": "COORD",
+   "name": "D1 winding 25.8 mm² (40/50, 125/160 A)",
+   "detail": "wire I²t 8.8·10⁶ ≥ 10× fuse clearing 0.3·10⁶ A²s — the gG element always melts first"
+  },
+  {
+   "status": "ok",
+   "tag": "COORD",
+   "name": "busbar min 50 mm² class",
+   "detail": "wire I²t 33.1·10⁶ ≥ 10× fuse clearing 0.3·10⁶ A²s — the gG element always melts first"
+  },
+  {
+   "status": "ok",
+   "tag": "VENT",
+   "name": "bank/link can strings",
+   "detail": "2-series 450 V cans = 900 V string vs ≤525 V (58%) — venting requires a BALANCE failure, which F-rows detect via the bank senses; DFM carries the vent-clearance rule (E59)"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "30kw airflow margin",
+   "detail": "need 162 m³/h @ΔT20 for 1048.5 W vs 2×160×0.6 = 192 — margin 1.19×"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "30kw one-fan-out (FSM derate 0.6)",
+   "detail": "(n−1) = 96 m³/h vs derated need 89 (tachs all monitored — E44; OT ladder is the second net)"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "40kw airflow margin",
+   "detail": "need 211 m³/h @ΔT20 for 1366.6 W vs 3×160×0.6 = 288 — margin 1.36×"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "40kw one-fan-out (FSM derate 0.6)",
+   "detail": "(n−1) = 192 m³/h vs derated need 116 (tachs all monitored — E44; OT ladder is the second net)"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "50kw liquid loop",
+   "detail": "1782 W into 6.5 L/min 50/50 EG-water → coolant ΔT 4.6 K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "50kwa airflow margin",
+   "detail": "need 281 m³/h @ΔT20 for 1821.7 W vs 4×160×0.6 = 384 — margin 1.37×"
+  },
+  {
+   "status": "ok",
+   "tag": "AIR",
+   "name": "50kwa one-fan-out (FSM derate 0.6)",
+   "detail": "(n−1) = 288 m³/h vs derated need 155 (tachs all monitored — E44; OT ladder is the second net)"
+  }
+ ]
+}

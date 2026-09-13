@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/grid-4536_pts_·_0_fail_·_0_folds-2ea44f?style=flat-square" alt="grid: 4536 pts · 0 fail · 0 folds"/>
 </p>
@@ -69,7 +69,7 @@ so the ≥ 97 % peak specification is met on every SKU. The grid's averaged mode
 ESR, which at part load are worth −0.05…−0.07 pt.
 
 **Market position:** ahead of the verified mainstream band (95.5–96.5 % peak) and at parity with the newest SiC
-flagships' ≥97 % claim ([`competitive-benchmark-e51.md`](competitive-benchmark-e51.md)).
+flagships' ≥97 % claim ([teardown benchmark](benchmark-infypower-teardown.md)).
 
 ```mermaid
 pie showData title 50 kW air module — where 1,822 W goes
@@ -153,7 +153,7 @@ corners per SKU — the 14 E60 stress corners plus the 20-point bank-voltage × 
 `simulation-results/<sku>/llc-flux.csv` with the tank fingerprint checked — instead of at resonance. D3 flux is
 volt-second pinned by the bank voltage, so its core corner is the 525 V bank at 77–84 kHz and a power derate does
 not relieve it; copper peaks at the SER 250 V corners (176–189 kHz). Constructions of record:
-[magnetics](magnetics.md) · [manufacturing pack](magnetics-manufacturing-pack.md).
+[magnetics hub](magnetics.md) and the module magnetics pages.
 
 > [!NOTE]
 > **What E65 replaced.** The E58/E60 rows here took D3 and D2 at resonance (140 kHz; D3 108 / 90 / 109 mT) behind a
@@ -360,8 +360,8 @@ the 110 °C internal air feeds heat through the parts (§4.3).
 | D1 · Kool Mµ stacks | ΔT ≤ 45 K acceptance (Cu 28 / 26 / 38 W) | powder core, µ tempco ≤ ±3 % | 9× / 13× 1.6 mm bundles |
 
 All ferrite parts sit near the material's loss minimum (~80–100 °C). The loss slope is negative below it, so a
-cold start self-warms toward the minimum instead of running away. Details:
-[`magnetics-fmea-e58.md`](magnetics-fmea-e58.md) · [`conductor-selection.md`](conductor-selection.md).
+cold start self-warms toward the minimum instead of running away. Details: the
+[magnetics hub](magnetics.md#failure-modes-and-what-closes-each).
 
 ## 5. Corners and failures
 
@@ -406,26 +406,8 @@ plot `simulation-results/30kw/plots/derating-curve.svg`.
 
 ---
 
-## Revision history (dated deltas, kept for provenance)
-
-<details>
-<summary>Rev C (2026-09-05) and rev D (2026-09-05, R2 re-audit) — single-board 30/60/120 kW era</summary>
-
-- **Rev C:** LLC node snubbers deleted (E28), removing a silent ≈45 W/leg heat source. Vienna snubber re-sized
-  (100 pF / 2 W → 0.86 W actual per phase). Clamp bleeder 470 Ω moved to 5 W axial. Aux stage E26 at ≈11 W in the aux
-  corner. Per-phase film caps reduce electrolytic ripple heating.
-- **Rev D:** EMI-filter losses budgeted for the first time (R2 HR-18). The 3.3 V rail became sync bucks at ≈0.4 W each;
-  the deleted LDO would have dissipated 2.9–4.1 W. Aux rev C 110 W. Resonant burdens moved to 1 W 2512 (CB-16).
-  Balance/star resistors split 2-series (HR-20). Bank bleeders are pulse duty only (E33).
-- The 60/120 kW single-board columns of that era are retired (E40/E50). Products above 50 kW are multi-module
-  (E55: 100 kW = 2 × 50, 150 kW = 3 × 50; the CSU was deleted at E66).
-
-</details>
-
----
-
 <div align="center">
 <sub><a href="current-coordination.md">← Current & Protection Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="insulation-coordination.md">Insulation Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

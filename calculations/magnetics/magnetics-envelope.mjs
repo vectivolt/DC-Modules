@@ -27,6 +27,7 @@ import { DATA, CORES, stack, eTurn, FORMER_WALL } from "./geometry.mjs";
 import { rho, delta, dowell, litzFr, leakageSPS } from "./winding-physics.mjs";
 import { fingerprint, TANKS } from "../llc/tanks.mjs";
 import { TOL } from "../../spice/llc/llc-run.mjs";
+import { captureEvidence } from "../evidence.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
@@ -224,6 +225,7 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
 
 const T = (x) => (Number.isFinite(x) ? `${f(x, 0)} °C` : "RUNAWAY");
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
+  captureEvidence("magnetics-envelope");
   console.log("=== MAGNETICS ENVELOPE (E65 gate, E67 full bridge) — D3 cells / D2 external Lr at every power-solved corner (stress + bank-voltage × load envelope) ===");
   for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
     const ex = excitation(sku), t = TANKS[sku];

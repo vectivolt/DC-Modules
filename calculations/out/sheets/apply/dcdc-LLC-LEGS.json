@@ -12,7 +12,6 @@
     "designator": "JDCP",
     "value": "STUD-M8",
     "block_name": "BUS-IN",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -25,7 +24,6 @@
     "designator": "JDCN",
     "value": "STUD-M8",
     "block_name": "BUS-IN",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -38,7 +36,6 @@
     "designator": "JPEB",
     "value": "STUD-M8",
     "block_name": "BUS-IN",
-    "search_query": "STUD-M8 M8 stud terminal",
     "pins": [
      {
       "pin_number": 1,
@@ -51,7 +48,6 @@
     "designator": "CF0",
     "value": "1uF",
     "block_name": "BUS-IN",
-    "search_query": "PP-1u-1100 1 µF 1100 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -69,7 +65,6 @@
     "designator": "CF1",
     "value": "1uF",
     "block_name": "BUS-IN",
-    "search_query": "PP-1u-1100 1 µF 1100 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -87,7 +82,6 @@
     "designator": "CF2",
     "value": "1uF",
     "block_name": "BUS-IN",
-    "search_query": "PP-1u-1100 1 µF 1100 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -105,7 +99,6 @@
     "designator": "CF3",
     "value": "1uF",
     "block_name": "BUS-IN",
-    "search_query": "PP-1u-1100 1 µF 1100 V film",
     "pins": [
      {
       "pin_number": 1,
@@ -125,7 +118,6 @@
     "designator": "Q1H",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -153,7 +145,6 @@
     "designator": "Q1L",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -181,7 +172,6 @@
     "designator": "U1H",
     "value": "NSI6611",
     "block_name": "LEG-1",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -269,7 +259,6 @@
     "designator": "R1HPD",
     "value": "10k",
     "block_name": "LEG-1",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -287,7 +276,6 @@
     "designator": "C1HBV",
     "value": "100nF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -305,7 +293,6 @@
     "designator": "C1HB1",
     "value": "1uF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -323,7 +310,6 @@
     "designator": "C1HB2",
     "value": "1uF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -341,7 +327,6 @@
     "designator": "R1HON",
     "value": "4.7",
     "block_name": "LEG-1",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -359,7 +344,6 @@
     "designator": "R1HOFF",
     "value": "2.2",
     "block_name": "LEG-1",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -377,7 +361,6 @@
     "designator": "R1HGS",
     "value": "10k",
     "block_name": "LEG-1",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -395,7 +378,6 @@
     "designator": "C1HBL",
     "value": "22pF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -413,7 +395,6 @@
     "designator": "R1HDS",
     "value": "100",
     "block_name": "LEG-1",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -431,7 +412,6 @@
     "designator": "D1HS1",
     "value": "US1M",
     "block_name": "LEG-1",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -449,7 +429,6 @@
     "designator": "D1HS2",
     "value": "US1M",
     "block_name": "LEG-1",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -467,7 +446,6 @@
     "designator": "PS1H",
     "value": "QA01C-18",
     "block_name": "LEG-1",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,
@@ -500,7 +478,6 @@
     "designator": "U1L",
     "value": "NSI6611",
     "block_name": "LEG-1",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -588,7 +565,6 @@
     "designator": "R1LPD",
     "value": "10k",
     "block_name": "LEG-1",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -606,7 +582,6 @@
     "designator": "C1LBV",
     "value": "100nF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -624,7 +599,6 @@
     "designator": "C1LB1",
     "value": "1uF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -642,7 +616,6 @@
     "designator": "C1LB2",
     "value": "1uF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -660,7 +633,6 @@
     "designator": "R1LON",
     "value": "4.7",
     "block_name": "LEG-1",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -678,7 +650,6 @@
     "designator": "R1LOFF",
     "value": "2.2",
     "block_name": "LEG-1",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -696,7 +667,6 @@
     "designator": "R1LGS",
     "value": "10k",
     "block_name": "LEG-1",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -714,7 +684,6 @@
     "designator": "C1LBL",
     "value": "22pF",
     "block_name": "LEG-1",
-    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -732,7 +701,6 @@
     "designator": "R1LDS",
     "value": "100",
     "block_name": "LEG-1",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -750,7 +718,6 @@
     "designator": "D1LS1",
     "value": "US1M",
     "block_name": "LEG-1",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -768,7 +735,6 @@
     "designator": "D1LS2",
     "value": "US1M",
     "block_name": "LEG-1",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -786,7 +752,6 @@
     "designator": "PS1L",
     "value": "QA01C-18",
     "block_name": "LEG-1",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,
@@ -821,7 +786,6 @@
     "designator": "Q2H",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -849,7 +813,6 @@
     "designator": "Q2L",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -877,7 +840,6 @@
     "designator": "U2H",
     "value": "NSI6611",
     "block_name": "LEG-2",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -965,7 +927,6 @@
     "designator": "R2HPD",
     "value": "10k",
     "block_name": "LEG-2",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -983,7 +944,6 @@
     "designator": "C2HBV",
     "value": "100nF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1001,7 +961,6 @@
     "designator": "C2HB1",
     "value": "1uF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1019,7 +978,6 @@
     "designator": "C2HB2",
     "value": "1uF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1037,7 +995,6 @@
     "designator": "R2HON",
     "value": "4.7",
     "block_name": "LEG-2",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -1055,7 +1012,6 @@
     "designator": "R2HOFF",
     "value": "2.2",
     "block_name": "LEG-2",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -1073,7 +1029,6 @@
     "designator": "R2HGS",
     "value": "10k",
     "block_name": "LEG-2",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -1091,7 +1046,6 @@
     "designator": "C2HBL",
     "value": "22pF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1109,7 +1063,6 @@
     "designator": "R2HDS",
     "value": "100",
     "block_name": "LEG-2",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1127,7 +1080,6 @@
     "designator": "D2HS1",
     "value": "US1M",
     "block_name": "LEG-2",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -1145,7 +1097,6 @@
     "designator": "D2HS2",
     "value": "US1M",
     "block_name": "LEG-2",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -1163,7 +1114,6 @@
     "designator": "PS2H",
     "value": "QA01C-18",
     "block_name": "LEG-2",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,
@@ -1196,7 +1146,6 @@
     "designator": "U2L",
     "value": "NSI6611",
     "block_name": "LEG-2",
-    "search_query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
     "pins": [
      {
       "pin_number": 15,
@@ -1284,7 +1233,6 @@
     "designator": "R2LPD",
     "value": "10k",
     "block_name": "LEG-2",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1302,7 +1250,6 @@
     "designator": "C2LBV",
     "value": "100nF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1320,7 +1267,6 @@
     "designator": "C2LB1",
     "value": "1uF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1338,7 +1284,6 @@
     "designator": "C2LB2",
     "value": "1uF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-1u-0805 1 µF 0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1356,7 +1301,6 @@
     "designator": "R2LON",
     "value": "4.7",
     "block_name": "LEG-2",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -1374,7 +1318,6 @@
     "designator": "R2LOFF",
     "value": "2.2",
     "block_name": "LEG-2",
-    "search_query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated",
     "pins": [
      {
       "pin_number": 1,
@@ -1392,7 +1335,6 @@
     "designator": "R2LGS",
     "value": "10k",
     "block_name": "LEG-2",
-    "search_query": "R0805-10k 10 kΩ gate-source",
     "pins": [
      {
       "pin_number": 1,
@@ -1410,7 +1352,6 @@
     "designator": "C2LBL",
     "value": "22pF",
     "block_name": "LEG-2",
-    "search_query": "MLCC-22p-0603 22 pF 0603 C0G",
     "pins": [
      {
       "pin_number": 1,
@@ -1428,7 +1369,6 @@
     "designator": "R2LDS",
     "value": "100",
     "block_name": "LEG-2",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -1446,7 +1386,6 @@
     "designator": "D2LS1",
     "value": "US1M",
     "block_name": "LEG-2",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -1464,7 +1403,6 @@
     "designator": "D2LS2",
     "value": "US1M",
     "block_name": "LEG-2",
-    "search_query": "US1M 1 kV 1 A fast diode SMA",
     "pins": [
      {
       "pin_number": 2,
@@ -1482,7 +1420,6 @@
     "designator": "PS2L",
     "value": "QA01C-18",
     "block_name": "LEG-2",
-    "search_query": "QA01C-18 iso gate-bias module +18/−4-configured",
     "pins": [
      {
       "pin_number": 1,

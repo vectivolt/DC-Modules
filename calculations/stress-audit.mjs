@@ -18,6 +18,8 @@ import { stack, CORES } from "./magnetics/geometry.mjs";
 import { D1 as D1C, D1_REGISTERED, D1_LITZ, d1Temp, d1TypeTest, row as vsRow, VS as D1VS } from "./magnetics/d1-choke.mjs";
 import { mechLines } from "./cost/parts-db.mjs";
 import { D4, D4_REGISTERED_E52, DRAWN_E52, NCP, drawn as d4Drawn, evaluate as d4Evaluate, fingerprint as d4Fingerprint, leakageEstimate, Bsat as d4Bsat, csTrip, VBUS_MAX } from "./magnetics/d4-flyback.mjs";
+import { captureEvidence } from "./evidence.mjs";
+captureEvidence("stress-audit");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
 let fails = 0, warns = 0;
@@ -83,7 +85,7 @@ const mu26 = (H) => 1 / (1 + R26.a * Math.pow(Math.max(H / 79.577, 1e-9), R26.b)
 const D1 = {
   "30kw": { stack: 3, N: 39, cu: 18.0, Irms: 54.94, Ibias: 78, Lfloor: 75, note: "D1 rev B: N=39±1 lot-trim, 18 mm² (drawing of record)" },
   "40kw": { stack: 5, N: 26, cu: 25.8, Irms: 73.25, Ibias: 104, Lfloor: 61, note: "D1-40 rev B (E51): N=26±1 on CATALOG AL — the E41 N=23 missed its floor on the real core" },
-  "50kw": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, note: "D1-50 rev B (E51): N=24±1, dIpp basis restated 36.2 A pp (D6-50 floor 11.8 ≤ built 12.9); plate/web-bonded" },
+  "50kw": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, note: "D1-50 rev B (E51): N=24±1, dIpp basis 36.2 A pp; plate-bonded (liquid) / web-bonded (air)" },
   "50kwa": { stack: 5, N: 24, cu: 25.8, Irms: 91.57, Ibias: 129.5, Lfloor: 45, note: "same D1-50 rev B part (E44 twin)" },
 };
 for (const [sku, d] of Object.entries(D1)) {
@@ -138,7 +140,7 @@ for (const [sku, d] of Object.entries(D1)) {
 // E65 bonded magnetics (D1-F3 · D2-04): a winding gap-padded or clamped to PE-bonded metal is part of the BASIC barrier to PE, at
 // its recurring peak voltage — D1 switch end vs grid neutral (vienna-switched, recurring cases only); D2/D3 tank node = bus/2 + the
 // resonant-cap peak (llc-stress, every corner) + the Vienna midpoint-to-neutral peak (ideal switches, CM filter not credited);
-// D6-50 at line peak (500 VAC edge). PD verification where Û_rp > 700 V at extinction ≥ 1.5·Û_rp (IEC 60664-1 F1·F2, basic).
+// PD verification where Û_rp > 700 V at extinction ≥ 1.5·Û_rp (IEC 60664-1 F1·F2, basic).
 // insulation-coordination.md must carry the computed values (tokens rounded up: 10 V, 0.1 kV).
 {
   const ins = readFileSync(join(ROOT, "docs/insulation-coordination.md"), "utf8").replace(/\s/g, "");
@@ -147,12 +149,12 @@ for (const [sku, d] of Object.entries(D1)) {
   const llcTank = (sku) => { const L = readFileSync(join(ROOT, `simulation-results/${sku}/llc-stress.csv`), "utf8").split("\n").filter((l) => l && !l.startsWith("#")), h = L[0].split(",");
     return Math.max(...L.slice(1).map((l) => { const r = Object.fromEntries(l.split(",").map((v, i) => [h[i], v])); return +r.bus_V / 2 + +r.Vcr_ac_pk_V; })); };
   const SK = ["30kw", "40kw", "50kw", "50kwa"];
-  const d1 = up(Math.max(...SK.map((s) => vRec(s, "vSwN_pk_V"))), 10), d6 = up((500 * Math.SQRT2) / Math.sqrt(3), 10);
+  const d1 = up(Math.max(...SK.map((s) => vRec(s, "vSwN_pk_V"))), 10);
   const tank = SK.map((s) => up(llcTank(s) + vRec(s, "vMN_pk_V"), 10)), pd = tank.map((v) => up((1.5 * v) / 1000, 0.1).toFixed(1));
   const tok = [`D1Û_rp≤${d1}V`, `D2/D3Û_rp${tank.join("/")}V`, `PDextinction≥${pd.join("/")}kV`];   // E68: D6-50 retired with the AC DM chokes
   const miss = tok.filter((t) => !ins.includes(t));
-  ck("INS", "bonded magnetics carry their basic-barrier rows at the computed recurring peaks", d1 <= 700 && d6 <= 700 && tank.every((v) => v > 700) && miss.length === 0,
-    `D1 ${d1} V · D6-50 ${d6} V (≤700 V: hipot + impulse, no PD) · D2/D3 ${tank.join(" / ")} V (30/40/50/50a — PD sample test at ≥ ${pd.join(" / ")} kV)${miss.length ? ` → MISSING in insulation-coordination.md: ${miss.join(" · ")}` : " → rows present"}`);
+  ck("INS", "bonded magnetics carry their basic-barrier rows at the computed recurring peaks", d1 <= 700 && tank.every((v) => v > 700) && miss.length === 0,
+    `D1 ${d1} V (≤700 V: hipot + impulse, no PD) · D2/D3 ${tank.join(" / ")} V (30/40/50/50a — PD sample test at ≥ ${pd.join(" / ")} kV)${miss.length ? ` → MISSING in insulation-coordination.md: ${miss.join(" · ")}` : " → rows present"}`);
 }
 // D2 external resonant inductor [reg formula] (E67): Bpk = Lmax·√2·I_class / (N · Ae) at the +3 % inductance and the tank class;
 // thermal proof at every simulated corner lives in magnetics-envelope, the simulated-peak + fault flux in current-coordination.

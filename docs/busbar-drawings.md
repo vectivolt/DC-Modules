@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/owner-busbar--calc.mjs-5f8fc0?style=flat-square" alt="owner: busbar-calc.mjs"/>
 </p>
@@ -92,7 +92,7 @@ Busbar set ≈ **₹1188** (copper × 1.6 fabrication) · BOM mechanical line "b
 | Joint | Hardware | Torque | Acceptance |
 |---|---|---:|---|
 | B2B stud pillars DCP / DCN / PE | M8 × 1.25, Belleville + flat washer | 12 N·m | ≤ 50 µΩ each (EOL milliohm check) |
-| Relay lugs (K_SER / K_PAR / K_OUT) | M6 | 8 N·m | ≤ 80 µΩ |
+| Relay lugs (KSER / KPARA / KPARB) | M6 | 8 N·m | ≤ 80 µΩ |
 | Shunt terminals | M8, Kelvin taps untouched | 12 N·m | calibration validates |
 | AC input studs | M8 | 12 N·m | ≤ 60 µΩ |
 | Choke centre bolt (D1 stacks) | M6 + silicone pad; ≥ 3 kg stacks add two-point banding | first article | leads are soldered flying leads — the old M5 lug row predated D1 rev B |
@@ -100,7 +100,7 @@ Busbar set ≈ **₹1188** (copper × 1.6 fabrication) · BOM mechanical line "b
 ---
 
 <div align="center">
-<sub><a href="insulation-coordination.md">← Insulation Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics.md">Magnetics Drawings D1–D7 →</a></sub>
+<sub><a href="insulation-coordination.md">← Insulation Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics.md">Magnetics Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

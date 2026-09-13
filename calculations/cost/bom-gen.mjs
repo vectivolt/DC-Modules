@@ -7,7 +7,7 @@
 // UNMATCHED components are listed loudly — the BOM is not "perfect" until that list is empty.
 // Run (after tsci builds): node calculations/cost/bom-gen.mjs
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DB, skuOverrides, mechLines, mech2U, biasCommon, BUILDABLE_SKUS } from "./parts-db.mjs";
@@ -29,7 +29,7 @@ const CAT = (mpn, desc) =>
   /SiC|MOSFET|JBS|FET 1200|650 V 4 A/.test(desc) ? "semiconductors"
     : /driver|iso |LDO|MCU|shift|ULN|flyback controller|transceiver|amplifier/.test(desc) ? "drive+control ICs"
     : /module/.test(desc) ? "bias/iso modules"
-    : /choke|transformer|trim/i.test(desc) || /\bCT\b/.test(desc) ? "magnetics"   // E61: a case-insensitive "CT " matched every relay "contact "
+    : /choke|transformer|inductor|trim/i.test(desc) || /\bCT\b/.test(desc) ? "magnetics"   // E61: a case-insensitive "CT " matched every relay "contact " · E70: an inductor is magnetics whatever its text says about trims
     : /µF|nF|pF|film|snap|X2|Y2|MLCC/i.test(desc) ? "capacitors"
     : /resistor|shunt|Ω|ceramic/i.test(desc) ? "resistors/shunts"
     : /relay/i.test(desc) ? "relays"
@@ -57,11 +57,38 @@ const CN = { semiconductors: 0.75, "drive+control ICs": 0.85, "bias/iso modules"
   "resistors/shunts": 0.90, relays: 0.85, protection: 0.85, connectors: 0.90, HMI: 0.90, misc: 0.90 };
 const cnFactor = (cat, desc) => (cat === "capacitors" && /MLCC|C0G|X7R|X5R|pF\b/.test(desc) ? 0.90 : CN[cat] ?? 0.90);
 const cnMech = (desc) => (/^PCB/.test(desc) ? 0.75 : /Assembly|EOL/i.test(desc) ? 1.00 : 0.85);
+// E70: every designator's schematic section, read off the audited sheet payloads, so a per-SKU BOM page groups cost the way
+// the release sheets are drawn (sheet-pages → sheet-netlist-gen → kicad5). Missing payloads leave parts under "Unassigned".
+const SECTION_TITLE = {
+  "acdc:INPUT-EMI": "AC input, surge and EMI filter", "acdc:VIENNA-PFC": "Vienna PFC stage", "acdc:DC-LINK": "Split DC link and discharge",
+  "acdc:AC-SENSING": "AC and bus sensing", "acdc:CONTROL": "AC-DC control interface", "acdc:AUX-POWER": "Auxiliary supply and fans",
+  "dcdc:LLC-LEGS": "Full-bridge LLC legs", "dcdc:LLC-TANKS": "Resonant tank, transformer and rectifiers",
+  "dcdc:BANKS-SP": "Output banks, S/P relays and output diode", "dcdc:OUTPUT-SENSING": "Output and bank sensing",
+  "dcdc:CONTROL": "DC-DC control interface", "dcdc:COMMS-HMI": "CAN and HMI", "card:CONTROL": "Control card",
+};
+const sectionMap = (sku) => {
+  const m = new Map();
+  const dirs = [[sku === "30kw" ? join(ROOT, "calculations/out/sheets/apply") : join(ROOT, "calculations/out/sheets", sku, "apply"), ["acdc", "dcdc"]],
+    [join(ROOT, "calculations/out/sheets/control-card/apply"), ["card"]]];
+  for (const [dir, sides] of dirs) {
+    if (!existsSync(dir)) continue;
+    for (const fn of readdirSync(dir)) {
+      const side = fn.split("-")[0];
+      if (!sides.includes(side) || !fn.endsWith(".json")) continue;
+      const page = JSON.parse(readFileSync(join(dir, fn), "utf8"));
+      for (const chunk of page.chunks) for (const c of chunk) m.set(`${side}:${c.designator}`, `${side}:${page.page.replace(/^(acdc|dcdc|card)-/, "")}`);
+    }
+  }
+  return m;
+};
 const summary = {};
+const detail = {};   // E70: per-SKU section roll-up and line items for docs/bom-<sku>.md
 let anyUnmatched = false;
 for (const sku of SKUS) {
   const parts = new Map();
   const unmatched = new Set();
+  const secOf = sectionMap(sku);
+  const sec = {};   // section → { cost10: ₹ @10k, parts: count, lines: Map(key → {rec, qty}) }
   // Each power board pairs with one control card (role-agnostic, one p/n) -> TWO cards per
   // module. The card's parts were in NO BOM before this line (audit E35 follow-through).
   for (const [side, mult, pth] of [["acdc", 1, null], ["dcdc", 1, null], ["card", 1, join(ROOT, "dist", "boards", "control-card", "circuit.json")]   /* E40: ONE brain per module */]) {
@@ -90,6 +117,13 @@ for (const sku of SKUS) {
       rec.sides.add(side);
       if (rec.refs.length < 12) rec.refs.push(name);
       parts.set(key, rec);
+      const sk = secOf.get(`${side}:${name}`) ?? "unassigned";
+      const S = (sec[sk] ??= { cost10: 0, parts: 0, lines: new Map() });
+      const q = (ov.qtyMul ?? 1) * mult;
+      S.cost10 += q * (rec.p10k ?? f(rec.price1k * 0.80, 1)); S.parts += q;
+      const L = S.lines.get(key) ?? { key, qty: 0, refs: [] };
+      L.qty += q; if (L.refs.length < 8) L.refs.push(name);
+      S.lines.set(key, L);
     }
   }
   const rows = [...parts.values()].sort((a, b) => b.qty * b.price1k - a.qty * a.price1k);
@@ -105,6 +139,7 @@ for (const sku of SKUS) {
     totE10cn += ext10 * cnFactor(cat, r.desc);
     const lc = lcscForPart(r.cls ?? r.mpn, r.val ?? "", r.pkg);
     if (!lc.status) throw new Error(`bom-gen: ${r.mpn} has no lcsc_status`);   // E61: five value lines per SKU shipped blank past bom-maturity
+    r.u10 = u10; r.ext10 = ext10; r.cat = cat; r.cn = cnFactor(cat, r.desc); r.lcsc = lc.lcsc ?? ""; r.status = lc.status;
     csv.push([r.mpn, lc.lcsc ?? "", lc.status, csvq(r.mfr), csvq(`${r.desc}${r.val && (LCSC_BY_VALUE[`${r.cls ?? r.mpn}|${r.val}`] || r.pkg) ? ` ${r.val}${r.pkg ? ` (${r.pkg} land)` : ""}` : ""}`), csvq(r.alt), [...r.sides].join("+"), r.qty, f(r.price1k * 1.35, 1), r.price1k, f(r.price1k * 0.88, 1), u10, f(ext), f(ext10), r.refs.join(" ")]);
   }
   csv.push(["BIAS-XFMR-SET", "", "CUSTOM", "custom", csvq(biasCommon.desc), `"—"`, "acdc+dcdc", 2, 0, biasCommon.price1k, 0, 0, 2 * biasCommon.price1k, 0, ""]);
@@ -113,6 +148,7 @@ for (const sku of SKUS) {
   let mechTot = 0, mech10cn = 0;
   for (const [d, q, pr] of mechLines[sku]) { const e = q * pr; mechTot += e; mech10cn += e * 0.87 * cnMech(d); csv.push([`MECH`, "", "MECH", "—", csvq(d), `"—"`, "module", q, f(pr * 1.15, 0), pr, f(pr * 0.93, 0), f(pr * 0.87, 0), f(e), f(e * 0.87), ""]); }
   cats["mechanical/assembly"] = mechTot;
+  detail[sku] = { sec, parts, rows, mech: mechLines[sku], mech2U: mech2U[sku] ?? null };
   const grand = totE + mechTot;
   const grand10 = totE10 + mechTot * 0.87;
   csv.push(["TOTAL_ELECTRONIC", "", "", "", "", "", "", "", "", "", "", "", f(totE), f(totE10), ""]);
@@ -239,17 +275,17 @@ line — a flat price per kW above 50 kW is accepted (E66 directive) rather than
 reintroduce a single point of failure. The 150 kW keeps 67 % of its power with one module out (a 100 kW
 keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 `];
-for (const sku of [...SKUS, "150kw"]) {
-  const s = summary[sku];
-  md.push(`## ${NAMES[sku]} — ₹${inr(s.g10k)} @10k\n`);
-  md.push(`**1k ₹${inr(s.grand)} · 5k ₹${inr(s.g5k)} · 100 pcs ₹${inr(s.g100)}** · red-line ₹${inr(s.red)} / stretch ₹${inr(s.stretch)} → ${verdict(s)}${s.g10k <= s.stretch ? ", meets stretch" : ""}${s.cabinet ? ` · composition: ${s.cabinet}` : ""}\n`);
-  md.push(`<details><summary>Cost by category (₹ @1k)</summary>\n`, `| Category | ₹ @1k | Share |`, `|---|---:|---:|`);
-  const tot = s.grand;
-  for (const [c, v] of Object.entries(s.cats).sort((a, b) => b[1] - a[1])) md.push(`| ${c} | ${inr(v)} | ${f(100 * v / tot, 1)} % |`);
-  md.push(`\n</details>`);
-  if (s.unmatched.length) md.push(`\n> [!CAUTION]\n> **UNMATCHED PARTS (${s.unmatched.length}) — BOM incomplete:** ${s.unmatched.join(", ")}`);
-  md.push("");
-}
+md.push(`## Per-module BOM pages
+
+Each module has its own generated page — cost by schematic section, the parts that make that SKU different, every line item and
+its sourcing status.
+
+| Module | ₹ @10k | China target | 1k · 5k · 100 pcs | Lines | Page |
+|---|---:|---:|---|---:|---|
+${SKUS.map((k) => { const s = summary[k]; return `| ${NAMES[k]} | **${inr(s.g10k)}** | ${inr(s.g10kCN)} | ${inr(s.grand)} · ${inr(s.g5k)} · ${inr(s.g100)} | ${s.nLines} | [bom-${k}.md](bom-${k}.md) |`; }).join("\n")}
+| ${NAMES["150kw"]} | **${inr(summary["150kw"].g10k)}** | ${inr(summary["150kw"].g10kCN)} | ${inr(summary["150kw"].grand)} · ${inr(summary["150kw"].g5k)} · ${inr(summary["150kw"].g100)} | 3 × module | [bom-50kwa.md](bom-50kwa.md) |
+`);
+for (const sku of SKUS) if (summary[sku].unmatched.length) md.push(`> [!CAUTION]\n> **${NAMES[sku]}: UNMATCHED PARTS (${summary[sku].unmatched.length}) — BOM incomplete:** ${summary[sku].unmatched.join(", ")}\n`);
 md.push(`## Red-line closure levers (10k basis)
 
 > [!TIP]
@@ -285,9 +321,134 @@ flag (R12).
 |---|---|
 | Two-board sandwich (E17) | +1 PCB, studs and harness — ≈ +₹1,450 per module at 30 kW |
 | HMI (2 buttons + 2-digit display + driver) | ≈ +₹45 |
-| Pre-insertion relays + K_OUT (E12, safety-mandatory) | ≈ +₹800 at 30 kW |
+| Output blocking diode DOUT replacing K_OUT and the pre-insertion relays (E67, InfyPower practice) | the E12 relay set (≈ ₹800 at 30 kW) removed; DOUT ₹336–496 @10k added |
 | CTs replacing shunt + isolated-amplifier phase sensing (E18) | −₹240 net at 30 kW |
 
 ${footer("docs/bom-cost.md")}`);
 writeFileSync(join(ROOT, "docs", "bom-cost.md"), md.join("\n") + "\n");
+
+// ---- E70: one custom BOM page per module SKU (docs/bom-<sku>.md) — generated, never hand-edited ----
+const STATUS_BADGE = { ORDERABLE: "2ea44f", "SECOND-SOURCE": "2ea44f", DIRECT: "1a9fb3", CLASS: "d19a00", CUSTOM: "b8732e", REVIEW: "bc4e9c" };
+const STATUS_MEANS = { ORDERABLE: "a specific catalogue part, verified against the rating", "SECOND-SOURCE": "the primary is off-catalogue; a verified equivalent is named",
+  DIRECT: "a vendor-direct order code (Talema, Hongfa, Mean Well class)", CLASS: "the rating is the specification; purchasing selects to the spec line",
+  CUSTOM: "built to our drawing — see the magnetics page", REVIEW: "a tracked open decision, closed before release" };
+const SECTION_ORDER = Object.keys(SECTION_TITLE);
+const cell = (t) => String(t).replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
+const trim = (t, n = 110) => { const c = cell(t.replace(/\s*\[[^\]]*\]\s*$/, "")); return c.length <= n ? c : `${c.slice(0, c.lastIndexOf(" ", n))} …`; };
+const PAGE = { "30kw": "30 kW", "40kw": "40 kW", "50kw": "50 kW liquid", "50kwa": "50 kW air" };
+const KW = { "30kw": 30, "40kw": 40, "50kw": 50, "50kwa": 50 };
+for (const sku of SKUS) {
+  const s = summary[sku], d = detail[sku], kw = KW[sku], path = `docs/bom-${sku}.md`;
+  const secs = Object.entries(d.sec).sort(([a], [b]) => (SECTION_ORDER.indexOf(a) + 1 || 99) - (SECTION_ORDER.indexOf(b) + 1 || 99));
+  const cn = (L) => { const r = d.parts.get(L.key); return L.qty * r.u10 * r.cn; };
+  const secRows = secs.map(([k, S]) => ({ k, title: SECTION_TITLE[k] ?? "Unassigned (no sheet section)", parts: S.parts, lines: S.lines.size, c10: S.cost10, cn: [...S.lines.values()].reduce((a, L) => a + cn(L), 0), S }));
+  const mech10 = d.mech.reduce((a, [, q, pr]) => a + q * pr * 0.87, 0), mechCN = d.mech.reduce((a, [dd, q, pr]) => a + q * pr * 0.87 * cnMech(dd), 0);
+  const total10 = secRows.reduce((a, r) => a + r.c10, 0) + mech10;
+  const board = (b) => secRows.filter((r) => r.k.startsWith(`${b}:`)).reduce((a, r) => a + r.parts, 0);
+  const counts = {}; for (const r of d.rows) counts[r.status] = (counts[r.status] ?? 0) + 1;
+  const review = d.rows.filter((r) => r.status === "REVIEW");
+  const custom = d.rows.filter((r) => r.status === "CUSTOM");
+  const ov = skuOverrides[sku] ?? {};
+  const ovRows = [...new Map(Object.entries(ov).filter(([, o]) => o.mpn || o.price1k).map(([ref, o]) => {
+    const r = d.rows.find((x) => x.refs.includes(ref));
+    return [o.mpn ?? ref, { mpn: o.mpn ?? r?.mpn ?? ref, refs: Object.entries(ov).filter(([, x]) => (x.mpn ?? "") === (o.mpn ?? "")).map(([k]) => k), u10: r?.u10, note: o.note ?? o.desc ?? r?.desc ?? "" }];
+  })).values()];
+  // per-designator override records (T1A / T1B …) are one part on the page
+  const merged = [...d.rows.reduce((m, r) => { const k = `${r.mpn}|${r.u10}`; const x = m.get(k); if (x) { x.qty += r.qty; x.ext10 += r.ext10; } else m.set(k, { ...r }); return m; }, new Map()).values()];
+  const top = merged.sort((a, b) => b.ext10 - a.ext10).slice(0, 15);
+  const pie = [...secRows.map((r) => [r.title, r.c10]), ["Mechanics, thermal and assembly", mech10]].sort((a, b) => b[1] - a[1]);
+  const pg = [masthead(path), `
+> [!NOTE]
+> **Purpose** — the complete bill of materials of the **${PAGE[sku]} module**: what it costs, where the money goes by schematic
+> section, the parts that make this SKU different, and every line item with its sourcing status. **Generated by
+> \`calculations/cost/bom-gen.mjs\` on every battery run — do not hand-edit.** Machine-readable lines: \`calculations/out/bom-${sku}.csv\`.
+
+## At a glance
+
+| | |
+|---|---|
+| **Build cost @10k** (India basis) | **₹${inr(s.g10k)}** · ₹${inr(s.g10k / kw)} / kW |
+| **China RFQ target @10k** (E69f) | **₹${inr(s.g10kCN)}** · ₹${inr(s.g10kCN / kw)} / kW — landed targets, not quotes |
+${s.s2U !== null ? `| **2U construction scenario** (E69e) | ₹${inr(s.s2U)} · China target ₹${inr(s.s2UCN)} — flagged estimate, not the design basis |\n` : ""}| **1k · 5k · 100 pcs** | ₹${inr(s.grand)} · ₹${inr(s.g5k)} · ₹${inr(s.g100)} |
+| **Red-line / stretch** | ₹${inr(s.red)} / ₹${inr(s.stretch)} → ${verdict(s)} |
+| **BOM lines · placed parts** | ${s.nLines} lines · ${inr(board("acdc") + board("dcdc") + board("card"))} parts (AC-DC ${inr(board("acdc"))} · DC-DC ${inr(board("dcdc"))} · control card ${inr(board("card"))}) |
+| **Built to our drawings** | ${custom.length} custom lines — specifications on the [${PAGE[sku]} magnetics page](magnetics-${sku}.md) |
+| **Open sourcing decisions** | ${review.length} REVIEW line${review.length === 1 ? "" : "s"} |
+
+## Where the money goes
+
+\`\`\`mermaid
+pie showData title ${PAGE[sku]} module — ₹ @10k by section
+${pie.filter(([, v]) => v >= 1).map(([t, v]) => `  "${t}" : ${Math.round(v)}`).join("\n")}
+\`\`\`
+
+| Section (schematic sheet) | Parts | Lines | ₹ @10k | Share | China target ₹ |
+|---|---:|---:|---:|---:|---:|
+${secRows.map((r) => `| ${r.title} | ${r.parts} | ${r.lines} | ${inr(r.c10)} | ${f(100 * r.c10 / total10, 1)} % | ${inr(r.cn)} |`).join("\n")}
+| Mechanics, thermal and assembly | — | ${d.mech.length} | ${inr(mech10)} | ${f(100 * mech10 / total10, 1)} % | ${inr(mechCN)} |
+| **Module** | | | **${inr(total10)}** | 100 % | **${inr(secRows.reduce((a, r) => a + r.cn, 0) + mechCN)}** |
+
+> [!TIP]
+> Sections follow the release sheets, so a line here is found on the sheet of the same name. The small difference against the
+> headline figure is the gate-bias transformer set, which is priced at 1k only.
+
+## Top cost drivers
+
+| # | Part | What it is | Qty | ₹ / unit @10k | ₹ @10k | China target ₹ | Status |
+|---:|---|---|---:|---:|---:|---:|---|
+${top.map((r, i) => `| ${i + 1} | \`${r.mpn}\` | ${trim(r.desc, 90)} | ${r.qty} | ${inr(r.u10)} | **${inr(r.ext10)}** | ${inr(r.ext10 * r.cn)} | ${r.status} |`).join("\n")}
+
+## What is specific to this SKU
+
+${ovRows.length ? `These lines replace the shared-cell default on the ${PAGE[sku]} module (\`skuOverrides\` in \`parts-db.mjs\`); everything else is the common design.
+
+| Part | Where | ₹ / unit @10k | Why this part |
+|---|---|---:|---|
+${ovRows.map((o) => `| \`${o.mpn}\` | ${cell(o.refs.slice(0, 6).join(" · "))}${o.refs.length > 6 ? " …" : ""} | ${o.u10 != null ? inr(o.u10) : "—"} | ${trim(o.note, 160)} |`).join("\n")}` : "The 30 kW module is the reference build: every line is the shared-cell default, apart from the per-SKU values the cells take as parameters."}
+
+## Line items by section
+
+${secRows.map((r) => {
+  const lines = [...[...r.S.lines.values()].reduce((m, L) => { const p = d.parts.get(L.key), k = `${p.mpn}|${p.u10}`;
+    const x = m.get(k); if (x) { x.L.qty += L.qty; x.L.refs.push(...L.refs); } else m.set(k, { L: { ...L, refs: [...L.refs] }, r: p }); return m; }, new Map()).values()]
+    .sort((a, b) => b.L.qty * b.r.u10 - a.L.qty * a.r.u10);
+  return `<details><summary><b>${r.title}</b> — ₹${inr(r.c10)} @10k · ${r.parts} parts · ${r.lines} lines</summary>
+
+| Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
+|---|---|---|---:|---:|---:|---|---|
+${lines.map(({ L, r: p }) => `| \`${p.mpn}\` | ${trim(p.desc)} | ${cell(L.refs.slice(0, 8).join(" "))}${L.qty > Math.min(8, L.refs.length) ? " …" : ""} | ${L.qty} | ${inr(p.u10)} | ${inr(L.qty * p.u10)} | ${p.lcsc || "—"} | ${p.status} |`).join("\n")}
+
+</details>`;
+}).join("\n\n")}
+
+## Mechanics, thermal and assembly
+
+| Item | Qty | ₹ @1k | ₹ @10k | China target ₹ |
+|---|---:|---:|---:|---:|
+${d.mech.map(([dd, q, pr]) => `| ${trim(dd, 140)} | ${q} | ${inr(q * pr)} | ${inr(q * pr * 0.87)} | ${inr(q * pr * 0.87 * cnMech(dd))} |`).join("\n")}
+| **Total** | | **${inr(d.mech.reduce((a, [, q, pr]) => a + q * pr, 0))}** | **${inr(mech10)}** | **${inr(mechCN)}** |
+${d.mech2U ? `
+<details><summary><b>2U construction scenario lines</b> (E69e — estimate, not the design basis)</summary>
+
+| Item | Qty | ₹ @1k | ₹ @10k |
+|---|---:|---:|---:|
+${d.mech2U.map(([dd, q, pr]) => `| ${trim(dd, 140)} | ${q} | ${inr(q * pr)} | ${inr(q * pr * 0.87)} |`).join("\n")}
+
+</details>
+` : ""}
+## Sourcing status
+
+| Status | Lines | Meaning |
+|---|---:|---|
+${Object.keys(STATUS_BADGE).filter((k) => counts[k]).map((k) => `| ![${k}](https://img.shields.io/badge/-${k.replace(/-/g, "--")}-${STATUS_BADGE[k]}?style=flat-square) | ${counts[k]} | ${STATUS_MEANS[k]} |`).join("\n")}
+${review.length ? `
+**Open REVIEW lines:** ${review.map((r) => `\`${r.mpn}\``).join(" · ")} — each carries its action note in \`lcsc-map.mjs\`.` : ""}
+
+Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family roll-up and ₹ / kW ladder: [BOM & cost](bom-cost.md).
+
+${footer(path)}`];
+  writeFileSync(join(ROOT, path), pg.join("\n") + "\n");
+}
+console.log(`→ docs/bom-{${SKUS.join(",")}}.md (per-SKU pages)`);
+
 console.log(`\n→ docs/bom-cost.md, calculations/out/bom-*.csv${anyUnmatched ? "  (FIX UNMATCHED!)" : "  (all components matched ✓)"}`);

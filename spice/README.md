@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
@@ -38,10 +38,10 @@ flowchart LR
 |---|---|---|
 | `double-pulse/dpt-run.mjs` | device-edge truth — overshoot, dv/dt, Eon/Eoff across Rg, current, voltage, loop, snubber and clamp sweeps; froze the E5/E6 gate networks and re-selected fsw | `dpt-*-metrics.csv`, waveform plots |
 | `pfc/pfc-phase-run.mjs` | 3-φ line-cycle behaviour at averaged-switch fidelity: THD-40, midpoint balance, phase loss, precharge / discharge sizing | `pfc-phase-runs.csv` |
-| `llc/llc-run.mjs` | **per-SKU, power-solved** 3-φ LLC with body diodes and the star held at mid-bus: 14 corners (tolerance, mismatch, gain-worst, nominal), an internal-short race and a dead short; **physicality guard** (legs in rails) and **tank fingerprint** | `<sku>/llc-stress.csv` · `llc-stress-summary.json` · `plots/llc-worst-corner.svg` |
-| `llc/sp-transition.mjs` | why hard bank paralleling is banned (205 A at a 2 V mismatch) → E12 pre-insertion | `sp-transition.csv` |
+| `llc/llc-run.mjs` | **per-SKU, power-solved** full-bridge LLC (E67) with body diodes: 12 stress corners (tolerance, gain-worst, high-line bus floor, nominal) plus the 20-point envelope from `llc-envelope.mjs`, an internal-short race and a dead short; **physicality guard** (legs in rails) and **tank fingerprint** | `<sku>/llc-stress.csv` · `llc-stress-summary.json` · `plots/llc-worst-corner.svg` |
+| `llc/sp-transition.mjs` | why banks are never paralleled across a voltage difference (205 A at a 2 V mismatch) — the reason the E67 S/P relays close only in standby at 0 A | `sp-transition.csv` |
 | `aux/aux-flyback.mjs` | aux start, regulation and cross-regulation at 342 / 560 / 850 V per product SKU, including the current-sense clamp lesson | `aux-flyback.csv` |
-| `protection/ct-frontend.mjs` | AVMID stability and the per-SKU resonant and line CT chains at the E60 burdens, thresholds and race peaks | `ct-frontend.csv` |
+| `protection/ct-frontend.mjs` | AVMID stability and the per-SKU resonant and line CT chains at the E67 burdens, thresholds and race peaks | `ct-frontend.csv` |
 | `protection/prechg-disch.mjs` | precharge, discharge and bank bleed per product SKU against F.20 / F.21 / F.21b | `prechg-disch-sku.csv` |
 
 ```bash
@@ -67,7 +67,7 @@ switching-energy band is carried through every downstream decision and closes at
 ---
 
 <div align="center">
-<sub><a href="../calculations/README.md">← Calculations & Gates</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../docs/component-selection.md">Component Selection →</a></sub>
+<sub><a href="../calculations/README.md">← Calculations & Gates</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../docs/bom-cost.md">BOM & Cost Roll-up →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

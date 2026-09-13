@@ -113,7 +113,7 @@ md.push(`## Joint schedule (all SKUs)
 | Joint | Hardware | Torque | Acceptance |
 |---|---|---:|---|
 | B2B stud pillars DCP / DCN / PE | M8 × 1.25, Belleville + flat washer | 12 N·m | ≤ 50 µΩ each (EOL milliohm check) |
-| Relay lugs (K_SER / K_PAR / K_OUT) | M6 | 8 N·m | ≤ 80 µΩ |
+| Relay lugs (KSER / KPARA / KPARB) | M6 | 8 N·m | ≤ 80 µΩ |
 | Shunt terminals | M8, Kelvin taps untouched | 12 N·m | calibration validates |
 | AC input studs | M8 | 12 N·m | ≤ 60 µΩ |
 | Choke centre bolt (D1 stacks) | M6 + silicone pad; ≥ 3 kg stacks add two-point banding | first article | leads are soldered flying leads — the old M5 lug row predated D1 rev B |

@@ -2,7 +2,7 @@
 // footprint-audit.mjs — E61: what package each component on the release sheets names, and whether a land
 // exists for it. Layout is parked (E36), so this does not fail on the open queue; it fails only if the queue
 // GROWS — a part added without a package name, or a value-row MPN whose package disagrees with its land.
-// Numbers feed docs/footprints-to-draw.md. Run: node calculations/footprint-audit.mjs
+// Run: node calculations/footprint-audit.mjs
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

@@ -13,7 +13,6 @@
     "designator": "C1R0",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -31,7 +30,6 @@
     "designator": "C1R1",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -49,7 +47,6 @@
     "designator": "C1R2",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -67,7 +64,6 @@
     "designator": "C1R3",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -85,7 +81,6 @@
     "designator": "C1R4",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -103,7 +98,6 @@
     "designator": "C1R5",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -121,7 +115,6 @@
     "designator": "C1R6",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -139,7 +132,6 @@
     "designator": "C1R7",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -157,7 +149,6 @@
     "designator": "C1R8",
     "value": "33nF",
     "block_name": "TANK",
-    "search_query": "PP-33n-1200V 33 nF 1200 V PP resonant-duty film",
     "pins": [
      {
       "pin_number": 1,
@@ -175,7 +166,6 @@
     "designator": "L1R",
     "value": "IND-LR-E70-30",
     "block_name": "TANK",
-    "search_query": "IND-LR-E70-30 D2-30 rev F",
     "pins": [
      {
       "pin_number": 1,
@@ -193,7 +183,6 @@
     "designator": "T1A",
     "value": "XFMR-LLC-CELL-2E70-30",
     "block_name": "TANK",
-    "search_query": "XFMR-LLC-CELL-2E70-30 D3-30 rev D",
     "pins": [
      {
       "pin_number": 1,
@@ -226,7 +215,6 @@
     "designator": "T1B",
     "value": "XFMR-LLC-CELL-2E70-30",
     "block_name": "TANK",
-    "search_query": "XFMR-LLC-CELL-2E70-30 D3-30 rev D",
     "pins": [
      {
       "pin_number": 1,
@@ -259,7 +247,6 @@
     "designator": "CT1",
     "value": "CT-RES-1:100-100A",
     "block_name": "TANK",
-    "search_query": "CT-RES-1:100-100A resonant CT 1:100, 100 A rms class, 20–250 kHz, pass-through —",
     "pins": [
      {
       "pin_number": 1,
@@ -277,7 +264,6 @@
     "designator": "R1CT",
     "value": "360m",
     "block_name": "TANK",
-    "search_query": "R2512-0R47-1W-1% 0.47 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,
@@ -295,7 +281,6 @@
     "designator": "R1CF",
     "value": "1k",
     "block_name": "TANK",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -313,7 +298,6 @@
     "designator": "C1CF",
     "value": "220pF",
     "block_name": "TANK",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -331,7 +315,6 @@
     "designator": "D1CP",
     "value": "1N4148WS",
     "block_name": "TANK",
-    "search_query": "1N4148WS clamp diode SOD-323",
     "pins": [
      {
       "pin_number": 2,
@@ -349,7 +332,6 @@
     "designator": "D1CN",
     "value": "1N4148WS",
     "block_name": "TANK",
-    "search_query": "1N4148WS clamp diode SOD-323",
     "pins": [
      {
       "pin_number": 2,
@@ -367,7 +349,6 @@
     "designator": "U1W",
     "value": "TLV3202-class",
     "block_name": "TANK",
-    "search_query": "TLV3202-class dual 40 ns push-pull comparator SOIC/VSSOP-8, 2.7–5.5 V",
     "pins": [
      {
       "pin_number": 1,
@@ -415,7 +396,6 @@
     "designator": "D1W",
     "value": "BAT54A",
     "block_name": "TANK",
-    "search_query": "BAT54A dual Schottky SOT-23 common anode",
     "pins": [
      {
       "pin_number": 1,
@@ -438,7 +418,6 @@
     "designator": "C1WB",
     "value": "100nF",
     "block_name": "TANK",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -458,7 +437,6 @@
     "designator": "D1A1",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -476,7 +454,6 @@
     "designator": "D1A1P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -494,7 +471,6 @@
     "designator": "D1A2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -512,7 +488,6 @@
     "designator": "D1A2P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -530,7 +505,6 @@
     "designator": "D1A3",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -548,7 +522,6 @@
     "designator": "D1A3P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -566,7 +539,6 @@
     "designator": "D1A4",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -584,7 +556,6 @@
     "designator": "D1A4P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-A",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -604,7 +575,6 @@
     "designator": "D1B1",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -622,7 +592,6 @@
     "designator": "D1B1P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -640,7 +609,6 @@
     "designator": "D1B2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -658,7 +626,6 @@
     "designator": "D1B2P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -676,7 +643,6 @@
     "designator": "D1B3",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -694,7 +660,6 @@
     "designator": "D1B3P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -712,7 +677,6 @@
     "designator": "D1B4",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -730,7 +694,6 @@
     "designator": "D1B4P2",
     "value": "SICJBS-1200-40",
     "block_name": "RECT-B",
-    "search_query": "SICJBS-1200-40 SiC JBS 1200 V 40 A TO-247-2",
     "pins": [
      {
       "pin_number": 2,
@@ -750,7 +713,6 @@
     "designator": "RF11H",
     "value": "2k",
     "block_name": "F11-WINDOW",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -768,7 +730,6 @@
     "designator": "RF11M",
     "value": "2.61k",
     "block_name": "F11-WINDOW",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -786,7 +747,6 @@
     "designator": "RF11L",
     "value": "2k",
     "block_name": "F11-WINDOW",
-    "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -804,7 +764,6 @@
     "designator": "CF11H",
     "value": "100nF",
     "block_name": "F11-WINDOW",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,
@@ -822,7 +781,6 @@
     "designator": "CF11L",
     "value": "100nF",
     "block_name": "F11-WINDOW",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
     "pins": [
      {
       "pin_number": 1,

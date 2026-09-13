@@ -6,12 +6,12 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E69-f2b705?style=for-the-badge" alt="decision register E1 to E69"/>
+  <img src="https://img.shields.io/badge/decision_register-E1–E70-f2b705?style=for-the-badge" alt="decision register E1 to E70"/>
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 4536 points, 0 failures"/>
   <img src="https://img.shields.io/badge/independent_checks-227%2F227-2ea44f?style=for-the-badge" alt="independent verifier 227 of 227"/>
   <img src="https://img.shields.io/badge/firmware-60%2F60_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 60 of 60"/>
@@ -45,7 +45,7 @@ resistor. Above the modules there are exactly two products (E55).
 | **Cooling** | air · 2 fans | air · 3 fans | sealed coldplates | air · 4 fans | per module | per module |
 | **₹ @10k** (India basis) | 30,033 | 34,616 | 40,481 | 38,404 | 76,808 (air) | 1,15,212 (air) |
 | **₹ / kW** | 1,001 | 865 | 810 | **768** | 768 | 768 |
-| **China RFQ target ₹ @10k** (E69f) | 24,640 | 28,320 | 33,183 | 31,399 | 62,798 (air) | 94,197 (air) |
+| **China RFQ target ₹ @10k** (E69f) | 24,639 | 28,319 | 33,182 | 31,398 | 62,796 (air) | 94,194 (air) |
 
 ```mermaid
 xychart-beta
@@ -65,12 +65,12 @@ xychart-beta
 | THD | ≤ 5 % (stretch 3 %) | **0.59–1.05 %** at full power, 2.55 % at 25 % load (line-cycle control simulation) | [simulation report](docs/simulation-report.md) |
 | Efficiency | peak ≥ 97 % | **peak 98.11–98.30 %** · full power at 400 VAC **96.62 / 96.70 / 96.56 / 96.48 %** (output diode included; InfyPower states > 96 %) | [thermal report](docs/thermal-report.md) |
 | Thermal envelope | full power to +55 °C | 4,536 grid points (1,134 per module) with **0 violations and 0 folds**; worst Tj **139 °C** against the 150 °C ceiling | [thermal report](docs/thermal-report.md) |
-| Environment | match the market | **−30…+75 °C** (full power to 55 °C), ≤ 95 % RH non-condensing, ≤ 2000 m, conformal coating, IP55 fans | [benchmark §7](docs/competitive-benchmark-e51.md) |
+| Environment | match the market | **−30…+75 °C** (full power to 55 °C), ≤ 95 % RH non-condensing, ≤ 2000 m, conformal coating, IP55 fans | [teardown benchmark](docs/benchmark-infypower-teardown.md) |
 | Accuracy | ±0.5 % V · ±1 % I | **±0.18 % / ±0.2 %** after the mandatory 2-point EOL calibration (10k-sample Monte-Carlo) | [verification matrix](docs/verification-matrix.md) |
 | Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak (E69); DESAT response 1.44 µs against a 2 µs SiC withstand | [current coordination](docs/current-coordination.md) |
-| Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet | [conductor selection](docs/conductor-selection.md) |
+| Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet | [magnetics hub](docs/magnetics.md) |
 | EMI | CISPR-class conducted pre-compliance | InfyPower star-X2 filter (E68b): DM margin **+32.9 / +30.6 / +28.7 dB**, CM +8 dB at 200 pF switch-node capacitance; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
-| Build cost at 10k | red-line ₹25k / 33k / 43k | **₹30,033 / 34,616 / 40,481 / 38,404** India basis · **₹24,640 / 28,320 / 33,183 / 31,399** China RFQ target | [BOM & cost](docs/bom-cost.md) |
+| Build cost at 10k | red-line ₹25k / 33k / 43k | **₹30,033 / 34,616 / 40,481 / 38,404** India basis · **₹24,639 / 28,319 / 33,182 / 31,398** China RFQ target | [BOM & cost](docs/bom-cost.md) |
 
 ## 🏗️ Architecture
 
@@ -119,6 +119,8 @@ flowchart LR
   P --> I["Clean-room verifier<br/>227 independent checks"]
   I --> D["Docs and footprints<br/>docs-lint · footprint-audit"]
   D --> F["Firmware<br/>host_sim 60/60 ASan/UBSan"]
+  P --> G["Generated pages<br/>4 module BOMs · 4 module magnetics<br/>from gate evidence"]
+  G --> D
   style I stroke:#2ea44f,stroke-width:2.5px
   style P stroke:#d19a00,stroke-width:2px
 ```
@@ -128,7 +130,7 @@ flowchart LR
 | `review-checks.mjs` — every external-review and audit closure, as assertions | **141 pass** |
 | `kicad5-verify.mjs` — label-level check of the release schematics | **6,901 / 6,901 labels** across 6 targets |
 | SPICE suites — power-solved LLC per SKU, CT front-ends, precharge / discharge, aux flyback | all pass · [toolchain](docs/simulation-toolchain.md) |
-| `magnetics-rfq-audit.mjs` — every magnetic drawing complete enough to order | 0 missing fields |
+| `magnetics-rfq-audit.mjs` — every magnetic drawing on the module pages complete enough to order (in run-all since E70) | 0 missing fields · 25 drawings |
 
 <details>
 <summary><b>The audit trail</b> — every layer earned its place by catching something real</summary>
@@ -194,7 +196,7 @@ flowchart LR
 | MTBF (parts count, 40 °C, E69 classifier) | 422 kh | 402 kh | 396 kh | 394 kh |
 | RATING strap | 0 Ω | 1 k | 10 k | 15 k |
 | **BOM @10k · ₹/kW** | **₹30,033 · 1,001** | **₹34,616 · 865** | **₹40,481 · 810** | **₹38,404 · 768** |
-| China RFQ target @10k (E69f) | ₹24,640 | ₹28,320 | ₹33,183 | ₹31,399 |
+| China RFQ target @10k (E69f) | ₹24,639 | ₹28,319 | ₹33,182 | ₹31,398 |
 
 </details>
 
@@ -269,19 +271,18 @@ stateDiagram-v2
 
 ## 📚 Documentation
 
-Start at the **[documentation hub](docs/README.md)** — 51 documents in five families, each with a banner, a
+Start at the **[documentation hub](docs/README.md)** — 37 documents in five families, with one BOM page and one magnetics page per module, each with a banner, a
 status badge and next/previous navigation.
 
 | Start here | To understand |
 |---|---|
 | [Platform architecture](docs/architecture.md) | the module in one read |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E69, with provenance and invalidator |
+| [Decision register](docs/assumptions.md) | every frozen decision E1–E70, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
-| [Magnetics drawings](docs/magnetics.md) · [RFQ pack](docs/magnetics-manufacturing-pack.md) | the custom parts and how to buy them |
+| [Magnetics hub](docs/magnetics.md) · module pages [30](docs/magnetics-30kw.md) · [40](docs/magnetics-40kw.md) · [50 L](docs/magnetics-50kw.md) · [50 A](docs/magnetics-50kwa.md) | every custom magnetic — drawing, gate proof, build, tests, cost |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
 | [EVT test plan](docs/evt-plan.md) | the bench campaign T-00…T-41 |
-| [BOM & cost](docs/bom-cost.md) | the generated cost roll-up and ₹/kW ladder |
-| [Prototype fast path](docs/prototype-fast-path.md) | catalog parts that shorten the first build |
+| [BOM & cost](docs/bom-cost.md) · module BOMs [30](docs/bom-30kw.md) · [40](docs/bom-40kw.md) · [50 L](docs/bom-50kw.md) · [50 A](docs/bom-50kwa.md) | the generated cost roll-up, China targets, ₹/kW ladder and every line item |
 
 <a name="honesty"></a>
 
@@ -302,7 +303,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 ## 🗺️ Roadmap
 
-- [x] Frozen decision register E1–E69
+- [x] Frozen decision register E1–E70
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
 - [x] Release schematics — six KiCad-5 targets, 6,901 / 6,901 labels, ten board PDFs
 - [x] InfyPower architecture and BOM clone — full-bridge LLC, two output modes, output diode (E67); clip mount, star-X2 filter, film-only banks (E68); right-sized dies, fault-pulse gate, China cost column (E69)
@@ -312,7 +313,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 - [ ] RFQ round 1 (SiC with the IDM acceptance lines, magnetics, relays; India and China suppliers) → cost closure
 - [ ] Remaining clone levers: drive clone (approved, deferred), flat-core D1 + 2U mechanics, 900 V aux
 - [ ] PCB layout under the sandwich envelope
-- [ ] Prototype build ([fast path](docs/prototype-fast-path.md)) → EVT → model recalibration
+- [ ] Prototype build (prototype routes on each module magnetics page) → EVT → model recalibration
 - [ ] Compliance campaign → certification
 
 ---
@@ -320,5 +321,5 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -1,5 +1,5 @@
 // design-basis.mjs — Phase 1/2 preliminary sizing for the 30/60/120 kW monoblock platform.
-// Every number quoted in docs/design-basis-report.md sections B, D, E, F, L traces to this file.
+// The Phase-1 design basis (input currents, DC link, LLC window, device counts) — its outputs feed loss-budget and the register.
 // Status: ANALYTICAL ESTIMATE. No SPICE has been run. Component prices are placeholders pending RFQ.
 // Run: node calculations/design-basis.mjs   (writes CSVs to calculations/out/)
 

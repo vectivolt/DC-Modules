@@ -31,9 +31,12 @@ node calculations/stress-audit.mjs
 node calculations/magnetics/temp-critique.mjs
 node calculations/magnetics/conductor-audit.mjs
 node calculations/magnetics/magnetics-envelope.mjs
-node calculations/magnetics/mag-sync.mjs
 node calculations/system/fault-energy.mjs
 node calculations/system/current-coordination.mjs
+# E70: the four module magnetics pages are written from the gate evidence above; mag-sync and the RFQ audit then check them
+node calculations/magnetics/mag-docs.mjs
+node calculations/magnetics/mag-sync.mjs
+node calculations/magnetics-rfq-audit.mjs
 node calculations/system/standby-budget.mjs > /dev/null
 echo "STANDBY BUDGET CONSISTENT"
 node calculations/reliability/mtbf-budget.mjs > /dev/null

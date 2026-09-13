@@ -1,7 +1,7 @@
-* bank-bleed: 0.000705 F from 525 V into 8800 ohm
-CB p 0 0.000705 ic=525
+* bank-bleed: 0.0000264 F from 500 V into 8800 ohm
+CB p 0 0.0000264 ic=500
 RD p 0 8800
-.tran 0.00504075 20.163 0 0.0100815 uic
+.tran 0.00034848 1.39392 0 0.00069696 uic
 .control
 set filetype=ascii
 run

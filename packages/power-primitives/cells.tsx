@@ -1,5 +1,5 @@
 // cells.tsx v4 — schematic-complete parameterized cells for the two-board (AC-DC / DC-DC) split.
-// v4 (2026-09-05, R2 review closure — docs/design-review-production-r2.md, register E32/E26-revC):
+// v4 (2026-09-05, R2 review closure — register E32/E26-revC):
 //   CB-16 resonant CT burden 33→2.0 Ω 2512 (46 A rms/1:100 scaling) · CB-22 Cr 44→46 nF (rev D2 tank)
 //   CB-18 Rail3V3 sync-buck cell replaces the 15 V-fed LDO (fitted per board — CB-17)
 //   CB-19/20 aux rev C: 110 W all SKUs (Lp 345 µH, Ip 3.2 A @ 0.31 Ω, 65 kHz, D4 rev C), 400 V
@@ -11,7 +11,7 @@
 // PCB layout intentionally NOT tuned (customer directive 2026-09-04): pcb coords are coarse grid
 // only so builds succeed; schematic completeness + BOM accuracy are the deliverable.
 // v3 (2026-09-05) closes the production-review blockers CB-1…CB-15 + HR list
-// (docs/design-review-production.md, fix log in its appendix). Key deltas vs v2:
+// (R1 audit). Key deltas vs v2:
 //   CB-12 driver CLAMP wired to gate · HR-6 PWM pulldowns · en is now a parameter (CB-10 chain)
 //   CB-9 Vienna per-phase film commutation caps · E28 LLC node RC snubbers deleted (CV²f),
 //   Vienna snubber 470p→100p 2 W · HR-3 clamp bleeder 5 W axial
@@ -28,10 +28,10 @@
 // MOSFET reported a 10.0 x 2.4 mm extent against a real 15.9 x 5.0 mm package. Overlap checking
 // against pad extents is checking the wrong thing, so placement could not be trusted at all.
 //
-// These are the SAME envelopes already used by calculations/floorplan-budget.mjs and encoded in
+// These are the SAME envelopes encoded in
 // the generated land-pattern names (CAP-TH_L26.5-W11.0-P22.50 states body 26.5 x 11.0 on a 22.5
-// pitch), so nothing here is a new number. The toroid rule is the one in docs/footprints-to-draw.md:
-// finished OD = core OD + 2x4 mm winding, courtyard = OD + 2 mm.
+// pitch), so nothing here is a new number. Toroid rule: finished OD = core OD + 2x4 mm winding,
+// courtyard = OD + 2 mm.
 //
 // Pad geometry is deliberately NOT changed here. Where a body is much larger than its pad span
 // (MOV disc on a 10 mm pitch, fuse holder on 30 mm) the courtyard now states the truth and the

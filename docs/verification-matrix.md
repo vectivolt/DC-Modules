@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E61-f2b705?style=flat-square" alt="revision E61"/>
+  <img src="https://img.shields.io/badge/rev-E70-f2b705?style=flat-square" alt="revision E70"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
   <img src="https://img.shields.io/badge/verify--independent-227%2F227-2ea44f?style=flat-square" alt="verify-independent: 227/227"/>
 </p>
@@ -23,7 +23,7 @@
 | Gate | What it checks | Result |
 |---|---|---|
 | `envelope-grid` | 4 SKUs × 6 input voltages × 8 output voltages × 7 loads × 3 temperatures (E67 LOW/HIGH modes) | **4,536 points · 0 failures · max Tj 139 °C** |
-| `monte-carlo` | tank gain, choke lots, voltage and current chains, lane sharing, dead-time | **6 batches × 10k samples · pass** |
+| `monte-carlo` | tank gain per SKU on the E67 tanks, choke lots, voltage and current chains, full-bridge dead time | **8 batches × 10k samples · pass** |
 | `fsm-sim` + `host_sim` | fault scenarios · C firmware under ASan/UBSan | **26 / 26 · 60 / 60** |
 | `stress-audit` | every device, magnetic, pulse part and protection class against its acceptance line | **127 checks · clean** (incl. the E69a PFC die classes and the E67 grid-shape assert) |
 | `current-coordination` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux, **per-die fault pulse ≤ 0.8 × IDM (E69a-2)**, film-bank ripple (E68c), output diode | **72 checks · clean** |
@@ -32,7 +32,9 @@
 | `verify-independent` | clean-room recompute from its own netlist parser and physics | **227 / 227** |
 | `review-checks` | every audit and external-review closure as an assertion | **141 pass** |
 | `kicad5-verify` | release-sheet labels against the netlists | **6,901 / 6,901 · 6 targets** |
-| `docs-lint` | links, anchors, page chrome, diagram types | **clean** |
+| `docs-lint` | links, anchors, page chrome, diagram types | **clean · 37 documents** |
+| `magnetics-rfq-audit` | every magnetic drawing on the module pages carries every field a winder quotes against (E70: in run-all) | **0 missing · 25 drawings** |
+| `bom-gen` · `mag-docs` | the per-module BOM and magnetics pages, generated from the built boards and the gate evidence (E70) | **4 + 4 pages** |
 | `footprint-audit` | unnamed packages and MPN / land conflicts on the release sheets | **0 · 0 — queue closed (E64), ratchet at zero** |
 | `standby-budget` | drawn HV passive network vs the registered standby arithmetic and the ≤ 10 W target (E64) | **consistent · EVT measures** |
 | `mtbf-budget` | parts-count reliability prediction vs the registered table (E64) | **394–422 kh · consistent** (re-registered at E69 on the corrected classifier) |
@@ -95,7 +97,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | Driver channels | one `DriverCh` cell for all 7 channels per module — 3 Vienna + 4 full-bridge LLC since E67 (real NSI6611 map R4-2, DESAT series R R5-B, per-stage blank E60) |
 | BOM coverage | 0 unmatched designators; every class part carries a value-carrying order code; `bom-maturity` MATURE |
 | Supervisory logic | C99 FSM + CAN codec + group share law: **60 / 60** under ASan/UBSan |
-| PCB layout | **N** — out of scope by directive (E36); the layout phase reopens with the [floorplan basis](pcb-floorplan.md) |
+| PCB layout | **N** — out of scope: the design face ends at the audited KiCad-5 schematics (E36, E70) |
 
 ## 3. Simulation matrix
 
@@ -118,9 +120,9 @@ or specified, not yet executed · **N** not applicable at this phase.
 
 | Round | Verdict at review | Closure |
 |---|---|---|
-| **R1** adversarial ([record](design-review-production.md)) | NO — 15 critical | rev C, same day |
-| **R2** re-audit ([record](design-review-production-r2.md)) | NO — 7 new criticals inside the rev C fixes | rev D, same day; assertion suite began |
-| **R3** external PDF ([record](history/review-response-r3.md)) | "do not manufacture" on pin numbering | allocation regenerated from the datasheet |
+| **R1** adversarial audit | NO — 15 critical | rev C, same day |
+| **R2** re-audit | NO — 7 new criticals inside the rev C fixes | rev D, same day; assertion suite began |
+| **R3** external PDF | "do not manufacture" on pin numbering | allocation regenerated from the datasheet |
 | **E35 / E37 / E38 / E39** margin, interconnect, polarity, cabinet audits | 8 + 4 + 0 + 3 findings | same-day closure, permanent gates |
 | **R4–R8** external PDF rounds (register E45–E49) | ~40 claims per round, triaged against netlists and datasheets | every real defect fixed and gated, including one retraction of our own arithmetic (E49) |
 | **E51 / E58 / E60** magnetics recompute, temperature critique, current coordination | unbuildable windows, temperature-blind fits, trips below real peaks, non-physical LLC deck | re-issued constructions, computing gates |
@@ -145,7 +147,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | R14 | 480 V grid customers need 530 VAC input | M × M | product-owner decision — filter already X1 530 VAC / Y1 440 VAC / MOV 550 VAC; F.07 trip at 500 VAC and 21 V of bus headroom are the real work | open (decision) |
 | R15 | Sourcing restrictions on bias / isolation modules (Mornsun OFAC flag) | M × M | qualify MEAN WELL / RECOM / CUI-class second sources before volume | open |
 | R16 | BOM busbar line below the computed set at 40 / 50 kW (₹953 / ₹1,188 vs ₹810 / ₹850) | L × H | reconcile at the mechanical RFQ | open (cost) |
-| R17 | ~~Release sheets not layout-ready: 307 components named no package; 344 carried an MPN whose package differed from its land~~ | M × H | **resolved at E64** — every part names its package, the value map is land-aware, `footprint-audit` holds both counts at zero; the 392-instance C-number [read-back queue](lcsc-status.md#read-back-queue--named-candidates-without-a-c-number) is purchasing work, not a design gap | **resolved (E64)** |
+| R17 | ~~Release sheets not layout-ready: 307 components named no package; 344 carried an MPN whose package differed from its land~~ | M × H | **resolved at E64** — every part names its package, the value map is land-aware, `footprint-audit` holds both counts at zero; the C-number read-back list is purchasing work (REVIEW lines on each module BOM page), not a design gap | **resolved (E64)** |
 | R18 | ~~No series output blocking diode: reverse-battery and bus back-feed held by K_OUT isolation, the E12b matched-voltage make and mirror weld-check~~ | L × M | **resolved at E67** — DOUT (1600 V, 150 / 200 / 250 A class, InfyPower practice) is fitted on every SKU and K_OUT is retired; its loss is in the loss budget and its Tj in `current-coordination` | **resolved (E67)** |
 | R19 | Clip-mount Rth basis unproven: every Tj gate reads 0.8 / 0.65 K/W from `mount.mjs`, and the single-die decisions of E68a/E69a depend on it | H × M | EVT T-38 with a +15 % acceptance; a miss reopens the mount and restores paralleled dies where the grid folds | open (EVT) |
 | R20 | Right-sized SiC dies miss their pulsed-current line at RFQ (SG2M023120LJ IDM ≥ 265 A; 750 V 20 / 15 mΩ classes ≥ 210 / 260 A) | M × M | acceptance lines in `parts-db`; T-41 sample pulse test; revert path per SKU (two LLC dies / B3M010C075Z) priced | open (RFQ) |
@@ -159,5 +161,5 @@ The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).
 <div align="center">
 <sub><a href="simulation-report.md">← Simulation Report</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="evt-plan.md">EVT Test Plan →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E70 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

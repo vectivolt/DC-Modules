@@ -1,4 +1,4 @@
-// boards.tsx v4 — R2 review closure (docs/design-review-production-r2.md, E32):
+// boards.tsx v4 — R2 review closure (E32):
 //   CB-17/18 Rail3V3 buck per board (DC-DC had NO 3.3 V source; LDO was thermally impossible)
 //   CB-21 FLT_LLC → MCU-LLC pin 74 · HR-15 bank bleeders (2× DischargeCtl + FET + chains, pin 75)
 //   HR-17 4 fan ports + pins 80–83 at 120 kW · HR-19 dual S/P relays at 120 kW (matrix `dual`)
@@ -7,7 +7,7 @@
 // boards.tsx v3 — AC-DC and DC-DC board generators for the two-board sandwich architecture
 // (customer directive 2026-09-04; E17). Lanes/channels parameterized: 30 kW = 1, 60 kW = 2,
 // 120 kW = 4. Schematic-complete; PCB layout deliberately untuned.
-// v3 (2026-09-05) closes the production-review blockers (docs/design-review-production.md):
+// v3 (2026-09-05) closes the production-review blockers (R1):
 //   CB-1 X1-530/Y1-440 filter caps (parts-db) · CB-2 bank electrolytics 2-series strings (E29)
 //   CB-4 AGND–DGND single-point tie per board + DGND→PE soft RC · CB-8 KPRE → 2× line-rated
 //   power relays w/ mirror readback · CB-10 SafetyChain per board (WD + 3-input AND, E27)
