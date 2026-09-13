@@ -7,15 +7,6 @@
   "BLEEDERS"
  ],
  "net_style_overrides": {
-  "BKAM": "wire",
-  "BKBM": "wire",
-  "RBALTA_M": "wire",
-  "RBALBA_M": "wire",
-  "RBALTB_M": "wire",
-  "RBALBB_M": "wire",
-  "KOUT_M2": "wire",
-  "KPREA_B": "wire",
-  "KPREB_B": "wire",
   "RBDA_M": "wire",
   "RBDA_12": "wire",
   "RBDA_23": "wire",
@@ -33,93 +24,13 @@
  "net_class_overrides": {},
  "components": [
   {
-   "designator": "CBA0T",
+   "designator": "CFA0",
    "block_name": "BANK-A",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBA1T",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBA2T",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBA3T",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBA0B",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAM"
+     "signal_name": "RKAP"
     },
     {
      "pin_number": 2,
@@ -128,18 +39,18 @@
     }
    ],
    "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
-   "designator": "CBA1B",
+   "designator": "CFA1",
    "block_name": "BANK-A",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "BKAM"
+     "signal_name": "RKAP"
     },
     {
      "pin_number": 2,
@@ -148,18 +59,18 @@
     }
    ],
    "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
-   "designator": "CBA2B",
+   "designator": "CFA2",
    "block_name": "BANK-A",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "BKAM"
+     "signal_name": "RKAP"
     },
     {
      "pin_number": 2,
@@ -168,18 +79,18 @@
     }
    ],
    "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
-   "designator": "CBA3B",
+   "designator": "CFA3",
    "block_name": "BANK-A",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "BKAM"
+     "signal_name": "RKAP"
     },
     {
      "pin_number": 2,
@@ -188,332 +99,72 @@
     }
    ],
    "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
   },
   {
-   "designator": "CBB0T",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB1T",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB2T",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB3T",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB0B",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBM"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB1B",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBM"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB2B",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBM"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "CBB3B",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBM"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in, −40 °C category — 2-series string, 900 V vs ≤5",
-   "mpn": "ELH-470u450"
-  },
-  {
-   "designator": "RBALTA1",
+   "designator": "CFA4",
    "block_name": "BANK-A",
    "pins": [
     {
      "pin_number": 1,
      "name": "pin1",
+     "signal_name": "RKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFA5",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "LFA",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RBALTA_M"
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "IND-BANK-30",
+   "query": "IND-BANK-30 D8-30 bank filter inductor ",
+   "mpn": "IND-BANK-30"
   },
   {
-   "designator": "RBALTA2",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "RBALTA_M"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "RBALBA1",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKAM"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RBALBA_M"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "RBALBA2",
-   "block_name": "BANK-A",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "RBALBA_M"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKAN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "RBALTB1",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RBALTB_M"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "RBALTB2",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "RBALTB_M"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBM"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "RBALBB1",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "BKBM"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RBALBB_M"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "RBALBB2",
-   "block_name": "BANK-B",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "RBALBB_M"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "BKBN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
-  },
-  {
-   "designator": "CBAF",
+   "designator": "CEA0",
    "block_name": "BANK-A",
    "pins": [
     {
@@ -528,12 +179,172 @@
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "PP-1u-1100 1 µF 1100 V film ",
-   "mpn": "PP-1u-1100"
+   "value": "330uF",
+   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-330u550"
   },
   {
-   "designator": "CBBF",
+   "designator": "CEA1",
+   "block_name": "BANK-A",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKAP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKAN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330uF",
+   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-330u550"
+  },
+  {
+   "designator": "CFB0",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB1",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB2",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB3",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB4",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "CFB5",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-630 2.2 µF 630 V PP film, ripple-rated ",
+   "mpn": "PP-2u2-630"
+  },
+  {
+   "designator": "LFB",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "IND-BANK-30",
+   "query": "IND-BANK-30 D8-30 bank filter inductor ",
+   "mpn": "IND-BANK-30"
+  },
+  {
+   "designator": "CEB0",
    "block_name": "BANK-B",
    "pins": [
     {
@@ -548,9 +359,29 @@
     }
    ],
    "nc_pins": [],
-   "value": "1uF",
-   "query": "PP-1u-1100 1 µF 1100 V film ",
-   "mpn": "PP-1u-1100"
+   "value": "330uF",
+   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-330u550"
+  },
+  {
+   "designator": "CEB1",
+   "block_name": "BANK-B",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "BKBP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "BKBN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330uF",
+   "query": "ELH-330u550 330 µF 550 V snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-330u550"
   },
   {
    "designator": "KSER",
@@ -575,22 +406,12 @@
      "pin_number": 4,
      "name": "B",
      "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "RELAY_FB_KSER"
     }
    ],
    "nc_pins": [],
-   "value": "HFE82V-M-CLASS",
-   "query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact ",
-   "mpn": "HFE82V-M-CLASS"
+   "value": "RELAY-PCB-120A-24V",
+   "query": "RELAY-PCB-120A-24V PCB power relay 120 A, 24 V coil, no mirror contact ",
+   "mpn": "RELAY-PCB-120A-24V"
   },
   {
    "designator": "KPARA",
@@ -615,22 +436,12 @@
      "pin_number": 4,
      "name": "B",
      "signal_name": "BKBP"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "RELAY_FB_KPARA"
     }
    ],
    "nc_pins": [],
-   "value": "HFE82V-M-CLASS",
-   "query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact ",
-   "mpn": "HFE82V-M-CLASS"
+   "value": "RELAY-PCB-120A-24V",
+   "query": "RELAY-PCB-120A-24V PCB power relay 120 A, 24 V coil, no mirror contact ",
+   "mpn": "RELAY-PCB-120A-24V"
   },
   {
    "designator": "KPARB",
@@ -655,342 +466,32 @@
      "pin_number": 4,
      "name": "B",
      "signal_name": "BKBN"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "RELAY_FB_KPARB"
     }
    ],
    "nc_pins": [],
-   "value": "HFE82V-M-CLASS",
-   "query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact ",
-   "mpn": "HFE82V-M-CLASS"
+   "value": "RELAY-PCB-120A-24V",
+   "query": "RELAY-PCB-120A-24V PCB power relay 120 A, 24 V coil, no mirror contact ",
+   "mpn": "RELAY-PCB-120A-24V"
   },
   {
-   "designator": "KOUT",
+   "designator": "DOUT",
    "block_name": "SP-MATRIX",
    "pins": [
     {
      "pin_number": 1,
-     "name": "C1",
-     "signal_name": "V24"
-    },
-    {
-     "pin_number": 2,
-     "name": "C2",
-     "signal_name": "COIL_KOUT"
-    },
-    {
-     "pin_number": 3,
-     "name": "A",
+     "name": "pin1",
      "signal_name": "BKAP"
     },
     {
-     "pin_number": 4,
-     "name": "B",
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "OUTP"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "KOUT_M2"
     }
    ],
    "nc_pins": [],
-   "value": "HFE82V-M-CLASS",
-   "query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact ",
-   "mpn": "HFE82V-M-CLASS"
-  },
-  {
-   "designator": "KPREA",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "C1",
-     "signal_name": "V24"
-    },
-    {
-     "pin_number": 2,
-     "name": "C2",
-     "signal_name": "COIL_KPREA"
-    },
-    {
-     "pin_number": 3,
-     "name": "A",
-     "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 4,
-     "name": "B",
-     "signal_name": "KPREA_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "RELAY_FB_KPREA"
-    }
-   ],
-   "nc_pins": [],
-   "value": "HFE82V-20-M-CLASS",
-   "query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact ",
-   "mpn": "HFE82V-20-M-CLASS"
-  },
-  {
-   "designator": "KPREB",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "C1",
-     "signal_name": "V24"
-    },
-    {
-     "pin_number": 2,
-     "name": "C2",
-     "signal_name": "COIL_KPREB"
-    },
-    {
-     "pin_number": 3,
-     "name": "A",
-     "signal_name": "BKAN"
-    },
-    {
-     "pin_number": 4,
-     "name": "B",
-     "signal_name": "KPREB_B"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "RELAY_FB_KPREB"
-    }
-   ],
-   "nc_pins": [],
-   "value": "HFE82V-20-M-CLASS",
-   "query": "HFE82V-20-M-CLASS HV DC relay 20 A 1000 VDC w/ auxiliary contact ",
-   "mpn": "HFE82V-20-M-CLASS"
-  },
-  {
-   "designator": "KOUT2",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "C1",
-     "signal_name": "V24"
-    },
-    {
-     "pin_number": 2,
-     "name": "C2",
-     "signal_name": "COIL_KOUT"
-    },
-    {
-     "pin_number": 3,
-     "name": "A",
-     "signal_name": "BKAP"
-    },
-    {
-     "pin_number": 4,
-     "name": "B",
-     "signal_name": "OUTP"
-    },
-    {
-     "pin_number": 5,
-     "name": "M1",
-     "signal_name": "KOUT_M2"
-    },
-    {
-     "pin_number": 6,
-     "name": "M2",
-     "signal_name": "RELAY_FB_KOUT"
-    }
-   ],
-   "nc_pins": [],
-   "value": "HFE82V-M-CLASS",
-   "query": "HFE82V-M-CLASS HV DC relay 1000 V w/ mirror contact ",
-   "mpn": "HFE82V-M-CLASS"
-  },
-  {
-   "designator": "RKPUKSER",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RELAY_FB_KSER"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RKPUKPARA",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RELAY_FB_KPARA"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RKPUKPARB",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RELAY_FB_KPARB"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RKPUKOUT",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RELAY_FB_KOUT"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RKPUKPREA",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RELAY_FB_KPREA"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RKPUKPREB",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "RELAY_FB_KPREB"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R-small small-signal resistor 0402–0805 ",
-   "mpn": "R-small"
-  },
-  {
-   "designator": "RPREA",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "A",
-     "signal_name": "KPREA_B"
-    },
-    {
-     "pin_number": 2,
-     "name": "B",
-     "signal_name": "BKBP"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SQP-10R-25W",
-   "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
-   "mpn": "SQP-10R-25W"
-  },
-  {
-   "designator": "RPREB",
-   "block_name": "SP-MATRIX",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "A",
-     "signal_name": "KPREB_B"
-    },
-    {
-     "pin_number": 2,
-     "name": "B",
-     "signal_name": "BKBN"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SQP-10R-25W",
-   "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
-   "mpn": "SQP-10R-25W"
+   "value": "DIODE-1600V-150A-MOD",
+   "query": "DIODE-1600V-150A-MOD output series blocking diode 1600 V 150 A, insulated-base 2",
+   "mpn": "DIODE-1600V-150A-MOD"
   },
   {
    "designator": "RBDA0",

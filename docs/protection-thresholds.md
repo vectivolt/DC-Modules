@@ -259,6 +259,53 @@ reads ≤ 0.96 Vref at −40 °C, so the guard never trips on a cold sensor.
   banks under the 250 V SER floor.
 - **FW-R11 — NTC open-loop guard** (row 22b).
 
+
+## 6. E67 full-bridge fault coordination (2026-09-13) — one tank, one window comparator, diode output
+
+> [!IMPORTANT]
+> Additive update to § 2 rows 11 · 17 · 18 · 22b, § 4 and § 5. E67 replaces the three interleaved LLC half-bridge sections
+> with ONE full-bridge LLC (the InfyPower REG1K0135A2 architecture): one Cr bank → one external Lr (D2 rev F) → two
+> transformer cells with primaries in series (D3 rev D), one secondary per bank, and an output blocking diode instead of
+> K_OUT. The protection logic stands; counts, classes and one relay row change. Gate:
+> `calculations/system/current-coordination.mjs` (reads `simulation-results/<sku>/llc-short.csv` and `llc-stress.csv`).
+
+**F.11 hardware path (E67):** one resonant CT (`CT1`, 1:100) in the Cr → Lr leg, burden `R1CT`, one dual 40 ns comparator
+`U1W` (A above F11_VH, B below F11_VL) → `D1W` → FLT wire-OR = **HRTIMER_FLT2 on PB10**, a hardware kill of all four bridge
+positions in < 1 µs. Ladder `RF11H` / `RF11M` / `RF11L` = 2k / 2.67k / 2k (30 and 50 kW) · 2k / 2.61k / 2k (40 kW).
+
+### E67 full-bridge F.11 classes
+
+| SKU | F.01 line OC (unchanged) | F.11 tank OC | Resonant burden | Window (V) | Worst simulated tank peak | Kill peak (+1 µs) · per FET | Monitor peak (+3 µs) | Ceiling | D2 fault flux |
+|---|---|---|---|---|---|---|---|---|---|
+| 30 kW | **120 A pk** | **140 A pk** | 0.47 Ω (2512 1 W) | 0.99 / 2.31 | 113 A (SER250-full-bus764) → 1.24× | 210 A · 105 A (2 FETs) | 328 A | 345 A | 163 mT |
+| 40 kW | **155 A pk** | **180 A pk** | 0.36 Ω (2512 1 W) | 1.00 / 2.30 | 148 A → 1.22× | 267 A · 134 A (2 FETs) | 417 A | 450 A | 164 mT |
+| 50 kW liquid | **195 A pk** | **220 A pk** | 0.30 Ω (2512 2 W) | 0.99 / 2.31 | 183 A → 1.20× | 330 A · 165 A (2 FETs) | 503 A | 540 A | 163 mT |
+| 50 kW air | **195 A pk** | **220 A pk** | 0.30 Ω (2512 2 W) | 0.99 / 2.31 | 183 A → 1.20× | 331 A · 110 A (3 FETs) | 504 A | 540 A | 163 mT |
+
+The § 5 table (85 / 115 / 145 A pk per section) is superseded. D2 fault flux is at the kill peak on Lmax (≤ 217 mT = 60 %
+Bsat 130 °C). Per-FET kill peaks equal the E65 single-FET section values (104 / 132 / 158 A) — no new pulse stress. **RFQ
+acceptance line (not yet on a datasheet):** SG2M023120LJ single-pulse drain current ≥ per-FET kill peak / 0.6 at tp ≤ 10 µs,
+Tj 150 °C — ≥ 175 / 225 / 275 / 185 A (30 / 40 / 50 / 50a), the same 60 % rule the PFC FET row uses.
+
+**DESAT timing note (E67):** unchanged — one NSI6611-class driver per bridge position (four), 22 pF blank, worst response
+**1.44 µs** vs the 2.0 µs SCWT class (§ 4). Paralleled FETs in a position share the driver and the DESAT diode on the common
+drain, so a shoot-through through either device trips the position. A leg shoot-through is a single-leg event in the full
+bridge as it was in the half bridge; a secondary or transformer short is F.11's, not DESAT's (the ZVS current rises through the
+tank, never through a desaturated device).
+
+| Row | Fault | Threshold | Time | Detector | Action | Code |
+|---|---|---|---|---|---|---|
+| 11 (E67) | LLC tank OC, both polarities | 140 / 180 / 220 A pk, one window comparator on the tank CT | < 1 µs | HW comparator → HRTIMER_FLT2 | all four positions off, latch | F.11 |
+| 17 (E67) | Bank imbalance during the SER soft start — also a welded K_PARA / K_PARB | \|VA − VB\| > 25 V once either bank passes 50 V | 10 ms | FW | stop, latch (a welded parallel relay ties the bank tops together, so the banks cannot split in SER) | F.17 |
+| 18 (E67) | K_OUT weld | **retired** — K_OUT and the pre-insertion relays are removed; DOUT blocks the battery, so KSER / KPARA / KPARB switch at zero current in STANDBY only | — | — | — | — |
+| 22b (E67) | Magnetics bond loss / T_XFMR loop open | three cutouts (two D3 cells + D2), any ≥ 130 ±5 °C, or the loop open | 1 s | NTC channel at the rail → 150 °C | stop, latch | F.22 |
+
+**Firmware requirements introduced (E67, `fsm.c` / `fsm.h`, host_sim 60/60, fsm-sim 26/26):**
+- **FW-R12 — two output modes, set only in STANDBY:** LOW ≤ 500 V (banks parallel), HIGH 500–1000 V (banks series), AUTO.
+  HIGH with a start voltage below 480 V is refused. AUTO RUN crossover PAR → SER above 500 V, SER → PAR below 480 V.
+- **FW-R13 — diode output:** no K_OUT, no pre-insertion. The relays close at zero current before the soft start; F.17 during
+  the SER ramp is the weld screen.
+
 ---
 
 <div align="center">

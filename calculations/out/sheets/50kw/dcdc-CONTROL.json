@@ -8,10 +8,7 @@
  "net_style_overrides": {
   "UEXCL_Y1": "wire",
   "UEXCL_Y2": "wire",
-  "UEXCL_Y3": "wire",
-  "UEXCL2_Y1": "wire",
-  "UEXCL2_Y2": "wire",
-  "UEXCL2_Y3": "wire"
+  "UEXCL_Y3": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -28,11 +25,6 @@
      "pin_number": 2,
      "name": "PWM1",
      "signal_name": "PWM_L2H"
-    },
-    {
-     "pin_number": 3,
-     "name": "PWM2",
-     "signal_name": "PWM_L3H"
     },
     {
      "pin_number": 4,
@@ -60,24 +52,9 @@
      "signal_name": "PWM_L2L"
     },
     {
-     "pin_number": 9,
-     "name": "PWM8",
-     "signal_name": "PWM_L3L"
-    },
-    {
      "pin_number": 13,
      "name": "AIN0",
      "signal_name": "I_RES1"
-    },
-    {
-     "pin_number": 14,
-     "name": "AIN1",
-     "signal_name": "I_RES2"
-    },
-    {
-     "pin_number": 15,
-     "name": "AIN2",
-     "signal_name": "I_RES3"
     },
     {
      "pin_number": 16,
@@ -200,21 +177,6 @@
      "signal_name": "CTL_KPARB"
     },
     {
-     "pin_number": 40,
-     "name": "DO3",
-     "signal_name": "CTL_KOUT"
-    },
-    {
-     "pin_number": 41,
-     "name": "DO4",
-     "signal_name": "CTL_KPREA"
-    },
-    {
-     "pin_number": 42,
-     "name": "DO5",
-     "signal_name": "CTL_KPREB"
-    },
-    {
      "pin_number": 43,
      "name": "DO6",
      "signal_name": "CTL_QDISBK"
@@ -238,36 +200,6 @@
      "pin_number": 47,
      "name": "DO10",
      "signal_name": "CTL_QDIS"
-    },
-    {
-     "pin_number": 48,
-     "name": "DI0",
-     "signal_name": "RELAY_FB_KSER"
-    },
-    {
-     "pin_number": 49,
-     "name": "DI1",
-     "signal_name": "RELAY_FB_KPARA"
-    },
-    {
-     "pin_number": 50,
-     "name": "DI2",
-     "signal_name": "RELAY_FB_KPARB"
-    },
-    {
-     "pin_number": 51,
-     "name": "DI3",
-     "signal_name": "RELAY_FB_KOUT"
-    },
-    {
-     "pin_number": 52,
-     "name": "DI4",
-     "signal_name": "RELAY_FB_KPREA"
-    },
-    {
-     "pin_number": 53,
-     "name": "DI5",
-     "signal_name": "RELAY_FB_KPREB"
     },
     {
      "pin_number": 54,
@@ -396,9 +328,22 @@
     }
    ],
    "nc_pins": [
+    3,
+    9,
     10,
     11,
     12,
+    14,
+    15,
+    40,
+    41,
+    42,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
     76,
     78,
     79,
@@ -521,66 +466,6 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "CTL_KOUT"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
-   "mpn": "R0603-10k"
-  },
-  {
-   "designator": "RPDB6",
-   "block_name": "CARD-IF",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "CTL_KPREA"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
-   "mpn": "R0603-10k"
-  },
-  {
-   "designator": "RPDB7",
-   "block_name": "CARD-IF",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "CTL_KPREB"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "10k",
-   "query": "R0603-10k 10 kΩ 0603 card-interface pull-down ",
-   "mpn": "R0603-10k"
-  },
-  {
-   "designator": "RPDB8",
-   "block_name": "CARD-IF",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
      "signal_name": "CTL_QDISBK"
     },
     {
@@ -695,107 +580,7 @@
    "mpn": "74HC02"
   },
   {
-   "designator": "UEXCL2",
-   "block_name": "COIL-DRIVER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "Y1",
-     "signal_name": "UEXCL2_Y1"
-    },
-    {
-     "pin_number": 2,
-     "name": "A1",
-     "signal_name": "CTL_KPREA"
-    },
-    {
-     "pin_number": 3,
-     "name": "B1",
-     "signal_name": "CTL_KPREB"
-    },
-    {
-     "pin_number": 4,
-     "name": "Y2",
-     "signal_name": "UEXCL2_Y2"
-    },
-    {
-     "pin_number": 5,
-     "name": "A2",
-     "signal_name": "KSER_STG1"
-    },
-    {
-     "pin_number": 6,
-     "name": "B2",
-     "signal_name": "KSER_STG1"
-    },
-    {
-     "pin_number": 7,
-     "name": "GND",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 8,
-     "name": "A3",
-     "signal_name": "UEXCL2_Y1"
-    },
-    {
-     "pin_number": 9,
-     "name": "B3",
-     "signal_name": "UEXCL2_Y1"
-    },
-    {
-     "pin_number": 10,
-     "name": "Y3",
-     "signal_name": "UEXCL2_Y3"
-    },
-    {
-     "pin_number": 11,
-     "name": "A4",
-     "signal_name": "UEXCL2_Y2"
-    },
-    {
-     "pin_number": 12,
-     "name": "B4",
-     "signal_name": "UEXCL2_Y3"
-    },
-    {
-     "pin_number": 13,
-     "name": "Y4",
-     "signal_name": "KSER_GATED"
-    },
-    {
-     "pin_number": 14,
-     "name": "VCC",
-     "signal_name": "V3P3"
-    }
-   ],
-   "nc_pins": [],
-   "value": "74HC02",
-   "query": "74HC02 quad NOR SOIC-14 ",
-   "mpn": "74HC02"
-  },
-  {
    "designator": "CEXCL",
-   "block_name": "COIL-DRIVER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "V3P3"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "100nF",
-   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
-   "mpn": "MLCC-small"
-  },
-  {
-   "designator": "CEXCL2",
    "block_name": "COIL-DRIVER",
    "pins": [
     {
@@ -821,7 +606,7 @@
     {
      "pin_number": 1,
      "name": "IN1",
-     "signal_name": "KSER_GATED"
+     "signal_name": "KSER_STG1"
     },
     {
      "pin_number": 2,
@@ -836,17 +621,17 @@
     {
      "pin_number": 4,
      "name": "IN4",
-     "signal_name": "CTL_KOUT"
+     "signal_name": "DGND"
     },
     {
      "pin_number": 5,
      "name": "IN5",
-     "signal_name": "CTL_KPREA"
+     "signal_name": "DGND"
     },
     {
      "pin_number": 6,
      "name": "IN6",
-     "signal_name": "CTL_KPREB"
+     "signal_name": "DGND"
     },
     {
      "pin_number": 7,
@@ -869,21 +654,6 @@
      "signal_name": "V24"
     },
     {
-     "pin_number": 13,
-     "name": "OUT6",
-     "signal_name": "COIL_KPREB"
-    },
-    {
-     "pin_number": 14,
-     "name": "OUT5",
-     "signal_name": "COIL_KPREA"
-    },
-    {
-     "pin_number": 15,
-     "name": "OUT4",
-     "signal_name": "COIL_KOUT"
-    },
-    {
      "pin_number": 16,
      "name": "OUT3",
      "signal_name": "COIL_KPARB"
@@ -901,7 +671,10 @@
    ],
    "nc_pins": [
     11,
-    12
+    12,
+    13,
+    14,
+    15
    ],
    "value": "ULN2803A",
    "query": "ULN2803A 8-ch relay coil driver SOIC-18 ",

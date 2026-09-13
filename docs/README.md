@@ -85,7 +85,7 @@ inlet or ambient unless labelled Tj or core.
 | | Document | What it decides | Kept honest by |
 |---|---|---|---|
 | 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | — |
-| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E64 with provenance and invalidator | rows cited by every gate |
+| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E67 with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
 | 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, F.21 semantics | `host_sim` 54/54 · grep-pinned |

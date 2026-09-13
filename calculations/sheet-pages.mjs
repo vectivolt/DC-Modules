@@ -124,11 +124,12 @@ const PAGES = {
       ["TANK", [/^C1R\d+$/, /^L1R$/, /^T1[AB]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/, /^U1W$/, /^D1W$/, /^C1WB$/]],
       ["RECT-A", [/^D1A[1-4](P[23])?$/]],
       ["RECT-B", [/^D1B[1-4](P[23])?$/]],
-    ], ["TANK", "RECT-A", "RECT-B"]],
+      ["F11-WINDOW", [/^[RC]F11[HML]$/]],   /* E67: the ladder was unassigned since E65 (three comparators hid it from R4-3) */
+    ], ["TANK", "RECT-A", "RECT-B", "F11-WINDOW"]],
     ["BANKS-SP", [
-      ["BANK-A", [/^CBA\d[TB]$/, /^RBALT?A[12]$/, /^RBALBA[12]$/, /^CBAF$/]],
-      ["BANK-B", [/^CBB\d[TB]$/, /^RBALT?B[12]$/, /^RBALBB[12]$/, /^CBBF$/]],
-      ["SP-MATRIX", [/^K(SER|PARA|PARB|OUT|PREA|PREB)2?$/, /^RKPU/, /^RPRE[AB]$/]],
+      ["BANK-A", [/^CBA\d[TB]$/, /^RBALT?A[12]$/, /^RBALBA[12]$/, /^CBAF$/, /^CFA\d$/, /^LFA$/, /^CEA\d$/]],   /* E67 bank filter */
+      ["BANK-B", [/^CBB\d[TB]$/, /^RBALT?B[12]$/, /^RBALBB[12]$/, /^CBBF$/, /^CFB\d$/, /^LFB$/, /^CEB\d$/]],
+      ["SP-MATRIX", [/^K(SER|PARA|PARB|OUT|PREA|PREB)2?$/, /^RKPU/, /^RPRE[AB]$/, /^DOUT$/]],
       ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/, /^(QPVD|RPVD[BP])$/]],
     ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],
     ["OUTPUT-SENSING", [
@@ -305,5 +306,6 @@ for (const side of (SKU === "control-card" ? ["card"] : SKU === "cabinet" ? ["ca
   const missed = comps.filter(c => !seen.has(c.name) && !/^NC_/.test(c.name)).map(c => c.name);
   for (const p of pagesOut) console.log(`${side}/${p.page} (${p.count}): ${Object.entries(p.perBlock).map(([b, n]) => `${b}=${n}`).join(" ")}`);
   console.log(`${side} UNASSIGNED: ${missed.length ? missed.join(",") : "none"}`);
+  if (missed.length) process.exitCode = 1;   // a part with no page is a part missing from the drawing set
 }
 console.log(`→ ${OUT}/`);

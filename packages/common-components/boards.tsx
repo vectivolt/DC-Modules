@@ -571,8 +571,8 @@ return (
         sx={30} sy={24} />
 
       {/* E67 bank filters (BankFilter): rectifier film → Lf (the D6 sendust construction at DC duty) → 330 µF 550 V electrolytic per bank */}
-      <BankFilter id="A" rkp="net.RKAP" bkp="net.BKAP" bkn="net.BKAN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[0]} sx={58} sy={27} />
-      <BankFilter id="B" rkp="net.RKBP" bkp="net.BKBP" bkn="net.BKBN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[2]} sx={58} sy={17} />
+      <BankFilter id="A" rkp="net.RKAP" bkp="net.BKAP" bkn="net.BKAN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[0]} sx={50} sy={27} />
+      <BankFilter id="B" rkp="net.RKBP" bkp="net.BKBP" bkn="net.BKBN" nF={bankF.nF} nE={bankF.nE} lf={bankF.lf} x={Q.bankX[0]} y={Q.bankY[2]} sx={50} sy={17} />
 
       {/* E67 S/P matrix: zero-current PCB power relays + the output blocking diode DOUT (InfyPower practice) */}
       <SeriesParallelRelayMatrix bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"

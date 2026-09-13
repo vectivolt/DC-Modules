@@ -65,7 +65,7 @@ built from modules.** → [control-card scope](../docs/control-card-scope.md)
 | **Silicon** | the 40 kW silicon — single LLC FETs at 167 A, made possible by the plate (Rth 1.1 K/W to a 65 °C plate) | PFC **and** LLC pairs paralleled — per-package conduction ÷ 4 |
 | **Thermal proof** | 5,544-point grid, 0 failures; folds only in hot PS and SER-band corners | 0 failures; folds only in the hot SER band (JBS 149 °C) |
 | **Classes** | 160 A NH00 fuses · 250 A precharge frame · dual K_OUT · revved tank classes | identical to the liquid twin by construction |
-| **System boundary** | charger-level cooling cart: coolant ≤ 60 °C, 6 L/min per module; the plate NTCs and OT ladder are the module's dry-run protection | none beyond airflow |
+| **System boundary** | charger-level cooling cart: coolant ≤ 60 °C, 6.5 L/min per module (E67: 6 L/min before the output diode's 175 W); the plate NTCs and OT ladder are the module's dry-run protection | none beyond airflow |
 | **₹ / kW** | 837 | **830** |
 
 <details>

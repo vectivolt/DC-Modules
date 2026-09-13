@@ -66,7 +66,7 @@ sequenceDiagram
 | Type | Name | Payload (8 bytes, little-endian) | Rate |
 |---|---|---|---|
 | **0x10** | SET_OUTPUT | u32 V_set in mV · u32 I_set in mA | ≥ 1 Hz — timeout 1 s → F.28 ramp-off |
-| **0x11** | MODULE_CTL | b0 ENABLE · b1 clear-faults · b2 force-HV · b3 force-LV · b4 LED / locate · b5 walk-in enable | on change |
+| **0x11** | MODULE_CTL | b0 ENABLE · b1 clear-faults · b2 force-HV (HIGH mode 500–1000 V) · b3 force-LV (LOW mode 150–500 V) · neither = AUTO · b4 LED / locate · b5 walk-in enable | on change — the mode bits take effect in standby only (E67) |
 | **0x12** | GROUP_SET | group power / current share parameters | optional |
 | **0x13** | ADDR_ASSIGN | serial match → address | commissioning |
 | **0x1F** | TIME_SYNC | epoch | optional |
@@ -93,9 +93,9 @@ Default rate 1 Hz; on-change frames 0x2x at up to 10 Hz.
 | Rule | Behaviour |
 |---|---|
 | **Permission to deliver** | output only when ENABLE is set **and** a valid SET_OUTPUT arrived within the timeout **and** no fault is latched |
-| **Timeout** | default 1 s, configurable 0.2–5 s: ramp to zero, open K_OUT at I ≈ 0, state → IDLE; a **new ENABLE is required** after more than 10 s of loss |
+| **Timeout** | default 1 s, configurable 0.2–5 s: ramp to zero, state → IDLE (E67: no K_OUT — the output diode blocks the battery); a **new ENABLE is required** after more than 10 s of loss |
 | **Clearing faults** | clear-faults never clears lockout F.31 — that needs a power cycle or the service bit |
-| **Mode transitions** | LV parallel ↔ HV series always follows the E12 state machine; force bits only bias the auto-selection hysteresis (§5) |
+| **Mode transitions** | **E67:** force-LV = LOW (≤ 500 V, banks parallel), force-HV = HIGH (≥ 500 V, banks series), neither = AUTO. The mode is latched in standby; a change requested while running waits for the next standby. HIGH below 480 V is refused. AUTO crosses PAR → SER above 500 V and SER → PAR below 480 V at zero current (the same LOW/HIGH convention as UUGreen, ENR, Tonhe, NIUERA and Maxwell modules) |
 | **Configuration** | address, group and calibration frames are committed to EEPROM with a CRC and echoed back for verification |
 
 > [!TIP]

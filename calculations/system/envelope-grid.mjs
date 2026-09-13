@@ -122,7 +122,8 @@ for (const s of SKUS) {
     const Ib = mode === "SER" ? Pout3 / 0.99 / Vout : Pout3 / 0.99 / Vout / 2, rdJ = s.jbs.cls === 40 ? 0.022 : 0.045;
     const secW = 2 * (2 * 0.95 * Ib + rdJ * Math.PI ** 2 * Ib * Ib / (4 * s.jbs.n));
     const fixW = 20 + 12 * s.lanes + 10 * s.ch + 10 * (s.lanes > 2 ? 2 : 1);
-    const loss = pfcW + llcW + secW + fixW;
+    const outW = 1.05 * Pout3 / Vout;              // E67: DOUT blocking diode carries the output current (D8 copper is < 1 % of it)
+    const loss = pfcW + llcW + secW + outW + fixW;
     const eta = 100 * Pout3 / (Pout3 + loss);
     // pass criteria
     const pass = TjP <= 150 && TjL <= 150.5 && TjD <= 150.5 && Ip <= CEIL * 1.02 && fn >= 0.45 && fn <= 1.45 &&

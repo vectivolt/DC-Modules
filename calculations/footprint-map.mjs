@@ -124,7 +124,9 @@ export const footprintForRef = (designator, mpnHint) => {
 // across all six boards, 309 of 1325 chip-package components (23%) carried the wrong package.
 // The built circuit knows the truth — pcb_component gives each part's actual land size — so use
 // that for chip packages and keep the class map for everything else.
-const LAND_MM = { "0402": 1.55, "0603": 2.0, "0805": 2.85, "1206": 4.0, "1210": 4.3, "1812": 5.5, "2512": 7.0 };
+// E67: widths measured on the built tscircuit lands (0402 1.56 · 0603 2.45 · 0805 2.85 · 1206 4.05 · 2512 7.15 mm). The
+// original 0603 = 2.0 sat 22 % from the real 2.45 land and 14 % from 0805, so every drawn 0603 part was named 0805.
+const LAND_MM = { "0402": 1.55, "0603": 2.45, "0805": 2.85, "1206": 4.0, "1210": 4.3, "1812": 5.5, "2512": 7.0 };
 
 export const realPackagesFrom = (files) => {   // E64: explicit-file variant (bom-gen needs the card too)
   const out = new Map();

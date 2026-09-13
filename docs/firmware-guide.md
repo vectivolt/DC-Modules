@@ -319,6 +319,39 @@ at the module cap* · *non-member never delivers* · *GROUP_SET codec round-trip
 Not firmware: EVT line — a grid-impedance step test at Lg ≈ 100 µH per phase (and the 3-module cabinet on one
 transformer) with the loop delay measured on the scope, before the margins above are called verified.
 
+
+## E67 — two output modes and a diode output (2026-09-13)
+
+> [!IMPORTANT]
+> E67 follows the charging-module convention in the UUGreen, ENR, Tonhe, NIUERA and Maxwell CAN protocols: a LOW
+> (< 500 V) and a HIGH (> 500 V) output range, chosen before the module starts. The output blocking diode (InfyPower
+> practice) removes K_OUT and the pre-insertion relays, so the relay matrix never switches current. This supersedes the
+> "S/P transition" diagram above: there is no RUN-time relay transition with a dwell or a weld check any more.
+
+| Req | What the code does | Why |
+|---|---|---|
+| **FW-R12** output mode | `in->omode_req` ∈ {`OMODE_AUTO`, `OMODE_LOW`, `OMODE_HIGH`} is latched into `f->omode` in STANDBY only. LOW → banks parallel, `v_max` 500 V · HIGH → banks series, `v_max` 1000 V, refused below `PMP_XOVER_UP_V` (480 V) · AUTO → start SER above `PMP_XOVER_DN_V` (500 V), else PAR | a bank tops out at 500 V (gain M ≤ 1.205) — the tank was solved for that edge, not for the E60 525 V in-run hysteresis |
+| **FW-R12b** AUTO crossover | only in AUTO: PAR → SER when the battery (or vcmd with no vehicle) exceeds 500 V, SER → PAR below 480 V; ramp to zero, swap relays at zero current, soft-start again | 20 V hysteresis; the battery voltage, not the EV's request, decides (FW-R10) |
+| **FW-R13** diode output | relays close before the soft start; with a SER start, `fabsf(vbank_a − vbank_b) > PMP_BANK_IMB_V` once either bank passes 50 V latches **F.17** | a welded K_PARA/K_PARB ties the bank tops; it shows as imbalance at the first SER ramp. `PMP_WELD_DV_V` / `PMP_WELD_MS` stay defined but unused |
+| **FW-R14** F.11 classes | `oc_tank_a` 140 / 180 / 220 A (default 140) from the rating strap | protection-thresholds § 6 |
+| **HAL — CAN mapping** | MODULE_CTL b2 force-HV → `OMODE_HIGH`, b3 force-LV → `OMODE_LOW`, neither → `OMODE_AUTO` (both set is rejected by `can_proto.c`) | a request in RUN is held until the next STANDBY (host_sim `reqrun`) |
+
+```mermaid
+stateDiagram-v2
+  [*] --> STANDBY
+  STANDBY --> STANDBY: latch omode_req
+  STANDBY --> PAR: LOW, or AUTO with V ≤ 500 V
+  STANDBY --> SER: HIGH with V ≥ 480 V, or AUTO with V > 500 V
+  STANDBY --> STANDBY: HIGH with V < 480 V (refused)
+  PAR --> RUN_PAR: relays closed at 0 A, soft start
+  SER --> RUN_SER: relays closed at 0 A, soft start, F.17 screen
+  RUN_PAR --> SER: AUTO and V > 500 V (ramp to 0 A first)
+  RUN_SER --> PAR: AUTO and V < 480 V (ramp to 0 A first)
+```
+
+Host tests added (host_sim 60/60): `start490`, `start510`, `lowforced`, `highlow`, `reqrun`, `hyst` (510 → 490 V), and the
+F.11 class checks 195 A / 220 A and 155 A / 180 A.
+
 ---
 
 <div align="center">

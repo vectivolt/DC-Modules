@@ -66,48 +66,49 @@ B.cab = loadNet(`${ROOT}/dist/boards/cabinet/circuit.json`);
 
 // ---------- A. system currents (first principles) ----------
 console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
-const SK = {
-  "30kw": { P: 30e3, Imax: 100, par: 1, nHalf: 5, nBank: 2, fans: 2, crN: 4, crV: 46e-9, trim: 6.65e-6, tRms: 46.4, fuse: 80, kpre: 80, lineCT: 100, resCT: 50, lineB: 22, resB: 1.0, F01: 120, F11: 85, disch: 3000, litz: 12.0 },
-  "40kw": { P: 40e3, Imax: 133, par: 2, nHalf: 6, nBank: 3, fans: 3, crN: 6, crV: 33e-9, trim: 6.15e-6, tRms: 61.9, fuse: 125, kpre: 100, lineCT: 150, resCT: 80, lineB: 18, resB: 0.82, F01: 155, F11: 115, disch: 4000, litz: 16.0 },
-  "50kw": { P: 50e3, Imax: 167, par: 2, nHalf: 8, nBank: 4, fans: 0, crN: 8, crV: 27e-9, trim: 5.65e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 13, resB: 0.68, F01: 195, F11: 145, disch: 5000, litz: 16.0 },
-  "50kwa": { P: 50e3, Imax: 167, par: 2, parL: 2, nHalf: 8, nBank: 4, fans: 4, crN: 8, crV: 27e-9, trim: 5.65e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 13, resB: 0.68, F01: 195, F11: 145, disch: 5000, litz: 16.0 },
+const SK = {   // E67 full bridge: crN × 33 nF · external Lr (D2 rev F) · tank class (A rms) · 0.05 mm litz area · bank film/electrolytic counts
+  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 2, nHalf: 5, fans: 2, crN: 7, crV: 33e-9, lr: 5.16e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 4, nE: 1, dPar: 2, dout: 150 },
+  "40kw": { P: 40e3, Imax: 133, par: 2, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 4.07e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 5, nE: 1, dPar: 2, dout: 200 },
+  "50kw": { P: 50e3, Imax: 167, par: 2, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 2, dout: 250 },
+  "50kwa": { P: 50e3, Imax: 167, par: 2, parL: 3, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 6, nE: 2, dPar: 3, dout: 250 },
 };
 for (const [sku, s] of Object.entries(SK)) {
   s.Iline = (s.P / 0.965) / (Math.sqrt(3) * 330 * 0.99);
   s.Ipk = s.Iline * Math.SQRT2;
   s.Iout = s.Imax;
-  s.Ip1max = s.Imax / (0.98 * 3 * 0.9);
-  console.log(`  ${sku}: Iline ${f(s.Iline, 1)} A (pk ${f(s.Ipk, 1)}) · Iout ${s.Iout} A · tank Ip1-bound ${f(s.Ip1max, 1)} A pk · tank ${s.tRms} A rms/section`);
+  s.Ip1max = (Math.PI / (2 * Math.SQRT2)) * (s.P / 500) / 0.98;   // E67: reflected load current (n = 2) at the 500 V HIGH-mode floor, rms
+  console.log(`  ${sku}: Iline ${f(s.Iline, 1)} A (pk ${f(s.Ipk, 1)}) · Iout ${s.Iout} A · tank load-bound ${f(s.Ip1max, 1)} A rms at the HIGH floor · class ${s.tRms} A rms`);
 }
 ck("A", "registered line currents reproduce", Math.abs(SK["40kw"].Iline - 73.25) < 0.4 && Math.abs(SK["50kw"].Iline - 91.57) < 0.4,
   `40: ${f(SK["40kw"].Iline, 1)} vs 73.3 · 50: ${f(SK["50kw"].Iline, 1)} vs 91.6 (30 kW doc constant 55.9 is 1.7% conservative vs ${f(SK["30kw"].Iline, 1)} — fuse math uses the conservative one, safe direction)`);
-ck("A", "tank rms scaling is the registered book", Math.abs(46.4 * 40 / 30 - 61.9) < 0.1 && Math.abs(46.4 * 50 / 30 - 77.3) < 0.1, "46.4 × P/30k → 61.87/77.33");
-ck("A", "50 kW tank Ip1-bound inside revved 65 A ceiling", SK["50kw"].Ip1max < 65, `${f(SK["50kw"].Ip1max, 1)} A + im(≈8 A, quadrature) → ≈64 A ≤ 65`);
+ck("A", "tank classes cover the load-set current at the HIGH-mode floor (+ magnetizing in quadrature)", Object.values(SK).every((s) => Math.hypot(s.Ip1max, 0.2 * s.Ip1max) <= s.tRms),
+  Object.entries(SK).map(([k, s]) => `${k} ${f(s.Ip1max, 1)} A (+20 % Im quadrature ${f(Math.hypot(s.Ip1max, 0.2 * s.Ip1max), 1)}) ≤ ${s.tRms}`).join(" · "));
 
 // ---------- B. tank resonance + capacitor duty (independent) ----------
 console.log("\n=== B. TANK — fr, per-cap duty, trim ===");
-// E65 clean-room leakage: concentric S1–P–S2 interleave, 1-D MMF energy L = µ0·N²·MLT/(4b)·(2g + (2hS + hP)/3) with this file's
-// own build guesses (foil + 50 µm film per turn, litz at 0.55 Cu fill + 0.6 mm serving, 0.3 mm barrier, E70 lN 230.5/293 mm)
-const XF = { "30kw": { N: 7, mlt: 0.2305, cuP: 9.8e-6, foil: 0.10e-3 }, "40kw": { N: 6, mlt: 0.2305, cuP: 13.8e-6, foil: 0.127e-3 }, "50kw": { N: 5, mlt: 0.293, cuP: 17.3e-6, foil: 0.127e-3 } };
+// E67 clean-room tank: two series-primary cells, each an S1–P–S2 interleave — 1-D MMF energy L = µ0·N²·MLT/(4b)·(2g + (2hS + hP)/3)
+// with this file's own build guesses (foil + 50 µm film per layer, litz at 0.55 Cu fill + 0.6 mm serving across the 28 mm conductor
+// breadth, 0.3 mm barrier, E70 former lN 230.5 mm (2-set) / 293 mm (3-set)); tank Lr = external D2 + 2 × cell leakage + 0.1 µH loop
+const XF = { "30kw": { N: 6, mlt: 0.2305, cuP: 12e-6, foil: 0.10e-3, nf: 1 }, "40kw": { N: 4, mlt: 0.293, cuP: 14e-6, foil: 0.08e-3, nf: 2 }, "50kw": { N: 4, mlt: 0.293, cuP: 14e-6, foil: 0.08e-3, nf: 2 } };
 XF["50kwa"] = XF["50kw"];
-const llkOf = (x) => 4e-7 * Math.PI * x.N * x.N * x.mlt / (4 * 0.041) * (2 * 0.3e-3 + (2 * x.N * (x.foil + 50e-6) + x.N * x.cuP / (0.55 * 0.041) + 0.6e-3) / 3);
+const llkOf = (x) => 4e-7 * Math.PI * x.N * x.N * x.mlt / (4 * 0.041) * (2 * 0.3e-3 + (2 * x.N * x.nf * (x.foil + 50e-6) + x.N * x.cuP / (0.55 * 0.028) + 0.6e-3) / 3);
 for (const [sku, s] of Object.entries(SK)) {
-  const LLK = llkOf(XF[sku]) + 0.1e-6, Cr = s.crN * s.crV, Lr = LLK + s.trim;
+  const LLK = 2 * llkOf(XF[sku]) + 0.1e-6, Cr = s.crN * s.crV, Lr = LLK + s.lr;
   const fr = 1 / (2 * Math.PI * Math.sqrt(Lr * Cr));
-  ck("B", `${sku} tank re-centers to the frozen fr`, Math.abs(fr - 140e3) < 2.5e3 && LLK < 1e-6, `${s.crN}×${f(s.crV * 1e9, 0)} nF + ${f(s.trim * 1e6, 2)} µH trim + ${f(LLK * 1e6, 2)} µH leakage+loop (clean-room) → fr ${f(fr / 1e3, 1)} kHz (frozen 140 ±bin; the E51 "3 µH engineered leakage" would need ≈${f(3e-6 / llkOf(XF[sku]), 0)}× this build)`);
+  ck("B", `${sku} tank re-centers to fr 140 kHz`, Math.abs(fr - 140e3) < 3e3 && LLK < 0.8e-6, `${s.crN}×${f(s.crV * 1e9, 0)} nF + ${f(s.lr * 1e6, 2)} µH external + ${f(LLK * 1e6, 2)} µH 2-cell leakage+loop (clean-room) → fr ${f(fr / 1e3, 1)} kHz`);
   const iCap = s.tRms / s.crN, vCap = iCap / (2 * Math.PI * 140e3 * s.crV);
   const esr = 2e-4 / (2 * Math.PI * 140e3 * s.crV), wCap = iCap * iCap * esr;
   ck("B", `${sku} per-cap duty`, iCap <= 12 && vCap < 530 && wCap < 1.0,
     `${f(iCap, 1)} A · ${f(vCap, 0)} V rms @140 kHz · ${f(wCap, 2)} W dielectric (O-8 line: curve ≥ ${f(vCap * 1.3, 0)} V — 942C class covers)`);
-  // E65 clean-room D2 (carries ~all of Lr): own Sullivan litz proximity at the 180 kHz SER corner; thermal proof is the envelope gate's
-  const one = sku === "30kw", Nt = one ? 8 : 5, Ae = one ? 683e-6 : 1366e-6, mltT = one ? 0.155 : 0.216, nS = one ? 6112 : 8149, dS = 0.05e-3;
-  const B_ = s.trim * s.tRms * Math.SQRT2 / (Nt * Ae) * 1e3;
+  // clean-room D2 external Lr: own Sullivan litz proximity at the 200 kHz PSM corner; thermal proof is the envelope gate's
+  const Nt = 5, Ae = 1366e-6, mltT = 0.218, dS = 0.05e-3, nS = s.litz * 1e-6 / (Math.PI * dS * dS / 4);
+  const B_ = s.lr * 1.03 * s.tRms * Math.SQRT2 / (Nt * Ae) * 1e3;
   const J = s.tRms / s.litz;
-  const rh = 1.7241e-8 * (1 + 0.00393 * 80), w = 2 * Math.PI * 180e3, mu0 = 4e-7 * Math.PI;
+  const rh = 1.7241e-8 * (1 + 0.00393 * 80), w = 2 * Math.PI * 200e3, mu0 = 4e-7 * Math.PI;
   const FrS = 1 + Math.PI ** 2 * w * w * mu0 * mu0 * Nt * Nt * nS * nS * dS ** 6 / (768 * rh * rh * 0.041 * 0.041);
   const pcu = s.tRms ** 2 * rh * Nt * mltT / (s.litz * 1e-6) * FrS;
-  ck("B", `${sku} trim: Bpk/J/Fr (clean-room Sullivan @180 kHz)`, B_ <= 100.5 && J <= 5.65 && FrS <= 2.5,
-    `${one ? "1×E70 N8" : "2×E70 N5"} 0.05 mm litz · Bpk ${f(B_, 0)} mT · J ${f(J, 1)} A/mm² · Fr ${f(FrS, 2)} → Cu ${f(pcu, 1)} W at the ${s.tRms} A rms class current`);
+  ck("B", `${sku} external Lr: Bpk/J/Fr (clean-room Sullivan @200 kHz)`, B_ <= 100.5 && J <= 5.65 && FrS <= 3.5,
+    `2×E70 N5 0.05 mm litz (${f(nS, 0)} strands) · Bpk ${f(B_, 0)} mT · J ${f(J, 1)} A/mm² · Fr ${f(FrS, 2)} → Cu ${f(pcu, 1)} W at the ${s.tRms} A rms class current`);
 }
 
 // ---------- C. protection ladder (energies, classes, timing) ----------
@@ -130,8 +131,7 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("C", `${sku} fuse derate`, cap >= (sku === "30kw" ? 55.9 : s.Iline),
     `${s.fuse} A gG → ${f(cap, 1)} A enclosed/hot ≥ ${f(sku === "30kw" ? 55.9 : s.Iline, 1)} A`);
   ck("C", `${sku} precharge-bypass class`, (sku === "30kw" ? 55.9 : s.Iline) / s.kpre <= 0.75, `${f(100 * (sku === "30kw" ? 55.9 : s.Iline) / s.kpre, 0)}% of ${s.kpre} A`);
-  const kout = s.Iout / (/^50kw/.test(sku) ? 2 : 1) / 200;
-  ck("C", `${sku} K_OUT loading`, kout <= 0.70, `${f(100 * kout, 0)}% per 200 A relay${sku === "50kw" ? " (dual)" : ""}`);
+  ck("C", `${sku} output blocking diode class (E67, K_OUT retired)`, s.Iout / s.dout <= 0.70, `${s.Iout} A on the ${s.dout} A module = ${f(100 * s.Iout / s.dout, 0)} %`);
   // OC observability inside the rail
   // E60: the comparator thresholds themselves (F.01 line / F.11 tank) must be representable with
   // ≥0.27 V left to the rail; the observability-through-the-fault-race proof is current-coordination's
@@ -140,9 +140,9 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("C", `${sku} CT burden rail budgets`, obs <= 3.0 && res <= 3.0,
     `F.01 ${s.F01} A on ${s.lineB} Ω → ${f(obs, 2)} V · F.11 ${s.F11} A on ${s.resB} Ω → ${f(res, 2)} V (≤3.0, headroom for the kill race)`);
   // bank bleeders
-  const cBank = s.nBank * 235e-6, tauB = 4 * 2200 * cBank;
-  ck("C", `${sku} bank bleeder window`, tauB >= 2 && tauB <= 17 && 0.5 * cBank * 525 * 525 / 4 <= 65,
-    `τ ${f(tauB, 1)} s (family 4–17 s) · ${f(0.5 * cBank * 525 * 525 / 4, 0)} J/resistor ≤ 65`);
+  const cBank = s.nE * 330e-6 + s.nF * 2.2e-6, tauB = 4 * 2200 * cBank;
+  ck("C", `${sku} bank bleeder window (E67 bank C)`, tauB >= 2 && tauB <= 17 && 0.5 * cBank * 500 * 500 / 4 <= 65,
+    `${f(cBank * 1e6, 0)} µF per bank → τ ${f(tauB, 1)} s (family 2–17 s) · ${f(0.5 * cBank * 500 * 500 / 4, 0)} J/resistor ≤ 65`);
 }
 { // X-bleed with the E43 4.7 µF CX2 and the E65 damper cap (its 10 Ω is ≪ the bleed star, it discharges with the bank)
   const A30 = B["30kw"].ac, cX = (A30.val.get("CX11") + A30.val.get("CX21") + (A30.val.get("CDMP1") ?? 0)) * 1e6;
@@ -164,19 +164,16 @@ function tjWorst(sku) {
   const wl = rows.reduce((a, r) => (+r[14] > +a[14] ? r : a));
   return { p: Math.max(...rows.map(r => +r[13])), l: +wl[14], ip: Math.max(...rows.map(r => +r[10])), lRow: wl };
 }
-{ // 50 kW liquid: re-derive the grid's OWN worst LLC row closed-form (E60: the SER hysteresis band is in the grid now)
-  const g = tjWorst("50kw"), ipW = +g.lRow[10], psW = g.lRow[6] === "PS" ? 8 : 1;
+{ // 50 kW liquid: re-derive the grid's OWN worst LLC row closed-form (E67: full bridge, par FETs per position)
+  const g = tjWorst("50kw"), ipW = +g.lRow[10], psW = g.lRow[6] === "PSM" ? 8 : 1, par = SK["50kw"].parL;
   const plate = { cold: 10, room: 45, hot: 65 }[g.lRow[4]];
-  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + psW) * 1.1;
-  ck("D", "50kw LLC worst corner reproduces", Math.abs(Tj - g.l) < 3, `closed-form ${f(Tj, 0)} °C vs grid ${g.l} at its worst row (${g.lRow[2]} V ${g.lRow[5]} ${g.lRow[6]} ${g.lRow[4]}, Ip ${ipW} A rms — single FETs, liquid model)`);
-  ck("D", "50kw Ip max inside the tank class", g.ip <= 77.3 * 1.02, `${g.ip} A rms ≤ 77.3 A rms class (E60: the old "65 A pk" was the same rms quantity mislabelled)`);
-  // and the air counterfactual that justifies the liquid choice
-  let Ta = 90; for (let i = 0; i < 40; i++) Ta = 70 + ((63.3 / Math.SQRT2) ** 2 * 0.023 * (1 + 0.004 * (Ta - 25)) + 1) * 1.9;
-  ck("D", "the liquid dividend is real", Ta > 175, `the Imax PS corner (63.3 A rms) on AIR computes ${f(Ta, 0)} °C (> abs-max) — single LLC FETs only exist because of the coldplate`);
+  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + psW / par) * 1.1;
+  ck("D", "50kw LLC worst corner reproduces", Math.abs(Tj - g.l) < 3, `closed-form ${f(Tj, 0)} °C vs grid ${g.l} at its worst row (${g.lRow[2]} V ${g.lRow[5]} ${g.lRow[6]} ${g.lRow[4]}, Ip ${ipW} A rms — ${par} FETs per position, liquid model)`);
+  ck("D", "50kw Ip max inside the tank class", g.ip <= SK["50kw"].tRms * 1.02, `${g.ip} A rms ≤ ${SK["50kw"].tRms} A rms class`);
 }
-for (const [sku, cls] of [["30kw", 46.4], ["40kw", 61.9]]) {
+for (const sku of ["30kw", "40kw", "50kwa"]) {
   const g = tjWorst(sku);
-  ck("D", `${sku} grid worst temps inside ceilings`, g.p <= 150 && g.l <= 150.5 && g.ip <= cls * 1.02, `TjPFC ${g.p} · TjLLC ${g.l} · Ip ${g.ip} A rms ≤ ${cls} class`);
+  ck("D", `${sku} grid worst temps inside ceilings`, g.p <= 150 && g.l <= 150.5 && g.ip <= SK[sku].tRms * 1.02, `TjPFC ${g.p} · TjLLC ${g.l} · Ip ${g.ip} A rms ≤ ${SK[sku].tRms} class`);
 }
 
 // ---------- E. aux budget per variant ----------
@@ -194,15 +191,10 @@ for (const [sku, s] of Object.entries(SK)) {
 // ---------- F. bank + link ripple (3-φ interleave, numeric) ----------
 console.log("\n=== F. CAPACITOR RIPPLE (numeric interleave model) ===");
 for (const [sku, s] of Object.entries(SK)) {
-  const Idc = s.Imax / 2;                       // per bank, PAR worst
-  let sum = 0, n = 3000, mean = 0, acc = 0;
-  const iSec = (th, k) => Math.abs(Math.sin(th - k * 2 * Math.PI / 3)) * (Math.PI / 2) * Idc / 3;
-  for (let i = 0; i < n; i++) { const th = Math.PI * 2 * i / n; const it = iSec(th, 0) + iSec(th, 1) + iSec(th, 2); mean += it / n; }
-  for (let i = 0; i < n; i++) { const th = Math.PI * 2 * i / n; const it = iSec(th, 0) + iSec(th, 1) + iSec(th, 2); acc += (it - mean) ** 2 / n; }
-  const iRip = Math.sqrt(acc);                  // low-order interleave residue (HF handled by film)
-  const perCan = iRip / (s.nBank * 1);          // strings share; series pair carries same current
-  ck("F", `${sku} bank per-can interleave ripple`, perCan <= 2.9,
-    `3-φ residue ${f(iRip, 1)} A rms over ${s.nBank} strings → ${f(perCan, 2)} A/can (class ~2.8 A @105 °C; film takes the 280 kHz component)`);
+  // E67: one bridge, no interleave — the full-wave rectified ripple √(π²/8 − 1)·Idc at the HIGH-mode floor lands on the rectifier film
+  const Idc = s.P / 500, iRip = Math.sqrt(Math.PI ** 2 / 8 - 1) * Idc, perFilm = iRip / s.nF;
+  ck("F", `${sku} bank film ripple (full-bridge, clean-room)`, perFilm <= 10.5,
+    `Idc ${f(Idc, 0)} A → ${f(iRip, 1)} A rms ripple (sine-rectifier closed form) over ${s.nF}× 2.2 µF = ${f(perFilm, 2)} A/part ≤ 10.5 (ngspice PSM corner reads ~20 % higher — current-coordination gates that)`);
   const pCan = { "30kw": 12, "40kw": 12 * (4 / 3) ** 2 * 10 / 12, "50kw": 12 * (5 / 3) ** 2 * 10 / 16, "50kwa": 12 * (5 / 3) ** 2 * 10 / 16 }[sku] / (s.nHalf * 2);
   ck("F", `${sku} link per-can dissipation vs family control`, pCan <= 1.85,
     `${f(pCan, 2)} W/can (30 kW control ${f(12 / 10, 2)} — same class duty, bench T-03 measures)`);
@@ -234,27 +226,21 @@ for (const [sku, s] of Object.entries(SK)) {
   const acPD = ["GATE_EN_A", "EN_PFC", "CTL_KPRE", "CTL_QDIS", "PWM_A0", "PWM_B0", "PWM_C0"];
   ck("G", `${sku} AC-DC default-OFF coverage`, acPD.every((n, i) => A.netOfPin.get(`RPD${i}.pin1`) === n && A.netOfPin.get(`RPD${i}.pin2`) === "DGND"),
     `${acPD.length}/7 lines pulled to DGND`);
-  const dcPD = ["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_KOUT", "CTL_KPREA", "CTL_KPREB", "CTL_QDISBK"];
-  ck("G", `${sku} DC-DC default-OFF coverage`, dcPD.every((n, i) => D.netOfPin.get(`RPDB${i}.pin1`) === n && D.netOfPin.get(`RPDB${i}.pin2`) === "DGND"),
-    `${dcPD.length}/9 lines pulled to DGND`);
+  const dcPD = ["GATE_EN_B", "EN_LLC", "CTL_KSER", "CTL_KPARA", "CTL_KPARB", "CTL_QDISBK"];
+  ck("G", `${sku} DC-DC default-OFF coverage`, dcPD.every((n, i) => D.netOfPin.get(`RPDB${i}.pin1`) === n && D.netOfPin.get(`RPDB${i}.pin2`) === "DGND") && !D.byName.has(`RPDB${dcPD.length}`),
+    `${dcPD.length}/6 lines pulled to DGND (E67: K_OUT + pre-insertion lines retired)`);
   // LLC + tank + banks
-  ck("G", `${sku} LLC legs`, cnt(D, /^Q\d[HL]$/) === 6 && cnt(D, /^Q\d[HL]2$/) === (s.parL ? 6 : 0) && cnt(D, /^RG\d[HL]2$/) === (s.parL ? 6 : 0),
-    s.parL ? "12 half-bridge FETs (E44 paralleled pairs + per-device gate Rs)" : "6 half-bridge FETs, 3 legs");
-  ck("G", `${sku} tank caps`, cnt(D, /^C\dR\d$/) === 3 * s.crN && [0, 1, 2].every(k => Math.abs(D.val.get(`C${k + 1}R0`) - s.crV) < 1e-12),
-    `${3 * s.crN} × ${f(s.crV * 1e9, 0)} nF`);
-  ck("G", `${sku} trim + resonant burden`, [1, 2, 3].every(i => Math.abs(D.val.get(`L${i}T`) - s.trim) < 1e-9) && [1, 2, 3].every(i => Math.abs(D.val.get(`R${i}CT`) - s.resB) < 0.05),
-    `${f(s.trim * 1e6, 1)} µH · ${s.resB} Ω`);
-  ck("G", `${sku} bank strings`, cnt(D, /^CB[AB]\d+[TB]$/) === s.nBank * 4, `${s.nBank} strings × 2-series × 2 banks`);
-  ck("G", `${sku} secondary bridges`, cnt(D, /^D\d[AB][1-4]$/) === 24, "24 JBS diodes (dual bridges × 3 sections)");
-  // K_OUT single vs dual + mirror chain
-  if (sku === "50kw" || sku === "50kwa") {
-    ck("G", `${sku} K_OUT dual pair`, D.byName.has("KOUT2") && D.netOfPin.get("KOUT.M2") === D.netOfPin.get("KOUT2.M1") && D.netOfPin.get("KOUT2.M2") === "RELAY_FB_KOUT"
-      && D.netOfPin.get("KOUT2.A") === D.netOfPin.get("KOUT.A") && D.netOfPin.get("KOUT2.B") === D.netOfPin.get("KOUT.B") && D.netOfPin.get("KOUT2.C2") === D.netOfPin.get("KOUT.C2"),
-      "contacts paralleled, coils share the driver, mirrors in series → one FB proves BOTH released");
-    ck("G", `${sku} matrix legs single`, !D.byName.has("KSER2") && !D.byName.has("KPARA2") && !D.byName.has("KPARB2"), "no pointless doubling");
-  } else {
-    ck("G", `${sku} K_OUT single + mirror`, !D.byName.has("KOUT2") && D.netOfPin.get("KOUT.M2") === "RELAY_FB_KOUT", "single 200 A class, mirror to FB");
-  }
+  ck("G", `${sku} LLC full bridge`, cnt(D, /^Q[12][HL]$/) === 4 && cnt(D, /^Q[12][HL]2$/) === (s.parL >= 2 ? 4 : 0) && cnt(D, /^Q[12][HL]3$/) === (s.parL === 3 ? 4 : 0) && !D.byName.has("Q3H"),
+    `${4 * s.parL} FETs, 2 legs × ${s.parL} per position (E67)`);
+  ck("G", `${sku} tank caps + external Lr + transformer cells`, cnt(D, /^C1R\d+$/) === s.crN && Math.abs(D.val.get("C1R0") - s.crV) < 1e-12 && Math.abs(D.val.get("L1R") - s.lr) < 1e-8
+      && D.netOfPin.get("C1R0.pin2") === D.netOfPin.get("L1R.pin1") && D.netOfPin.get("L1R.pin2") === D.netOfPin.get("T1A.P1") && D.netOfPin.get("T1A.P2") === D.netOfPin.get("T1B.P1") && D.netOfPin.get("T1B.P2") === D.netOfPin.get("Q2H.S") && D.netOfPin.get("C1R0.pin1") === D.netOfPin.get("Q1H.S") && D.netOfPin.get("Q1H.S") !== D.netOfPin.get("Q2H.S"),
+    `SWA → ${s.crN} × ${f(s.crV * 1e9, 0)} nF → ${f(s.lr * 1e6, 2)} µH → T1A.P → T1B.P → SWB (Cr strictly in series: flux-walk blocked)`);
+  ck("G", `${sku} resonant burden`, Math.abs(D.val.get("R1CT") - s.resB) < 0.01 && !D.byName.has("CT2"), `${s.resB} Ω on the one tank CT`);
+  ck("G", `${sku} bank filters`, cnt(D, /^CF[AB]\d$/) === 2 * s.nF && cnt(D, /^LF[AB]$/) === 2 && cnt(D, /^CE[AB]\d$/) === 2 * s.nE && D.netOfPin.get("LFA.pin1") === "RKAP" && D.netOfPin.get("LFA.pin2") === "BKAP" && D.netOfPin.get("CFA0.pin1") === "RKAP" && D.netOfPin.get("CEA0.pin1") === "BKAP" && !D.byName.has("CBA0T"),
+    `per bank ${s.nF}× 2.2 µF film at RK·P → Lf → ${s.nE}× 330 µF at BK·P (E67)`);
+  ck("G", `${sku} secondary bridges`, cnt(D, /^D1[AB][1-4](P[23])?$/) === 8 * s.dPar, `${8 * s.dPar} JBS (2 bridges × 4 positions × ${s.dPar})`);
+  ck("G", `${sku} output: blocking diode, no K_OUT / pre-insertion`, D.netOfPin.get("DOUT.pin1") === "BKAP" && D.netOfPin.get("DOUT.pin2") === "OUTP" && !D.byName.has("KOUT") && !D.byName.has("KPREA") && !D.byName.has("RPREA") && !D.byName.has("UEXCL2"),
+    "BKAP → DOUT → OUTP · matrix KSER/KPARA/KPARB only (E67)");
   ck("G", `${sku} RATING strap`, Math.abs(D.val.get("RROLEB") - { "30kw": 0, "40kw": 1000, "50kw": 10000, "50kwa": 15000 }[sku]) < 1, `${D.val.get("RROLEB")} Ω`);
   // E65: the filter the pre-compliance and stability gates model — Y trios on BOTH CM-choke nodes (two CM stages)
   // and the CX2-node Rd–Cd damper; then the PE leakage those Y caps imply
@@ -352,16 +338,9 @@ for (const [sku] of Object.entries(SK)) {
     "NSI6611 VCC1 + AMC class both sides at the pins");
   ck("J", `${sku} floating-rail bulk + CAN`, A.netOfPin.get("C5BAC.pin1") === A.netOfPin.get("PS5AC.P5") && A.netOfPin.get("C5BBUS.pin1") === A.netOfPin.get("PS5BUS.P5") && D.netOfPin.get("C5BBKA.pin1") === D.netOfPin.get("PS5BKA.P5") && D.netOfPin.get("CSHB.pin1") === D.netOfPin.get("USHO.VDD1") && D.netOfPin.get("CCV1.pin1") === D.netOfPin.get("UCAN.VDD1") && D.netOfPin.get("CCV2.pin1") === D.netOfPin.get("UCAN.VDD2") && D.netOfPin.get("CCB5.pin1") === D.netOfPin.get("PSCAN.P5") && A.netOfPin.get("CQD.pin1") === A.netOfPin.get("UQD.VCC"),
     "1 µ reservoirs live at the module-fed rails; opto driver decoupled at its pins");
-  // R5-D: two-stage exclusion — the pre-insertion contacts join
-  ck("J", `${sku} exclusion incl. pre-insertion`, D.netOfPin.get("UEXCL2.A1") === "CTL_KPREA" && D.netOfPin.get("UEXCL2.B1") === "CTL_KPREB" && D.netOfPin.get("UEXCL2.A2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.B2") === "KSER_STG1" && D.netOfPin.get("UEXCL2.Y4") === "KSER_GATED" && D.netOfPin.get("ULB.IN1") === "KSER_GATED" && D.netOfPin.get("CEXCL.pin1") === D.netOfPin.get("UEXCL.VCC") && D.netOfPin.get("CEXCL2.pin1") === D.netOfPin.get("UEXCL2.VCC"),
-    "KSER coil = KSER ∧ ¬(KPARA∨KPARB) ∧ ¬(KPREA∨KPREB); both stages bypassed");
-  // E58: flux-walk blocker — the resonant Cr bank sits in SERIES with each primary
-  // (SW → Cr → trim → P1), so DC volt-second asymmetry cannot walk the transformer core.
-  ck("J", `${sku} flux-walk blocked by series Cr (all 3 sections)`, [1, 2, 3].every((n) =>
-    D.netOfPin.get(`C${n}R0.pin2`) === D.netOfPin.get(`L${n}T.pin1`) &&
-    D.netOfPin.get(`L${n}T.pin2`) === D.netOfPin.get(`T${n}.P1`) &&
-    D.netOfPin.get(`C${n}R0.pin1`) !== D.netOfPin.get(`T${n}.P1`)),
-    "SW → Cr bank → trim → primary, Cr strictly in series — DC-block by construction (E58 temp-critique companion)");
+  // R4-8 exclusion stage (E67: the pre-insertion second stage retired with the pre-insertion pair) — the KSER coil input is gated
+  ck("J", `${sku} S/P exclusion gate`, D.netOfPin.get("UEXCL.A1") === "CTL_KPARA" && D.netOfPin.get("UEXCL.B1") === "CTL_KPARB" && D.netOfPin.get("UEXCL.Y4") === "KSER_STG1" && D.netOfPin.get("ULB.IN1") === "KSER_STG1",
+    "KSER coil = KSER ∧ ¬(KPARA∨KPARB) — the forbidden bank-short state is unreachable in hardware");
   // R6-E: output-current sign — VINP rides KB (OUTN side) so delivering current reads POSITIVE
   ck("J", `${sku} shunt differential sign`, D.netOfPin.get("USHO.VINP") === D.netOfPin.get("RSHO.KB") && D.netOfPin.get("USHO.VINN") === D.netOfPin.get("RSHO.KA"),
     "return current OUTN→B→A: KB high of KA when delivering — positive reading = charging (R6-E)");
@@ -407,14 +386,14 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
   ck("K", `${sku} Vienna device currents vs closed form (330 VAC, bus 830)`, dev.every((d) => Math.abs(d) <= 0.05),
     `M ${f(M, 3)}, Ia ${Ia} A → switch ${f(cf.sw, 1)} / diode avg ${f(cf.da, 1)} / diode rms ${f(cf.dr, 1)} A vs cycle-by-cycle ${sim.sw} / ${sim.da} / ${sim.dr} A (${dev.map((d) => `${d >= 0 ? "+" : ""}${f(100 * d, 1)} %`).join(" · ")}; the switched model adds ripple, ≤ ±5 %)`);
 }
-// Wolfspeed PRD-05777 (CRD-30DD12N-K user guide) Tables 11/12: worst measured tank current 54.3 A pk /
-// 36.57 A rms at 650 V bus, 500 V series output, 25 kW. Same class as our SER-250 corner (650 V bus,
-// 250 V per bank). Scaled by bank current (60/50 A) and turns (their 12:11:11 vs our 1:1:1).
+// E67 anchor: the one-bridge tank current at the HIGH-mode floor against the full-wave first-harmonic closed form — load current
+// P/(0.9·n·Vbank) in quadrature with the simulated magnetizing peak/√3 (the CRD-30DD12N-K 3-phase scaling retired with the sections)
 {
-  const llc = readFileSync(`${ROOT}/simulation-results/30kw/llc-stress.csv`, "utf8").split("\n").find((l) => l.startsWith("SER250-full,")).split(",");
-  const k = (60 / 50) * (12 / 11), refPk = 54.3 * k, refRms = 36.57 * k, dPk = +llc[10] / refPk - 1, dRms = +llc[9] / refRms - 1;
-  ck("K", "30kw LLC SER-250 tank current vs the measured reference design", Math.abs(dPk) <= 0.15 && Math.abs(dRms) <= 0.15,
-    `sim ${llc[10]} A pk / ${llc[9]} A rms vs CRD-30DD12N-K scaled ${f(refPk, 1)} / ${f(refRms, 1)} A (${f(100 * dPk, 1)} % / ${f(100 * dRms, 1)} %; different Lr/Lm, so ±15 % is the anchor band — the withdrawn deck missed power by −77…+71 %). Their tank OCP sits 1.38× above that measurement; our F.11 85 A sits 1.30× above the nominal corner`);
+  const L = readFileSync(`${ROOT}/simulation-results/30kw/llc-stress.csv`, "utf8").split("\n").filter((l) => l && !l.startsWith("#")), h = L[0].split(",");
+  const r = Object.fromEntries(L.find((l) => l.startsWith("SER250-full,")).split(",").map((v, i) => [h[i], v]));
+  const cf = Math.hypot(30e3 / (0.9 * 2 * 250), +r.Im_pk_A / Math.sqrt(3)), d = +r.Ip_rms_A / cf - 1;
+  ck("K", "30kw LLC SER-250 tank current vs the first-harmonic closed form", Math.abs(d) <= 0.10,
+    `sim ${r.Ip_rms_A} A rms (${r.fsw_kHz} kHz, above resonance) vs closed form ${f(cf, 1)} A (${f(100 * d, 1)} %, ±10 % band — FHA ignores the rectifier conduction-angle shape)`);
 }
 
 console.log(`\n${checks} checks — ${fails ? fails + " FAILURE(S)" : "ALL CLEAN"}`);

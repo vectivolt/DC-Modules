@@ -47,7 +47,7 @@ function secondary(IoutCh, sku = "30kw") {
 const SKUS = [
   { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 2 },
   { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
-  { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6 L/min)
+  { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6.5 L/min)
   { name: "50kWa", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 4, parL: 2 },   // E44 AIR: 4 fans; LLC paralleled (pri conduction halves)
   // E50: 60/120 kW single-board rows retired (products are cabinets of the four modules above)
 ];
@@ -67,7 +67,10 @@ const CH = JSON.parse(readFileSync(join(OUT, "dm-choke-design.json"), "utf8"));
 const DAMP = readFileSync(join(OUT, "pfc-filter-stability.csv"), "utf8").split("\n").map((l) => l.split(",")).filter((r) => r[1] === "time-domain" && r[3] === "15");
 const emiW = (k) => 2 * CH.d7[k].P + 3 * CH[k].P + Math.max(...DAMP.filter((r) => r[0] === k).map((r) => +r[7]));
 const EMI_FILTER = { "30kW": emiW("30kw"), "40kW": emiW("40kw"), "50kW": emiW("50kw"), "50kWa": emiW("50kw") };
-const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
+// E67: output path — the DOUT blocking diode (Vf 1.05 V, the current-coordination basis) carries the whole output current, and the
+// two D8 bank inductors (D6 construction, engine Rdc) each carry half of it in PAR. Missing from the first E67 roll-up (0.3 pt).
+const outW = (Iout, sku) => 1.05 * Iout + 2 * (CH[sku.toLowerCase().replace("50kwa", "50kw")].Rdc_mR / 1e3) * (Iout / 2) ** 2;
+const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","out_diode_lf_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
   // E41: k = per-lane power ratio vs the 30 kW design point (1.0 for every legacy row; 1.333 for
@@ -99,10 +102,11 @@ for (const s of SKUS) {
   // rev D: E26 rev C 110 W stage at per-SKU load (η 0.85) — dissipation grows with SKU.
   const aux = 20 + 8.5 * s.lanes + 9.5 * s.ch;
   const fansW = s.fans * 10;
-  const totJ = pfcSemis + pfcMag + dclink + pri + xf + tank + secJ + bus + emi + aux + fansW;
+  const outP = outW(s.Iout, s.name);
+  const totJ = pfcSemis + pfcMag + dclink + pri + xf + tank + secJ + outP + bus + emi + aux + fansW;
   const totS = totJ - secJ + secS;
-  rows.push([s.name, f(pfcSemis), f(pfcMag), f(dclink), f(pri), f(xf), f(tank), f(secJ), f(secS), f(bus), f(emi), f(aux), f(fansW), f(totJ), f(100 * s.P / (s.P + totJ), 2), f(totS), f(100 * s.P / (s.P + totS), 2)]);
-  console.log(`${s.name}: JBS total ${f(totJ, 0)} W (η=${f(100 * s.P / (s.P + totJ), 2)}%)  |  SR total ${f(totS, 0)} W (η=${f(100 * s.P / (s.P + totS), 2)}%)  | sec JBS ${f(secJ, 0)} vs SR ${f(secS, 0)} W | EMI filter ${f(emi, 0)} W`);
+  rows.push([s.name, f(pfcSemis), f(pfcMag), f(dclink), f(pri), f(xf), f(tank), f(secJ), f(secS), f(outP), f(bus), f(emi), f(aux), f(fansW), f(totJ), f(100 * s.P / (s.P + totJ), 2), f(totS), f(100 * s.P / (s.P + totS), 2)]);
+  console.log(`${s.name}: JBS total ${f(totJ, 0)} W (η=${f(100 * s.P / (s.P + totJ), 2)}%)  |  SR total ${f(totS, 0)} W (η=${f(100 * s.P / (s.P + totS), 2)}%)  | sec JBS ${f(secJ, 0)} vs SR ${f(secS, 0)} W | DOUT + Lf ${f(outP, 0)} W | EMI filter ${f(emi, 0)} W`);
 }
 writeFileSync(join(OUT, "loss-budget.csv"), rows.map(r => r.join(",")).join("\n") + "\n");
 
@@ -124,8 +128,8 @@ console.log(`fan-life field costs are priced in — revisit at Phase 17 with rea
 
 // ---------------- heatsink requirement + corners + derating
 // Worst continuous: 330 VAC full power, JBS baseline, +55 °C ambient.
-const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
-const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + secondary(100).jbsW;
+const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + outW(100, "30kW") + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
+const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + secondary(100).jbsW + 1.05 * 100;   // E67: DOUT is heatsink-mounted
 console.log(`\n30 kW worst-corner dissipation ≈ ${f(totalWorst30, 0)} W, of which heatsink-mounted semis ≈ ${f(semisShare, 0)} W`);
 const RthReq = 20 / semisShare;                       // allow 20 K sink-to-air rise at 55 °C ambient → sink ≤75 °C
 console.log(`Heatsink Rth(sink-air) ≤ ${f(RthReq, 3)} K/W @ rated airflow → forced-air extrusion, ~${f(semisShare * 1, 0)} cm² base, 2× 120×38 fans on static-pressure curve (fan calc: ~110 Pa @ 160 m³/h class, VERIFY vendor curve)`);
