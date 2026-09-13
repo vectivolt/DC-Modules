@@ -97,8 +97,8 @@ const solve2 = (loss, nw, Twall, Tair, cuK, k = 1) => {
   return { Tc, Tw, hot: Math.max(Tc, Tw) };
 };
 // local air velocity at the magnetics scales with the per-SKU airflow need (thermal-report air budget 128/187/245 m³/h)
-const V_AIR = { "30kw": 2.0, "40kw": 2.5, "50kw": 0, "50kwa": 3.2 };
-const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * frac);
+export const V_AIR = { "30kw": 2.0, "40kw": 2.5, "50kw": 0, "50kwa": 3.2 };
+export const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * frac);
 
 // ---------------- the E65 constructions (drawings of record after E65) ----------------
 // D3: turns ratio 1:1:1 and Lm 63 µH unchanged from E60 → tank fingerprint and every LLC simulation stay valid.

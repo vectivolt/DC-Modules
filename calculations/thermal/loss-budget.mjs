@@ -7,11 +7,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { plotSVG } from "../plot.mjs";
 import { excitation, d3Loss, d2Loss, D3 as D3C, D2 as D2C } from "../magnetics/magnetics-envelope.mjs";
+import { D1 as D1C, d1Loss, row as vsRow } from "../magnetics/d1-choke.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const f = (x, d = 1) => Number(x.toFixed(d));
 
 // ---------------- per-lane / per-channel building blocks (from Phase 3/6/7 outputs)
-const PFC_LANE = { semis: 3 * (43.5 + 24.2), mag: 3 * 34.8, note: "3 pairs @43.5 W + 3 diode-pairs 24.2 W (per-diode 12.1 W ×2) + 3 chokes 34.8 W @330 V corner (D1 rev B: N=39/18 mm² on the real 0077908A7 core — audit F4; Cu 32.4 + Fe 2.4)" };
+// E65 D1: choke loss per SKU from d1-choke on the vienna-switched row (50 Hz + 50 kHz ripple copper at the datasheet MLT with the 2-D
+// anchored proximity factor, iGSE Kool Mµ 26 at the datasheet max) — the k-scaled 32.4 + 2.4 W and its ×0.72 line factor are retired
+const D1_AT = (sku, tag, T) => { const L = d1Loss(D1C[sku], vsRow(sku, tag), T); return L.lf + L.hf + L.fe; };
+const PFC_LANE = { semis: 3 * (43.5 + 24.2), mag: 3 * D1_AT("30kw", "330-full-bus830-lot92", 100), note: "3 pairs @43.5 W + 3 diode-pairs 24.2 W (per-diode 12.1 W ×2) + 3 D1-30 chokes at the 330 VAC corner (d1-choke, E65)" };
 // LLC phase current at the nominal full-power point = the power-solved ngspice PAR400-full corner
 // (bank 400 V, bus 830). E60: the pre-E60 23.3 A came from the withdrawn no-body-diode deck and
 // understated the nominal current by ~20 % (sim 29.0 A at 30 kW).
@@ -66,7 +70,7 @@ for (const s of SKUS) {
   //   · PFC pair loss splits ~0.68 conduction / 0.32 switching at 50 kHz (Phase-3 DPT energy ratio
   //     — VERIFY against dpt CSV at E41 close): conduction ∝ k², switching ∝ k. `pfcPar` = 2
   //     paralleled B3M per position (the no-new-part option): conduction halves, switching shared.
-  //   · PFC diodes are Vf-dominated ∝ k; D1 choke REWOUND at constant J → Cu ∝ k, Fe ≈ flat.
+  //   · PFC diodes are Vf-dominated ∝ k; D1 chokes (E65) are computed per SKU at the 400 VAC rated row, windings 90 °C.
   //   · transformer D3-40 rewound/upsized at constant J → Cu share (0.65) ∝ k, Fe ≈ flat.
   //   · LLC_CH()/secondary() are already current-parameterized.
   const k = (s.P / s.lanes) / 30e3;
@@ -74,7 +78,7 @@ for (const s of SKUS) {
   const pfcSemis = (3 * pairW + 3 * 24.2 * k) * 0.78 * s.lanes;
   const pfcSemisPar = (3 * pairParW + 3 * 24.2 * k) * 0.78 * s.lanes;
   if (k > 1.01) console.log(`  ${s.name} PFC semi scenarios @330 V corner-scaled: single-FET ${f(pfcSemis / 0.78, 0)} W · 2x-parallel ${f(pfcSemisPar / 0.78, 0)} W (per pair ${f(pairW, 1)} vs ${f(pairParW, 1)} W)`);
-  const pfcMag = 3 * (32.4 * k + 2.4) * 0.72 * s.lanes;
+  const pfcMag = 3 * D1_AT(s.name.toLowerCase(), "400-full-bus830-nom", 90) * s.lanes;
   const dclink = 12 * s.lanes * k * k * (10 / (10 * k > 10 ? 12 : 10)) * (s.lanes > 1 ? 1 : 1);
   const llc = LLC_CH(IP_NOM(s.name), s.name);
   // E65: transformer per-section loss = magnetics-envelope at PAR400-full (30 kW 2×E70 7:7:7 · 40 kW 2×E70 6:6:6 ·

@@ -11,6 +11,7 @@ node calculations/llc/llc-design.mjs
 node calculations/thermal/loss-budget.mjs
 node calculations/system/envelope-grid.mjs
 node calculations/pfc/vienna-switched.mjs
+node calculations/magnetics/d1-fd.mjs
 node calculations/system/monte-carlo.mjs
 node calculations/system/fsm-sim.mjs
 node calculations/emi/dm-choke-design.mjs

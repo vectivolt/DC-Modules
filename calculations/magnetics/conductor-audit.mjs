@@ -16,7 +16,7 @@ const f = (x, d = 2) => Number(x.toFixed(d));
 let fails = 0;
 const ck = (sec, name, cond, detail) => { console.log(`${cond ? "  ok  " : "  FAIL"}  [${sec}] ${name} — ${detail}`); if (!cond) fails++; };
 import { rho, delta, dowell, litzFr } from "./winding-physics.mjs";
-import { toroidMlt } from "./geometry.mjs";
+import { D1 as D1C, d1Loss } from "./d1-choke.mjs";
 import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
 const T = 100;                                                      // winding hot-spot class basis, °C
 
@@ -30,17 +30,22 @@ const vh = vs[0].split(","), VS = vs.slice(1).map((l) => { const c = l.match(/("
 console.log("=== CONDUCTOR AUDIT (E60 · E65 constructions) — Dowell/Sullivan AC copper at the simulated currents ===");
 console.log(`  info  Cu IEC 60028: ρ(100 °C) = ${f(rho(100) * 1e8, 3)}e-8 Ω·m · δ(50 kHz) ${f(delta(50e3, T) * 1e3, 3)} mm · δ(140 kHz) ${f(delta(140e3, T) * 1e3, 3)} mm · δ(190 kHz) ${f(delta(190e3, T) * 1e3, 3)} mm`);
 
-// ---------------- D1: round enamelled bundles at 50 Hz + 50 kHz ripple ----------------
-// E65: D1-40/50 MLT 0.190 → the 5-stack geometry (0.242 m, the pfc-design winding model) — the Pcu budgets follow it
-const D1W = { "30kw": { N: 39, nw: 9, d: 1.6e-3, mlt: toroidMlt("T79", 3), rdcLine: 11e-3, Pcu: 32.4 }, "40kw": { N: 26, nw: 13, d: 1.6e-3, mlt: toroidMlt("T79", 5), rdcLine: 7.0e-3, Pcu: 39 }, "50kw": { N: 24, nw: 13, d: 1.6e-3, mlt: toroidMlt("T79", 5), rdcLine: 6.5e-3, Pcu: 55 } };
-for (const [sku, w] of Object.entries(D1W)) {
-  const r = VS.find((x) => x.sku === sku && x.case === "330-full-bus830-lot92");
-  const Irms = +r.Irms_A, I1 = +r.I1pk_A / Math.SQRT2, Ihf = Math.sqrt(Math.max(Irms * Irms - I1 * I1, 0));
-  const A = w.nw * Math.PI * w.d ** 2 / 4, Rdc = rho(T) * w.N * w.mlt / A, Rdc25 = rho(25) * w.N * w.mlt / A;
-  const Fr = dowell(Math.pow(Math.PI / 4, 0.75) * (w.d / delta(50e3, T)) * Math.sqrt(0.85), 2);
-  const P = I1 * I1 * Rdc + Ihf * Ihf * Rdc * Fr;
-  ck("D1", `${sku} bundle ${w.nw}× ${w.d * 1e3} mm, ${w.N} T`, Rdc25 <= w.rdcLine * 1.02 && P <= w.Pcu * 1.25,
-    `Rdc ${f(Rdc25 * 1e3)} mΩ @25 °C (line ≤${w.rdcLine * 1e3}) · 50 Hz ${f(I1, 1)} A + 50 kHz ripple ${f(Ihf, 1)} A rms at Fr ${f(Fr, 1)} → Cu ${f(P, 1)} W hot (budget ${w.Pcu} W; HF share ${f(100 * Ihf * Ihf * Fr / (I1 * I1), 0)} %) — ripple is ~11 % of rms, so solid round wire stays the right conductor (litz buys <5 %)`);
+// ---------------- D1: taped round-wire bundles at 50 Hz + 50 kHz ripple ----------------
+// E65 (d1-choke): the E60 row counted two layers of strands (Dowell m = 2, Fr 11.4) and 0.170/0.190 m turns. The bundles put 8–10
+// strand rows in the bore field: copper is now Ferreira on every strand at its own radius × the 2-D shielding factor solved by
+// d1-fd (twisted/transposed bundle = design basis), on the datasheet MLT; temperature is proven in stress-audit.
+// Production rows at 25 °C (D1-F4): an absolute row ≤15 % above the build that still passes a good part at the lot-trim N+1 with
+// +3 % turn length and a −2.25 % wire area (IEC 60317 1.6 mm ±0.018 mm), and catches two open strands; a ±5 % per-lot window
+// around the median of the lot's first five parts (4-wire, corrected to 25 °C) catches ONE open strand (+12.5 % of 9, +8.3 % of 13).
+export const D1ROWS = { "30kw": { rdc25: 6.9e-3 }, "40kw": { rdc25: 4.55e-3 }, "50kw": { rdc25: 4.15e-3 } };
+export const D1_LOT_WINDOW = 0.05;
+for (const [sku, row] of Object.entries(D1ROWS)) {
+  const c = D1C[sku], r = VS.find((x) => x.sku === sku && x.case === "330-full-bus830-lot92"), L = d1Loss(c, r, T);
+  ck("D1", `${sku} bundle ${c.nw}× ${c.d * 1e3} mm, ${c.N} T on ${c.stack}×T79`, L.fd.ok && L.fd.k2D >= 0.5 && L.fd.k2D <= 1,
+    `MLT ${f(L.g.mlt * 1e3, 0)} mm (Magnetics table, K ${f(L.g.K * 100, 0)} %) · 50 Hz ${f(L.I1, 1)} A → ${f(L.lf, 1)} W · 50 kHz ripple ${f(L.Ihf, 2)} A rms at Fr ${f(L.Fr, 1)} (Ferreira ${f(L.FrFerreira, 1)} × 2-D ${f(L.fd.k2D, 3)}; a flat untwisted bundle computes ${f(L.hfUntwisted, 1)} W) → ${f(L.hf, 1)} W · Cu ${f(L.lf + L.hf, 1)} W hot — the E60 m = 2 model read ${f(L.Ihf * L.Ihf * L.Rdc * dowell(Math.pow(Math.PI / 4, 0.75) * (c.d / delta(50e3, T)) * Math.sqrt(0.85), 2), 1)} W ripple copper [${L.fd.src}]`);
+  const good = (L.Rdc25 * (c.N + 1) / c.N) * 1.03 / (1 - 0.0225), twoOpen = (L.Rdc25 * c.nw) / (c.nw - 2), oneOpen = c.nw / (c.nw - 1) - 1;
+  ck("D1", `${sku} production Rdc row @25 °C catches open strands`, row.rdc25 <= 1.15 * L.Rdc25 && row.rdc25 >= good && twoOpen > row.rdc25 && oneOpen > D1_LOT_WINDOW + 0.03,
+    `build ${f(L.Rdc25 * 1e3)} mΩ · row ≤${f(row.rdc25 * 1e3)} mΩ (${f(100 * (row.rdc25 / L.Rdc25 - 1), 0)} % above; worst good part ${f(good * 1e3)}; 2 strands open ${f(twoOpen * 1e3)}) · lot window ±${D1_LOT_WINDOW * 100} % vs one open strand +${f(100 * oneOpen, 1)} % — the E60 lines ≤11 / 7.0 / 6.5 mΩ passed a third of the strands open`);
 }
 
 // ---------------- D2: litz trim inductors at the tank current ----------------

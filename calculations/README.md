@@ -60,7 +60,9 @@ flowchart TB
 | `design-basis.mjs` | input currents, availability policy, first-pass sizing |
 | `pfc/pfc-design.mjs` | Vienna device losses and the D1 choke search on the **catalog core** (E51) |
 | `pfc/pfc-control.mjs` | current and voltage loops with an ngspice AC cross-check |
-| `pfc/vienna-switched.mjs` | **cycle-by-cycle** 3-φ Vienna — catalog L(i), floating neutral, dips, phase jump, high line (E60) |
+| `pfc/vienna-switched.mjs` | **cycle-by-cycle** 3-φ Vienna — catalog L(i), floating neutral, dips, phase jump, high line (E60); D1 ripple, iGSE core loss, switch-end peak (E65) |
+| `magnetics/d1-choke.mjs` | the D1 PFC choke model — datasheet MLT, strand-resolved ripple copper, wound surfaces, air ∥ bond thermal (E65) |
+| `magnetics/d1-fd.mjs` | 2-D eddy-current anchor for the D1 bundles → `out/d1-fd.csv`, fingerprinted per build (E65) |
 | `llc/llc-design.mjs` | tank synthesis (joint Ln · Q solve), operating map, first-pass transformer basis |
 | `llc/tanks.mjs` | **the one per-SKU tank table** — Lr, Cr, Lm, Coss, D2 turns and area — with the fingerprint every LLC result carries (E60) |
 | `emi/dm-choke-design.mjs` | D6 engine — crest-biased inductance floors per variant (E43) |

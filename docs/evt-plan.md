@@ -30,7 +30,7 @@
 | Bring-up and power quality | T-00 · T-02 · T-03 · T-10 · T-19 |
 | Pulse parts and discharge | T-05 · T-21 · T-22 · T-27 · T-28 |
 | Aux supply | T-09 · T-11 · T-12 · T-18 · T-29 |
-| Thermal and environment | T-04 · T-15 · T-23 · **T-32** |
+| Thermal and environment | T-04 · T-15 · T-23 · **T-32** · **T-33** |
 | EMI and insulation | T-08 · T-13 · T-14 |
 | Relays and series / parallel | T-07 · T-24 |
 | Magnetics and tank | T-25 · **T-31** |
@@ -38,12 +38,12 @@
 </td><td valign="top" width="48%">
 
 ```mermaid
-pie showData title 33 tests by domain
+pie showData title 34 tests by domain
   "device and protection" : 7
   "bring-up and quality" : 5
   "pulse parts and discharge" : 5
   "aux supply" : 5
-  "thermal and environment" : 4
+  "thermal and environment" : 5
   "EMI and insulation" : 3
   "relays and S/P" : 2
   "magnetics and tank" : 2
@@ -68,6 +68,7 @@ flowchart LR
   E --> I["T-09 / T-11–T-13 / T-18 / T-19 / T-27–T-29<br/>aux · discharge · PV drive"]
   G --> J["T-10 / T-14 / T-15<br/>soak · hipot · thermography"]
   M["T-31<br/>magnetics first articles<br/>Rac @ 140 kHz"] --> K
+  VB["T-33<br/>D1 as-mounted<br/>vibration + bond"] --> K
   H --> K(["BOM freeze gates<br/>loaded PV Vgs · both-polarity trip<br/>D4 clamp · magnetics first articles"])
   I --> K
   J --> K
@@ -140,6 +141,12 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 | T-30 | **DESAT / short-circuit timing with the E60 blanks (22 pF LLC, 47 pF Vienna)** — SC type I (turn-on into short) and type II (fault under load) at 830 V (LLC) / 415 V half-bus (Vienna), Tj 25 °C and hot, both current polarities; Rogowski + Vds/Vgs capture | measured fault-to-gate-off ≤ **75 % of the vendor tSC** (and ≤ 1.5 µs LLC / ≤ 3.15 µs Vienna); no false DESAT over 10⁴ normal turn-ons at the hot corner; F.11/F.01 comparator trips land within ±5 % of 85/115/145 · 120/155/195 A pk |
 | T-31 | **First-article AC resistance + class-current thermal** — every D2/D3 winding at 140 kHz (impedance analyser; D3 shorted-secondary method), then ΔT at the class current (46.4 / 61.9 / 77.3 A rms) | Rac within **+15 %** of the conductor-audit row (D3 Rac/Rdc ≤ 1.35 per winding; D2 ≤ 4.0 / 2.6 / 2.0 mΩ); ΔT ≤ 40 K (D2) / hotspot ≤ +55 K (D3). **D3 adds an open-secondary 140 kHz check and an S1 thermocouple at PAR-525** (gap fringing is invisible to shorted-secondary Rac); S1 within +10 K of the S2 reading. A miss is a construction error: re-check strand size, foil gauge, lay-up, gap split |
 | T-32 | **Cold soak −30 °C, 4 h, then start and ramp (A11 rev C competitor parity)** — per SKU in the chamber, 330 and 475 VAC | aux starts per T-29; precharge inside the EOL window ×1.3; FW-R3 soft limit engages and releases; no F.xx trip; e-cap ESR/ripple, fan start and magnetics self-warming logged |
+
+## 4. Bonded PFC chokes on real hardware (E65 · T-33)
+
+| Test | Procedure | Pass criterion |
+|---|---|---|
+| T-33 | **D1 as-mounted resonance search and endurance (IEC 60068-2-6)** — one module per SKU with the E65 D1 mount (gap pad, GF-PPS clamp cap, bore sleeve, M6 at 4.5 N·m on a Belleville, 2-point banding, strain-relieved leads): pre-test L₀, 4-wire Rdc and bonded-face thermal (the `stress-audit` [D1-BUILD] type-test current); 0.5 g sine search 10–500 Hz, 1 oct/min, 3 axes, accelerometers on the clamp cap and the stack top; 2 g sweep; 10 min dwell at each resonance with transmissibility > 2; final 0.5 g search. Then the D1 rows of T-04 at 330 VAC / 55 °C inlet with a thermocouple at the inner bore | no mode shift > 10 % between searches (nothing loosened); no pad walk, fretting or cap cracking; lead joints intact (cross-section one joint per SKU); L₀ and Rdc inside ±5 % of the pre-test values; residual bolt torque ≥ 80 %; bonded thermal rise within the pre-test value + 3 K; T-04 bore hot-spot ≤ the `stress-audit` D1 value + 10 K |
 
 ---
 
