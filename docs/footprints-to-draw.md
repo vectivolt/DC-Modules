@@ -175,7 +175,7 @@ part that defines it is chosen.
 ---
 
 <div align="center">
-<sub><a href="competitive-benchmark-e51.md">← Competitive Benchmark</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="pcb-floorplan.md">PCB Floorplan Basis →</a></sub>
+<sub><a href="benchmark-infypower-teardown.md">← InfyPower Teardown Benchmark</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="pcb-floorplan.md">PCB Floorplan Basis →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E61 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
