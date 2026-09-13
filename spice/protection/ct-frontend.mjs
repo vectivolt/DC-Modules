@@ -102,9 +102,10 @@ const push = (c, m, v, l, ok) => { rows.push([c, m, v, l, ok ? "PASS" : "FAIL"])
 // worst nominal peak (in-rails, no clamp conduction), at F.11 (lands at the computed DAC point) and at
 // F.11 + the simulated 3 µs race (still inside the 3.27 V rail); the line chain likewise at 50 Hz.
 const CLS = {
-  "30kw": { resRb: 1.2, F11: 85, pkNom: 65.6, race11: 44, lineRb: 22, F01: 120, race01: 46 },
-  "40kw": { resRb: 0.91, F11: 115, pkNom: 87.4, race11: 48, lineRb: 18, F01: 155, race01: 50 },
-  "50kw": { resRb: 0.75, F11: 145, pkNom: 108.8, race11: 52, lineRb: 13, F01: 195, race01: 72 },
+  // E65: resonant burdens 1.0/0.82/0.68 Ω; race11 = crossing-referenced 3 µs peak − F.11 (llc-short.csv: 148.7/179.9/215.6 A)
+  "30kw": { resRb: 1.0, F11: 85, pkNom: 65.6, race11: 64, lineRb: 22, F01: 120, race01: 46 },
+  "40kw": { resRb: 0.82, F11: 115, pkNom: 87.4, race11: 65, lineRb: 18, F01: 155, race01: 50 },
+  "50kw": { resRb: 0.68, F11: 145, pkNom: 108.8, race11: 71, lineRb: 13, F01: 195, race01: 72 },
 };
 const lineDeck = (ipk, rb) => ctDeck(ipk, rb, 2500, 50, "1n", 60e-3);
 for (const [sku, c] of Object.entries(CLS)) {

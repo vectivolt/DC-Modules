@@ -534,7 +534,7 @@ return (
       ))}
       {secs.map((s, i) => (
         <LlcSection key={s.id} id={s.id} sw={s.sw} star={s.star}
-          crN={pw === 50 ? 8 : pw === 40 ? 6 : 4} crVal={pw === 50 ? "27nF" : pw === 40 ? "33nF" : "46nF"} trim={pw === 50 ? "3uH" : pw === 40 ? "3.5uH" : "4uH"} ctBurden={pw === 50 ? "0.75" : pw === 40 ? "0.91" : "1.2"}
+          crN={pw === 50 ? 8 : pw === 40 ? 6 : 4} crVal={pw === 50 ? "27nF" : pw === 40 ? "33nF" : "46nF"} trim={pw === 50 ? "5.65uH" : pw === 40 ? "6.15uH" : "6.65uH"} ctBurden={pw === 50 ? "0.68" : pw === 40 ? "0.82" : "1.0"}
           x={Q.sec[i % 3]} y={Q.secY}
           bkAp="net.BKAP" bkAn="net.BKAN" bkBp="net.BKBP" bkBn="net.BKBN"
           ctOut={`net.I_RES${s.id}`}

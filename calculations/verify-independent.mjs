@@ -67,10 +67,10 @@ B.cab = loadNet(`${ROOT}/dist/boards/cabinet/circuit.json`);
 // ---------- A. system currents (first principles) ----------
 console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
 const SK = {
-  "30kw": { P: 30e3, Imax: 100, par: 1, nHalf: 5, nBank: 2, fans: 2, crN: 4, crV: 46e-9, trim: 4.0e-6, tRms: 46.4, fuse: 80, kpre: 80, lineCT: 100, resCT: 50, lineB: 22, resB: 1.2, F01: 120, F11: 85, disch: 3000, litz: 10.6 },
-  "40kw": { P: 40e3, Imax: 133, par: 2, nHalf: 6, nBank: 3, fans: 3, crN: 6, crV: 33e-9, trim: 3.5e-6, tRms: 61.9, fuse: 125, kpre: 100, lineCT: 150, resCT: 80, lineB: 18, resB: 0.91, F01: 155, F11: 115, disch: 4000, litz: 16.4 },
-  "50kw": { P: 50e3, Imax: 167, par: 2, nHalf: 8, nBank: 4, fans: 0, crN: 8, crV: 27e-9, trim: 3.0e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 13, resB: 0.75, F01: 195, F11: 145, disch: 5000, litz: 19.6 },
-  "50kwa": { P: 50e3, Imax: 167, par: 2, parL: 2, nHalf: 8, nBank: 4, fans: 4, crN: 8, crV: 27e-9, trim: 3.0e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 13, resB: 0.75, F01: 195, F11: 145, disch: 5000, litz: 19.6 },
+  "30kw": { P: 30e3, Imax: 100, par: 1, nHalf: 5, nBank: 2, fans: 2, crN: 4, crV: 46e-9, trim: 6.65e-6, tRms: 46.4, fuse: 80, kpre: 80, lineCT: 100, resCT: 50, lineB: 22, resB: 1.0, F01: 120, F11: 85, disch: 3000, litz: 12.0 },
+  "40kw": { P: 40e3, Imax: 133, par: 2, nHalf: 6, nBank: 3, fans: 3, crN: 6, crV: 33e-9, trim: 6.15e-6, tRms: 61.9, fuse: 125, kpre: 100, lineCT: 150, resCT: 80, lineB: 18, resB: 0.82, F01: 155, F11: 115, disch: 4000, litz: 16.0 },
+  "50kw": { P: 50e3, Imax: 167, par: 2, nHalf: 8, nBank: 4, fans: 0, crN: 8, crV: 27e-9, trim: 5.65e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 13, resB: 0.68, F01: 195, F11: 145, disch: 5000, litz: 16.0 },
+  "50kwa": { P: 50e3, Imax: 167, par: 2, parL: 2, nHalf: 8, nBank: 4, fans: 4, crN: 8, crV: 27e-9, trim: 5.65e-6, tRms: 77.3, fuse: 160, kpre: 250, lineCT: 150, resCT: 100, lineB: 13, resB: 0.68, F01: 195, F11: 145, disch: 5000, litz: 16.0 },
 };
 for (const [sku, s] of Object.entries(SK)) {
   s.Iline = (s.P / 0.965) / (Math.sqrt(3) * 330 * 0.99);
@@ -86,26 +86,28 @@ ck("A", "50 kW tank Ip1-bound inside revved 65 A ceiling", SK["50kw"].Ip1max < 6
 
 // ---------- B. tank resonance + capacitor duty (independent) ----------
 console.log("\n=== B. TANK — fr, per-cap duty, trim ===");
-const LLK = 3.0e-6, AE2 = 2 * 328e-6;
+// E65 clean-room leakage: concentric S1–P–S2 interleave, 1-D MMF energy L = µ0·N²·MLT/(4b)·(2g + (2hS + hP)/3) with this file's
+// own build guesses (foil + 50 µm film per turn, litz at 0.55 Cu fill + 0.6 mm serving, 0.3 mm barrier, E70 lN 230.5/293 mm)
+const XF = { "30kw": { N: 7, mlt: 0.2305, cuP: 9.8e-6, foil: 0.10e-3 }, "40kw": { N: 6, mlt: 0.2305, cuP: 13.8e-6, foil: 0.127e-3 }, "50kw": { N: 5, mlt: 0.293, cuP: 17.3e-6, foil: 0.127e-3 } };
+XF["50kwa"] = XF["50kw"];
+const llkOf = (x) => 4e-7 * Math.PI * x.N * x.N * x.mlt / (4 * 0.041) * (2 * 0.3e-3 + (2 * x.N * (x.foil + 50e-6) + x.N * x.cuP / (0.55 * 0.041) + 0.6e-3) / 3);
 for (const [sku, s] of Object.entries(SK)) {
-  const Cr = s.crN * s.crV, Lr = LLK + s.trim;
+  const LLK = llkOf(XF[sku]) + 0.1e-6, Cr = s.crN * s.crV, Lr = LLK + s.trim;
   const fr = 1 / (2 * Math.PI * Math.sqrt(Lr * Cr));
-  ck("B", `${sku} tank re-centers to the frozen fr`, Math.abs(fr - 140e3) < 2.5e3, `${s.crN}×${f(s.crV * 1e9, 0)} nF + ${f(s.trim * 1e6, 1)} µH trim + 3.0 µH leakage → fr ${f(fr / 1e3, 1)} kHz (frozen 140 ±bin)`);
+  ck("B", `${sku} tank re-centers to the frozen fr`, Math.abs(fr - 140e3) < 2.5e3 && LLK < 1e-6, `${s.crN}×${f(s.crV * 1e9, 0)} nF + ${f(s.trim * 1e6, 2)} µH trim + ${f(LLK * 1e6, 2)} µH leakage+loop (clean-room) → fr ${f(fr / 1e3, 1)} kHz (frozen 140 ±bin; the E51 "3 µH engineered leakage" would need ≈${f(3e-6 / llkOf(XF[sku]), 0)}× this build)`);
   const iCap = s.tRms / s.crN, vCap = iCap / (2 * Math.PI * 140e3 * s.crV);
   const esr = 2e-4 / (2 * Math.PI * 140e3 * s.crV), wCap = iCap * iCap * esr;
   ck("B", `${sku} per-cap duty`, iCap <= 12 && vCap < 530 && wCap < 1.0,
     `${f(iCap, 1)} A · ${f(vCap, 0)} V rms @140 kHz · ${f(wCap, 2)} W dielectric (O-8 line: curve ≥ ${f(vCap * 1.3, 0)} V — 942C class covers)`);
-  // E60 clean-room D2: own Sullivan litz proximity (π²ω²µ0²N²n²d⁶/(768ρ²b²)) — the DC×1.15 model hid Fr 4–12
-  const e70 = sku !== "30kw", two = /^50/.test(sku), Nt = two ? 3 : e70 ? 5 : 4, Ae = two ? 1366e-6 : e70 ? 683e-6 : AE2, bw = e70 ? 41e-3 : 30.4e-3, mltT = two ? 0.2305 : e70 ? 0.166 : 0.115, nS = two ? 2500 : e70 ? 4150 : 1350, dS = sku === "40kw" ? 0.071e-3 : 0.1e-3;
+  // E65 clean-room D2 (carries ~all of Lr): own Sullivan litz proximity at the 180 kHz SER corner; thermal proof is the envelope gate's
+  const one = sku === "30kw", Nt = one ? 8 : 5, Ae = one ? 683e-6 : 1366e-6, mltT = one ? 0.155 : 0.216, nS = one ? 6112 : 8149, dS = 0.05e-3;
   const B_ = s.trim * s.tRms * Math.SQRT2 / (Nt * Ae) * 1e3;
   const J = s.tRms / s.litz;
-  const rh = 1.7241e-8 * (1 + 0.00393 * 80), w = 2 * Math.PI * 140e3, mu0 = 4e-7 * Math.PI;
-  const FrS = 1 + Math.PI ** 2 * w * w * mu0 * mu0 * Nt * Nt * nS * nS * dS ** 6 / (768 * rh * rh * bw * bw);
+  const rh = 1.7241e-8 * (1 + 0.00393 * 80), w = 2 * Math.PI * 180e3, mu0 = 4e-7 * Math.PI;
+  const FrS = 1 + Math.PI ** 2 * w * w * mu0 * mu0 * Nt * Nt * nS * nS * dS ** 6 / (768 * rh * rh * 0.041 * 0.041);
   const pcu = s.tRms ** 2 * rh * Nt * mltT / (s.litz * 1e-6) * FrS;
-  const fe = { "30kw": 5.3, "40kw": 5.3, "50kw": 7.1, "50kwa": 7.1 }[sku];            // measured-3C95 basis (temp-critique)
-  const dT = Math.pow(1000 * (pcu + fe) / (two ? 266 : e70 ? 179 : 131), 0.833);
-  ck("B", `${sku} trim: Bpk/J/ΔT (clean-room Sullivan)`, B_ <= 100.5 && J <= 5.65 && dT <= 40.5,
-    `${two ? "2×E70 N3" : e70 ? "1×E70 N5 0.071" : "2×PQ50 N4"} · Bpk ${f(B_, 0)} mT · J ${f(J, 1)} A/mm² · Fr ${f(FrS, 2)} → Cu ${f(pcu, 1)} W + Fe ${fe} W → ΔT ${f(dT, 0)} K ≤ 40 at the ${s.tRms} A rms class current`);
+  ck("B", `${sku} trim: Bpk/J/Fr (clean-room Sullivan @180 kHz)`, B_ <= 100.5 && J <= 5.65 && FrS <= 2.5,
+    `${one ? "1×E70 N8" : "2×E70 N5"} 0.05 mm litz · Bpk ${f(B_, 0)} mT · J ${f(J, 1)} A/mm² · Fr ${f(FrS, 2)} → Cu ${f(pcu, 1)} W at the ${s.tRms} A rms class current`);
 }
 
 // ---------- C. protection ladder (energies, classes, timing) ----------

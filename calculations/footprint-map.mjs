@@ -86,7 +86,7 @@ export const FOOTPRINT = {
   // cabinet blocks and the DIN supply are assemblies with no PCB land, and say so.
   "R0603-10k": "R0603", "R0805-2R2": "R0805", "R0603-120R-1%": "R0603", "R0603-3k32-1%": "R0603",
   "R0603-0R": "R0603", "R2010-1k-0.75W-1%": "R2010",
-  "R2512-0R75-2W-1%": "R2512", "R2512-0R91-1W-1%": "R2512", "R2512-1R2-1W-1%": "R2512",
+  "R2512-0R68-2W-1%": "R2512", "R2512-0R82-1W-1%": "R2512", "R2512-1R00-1W-1%": "R2512",
   "R1206-13R-1%": "R1206", "R1206-18R-1%": "R1206", "R1206-22R-1%": "R1206",
   "MLCC-22p-0603": "C0603", "MLCC-47p-0603": "C0603",
   "X1-4u7-530": "CAP-TH_L31.5-W17.0-P27.50",   // class-typical X1 4.7 µF 530 VAC box (C424W class); confirm at part choice

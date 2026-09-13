@@ -11,6 +11,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
+import { stack } from "./geometry.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const mag = readFileSync(join(ROOT, "docs/magnetics.md"), "utf8");
 const pack = readFileSync(join(ROOT, "docs/magnetics-manufacturing-pack.md"), "utf8");
@@ -27,11 +29,13 @@ const IDS = [
   { id: "D1-30", tokens: { "N = 39": [mag, pack], "150–185 µH": [mag, pack], "≥ 75 µH": [pack], "165uH": [boards], "N=39": [k5, db] } },
   { id: "D1-40", tokens: { "N = 26": [pack], "N=26": [mag, k5, db], "116": [mag, pack, db, boards], "≥61": [mag], "61 µH": [pack] } },
   { id: "D1-50", tokens: { "N = 24": [pack], "N=24": [mag, k5, db], "107": [mag, pack, db, boards], "45 µH": [pack] } },
-  { id: "D2 bins", tokens: { "3.3 / 3.65 / 4.0 / 4.35": [mag], "3.3/3.65/4.0/4.35": [pack], "1350×0.1": [mag, pack, db], "2500x0.1": [k5, db], "IND-TRIM-E70-40": [pack, db], "IND-TRIM-E70-50": [pack, db] } },
+  // E65: D2 carries ~all of Lr on E70 (bins from tanks.mjs); D3-30 → 2×E70, D3-50 → 3×E70 (XFMR-LLC-3E70-50)
+  { id: "D2 bins", tokens: { "6.35 / 6.5 / 6.65 / 6.8": [mag], "6.35/6.5/6.65/6.8": [pack, db, k5], "5.85/6.0/6.15/6.3": [pack, db, k5], "5.35/5.5/5.65/5.8": [pack, db, k5], "6112×0.05": [mag, pack, db], "8149x0.05": [k5, db], "IND-TRIM-E70-40": [pack, db], "IND-TRIM-E70-50": [pack, db] } },
   { id: "D3 copper (E60)", tokens: { "0.10 × 28": [mag, pack], "0.127 × 28": [mag, pack], "0.071": [mag, pack, k5, db], "0.10x28": [k5], "0.127x28": [k5] } },
-  { id: "D3-30", tokens: { "7:7:7": [mag, k5, db], "Lm 63": [mag], "Lm = 63": [pack] } },   // magnetics.md now carries the compact 7:7:7 identity too (E59)
+  { id: "D3-30", tokens: { "7:7:7": [mag, pack, k5, db], "Lm 63": [mag], "Lm = 63": [pack] } },
   { id: "D3-40", tokens: { "6:6:6": [mag, pack, k5, db], "B66372B2000": [mag, pack, k5, db] } },
-  { id: "D3-50", tokens: { "5:5:5": [mag, pack, k5, db] } },
+  { id: "D3-50", tokens: { "5:5:5": [mag, pack, k5, db], "XFMR-LLC-3E70-50": [pack, db] } },
+  { id: "D2/D3 build (E65)", tokens: { "VPI": [mag, pack, db], "130 °C": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
   { id: "D4", tokens: { "ETD39": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-D": [pack, db] } },
   { id: "D6", tokens: { "N=7": [db], "N=8": [db], "7 T": [mag], "8 T": [mag], "7.4": [mag, db], "10.5": [mag, db], "12.9": [mag, db] } },
 ];
@@ -54,12 +58,13 @@ const MASS = [
   ["D1-30", 3 * 45.6 * RHO.sendust / 1000, CU(0.170, 39, 18.0), 2.2],
   ["D1-40", 5 * 45.6 * RHO.sendust / 1000, CU(0.190, 26, 25.8), 3.0],
   ["D1-50", 5 * 45.6 * RHO.sendust / 1000, CU(0.190, 24, 25.8), 2.9],
-  ["D2-30", 2 * 37.1 * RHO.ferrite / 1000, CU(0.115, 4, 10.6), 0.45],
-  ["D2-40", 102 * RHO.ferrite / 1000, CU(0.166, 5, 16.4), 0.55],                    // E60 1×E70 N5
-  ["D2-50", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 3, 19.6), 1.1],                // E60 2×E70 N3
-  ["D3-30", 3 * 37.1 * RHO.ferrite / 1000, CU(0.115, 7 + 14 * 0.286, 9.8), 0.75],   // E60 sec foil 0.10×28 = 2.8 mm² ≈ 0.286×pri
-  ["D3-40", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 6 + 12 * 0.258, 13.8), 1.35],  // sec 0.127×28 = 3.56 mm²
-  ["D3-50", 2 * 102 * RHO.ferrite / 1000, CU(0.2305, 5 + 10 * 0.206, 17.3), 1.35],
+  // E65: D2/D3 from the envelope construction tables + per-winding mean turns (geometry.mjs)
+  ...Object.entries({ "30kw": 0.70, "40kw": 1.27, "50kw": 1.27 }).map(([sku, doc]) => {
+    const c = D2C[sku]; return [`D2-${sku.replace("kw", "")}`, stack(c.core, c.n).kg, c.N * d2Mlt(c) * (c.strands * Math.PI * c.dS ** 2 / 4) * 8900, doc];
+  }),
+  ...Object.entries({ "30kw": 1.32, "40kw": 1.36, "50kw": 1.97 }).map(([sku, doc]) => {
+    const c = D3C[sku], g = d3Build(c); return [`D3-${sku.replace("kw", "")}`, stack(c.core, c.n).kg, c.N * (g.mltP * c.cuP + (g.mltS1 + g.mltS2) * c.foil * c.foilW) * 8900, doc];
+  }),
 ];
 for (const [id, core, cu, doc] of MASS) {
   const m = (core + cu) * 1.10;

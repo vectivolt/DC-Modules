@@ -1,0 +1,128 @@
+* E60 3-phase LLC 40kw:Lr6.5u/Cr6x33n/Lm63u/Coss250p VBUS=830 VBANK=525 fsw=80.585k PFM
+.model DREC D(Is=1e-9 N=1.8 Rs=0.022)
+.model DBODY D(Is=1e-12 N=4 Rs=0.03)
+VBUS bus 0 DC 830
+
+VGH1 gh1 0 PULSE(0 1 0.00000e+0 20n 20n 6.06460e-6 1.24092e-5)
+VGL1 gl1 0 PULSE(0 1 6.20460e-6 20n 20n 6.06460e-6 1.24092e-5)
+VHS1 bus bh1 DC 0
+BSH1 bh1 leg1 I=v(bh1,leg1)*(2e-5+v(gh1)*28.57)
+BSL1 leg1 0 I=v(leg1)*(2e-5+v(gl1)*28.57)
+DBH1 leg1 bh1 DBODY
+DBL1 0 leg1 DBODY
+CPAR1 leg1 0 2.5e-10
+VSP1 leg1 tk1 DC 0
+CR1 tk1 tk1b 1.98000e-7 ic=0
+LR1 tk1b pri1 6.50000e-6
+RW1 pri1 pri1b 0.005
+LM1 pri1b star 6.30000e-5
+LS11 s11w s11n 6.30000e-5
+RW11 s11w s11p 0.005
+VSA1 s11p s11q DC 0
+LS21 s21w s21n 6.30000e-5
+RW21 s21w s21p 0.005
+VSB1 s21p s21q DC 0
+KA1 LM1 LS11 0.9999
+KB1 LM1 LS21 0.9999
+KC1 LS11 LS21 0.9999
+RB11 s11q 0ba 1meg
+RB21 s11n 0ba 1meg
+RB31 s21q 0bb 1meg
+RB41 s21n 0bb 1meg
+DA11 s11q bkA DREC
+DA21 0ba s11q DREC
+DA31 s11n bkA DREC
+DA41 0ba s11n DREC
+DB11 s21q bkB DREC
+DB21 0bb s21q DREC
+DB31 s21n bkB DREC
+DB41 0bb s21n DREC
+
+VGH2 gh2 0 PULSE(0 1 4.13640e-6 20n 20n 6.06460e-6 1.24092e-5)
+VGL2 gl2 0 PULSE(0 1 1.03410e-5 20n 20n 6.06460e-6 1.24092e-5)
+VHS2 bus bh2 DC 0
+BSH2 bh2 leg2 I=v(bh2,leg2)*(2e-5+v(gh2)*28.57)
+BSL2 leg2 0 I=v(leg2)*(2e-5+v(gl2)*28.57)
+DBH2 leg2 bh2 DBODY
+DBL2 0 leg2 DBODY
+CPAR2 leg2 0 2.5e-10
+VSP2 leg2 tk2 DC 0
+CR2 tk2 tk2b 1.98000e-7 ic=0
+LR2 tk2b pri2 6.50000e-6
+RW2 pri2 pri2b 0.005
+LM2 pri2b star 6.30000e-5
+LS12 s12w s12n 6.30000e-5
+RW12 s12w s12p 0.005
+VSA2 s12p s12q DC 0
+LS22 s22w s22n 6.30000e-5
+RW22 s22w s22p 0.005
+VSB2 s22p s22q DC 0
+KA2 LM2 LS12 0.9999
+KB2 LM2 LS22 0.9999
+KC2 LS12 LS22 0.9999
+RB12 s12q 0ba 1meg
+RB22 s12n 0ba 1meg
+RB32 s22q 0bb 1meg
+RB42 s22n 0bb 1meg
+DA12 s12q bkA DREC
+DA22 0ba s12q DREC
+DA32 s12n bkA DREC
+DA42 0ba s12n DREC
+DB12 s22q bkB DREC
+DB22 0bb s22q DREC
+DB32 s22n bkB DREC
+DB42 0bb s22n DREC
+
+VGH3 gh3 0 PULSE(0 1 8.27281e-6 20n 20n 6.06460e-6 1.24092e-5)
+VGL3 gl3 0 PULSE(0 1 1.44774e-5 20n 20n 6.06460e-6 1.24092e-5)
+VHS3 bus bh3 DC 0
+BSH3 bh3 leg3 I=v(bh3,leg3)*(2e-5+v(gh3)*28.57)
+BSL3 leg3 0 I=v(leg3)*(2e-5+v(gl3)*28.57)
+DBH3 leg3 bh3 DBODY
+DBL3 0 leg3 DBODY
+CPAR3 leg3 0 2.5e-10
+VSP3 leg3 tk3 DC 0
+CR3 tk3 tk3b 1.98000e-7 ic=0
+LR3 tk3b pri3 6.50000e-6
+RW3 pri3 pri3b 0.005
+LM3 pri3b star 6.30000e-5
+LS13 s13w s13n 6.30000e-5
+RW13 s13w s13p 0.005
+VSA3 s13p s13q DC 0
+LS23 s23w s23n 6.30000e-5
+RW23 s23w s23p 0.005
+VSB3 s23p s23q DC 0
+KA3 LM3 LS13 0.9999
+KB3 LM3 LS23 0.9999
+KC3 LS13 LS23 0.9999
+RB13 s13q 0ba 1meg
+RB23 s13n 0ba 1meg
+RB33 s23q 0bb 1meg
+RB43 s23n 0bb 1meg
+DA13 s13q bkA DREC
+DA23 0ba s13q DREC
+DA33 s13n bkA DREC
+DA43 0ba s13n DREC
+DB13 s23q bkB DREC
+DB23 0bb s23q DREC
+DB33 s23n bkB DREC
+DB43 0bb s23n DREC
+VBKA bkA 0ba DC 525
+VBKB bkB 0bb DC 525
+RTA 0ba 0 1u
+RTB 0bb 0 1u
+* primary star held at mid-bus by the drawn 2×47 k per side star/balance chain (HR-20) — Cr carries no DC
+RSTP star bus 94k
+RSTN star 0 94k
+.tran 30n 7.44553e-4 5.46005e-4 15n uic
+.option method=gear reltol=1e-3 abstol=1e-6 vntol=1u itl4=100
+.control
+set filetype=ascii
+run
+let vcr1 = v(tk1)-v(tk1b)
+let vcr2 = v(tk2)-v(tk2b)
+let vcr3 = v(tk3)-v(tk3b)
+wrdata llc-40kw-ENV525-70.out i(VSP1) i(VSP2) i(VSP3) i(VSA1) i(VSB1) vcr1 vcr2 vcr3 v(leg1) v(leg2) v(leg3) v(gh1) v(gh2) v(gh3) v(gl1) i(VBKA) i(VBKB) i(VHS1)
+quit
+.endc
+.end

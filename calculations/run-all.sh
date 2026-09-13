@@ -28,6 +28,7 @@ npx tsx calculations/polarity-audit.mts
 node calculations/stress-audit.mjs
 node calculations/magnetics/temp-critique.mjs
 node calculations/magnetics/conductor-audit.mjs
+node calculations/magnetics/magnetics-envelope.mjs
 node calculations/magnetics/mag-sync.mjs
 node calculations/system/fault-energy.mjs
 node calculations/system/current-coordination.mjs
@@ -36,5 +37,5 @@ node calculations/reliability/mtbf-budget.mjs > /dev/null && echo "MTBF BUDGET C
 node calculations/verify-independent.mjs
 node calculations/footprint-audit.mjs > /dev/null && echo "FOOTPRINT AUDIT CLEAN (0 unnamed - 0 mismatched)"
 node calculations/docs-lint.mjs
-sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 54/54 OK"
+sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 58/58 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

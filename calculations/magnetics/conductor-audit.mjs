@@ -2,8 +2,8 @@
 // currents and frequencies (llc-stress / vienna-switched), against each drawing's own acceptance rows.
 // Models: IEC 60028 annealed Cu (ρ20 1.7241e-8 Ω·m, α 0.00393/K) · skin depth δ = √(ρ/(π f µ0)) ·
 // Dowell (1966) for foil and round-wire layers (porosity-corrected Δ) · Sullivan (TPEL 1999) litz
-// proximity factor. Geometry: TDK PQ50/50 former B65982E winding width 30.4 mm (datasheet 10/22),
-// E70 2-set former ~41 mm; MLTs = the mag-sync mass-table values.
+// proximity factor (shared: winding-physics.mjs). Geometry: geometry.mjs (catalog former lN, per-winding radial build)
+// — E65: constructions come from the magnetics-envelope tables, so a drawing change moves both gates together.
 // Why it exists: the E51 construction rev moved the D3 secondaries to 0.20/0.25/0.30 mm copper foil,
 // 5–7 layers each, at 140–190 kHz — h/δ ≈ 1.0–1.5, where Dowell puts Rac/Rdc at 5–12 while the pack
 // row says ≤1.35 and the loss budget carried 1.15. Nothing computed it until this gate.
@@ -15,17 +15,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 2) => Number(x.toFixed(d));
 let fails = 0;
 const ck = (sec, name, cond, detail) => { console.log(`${cond ? "  ok  " : "  FAIL"}  [${sec}] ${name} — ${detail}`); if (!cond) fails++; };
-const MU0 = 4e-7 * Math.PI;
-export const rho = (T) => 1.7241e-8 * (1 + 0.00393 * (T - 20));
-export const delta = (fq, T) => Math.sqrt(rho(T) / (Math.PI * fq * MU0));
-export const dowell = (D, m) => {
-  const z1 = (Math.sinh(2 * D) + Math.sin(2 * D)) / (Math.cosh(2 * D) - Math.cos(2 * D));
-  const z2 = (Math.sinh(D) - Math.sin(D)) / (Math.cosh(D) + Math.cos(D));
-  return D * (z1 + (2 / 3) * (m * m - 1) * z2);
-};
-// Sullivan litz: Fr = 1 + π²ω²µ0²N²n²d⁶k / (768 ρ² b²); k = 1 for a 0→NI winding portion, 0.25 for a layer
-// sandwiched between two half-current windings (MMF −NI/2 → +NI/2)
-export const litzFr = ({ fq, T, N, n, d, b, k }) => 1 + (Math.PI ** 2 * (2 * Math.PI * fq) ** 2 * MU0 ** 2 * N * N * n * n * d ** 6 * k) / (768 * rho(T) ** 2 * b * b);
+import { rho, delta, dowell, litzFr } from "./winding-physics.mjs";
+import { toroidMlt } from "./geometry.mjs";
+import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
 const T = 100;                                                      // winding hot-spot class basis, °C
 
 // simulated currents
@@ -35,11 +27,12 @@ const llc = (sku) => {
 };
 const vs = readFileSync(join(ROOT, "calculations/out/vienna-switched.csv"), "utf8").split("\n").filter((l) => l && !l.startsWith("#"));
 const vh = vs[0].split(","), VS = vs.slice(1).map((l) => { const c = l.match(/("[^"]*"|[^,]+)/g); return Object.fromEntries(c.map((v, i) => [vh[i], v])); });
-console.log("=== CONDUCTOR AUDIT (E60) — Dowell/Sullivan AC copper at the simulated currents ===");
+console.log("=== CONDUCTOR AUDIT (E60 · E65 constructions) — Dowell/Sullivan AC copper at the simulated currents ===");
 console.log(`  info  Cu IEC 60028: ρ(100 °C) = ${f(rho(100) * 1e8, 3)}e-8 Ω·m · δ(50 kHz) ${f(delta(50e3, T) * 1e3, 3)} mm · δ(140 kHz) ${f(delta(140e3, T) * 1e3, 3)} mm · δ(190 kHz) ${f(delta(190e3, T) * 1e3, 3)} mm`);
 
 // ---------------- D1: round enamelled bundles at 50 Hz + 50 kHz ripple ----------------
-const D1W = { "30kw": { N: 39, nw: 9, d: 1.6e-3, mlt: 0.170, rdcLine: 11e-3, Pcu: 32.4 }, "40kw": { N: 26, nw: 13, d: 1.6e-3, mlt: 0.190, rdcLine: 7.0e-3, Pcu: 39 }, "50kw": { N: 24, nw: 13, d: 1.6e-3, mlt: 0.190, rdcLine: 6.5e-3, Pcu: 55 } };
+// E65: D1-40/50 MLT 0.190 → the 5-stack geometry (0.242 m, the pfc-design winding model) — the Pcu budgets follow it
+const D1W = { "30kw": { N: 39, nw: 9, d: 1.6e-3, mlt: toroidMlt("T79", 3), rdcLine: 11e-3, Pcu: 32.4 }, "40kw": { N: 26, nw: 13, d: 1.6e-3, mlt: toroidMlt("T79", 5), rdcLine: 7.0e-3, Pcu: 39 }, "50kw": { N: 24, nw: 13, d: 1.6e-3, mlt: toroidMlt("T79", 5), rdcLine: 6.5e-3, Pcu: 55 } };
 for (const [sku, w] of Object.entries(D1W)) {
   const r = VS.find((x) => x.sku === sku && x.case === "330-full-bus830-lot92");
   const Irms = +r.Irms_A, I1 = +r.I1pk_A / Math.SQRT2, Ihf = Math.sqrt(Math.max(Irms * Irms - I1 * I1, 0));
@@ -51,49 +44,42 @@ for (const [sku, w] of Object.entries(D1W)) {
 }
 
 // ---------------- D2: litz trim inductors at the tank current ----------------
-// E60 construction: D2-30 unchanged (2×PQ50/50, N 4, 1350×0.1); D2-40 → 1× E70/33/32 N 5 in 0.071 mm litz
-// (0.54 kg); D2-50 → 2× E70/33/32 N 3, 2500×0.1 (no single-set option held 40 K) — the as-drawn
-// 2000×0.1/N 5 and 3000×0.1/N 6 on PQ50 computed Fr 4.3/11.7
-// (13.6/45 W at the SER corner): the E43/E44 "upsizing" cut DC density and multiplied proximity (∝ N²n²).
-const D2W = {
-  "30kw": { core: "2×PQ50/50", N: 4, n: 1350, b: 30.4e-3, mlt: 0.115, racLine: 4e-3, Asurf: 131, fe: 5.3, was: null },
-  "40kw": { core: "1×E70/33/32", N: 5, n: 4150, d: 0.071e-3, b: 41e-3, mlt: 0.166, racLine: 2.6e-3, Asurf: 179, fe: 5.3, was: { core: "2×PQ50/50", N: 5, n: 2000, b: 30.4e-3, mlt: 0.115 } },
-  "50kw": { core: "2×E70/33/32", N: 3, n: 2500, b: 41e-3, mlt: 0.2305, racLine: 2.0e-3, Asurf: 266, fe: 7.1, was: { core: "2×PQ50/50", N: 6, n: 3000, b: 30.4e-3, mlt: 0.115 } },
-};
-const rac = (w, fq) => { const d = w.d ?? 0.1e-3, A = w.n * Math.PI * d ** 2 / 4, Rdc = rho(T) * w.N * w.mlt / A, Fr = litzFr({ fq, T, N: w.N, n: w.n, d, b: w.b, k: 1 }); return { Rdc, Fr, Rac: Rdc * Fr }; };
-for (const [sku, w] of Object.entries(D2W)) {
-  const rows = llc(sku), worst = rows.reduce((a, r) => (+r.Ip_rms_A > +a.Ip_rms_A ? r : a));
-  const fq = +worst.fsw_kHz * 1e3, I = +worst.Ip_rms_A, r = rac(w, fq);
-  const P = I * I * r.Rac, dT = Math.pow(1000 * (P + w.fe) / w.Asurf, 0.833);
-  const was = w.was ? rac(w.was, fq) : null;
-  ck("D2", `${sku} ${w.core} N ${w.N}, litz ${w.n}×${f((w.d ?? 0.1e-3) * 1e3, 3)} @${f(fq / 1e3, 0)} kHz`, r.Rac <= w.racLine && dT <= 40,
-    `Rdc ${f(r.Rdc * 1e3)} mΩ hot · Sullivan Fr ${f(r.Fr)} → Rac ${f(r.Rac * 1e3)} mΩ (row ≤${w.racLine * 1e3}) · Cu ${f(P, 1)} W + Fe ${w.fe} W (measured basis) at ${f(I, 1)} A rms (${worst.corner}) → ΔT ${f(dT, 0)} K ≤ 40${was ? ` · as drawn (${w.was.core} N ${w.was.N}, ${w.was.n}×0.1): Fr ${f(was.Fr, 1)} → ${f(I * I * was.Rac, 1)} W` : ""}`);
+// E65 construction (magnetics-envelope D2): D2-30 1×E70 N 8, 6112×0.05 mm; D2-40/50 2×E70 N 5, 8149×0.05 mm — each
+// carries ~all of Lr. Proximity ∝ N²n²d⁶/b²: 0.05 mm strands in the 41 mm E70 window. Thermal: magnetics-envelope.
+// Production rows: Rdc @25 °C (catches a wrong strand count) and Rac @100 °C at the worst nominal corner.
+export const D2ROWS = { "30kw": { rdc25: 1.95e-3, rac: 4.5e-3 }, "40kw": { rdc25: 1.3e-3, rac: 2.6e-3 }, "50kw": { rdc25: 1.3e-3, rac: 2.6e-3 } };
+for (const [sku, row] of Object.entries(D2ROWS)) {
+  const c = D2C[sku], rows = llc(sku), worst = rows.reduce((a, r) => (+r.Ip_rms_A > +a.Ip_rms_A ? r : a));
+  const fq = +worst.fsw_kHz * 1e3, I = +worst.Ip_rms_A, A = (c.strands * Math.PI * c.dS ** 2) / 4, mlt = d2Mlt(c);
+  const Rdc = (rho(T) * c.N * mlt) / A, Rdc25 = (rho(25) * c.N * mlt) / A, Fr = litzFr({ fq, T, N: c.N, n: c.strands, d: c.dS, b: c.b, k: 1 });
+  ck("D2", `${sku} ${c.n}×${c.core} N ${c.N}, litz ${c.strands}×${f(c.dS * 1e3, 3)} @${f(fq / 1e3, 0)} kHz`, Rdc25 <= row.rdc25 && Rdc25 >= 0.85 * row.rdc25 && Rdc * Fr <= row.rac,
+    `MLT ${f(mlt * 1e3, 0)} mm · Rdc ${f(Rdc25 * 1e3)} mΩ @25 °C (row ≤${f(row.rdc25 * 1e3)}) · Sullivan Fr ${f(Fr)} → Rac ${f(Rdc * Fr * 1e3)} mΩ hot (row ≤${f(row.rac * 1e3)}) → Cu ${f(I * I * Rdc * Fr, 1)} W at ${f(I, 1)} A rms (${worst.corner}) — thermal proof: magnetics-envelope`);
 }
 
 // ---------------- D3: profiled-litz primary + copper-foil secondaries ----------------
 const FOILS = [0.05, 0.08, 0.10, 0.127, 0.15, 0.20, 0.25, 0.30].map((x) => x * 1e-3);
-// E60 construction: secondaries at the Dowell optimum over standard foils (0.10 mm @30 kW, 0.127 mm @40/50)
-// and primaries in 0.071 mm strands at the SAME copper area; `wasFoil`/0.1 mm strands = the E51 as-drawn
-const D3W = {
-  "30kw": { N: 7, cuP: 9.8e-6, dP: 0.071e-3, foil: 0.10e-3, wasFoil: 0.20e-3, b: 30.4e-3, mlt: 0.115, racLine: 1.35 },
-  "40kw": { N: 6, cuP: 13.8e-6, dP: 0.071e-3, foil: 0.127e-3, wasFoil: 0.25e-3, b: 41e-3, mlt: 0.2305, racLine: 1.35 },
-  "50kw": { N: 5, cuP: 17.3e-6, dP: 0.071e-3, foil: 0.127e-3, wasFoil: 0.30e-3, b: 41e-3, mlt: 0.2305, racLine: 1.35 },
-};
+// E60 secondaries at the Dowell optimum over standard foils (0.10 mm @30 kW, 0.127 mm @40/50), primaries in 0.071 mm
+// strands; E65 per-winding mean turns from the radial build (S1 inner, P, S2 outer) on the E70 formers.
+// Production rows at 25 °C: Rdc P / S1 / S2 (S2 is the longest turn) and Rac/Rdc ≤ 1.35 at the worst nominal corner.
+export const D3ROWS = { "30kw": { p: 2.8e-3, s1: 9.0e-3, s2: 10.6e-3 }, "40kw": { p: 1.75e-3, s1: 6.1e-3, s2: 7.3e-3 }, "50kw": { p: 1.5e-3, s1: 6.75e-3, s2: 7.75e-3 } };
+const WAS_FOIL = { "30kw": 0.20e-3, "40kw": 0.25e-3, "50kw": 0.30e-3 };
 export const RECOMMEND = {};
-for (const [sku, w] of Object.entries(D3W)) {
-  const rows = llc(sku), worst = rows.reduce((a, r) => (+r.Isec_rms_A > +a.Isec_rms_A ? r : a));
-  const fq = +worst.fsw_kHz * 1e3, Ip = +worst.Ip_rms_A, Is = +worst.Isec_rms_A, dl = delta(fq, T), eta = 28e-3 / w.b;
-  const secP = (h) => { const R = rho(T) * w.N * w.mlt / (h * 28e-3); const Fr = dowell((h / dl) * Math.sqrt(eta), w.N); return { R, Fr, P: 2 * Is * Is * R * Fr }; };
-  const built = secP(w.foil), asDrawn = secP(w.wasFoil);
-  const nP = Math.round(w.cuP / (Math.PI * w.dP ** 2 / 4)), priR = rho(T) * w.N * w.mlt / w.cuP;
-  const priFr = litzFr({ fq, T, N: w.N, n: nP, d: w.dP, b: w.b, k: 0.25 });
-  const priWas = litzFr({ fq, T, N: w.N, n: Math.round(w.cuP / (Math.PI * 0.1e-3 ** 2 / 4)), d: 0.1e-3, b: w.b, k: 0.25 });
+for (const [sku, row] of Object.entries(D3ROWS)) {
+  const w = D3C[sku], g = d3Build(w), rows = llc(sku), worst = rows.reduce((a, r) => (+r.Isec_rms_A > +a.Isec_rms_A ? r : a));
+  const fq = +worst.fsw_kHz * 1e3, Ip = +worst.Ip_rms_A, Is = +worst.Isec_rms_A, dl = delta(fq, T), eta = w.foilW / w.b;
+  const secP = (h) => { const R1 = rho(T) * w.N * g.mltS1 / (h * w.foilW), R2 = rho(T) * w.N * g.mltS2 / (h * w.foilW); const Fr = dowell((h / dl) * Math.sqrt(eta), w.N); return { Fr, P: Is * Is * (R1 + R2) * Fr }; };
+  const built = secP(w.foil), asDrawn = secP(WAS_FOIL[sku]);
+  const priR = rho(T) * w.N * g.mltP / w.cuP;
+  const priFr = litzFr({ fq, T, N: w.N, n: w.strands, d: w.dS, b: w.b, k: 0.25 });
   const best = FOILS.map((h) => ({ h, ...secP(h) })).reduce((a, x) => (x.P < a.P ? x : a));
-  RECOMMEND[sku] = { foil: w.foil, Fr: built.Fr, Psec: built.P, PsecAsDrawn: asDrawn.P, priFr, Ppri: Ip * Ip * priR * priFr, worst: worst.corner, fq, nP, optimum: best.h };
-  ck("D3", `${sku} foil secondaries ${w.foil * 1e3} mm × 28 mm, ${w.N} layers each @${f(fq / 1e3, 0)} kHz`, built.Fr <= w.racLine && built.P <= 1.1 * best.P,
-    `h/δ ${f(w.foil / dl)} (η ${f(eta)}) → Dowell Fr ${f(built.Fr)} ≤ ${w.racLine} → both secondaries ${f(built.P, 1)} W at ${f(Is, 1)} A rms each (${worst.corner}; optimum ${f(best.h * 1e3, 3)} mm = ${f(best.P, 1)} W) · the E51 ${w.wasFoil * 1e3} mm foil computed Fr ${f(asDrawn.Fr, 1)} → ${f(asDrawn.P, 1)} W`);
-  ck("D3", `${sku} profiled-litz primary ${nP}×${f(w.dP * 1e3, 3)} mm`, priFr <= w.racLine,
-    `Sullivan (interleaved k 0.25) Fr ${f(priFr)} → ${f(Ip * Ip * priR * priFr, 1)} W at ${f(Ip, 1)} A rms (0.1 mm strands at the same area computed Fr ${f(priWas)})`);
+  const r25 = { p: rho(25) * w.N * g.mltP / w.cuP, s1: rho(25) * w.N * g.mltS1 / (w.foil * w.foilW), s2: rho(25) * w.N * g.mltS2 / (w.foil * w.foilW) };
+  RECOMMEND[sku] = { foil: w.foil, Fr: built.Fr, Psec: built.P, PsecAsDrawn: asDrawn.P, priFr, Ppri: Ip * Ip * priR * priFr, worst: worst.corner, fq, nP: w.strands, optimum: best.h };
+  ck("D3", `${sku} foil secondaries ${w.foil * 1e3} mm × ${w.foilW * 1e3} mm, ${w.N} layers each @${f(fq / 1e3, 0)} kHz`, built.Fr <= 1.35 && built.P <= 1.1 * best.P,
+    `h/δ ${f(w.foil / dl)} (η ${f(eta)}) → Dowell Fr ${f(built.Fr)} ≤ 1.35 → both secondaries ${f(built.P, 1)} W at ${f(Is, 1)} A rms each (${worst.corner}; optimum ${f(best.h * 1e3, 3)} mm = ${f(best.P, 1)} W) · the E51 ${WAS_FOIL[sku] * 1e3} mm foil computed Fr ${f(asDrawn.Fr, 1)} → ${f(asDrawn.P, 1)} W`);
+  ck("D3", `${sku} profiled-litz primary ${w.strands}×${f(w.dS * 1e3, 3)} mm`, priFr <= 1.35,
+    `Sullivan (interleaved k 0.25) Fr ${f(priFr)} → ${f(Ip * Ip * priR * priFr, 1)} W at ${f(Ip, 1)} A rms`);
+  ck("D3", `${sku} production Rdc rows @25 °C match the ${w.n}×${w.core} build`, r25.p <= row.p && r25.s1 <= row.s1 && r25.s2 <= row.s2 && r25.p >= 0.85 * row.p && r25.s2 >= 0.85 * row.s2,
+    `MLT S1/P/S2 ${f(g.mltS1 * 1e3, 0)}/${f(g.mltP * 1e3, 0)}/${f(g.mltS2 * 1e3, 0)} mm → P ${f(r25.p * 1e3)} (≤${f(row.p * 1e3)}) · S1 ${f(r25.s1 * 1e3)} (≤${f(row.s1 * 1e3)}) · S2 ${f(r25.s2 * 1e3)} (≤${f(row.s2 * 1e3)}) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught`);
 }
 // D4 aux flyback primary (65 kHz DCM, 2 layers): informational — the bifilar 2×0.35 mm option is preferred
 {
@@ -101,6 +87,6 @@ for (const [sku, w] of Object.entries(D3W)) {
   const Fr035 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.35e-3 / delta(65e3, T)) * Math.sqrt(0.8), 4);
   console.log(`  info  [D4] primary @65 kHz: 0.5 mm single Fr ${f(Fr05)} vs 2×0.35 mm bifilar (4 sub-layers) Fr ${f(Fr035)} — both inside the ~1 W copper budget at ~1 A rms; bifilar is the build default`);
 }
-console.log("  info  [GAP] Dowell/Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor — D2: distributed gaps + ≥5 mm litz clearance, measured Rac includes it · D3: Lm gap split equally per set (≤0.5 mm/position) because S1 foil is innermost; T-31 open-secondary check + S1 thermocouple, FEMMT run closes the number");
+console.log("  info  [GAP] Dowell/Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor — D2: distributed gap ≤1.0 mm per segment + ≥3 mm litz clearance (E65), measured Rac includes it · D3: Lm gap split equally per set (≤0.5 mm/position) because S1 foil is innermost; T-31 open-secondary check + S1 thermocouple, FEMMT run closes the number");
 console.log(fails ? `\n${fails} CONDUCTOR FAILURE(S)` : "\nCONDUCTOR AUDIT CLEAN — every winding's AC resistance inside its own acceptance row at the simulated corner");
 if (fileURLToPath(import.meta.url) === process.argv[1]) process.exit(fails ? 1 : 0);

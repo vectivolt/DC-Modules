@@ -12,6 +12,9 @@ import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { plotSVG } from "../plot.mjs";
+import { D3 as D3C, D2 as D2C, d3Leakage, excitation, d3Loss, d2Loss } from "../magnetics/magnetics-envelope.mjs";
+import { stack } from "../magnetics/geometry.mjs";
+import { TANKS } from "./tanks.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const f = (x, d = 2) => Number(x.toFixed(d));
 
@@ -98,39 +101,31 @@ const curves = [650, 740, 800, 830].map(vb => {
 });
 plotSVG({ title: `LLC reachable bank voltage vs fn (full load, Ln=${Ln}, Q=${f(Q, 2)})`, xlabel: "fn = fsw/fr", ylabel: "bank V", path: join(OUT, "..", "..", "simulation-results", "30kw", "plots", "llc-gain-curves.svg"), series: curves });
 
-// ---------------- transformer section: 2× stacked PQ50/50-class, PC95-class ferrite
-const CORE = { Ae: 3.28e-4, Ve: 37.1, win: 4.4, MLT: 0.103, stack: 3 };  // 3-stack: window-limited, see rev notes
-const AeT = CORE.Ae * CORE.stack;
-const dBtgt = 0.22;
-const Np = Math.ceil((415 * (1 / (2 * FR))) / (dBtgt * AeT));   // worst volt-seconds at bus 830
-const Ns = Np;
-const dBact = (415 / (2 * FR)) / (Np * AeT);
-const pfe_mWcm3 = 3.2e-8 * Math.pow(FR / 1e3, 1.71) * Math.pow((dBact / 2) * 1e3, 2.9);
-const Pfe = (pfe_mWcm3 * CORE.Ve * CORE.stack) / 1000;
-const delta = Math.sqrt((2 * 2.3e-8) / (2 * Math.PI * FR * 4e-7 * Math.PI));
+// ---------------- transformer section — E65: the drawing of record, not a resonant-point sizing ----------------
+// This engine used to pick Np from the 415 V / 140 kHz volt-seconds; the power-solved decks run 77–88 kHz at bank
+// 500–525 V (gain 1.2–1.27 with the bus capped at 830 V), so that sizing understated flux 1.5–2.2×. The construction now
+// comes from magnetics-envelope (proven at every simulated corner) and the losses printed here are its rated point.
+const X30 = D3C["30kw"], AeT = stack(X30.core, X30.n).Ae, Np = X30.N, Ns = Np;
+const dBact = (415 / (2 * FR)) / (Np * AeT);                    // resonant-point swing, informational only
+const rated = excitation("30kw").rows.find((r) => r.corner === "PAR400-full");
+const Pfe = d3Loss("30kw", X30, rated).fe(90), Pcu = d3Loss("30kw", X30, rated).cu(90);
 const IpDesign = Math.max(worst.IpRms, 38), IsDesign = Math.max(...points.map(p => p.IsW));
-const JP = 4.4, JS = 4.4;
-const Acu_p = IpDesign / JP, Acu_s = IsDesign / JS;
-const fill = (Np * Acu_p + 2 * Ns * Acu_s) / (CORE.win * 100 * 0.35);
-const Rp = ((2.3e-8 * Np * CORE.MLT) / (Acu_p * 1e-6)) * 1.15;
-const Rs = ((2.3e-8 * Ns * CORE.MLT) / (Acu_s * 1e-6)) * 1.15;
-const Pcu = IpDesign ** 2 * Rp + 2 * IsDesign ** 2 * Rs;
-const leakEst = 3e-6;                                           // interleaved P-S-P: low leakage; external trim completes Lr
-console.log(`\nTRANSFORMER (per section, 3× PQ50/50 PC95-class): Np=Ns=${Np}, ΔB=${f(dBact * 1e3, 0)} mT, Pfe=${f(Pfe, 1)} W, Pcu=${f(Pcu, 1)} W → ${f(Pfe + Pcu, 1)} W (${f((Pfe + Pcu) / (P_PH * 0.98) * 100, 2)}%)`);
-console.log(`  Ip=${f(IpDesign, 1)} A litz ${f(Acu_p, 1)} mm² (first-pass DC×1.15 area, δ=${f(delta * 1e3, 3)} mm — strand size and foil gauge are set by conductor-audit: 0.071 mm litz, 0.10 mm foil at E60); Is=${f(IsDesign, 1)} A/wdg ×2; fill=${f(fill * 100, 0)}% of usable window ${fill <= 1 ? "OK" : "OVER — bobbin study required"}`);
-console.log(`  Leakage target ${f(leakEst * 1e6, 0)} µH (interleaved) + external trim ${f((Lr - leakEst) * 1e6, 1)} µH bin set (D2 rev C: GAPPED FERRITE 2×PQ50/50 — powder cores prohibited at full AC swing, audit F1) = Lr`);
-console.log(`  Insulation: pri-sec REINFORCED 4 kV_pk class; triple-insulated secondary litz + 3.2 mm margins; interwinding shield → primary star`);
+const leakEst = d3Leakage(X30), trimNom = TANKS["30kw"].trim;
+console.log(`\nTRANSFORMER (per section, E65 D3-30: ${X30.n}× E70/33/32, ${Np}:${Ns}:${Ns}): resonant-point ΔB ${f(dBact * 1e3, 0)} mT pp (the 525 V-bank corner is 142 mT pk — magnetics-envelope) · rated PAR400 Pfe ${f(Pfe, 1)} W + Pcu ${f(Pcu, 1)} W → ${f(Pfe + Pcu, 1)} W (${f((Pfe + Pcu) / (P_PH * 0.98) * 100, 2)}%)`);
+console.log(`  Ip=${f(IpDesign, 1)} A · Is=${f(IsDesign, 1)} A/wdg ×2 · primary TIW litz ${X30.strands}×0.071 mm, secondaries Cu foil ${X30.foil * 1e3}×28 mm (conductor-audit)`);
+console.log(`  Lr split: transformer leakage ${f(leakEst * 1e6, 2)} µH (S1–P–S2, computed) + 0.1 µH loop + D2 trim bin ~${f(trimNom * 1e6, 2)} µH (${D2C["30kw"].n}× E70 N ${D2C["30kw"].N}) = Lr ${f(Lr * 1e6, 1)} µH — the E51 "engineered 3 µH" leakage was not buildable`);
+console.log(`  Insulation: pri-sec REINFORCED 4 kV_pk class; TIW-served primary litz; interwinding shield → primary star`);
 
 writeFileSync(join(OUT, "llc-tank.csv"), [
   "param,value,unit,tolerance,note",
   `fr,140,kHz,±4%,from Lr+trim ±5% + Cr ±5%`,
-  `Lr,${f(Lr * 1e6, 1)},µH,±5%,${f(leakEst * 1e6, 0)} leakage + ${f((Lr - leakEst) * 1e6, 1)} external trim`,
+  `Lr,${f(Lr * 1e6, 1)},µH,±3%,${f(leakEst * 1e6, 2)} leakage + 0.1 loop + D2 bin (E65 bins 6.35–6.8 µH)`,
   `Cr,${f(Cr * 1e9, 1)},nF,±5%,4× parallel 46 nF 1200 V resonant-duty film (Vrms-vs-f curve at 140 kHz — §K O-8)`,
-  `Lm,${f(Lm * 1e6, 0)},µH,±7%,gapped 3×PQ50/50 (E7 rev D2 tolerance)`,
+  `Lm,${f(Lm * 1e6, 0)},µH,±7%,gapped 2×E70/33/32 (E7 rev D2 tolerance; E65 core)`,
   `Ln,${Ln},,,joint solve`, `Q_crit,${f(Q, 3)},,,at bank 518 full load`,
   `Np=Ns,${Np},turns,exact,2 secondaries (bank A/B)`,
-  `dB_pp,${f(dBact * 1e3, 0)},mT,,at bus 830`,
-  `Pfe,${f(Pfe, 1)},W,,PC95 fit VERIFY`, `Pcu,${f(Pcu, 1)},W,,litz AC×1.15`,
+  `dB_pp_resonant,${f(dBact * 1e3, 0)},mT,,informational — worst simulated corner in llc-flux.csv`,
+  `Pfe,${f(Pfe, 1)},W,,rated PAR400 iGSE (magnetics-envelope)`, `Pcu,${f(Pcu, 1)},W,,rated PAR400 Dowell/Sullivan`,
   `Ip_rms_design,${f(IpDesign, 1)},A,,envelope-flat worst`,
   `Is_rms_per_winding,${f(IsDesign, 1)},A,,two windings share section current`,
   `Im_pk_830,${f(best.imPk830, 1)},A,,ZVS OK / ≤13 A ceiling`,

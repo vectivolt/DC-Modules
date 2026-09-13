@@ -87,8 +87,8 @@ export const DB = [
   { m: /^LBK(CARD|[AB])$/, mpn: "IND-10u-3A", mfr: "any shielded", desc: "10 µH 3 A shielded power inductor (3V3 buck)", price1k: 6, alt: "any" },
   // --- magnetics (custom assemblies; costed builds from magnetics calc)
   { m: /^L[ABC]\d+$/, mpn: "IND-PFC-165u", mfr: "custom (docs/magnetics.md D1 rev B)", desc: "PFC choke 165 µH class, 3× OD79 26µ sendust (Magnetics 0077908A7 / Chang Sung KS eq, catalog AL 37 nH/T² ±8%), N=39, 3×(6×1 mm) flat Cu 18 mm² (audit F4: the rev-A 13.75 mm²/N=36 failed its own Rdc and L lines against the real core)", price1k: 1035, alt: "POCO/DMEGC equiv core" },
-  { m: /^L\d+T$/, mpn: "IND-TRIM-BIN4", mfr: "custom (D2 rev C — GAPPED FERRITE)", desc: "resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/50 PC95-class (same core p/n as D3), N=4 litz 1350×0.1 mm (10.6 mm² — E52 margin rev: the frozen 1050×0.1 rode J 5.62 exactly at the 5.6 line; 1350 lands J 4.38/ΔT ~35 K AND is the same litz construction as the D3-30 primary — one spool), distributed gap ~3.3 mm ground per bin — audit F1: the rev-B sendust toroid at full 140 kHz AC swing computed ~43 W core loss vs a ~4 W tank budget and its L swung 2:1 over each cycle; powder cores are prohibited in this slot. Bin picked against measured transformer leakage so Lr(total)=7.0 µH (kitting per DFM step 3)", price1k: 110, alt: "air-core (lossier, stray field)" },
-  { m: /^T\d+$/, mpn: "XFMR-LLC-10K", mfr: "custom (D3)", desc: "LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7% (E7 rev D2) — E60 copper rev: secondaries Cu foil 0.10 x 28 mm (Dowell Fr 1.27; the E51 0.20 mm computed 5.3), primary litz 2475x0.071 mm (Fr 1.32)", price1k: 680, alt: "PQ65 single-core variant" },
+  { m: /^L\d+T$/, mpn: "IND-TRIM-BIN4", mfr: "custom (D2 rev E — GAPPED FERRITE, E65)", desc: "D2-30 rev E (E65): resonant trim BIN SET 6.35/6.5/6.65/6.8 µH ±1.5% on 1× E70/33/32 PC95-class (TDK former B66372B1000), N=8, litz 6112×0.05 mm (12.0 mm²) compacted single layer ≥3 mm clear of a DISTRIBUTED centre-leg gap (≤1.0 mm per segment); vacuum-impregnated, both yoke faces gap-padded to the extrusion webs, 130 °C cutout in the magnetics loop. Carries ~all of Lr: the E60 bins (3.3–4.35 µH) assumed an 'engineered 3 µH' transformer leakage that an S1–P–S2 interleave cannot produce (computes 0.22 µH). Envelope gate (two-node core/winding network): ~11.5 W Fe + 10.6 W Cu at the SER250 corner, hot-spot 99 °C at 55 °C inlet; fault flux 127 mT at F.11+race. Bin picked against measured D3 leakage + 0.1 µH loop so Lr(total)=7.0 µH ±3% (DFM step 3). Powder cores prohibited in this slot (audit F1). E65 cost roll-up [est, REVIEW at winder RFQ]: E70/33/32 PC95-class set ₹160, litz 0.05 mm ₹2,600/kg, TIW-served 0.071 mm ₹2,210/kg, Cu foil ₹1,050/kg, +10 % leads, former, insulation, gap work, labour + test → ₹886", price1k: 886, alt: "Ferroxcube 3C95 E71/33/32 set" },
+  { m: /^T\d+$/, mpn: "XFMR-LLC-10K", mfr: "custom (D3-30 rev C, E65)", desc: "D3-30 rev C (E65): LLC section transformer 2× E70/33/32 PC95-class on TDK B66372B2000 (same former as D3-40), 7:7:7, Lm 63 µH ±7% (distributed gap ground to AL), S1–P–S2 interleave, primary TIW-served litz 2475×0.071 mm, secondaries Cu foil 0.10×28 mm; vacuum-impregnated, both yoke faces gap-padded to the webs, 130 °C cutout. The 3× PQ50/50 stack it replaces could not be wound (stacked PQ leg tips leave 5–6 mm radial build vs the 8.1 mm lay-up) and its real MLT 191–229 mm (not 115) put Rdc outside its own rows; at the simulated 77–88 kHz / 525 V-bank corner it ran away in air. Envelope gate: Fe 22.3 W (142 mT), Cu 23.9 W (SER250), winding hot-spot 104 °C at 55 °C inlet, B̂ ≤36 % of hot Bsat. E65 cost roll-up [est, REVIEW at winder RFQ]: E70/33/32 PC95-class set ₹160, litz 0.05 mm ₹2,600/kg, TIW-served 0.071 mm ₹2,210/kg, Cu foil ₹1,050/kg, +10 % leads, former, insulation, gap work, labour + test → ₹1,200", price1k: 1200, alt: "Ferroxcube 3C95 E71/33/32 sets" },
   { m: /^TAUX$/, mpn: "XFMR-AUX-FLY-D", mfr: "custom (D4 rev D — E52)", desc: "aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input, Np38/N24 6/N15 4/Naux 4 UNCHANGED, Lp 345 µH/AL 239 unchanged (E52 margin rev: ETD34's Bpk 0.30 T ran 85% of hot Bsat at Lp+10%+clamp — ETD39 Ae 125 mm² puts it at 0.233 T / 66% at tolerance; DCM proof and the 9/9 aux sim are Lp-based, unaffected; reinforced pri→sec barrier, 100% hipot 4 kV)", price1k: 185, alt: "—" },
   { m: /^LDM[123]$/, mpn: "DM-CHOKE-SKU", mfr: "custom/POCO (D6 rev C — ENGINE-designed, dm-choke-design.mjs)", desc: "DM line choke, 60µ sendust stack, crest-biased L(Ipk) meets the per-variant LISN floor (E43: the inherited 22 µH could not exist at the crest on the drawn core — 7–8 µH at 82 A pk computed vs the 15 µH floor; engine rows: 30 kW 2×T48 N=7 foil 20 mm², 40 kW 2×T57 N=8 26.4 mm², 50 kW 3×T57 N=8 26.4 mm²)", price1k: 300, alt: "DMEGC/Chang Sung eq cores" },
   { m: /^CMC[12]$/, mpn: "CMC-3PH-2mH-SKU", mfr: "custom/Hongfa mag", desc: "3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). 30 kW: qualify Schaffner RT8131-63-2M8 (63 A/2.8 mH/600 VAC, 3-line nanocrystalline, Digi-Key) as catalog drop-in — audit; custom drawing stays the second source", price1k: 240, alt: "Schaffner RT8131-63-2M8 @30 kW" },
@@ -140,7 +140,7 @@ export const DB = [
   { m: /^RG([ABC]\d+[AB]|\d+[HL])[12]$/, mpn: "R0805-2R2", mfr: "any thick-film", desc: "per-device series gate R for paralleled SiC — BOTH branches incl. the original device (E41/E44 pairs; R5-E symmetry)", price1k: 0.5, alt: "any" },
   { m: /^R\w+(ON|OFF)$/, mpn: "R1206-RG-0.5W", mfr: "any thick-film HP", desc: "gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard 0.25 W part runs 80%)", price1k: 2, alt: "2× 0805 parallel" },
   { m: /^R\w+GS$/, mpn: "R0805-10k", mfr: "any", desc: "10 kΩ gate-source", price1k: 0.5, alt: "any" },
-  { m: /^R\d+CT$/, mpn: "R2512-1R2-1W-1%", mfr: "any", desc: "1.2 Ω 1% 1 W 2512 resonant-CT burden (E60: F.11 85 A pk = 2.67 V at the comparator, observable to 135 A through the 3 µs internal-short race; 47.9 A rms worst → 0.28 W. History: CB-16 2.0 Ω/70 A sat AT the 30 kW operating peak)", price1k: 3, alt: "2× 1206 2R4 parallel" },
+  { m: /^R\d+CT$/, mpn: "R2512-1R00-1W-1%", mfr: "any", desc: "1.0 Ω 1% 1 W 2512 resonant-CT burden (E65: F.11 85 A pk = 2.50 V at the comparator, observable to 162 A — the internal-short race measured from the F.11 crossing peaks at 149 A, past the E60 1.2 Ω ceiling of 135 A; 47.9 A rms worst → 0.23 W. History: CB-16 2.0 Ω/70 A sat AT the 30 kW operating peak)", price1k: 3, alt: "2× 1206 2R0 parallel" },
   { m: /^R[ABC]\d+B$/, mpn: "R1206-22R-1%", mfr: "any", desc: "22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A)", price1k: 1.2, alt: "any" },
   { m: /^RSH?O$/, mpn: "SHUNT-50MV-100A", mfr: "Isabellenhütte-eq/local", desc: "manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU via skuOverride)", price1k: 120, alt: "local manganin" },
   { m: /^RSEG\d$/, mpn: "R0603-220", mfr: "any", desc: "220 Ω segment", price1k: 0.3, alt: "any" },
@@ -204,8 +204,8 @@ export const skuOverrides = {
     // bins 3.2/3.5/3.8 uH by distributed gap grind (AL 128/140/152 nH/T2), litz 4150x0.071 (16.4 mm2).
     // The E43 PQ50/N=5/2000x0.1 route computed Sullivan Fr 4.3 -> 13.6 W Cu at the SER corner
     // (the DC x1.15 model called it 4.3 W): proximity scales (N n)^2 / b^2 — fewer turns, taller window.
-    L1T: { price1k: 170, mpn: "IND-TRIM-E70-40", note: "D2-40 rev D (E60): 1x E70/33/32 N=5, bins 3.2/3.5/3.8 uH, litz 4150x0.071 — Rac 2.29 mOhm @140 kHz, dT 38 K at the SER corner / 32 K continuous (conductor-audit), 0.54 kg" },
-    L2T: { price1k: 190, mpn: "IND-TRIM-E70-40" }, L3T: { price1k: 190, mpn: "IND-TRIM-E70-40" },
+    L1T: { price1k: 1124, mpn: "IND-TRIM-E70-40", note: "D2-40 rev E (E65): 2x E70/33/32 N=5 on B66372B2000, bins 5.85/6.0/6.15/6.3 uH, litz 8149x0.05 (16.0 mm2), distributed gap, VPI, both yoke faces padded + cutout — carries ~all of Lr (real D3 leakage 0.16 uH). Envelope: ~20 W Fe + 10 W Cu at SER250, 93 C at 55 C inlet; fault flux 150 mT. ₹1,124 E65 roll-up [est]" },
+    L2T: { price1k: 1124, mpn: "IND-TRIM-E70-40" }, L3T: { price1k: 1124, mpn: "IND-TRIM-E70-40" },
     // resonant caps: 6x33 nF per section (per-cap ~10.2 A vs the 12 A line — 15% margin)
     "C1R0": { mpn: "PP-33n-1200V" }, "C1R1": { mpn: "PP-33n-1200V" }, "C1R2": { mpn: "PP-33n-1200V" }, "C1R3": { mpn: "PP-33n-1200V" }, "C1R4": { mpn: "PP-33n-1200V" }, "C1R5": { mpn: "PP-33n-1200V" }, "C2R0": { mpn: "PP-33n-1200V" }, "C2R1": { mpn: "PP-33n-1200V" }, "C2R2": { mpn: "PP-33n-1200V" }, "C2R3": { mpn: "PP-33n-1200V" }, "C2R4": { mpn: "PP-33n-1200V" }, "C2R5": { mpn: "PP-33n-1200V" }, "C3R0": { mpn: "PP-33n-1200V" }, "C3R1": { mpn: "PP-33n-1200V" }, "C3R2": { mpn: "PP-33n-1200V" }, "C3R3": { mpn: "PP-33n-1200V" }, "C3R4": { mpn: "PP-33n-1200V" }, "C3R5": { mpn: "PP-33n-1200V" },
     // resonant CT: AS-404 (50 A) would run 122% at 61 A rms — RFQ the 80 A class before EVT
@@ -213,15 +213,15 @@ export const skuOverrides = {
     // E60 current coordination: F.11 115 A pk on 0.91 Ω (observable to 178 A); F.01 155 A pk on 18 Ω
     // (observable to 225 A) — the ACX-1100 is linear only to ~179 A at 18 Ω, so the 40 kW joins the
     // 150 A line-CT class (Talema ACX-1150, linear to 200 A at 33 Ω)
-    R1CT: { mpn: "R2512-0R91-1W-1%", note: "E60: F.11 115 A pk = 2.70 V; 64.4 A rms → 0.38 W" }, R2CT: { mpn: "R2512-0R91-1W-1%" }, R3CT: { mpn: "R2512-0R91-1W-1%" },
+    R1CT: { mpn: "R2512-0R82-1W-1%", note: "E65: F.11 115 A pk = 2.59 V, ceiling 198 A vs the 180 A crossing-referenced race (E60 0.91 Ω: 178 A); 64.4 A rms → 0.34 W" }, R2CT: { mpn: "R2512-0R82-1W-1%" }, R3CT: { mpn: "R2512-0R82-1W-1%" },
     CTA0: { price1k: 95, mpn: "CT-LINE-2500-150A", note: "E60: 150 A class (ACX-1150) — F.01 155 A + 50 A race needs linearity to ≥205 A" }, CTB0: { price1k: 95, mpn: "CT-LINE-2500-150A" }, CTC0: { price1k: 95, mpn: "CT-LINE-2500-150A" },
     RA0B: { mpn: "R1206-18R-1%", note: "E60: F.01 155 A pk = 2.77 V, ceiling 225 A" }, RB0B: { mpn: "R1206-18R-1%" }, RC0B: { mpn: "R1206-18R-1%" },
     CT2: { mpn: "CT-RES-1:100-80A" }, CT3: { mpn: "CT-RES-1:100-80A" },
     // D3-40 identity (registered at E41, BOM identity landed at E42 close): the 40 kW transformer
     // is the 2x E70/33/32 stack — WINDOW-driven, volt-second-identical, same price basis as the
     // 3x PQ50 drawing until the winder RFQ splits them.
-    T1: { mpn: "XFMR-LLC-2E70-40", note: "D3-40 rev B (E51): 2x E70/33/32 sets on B66372B2000T001 stack former, 6:6:6 (the registered 9:9:9 litz+TIW+margin wind demands ~2.4x the former window AN 389 mm2 — unbuildable; Bpk truth 90 mT at 6:6:6, NOT the '108 mT' doc claim), compacted-profile litz pri + Cu-foil TIW-barrier secondaries, leakage engineered 3 +/-0.7 uH — E60 copper rev: secondaries Cu foil 0.127 x 28 mm (Dowell-optimum; the E51 foil computed Rac/Rdc 5-7 vs the 1.35 row), primary litz 3486x0.071 mm (same area, Fr 1.3)" },
-    T2: { mpn: "XFMR-LLC-2E70-40" }, T3: { mpn: "XFMR-LLC-2E70-40" },
+    T1: { price1k: 1279, mpn: "XFMR-LLC-2E70-40", note: "D3-40 rev C (E65): 2x E70/33/32 sets on B66372B2000T001, 6:6:6, TIW-served litz 3486x0.071 + Cu foil 0.127 x 28 mm, S1-P-S2 — construction unchanged from E60; E65 adds VPI, both yoke faces padded to the webs, end turns potted to the web and the 130 C cutout (the power-solved 525 V-bank corner puts B 176 mT / Fe 37 W: runaway in air; 97 C winding hot-spot as built); leakage 0.16 uH computed (the E51 3 uH target was unreachable). ₹1,279 E65 roll-up [est]" },
+    T2: { price1k: 1279, mpn: "XFMR-LLC-2E70-40" }, T3: { price1k: 1279, mpn: "XFMR-LLC-2E70-40" },
   },
   // E42 50 kW LIQUID variant — engine-driven (pfc-design @PFC_P=50e3/PFC_PAR=2, frozen 50 kHz;
   // envelope grid at plate Rth 1.1 K/W / 65 C hot plate ref): line 91.6 A worst, output 167 A,
@@ -256,11 +256,10 @@ export const skuOverrides = {
     // dT 41 K convective (plate/web bond per E42/E44 practice).
     LA0: { price1k: 1240, mpn: "IND-PFC-107u-50", note: "D1-50 rev B: 5x T79 26u CATALOG core, N=24 +/-1 lot-trim (E51)" },
     LB0: { price1k: 1240, mpn: "IND-PFC-107u-50" }, LC0: { price1k: 1240, mpn: "IND-PFC-107u-50" },
-    // D2-50 rev D (E60): 2x E70/33/32, N=3, bins 2.8/3.0/3.2 uH (AL 311/333/356 nH/T2), litz 2500x0.1.
-    // The E44 PQ50/N=6/3000x0.1 route computed Sullivan Fr 11.7 -> 45 W Cu at the SER corner (DC model: 5.4 W)
-    // — no strand count on the PQ50 holds 40 K; the E70 window (41 mm) and N=3 cut the winding field 2.6x.
-    L1T: { price1k: 230, mpn: "IND-TRIM-E70-50", note: "D2-50 rev D (E60): 2x E70/33/32 N=3, bins 2.8/3.0/3.2 uH, litz 2500x0.1 — Rac 1.61 mOhm, dT 31 K at the SER corner (no single-set option held 40 K); 1.1 kg; one drawing serves liquid AND air" },
-    L2T: { price1k: 190, mpn: "IND-TRIM-E70-50" }, L3T: { price1k: 190, mpn: "IND-TRIM-E70-50" },
+    // D2-50 rev E (E65): 2x E70/33/32, N=5, bins 5.35/5.5/5.65/5.8 uH, litz 8149x0.05 — the E60 N=3 part was sized
+    // for a 3 uH transformer leakage that does not exist (0.15 uH real), so it would have left Lr ~2.9 uH short.
+    L1T: { price1k: 1124, mpn: "IND-TRIM-E70-50", note: "D2-50 rev E (E65): 2x E70/33/32 N=5 on B66372B2000, bins 5.35/5.5/5.65/5.8 uH, litz 8149x0.05 (16.0 mm2), distributed gap, VPI, both yoke faces padded (plates / webs), end turns potted on the liquid SKU + cutout. Envelope: ~26 W Fe + 15 W Cu at SER250, 84 C (liquid) / 101 C (air) at 55 C inlet; fault flux 166 mT; one drawing serves liquid AND air. ₹1,124 E65 roll-up [est]" },
+    L2T: { price1k: 1124, mpn: "IND-TRIM-E70-50" }, L3T: { price1k: 1124, mpn: "IND-TRIM-E70-50" },
     // resonant caps: 8x27 nF per section (77.3 A rms / 8 = 9.7 A of the 12 A line)
     "C1R0": { mpn: "PP-27n-1200V" }, "C1R1": { mpn: "PP-27n-1200V" }, "C1R2": { mpn: "PP-27n-1200V" }, "C1R3": { mpn: "PP-27n-1200V" }, "C1R4": { mpn: "PP-27n-1200V" }, "C1R5": { mpn: "PP-27n-1200V" }, "C1R6": { mpn: "PP-27n-1200V" }, "C1R7": { mpn: "PP-27n-1200V" },
     "C2R0": { mpn: "PP-27n-1200V" }, "C2R1": { mpn: "PP-27n-1200V" }, "C2R2": { mpn: "PP-27n-1200V" }, "C2R3": { mpn: "PP-27n-1200V" }, "C2R4": { mpn: "PP-27n-1200V" }, "C2R5": { mpn: "PP-27n-1200V" }, "C2R6": { mpn: "PP-27n-1200V" }, "C2R7": { mpn: "PP-27n-1200V" },
@@ -272,17 +271,17 @@ export const skuOverrides = {
     CT2: { mpn: "CT-RES-1:100-100A" }, CT3: { mpn: "CT-RES-1:100-100A" },
     // resonant burden re-scale: 1.6 ohm on a 2 W 2512 (0.96 W worst = 48%; the 1 W frozen part
     // would run 96% at 77.3 A rms) — metering signal identical to the 40 kW (1.24 V rms)
-    R1CT: { mpn: "R2512-0R75-2W-1%", note: "E60: F.11 145 A pk = 2.74 V; 80.9 A rms → 0.49 W on the 2 W class" },
-    R2CT: { mpn: "R2512-0R75-2W-1%" }, R3CT: { mpn: "R2512-0R75-2W-1%" },
+    R1CT: { mpn: "R2512-0R68-2W-1%", note: "E65: F.11 145 A pk = 2.64 V, ceiling 238 A vs the 216 A crossing-referenced race (E60 0.75 Ω: 216 A, 0.2 % margin); 80.9 A rms → 0.45 W on the 2 W class" },
+    R2CT: { mpn: "R2512-0R68-2W-1%" }, R3CT: { mpn: "R2512-0R68-2W-1%" },
     // line CTs: ACX-1100 (100 A) would run 92% at 91.6 A rms — class up at RFQ (sensor path)
     CTA0: { price1k: 95, mpn: "CT-LINE-2500-150A", note: "150 A class (Talema ACX-1150 catalog, linear to 200 A at 33 R); E60: F.01 195 A pk on 13 R = 2.66 V, observable to 311 A through the D1 soft-sat race" },
     CTB0: { price1k: 95, mpn: "CT-LINE-2500-150A" }, CTC0: { price1k: 95, mpn: "CT-LINE-2500-150A" },
     RA0B: { mpn: "R1206-13R-1%", note: "E60 line-CT burden (F.01 195 A pk; the E42 21.5 R saw only to 187 A)" },
     RB0B: { mpn: "R1206-13R-1%" }, RC0B: { mpn: "R1206-13R-1%" },
-    // D3-50: 3x E70/33/32 per section — Ae x1.5 -> turns x2/3 at identical volt-seconds (Bpk
-    // unchanged 108 mT), window fill ~0.83x of the 40 kW wind despite +25% copper CSA
-    T1: { price1k: 850, mpn: "XFMR-LLC-2E70-50", note: "D3-50 rev B (E51): 2x E70/33/32 sets on B66372B2000T001, 5:5:5, Bpk 109 mT (the registered 3-set route needs a former that DOES NOT EXIST and still demands ~1.2x its window; 2-set 5:5:5 fits at 91% with compacted litz + foil secondaries), Fe 24.4 W/section -> transformer clamp bonds to the coldplate/extrusion web (E42/E44 magnetics-bond practice), leakage engineered 3 +/-0.7 uH — E60 copper rev: secondaries Cu foil 0.127 x 28 mm (Dowell-optimum; the E51 foil computed Rac/Rdc 5-7 vs the 1.35 row), primary litz 4370x0.071 mm (same area, Fr 1.3)" },
-    T2: { price1k: 850, mpn: "XFMR-LLC-2E70-50" }, T3: { price1k: 850, mpn: "XFMR-LLC-2E70-50" },
+    // D3-50 rev C (E65): 3x E70/33/32 per section at 5:5:5 — the E51 2-set part ran B 237 mT / Fe 79 W at the
+    // simulated 525 V-bank corner and had no thermal equilibrium even plate-bonded; +50 % Ae brings it to 158 mT / 38 W.
+    T1: { price1k: 1649, mpn: "XFMR-LLC-3E70-50", note: "D3-50 rev C (E65): 3x E70/33/32 sets on a 3-set coil former (lN 293 mm; custom — TDK lists 1/2-set only, tooling amortised in the price), 5:5:5, TIW-served litz 4370x0.071 + Cu foil 0.127 x 28 mm, S1-P-S2 (window fill unchanged from the 2-set 5:5:5, 91 %), Lm 63 uH +/-7 %, VPI, BOTH yoke faces padded to the plates/webs + end turns potted (MANDATORY) + 130 C cutout. Envelope: Fe 38 W (158 mT), Cu 46 W at SER250, winding hot-spot 88 C (liquid plate 65 C) / 101 C (air), B 41 % of hot Bsat. ₹1,649 E65 roll-up [est]" },
+    T2: { price1k: 1649, mpn: "XFMR-LLC-3E70-50" }, T3: { price1k: 1649, mpn: "XFMR-LLC-3E70-50" },
   },
   // E44 50 kW AIR variant: every electrical class IDENTICAL to the liquid 50 kW (same line/tank/
   // output currents — the classes were set by current, not by coolant). Assigned programmatically
@@ -305,6 +304,8 @@ export const mechLines = {
     ["Heatsink extrusions (2, sandwich outer faces)", 1, 1500], ["Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C, IP55, −30…+70 °C — E52/E60 field-reliability spec; IP55 premium at RFQ)", 2, 280],
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 724],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 350],
+    ["Magnetics over-temperature cutout loop (E65): NC hermetic snap-action thermostat 130 ±5 °C, gold dry-circuit contacts, reinforced-insulated case + leads, one per D3 and D2, series-wired into the T_XFMR NTC loop (open loop → firmware OT trip)", 6, 48],
+    ["Magnetics bond kit (E65): 3 W/mK silicone gap pads on BOTH yoke faces of every D3/D2 to the upper/lower extrusion webs + clamp bars, CTE-compliant (no rigid epoxy to aluminium); VPI is in the part price", 1, 350],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 320],
     ["Assembly + calibration + EOL test", 1, 1900],
   ],
@@ -315,6 +316,8 @@ export const mechLines = {
     ["Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C, IP55, −30…+70 °C — E52/E60 field-reliability spec; IP55 premium at RFQ)", 3, 280],
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 810],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 380],
+    ["Magnetics over-temperature cutout loop (E65): NC hermetic snap-action thermostat 130 ±5 °C, gold dry-circuit contacts, reinforced-insulated case + leads, one per D3 and D2, series-wired into the T_XFMR NTC loop (open loop → firmware OT trip)", 6, 48],
+    ["Magnetics bond kit (E65): 3 W/mK silicone gap pads on BOTH yoke faces of every D3/D2 to the upper/lower extrusion webs + clamp bars, D3 end turns potted to the web (≥0.8 W/mK silicone), CTE-compliant; VPI is in the part price", 1, 620],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 340],
     ["Assembly + calibration + EOL test", 1, 1950],
   ],
@@ -326,9 +329,11 @@ export const mechLines = {
     ["Liquid coldplates (2, sandwich outer faces, brazed channel — REVIEW at thermal RFQ)", 1, 4400],
     ["Coolant fittings: 2× quick-disconnect + internal manifold/hose set", 1, 380],
     ["Gap pads + potting (choke stacks / transformers / EMI magnetics → plate webs)", 1, 420],
+    ["Magnetics two-face plate bond (E65): gap pads on BOTH yoke faces of every D3/D2 to the two coldplates, D3/D2 end turns potted to the plate (adds to the E42 potting line); VPI is in the part price", 1, 330],
     ["Enclosure sheet metal + hardware (sealed, gasket set; NH00 fuse bases)", 1, 1250],
     ["Busbars/interconnect studs + harness (busbar-calc, 167 A output class)", 1, 850],
     ["NTC sensor assemblies (insulated tip spec, E25 — plate-mounted)", 4, 18],
+    ["Magnetics over-temperature cutout loop (E65): NC hermetic snap-action thermostat 130 ±5 °C, gold dry-circuit contacts, reinforced-insulated case + leads, one per D3 and D2, series-wired into the T_XFMR NTC loop (open loop → firmware OT trip)", 6, 48],
     ["TIM/insulators/fasteners", 1, 420],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test (incl. coolant-loop pressure/leak test)", 1, 2150],
@@ -341,6 +346,8 @@ export const mechLines = {
     ["Enclosure sheet metal + hardware (vented; NH00 fuse bases)", 1, 1000],
     ["Busbars/interconnect studs + harness (busbar-calc, 167 A output class)", 1, 850],
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18],
+    ["Magnetics over-temperature cutout loop (E65): NC hermetic snap-action thermostat 130 ±5 °C, gold dry-circuit contacts, reinforced-insulated case + leads, one per D3 and D2, series-wired into the T_XFMR NTC loop (open loop → firmware OT trip)", 6, 48],
+    ["Magnetics bond kit (E65): 3 W/mK silicone gap pads on BOTH yoke faces of every D3/D2 to the upper/lower extrusion webs + clamp bars, D3 end turns potted to the web (≥0.8 W/mK silicone), CTE-compliant; VPI is in the part price", 1, 620],
     ["TIM/insulators/fasteners", 1, 420],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test", 1, 2000],

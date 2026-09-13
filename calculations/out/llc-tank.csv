@@ -1,14 +1,14 @@
 param,value,unit,tolerance,note
 fr,140,kHz,±4%,from Lr+trim ±5% + Cr ±5%
-Lr,7,µH,±5%,3 leakage + 4 external trim
+Lr,7,µH,±3%,0.19 leakage + 0.1 loop + D2 bin (E65 bins 6.35–6.8 µH)
 Cr,185.4,nF,±5%,4× parallel 46 nF 1200 V resonant-duty film (Vrms-vs-f curve at 140 kHz — §K O-8)
-Lm,63,µH,±7%,gapped 3×PQ50/50 (E7 rev D2 tolerance)
+Lm,63,µH,±7%,gapped 2×E70/33/32 (E7 rev D2 tolerance; E65 core)
 Ln,9,,,joint solve
 Q_crit,0.28,,,at bank 518 full load
 Np=Ns,7,turns,exact,2 secondaries (bank A/B)
-dB_pp,215,mT,,at bus 830
-Pfe,13,W,,PC95 fit VERIFY
-Pcu,7.6,W,,litz AC×1.15
+dB_pp_resonant,155,mT,,informational — worst simulated corner in llc-flux.csv
+Pfe,9.5,W,,rated PAR400 iGSE (magnetics-envelope)
+Pcu,8.4,W,,rated PAR400 Dowell/Sullivan
 Ip_rms_design,45.6,A,,envelope-flat worst
 Is_rms_per_winding,22.2,A,,two windings share section current
 Im_pk_830,11.8,A,,ZVS OK / ≤13 A ceiling

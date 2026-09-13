@@ -61,19 +61,9 @@ console.log(`=== MAGNETICS TEMPERATURE CRITIQUE (E58) — 3C95 measured surfaces
 
 // ---- ferrite op-set: {f, B̂, Ve[m3], Pfe_design(A4 basis)W, Pcu W, Rth K/W (ΔTspec/Ptot), hot core °C}
 const PARTS = [
-  // E60: D3 copper = conductor-audit at the continuous-worst simulated corner with the E60 construction
-  // (Dowell-optimum foil + 0.071 mm primary strands); the E51 as-drawn foils computed 2.3–2.9× these
-  { n: "D3-30 (3×PQ50 7:7:7)", f: 140e3, B: 0.1076, Ve: 111.3e-6, PfeA4: 13.0, Pcu: 10.2, Rth: 2.57, Thot: 130 },
-  { n: "D3-40 (2×E70 6:6:6)", f: 140e3, B: 0.0904, Ve: 204e-6, PfeA4: 14.4, Pcu: 22.4, Rth: 1.60, Thot: 130 },
-  { n: "D3-50 (2×E70 5:5:5)", f: 140e3, B: 0.1085, Ve: 204e-6, PfeA4: 24.4, Pcu: 25.3, Rth: 1.22, Thot: 130 },
-  // E60: D2 flux at the bin-max inductance and the POWER-SOLVED ngspice worst nominal peak (SER bank
-  // 250 V: 65.6 / 87.4 / 108.7 A) — the E58 rows carried 100/93/83 mT taken at the nominal bin and the
-  // pre-E60 (wrong-power) current; A4 Fe re-scaled ∝ B^2.9 so the conservative-fit check stays honest
-  { n: "D2-30 (bin-max, SER-250 worst)", f: 140e3, B: 0.109, Ve: 74.2e-6, PfeA4: 8.7, Pcu: 2.9, Rth: 3.70, Thot: 115 },
-  // E60: D2-40 on 1× E70/33/32 N 5, D2-50 on 2× E70/33/32 N 3 — flux at bin-max L and the simulated worst peak; Rth from the
-  // E70 2-set surface law (266 cm²) at the operating loss; Cu = Sullivan Rac at the continuous corner
-  { n: "D2-40 (1×E70 N5)", f: 140e3, B: 0.097, Ve: 102e-6, PfeA4: 9.0, Pcu: 6.1, Rth: 2.82, Thot: 115 },
-  { n: "D2-50 (2×E70 N3)", f: 140e3, B: 0.085, Ve: 204e-6, PfeA4: 12.1, Pcu: 6.6, Rth: 1.94, Thot: 115 },
+  // E65: the D3 and D2 rows (140 kHz resonant-point flux, hand-typed Pcu and lumped Rth) are RETIRED — the simulated corners
+  // run 77–88 kHz / 150–237 mT (D3) and 170–190 kHz (D2), so every row understated loss 2–3×. Both parts are now proven by
+  // magnetics-envelope: every power-solved corner, iGSE on the ngspice waveform, a core/winding thermal network, runaway.
   { n: "D4 (ETD39 DCM amp)", f: 65e3, B: 0.1165, Ve: 11.5e-6, PfeA4: 0.6, Pcu: 1.8, Rth: 12.0, Thot: 120 },
 ];
 // Core flux is VOLT-SECOND driven — Fe persists at FULL value even when the module derates,
@@ -105,10 +95,24 @@ for (const p of PARTS) {
     `Fe(−30 °C) = ${f2(feCold, 1)} W = ${f2(feCold / fe100, 2)}× the 100 °C basis; cold equilibrium core ${f2(Tcold, 0)} °C at full load (stable — loss slope negative below the ~80 °C minimum, so cold start SELF-WARMS toward the minimum)`);
 }
 // ---- saturation margins vs temperature ----
-ck("BSAT", "D3 volt-second flux at 130 °C core", 0.1085 <= 0.35 * Bsat(130),
-  `worst B̂ 108.5 mT ≤ 35% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * 0.1085 / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
-ck("BSAT", "D2 fault flux (bin-max L × (F.11 + 3 µs race), worst SKU = 30 kW)", (4.35e-6 * 129) / (4 * 656e-6) <= 0.6 * Bsat(130),
-  `${f2((4.35e-6 * 129) / (4 * 656e-6) * 1e3, 0)} mT at 85 + 44 A (E60 ngspice race) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
+{
+  const { D2: D2C, D3: D3C, excitation } = await import("./magnetics-envelope.mjs");
+  const { TANKS } = await import("../llc/tanks.mjs");
+  const { stack } = await import("./geometry.mjs");
+  let wB = 0, wAt = "";
+  for (const [sku, c] of Object.entries(D3C)) for (const r of excitation(sku).rows) {
+    const B = 63e-6 * r.Im_pk_A * r.lm_scale / (c.N * stack(c.core, c.n).Ae);
+    if (B > wB) { wB = B; wAt = `${sku} ${r.corner}`; }
+  }
+  ck("BSAT", "D3 simulated worst flux at 130 °C core", wB <= 0.5 * Bsat(130),
+    `worst B̂ ${f2(wB * 1e3, 0)} mT (${wAt}, E65 envelope) ≤ 50% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * wB / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
+  const { shortRacePeak } = await import("../../spice/llc/llc-flux-post.mjs");
+  const F11 = { "30kw": 85, "40kw": 115, "50kw": 145, "50kwa": 145 };   // race peak 3 µs after the F.11 crossing (E65)
+  const bf = Object.entries(D2C).map(([sku, c]) => [sku, Math.max(...TANKS[sku].bins) * 1e-6 * shortRacePeak(sku, F11[sku]).peak / (c.N * stack(c.core, c.n).Ae)]);
+  const worst = bf.reduce((a, x) => (x[1] > a[1] ? x : a));
+  ck("BSAT", `D2 fault flux (bin-max L × (F.11 + 3 µs race), worst SKU = ${worst[0]})`, worst[1] <= 0.6 * Bsat(130),
+    `${f2(worst[1] * 1e3, 0)} mT at the crossing-referenced race (E65 D2: ${bf.map(([k, v]) => `${k} ${f2(v * 1e3, 0)}`).join(" · ")}) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
+}
 ck("BSAT", "D4 clamp point at Lp+10%, 130 °C", 0.256 <= 0.75 * Bsat(130),
   `256 mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * 0.256 / Bsat(130), 0)}% absolute) — the E52 ETD39 margin HOLDS at temperature (the ETD34 rev C would sit at ${f2(100 * 0.329 / Bsat(130), 0)}%)`);
 // ---- Lm gap dominance: amplitude-permeability swing must not move Lm beyond its ±7% window ----

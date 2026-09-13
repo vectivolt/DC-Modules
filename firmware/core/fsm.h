@@ -107,6 +107,13 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_BUS_MIN_V      650.0f
 #define PMP_BUS_MAX_V      830.0f
 #define PMP_BUS_LINE_K       1.08f
+/* E65: magnetics bond-loss cover — six NC 130 °C cutouts (one per D3/D2) run in series with the T_XFMR NTC. Any open
+   cutout, or a broken NTC lead, pulls the channel to the rail; the HAL passes every NTC zone through this guard before
+   taking the zone max, so an open loop reports PMP_NTC_OPEN_C and latches F.22 instead of reading "very cold".
+   10 k pull-up / 10 k B3435 NTC reads ≤0.96 of Vref at −40 °C, so 0.98 never trips on a healthy cold sensor. */
+#define PMP_NTC_OPEN_FRAC    0.98f
+#define PMP_NTC_OPEN_C     150.0f
+static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac >= PMP_NTC_OPEN_FRAC ? PMP_NTC_OPEN_C : t_c; }
 #define PMP_LOCK_COUNT       5u
 /* F.21 discharge supervision (R2 review: the doc row previously had no implementation).
    Physics scales with bus C: t(<60 V) ≈ 2.0 / 3.6 / 7.2 s at 30/60/120 kW (640 Ω, 850 V) —

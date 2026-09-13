@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { plotSVG } from "../plot.mjs";
+import { excitation, d3Loss, d2Loss, D3 as D3C, D2 as D2C } from "../magnetics/magnetics-envelope.mjs";
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const f = (x, d = 1) => Number(x.toFixed(d));
 
@@ -16,10 +17,18 @@ const PFC_LANE = { semis: 3 * (43.5 + 24.2), mag: 3 * 34.8, note: "3 pairs @43.5
 // understated the nominal current by ~20 % (sim 29.0 A at 30 kW).
 const IP_NOM = (sku) => +readFileSync(join(OUT, "..", "..", "simulation-results", sku.toLowerCase(), "llc-stress.csv"), "utf8")
   .split("\n").find((l) => l.startsWith("PAR400-full,")).split(",")[9];
-const LLC_CH = (ip) => ({
+// E65: D3 and D2 losses at the rated point come from the magnetics-envelope models on the power-solved PAR400-full
+// waveform (iGSE Fe + Dowell/Sullivan Cu at the simulated 150 kHz, windings at 90 °C) — the old 20.5 W/section and the
+// 8 mΩ lumped trim were resonant-point hand values. Cr ESR: tanδ 2e-4 film, parallel set ≈ 1.2 mΩ per phase.
+const MAG_RATED = (sku) => {
+  const k = sku.toLowerCase(), r = excitation(k).rows.find((x) => x.corner === "PAR400-full");
+  const a = d3Loss(k, D3C[k], r), b = d2Loss(k, D2C[k], r);
+  return { xfmrSec: a.fe(90) + a.cu(90), trimSec: b.fe(90) + b.cu(90) };
+};
+const LLC_CH = (ip, sku = "30kW") => ({
   pri: 6 * (ip / Math.SQRT2) ** 2 * 0.035,          // 6 FETs, each conducts half-period, Rds_hot 35 mΩ
-  xfmr: 3 * 20.5,
-  tank: 3 * ip * ip * 0.008,                        // trim L + Cr ESR ~8 mΩ per phase
+  xfmr: 3 * MAG_RATED(sku).xfmrSec,
+  tank: 3 * (MAG_RATED(sku).trimSec + ip * ip * 0.0012),   // D2 trim (envelope) + Cr ESR per phase
 });
 // Secondary options at module full output current Iout (per 30 kW-channel: 100 A total, 50 A/bank):
 function secondary(IoutCh) {
@@ -67,12 +76,10 @@ for (const s of SKUS) {
   if (k > 1.01) console.log(`  ${s.name} PFC semi scenarios @330 V corner-scaled: single-FET ${f(pfcSemis / 0.78, 0)} W · 2x-parallel ${f(pfcSemisPar / 0.78, 0)} W (per pair ${f(pairW, 1)} vs ${f(pairParW, 1)} W)`);
   const pfcMag = 3 * (32.4 * k + 2.4) * 0.72 * s.lanes;
   const dclink = 12 * s.lanes * k * k * (10 / (10 * k > 10 ? 12 : 10)) * (s.lanes > 1 ? 1 : 1);
-  const llc = LLC_CH(IP_NOM(s.name));
-  // E51: transformer per-section losses from the re-issued D3 drawings (real former MLT 230.5 mm
-  // on the E70 routes — the old 0.65k+0.35 scaling of the PQ number understated 40/50 by 9-16 W/section):
-  // 30 kW = 3×PQ50 7:7:7 (llc-design 20.5 W) · 40 = 2×E70 6:6:6 (34.3) · 50 = 2×E70 5:5:5 (45.1, web-bonded)
-  const XFMR_SEC = { "30kW": 20.5, "40kW": 34.3, "50kW": 45.1, "50kWa": 45.1 };
-  const pri = llc.pri * s.ch / (s.parL ?? 1), xf = 3 * (XFMR_SEC[s.name] ?? 20.5) * s.ch, tank = llc.tank * s.ch;   // E44: paralleled LLC halves pri conduction
+  const llc = LLC_CH(IP_NOM(s.name), s.name);
+  // E65: transformer per-section loss = magnetics-envelope at PAR400-full (30 kW 2×E70 7:7:7 · 40 kW 2×E70 6:6:6 ·
+  // 50 kW 3×E70 5:5:5); the worst THERMAL corners (525 V bank / SER250) are the envelope gate's job, not efficiency's
+  const pri = llc.pri * s.ch / (s.parL ?? 1), xf = llc.xfmr * s.ch, tank = llc.tank * s.ch;   // E44: paralleled LLC halves pri conduction
   const { jbsW, srW } = secondary(100 * k);
   const secJ = jbsW * s.ch, secS = srW * s.ch;
   const bus = 0.00015 * s.Iout ** 2 + 25e-6 * s.Iout ** 2; // busbar ~0.15 mΩ + shunt 25 µΩ paths
@@ -107,7 +114,7 @@ console.log(`fan-life field costs are priced in — revisit at Phase 17 with rea
 
 // ---------------- heatsink requirement + corners + derating
 // Worst continuous: 330 VAC full power, JBS baseline, +55 °C ambient.
-const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + 3 * 20.5 + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
+const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
 const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + secondary(100).jbsW;
 console.log(`\n30 kW worst-corner dissipation ≈ ${f(totalWorst30, 0)} W, of which heatsink-mounted semis ≈ ${f(semisShare, 0)} W`);
 const RthReq = 20 / semisShare;                       // allow 20 K sink-to-air rise at 55 °C ambient → sink ≤75 °C

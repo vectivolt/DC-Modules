@@ -1328,19 +1328,19 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
                  "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH, E51 restated basis 11.8 — met)"],
         },
         dcdc: {
-          "30": ["D3 T1-T3: 3x PQ50/50 PC95 stack, 7:7:7 (E8), pri litz 2475x0.071 + sec Cu foil 0.10x28 (E60 Dowell rev), Lm 63uH +/-7% gap-ground",
-                 "D2 L1T-L3T: gapped 2x PQ50/50, N=4, bins ~4.0uH, gap ground per bin"],
-          "40": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 6:6:6, Bpk 90mT, pri litz 3486x0.071 + sec foil 0.127x28 (E60), Lm 63uH +/-7% gap-ground",
-                 "D2 L1T-L3T: 1x E70/33/32, N=5, bins 3.2/3.5/3.8uH, litz 4150x0.071 (16.4mm2, E60 proximity rev)"],
-          "50": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 5:5:5, Bpk 109mT, pri litz 4370x0.071 + sec foil 0.127x28 (E60), web-bonded, Lm 63uH +/-7%",
-                 "D2 L1T-L3T: 2x E70/33/32, N=3, bins 2.8/3.0/3.2uH, litz 2500x0.1 (19.6mm2, E60 proximity rev)"],
+          "30": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 7:7:7 (E65 rev C; E8 turns), Bpk 142mT @525V-bank sim, pri litz 2475x0.071 + sec Cu foil 0.10x28, Lm 63uH +/-7% gap-ground, BONDED",
+                 "D2 L1T-L3T: 1x E70/33/32, N=8, bins 6.35/6.5/6.65/6.8uH, litz 6112x0.05, distributed gap, bonded (E65: carries ~all of Lr)"],
+          "40": ["D3 T1-T3: 2x E70/33/32 sets (B66372B2000 former), 6:6:6, Bpk 176mT @525V-bank sim, pri litz 3486x0.071 + sec foil 0.127x28, Lm 63uH +/-7% gap-ground, BONDED",
+                 "D2 L1T-L3T: 2x E70/33/32, N=5, bins 5.85/6.0/6.15/6.3uH, litz 8149x0.05, distributed gap, bonded (E65)"],
+          "50": ["D3 T1-T3: 3x E70/33/32 sets (3-set former), 5:5:5, Bpk 158mT @525V-bank sim, pri litz 4370x0.071 + sec foil 0.127x28, Lm 63uH +/-7%, plate/web-BONDED",
+                 "D2 L1T-L3T: 2x E70/33/32, N=5, bins 5.35/5.5/5.65/5.8uH, litz 8149x0.05, distributed gap, bonded (E65)"],
         },
       };
       const magRows = MAG[key.endsWith("acdc") ? "acdc" : "dcdc"]?.[KW];
       if (magRows) {
         const magPanel = (V, fixed) => drawPanel(V, "MAGNETICS CONSTRUCTION",
           "identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)",
-          [...magRows, "total Lr = trim + measured xfmr leakage (bins COMPENSATE leakage spread); Cr at TANK sections"], "", fixed);
+          [...magRows, key.endsWith("acdc") ? "Cr at TANK sections" : "total Lr = D2 bin + measured xfmr leakage (~0.2uH) + 0.1uH loop; Cr at TANK sections", ...(key.endsWith("acdc") ? [] : ["T_XFMR NTC loop runs through 6 NC 130C cutouts, one per D3/D2 (open loop = OT trip, E65 bond-loss cover)"])], "", fixed);
         const m1 = magPanel(pickVoid(used));
         if (m1) used.push(m1);
       }

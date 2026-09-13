@@ -65,13 +65,13 @@ ck("MR-8", !/net\.NC_U\d/.test(boards), "ULN spare inputs grounded");
 // ===== R2 review closure (docs/design-review-production-r2.md, 2026-09-05) =====
 const fsmH = readFileSync(join(ROOT, "firmware/core/fsm.h"), "utf8");
 const fsmC = readFileSync(join(ROOT, "firmware/core/fsm.c"), "utf8");
-ck("R2-CB16", cells.includes('ctBurden = "1.2"') && cells.includes('R${id}CT`} resistance={ctBurden}') && /R2512-1R2-1W-1%/.test(db) && db.includes("R\\d+CT"), "resonant CT burden per tank class (E60 re-point of CB-16: 1.2/0.91/0.75 Ω for F.11 85/115/145 A pk — the 2.0 Ω/70 A class sat AT the 30 kW operating peak; current-coordination proves the per-SKU race)");
+ck("R2-CB16", cells.includes('ctBurden = "1.0"') && cells.includes('R${id}CT`} resistance={ctBurden}') && /R2512-1R00-1W-1%/.test(db) && db.includes("R\\d+CT"), "resonant CT burden per tank class (E65 re-point of CB-16: 1.0/0.82/0.68 Ω for F.11 85/115/145 A pk, race measured from the F.11 crossing — the 2.0 Ω/70 A class sat AT the 30 kW operating peak; current-coordination proves the per-SKU race)");
 ck("R2-CB17", /Rail3V3 id="CARD"/.test(boards), "3.3 V rail sourced on the card (one card per board role — card-split rev of CB-17/18)");
 ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck, not a 15 V-fed LDO");
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
 ck("R2-CB20", /Lp 345/.test(cells) && /0\.31/.test(cells) && /ETD39/.test(db), "aux 110 W stage values in cells + D4 part (rev D ETD39 at E52 — sat margin 85%→66% at Lp+10%+clamp; electricals unchanged)");
 ck("R2-CB21", /flt="net.FLT" en="net.GATE_EN_B"/.test(boards), "E40 rev: the LLC driver fault wire-OR reaches the brain on the single merged FLT line");
-ck("R2-CB22", /crVal=\{pw === 50 \? "27nF" : pw === 40 \? "33nF" : "46nF"\}/.test(boards) && /crN=\{pw === 50 \? 8 : pw === 40 \? 6 : 4\}/.test(boards) && /PP-46n-1200/.test(db) && /PP-33n-1200V/.test(db) && /PP-27n-1200V/.test(db) && /IND-TRIM-BIN4/.test(db) && /IND-TRIM-E70-40/.test(db) && /IND-TRIM-E70-50/.test(db), "tank: 30 kW frozen rev D2 (4x46 nF) + E41 (6x33 nF) + E42 (8x27 nF) with the E60 D2 rev D trims (1×E70 N5 / 2×E70 N3 — proximity rev) — all three asserted structurally");
+ck("R2-CB22", /crVal=\{pw === 50 \? "27nF" : pw === 40 \? "33nF" : "46nF"\}/.test(boards) && /crN=\{pw === 50 \? 8 : pw === 40 \? 6 : 4\}/.test(boards) && /PP-46n-1200/.test(db) && /PP-33n-1200V/.test(db) && /PP-27n-1200V/.test(db) && /IND-TRIM-BIN4/.test(db) && /IND-TRIM-E70-40/.test(db) && /IND-TRIM-E70-50/.test(db), "tank: 30 kW frozen rev D2 (4x46 nF) + E41 (6x33 nF) + E42 (8x27 nF) with the E65 D2 rev E trims (1×E70 N8 / 2×E70 N5 — carry ~all of Lr) — all three asserted structurally");
 ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db) && /PMP_DISCH_TO_MS/.test(fsmH) && /disch_ms/.test(fsmC), "per-SKU pulse parts @120 kW + F.21 implemented in firmware");
 ck("R2-HR15", /QDISA/.test(boards) && /QDISB/.test(boards) && /RBDA0/.test(boards) && /CTL_QDISBK/.test(boards), "commanded bank bleeders exist (banks no longer hold 525 V for minutes)");
 ck("R2-HR16", /ISO5V-RFC-6K/.test(db) && !/B1505S-2WR2/.test(db), "iso-5V bias modules reinforced-rated (they ARE the barrier)");
@@ -369,7 +369,7 @@ ck("SHEET-VALUE-TEXT", (() => {
 }
 ck("AUD-BURDEN27", cells.includes('burden = "22"') && cells.includes('R${id}B`} resistance={burden}') && /R1206-22R-1%/.test(db) && !/R1206-33R-1%/.test(db),
   "line-CT burden default 22 R (E60 re-point of R3: F.01 120 A pk observable through the D1 soft-sat race to 184 A; 40/50 kW 18/13 R via the burden prop; the 33 R clip must never return)");
-ck("AUD-D2-FERRITE", /GAPPED FERRITE/.test(db) && /PQ50\/50/.test(db.match(/IND-TRIM-BIN4[\s\S]{0,400}/)?.[0] ?? ""),
+ck("AUD-D2-FERRITE", /GAPPED FERRITE/.test(db) && /E70\/33\/32/.test(db.match(/IND-TRIM-BIN4[\s\S]{0,400}/)?.[0] ?? "") && /Powder cores prohibited/.test(db),
   "D2 trim is gapped ferrite (F1: sendust at full 140 kHz AC swing = ~43 W core loss, 2:1 L swing)");
 ck("AUD-D1-REVB", /N=39/.test(db) && /18 mm²/.test(db) && /0077908A7/.test(db),
   "D1 re-issued against the real core (AL 37) with the calculator's copper (F4)");
@@ -407,7 +407,7 @@ ck("E42-KOUT", /dualOut=\{pw === 50\}/.test(boards) && /dual \? HV : dualOut \? 
   "K_OUT dual pair at 50 kW only (matrix legs single) — cell prop + board wiring + BOM instance");
 ck("E42-BURDENS", /burden=\{pw === 50 \? "13" : pw === 40 \? "18" : "22"\}/.test(boards) && /ctBurden=\{pw === 50 \? "0\.75" : pw === 40 \? "0\.91" : "1\.2"\}/.test(boards),
   "CT burdens per SKU at the E60 coordination classes (line 22/18/13 Ω for F.01 120/155/195 A pk · resonant 1.2/0.91/0.75 Ω for F.11 85/115/145 A pk — current-coordination proves the race; E42 first re-scaled them at 50 kW)");
-ck("E42-CLASSES", /FUSE-gG-690V-160A/.test(db) && /91\.6 A line = 37%/.test(db) && /CT-LINE-2500-150A/.test(db) && /IND-PFC-107u-50/.test(db) && /XFMR-LLC-2E70-50/.test(db) && /Liquid coldplates/.test(db),
+ck("E42-CLASSES", /FUSE-gG-690V-160A/.test(db) && /91\.6 A line = 37%/.test(db) && /CT-LINE-2500-150A/.test(db) && /IND-PFC-107u-50/.test(db) && /XFMR-LLC-3E70-50/.test(db) && /Liquid coldplates/.test(db),
   "50 kW protection/magnetics classes + coldplate mech lines all ordered in parts-db");
 ck("E42-RATING", /pw === 50 \? \(air \? "15k" : "10k"\) : pw === 40 \? "1k" : "0"/.test(boards) && /"50kw": "10000", "50kwa": "15000"/.test(readFileSync(join(ROOT, "calculations/module-interconnect-audit.mts"), "utf8")),
   "RATING straps 10k = 50 liquid / 15k = 50 AIR (E24 rev G) and the audit knows both");
@@ -531,8 +531,8 @@ ck("R8-A", /nSets/.test(readFileSync(join(ROOT, "calculations/stress-audit.mjs")
 // R8-B rev E51: the panel-truth requirement stands (turns + Lm on every dcdc row) but the truth
 // moved — D3-40/50 re-issued 6:6:6 / 5:5:5 on 2×E70 sets (the 9:9:9 and 3-set routes were
 // unbuildable; see E51). The register's R8-B row stays historical.
-ck("R8-B", /7:7:7 \(E8\)/.test(k5genR8) && /6:6:6, Bpk 90mT/.test(k5genR8) && /5:5:5, Bpk 109mT/.test(k5genR8) && k5genR8.split("Lm 63uH").length === 4 && /sec Cu foil 0\.10x28/.test(k5genR8),
-  "MAG panels: correct turns per SKU (7:7:7 / 6:6:6 / 5:5:5 — E51 revs) and the Lm 63uH ±7% line on ALL THREE dcdc rows");
+ck("R8-B", /7:7:7 \(E65 rev C; E8 turns\)/.test(k5genR8) && /6:6:6, Bpk 176mT/.test(k5genR8) && /5:5:5, Bpk 158mT/.test(k5genR8) && k5genR8.split("Lm 63uH").length === 4 && /sec Cu foil 0\.10x28/.test(k5genR8),
+  "MAG panels: correct turns per SKU (7:7:7 / 6:6:6 / 5:5:5), the E65 simulated-corner Bpk and the Lm 63uH ±7% line on ALL THREE dcdc rows");
 ck("R8-C", /resistance="1k" footprint="2010"/.test(cells) && /R2010-1k-0.75W/.test(db) && /25 °C-ENDPOINT MODEL/.test(db),
   "PV LED feed 1.2k→1k/2010 (≥10 mA held to the 13.5 V rail floor, 31% of rating at the 16.5 V corner) and the gate-voltage claim de-escalated from guarantee to 25 °C-endpoint model with declared ambient + EVT gate");
 

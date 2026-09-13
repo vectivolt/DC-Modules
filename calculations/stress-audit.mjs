@@ -10,6 +10,9 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { TANKS } from "./llc/tanks.mjs";
+import { D2 as D2C, D3 as D3C, excitation } from "./magnetics/magnetics-envelope.mjs";
+import { stack } from "./magnetics/geometry.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
 let fails = 0, warns = 0;
@@ -96,28 +99,23 @@ for (const [sku, d] of Object.entries(D1)) {
   ck("D1", `${sku} ΔT`, d.dT <= 45, `${d.dT} K vs 45 K acceptance`);
   ck("D1", `${sku} current density`, J <= 5.5, `${f(J, 2)} A/mm² ≤ 5.5`);
 }
-// D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae). E60: D2-40 = 1× E70/33/32 N 5 (Ae 683 mm²),
-// D2-50 = 2× E70/33/32 N 3 (1366 mm²) — the PQ50 N 5/6 routes computed Fr 4.3/11.7 (conductor-audit owns the AC proof)
-const D2 = { "30kw": { L: 4.0e-6, Irms: 46.4, N: 4, Ae: 656e-6 }, "40kw": { L: 3.5e-6, Irms: 61.9, N: 5, Ae: 683e-6 }, "50kw": { L: 3.0e-6, Irms: 77.3, N: 3, Ae: 1366e-6 }, "50kwa": { L: 3.0e-6, Irms: 77.3, N: 3, Ae: 1366e-6 } };
-for (const [sku, d] of Object.entries(D2)) {
-  const B = d.L * d.Irms * Math.SQRT2 / (d.N * d.Ae) * 1e3;
-  ck("D2", `${sku} trim Bpk`, B <= 100.5, `${f(B, 0)} mT vs 100 mT loss line (N=${d.N} on ${d.Ae > 1e-3 ? "2× E70/33/32 — E60" : d.Ae > 6.7e-4 ? "1× E70/33/32 — E60" : "2× PQ50/50"}; trim = ~50 % of Lr so leakage tolerance stays binnable)`);
+// D2 resonant trim [reg formula]: Bpk = L·Ipk_tank / (N · Ae) at the BIN-MAX inductance and the drawn tank class.
+// E65: D2 carries ~all of Lr (the "engineered 3 µH" transformer leakage was unreachable) — constructions from the
+// magnetics-envelope table, bins from tanks.mjs; thermal proof at every simulated corner lives in magnetics-envelope.
+const IRMS_CLASS = { "30kw": 46.4, "40kw": 61.9, "50kw": 77.3, "50kwa": 77.3 };
+for (const [sku, c] of Object.entries(D2C)) {
+  const t = TANKS[sku], Ae = stack(c.core, c.n).Ae, B = Math.max(...t.bins) * 1e-6 * IRMS_CLASS[sku] * Math.SQRT2 / (c.N * Ae) * 1e3;
+  ck("D2", `${sku} trim Bpk`, B <= 110 && t.nTrim === c.N, `${f(B, 0)} mT at bin-max ${Math.max(...t.bins)} µH × ${IRMS_CLASS[sku]} A rms class vs 110 mT line (N=${c.N} on ${c.n}× E70/33/32 — E65)`);
 }
-// D3 transformer — E51: the old check here was literally `true` while the register carried a
-// ×1.8 flux-claim error ("108 mT identical" — the E70 routes actually ran 60 mT) and windings
-// that could not fit their formers. Now COMPUTED from volt-seconds (415 V half-cycle @140 kHz)
-// against each variant's core set and its registered Bpk line.
+// D3 transformer — E65: flux from the POWER-SOLVED magnetizing current at every simulated corner (llc-flux.csv), not the
+// 415 V / 140 kHz resonant point: the bus is capped at 830 V, so bank 500–525 V runs gain 1.2–1.27 at 77–88 kHz and
+// flux follows bank voltage, 1.5–2.2× the resonant value (E51's volt-second check was right in form, wrong in corner).
 {
-  const LAM = 415 / (2 * 140e3);
-  const D3 = {
-    "30kw": { sets: 3, Ae: 328e-6, N: 7, BpkLine: 108, win: "75% of bobbinless PQ window (compacted litz + foil sec, E51 construction)" },
-    "40kw": { sets: 2, Ae: 683e-6, N: 6, BpkLine: 90, win: "88% of B66372B2000 former AN 389 mm² (E51: 9:9:9 computed 242–294% — unbuildable)" },
-    "50kw": { sets: 2, Ae: 683e-6, N: 5, BpkLine: 109, win: "91% of B66372B2000 former (E51: registered 3-set former does not exist)" },
-    "50kwa": { sets: 2, Ae: 683e-6, N: 5, BpkLine: 109, win: "same D3-50 rev B part" },
-  };
-  for (const [sku, d] of Object.entries(D3)) {
-    const Bamp = LAM / (d.N * d.Ae * d.sets) / 2 * 1e3;
-    ck("D3", `${sku} Bpk from volt-seconds`, Math.abs(Bamp - d.BpkLine) <= 2 && Bamp <= 115, `${f(Bamp, 0)} mT vs registered ${d.BpkLine} (≤115 loss line; hot Bsat ~330); window: ${d.win}`);
+  for (const [sku, c] of Object.entries(D3C)) {
+    const Ae = stack(c.core, c.n).Ae, rows = excitation(sku).rows;
+    const w = rows.reduce((a, r) => (r.Im_pk_A * r.lm_scale > a.Im_pk_A * a.lm_scale ? r : a));
+    const B = 63e-6 * w.Im_pk_A * w.lm_scale / (c.N * Ae) * 1e3;
+    ck("D3", `${sku} Bpk at the worst simulated corner`, B <= 205, `${f(B, 0)} mT at ${w.corner} (${w.fsw_kHz} kHz) on ${c.n}× E70 ${c.N}:${c.N}:${c.N} ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)`);
   }
 }
 // D6/D7 EMI chokes: constant-J rewind at 40/50 kW [lb]
@@ -138,12 +136,12 @@ ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(
   // E60 re-point: the observability point is now F.0x + the simulated 3 µs fault rise (current-
   // coordination gate owns the per-SKU proof; this row keeps the 50 kW rail arithmetic visible)
   const lineV = 1.65 + (195 + 71.4) / 2500 * 13;            // 50 kW F.01 195 A + D1 soft-sat race
-  const resV = 1.65 + (145 + 50.4) / 100 * 0.75;            // 50 kW F.11 145 A + ngspice race
-  const resW = 0.809 ** 2 * 0.75;                           // resonant burden at the 80.9 A rms mismatch corner
+  const resV = 1.65 + 215.6 / 100 * 0.68;                   // E65: 50 kW air-twin race peak 3 µs after the F.11 crossing (llc-short.csv)
+  const resW = 0.809 ** 2 * 0.68;                           // resonant burden at the 80.9 A rms mismatch corner
   ck("BRD", "50kw line-CT burden rail budget", lineV <= 3.275, `266 A pk (F.01+race) → ${f(lineV, 2)} V on 13 Ω (the E42 21.5 Ω saw only to 187 A)`);
-  ck("BRD", "50kw resonant burden rail budget", resV <= 3.275, `195 A pk (F.11+race) → ${f(resV, 2)} V on 0.75 Ω (the E42 1.6 Ω would clip at 104 A)`);
+  ck("BRD", "50kw resonant burden rail budget", resV <= 3.275, `216 A pk (F.11+race, E65 crossing-referenced) → ${f(resV, 2)} V on 0.68 Ω (the E42 1.6 Ω would clip at 104 A; E60 0.75 Ω sat at the rail)`);
   ck("BRD", "50kw resonant burden dissipation", resW <= 1.0, `${f(resW, 2)} W on the 2 W part = ${f(50 * resW, 0)}%`);
-  ck("BRD", "50kw burden parts ordered", /R2512-0R75-2W-1%/.test(db) && /R1206-13R-1%/.test(db), "both E60 burdens exist as skuOverrides");
+  ck("BRD", "50kw burden parts ordered", /R2512-0R68-2W-1%/.test(db) && /R1206-13R-1%/.test(db), "both burdens exist as skuOverrides (E65 resonant 0.68 Ω)");
 }
 
 // ---------------- 3b. E43 verification-pass permanent gates -------------------------------------

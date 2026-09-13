@@ -3,6 +3,13 @@
 #include "fsm.h"
 #include <math.h>
 
+/* E60/E65 bus reference: the tank must reach the bank voltage it is actually delivering into — gain = bank/(bus/2)
+ * stays inside the simulated envelope (≤1.265 at the 830 V cap) only if the reference follows that bank. */
+static float bus_ref_for(pmp_mode_t mode, float v_op, float vin_ll) {
+  float bank = (mode == MODE_SER) ? 0.5f * v_op : v_op;
+  return fminf(PMP_BUS_MAX_V, fmaxf(PMP_BUS_MIN_V, fmaxf(2.0f * bank / 0.95f, PMP_BUS_LINE_K * 1.414f * vin_ll)));
+}
+
 static void latch(pmp_fsm_t *f, pmp_fault_t code) {
   if (f->latched != FC_NONE || f->lock) return;
   f->latched = code;
@@ -68,6 +75,9 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       f->st = ST_STANDBY; o->llc_en = false; o->k_out = false; f->need_enable = true;
     }
     if (in->link_age_ms > PMP_LINK_TO_MS) latch(f, FC_LINK);
+    /* E65: recomputed every tick — a session that starts low (bus 650 V) and climbs to a 525 V bank would otherwise
+       run gain 1.6, outside every simulated corner (the reference was only set in STANDBY) */
+    o->vbus_ref = bus_ref_for(o->mode, fmaxf(in->vcmd, in->vout_meas), in->vin_ll);
   }
 
   /* ---------------- state machine */
@@ -87,11 +97,13 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       /* E60: the START decision uses the same 525 V entry threshold as the RUN transition — starting
        * SER at 500–525 V put the bank at 250 V with twice the PAR tank current (ngspice E60: 86.6 A pk
        * at 40 kW vs 57.9 A in PAR at 525 V), a corner the 40 kW's single LLC FETs can only hold derated */
-      o->vbus_ref = fminf(PMP_BUS_MAX_V, fmaxf(PMP_BUS_MIN_V, fmaxf(2.0f * (in->vcmd > PMP_XOVER_DN_V ? in->vcmd * 0.5f : in->vcmd) / 0.95f,
-                                                                  PMP_BUS_LINE_K * 1.414f * in->vin_ll)));
+      /* E65: a connected battery sets the operating voltage — EVs often send their MAXIMUM as vcmd while the pack sits far
+       * below it; choosing SER from vcmd then ran banks under the 250 V SER floor */
+      float v_start = (in->ext_connected && in->vext > 0.0f) ? in->vext : in->vcmd;
+      o->vbus_ref = bus_ref_for(v_start > PMP_XOVER_DN_V ? MODE_SER : MODE_PAR, v_start, in->vin_ll);
       if (in->vbus > 700.0f) {
         if (in->ext_connected && in->vext < 0.0f) { latch(f, FC_BACKFEED); break; }
-        o->mode = (in->vcmd > PMP_XOVER_DN_V) ? MODE_SER : MODE_PAR;
+        o->mode = (v_start > PMP_XOVER_DN_V) ? MODE_SER : MODE_PAR;
         o->llc_en = true;
         bool ready = (o->mode == MODE_SER) ? o->k_ser : (o->k_para && o->k_parb);
         if (!ready) {
@@ -114,10 +126,11 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     break;
   case ST_RUN:
     if (o->derate < 1.0f) f->st = ST_DERATE;
-    if ((o->mode == MODE_PAR && in->vcmd > PMP_XOVER_DN_V) ||
-        (o->mode == MODE_SER && in->vcmd < PMP_XOVER_UP_V)) {
+    { float v_x = in->ext_connected ? in->vout_meas : in->vcmd;     /* E65: crossover on the real battery voltage */
+    if ((o->mode == MODE_PAR && v_x > PMP_XOVER_DN_V) ||
+        (o->mode == MODE_SER && v_x < PMP_XOVER_UP_V)) {
       if (++f->dwell_ms > PMP_MODE_DWELL_MS) { f->st = ST_MODESW; f->sw_step = 0; }
-    } else f->dwell_ms = 0;
+    } else f->dwell_ms = 0; }
     break;
   case ST_DERATE:
     if (o->derate >= 1.0f) f->st = ST_RUN;

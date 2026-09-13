@@ -87,7 +87,8 @@ function step(m, ev = {}) {
         if (m.bus > 700) {
           // backfeed policy: match stack to external voltage before K_OUT
           if (m.extConn && m.vext < 0) { latch(m, F.BACKFEED); break; }
-          m.mode = m.vcmd > 525 ? "SER" : "PAR";   // E60: start threshold = RUN entry (525 V) — no SER bank-250 starts
+          const vStart = m.extConn && m.vext > 0 ? m.vext : m.vcmd;   // E65: a connected battery sets the operating voltage
+          m.mode = vStart > 525 ? "SER" : "PAR";   // E60: start threshold = RUN entry (525 V) — no SER bank-250 starts
           m.llcOn = true;
           const ready = m.mode === "SER" ? m.kser : m.kpara && m.kparb;
           if (!ready) {
@@ -107,7 +108,8 @@ function step(m, ev = {}) {
     case "RUN":
       if (m.derate < 1) { m.st = "DERATE"; m.log.push([m.t, "->DERATE", m.derate]); }
       // mode transition request with dwell
-      if ((m.mode === "PAR" && m.vcmd > 525) || (m.mode === "SER" && m.vcmd < 500)) {
+      const vX = m.extConn ? m.vout : m.vcmd;                     // E65: crossover on the real battery voltage
+      if ((m.mode === "PAR" && vX > 525) || (m.mode === "SER" && vX < 500)) {
         m.dwell++;
         if (m.dwell > 30) { m.st = "MODESW"; m.swStep = 0; m.log.push([m.t, "->MODESW"]); }
       } else m.dwell = 0;

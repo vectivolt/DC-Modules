@@ -8,6 +8,7 @@
 // Inputs: simulation-results/<sku>/llc-stress{.csv,-summary.json} (spice/llc/llc-run.mjs, pinned
 // by tank fingerprint) · calculations/out/vienna-switched.csv (calculations/pfc/vienna-switched.mjs)
 // Run: node calculations/system/current-coordination.mjs        (run-all, after vienna-switched)
+import { shortRacePeak } from "../../spice/llc/llc-flux-post.mjs";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,9 +23,11 @@ const ck = (sec, name, cond, detail) => { console.log(`${cond ? "  ok  " : "  FA
 // ---- THE coordination classes. fsm.c, boards.tsx/cells.tsx, parts-db and protection-thresholds.md
 // are asserted against this table (section K) so the carriers cannot drift apart again.
 export const OC = {
-  "30kw": { F01: 120, lineRb: 22, F11: 85, resRb: 1.2, lineMpn: "R1206-22R-1%", resMpn: "R2512-1R2-1W-1%" },
-  "40kw": { F01: 155, lineRb: 18, F11: 115, resRb: 0.91, lineMpn: "R1206-18R-1%", resMpn: "R2512-0R91-1W-1%" },
-  "50kw": { F01: 195, lineRb: 13, F11: 145, resRb: 0.75, lineMpn: "R1206-13R-1%", resMpn: "R2512-0R75-2W-1%" },
+  // E65 resonant burdens 1.2/0.91/0.75 → 1.0/0.82/0.68 Ω: the internal-short race measured from the F.11 CROSSING peaks at
+  // 149/180/213 A (216 A air twin) — beyond the 135/178 A ceilings of the E60 burdens at 30/40 kW, 0.2 % inside at 50 kW air
+  "30kw": { F01: 120, lineRb: 22, F11: 85, resRb: 1.0, lineMpn: "R1206-22R-1%", resMpn: "R2512-1R00-1W-1%" },
+  "40kw": { F01: 155, lineRb: 18, F11: 115, resRb: 0.82, lineMpn: "R1206-18R-1%", resMpn: "R2512-0R82-1W-1%" },
+  "50kw": { F01: 195, lineRb: 13, F11: 145, resRb: 0.68, lineMpn: "R1206-13R-1%", resMpn: "R2512-0R68-2W-1%" },
 };
 OC["50kwa"] = OC["50kw"];
 export const BLANK = { pfc: 47e-12, llc: 22e-12 };              // DESAT blanking caps (NSI66x1A)
@@ -81,9 +84,10 @@ for (const sku of Object.keys(TANKS)) {
   const pkNom = Math.max(...nominal.map((r) => +r.Ip_pk_A)), rmsNom = Math.max(...nominal.map((r) => +r.Ip_rms_A));
   ck("F.11", `${sku} threshold ≥ ${RULE.margin}× simulated worst tank peak`, c.F11 >= RULE.margin * s.ipPkMax,
     `${c.F11} A pk vs ${s.ipPkMax} A (${s.worstCorner}; nominal corners ${f(pkNom)} A) → ${f(c.F11 / s.ipPkMax, 2)}× — the as-drawn 70/70/95 A sat at 1.00/0.74/0.81×`);
-  const di = s.race.at3us - s.race.pre, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
-  ck("F.11", `${sku} observability through the internal-short race`, c.F11 + di <= ceil && thrV <= RULE.thrMaxV,
-    `sim Δi(3 µs) = ${f(di)} A → ${f(c.F11 + di)} A ≤ ceiling ${f(ceil)} A on ${c.resRb} Ω · threshold ${f(thrV, 2)} V`);
+  // E65: the 3 µs kill window starts at the F.11 CROSSING on the committed post-short envelope (llc-short.csv), like F.01
+  const { tX, peak: racePk } = shortRacePeak(sku, c.F11), di = racePk - c.F11, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
+  ck("F.11", `${sku} observability through the internal-short race`, racePk * 1.05 <= ceil && thrV <= RULE.thrMaxV,
+    `F.11 crossed ${f(tX, 2)} µs after the short → peak ${f(racePk)} A 3 µs later (Δi ${f(di)} A) ×1.05 ≤ ceiling ${f(ceil)} A on ${c.resRb} Ω · threshold ${f(thrV, 2)} V (E60 fixed-time sampling said ${f(c.F11 + s.race.at3us - s.race.pre)} A)`);
   const Lmax = Math.max(...t.bins) * 1e-6;
   const bNorm = Lmax * pkNom / (t.nTrim * t.aeTrim), bFault = Lmax * (c.F11 + di) / (t.nTrim * t.aeTrim);
   ck("D2", `${sku} trim flux: operating + fault`, bNorm <= 0.110 && bFault <= 0.6 * Bsat130,
@@ -132,8 +136,8 @@ for (const sku of Object.keys(TANKS)) {
   const db = rd("calculations/cost/parts-db.mjs"), prot = rd("docs/protection-thresholds.md");
   ck("SYNC", "fsm.c per-rating OC classes", /oc_line_a = \(kw == 50u\) \? 195\.0f : \(kw == 40u\) \? 155\.0f : 120\.0f/.test(fsm) && /oc_tank_a = \(kw == 50u\) \? 145\.0f : \(kw == 40u\) \? 115\.0f : 85\.0f/.test(fsm),
     "HAL programs the CMP DACs from these (120/155/195 line · 85/115/145 tank)");
-  ck("SYNC", "boards.tsx burdens per rating", /burden=\{pw === 50 \? "13" : pw === 40 \? "18" : "22"\}/.test(boards) && /ctBurden=\{pw === 50 \? "0\.75" : pw === 40 \? "0\.91" : "1\.2"\}/.test(boards),
-    "line 22/18/13 Ω · resonant 1.2/0.91/0.75 Ω");
+  ck("SYNC", "boards.tsx burdens per rating", /burden=\{pw === 50 \? "13" : pw === 40 \? "18" : "22"\}/.test(boards) && /ctBurden=\{pw === 50 \? "0\.68" : pw === 40 \? "0\.82" : "1\.0"\}/.test(boards),
+    "line 22/18/13 Ω · resonant 1.0/0.82/0.68 Ω (E65)");
   ck("SYNC", "parts-db burden mpns per rating", Object.values(OC).every((c) => db.includes(c.lineMpn) && db.includes(c.resMpn)),
     Object.entries(OC).filter(([k]) => k !== "50kwa").map(([k, c]) => `${k}: ${c.lineMpn} + ${c.resMpn}`).join(" · "));
   ck("SYNC", "protection-thresholds carries the E60 class table", /E60 current-coordination classes/.test(prot) && ["120", "155", "195", "85", "115", "145"].every((v) => prot.includes(`${v} A pk`)),

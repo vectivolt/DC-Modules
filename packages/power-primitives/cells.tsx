@@ -488,7 +488,7 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
 
 // ---------- LLC section: 4× Cr ∥ + trim Lr + resonant CT + transformer + dual JBS bridges
 // v3/CB-15: CT return + burden biased to AVMID (VREF/2), series R + dual clamp into the ADC net.
-export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "4uH", ctBurden = "1.2", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const LlcSection = ({ id, crN = 4, crVal = "46nF", trim = "6.65uH", ctBurden = "1.0", sw, star, bkAp, bkAn, bkBp, bkBn, ctOut, sec = "TANK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`sec${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 26 × 12: tank L→R (Cr bank → trim → transformer → dual rectifier bridges),
         resonant-CT measurement chain on its own row below the tank. */}

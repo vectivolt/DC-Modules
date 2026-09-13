@@ -118,6 +118,12 @@ SCRIPT(sc_modesw) { sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
 SCRIPT(sc_start510) { if (s->t == 1) s->in.vcmd = 510; sc_en(s); }
 SCRIPT(sc_hiline) { if (s->t == 1) { s->in.vin_ll = 475; s->in.vcmd = 300; } sc_en(s); }
 SCRIPT(sc_weld) { if (s->t == 1) s->welded_para = true; sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
+/* E65: EV sends its maximum (800 V) as vcmd while the pack sits at 450 V — must start PAR, never SER at bank 225 V */
+SCRIPT(sc_extlow) { if (s->t == 1) { s->in.ext_connected = true; s->in.vext = 450; s->in.vcmd = 800; } sc_en(s); s->rload_ovr = 4.5f; }
+/* E65: session starts at 300 V (bus ref 650) and the command climbs to 520 V — the reference must follow (830) */
+SCRIPT(sc_climb) { if (s->t == 1) s->in.vcmd = 300; sc_en(s); if (s->t == 1800) s->in.vcmd = 520; }
+/* E65: a magnetics cutout opens — the T_XFMR channel hits the rail and the guard reports 150 °C */
+SCRIPT(sc_ntcopen) { sc_en(s); if (s->t >= 1500) s->p.temp = pmp_ntc_guard_c(70.0f, 0.995f); }
 SCRIPT(sc_fan) { sc_en(s); if (s->t == 1500) s->in.fan_ok = false; }
 SCRIPT(sc_ot) { sc_en(s); if (s->t == 1500) s->p.temp = 118; }
 SCRIPT(sc_sensor) { sc_en(s); if (s->t == 1600) { s->vout_stuck_en = true; s->vout_stuck = 12; } }
@@ -155,6 +161,10 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_modesw, 3000); expect("S/P transition w/ dwell", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.out.k_ser);
   sim_init(&s); runsim(&s, sc_start510, 3000); expect("E60 start at 510 V selects PAR (entry = 525 V)", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser);
   sim_init(&s); runsim(&s, sc_hiline, 3000); expect("E60 bus floor at 475 VAC >= 1.08*sqrt2*VLL", &s, "|RUN|", -1, s.f.out.vbus_ref >= 1.08f * 1.414f * 475.0f - 0.5f);
+  sim_init(&s); runsim(&s, sc_extlow, 3000); expect("E65 vcmd 800 / battery 450 V starts PAR", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser);
+  sim_init(&s); runsim(&s, sc_climb, 3000);  expect("E65 bus ref follows a climbing bank (300 -> 520 V)", &s, "|RUN|", -1, s.f.out.vbus_ref >= 829.0f && s.f.out.mode == MODE_PAR);
+  sim_init(&s); runsim(&s, sc_ntcopen, 3000); expect("E65 open NTC/cutout loop F.22", &s, "|FAULT|LOCK|", FC_OT, 1);
+  ck("E65 ntc guard passes a healthy -40 C reading", pmp_ntc_guard_c(-40.0f, 0.96f) == -40.0f);
   sim_init(&s); runsim(&s, sc_weld, 3000);   expect("welded K_PARA F.18", &s, "|FAULT|LOCK|", FC_WELD, 1);
   sim_init(&s); runsim(&s, sc_fan, 3000);    expect("fan fail derate 50%", &s, "|DERATE|", -1, s.f.out.derate == 0.5f);
   sim_init(&s); runsim(&s, sc_ot, 3000);     expect("OT F.22", &s, "|FAULT|LOCK|", FC_OT, 1);
