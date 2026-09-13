@@ -41,7 +41,7 @@ xychart-beta
 > **Why the family stops at 50 kW per module.** A module is one lane: 3 Vienna phases and 3 LLC sections. A monolithic
 > 60 kW module needs a second lane — about 18 PWM and ~30 analog signals — which no single card can carry, so it would
 > ship with two cards and cost what two 30 kW modules already cost. Power above 50 kW is therefore built from modules:
-> **100 kW = 2 × 50** and **150 kW = 3 × 50 + CSU**, where the CSU is this same card in its strap role.
+> **100 kW = 2 × 50** and **150 kW = 3 × 50** — E66: no cabinet card; the charger controller is the group master and the 3.32 k strap band is reserved.
 
 ## What one card does
 
@@ -49,10 +49,10 @@ xychart-beta
 flowchart LR
   STRAP["RATING strap"] --> ROLErole
   ROLE -- "0 Ω / 1 k / 10 k / 15 k" --> MOD["module brain<br/>30 · 40 · 50 L · 50 A"]
-  ROLE -- "3.32 k" --> CSU["cabinet CSU<br/>150 kW supervisor"]
+  ROLE -- "3.32 k" --> CSU["reserved band<br/>(E66: CSU retired)"]
   ROLE -- "open" --> FAULT["fault — gates held off"]
   MOD --> HR["HRTIMER: 3 LLC pairs + 3 PFC singles<br/>one merged FLT on HRTIMER_FLT2"]
-  CSU --> CAN["CAN: equal-share CC,<br/>staggered starts, dropout degrade"]
+  CSU --> CAN["no host → fault"]
   style MOD stroke:#2ea44f,stroke-width:2px
   style CSU stroke:#3f7fc4,stroke-width:2px
 ```

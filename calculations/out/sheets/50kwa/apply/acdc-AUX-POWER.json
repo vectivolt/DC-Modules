@@ -83,9 +83,9 @@
    },
    {
     "designator": "RAUXCS",
-    "value": "310m",
+    "value": "280m",
     "block_name": "FLYBACK",
-    "search_query": "R1206-R31-1%-0.5W 0.31 Ω 1% 0.5 W 1206 current-sense",
+    "search_query": "R1206-R28-1%-0.5W 0.28 Ω 1% 0.5 W 1206 current-sense",
     "pins": [
      {
       "pin_number": 1,
@@ -137,9 +137,9 @@
    },
    {
     "designator": "CCSF",
-    "value": "470pF",
+    "value": "100pF",
     "block_name": "FLYBACK",
-    "search_query": "MLCC-small filter/decoupling MLCC 0402–0805",
+    "search_query": "MLCC-100p-0603 100 pF 0603 C0G ±5 %",
     "pins": [
      {
       "pin_number": 1,
@@ -155,9 +155,9 @@
    },
    {
     "designator": "TAUX",
-    "value": "XFMR-AUX-FLY-D",
+    "value": "XFMR-AUX-FLY-E",
     "block_name": "FLYBACK",
-    "search_query": "XFMR-AUX-FLY-D aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input,",
+    "search_query": "XFMR-AUX-FLY-E aux flyback transformer ETD44 PC95, 110 W class, 321–860 V input,",
     "pins": [
      {
       "pin_number": 1,
@@ -171,33 +171,33 @@
      },
      {
       "pin_number": 3,
-      "name": "S24A",
-      "signal_name": "TAUX_S24A"
-     },
-     {
-      "pin_number": 4,
-      "name": "S24B",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 5,
-      "name": "S15A",
-      "signal_name": "TAUX_S15A"
-     },
-     {
-      "pin_number": 6,
-      "name": "S15B",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 7,
       "name": "AXA",
       "signal_name": "TAUX_AXA"
      },
      {
-      "pin_number": 8,
+      "pin_number": 4,
       "name": "AXB",
       "signal_name": "DCN"
+     },
+     {
+      "pin_number": 5,
+      "name": "S24A",
+      "signal_name": "TAUX_S24A"
+     },
+     {
+      "pin_number": 6,
+      "name": "S24B",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 7,
+      "name": "S15A",
+      "signal_name": "TAUX_S15A"
+     },
+     {
+      "pin_number": 8,
+      "name": "S15B",
+      "signal_name": "DGND"
      }
     ]
    },
@@ -205,7 +205,7 @@
     "designator": "RAUXST1",
     "value": "470k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated",
+    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -223,7 +223,7 @@
     "designator": "RAUXST2",
     "value": "470k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated",
+    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -239,9 +239,9 @@
    },
    {
     "designator": "RBR1A",
-    "value": "2.4M",
+    "value": "1.2M",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated",
+    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -257,9 +257,9 @@
    },
    {
     "designator": "RBR1B",
-    "value": "2.4M",
+    "value": "1.2M",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated",
+    "search_query": "R2512-HV 2512 HV-rated 1 %",
     "pins": [
      {
       "pin_number": 1,
@@ -275,7 +275,7 @@
    },
    {
     "designator": "RBR2",
-    "value": "15k",
+    "value": "7.5k",
     "block_name": "FLYBACK",
     "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
@@ -406,9 +406,9 @@
    },
    {
     "designator": "DCLA",
-    "value": "FAST-1200-1A",
+    "value": "SIC-SBD-1700V",
     "block_name": "FLYBACK",
-    "search_query": "FAST-1200-1A 1200 V 1 A fast diode SMB",
+    "search_query": "SIC-SBD-1700V SiC Schottky ≥1700 V, IF",
     "pins": [
      {
       "pin_number": 2,
@@ -442,9 +442,9 @@
    },
    {
     "designator": "RCLA1",
-    "value": "47k",
+    "value": "11k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated",
+    "search_query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working",
     "pins": [
      {
       "pin_number": 1,
@@ -460,14 +460,32 @@
    },
    {
     "designator": "RCLA2",
-    "value": "47k",
+    "value": "11k",
     "block_name": "FLYBACK",
-    "search_query": "R2512-HV 2512 HV-rated",
+    "search_query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
       "signal_name": "RCLA_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RCLA_23"
+     }
+    ]
+   },
+   {
+    "designator": "RCLA3",
+    "value": "11k",
+    "block_name": "FLYBACK",
+    "search_query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RCLA_23"
      },
      {
       "pin_number": 2,
@@ -510,7 +528,7 @@
      {
       "pin_number": 1,
       "name": "C",
-      "signal_name": "V24"
+      "signal_name": "CAUX24_DAUX24"
      }
     ]
    },
@@ -559,7 +577,7 @@
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "V24"
+      "signal_name": "CAUX24_DAUX24"
      },
      {
       "pin_number": 2,
@@ -637,6 +655,24 @@
       "pin_number": 1,
       "name": "C",
       "signal_name": "V15"
+     }
+    ]
+   },
+   {
+    "designator": "RAUX24",
+    "value": "50m",
+    "block_name": "RAILS",
+    "search_query": "R2512-R05-1W-1% 50 mΩ 1 % 1 W 2512 in the V24 distribution after CAUX24",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CAUX24_DAUX24"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "V24"
      }
     ]
    },
@@ -1242,5 +1278,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 50
+ "total": 52
 }

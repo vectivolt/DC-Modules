@@ -120,7 +120,7 @@
     "designator": "L1T",
     "value": "IND-TRIM-BIN4",
     "block_name": "TANK-1",
-    "search_query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
+    "search_query": "IND-TRIM-BIN4 D2-30 rev E",
     "pins": [
      {
       "pin_number": 1,
@@ -138,7 +138,7 @@
     "designator": "T1",
     "value": "XFMR-LLC-10K",
     "block_name": "TANK-1",
-    "search_query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7%",
+    "search_query": "XFMR-LLC-10K D3-30 rev C",
     "pins": [
      {
       "pin_number": 1,
@@ -153,7 +153,7 @@
      {
       "pin_number": 3,
       "name": "SH",
-      "signal_name": "STAR0"
+      "signal_name": "DCN"
      },
      {
       "pin_number": 4,
@@ -341,9 +341,9 @@
    },
    {
     "designator": "R1CT",
-    "value": "910m",
+    "value": "820m",
     "block_name": "TANK-1",
-    "search_query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden",
+    "search_query": "R2512-1R00-1W-1% 1.0 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,
@@ -543,7 +543,7 @@
     "designator": "L2T",
     "value": "IND-TRIM-BIN4",
     "block_name": "TANK-2",
-    "search_query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
+    "search_query": "IND-TRIM-BIN4 D2-30 rev E",
     "pins": [
      {
       "pin_number": 1,
@@ -561,7 +561,7 @@
     "designator": "T2",
     "value": "XFMR-LLC-10K",
     "block_name": "TANK-2",
-    "search_query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7%",
+    "search_query": "XFMR-LLC-10K D3-30 rev C",
     "pins": [
      {
       "pin_number": 1,
@@ -576,7 +576,7 @@
      {
       "pin_number": 3,
       "name": "SH",
-      "signal_name": "STAR0"
+      "signal_name": "DCN"
      },
      {
       "pin_number": 4,
@@ -764,9 +764,9 @@
    },
    {
     "designator": "R2CT",
-    "value": "910m",
+    "value": "820m",
     "block_name": "TANK-2",
-    "search_query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden",
+    "search_query": "R2512-1R00-1W-1% 1.0 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,
@@ -966,7 +966,7 @@
     "designator": "L3T",
     "value": "IND-TRIM-BIN4",
     "block_name": "TANK-3",
-    "search_query": "IND-TRIM-BIN4 resonant trim BIN SET 3.3/3.65/4.0/4.35 µH ±3% on 2× stacked PQ50/",
+    "search_query": "IND-TRIM-BIN4 D2-30 rev E",
     "pins": [
      {
       "pin_number": 1,
@@ -984,7 +984,7 @@
     "designator": "T3",
     "value": "XFMR-LLC-10K",
     "block_name": "TANK-3",
-    "search_query": "XFMR-LLC-10K LLC section transformer 3× PQ50/50 PC95, 7:7:7, Lm 63 µH ±7%",
+    "search_query": "XFMR-LLC-10K D3-30 rev C",
     "pins": [
      {
       "pin_number": 1,
@@ -999,7 +999,7 @@
      {
       "pin_number": 3,
       "name": "SH",
-      "signal_name": "STAR0"
+      "signal_name": "DCN"
      },
      {
       "pin_number": 4,
@@ -1187,9 +1187,9 @@
    },
    {
     "designator": "R3CT",
-    "value": "910m",
+    "value": "820m",
     "block_name": "TANK-3",
-    "search_query": "R2512-1R2-1W-1% 1.2 Ω 1% 1 W 2512 resonant-CT burden",
+    "search_query": "R2512-1R00-1W-1% 1.0 Ω 1% 1 W 2512 resonant-CT burden",
     "pins": [
      {
       "pin_number": 1,

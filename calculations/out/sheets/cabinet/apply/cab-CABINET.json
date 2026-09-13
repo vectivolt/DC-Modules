@@ -6,7 +6,7 @@
   "MODULES",
   "DC-BUS",
   "CAN-CHAIN",
-  "CSU-CARRIER"
+  "CTRL-PORT"
  ],
  "chunks": [
   [
@@ -307,147 +307,28 @@
   ],
   [
    {
-    "designator": "PSU1",
-    "value": "PSU-15V-DIN-WDR",
-    "block_name": "CSU-CARRIER",
-    "search_query": "PSU-15V-DIN-WDR 15 V DIN supply, WIDE-RANGE 180-550 VAC input",
+    "designator": "CTRL1",
+    "value": "CHARGER-CONTROLLER-CAN-PORT",
+    "block_name": "CTRL-PORT",
+    "search_query": "CHARGER-CONTROLLER-CAN-PORT charger controller CAN port — the group master that",
     "pins": [
      {
       "pin_number": 1,
-      "name": "L",
-      "signal_name": "AC_L1"
-     },
-     {
-      "pin_number": 2,
-      "name": "N",
-      "signal_name": "AC_L2"
-     },
-     {
-      "pin_number": 3,
-      "name": "PE",
-      "signal_name": "PE"
-     },
-     {
-      "pin_number": 4,
-      "name": "V15P",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 5,
-      "name": "V15N",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "JCSU",
-    "value": "CONN-CARD-88-H",
-    "block_name": "CSU-CARRIER",
-    "search_query": "CONN-CARD-88-H CSU carrier 88-way PIN HEADER",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "V15A",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 2,
-      "name": "V15B",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 3,
-      "name": "GNDA",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "GNDB",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 5,
-      "name": "GNDC",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 6,
-      "name": "ROLE1",
-      "signal_name": "ROLE1"
-     }
-    ]
-   },
-   {
-    "designator": "RRCSU",
-    "value": "3.32k",
-    "block_name": "CSU-CARRIER",
-    "search_query": "R0603-3k32-1% CSU RATING strap 3.32 k → 0.82 V band",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "ROLE1"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "UCSU",
-    "value": "CONTROL-CARD-CSU",
-    "block_name": "CSU-CARRIER",
-    "search_query": "CONTROL-CARD-CSU control card in the CSU strap role",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "V15A",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 2,
-      "name": "V15B",
-      "signal_name": "V15"
-     },
-     {
-      "pin_number": 3,
-      "name": "GNDA",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 4,
-      "name": "GNDB",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 5,
-      "name": "GNDC",
-      "signal_name": "DGND"
-     },
-     {
-      "pin_number": 6,
-      "name": "ROLE1",
-      "signal_name": "ROLE1"
-     },
-     {
-      "pin_number": 7,
       "name": "CANH",
       "signal_name": "CANH"
      },
      {
-      "pin_number": 8,
+      "pin_number": 2,
       "name": "CANL",
       "signal_name": "CANL"
      },
      {
-      "pin_number": 9,
+      "pin_number": 3,
       "name": "SGND",
-      "signal_name": "CAN_SGND"
+      "signal_name": "CTRL_SGND"
      },
      {
-      "pin_number": 10,
+      "pin_number": 4,
       "name": "SHLD",
       "signal_name": "CAN_SHLD"
      }
@@ -456,7 +337,7 @@
    {
     "designator": "RSGB",
     "value": "0R",
-    "block_name": "CSU-CARRIER",
+    "block_name": "CTRL-PORT",
     "search_query": "R-small small-signal resistor 0402–0805",
     "pins": [
      {
@@ -467,14 +348,14 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "DGND"
+      "signal_name": "CTRL_SGND"
      }
     ]
    },
    {
     "designator": "RSHB",
     "value": "0R",
-    "block_name": "CSU-CARRIER",
+    "block_name": "CTRL-PORT",
     "search_query": "R0603-0R CAN shield single-point PE bond",
     "pins": [
      {
@@ -493,5 +374,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 17
+ "total": 14
 }

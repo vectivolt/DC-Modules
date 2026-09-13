@@ -90,7 +90,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | Polarity | every polarized part has its + / anode on pin 1 as the glyphs draw it (E38 gate + R4-1 seating fix) |
 | Driver channels | one `DriverCh` cell for all 9 channels per module (real NSI6611 map R4-2, DESAT series R R5-B, per-stage blank E60) |
 | BOM coverage | 0 unmatched designators; every class part carries a value-carrying order code; `bom-maturity` MATURE |
-| Supervisory logic | C99 FSM + CAN codec + CSU: **54 / 54** under ASan/UBSan |
+| Supervisory logic | C99 FSM + CAN codec + group share law: **55 / 55** under ASan/UBSan |
 | PCB layout | **N** — out of scope by directive (E36); the layout phase reopens with the [floorplan basis](pcb-floorplan.md) |
 
 ## 3. Simulation matrix

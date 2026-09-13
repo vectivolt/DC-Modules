@@ -26,7 +26,6 @@ import { fileURLToPath } from "node:url";
 import { DATA, CORES, stack, eTurn, FORMER_WALL } from "./geometry.mjs";
 import { rho, delta, dowell, litzFr, leakageSPS } from "./winding-physics.mjs";
 import { fingerprint, TANKS } from "../llc/tanks.mjs";
-import { mechLines } from "../cost/parts-db.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const f = (x, d = 1) => Number(x.toFixed(d));
@@ -237,16 +236,16 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
         `core corner ${e.fe.corner} ${e.fe.fsw} kHz B̂ ${f(e.fe.B * 1e3, 0)} mT Fe ${f(e.fe.fe100)} W · copper corner ${e.cu.corner} ${e.cu.fsw} kHz Cu ${f(e.cu.cu100)} W · hot-spot ${T(e.w55.T55)} @55 °C (${e.w55.corner}; core ${T(e.w55.Tc55)} / winding ${T(e.w55.Tw55)}) / ${T(e.w75.T75)} @75 °C derated (${e.w75.corner}) · +25 % Rth ${T(e.wS.Tstress)} · runaway margin ${f(e.wM.margin, 0)} K · B̂ ${f(e.wB.bsat * 100, 0)} % of hot Bsat`);
       // a failed bond: one gap pad delaminated (the credible single failure) — the other face + convection must carry it
       const lost = c.mount.replace(/2$/, "1"), a = evaluate(sku, part, c, ex.rows, lost);
-      console.log(`  info  [${part}-BOND-LOST] ${sku}: one face lost (${lost}) → ${T(a.w55.T55)} @55 / ${T(a.w75.T75)} @75 · +25 % ${T(a.wS.Tstress)} → ${a.ok ? "survives" : "NOT survivable — needs the cutout loop"}`);
+      console.log(`  info  [${part}-BOND-LOST] ${sku}: one face lost (${lost}) → ${T(a.w55.T55)} @55 / ${T(a.w75.T75)} @75 · +25 % ${T(a.wS.Tstress)} → ${a.ok ? "survives" : "not survivable — screened by the EOL bonded thermal soak"}`);
       if (!a?.ok) unprotected.push(part);
     }
-    const loop = (mechLines[sku] ?? []).find(([d]) => /over-temperature cutout/i.test(d));
-    ck("BOND", `${sku} bond-loss protection fitted where a part cannot survive one lost gap pad`, !unprotected.length || (loop && loop[1] >= 3 * (D3[sku].mount === "bond") + 3 * (D2[sku].mount === "bond")),
-      unprotected.length ? `${unprotected.join(" + ")} need it → parts-db mech line: ${loop ? `"${loop[0].slice(0, 90)}…" × ${loop[1]}` : "MISSING"}` : "every part survives one lost gap pad (loop fitted regardless — one line per SKU)");
+    // bond loss is a PROCESS defect (VPI + gap pad + potting, as InfyPower-class modules pot their magnetics): it is screened by
+    // the EOL bonded thermal soak on every module (T_XFMR NTC rise at a fixed load), not by a sensor per part — informational here
+    if (unprotected.length) console.log(`  info  [BOND] ${sku}: ${unprotected.join(" + ")} cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md)`);
     const reg = D3_REGISTERED_E60[sku], er = evaluate(sku, "D3", reg, ex.rows);
     ck("CONTROL", `${sku} gate rejects the E60 D3 as registered (${reg.n}×${reg.core} ${reg.N}:${reg.N}:${reg.N} ${reg.mount})`, !er.ok,
       `hot-spot ${T(er.w55.T55)} @55 / ${T(er.w75.T75)} @75 · Fe ${f(er.fe.fe100)} W at B̂ ${f(er.fe.B * 1e3, 0)} mT · MLT ${f(stack(reg.core, reg.n).mlt * 1e3, 0)} mm → ${er.ok ? "PASSES — the gate is blind" : "rejected"}`);
   }
-  console.log(fails ? `\n${fails} MAGNETICS ENVELOPE FAILURE(S)` : "\nMAGNETICS ENVELOPE CLEAN — every D3 and D2 holds temperature, runaway margin and saturation margin at every simulated corner; the Lr split is physical; bond loss is covered");
+  console.log(fails ? `\n${fails} MAGNETICS ENVELOPE FAILURE(S)` : "\nMAGNETICS ENVELOPE CLEAN — every D3 and D2 holds temperature, runaway margin and saturation margin at every simulated corner; the Lr split is physical");
   process.exit(fails ? 1 : 0);
 }

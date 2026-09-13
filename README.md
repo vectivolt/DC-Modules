@@ -40,7 +40,7 @@ resistor. Above the modules there are exactly two products (E55).
 
 | | 30 kW | 40 kW | 50 kW liquid | 50 kW air | 100 kW | 150 kW |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Build** | 1 module | 1 module | 1 module | 1 module | 2 × 50 | 3 × 50 + CSU |
+| **Build** | 1 module | 1 module | 1 module | 1 module | 2 × 50 | 3 × 50 |
 | **Output** | 150–1000 V · 100 A | · 133 A | · 167 A | · 167 A | · 333 A | · 500 A |
 | **Cooling** | air · 2 fans | air · 3 fans | sealed coldplates | air · 4 fans | per module | per module |
 | **₹ @10k** | 30,980 | 35,891 | 41,865 | 41,516 | 83,032 (air) | 1,26,382 (air) |
@@ -98,7 +98,7 @@ flowchart LR
   → [interconnect](docs/interconnect.md)
 - **One brain per module (E40).** The card in the DC-DC slot runs the Vienna and the LLC together: 75 of 82 MCU
   pins, 22 analog channels, every PWM on HRTIMER units, one merged fault line. The RATING strap selects
-  30 / 40 / 50 L / 50 A or the cabinet CSU role. → [control-card scope](docs/control-card-scope.md)
+  30 / 40 / 50 L / 50 A (the 3.32 k band is reserved since E66). → [control-card scope](docs/control-card-scope.md)
 - **Protection in layers.** DESAT and comparator trips act in microseconds with no firmware in the loop. A
   hardware relay interlock and a watchdog that resets the MCU sit beside them. The supervisory F.xx ladder with
   per-SKU windows covers everything slower. → [protection thresholds](docs/protection-thresholds.md)
@@ -203,7 +203,7 @@ The release face is the audited **KiCad-5 set** in `kicad5/`, rendered to print-
 | `DC-Modules 40kW AC-DC / DC-DC (E41)` | 40 kW air |
 | `DC-Modules 50kW … (E42 liquid)` · `50kW-Air … (E44)` | the two 50 kW twins |
 | `DC-Modules Control Card (GD32G553VET7)` | the one card, every seat |
-| `DC-Modules 150kW Cabinet (3x50kW + CSU)` | the cabinet interconnect of record |
+| `DC-Modules 150kW Cabinet (3x50kW)` | the cabinet interconnect of record |
 
 ## 🚀 Quickstart
 
@@ -235,8 +235,8 @@ node spice/llc/llc-run.mjs 30kw 40kw 50kw 50kwa && node spice/protection/ct-fron
 ## 💾 Supervisory firmware
 
 Portable **C99** with no HAL dependency (`firmware/core/`): the module state machine, the protection evaluator,
-the CAN 2.0B codec and the CSU cabinet supervisor. One image serves every seat. The host suite runs **54 cases
-under ASan/UBSan**: 26 fault scenarios, rating windows, the E60 coordination rules, 10 CSU scenarios, codec guards
+the CAN 2.0B codec and the group share law (E66). One image serves every seat. The host suite runs **55 cases
+under ASan/UBSan**: 26 fault scenarios, rating windows, the E60 coordination rules, 7 group share-law checks, codec guards
 and a 100k-frame fuzz. → [firmware guide](docs/firmware-guide.md) · [CAN protocol](docs/can-protocol.md)
 
 ```mermaid
@@ -294,7 +294,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 - [x] Frozen decision register E1–E64
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
 - [x] Release schematics — six KiCad-5 targets, 7,784 / 7,784 pins, ten board PDFs
-- [x] Product structure — 30 / 40 / 50 L / 50 A modules, 100 kW = 2 × 50, 150 kW = 3 × 50 + CSU
+- [x] Product structure — 30 / 40 / 50 L / 50 A modules, 100 kW = 2 × 50, 150 kW = 3 × 50 (no CSU, E66)
 - [x] Three adversarial audits and five external review rounds answered with executed fixes and permanent gates
 - [ ] RFQ round 1 (SiC, magnetics, relays) → cost closure
 - [ ] PCB layout under the sandwich envelope

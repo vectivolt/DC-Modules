@@ -42,18 +42,18 @@ own sheet (D3: E65).
 
 | Sheet | Part | Rev | Order code | Qty / module | Quote note |
 |---|---|---|---|---:|---|
-| [PMP-MAG-D1-30](#pmp-mag-d1-30-rev-b--pfc-swing-choke-165-µh-class-ind-pfc-165u--qty-3) | PFC swing choke 165 µH class | B | `IND-PFC-165u` | 3 | 3 × 0077908A7, lot-trim ± 1 turn |
-| [PMP-MAG-D1-40](#pmp-mag-d1-40-rev-b-e51--pfc-swing-choke-40-kw-ind-pfc-116u-40--qty-3) | PFC swing choke 40 kW | B (E51) | `IND-PFC-116u-40` | 3 | 5-stack, N = 26 ± 1 |
-| [PMP-MAG-D1-50](#pmp-mag-d1-50-rev-b-e51--pfc-swing-choke-50-kw-ind-pfc-107u-50--qty-3) | PFC swing choke 50 kW | B (E51) | `IND-PFC-107u-50` | 3 | 5-stack, N = 24 ± 1 |
+| [PMP-MAG-D1-30](#pmp-mag-d1-30-rev-c-e65--pfc-swing-choke-165-µh-class-ind-pfc-165u--qty-3) | PFC swing choke 165 µH class | B | `IND-PFC-165u` | 3 | 3 × 0077908A7, lot-trim ± 1 turn |
+| [PMP-MAG-D1-40](#pmp-mag-d1-40-rev-c-e65--pfc-swing-choke-40-kw-ind-pfc-116u-40--qty-3) | PFC swing choke 40 kW | B (E51) | `IND-PFC-116u-40` | 3 | 5-stack, N = 26 ± 1 |
+| [PMP-MAG-D1-50](#pmp-mag-d1-50-rev-c-e65--pfc-swing-choke-50-kw-ind-pfc-107u-50--qty-3) | PFC swing choke 50 kW | B (E51) | `IND-PFC-107u-50` | 3 | 5-stack, N = 24 ± 1 |
 | [PMP-MAG-D2-30](#pmp-mag-d2-30-rev-e-e65--resonant-trim-inductor-bin-set-ind-trim-bin4--qty-3) | resonant trim bin set 30 kW | **E (E65)** | `IND-TRIM-BIN4` | 3 | 1 × E70, N 8, 6112 × 0.05 litz — 4 bins |
 | [PMP-MAG-D2-40](#pmp-mag-d2-40-rev-e-e65--trim-bin-set-40-kw-ind-trim-e70-40--qty-3) | resonant trim bin set 40 kW | **E (E65)** | `IND-TRIM-E70-40` | 3 | 2 × E70, N 5, 8149 × 0.05 litz — 4 bins |
 | [PMP-MAG-D2-50](#pmp-mag-d2-50-rev-e-e65--trim-bin-set-50-kw-ind-trim-e70-50--qty-3) | resonant trim bin set 50 kW | **E (E65)** | `IND-TRIM-E70-50` | 3 | the D2-40 build with its own bins — liquid and air |
 | [PMP-MAG-D3-30](#pmp-mag-d3-30-rev-c-e65--llc-transformer-10-kw-xfmr-llc-10k--qty-3) | LLC transformer 10 kW | **C (E65)** | `XFMR-LLC-10K` | 3 | 2 × E70, 7:7:7 — reinforced barrier, safety-critical traveler |
 | [PMP-MAG-D3-40](#pmp-mag-d3-40-rev-c-e65--llc-transformer-136-kw-xfmr-llc-2e70-40--qty-3) | LLC transformer 13.6 kW | **C (E65)** | `XFMR-LLC-2E70-40` | 3 | 2 × E70, 6:6:6 — E60 winding, now VPI + two-face bond |
 | [PMP-MAG-D3-50](#pmp-mag-d3-50-rev-c-e65--llc-transformer-17-kw-xfmr-llc-3e70-50--qty-3) | LLC transformer 17 kW | **C (E65)** | `XFMR-LLC-3E70-50` | 3 | 3 × E70, 5:5:5 — custom 3-set former (tooling) |
-| [PMP-MAG-D4](#pmp-mag-d4-rev-d-e52--aux-flyback-transformer-xfmr-aux-fly-d--qty-1) | aux flyback transformer | D (E52) | `XFMR-AUX-FLY-D` | 1 | reinforced — 100 % hipot |
+| [PMP-MAG-D4](#pmp-mag-d4-rev-e-e65--aux-flyback-transformer-xfmr-aux-fly-e--qty-1) | aux flyback transformer | D (E52) | `XFMR-AUX-FLY-E` | 1 | reinforced — 100 % hipot |
 | [PMP-MAG-D6](#pmp-mag-d6-304050-rev-c--dm-line-chokes-dm-choke-30-40-50--qty-3-each) | DM line chokes | C | `DM-CHOKE-30/-40/-50` | 3 | engine-designed, crest-biased floors |
-| [PMP-MAG-D7](#pmp-mag-d7-40-50-rev-a--3-phase-cm-chokes-cmc-3ph-2mh-sku--qty-2-each) | 3-phase CM chokes 40 / 50 kW | A | `CMC-3PH-2mH-SKU` | 2 | 30 kW buys the Schaffner catalog part |
+| [PMP-MAG-D7](#pmp-mag-d7-30-40-50-rev-b--3-phase-cm-chokes-cmc-3ph-2mh-sku--qty-2-each) | 3-phase CM chokes 40 / 50 kW | A | `CMC-3PH-2mH-SKU` | 2 | 30 kW buys the Schaffner catalog part |
 | [CT buy specs](#ct-buy-specs-catalog--quote-bare-burden-lives-on-the-pcb) | line and resonant CTs | — | Talema ACX / AS | 3 + 3 | quote bare — the burden lives on the PCB |
 
 ## From quote to production
@@ -107,46 +107,52 @@ flowchart LR
 
 ---
 
-## PMP-MAG-D1-30 rev B — PFC swing choke, 165 µH class (`IND-PFC-165u`) — qty 3
+## PMP-MAG-D1-30 rev C (E65) — PFC swing choke, 165 µH class (`IND-PFC-165u`) — qty 3
 
 | Row | Spec |
 |---|---|
-| Function / circuit | Vienna PFC phase inductor, 50 kHz boost duty, DC-bias + ripple (swing design) |
-| Core | **3× Magnetics 0077908A7** stacked (Kool Mµ 26µ toroid OD79.4/ID48.4/H17.15; AL 37 nH/T² ±8 % per core; epoxy-band the stack) |
-| Winding | **N = 39 nominal, winder trims ±1 turn per core lot** so both L rows hold across AL ±8 %. Conductor: **9× 1.6 mm enameled round in parallel (18 mm², 2-layer)** — PRIMARY construction (machine-windable); 3×(6×1 mm) flat on edge is the ALTERNATE only if hand-wound; spread ≥300° |
-| Electrical acceptance (100 %) | L₀ @0.1 V/100 kHz: **150–185 µH** · **L @78 A pk (pulse method) ≥ 75 µH** · Rdc ≤ 11 mΩ @25 °C |
-| Operating point (info) | 54.9 A rms / 77.7 A pk + 21.4 A pp ripple @50 kHz; Cu 32–34 W + Fe ~2 W; J 3.05 A/mm² |
-| Parasitics | SRF ≥ 500 kHz (≥10× fsw) · winding–core capacitance no spec (functional) |
-| Insulation | winding–core 500 VAC 1 min (functional; part floats on mount); Class F system |
-| Thermal | ΔT ≤ 45 K at 54.9 A rms in 2 m/s airflow; thermocouple at inner bore |
-| Mechanical | finished ⌀ ≤ 87 mm × H ≤ 62 mm; M6 centre bolt + silicone pad; 2× tinned flying leads 60 mm into plated holes ⌀6.0 mm; mass **~2.2 kg (computed — mag-sync, E59)** |
-| Production test | 100 %: L₀, L@78 A (pulse), Rdc, 500 VAC. (S) 1/lot: L(I) curve 0–100 A, ΔT type-test 1/first article |
+| Function / circuit | Vienna PFC phase inductor, 50 kHz boost duty, DC bias + ripple (swing design). Winding at line / switch-node potential; bonded to PE-bonded metal, so part of the basic barrier to PE |
+| Core | **3× Magnetics 0077908A7** Kool Mµ 26µ toroid (coated OD 78.94 max / ID 48.21 min / HT 17.02 max; AL 37 nH/T² ±8 % per core; Ae 221 mm², le 196 mm, Ve 43.4 cm³, 240 g). Faces epoxy-bonded (≤ 0.1 mm line), stack 51.3 mm. Distributed gap — no grinding |
+| Winding | **N = 39 nominal, winder trims ±1 turn per core lot.** Conductor **9 × 1.6 mm grade-2 dual-coat enamelled round (IEC 60317-13, Class 200), 18 mm² class**, taped into one bundle every 150 mm and **laid flat, no deliberate twist** (the loss rows assume the twisted case; flat lay only adds margin). Spread ≥ 300°; bore layers 21 / 15 / 3; one OD layer. **The 3 × (6 × 1 mm) flat-on-edge alternate is withdrawn** — its 6 mm dimension lies across the 50 kHz bore field |
+| Electrical acceptance (100 %) | L₀ @ 0.1 V / 100 kHz: **150–185 µH** · **L @ 78 A pk (pulse method) ≥ 75 µH** · **Rdc ≤ 6.9 mΩ @ 25 °C** (4-wire, temperature-corrected; build 6.08 mΩ) **and within ±5 % of the lot median** (median of the lot's first five parts at the lot's N) — one open strand reads +12.5 % |
+| Operating point (info, computed — `conductor-audit` / `stress-audit`) | 330 VAC, bus 830 V, AL −8 %: 54.7 A fundamental rms + 6.30 A rms 50 kHz ripple (ΔB 90 mT pp) → Cu 23.4 W (50 Hz) + 14.8 W (ripple, Fr 47.5) + Fe 4.7 W (iGSE, datasheet max) = **42.9 W** at 100 °C · 400 VAC rated 28.0 W · J 3.05 A/mm² |
+| Parasitics | SRF ≥ 500 kHz (≥ 10 × fsw) · winding ↔ bond-face capacitance recorded at first article (EMI budget) |
+| Insulation | **Basic insulation to PE (E65):** winding ↔ bond face = the module's gap pad; winding ↔ M6 bolt = bore sleeve + clamp cap; recurring peak **≤ 540 V** (switch end vs neutral) → no PD test. Winding ↔ core (0.13 mm polyester wrap + enamel) stays functional. Class F (155 °C) UL 1446 system |
+| Thermal | **One end face gap-pad bonded to the PE-bonded AC-DC extrusion web** (bonded face flat ≤ 0.5 mm, varnish-free). Computed hot-spot **87 °C** at 55 °C inlet · 92 °C at 75 °C inlet derated · 89 °C with every thermal resistance +25 % · bond lost 131 °C (≤ Class F). Limits 120 / 130 / 145 °C. **Bonded type test** (first article + 1 / lot): bonded face on a plate held at 80 °C, still air, **74 A DC** → inner-bore hot-spot **≤ 19 K above the plate** (calc 9.4 K) |
+| Mechanical | Finished ⌀ 91–92 mm × H 68–88 mm (compacted … round-bundle layers) — **exceeds the E60 ⌀ ≤ 87 × H ≤ 62 mm row: layout open item, not a part change**; mass **1.9 kg** (computed — `mag-sync`) |
+| Mounting (module mount kit, E65) | fiberglass-reinforced silicone gap pad 1.0 mm (Shore 00 ≤ 70, ≥ 3 W/mK, ≥ 5 kVAC ASTM D149, qualified at its 0.8 mm compressed thickness for 2.5 kV DC 1 min and 4 kV impulse, RTI ≥ 150 °C, UL 94 V-0) · GF-PPS clamp cap on the top face (≥ 4.0 mm clearance / ≥ 5.5 mm creepage winding ↔ bolt head and washer) · bore sleeve ≥ 1.0 mm wall · **M6 A4-70 through the bore at 4.5 N·m (dry, K 0.2 → 3.75 kN)** on a Belleville washer · pad 0.58 MPa · **2-point glass banding to the web** (now on every D1) |
+| Terminations | 2 × tinned flying leads, 60 mm, **Ω strain-relief loop ≥ 10 mm before the board, lead bundle tied to the clamp cap**. Per-strand continuity check before tinning |
+| Production test | 100 %: L₀ · L @ 78 A pulse · Rdc (row + lot window) · **hipot 2.5 kV DC 1 min winding ↔ bond-face plate electrode + bore mandrel electrode** (replaces 500 VAC winding–core). (S) 1 / lot: L(I) 0–100 A, bonded thermal type test. First article: 4 kV 1.2/50 impulse × 5 each polarity on the bonded assembly, Rac @ 50 kHz recorded (information) |
 
-## PMP-MAG-D1-40 rev B (E51) — PFC swing choke 40 kW (`IND-PFC-116u-40`) — qty 3
+## PMP-MAG-D1-40 rev C (E65) — PFC swing choke 40 kW (`IND-PFC-116u-40`) — qty 3
 
 As D1-30 except:
 
 | Row | Spec |
 |---|---|
-| Core | **5× 0077908A7** stacked (same p/n; stack H ≈ 86 mm, epoxy-banded) |
-| Winding | **N = 26 ±1 lot-trim**, conductor 25.8 mm² class = **8× 2.0 mm or 13× 1.6 mm enameled round**, 2-layer, spread ≥300° |
-| Electrical acceptance | L₀ **106–135 µH** (lot-trim window; 116 nominal) · **L @104 A pk ≥ 61 µH** · Rdc ≤ 7.0 mΩ |
-| Operating point | 73.3 A rms / 103.6 A pk + 27.5 A pp @50 kHz; ~39 W; J 2.84; ΔT calc 30 K |
-| Mechanical | ⌀ ≤ 87 × H ≤ 100 mm; M6 centre bolt; drill 6.0/pad 6.9; mass **~3.0 kg (computed, E59)** — ≥3 kg stacks take the centre bolt PLUS two-point epoxy banding to standoffs (2 g rule) |
-| Note | **Rev B re-issued on the CATALOG core** — the E41 N=23 selection came from a geometric-Ae model and misses its floors on the real part (E51). Any equivalent core must match AL 37 ±8 % AND the 26µ roll-off anchors. |
+| Core | **5 × 0077908A7** stacked (same p/n; stack H 85.5 mm, epoxy-bonded) |
+| Winding | **N = 26 ± 1 lot-trim**, **13 × 1.6 mm** grade-2 enamelled bundle (26 mm² class), laid flat; bore layers 17 / 9; spread ≥ 300°. **The 8 × 2.0 mm alternate is withdrawn** (not evaluated by the D1 gate — re-admit only through `d1-fd` + `stress-audit`) |
+| Electrical acceptance | L₀ **106–135 µH** (116 nominal) · **L @ 104 A pk ≥ 61 µH** · **Rdc ≤ 4.55 mΩ @ 25 °C** (build 3.97) + **±5 % lot window** (one open strand +8.3 %) |
+| Operating point | 72.9 A fundamental + 7.83 A rms ripple (ΔB 82 mT pp) → Cu 27.2 + 13.6 W (Fr 43.2) + Fe 6.35 W = **47.2 W** at 100 °C · rated 31.5 W · J 2.84 |
+| Thermal | web-bonded: hot-spot **88 °C** · 92 °C derated · 91 °C at +25 % · bond lost 116 °C · type test **95.9 A DC → ≤ 22 K** above the plate (calc 11.6 K) |
+| Mechanical | ⌀ 93–94 × H 100–115 mm (layout open item); mass **2.8 kg** (computed); clamp preload needed 2.72 kN vs 3.75 kN fitted |
+| Note | Rev B was re-issued on the catalog core (E51); rev C changes cooling, insulation, mount, Rdc rows and withdraws the unmodelled alternate — electrical design (N, L rows) unchanged |
 
-## PMP-MAG-D1-50 rev B (E51) — PFC swing choke 50 kW (`IND-PFC-107u-50`) — qty 3
+## PMP-MAG-D1-50 rev C (E65) — PFC swing choke 50 kW (`IND-PFC-107u-50`) — qty 3
 
 As D1-40 except:
 
 | Row | Spec |
 |---|---|
-| Winding | **N = 24 ±1 lot-trim**, 25.8 mm² |
-| Electrical acceptance | L₀ **98–124 µH** (107 nominal) · **L @129.5 A pk ≥ 45 µH** · Rdc ≤ 6.5 mΩ |
-| Mass | **~2.9 kg (computed, E59)** — centre bolt + two-point banding |
-| Operating point | 91.6 A rms / 129.5 A pk + 36.2 A pp @50 kHz; ~57 W; J 3.55; ΔT calc 41 K convective |
-| Cooling interface | **gap-pad bond of the stack face to the coldplate/extrusion web** (E42/E44 practice) — flatness of the bonded face ≤ 0.5 mm; convective ΔT row is the acceptance gate, the bond is the mechanism |
-| Note | dIpp basis restated 36.2 A pp at E51 (catalog core; D6-50 floor restated 11.8 µH — met at 12.9). 6-stack variant (holds 34.8 A pp) on record but declined pending tunnel-height check. |
+| Winding | **N = 24 ± 1 lot-trim**, 13 × 1.6 mm bundle; bore layers 17 / 7 |
+| Electrical acceptance | L₀ **98–124 µH** (107 nominal) · **L @ 129.5 A pk ≥ 45 µH** · **Rdc ≤ 4.15 mΩ @ 25 °C** (build 3.63) + ±5 % lot window |
+| Operating point | 91.2 A fundamental + 10.16 A rms ripple (ΔB 87 mT pp) → Cu 38.9 + 17.9 W (Fr 37.1) + Fe 7.5 W = **64.4 W** at 100 °C · rated 42.4 W · J 3.55 · dIpp basis 36.2 A pp (E51) unchanged |
+| Cooling interface | liquid module: one end face gap-pad bonded to the coldplate → hot-spot **81 °C** (73 °C derated, 85 °C at +25 %); **a lost pad has no air fallback in the sealed module → D1 over-temperature cutout: NC thermostat 130 ± 5 °C on each D1 clamp cap, in the magnetics cutout loop** · air twin: web-bonded → **92 °C** (94 / 96 °C), bond lost 129 °C · type test **117.3 A DC → ≤ 26 K** (calc 16.3 K) |
+| Mass / mount | **2.7 kg** (computed); clamp preload needed 2.60 kN vs 3.75 kN fitted |
+| Note | 6-stack variant still declined (tunnel height — layout open item) |
+
+Common-requirements table (§C) edits: **Vibration** row → "2 g 10–500 Hz sine: bonded + clamped + 2-point banded
+construction on every D1; as-mounted resonance search EVT T-33". **Packaging** masses → "D1 ≈ 1.9–2.8 kg".
 
 ## PMP-MAG-D2-30 rev E (E65) — resonant trim inductor bin set (`IND-TRIM-BIN4`) — qty 3
 
@@ -300,20 +306,20 @@ As D3-30 rev C except — **new p/n; one drawing serves the liquid and the air S
 | Qty · price | 3 per 50 kW module, liquid or air — 6 per 100 kW, 9 per 150 kW · **₹1,649 @1k [est]**, former tooling included |
 | History | `XFMR-LLC-2E70-50` rev B (E51 / E60): 2 × E70, 5:5:5 — B̂ 236–237 mT, Fe 78.6–78.8 W, runaway on the plate and in air (envelope gate control); p/n retired |
 
-## PMP-MAG-D4 rev D (E52) — aux flyback transformer (`XFMR-AUX-FLY-D`) — qty 1
+## PMP-MAG-D4 rev E (E65) — aux flyback transformer (`XFMR-AUX-FLY-E`) — qty 1
 
 | Row | Spec |
 |---|---|
-| Function | 110 W-class DCM flyback, 342–860 VDC input, 65 kHz, Vor ≈ 157 V, Ip clamp 3.2 A |
-| Core | **ETD39 PC95-class** (rev D, E52 saturation-margin re-core), gapped to **AL 239 nH/T²** (centre leg) — electricals identical to rev C |
-| Windings | Np 38 (345 µH ±10 %) / N24 = 6 / N15 = 4 / Naux = 4; primary 0.5 mm (2×0.35 bifilar OK); secondaries TIW 0.8 mm² class; margin 3 mm (ETD39 former AN ≈ 177 mm² — fill relaxed vs rev C) |
-| Flux | **Bpk 0.233 T @clamp (0.256 at Lp+10 %) vs PC95 hot Bsat ~0.39 — 66 % at tolerance** (rev C ETD34 ran 85 %); clamp-limited; **EVT T-09 verifies clamp before BOM freeze** |
-| Insulation | pri at BUS potential → pri↔ALL secondaries REINFORCED (TIW + 3 mm margin), **hipot 4 kV 100 % — SAFETY-CRITICAL traveler flag** (E25 SELV depends on it); aux winding = primary-side, functional to pri, reinforced to secs |
-| Acceptance | Lp 345 µH ±10 % · turns exact · Rdc: pri ≤ 900 mΩ / 24 V ≤ 60 mΩ / 15 V ≤ 45 mΩ / aux ≤ 45 mΩ · hipot 4 kV · leakage ≤ 12 µH (clamp energy) |
-| Parasitics | C(pri↔sec) ≤ 50 pF · SRF(pri) ≥ 650 kHz (10× fsw) |
-| Thermal | ΔT ≤ 45 K at 110 W throughput; thermocouple on primary margin tape |
-| Mechanical | ETD34 8-pin former, 5.08 mm pitch, PCB pins |
-| Production test | 100 %: Lp, turns, Rdc×4, hipot 4 kV. (S): leakage 5/lot, PD 5/lot @1.2 kV, thermal first-article |
+| Function | 110 W-class DCM flyback, 306–860 VDC running range, 65 kHz, Vor ≈ 157 V, NCP1252D cycle-by-cycle limit |
+| Core | **ETD44 PC95-class** (TDK ETD 44/22/15 class, Ae 173 mm²), gapped to **AL 239 nH/T²** — rev E re-core: at the computed cycle-by-cycle limit (860 V · Lp +5 % · VILIM max · CS 1 k/100 pF · tILIM 150 ns → 4.67 A) the flux is **257 mT = 71 % of Bsat 130 °C** (ETD39 reached 113 %) |
+| Windings | Np 38 / N24 = 6 / N15 = 4 / Naux = 4 (turns unchanged), **P/2–S–P/2 sandwich**; secondaries TIW Class F min; Lp **345 µH ±5 %** (100 % test) |
+| Leakage | **≤ 4 µH** primary-referred, all secondaries shorted @10 kHz (1-D estimate 1.7 µH) — sets the RCD clamp: 1700 V SiC Schottky DCLA, 3 × 11 k 2 W clamp resistors, CCLA 1200 V |
+| Terminations | **pins 1–4 = AXA, AXB, P1, P2 (bus side) · pins 5–8 = S15A, S15B, S24A, S24B (SELV)** on opposite rows — reinforced 8.0 mm clearance / 12.6 mm creepage, core treated as floating conductor (land pattern = layout open item) |
+| Insulation | pri ↔ all secondaries **REINFORCED**; 100 % hipot ≥ 4.25 kV DC; PD sample 5/lot, extinction ≥ 1.875 × recurring peak; 1.2/50 µs impulse type test ≥ 8 kV |
+| Acceptance | Lp 345 µH ±5 % · turns exact · Rdc pri ≤ 900 mΩ / 24 V ≤ 60 mΩ / 15 V ≤ 45 mΩ / aux ≤ 45 mΩ · leakage ≤ 4 µH · C(pri↔sec) ≤ 50 pF · SRF ≥ 650 kHz |
+| Thermal | ΔT ≤ 45 K at 110 W throughput (thermocouple on the primary margin) |
+| Production test | 100 %: Lp, turns, Rdc × 4, leakage, hipot. (S): PD 5/lot, impulse + thermal at first article |
+| Proof | `calculations/magnetics/d4-flyback.mjs` via `stress-audit` [D4] rows + the drawn-circuit ngspice deck `spice/aux/aux-flyback.mjs` (17 rows; V24/V15 hard short bounded at ≤ 85 % Bsat before the fault latch) |
 
 ## PMP-MAG-D6-30/40/50 rev C — DM line chokes (`DM-CHOKE-30/-40/-50`) — qty 3 each
 
@@ -330,19 +336,21 @@ Common: J ≤ 5.6 · bare-Cu fill ≤ 40 % · hipot winding–core 2.5 kV · bon
 into plated holes (drill per magnetics.md §0.1). Production test 100 %: L₀, L@crest (pulse), Rdc,
 hipot. **T57 core p/n must be sample-verified for AL + roll-off before PO (E51 sourcing gap).**
 
-## PMP-MAG-D7-40/-50 rev A — 3-phase CM chokes (`CMC-3PH-2mH-SKU`) — qty 2 each
+## PMP-MAG-D7-30/-40/-50 rev B — 3-phase CM chokes (`CMC-3PH-2mH-SKU`) — qty 2 each
 
 | Row | Spec |
 |---|---|
-| Function | 3-line common-mode choke, 2 stages/module, 475 VAC system |
-| Core | nanocrystalline toroid (VITROPERM 500F-class): 40 kW OD62-class · 50 kW OD80-class |
-| Windings | 3× sectored windings, foil/flat: 40 kW ≥ 13.3 mm² (75 A class, J ≤ 5.6) · 50 kW ≥ 17 mm² (95 A class) |
-| Electrical acceptance | **L_cm ≥ 2 mH @10 kHz** each choke · leakage(DM) 6–12 µH (feeds the DM budget — measure and report) · line-line functional insulation via sector spacing ≥ 3 mm + UL1446 tape |
-| Hipot | winding–winding 2.5 kV AC 1 min · winding–core 2.5 kV |
-| Thermal | ΔT ≤ 45 K at 73.3 / 91.6 A rms; thermocouple between phases |
-| Mechanical | finished ⌀ ≤ 70 / 88 mm; bonded base + band; 6 leads into plated holes |
-| Production test | 100 %: L_cm @10 kHz, Rdc ×3 matched ±5 %, hipot. (S) leakage LDM 5/lot, ΔT first-article |
-| 30 kW note | catalog **Schaffner RT8131-63-2M8** (63 A, 2.8 mH) qualifies at 55.9 A — this drawing (wound at 10 mm²) is its second source |
+| Function | 3-line common-mode choke, 2 stages/module, 475 VAC system; Y1 trio on the node between the two chokes (E65) |
+| Core | Nanocrystalline tape-wound toroid, µi(10 kHz) 25–40 k class (Nanoperm 30000 / VITROPERM 500F W-grade / AT&M 1K107 CMC grade), Bsat ≥ 1.2 T at 25 °C. 30/40 kW: **T 80/50/25**. 50 kW: **T 90/50/30**. **The quote must state A_Fe (iron, excluding case): ≥ 281 / 281 / 450 mm².** Epoxy-coated or PA66/PBT UL94 V-0 trough. The core is never impregnated. |
+| Windings | 3 sectors × **8 T**, each sector the same sense (CM-aiding), start/finish on the same side. Cu **20 / 20 / 25 mm²** (Ø5.05 / 5.05 / 5.64 mm bare solid enamelled, or equal-CSA flat/bundle). ≤ 2 layers. Sector spacing ≥ 3 mm plus a UL1446 barrier. J 2.79 / 3.67 / 3.66 A/mm². |
+| Insulation | Winding–core over the trough plus 2 × class-F polyimide tape. Line–line functional via sector spacing. |
+| Electrical acceptance | **L_cm ≥ 2.0 mH @ 10 kHz** each choke. **L_cm ≥ 1.0 mH @ 150 kHz** (\|Z_cm\| ≥ 940 Ω — the pre-compliance basis). **DM-bias row:** L_cm @ 10 kHz ≥ 2.0 mH **and** ≥ 80 % of the unbiased reading, with DC or ≥ 20 ms pulse DM current **83 / 110 / 138 A** injected line-to-line (L1 in, L2 out). Leakage (DM) **6–12 µH**, measured and reported. **Quote check:** L_lk,measured × I_pk / (8 × A_Fe,quoted) ≤ 0.6 T. Rdc per winding ≤ 0.85 mΩ at 20 °C (calc 0.77), matched ±5 %. |
+| Hipot | Winding–winding 2.5 kV AC 1 min · winding–core 2.5 kV |
+| Thermal | ΔT ≤ 45 K at 55.9 / 73.3 / 91.6 A rms (calc 20 / 32 / 38 K at 100 °C copper; 9.9 / 17.0 / 26.7 W). Thermocouple between sectors. |
+| Mechanical | Finished ⌀ ≤ 95 / 95 / 106 mm, H ≤ 40 / 40 / 46 mm (calc 93×38 / 93×38 / 104×44). Bonded base plus band. 6 leads into plated holes. Mass ≈ 0.9 / 0.9 / 1.5 kg. |
+| Production test | 100 %: L_cm @ 10 kHz, Rdc × 3 matched ±5 %, hipot. Sample 5/lot: L_cm @ 150 kHz, leakage. First article: DM-bias row and ΔT. |
+| 30 kW note | Catalog Schaffner **RT8131-63-2M8** is primary (63 A / 2.8 mH); qualification adds the 150 kHz and DM-bias rows. This drawing is its second source. |
+| Cost basis | [est, REVIEW at RFQ] cased nanocrystalline ₹1,500/kg · Cu ₹1,050/kg (E65 basis) · ₹200 wind + test → **₹1,327 / 1,327 / 2,065**. The rev A ₹240–340 did not cover the core. |
 
 ## CT buy specs (catalog — quote bare, burden lives on the PCB)
 

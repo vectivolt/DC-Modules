@@ -103,7 +103,7 @@ flowchart LR
 | 150 kW cabinet | 17 | 1 | 11 | 4 | 1 | — | — | 6 % |
 | **All sheets** | **2,662** | **1,437** | **1,049** | **64** | **55** | **41** | **16** | **54 %** |
 
-The cabinet sheet is mostly blocks and bulk copper — three module interfaces, the CSU card and six M8 studs — so
+The cabinet sheet is mostly blocks and bulk copper — three module interfaces, the controller CAN port and six M8 studs — so
 a low C-number share there is expected, not a gap.
 
 ### The same picture in the BOM
@@ -199,8 +199,8 @@ there is no catalogue equivalent to look up.
 | D6 · DM choke | `DM-CHOKE-30` | `DM-CHOKE-40` | `DM-CHOKE-50` |
 | CM choke | `CMC-3PH-2mH-SKU` | `CMC-3PH-2mH-SKU` | `CMC-3PH-2mH-SKU` |
 
-The cabinet sheet adds two blocks: `PMP-50KW-MODULE` (3) — costed as the module roll-up — and `CONTROL-CARD-CSU`
-(1), the same card assembly in the CSU strap role.
+The cabinet sheet adds two blocks: `PMP-50KW-MODULE` (3) — costed as the module roll-up — and `CHARGER-CONTROLLER-CAN-PORT`
+(1), the integrator's controller interface (E66 — the CSU card is deleted).
 
 ## DIRECT — 55 instances, 9 order codes
 

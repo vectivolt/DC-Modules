@@ -859,7 +859,7 @@
     "designator": "RPREA",
     "value": "SQP-10R-25W",
     "block_name": "SP-MATRIX",
-    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH",
     "pins": [
      {
       "pin_number": 1,
@@ -877,7 +877,7 @@
     "designator": "RPREB",
     "value": "SQP-10R-25W",
     "block_name": "SP-MATRIX",
-    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH",
     "pins": [
      {
       "pin_number": 1,

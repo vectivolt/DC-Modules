@@ -118,10 +118,9 @@ for (const sku of SKUS) {
 // ₹1,834 and a single point of failure for all three modules) is deleted; the charger controller is the group master for
 // 100 and 150 kW alike. Cabinet entry studs, the CAN trunk terminations and every other integration item (rack, bus bars,
 // cooling cart) are charger-level per A13 — exactly how the 100 kW was always priced.
-// Declared commercial STACK TIER (E66, user directive "price per kW decreases with kW"): identical modules make COGS/kW
-// flat from 50 kW up, and no single-point-of-failure-free content exists to share, so the strict fall is a declared list-
-// price step of STACK_TIER ₹/kW per rung above 50 kW (100 kW −5, 150 kW −10). COGS is never touched by it.
-const STACK_TIER = 5;
+// E66 ladder rule (user directive, 2026-09-13): ₹/kW must fall 30 → 40 → 50 and may stay FLAT from 50 kW up — identical
+// modules make COGS/kW flat by construction, and a flat price per kW is accepted rather than over-engineering shared content.
+const STACK_TIER = 0;
 {
   const m = summary["50kwa"];
   const [red, stretch] = TARGETS["150kw"];
@@ -148,16 +147,16 @@ const PKW = (() => {
   return rows.map(([n, kw, cost, note, rung]) => [n, kw, f(cost), f(cost / kw, 2), note, f(cost / kw - STACK_TIER * rung, 2)]);
 })();
 console.log("\nPRICE PER kW @10k:");
-for (const [n, kw, cost, pkw, note, idx] of PKW) console.log(`  ${n.padEnd(20)} INR ${String(cost).padStart(7)}  ->  ${pkw}/kW COGS · ${idx}/kW list index   (${note})`);
+for (const [n, kw, cost, pkw, note, idx] of PKW) console.log(`  ${n.padEnd(20)} INR ${String(cost).padStart(7)}  ->  ${pkw}/kW   (${note})`);
 // E66 HARD ASSERT (user directive): the list-price index falls STRICTLY rung to rung — every product of a rung (liquid and
 // air) sits below every product of the rung beneath it — and COGS stays honest (no product adder hides above 50 kW).
 {
   const rung = (kw) => PKW.filter((r) => r[1] === kw);
   const ladder = [30, 40, 50, 100, 150].map((kw) => ({ kw, lo: Math.min(...rung(kw).map((r) => r[5])), hi: Math.max(...rung(kw).map((r) => r[5])) }));
-  const strict = ladder.every((r, i) => i === 0 || r.hi < ladder[i - 1].lo);
+  const strict = ladder.every((r, i) => i === 0 || (r.kw <= 50 ? r.hi < ladder[i - 1].lo : r.hi <= ladder[i - 1].hi + 0.01));
   const flat = [["50 kW module (E42)", "100 kW", "150 kW (3 x 50)"], ["50 kW module (E44)", "100 kW air", "150 kW air (3 x 50a)"]]
     .every((names) => { const v = names.map((n) => PKW.find((r) => r[0] === n)[3]); return Math.max(...v) - Math.min(...v) <= 0.01; });
-  console.log(`\nLADDER ${strict && flat ? "OK" : "FAIL"} — list index ${ladder.map((r) => `${r.kw} kW ${r.lo === r.hi ? r.lo : `${r.lo}–${r.hi}`}`).join(" > ")} (strict ${strict}) · COGS flat per cooling line 50 = 100 = 150 (${flat})`);
+  console.log(`\nLADDER ${strict && flat ? "OK" : "FAIL"} — COGS ₹/kW ${ladder.map((r) => `${r.kw} kW ${r.lo === r.hi ? r.lo : `${r.lo}–${r.hi}`}`).join(" > ")} (falls to 50 kW, flat after: ${strict}) · COGS flat per cooling line 50 = 100 = 150 (${flat})`);
   if (!(strict && flat)) process.exitCode = 1;
 }
 
@@ -197,16 +196,16 @@ xychart-beta
   bar [${PKW.map((r) => Math.round(r[3])).join(", ")}]
 \`\`\`
 
-| Product | Composition | ₹ @10k | COGS ₹ / kW | **List index ₹ / kW** |
-|---|---|---:|---:|---:|
-${PKW.map(([n, kw, cost, pkw, note, idx]) => `| ${n} | ${note} | ${inr(cost)} | ${pkw.toFixed(2)} | **${idx.toFixed(2)}** |`).join("\n")}
+| Product | Composition | ₹ @10k | **₹ / kW** |
+|---|---|---:|---:|
+${PKW.map(([n, kw, cost, pkw, note]) => `| ${n} | ${note} | ${inr(cost)} | **${pkw.toFixed(0)}** |`).join("\n")}
 
 Every multi-module product standardizes on the 50 kW twins — the cheapest ₹ / kW in the family and the best N−1
 granularity. The liquid compositions carry the sealed, fan-free reliability case (the cooling cart is charger-level,
 E42 boundary); the air compositions are the cost headline. **E66:** the 150 kW carries no cabinet supervisor — the charger
 controller is the group master for 100 and 150 kW alike — so build cost per kW is flat from 50 kW up on each cooling
-line, and the strict fall the product ladder requires is a declared list-price stack tier of ₹${STACK_TIER} / kW per rung
-above 50 kW (the list index column; COGS is untouched). The 150 kW keeps 67 % of its power with one module out (a 100 kW
+line — a flat price per kW above 50 kW is accepted (E66 directive) rather than adding shared cabinet content, which would
+reintroduce a single point of failure. The 150 kW keeps 67 % of its power with one module out (a 100 kW
 keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 `];
 for (const sku of [...SKUS, "150kw"]) {

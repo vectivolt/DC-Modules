@@ -12,7 +12,7 @@
 </p>
 
 > [!NOTE]
-> **Purpose** — the contract between a module and a charger controller (or the cabinet CSU): the physical layer,
+> **Purpose** — the contract between a module and a charger controller (the group master for 100 / 150 kW, E66): the physical layer,
 > 29-bit identifiers, control and telemetry frames, and the rules that decide when a module may deliver power.
 >
 > **Gate coupling** — `firmware/core/can_proto.c` is the normative codec: bounds-checked, little-endian, round-trip
@@ -99,9 +99,13 @@ Default rate 1 Hz; on-change frames 0x2x at up to 10 Hz.
 | **Configuration** | address, group and calibration frames are committed to EEPROM with a CRC and echoed back for verification |
 
 > [!TIP]
-> **In a 150 kW cabinet** the CSU is the controller on this bus: it claims modules by hearing their telemetry,
-> distributes equal-share current setpoints, staggers starts by 300 ms and re-shares when a module drops out
-> (`firmware/core/csu.c`). See [product structure](../boards/README-product-structure.md).
+> **In a 100 or 150 kW cabinet (E66)** the charger controller is the group master: it broadcasts `GROUP_SET` 0x12 at
+> 10 Hz — 8 bytes LE: u16 V_set 0.1 V · u16 I_req 0.1 A · u16 member bitmap (bit k = address base+k; set only for modules
+> heard within 1 s and not FAULT/LOCK) · u8 base address · u8 reserved = 0. Each module runs `firmware/core/group.c`:
+> share = min(own I_avail, I_req ÷ members); lower at once, raise after 1.3 s; deliver after the own bit has been present
+> 1.3 s + rank × 300 ms; no frame for 1 s → zero (F.28). No module infers its peers by hearing, so there is no split brain.
+> `SET_OUTPUT` 0x10 stays for controllers that water-fill unequal shares — one command form per group per session.
+> See [product structure](../boards/README-product-structure.md).
 
 ---
 

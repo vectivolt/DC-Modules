@@ -5,7 +5,7 @@
   "MODULES",
   "DC-BUS",
   "CAN-CHAIN",
-  "CSU-CARRIER"
+  "CTRL-PORT"
  ],
  "net_style_overrides": {},
  "net_class_overrides": {
@@ -323,163 +323,38 @@
    "mpn": "R0603-120R-1%"
   },
   {
-   "designator": "PSU1",
-   "block_name": "CSU-CARRIER",
+   "designator": "CTRL1",
+   "block_name": "CTRL-PORT",
    "pins": [
     {
      "pin_number": 1,
-     "name": "L",
-     "signal_name": "AC_L1"
-    },
-    {
-     "pin_number": 2,
-     "name": "N",
-     "signal_name": "AC_L2"
-    },
-    {
-     "pin_number": 3,
-     "name": "PE",
-     "signal_name": "PE"
-    },
-    {
-     "pin_number": 4,
-     "name": "V15P",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 5,
-     "name": "V15N",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "PSU-15V-DIN-WDR",
-   "query": "PSU-15V-DIN-WDR 15 V DIN supply, WIDE-RANGE 180-550 VAC input ",
-   "mpn": "PSU-15V-DIN-WDR"
-  },
-  {
-   "designator": "JCSU",
-   "block_name": "CSU-CARRIER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "V15A",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 2,
-     "name": "V15B",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 3,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 4,
-     "name": "GNDB",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 5,
-     "name": "GNDC",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "ROLE1",
-     "signal_name": "ROLE1"
-    }
-   ],
-   "nc_pins": [],
-   "value": "CONN-CARD-88-H",
-   "query": "CONN-CARD-88-H CSU carrier 88-way PIN HEADER ",
-   "mpn": "CONN-CARD-88-H"
-  },
-  {
-   "designator": "RRCSU",
-   "block_name": "CSU-CARRIER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "ROLE1"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "3.32k",
-   "query": "R0603-3k32-1% CSU RATING strap 3.32 k → 0.82 V band ",
-   "mpn": "R0603-3k32-1%"
-  },
-  {
-   "designator": "UCSU",
-   "block_name": "CSU-CARRIER",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "V15A",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 2,
-     "name": "V15B",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 3,
-     "name": "GNDA",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 4,
-     "name": "GNDB",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 5,
-     "name": "GNDC",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 6,
-     "name": "ROLE1",
-     "signal_name": "ROLE1"
-    },
-    {
-     "pin_number": 7,
      "name": "CANH",
      "signal_name": "CANH"
     },
     {
-     "pin_number": 8,
+     "pin_number": 2,
      "name": "CANL",
      "signal_name": "CANL"
     },
     {
-     "pin_number": 9,
+     "pin_number": 3,
      "name": "SGND",
-     "signal_name": "CAN_SGND"
+     "signal_name": "CTRL_SGND"
     },
     {
-     "pin_number": 10,
+     "pin_number": 4,
      "name": "SHLD",
      "signal_name": "CAN_SHLD"
     }
    ],
    "nc_pins": [],
-   "value": "CONTROL-CARD-CSU",
-   "query": "CONTROL-CARD-CSU control card in the CSU strap role ",
-   "mpn": "CONTROL-CARD-CSU"
+   "value": "CHARGER-CONTROLLER-CAN-PORT",
+   "query": "CHARGER-CONTROLLER-CAN-PORT charger controller CAN port — the group master that ",
+   "mpn": "CHARGER-CONTROLLER-CAN-PORT"
   },
   {
    "designator": "RSGB",
-   "block_name": "CSU-CARRIER",
+   "block_name": "CTRL-PORT",
    "pins": [
     {
      "pin_number": 1,
@@ -489,7 +364,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "DGND"
+     "signal_name": "CTRL_SGND"
     }
    ],
    "nc_pins": [],
@@ -499,7 +374,7 @@
   },
   {
    "designator": "RSHB",
-   "block_name": "CSU-CARRIER",
+   "block_name": "CTRL-PORT",
    "pins": [
     {
      "pin_number": 1,

@@ -25,7 +25,7 @@
 | **Input → output** | 3-φ 285–475 VAC → split DC bus 650–830 V → 150–1000 VDC, 100 / 133 / 167 A |
 | **Switching** | Vienna 50 kHz (750 V SiC pairs, 1200 V JBS) · LLC fr 140 kHz (1200 V SiC half-bridges, ZVS) |
 | **Output stage** | two floating banks with a series/parallel relay matrix, pre-insertion and K_OUT |
-| **Family** | 30 · 40 · 50 kW liquid · 50 kW air modules; 100 kW = 2 × 50 and 150 kW = 3 × 50 + CSU products |
+| **Family** | 30 · 40 · 50 kW liquid · 50 kW air modules; 100 kW = 2 × 50 and 150 kW = 3 × 50 products (E66: no CSU) |
 
 ```mermaid
 flowchart LR
@@ -56,7 +56,7 @@ flowchart LR
 | **40 kW** (E41) | PFC pairs **paralleled** (2 × B3M per position, each behind its own 2.2 Ω) | air, 3 fans | 35,891 · 897 |
 | **50 kW liquid** (E42) | the 40 kW silicon — single LLC FETs, which the coldplate makes possible | **liquid**, 0 fans | 41,865 · 837 |
 | **50 kW air** (E44) | PFC **and** LLC paralleled (per-package conduction ÷ 4) | air, 4 fans | 41,516 · **830 — cheapest** |
-| **Products** (E55) | **100 kW = 2 × 50** (no CSU) · **150 kW = 3 × 50 + CSU** (same card in the CSU strap role) | per module | 100 kW air 83,032 (830) · 150 kW air 1,26,382 (843) |
+| **Products** (E55) | **100 kW = 2 × 50** (no CSU) · **150 kW = 3 × 50** (E66: charger controller = group master, no CSU) | per module | 100 kW air 83,032 (830) · 150 kW air 1,26,382 (843) |
 
 Costs are generated in [`bom-cost.md`](bom-cost.md); the product rationale is in
 [product structure](../boards/README-product-structure.md).
@@ -112,7 +112,7 @@ flowchart LR
   analog channels are used, and one merged fault line lands on HRTIMER_FLT2. The 88-way slot carries the DC-DC
   side; a **40-way straight-through harness** (HARNESS40, generated) carries the whole PFC bundle to the AC-DC
   board. There is no inter-MCU link.
-- **Identity is one RATING strap** (E24 rev G): 0 Ω → 30 kW · 1 k → 40 kW · 3.32 k → cabinet CSU ·
+- **Identity is one RATING strap** (E24 rev G): 0 Ω → 30 kW · 1 k → 40 kW · 3.32 k → reserved (E66) ·
   10 k → 50 kW liquid · 15 k → 50 kW air · open → fault. One card part number and one firmware image serve the
   whole family.
 - **Loops.** Per-phase current (fc ≈ 3 kHz, PM 50°); bus voltage (15 Hz) with
@@ -120,7 +120,7 @@ flowchart LR
   clamp 1.05× (FW-R6); PLL and midpoint balance. The LLC runs CV/CC with a mode map (PFM, phase shift below 260 V
   per bank, burst). The S/P state machine applies pre-insertion, a weld check, the E12b K_OUT gate, and allows
   a series start only above 525 V (FW-R8).
-- **Supervisory firmware** (`firmware/`) is the normative logic: 26 scenarios, CSU, codec, fuzz and invariants —
+- **Supervisory firmware** (`firmware/`) is the normative logic: 26 scenarios, group share law, codec, fuzz and invariants —
   **54 / 54 under ASan/UBSan** ([firmware guide](firmware-guide.md)).
 - **Pin budget:** 75 of 82 usable MCU pins, 7 spare — the arithmetic is in [control-card scope](control-card-scope.md).
 

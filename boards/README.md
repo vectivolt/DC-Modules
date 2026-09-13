@@ -27,7 +27,7 @@
 | [`50kw/`](50kw/) | 50 kW **liquid** (E42): the 40 kW silicon, coldplates, zero fans, dual K_OUT | 1,874 | 326 · 333 |
 | [`50kwa/`](50kwa/) | 50 kW **air** (E44): LLC pairs paralleled too, 4 fans, every electrical class shared with the liquid twin | 1,938 | 330 · 351 |
 | [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120 × 80 mm, 88-way) — one part number, every seat | 291 | 49 |
-| [`cabinet.tsx`](cabinet.tsx) | the **150 kW cabinet** interconnect of record (3 × 50 kW + CSU) | 67 | 17 |
+| [`cabinet.tsx`](cabinet.tsx) | the **150 kW cabinet** interconnect of record (3 × 50 kW, E66 no CSU) | 67 | 17 |
 | [`out-pdf/`](out-pdf/) | the ten release PDFs rendered from the audited KiCad-5 sheets | **7,784 total** | — |
 
 All four SKUs come from one parameterized source, [`boards.tsx`](../packages/common-components/boards.tsx), built

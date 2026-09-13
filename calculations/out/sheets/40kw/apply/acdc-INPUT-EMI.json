@@ -520,6 +520,168 @@
     ]
    },
    {
+    "designator": "CY4",
+    "value": "4.7nF",
+    "block_name": "EMI-FILTER",
+    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "CY5",
+    "value": "4.7nF",
+    "block_name": "EMI-FILTER",
+    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "CY6",
+    "value": "4.7nF",
+    "block_name": "EMI-FILTER",
+    "search_query": "Y1-4n7-440 Y1 4.7 nF 440 VAC",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "CDMP1",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "CDMP1_RDMP1"
+     }
+    ]
+   },
+   {
+    "designator": "CDMP2",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "CDMP2_RDMP2"
+     }
+    ]
+   },
+   {
+    "designator": "CDMP3",
+    "value": "2.2uF",
+    "block_name": "EMI-FILTER",
+    "search_query": "X1-2u2-530 X1 2.2 µF 530 VAC",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AC3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "CDMP3_RDMP3"
+     }
+    ]
+   },
+   {
+    "designator": "RDMP1",
+    "value": "10",
+    "block_name": "EMI-FILTER",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CDMP1_RDMP1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC2"
+     }
+    ]
+   },
+   {
+    "designator": "RDMP2",
+    "value": "10",
+    "block_name": "EMI-FILTER",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CDMP2_RDMP2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC3"
+     }
+    ]
+   },
+   {
+    "designator": "RDMP3",
+    "value": "10",
+    "block_name": "EMI-FILTER",
+    "search_query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CDMP3_RDMP3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AC1"
+     }
+    ]
+   },
+   {
     "designator": "LDM1",
     "value": "DM-CHOKE-SKU",
     "block_name": "EMI-FILTER",
@@ -726,5 +888,5 @@
   ]
  },
  "warnings": [],
- "total": 35
+ "total": 44
 }

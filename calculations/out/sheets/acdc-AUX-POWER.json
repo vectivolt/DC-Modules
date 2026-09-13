@@ -17,15 +17,17 @@
   "UAUX_SS": "wire",
   "QAUX_D": "wire",
   "QAUX_S": "wire",
+  "TAUX_AXA": "wire",
   "TAUX_S24A": "wire",
   "TAUX_S15A": "wire",
-  "TAUX_AXA": "wire",
+  "CAUX24_DAUX24": "wire",
   "RAUXST_M": "wire",
   "RBR1_M": "wire",
   "QAUXFB_B": "wire",
   "DZAUX_RZFB": "wire",
   "CCLA_DCLA": "wire",
   "RCLA_M": "wire",
+  "RCLA_23": "wire",
   "UBKA_SW": "wire",
   "UBKA_FB": "wire",
   "UBKA_EN": "wire",
@@ -126,9 +128,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "310m",
-   "query": "R1206-R31-1%-0.5W 0.31 Ω 1% 0.5 W 1206 current-sense ",
-   "mpn": "R1206-R31-1%-0.5W"
+   "value": "280m",
+   "query": "R1206-R28-1%-0.5W 0.28 Ω 1% 0.5 W 1206 current-sense ",
+   "mpn": "R1206-R28-1%-0.5W"
   },
   {
    "designator": "RAUXG",
@@ -186,9 +188,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "470pF",
-   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
-   "mpn": "MLCC-small"
+   "value": "100pF",
+   "query": "MLCC-100p-0603 100 pF 0603 C0G ±5 % ",
+   "mpn": "MLCC-100p-0603"
   },
   {
    "designator": "TAUX",
@@ -206,39 +208,39 @@
     },
     {
      "pin_number": 3,
-     "name": "S24A",
-     "signal_name": "TAUX_S24A"
-    },
-    {
-     "pin_number": 4,
-     "name": "S24B",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 5,
-     "name": "S15A",
-     "signal_name": "TAUX_S15A"
-    },
-    {
-     "pin_number": 6,
-     "name": "S15B",
-     "signal_name": "DGND"
-    },
-    {
-     "pin_number": 7,
      "name": "AXA",
      "signal_name": "TAUX_AXA"
     },
     {
-     "pin_number": 8,
+     "pin_number": 4,
      "name": "AXB",
      "signal_name": "DCN"
+    },
+    {
+     "pin_number": 5,
+     "name": "S24A",
+     "signal_name": "TAUX_S24A"
+    },
+    {
+     "pin_number": 6,
+     "name": "S24B",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 7,
+     "name": "S15A",
+     "signal_name": "TAUX_S15A"
+    },
+    {
+     "pin_number": 8,
+     "name": "S15B",
+     "signal_name": "DGND"
     }
    ],
    "nc_pins": [],
-   "value": "XFMR-AUX-FLY-D",
-   "query": "XFMR-AUX-FLY-D aux flyback transformer ETD39 PC95, 110 W class, 342–860 V input,",
-   "mpn": "XFMR-AUX-FLY-D"
+   "value": "XFMR-AUX-FLY-E",
+   "query": "XFMR-AUX-FLY-E aux flyback transformer ETD44 PC95, 110 W class, 321–860 V input,",
+   "mpn": "XFMR-AUX-FLY-E"
   },
   {
    "designator": "DAUX24",
@@ -252,7 +254,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "V24"
+     "signal_name": "CAUX24_DAUX24"
     }
    ],
    "nc_pins": [],
@@ -307,7 +309,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "V24"
+     "signal_name": "CAUX24_DAUX24"
     },
     {
      "pin_number": 2,
@@ -417,7 +419,7 @@
    ],
    "nc_pins": [],
    "value": "470k",
-   "query": "R2512-HV 2512 HV-rated ",
+   "query": "R2512-HV 2512 HV-rated 1 % ",
    "mpn": "R2512-HV"
   },
   {
@@ -437,7 +439,7 @@
    ],
    "nc_pins": [],
    "value": "470k",
-   "query": "R2512-HV 2512 HV-rated ",
+   "query": "R2512-HV 2512 HV-rated 1 % ",
    "mpn": "R2512-HV"
   },
   {
@@ -456,8 +458,8 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.4M",
-   "query": "R2512-HV 2512 HV-rated ",
+   "value": "1.2M",
+   "query": "R2512-HV 2512 HV-rated 1 % ",
    "mpn": "R2512-HV"
   },
   {
@@ -476,8 +478,8 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.4M",
-   "query": "R2512-HV 2512 HV-rated ",
+   "value": "1.2M",
+   "query": "R2512-HV 2512 HV-rated 1 % ",
    "mpn": "R2512-HV"
   },
   {
@@ -496,7 +498,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "15k",
+   "value": "7.5k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },
@@ -641,9 +643,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "FAST-1200-1A",
-   "query": "FAST-1200-1A 1200 V 1 A fast diode SMB ",
-   "mpn": "FAST-1200-1A"
+   "value": "SIC-SBD-1700V",
+   "query": "SIC-SBD-1700V SiC Schottky ≥1700 V, IF",
+   "mpn": "SIC-SBD-1700V"
   },
   {
    "designator": "CCLA",
@@ -681,9 +683,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-HV 2512 HV-rated ",
-   "mpn": "R2512-HV"
+   "value": "11k",
+   "query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working ",
+   "mpn": "R2512-11k-2W-AS"
   },
   {
    "designator": "RCLA2",
@@ -697,13 +699,53 @@
     {
      "pin_number": 2,
      "name": "pin2",
+     "signal_name": "RCLA_23"
+    }
+   ],
+   "nc_pins": [],
+   "value": "11k",
+   "query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working ",
+   "mpn": "R2512-11k-2W-AS"
+  },
+  {
+   "designator": "RCLA3",
+   "block_name": "FLYBACK",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RCLA_23"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
      "signal_name": "DCP"
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-HV 2512 HV-rated ",
-   "mpn": "R2512-HV"
+   "value": "11k",
+   "query": "R2512-11k-2W-AS 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working ",
+   "mpn": "R2512-11k-2W-AS"
+  },
+  {
+   "designator": "RAUX24",
+   "block_name": "RAILS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CAUX24_DAUX24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "V24"
+    }
+   ],
+   "nc_pins": [],
+   "value": "50m",
+   "query": "R2512-R05-1W-1% 50 mΩ 1 % 1 W 2512 in the V24 distribution after CAUX24 ",
+   "mpn": "R2512-R05-1W-1%"
   },
   {
    "designator": "CVCCB",

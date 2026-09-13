@@ -42,12 +42,12 @@
 
 | Part | Function | 30 kW | 40 kW | 50 kW (liquid and air) | Kept honest by |
 |---|---|---|---|---|---|
-| [**D1**](#d1-rev-b--pfc-choke-165-µh-swing-pn-ind-pfc-165u--qty-3-per-module) · × 3 | PFC boost choke | 3 × 0077908A7, N = 39 ± 1 | 5 × 0077908A7, N = 26 ± 1 | 5 × 0077908A7, N = 24 ± 1 | `mag-sync` · `stress-audit` · `temp-critique` |
+| [**D1**](#d1-rev-c-e65--pfc-boost-chokes--qty-3-per-module) · × 3 | PFC boost choke | 3 × 0077908A7, N = 39 ± 1 | 5 × 0077908A7, N = 26 ± 1 | 5 × 0077908A7, N = 24 ± 1 | `mag-sync` · `stress-audit` · `temp-critique` |
 | [**D2**](#d2-rev-e-e65--resonant-trim-inductor-bin-sets--qty-3-per-module) · × 3 | resonant trim — carries ~all of Lr, binned to the transformer's measured leakage | 1 × E70, N 8 · 6.35 / 6.5 / 6.65 / 6.8 µH | 2 × E70, N 5 · 5.85 / 6.0 / 6.15 / 6.3 µH | 2 × E70, N 5 · 5.35 / 5.5 / 5.65 / 5.8 µH | `magnetics-envelope` · `conductor-audit` · `current-coordination` |
 | [**D3**](#d3-rev-c-e65--llc-section-transformers--qty-3-per-module) · × 3 | LLC section transformer | 2 × E70, 7:7:7 · foil 0.10 mm | 2 × E70, 6:6:6 · foil 0.127 mm | 3 × E70, 5:5:5 · foil 0.127 mm | `magnetics-envelope` · `conductor-audit` · `mag-sync` |
-| [**D4**](aux-transformer-D4.md) · × 1 | 110 W aux flyback | ETD39 rev D | = | = | `stress-audit` D4 Bpk |
+| [**D4**](aux-transformer-D4.md) · × 1 | 110 W aux flyback | ETD44 rev E (E65) | = | = | `stress-audit` D4 Bpk |
 | [**D6**](#d6--dm-line-chokes-dm-22u-sku--qty-3-per-module-one-per-phase-hr-9-new-drawing) · × 3 | differential-mode line choke | 2 × T48 60µ, N 7 | 2 × T57 60µ, N 8 | 3 × T57 60µ, N 8 | `dm-choke-design` · `lisn-precompliance` |
-| [**D7**](#d7--cm-chokes-cmc-3ph-2mh-sku--qty-2-per-sku-winding-r2-hr-18-new-drawing) · × 2 | 3-phase common-mode choke | Schaffner RT8131-63-2M8 class | custom 75 A | custom 95 A | ΔT acceptance |
+| [**D7**](#d7--cm-chokes-cmc-3ph-2mh-sku--qty-2-rev-b-e65-engine-designed-dm-bias-acceptance) · × 2 | 3-phase common-mode choke | Schaffner RT8131-63-2M8 class | custom 75 A | custom 95 A | ΔT acceptance |
 | [**CT**](#ct--current-transformers--qty-3-each-per-module--catalog-parts-audit-2026-09-08) · × 3 + 3 | line and resonant current sensing | ACX-1100 · 22 Ω / AS-404 · 1.2 Ω | ACX-1150 · 18 Ω / 80 A class · 0.91 Ω | ACX-1150 · 13 Ω / 100 A class · 0.75 Ω | `current-coordination` |
 
 ```mermaid
@@ -70,27 +70,39 @@ rows trace to `calculations/magnetics/magnetics-envelope.mjs`, `conductor-audit.
 Acceptance limits are the production test spec (EOL §45). Material fits are catalog-class,
 marked VERIFY (A3/A4) — first-article measurement closes them.
 
-## D1 rev B — PFC choke, 165 µH swing (p/n IND-PFC-165u) — qty 3 per module
+## D1 rev C (E65) — PFC boost chokes — qty 3 per module
 
-**Rev B (margin audit 2026-09-08, F4):** re-issued against the REAL catalog core and the
-calculator's selected copper. Rev A specified 13.75 mm²/N=36, which fails its own Rdc line
-(computes 12.05 mΩ vs ≤11) and — on the actual Magnetics 0077908A7 (AL 37 nH/T² ±8%, effective
-Ae 2.27 cm², not the 2.62 cm² geometric idealisation) — lands L₀ at 144 µH, below the −12% floor,
-and 71 µH at 78 A, below acceptance.
+**D1 section rows** (the "Item / Spec" table under the D1 heading), replace:
 
-| Item | Spec |
+| Item | Spec (rev C, E65) |
 |---|---|
-| Core | 3× stacked sendust toroid OD79/ID48/H17 mm, µ=26 — **Magnetics 0077908A7 or matched equivalent (Chang Sung KS / POCO / DMEGC), AL 37 nH/T² ±8% per core** — catalog rev 10/7/2021: **Ae 221 mm², le 196 mm**, Ve 43.4 cm³, DC-bias minimums 80 %@95 Oe / 50 %@205 Oe (E60 sync; the design roll-off fit 80 %@75 / 50 %@175 Oe stays the conservative basis) |
-| Winding | **N = 39 nominal; winder trims ±1 turn per core lot** so both L lines below are met across the AL ±8% band (standard swing-choke practice — a fixed N misses the bias floor on a low-AL lot). Flat copper **3×(6×1 mm) = 18 mm²** on edge (alt: 9× 1.6 mm enameled 2-layer — Rdc governs), spread ≥300° |
-| Terminations | 2× tinned flying leads, 60 mm, solder into the board's plated holes (§0.1 — resolves the rev-A ring-lug/hole conflict in favour of the board) |
-| L @ 0 A | **168 µH nominal; accept 150–185 µH** (100 kHz, 0.1 V — brackets core AL ±8%) |
-| L @ 78 A pk bias | ≥ 75 µH (pulse method; ACCEPTANCE — calc 77 µH on nominal AL) |
-| Rdc | ≤ 11 mΩ @25 °C (calc 10.0 mΩ) |
-| Core loss @ rated ripple | ≈ 2.4 W calc (ΔB ≈ 70 mT pp @ 50 kHz, A3 fit) — stated so the loss line is auditable |
-| Loss @ rated | ≈ 35 W calc total (Cu 32.4 + Fe 2.4) — ΔT ≤ 45 °C over 55 °C ambient, thermocouple at inner bore (calc ≈ 36 °C) |
-| Isolation | winding–core 500 VAC/1 min (functional; core floats on mount) |
-| Mount | center bolt M6 + silicone pad + epoxy band; mass **~2.2 kg (computed — mag-sync gate, E59: core 0.96 + Cu 1.06 + build; the old ~1.0 was eyeballed)** |
-| Hi-pot | none (line-potential part; board-level hipot covers) |
+| Winding | **N = 39 nominal; winder trims ±1 turn per core lot.** 9 × 1.6 mm grade-2 enamelled bundle (18 mm² class), taped every 150 mm, laid flat; bore layers 21/15/3, spread ≥ 300°. The flat-on-edge 3 × (6 × 1 mm) alternate is withdrawn (6 mm across the bore field at 50 kHz) |
+| Rdc | ≤ **6.9 mΩ @ 25 °C** (build 6.08 mΩ, Magnetics-table MLT 160.5 mm) + ±5 % per-lot window (one open strand = +12.5 %) |
+| Core loss @ rated ripple | **4.7 W** at the 330 VAC corner (iGSE on the simulated flux, ΔB 90 mT pp, Kool Mµ 26 published equation × the datasheet max 900 mW/cm³) — the A3 fit read 2.4 W |
+| Loss @ rated | **42.9 W** at the 330 VAC corner (Cu 23.4 + ripple 14.8 + Fe 4.7), 28.0 W at 400 VAC — hot-spot **87 °C** bonded, limit 120 °C at 55 °C inlet (`stress-audit` [D1], computed) |
+| Isolation | **basic insulation to PE** — gap pad (bond face), bore sleeve and clamp cap; Û_rp ≤ 540 V; 100 % hipot 2.5 kV DC 1 min winding ↔ bond-face + bore electrodes |
+| Mount | one end face gap-pad bonded to the PE-bonded web; M6 A4-70 through the bore at 4.5 N·m on a Belleville via a GF-PPS insulating cap; 2-point glass banding; mass **1.9 kg** (computed) |
+| Hi-pot | 2.5 kV DC 1 min, 100 % (winding ↔ bond face + bore); 4 kV impulse type test |
+
+**§0.1 land-pattern table, D1 row** — leave the land pattern (layout) but add a footnote: "E65: finished ⌀ 91–94 mm × H
+68–115 mm computed from the winding build; the 87 mm keep-out, the 62 mm tunnel and the 6.0 mm lead holes do not hold
+(9 × 1.6 mm bundle ⌀ 6.2 mm enamelled, 13 × 1.6 mm ⌀ 7.2 mm) — layout open item."
+
+**§0.2 thermal-class table, D1 row** → `| D1 | hot-spot ≤ 120 °C at 55 °C inlet, ≤ 130 °C at 75 °C derated (computed, bonded) | 87–92 °C | 73–94 °C | **F (155 °C)** |`
+(D6 / D7 keep ΔT ≤ 45 K on their own row).
+
+**E41 variant row, D1-40** acceptance cell → "L0 **116 µH** nom, accept **106–135** · **L@104 A pk ≥61 µH** · dIpp ≤ 28 A nom ·
+Rdc ≤ 4.55 mΩ + ±5 % lot window · hot-spot 88 °C bonded (limit 120 °C) · fill 42 % (insulated-wire winding factor)".
+Construction cell: replace "wire 25.8 mm² class" with "13 × 1.6 mm bundle (26 mm² class), web-bonded".
+
+**E42 variant row, D1-50** acceptance cell → "L0 **107 µH** nom, accept **98–124** · **L@129.5 A pk ≥ 45 µH** · dIpp basis 36.2 A pp
+nom · swing 0.405 ≥ 0.40 · Rdc ≤ 4.15 mΩ + ±5 % lot window · hot-spot 81 °C plate-bonded / 92 °C web-bonded (limit 120 °C) ·
+D1 cutout thermostat on the liquid SKU".
+
+**E44 air note** — replace "D1-50's 37 K ... convective figures" with "D1-50 is web-bonded on the air twin (92 °C hot-spot;
+bond lost 129 °C, survivable on air)".
+
+mag-sync tokens preserved by the text above: `N = 39`, `150–185 µH`, `≥ 75 µH`, `N=26` / `N = 26`, `116`, `≥61`, `61 µH`,
 
 ## D2 rev E (E65) — Resonant trim inductor bin sets — qty 3 per module
 
@@ -225,31 +237,34 @@ Do not quote from this section.
 
 EE19/EF20 class, PC40, primary 425 V-max input (fed DCP→MID, E20), 3 outputs: 24 V/0.8 A, 15 V/0.6 A, aux 15 V bias; pri↔sec reinforced TIW, hipot 3 kV; fsw ~65 kHz flyback DCM. Detailed turns sheet issued with aux SPICE validation (open item V-21).
 
-## D7 — CM chokes (CMC-3PH-2mH-SKU) — qty 2, **per-SKU winding (R2 HR-18, new drawing)**
+## D7 — CM chokes (CMC-3PH-2mH-SKU) — qty 2, **rev B (E65): engine-designed, DM-bias acceptance**
 
-The rev-B "same core family, 4–8 mm² wire" spec ran the copper at **13.8 / 18.3 / 27.5 A/mm²**
-(≈29 / 77 / 231 W per choke — a thermal event at 120 kW, and none of it was in the loss budget).
-Rated windings, D6-style:
+The rev A rows (OD62, 3× 8 T, 10/13.3/16.7 mm², "≈ 11/15/19 W") used 20 °C copper on a one-layer turn that the
+core cannot hold. On the platform model at 100 °C copper they compute 19.6/27.0/34.9 W and ΔT 52/66/80 K, and the
+50 kW winding does not fit. Rev A also had no line for the DM leakage flux the choke carries at every line crest.
 
-| SKU | I_rms/line | Core | Winding | Cu loss/choke (calc) |
-|---|---|---|---|---|
-| 30 kW | 55 A | nanocrystalline OD62 | 3× 8 T, 10 mm² foil 0.3×33 | ≈ 11 W |
-| 40 kW | 73.3 A | nanocrystalline OD62 (same core) | 3× 8 T, 13.3 mm² foil (CSA × 4/3 at constant J) | ≈ 15 W |
-| 50 kW | 91.6 A | nanocrystalline OD62 (same core) | 3× 8 T, 16.7 mm² foil (CSA × 5/3 at constant J) | ≈ 19 W |
+Rev B is designed by `emi/dm-choke-design.mjs` (D7 block):
+- **Design lines:** L_cm(10 kHz) ≥ 2 mH at catalog-minimum µ (−30 %) · B_DM = L_lk,max·I1pk/(N·A_Fe) ≤ 0.6 T at the
+  simulated crest · J ≤ 5.6 · ΔT ≤ 40 K (5 K under the 45 K acceptance) · ≤ 2 layers.
+- **Fixed inputs:** N = 8 and the 6–12 µH leakage band stay as registered. Leakage is measured at first article;
+  the A_Fe floor is set against the band maximum.
 
-*E61: the 60 / 120 kW rows retired with their boards; the 40 / 50 kW rows restate the E41 / E42 variant windings and the loss-budget CMC lines.*
+| SKU | I_rms / crest | Core (nanocrystalline toroid) | A_Fe floor | Winding | L_cm ≥ (µ −30 %) | B_DM @ 12 µH | Cu loss/choke (100 °C) | ΔT (calc) | Rdc/winding 20 °C | Finished ⌀ × H | Mass |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 30 kW (2nd source) | 55.9 / 82.6 A | T 80/50/25 (AT&M CC050 class) | **281 mm²** | 3 × 8 T, 20 mm² Cu, 2 layers (23 + 1 turns) | 2.27 mH | 0.44 T | 9.9 W | 20 K | 0.77 mΩ | 93 × 38 mm | 0.89 kg |
+| 40 kW | 73.3 / 109.9 A | T 80/50/25 (AT&M CC050 class) | **281 mm²** | 3 × 8 T, 20 mm² Cu, 2 layers | 2.27 mH | 0.59 T | 17.0 W | 32 K | 0.77 mΩ | 93 × 38 mm | 0.89 kg |
+| 50 kW (both twins) | 91.6 / 137.1 A | T 90/50/30 (AT&M CC243 class) | **450 mm²** | 3 × 8 T, 25 mm² Cu, 2 layers | 3.38 mH | 0.46 T | 26.7 W | 38 K | 0.77 mΩ | 104 × 44 mm | 1.47 kg |
 
-L_cm ≥ 2 mH @10 kHz all SKUs; leakage (DM) ~9 µH doubles as DM filter stage (re-verify at the new
-turns at EMI rev). ΔT ≤ 45 K at I_rms acceptance (thermocouple, like D1/D6). Hi-pot line–line
-functional via spacing; UL1446-class tape. **Loss budget: EMI-filter line added (thermal-report
-rev D) — these losses existed before, they were just unbudgeted.**
+Surrounding filter (E65 schematic):
+- There are two CM stages: CMC1, then Y1 3 × 4.7 nF L-PE on AC1M..3M (**CY4-6, new**), then CMC2, then Y1
+  3 × 4.7 nF on AC1..3 (CY1-3).
+- Leakage (DM) 6–12 µH stays in the DM budget.
+- The pre-compliance model uses the 2 mH floor with the Nanoperm-30000 µ(f) roll-off (0.50 at 150 kHz). Hence the
+  150 kHz acceptance row below.
 
-**Catalog adoption @30 kW (margin audit 2026-09-08):** Schaffner **RT8131-63-2M8** (vertical:
-RT8531-63-2M8) — 3-line, 63 A @60 °C, 2.8 mH, 600 VAC, nanocrystalline, PCB-mount, Digi-Key
-stocked — qualifies as a drop-in for the 30 kW winding (55.9 A worst). Qualify at EMI rev; this
-custom drawing then becomes the second source (Schaffner is single-source post-TE-acquisition;
-custom-wind fallback cores: VAC T60006 via Mouser singles, or King Magnetics rings). 60/120 kW
-reference windings stay custom — nothing in any catalog reaches 110/220 A at ≥2 mH.
+**Catalog adoption at 30 kW (unchanged):** Schaffner **RT8131-63-2M8** is the primary. Its 63 A rating gives
+89.1 A pk, above the 82.6 A simulated crest (stress-audit row). Qualification adds the 150 kHz |Z| row and the
+DM-bias row below. The rev B drawing is the second source.
 
 ## CT — current transformers — qty 3 each per module — **CATALOG PARTS (audit 2026-09-08)**
 

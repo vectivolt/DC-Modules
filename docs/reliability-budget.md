@@ -44,12 +44,12 @@
 |---|---:|---:|---|
 | 100 kW (2 × 50 L) | 6,792 | ≈ 147 kh | the product drops to **50 % power**, not zero |
 | 100 kW air (2 × 50a) | 7,104 | ≈ 141 kh | 50 % power |
-| 150 kW (3 × 50 L + CSU) | 10,538 | ≈ 95 kh | **67 % power** — CSU re-shares on hot-rejoin |
-| 150 kW air (3 × 50a + CSU) | 11,006 | ≈ 91 kh | 67 % power |
+| 150 kW (3 × 50 L, E66 no CSU) | 10,188 | ≈ 98 kh | **67 % power** — group share law re-shares on hot-rejoin |
+| 150 kW air (3 × 50a, E66) | 10,656 | ≈ 94 kh | 67 % power |
 
 A series-sum MTBF answers "when does the *first* service call happen", not "when is the charger down" —
-availability at N−1 is the number a site cares about, and the ladder was shaped for it (E55). The CSU adder
-carries a declared-estimate 350 FIT (card-class assembly + DIN supply + carrier).
+availability at N−1 is the number a site cares about, and the ladder was shaped for it (E55). The E39 CSU adder
+(350 FIT: card-class assembly + DIN supply + carrier) was deleted with the CSU at E66.
 
 ```mermaid
 pie showData
@@ -82,7 +82,7 @@ pie showData
 |---|---|
 | Device | DESAT inside the SiC withstand time · comparator trips 1.2× over worst simulated peaks · F.xx ladder — a failing semiconductor becomes a *contained trip*, its energy gated by `fault-energy` (every reservoir has a rated dump path, every wire outlives the fuse ≥ 10×) |
 | Module | fan-out → derate ladder (n−1 airflow covered at 0.6 duty, `fault-energy`) · aux brown-out defined to 321 V · watchdog wire-ORs the MCU reset (R5-A) — a hung brain cannot hold gates on |
-| Product | **100 kW = 2 × 50, 150 kW = 3 × 50 + CSU: one module out = 50 % / 67 % power, never zero** (E55) · CSU re-shares on hot-rejoin with 300 ms staggered joins · per-module fusing and relay isolation keep a dead module off the bus |
+| Product | **100 kW = 2 × 50, 150 kW = 3 × 50 (E66: no CSU): one module out = 50 % / 67 % power, never zero** (E55) · the group share law re-shares on hot-rejoin with 300 ms staggered joins · per-module fusing and relay isolation keep a dead module off the bus |
 | Fleet | CAN telemetry + lifetime counters locked at first RUN (EOL) — wear clocks are observable in service |
 
 The one accepted module-level single point is the control card itself — deliberately (E40, one brain): its failure

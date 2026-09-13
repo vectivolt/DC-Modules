@@ -33,7 +33,8 @@ const ACDC: Rule[] = [
   { m: /^D([ABC])(\d)P$/, p1: { net: "^I_$1$2$" }, p2: { net: "^V3P3$" } }, // ADC clamp up
   { m: /^D([ABC])(\d)N$/, p1: { net: "^AGND$" }, p2: { net: "^I_$1$2$" } }, // ADC clamp down
   { m: /^DTVS(24|15)$/, p1: { net: "^DGND$" }, p2: { net: "^V$1$" } },  // unidirectional rail TVS
-  { m: /^DAUX(24|15)$/, p1: { peer: "^TAUX\\." }, p2: { net: "^V$1$" } }, // flyback secondary rectifiers
+  { m: /^DAUX15$/, p1: { peer: "^TAUX\\." }, p2: { net: "^V15$" } }, // flyback secondary rectifier
+  { m: /^DAUX24$/, p1: { peer: "^TAUX\\." }, p2: { peer: "^(CAUX24|RAUX24)\\.pin1$" } }, // E65: cathode feeds the reservoir, RAUX24 then V24
   { m: /^DAUXVC$/, p1: { peer: "^TAUX\\.AXA$" }, p2: { peer: "^UAUX\\.VCC$" } }, // VCC winding rectifier
   { m: /^DCLA$/, p1: { peer: "^TAUX\\.P2$" }, p2: { peer: "^CCLA\\." } },   // RCD clamp diode
   { m: /^DZAUX$/, p1: { peer: "^QAUXFB\\.B$" }, p2: { peer: "^RZFB\\." } }, // R4-3 zener: reverse-biased ref, cathode toward VCC via RZFB

@@ -110,7 +110,7 @@ brain count (1 vs 2), and packaging density. Each is audited below.
 | 15 | Aux power | UCC28C45 flyback, 900 V Si, opto FB [T] | one 110 W 342–860 V flyback, 1700 V SiC, NCP1252D | **1/2** — dearer switch, full-range and balance-neutral |
 | 16 | Thermal / cooling | 3 fans + potted heatsink integration | 3 fans + extrusion tunnel; 50 kW liquid twin | **1**; density consequence in #20 |
 | 17 | EMI / EMC | 2 × CMC, 9 × X2, Y films, MOV + GDT | 2 × CMC, X1-class caps, per-phase DM chokes, MOV Δ + GDT | **1/2** — heavier filter, computed LISN margins |
-| 18 | Modularity / service | potted (non-repairable), 48-module parallel bus | coated boards, card slot, 2–3-module products + CSU | **1** — different product philosophy |
+| 18 | Modularity / service | potted (non-repairable), 48-module parallel bus | coated boards, card slot, 2–3-module products (E66: no CSU) | **1** — different product philosophy |
 | 19 | Communication | CAN, iso transceiver (NSi1050) | CAN 2.0B, iso transceiver (NSI1042), fuzzed codec | **same choice — validated** |
 | 20 | Component utilization / density | 3.96 kW/L · 2.58 kW/kg | ~2.1–2.6 kW/L [est] | **2/4 — their clear win**; E36 layout lever |
 | 21 | Reliability philosophy | potting + derate + MTBF 500 kh claim | gates + margins + coating; MTBF unpublished | **1**, with an honesty gap on MTBF |
@@ -224,7 +224,7 @@ P_{cond} \approx 2\cdot R_{hot}(\approx50\ \mathrm{m\Omega})\cdot57^2 \approx 32
 | **InfyPower** | **series blocking diodes** (1600 V / 90 A class) in the output [T]; discharge = 1500 V FET chopping 4 × 75 Ω [T]. |
 | **Why** | the series diode makes reverse-battery, bus back-feed and 48-module parallel racks unconditionally safe with zero firmware — at a permanent conduction cost. |
 | **Ours** | no series diode. Isolation is K_OUT (dual at 50 kW) with mirror weld-check; connection is the E12b matched-voltage make through pre-insertion; discharge is a 640 Ω path on a 1200 V SiC switch, default-OFF (E19), 830 → 60 V in 2.4 s [R], plus passive 2 × 47k pairs; polarity screening before the plug goes live is the dispenser's job in a 61851-23 system. |
-| **Assessment** | their diode costs 0.15 % (750 V) to 0.44 % (300 V full current) of efficiency, forever [C]; ours costs relay discipline and one system assumption. Our own multi-module products (100 = 2 × 50, 150 = 3 × 50 + CSU) run commanded-CC with per-module fusing — not a 48-module diode bus — so the assumption is inside our product structure. It is now **recorded as R18** in the [verification matrix](verification-matrix.md) rather than living implicitly. |
+| **Assessment** | their diode costs 0.15 % (750 V) to 0.44 % (300 V full current) of efficiency, forever [C]; ours costs relay discipline and one system assumption. Our own multi-module products (100 = 2 × 50, 150 = 3 × 50 (E66: no CSU)) run commanded-CC with per-module fusing — not a 48-module diode bus — so the assumption is inside our product structure. It is now **recorded as R18** in the [verification matrix](verification-matrix.md) rather than living implicitly. |
 | **Verdict** | **1**, with R18 recorded. No diode added — that would be copying a solution to a product architecture we do not have. |
 
 ```math
