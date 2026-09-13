@@ -1,7 +1,7 @@
 #!/bin/sh
 # Reproduce every machine-readable calculation (§48). SPICE suites are separate (see spice/*/**.mjs);
 # E60: their result CSVs are pinned by tank fingerprint — current-coordination FAILS if a tank changes without a re-run.
-set -e
+set -e   # E68: a gate on an `a && b` line cannot trip set -e — every gate runs as its own command
 cd "$(dirname "$0")/.."
 node calculations/design-basis.mjs
 node calculations/control/mcu-matrix.mjs
@@ -34,10 +34,14 @@ node calculations/magnetics/magnetics-envelope.mjs
 node calculations/magnetics/mag-sync.mjs
 node calculations/system/fault-energy.mjs
 node calculations/system/current-coordination.mjs
-node calculations/system/standby-budget.mjs > /dev/null && echo "STANDBY BUDGET CONSISTENT"
-node calculations/reliability/mtbf-budget.mjs > /dev/null && echo "MTBF BUDGET CONSISTENT"
+node calculations/system/standby-budget.mjs > /dev/null
+echo "STANDBY BUDGET CONSISTENT"
+node calculations/reliability/mtbf-budget.mjs > /dev/null
+echo "MTBF BUDGET CONSISTENT"
 node calculations/verify-independent.mjs
-node calculations/footprint-audit.mjs > /dev/null && echo "FOOTPRINT AUDIT CLEAN (0 unnamed - 0 mismatched)"
+node calculations/footprint-audit.mjs > /dev/null
+echo "FOOTPRINT AUDIT CLEAN (0 unnamed - 0 mismatched)"
 node calculations/docs-lint.mjs
-sh firmware/run_tests.sh > /dev/null && echo "FIRMWARE LOGIC 60/60 OK"
+sh firmware/run_tests.sh > /dev/null
+echo "FIRMWARE LOGIC 60/60 OK"
 echo "ALL CALCULATIONS REPRODUCED OK"

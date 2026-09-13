@@ -213,9 +213,8 @@ export const skuOverrides = {
     RA0B: { mpn: "R1206-18R-1%", note: "E60: F.01 155 A pk = 2.77 V, ceiling 225 A" }, RB0B: { mpn: "R1206-18R-1%" }, RC0B: { mpn: "R1206-18R-1%" },
   },
   // E42 50 kW LIQUID variant — engine-driven (pfc-design @PFC_P=50e3/PFC_PAR=2, frozen 50 kHz;
-  // envelope grid at plate Rth 1.1 K/W / 65 C hot plate ref): line 91.6 A worst, output 167 A,
-  // tank 77.3 A rms per section. SAME silicon as the 40 kW (paralleled PFC pairs, single LLC
-  // FETs) — the coldplate is what buys that. Protection classes rev: see each note.
+  // envelope grid at the 65 C hot plate ref): line 91.6 A worst, output 167 A. E68: one PFC die per phase and two LLC dies
+  // per position on the clip mount (mount.mjs) — the same silicon as the 40 kW. Protection classes rev: see each note.
   "50kw": {
     // stress rule (E35/F6, 0.72x enclosed derate): 125 A -> 90 A < 91.6 A worst — FAILS by the
     // same class E41 caught at 100 A. 160 A gG derates to 115 A (26% margin). Frame steps
@@ -277,7 +276,7 @@ export const mechLines = {
     ["PCB-ACDC 6L 420×300", 1, 1200], ["PCB-DCDC 6L 460×320", 1, 1400],
     ["Heatsink extrusions (2, sandwich outer faces)", 1, 1500], ["Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C, IP55, −30…+70 °C — E52/E60 field-reliability spec; IP55 premium at RFQ)", 2, 280],
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 724],
-    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 350],
+    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners (E68 clip mount: 0.635 mm Al2O3 insulator + spring clip + grease under each of 27 TO-247 dies, mount.mjs 0.8 K/W)", 1, 480],
     ["Magnetics bond kit (E65 → E67): 3 W/mK silicone gap pads on BOTH yoke faces of the two D3 cells and the D2 to the upper/lower extrusion webs + clamp bars, end turns potted (≥0.8 W/mK), CTE-compliant (no rigid epoxy to aluminium); VPI is in the part price — three parts, was six", 1, 220],
     ["D1 choke mount kit (E65 D1): per stack — fiberglass-reinforced silicone gap pad 1.0 mm ≥3 W/mK (≥5 kVAC ASTM D149, basic insulation to the PE-bonded web), GF-PPS insulating clamp cap + bore sleeve (basic insulation winding↔bolt), M6 A4 bolt + Belleville + nut, 2-point glass banding; the bonded end face is the D1 cooling path [est: pad ₹45, cap+sleeve ₹42, hardware+banding ₹18]", 3, 105],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 320],
@@ -289,7 +288,7 @@ export const mechLines = {
     ["Heatsink extrusions (2, sandwich outer faces — 40 kW fin stock)", 1, 1750],
     ["Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C, IP55, −30…+70 °C — E52/E60 field-reliability spec; IP55 premium at RFQ)", 3, 280],
     ["Enclosure sheet metal + hardware", 1, 1000], ["Busbars/interconnect studs + harness (busbar-calc)", 1, 810],
-    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners", 1, 380],
+    ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18], ["TIM/insulators/fasteners (E68 clip mount: 0.635 mm Al2O3 insulator + spring clip + grease under each of 39 TO-247 dies, mount.mjs 0.8 K/W)", 1, 640],
     ["Magnetics bond kit (E65 → E67): 3 W/mK silicone gap pads on BOTH yoke faces of the two 3-set D3 cells and the D2 to the upper/lower extrusion webs + clamp bars, end turns potted to the web (≥0.8 W/mK silicone), CTE-compliant; VPI is in the part price — three parts, was six", 1, 380],
     ["D1 choke mount kit (E65 D1): per stack — fiberglass-reinforced silicone gap pad 1.0 mm ≥3 W/mK (≥5 kVAC ASTM D149, basic insulation to the PE-bonded web), GF-PPS insulating clamp cap + bore sleeve (basic insulation winding↔bolt), M6 A4 bolt + Belleville + nut, 2-point glass banding; the bonded end face is the D1 cooling path [est: pad ₹45, cap+sleeve ₹42, hardware+banding ₹18]", 3, 105],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 340],
@@ -309,7 +308,7 @@ export const mechLines = {
     ["NTC sensor assemblies (insulated tip spec, E25 — plate-mounted)", 4, 18],
     ["D1 choke mount kit (E65 D1): per stack — gap pad in the E42 plate-web line above; GF-PPS insulating clamp cap + bore sleeve (basic insulation winding↔bolt), M6 A4 bolt + Belleville + nut, 2-point glass banding; the bonded end face is the D1 cooling path [est: pad ₹45, cap+sleeve ₹42, hardware+banding ₹18]", 3, 60],
     ["D1 over-temperature cutout (E65 D1): NC snap-action thermostat 130 ±5 °C on each D1 clamp cap, basic-insulated to line potential, series-wired into the magnetics cutout loop — bond-loss cover in the sealed liquid module (no air path: a lost D1 pad has no fallback)", 3, 48],
-    ["TIM/insulators/fasteners", 1, 420],
+    ["TIM/insulators/fasteners (E68 clip mount: 0.635 mm Al2O3 insulator + spring clip + grease under each of 39 TO-247 dies, mount.mjs 0.8 / 0.65 K/W)", 1, 640],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test (incl. coolant-loop pressure/leak test)", 1, 2150],
   ],
@@ -323,7 +322,7 @@ export const mechLines = {
     ["NTC sensor assemblies (insulated tip spec, E25)", 4, 18],
     ["Magnetics bond kit (E65 → E67): 3 W/mK silicone gap pads on BOTH yoke faces of the two 3-set D3 cells and the D2 to the upper/lower extrusion webs + clamp bars, end turns potted to the web (≥0.8 W/mK silicone), CTE-compliant; VPI is in the part price — three parts, was six", 1, 380],
     ["D1 choke mount kit (E65 D1): per stack — fiberglass-reinforced silicone gap pad 1.0 mm ≥3 W/mK (≥5 kVAC ASTM D149, basic insulation to the PE-bonded web), GF-PPS insulating clamp cap + bore sleeve (basic insulation winding↔bolt), M6 A4 bolt + Belleville + nut, 2-point glass banding; the bonded end face is the D1 cooling path [est: pad ₹45, cap+sleeve ₹42, hardware+banding ₹18]", 3, 105],
-    ["TIM/insulators/fasteners", 1, 420],
+    ["TIM/insulators/fasteners (E68 clip mount: 0.635 mm Al2O3 insulator + spring clip + grease under each of 39 TO-247 dies, mount.mjs 0.8 / 0.65 K/W)", 1, 640],
     ["Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline)", 1, 360],
     ["Assembly + calibration + EOL test", 1, 2000],
   ],

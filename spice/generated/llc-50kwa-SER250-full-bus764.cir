@@ -1,4 +1,4 @@
-* E67 full-bridge LLC 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss750p VBUS=764 VBANK=250 fsw=203.006k PS d=0.3372
+* E67 full-bridge LLC 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss500p VBUS=764 VBANK=250 fsw=203.006k PS d=0.3366
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
 .model DBODY D(Is=1e-12 N=4 Rs=0.03)
 VBUS bus 0 DC 764
@@ -6,20 +6,20 @@ VBUS bus 0 DC 764
 VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 2.32298e-6 4.92595e-6)
 VGLA glA 0 PULSE(0 1 2.46298e-6 20n 20n 2.32298e-6 4.92595e-6)
 VHSA bus bhA DC 0
-BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*85.71000000000001)
-BSLA legA 0 I=v(legA)*(2e-5+v(glA)*85.71000000000001)
+BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*57.14)
+BSLA legA 0 I=v(legA)*(2e-5+v(glA)*57.14)
 DBHA legA bhA DBODY
 DBLA 0 legA DBODY
-CPARA legA 0 7.500000000000001e-10
+CPARA legA 0 5e-10
 
-VGHB ghB 0 PULSE(0 1 1.66105e-6 20n 20n 2.32298e-6 4.92595e-6)
-VGLB glB 0 PULSE(0 1 4.12403e-6 20n 20n 2.32298e-6 4.92595e-6)
+VGHB ghB 0 PULSE(0 1 1.65788e-6 20n 20n 2.32298e-6 4.92595e-6)
+VGLB glB 0 PULSE(0 1 4.12085e-6 20n 20n 2.32298e-6 4.92595e-6)
 VHSB bus bhB DC 0
-BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*85.71000000000001)
-BSLB legB 0 I=v(legB)*(2e-5+v(glB)*85.71000000000001)
+BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*57.14)
+BSLB legB 0 I=v(legB)*(2e-5+v(glB)*57.14)
 DBHB legB bhB DBODY
 DBLB 0 legB DBODY
-CPARB legB 0 7.500000000000001e-10
+CPARB legB 0 5e-10
 VSP legA tk DC 0
 CR tk tkb 3.63000e-7 ic=0
 LR tkb pri 3.56000e-6

@@ -7,13 +7,9 @@
  ],
  "net_style_overrides": {
   "PHA0": "wire",
-  "QA0A2_G": "wire",
-  "QA0A2_S": "wire",
-  "KS_A0": "wire",
-  "QA0B2_G": "wire",
   "G_A0": "wire",
-  "QA0A_G": "wire",
-  "QA0B_G": "wire",
+  "QA0A_S": "wire",
+  "KS_A0": "wire",
   "UA0G_DST": "wire",
   "UA0G_OUTH": "wire",
   "UA0G_VCC2": "wire",
@@ -24,13 +20,9 @@
   "CA0SN_RA0SN": "wire",
   "CA0C_DA0C": "wire",
   "PHB0": "wire",
-  "QB0A2_G": "wire",
-  "QB0A2_S": "wire",
-  "KS_B0": "wire",
-  "QB0B2_G": "wire",
   "G_B0": "wire",
-  "QB0A_G": "wire",
-  "QB0B_G": "wire",
+  "QB0A_S": "wire",
+  "KS_B0": "wire",
   "UB0G_DST": "wire",
   "UB0G_OUTH": "wire",
   "UB0G_VCC2": "wire",
@@ -41,13 +33,9 @@
   "CB0SN_RB0SN": "wire",
   "CB0C_DB0C": "wire",
   "PHC0": "wire",
-  "QC0A2_G": "wire",
-  "QC0A2_S": "wire",
-  "KS_C0": "wire",
-  "QC0B2_G": "wire",
   "G_C0": "wire",
-  "QC0A_G": "wire",
-  "QC0B_G": "wire",
+  "QC0A_S": "wire",
+  "KS_C0": "wire",
   "UC0G_DST": "wire",
   "UC0G_OUTH": "wire",
   "UC0G_VCC2": "wire",
@@ -81,153 +69,13 @@
    "mpn": "IND-PFC-165u"
   },
   {
-   "designator": "QA0A2",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "QA0A2_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "PHA0"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "QA0A2_S"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KS_A0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "B3M010C075Z",
-   "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
-   "mpn": "B3M010C075Z"
-  },
-  {
-   "designator": "QA0B2",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "QA0B2_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "MID"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "QA0A2_S"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KS_A0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "B3M010C075Z",
-   "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
-   "mpn": "B3M010C075Z"
-  },
-  {
-   "designator": "RGA0A2",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_A0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QA0A2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGA0B2",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_A0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QA0B2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGA0A1",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_A0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QA0A_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGA0B1",
-   "block_name": "PHASE-A0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_A0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QA0B_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
    "designator": "QA0A",
    "block_name": "PHASE-A0",
    "pins": [
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "QA0A_G"
+     "signal_name": "G_A0"
     },
     {
      "pin_number": 2,
@@ -237,7 +85,7 @@
     {
      "pin_number": 3,
      "name": "S",
-     "signal_name": "QA0A2_S"
+     "signal_name": "QA0A_S"
     },
     {
      "pin_number": 4,
@@ -257,7 +105,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "QA0B_G"
+     "signal_name": "G_A0"
     },
     {
      "pin_number": 2,
@@ -267,7 +115,7 @@
     {
      "pin_number": 3,
      "name": "S",
-     "signal_name": "QA0A2_S"
+     "signal_name": "QA0A_S"
     },
     {
      "pin_number": 4,
@@ -826,153 +674,13 @@
    "mpn": "IND-PFC-165u"
   },
   {
-   "designator": "QB0A2",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "QB0A2_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "PHB0"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "QB0A2_S"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KS_B0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "B3M010C075Z",
-   "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
-   "mpn": "B3M010C075Z"
-  },
-  {
-   "designator": "QB0B2",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "QB0B2_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "MID"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "QB0A2_S"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KS_B0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "B3M010C075Z",
-   "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
-   "mpn": "B3M010C075Z"
-  },
-  {
-   "designator": "RGB0A2",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_B0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QB0A2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGB0B2",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_B0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QB0B2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGB0A1",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_B0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QB0A_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGB0B1",
-   "block_name": "PHASE-B0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_B0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QB0B_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
    "designator": "QB0A",
    "block_name": "PHASE-B0",
    "pins": [
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "QB0A_G"
+     "signal_name": "G_B0"
     },
     {
      "pin_number": 2,
@@ -982,7 +690,7 @@
     {
      "pin_number": 3,
      "name": "S",
-     "signal_name": "QB0A2_S"
+     "signal_name": "QB0A_S"
     },
     {
      "pin_number": 4,
@@ -1002,7 +710,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "QB0B_G"
+     "signal_name": "G_B0"
     },
     {
      "pin_number": 2,
@@ -1012,7 +720,7 @@
     {
      "pin_number": 3,
      "name": "S",
-     "signal_name": "QB0A2_S"
+     "signal_name": "QB0A_S"
     },
     {
      "pin_number": 4,
@@ -1571,153 +1279,13 @@
    "mpn": "IND-PFC-165u"
   },
   {
-   "designator": "QC0A2",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "QC0A2_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "PHC0"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "QC0A2_S"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KS_C0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "B3M010C075Z",
-   "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
-   "mpn": "B3M010C075Z"
-  },
-  {
-   "designator": "QC0B2",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "QC0B2_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "MID"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "QC0A2_S"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KS_C0"
-    }
-   ],
-   "nc_pins": [],
-   "value": "B3M010C075Z",
-   "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
-   "mpn": "B3M010C075Z"
-  },
-  {
-   "designator": "RGC0A2",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_C0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QC0A2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGC0B2",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_C0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QC0B2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGC0A1",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_C0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QC0A_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RGC0B1",
-   "block_name": "PHASE-C0",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "G_C0"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "QC0B_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
    "designator": "QC0A",
    "block_name": "PHASE-C0",
    "pins": [
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "QC0A_G"
+     "signal_name": "G_C0"
     },
     {
      "pin_number": 2,
@@ -1727,7 +1295,7 @@
     {
      "pin_number": 3,
      "name": "S",
-     "signal_name": "QC0A2_S"
+     "signal_name": "QC0A_S"
     },
     {
      "pin_number": 4,
@@ -1747,7 +1315,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "QC0B_G"
+     "signal_name": "G_C0"
     },
     {
      "pin_number": 2,
@@ -1757,7 +1325,7 @@
     {
      "pin_number": 3,
      "name": "S",
-     "signal_name": "QC0A2_S"
+     "signal_name": "QC0A_S"
     },
     {
      "pin_number": 4,

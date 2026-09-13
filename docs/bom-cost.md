@@ -30,11 +30,11 @@
 
 | Build | ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict |
 |---|---:|---:|---:|---:|---|
-| 30 kW module | **33,013** | 1,100 | 25,000 | 22,000 | ⚠️ over by ₹8,013 |
-| 40 kW module | **38,048** | 951 | 33,000 | 29,000 | ⚠️ over by ₹5,048 |
-| 50 kW liquid module | **44,376** | 888 | 43,000 | 39,000 | ⚠️ over by ₹1,376 |
-| 50 kW air module | **44,317** | 886 | 43,000 | 39,000 | ⚠️ over by ₹1,317 |
-| 150 kW air product (3 × 50a) | **1,32,951** | 886 | 1,29,000 | 1,17,000 | ⚠️ over by ₹3,951 |
+| 30 kW module | **31,874** | 1,062 | 25,000 | 22,000 | ⚠️ over by ₹6,874 |
+| 40 kW module | **36,686** | 917 | 33,000 | 29,000 | ⚠️ over by ₹3,686 |
+| 50 kW liquid module | **42,979** | 860 | 43,000 | 39,000 | ✅ under by ₹21 |
+| 50 kW air module | **40,902** | 818 | 43,000 | 39,000 | ✅ under by ₹2,098 |
+| 150 kW air product (3 × 50a) | **1,22,706** | 818 | 1,29,000 | 1,17,000 | ✅ under by ₹6,294 |
 
 ## The ₹ / kW product ladder
 
@@ -42,20 +42,20 @@
 xychart-beta
   title "Build cost per kW at 10k volume (₹)"
   x-axis ["30", "40", "50 L", "50 A", "100 L", "100 A", "150 L", "150 A"]
-  y-axis "₹ / kW" 0 --> 1300
-  bar [1100, 951, 888, 886, 888, 886, 888, 886]
+  y-axis "₹ / kW" 0 --> 1200
+  bar [1062, 917, 860, 818, 860, 818, 860, 818]
 ```
 
 | Product | Composition | ₹ @10k | **₹ / kW** |
 |---|---|---:|---:|
-| 30 kW module | 1 module · 1 card · air | 33,013 | **1100** |
-| 40 kW module (E41) | 1 module · 1 card · air | 38,048 | **951** |
-| 50 kW module (E42) | 1 module · 1 card · LIQUID | 44,376 | **888** |
-| 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 44,317 | **886** |
-| 100 kW | 2 x 50 · 2 cards · liquid | 88,752 | **888** |
-| 100 kW air | 2 x 50a · 2 cards · air | 88,634 | **886** |
-| 150 kW (3 x 50) | 3 x 50 · 3 cards · liquid (E66 no CSU) | 1,33,128 | **888** |
-| 150 kW air (3 x 50a) | 3 x 50a · 3 cards · air (E66 no CSU) | 1,32,951 | **886** |
+| 30 kW module | 1 module · 1 card · air | 31,874 | **1062** |
+| 40 kW module (E41) | 1 module · 1 card · air | 36,686 | **917** |
+| 50 kW module (E42) | 1 module · 1 card · LIQUID | 42,979 | **860** |
+| 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 40,902 | **818** |
+| 100 kW | 2 x 50 · 2 cards · liquid | 85,958 | **860** |
+| 100 kW air | 2 x 50a · 2 cards · air | 81,804 | **818** |
+| 150 kW (3 x 50) | 3 x 50 · 3 cards · liquid (E66 no CSU) | 1,28,937 | **860** |
+| 150 kW air (3 x 50a) | 3 x 50a · 3 cards · air (E66 no CSU) | 1,22,706 | **818** |
 
 Every multi-module product standardizes on the 50 kW twins — the cheapest ₹ / kW in the family and the best N−1
 granularity. The liquid compositions carry the sealed, fan-free reliability case (the cooling cart is charger-level,
@@ -65,67 +65,67 @@ line — a flat price per kW above 50 kW is accepted (E66 directive) rather than
 reintroduce a single point of failure. The 150 kW keeps 67 % of its power with one module out (a 100 kW
 keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 
-## 30 kW module — ₹33,013 @10k
+## 30 kW module — ₹31,874 @10k
 
-**1k ₹40,720 · 5k ₹36,312 · 100 pcs ₹53,060** · red-line ₹25,000 / stretch ₹22,000 → ⚠️ over by ₹8,013
+**1k ₹39,286 · 5k ₹35,056 · 100 pcs ₹51,098** · red-line ₹25,000 / stretch ₹22,000 → ⚠️ over by ₹6,874
 
 <details><summary>Cost by category (₹ @1k)</summary>
 
 | Category | ₹ @1k | Share |
 |---|---:|---:|
-| mechanical/assembly | 9,561 | 23.5 % |
-| semiconductors | 8,651 | 21.2 % |
-| magnetics | 8,140 | 20 % |
-| capacitors | 5,171 | 12.7 % |
-| drive+control ICs | 3,378 | 8.3 % |
-| bias/iso modules | 2,763 | 6.8 % |
-| relays | 1,180 | 2.9 % |
-| resistors/shunts | 655 | 1.6 % |
-| protection | 457 | 1.1 % |
+| mechanical/assembly | 9,691 | 24.7 % |
+| magnetics | 8,140 | 20.7 % |
+| semiconductors | 7,087 | 18 % |
+| capacitors | 5,171 | 13.2 % |
+| drive+control ICs | 3,378 | 8.6 % |
+| bias/iso modules | 2,763 | 7 % |
+| relays | 1,180 | 3 % |
+| resistors/shunts | 655 | 1.7 % |
+| protection | 457 | 1.2 % |
 | connectors | 430 | 1.1 % |
 | misc | 311 | 0.8 % |
 | HMI | 24 | 0.1 % |
 
 </details>
 
-## 40 kW module — ₹38,048 @10k
+## 40 kW module — ₹36,686 @10k
 
-**1k ₹46,929 · 5k ₹41,825 · 100 pcs ₹61,247** · red-line ₹33,000 / stretch ₹29,000 → ⚠️ over by ₹5,048
+**1k ₹45,203 · 5k ₹40,319 · 100 pcs ₹58,865** · red-line ₹33,000 / stretch ₹29,000 → ⚠️ over by ₹3,686
 
 <details><summary>Cost by category (₹ @1k)</summary>
 
 | Category | ₹ @1k | Share |
 |---|---:|---:|
-| semiconductors | 10,637 | 22.7 % |
-| mechanical/assembly | 10,537 | 22.5 % |
-| magnetics | 9,467 | 20.2 % |
-| capacitors | 6,027 | 12.8 % |
-| bias/iso modules | 3,393 | 7.2 % |
-| drive+control ICs | 3,378 | 7.2 % |
-| relays | 1,260 | 2.7 % |
-| protection | 772 | 1.6 % |
-| resistors/shunts | 675 | 1.4 % |
-| connectors | 436 | 0.9 % |
+| mechanical/assembly | 10,797 | 23.9 % |
+| magnetics | 9,467 | 20.9 % |
+| semiconductors | 8,651 | 19.1 % |
+| capacitors | 6,027 | 13.3 % |
+| bias/iso modules | 3,393 | 7.5 % |
+| drive+control ICs | 3,378 | 7.5 % |
+| relays | 1,260 | 2.8 % |
+| protection | 772 | 1.7 % |
+| resistors/shunts | 675 | 1.5 % |
+| connectors | 436 | 1 % |
 | misc | 324 | 0.7 % |
 | HMI | 24 | 0.1 % |
 
 </details>
 
-## 50 kW liquid module — ₹44,376 @10k
+## 50 kW liquid module — ₹42,979 @10k
 
-**1k ₹54,569 · 5k ₹48,702 · 100 pcs ₹70,942** · red-line ₹43,000 / stretch ₹39,000 → ⚠️ over by ₹1,376
+**1k ₹52,803 · 5k ₹47,159 · 100 pcs ₹68,514** · red-line ₹43,000 / stretch ₹39,000 → ✅ under by ₹21
 
 <details><summary>Cost by category (₹ @1k)</summary>
 
 | Category | ₹ @1k | Share |
 |---|---:|---:|
-| mechanical/assembly | 13,626 | 25 % |
-| magnetics | 11,552 | 21.2 % |
-| semiconductors | 10,637 | 19.5 % |
-| capacitors | 7,523 | 13.8 % |
-| bias/iso modules | 3,493 | 6.4 % |
-| drive+control ICs | 3,378 | 6.2 % |
-| relays | 1,880 | 3.4 % |
+| mechanical/assembly | 13,846 | 26.2 % |
+| magnetics | 11,552 | 21.9 % |
+| semiconductors | 8,651 | 16.4 % |
+| capacitors | 7,523 | 14.2 % |
+| bias/iso modules | 3,493 | 6.6 % |
+| drive+control ICs | 3,378 | 6.4 % |
+| relays | 1,880 | 3.6 % |
 | protection | 922 | 1.7 % |
 | resistors/shunts | 792 | 1.5 % |
 | connectors | 418 | 0.8 % |
@@ -134,47 +134,47 @@ keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 
 </details>
 
-## 50 kW air module — ₹44,317 @10k
+## 50 kW air module — ₹40,902 @10k
 
-**1k ₹54,706 · 5k ₹48,702 · 100 pcs ₹71,609** · red-line ₹43,000 / stretch ₹39,000 → ⚠️ over by ₹1,317
+**1k ₹50,418 · 5k ₹44,939 · 100 pcs ₹65,776** · red-line ₹43,000 / stretch ₹39,000 → ✅ under by ₹2,098
 
 <details><summary>Cost by category (₹ @1k)</summary>
 
 | Category | ₹ @1k | Share |
 |---|---:|---:|
-| semiconductors | 13,159 | 24.1 % |
-| magnetics | 11,552 | 21.1 % |
-| mechanical/assembly | 11,217 | 20.5 % |
-| capacitors | 7,523 | 13.8 % |
-| bias/iso modules | 3,493 | 6.4 % |
-| drive+control ICs | 3,378 | 6.2 % |
-| relays | 1,880 | 3.4 % |
-| protection | 922 | 1.7 % |
-| resistors/shunts | 792 | 1.4 % |
-| connectors | 442 | 0.8 % |
+| magnetics | 11,552 | 22.9 % |
+| mechanical/assembly | 11,437 | 22.7 % |
+| semiconductors | 8,651 | 17.2 % |
+| capacitors | 7,523 | 14.9 % |
+| bias/iso modules | 3,493 | 6.9 % |
+| drive+control ICs | 3,378 | 6.7 % |
+| relays | 1,880 | 3.7 % |
+| protection | 922 | 1.8 % |
+| resistors/shunts | 792 | 1.6 % |
+| connectors | 442 | 0.9 % |
 | misc | 324 | 0.6 % |
 | HMI | 24 | 0 % |
 
 </details>
 
-## 150 kW air product (3 × 50a) — ₹1,32,951 @10k
+## 150 kW air product (3 × 50a) — ₹1,22,706 @10k
 
-**1k ₹1,64,117 · 5k ₹1,46,106 · 100 pcs ₹2,14,827** · red-line ₹1,29,000 / stretch ₹1,17,000 → ⚠️ over by ₹3,951 · composition: 3x 50 kW modules, charger controller = group master (air basis; liquid = 3x 50kw)
+**1k ₹1,51,253 · 5k ₹1,34,817 · 100 pcs ₹1,97,328** · red-line ₹1,29,000 / stretch ₹1,17,000 → ✅ under by ₹6,294 · composition: 3x 50 kW modules, charger controller = group master (air basis; liquid = 3x 50kw)
 
 <details><summary>Cost by category (₹ @1k)</summary>
 
 | Category | ₹ @1k | Share |
 |---|---:|---:|
-| semiconductors | 39,476 | 24.1 % |
-| magnetics | 34,655 | 21.1 % |
-| mechanical/assembly | 33,651 | 20.5 % |
-| capacitors | 22,568 | 13.8 % |
-| bias/iso modules | 10,478 | 6.4 % |
-| drive+control ICs | 10,135 | 6.2 % |
-| relays | 5,640 | 3.4 % |
-| protection | 2,766 | 1.7 % |
-| resistors/shunts | 2,377 | 1.4 % |
-| connectors | 1,326 | 0.8 % |
+| magnetics | 34,655 | 22.9 % |
+| mechanical/assembly | 34,311 | 22.7 % |
+| semiconductors | 25,952 | 17.2 % |
+| capacitors | 22,568 | 14.9 % |
+| bias/iso modules | 10,478 | 6.9 % |
+| drive+control ICs | 10,135 | 6.7 % |
+| relays | 5,640 | 3.7 % |
+| protection | 2,766 | 1.8 % |
+| resistors/shunts | 2,377 | 1.6 % |
+| connectors | 1,326 | 0.9 % |
 | misc | 973 | 0.6 % |
 | HMI | 72 | 0 % |
 

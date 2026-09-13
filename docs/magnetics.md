@@ -107,7 +107,7 @@ S1–P–S2 interleave; S1 and S2 are paralleled at the secondary header and car
 | Build | VPI class H, both yoke faces bonded, end turns potted, shield to DCN | as D3-30 | plate-bonded (liquid) / web-bonded (air) |
 | Mounting · envelope · mass | two-face gap-pad bond + clamp bars, ≤ 70.5 × 65.9 × 91 mm, 1.3 kg | ≤ 70.5 × 65.9 × 120 mm, 1.85 kg | as D3-40 |
 | Terminations · marking | primary header (P1 · P2 · SH) and secondary header (SA · SB) on opposite faces · label p/n, rev, lot, serial, measured leakage, polarity dot at start | same | same |
-| Insulation · hipot | pri↔sec REINFORCED (TIW + ≥ 3 barrier-tape layers per shield) · 100 % pri↔sec 4.25 kV DC, windings → bonded-face foil 2.5 / 1.5 kV DC · PD ≥ 1.9 kV extinction (insulation-coordination) | same | PD ≥ 2.0 kV |
+| Insulation · hipot | pri↔sec REINFORCED (TIW + ≥ 3 barrier-tape layers per shield) · 100 % pri↔sec 4.25 kV DC, windings → bonded-face foil 2.5 / 1.5 kV DC · PD ≥ 2.0 kV extinction (insulation-coordination; E68 single-die 30 kW bridge) | PD ≥ 1.9 kV | PD ≥ 2.0 kV |
 | Thermal type test | hotspot thermocouples at the winding outer surface and the centre leg; ≤ 125 °C at 55 °C inlet, operating ambient −40…+55 °C full power (derated to 75 °C) | same | same |
 
 The RFQ sheets with winding tables, insulation, hipot and thermal type tests are in

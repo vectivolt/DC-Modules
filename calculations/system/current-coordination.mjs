@@ -8,6 +8,7 @@
 // Inputs: simulation-results/<sku>/llc-stress{.csv,-summary.json} (spice/llc/llc-run.mjs, pinned
 // by tank fingerprint) · calculations/out/vienna-switched.csv (calculations/pfc/vienna-switched.mjs)
 // Run: node calculations/system/current-coordination.mjs        (run-all, after vienna-switched)
+import { mountFor } from "../thermal/mount.mjs";
 import { shortRacePeak } from "../../spice/llc/llc-flux-post.mjs";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -80,7 +81,7 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
 }
 
 // ---------------- E/F/G/H. LLC: F.11, flux, caps, rectifiers ----------------
-const SEC = { "30kw": { rth: 1.9, ref: 70 }, "40kw": { rth: 1.9, ref: 70 }, "50kw": { rth: 1.1, ref: 65 }, "50kwa": { rth: 1.9, ref: 70 } };
+const SEC = Object.fromEntries(["30kw", "40kw", "50kw", "50kwa"].map((k) => [k, mountFor(k)]));   // E68: mount.mjs
 for (const sku of Object.keys(TANKS)) {
   const t = TANKS[sku], c = OC[sku], s = SUM[sku], rows = LLC[sku];
   const pkNom = Math.max(...rows.map((r) => +r.Ip_pk_A)), rmsNom = Math.max(...rows.map((r) => +r.Ip_rms_A));

@@ -7,6 +7,7 @@
 //   [lb]     calculations/thermal/loss-budget.mjs rev E42 (k-scaled device/diode blocks)
 //   [reg]    docs/assumptions.md frozen values (voltage classes, acceptance lines)
 // A FAIL here is a design error, not a style complaint. Run: node calculations/stress-audit.mjs
+import { mountFor } from "./thermal/mount.mjs";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -63,7 +64,8 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
 }
 // PFC boost diodes [lb k-scaling]: per-diode dissipation into its position Rth at its reference — air 1.9 K/W to the 70 °C sink ·
 // E42 liquid 1.1 K/W to the 65 °C plate. (E67: the secondary JBS row is the grid column above — per-corner, per-position count.)
-for (const [sku, k, rth, ref] of [["30kw", 1, 1.9, 70], ["40kw", 4 / 3, 1.9, 70], ["50kw", 5 / 3, 1.1, 65], ["50kwa", 5 / 3, 1.9, 70]]) {
+for (const [sku, k] of [["30kw", 1], ["40kw", 4 / 3], ["50kw", 5 / 3], ["50kwa", 5 / 3]]) {
+  const { rth, ref } = mountFor(sku);   // E68: mount.mjs (clip-mounted dies)
   const pfcD = 12.1 * Math.pow(k, 1.6);                     // Vf + dyn-R blend [lb]
   ck("Tj", `${sku} PFC boost diode`, ref + rth * pfcD <= 150, `${f(pfcD)} W → Tj ≈ ${f(ref + rth * pfcD, 0)} °C (${rth} K/W to ${ref} °C ref)`);
 }

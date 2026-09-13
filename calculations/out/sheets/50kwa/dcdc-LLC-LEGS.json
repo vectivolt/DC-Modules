@@ -15,8 +15,6 @@
   "Q1L2_G": "wire",
   "GH_1": "wire",
   "GL_1": "wire",
-  "Q1H3_G": "wire",
-  "Q1L3_G": "wire",
   "U1H_DST": "wire",
   "U1H_OUTH": "wire",
   "U1H_VCC2": "wire",
@@ -40,8 +38,6 @@
   "Q2L2_G": "wire",
   "GH_2": "wire",
   "GL_2": "wire",
-  "Q2H3_G": "wire",
-  "Q2L3_G": "wire",
   "U2H_DST": "wire",
   "U2H_OUTH": "wire",
   "U2H_VCC2": "wire",
@@ -339,106 +335,6 @@
      "pin_number": 2,
      "name": "pin2",
      "signal_name": "Q1L2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "Q1H3",
-   "block_name": "LEG-1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "Q1H3_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "DCP"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "SWA"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KH_1"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
-   "mpn": "SG2M023120LJ"
-  },
-  {
-   "designator": "Q1L3",
-   "block_name": "LEG-1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "Q1L3_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "SWA"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "DCN"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KL_1"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
-   "mpn": "SG2M023120LJ"
-  },
-  {
-   "designator": "RG1H3",
-   "block_name": "LEG-1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "GH_1"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "Q1H3_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RG1L3",
-   "block_name": "LEG-1",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "GL_1"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "Q1L3_G"
     }
    ],
    "nc_pins": [],
@@ -1329,106 +1225,6 @@
      "pin_number": 2,
      "name": "pin2",
      "signal_name": "Q2L2_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "Q2H3",
-   "block_name": "LEG-2",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "Q2H3_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "DCP"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "SWB"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KH_2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
-   "mpn": "SG2M023120LJ"
-  },
-  {
-   "designator": "Q2L3",
-   "block_name": "LEG-2",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "G",
-     "signal_name": "Q2L3_G"
-    },
-    {
-     "pin_number": 2,
-     "name": "D",
-     "signal_name": "SWB"
-    },
-    {
-     "pin_number": 3,
-     "name": "S",
-     "signal_name": "DCN"
-    },
-    {
-     "pin_number": 4,
-     "name": "KS",
-     "signal_name": "KL_2"
-    }
-   ],
-   "nc_pins": [],
-   "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L ",
-   "mpn": "SG2M023120LJ"
-  },
-  {
-   "designator": "RG2H3",
-   "block_name": "LEG-2",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "GH_2"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "Q2H3_G"
-    }
-   ],
-   "nc_pins": [],
-   "value": "2.2",
-   "query": "R0805-2R2 per-device series gate R for paralleled SiC — BOTH branches incl. the ",
-   "mpn": "R0805-2R2"
-  },
-  {
-   "designator": "RG2L3",
-   "block_name": "LEG-2",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "GL_2"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "Q2L3_G"
     }
    ],
    "nc_pins": [],

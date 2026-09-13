@@ -355,7 +355,7 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
 // v3: per-phase film commutation caps DCP–MID / MID–DCN (CB-9 — restores the ≤10 nH loop premise
 // behind the DPT-frozen drive; §P-1 layout note: at the leg pins), snubber C 470p→100p with 2 W R
 // (E28 corrected CV²f = 0.86 W), clamp bleeder to 5 W axial (HR-3, 4.3 W worst-case).
-export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH", par = false, sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH", sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`vp${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB envelope 89 x 163, origin at the cell centre. The old layout ran the parts out in one
         200 mm line from the choke, which put the cell 175 mm wide and hung it 27 mm off the board.
@@ -371,30 +371,9 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
           y -46   commutation films, then snubber and clamp below
         Power flows top-to-bottom inside the cell; the cell as a whole flows left-to-right. */}
     <inductor name={`L${id}`} inductance={ind} footprint={<ChokeFP />} pcbX={0} pcbY={50} schX={0} schY={0} schSectionName={sec} />
-    {/* E41 (40 kW variant): the pair loss at +33% current would blow the 150 C corner on one
-        device — so the variant PARALLELS a second proven B3M pair (no new part number). Each
-        added FET gets its own small series gate resistor off the shared gate net (parallel-SiC
-        practice); Kelvin and DESAT references are the shared nodes. Loss engine: pair 71.1 W
-        single vs 44.9 W paralleled — the 30 kW thermal architecture then holds unchanged. */}
-    {par ? <chip name={`Q${id}A2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-45} pcbY={-14} schX={3} schY={-1.8} schSectionName={sec} /> : null}
-    {par ? <chip name={`Q${id}B2`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-9} pcbY={-14} schX={6} schY={-1.8} schSectionName={sec} /> : null}
-    {par ? <resistor name={`RG${id}A2`} resistance="2.2" footprint="0805" pcbX={-45} pcbY={-24} schX={2} schY={-1.1} schSectionName={sec} /> : null}
-    {par ? <resistor name={`RG${id}B2`} resistance="2.2" footprint="0805" pcbX={-9} pcbY={-24} schX={5} schY={-1.1} schSectionName={sec} /> : null}
-    {/* R5-E: the ORIGINAL device of each pair gets the same 2.2 Ω — one branch straight on the
-        gate net while the twin sat behind a resistor was an asymmetric split (unequal di/dt
-        share and a parasitic L-C between the two gates). Both branches now match. */}
-    {par ? <resistor name={`RG${id}A1`} resistance="2.2" footprint="0805" pcbX={-36} pcbY={-24} schX={2} schY={0.9} schSectionName={sec} /> : null}
-    {par ? <resistor name={`RG${id}B1`} resistance="2.2" footprint="0805" pcbX={-18} pcbY={-24} schX={5} schY={0.9} schSectionName={sec} /> : null}
-    {par ? <trace from={`.RG${id}A2 > .pin1`} to={`net.G_${id}`} /> : null}
-    {par ? <trace from={`.RG${id}A2 > .pin2`} to={`.Q${id}A2 > .G`} /> : null}
-    {par ? <trace from={`.Q${id}A2 > .D`} to={`net.PH${id}`} /> : null}
-    {par ? <trace from={`.Q${id}A2 > .S`} to={`.Q${id}A > .S`} /> : null}
-    {par ? <trace from={`.Q${id}A2 > .KS`} to={`net.KS_${id}`} /> : null}
-    {par ? <trace from={`.RG${id}B2 > .pin1`} to={`net.G_${id}`} /> : null}
-    {par ? <trace from={`.RG${id}B2 > .pin2`} to={`.Q${id}B2 > .G`} /> : null}
-    {par ? <trace from={`.Q${id}B2 > .D`} to={mid} schDisplayLabel={mid.replace("net.", "")} /> : null}
-    {par ? <trace from={`.Q${id}B2 > .S`} to={`.Q${id}B > .S`} /> : null}
-    {par ? <trace from={`.Q${id}B2 > .KS`} to={`net.KS_${id}`} /> : null}
+    {/* E68: ONE common-source B3M pair per phase on every SKU (InfyPower practice — single dies on a ceramic-insulated
+        clip mount, 0.8 K/W j→sink). The E41 paralleled second pair was bought by the 1.9 K/W pad basis; the grid holds
+        114 / 116 / 135 °C at 40 / 50 L / 50 A with one die. */}
     <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-36} pcbY={-14} schX={3} schY={0} schSectionName={sec} />
     <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-18} pcbY={-14} schX={6} schY={0} schSectionName={sec} />
     <DriverCh id={`${id}G`} cBlank="47pF" pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
@@ -410,17 +389,11 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
     <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
     <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
-    {par ? [
-      <trace key="a1g" from={`.RG${id}A1 > .pin1`} to={`net.G_${id}`} />,
-      <trace key="a1q" from={`.RG${id}A1 > .pin2`} to={`.Q${id}A > .G`} />,
-    ] : <trace from={`.Q${id}A > .G`} to={`net.G_${id}`} />}
+    <trace from={`.Q${id}A > .G`} to={`net.G_${id}`} />
     <trace from={`.Q${id}A > .KS`} to={`net.KS_${id}`} />
     <trace from={`.Q${id}A > .S`} to={`.Q${id}B > .S`} />
     <trace from={`.Q${id}B > .KS`} to={`net.KS_${id}`} />
-    {par ? [
-      <trace key="b1g" from={`.RG${id}B1 > .pin1`} to={`net.G_${id}`} />,
-      <trace key="b1q" from={`.RG${id}B1 > .pin2`} to={`.Q${id}B > .G`} />,
-    ] : <trace from={`.Q${id}B > .G`} to={`net.G_${id}`} />}
+    <trace from={`.Q${id}B > .G`} to={`net.G_${id}`} />
     <trace from={`.Q${id}B > .D`} to={mid} schDisplayLabel={mid.replace("net.", "")} />
     <trace from={`.D${id}T > .anode`} to={`net.PH${id}`} />
     <trace from={`.D${id}T > .cathode`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />

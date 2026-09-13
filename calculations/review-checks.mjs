@@ -413,7 +413,7 @@ ck("E42-RATING", /pw === 50 \? \(air \? "15k" : "10k"\) : pw === 40 \? "1k" : "0
   "RATING straps 10k = 50 liquid / 15k = 50 AIR (E24 rev G) and the audit knows both");
 {
   const grid = readFileSync(join(ROOT, "calculations/system/envelope-grid.mjs"), "utf8");
-  ck("E42-GRID", /TANK_CLASS\[s\.name\]/.test(grid) && /rth: 1\.1/.test(grid) && /ref: \{ cold: 10, room: 45, hot: 65 \}/.test(grid) && /TANKS\[s\.name\]/.test(grid),
+  ck("E42-GRID", /TANK_CLASS\[s\.name\]/.test(grid) && /mountFor\(s\.name\)\.rth/.test(grid) && /liquid: \{ rth: 0\.65, ref: 65 \}/.test(readFileSync(join(ROOT, "calculations/thermal/mount.mjs"), "utf8")) && /ref: \{ cold: 10, room: 45, hot: 65 \}/.test(grid) && /TANKS\[s\.name\]/.test(grid),
     "liquid thermal model + the tank CLASS (A rms — E60 re-point of the mislabelled 65 A pk ceiling) + per-SKU tanks registered IN the grid source");
 }
 {
@@ -468,8 +468,8 @@ ck("R5-D", !/UEXCL2/.test(boards) && !/"net.CTL_KPREA"/.test(boards) && /\/\^UEX
   "E67: the pre-insertion exclusion stage is RETIRED with the pre-insertion pair (the output diode needs no matched-voltage make) — no orphan second stage may remain");
 ck("R5-D-FW", /o->k_ser = false; o->k_para = false; o->k_parb = false; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),
   "ST_MODESW step-20 opens ALL three matrix contacts explicitly; host_sim asserts the exclusion invariant on every tick of every scenario");
-ck("R5-E", /RG\$\{id\}A1/.test(cells) && /RG\$\{id\}B1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[123]"),
-  "paralleled pairs are SYMMETRIC: the original device gets its own 2.2 R branch (was: one bare gate beside a resistored twin)");
+ck("R5-E", !/RG\$\{id\}A1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[123]"),
+  "paralleled pairs are SYMMETRIC: the original device gets its own 2.2 R branch (E68: the Vienna pairs are retired — one die per phase on the clip mount; the LLC positions that stay paralleled keep the symmetric branches)");
 ck("R5-F", /R5-F: DC input 13.5\u201316.5 V/.test(db),
   "QA01C-18 input range (13.5-16.5 V) vs V15 = 15.0 V recorded on the BOM line; cross-regulation re-verify staged for EVT");
 ck("R5-G", /CER-25W-33R-AX/.test(db) && /CER-50W-33R-AX/.test(db) && /CER-25W-160R-AX/.test(db) && /CER-50W-160R-AX/.test(db) && /SHUNT-50MV-100A/.test(db) && /SHUNT-50MV-133A/.test(db) && /SHUNT-50MV-167A/.test(db),
