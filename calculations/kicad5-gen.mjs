@@ -630,7 +630,8 @@ const HAND = {
   // the CX2-node Rd–Cd damper takes a third column (frame re-probe is the integrator's sheet-pipeline run).
   "INPUT-EMI / EMI-FILTER": [
     ["CMC1", "CX11", "CX12", "CX13", "CY4", "CY5", "CY6", "CMC2"],
-    ["LDM1", "LDM2", "LDM3", "CX21", "CX22", "CX23", "CY1", "CY2", "CY3"],
+    ["CX01", "CX02", "CX03", "CX21", "CX22", "CX23", "CX24", "CX25", "CX26"],   /* E68: line-side X2 star stage + the doubled converter stage */
+    ["CY1", "CY2", "CY3"],
     ["CDMP1", "CDMP2", "CDMP3", "RDMP1", "RDMP2", "RDMP3"],
   ],
 
@@ -1324,11 +1325,11 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
       const MAG = {
         acdc: {
           "30": ["D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2 -> L0 169uH, >=75uH @82A pk (BIASED value governs ripple/trip calcs)",
-                 "D6 LDM1-3: 2x T48 60u, N=7, foil 20mm2 -> 7.4uH @82A pk (floor 7.0uH)"],
+                 "E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted"],
           "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu (CATALOG AL37), N=26 +/-1 lot trim -> L0 116uH, >=61uH @104A pk (E51)",
-                 "D6 LDM1-3: 2x T57 60u, N=8, 26.4mm2 -> 10.5uH @109A pk (floor 9.2uH)"],
+                 "E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted"],
           "50": ["D1 LA0-LC0: 5x T79 26u sendust (CATALOG AL37), N=24 +/-1 lot trim -> L0 107uH, >=45uH @129.5A pk (E51)",
-                 "D6 LDM1-3: 3x T57 60u, N=8, 26.4mm2 -> 12.9uH @136A pk (floor 11.4uH, E51 restated basis 11.8 — met)"],
+                 "E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted"],
         },
         dcdc: {
           "30": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372B2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED",

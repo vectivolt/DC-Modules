@@ -65,7 +65,7 @@ const SKUS = [
 // 11.5/15.3/19.2 → engine) + the CX2-node damper (pfc-control switched model, 330 VAC full power). run-all runs both first.
 const CH = JSON.parse(readFileSync(join(OUT, "dm-choke-design.json"), "utf8"));
 const DAMP = readFileSync(join(OUT, "pfc-filter-stability.csv"), "utf8").split("\n").map((l) => l.split(",")).filter((r) => r[1] === "time-domain" && r[3] === "15");
-const emiW = (k) => 2 * CH.d7[k].P + 3 * CH[k].P + Math.max(...DAMP.filter((r) => r[0] === k).map((r) => +r[7]));
+const emiW = (k) => 2 * CH.d7[k].P + Math.max(...DAMP.filter((r) => r[0] === k).map((r) => +r[7]));   // E68: no D6 DM chokes (star X2 filter)
 const EMI_FILTER = { "30kW": emiW("30kw"), "40kW": emiW("40kw"), "50kW": emiW("50kw"), "50kWa": emiW("50kw") };
 // E67: output path — the DOUT blocking diode (Vf 1.05 V, the current-coordination basis) carries the whole output current, and the
 // two D8 bank inductors (D6 construction, engine Rdc) each carry half of it in PAR. Missing from the first E67 roll-up (0.3 pt).

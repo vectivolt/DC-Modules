@@ -146,7 +146,7 @@ for (const [sku, d] of Object.entries(D1)) {
   const SK = ["30kw", "40kw", "50kw", "50kwa"];
   const d1 = up(Math.max(...SK.map((s) => vRec(s, "vSwN_pk_V"))), 10), d6 = up((500 * Math.SQRT2) / Math.sqrt(3), 10);
   const tank = SK.map((s) => up(llcTank(s) + vRec(s, "vMN_pk_V"), 10)), pd = tank.map((v) => up((1.5 * v) / 1000, 0.1).toFixed(1));
-  const tok = [`D1Û_rp≤${d1}V`, `D6-50Û_rp≤${d6}V`, `D2/D3Û_rp${tank.join("/")}V`, `PDextinction≥${pd.join("/")}kV`];
+  const tok = [`D1Û_rp≤${d1}V`, `D2/D3Û_rp${tank.join("/")}V`, `PDextinction≥${pd.join("/")}kV`];   // E68: D6-50 retired with the AC DM chokes
   const miss = tok.filter((t) => !ins.includes(t));
   ck("INS", "bonded magnetics carry their basic-barrier rows at the computed recurring peaks", d1 <= 700 && d6 <= 700 && tank.every((v) => v > 700) && miss.length === 0,
     `D1 ${d1} V · D6-50 ${d6} V (≤700 V: hipot + impulse, no PD) · D2/D3 ${tank.join(" / ")} V (30/40/50/50a — PD sample test at ≥ ${pd.join(" / ")} kV)${miss.length ? ` → MISSING in insulation-coordination.md: ${miss.join(" · ")}` : " → rows present"}`);
@@ -174,9 +174,9 @@ for (const [sku, c] of Object.entries(D2C)) {
   const ch = JSON.parse(readFileSync(join(ROOT, "calculations/out/dm-choke-design.json"), "utf8"));
   const vs = readFileSync(join(ROOT, "calculations/out/vienna-switched.csv"), "utf8").split("\n").filter((l) => /^\d/.test(l)).map((l) => l.split(","));
   for (const sku of ["30kw", "40kw", "50kw"]) {
-    const d6 = ch[sku], d7 = ch.d7[sku], i1pk = Math.max(...vs.filter((r) => r[0] === sku).map((r) => +r[7]));
+    const d7 = ch.d7[sku], i1pk = Math.max(...vs.filter((r) => r[0] === sku).map((r) => +r[7]));
     const B = d7.Llk_band_uH[1] * 1e-6 * i1pk / (d7.N * d7.AFe_mm2 * 1e-6);
-    ck("D6/D7", `${sku} winding J [engines]`, d6.J <= 5.6 && d7.J <= 5.6, `D6 ${d6.aw_mm2} mm² → ${d6.J} · D7 ${d7.aw_mm2} mm² → ${d7.J} A/mm² ≤ 5.6`);
+    ck("D7", `${sku} winding J [engine]`, d7.J <= 5.6, `D7 ${d7.aw_mm2} mm² → ${d7.J} A/mm² ≤ 5.6 (E68: no AC-side D6)`);
     ck("D7", `${sku} DM-leakage flux at the simulated crest`, B <= 0.6 && d7.Lcm10k_mH >= 2,
       `${d7.Llk_band_uH[1]} µH × ${i1pk} A / (${d7.N} T × ${d7.AFe_mm2} mm²) = ${f(B, 2)} T ≤ 0.6 (hot Bsat 1.155 T) · L_cm ${d7.Lcm10k_mH} mH ≥ 2 at µ −30 % (${d7.core})`);
     ck("D7", `${sku} hot-copper ΔT`, d7.dT <= 45, `${d7.P} W/choke at 100 °C Cu → ΔT ${d7.dT} K ≤ 45 (registered 11.5/15.3/19.2 W were 20 °C copper on a turn the OD62 core could not hold)`);
@@ -218,16 +218,8 @@ ck("CT", "line CT class @50 kW", 91.6 <= 150 * 0.95 && /CT-LINE-2500-150A/.test(
 }
 
 // ---------------- 3b. E43 verification-pass permanent gates -------------------------------------
-// D6 DM chokes: crest-biased inductance vs each variant's equal-margin LISN floor — from the D6
-// ENGINE (the E43 finding: the inherited 22 µH could not exist at the crest on the drawn core).
-{
-  const d6 = JSON.parse(readFileSync(join(ROOT, "calculations/out/dm-choke-design.json"), "utf8"));
-  for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
-    const row = d6[sku] ?? d6["50kw"];   // E44: the air twin shares the D6-50 part
-    ck("D6", `${sku} crest-biased L vs LISN floor [engine]`, row && row.Lpk >= row.Lfloor,
-      `${row?.stack}× ${row?.geom?.split(" ")[0]} ${row?.mat} N=${row?.N} → ${row?.Lpk} µH ≥ ${row?.Lfloor} (CX2 4.7 µF rev; lisn per-variant margins ≥ +4.9 dB)`);
-  }
-}
+// E68: the D6 crest-L vs LISN-floor row is retired with the AC-side DM chokes — lisn-precompliance gates the star-X2 filter
+// against the E65 filter on the per-phase ladder instead.
 // resonant-cap DIELECTRIC duty: current alone is the wrong invariant — V = I/(ωC) per cap at 140 kHz and the tank class (E67)
 for (const [sku, t] of Object.entries(TANKS)) {
   const iC = TANK_CLASS[sku] / t.crN, xc = 1 / (2 * Math.PI * 140e3 * t.crNF * 1e-9), vC = iC * xc, wC = iC * iC * 2e-4 * xc;
