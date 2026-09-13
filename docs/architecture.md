@@ -13,7 +13,7 @@
 > [!NOTE]
 > **Purpose** — the platform in one read: the product family, the power path stage by stage, the control plane,
 > the protection layers, the auxiliary rails and the thermal snapshot. Values are the frozen set in the
-> [decision register](assumptions.md) (E1–E61), and every number reproduces from `calculations/run-all.sh`.
+> [decision register](assumptions.md) (E1–E62), and every number reproduces from `calculations/run-all.sh`.
 
 ## At a glance
 
@@ -186,7 +186,7 @@ timeline
   Audits and variants · E35–E44 : margin audit, one brain per module, 40 kW air, 50 kW liquid and air
   External reviews · E45–E49 : five rounds R4–R8, each closed with executed fixes and gates
   Focus and hardening · E50–E59 : magnetics recompute, KiCad-native face, BOM maturity, temperature FMEA
-  Coordination · E60–E61 : power-solved simulation, trip classes, AC copper, harsh-environment parity, documentation standard
+  Coordination · E60–E62 : power-solved simulation, trip classes, AC copper, harsh-environment parity, documentation standard, teardown benchmark
 ```
 
 Each decision is recorded row by row in the [decision register](assumptions.md). Dated fix logs live in the

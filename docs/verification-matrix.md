@@ -140,6 +140,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | R15 | Sourcing restrictions on bias / isolation modules (Mornsun OFAC flag) | M × M | qualify MEAN WELL / RECOM / CUI-class second sources before volume | open |
 | R16 | BOM busbar line below the computed set at 40 / 50 kW (₹953 / ₹1,188 vs ₹810 / ₹850) | L × H | reconcile at the mechanical RFQ | open (cost) |
 | R17 | Release sheets not layout-ready: 307 components name no package; 344 carry an MPN whose package differs from its land | M × H | resolve at layout entry, reading each new C-number back; `footprint-audit` fails if either count grows — [footprints to draw](footprints-to-draw.md) | open (layout entry) |
+| R18 | No series output blocking diode (the InfyPower benchmark fits 1600 V / 90 A ones at 0.15–0.44 % permanent efficiency cost): reverse-battery and bus back-feed are held by K_OUT isolation, the E12b matched-voltage make and mirror weld-check; polarity screening before the plug goes live is the dispenser's job (61851-23 system scope) | L × M | assumption recorded at E62 — [teardown benchmark](benchmark-infypower-teardown.md); module-side relay behaviour already lives in the EVT relay tests | accepted (E62) |
 
 The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).
 

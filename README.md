@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E61-f2b705?style=for-the-badge" alt="decision register E1 to E61"/>
+  <img src="https://img.shields.io/badge/decision_register-E1–E62-f2b705?style=for-the-badge" alt="decision register E1 to E62"/>
   <img src="https://img.shields.io/badge/envelope_grid-5544_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 5544 points, 0 failures"/>
   <img src="https://img.shields.io/badge/independent_checks-226%2F226-2ea44f?style=for-the-badge" alt="independent verifier 226 of 226"/>
   <img src="https://img.shields.io/badge/firmware-54%2F54_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 54 of 54"/>
@@ -264,7 +264,7 @@ status badge and next/previous navigation.
 | Start here | To understand |
 |---|---|
 | [Platform architecture](docs/architecture.md) | the module in one read |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E61, with provenance and invalidator |
+| [Decision register](docs/assumptions.md) | every frozen decision E1–E62, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
 | [Magnetics drawings](docs/magnetics.md) · [RFQ pack](docs/magnetics-manufacturing-pack.md) | the custom parts and how to buy them |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
@@ -291,7 +291,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 ## 🗺️ Roadmap
 
-- [x] Frozen decision register E1–E61
+- [x] Frozen decision register E1–E62
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
 - [x] Release schematics — six KiCad-5 targets, 7,784 / 7,784 pins, ten board PDFs
 - [x] Product structure — 30 / 40 / 50 L / 50 A modules, 100 kW = 2 × 50, 150 kW = 3 × 50 + CSU

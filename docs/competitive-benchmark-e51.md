@@ -13,6 +13,11 @@
 > [!NOTE]
 > **Purpose** — where the platform stands in the market: the reference designs it matches, the Chinese production
 > modules it competes with, the SiC verdict, the density gap, cost levers, and harsh-environment parity.
+
+> [!TIP]
+> The REG1K0135A2 40 kW SiC module is now audited block-by-block against this platform — every stage, drive,
+> sensing and protection choice carries a verdict — in the [InfyPower teardown benchmark](benchmark-infypower-teardown.md)
+> (E62). No architecture change resulted; R18 and two RFQ levers were recorded.
 >
 > **Gate coupling** — claims labelled **[V]** survived 3-vote adversarial verification; **[P]** rows were read
 > directly from manufacturer pages; **[est]** rows are our estimates.
