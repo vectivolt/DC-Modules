@@ -37,7 +37,7 @@
 | Build | ₹ @10k | ₹ / kW | China RFQ target ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict (India basis) |
 |---|---:|---:|---:|---:|---:|---:|---|
 | 30 kW module | **30,033** | 1,001 | 24,640 | 821 | 25,000 | 22,000 | ⚠️ over by ₹5,033 |
-| 40 kW module | **33,781** | 845 | 27,694 | 692 | 33,000 | 29,000 | ⚠️ over by ₹781 |
+| 40 kW module | **34,616** | 865 | 28,320 | 708 | 33,000 | 29,000 | ⚠️ over by ₹1,616 |
 | 50 kW liquid module | **40,481** | 810 | 33,183 | 664 | 43,000 | 39,000 | ✅ under by ₹2,519 |
 | 50 kW air module | **38,404** | 768 | 31,399 | 628 | 43,000 | 39,000 | ✅ under by ₹4,596 |
 | 150 kW air product (3 × 50a) | **1,15,212** | 768 | 94,197 | 628 | 1,29,000 | 1,17,000 | ✅ under by ₹13,788 |
@@ -49,13 +49,13 @@ xychart-beta
   title "Build cost per kW at 10k volume (₹)"
   x-axis ["30", "40", "50 L", "50 A", "100 L", "100 A", "150 L", "150 A"]
   y-axis "₹ / kW" 0 --> 1200
-  bar [1001, 845, 810, 768, 810, 768, 810, 768]
+  bar [1001, 865, 810, 768, 810, 768, 810, 768]
 ```
 
 | Product | Composition | ₹ @10k | **₹ / kW** |
 |---|---|---:|---:|
 | 30 kW module | 1 module · 1 card · air | 30,033 | **1001** |
-| 40 kW module (E41) | 1 module · 1 card · air | 33,781 | **845** |
+| 40 kW module (E41) | 1 module · 1 card · air | 34,616 | **865** |
 | 50 kW module (E42) | 1 module · 1 card · LIQUID | 40,481 | **810** |
 | 50 kW module (E44) | 1 module · 1 card · AIR (paralleled LLC, 4 fans) | 38,404 | **768** |
 | 100 kW | 2 x 50 · 2 cards · liquid | 80,962 | **810** |
@@ -94,22 +94,22 @@ keeps 50 %). The 60 / 80 / 120 kW compositions are retired (E55).
 
 </details>
 
-## 40 kW module — ₹33,781 @10k
+## 40 kW module — ₹34,616 @10k
 
-**1k ₹41,572 · 5k ₹37,123 · 100 pcs ₹53,963** · red-line ₹33,000 / stretch ₹29,000 → ⚠️ over by ₹781
+**1k ₹42,616 · 5k ₹38,042 · 100 pcs ₹55,372** · red-line ₹33,000 / stretch ₹29,000 → ⚠️ over by ₹1,616
 
 <details><summary>Cost by category (₹ @1k)</summary>
 
 | Category | ₹ @1k | Share |
 |---|---:|---:|
-| mechanical/assembly | 10,797 | 26 % |
-| magnetics | 8,576 | 20.6 % |
-| semiconductors | 7,067 | 17 % |
-| capacitors | 4,871 | 11.7 % |
-| bias/iso modules | 3,393 | 8.2 % |
-| drive+control ICs | 3,378 | 8.1 % |
+| mechanical/assembly | 10,797 | 25.3 % |
+| magnetics | 8,576 | 20.1 % |
+| semiconductors | 8,111 | 19 % |
+| capacitors | 4,871 | 11.4 % |
+| bias/iso modules | 3,393 | 8 % |
+| drive+control ICs | 3,378 | 7.9 % |
 | relays | 1,260 | 3 % |
-| protection | 772 | 1.9 % |
+| protection | 772 | 1.8 % |
 | resistors/shunts | 675 | 1.6 % |
 | connectors | 436 | 1 % |
 | misc | 324 | 0.8 % |

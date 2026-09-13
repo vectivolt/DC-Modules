@@ -432,7 +432,7 @@ export const DcDcBoard = ({ channels, w, h, pw = 30, air = false }: { channels: 
   const legs = [{ id: "1", sw: "net.SWA" }, { id: "2", sw: "net.SWB" }];
   // E68 (clip mount, 0.8 K/W): 30 kW one LLC die per position (two JBS stay — one cost 135 W); 40/50 kW two LLC dies; the 50 kW air twin drops its third
   const tank = pw === 50 ? { crN: 11, lr: "3.28uH", burden: "0.30", dPar: 2, fetPar: 2 }
-    : pw === 40 ? { crN: 9, lr: "4.07uH", burden: "0.36", dPar: 2, fetPar: 1 } : { crN: 7, lr: "5.16uH", burden: "0.47", dPar: 2, fetPar: 1 };
+    : pw === 40 ? { crN: 9, lr: "4.07uH", burden: "0.36", dPar: 2, fetPar: 2 } : { crN: 7, lr: "5.16uH", burden: "0.47", dPar: 2, fetPar: 1 };
   const relayFb = ["KSER", "KPARA", "KPARB", "KOUT", "KPREA", "KPREB"];
   // E67 bank filter per bank: film at the bridge (≤10.5 A rms per 2.2 µF at the simulated worst ripple 34.5/44.9/55.1 A — the PSM corner) · Lf · 550 V electrolytic
   // E68: film-only banks — 2.2 µF count per bank from 0.5 % RMS ripple at the 150 V / Imax PSM corner (current-coordination OUT)

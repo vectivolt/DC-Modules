@@ -17,6 +17,10 @@ import { TANKS, TANK_CLASS, JBS_POS, fingerprint } from "../llc/tanks.mjs";
 import { D2 as D2C } from "../magnetics/magnetics-envelope.mjs";
 import { stack } from "../magnetics/geometry.mjs";
 import { D1, Ld1 } from "../pfc/vienna-switched.mjs";
+// E69a: pulsed rating IDM (25 °C) per die — listings where they exist, otherwise the RFQ acceptance line the part must meet
+const PFC_DIE = { "30kw": { mpn: "SIC-750V-20mR", idm: 210, src: "RFQ acceptance IDM ≥ 210 A" }, "40kw": { mpn: "SIC-750V-15mR", idm: 260, src: "RFQ acceptance IDM ≥ 260 A" },
+  "50kw": { mpn: "B3M010C075Z", idm: 480, src: "TME listing" }, "50kwa": { mpn: "B3M010C075Z", idm: 480, src: "TME listing" } };
+const LLC_IDM = { SG2M023120LJ: { idm: 265, src: "RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)" } };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const rd = (p) => readFileSync(join(ROOT, p), "utf8");
 const f = (x, d = 1) => Number(x.toFixed(d));
@@ -72,9 +76,11 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
   const mu = Ld1(d, c.F01 + di, 1) / Ld1(d, 0.01, 1);
   ck("F.01", `${sku} D1 stays soft at the fault peak`, mu >= 0.15,
     `µ(${f(c.F01 + di)} A) = ${f(mu, 3)} of initial (sendust soft-sat — di/dt grows ${f(1 / mu, 1)}×, never a hard collapse; Kool Mµ Tc 500 °C)`);
-  const par = sku === "30kw" ? 1 : 2;
-  ck("F.01", `${sku} PFC FET pulse class at the fault peak`, (c.F01 + di) / par <= 0.6 * 480,
-    `${f((c.F01 + di) / par)} A per B3M010C075Z (×${par}) vs 60 % of IDM 480 A (TME listing) — µs event, SC-SOA is the governing limit (DESAT row)`);
+  // E69a fault-pulse rule (both stages): a trip-limited, non-repetitive µs pulse at low VDS may reach 80 % of the die's pulsed rating IDM
+  // (25 °C listing, −20 % for a hot start). One die per PFC position since E68a; class dies carry their IDM as an RFQ ACCEPTANCE line.
+  const pd = PFC_DIE[sku];
+  ck("F.01", `${sku} PFC FET pulse class at the fault peak`, c.F01 + di <= 0.8 * pd.idm,
+    `${f(c.F01 + di)} A per die (one ${pd.mpn} per position) vs 80 % of IDM ${pd.idm} A (${pd.src})`);
   const dpk = Math.max(...legal.map((r) => +r.Id_pk_A));
   ck("F.01", `${sku} boost-diode repetitive peak`, dpk <= c.F01,
     `diode peak ${f(dpk)} A (sim) ≤ F.01 ${c.F01} A — anything above is a fault by definition; JBS IFSM/I²t class at RFQ ≥ 5× the F.01 point`);
@@ -94,6 +100,9 @@ for (const sku of Object.keys(TANKS)) {
   const di = racePk - c.F11, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
   ck("F.11", `${sku} window-comparator kill + observability`, racePk * 1.2 <= ceil && mon * 1.05 <= ceil && thrV <= RULE.thrMaxV && 2 * RULE.avmid - thrV >= 0.3,
     `|Ip| crosses F.11 ${f(tX, 2)} µs after the short → kill peak ${f(racePk)} A (+1 µs, ×1.2 ≤ ${f(ceil)} A on ${c.resRb} Ω) · monitor peak +3 µs ${f(mon)} A ×1.05 in rail · window ${f(2 * RULE.avmid - thrV, 2)}/${f(thrV, 2)} V`);
+  const li = LLC_IDM[t.dieP.mpn];
+  ck("F.11", `${sku} LLC FET pulse class at the kill peak`, li && racePk / t.par <= 0.8 * li.idm,
+    `${f(racePk / t.par)} A per die (${t.par}× ${t.dieP.mpn} per position) vs 80 % of IDM ${li?.idm} A (${li?.src}) — non-repetitive µs pulse at low VDS`);
   const d2 = D2C[sku], Ae2 = stack(d2.core, d2.n).Ae;
   const bNorm = d2.Lmax * pkNom / (d2.N * Ae2), bFault = d2.Lmax * racePk / (d2.N * Ae2);
   ck("D2", `${sku} external Lr flux: operating + fault`, bNorm <= 0.110 && bFault <= 0.6 * Bsat130,

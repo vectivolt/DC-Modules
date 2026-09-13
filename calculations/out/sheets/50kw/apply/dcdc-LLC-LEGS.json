@@ -125,7 +125,7 @@
     "designator": "Q1H",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -153,7 +153,7 @@
     "designator": "Q1L",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -181,7 +181,7 @@
     "designator": "Q1H2",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -209,7 +209,7 @@
     "designator": "Q1L2",
     "value": "SG2M023120LJ",
     "block_name": "LEG-1",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -949,7 +949,7 @@
     "designator": "Q2H",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -977,7 +977,7 @@
     "designator": "Q2L",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -1005,7 +1005,7 @@
     "designator": "Q2H2",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,
@@ -1033,7 +1033,7 @@
     "designator": "Q2L2",
     "value": "SG2M023120LJ",
     "block_name": "LEG-2",
-    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L",
+    "search_query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25",
     "pins": [
      {
       "pin_number": 4,

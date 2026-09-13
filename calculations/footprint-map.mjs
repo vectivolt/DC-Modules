@@ -11,7 +11,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // a decision not yet frozen the entry says so.
 export const FOOTPRINT = {
   // --- power semiconductors ---
-  "SIC-750V-20mR": "TO-247-4_L15.8-W5.0-P2.54-L", "SIC-750V-15mR": "TO-247-4_L15.8-W5.0-P2.54-L", "SIC-1200V-16mR": "TO-247-4_L15.8-W5.0-P2.54-L",
+  "SIC-750V-20mR": "TO-247-4_L15.8-W5.0-P2.54-L", "SIC-750V-15mR": "TO-247-4_L15.8-W5.0-P2.54-L",
   "B3M010C075Z": "TO-247-4_L15.8-W5.0-P2.54-L",        "SG2M023120LJ": "TO-247-4_L15.8-W5.0-P2.54-L",
   "SICJBS-1200-10": "TO-247-3_L15.9-W5.0-P5.44-L",     "SICJBS-1200-20": "TO-247-3_L15.9-W5.0-P5.44-L",
   "SICJBS-1200-40": "TO-247-3_L15.9-W5.0-P5.44-L",     "SIC-1700-1R": "TO-247-3_L15.9-W5.0-P5.44-L",
