@@ -71,7 +71,7 @@ pie showData
 | Item | Clock | Position |
 |---|---|---|
 | Fans (air SKUs) | **L10 ≥ 70 kh @ 40 °C** (dual-ball spec, E52) | the first maintenance item on every air SKU; each fan carries a monitored tach and an F-row — a fan death is an alarm and a derate, not an outage. The 50 kW liquid has none |
-| DC-link / bank electrolytics | E29 endurance basis at 105 °C, per-can ripple gated (≤ 1.05 A interleave residue, `verify-independent` §F) | years-scale at the 40 °C mean; E59 vent rule caps the failure mode |
+| DC-link / bank electrolytics | E29 endurance basis at 105 °C — **per-can HF ripple is the open E74-1/E76 line**: the E67 full bridge removed the interleave the old ≤ 1.05 A residue figure assumed (bridge-input AC ≈ 50–82 A rms at the worst PFM corner; the can share depends on the film/electrolytic impedance split — llc-run i(Vbus) probe + EVT T-43 close it before PO) | years-scale at the 40 °C mean once the share is proven; E59 vent rule caps the failure mode |
 | HV relays | cycle-rated per session | mirror contacts are **read back at every operation** (E30) — a welded contact is detected on the cycle it happens, not at the annual inspection |
 | Acrylic coating | re-inspection at service | the E52 answer to the #1 field killer (dust + condensation) |
 
@@ -100,7 +100,7 @@ and availability above one module comes from running modules in parallel, not fr
 ---
 
 <div align="center">
-<sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../calculations/README.md">Calculations & Gates →</a></sub>
+<sub><a href="firmware-verification.md">← Firmware Verification Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../calculations/README.md">Calculations & Gates →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

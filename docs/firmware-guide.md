@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/host__sim-63%2F63_ASan%2FUBSan-2ea44f?style=flat-square" alt="host_sim: 63/63 ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/firmware-114_·_18_·_40_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 114 · 18 · 40 ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -24,7 +24,7 @@
 |---|---|
 | **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
-| **Verification** | `firmware/test/host_sim.c` — **63 / 63** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60; the E66 and E67 cases added six, E73 three) |
+| **Verification** | `firmware/test/host_sim.c` — **77 / 77** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60 · 63 / 63 at E73 · E76 adds 14 adversarial checks incl. three every-tick invariants) |
 | **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 7 group share-law checks · the E67 output-mode latch · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
 | **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — selected by the RATING strap (the 3.32 k band is reserved) |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
@@ -373,10 +373,80 @@ F.11 class checks 195 A / 220 A and 155 A / 180 A.
 Host tests added (host_sim **63 / 63**): *E73 bypass-closure inrush on F.01 is blanked* · *no PFC enable inside the blank
 window* · *F.01 line OC while switching latches*. Negative test: with the blank removed, the inrush scenario latches F.01.
 
+## E75 — OVP comparator allocation + mode-swap release margin (2026-09-14)
+
+> [!IMPORTANT]
+> Additive. An external review asked which comparator instances back the F.03/F.13 "HW comp" rows
+> and whether the mode-swap gap covers the relay's diode-suppressed release; the audit confirmed
+> both gaps ([protection thresholds §2 footnote](protection-thresholds.md)).
+
+| Item | Contract | Why |
+|---|---|---|
+| F.03 bus OVP | HAL configures **CMP4**: IP = PB13/pin 52 (SNS_VBUSP, also ADC2_IN4 for metering), IM = **DAC3_OUT0** at the 860 V code; output → **HRTIMER fault channel 5** (`FLTyINSRC = 01`), latch armed before the first PWM | before E75 SNS_VBUSP sat on PE15 — no CMP function existed; the analog latch path of the footnote had no comparator behind it |
+| F.13 output OVP | HAL configures **CMP0**: IP = PA1/pin 21 (SNS_VOUT, also ADC01_IN1), IM = **DAC0_OUT0 with MODE0 = 011** (buffer off, internal-only — PA4/SNS_VAC2 keeps its pin); output → **fault channel 3** | film-only output ≈ 24 µF at 167 A slews 2.6–5.6 V/µs — a firmware path is orders too slow; PA5 (the old pin) offered only CMP1_IM, and CMP1 is phase B's |
+| ADC re-map | SNS_VBUSP = ADC2_IN4 · SNS_VOUT = ADC01_IN1 (were ADC3_IN1 / ADC1_IN12) | the two channel-table constants move with the pins |
+| Mode swap | `ST_MODESW` flips at **step 70** (was 40): open command at step 20 → earliest re-close ≥ 51 ms later | the ULN COM clamp freewheels the coil — diode-suppressed release stretches 2–3×; the matrix-relay RFQ line is release + bounce ≤ 35 ms suppressed. An overlap would dump a charged film bank (~3 J at 500 V) through two making contacts |
+
+Gates: `verify-independent` §J asserts pin 52 = ANA14 and pin 21 = AIN3 from the built card netlist; host_sim
+stays **63 / 63** (the per-tick exclusion invariant runs through the widened swap).
+
+## E76 — supervisory-logic hardening (2026-09-14)
+
+> [!IMPORTANT]
+> Additive. The fifth external review compiled the cores and reproduced nine defects with adversarial
+> inputs; all are closed firmware-only. The defect table with mechanisms lives in
+> [protection thresholds §9](protection-thresholds.md#9-e76-supervisory-logic-hardening-2026-09-14--the-fifth-external-reviews-firmware-counterexamples-closed).
+> This section is the changed CONTRACT.
+
+| Contract | Now |
+|---|---|
+| Start readiness | `vbus > 0.95 · vbus_ref` (was a fixed 700 V that blocked every sub-700 V reference — R02) |
+| Matrix make | only at ≤ 2 A and new stack ≥ 10 V **below** the output node (battery, else terminal caps, 60 V floor); bank bleeders (`out.q_disch_bk`, **new output — HAL maps to CTL_QDISBK**) run from the MODESW open until the permit; LLC off through the wait; stall → **F.34** at 8 s |
+| Output-mode change | latches only with every matrix contact open; otherwise routes through ST_MODESW (open + bleed + re-select in STANDBY — ST_MODESW no longer flips `out.mode` itself) |
+| STOP / re-arm | `enable_req=false` in RUN/DERATE → STANDBY with LLC off; `need_enable` (fault clear, CAN timeout) clears **only** when enable is observed low — the host must drop and re-assert ENABLE |
+| Safety scope | OT / input / midpoint / OVP / sensor / CAN checks run whenever PFC or LLC is enabled, not just in RUN; STANDBY enable requires `aux_ok`; latches always win over graceful transitions |
+| Derate | recomputed every tick (5 °C recovery hysteresis); RUN/DERATE are one delivering super-state, AUTO crossover evaluated in both |
+| Sensor plausibility | low-side only (`stack − vout > 20 %` with LLC on) — the high side belongs to F.13 |
+| Group share | a **grown** pending raise target restarts the 1.3 s hold (`pend_da`); equal/smaller never does |
+| Shutdown | `q_disch` **and** `q_disch_bk` both command through ST_DISCH (E33 contract) |
+
+Host suite: **77/77** — 63 legacy + 14 new (R02 ×2, R03 scenario + every-tick make-permit invariant,
+R04, R05 ×3 incl. every-tick aux invariant, R06 ×2, R07, R09, F.34, group R08). The plant now follows
+`vbus_ref`, conducts DOUT on physics (any state), models the bank bleeders and terminal-capacitor
+node, and the lock scenario re-arms through the public contract instead of poking `need_enable`.
+`fsm-sim.mjs` (26 JS scenarios) still passes but lags the C core in the E76 areas — the C core is
+normative (E24); syncing the JS model is an open E76 line.
+
+## E78 — the protocol-neutral core (2026-09-15)
+
+> [!IMPORTANT]
+> Additive. The firmware now has three layers — protocol profiles, one canonical model, the power core — specified with the
+> review findings FW-01…FW-25 in [firmware architecture](firmware-architecture.md). The native protocol is
+> [VMP 2.0](can-protocol.md); the [TonHe V1.2 profile](can-profile-tonhe-v12.md) is the drop-in compatibility profile.
+> Suites: `host_sim` **114**, `ctl_test` **18**, `proto_test` **40** — ASan + UBSan (fatal) + `-Werror`. The review started
+> from the E77 working-tree core (input sanitization, row persistence, the F.31 window, warm hold, the public shutdown), which
+> had no register row; E78 records it as its base.
+
+| Contract | Now |
+|---|---|
+| Communication timeout | owned by the active profile: `pmp_fsm_set_comm_timeout_ms()` (VMP 1 s default, TonHe 20 s); `PMP_CAN_TO_MS` is only the boot default |
+| Controlled stop | STOP, communication loss and a lost setpoint set `out.stop_ramp`; `core/ctl.c` takes the current to zero in 80 ms; the LLC stops below 2 A or at 100 ms; F.16 is not evaluated during it; a withdrawn STOP continues the session |
+| Recovery classes | `pmp_fault_class()`: AUTO_EXT (F.07 · F.08 · F.09) and AUTO_INT (F.05 · F.06 · F.22) clear after a 2 → 64 s hold once their condition is gone; LATCH needs CLEAR; F.31 counts every latch except AUTO_EXT |
+| Relay feedback | inputs `relay_fb` / `relay_fb_wired` (`PMP_RLY_*` bits, 1 = main contact closed); F.19 on a 100 ms mismatch; the PFC waits for a confirmed bypass and the soft start for confirmed contacts; `PMP_W_RELAY_FB_OFF` while nothing is wired — the production HAL wires all four |
+| New rows | F.35 (`ctl_overrun`, the HAL's deadline verdict) · F.36 (undefined state value) |
+| New inputs | `wake_req` (OFF → INIT) · `ctl_overrun` · `relay_fb` · `relay_fb_wired` |
+| Start and recovery window | 275–485 VAC; the trip rows stay 260 / 500 VAC |
+| Mode dwell | `PMP_MODE_DWELL_MS` = 1 000 ms — the build value is the product value (supersedes the "30 000 ms, compressed 1000× on the host" HAL line above) |
+| SAFE | left after 500 ms of stable aux; the restart needs a fresh ENABLE |
+| Fresh request after a reset | the profile's rule, not the core's: VMP holds RUN until RUN = 0; a TonHe start is an event |
+| Reference shaping | `core/ctl.c`: soft start from the output node, 500 V/s and 1 000 A/s rises, E1 input derate, power limits, group share, CV share trim; regulator kernel with min-select and back-calculation anti-windup |
+| Protocol layer | `core/modapi.h` canonical model · `proto/` profiles and registry · `can_proto.{h,c}` (v1, never shipped) retired |
+| HAL 1 ms order | profile rx → profile tick → `pmp_cmd_to_in` → `pmp_fsm_step` → `pmp_cmd_to_ctl` → `pmp_ctl_step` → commit references → telemetry → TX |
+
 ---
 
 <div align="center">
-<sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">External CAN Protocol →</a></sub>
+<sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-architecture.md">Firmware Architecture →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

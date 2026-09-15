@@ -25,6 +25,7 @@ typedef struct {
   bool have, member, raising;
   pmp_group_set_t last;
   uint32_t t_frame, t_member, t_raise, share_da;
+  uint32_t pend_da;         /* E76 (review R08): the pending raise target — a GROWN target restarts the hold */
 } pmp_group_t;
 
 typedef struct { uint32_t i_set_da; bool deliver; } pmp_group_out_t;

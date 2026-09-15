@@ -89,7 +89,7 @@ without collapsing. The winding sits at line / switch-node potential and its bon
 |---|---|
 | Core | **5 × Magnetics 0077908A7** Kool Mµ 26µ toroid (OD 78.94 / ID 48.21 / HT 17.02 mm max; AL 37 nH/T² ± 8 % per core); faces epoxy-bonded, distributed gap — no grinding |
 | Winding | **N = 26 nominal, winder trims ± 1 turn per core lot** · **13 × 1.6 mm** grade-2 dual-coat enamelled round (Class 200), taped into one bundle every 150 mm, laid flat · bore layers 17 / 9 · spread ≥ 300° |
-| Electrical acceptance (100 %) | L₀ @ 0.1 V / 100 kHz **106–135 µH (116 nom)** · **L @ 104 A pk ≥ 61 µH** (pulse method) · Rdc **≤ 4.55 mΩ @ 25 °C (build 3.97) and within ±5 % of the lot median** — one open strand fails the lot window |
+| Electrical acceptance (100 %) | L₀ @ 0.1 V / 100 kHz **106–135 µH (125 nom — 5 × AL 37 at N = 26; the 116u class name is historical, E74)** · **L @ 104 A pk ≥ 61 µH** (pulse method) · Rdc **≤ 4.55 mΩ @ 25 °C (build 3.97) and within ±5 % of the lot median** — one open strand fails the lot window |
 | Operating point | 72.9 A fundamental + 7.83 A rms ripple at 330 VAC, bus 830 V, AL − 8 % — loss and hot-spot in the proof table |
 | Insulation | basic insulation to PE: bonded face through the module gap pad, bore through sleeve + clamp cap; recurring peak ≤ 540 V (no PD test) · winding ↔ core functional · Class F (155 °C) UL 1446 system |
 | Thermal | one end face gap-pad bonded to the extrusion web · hot-spot limit 120 °C at 55 °C inlet · bonded type test: 95.9 A DC → hot-spot ≤ 22 K above the plate |

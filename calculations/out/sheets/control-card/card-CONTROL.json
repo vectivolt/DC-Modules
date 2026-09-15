@@ -95,7 +95,7 @@
     {
      "pin_number": 21,
      "name": "pin21",
-     "signal_name": "AIN1"
+     "signal_name": "AIN3"
     },
     {
      "pin_number": 22,
@@ -125,7 +125,7 @@
     {
      "pin_number": 27,
      "name": "pin27",
-     "signal_name": "AIN3"
+     "signal_name": "AIN1"
     },
     {
      "pin_number": 28,
@@ -215,7 +215,7 @@
     {
      "pin_number": 46,
      "name": "pin46",
-     "signal_name": "ANA14"
+     "signal_name": "PWM8"
     },
     {
      "pin_number": 47,
@@ -245,7 +245,7 @@
     {
      "pin_number": 52,
      "name": "pin52",
-     "signal_name": "PWM8"
+     "signal_name": "ANA14"
     },
     {
      "pin_number": 53,

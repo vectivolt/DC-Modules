@@ -95,7 +95,7 @@ AIN0
 Wire Wire Line
 	1900 2500 1700 2500
 Text Label 1700 2500 2    45   ~ 0
-AIN1
+AIN3
 Wire Wire Line
 	1900 2600 1700 2600
 Text Label 1700 2600 2    45   ~ 0
@@ -119,7 +119,7 @@ AIN12
 Wire Wire Line
 	1900 3100 1700 3100
 Text Label 1700 3100 2    45   ~ 0
-AIN3
+AIN1
 Wire Wire Line
 	1900 3200 1700 3200
 Text Label 1700 3200 2    45   ~ 0
@@ -191,7 +191,7 @@ HMI3
 Wire Wire Line
 	1900 4900 1700 4900
 Text Label 1700 4900 2    45   ~ 0
-ANA14
+PWM8
 Wire Wire Line
 	1900 5000 1700 5000
 Text Label 1700 5000 2    45   ~ 0
@@ -215,7 +215,7 @@ PWM2
 Wire Wire Line
 	1900 5500 1700 5500
 Text Label 1700 5500 2    45   ~ 0
-PWM8
+ANA14
 Wire Wire Line
 	1900 5600 1700 5600
 Text Label 1700 5600 2    45   ~ 0

@@ -85,6 +85,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 28 | EEPROM CRC | at boot | boot | FW | safe defaults, F-code, no output | F.30 |
 | 29 | Repeated fault lockout | 5 latches / 10 min | — | FW | lockout until CAN clear + ENABLE | F.31 |
 | 30 | Watchdog | CWD-programmed window | HW | card supervisor: open-drain WDO gates the GATE_EN AND **and rides NRST_CARD** (R5-A/R6-A) — a hung MCU restarts with enables low | gates default-disabled through WDO-low and boot | F.32 |
+| 31 | Start / make-permit stall (E76) | STANDBY energized (PFC/LLC on, or bleeding toward the make-permit) without reaching RUN | 8 s | FW | latch | F.34 |
 
 Hardware comparator DACs: thresholds from MCU DAC but **latch path is analog** — firmware can
 tighten, never loosen beyond table max (resistor-set ceilings on comparator references).
@@ -93,6 +94,23 @@ tighten, never loosen beyond table max (resistor-set ceilings on comparator refe
 carry a 1 nF filter (pole ≈ 23 kHz) + AMC1311 group delay → total trip path ≈ 10–20 µs. The old
 "<10 µs" figure predated the isolated front-ends. Consequence at trip dV/dt (≈18 V/ms load-dump):
 overshoot ≤ 0.5 V — no margin impact; the number in the table is now the number the hardware has.
+
+**E75 — the OVP comparators now exist on real pins.** An external review asked which comparator
+instances the "HW comp" rows actually use; the audit found that **before E75 they had none**:
+SNS_VBUSP sat on PE15 (ADC3_IN1 only — no CMP function) and SNS_VOUT on PA5 (CMP1_IM, but CMP1
+is phase B's trip and IM is the reference side) — F.03/F.13 as drawn were firmware-speed. The
+R7-A-pattern fix (pins swapped inside the card generator; ways, harness and power boards
+untouched, spare ways AIN1/PWM8 take the vacated pins): **F.03 = CMP4** (SNS_VBUSP → PB13 =
+CMP4_IP + ADC2_IN4; reference DAC3_OUT0 — the free internal channel; CMP4 → HRTIMER fault
+channel 5) and **F.13 = CMP0** (SNS_VOUT → PA1 = CMP0_IP + ADC01_IN1; reference DAC0_OUT0 in
+MODE0=011, buffer-off internal-only so PA4/SNS_VAC2 keeps its pin; CMP0 → fault channel 3).
+Verified against GD32G553xx Datasheet Rev 1.01 Table 2-4 and User Manual Rev 1.0 (CMPxMSEL
+source lists, DAC mode bits, HRTIMER Table 25-21 — which also confirms the three phase trips
+own distinct fault channels: CMP7→ch 7, CMP1→ch 0, CMP2→ch 4; the external FLT wire-OR stays
+on PB10 = fault channel 2's pin source). Bank OV needs no comparator: its dV/dt is
+current-limited (F.11 tank kill + F.13 + F.17 cover the fast cases) and SNS_VBKA/VBKB stay
+ADC channels on PD9/PD8 — their CMP7_IM alternate functions are unused and unusable (CMP7 is
+phase A's). `verify-independent` §J asserts the pin ownership from the built card netlist.
 
 ## 3. Reverse-polarity coverage and response-time honesty (R4–R7)
 
@@ -149,7 +167,7 @@ only the single-bank 30 kW is 188 k. 321→60 V ≈ **370 / 222 / 296 s** at 30/
 totals ≈ 6.2 / 3.7 / 5.0 min; **the 30 kW is the slowest**, and the R7 report's dismissal of
 the reviewer's 222 s figure was OUR error, retracted at E49. Consequences, registered: (1) the enclosure carries the
 IEC 62477-1 stored-energy **warning label with the stated discharge time** ("isolate upstream, wait 10 min, AND
-verify <60 V at the link and both banks before access") — tool-access only; the wait alone
+verify <60 V at the link, both banks and the output studs before access") — tool-access only; the wait alone
 is never the permission, the measurement is; (2) **F.21's real coverage is the AC-PRESENT case**: with
 mains still feeding the link through the permanent RPRE paths the bus cannot fall (rectifier
 holds ≥~530 V), the aux stays alive, the timer expires and FC_DISCH latches — correctly
@@ -158,7 +176,14 @@ dies mid-count and no fault is latched; safety is the passive path plus the labe
 same hold-up limit applies to the bank bleeders (PV-driven QDISA/B lose their MCU command):
 bank passive balance pairs give the same few-minute class. Do NOT "fix" this by lowering the
 BO divider — 321 V is the flyback's full-load DCM floor (duty 22% of the D-version's 44%
-ceiling at that bus; at 150 V it would need 58%).
+ceiling at that bus; at 150 V it would need 58%). (4) **E74 — the output studs are a third
+store**: `COF1`+`COF2` (2 × 4.7 µF across OUTP–OUTN, downstream of `DOUT`) cannot be reached by
+the bank bleeders — the blocking diode conducts bank→output only. Their only on-board load is
+the `SNS_VOUT` divider (≈ 3.81 MΩ): τ ≈ 36 s, 1000→60 V ≈ 101 s, stored energy ≤ 4.7 J. That is
+why the label's verify step names the output studs; fast output-bus discharge (including the
+paralleled-module bus capacitance behind every DOUT) is the charger/dispenser's function per
+IEC 61851-23 — the module deliberately carries no permanent output bleeder (a 1 MΩ-class bleeder
+would burn ~1 W at 1000 V, ×N modules on a shared bus, for a store the divider already drains).
 
 ---
 
@@ -369,6 +394,58 @@ on F.01 blanked*, *no PFC enable inside the window*, *F.01 while switching latch
 contacts and ≥ 30 000 makes · Vienna JBS **IFSM ≥ 250 A** (10 ms half-sine) — the pulse I²t is 20 / 27 / 45 A²s per diode,
 ≤ 15 % of that class · gG fuses see ≤ 3 % of their pre-arc I²t · D1 saturates softly for about 1.5 ms (Kool Mµ), winding
 temperature rise negligible.
+
+## 9. E76 supervisory-logic hardening (2026-09-14) — the fifth external review's firmware counterexamples, closed
+
+> [!IMPORTANT]
+> Additive. A reviewer compiled the portable cores and drove them with adversarial inputs; nine of ten
+> counterexamples reproduced. Every fix is firmware-only (₹0), each carries a host_sim scenario, and the
+> host PLANT was corrected too — its fixed-800 V bus and RUN-gated diode are what had masked the defects.
+> Suite: **77/77** (63 legacy + 14 new, incl. three every-tick invariants).
+
+| Review ID | Defect (reproduced) | Correction (fsm.c / group.c) |
+|---|---|---|
+| R02 | STANDBY readiness gate was a fixed `vbus > 700` — every PAR start below ~332 V out and every SER start below ~665 V (bus_ref 650) could **never enable the LLC** | readiness is `vbus > 0.95 · vbus_ref`; the FW-R7 line floor keeps that above the unloaded rectifier crest, so a real boost is still demanded |
+| R03 | Matrix close assumed "banks bled/equal": after a PAR→SER crossover the ~500 V banks made a ~1 kV stack onto the battery **through the closing contact** (DOUT forward, ~2 J film dump, weld class) | **make-permit**: the matrix closes only at ≤ 2 A measured and with the NEW stack ≥ 10 V below the output node (battery, else terminal caps; 60 V floor); the bank bleeders (`q_disch_bk`, new output) run from the MODESW open until the permit lands (0.12–0.7 s); LLC stays off through the wait; a stall latches **F.34** |
+| R04 | An output-mode request landing mid-soft-start closed the new relays over the old ones (UEXCL blocked the coil; the FSM still ran SER arithmetic on a paralleled matrix) | the mode latches only with every contact open; a change with contacts closed routes through ST_MODESW |
+| R05 | Safety checks ran only in RUN/DERATE — a stalled, energized soft-start ignored OT/CAN/sensor forever; an aux_ok=false inhibit could be re-enabled the same tick | safety checks run whenever energized; load checks stay in the delivering states; STANDBY enable requires aux_ok; **F.34** bounds any start that neither completes nor faults |
+| R06 | `enable_req=false` was ignored in RUN — no public STOP; worse, `need_enable` was **never cleared by the core** (the old test harness poked the struct), so a field module could not restart after a fault clear or CAN timeout | enable release stops to STANDBY and is the re-arm: need_enable clears only when enable is observed low |
+| R07 | An OT latch and a CAN timeout in the same tick left `latched=F.22` with the state machine in STANDBY — a wedged, unclearable half-fault | graceful transitions are gated on `latched == FC_NONE`; a latch always keeps the state |
+| R08 | group.c granted a raise on the FIRST increase's timestamp — two membership drops inside one hold delivered **225 A against a 150 A group request for ~0.8 s** (under every per-module limit) | a GROWN pending target restarts the hold; an equal/smaller one never does (no starvation) |
+| R09 | `derate` only ever ratcheted down (a fan glitch halved power until power-cycle) and the AUTO crossover was not evaluated in DERATE | derate recomputed every tick with 5 °C recovery hysteresis; RUN/DERATE share one delivering super-state incl. the crossover |
+| — | Sensor-plausibility was two-sided: any no-load downward step (terminal caps hold, only the 3.8 MΩ divider drains them) or a higher battery falsely latched F.29 | plausibility is **low-side only** (a stuck-low sensor blinds OVP — the real fault); the high side is F.13's job |
+
+The R01 finding of the same review — the E75 comparator remap present in the netlist but **absent from the
+delivered KiCad face** (a partial regen skipped the `sheet-pages` stage; kicad5-verify only proves face ⇄
+payload) — is fixed and now structurally gated: `verify-independent` §J reads the SHIP `.sch`/`.lib` face
+itself and traces all eight §J pins to their label stubs. `fsm-sim.mjs` (the JS scenario model) still passes
+its own 26 scenarios but now lags the C core in the E76 areas — the C core is normative (E24); the JS model
+sync is an open documentation line in E76.
+
+## 10. E78 protection hierarchy (2026-09-15) — recovery classes, relay supervision, the controlled stop
+
+> [!IMPORTANT]
+> Additive. Every row now carries a response level and a recovery class; the row-by-row table, the anti-chatter values and the
+> rows deliberately not added are in [firmware architecture §6](firmware-architecture.md#6-the-protection-hierarchy). Nothing
+> in the hardware classes changes.
+
+| Row | Change | Code |
+|---|---|---|
+| 5 · 6 (F.05, F.06) | **AUTO_INT** — clear after the recovery hold with a healthy line; counted toward F.31 | `fsm.c` `pmp_fault_class` |
+| 7 · 8 · 9 (F.07, F.08, F.09) | **AUTO_EXT** — clear once the line is back inside 275–485 VAC with three phases for the hold (2 s, doubling to 64 s); **not** counted toward F.31 | `fsm.c` |
+| 16 (F.16) | no module-side burst retry (the rev B "burst-retry ×3" wording is superseded): LATCH, the charger decides whether to retry; not evaluated during a controlled stop | `fsm.c` |
+| 19 (F.19) | implemented: command ≠ mirror contact for 100 ms latches; the PFC enable waits for a confirmed bypass | `fsm.c` |
+| 22 (F.22) | **AUTO_INT** — clears below 100 °C after the hold; five trips in 10 min lock (F.31) | `fsm.c` |
+| 26 (F.28) | the timeout belongs to the protocol profile (VMP 1 s default, TonHe 20 s); a delivering module ramps its current out in ≤ 100 ms before stopping | `fsm.c` · `proto/` |
+| 29 (F.31) | counts every latch except the AUTO_EXT rows | `fsm.c` |
+| new F.35 | control-deadline overrun — the HAL's verdict (≥ 10 overruns in 100 ms, or 3 missed LLC periods) | `fsm.c` |
+| new F.36 | an undefined FSM state value | `fsm.c` |
+| new F.37 *(spec)* | line frequency outside 45–65 Hz or PLL unlocked for 200 ms — AUTO_EXT | HAL |
+| 4 (F.04) | recommended retired — it duplicates the 860 V hardware trip and the bus-reference clamp | — |
+| 13 (F.13) | HW-REC-1 proposed: a non-latching cycle-by-cycle output clamp, with the CMP0 threshold scheduled by mode (LOW 560 V · HIGH 1 050 V) | [firmware architecture §10](firmware-architecture.md#10-hardware-recommendations-raised-by-the-firmware-review) |
+
+Host evidence: `host_sim` **114 / 114** (16 E78 checks; F.19 is live in every scenario) and `proto_test` 40 / 40 — whose
+end-to-end rig found that a stop into a resistive load read as F.16.
 
 ---
 

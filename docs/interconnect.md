@@ -140,6 +140,15 @@ are PV-driven (VOM1271 via QPVD at the guaranteed 10 mA point, R8). The discharg
 active down to the 321 V aux floor, then passive. F.21's real coverage is the AC-present case — see
 [protection thresholds](protection-thresholds.md).
 
+**Module ↔ charger boundary at the output studs (E74).** Two functions are the charger/dispenser's, per
+IEC 61851-23, and the module must not duplicate them: (1) **output-bus discharge** — `COF1`+`COF2` (9.4 µF)
+sit downstream of `DOUT`, out of reach of the bank bleeders; on-module decay is the `SNS_VOUT` divider only
+(τ ≈ 36 s, 1000→60 V ≈ 101 s), and the shared DC bus the modules feed is discharged by the dispenser;
+(2) **output polarity screening** — `DOUT` blocks positive back-feed, but a **reversed** battery/bus applied
+while the S/P relays are closed drives a two-diode short through a bank bridge and the matrix. The dispenser
+verifies polarity before closing its contactors; the module closes its matrix only from STANDBY on command.
+With the matrix open there is no through-path between the output studs and the banks.
+
 ## 5. HMI behaviour
 
 ```mermaid

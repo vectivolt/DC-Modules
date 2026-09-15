@@ -101,7 +101,7 @@ These lines replace the shared-cell default on the 50 kW air module (`skuOverrid
 | `DIODE-1600V-250A-MOD` | DOUT | 496 | E67: 167 A out → 250 A class insulated module (200 A would run 84 %) |
 | `HF167F-250A-M` | KPRE1 · KPRE2 | 416 | power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation … |
 | `CMC-3PH-2mH-SKU` | CMC1 · CMC2 | 1,652 | 3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 rev B (dm-choke-design D7 engine): acceptance L_cm ≥ 2 mH @10 kHz AND … |
-| `SHUNT-50MV-167A` | RSHO | 124 | manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU via skuOverride) |
+| `SHUNT-50MV-167A` | RSHO | 124 | 0.299 mΩ (50 mV / 167 A) — E76 value-align |
 | `XFMR-LLC-CELL-3E70-50` | T1A · T1B | 1,147 | D3-50 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n = 2 overall) — the D3-40 construction: 3× E70/33/32 PC95-class on a … |
 | `IND-LR-E70-50` | L1R | 953 | D2-50 rev F (E67): EXTERNAL resonant inductor 3.28 µH ±3% on 2× E70/33/32 PC95-class (TDK former B66372B2000), N=5, litz 12000×0.05 mm (23.6 mm²), DISTRIBUTED … |
 | `CT-RES-1:100-150A` | CT1 | 72 | resonant CT 1:100, 150 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary (E67: ONE CT on the full-bridge tank; 50 kW tank class 120 A … |
@@ -323,7 +323,7 @@ These lines replace the shared-cell default on the 50 kW air module (`skuOverrid
 | `AMC1311DWVR` | iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3; R4 note: on the 1311 class the symbol's … | UIVOA UIVOB UIVOV | 3 | 92 | 276 | C456277 | ORDERABLE |
 | `PP-4u7-1200` | 4.7 µF 1200 V film (output — HR-8: 1000 V = 83%) | COF1 COF2 | 2 | 100 | 200 | — | CLASS |
 | `ISO5V-RFC-6K` | iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / … | PSSH PS5BKA PS5BKB | 3 | 65 | 195 | C20613048 | REVIEW |
-| `SHUNT-50MV-167A` | manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU … | RSHO | 1 | 124 | 124 | — | CLASS |
+| `SHUNT-50MV-167A` | manganin shunt, 50 mV at rated current, Kelvin 4-terminal (0.500 / 0.376 / 0.299 mΩ at the 100 / 133 / 167 A … | RSHO | 1 | 124 | 124 | — | CLASS |
 | `NSI1200-DSWR` | iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6) | USHO | 1 | 56 | 56 | C3029747 | ORDERABLE |
 | `STUD-M8` | M8 stud terminal | JOUTP JOUTN | 2 | 22 | 45 | — | CLASS |
 | `HV732BTTD4753F` | 475 kΩ 1206 1% anti-surge (HV divider — MR-3) | ROAD0 ROAD1 ROAD2 ROAD3 ROAD4 ROAD5 ROAD6 ROAD7 … | 24 | 1 | 26 | C4121673 | ORDERABLE |
