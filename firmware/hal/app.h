@@ -137,7 +137,7 @@ typedef struct {
   float la_vout, la_iout, la_vbka, la_vbkb; uint32_t la_n;
   volatile float pub_vout, pub_iout, pub_vbka, pub_vbkb, p_llc; volatile uint32_t pub_llc_seq, llc_count;
   app_azs_t azl;                          /* ch 0 I_RES, ch 1 the output differential */
-  uint32_t az_gen; bool az_done, az_bad; uint8_t az_try;
+  uint32_t az_gen; bool az_done, az_bad, az_gave_up; uint8_t az_try;
   /* fault ISR — one counter per kind, the tick keeps what it has seen */
   volatile uint8_t flt_n[5]; uint8_t flt_seen[5];
   /* tick state */

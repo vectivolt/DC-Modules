@@ -104,7 +104,7 @@ The periodic frames are phased by address (37 ms × address, modulo 500 ms), so 
 | Bit | V1.2 meaning | Set by |
 |---|---|---|
 | 0 | input overcurrent | F.01 |
-| 1 | mains frequency fault | F.37 when the HAL implements it |
+| 1 | mains frequency fault | F.37 — outside 45–65 Hz, or no zero crossing on a live line, for 200 ms (E79, `hal/app.c`) |
 | 2 | mains imbalance | not supervised — 0 |
 | 3 | "DCTz" fault | undefined in the document — 0 (TH-AMB-7) |
 | 4 | address conflict | a frame under this module's address from another node |

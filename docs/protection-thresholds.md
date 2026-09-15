@@ -447,6 +447,28 @@ sync is an open documentation line in E76.
 Host evidence: `host_sim` **114 / 114** (16 E78 checks; F.19 is live in every scenario) and `proto_test` 40 / 40 — whose
 end-to-end rig found that a stop into a resistive load read as F.16.
 
+## 11. E79 portable HAL (2026-09-16) — the rows the HAL decides, and a LIMIT tier in the PFC
+
+> [!IMPORTANT]
+> Additive. The portable real-time HAL (`firmware/hal/`) now implements the HAL side of the ladder. No hardware class or
+> threshold changes. Findings and the timing verdict: [firmware architecture §1.1 and §3.5](firmware-architecture.md).
+
+| Row | Change | Code |
+|---|---|---|
+| F.03 · F.13 · F.11 | attributed from the HRTIMER fault channels: CMP4 → F.03, CMP0 → F.13, and the FLT wire-OR → F.11 when I_RES at the edge is at least 90 % of the tank class, otherwise F.02; handed to the core as `hal_fault` | `hal/app.c` |
+| comparator references | recomputed every tick from the rating class and the calibration in force — at 50 kW: F.01 2.664 V · F.03 2.158 V · F.13 2.328 V (firmware may tighten, never loosen) | `hal/app.c` |
+| new F.30 | at boot, a calibration record outside ±10 % gain or ±150 counts of nominal, or no valid rating strap — no output. No record at all runs on nominal scaling with a warning | `hal/meas.c` · `hal/app.c` |
+| F.29 | adds the ADC reference beyond ±5 % for 100 ms, the sum of the line currents beyond 10 % of rated rms for 20 ms, and a boot offset more than 150 counts from nominal | `hal/app.c` |
+| new F.37 | line frequency outside 45–65 Hz, or no zero crossing on a live line, for 200 ms — AUTO_EXT (was spec) | `hal/app.c` |
+| F.22 zones | each zone's own derate and trip mapped onto the core's 105 / 115 °C scale: inlet 55 / 75 · PFC 95 / 105 · LLC 100 / 110 · transformer 105 / 115 °C | `hal/app.c` |
+| PFC LIMIT tier (new, below F.01) | a phase current above its reference by 15 % of the clamp turns that switch off for the update; the amplitude limit leaves room for the line to step back, because the 15 µs transport delay adds ΔV / L before any sample answers. Sag recoveries: 152 A (50 %) and 144 A (75 %) at 50 kW, 93 A for a 50 % sag of 480 VAC at 30 kW — each under F.01 / 1.2 | `hal/pfc.c` |
+| F.03 margin | skip (every switch off 15 V above the reference) and a light-load burst: a full-power load dump peaks at 833 V against the 860 V trip | `hal/pfc.c` |
+| F.05 | the LLC current folds back between the bus reference − 10 V and 625 V, so a sag rides on the power the PFC can still draw: 230 VAC for 60 ms at 50 kW kept the bus above 705 V | `hal/app.c` |
+| F.11 margin | the LLC frequency never sits below the tolerance-worst ZVS boundary for the load in force, and there is no burst below 100 V: soft-start tank peak 155 A against the 220 A class | `hal/llc.c` |
+
+Host evidence: `hal_test` **34 / 34** and `app_test` **16 / 16**, beside `host_sim` 114, `ctl_test` 18 and `proto_test` 40 — all
+under the sanitizers.
+
 ---
 
 <div align="center">

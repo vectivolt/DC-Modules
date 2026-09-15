@@ -30,12 +30,12 @@ void pfc_step(pfc_t *p, const pfc_cfg_t *c, const pfc_ref_t *r, const float i[3]
   float vbus = vp + vn;
   if (!r->en || !(vp > 50.0f) || !(vn > 50.0f) || !isfinite(vbus) || !isfinite(i[0] + i[1] + i[2]) ||
       !isfinite(v[0] + v[1] + v[2]) || !isfinite(r->vbus_ref) || !isfinite(r->w_line)) { pfc_reset(p); return; }
-  if (!p->run) { p->run = true; p->vref = vbus; }
+  if (!p->run) { p->run = true; p->vref = vbus; p->ivp = 1.0f / vp; p->ivn = 1.0f / vn; }
 
   float s = 0.6667f * (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);   /* balanced set: the phase crest² */
-  p->vpk2 = (s > p->vpk2) ? s : p->vpk2 + (s - p->vpk2) * fminf(dt / 5.0e-3f, 1.0f);
+  p->vpk2 = (s > p->vpk2) ? s : p->vpk2 + (s - p->vpk2) * fminf(dt * 200.0f, 1.0f);   /* falls in 5 ms */
   float vpk = sqrtf(fmaxf(p->vpk2, 2500.0f)), inv_vpk = 1.0f / vpk;
-  p->vnom = (vpk > p->vnom) ? vpk : p->vnom + (vpk - p->vnom) * fminf(dt / 2.0f, 1.0f);
+  p->vnom = (vpk > p->vnom) ? vpk : p->vnom + (vpk - p->vnom) * fminf(dt * 0.5f, 1.0f);   /* falls in 2 s */
 
   float up = c->ramp_vps * dt;
   p->vref = (r->vbus_ref > p->vref) ? fminf(r->vbus_ref, p->vref + up) : fmaxf(r->vbus_ref, p->vref - 2.0f * up);
@@ -51,6 +51,7 @@ void pfc_step(pfc_t *p, const pfc_cfg_t *c, const pfc_ref_t *r, const float i[3]
   bool hi = p_cmd * k_i >= i_max, lo = p_cmd <= 0.0f;
   if (++p->vdiv >= 10u) {   /* conditional integration: frozen while off, or while the limit holds against the error */
     p->vdiv = 0u;
+    p->ivp = 1.0f / vp; p->ivn = 1.0f / vn;
     if (!off && !(hi && e > 0.0f) && !(lo && e < 0.0f))
       p->xi = clampf(p->xi + c->ki_v * e * 10.0f * dt, -1.5f * c->p_clamp_w, 1.5f * c->p_clamp_w);
   }
@@ -68,11 +69,11 @@ void pfc_step(pfc_t *p, const pfc_cfg_t *c, const pfc_ref_t *r, const float i[3]
     vs[n] = vc[n] - c->kp_i * (ref[n] - i[n]);
   }
   float v0 = -0.5f * (fmaxf(fmaxf(vs[0], vs[1]), vs[2]) + fminf(fminf(vs[0], vs[1]), vs[2])) - c->k_mid * (vp - vn);
-  float ivp = 1.0f / vp, ivn = 1.0f / vn, i_sgn = 0.02f * c->i_clamp;
+  float i_sgn = 0.02f * c->i_clamp;
   for (int n = 0; n < 3; n++) {
     float vk = vs[n] + v0;
     bool pos = (fabsf(i[n]) > i_sgn ? i[n] : vc[n]) >= 0.0f;   /* the rail is the current's; too small to sign: the voltage's */
-    float on = 1.0f - clampf(pos ? vk * ivp : -vk * ivn, 0.0f, 1.0f);
+    float on = 1.0f - clampf(pos ? vk * p->ivp : -vk * p->ivn, 0.0f, 1.0f);
     if (fabsf(i[n]) > fabsf(ref[n]) + c->i_lim_a) on = 0.0f;   /* LIMIT: the rail against the current this update */
     p->on[n] = (on < c->on_min) ? 0.0f : (on > 1.0f - c->on_min) ? 1.0f : on;
   }

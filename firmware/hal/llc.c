@@ -22,7 +22,11 @@ void llc_cfg_default(llc_cfg_t *c, uint16_t kw) {
 float llc_zvs_fn(float q) {   /* the next grid point up: conservative on a rising curve; unknown load = the worst */
   if (isnan(q)) return ZVS_FN[23];
   if (q <= 0.0f) return ZVS_FN[0];
-  if (q <= 1.0f) { int k = (int)ceilf(q * 20.0f - 1.0e-4f); return ZVS_FN[k > 20 ? 20 : k]; }
+  if (q <= 1.0f) {   /* ceil without the library call */
+    int k = (int)(q * 20.0f);
+    if ((float)k < q * 20.0f - 1.0e-4f) k++;
+    return ZVS_FN[k > 20 ? 20 : k];
+  }
   return (q <= 1.5f) ? ZVS_FN[21] : (q <= 2.0f) ? ZVS_FN[22] : ZVS_FN[23];
 }
 

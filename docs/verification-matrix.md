@@ -24,7 +24,7 @@
 |---|---|---|
 | `envelope-grid` | 4 SKUs × 6 input voltages × 8 output voltages × 7 loads × 3 temperatures (E67 LOW/HIGH modes) | **4,536 points · 0 failures · max Tj 139 °C** |
 | `monte-carlo` | tank gain per SKU on the E67 tanks, choke lots, voltage and current chains, full-bridge dead time | **8 batches × 10k samples · pass** |
-| `fsm-sim` + `host_sim` | fault scenarios · C firmware under ASan/UBSan | **26 / 26 · 63 / 63** → E78: `host_sim` 114 · `ctl_test` 18 · `proto_test` 40 ([firmware verification](firmware-verification.md)) |
+| `fsm-sim` + `host_sim` | fault scenarios · C firmware under ASan/UBSan | **26 / 26 · 63 / 63** → E78: `host_sim` 114 · `ctl_test` 18 · `proto_test` 40 → E79: + `hal_test` 34 · `app_test` 16 ([firmware verification](firmware-verification.md)) |
 | `stress-audit` | every device, magnetic, pulse part and protection class against its acceptance line | **130 checks · clean** (incl. the E69a PFC die classes, the E67 grid-shape assert, and the E73 D7 CM-flux and D4 Rdc rows) |
 | `current-coordination` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux, **per-die fault pulse ≤ 0.8 × IDM (E69a-2)**, film-bank ripple (E68c), output diode, **precharge-bypass closure (E73)** | **81 checks · clean** |
 | `temp-critique` · `conductor-audit` · `magnetics-envelope` · `mag-sync` | core temperature, AC copper, D3 cells / D2 at every simulated corner, identity sync across five carriers | **11 · 18 · 30 · 48 · clean** (E73: fan-out and cell-imbalance rows) |
@@ -49,7 +49,7 @@ flowchart LR
   IND --> REV["review-checks<br/>140 assertions"]
   REV --> SHIP["KiCad-5 SHIP zips × 5<br/>pin-verify · uniformity"]
   SHIP --> PDF["10 release PDFs"]
-  FW["firmware run_tests<br/>172 checks (E78)"] --> REV
+  FW["firmware run_tests<br/>222 checks (E79)"] --> REV
   style GATES stroke:#d19a00,stroke-width:2.5px
   style IND stroke:#2ea44f,stroke-width:2.5px
 ```
