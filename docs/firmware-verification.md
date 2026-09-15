@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/host-172_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 172 checks · ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/host-222_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 222 checks · ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -17,7 +17,7 @@
 > conformance per protocol profile, timing measurement on the target, EVT on power hardware, and endurance.
 >
 > **Gate coupling** — the host level runs in `run-all` through `firmware/run_tests.sh`: `host_sim` **114** · `ctl_test` **18** ·
-> `proto_test` **40**, under AddressSanitizer + UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **host** cite a
+> `proto_test` **40** · `hal_test` **34** · `app_test` **16**, under AddressSanitizer + UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **host** cite a
 > named check; rows marked **HIL** or **EVT** are planned and carry their pass criteria now, so the rig is built to the
 > requirement rather than the requirement to the rig. Architecture and targets:
 > [firmware architecture](firmware-architecture.md).
@@ -26,7 +26,7 @@
 
 | Level | Where | What it proves | Status |
 |---|---|---|---|
-| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles | **172 checks, green** |
+| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end | **222 checks, green** |
 | **L2 static** | cppcheck + clang-tidy (bugprone, cert, misc), a MISRA C:2012 subset, stack-depth analysis | no undefined-behaviour classes, bounded stacks, no implicit narrowing on the wire path | planned |
 | **L3 HIL** | the production control card against a real-time plant, with two CAN interfaces and fault injection | timing, loops, sequencing, bus behaviour, NVM and update paths on the real MCU | planned |
 | **L4 EVT** | power hardware: T-44…T-49 with the existing T-03, T-06, T-16, T-35, T-42 | control transients, protection and interoperability on real power | planned |
@@ -34,7 +34,7 @@
 
 ```mermaid
 flowchart LR
-  SRC["firmware/core · firmware/proto"] --> L1["L1 host · run_tests.sh<br/>172 checks · sanitizers fatal"]
+  SRC["firmware/core · firmware/proto · firmware/hal"] --> L1["L1 host · run_tests.sh<br/>222 checks · sanitizers fatal"]
   SRC --> L2["L2 static<br/>MISRA subset · stack depth"]
   L1 --> RA["run-all.sh<br/>every commit"]
   L2 --> L3["L3 HIL · nightly<br/>real card · real-time plant · CAN fuzz"]
@@ -51,12 +51,12 @@ flowchart LR
 
 | ID | Required behaviour | Timing | Failure case | Recovery | Test | Pass / fail |
 |---|---|---|---|---|---|---|
-| S-01 | power-up → precharge → READY on a line inside 275–485 VAC with three phases | READY ≤ 2 s after aux up at 400 VAC | line out of window · precharge never completes | waits with LINE_WAIT · F.20 after 5 s of in-window line | host `power-up->precharge->standby` · HIL H-S01 · EVT T-22 | READY reached; no bypass close outside the window |
+| S-01 | power-up → precharge → READY on a line inside 275–485 VAC with three phases | READY ≤ 2 s after aux up at 400 VAC | line out of window · precharge never completes | waits with LINE_WAIT · F.20 after 5 s of in-window line | host `power-up->precharge->standby` · `app_test` boot to READY ≤ 1 s · HIL H-S01 · EVT T-22 | READY reached; no bypass close outside the window |
 | S-02 | the bypass contact closes and is confirmed before the PFC starts | confirmation ≤ 100 ms · F.01 blanked 60 ms | contact never closes | F.19, PFC never enabled | host `E78 a precharge bypass that never closes…` · EVT T-42 | F.19 ≤ 150 ms; zero PFC gate pulses |
 | S-03 | start from warm standby | regulated ≤ 1.0 s | start stalls | F.34 at 8 s | host `E76/F.34 stalled start…` · HIL H-S03 | ≤ 1.0 s; overshoot ≤ 1 % |
 | S-04 | start from cold standby through the make-permit | regulated ≤ 3.0 s | bleeders dead · a contact would make above the output node | F.34 · the make-permit refuses the close | host `E77 restart from cold standby…` · every-tick make-permit invariant · EVT T-35 | ≤ 3.0 s; every make at ≤ 2 A |
 | S-05 | no start without a voltage setpoint or a battery | — | NaN / zero command | READY + NO_SETPOINT | host `E77 voltage command NaN: no start` | no PFC enable |
-| S-06 | STOP is a controlled stop | current < 2 A in ≤ 100 ms, then gates off | a stop into a resistive load read as a short | F.16 not evaluated during the ramp | host `E78 the controlled stop…` · `proto_test` one core · HIL H-S06 | no latch; di/dt bounded |
+| S-06 | STOP is a controlled stop | current < 2 A in ≤ 100 ms, then gates off | a stop into a resistive load read as a short | F.16 not evaluated during the ramp | host `E78 the controlled stop…` · `proto_test` one core · `app_test` TonHe stop ≤ 150 ms · HIL H-S06 | no latch; di/dt bounded |
 | S-07 | a STOP withdrawn inside the ramp continues | no gate-off | — | — | host `E78 a STOP withdrawn…` | no restart, no re-arm |
 | S-08 | warm hold then cold standby | cold 60 s after STOP | — | the next start goes through the make-permit | host `E77 STOP: warm for the hold…` · EVT T-00 | PFC off and matrix open at 0 A; standby ≤ 10 W |
 | S-09 | shutdown and discharge | < 60 V in 3 / 4 / 5 s with AC present | discharge blocked | F.21, discharge stays commanded | host stuck-discharge windows · EVT T-21 · T-27 | per-SKU window holds |
@@ -75,12 +75,15 @@ flowchart LR
 | C-05 | load step 25 ↔ 100 % in CV | back within ± 0.5 % ≤ 50 ms | undershoot | — | HIL H-C05 · EVT T-03 | deviation ≤ 3 % |
 | C-06 | CV ↔ CC transfer | bumpless | windup, limit cycle | back-calculation | `ctl_test` no windup · takeover at the limit · HIL H-C06 | I overshoot ≤ 2 %, V overshoot ≤ 1 %, no cycle > 0.5 % |
 | C-07 | power limit and the rated-power curve | reduction ≤ 10 ms | overshoot | — | `ctl_test` power limits · HIL H-C07 | ≤ +2 % steady, ≤ +5 % for ≤ 100 ms |
-| C-08 | load dump from 100 % | peak ≤ V_set · 1.05 + 10 V | F.13 latch, bank overvoltage | skip band + HW-REC-1 | HIL H-C08 · EVT T-45 | no latch; parts inside ratings |
+| C-08 | load dump from 100 % | peak ≤ V_set · 1.05 + 10 V | F.13 latch, bank overvoltage | skip band + HW-REC-1 | `hal_test` PFC load dump (peak 833 V) · HIL H-C08 · EVT T-45 | no latch; parts inside ratings |
 | C-09 | derate down and recovery | down ≤ 10 ms · up ≤ 20 %/s | hunting | slew-limited recovery | host `E77 thermal derate is continuous` · `E77 fan recovery ramps…` | no step > 3 % per ms |
-| C-10 | input sag 330 → 285 VAC at full load | follows E1 without F.05 | bus collapse | E1 availability | `ctl_test` E1 · HIL H-C10 · EVT T-02 | no F.05; power ∝ V_LL below 330 VAC |
+| C-10 | input sag 330 → 285 VAC at full load | follows E1 without F.05 | bus collapse | E1 availability | `ctl_test` E1 · `app_test` 60 ms at 230 VAC and 50 kW · HIL H-C10 · EVT T-02 | no F.05; power ∝ V_LL below 330 VAC |
 | C-11 | accuracy and ripple | steady state | — | EOL calibration | EVT T-03 · T-40 | V ± 0.5 %, I ± 1 %, control ripple ≤ 0.2 % rms |
 | C-12 | loop stability | — | oscillation at a corner | gain schedule | HIL H-C12 frequency-response injection · EVT T-48 | PM ≥ 45°, GM ≥ 6 dB at every envelope corner |
 | C-13 | non-finite values in control | — | NaN / Inf into the shaper or kernel | outputs finite, demand 0 | `ctl_test` NaN containment · 200 k fuzz | no NaN reaches a PWM command |
+| C-14 | Vienna steady state and start (E79) | settles within 1 % · no start overshoot | distortion, midpoint drift | — | `hal_test` 50 kW at 400 VAC · start from the crest · 3 A on one bus half · sequence A-C-B · EVT T-02 | THD < 5 %, PF > 0.99, midpoint < 10 V (host plant: 0.7 %, 0.9999, 2.8 V) |
+| C-15 | the LLC never runs capacitive (E79) | every switching period | a demand beyond the tank's gain · a high-Q load | the ZVS floor | `hal_test` ZVS table against the FHA corners · CV, CC and beyond-gain on the switched tank · EVT T-48 | zero hard-switched edges; frequency never below the floor |
+| C-16 | the phase current through a line step (E79) | the 15 µs transport delay | a deep sag recovery · a phase jump · a high line | the amplitude limit leaves room for the step back | `hal_test` 50 % and 75 % sags at 50 kW · 50 % of 480 VAC at 30 kW · 30° jump · EVT T-02 | peak < F.01 / 1.2 |
 
 ### 1.3 Parallel operation
 
@@ -112,7 +115,7 @@ flowchart LR
 | ID | Required behaviour | Timing | Failure case | Recovery | Test | Pass / fail |
 |---|---|---|---|---|---|---|
 | X-01 | phase loss | 40 ms | a phase drops | F.09 AUTO_EXT | host `phase loss F.09` · `E77 1 ms phase dropout rides through` · EVT T-02 | rides 1 ms dropouts; trips at 40 ms |
-| X-02 | sag below 260 VAC | 100 ms ride-through | sustained sag | F.08; recovery above 275 VAC after the hold | host `E78 an input sag (F.08 AUTO_EXT)…` · `E77 99 ms sag rides through` | recovers into READY with REARM |
+| X-02 | sag below 260 VAC | 100 ms ride-through | sustained sag | F.08; recovery above 275 VAC after the hold | host `E78 an input sag (F.08 AUTO_EXT)…` · `E77 99 ms sag rides through` · `app_test` ride-through with the bus fold-back | recovers into READY with REARM |
 | X-03 | swell above 500 VAC | 20 ms | sustained swell | F.07; recovery below 485 VAC | host `swell F.07` | — |
 | X-04 | repeated grid events | — | 8 sags in 10 min | never locks; hold doubles to 64 s | host `E78 eight grid sags…` | no LOCK |
 | X-05 | aux brownout | SAFE at once; 500 ms stable to leave | aux hovering at UVLO | re-arm | host `E78 after an aux collapse…` · EVT T-09 | no restart without a fresh request |
@@ -120,8 +123,9 @@ flowchart LR
 | X-07 | output over-current backstop | 130 % / 2 ms · 102 % / 100 ms | CC loop failure | LATCH | host `E77 F.15 …` rows | no trip on a normal ramp-down |
 | X-08 | output overvoltage | CMP0 hardware · mirror 2 ms · sourcing 200 ms | CV failure · load dump | LATCH · skip band | host `E77 F.13 …` rows · EVT T-45 | no trip on a battery above the command |
 | X-09 | reversed battery at start | at readiness | reverse polarity | F.33 | host `reverse backfeed F.33` | no enable |
-| X-10 | bus OVP, DESAT, tank OC | µs, hardware | device failure | LATCH, attribution F.11 vs F.02 | host DESAT / F.01 / bus OVP rows · EVT T-06 · T-30 · T-37 | per protection-thresholds |
+| X-10 | bus OVP, DESAT, tank OC | µs, hardware | device failure | LATCH, attribution F.11 vs F.02 | host DESAT / F.01 / bus OVP rows · `app_test` channel attribution · EVT T-06 · T-30 · T-37 | per protection-thresholds |
 | X-11 | relay weld or open | 100 ms (open) · soft start (weld) | contact failure | F.19 · F.17 | host `E78 a matrix contact that drops out…` · `E67 welded K_PARA…` · EVT T-35 | latch; no make above the node |
+| X-12 | line frequency (E79) | 200 ms | outside 45–65 Hz, or no zero crossing on a live line | F.37 AUTO_EXT | `app_test` 40 Hz → F.37, clears at 50 Hz · `hal_test` grid monitor at 45 / 50 / 60 / 65 Hz with noise · EVT T-02 | latches at 200 ms; recovers after the hold |
 
 ### 1.6 Communication and protocols
 
@@ -132,7 +136,7 @@ flowchart LR
 | N-03 | frozen sender | stale at the timeout | the same frame repeated | — | `proto_test` frozen counter | stale despite frames arriving |
 | N-04 | duplicate and late frames | — | reordered by a gateway | ignored / NAK SEQUENCE | `proto_test` counter check | state unchanged |
 | N-05 | corrupted command | — | bit errors past CAN CRC, misrouting | NAK CRC | `proto_test` CRC NAK · must-understand | state unchanged |
-| N-06 | bus-off and error-passive | recover ≤ 200 ms; after 10 in 60 s hold off 5 s | babbling node, wiring fault | automatic; power side via the timeout | HIL H-N06 (error-frame injection) | never stuck off-bus; never delivering without a fresh stream |
+| N-06 | bus-off and error-passive | recover ≤ 200 ms; after 10 in 60 s hold off 5 s | babbling node, wiring fault | automatic; power side via the timeout | `app_test` 100 ms restart, a 5 s hold after ten · HIL H-N06 (error-frame injection) | never stuck off-bus; never delivering without a fresh stream |
 | N-07 | floods and high utilization | — | 1 kHz CTRL, 2 kHz foreign traffic, request storm | acceptance filters, RX ring, token bucket, TX eviction | `proto_test` TX queue eviction · HIL H-N07 | commands and fault events delivered; drops counted; CPU ≤ 75 % |
 | N-08 | wrong bit rate or profile | — | misconfigured cabinet | safe READY; HMI shows profile and rate | HIL H-N08 | no delivery; recoverable by service |
 | N-09 | ownership and controller restart | — | two controllers · a fast restart | NAK OWNED · RUN held | `proto_test` ownership · restart | no dual control; no blind restart |
@@ -149,13 +153,13 @@ flowchart LR
 | F-01 | impossible or non-finite measurements | F.29 after 3 ms | sensor or ADC failure | CLEAR | host `E77 …NaN…` rows | never blind; 2 ms glitches ride through |
 | F-02 | stuck-low output sensor | — | sensor failure | F.29 | host `stuck Vout sensor F.29` | latch |
 | F-03 | corrupted state value | next tick | memory corruption | F.36 | host `E78 a state value the enum does not define…` | every enable off |
-| F-04 | control overrun | verdict per architecture §3.3 | starved ISR | F.35 | host `E78 … control-overrun verdict…` · HIL H-F04 (injected ISR load) · EVT T-44 | latch on persistent overrun only |
+| F-04 | control overrun | verdict per architecture §3.3 | starved ISR | F.35 | host `E78 … control-overrun verdict…` · `app_test` a stalled LLC interrupt · HIL H-F04 (injected ISR load) · EVT T-44 | latch on persistent overrun only |
 | F-05 | ADC stall or reference drift | 1 ms · 1 s | DMA stopped · Vref off | F.29 | HIL H-F05 | latch within budget |
-| F-06 | watchdog reset under load | gates low ≤ the watchdog window | hung MCU | F.32 logged; no automatic restart | HIL H-F06 · EVT T-16 | zero gate pulses while GATE_EN low |
+| F-06 | watchdog reset under load | gates low ≤ the watchdog window | hung MCU | F.32 logged; no automatic restart | `app_test` F.32 on a watchdog boot · HIL H-F06 · EVT T-16 | zero gate pulses while GATE_EN low |
 | F-07 | HardFault or stack overflow | immediate | wild pointer, overflow | gates low, cause stored, reset | HIL H-F07 (fault injection build) | cause readable after the reset |
 | F-08 | boot loop | 3 resets in 10 min | bad image or hardware | safe bootloader | HIL H-F08 | outputs off; service frames answered |
-| F-09 | NVM corruption | at load | bit flips in A, in A and B | newest valid · defaults · F.30 for calibration | HIL H-F09 | never runs on an invalid calibration |
-| F-10 | power cut during a write | — | cut at a random instant | the previous record stays valid | HIL H-F10, 1 000 random cuts | zero invalid records accepted |
+| F-09 | NVM corruption | at load | bit flips in A, in A and B | newest valid · defaults · F.30 for calibration | `app_test` F.30 on an out-of-window record · HIL H-F09 | never runs on an invalid calibration |
+| F-10 | power cut during a write | — | cut at a random instant | the previous record stays valid | `hal_test` a cut at every byte and compaction step · HIL H-F10, 1 000 random cuts | zero invalid records accepted |
 | F-11 | interrupted firmware update | — | cut at 100 random points | the old image runs; rollback after 3 boots | HIL H-F11 | always boots a confirmed image |
 | F-12 | corrupted configuration values | at load and on write | out-of-range fields | per-field defaults | `proto_test` fuzz (cfg_sanitize) | no zero period, no divide |
 | F-13 | stack headroom | after the full HIL suite | deep call path | — | HIL H-F13 (painted stacks) | high-water ≤ 70 % |
@@ -184,6 +188,8 @@ flowchart LR
 | `host_sim` 114 | the 26 fault scenarios on a behavioural plant with relay mirror contacts, E60–E78 regressions, three group-law nodes, every-tick invariants (relay exclusion, make-permit, aux) |
 | `ctl_test` 18 | shaper rules and regulator properties (§1.2) |
 | `proto_test` 40 | frame helpers, TonHe V1.2 and VMP 2.0 conformance and fuzz, one core behind both profiles |
+| `hal_test` 34 | E79: the Vienna law on a cycle-by-cycle plant — start, load step and dump, steady THD / PF / midpoint, 50 % and 75 % sags, a 480 VAC sag, a 30° jump, sequence A-C-B · the LLC modulator on a switched tank — the ZVS table against the FHA corners, CV, CC into a battery, the floor, burst · measurement · the NVM store under a power cut at every byte and step |
+| `app_test` 16 | E79: the application end to end through TonHe V1.2 on averaged plants — boot to delivery, the stop, each fault channel, F.30 · F.32 · F.35 · F.37, the watchdog gate, sag ride-through, a start above the setpoint, CAN bus-off, configuration storage |
 
 To add: line and branch coverage with llvm-cov (target ≥ 90 % of `core/` and `proto/`), and a layer check that fails if any
 `core/` file includes a `proto/` header.

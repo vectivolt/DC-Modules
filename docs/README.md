@@ -94,11 +94,11 @@ inlet or ambient unless labelled Tj or core.
 | | Document | What it decides | Kept honest by |
 |---|---|---|---|
 | 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | — |
-| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E78 with provenance and invalidator | rows cited by every gate |
+| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E79 with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
 | 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, output modes, F.21 semantics | `host_sim` 114 · grep-pinned |
-| 🧬 | [Firmware architecture](firmware-architecture.md) | layers, timing, state machines, control and ramping, the protection hierarchy, exception handling, the firmware review | `run_tests.sh` 172 checks |
+| 🧬 | [Firmware architecture](firmware-architecture.md) | layers, timing, state machines, control and ramping, the protection hierarchy, exception handling, the firmware review, the one-MCU verdict | `run_tests.sh` 222 checks |
 | 📡 | [VMP 2.0 native CAN protocol](can-protocol.md) | addressing, control, acknowledgement, telemetry, discovery, versioning, the controller contract | `vmp.c` · `proto_test` |
 | 🔁 | [TonHe V1.2 compatibility profile](can-profile-tonhe-v12.md) | drop-in behaviour on TonHe V1.2 monitors, the fault-bit map, the ambiguity register | document examples byte-exact |
 | 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the release sheets | `kicad5-verify` 6,853 pins |

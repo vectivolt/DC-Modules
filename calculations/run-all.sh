@@ -49,5 +49,5 @@ node calculations/busbar/busbar-calc.mjs > /dev/null
 node calculations/pin-map-export.mjs > /dev/null
 node calculations/docs-lint.mjs
 sh firmware/run_tests.sh > /dev/null
-echo "FIRMWARE LOGIC OK — host_sim 114 · ctl_test 18 · proto_test 40 · hal_test 34 (E79)"
+echo "FIRMWARE LOGIC OK — host_sim 114 · ctl_test 18 · proto_test 40 · hal_test 34 · app_test 16 (E79)"
 echo "ALL CALCULATIONS REPRODUCED OK"

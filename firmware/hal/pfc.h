@@ -61,6 +61,8 @@ typedef struct {
   float i_pk;         /* commanded phase-current amplitude */
   float vpk2;         /* phase crest², peak-following */
   float vnom;         /* recent crest, peak-following with a 2 s fall — the line a sag can return to */
+  float ivp, ivn;     /* 1 / bus halves, refreshed every 10th update (a half moves < 0.3 % in 100 µs) — two FPU divisions
+                         saved on nine updates in ten of the 100 kHz interrupt */
   float on[3];        /* switch ON fraction for the next half period; 0 = off (the node sits on a rail, a passive rectifier) */
 } pfc_t;
 

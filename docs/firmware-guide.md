@@ -117,6 +117,13 @@ sequenceDiagram
 5. keep `PMP_MODE_DWELL_MS` at its product timebase (30 000 ms; the host suite compresses time 1000×);
 6. (single-brain, E40) there is no inter-MCU link — external CAN starvation is F.28; the 40-way harness carries no protocol, only signals with board-side default-OFF.
 
+> **E79 — the contract above is implemented by the portable HAL** (`firmware/hal/`, sans-IO). `app_pfc_isr`, `app_llc_isr`,
+> `app_fault_isr` and `app_tick` fill `pmp_in_t`, run the §2 sequence of the [firmware architecture](firmware-architecture.md),
+> attribute the HRTIMER fault channels, program the comparator references and read the bypass mirror contact
+> (`relay_fb_wired` = the KPRE pair). Item 5 is superseded: the product dwell is 1 000 ms (E78). What a GD32G553 port still
+> writes is the peripheral layer — clocks, HRTIMER, ADC groups and triggers, comparators and DAC, CAN-FD, the flash pages behind
+> `nvm_port_*`, the WDI pulse, DWT, and TCM placement of both control interrupts. Evidence: `hal_test` 34 · `app_test` 16.
+
 The ONE card (E40) runs the whole vocabulary — precharge, enables, S/P matrix, discharge — and the
 same `F.xx` codes appear on the HMI and in CAN telemetry (STATUS2/FAULT_EVT).
 

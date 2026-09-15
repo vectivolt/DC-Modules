@@ -5,15 +5,20 @@
 #   ctl_test    — the reference shaper and regulator kernel (ctl.c)
 #   proto_test  — TonHe V1.2 and VMP 2.0 conformance and fuzz, and one core driven through both profiles (E78)
 #   hal_test    — the portable real-time HAL on cycle-by-cycle Vienna and LLC plants, measurement, power-cut-safe NVM (E79)
+#   app_test    — the module application end to end: interrupts, the 1 ms sequence, TonHe V1.2, faults, NVM, CAN (E79)
 set -e
 cd "$(dirname "$0")"
 CC="cc -std=c99 -Wall -Wextra -Werror -O1 -fsanitize=address,undefined -fno-sanitize-recover=undefined"
+CORE="core/fsm.c core/group.c core/ctl.c core/modapi.c"
+PROTO="proto/frame.c proto/vmp.c proto/tonhe_v12.c proto/profile.c"
+HAL="hal/pfc.c hal/llc.c hal/meas.c hal/nvm.c"
 $CC core/fsm.c core/group.c test/host_sim.c -o /tmp/pmp_host_sim -lm
 $CC core/ctl.c test/ctl_test.c -o /tmp/pmp_ctl_test -lm
-$CC core/fsm.c core/group.c core/ctl.c core/modapi.c proto/frame.c proto/vmp.c proto/tonhe_v12.c proto/profile.c \
-    test/proto_test.c -o /tmp/pmp_proto_test -lm
-$CC hal/pfc.c hal/llc.c hal/meas.c hal/nvm.c core/ctl.c core/fsm.c test/hal_test.c -o /tmp/pmp_hal_test -lm
+$CC $CORE $PROTO test/proto_test.c -o /tmp/pmp_proto_test -lm
+$CC $HAL core/ctl.c core/fsm.c test/hal_test.c -o /tmp/pmp_hal_test -lm
+$CC -I. hal/app.c $HAL $CORE $PROTO test/app_test.c -o /tmp/pmp_app_test -lm
 /tmp/pmp_host_sim
 /tmp/pmp_ctl_test
 /tmp/pmp_proto_test
 /tmp/pmp_hal_test
+/tmp/pmp_app_test

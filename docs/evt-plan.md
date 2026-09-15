@@ -184,6 +184,11 @@ interoperability. The IDs in brackets are rows of the [firmware verification pla
 | T-48 | **Control transients** — C-01…C-12 per SKU: soft start, voltage and current steps, 25 ↔ 100 % load steps, CV ↔ CC, the power-limit crossing, a 330 → 285 VAC sag at full load, frequency-response injection | the performance targets of firmware architecture §5.5 · PM ≥ 45°, GM ≥ 6 dB at every envelope corner |
 | T-49 | **Fault and recovery cycling** — 1 000 cycles each of grid sag, phase loss, over-temperature (heater on the NTC), communication loss, relay feedback open, watchdog reset and aux brownout | every cycle ends in the documented state and recovers by the documented rule · no lockout from grid rows · no spurious gate pulse (D-03, D-05) |
 
+**E79 — what T-44 now checks against.** A static estimate from the compiled interrupt paths
+([firmware architecture §3.5](firmware-architecture.md)) puts the PFC update at ≈ 2.5 µs typical and ≈ 4.5 µs at a line-cycle
+close, the LLC update at ≈ 2.4 µs and all contexts at ≈ 35 % CPU, with both control interrupts in TCM RAM. T-44 records the
+typical and the line-cycle-close PFC update separately; above 5 µs the fallback is one PFC update per carrier period.
+
 ---
 
 <div align="center">

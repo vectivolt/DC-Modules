@@ -304,7 +304,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
   injection, first-article winding Rac, a −30 °C cold soak.
 - 📜 **Compliance certification** — a lab and certification-body activity.
 - 🤝 **Vendor RFQ pricing** — BOM prices are RFQ targets (±25 %) until quotes land; the China column is a landed target (duty per HSN code to confirm with a customs broker), and the InfyPower cost comparison rests on a teardown estimate.
-- 🖥️ **MCU HAL bring-up** — the C99 logic is host-proven; binding to peripherals happens on silicon.
+- 🖥️ **MCU port and bring-up** — the portable real-time HAL is host-proven on cycle-by-cycle plants (E79); the GD32G553 register port needs the vendor firmware library, and timing is measured on silicon (T-44).
 
 ## 🗺️ Roadmap
 

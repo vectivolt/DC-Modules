@@ -17,8 +17,9 @@
 > abnormal condition reaches a deterministic state, persistent data and firmware update, and the performance targets.
 >
 > **Gate coupling** — `firmware/run_tests.sh` (in `run-all`) is the evidence for every row marked **FIXED**:
-> `host_sim` 114 · `ctl_test` 18 · `proto_test` 40, under AddressSanitizer + UndefinedBehaviorSanitizer (fatal) and `-Werror`.
-> Rows marked **SPEC** are requirements on the HAL still to be written; rows marked **HW** need a hardware decision.
+> `host_sim` 114 · `ctl_test` 18 · `proto_test` 40 · `hal_test` 34 · `app_test` 16, under AddressSanitizer +
+> UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **SPEC** are requirements not yet implemented — since E79 the
+> portable HAL exists (`firmware/hal/`) and the GD32G553 register port does not; rows marked **HW** need a hardware decision.
 > The protocols are specified in [VMP 2.0](can-protocol.md) and the [TonHe V1.2 profile](can-profile-tonhe-v12.md); the test
 > matrix is the [firmware verification plan](firmware-verification.md).
 
@@ -31,8 +32,9 @@
 | **Protocols** | VMP 2.0 (native) and TonHe V1.2 — one profile per boot, chosen from the stored configuration; TonHe can be left out of an image at build time |
 | **Protection** | six response levels; every F.xx row carries a recovery class — AUTO_EXT · AUTO_INT · LATCH · LOCK |
 | **Smoothness** | bumpless soft start from the output node, slew-limited references, a 100 ms controlled stop, min-select CV/CC with back-calculation anti-windup, CV share trim |
-| **Verified on the host** | 172 checks: the 26 fault scenarios, E60–E78 regressions, every-tick invariants, both protocols against their documents, 2 M fuzzed frames |
-| **Before hardware** | the HAL against §3 and §9 · loop gains on HIL (§5.4) · HW-REC-1 (fast output clamp) |
+| **MCU** | one GD32G553 runs both stages — ≈ 35 % CPU by static estimate; the 100 kHz PFC update is the binding item (§3.5) |
+| **Verified on the host** | 222 checks: the 26 fault scenarios, E60–E79 regressions, every-tick invariants, both protocols against their documents, 2 M fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end |
+| **Before hardware** | the GD32G553 register port of `hal/app.h` (§11) · loop gains on HIL (§5.4) · HW-REC-1 (fast output clamp) |
 
 ## 1. What the review found
 
@@ -55,7 +57,7 @@ without contaminating the core. **FIXED** = code and a test in this pass (E78). 
 | FW-09 | Medium | Native protocol v1 (E73 draft) had no acknowledgement, counters, CRC, identity or capability discovery, 2-bit groups, and CLEAR as a level bit | silent rejections; stale, duplicated or frozen frames undetectable; a stuck clear bit auto-clears faults | **FIXED** — VMP 2.0 replaces it (v1 never shipped; `can_proto.c` retired) |
 | FW-10 | Medium | Input trip and start thresholds were equal (260 / 500 VAC) | a grid at the edge cycles the module | **FIXED** — start and recovery window 275–485 VAC |
 | FW-11 | Medium | The state `switch` had no default | a corrupted state value did nothing, silently | **FIXED** — F.36 latch with every enable off |
-| FW-12 | Medium | No control-deadline supervision in the core contract | a starved control ISR runs the converter on stale references | **FIXED** — `ctl_overrun` → F.35 · **SPEC** — the HAL's overrun verdict (§3.3) |
+| FW-12 | Medium | No control-deadline supervision in the core contract | a starved control ISR runs the converter on stale references | **FIXED** — `ctl_overrun` → F.35 · E79: the HAL's verdict (`hal/app.c`, §3.3), tested by `app_test` |
 | FW-13 | Medium | SAFE left on the first good aux sample, and the restart needed no fresh ENABLE | a rail hovering at UVLO cycles the converter; a restart the controller never asked for | **FIXED** — 500 ms stable aux, then a fresh ENABLE |
 | FW-14 | Medium | OFF was terminal | a discharged module needed a power cycle | **FIXED** — WAKE returns through INIT and precharge |
 | FW-15 | Medium | A voltage setpoint lost while delivering (no battery) drove the reference to 0 V under load | an uncontrolled collapse of the output | **FIXED** — controlled stop + `PMP_W_NO_SETPOINT` |
@@ -63,12 +65,30 @@ without contaminating the core. **FIXED** = code and a test in this pass (E78). 
 | FW-17 | Low | Wire encoders must cast floats to integers — NaN or out-of-range is undefined behaviour in C | a corrupted telemetry value is UB on the wire path | **FIXED** — every profile encodes through `pmp_sat_*`; UBSan is fatal in the tests |
 | FW-18 | Low | A core-level "fresh ENABLE after boot" would lose a TonHe start command that arrives during precharge | a TonHe monitor's single start command ignored | **FIXED** by design — "a restart needs a fresh request" lives in the profile (VMP holds RUN until RUN = 0; a TonHe start is an event) |
 | FW-19 | **High** | Output OV: the F.13 comparator (CMP0) latches at a fixed 1 050 V. In LOW mode (banks parallel, ≤ 500 V) an EV contactor opening at full current meets no hardware clamp below 1 050 V; the 10 kHz loop needs ~100 µs, and 167 A × 100 µs into ~34 µF is ≈ 490 V | bank and terminal-capacitor overvoltage on a load dump in LOW mode, or a nuisance latch if the threshold is simply lowered | **HW** — HW-REC-1 (§10); until decided, the HAL schedules the CMP0 threshold by mode (firmware may tighten) and T-45 measures the dump |
-| FW-20 | Medium | One temperature input, one derate slope; the protection table lists per-zone limits | a cool inlet can hide a hot transformer loop, or the reverse | **SPEC** — zone table mapped to a common margin (§7) |
-| FW-21 | Medium | Fan failure derates to a fixed 0.5 | the 50 kW air module with one fan out is sized for 0.6 (E59 air budget) | **SPEC** — derate by failed-fan count (§7) |
-| FW-22 | Medium | No design for NVM, calibration integrity, boot or firmware update | corruption, wear and interrupted updates had no defined outcome | **SPEC** — §9 |
-| FW-23 | Low | Line frequency is not supervised (a PLL unlock must stop the PFC) | undefined behaviour on a drifting generator | **SPEC** — F.37, 45–65 Hz, AUTO_EXT |
+| FW-20 | Medium | One temperature input, one derate slope; the protection table lists per-zone limits | a cool inlet can hide a hot transformer loop, or the reverse | **FIXED** (E79) — each zone's derate and trip mapped onto the core's 105 / 115 °C scale (§7, `hal/app.c`) |
+| FW-21 | Medium | Fan failure derates to a fixed 0.5 | the 50 kW air module with one fan out is sized for 0.6 (E59 air budget) | **SPEC** — derate by failed-fan count (§7); E79 supervises every tach, but the core input is still one `fan_ok` (0.5) |
+| FW-22 | Medium | No design for NVM, calibration integrity, boot or firmware update | corruption, wear and interrupted updates had no defined outcome | **FIXED** (E79) for records — a power-cut-safe two-page store (`hal/nvm.c`) and the calibration windows (F.30) · **SPEC** — boot and firmware update (§9) |
+| FW-23 | Low | Line frequency is not supervised (a PLL unlock must stop the PFC) | undefined behaviour on a drifting generator | **FIXED** (E79) — F.37: outside 45–65 Hz, or no zero crossing on a live line, for 200 ms; AUTO_EXT (`app_test`) |
 | FW-24 | Low | F.27 (internal link) was retired at E40 but is still evaluated on `link_age_ms` | none if the HAL feeds 0 | documented: the HAL feeds 0; one MCU runs both stages |
 | FW-25 | Low | Row 4 (bus OV firmware, 845 V) duplicates the 860 V hardware trip and the bus-reference clamp | over-guarding; it was never implemented | recommendation: retire row 4 |
+
+### 1.1 What implementing the HAL found (E79)
+
+Each row was reproduced on a host plant before it was fixed. The plant runs stay in `firmware/test/hal_test.c` and
+`app_test.c`, so a regression fails the gate.
+
+| ID | Severity | Finding | Consequence | Disposition |
+|---|---|---|---|---|
+| FW-26 | **Critical** | The E78 regulator placeholders (CV 2 / 200, CC 0.5 / 500) were far too stiff for the LLC: a battery puts about 70 per-unit of current on one unit of demand | 564 A tank peaks in every soft start (F.11 is 220 A) and an 81 A peak-to-peak limit cycle into a 0.1 Ω battery | **FIXED** — defaults CV 0.5 / 150 and CC 0.01 / 40: a 155 A soft-start peak and 100.1 A with 14 A peak to peak into the battery; the §5.5 transient targets stay HIL work (§5.4) |
+| FW-27 | **High** | A PFC voltage loop that commands the current amplitude keeps a sag's amplitude when the line returns | 269 A on a 50 % sag recovery at 50 kW — above F.01 (195 A) | **FIXED** — the loop commands power; the amplitude is that power over the measured crest |
+| FW-28 | **High** | A line step lands ΔV / L on the phase current for the 15 µs transport delay before any sample can answer (+53 A for a 50 % recovery at 50 kW, more from a high line); from the plain FW-R6 clamp a 50 % recovery reached 184 A | a nuisance F.01 latch at the end of a deep sag, worst on a 480 VAC grid | **FIXED** — the amplitude limit is the lowest of the clamp, the rated power above 330 VAC and 1.1 × clamp − k_step × (recent crest − crest): 152 A (50 % sag), 144 A (75 %), 93 A (30 kW, 480 VAC) — each under F.01 / 1.2. A faster sense filter does not help (11.5 µs still gave 184 A) |
+| FW-29 | **High** | An LLC floor fixed at the 0.55 fr design point ignores the capacitive boundary, which rises toward fr as the load's Q grows | a demand for more gain than the tank has drives it capacitive — hard commutation of the SiC body diodes | **FIXED** — floor = max(0.55 fr, 1.03 × the tolerance-worst ZVS boundary for the measured Q); no hard-switched edge on the switched tank, including a demand beyond its gain |
+| FW-30 | Medium | Bursting the LLC into a discharged output, which is a near-short | 129 A tank peaks and ± 13 % ripple at 60 V | **FIXED** — continuous phase shift below 100 V: 22–44 A and ± 0.5 % |
+| FW-31 | Medium | A Vienna stage has no way to stop a rising bus at light load unless every switch turns off | bus runaway at no load or after a load dump | **FIXED** — skip (every switch off 15 V above the reference) and a light-load burst: load-dump peak 833 V against the 860 V trip |
+| FW-32 | Medium | A latch during precharge or discharge, then CLEAR or an AUTO recovery, left the module in STANDBY with the bypass open | it never starts, because the PFC waits for the bypass, and never says why | **FIXED** — the FAULT exit goes through PRECHG while the bypass is open |
+| FW-33 | Medium | A start into a battery or charged terminal capacitors above the setpoint needed the stack to reach the node | F.34 on every restart at a lower setpoint with the output still charged | **FIXED** — RUN entry at min(node, command); the regulator follows min(terminal, stack) |
+| FW-34 | Medium | The E60 engine `vienna-switched.mjs` zero-clamps a diode current without re-imposing Σ i = 0 | a phase left conducting alone keeps its current — an 800 V/s no-load runaway in the C port of the plant | **FIXED** in the C plant · the E60 full-power evidence is unaffected; light-load results from that engine need the same correction |
+| FW-35 | Low | The 100 kHz update carried five FPU divisions, and the LLC path called `ceilf` | ≈ 3.4–4.6 µs of the 10 µs period | **FIXED** — the bus-half reciprocals every 10th update, constant divisions as multiplies, an integer ceil: one division and one square root per update (§3.5) |
 
 ## 2. Architecture
 
@@ -123,7 +143,12 @@ flowchart TB
 | `proto/profile.{h,c}` | profile table: name, bit rate, `rx`, `tick` |
 | `proto/vmp.{h,c}` | VMP 2.0 — the identifier and object tables of record |
 | `proto/tonhe_v12.{h,c}` | TonHe V1.2 — every rule and ambiguity of that document |
-| `test/host_sim.c` · `ctl_test.c` · `proto_test.c` | the host evidence (`run_tests.sh`) |
+| `hal/pfc.{h,c}` | E79: the Vienna law — current loops, modulation, the voltage loop in power, skip and burst, the amplitude limit |
+| `hal/llc.{h,c}` | E79: the LLC modulator — PFM, phase shift, burst, the ZVS floor |
+| `hal/meas.{h,c}` | E79: calibration, reference correction, the grid monitor, NTC, rating strap |
+| `hal/nvm.{h,c}` | E79: the power-cut-safe record store |
+| `hal/app.{h,c}` | E79: interrupt entries, the 1 ms sequence, supervision, relays, fans, panel, CAN recovery, NVM policy — sans-IO |
+| `test/host_sim.c` · `ctl_test.c` · `proto_test.c` · `hal_test.c` · `app_test.c` | the host evidence (`run_tests.sh`) |
 
 **The 1 ms sequence the HAL runs** — drain received frames into `profile->rx` · `profile->tick` · `pmp_cmd_to_in` ·
 `pmp_fsm_step` · `pmp_cmd_to_ctl` · `pmp_ctl_step` · commit references to the control ISR · fill `mod_tlm_t`
@@ -136,8 +161,8 @@ flowchart TB
 | Context | Rate / trigger | Work | WCET budget | Priority |
 |---|---|---|---|---|
 | HRTIMER fault ISR | fault edge | record source (FLT input, I_RES capture for F.11 vs F.02), timestamp — the silicon has already stopped PWM | ≤ 50 µs | highest |
-| PFC control ISR | 100 kHz, carrier peak and valley (FW-EMI-1) | three current loops, PLL, midpoint balance, duty loaded at the next half-period | ≤ 3 µs (30 %) | 2 |
-| LLC control ISR | 10 kHz, ADC end-of-sequence synchronized to HRTIMER | `pmp_reg_step`, frequency / phase / burst command | ≤ 30 µs (30 %) | 3 |
+| PFC control ISR | 100 kHz, carrier peak and valley (FW-EMI-1) | `app_pfc_isr` → `pfc_step`: three current loops on resistive emulation, midpoint balance, the voltage loop; the grid monitor every 10th update; duty loaded at the next half-period | ≤ 3 µs typical, ≤ 5 µs at a line-cycle close (E79 estimate 2.5 / 4.5 µs, §3.5) | 2 |
+| LLC control ISR | 10 kHz, ADC end-of-sequence synchronized to HRTIMER | `app_llc_isr`: the bus fold-back, `pmp_reg_step`, `llc_step` | ≤ 30 µs (E79 estimate 2.4 µs) | 3 |
 | CAN ISR | frame event | copy to or from ring buffers — nothing else | ≤ 20 µs | 4 |
 | 1 ms scheduler | 1 kHz timer | the sequence of §2 · slow ADC and plausibility · 10 ms slice (fans, relay economizer, HMI) · 100 ms slice (NVM journal, statistics) | ≤ 400 µs (40 %) | lowest |
 
@@ -177,6 +202,33 @@ the 100 ms slice with the control ISRs executing from RAM or from the bank not b
 
 A plausibility row only affects what it covers. F.29 latches only when a signal a protection row depends on is invalid for
 its persistence (3 ms, E77).
+
+### 3.5 One MCU for both stages — the verdict (E79)
+
+**Yes.** The GD32G553 runs the Vienna PFC, the LLC and the supervisory stack from one Cortex-M33 core with margin, on two
+conditions: both control interrupts execute from TCM RAM, and EVT T-44 confirms the estimate below with the DWT counter.
+
+| Resource | Needed | GD32G553VET7 |
+|---|---|---|
+| Core | single-precision float in the 100 kHz path | Cortex-M33 at 216 MHz, single-precision FPU, DSP extension |
+| PWM | LLC legs A and B with hardware dead time · three Vienna phases on one carrier · a hardware kill | HRTIMER at 145 ps; ST0 / ST1 for the legs and ST3–ST5 for the phases in the pin map; fault channels for CMP0 · CMP1 · CMP2 · CMP4 · CMP7 and the FLT wire-OR |
+| Analog | 5 channels per PFC update, 4 per LLC period, about 14 slow | four 12-bit ADCs at up to 5.3 Msps each — about 15 % used |
+| Fast protection | 5 comparators with DAC references | 8 comparators, DAC internal outputs |
+| Communication | one CAN at 125–500 kbit/s | 3 CAN-FD |
+| Memory | ≈ 37 KB code (HAL, core, both profiles) · ≈ 6 KB application state (`app_t` with both profile contexts) | up to 512 KB flash · 128 KB SRAM including 32 KB TCM |
+
+| Path | Compiled (gcc -O2, Cortex-M33 hard-float) | Estimate | Share of its period |
+|---|---|---|---|
+| PFC update, typical | `app_pfc_isr` + `pfc_step`: ≈ 450 instructions executed, 1 VDIV + 1 VSQRT | ≈ 2.5 µs | 25 % of 10 µs |
+| PFC update, every 10th · at a line-cycle close | + the voltage-loop integrator and `grid_sample`: + 2 VDIV, then + 4 VSQRT | ≈ 3.5 · 4.5 µs | 35 · 45 % |
+| LLC update | `app_llc_isr` + `pmp_reg_step` + `llc_step`: ≈ 350 instructions, 7 VDIV | ≈ 2.4 µs | 2.4 % of 100 µs |
+| 1 ms tick | measurement, profile, FSM, shaper, telemetry, NVM, CAN | 25–50 µs | 2.5–5 % |
+| **All contexts** | including interrupt entry with lazy FPU stacking | | **≈ 35 % average** |
+
+Method: instruction counts from the disassembly of the compiled paths, 1.1 cycles per instruction from TCM (1.3–1.5 from flash
+with wait states), 19 cycles per VDIV and 29 per VSQRT. It is an estimate, not a measurement. If T-44 measures the PFC update
+above 5 µs, the fallback is one update per carrier period (50 kHz — the 30 µs delay E65 already analysed), which halves the
+PFC load.
 
 ## 4. State machines
 
@@ -389,14 +441,14 @@ exit from FAULT, SAFE or a communication loss needs a fresh request (§4.3).
 | F.27 Internal link | retired at E40 | — | — | — | — | word 9 (never set) |
 | F.28 Communication loss | the profile's timeout | firmware | L3 | graceful | fresh request | ext 2 |
 | F.29 Sensor | non-finite or impossible for 3 ms · output reading far below a delivering stack | firmware | L4 | LATCH | CLEAR | word 7 |
-| F.30 Configuration / calibration | CRC at boot | firmware | no output | LATCH | service | word 7 |
+| F.30 Configuration / calibration | at boot: a calibration record outside its windows, or no valid rating strap (E79) | firmware | no output | LATCH | service | word 7 |
 | F.31 Lockout | 5 counted latches in 10 min | firmware | — | LOCK | power cycle / service | state 0x11 |
 | F.32 Watchdog | WDO | hardware | L5 | LATCH | CLEAR | word 7 |
 | F.33 Back-feed | reversed battery at start | firmware | L4 | LATCH | CLEAR | word 7 |
 | F.34 Start stall | 8 s energized without reaching RUN | firmware | L4 | LATCH | CLEAR | word 7 |
 | F.35 Control overrun | the HAL's verdict (§3.3) | firmware | L4 | LATCH | CLEAR | word 7 |
 | F.36 Internal | undefined FSM state · stack at 90 % | firmware | L4 | LATCH | CLEAR | word 7 |
-| F.37 Line frequency *(SPEC)* | outside 45–65 Hz or PLL unlocked for 200 ms | firmware | L4 | AUTO_EXT | in range + hold | PFC bit 1 |
+| F.37 Line frequency | outside 45–65 Hz, or no zero crossing on a live line, for 200 ms (E79) | firmware | L4 | AUTO_EXT | in range + hold | PFC bit 1 |
 
 ### 6.4 Anti-chatter
 
@@ -426,6 +478,9 @@ exit from FAULT, SAFE or a communication loss needs a fresh request (§4.3).
 - No CRC on telemetry frames: CAN CRC-15 plus counters suffice. CRC-8 protects only frames that can command power or change
   configuration.
 - No derate inside the normal line window.
+- No PLL (E79): the Vienna law is resistive emulation on the sensed phase voltages, and the grid monitor takes frequency and
+  phase sequence from hysteretic zero crossings — there is nothing to unlock.
+- No relay-coil economizer (E79): it would save 1–2 W while the matrix is closed, and cold standby opens the matrix anyway.
 
 ## 7. Thermal, cooling and derating
 
@@ -495,6 +550,12 @@ Flow assurance belongs to the cooling cart.
 **Flash map** *(GD32G553VET7, 512 KB — confirm sector sizes at bring-up)*: bootloader 32 KB · image slot A 200 KB · image slot B
 200 KB · NVM 64 KB (configuration A/B, calibration A/B, counter journal, event log ring) · the rest reserved.
 
+**As implemented (E79, `hal/nvm.c`):** one power-cut-safe store on two flash pages carries the configuration, calibration and
+counter records. Entries are appended with a CRC-32; the newest valid entry of a kind wins; a full page compacts into the other
+and commits by writing its header last. `hal_test` cuts the power at every programmed byte of an append and at every step of a
+compaction. The application programs nothing while the LLC delivers and erases only with both stages stopped. The event log and
+the firmware update below are not implemented yet.
+
 | Record | Contents | Written | Integrity |
 |---|---|---|---|
 | Configuration | address · group · slot · profile · bit rate · comm timeout · telemetry periods · ramps · droop · fan mode · power cap · TonHe address mode and CAN address | on change, rate-limited (≤ 1 per 10 s) | A/B, CRC-32, sequence |
@@ -523,7 +584,11 @@ no J1939 PDU1 frame sets the native marker.
 
 ## 11. Open before release
 
-- The HAL against §3, §8 and §9, and the self-test gate.
+- The GD32G553 register port of `hal/app.h` — clocks, HRTIMER (carrier, dead time, fault channels), ADC groups and triggers,
+  comparators and DAC references, CAN-FD, flash, watchdog, DWT, TCM placement. It needs the GigaDevice GD32G5x3 firmware
+  library; the portable HAL behind it is E79.
+- The bootloader, firmware update and event log (§9).
+- `vienna-switched.mjs` needs the Σ i = 0 correction before it is used for light-load results (FW-34).
 - Loop gains per rating on HIL (§5.4); the timing budget measured on the target (T-44).
 - HW-REC-1.
 - TonHe V1.2 interoperability on real equipment (T-46) — resolves TH-AMB-1 … TH-AMB-11.
