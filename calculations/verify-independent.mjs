@@ -325,6 +325,32 @@ console.log("\n=== J. R5 FIXES — proven in the built netlists ===");
   // R7-A: comparator-INSTANCE-aware current-sense allocation (B and C shared CMP2 before)
   ck("J", "card CMP allocation (R7-A)", C.netOfPin.get("UCARD.pin17") === "AIN8" && C.netOfPin.get("UCARD.pin25") === "AIN9" && C.netOfPin.get("UCARD.pin16") === "AIN10" && C.netOfPin.get("UCARD.pin15") === "AIN11",
     "I_A0→PC2/CMP7_IP · I_B0→PA3/CMP1_IP · I_C0→PC1/CMP2_IP · VAC1→PC0/ADC — three INDEPENDENT comparators (GD32G553 Fig 2-3 verified)");
+  // E75: the F.03/F.13 "HW comp" rows now have comparators behind them — SNS_VBUSP on PB13
+  // (CMP4_IP, ref DAC3_OUT0, HRTIMER fault ch 5) and SNS_VOUT on PA1 (CMP0_IP, ref DAC0_OUT0
+  // internal-only MODE0=011, fault ch 3); before E75 those senses sat on PE15/PA5 (no usable CMP).
+  ck("J", "card OVP CMP allocation (E75)", C.netOfPin.get("UCARD.pin52") === "ANA14" && C.netOfPin.get("UCARD.pin21") === "AIN3",
+    "SNS_VBUSP→PB13/CMP4_IP · SNS_VOUT→PA1/CMP0_IP (GD32G553 DS Rev 1.01 Table 2-4 + UM Table 25-21 verified)");
+  // E76 (external review R01): the netlist had E75 but the DELIVERED KiCad face did not — the
+  // kicad5 chain has an upstream stage (sheet-pages: dist → page tables) that a partial regen can
+  // skip, and kicad5-verify only proves face ⇄ payload, so a stale payload verifies clean (the
+  // R4-1/R6-A class, third occurrence). This check reads the SHIP .sch/.lib FACE itself and
+  // traces the eight §J pins to their label stubs — payload staleness can no longer pass.
+  {
+    const schT = readFileSync(join(ROOT, "kicad5/dc-modules-control-card/control-card-card.sch"), "utf8");
+    const libT = readFileSync(join(ROOT, "kicad5/dc-modules-control-card/dcmod-r4.lib"), "utf8");
+    const cm = schT.match(/L dcmod-r4:GD32G553VET7 UCARD\nU 1 1 \S+\nP (\d+) (\d+)\n(?:F .*\n)*\s*1\s+\d+\s+\d+\n\s*([\d\s-]+)\n/);
+    const [cpx, cpy] = [Number(cm[1]), Number(cm[2])], [ma, mb, mc, md] = cm[3].trim().split(/\s+/).map(Number);
+    const symT = libT.match(/DEF GD32G553VET7 [\s\S]*?ENDDEF/)[0];
+    const pinXY = {}; for (const pm of symT.matchAll(/X \S+ (\d+) (-?\d+) (-?\d+) \d+ [UDLR] /g)) pinXY[pm[1]] = [Number(pm[2]), Number(pm[3])];
+    const faceOf = (num) => {
+      const [x, y] = pinXY[num], sx = cpx + ma * x + mb * y, sy = cpy + mc * x + md * y;
+      const lm = schT.match(new RegExp(`Text Label ${sx - 200} ${sy} .*\\n(\\S+)`));
+      return lm ? lm[1] : "(none)";
+    };
+    const WANT = { 21: "AIN3", 27: "AIN1", 46: "PWM8", 52: "ANA14", 17: "AIN8", 25: "AIN9", 16: "AIN10", 15: "AIN11" };
+    ck("J", "card SHIP FACE pin ownership (E76 — R01)", Object.entries(WANT).every(([n, w]) => faceOf(n) === w),
+      Object.entries(WANT).map(([n, w]) => `pin${n}=${faceOf(n)}${faceOf(n) === w ? "" : "≠" + w}`).join(" · "));
+  }
 }
 for (const [sku] of Object.entries(SK)) {
   const A = B[sku].ac, D = B[sku].dc;

@@ -81,7 +81,7 @@ The 40 and 50 kW deltas are recorded in register rows E41, E42, E44 and E67–E6
 ---
 
 <div align="center">
-<sub><a href="../docs/can-protocol.md">← External CAN Protocol</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="README-module-family.md">Module Family →</a></sub>
+<sub><a href="../docs/can-profile-tonhe-v12.md">← TonHe V1.2 Compatibility Profile</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="README-module-family.md">Module Family →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

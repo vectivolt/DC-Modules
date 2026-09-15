@@ -14,6 +14,7 @@ The design face ends here: there is no PCB layout and no other CAD export in thi
 
 HOW THEY ARE MADE (never hand-edit - regenerate)
   node calculations/sheet-pages.mjs <target>
+  node calculations/sheet-pages.mjs <target>        REQUIRED FIRST: reads dist netlists into page tables
   node calculations/sheet-netlist-gen.mjs <target>
   node calculations/kicad5-gen.mjs <target>      writes dc-modules-<target>/ AND re-zips the SHIP file
   node calculations/kicad5-verify.mjs <target>   re-derives every pin from the files; must read 100 %

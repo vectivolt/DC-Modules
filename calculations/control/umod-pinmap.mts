@@ -40,13 +40,30 @@ cap.set(28, { port: "PA6", func: "ADC (per R3 fixed-pin finding); TIMER7_BRKIN0"
 // E44: pin 90 (PB3) is the FREED ROLE0 landing — documented free + 5V-tolerant in
 // docs/mcu-pin-allocation-gd32.md ("CAN2_RX on pin 90 PB3"; GPIO/EXTI input-capable).
 cap.set(90, { port: "PB3", func: "GPIO/EXTI input; CAN2_RX alt (freed ROLE0 landing)", via: "doc:pin-allocation-CAN2-finding" });
+// E75: pin 52 (PB13) capability re-documented from GD32G553xx Datasheet Rev 1.01 Table 2-4 (read
+// 2026-09-14): Additional = ADC2_IN4 + CMP4_IP (the R3 extraction had recorded only the HRTIMER
+// alternate). Carries SNS_VBUSP so the F.03 bus-OVP hardware comparator exists (CMP4, IM=DAC3_OUT0,
+// HRTIMER fault ch 5 per UM Table 25-21). Pin 21 (PA1, ADC01_IN1 + CMP0_IP) takes SNS_VOUT for
+// F.13 the same way (CMP0, IM=DAC0_OUT0 internal-only MODE0=011, fault ch 3).
+cap.set(52, { port: "PB13", func: "ADC2_IN4, CMP4_IP; HRTIMER_ST2CH1 alt", via: "doc:E75-DS-Table2-4" });
 const FIXED = new Set([24, 49, 64, 75, 100, 23, 48, 63, 74, 99, 37, 35, 36, 6, 14, 95, 76, 77]);
 
 // ---- the audited card-era pin map (E35 sheet, verified) — kept ways keep these pins ----------
 const KEPT: Record<string, number> = {
   PWM0: 69, PWM1: 71, PWM2: 51, PWM3: 53, PWM4: 67, PWM5: 65,
-  PWM6: 70, PWM7: 72, PWM8: 52, PWM9: 54, PWM10: 68, PWM11: 66,
-  AIN0: 20, AIN1: 21, AIN2: 22, AIN3: 27, AIN4: 29, AIN5: 30,
+  PWM6: 70, PWM7: 72, PWM8: 46, PWM9: 54, PWM10: 68, PWM11: 66,   // E75: PWM8 (null net) takes the vacated PE15
+  // E75 (external review #3 — the R7-A pattern again, one level up): the two "HW comp" OVP rows
+  // (F.03 bus 860 V, F.13 output) had NO comparator behind them — SNS_VBUSP sat on PE15 (ADC3_IN1
+  // only, no CMP function) and SNS_VOUT on PA5 (CMP1_IM: CMP1 is I_B0's, and IM is the reference
+  // side). Verified against GD32G553xx Datasheet Rev 1.01 Table 2-4 + User Manual Rev 1.0
+  // (CMP0MSEL/CMP4MSEL source lists, DAC MODEx=011 internal-only mode, HRTIMER Table 25-21 fault
+  // mapping). Pins swapped INSIDE the card — ways, harness and power boards untouched:
+  //   SNS_VOUT  (AIN3)  -> pin 21 PA1  = CMP0_IP + ADC01_IN1 · ref CMP0_IM <- DAC0_OUT0, DAC0
+  //     MODE0=011 (buffer off, internal-only: PA4/SNS_VAC2 keeps its pin) · CMP0 -> HRTIMER fault ch 3
+  //   SNS_VBUSP (ANA14) -> pin 52 PB13 = CMP4_IP + ADC2_IN4  · ref CMP4_IM <- DAC3_OUT0 (free
+  //     internal channel — phases hold DAC3_OUT1 / DAC2_OUT1 / DAC2_OUT0) · CMP4 -> HRTIMER fault ch 5
+  //   vacated PA5 (27) -> spare way AIN1 · vacated PE15 (46) -> spare way PWM8 (both nets null)
+  AIN0: 20, AIN1: 27, AIN2: 22, AIN3: 21, AIN4: 29, AIN5: 30,
   // R7-A (E48): AIN9<->AIN11 SWAPPED vs the R3 allocation. The R6 constraint ("CMP-capable
   // pin") was NOT sufficient — the external reviewer traced the LQFP100 table: pin 15/PC0 is
   // CMP2_IM and pin 16/PC1 is CMP2_IP, so phases B and C sat on OPPOSITE INPUTS OF THE SAME
@@ -74,7 +91,7 @@ const CHANGED: Record<string, [number, string]> = {
 };
 const NEW: Record<string, [number, string]> = {
   ANA13: [39, "harness sense — PE8 ADC2_IN5"],
-  ANA14: [46, "harness sense — PE15 ADC3_IN1"],
+  ANA14: [52, "harness sense — PB13 ADC2_IN4 + CMP4_IP (E75: bus-OVP comparator; was PE15/pin 46)"],
   ANA15: [57, "harness sense — PD10 ADC2_IN6"],
   ANA16: [58, "harness sense — PD11 ADC2_IN7"],
   ANA17: [43, "harness sense — PE12 ADC3_IN15 (vacated by DI2)"],

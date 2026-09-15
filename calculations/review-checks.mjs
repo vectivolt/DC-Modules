@@ -451,7 +451,7 @@ ck("R5-C", /C\$\{id\}BV/.test(cells) && /C\$\{id\}VA/.test(cells) && /C\$\{id\}V
   "local bypass at every flagged class: NSI6611 VCC1, AMC both sides, bias-module 1 u bulk, CAN both domains, AND/NOR/op-amp VCC, opto driver");
 ck("R5-D", !/UEXCL2/.test(boards) && !/"net.CTL_KPREA"/.test(boards) && /\/\^UEXCL\$\//.test(db),
   "E67: the pre-insertion exclusion stage is RETIRED with the pre-insertion pair (the output diode needs no matched-voltage make) — no orphan second stage may remain");
-ck("R5-D-FW", /o->k_ser = false; o->k_para = false; o->k_parb = false; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),
+ck("R5-D-FW", /o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = true; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),   /* E76: step 20 also starts the bank bleeders (review R03) */
   "ST_MODESW step-20 opens ALL three matrix contacts explicitly; host_sim asserts the exclusion invariant on every tick of every scenario");
 ck("R5-E", !/RG\$\{id\}A1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[123]"),
   "paralleled pairs are SYMMETRIC: the original device gets its own 2.2 R branch (E68: the Vienna pairs are retired — one die per phase on the clip mount; the LLC positions that stay paralleled keep the symmetric branches)");

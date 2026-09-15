@@ -102,7 +102,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `HF167F-80A-M` | KPRE1 · KPRE2 | 208 | power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation … |
 | `CMC-3PH-2mH-SKU` | CMC1 · CMC2 · RSHO | 1,062 | D7-30 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 9.9 W, ΔT 20 K — second source to the Schaffner catalog part |
 | `CMC-3PH-2mH-SKU` | CMC1 · CMC2 · RSHO | 1,062 | 3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 rev B (dm-choke-design D7 engine): acceptance L_cm ≥ 2 mH @10 kHz AND … |
-| `SHUNT-50MV-100A` | CMC1 · CMC2 · RSHO | 96 | manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU via skuOverride) |
+| `SHUNT-50MV-100A` | CMC1 · CMC2 · RSHO | 96 | manganin shunt, 50 mV at rated current, Kelvin 4-terminal (0.500 / 0.376 / 0.299 mΩ at the 100 / 133 / 167 A codes — E76: the value follows the order code, the … |
 
 ## Line items by section
 
@@ -314,7 +314,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `AMC1311DWVR` | iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3; R4 note: on the 1311 class the symbol's … | UIVOA UIVOB UIVOV | 3 | 92 | 276 | C456277 | ORDERABLE |
 | `PP-4u7-1200` | 4.7 µF 1200 V film (output — HR-8: 1000 V = 83%) | COF1 COF2 | 2 | 100 | 200 | — | CLASS |
 | `ISO5V-RFC-6K` | iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / … | PSSH PS5BKA PS5BKB | 3 | 65 | 195 | C20613048 | REVIEW |
-| `SHUNT-50MV-100A` | manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU … | RSHO | 1 | 96 | 96 | — | CLASS |
+| `SHUNT-50MV-100A` | manganin shunt, 50 mV at rated current, Kelvin 4-terminal (0.500 / 0.376 / 0.299 mΩ at the 100 / 133 / 167 A … | RSHO | 1 | 96 | 96 | — | CLASS |
 | `NSI1200-DSWR` | iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6) | USHO | 1 | 56 | 56 | C3029747 | ORDERABLE |
 | `STUD-M8` | M8 stud terminal | JOUTP JOUTN | 2 | 22 | 45 | — | CLASS |
 | `HV732BTTD4753F` | 475 kΩ 1206 1% anti-surge (HV divider — MR-3) | ROAD0 ROAD1 ROAD2 ROAD3 ROAD4 ROAD5 ROAD6 ROAD7 … | 24 | 1 | 26 | C4121673 | ORDERABLE |

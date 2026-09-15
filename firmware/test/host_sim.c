@@ -1,10 +1,11 @@
-/* host_sim.c — host-side verification of the PRODUCTION C logic (fsm.c + can_proto.c):
- *   1) the same 26 §36 scenarios as calculations/system/fsm-sim.mjs, against the same 1 ms plant;
- *   2) CAN codec round-trip + range/contradiction rejection;
- *   3) 100k-frame malformed-input fuzz of every decoder (run under ASan/UBSan by run_tests.sh).
+/* host_sim.c — host-side verification of the PRODUCTION supervisory logic (fsm.c + group.c):
+ *   1) the same 26 §36 scenarios as calculations/system/fsm-sim.mjs, against the same 1 ms plant (E78: relay mirror
+ *      contacts follow their coils, so F.19 is live in every scenario);
+ *   2) the E60–E78 regression checks and the every-tick invariants;
+ *   3) the E66 group share law on three nodes.
+ * The wire codecs moved to firmware/proto/ at E78 (VMP 2.0 + TonHe V1.2) and are verified by test/proto_test.c.
  * Build/run: firmware/run_tests.sh */
 #include "../core/fsm.h"
-#include "../core/can_proto.h"
 #include "../core/group.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +14,7 @@
 
 typedef struct {                 /* behavioral plant, mirrors fsm-sim.mjs 1 ms model */
   float bus, bankA, bankB, temp, vout, iout, prevR;
+  float voutc;                   /* E76: the 9.4 uF terminal capacitors behind DOUT (tau ~36 s on the divider) */
   int transient;
 } plant_t;
 
@@ -24,6 +26,8 @@ typedef struct {
   float rload_ovr;               /* <=0 → derive from vcmd/icmd */
   bool welded_para, vout_stuck_en;
   float vout_stuck;
+  float bank_clamp;              /* E76: >0 stalls the LLC plant at this bank voltage (start-stall scenarios) */
+  bool saw_bleed;                /* E76: q_disch_bk observed asserted during the run */
 } sim_t;
 
 static void sim_init(sim_t *s) {
@@ -33,14 +37,17 @@ static void sim_init(sim_t *s) {
   s->in.fan_ok = true; s->in.aux_ok = true; s->in.wdt_ok = true;
   s->in.vcmd = 400; s->in.icmd = 100;
   s->p.temp = 60; s->rload_ovr = 0;
+  s->in.relay_fb_wired = PMP_RLY_PRE | PMP_RLY_SER | PMP_RLY_PARA | PMP_RLY_PARB;   /* E78: F.19 live in every scenario */
 }
 
 static void plant_step(sim_t *s) {
   pmp_out_t *o = &s->f.out;
   plant_t *p = &s->p;
-  /* bus */
+  /* bus — E76 (review R02): the plant tracks the COMMANDED reference, not a fixed 800 V; the
+     old shortcut is exactly what masked the "vbus > 700" startup gate for every sub-700 V
+     reference (reviewer counterexample: 650 V reference, module parked in STANDBY forever). */
   if (s->f.st == ST_PRECHG) p->bus += (s->in.vin_ll * 1.414f - p->bus) * 0.012f;
-  if (o->pfc_en && s->in.aux_ok) p->bus += (800 - p->bus) * 0.05f;
+  if (o->pfc_en && s->in.aux_ok) p->bus += (o->vbus_ref - p->bus) * 0.05f;
   if (!o->pfc_en && s->f.st != ST_PRECHG && p->bus > 0) p->bus -= (o->q_disch ? 7.0f : 0.15f);
   if (p->bus < 0) p->bus = 0;
   /* CV/CC target drives BANKS (banks are the output) */
@@ -51,14 +58,31 @@ static void plant_step(sim_t *s) {
   if (s->p.transient > 0) s->p.transient--;
   float vtar = fminf(s->in.vcmd, ilim * rload);
   float bankT = o->llc_en ? fminf(vtar / (o->mode == MODE_SER ? 2 : 1), 500) : 0;
-  p->bankA += ((o->llc_en ? bankT : p->bankA * 0.995f) - p->bankA) * 0.08f;
-  p->bankB += ((o->llc_en ? bankT : p->bankB * 0.995f) - p->bankB) * 0.08f;
+  if (s->bank_clamp > 0) bankT = fminf(bankT, s->bank_clamp);       /* E76: stalled-start knob */
+  if (o->llc_en) {
+    p->bankA += (bankT - p->bankA) * 0.08f;
+    p->bankB += (bankT - p->bankB) * 0.08f;
+  } else {
+    /* E76 (review R03): honest bank decay — commanded bleeders tau ~175 ms; PASSIVE decay is the
+       3.8 MOhm sense divider (tau ~75 s), not the old 2.5 s shortcut that hid retained charge */
+    float d = o->q_disch_bk ? 0.9943f : 0.999987f;
+    p->bankA *= d; p->bankB *= d;
+  }
+  if (o->q_disch_bk) s->saw_bleed = true;
   /* a welded K_PARA: paralleled banks track; in SER (KSER closed) it shorts bank A (E67 → F.17 at the soft start) */
   if (s->welded_para) { if (o->mode == MODE_SER && o->k_ser) p->bankA = 0; else p->bankB = p->bankA; }
-  float stack = (o->mode == MODE_SER) ? (o->k_ser ? p->bankA + p->bankB : p->bankA)
-                                      : (o->k_para ? fmaxf(p->bankA, p->bankB) : p->bankA);
-  bool out = s->f.st == ST_RUN || s->f.st == ST_DERATE;             /* E67: the output diode conducts once RUN is entered */
-  p->vout = o->llc_en ? fmaxf(stack, s->in.ext_connected ? s->in.vext : 0) : (s->in.ext_connected ? s->in.vext : 0);
+  /* E76 (review R03): the stack follows the RELAY TOPOLOGY and the diode conducts on PHYSICS —
+     the old model keyed conduction on the FSM being in RUN ("a passive diode does not wait for
+     the software", reviewer). Output node = battery when connected (stiff), else the terminal
+     capacitors, which charge through DOUT whenever the stack exceeds them and decay tau ~36 s. */
+  float stack = o->k_ser ? p->bankA + p->bankB
+              : ((o->k_para || o->k_parb) ? fmaxf(p->bankA, p->bankB) : 0);
+  bool out = s->f.st == ST_RUN || s->f.st == ST_DERATE;
+  if (stack - 1.0f > p->voutc) p->voutc = stack - 1.0f;              /* diode charges the node up */
+  else if (out && o->llc_en) p->voutc = fmaxf(stack - 1.0f, 0.0f);   /* a connected load pulls it down with the stack */
+  else p->voutc -= p->voutc * 0.000028f;                             /* else only the 3.8 MOhm divider drains it */
+  float node = s->in.ext_connected ? s->in.vext : p->voutc;
+  p->vout = fmaxf(stack - 1.0f, node);
   p->iout = (out && o->llc_en) ? fminf(stack / fmaxf(rload, 0.01f), ilim * 1.02f) : 0;
   p->temp += ((o->llc_en ? 40 + 55 * o->derate + (s->in.fan_ok ? 0 : 15) : 40) - p->temp) * 0.002f;
   /* feed measurements */
@@ -67,6 +91,7 @@ static void plant_step(sim_t *s) {
   s->in.vout_meas = s->vout_stuck_en ? s->vout_stuck : p->vout;
   s->in.iout_meas = p->iout;
   s->in.temp_max_c = p->temp;
+  s->in.relay_fb = pmp_relay_cmd(o);   /* E78: ideal mirror contacts, one tick behind the coil command */
 }
 
 typedef void (*script_fn)(sim_t *s);
@@ -87,14 +112,25 @@ static void expect(const char *name, sim_t *s, const char *states, int code, int
   } else printf("PASS %-42s (%s)\n", name, pmp_state_name(s->f.st));
 }
 static int excl_viol = 0;   /* R5-D: matrix exclusion invariant, checked EVERY tick of EVERY scenario */
+static int surge_viol = 0;  /* E76 (review R03): a matrix contact must never MAKE with the new stack
+                               above the output node — that forward-biases DOUT through the closing
+                               contact (film-bank dump, weld class). Checked at every close edge. */
+static int aux_viol = 0;    /* E76 (review R05): aux_ok false must mean no conversion enable, every tick */
 static void runsim(sim_t *s, script_fn fn, int ticks) {
   for (s->t = 0; s->t < ticks; s->t++) {
+    bool pk_ser = s->f.out.k_ser, pk_pa = s->f.out.k_para, pk_pb = s->f.out.k_parb;
     if (fn) fn(s);
     plant_step(s);
     pmp_fsm_step(&s->f, &s->in);
     /* the hardware UEXCL/UEXCL2 pair enforces this state-wise; firmware must never even ASK
      * for it: KSER commanded together with a parallel-side contact */
     if (s->f.out.k_ser && (s->f.out.k_para || s->f.out.k_parb)) excl_viol++;
+    if ((s->f.out.k_ser && !pk_ser) || (s->f.out.k_para && !pk_pa) || (s->f.out.k_parb && !pk_pb)) {
+      float st_new = s->f.out.k_ser ? s->p.bankA + s->p.bankB : fmaxf(s->p.bankA, s->p.bankB);
+      float node = s->in.ext_connected ? s->in.vext : s->p.voutc;
+      if (st_new - 1.0f > node + 25.0f) surge_viol++;
+    }
+    if (!s->in.aux_ok && (s->f.out.pfc_en || s->f.out.llc_en)) aux_viol++;
     s->in.desat_flt = false; s->in.oc_pfc_flt = false; s->in.clear_req = false; /* read-clear */
   }
 }
@@ -144,13 +180,32 @@ SCRIPT(sc_ocpfc) { sc_en(s); if (s->t == 1500) s->in.oc_pfc_flt = true; }
 SCRIPT(sc_wdt) { sc_en(s); if (s->t == 1500) s->in.wdt_ok = false; }
 SCRIPT(sc_canto) { sc_en(s); if (s->t > 900) s->in.can_age_ms += 2; }
 SCRIPT(sc_link) { sc_en(s); if (s->t > 1500) s->in.link_age_ms += 2; }
-SCRIPT(sc_shut) { sc_en(s); if (s->t == 1200) s->f.st = ST_SHUTDOWN; }
+/* E77: shutdown through the PUBLIC input (the scripts used to write s->f.st — the core had no request) */
+SCRIPT(sc_shut) { sc_en(s); if (s->t == 1200) s->in.shutdown_req = true; }
 /* F.21 rating plumbing (card strap, one image): bus held up so discharge can never finish */
-SCRIPT(sc_dstuck) { sc_en(s); if (s->t == 100) s->f.st = ST_SHUTDOWN; if (s->t > 100) s->p.bus = 300; }
+SCRIPT(sc_dstuck) { sc_en(s); if (s->t == 100) s->in.shutdown_req = true; if (s->t > 100) s->p.bus = 300; }
+/* -------- E76 adversarial set (external review R02-R09 counterexamples) -------- */
+SCRIPT(sc_lowv) { if (s->t == 1) s->in.vcmd = 300; sc_en(s); }                     /* R02: 650 V reference must start */
+SCRIPT(sc_servlow) { if (s->t == 1) s->in.vcmd = 560; sc_en(s); }                  /* R02: SER at ref < 700 must start */
+SCRIPT(sc_stop) { sc_en(s); if (s->t == 1500) s->in.enable_req = false; if (s->t == 2200) s->in.enable_req = true; }
+SCRIPT(sc_otcan) { sc_en(s); if (s->t == 1500) { s->p.temp = 118; s->in.can_age_ms = 5000; } }   /* R07: same-tick OT + CAN loss */
+SCRIPT(sc_flipmid) { if (s->t == 1) { s->in.vcmd = 400; s->in.omode_req = OMODE_LOW; } sc_en(s);
+  /* R04: flip DURING the soft-start — triggered by the observed state (LLC on, still STANDBY), not a tick guess */
+  if (s->f.out.llc_en && s->f.st == ST_STANDBY && s->in.omode_req == OMODE_LOW) s->in.omode_req = OMODE_HIGH; }
+SCRIPT(sc_stallot) { if (s->t == 1) s->bank_clamp = 5; sc_en(s); if (s->t == 2500) s->p.temp = 130; }   /* R05: stalled start must obey OT */
+SCRIPT(sc_stall) { if (s->t == 1) s->bank_clamp = 5; sc_en(s); }                   /* F.34: stalled start times out */
+SCRIPT(sc_auxstart) { sc_en(s); if (s->t == 640) s->in.aux_ok = false; }           /* R05: aux drop mid-start stays off */
+SCRIPT(sc_fanrec) { sc_en(s); if (s->t == 1500) s->in.fan_ok = false; if (s->t == 2200) s->in.fan_ok = true; }  /* R09 */
+SCRIPT(sc_xbatt) { if (s->t == 1) { s->in.ext_connected = true; s->in.vext = 460; s->in.vcmd = 800; s->rload_ovr = 5; } sc_en(s);
+  if (s->t > 1000 && s->in.vext < 540) s->in.vext += 0.05f; }                      /* R03: battery climbs through 500 V */
 SCRIPT(sc_lock) {
   sc_en(s);
   if (s->t >= 600 && s->t < 2400 && s->t % 300 == 0) s->in.desat_flt = true;
-  if (s->t > 600 && s->t % 300 == 150) { s->in.clear_req = true; s->in.enable_req = true; s->f.need_enable = false; }
+  /* E76 (review R06): re-arm through the PUBLIC contract — drop enable for one tick after the
+     clear (the old script reached into the struct to clear need_enable, hiding that the core
+     never cleared it and a field module could not restart after a fault clear). */
+  if (s->t > 600 && s->t % 300 == 150) { s->in.clear_req = true; s->in.enable_req = false; }
+  if (s->t > 600 && s->t % 300 == 152) { s->in.enable_req = true; }
 }
 
 int main(void) {
@@ -197,6 +252,125 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_shut, 3000);   expect("shutdown discharge <60V", &s, "|OFF|", -1, s.p.bus < 60);
   sim_init(&s); runsim(&s, sc_lock, 3000);   expect("5 faults -> LOCK", &s, "|LOCK|", -1, s.f.lock);
 
+  /* -------- E76 adversarial set (external review R02-R09) -------- */
+  sim_init(&s); runsim(&s, sc_lowv, 3000);   expect("E76/R02 300 V LOW starts at a 650 V reference", &s, "|RUN|", -1,
+    s.f.out.llc_en && fabsf(s.p.bus - 650.0f) < 15.0f);
+  sim_init(&s); runsim(&s, sc_servlow, 3000); expect("E76/R02 560 V SER starts below the old 700 V gate", &s, "|RUN|", -1,
+    s.f.out.k_ser && s.f.out.vbus_ref < 700.0f);
+  sim_init(&s); runsim(&s, sc_stop, 2100);   expect("E76/R06 enable release stops to STANDBY", &s, "|STANDBY|", -1, !s.f.out.llc_en);
+  sim_init(&s); runsim(&s, sc_stop, 3400);   expect("E76/R06 re-enable after stop returns to RUN", &s, "|RUN|", -1, s.f.out.llc_en);
+  sim_init(&s); runsim(&s, sc_otcan, 3000);  expect("E76/R07 same-tick CAN loss cannot downgrade the OT latch", &s, "|FAULT|LOCK|", FC_OT, 1);
+  sim_init(&s); runsim(&s, sc_flipmid, 3000); expect("E76/R04 HIGH request mid-LOW-start reconfigures (450 V HIGH then refused, matrix open)", &s, "|STANDBY|", -1,
+    !s.f.out.k_para && !s.f.out.k_parb && !s.f.out.k_ser && !s.f.out.llc_en);
+  sim_init(&s); runsim(&s, sc_stallot, 4000); expect("E76/R05 stalled energized start obeys OT", &s, "|FAULT|LOCK|", FC_OT, 1);
+  sim_init(&s); runsim(&s, sc_stall, 11000); expect("E76/F.34 stalled start latches within the window", &s, "|FAULT|LOCK|", FC_START_TO, 1);
+  sim_init(&s); runsim(&s, sc_auxstart, 3000); expect("E76/R05 aux drop mid-start stays disabled", &s, "|STANDBY|SAFE|", -1, !s.f.out.pfc_en && !s.f.out.llc_en);
+  ck("E76/R05 aux invariant (no enable while aux_ok=false, all scenarios)", aux_viol == 0);
+  /* E77: the recovery is slew-limited (≤ 20 %/s) — 0.5 → 1.0 takes 2.5 s after the fan returns at 2.2 s */
+  sim_init(&s); runsim(&s, sc_fanrec, 5000); expect("E76/R09 fan recovery restores derate 1.0 and RUN", &s, "|RUN|", -1, s.f.out.derate == 1.0f);
+  sim_init(&s); runsim(&s, sc_xbatt, 9000);  expect("E76/R03 crossover under a live 500 V battery lands in SER", &s, "|RUN|DERATE|", -1,
+    s.f.out.k_ser && s.f.out.mode == MODE_SER && s.saw_bleed);
+
+
+  /* -------- E77 firmware review: every reproduced defect is a regression check (direct drive, no plant) -------- */
+  {
+    pmp_fsm_t f; pmp_in_t in;
+    #define E77_BASE() do { pmp_fsm_init(&f); memset(&in, 0, sizeof in); in.vin_ll = 400; in.phases_ok = 3; in.vmid_frac = 0.5f; \
+      in.fan_ok = in.aux_ok = in.wdt_ok = true; in.vcmd = 400; in.icmd = 100; in.temp_max_c = 60; in.vbus = 400; } while (0)
+    #define E77_STEP(n) do { for (long k_ = 0; k_ < (long)(n); k_++) pmp_fsm_step(&f, &in); } while (0)
+    /* drive to RUN at a PAR bank: precharge ramp, the PFC regulates to its reference, banks meet the command */
+    #define E77_RUN(vb) do { E77_BASE(); in.vcmd = (vb); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { \
+      if (f.st == ST_PRECHG) in.vbus += 5; if (f.out.pfc_en) in.vbus = f.out.vbus_ref; in.enable_req = t_ > 200; \
+      if (f.out.llc_en) { in.vbank_a = in.vbank_b = (vb); in.vout_meas = (vb) - 1; in.iout_meas = 50; } pmp_fsm_step(&f, &in); } } while (0)
+
+    E77_RUN(400); in.icmd = 0; for (int k = 0; k < 40; k++) { in.iout_meas = 50.0f * (1 - k / 40.0f); E77_STEP(1); }
+    ck("E77 current setpoint lowered to 0 A during a 40 ms ramp-down: no F.15", f.st == ST_RUN && f.latched == FC_NONE);
+    E77_RUN(400); in.iout_meas = 131; E77_STEP(3);
+    ck("E77 F.15 fast row: 131 % of rated for 3 ms latches", f.latched == FC_OUT_OC);
+    E77_RUN(400); in.iout_meas = 110; E77_STEP(50);
+    ck("E77 F.15: 110 % of rated for 50 ms is a CC-loop transient, no latch", f.latched == FC_NONE);
+    E77_RUN(400); in.iout_meas = 105; E77_STEP(150);
+    ck("E77 F.15 slow row: 105 % of rated for 150 ms latches", f.latched == FC_OUT_OC);
+    E77_RUN(400); in.ext_connected = true; in.vext = 480; in.vout_meas = 480; in.vcmd = 400; E77_STEP(300);
+    ck("E77 battery 480 V above a 400 V command behind DOUT: no F.13", f.latched == FC_NONE);
+    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG) in.vbus += 5; E77_STEP(1); }
+    in.ext_connected = true; in.vext = 420; in.vout_meas = 420; in.vcmd = 0; in.icmd = 0; in.enable_req = true; E77_STEP(20);
+    ck("E77 ENABLE before the first setpoint with a battery present: no F.13", f.latched == FC_NONE);
+    E77_RUN(400); in.vbank_a = in.vbank_b = 560; in.vout_meas = 559; E77_STEP(3);
+    ck("E77 F.13 firmware mirror: PAR stack above 545 V for 2 ms latches", f.latched == FC_OUT_OVP);
+    E77_RUN(400); in.vbank_a = in.vbank_b = 470; in.vout_meas = 469; in.iout_meas = 40; E77_STEP(250);
+    ck("E77 F.13 sourcing row: stack 470 V over a 400 V command at 40 A for 250 ms latches", f.latched == FC_OUT_OVP);
+
+    E77_BASE(); in.vin_ll = 0; in.vbus = 330; E77_STEP(200);
+    ck("E77 AC sense reads 0 in precharge: the bypass never closes, the wait is reported", f.st == ST_PRECHG && !f.out.k_pre && (f.out.warn & PMP_W_LINE_WAIT));
+    E77_BASE(); in.vin_ll = NAN; in.vbus = 330; E77_STEP(20);
+    ck("E77 AC sense NaN in precharge: F.29 instead of a silent park", f.latched == FC_SENSOR);
+    E77_RUN(400); in.temp_max_c = NAN; E77_STEP(5);
+    ck("E77 temperature NaN in RUN: F.29 (OT and derate would be blind)", f.latched == FC_SENSOR);
+    E77_RUN(400); in.vbus = NAN; E77_STEP(5);
+    ck("E77 bus voltage NaN in RUN: F.29", f.latched == FC_SENSOR);
+    E77_RUN(400); in.temp_max_c = NAN; E77_STEP(2); in.temp_max_c = 60; E77_STEP(20);
+    ck("E77 a 2 ms non-finite glitch inside the 3 ms persistence: no latch, reported", f.latched == FC_NONE);
+    E77_RUN(400); in.icmd = NAN; in.iout_meas = 400; E77_STEP(5);
+    ck("E77 current command NaN keeps F.15 armed (400 A latches)", f.latched == FC_OUT_OC);
+    E77_RUN(400); in.icmd = -1; E77_STEP(20);
+    ck("E77 negative current command reads as 0 A, no fault", f.latched == FC_NONE);
+    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG) in.vbus += 5; E77_STEP(1); }
+    in.vcmd = NAN; in.enable_req = true; E77_STEP(500);
+    ck("E77 voltage command NaN: no start (was: RUN at the 500 V PAR ceiling)", f.st == ST_STANDBY && !f.out.pfc_en && (f.out.warn & PMP_W_NO_SETPOINT));
+
+    E77_RUN(400); in.vin_ll = 255; E77_STEP(1); in.vin_ll = 400; E77_STEP(5);
+    ck("E77 1 ms sag to 255 VAC rides through (row 8: 100 ms)", f.latched == FC_NONE);
+    E77_RUN(400); in.vin_ll = 255; E77_STEP(99); in.vin_ll = 400; E77_STEP(5);
+    ck("E77 99 ms sag rides through", f.latched == FC_NONE);
+    E77_RUN(400); in.phases_ok = 2; E77_STEP(1); in.phases_ok = 3; E77_STEP(5);
+    ck("E77 1 ms phase dropout rides through (row 9: 40 ms)", f.latched == FC_NONE);
+    E77_RUN(400); in.vmid_frac = 0.56f; E77_STEP(1); in.vmid_frac = 0.5f; E77_STEP(5);
+    ck("E77 1 ms midpoint spike rides through (row 6: 10 ms)", f.latched == FC_NONE);
+    E77_RUN(400); in.vbus = 600; E77_STEP(5); in.vbus = f.out.vbus_ref; E77_STEP(5);
+    ck("E77 5 ms bus dip below 620 V rides through", f.latched == FC_NONE);
+    E77_RUN(400); in.vbus = 600; E77_STEP(12);
+    ck("E77 F.05 bus UV in RUN for 10 ms latches (row 5 had no code)", f.latched == FC_BUS_UV);
+
+    { int latches = 0; E77_RUN(400);
+      for (int k = 0; k < 6; k++) {
+        in.desat_flt = true; E77_STEP(1); in.desat_flt = false; if (f.latched == FC_DESAT) latches++;
+        in.enable_req = false; in.clear_req = true; E77_STEP(1); in.clear_req = false;
+        for (int t = 0; t < 700000; t++) { E77_STEP(1); if (t > 660000) break; }     /* 11 minutes between faults */
+        for (int t = 0; t < 4000 && f.st != ST_RUN; t++) { in.enable_req = true; if (f.out.pfc_en) in.vbus = f.out.vbus_ref;
+          if (f.out.llc_en) { in.vbank_a = in.vbank_b = 400; in.vout_meas = 399; in.iout_meas = 50; } E77_STEP(1); }
+      }
+      ck("E77 F.31 window: six latches 11 min apart never lock (the counter used to be lifetime)", latches == 6 && !f.lock && f.st == ST_RUN); }
+
+    E77_RUN(400); in.enable_req = false; in.iout_meas = 0; E77_STEP(1000);
+    int warm = f.out.pfc_en && f.out.k_para;
+    E77_STEP(60000);                                                   /* spec: cold 60 s after STOP (not the constant) */
+    ck("E77 STOP: warm for the hold, then PFC off and matrix open (standby target)", warm && !f.out.pfc_en && !f.out.k_para && !f.out.k_parb && !f.out.k_ser && (f.out.warn & PMP_W_COLD_STBY));
+    in.enable_req = true; for (int t = 0; t < 6000 && f.st != ST_RUN; t++) { if (f.out.pfc_en) in.vbus = f.out.vbus_ref;
+      if (f.out.q_disch_bk) { in.vbank_a *= 0.99f; in.vbank_b *= 0.99f; }
+      if (f.out.llc_en) { in.vbank_a = in.vbank_b = 400; in.vout_meas = 399; in.iout_meas = 50; } E77_STEP(1); }
+    ck("E77 restart from cold standby reaches RUN through the make-permit", f.st == ST_RUN);
+
+    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG) in.vbus += 5; E77_STEP(1); }
+    in.enable_req = true; for (int t = 0; t < 300 && !f.out.llc_en; t++) { if (f.out.pfc_en) in.vbus = f.out.vbus_ref; E77_STEP(1); }
+    int soft = f.out.llc_en; in.enable_req = false; E77_STEP(2);
+    ck("E77 STOP during the soft start stops the LLC (was left switching in STANDBY)", soft && !f.out.llc_en && f.st == ST_STANDBY);
+
+    { E77_RUN(400); float last = f.out.derate, max_step_up = 0, max_step_dn = 0;
+      for (int t = 0; t < 60000; t++) { in.temp_max_c = 102.5f + 6.0f * (float)sin(t / 3000.0); E77_STEP(1);
+        float d = f.out.derate - last; if (d > max_step_up) max_step_up = d; if (-d > max_step_dn) max_step_dn = -d; last = f.out.derate; }
+      ck("E77 thermal derate is continuous: no step above 0.03 per ms", max_step_dn < 0.03f && max_step_up < 0.03f); }
+    { E77_RUN(400); in.fan_ok = false; E77_STEP(50); float lo = f.out.derate; in.fan_ok = true; E77_STEP(1); float up1 = f.out.derate - lo;
+      E77_STEP(1000); float up1s = f.out.derate - lo;
+      ck("E77 fan recovery ramps at 20 %/s (a single-tick 0.5 -> 1.0 jump is a current step on the battery)",
+         lo <= 0.5f && up1 <= 0.0005f && up1s > 0.15f && up1s < 0.25f); }
+
+    E77_RUN(400); f.lock = true; f.st = ST_LOCK; in.shutdown_req = true; E77_STEP(3);
+    ck("E77 shutdown request discharges a locked module (service path)", f.st == ST_DISCH && f.out.q_disch && f.out.q_disch_bk);
+    #undef E77_RUN
+    #undef E77_STEP
+    #undef E77_BASE
+  }
   /* -------- core-API checks: runtime rating (card ROLE1 strap -> pmp_fsm_set_rating_kw) -------- */
   sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 30);
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, 30 kW window F.21", &s, "|FAULT|LOCK|", FC_DISCH, 1);
@@ -215,36 +389,111 @@ int main(void) {
   sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
 
-  /* -------- CAN codec round-trip + guards -------- */
-  uint8_t buf[8];
-  pmp_set_output_t so = { .v_set_mv = 750000, .i_set_ma = 100000 }, so2;
-  pmp_enc_set_output(buf, &so);
-  checks++; if (!pmp_dec_set_output(buf, 8, &so2) || so2.v_set_mv != 750000 || so2.i_set_ma != 100000) { fails++; puts("FAIL can set_output roundtrip"); } else puts("PASS can set_output roundtrip");
-  uint8_t bad[8] = {0}; bad[3] = 0x40;                       /* v = 1.07 GV → reject */
-  checks++; if (pmp_dec_set_output(bad, 8, &so2)) { fails++; puts("FAIL can range guard"); } else puts("PASS can range guard");
-  checks++; if (pmp_dec_set_output(buf, 7, &so2)) { fails++; puts("FAIL can dlc guard"); } else puts("PASS can dlc guard");
-  uint8_t ctl = (1u << 2) | (1u << 3);                       /* force_hv & force_lv */
-  pmp_module_ctl_t mc;
-  checks++; if (pmp_dec_module_ctl(&ctl, 1, &mc)) { fails++; puts("FAIL can ctl contradiction"); } else puts("PASS can ctl contradiction guard");
-  uint32_t id = pmp_can_id(2, PMP_MT_STATUS1, 0x01, 0x40 + 7, 1);
-  pmp_can_hdr_t h; pmp_can_id_parse(id, &h);
-  checks++; if (h.msgtype != PMP_MT_STATUS1 || h.src != 0x47 || h.dest != 1 || h.group != 1 || h.prio != 2) { fails++; puts("FAIL can id roundtrip"); } else puts("PASS can id roundtrip");
-  pmp_status2_t st2 = { .p_avail_10w = 3000, .i_avail_10ma = 10000, .state = 2, .mode = 1, .fault_lo = 0 }, st2b;
-  pmp_enc_status2(buf, &st2);
-  checks++; if (!pmp_dec_status2(buf, 8, &st2b) || st2b.p_avail_10w != 3000 || st2b.mode != 1) { fails++; puts("FAIL can status2 roundtrip"); } else puts("PASS can status2 roundtrip");
+  /* -------- E78: the protocol-neutral core — profile-owned timeout, controlled stop, recovery classes, relay feedback,
+     corrupted state, overrun, the product mode dwell, SAFE hold, WAKE (direct drive, relay mirrors follow their coils) -------- */
+  {
+    pmp_fsm_t f; pmp_in_t in;
+    #define E78_BASE() do { pmp_fsm_init(&f); memset(&in, 0, sizeof in); in.vin_ll = 400; in.phases_ok = 3; in.vmid_frac = 0.5f; \
+      in.fan_ok = in.aux_ok = in.wdt_ok = true; in.vcmd = 400; in.icmd = 100; in.temp_max_c = 60; in.vbus = 400; } while (0)
+    #define E78_STEP(n) do { for (long k_ = 0; k_ < (long)(n); k_++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); } } while (0)
+    #define E78_RUN(vb) do { E78_BASE(); in.relay_fb_wired = 0x0F; in.vcmd = (vb); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { \
+      if (f.st == ST_PRECHG) in.vbus += 5; if (f.out.pfc_en) in.vbus = f.out.vbus_ref; in.enable_req = t_ > 200; \
+      if (f.out.llc_en) { in.vbank_a = in.vbank_b = (vb); in.vout_meas = (vb) - 1; in.iout_meas = 50; } E78_STEP(1); } } while (0)
+    #define E78_RESTART() do { in.enable_req = false; E78_STEP(1); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { in.enable_req = true; \
+      if (f.out.pfc_en) in.vbus = f.out.vbus_ref; if (f.out.llc_en) { in.vbank_a = in.vbank_b = 400; in.vout_meas = 399; in.iout_meas = 50; } E78_STEP(1); } } while (0)
 
-  /* -------- fuzz all decoders (ASan/UBSan-guarded) -------- */
-  srand(12345);
-  for (int i = 0; i < 100000; i++) {
-    uint8_t fb[8]; for (int k = 0; k < 8; k++) fb[k] = (uint8_t)rand();
-    uint8_t dlc = (uint8_t)(rand() % 10);
-    pmp_dec_set_output(fb, dlc, &so2);
-    pmp_dec_module_ctl(fb, dlc, &mc);
-    uint32_t v, iq; pmp_dec_status1(fb, dlc, &v, &iq);
-    pmp_dec_status2(fb, dlc, &st2b);
-    pmp_can_id_parse((uint32_t)rand() << 16 ^ (uint32_t)rand(), &h);
+    E78_RUN(400); pmp_fsm_set_comm_timeout_ms(&f, 20000); in.can_age_ms = 15000; E78_STEP(10);
+    { int kept = f.st == ST_RUN;
+      in.can_age_ms = 20001; E78_STEP(1); int ramp = f.out.stop_ramp && f.out.llc_en && (f.out.warn & PMP_W_STOPPING);
+      E78_STEP(101);
+      ck("E78 the comm timeout is the profile's: alive at 15 s of 20 s; past it the current ramps out, then STANDBY, PFC off, re-arm",
+         kept && ramp && f.st == ST_STANDBY && !f.out.llc_en && !f.out.pfc_en && f.need_enable); }
+
+    E78_RUN(400); in.enable_req = false; E78_STEP(20);
+    { int stopping = f.out.stop_ramp && f.st == ST_RUN;
+      in.enable_req = true; E78_STEP(1);
+      ck("E78 a STOP withdrawn inside the 100 ms ramp continues the session (no restart, no re-arm)", stopping && !f.out.stop_ramp && f.st == ST_RUN && f.out.llc_en); }
+
+    E78_RUN(400); in.enable_req = false; in.iout_meas = 1.0f; E78_STEP(2);
+    ck("E78 the controlled stop ends as soon as the output current is below 2 A", f.st == ST_STANDBY && !f.out.llc_en);
+
+    E78_RUN(400); in.vin_ll = 250; E78_STEP(110);
+    { int lat = f.latched == FC_IN_UV && pmp_fault_class(f.latched) == FCL_AUTO_EXT && (f.out.warn & PMP_W_RECOVERING);
+      in.vin_ll = 280; E78_STEP(1999); int held = f.st == ST_FAULT;
+      E78_STEP(2);
+      ck("E78 an input sag (F.08 AUTO_EXT) clears 2 s after the line is back inside the start window, into STANDBY awaiting a fresh ENABLE",
+         lat && held && f.st == ST_STANDBY && f.latched == FC_NONE && f.need_enable && (f.out.warn & PMP_W_REARM)); }
+
+    { E78_RUN(400); int sags = 0;
+      for (int k = 0; k < 8; k++) {
+        in.vin_ll = 250; E78_STEP(110); if (f.latched == FC_IN_UV) sags++;
+        in.vin_ll = 400; for (int t = 0; t < 70000 && f.st == ST_FAULT; t++) E78_STEP(1);
+        E78_RESTART();
+      }
+      ck("E78 eight grid sags inside ten minutes never lock the module (AUTO_EXT does not count toward F.31); the hold doubles to 64 s",
+         sags == 8 && !f.lock && f.st == ST_RUN && f.rec_hold_ms == 64000u); }
+
+    { E78_RUN(400); int trips = 0;
+      for (int k = 0; k < 5 && !f.lock; k++) {
+        in.temp_max_c = 118; E78_STEP(2); if (f.latched == FC_OT) trips++;
+        in.temp_max_c = 60; for (int t = 0; t < 40000 && f.st == ST_FAULT; t++) E78_STEP(1);
+        if (!f.lock) E78_RESTART();
+      }
+      ck("E78 over-temperature (AUTO_INT) recovers below 100 °C, but five trips inside ten minutes lock the module (F.31)", trips == 5 && f.lock && f.st == ST_LOCK); }
+
+    E78_RUN(400); in.iout_meas = 140; E78_STEP(3);
+    { int oc = f.latched == FC_OUT_OC && pmp_fault_class(FC_OUT_OC) == FCL_LATCH;
+      in.iout_meas = 0; E78_STEP(70000); int stays = f.st == ST_FAULT;
+      in.clear_req = true; E78_STEP(1); in.clear_req = false; int cleared = f.st == ST_STANDBY;
+      E78_RUN(400); in.vin_ll = 250; E78_STEP(110); in.clear_req = true; E78_STEP(5); in.clear_req = false;
+      ck("E78 a LATCH row (F.15) waits for CLEAR however long; CLEAR cannot end an AUTO row whose condition is still present",
+         oc && stays && cleared && f.st == ST_FAULT && f.latched == FC_IN_UV); }
+
+    { E78_BASE(); in.relay_fb_wired = 0x0F; int pfc_seen = 0;
+      for (int t = 0; t < 1000 && f.latched == FC_NONE; t++) {
+        if (f.st == ST_PRECHG) in.vbus += 5;
+        in.enable_req = t > 200;
+        in.relay_fb = pmp_relay_cmd(&f.out) & (uint8_t)~PMP_RLY_PRE;   /* the bypass contact never closes */
+        pmp_fsm_step(&f, &in); if (f.out.pfc_en) pfc_seen = 1;
+      }
+      ck("E78 a precharge bypass that never closes latches F.19, and the PFC never starts on the precharge resistor", f.latched == FC_RELAY && !pfc_seen); }
+
+    E78_RUN(400);
+    { int ok_run = f.st == ST_RUN;
+      for (int t = 0; t < 150; t++) { in.relay_fb = pmp_relay_cmd(&f.out) & (uint8_t)~PMP_RLY_PARB; pmp_fsm_step(&f, &in); }
+      ck("E78 a matrix contact that drops out while running latches F.19 inside 150 ms", ok_run && f.latched == FC_RELAY); }
+
+    E78_BASE(); E78_STEP(5);
+    ck("E78 no relay feedback wired is reported (PMP_W_RELAY_FB_OFF), never silent", (f.out.warn & PMP_W_RELAY_FB_OFF) != 0);
+
+    E78_RUN(400); f.st = (pmp_state_t)77; E78_STEP(1);
+    ck("E78 a state value the enum does not define latches F.36 with every enable off", f.latched == FC_INTERNAL && f.st == ST_FAULT && !f.out.pfc_en && !f.out.llc_en);
+
+    E78_RUN(400); in.ctl_overrun = true; E78_STEP(1); in.ctl_overrun = false;
+    ck("E78 the HAL's control-overrun verdict latches F.35", f.latched == FC_OVERRUN);
+
+    { E78_RUN(400); in.ext_connected = true; int t_sw = -1;
+      for (int t = 0; t < 3000; t++) { in.vext = (t < 100) ? 400.0f : 505.0f; in.vout_meas = in.vext; E78_STEP(1); if (t_sw < 0 && f.st == ST_MODESW) t_sw = t; }
+      ck("E78 the AUTO crossover waits the 1 s product dwell (the header carried a 30 ms test value)", t_sw >= 1095 && t_sw <= 1110); }
+
+    E78_RUN(400); in.aux_ok = false; E78_STEP(5);
+    { int safe = f.st == ST_SAFE && f.need_enable;
+      in.aux_ok = true; E78_STEP(499); int hold = f.st == ST_SAFE;
+      E78_STEP(2);
+      ck("E78 after an aux collapse SAFE ends only after 500 ms of stable aux, and the restart needs a fresh ENABLE", safe && hold && f.st == ST_STANDBY && f.need_enable); }
+
+    E78_RUN(400); in.shutdown_req = true; E78_STEP(1); in.shutdown_req = false; in.vbus = 30; E78_STEP(5);
+    { int off = f.st == ST_OFF;
+      in.wake_req = true; E78_STEP(1); in.wake_req = false;
+      ck("E78 WAKE is the public exit from OFF (back through INIT and precharge)", off && (f.st == ST_INIT || f.st == ST_PRECHG)); }
+
+    { E78_BASE(); for (int k = 0; k < 300; k++) { in.desat_flt = true; E78_STEP(1); in.desat_flt = false; f.lock = false; f.latched = FC_NONE; f.st = ST_STANDBY; }
+      ck("E78 the lifetime latch counter saturates at 255 instead of wrapping", f.fault_count == 255); }
+    #undef E78_RESTART
+    #undef E78_RUN
+    #undef E78_STEP
+    #undef E78_BASE
   }
-  checks++; puts("PASS decoder fuzz 100k frames (no sanitizer trap)");
 
   /* ---- E66 group share law: 3 module nodes on ONE GROUP_SET stream from the charger controller ---- */
   {
@@ -284,12 +533,27 @@ int main(void) {
       pmp_group_set_t m3 = { .v_set_dv = 4000, .i_req_da = 3000, .members = 0x5, .base = 0x40 };
       for (uint32_t t = 0; t < 4000; t++) { if (t % 100 == 0) pmp_group_frame(&a, &m3, 0x41, t); pmp_group_step(&a, 0x41, 1670, t, &ao); }
       ck("group: non-member never delivers", !ao.deliver && ao.i_set_da == 0); }
-    { uint8_t b8[8]; pmp_group_set_t e = { 7500, 4500, 0x7, 0x40 }, d; pmp_enc_group_set(b8, &e);
-      ck("can GROUP_SET roundtrip + guards", pmp_dec_group_set(b8, 8, &d) && d.i_req_da == 4500 && d.members == 7 && d.base == 0x40 && !pmp_dec_group_set(b8, 7, &d)); }
-    for (int i = 0; i < 100000; i++) { uint8_t fb[8]; for (int k = 0; k < 8; k++) fb[k] = (uint8_t)rand(); pmp_group_set_t d; pmp_dec_group_set(fb, (uint8_t)(rand() % 10), &d); }
+    /* E76 (review R08): two membership drops inside one raise-hold — the survivor's grant must
+       wait a FULL hold from the SECOND increase, by which time the dropped peer is stale. The
+       old code granted on the first timestamp: 225 A against a 150 A request for ~0.8 s. */
+    { pmp_group_t ga, gb; pmp_group_out_t oa, ob; pmp_group_init(&ga); pmp_group_init(&gb);
+      int r08_viol = 0;
+      for (uint32_t t = 0; t < 8000; t++) {
+        pmp_group_set_t m = { .v_set_dv = 4000, .i_req_da = 1500, .members = 0x7, .base = 0x40 };
+        if (t >= 3000) m.members = 0x3;                       /* drop C: target 500 -> 750 */
+        if (t >= 3600) m.members = 0x1;                       /* drop B inside A's hold: 750 -> 1500 */
+        if (t % 100 == 0) {
+          pmp_group_frame(&ga, &m, 0x40, t);
+          if (t < 3550) pmp_group_frame(&gb, &m, 0x41, t);    /* B partitioned after the first drop */
+        }
+        pmp_group_step(&ga, 0x40, 1670, t, &oa);
+        pmp_group_step(&gb, 0x41, 1670, t, &ob);
+        if (oa.i_set_da + ob.i_set_da > 1500) r08_viol++;
+      }
+      ck("group: grown raise target restarts the hold (no 225 A vs 150 A window)", r08_viol == 0); }
   }
-  (void)buf;
   ck("matrix exclusion invariant (no KSER+KPAR/KPRE tick, all scenarios)", excl_viol == 0);
+  ck("E76/R03 make-permit invariant (no contact ever makes above the output node, all scenarios)", surge_viol == 0);
   printf("\nRESULT: %d/%d checks passed\n", checks - fails, checks);
   return fails ? 1 : 0;
 }

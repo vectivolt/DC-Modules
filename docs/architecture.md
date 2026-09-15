@@ -122,7 +122,7 @@ flowchart LR
   mode (LOW / HIGH / AUTO, CAN force-LV / force-HV) is latched in standby; relays switch at zero current behind the
   output diode, and AUTO crosses PAR → SER above 500 V and back below 480 V (FW-R12 / FW-R13).
 - **Supervisory firmware** (`firmware/`) is the normative logic: 26 scenarios, group share law, codec, fuzz and invariants —
-  **63 / 63 under ASan/UBSan** ([firmware guide](firmware-guide.md)).
+  **63 / 63 under ASan/UBSan** ([firmware guide](firmware-guide.md)). **E78:** three layers — protocol profiles ([VMP 2.0](can-protocol.md), [TonHe V1.2](can-profile-tonhe-v12.md)) → one canonical model → the power core; `host_sim` 114 · `ctl_test` 18 · `proto_test` 40 ([firmware architecture](firmware-architecture.md)).
 - **Pin budget:** 75 of 82 usable MCU pins, 7 spare — the arithmetic is in [control-card scope](control-card-scope.md).
 
 ## 4. Protection — three layers

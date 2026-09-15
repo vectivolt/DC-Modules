@@ -23,7 +23,14 @@ void pmp_group_step(pmp_group_t *g, uint8_t self_addr, uint32_t i_avail_da, uint
   if (target > i_avail_da) target = i_avail_da;
   if (target <= g->share_da) { g->share_da = target; g->raising = false; }
   else {
+    /* E76 (review R08): the hold must guard the TARGET IT GRANTS. The old code timestamped only the
+       FIRST increase — a second membership drop mid-hold inherited the stale timestamp and granted
+       the larger share while a not-yet-stale peer still delivered its old one (group 225 A against
+       a 150 A request for ~0.8 s, under every per-module limit). A grown pending target restarts
+       the hold; an identical or smaller one never does, so a raise cannot be starved. */
     if (!g->raising) { g->raising = true; g->t_raise = now_ms; }
+    else if (target > g->pend_da) g->t_raise = now_ms;
+    g->pend_da = target;
     if (now_ms - g->t_raise >= PMP_GRP_HOLD_MS) { g->share_da = target; g->raising = false; }
   }
   int b = own_bit(&g->last, self_addr);

@@ -38,7 +38,7 @@ flowchart LR
     direction TB
     SRC["boards.tsx + cells.tsx<br/>one parameterized source"]
     CARD["one control card<br/>GD32G553VET7 · 88-way slot"]
-    FW["one firmware image<br/>C99 · host_sim 63/63"]
+    FW["one firmware image<br/>C99 · host_sim 77/77"]
   end
   STRAP{"RATING strap<br/>read at boot"}
   SHARED --> STRAP

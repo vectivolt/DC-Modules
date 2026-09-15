@@ -120,6 +120,12 @@ A magnetic that is gap-padded or clamped to PE-bonded metal is part of the **bas
 - **Isolated amplifiers and their 5 V bias modules are reinforced-rated** for their domain's working voltage (1000 V output domain /
   830 V bus / AC mains star) — the BOM specifies reinforced-class modules at every Bias5 / PSCAN / PSSH position; the same
   certificate audit applies to the gate-bias and discharge-driver modules, whose barriers parallel the NSI6611's reinforced one.
+- **PV bleeder couplers (VOM1271-class, UPVA/UPVB) — working voltage is the floating-bus offset, not the stack (E74).**
+  Their SELV↔bank barriers see, in normal operation, the bank-negative-to-PE offset of the floating output (with the
+  output Y-caps centering the bus: ≤ ~½·V_out ≈ 500 V DC + ripple; the full 1000 V appears only in the pole-to-earth
+  first fault the charger IMD clears). RFQ acceptance: **V_IORM ≥ the 500 V-class continuous offset AND transient/
+  withstand rating covering the 1000 V first-fault dwell** — a 707 V-pk V_IORM class passes only with this centered-float
+  bound; do not grade these couplers against isolation TEST voltage, and re-check if the charger earthing scheme is not IT.
 - **Control domain to PE**: 1 MΩ ∥ 4.7 nF Y1 soft bond — no hard earth loop, leakage < 1 mA budget.
 
 ---

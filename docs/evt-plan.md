@@ -2,7 +2,7 @@
 
 # 🔬 EVT Test Plan
 
-<sub>The first-hardware campaign T-00…T-42, and the rule that lets bench results reopen a calculation</sub>
+<sub>The first-hardware campaign T-00…T-49, and the rule that lets bench results reopen a calculation</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
@@ -30,23 +30,25 @@
 | Bring-up and power quality | T-00 · T-02 · T-03 · T-10 · T-19 |
 | Pulse parts and discharge | T-05 · T-21 · T-22 · T-27 · T-28 |
 | Aux supply | T-09 · T-11 · T-12 · T-18 · T-29 |
-| Thermal and environment | T-04 · T-15 · T-23 · **T-32** · **T-33** · **T-38** |
+| Thermal and environment | T-04 · T-15 · T-23 · **T-32** · **T-33** · **T-38** · **T-43** |
 | EMI and insulation | T-08 · T-13 · T-14 · **T-39** |
 | Relays, output modes and output stage | T-07 · ~~T-24~~ · **T-35** · **T-36** · **T-40** |
 | Magnetics and tank | T-25 · **T-31** · **T-34** |
+| Firmware, control and protocol | **T-44** · **T-45** · **T-46** · **T-47** · **T-48** · **T-49** |
 
 </td><td valign="top" width="48%">
 
 ```mermaid
-pie showData title 41 live tests by domain (T-24 retired)
+pie showData title 48 live tests by domain (T-24 retired)
   "device and protection" : 9
   "bring-up and quality" : 5
   "pulse parts and discharge" : 5
   "aux supply" : 5
-  "thermal and environment" : 6
+  "thermal and environment" : 7
   "EMI and insulation" : 4
   "relays, modes and output" : 4
   "magnetics and tank" : 3
+  "firmware and protocol" : 6
 ```
 
 </td></tr>
@@ -69,7 +71,8 @@ flowchart LR
   G --> J["T-10 / T-14 / T-15<br/>soak · hipot · thermography"]
   M["T-31<br/>magnetics first articles<br/>short-circuit R @ 203 kHz"] --> K
   VB["T-33<br/>D1 as-mounted<br/>vibration + bond"] --> K
-  IP["T-34…T-42<br/>InfyPower-parity hardware<br/>tank · modes · DOUT · clip mount · filter · films · die pulse · bypass closure"] --> K
+  IP["T-34…T-43<br/>InfyPower-parity hardware<br/>tank · modes · DOUT · clip mount · filter · films · die pulse · bypass closure · link ripple"] --> K
+  FWP["T-44…T-49<br/>firmware timing · load dump · TonHe interop<br/>sharing · transients · fault cycling"] --> K
   H --> K(["BOM freeze gates<br/>loaded PV Vgs · both-polarity trip<br/>D4 clamp · magnetics first articles"])
   I --> K
   J --> K
@@ -149,7 +152,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on transformer l
 |---|---|---|
 | T-33 | **D1 as-mounted resonance search and endurance (IEC 60068-2-6)** — one module per SKU with the E65 D1 mount (gap pad, GF-PPS clamp cap, bore sleeve, M6 at 4.5 N·m on a Belleville, 2-point banding, strain-relieved leads): pre-test L₀, 4-wire Rdc and bonded-face thermal (the `stress-audit` [D1-BUILD] type-test current); 0.5 g sine search 10–500 Hz, 1 oct/min, 3 axes, accelerometers on the clamp cap and the stack top; 2 g sweep; 10 min dwell at each resonance with transmissibility > 2; final 0.5 g search. Then the D1 rows of T-04 at 330 VAC / 55 °C inlet with a thermocouple at the inner bore | no mode shift > 10 % between searches (nothing loosened); no pad walk, fretting or cap cracking; lead joints intact (cross-section one joint per SKU); L₀ and Rdc inside ±5 % of the pre-test values; residual bolt torque ≥ 80 %; bonded thermal rise within the pre-test value + 3 K; T-04 bore hot-spot ≤ the `stress-audit` D1 value + 10 K |
 
-## 5. InfyPower-parity hardware and startup (E67–E73 · T-34…T-42)
+## 5. InfyPower-parity hardware and startup (E67–E74 · T-34…T-43)
 
 The full-bridge LLC, the two output modes, the output diode, the clip mount, the star-X2 filter, the film-only banks and the
 right-sized dies each carry a model basis that only hardware can confirm. Each row names the engine line it closes.
@@ -165,11 +168,26 @@ right-sized dies each carry a model basis that only hardware can confirm. Each r
 | T-40 | **Film-only output banks (E68c)** — output ripple at PS150-Imax (150 V, Imax) and SER 250 V full power with a 20 MHz-limited differential probe; film case thermocouples | output ripple **≤ 0.5 % RMS** (model 0.47 / 0.46 / 0.49 %); per-film current ≤ 10.5 A (model ≤ 4.3 A); film ΔT ≤ 15 K |
 | T-41 | **SiC die pulse class on incoming samples (E69a-2)** — 5 dies per lot per MPN, single 10 µs pulse at 80 % of the RFQ IDM line, VDS 50 V, 25 °C | no parametric shift (Rds(on) ±5 %, Vth ±0.2 V, IDSS within datasheet) at SG2M023120LJ 212 A (IDM ≥ 265 A) · 750 V 20 mΩ class 168 A (≥ 210 A) · 15 mΩ class 208 A (≥ 260 A). A lot or MPN that fails reverts that SKU (two LLC dies / B3M010C075Z) |
 | T-42 | **Precharge-bypass closure (E73)** — per SKU at 475 VAC on the stiffest available source (≥ 500 kVA, short cable), 20 cold starts with the closure instant uncontrolled; Rogowski on one line, bus voltage, FLT line and relay coil current captured | peak ≤ the [INRUSH] row + 20 % (200 / 218 / 280 A) · no F.01 latch and no PFC PWM inside the 60 ms window · bus ≤ 860 V · relay contact resistance after 1 000 closures ≤ 1.2 × initial · fuse element intact (no pre-arc discolouration) |
+| T-43 | **DC-link electrolytic HF ripple (E74)** — per SKU at the worst LLC corner (PAR 400 V full power and SER 250 V): clip-on HF current probe on one can lead of each half-bank plus one film leg, can-top thermocouples, 1 h soak | per-can rms (120 Hz-equivalent, vendor frequency multipliers) ≤ the purchased series' 105 °C rating; can-top ΔT ≤ 10 K; the estimate the line was bought against (≈ 1.6–2.5 A rms/can at 2·fsw) reproduces within +40 % — a miss reopens the can count or adds film |
+
+## 6. Firmware, control and protocol on real hardware (E78 · T-44…T-49)
+
+The host suites prove logic and conformance to documents; only the target and the power stage can prove timing, loops and
+interoperability. The IDs in brackets are rows of the [firmware verification plan](firmware-verification.md).
+
+| Test | Procedure | Pass criterion |
+|---|---|---|
+| T-44 | **Firmware timing on the target** — DWT per ISR for 24 h at full telemetry and under a CAN flood; GPIO markers on the reference commit and on GATE_EN; analyzer timestamps | PFC ISR ≤ 3 µs · LLC ISR ≤ 30 µs · 1 ms tick ≤ 400 µs · CPU ≤ 60 % steady, ≤ 75 % under flood · control frame → reference ≤ 5 ms (99.9 %) · FAULT_BITS ≤ 20 ms after an injected latch (N-11, F-04) |
+| T-45 | **Load dump at full current** — contactor opened under 167 / 133 / 100 A in LOW (480 V) and HIGH (950 V), with and without HW-REC-1 | peak ≤ V_set · 1.05 + 10 V · no F.13 latch · banks and terminal capacitors inside their ratings (C-08) |
+| T-46 | **TonHe V1.2 interoperability** — our module on a TonHe-class monitor (start, setpoints, groups, the 20 s loss, addressing); a mixed rack with a TonHe module; captures of a real TonHe module replayed against the `proto_test` expectations | every frame read as the monitor expects · sharing within ± 10 % in the mixed rack · TH-AMB-1…11 confirmed or re-registered (N-14, G-08) |
+| T-47 | **Parallel sharing** — four modules on one output in CC and CV (battery emulator reaching its CV point), voltage calibration spread ± 0.3 % on purpose; hot join, member removal, one module derated with the LEVEL law | ± 5 % of the average at ≥ 10 % load · ± 10 % within 3 s of a change · group sum ≤ request + 1 % (G-01…G-07) |
+| T-48 | **Control transients** — C-01…C-12 per SKU: soft start, voltage and current steps, 25 ↔ 100 % load steps, CV ↔ CC, the power-limit crossing, a 330 → 285 VAC sag at full load, frequency-response injection | the performance targets of firmware architecture §5.5 · PM ≥ 45°, GM ≥ 6 dB at every envelope corner |
+| T-49 | **Fault and recovery cycling** — 1 000 cycles each of grid sag, phase loss, over-temperature (heater on the NTC), communication loss, relay feedback open, watchdog reset and aux brownout | every cycle ends in the documented state and recovers by the documented rule · no lockout from grid rows · no spurious gate pulse (D-03, D-05) |
 
 ---
 
 <div align="center">
-<sub><a href="verification-matrix.md">← Verification Matrix & Risk Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
+<sub><a href="verification-matrix.md">← Verification Matrix & Risk Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-verification.md">Firmware Verification Plan →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

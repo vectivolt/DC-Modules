@@ -94,11 +94,13 @@ inlet or ambient unless labelled Tj or core.
 | | Document | What it decides | Kept honest by |
 |---|---|---|---|
 | 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | — |
-| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E73 with provenance and invalidator | rows cited by every gate |
+| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E78 with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
-| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, output modes, F.21 semantics | `host_sim` 63/63 · grep-pinned |
-| 📡 | [External CAN protocol](can-protocol.md) | addressing, control and telemetry frames, controller rules | `can_proto.c` (fuzzed) |
+| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, output modes, F.21 semantics | `host_sim` 114 · grep-pinned |
+| 🧬 | [Firmware architecture](firmware-architecture.md) | layers, timing, state machines, control and ramping, the protection hierarchy, exception handling, the firmware review | `run_tests.sh` 172 checks |
+| 📡 | [VMP 2.0 native CAN protocol](can-protocol.md) | addressing, control, acknowledgement, telemetry, discovery, versioning, the controller contract | `vmp.c` · `proto_test` |
+| 🔁 | [TonHe V1.2 compatibility profile](can-profile-tonhe-v12.md) | drop-in behaviour on TonHe V1.2 monitors, the fault-bit map, the ambiguity register | document examples byte-exact |
 | 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the release sheets | `kicad5-verify` 6,853 pins |
 | 🔋 | [Module family](../boards/README-module-family.md) | the four SKUs side by side, why 50 kW is the top module, the two cooling lines, the module-to-charger contract | `bom-gen` · `loss-budget` · `mtbf-budget` |
 | 📋 | [30 kW module walkthrough](../boards/30kw/README.md) | the canonical board pair, cell by cell | — |
@@ -128,6 +130,7 @@ inlet or ambient unless labelled Tj or core.
 | 📈 | [Simulation report](simulation-report.md) | the executed-runs ledger — never claim beyond it | SPICE result CSVs |
 | ✅ | [Verification matrix](verification-matrix.md) | requirement → evidence, open risks | `run-all` |
 | 🔬 | [EVT test plan](evt-plan.md) | the bench campaign T-00…T-41 | sim-vs-bench > 20 % reopens a calc |
+| 🧪 | [Firmware verification plan](firmware-verification.md) | every firmware feature as behaviour → timing → failure → recovery → test → pass, host to endurance | `run_tests.sh` · HIL and EVT planned |
 | 🛡️ | [Reliability budget](reliability-budget.md) | MTBF prediction with its basis, wear-out clocks, no-single-point-of-darkness view | `mtbf-budget` · registered table |
 | 🧮 | [Calculations & gates](../calculations/README.md) | every engine, audit and generator | `run-all` exit 0 |
 | 🖥️ | [SPICE suites](../spice/README.md) | the ngspice runners and their outputs | result CSVs |

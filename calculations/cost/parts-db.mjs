@@ -133,7 +133,7 @@ export const DB = [
   { m: /^R\w+GS$/, mpn: "R0805-10k", mfr: "any", desc: "10 kΩ gate-source", price1k: 0.5, alt: "any" },
   { m: /^R\d+CT$/, mpn: "R2512-0R47-1W-1%", mfr: "any", desc: "0.47 Ω 1% 1 W 2512 resonant-CT burden (E67 full bridge: F.11 140 A pk = 0.66 V above AVMID; observable to 345 A, past the 328 A monitor peak 3 µs after an internal short; 78 A rms class → 0.29 W)", price1k: 4.1, alt: "2× 1206 0R91 parallel" },
   { m: /^R[ABC]\d+B$/, mpn: "R1206-22R-1%", mfr: "any", desc: "22 Ω line-CT burden 1% (E60: F.01 120 A pk = 2.71 V; observable to 184 A through the D1 soft-sat 3 µs race; 55 A rms → 0.48 V rms metering. History: R3 27 Ω saw only to 150 A)", price1k: 1.2, alt: "any" },
-  { m: /^RSH?O$/, mpn: "SHUNT-50MV-100A", mfr: "Isabellenhütte-eq/local", desc: "manganin shunt, 50 mV @ 100 A (0.5 mΩ, Kelvin 4-terminal; R5-G: rated current now in the order code — per-SKU via skuOverride)", price1k: 120, alt: "local manganin" },
+  { m: /^RSH?O$/, mpn: "SHUNT-50MV-100A", mfr: "Isabellenhütte-eq/local", desc: "manganin shunt, 50 mV at rated current, Kelvin 4-terminal (0.500 / 0.376 / 0.299 mΩ at the 100 / 133 / 167 A codes — E76: the value follows the order code, the 0.5 mΩ prose was the 30 kW value only; R5-G per-SKU via skuOverride)", price1k: 120, alt: "local manganin" },
   { m: /^RSEG\d$/, mpn: "R0603-220", mfr: "any", desc: "220 Ω segment", price1k: 0.3, alt: "any" },
   { m: /^R[A-Z0-9]+$/, mpn: "R-small", mfr: "any", desc: "small-signal resistor 0402–0805 (pulls/filters/feedback)", price1k: 0.4, alt: "any" },
   // --- ferrites
@@ -190,7 +190,7 @@ export const skuOverrides = {
     "F1": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F2": { price1k: 210, mpn: "FUSE-gG-690V-125A" }, "F3": { price1k: 210, mpn: "FUSE-gG-690V-125A" },
     KPRE1: { price1k: 300, note: "100 A class (73 A line) · make ≥ 280 A pk (E73 40 kW bypass-closure inrush, ≤ 70 V across the contacts, ≥ 30 000 makes)", mpn: "HF167F-100A-M" }, KPRE2: { price1k: 300, mpn: "HF167F-100A-M" },
     CMC1: { price1k: 1327, note: "D7-40 custom wind 75 A (the Schaffner 63 A catalog part is OUT of range here) · D7-40 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 17.0 W, ΔT 32 K [est roll-up]", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 1327, mpn: "CMC-3PH-2mH-SKU" },
-    RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A" },
+    RSHO: { price1k: 140, mpn: "SHUNT-50MV-133A", note: "0.376 mΩ (50 mV / 133 A) — E76 value-align" },
     // E67 output: DOUT 133 A = 67 % of the 200 A class module; bank filter = the D6-40 construction at DC duty
     DOUT: { price1k: 520, desc: "output series blocking diode 1600 V 200 A, insulated-base 2-terminal module (E67 InfyPower practice; 133 A = 67 % at 40 kW; ~1.05 V × Iout, heatsink-mounted)", mpn: "DIODE-1600V-200A-MOD", note: "E67: 133 A out → 200 A class insulated module (150 A would run 89 %)" },
     // E67 full-bridge LLC classes (tanks.mjs · magnetics-envelope · current-coordination)
@@ -225,7 +225,7 @@ export const skuOverrides = {
     // family part is the 250 A frame (37%); no new p/n invented.
     KPRE1: { price1k: 520, note: "250 A class (91.6 A line = 37%) · make ≥ 360 A pk (E73 50 kW bypass-closure inrush, ≤ 70 V across the contacts, ≥ 30 000 makes)", mpn: "HF167F-250A-M" }, KPRE2: { price1k: 520, mpn: "HF167F-250A-M" },
     CMC1: { price1k: 2065, note: "D7-50 custom wind 95 A · D7-50 rev B (E65 engine): T 90/50/30, A_Fe ≥ 450 mm², 3×8 T 25 mm², 26.7 W, ΔT 38 K [est roll-up]", mpn: "CMC-3PH-2mH-SKU" }, CMC2: { price1k: 2065, mpn: "CMC-3PH-2mH-SKU" },
-    RSHO: { price1k: 155, mpn: "SHUNT-50MV-167A" },
+    RSHO: { price1k: 155, mpn: "SHUNT-50MV-167A", note: "0.299 mΩ (50 mV / 167 A) — E76 value-align" },
     // E67 full-bridge LLC classes (tanks.mjs · magnetics-envelope · current-coordination) — the air twin copies these
     T1A: { price1k: 1434, mpn: "XFMR-LLC-CELL-3E70-50", desc: "D3-50 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n = 2 overall) — the D3-40 construction: 3× E70/33/32 PC95-class on a 3-set former, 4:4∥4, Lm 17.8 µH per cell ±7%, TIW-served litz 3536×0.071 mm, 2 × Cu foil 0.08×28 mm halves; leakage 0.090 µH (±30 %), vacuum-impregnated, both yoke faces plate-bonded (liquid) or web-bonded (air), end turns potted. Envelope gate: Fe 47.5 W at 159 mT · Cu 71.3 W at the PSM corner · hot-spot 103 °C liquid / 116 °C air at 55 °C inlet. Roll-up ₹1,434 [est, REVIEW at winder RFQ]" },
     T1B: { price1k: 1434, mpn: "XFMR-LLC-CELL-3E70-50", desc: "D3-50 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n = 2 overall) — the D3-40 construction: 3× E70/33/32 PC95-class on a 3-set former, 4:4∥4, Lm 17.8 µH per cell ±7%, TIW-served litz 3536×0.071 mm, 2 × Cu foil 0.08×28 mm halves; leakage 0.090 µH (±30 %), vacuum-impregnated, both yoke faces plate-bonded (liquid) or web-bonded (air), end turns potted. Envelope gate: Fe 47.5 W at 159 mT · Cu 71.3 W at the PSM corner · hot-spot 103 °C liquid / 116 °C air at 55 °C inlet. Roll-up ₹1,434 [est, REVIEW at winder RFQ]" },
