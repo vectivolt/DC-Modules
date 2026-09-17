@@ -68,7 +68,7 @@
    ],
    "nc_pins": [],
    "value": "SHUNT-50MV-100A",
-   "query": "SHUNT-50MV-100A manganin shunt, 50 mV @ 100 A ",
+   "query": "SHUNT-50MV-100A manganin shunt, 50 mV at rated current, Kelvin 4-terminal ",
    "mpn": "SHUNT-50MV-100A"
   },
   {

@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/decision_register-E1–E73-f2b705?style=for-the-badge" alt="decision register E1 to E73"/>
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 4536 points, 0 failures"/>
   <img src="https://img.shields.io/badge/independent_checks-226%2F226-2ea44f?style=for-the-badge" alt="independent verifier 226 of 226"/>
-  <img src="https://img.shields.io/badge/firmware-63%2F63_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 63 of 63"/>
+  <img src="https://img.shields.io/badge/firmware-260_checks_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 260 checks"/>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/schematic_pins-6853%2F6853_·_5_targets-2ea44f?style=flat-square" alt="6853 of 6853 schematic pins verified"/>
@@ -251,10 +251,13 @@ node spice/llc/llc-run.mjs 30kw 40kw 50kw 50kwa && node spice/llc/llc-envelope.m
 
 ## 💾 Supervisory firmware
 
-Portable **C99** with no HAL dependency (`firmware/core/`): the module state machine, the protection evaluator,
-the CAN 2.0B codec and the group share law (E66). One image serves every seat. The host suite runs **60 cases
-under ASan/UBSan**: 26 fault scenarios, rating windows, the E60/E67 trip classes, the E67 output-mode latch and hysteresis, 7 group share-law checks, codec guards
-and a 100k-frame fuzz. → [firmware guide](docs/firmware-guide.md) · [CAN protocol](docs/can-protocol.md)
+Portable **C99**, sans-IO, one image for every seat: the supervisory core (`firmware/core/`), the VMP 2.0 and TonHe V1.2
+profiles (`firmware/proto/`), the real-time HAL with the Vienna and LLC laws (`firmware/hal/`), the signed A/B boot chain
+(`firmware/boot/` — SHA-256 + ECDSA-P256, trial/confirm/rollback, CAN field update) and the **register-level GD32G553
+port** (`firmware/port/gd32g553/`, no vendor library — built and signed by `port/gd32g553/build.sh`, its pin table gated
+against the card generator). The host suite runs **260 checks under ASan/UBSan** across six binaries, from the 26 fault
+scenarios to cycle-by-cycle converter plants and power-cut update storms. → [firmware guide](docs/firmware-guide.md) ·
+[CAN protocol](docs/can-protocol.md) · [E80 recheck response](docs/e80-recheck-response.md)
 
 ```mermaid
 stateDiagram-v2

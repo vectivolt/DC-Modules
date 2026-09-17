@@ -20,14 +20,14 @@
 
 | | |
 |---|---|
-| **Build cost @10k** (India basis) | **₹30,033** · ₹1,001 / kW |
+| **Build cost @10k** (India basis) | **₹30,032** · ₹1,001 / kW |
 | **China RFQ target @10k** (E69f) | **₹24,639** · ₹821 / kW — landed targets, not quotes |
-| **2U construction scenario** (E69e) | ₹28,442 · China target ₹23,348 — flagged estimate, not the design basis |
+| **2U construction scenario** (E69e) | ₹28,441 · China target ₹23,347 — flagged estimate, not the design basis |
 | **1k · 5k · 100 pcs** | ₹36,984 · ₹33,030 · ₹47,990 |
-| **Red-line / stretch** | ₹25,000 / ₹22,000 → ⚠️ over by ₹5,033 |
-| **BOM lines · placed parts** | 142 lines · 611 parts (AC-DC 312 · DC-DC 250 · control card 49) |
+| **Red-line / stretch** | ₹25,000 / ₹22,000 → ⚠️ over by ₹5,032 |
+| **BOM lines · placed parts** | 142 lines · 610 parts (AC-DC 312 · DC-DC 250 · control card 48) |
 | **Built to our drawings** | 6 custom lines — specifications on the [30 kW magnetics page](magnetics-30kw.md) |
-| **Open sourcing decisions** | 7 REVIEW lines |
+| **Open sourcing decisions** | 8 REVIEW lines |
 
 ## Where the money goes
 
@@ -63,9 +63,9 @@ pie showData title 30 kW module — ₹ @10k by section
 | Output and bank sensing | 61 | 14 | 938 | 3.1 % | 795 |
 | DC-DC control interface | 12 | 7 | 107 | 0.4 % | 90 |
 | CAN and HMI | 33 | 18 | 161 | 0.5 % | 138 |
-| Control card | 49 | 23 | 310 | 1 % | 269 |
+| Control card | 48 | 23 | 310 | 1 % | 269 |
 | Mechanics, thermal and assembly | — | 12 | 8,431 | 28.1 % | 7,188 |
-| **Module** | | | **30,033** | 100 % | **24,639** |
+| **Module** | | | **30,032** | 100 % | **24,639** |
 
 > [!TIP]
 > Sections follow the release sheets, so a line here is found on the sheet of the same name. The small difference against the
@@ -77,7 +77,7 @@ pie showData title 30 kW module — ₹ @10k by section
 |---:|---|---|---:|---:|---:|---:|---|
 | 1 | `IND-PFC-165u` | PFC choke 165 µH class, 3× OD79 26µ sendust (Magnetics 0077908A7 / Chang Sung KS eq, … | 3 | 828 | **2,484** | 1,987 | CUSTOM |
 | 2 | `CMC-3PH-2mH-SKU` | 3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 … | 2 | 1,062 | **2,123** | 1,699 | CUSTOM |
-| 3 | `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — … | 22 | 96 | **2,112** | 1,584 | ORDERABLE |
+| 3 | `GC4D20120D` | SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT (exact p/n at RFQ; IFSM ≥ 250 A (10 ms … | 22 | 96 | **2,112** | 1,584 | REVIEW |
 | 4 | `XFMR-LLC-CELL-2E70-30` | D3-30 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n … | 2 | 935 | **1,870** | 1,590 | CUSTOM |
 | 5 | `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a-2: the 30 kW … | 4 | 312 | **1,248** | 936 | SECOND-SOURCE |
 | 6 | `ELH-470u450` | 470 µF 450 V snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C) (split bus: 415 … | 10 | 120 | **1,200** | 960 | CLASS |
@@ -131,7 +131,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 |---|---|---|---:|---:|---:|---|---|
 | `IND-PFC-165u` | PFC choke 165 µH class, 3× OD79 26µ sendust (Magnetics 0077908A7 / Chang Sung KS eq, catalog AL 37 nH/T² ±8%), … | LA0 LB0 LC0 | 3 | 828 | 2,484 | — | CUSTOM |
 | `SIC-750V-20mR` | SiC MOSFET 750 V 20 mΩ class TO-247-4 (Vienna common-source pair, one die per position) | QA0A QA0B QB0A QB0B QC0A QC0B | 6 | 144 | 864 | — | CLASS |
-| `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 bypass-closure … | DA0T DA0B DB0T DB0B DC0T DC0B | 6 | 96 | 576 | C7435099 | ORDERABLE |
+| `GC4D20120D` | SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 … | DA0T DA0B DB0T DB0B DC0T DC0B | 6 | 96 | 576 | C7435099 | REVIEW |
 | `NSI6611` | iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16 | UA0G UB0G UC0G | 3 | 68 | 204 | C7470934 | ORDERABLE |
 | `QA01C-18` | iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs … | PSA0G PSB0G PSC0G | 3 | 55 | 165 | — | REVIEW |
 | `PP-1u-600` | 1 µF 600 V film (Vienna per-phase commutation, CB-9) | CA0FP CA0FN CB0FP CB0FN CC0FP CC0FN | 6 | 26 | 154 | — | CLASS |
@@ -274,8 +274,8 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
 | `XFMR-LLC-CELL-2E70-30` | D3-30 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n = 2 overall) — 2× … | T1A T1B | 2 | 935 | 1,870 | — | CUSTOM |
-| `GC4D20120D` | SiC JBS 1200 V 40 A TO-247-2 (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 bypass-closure … | D1A1 D1A1P2 D1A2 D1A2P2 D1A3 D1A3P2 D1A4 D1A4P2 … | 16 | 96 | 1,536 | C7435099 | ORDERABLE |
-| `IND-LR-E70-30` | D2-30 rev F (E67): EXTERNAL resonant inductor 5.16 µH ±3% on 2× E70/33/32 PC95-class (TDK former B66372B2000), … | L1R | 1 | 772 | 772 | — | CUSTOM |
+| `GC4D20120D` | SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 … | D1A1 D1A1P2 D1A2 D1A2P2 D1A3 D1A3P2 D1A4 D1A4P2 … | 16 | 96 | 1,536 | C7435099 | REVIEW |
+| `IND-LR-E70-30` | D2-30 rev F (E67): EXTERNAL resonant inductor 5.16 µH ±3% on 2× E70/33/32 PC95-class (TDK former B66372A2000), … | L1R | 1 | 772 | 772 | — | CUSTOM |
 | `PP-33n-1200V` | 33 nF 1200 V PP resonant-duty film (E67 full-bridge tank: 7/9/11 in parallel at 30/40/50 kW → ≤ 10.3 A rms per … | C1R0 C1R1 C1R2 C1R3 C1R4 C1R5 C1R6 | 7 | 54 | 381 | — | CLASS |
 | `CT-RES-1:100-100A` | resonant CT 1:100, 100 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary, so … | CT1 | 1 | 60 | 60 | — | DIRECT |
 | `TLV3202-class` | dual 40 ns push-pull comparator SOIC/VSSOP-8, 2.7–5.5 V (E65 F.11 window: trips above F11_VH and below F11_VL, … | U1W | 1 | 13 | 13 | — | CLASS |
@@ -367,7 +367,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 </details>
 
-<details><summary><b>Control card</b> — ₹310 @10k · 49 parts · 23 lines</summary>
+<details><summary><b>Control card</b> — ₹310 @10k · 48 parts · 23 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -381,8 +381,8 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CCARDD0 CCARDD1 CCARDD2 CCARDD3 CCARDD4 CCARDA2 CCARDVR CCARDRST … | 13 | 0 | 5 | C14663 | ORDERABLE |
 | `CYA0630-10UH` | 10 µH 3 A shielded power inductor (3V3 buck) | LBKCARD | 1 | 5 | 5 | C5189958 | ORDERABLE |
 | `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RCARDBOOT RWPUCARD RGPDCARD RRDYCARD RGPACARD RBKF2CARD RAVH RAVL … | 10 | 0 | 3 | — | CLASS |
-| `CC0603KRX7R9BB102` | filter/decoupling MLCC 0402–0805 | CWDCARD CRSTCARD CFLTC | 3 | 0 | 1 | C100040 | ORDERABLE |
 | `RC0603FR-07100KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RENRCARD RENLCARD REN1CARD | 3 | 0 | 1 | — | CLASS |
+| `CC0603KRX7R9BB102` | filter/decoupling MLCC 0402–0805 | CRSTCARD CFLTC | 2 | 0 | 1 | C100040 | ORDERABLE |
 | `CL21A106KAYNNNE` | filter/decoupling MLCC 0402–0805 | CBKICARD CAVO | 2 | 0 | 1 | C15850 | ORDERABLE |
 | `GZ2012D601TF` | ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7) | FBCARDA | 1 | 1 | 1 | C1017 | ORDERABLE |
 | `CL10A105KB8NNNC` | filter/decoupling MLCC 0402–0805 | CCARDA1 | 1 | 0 | 0 | — | CLASS |
@@ -437,14 +437,14 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 | Status | Lines | Meaning |
 |---|---:|---|
-| ![ORDERABLE](https://img.shields.io/badge/-ORDERABLE-2ea44f?style=flat-square) | 59 | a specific catalogue part, verified against the rating |
+| ![ORDERABLE](https://img.shields.io/badge/-ORDERABLE-2ea44f?style=flat-square) | 58 | a specific catalogue part, verified against the rating |
 | ![SECOND-SOURCE](https://img.shields.io/badge/-SECOND--SOURCE-2ea44f?style=flat-square) | 1 | the primary is off-catalogue; a verified equivalent is named |
 | ![DIRECT](https://img.shields.io/badge/-DIRECT-1a9fb3?style=flat-square) | 6 | a vendor-direct order code (Talema, Hongfa, Mean Well class) |
 | ![CLASS](https://img.shields.io/badge/-CLASS-d19a00?style=flat-square) | 63 | the rating is the specification; purchasing selects to the spec line |
 | ![CUSTOM](https://img.shields.io/badge/-CUSTOM-b8732e?style=flat-square) | 6 | built to our drawing — see the magnetics page |
-| ![REVIEW](https://img.shields.io/badge/-REVIEW-bc4e9c?style=flat-square) | 7 | a tracked open decision, closed before release |
+| ![REVIEW](https://img.shields.io/badge/-REVIEW-bc4e9c?style=flat-square) | 8 | a tracked open decision, closed before release |
 
-**Open REVIEW lines:** `QA01C-18` · `ISO5V-RFC-6K` · `GD32G553VET7` · `QA01C` · `PS122WF4702T4E` · `LED-2DIG-0.56CC` · `TACT-6x6` — each carries its action note in `lcsc-map.mjs`.
+**Open REVIEW lines:** `GC4D20120D` · `QA01C-18` · `ISO5V-RFC-6K` · `GD32G553VET7` · `QA01C` · `PS122WF4702T4E` · `LED-2DIG-0.56CC` · `TACT-6x6` — each carries its action note in `lcsc-map.mjs`.
 
 Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family roll-up and cost per kW: [BOM & cost](bom-cost.md).
 

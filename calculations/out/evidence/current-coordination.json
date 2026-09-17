@@ -60,7 +60,7 @@
    "status": "ok",
    "tag": "F.01",
    "name": "30kw high-line bus floor proven",
-   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.76/40.36 %, overmod 74.1/90.5 % → with 1.08·√2·VLL floor: THD 0.12/0.1 % (fsm.c E60)"
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.75/40.33 %, overmod 74.2/90.5 % → with 1.08·√2·VLL floor: THD 0.08/0.11 % (fsm.c E60)"
   },
   {
    "status": "ok",
@@ -90,13 +90,13 @@
    "status": "ok",
    "tag": "F.01",
    "name": "40kw threshold ≥ 1.2× simulated worst line peak",
-   "detail": "155 A pk vs 127.2 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
+   "detail": "155 A pk vs 127.1 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
   },
   {
    "status": "ok",
    "tag": "F.01",
    "name": "40kw high-line bus floor proven",
-   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.61/39.93 %, overmod 75.3/91.7 % → with 1.08·√2·VLL floor: THD 0.11/0.1 % (fsm.c E60)"
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.61/39.91 %, overmod 75.4/91.5 % → with 1.08·√2·VLL floor: THD 0.12/0.08 % (fsm.c E60)"
   },
   {
    "status": "ok",
@@ -126,13 +126,13 @@
    "status": "ok",
    "tag": "F.01",
    "name": "50kw threshold ≥ 1.2× simulated worst line peak",
-   "detail": "195 A pk vs 159.4 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
+   "detail": "195 A pk vs 159.3 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
   },
   {
    "status": "ok",
    "tag": "F.01",
    "name": "50kw high-line bus floor proven",
-   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.6/39.82 %, overmod 75/91.4 % → with 1.08·√2·VLL floor: THD 0.12/0.09 % (fsm.c E60)"
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.6/39.82 %, overmod 75/91.3 % → with 1.08·√2·VLL floor: THD 0.12/0.09 % (fsm.c E60)"
   },
   {
    "status": "ok",
@@ -156,7 +156,7 @@
    "status": "ok",
    "tag": "F.01",
    "name": "50kw boost-diode repetitive peak",
-   "detail": "diode peak 158.5 A (sim) ≤ F.01 195 A — anything above is a fault by definition; the surge class is the parts-db IFSM line, held against the bypass-closure pulse in [INRUSH]"
+   "detail": "diode peak 158.6 A (sim) ≤ F.01 195 A — anything above is a fault by definition; the surge class is the parts-db IFSM line, held against the bypass-closure pulse in [INRUSH]"
   },
   {
    "status": "ok",

@@ -10,8 +10,13 @@ void meas_cal_default(meas_cal_t *c, uint16_t kw) {
   float rb = (kw == 50u) ? 13.0f : (kw == 40u) ? 18.0f : 22.0f;            /* line CT burden (E60) */
   float rr = (kw == 50u) ? 0.30f : (kw == 40u) ? 0.36f : 0.47f;            /* resonant CT burden (E67) */
   float rs = (kw == 50u) ? 0.299e-3f : (kw == 40u) ? 0.376e-3f : 0.500e-3f; /* output shunt, 50 mV at the rated code (E76) */
-  meas_ch_t dc = { 2.0f * LSB * (3.8e6f + 6.8e3f) / 6.8e3f, 1.39f / LSB };   /* AMC1311 class: OUTP = 1.39 V + Vin/2 · 8×475 k / 6.8 k */
-  meas_ch_t ac = { LSB / 0.205f * (3.8e6f + 11.5e3f) / 11.5e3f, 1.44f / LSB }; /* AMC1350 class: OUTP = 1.44 V + 0.41·Vin/2 · 11.5 k */
+  /* E80 (review HR-04/R02): the AMC1311's OUTP common mode is 1.44 V TYPICAL (1.39 V is its minimum) — the old nominal
+     read every DC channel 56 V high on an uncalibrated card (0.05 V × 2 × 559.8). EOL calibration replaces the pair. */
+  meas_ch_t dc = { 2.0f * LSB * (3.8e6f + 6.8e3f) / 6.8e3f, 1.44f / LSB };   /* AMC1311 class: OUTP = 1.44 V + Vin/2 · 8×475 k / 6.8 k */
+  /* E80 (review HR-05/R03): AMC1350 differential gain is 0.40 (single-ended slope 0.200, not 0.205), and its ~1.25 MΩ
+     input loads the 11.5 k divider bottom to 11.396 k — together the old nominal read the line 3.3 % low */
+  float rac = 11.5e3f * 1.25e6f / (11.5e3f + 1.25e6f);
+  meas_ch_t ac = { LSB / 0.200f * (3.8e6f + rac) / rac, 1.44f / LSB };       /* AMC1350 class: OUTP = 1.44 V + 0.40·Vin/2 · loaded divider */
   for (int k = MCH_IA; k <= MCH_IC; k++) c->ch[k] = (meas_ch_t){ LSB * 2500.0f / rb, 2048.0f };
   c->ch[MCH_IRES] = (meas_ch_t){ LSB * 100.0f / rr, 2048.0f };
   c->ch[MCH_VBUS] = c->ch[MCH_VMID] = c->ch[MCH_VOUT] = c->ch[MCH_VBKA] = c->ch[MCH_VBKB] = dc;

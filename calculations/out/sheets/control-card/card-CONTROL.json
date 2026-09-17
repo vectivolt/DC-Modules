@@ -11,7 +11,6 @@
   "CARD-IF"
  ],
  "net_style_overrides": {
-  "USUPCARD_CWD": "wire",
   "USUPCARD_CRST": "wire",
   "UBKCARD_SW": "wire",
   "UBKCARD_FB": "wire",
@@ -791,7 +790,7 @@
     {
      "pin_number": 4,
      "name": "SET1",
-     "signal_name": "DGND"
+     "signal_name": "V3P3"
     },
     {
      "pin_number": 5,
@@ -804,17 +803,14 @@
      "signal_name": "V3P3"
     },
     {
-     "pin_number": 7,
-     "name": "CWD",
-     "signal_name": "USUPCARD_CWD"
-    },
-    {
      "pin_number": 8,
      "name": "CRST",
      "signal_name": "USUPCARD_CRST"
     }
    ],
-   "nc_pins": [],
+   "nc_pins": [
+    7
+   ],
    "value": "TPS3430-class",
    "query": "TPS3430-class external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps ",
    "mpn": "TPS3430-class"
@@ -993,26 +989,6 @@
    ],
    "nc_pins": [],
    "value": "100nF",
-   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
-   "mpn": "MLCC-small"
-  },
-  {
-   "designator": "CWDCARD",
-   "block_name": "SAFETY",
-   "pins": [
-    {
-     "pin_number": 1,
-     "name": "pin1",
-     "signal_name": "USUPCARD_CWD"
-    },
-    {
-     "pin_number": 2,
-     "name": "pin2",
-     "signal_name": "DGND"
-    }
-   ],
-   "nc_pins": [],
-   "value": "1nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
   },

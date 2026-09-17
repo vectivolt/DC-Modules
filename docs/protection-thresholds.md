@@ -469,6 +469,18 @@ end-to-end rig found that a stop into a resistive load read as F.16.
 Host evidence: `hal_test` **34 / 34** and `app_test` **16 / 16**, beside `host_sim` 114, `ctl_test` 18 and `proto_test` 40 — all
 under the sanitizers.
 
+### 11.x E80 — the external-recheck rows (additive; docs/e80-recheck-response.md)
+
+| Addition | Value | Why |
+|---|---|---|
+| **F.38 half-link overvoltage** (new row, LATCH) | either half-link > **440 V** for 10 ms (`FC_HALF_OV`) | F.03 (860 V total) and F.06 (±40 V midpoint) together still allowed one 450 V bank 454–468 V (HR-06/R10); trip span 435.6–444.4 V at the calibrated ±1 % class, normal worst half ≈ 438 V at the F.06 boundary |
+| **F.07 / F.08 basis** | overvoltage reads the **highest** line-line RMS, undervoltage the **lowest**; the precharge crest and the bus floor read the highest | one "farthest from 400 V" scalar hid a 280/505/505 V set entirely (R06/HR-24) |
+| **F.13 threshold by mode** (interim until HW-REC-1) | CMP0 reference **560 V in LOW**, 1050 V in HIGH — programmed by the HAL every tick | FW-19: LOW-mode banks (630 V film) had no hardware ceiling below 1050 V; a LOW-mode dump ends the session anyway, so the latch is the protective outcome |
+| **F.25 semantics** | derate by failed-fan **count** (4-fan SKU: one failed 0.6, two 0.3; 2–3-fan: one failed 0.5); no fan able to cool → **F.25 latches (AUTO_INT)**; a fan is failed when its tach sits below 35 % of its commanded speed (floor 5 Hz) for 3 s, judged from 20 % duty | 150 rpm at full command previously read healthy, and all-fans-lost was indistinguishable from one (HR-25/R25) |
+| **F.21 completion and abort** | discharged = link **and both banks** < 60 V; at the window timeout F.21 latches **and both dump commands end** (isolate upstream, then verify — the permanent precharge path can hold the bus from a live source at ~439 W into the 640 Ω string) | HR-11/HR-12 |
+| **F.34 coverage** | the energized PFC ramp counts inside the 8 s window | a boost that never reached 0.95 · ref was unsupervised (HR-28) |
+| **Matrix make discipline** | 40 ms settle wait after any matrix close command (no mirror contacts, E67); PAR make additionally requires bank mismatch ≤ 25 V (≈ 5 mJ equalization at 30.8 µF) | HR-08/HR-09 |
+
 ---
 
 <div align="center">

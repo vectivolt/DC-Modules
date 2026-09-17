@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/host-222_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 222 checks · ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/host-260_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 260 checks · ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -17,7 +17,7 @@
 > conformance per protocol profile, timing measurement on the target, EVT on power hardware, and endurance.
 >
 > **Gate coupling** — the host level runs in `run-all` through `firmware/run_tests.sh`: `host_sim` **114** · `ctl_test` **18** ·
-> `proto_test` **40** · `hal_test` **34** · `app_test` **16**, under AddressSanitizer + UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **host** cite a
+> `proto_test` **40** · `hal_test` **35** · `app_test` **24** · `boot_test` **21** (E80), under AddressSanitizer + UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **host** cite a
 > named check; rows marked **HIL** or **EVT** are planned and carry their pass criteria now, so the rig is built to the
 > requirement rather than the requirement to the rig. Architecture and targets:
 > [firmware architecture](firmware-architecture.md).
@@ -26,7 +26,7 @@
 
 | Level | Where | What it proves | Status |
 |---|---|---|---|
-| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end | **222 checks, green** |
+| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, and (E80) the signed boot chain — SHA-256/ECDSA-P256 against OpenSSL-derived vectors, image acceptance, trial/rollback, the update protocol under drops and power cuts | **260 checks, green** |
 | **L2 static** | cppcheck + clang-tidy (bugprone, cert, misc), a MISRA C:2012 subset, stack-depth analysis | no undefined-behaviour classes, bounded stacks, no implicit narrowing on the wire path | planned |
 | **L3 HIL** | the production control card against a real-time plant, with two CAN interfaces and fault injection | timing, loops, sequencing, bus behaviour, NVM and update paths on the real MCU | planned |
 | **L4 EVT** | power hardware: T-44…T-49 with the existing T-03, T-06, T-16, T-35, T-42 | control transients, protection and interoperability on real power | planned |
@@ -34,7 +34,7 @@
 
 ```mermaid
 flowchart LR
-  SRC["firmware/core · firmware/proto · firmware/hal"] --> L1["L1 host · run_tests.sh<br/>222 checks · sanitizers fatal"]
+  SRC["firmware/core · firmware/proto · firmware/hal · firmware/boot"] --> L1["L1 host · run_tests.sh<br/>260 checks · sanitizers fatal"]
   SRC --> L2["L2 static<br/>MISRA subset · stack depth"]
   L1 --> RA["run-all.sh<br/>every commit"]
   L2 --> L3["L3 HIL · nightly<br/>real card · real-time plant · CAN fuzz"]
@@ -245,6 +245,18 @@ non-deterministic outcome across repeated runs of the same injected sequence.
 
 T-44 firmware timing on the target · T-45 load dump at full current · T-46 TonHe V1.2 interoperability · T-47 parallel sharing ·
 T-48 control transients · T-49 fault and recovery cycling — procedures and criteria in the [EVT plan](evt-plan.md).
+
+## E80 additions
+
+| ID | Behaviour under test | Where | Status |
+|---|---|---|---|
+| C-17 | The external-recheck protection rows: line min/max split (F.07/F.08), F.38 half-link, F.34 over the PFC ramp, the matrix make-settle and mismatch permits, discharge completion on link + banks, F.21 ending the dumps, fan derate by count | `host_sim` E80 block (8 checks) | **host, green** |
+| C-18 | Uncalibrated inhibit (F.30 on a blank card), the fan tach curve, the mode-scheduled F.13 and the HW-REC-1 clamp reference, the event ring + VMP 0x0400 reads, ENTER_BOOT handoff, the 60 s boot confirmation edge | `app_test` E80 checks | **host, green** |
+| C-19 | CC setpoint step 10 ↔ 90 % through the documented shaper slews: t90 ≤ 150 ms up / ≤ 100 ms down, overshoot bounded inside F.15's fast row (the §5.5 ≤ 2 % figure is the HIL gain-acceptance, review R34) | `hal_test` | **host, green — 2 % at T-48/HIL** |
+| B-01…B-05 | SHA-256 and P-256 vectors (43 accept / 29 refuse), signed-image acceptance and every refusal code, the boot decision table incl. rollback/streak/baseline, the update protocol end to end on RAM flash, the chunked-verification watchdog poll | `boot_test` | **host, green** |
+| X-13 | The target port's pin table equals the card generator's, 56 pins | `port-pin-audit` (run-all) | **gate, green** |
+| X-14 | The target cross-build links boot + slot A/B and signs both images | `firmware/port/gd32g553/build.sh` (run-all when the ARM GCC exists) | **gate, green** |
+| T-52…T-56 | Boot/update on silicon · the TPS3430 window · the fan curve constant · the aux fault matrix · PV bleeder hot/humid | [EVT plan](evt-plan.md) | planned |
 
 ---
 

@@ -55,18 +55,21 @@ static uint32_t read_entry(const nvm_t *s, uint8_t page, uint32_t off, uint8_t *
   return tot;
 }
 
+static uint8_t pg(const nvm_t *s, uint8_t k) { return (uint8_t)(s->base + k); }
+
 static void set_rec(nvm_t *s, uint8_t kind, uint32_t off, uint32_t seq, uint32_t pcrc, uint8_t len) {
   s->rec[kind].off = off; s->rec[kind].seq = seq; s->rec[kind].pcrc = pcrc; s->rec[kind].len = len; s->rec[kind].have = true;
 }
 
-void nvm_mount(nvm_t *s, uint32_t page_size) {
+void nvm_mount(nvm_t *s, uint8_t base, uint32_t page_size) {
   memset(s, 0, sizeof *s);
+  s->base = base;
   s->page_size = page_size;
   uint32_t q0 = 0u, q1 = 0u;
-  bool v0 = read_hdr(0u, &q0), v1 = read_hdr(1u, &q1);
+  bool v0 = read_hdr(pg(s, 0u), &q0), v1 = read_hdr(pg(s, 1u), &q1);
   if (!v0 && !v1) {                                  /* blank (first boot) or both headers damaged: a fresh store */
     s->page_seq = 1u; s->wr = HDR_LEN;
-    s->full = !(nvm_port_erase(0u) && write_hdr(0u, 1u));
+    s->full = !(nvm_port_erase(pg(s, 0u)) && write_hdr(pg(s, 0u), 1u));
     return;
   }
   s->active = (v0 && (!v1 || q0 >= q1)) ? 0u : 1u;    /* both valid = a cut after the commit, before the old erase */
@@ -75,7 +78,7 @@ void nvm_mount(nvm_t *s, uint32_t page_size) {
   uint8_t buf[NVM_MAX_LEN];
   for (;;) {
     uint8_t kind = 0u, len = 0u; uint32_t seq = 0u;
-    uint32_t tot = read_entry(s, s->active, off, &kind, &len, &seq, buf);
+    uint32_t tot = read_entry(s, pg(s, s->active), off, &kind, &len, &seq, buf);
     if (tot == 0u) break;
     if (tot == UINT32_MAX) { s->full = true; break; }
     set_rec(s, kind, off, seq, pmp_crc32(buf, len), len);
@@ -88,29 +91,29 @@ void nvm_mount(nvm_t *s, uint32_t page_size) {
 bool nvm_get(nvm_t *s, uint8_t kind, uint8_t *buf, uint8_t len) {
   if (kind >= NVM_KINDS || !s->rec[kind].have || s->rec[kind].len != len) return false;
   uint8_t k = 0u, l = 0u; uint32_t q = 0u;
-  uint32_t t = read_entry(s, s->active, s->rec[kind].off, &k, &l, &q, buf);
+  uint32_t t = read_entry(s, pg(s, s->active), s->rec[kind].off, &k, &l, &q, buf);
   return t != 0u && t != UINT32_MAX && k == kind && l == len;
 }
 
 static bool compact(nvm_t *s, uint8_t kind, const uint8_t *buf, uint8_t len) {
   uint8_t dst = (uint8_t)(1u - s->active), tmp[NVM_MAX_LEN];
-  if (!nvm_port_erase(dst)) return false;
+  if (!nvm_port_erase(pg(s, dst))) return false;
   nvm_t n = *s;
   uint32_t off = HDR_LEN;
   for (uint8_t k = 0u; k < NVM_KINDS; k++) {
     n.rec[k].have = false;
     if (k == kind || !s->rec[k].have) continue;
     uint8_t kk = 0u, ll = 0u; uint32_t q = 0u;
-    uint32_t t = read_entry(s, s->active, s->rec[k].off, &kk, &ll, &q, tmp);
+    uint32_t t = read_entry(s, pg(s, s->active), s->rec[k].off, &kk, &ll, &q, tmp);
     if (t == 0u || t == UINT32_MAX || kk != k) continue;             /* unreadable now: dropped, never copied torn */
-    if (off + t > s->page_size || !append(dst, off, k, tmp, ll, q)) return false;
+    if (off + t > s->page_size || !append(pg(s, dst), off, k, tmp, ll, q)) return false;
     set_rec(&n, k, off, q, s->rec[k].pcrc, ll);
     off += t;
   }
   uint32_t tot = entry_len(len);
-  if (off + tot > s->page_size || !append(dst, off, kind, buf, len, s->seq + 1u) || !write_hdr(dst, s->page_seq + 1u)) return false;
+  if (off + tot > s->page_size || !append(pg(s, dst), off, kind, buf, len, s->seq + 1u) || !write_hdr(pg(s, dst), s->page_seq + 1u)) return false;
   set_rec(&n, kind, off, s->seq + 1u, pmp_crc32(buf, len), len);
-  (void)nvm_port_erase(s->active);   /* a failure here is harmless: the higher generation wins at every mount */
+  (void)nvm_port_erase(pg(s, s->active));   /* a failure here is harmless: the higher generation wins at every mount */
   n.active = dst; n.page_seq = s->page_seq + 1u; n.seq = s->seq + 1u; n.wr = off + tot; n.full = false;
   *s = n;
   return true;
@@ -121,7 +124,7 @@ bool nvm_put(nvm_t *s, uint8_t kind, const uint8_t *buf, uint8_t len, bool may_e
   uint32_t pc = pmp_crc32(buf, len), tot = entry_len(len);
   if (s->rec[kind].have && s->rec[kind].len == len && s->rec[kind].pcrc == pc) return true;
   if (!s->full && s->wr + tot <= s->page_size) {
-    if (append(s->active, s->wr, kind, buf, len, s->seq + 1u)) {
+    if (append(pg(s, s->active), s->wr, kind, buf, len, s->seq + 1u)) {
       set_rec(s, kind, s->wr, s->seq + 1u, pc, len);
       s->seq++; s->wr += tot;
       return true;

@@ -96,7 +96,7 @@
    "status": "ok",
    "tag": "AIR",
    "name": "30kw airflow margin",
-   "detail": "need 162 m³/h @ΔT20 for 1048.5 W vs 2×160×0.6 = 192 — margin 1.19×"
+   "detail": "need 162 m³/h @ΔT20 for 1048.4 W vs 2×160×0.6 = 192 — margin 1.19×"
   },
   {
    "status": "ok",

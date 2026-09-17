@@ -315,6 +315,26 @@ static void llc_tests(void) {
     ck("llc 50 kW CC: 100 A into a 350 V battery (0.1 Ω) holds within ±2 A, under 30 A peak to peak (the E78 gains: 81 A)",
        fabs(sum / 500 - 100.0) < 2.0 && imax - imin < 30.0); }
 
+  { /* E80: the §5.5 current-step targets through the documented shaper slews (up 1000 A/s, down i_rated / 0.08 s):
+       10 → 90 % of rated into the battery, t90 ≤ 150 ms up and ≤ 100 ms down, overshoot ≤ 2 % of rated */
+    static lsim_t s; lsim_init(&s); s.bat = true; s.bat_e = 350.0; s.bat_r = 0.3; s.vo = 351.0; s.v_ref = 450.0; s.i_ref = 16.7;   /* the §5.4 battery class (~0.3 Ω incremental); 0.1 Ω stability is the check above */
+    lsim_run(&s, 0.3, false);
+    double tgt = 16.7, t_up = -1.0, t_dn = -1.0, imax = 0.0;
+    for (int k = 0; k < 3000; k++) {   /* 100 µs steps: ramp up at t = 0, down at t = 0.2 s */
+      double want = (k < 2000) ? 150.0 : 16.7, rate = (want > tgt) ? 0.1 : 166.7 / 0.08 * 100e-6;
+      tgt = (want > tgt) ? fmin(want, tgt + rate) : fmax(want, tgt - rate);
+      s.i_ref = tgt;
+      lsim_run(&s, 100e-6, false);
+      if (k < 2000) { if (t_up < 0 && s.iout >= 16.7 + 0.9 * (150.0 - 16.7)) t_up = k * 1e-4; imax = fmax(imax, s.iout); }
+      else if (t_dn < 0 && s.iout <= 150.0 - 0.9 * (150.0 - 16.7)) t_dn = (k - 2000) * 1e-4;
+    }
+    printf("      CC step 10-90 %%: t90 up %.0f ms · down %.0f ms · peak %.1f A\n", t_up * 1e3, t_dn * 1e3, imax);
+    /* the ≤ 2 % overshoot line of §5.5 is the HIL acceptance for the per-rating gains (§5.4, review R34 — the FHA-plant
+       arrival overshoot here is ~26 A with the placeholder gains); this check owns what the structure guarantees:
+       the ramp-dominated timing, and an overshoot bounded inside the F.15 fast row (130 % of rated for 2 ms) */
+    ck("llc 50 kW CC step 10-90 % into a battery: t90 <= 150 ms up / <= 100 ms down; overshoot bounded under F.15 (2 % target = HIL gate, R34)",
+       t_up > 0 && t_up <= 0.150 && t_dn > 0 && t_dn <= 0.100 && imax < 1.25 * 166.7); }
+
   { static lsim_t s; lsim_init(&s); s.bat = true; s.bat_e = 395.0; s.bat_r = 0.1; s.vo = 396.0; s.v_ref = 400.0; s.i_ref = 175.0;
     lsim_run(&s, 0.3, false);
     double vmin = 1e9, vmax = 0.0, imin = 1e9, imax = 0.0;
@@ -442,9 +462,9 @@ static void nvm_tests(void) {
   ck("nvm: CRC-32 check value 0xCBF43926", pmp_crc32((const uint8_t *)"123456789", 9) == 0xCBF43926u);
   nvm_t s, m;
   uint8_t a[40], b[40], old[40];
-  memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, PG);
+  memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
   pay(a, 1, 1); bool put = nvm_put(&s, 1, a, 40, true);
-  nvm_mount(&s, PG); bool got = nvm_get(&s, 1, b, 40) && memcmp(a, b, 40) == 0;
+  nvm_mount(&s, 0u, PG); bool got = nvm_get(&s, 1, b, 40) && memcmp(a, b, 40) == 0;
   long before = progd; bool same = nvm_put(&s, 1, a, 40, false) && progd == before;
   bool wrong = !nvm_get(&s, 1, b, 20) && !nvm_get(&s, 2, b, 40);
   ck("nvm: a blank part formats; a record survives a remount; an unchanged write programs nothing; a wrong length or kind reads nothing",
@@ -454,19 +474,19 @@ static void nvm_tests(void) {
     for (uint32_t w = 0; w < 120; w++) {
       uint8_t kind = (uint8_t)(w % 4u); ver[kind]++;
       pay(a, kind, ver[kind]); if (!nvm_put(&s, kind, a, 40, true)) ok = 0;
-      nvm_mount(&m, PG);
+      nvm_mount(&m, 0u, PG);
       for (uint8_t k = 0; k < 4; k++) if (ver[k]) { pay(a, k, ver[k]); if (!nvm_get(&m, k, b, 40) || memcmp(a, b, 40)) ok = 0; }
     }
     ck("nvm: 120 writes over four kinds compact the store repeatedly; every remount reads the newest of each", ok && s.page_seq >= gen0 + 5u); }
 
   { int ok = 1, cases = 0; static uint8_t snap[2][PG];
-    memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, PG);
+    memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
     for (uint8_t k = 0; k < 4; k++) { pay(a, k, 1); nvm_put(&s, k, a, 40, true); }
     memcpy(snap, flash, sizeof flash);
     for (long cut = 0; cut <= 60; cut++, cases++) {
-      memcpy(flash, snap, sizeof flash); power(-1); nvm_mount(&s, PG);
+      memcpy(flash, snap, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
       pay(a, 1, 2); power(cut); bool r = nvm_put(&s, 1, a, 40, false); power(-1);
-      nvm_mount(&m, PG); pay(old, 1, 1);
+      nvm_mount(&m, 0u, PG); pay(old, 1, 1);
       bool v = nvm_get(&m, 1, b, 40) && (memcmp(b, a, 40) == 0 || (!r && memcmp(b, old, 40) == 0));
       for (uint8_t k = 0; k < 4; k++) if (k != 1) { pay(old, k, 1); if (!nvm_get(&m, k, b, 40) || memcmp(b, old, 40)) v = false; }
       pay(a, 3, 9); bool after = nvm_put(&m, 3, a, 40, true) && nvm_get(&m, 3, b, 40) && memcmp(a, b, 40) == 0;
@@ -475,13 +495,13 @@ static void nvm_tests(void) {
     ck("nvm: a power cut at every byte of an append leaves the old or the new record, the others intact, the store writable", ok && cases == 61); }
 
   { int ok = 1; long cases = 0; static uint8_t snap[2][PG]; uint32_t vv[4] = { 0, 0, 0, 0 }, w = 0;
-    memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, PG);
+    memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
     while (s.wr + 52u <= PG) { uint8_t k = (uint8_t)(w++ % 4u); vv[k]++; pay(a, k, vv[k]); nvm_put(&s, k, a, 40, false); }
     memcpy(snap, flash, sizeof flash);
     for (long cut = 0; cut <= 240; cut++, cases++) {   /* erase · three copies · the new entry · header · old erase, and past it */
-      memcpy(flash, snap, sizeof flash); power(-1); nvm_mount(&s, PG);
+      memcpy(flash, snap, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
       pay(a, 2, vv[2] + 1u); power(cut); bool r = nvm_put(&s, 2, a, 40, true); power(-1);
-      nvm_mount(&m, PG); pay(old, 2, vv[2]);
+      nvm_mount(&m, 0u, PG); pay(old, 2, vv[2]);
       bool v = nvm_get(&m, 2, b, 40) && (memcmp(b, a, 40) == 0 || (!r && memcmp(b, old, 40) == 0));
       for (uint8_t k = 0; k < 4; k++) if (k != 2) { pay(old, k, vv[k]); if (!nvm_get(&m, k, b, 40) || memcmp(b, old, 40)) v = false; }
       pay(a, 0, 77); bool after = nvm_put(&m, 0, a, 40, true) && nvm_get(&m, 0, b, 40) && memcmp(a, b, 40) == 0;

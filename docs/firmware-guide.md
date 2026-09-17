@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/firmware-114_·_18_·_40_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 114 · 18 · 40 ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/firmware-260_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 260 checks ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -449,6 +449,25 @@ normative (E24); syncing the JS model is an open E76 line.
 | Reference shaping | `core/ctl.c`: soft start from the output node, 500 V/s and 1 000 A/s rises, E1 input derate, power limits, group share, CV share trim; regulator kernel with min-select and back-calculation anti-windup |
 | Protocol layer | `core/modapi.h` canonical model · `proto/` profiles and registry · `can_proto.{h,c}` (v1, never shipped) retired |
 | HAL 1 ms order | profile rx → profile tick → `pmp_cmd_to_in` → `pmp_fsm_step` → `pmp_cmd_to_ctl` → `pmp_ctl_step` → commit references → telemetry → TX |
+
+## E80 addendum (additive)
+
+- **Host suite is now six binaries / 260 checks**: `boot_test` (SHA-256 · ECDSA-P256 against OpenSSL + BigInt vectors ·
+  signed images · boot decision · update protocol on RAM flash) joins the five E79 suites; `run_tests.sh` runs all six.
+- **The GD32G553 register port is built** (`firmware/port/gd32g553/` — no vendor library; every register cited to UM
+  Rev 1.3): 216 MHz clock recipe, HRTIMER center-aligned Vienna carrier + PFM/PSM legs with 120 ns dead time, the six
+  fault channels of Table 25-21, four ADCs on one 100 kHz trigger with double-buffered DMA rings, CMP/DAC thresholds,
+  CAN mailbox driver with manual bus-off recovery, FWDGT + the TPS3430 WDI contract, TCM placement of the whole 100 kHz
+  path, and `build.sh` producing the bootloader plus signed slot-A/B images. `port-pin-audit` (run-all) locks its pin
+  table to `umod-map.gen.ts` — 56 pins.
+- **Watchdog contract update (review HR-02)**: the TPS3430 now runs the FIXED window (CWD open, SET0 low, SET1 high) —
+  a falling WDI edge is valid 2.22–23.375 ms after the last one; the app kicks every 10 ms as before, and the BOOTLOADER
+  kicks from power-up, chunking image verification (a 208 KB SHA-256 pass takes ~40 ms and must be split). EVT T-53.
+- **Relay economization is live** (the E26 instruction above): the app emits per-coil duties — 100 % for 60 ms after a
+  close command, then 40 % hold at 20 kHz (`app_tick_out_t.relay_duty[]`); KSER/KPARA ride TIMER3 PWM, KPRE/KPARB hold
+  full until their pins' PWM capability is confirmed at bring-up.
+- **Calibration policy (review HR-29)**: a card with NO calibration record latches F.30 at boot exactly like an
+  implausible one — nominal-scaling delivery is gone; the EOL fixture is the only calibration writer.
 
 ---
 

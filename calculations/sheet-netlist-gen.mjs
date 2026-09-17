@@ -81,10 +81,14 @@ function transform(c, page, all, warn) {
     out.pins = [P(7, "WDI", sig(c, "WDI")), P(5, "GND", gnd), P(11, "EP", gnd),
       P(3, "SET0", sig(c, "SET0")), P(6, "SET1", sig(c, "SET1")), P(8, "WDO#", sig(c, "WDO")),
       P(10, "VDD2", vdd), P(1, "VDD1", vdd),
-      // R3 CLOSED: pin 2 CWD programs the watchdog timeout, pin 4 CRST the reset delay. Both now
-      // carry their timing cap to GND, so the window is defined rather than floating.
-      P(2, "CWD", sig(c, "CWD")), P(4, "CRST", sig(c, "CRST"))];
-    out.nc = [9];
+      // R3 CLOSED: pin 4 CRST carries the reset-delay cap. E80 (review HR-02/R01, CONFIRMED on the TI datasheet the
+      // reviews quote): CWD 1 nF with SET00 put the window's EARLY boundary at ~15-18 ms — the 10 ms kick contract
+      // (app.c APP_WDT_KICK_MS) serviced it inside the prohibited window, a reset loop. Fixed-window strap instead:
+      // CWD unconnected, SET0 low, SET1 high -> valid service after 2.22 ms and before 23.375 ms; 10 ms kicks are legal
+      // with no capacitor tolerance in the window. Boot contract: the bootloader kicks every ~10 ms from power-up,
+      // chunking image verification (boot/image.h poll); EVT T-48 confirms the window on the fitted part.
+      P(4, "CRST", sig(c, "CRST"))];
+    out.nc = [2, 9];
   } else if (m === "TPS54202-class") {
     out.pins = [P(3, "VIN", sig(c, "VIN")), P(1, "GND", sig(c, "GND")), P(2, "SW", sig(c, "SW")),
       P(4, "FB", sig(c, "FB")), P(5, "EN", sig(c, "EN")), P(6, "BOOT", sig(c, "BST"))];
@@ -131,8 +135,11 @@ function transform(c, page, all, warn) {
       P(12, "CANL", sig(c, "CANL")), P(13, "CANH", sig(c, "CANH"))];
     out.nc = [4, 5, 7, 11, 14];
   } else if (m === "CMC-CAN-51uH") {
-    // ACT45B windings 1-4 and 2-3
-    out.pins = [P(1, "A1", sig(c, "A1")), P(4, "A2", sig(c, "A2")), P(2, "B1", sig(c, "B1")), P(3, "B2", sig(c, "B2"))];
+    // E80 (review HR-01, CONFIRMED): ACT45B windings are pins 1-4 and 2-3 (TDK ACT45B datasheet circuit). The E73 map
+    // (A1=1 A2=4 / B1=2 B2=3) put the TRANSCEIVER PAIR across winding 1-4 and the CONNECTOR PAIR across 2-3 — no
+    // conductive through-path for either CAN signal on all four exported variants. Correct: CANH flows 1→4, CANL 2→3;
+    // the bus-side termination/TVS ride the B labels and land on 4/3 with this map.
+    out.pins = [P(1, "A1", sig(c, "A1")), P(2, "A2", sig(c, "A2")), P(4, "B1", sig(c, "B1")), P(3, "B2", sig(c, "B2"))];
   } else if (/^XFMR-LLC-CELL-/.test(m)) {   /* E67 D3 rev D cell: P1 P2 SH SA SB, all five bound */
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
   } else if (m === "CMC-3PH-2mH-SKU") {

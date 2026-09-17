@@ -128,9 +128,9 @@ ck("R4-2", /<OutputShunt inn="net\.BKBN"/.test(boards) && !/outn="net\.OUTN_SH"/
 // unbound pin. The check is that the pin is BOUND and that the part driving it exists.
 ck("R3-RDY", /\.U\$\{id\} > \.RDY`\} to="net\.DRV_RDY"/.test(cells) && /RRDY\$\{id\}/.test(cells),
   "NSI6611 RDY wired-OR to DRV_RDY with a per-board pull-up (was floating open-drain)");
-ck("R3-WDT", /CWD\$\{id\}/.test(cells) && /CRST\$\{id\}/.test(cells) &&
-  /pin7: "CWD", pin8: "CRST"/.test(cells),
-  "TPS3430 CWD/CRST carry their timing caps (window was undefined)");
+ck("R3-WDT/E80", /CRST\$\{id\}/.test(cells) && /pin7: "CWD", pin8: "CRST"/.test(cells) &&
+  !/name=\{`CWD\$\{id\}`\}/.test(cells) && /SET1`\} to="net\.V3P3"/.test(cells),
+  "TPS3430 fixed-window strap (E80/HR-02): CRST cap kept, CWD OPEN, SET0 low / SET1 high — 10 ms kicks sit inside 2.22-23.375 ms");
 ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin4: "RT"/.test(cells),
   "NCP1252 RT has its frequency-setting resistor (stage had no defined Fsw)");
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
@@ -451,7 +451,7 @@ ck("R5-C", /C\$\{id\}BV/.test(cells) && /C\$\{id\}VA/.test(cells) && /C\$\{id\}V
   "local bypass at every flagged class: NSI6611 VCC1, AMC both sides, bias-module 1 u bulk, CAN both domains, AND/NOR/op-amp VCC, opto driver");
 ck("R5-D", !/UEXCL2/.test(boards) && !/"net.CTL_KPREA"/.test(boards) && /\/\^UEXCL\$\//.test(db),
   "E67: the pre-insertion exclusion stage is RETIRED with the pre-insertion pair (the output diode needs no matched-voltage make) — no orphan second stage may remain");
-ck("R5-D-FW", /o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = true; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),   /* E76: step 20 also starts the bank bleeders (review R03) */
+ck("R5-D-FW", /o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = true; f->p_make = 0; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),   /* E76: step 20 starts the bleeders (R03); E80: it also re-arms the make-settle wait (HR-08) */
   "ST_MODESW step-20 opens ALL three matrix contacts explicitly; host_sim asserts the exclusion invariant on every tick of every scenario");
 ck("R5-E", !/RG\$\{id\}A1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[123]"),
   "paralleled pairs are SYMMETRIC: the original device gets its own 2.2 R branch (E68: the Vienna pairs are retired — one die per phase on the clip mount; the LLC positions that stay paralleled keep the symmetric branches)");

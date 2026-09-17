@@ -163,7 +163,7 @@ are [current coordination](current-coordination.md).
 | **V24** | aux secondary | relay coils, fans |
 | **V15** | aux secondary | driver bias modules, card feed |
 | **3.3 V** | sync buck per board (100 k / 27 k EN dividers, R4-4) | local logic and senses |
-| **Isolated bias** | reinforced-class modules (QA01C-18) · drawn +18 / −4 V; the catalogue part is +18 / −3 V, so the −4 V split is open decision O-11 | every floating driver and sense domain |
+| **Isolated bias** | reinforced-class modules (QA01C-18), +18 / −3 V — the catalogue rails ARE the design rails (O-11 closed at E45, reconfirmed E80; −3 V keeps 2 V to the SiC gate's −5 V conditional floor, scoped at DPT) | every floating driver and sense domain |
 
 ## 6. Efficiency and thermal snapshot
 

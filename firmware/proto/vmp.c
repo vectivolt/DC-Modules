@@ -203,7 +203,9 @@ static bool obj_get(const vmp_t *v, const mod_tlm_t *m, uint16_t o, uint8_t sub,
   case VMP_O_ENERGY: *val = m->energy_wh / 100u; return true;   /* 0.1 kWh */
   case VMP_O_STARTS: *val = m->starts; return true;
   case VMP_O_FAULTS: *val = m->fault_total; return true;
-  default: return false;
+  default:
+    if (v->aux_read && o >= 0x0400u) { bool ok = false; *val = v->aux_read(v->aux_ctx, o, sub, &ok); return ok; }
+    return false;
   }
 }
 

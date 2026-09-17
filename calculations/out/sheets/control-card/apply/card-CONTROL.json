@@ -738,7 +738,7 @@
      {
       "pin_number": 6,
       "name": "SET1",
-      "signal_name": "DGND"
+      "signal_name": "V3P3"
      },
      {
       "pin_number": 8,
@@ -754,11 +754,6 @@
       "pin_number": 1,
       "name": "VDD1",
       "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "CWD",
-      "signal_name": "USUPCARD_CWD"
      },
      {
       "pin_number": 4,
@@ -916,23 +911,6 @@
       "pin_number": 1,
       "name": "pin1",
       "signal_name": "V3P3"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DGND"
-     }
-    ]
-   },
-   {
-    "designator": "CWDCARD",
-    "value": "1nF",
-    "block_name": "SAFETY",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "USUPCARD_CWD"
      },
      {
       "pin_number": 2,
@@ -1841,6 +1819,7 @@
    98
   ],
   "USUPCARD": [
+   2,
    9
   ],
   "UANDCARD": [
@@ -1860,5 +1839,5 @@
   ]
  },
  "warnings": [],
- "total": 49
+ "total": 48
 }

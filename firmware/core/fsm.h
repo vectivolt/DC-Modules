@@ -24,7 +24,9 @@ typedef enum {
   FC_AUX_UV = 26, FC_LINK = 27, FC_CAN_TO = 28, FC_SENSOR = 29, FC_CAL = 30, FC_LOCK = 31, FC_WDT = 32,
   FC_BACKFEED = 33, FC_START_TO = 34,  /* E76: soft-start / make-permit stall (F.34) */
   FC_OVERRUN = 35, FC_INTERNAL = 36,   /* E78: control-deadline overrun (HAL verdict) · a state value the enum does not define */
-  FC_LINE_HZ = 37                      /* E79: line frequency outside 45–65 Hz, or no zero crossing on a live line, for 200 ms */
+  FC_LINE_HZ = 37,                     /* E79: line frequency outside 45–65 Hz, or no zero crossing on a live line, for 200 ms */
+  FC_HALF_OV = 38                      /* E80 (review HR-06/R10): a half-link above PMP_HALF_OV_V for 10 ms — the 860 V total
+                                          and 40 V midpoint rows together still allowed one 450 V bank to reach 454–468 V */
 } pmp_fault_t;
 
 /* E78: what a latched row asks of the outside world (docs/firmware-architecture.md §4). AUTO rows clear themselves once
@@ -45,7 +47,9 @@ typedef enum { OMODE_AUTO = 0, OMODE_LOW = 1, OMODE_HIGH = 2 } pmp_omode_t;
 #define PMP_RLY_PARB  (1u << 3)
 
 typedef struct {            /* measured / external inputs, engineering units */
-  float vin_ll;             /* worst line-line VAC */
+  float vin_ll;             /* the line-line VAC farthest from nominal — telemetry/display only (E80) */
+  float vin_ll_min, vin_ll_max;   /* E80 (review R06/HR-24): each limit reads its own side — one "worst" scalar hid a
+                                     280 / 505 / 505 V set from F.07, and fed a 505 V line's crest into precharge as 280 V */
   uint8_t phases_ok;        /* count of live phases */
   float vbus, vmid_frac;    /* total bus V; midpoint as fraction of bus */
   float vbank_a, vbank_b;
@@ -53,6 +57,7 @@ typedef struct {            /* measured / external inputs, engineering units */
   bool ext_connected;
   float temp_max_c;         /* worst NTC zone (per-zone handling in zone table upstream) */
   bool fan_ok, aux_ok, wdt_ok;
+  uint8_t fans_total, fans_failed;        /* E80 (FW-21): fans fitted and failed; fans_total 0 = fan_ok alone, as before (0.5) */
   bool desat_flt, oc_pfc_flt;             /* latched HW flags (read-clear) */
   uint32_t can_age_ms, link_age_ms;
   bool enable_req, clear_req;
@@ -116,6 +121,9 @@ typedef struct {
   /* E77: persistence counters (consecutive ms a row's condition has held) — the rows' documented detection times */
   uint16_t p_bad, p_mid, p_inov, p_inuv, p_ph, p_busuv, p_ocf, p_ocs, p_ovpa, p_ovps;
   uint16_t p_relay, p_aux;  /* E78: F.19 persistence · aux-stable hold out of SAFE */
+  uint16_t p_half;          /* E80: F.38 half-link persistence */
+  uint16_t p_make;          /* E80 (review HR-08): ms since the matrix close command — no mirror contacts on the matrix
+                               relays (E67), so the soft start waits out operate + bounce instead of trusting the coil bit */
   uint32_t lock_t[5];       /* E77: times of the last PMP_LOCK_COUNT (5) latches — F.31 counts inside PMP_LOCK_WINDOW_MS */
   uint8_t lock_i;
   uint32_t idle_ms;         /* E77: STANDBY time without a start request while still warm */
@@ -132,6 +140,9 @@ void pmp_fsm_init(pmp_fsm_t *f);
 void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in);   /* call every 1 ms */
 void pmp_fsm_set_comm_timeout_ms(pmp_fsm_t *f, uint32_t ms);   /* E78: profile-owned, clamped 100–60 000 ms */
 pmp_fclass_t pmp_fault_class(pmp_fault_t c);                   /* E78 */
+/* E80 (FW-21, firmware-architecture §7): the power a module may keep with failed fans — 4 fans (50 kW air): one failed 0.6, two
+   0.3; 2–3 fans: one failed 0.5; fewer fans than that: 0, which is F.25 (AUTO_INT: it recovers when a fan runs again) */
+float pmp_fan_derate(const pmp_in_t *in);
 /* Card promise (CARD_RULES): ONE firmware image, rating read at boot from the RATING strap on
  * ROLE1's ADC (card 10k pull-up to V3P3, board resistor to DGND) — E24 rev G bands:
  *   <0.15 V  (0R)    -> 30 kW module
@@ -175,6 +186,14 @@ const char *pmp_state_name(pmp_state_t s);
    would hold a battery that climbed past the 500 V PAR ceiling at zero current for 30 s). The 20 V hysteresis below prevents
    chatter; the dwell only has to outlast measurement noise and a load step. */
 #define PMP_MODE_DWELL_MS 1000u
+/* E80 (review HR-06/R10): absolute half-link ceiling, either half, 450 V cans. Normal worst half = 415 (830 ref) + 20
+   (F.06 lets the midpoint move 40 V) + 3 ripple = 438 at the F.06 boundary; the 10 ms persistences overlap so whichever
+   row's condition holds fires. Sensing is the calibrated ±1 % class: trip spans 435.6–444.4 V, under the can rating. */
+#define PMP_HALF_OV_V      440.0f
+#define PMP_HALF_OV_MS      10u
+/* E80 (review HR-08): matrix relays carry no mirror contacts (E67) — the LLC waits out the RFQ operate ≤ 25 ms +
+   bounce ≤ 5 ms with margin after a close command instead of starting on the next tick */
+#define PMP_RELAY_MAKE_MS   40u
 /* E67: LOW (banks parallel) ≤ 500 V, HIGH (banks series) ≥ 500 V. AUTO starts on the 500 V line and switches in RUN (stop,
    reconfigure, restart) with a 480 V return so a battery at the boundary cannot chatter; HIGH refuses a start below 480 V. */
 #define PMP_XOVER_UP_V     480.0f

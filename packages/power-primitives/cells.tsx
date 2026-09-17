@@ -809,8 +809,9 @@ export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 
 // → 10 k pulldown on the output: gates default-DISABLED for any missing/floating/reset condition.
 // USUP = external windowed watchdog (protection rows 24/30); spare AND gates' inputs tied low.
 // v4/HR-13: watchdog symbol corrected to the real 6-pin device class (TPS3430: VDD/GND/WDI/WDO/
-// window-set straps) — the v3 3-pin symbol had no supply. SET straps to DGND = datasheet default
-// window; final strap per A6/§K. RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
+// window-set straps) — the v3 3-pin symbol had no supply. E80: SET0 low + SET1 high + CWD open =
+// the FIXED window (2.22–23.375 ms), matching the firmware's 10 ms kick (§K strap line CLOSED).
+// RENL: local-EN 100 k pulldown (E27 hygiene — no floating CMOS
 // input on the safety AND while the local MCU is in reset).
 export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "SAFETY", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => {
   // R6-A: when nrst is given it REPLACES the WDO net name outright. The R5 implementation
@@ -834,15 +835,13 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
         package, a 1206's pads land 1.06 mm from each -- against 24.5 mm where this cap started,
         which for a supervisor's rail is a cap that is not there. */}
     <capacitor layer={lay === "bottom" ? "top" : "bottom"} name={`CSF${id}`} capacitance="100nF" footprint="1206" pcbX={0} pcbY={0} schX={6} schY={-2} schSectionName={sec} />
-    {/* R3: CWD (physical 2) programs the watchdog timeout and CRST (physical 4) the reset delay.
-        Both were floating, which leaves the window UNDEFINED — the safety chain's centerpiece
-        would not have had a defined timeout. Sized for the 10 ms window of E27/F.32.
-        VALUE REVIEW: the C-per-ms constant comes from the final TPS3430 datasheet (§K); the
-        components and their nets are correct regardless of the final capacitance. */}
-    <capacitor layer={lay} name={`CWD${id}`} capacitance="1nF" footprint="0603" pcbX={-6} pcbY={0.6} schX={6} schY={-3.2} schSectionName={sec} />
+    {/* E80 (review HR-02/R01 — closes the §K strap line): FIXED-WINDOW mode, no CWD capacitor. The R3 1 nF + SET00
+        combination put the window's early boundary at ~15–18 ms while firmware kicks WDI every 10 ms (app.c) — every
+        correct kick landed in the prohibited early window. SET0 low + SET1 high + CWD OPEN gives the datasheet fixed
+        window: a kick is valid after 2.22 ms and before 23.375 ms, with no capacitor tolerance in it. CRST (reset
+        stretch) keeps its 1 nF. Contract: bootloader kicks every ~10 ms from power-up (chunked image verification);
+        EVT T-48 scopes WDI/WDO/NRST over temperature. */}
     <capacitor layer={lay} name={`CRST${id}`} capacitance="1nF" footprint="0603" pcbX={-6} pcbY={3.4} schX={7.5} schY={-3.2} schSectionName={sec} />
-    <trace from={`.CWD${id} > .pin1`} to={`.USUP${id} > .CWD`} />
-    <trace from={`.CWD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.CRST${id} > .pin1`} to={`.USUP${id} > .CRST`} />
     <trace from={`.CRST${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     {/* the single per-board pull-up for the wired-OR driver power-good chain (see DriverCh) */}
@@ -853,7 +852,7 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
     <trace from={`.USUP${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.USUP${id} > .VDD`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.USUP${id} > .SET0`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.USUP${id} > .SET1`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.USUP${id} > .SET1`} to="net.V3P3" schDisplayLabel="V3P3" />   {/* E80: fixed-window strap (HR-02) */}
     <trace from={`.CSF${id} > .pin1`} to={`.USUP${id} > .VDD`} />
     <trace from={`.RENL${id} > .pin1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
     <trace from={`.RENL${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />

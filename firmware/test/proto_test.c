@@ -449,7 +449,7 @@ static void rig_init(rig_t *r) {
   memset(r, 0, sizeof *r);
   pmp_fsm_init(&r->f); pmp_fsm_set_rating_kw(&r->f, 50);
   mod_cmd_init(&r->cmd); pmp_ctl_cfg_default(&r->cc, 50); pmp_ctl_init(&r->c);
-  r->in.vin_ll = 400.0f; r->in.phases_ok = 3; r->in.vmid_frac = 0.5f; r->in.fan_ok = true; r->in.aux_ok = true; r->in.wdt_ok = true;
+  r->in.vin_ll = r->in.vin_ll_min = r->in.vin_ll_max = 400.0f; r->in.phases_ok = 3; r->in.vmid_frac = 0.5f; r->in.fan_ok = true; r->in.aux_ok = true; r->in.wdt_ok = true;
   r->in.temp_max_c = 60.0f; r->in.vbus = 400.0f;
   r->m = tlm();
 }

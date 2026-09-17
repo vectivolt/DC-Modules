@@ -189,7 +189,7 @@ SKU across every physical boundary:
 ---
 
 <div align="center">
-<sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
+<sub><a href="e80-recheck-response.md">← E80 External Recheck — Response Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

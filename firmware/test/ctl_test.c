@@ -142,6 +142,16 @@ int main(void) {
     float u = pmp_reg_step(&r, &rc, false, 400.0f, 100.0f, 390.0f, 50.0f, VS, IS, rdt);
     ck("regulator: disable returns zero demand and clears both integrators", u == 0.0f && r.xv == 0.0f && r.xi == 0.0f); }
 
+  { /* E80 (review R34): the share trim's authority ends at the mode ceiling — +1 % on a 500 V command stays 500 V */
+    pmp_ctl_t s2; pmp_ctl_cfg_t c2; pmp_ctl_cfg_default(&c2, 50);
+    pmp_ctl_in_t in2 = base();
+    pmp_ctl_init(&s2);
+    in2.en = true; in2.cv_active = true; in2.v_set = 500.0f; in2.i_set = 100.0f; in2.v_max_mode = 500.0f;
+    in2.peer_n = 4; in2.peer_avg_a = 120.0f; in2.i_out = 60.0f; in2.v_out = 500.0f;
+    for (int k = 0; k < 20000; k++) pmp_ctl_step(&s2, &c2, &in2, 1e-3f);
+    ck("E80 R34: a saturated positive share trim never carries v_tgt past v_max_mode", s2.trim_v > 4.0f && s2.v_tgt <= 500.0f + 1e-3f);
+  }
+
   printf("\nRESULT: %d/%d checks passed\n", checks - fails, checks);
   return fails ? 1 : 0;
 }

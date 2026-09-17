@@ -57,7 +57,9 @@ void pmp_ctl_step(pmp_ctl_t *s, const pmp_ctl_cfg_t *c, const pmp_ctl_in_t *in, 
   float tmax = c->trim_max_frac * v_cmd;
   s->trim_v = clampf(fin0(s->trim_v), -tmax, tmax);
   s->trim_active = trim_on;
-  s->v_tgt = (v_cmd > 0.0f) ? fmaxf(v_cmd + s->trim_v - c->droop_ohm * fmaxf(iout, 0.0f), 0.0f) : 0.0f;
+  /* E80 (review R34): the FINAL target is clamped to the mode window — the share trim's +1 % authority otherwise
+     carried the command past the ceiling (505 V in LOW) after the earlier clamp had already run */
+  s->v_tgt = (v_cmd > 0.0f) ? clampf(v_cmd + s->trim_v - c->droop_ohm * fmaxf(iout, 0.0f), 0.0f, vmax) : 0.0f;
 
   if (!in->en) {   /* idle: the references wait at the output node, so the next start is bumpless */
     s->v_ref = fminf(vout, s->v_tgt); s->i_ref = 0.0f; s->was_en = false; s->limiter = PMP_LIM_NONE;

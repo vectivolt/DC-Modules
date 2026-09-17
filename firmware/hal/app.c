@@ -18,6 +18,7 @@ enum { FLT_OC = 0, FLT_DESAT, FLT_VBUS, FLT_VOUT, FLT_TANK };
 typedef char app_nv_records_fit[(sizeof(app_cfg_t) <= NVM_MAX_LEN && sizeof(meas_cal_t) <= NVM_MAX_LEN) ? 1 : -1];
 
 static float clampf(float x, float lo, float hi) { return x < lo ? lo : (x > hi ? hi : x); }
+static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok);   /* E80: registered on the native profile */
 static uint16_t sat16(uint32_t x) { return x > 0xFFFFu ? 0xFFFFu : (uint16_t)x; }
 
 void app_cfg_default(app_cfg_t *c) {
@@ -46,7 +47,7 @@ void app_init(app_t *a, const app_boot_t *b) {
   meas_cal_default(&a->cal, a->kw);
   mod_cmd_init(&a->cmd);
 
-  nvm_mount(&a->nvm, b->nvm_page_size);
+  nvm_mount(&a->nvm, 0u, b->nvm_page_size);
   meas_cal_t cal;
   if (nvm_get(&a->nvm, APP_NV_CAL, (uint8_t *)&cal, (uint8_t)sizeof cal)) {
     if (meas_cal_plausible(&cal, a->kw)) a->cal = cal; else a->cal_bad = true;
@@ -61,6 +62,14 @@ void app_init(app_t *a, const app_boot_t *b) {
   (void)nvm_get(&a->nvm, APP_NV_COUNTERS, (uint8_t *)&a->cnt, (uint8_t)sizeof a->cnt);
 
   a->ident.uid = b->uid; a->ident.fw = b->fw; a->ident.product = a->kw; a->ident.reset_cause = b->wdt_reset ? 1u : 0u;
+  a->ident.fw_crc = b->fw_crc; a->ident.boot_ver = b->boot_ver; a->ident.boot_state = b->boot_state;
+  a->ident.features = (uint16_t)(VMP_FEAT_GROUP | VMP_FEAT_LEVEL_LAW | VMP_FEAT_P_LIMIT | VMP_FEAT_SHARE_TRIM |
+                                 VMP_FEAT_FAN_MODES | VMP_FEAT_TIME_SYNC | VMP_FEAT_BOOTLOADER |
+                                 (a->liquid ? VMP_FEAT_LIQUID : 0u) | (PMP_WITH_TONHE_V12 ? VMP_FEAT_TONHE_V12 : 0u));
+  if (b->evlog_pages) {                       /* E80: the event ring sits behind the record store's pages */
+    evlog_mount(&a->ev, 4u, b->evlog_pages, b->nvm_page_size);   /* port pages: 0/1 records · 2/3 boot control · 4… events */
+    evlog_add(&a->ev, 1u /* boot */, a->ident.reset_cause, (uint16_t)(b->fw & 0xFFFFu), 0u);
+  }
   a->prof = pmp_profile_get((pmp_profile_id_t)a->cfg.vmp.profile);
 #if PMP_WITH_TONHE_V12
   if (a->prof->id == PMP_PROFILE_TONHE_V12) {
@@ -71,6 +80,7 @@ void app_init(app_t *a, const app_boot_t *b) {
 #endif
   {
     vmp_init(&a->vmp, &a->cfg.vmp, &a->ident, 0u);
+    a->vmp.aux_read = app_aux_read; a->vmp.aux_ctx = a;   /* E80: event-log and timing objects */
     a->prof_ctx = &a->vmp;
     a->bitrate = a->vmp.cfg.bitrate;
     if (a->vmp.cfg.ramp_v_vps) a->ctl_cfg.ramp_v_vps = (float)a->vmp.cfg.ramp_v_vps;
@@ -173,6 +183,44 @@ static bool took(app_t *a, int kind) {   /* a fault event the tick has not seen 
 }
 
 /* -------------------------------------------------------------------------------------------------------------------- tick */
+static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok) {   /* E80: VMP objects 0x04xx / 0x05xx */
+  app_t *a = ctx;
+  *ok = true;
+  switch (obj) {
+  case VMP_O_EV_COUNT: return evlog_count(&a->ev);
+  case VMP_O_EV_W0: case VMP_O_EV_W1: case VMP_O_EV_W2: case VMP_O_EV_W3: {
+    evlog_entry_t e;
+    if (!evlog_read(&a->ev, sub, &e)) break;
+    switch (obj) {
+    case VMP_O_EV_W0: return e.seq;
+    case VMP_O_EV_W1: return e.t;
+    case VMP_O_EV_W2: return (uint32_t)e.boot | ((uint32_t)e.kind << 16) | ((uint32_t)e.code << 24);
+    default: return e.arg;
+    }
+  }
+  case VMP_O_DIAG_EXEC: return ((uint32_t)a->pfc_us << 16) | a->llc_us;      /* T-44: worst ISR µs since the last read tick */
+  case VMP_O_DIAG_STACK: return a->stack_pct;
+  default: break;
+  }
+  *ok = false;
+  return 0u;
+}
+
+static void events(app_t *a) {   /* E80: fault transitions into the ring (flushed by nvm_service, never while delivering) */
+  pmp_fault_t l = a->fsm.latched;
+  if (l == a->ev_prev) return;
+  uint8_t kind = (l != FC_NONE) ? 2u : 3u;                     /* fault set / cleared (vmp EVENT kinds) */
+  uint8_t code = (uint8_t)(l != FC_NONE ? l : a->ev_prev);
+  if (l != FC_NONE) {
+    pmp_fclass_t cl = pmp_fault_class(l);
+    if (cl == FCL_LATCH || cl == FCL_LOCK) a->latch_seen = true;   /* a pending image is not confirmed past these */
+  }
+  uint32_t t = a->now_ms / 1000u;
+  if (a->prof->id == PMP_PROFILE_NATIVE && a->vmp.epoch_ok) { t = a->vmp.epoch_s + (a->now_ms - a->vmp.t_epoch) / 1000u; kind |= EVLOG_KIND_UNIX; }
+  evlog_add(&a->ev, kind, code, (uint16_t)a->fsm.counted, t);
+  a->ev_prev = l;
+}
+
 static void supervise(app_t *a, const app_tick_in_t *ti) {
   uint32_t pc = a->pfc_count, lc = a->llc_count, dp = pc - a->pfc_last, dl = lc - a->llc_last;
   a->pfc_last = pc; a->llc_last = lc;
@@ -242,7 +290,8 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   if (q != a->grid_seen) {   /* a line cycle closed */
     a->grid_seen = q;
     float mx = fmaxf(fmaxf(vll[0], vll[1]), vll[2]), mn = fminf(fminf(vll[0], vll[1]), vll[2]);
-    in->vin_ll = (mx - 400.0f > 400.0f - mn) ? mx : mn;          /* the line farthest from nominal: each row sees its side */
+    in->vin_ll = (mx - 400.0f > 400.0f - mn) ? mx : mn;          /* display keeps the line farthest from nominal */
+    in->vin_ll_min = mn; in->vin_ll_max = mx;                    /* E80 (R06/HR-24): each protection row reads its own side */
     float vmax = fmaxf(fmaxf(vph[0], vph[1]), vph[2]), imean = (irms[0] + irms[1] + irms[2]) / 3.0f;
     bool loaded = a->pfc.run && imean > 0.05f * a->pfc_cfg.i_clamp;
     uint8_t ok = 0u;
@@ -284,7 +333,10 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   if (took(a, FLT_VOUT) && h == FC_NONE) h = FC_OUT_OVP;
   if (took(a, FLT_TANK) && h == FC_NONE) h = FC_TANK_OC;
   if (h == FC_NONE) {
-    if (a->strap_bad || a->cal_bad) h = FC_CAL;
+    /* E80 (review HR-29/R04): NO calibration record inhibits delivery like a bad one — with the corrected nominal
+       transfers a blank card still carries the sense chains' full part tolerances; the EOL fixture writes the record
+       (there is deliberately no CAN write path for calibration). APP_W_UNCAL names the cause next to F.30. */
+    if (a->strap_bad || a->cal_bad || a->uncal) h = FC_CAL;
     else if (a->az_bad || a->ref_bad_ms >= 100u || a->isum_bad_ms >= 20u) h = FC_SENSOR;
     else if (ti->stack_pct >= 90u) h = FC_INTERNAL;
     else if (a->hz_bad_ms >= 200u) h = FC_LINE_HZ;
@@ -322,7 +374,23 @@ static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
   /* the comparator references from the rating and the calibration in force (firmware may tighten, never loosen) */
   for (int n = 0; n < 3; n++) o->dac_v[APP_DAC_IA + n] = dac_v(&a->cal, MCH_IA + n, APP_OC_POL * a->fsm.oc_line_a);
   o->dac_v[APP_DAC_VBUS] = dac_v(&a->cal, MCH_VBUS, PMP_BUS_OVP_V);
-  o->dac_v[APP_DAC_VOUT] = dac_v(&a->cal, MCH_VOUT, PMP_OUT_OVP_ABS_V);
+  /* E80 (review R09/HR-07, FW-19): the F.13 comparator threshold follows the output mode — LOW mode's banks meet a
+     hardware limit at 560 V instead of the HIGH-mode 1050 V (the documented interim until HW-REC-1 is decided; an EV
+     contactor opening ends the session anyway, so the latch is the protective outcome, not a nuisance) */
+  float th13 = (fo->v_max <= PMP_PAR_VMAX_V) ? 560.0f : PMP_OUT_OVP_ABS_V;
+  o->dac_v[APP_DAC_VOUT] = dac_v(&a->cal, MCH_VOUT, th13);
+  /* HW-REC-1 readiness: the non-latching clamp reference rides the active CV setpoint; armed high when idle */
+  float vr = a->ctl.v_ref;
+  o->dac_v[APP_DAC_CLAMP] = dac_v(&a->cal, MCH_VOUT, (vr > 50.0f) ? fminf(vr * 1.05f + 10.0f, th13) : th13);
+  /* E80: relay-coil economizer (firmware-guide E26) — 60 ms pull-in, then 40 % hold at 20 kHz; aux-budget relief (R23) */
+  static const uint16_t RLY_DO[APP_RLY_COUNT] = { APP_DO_KPRE, APP_DO_KSER, APP_DO_KPARA, APP_DO_KPARB };
+  for (int r = 0; r < APP_RLY_COUNT; r++) {
+    if (!(o->do_bits & RLY_DO[r])) { a->rly_ms[r] = 0u; o->relay_duty[r] = 0.0f; }
+    else {
+      if (a->rly_ms[r] < 0xFFFFu) a->rly_ms[r]++;
+      o->relay_duty[r] = (a->rly_ms[r] <= APP_RLY_PULL_MS) ? 1.0f : APP_RLY_HOLD;
+    }
+  }
   /* E73: the latches clear through the bypass-closure blank, and once a latched row has cleared */
   o->fault_rearm = a->fsm.pre_blank_ms > 0u || (st0 == ST_FAULT && a->fsm.st != ST_FAULT && a->fsm.st != ST_LOCK);
 }
@@ -344,13 +412,22 @@ static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
       a->fan_duty = d;
     }
     uint8_t fail = 0u;
-    for (uint8_t k = 0u; k < a->n_fans; k++) {                /* a running command with a still tach for 3 s */
-      bool still = a->fan_duty >= 0.3f && !(ti->tach_hz[k] >= 5.0f);
-      a->fan_still_ms[k] = still ? sat16(a->fan_still_ms[k] + 10u) : 0u;
+    for (uint8_t k = 0u; k < a->n_fans; k++) {
+      /* E80 (review HR-25/R25): the floor scales with the command — 5 Hz (150 rpm) used to pass at ANY duty, so a
+         fan at 4 % of its commanded speed read healthy. Below 20 % duty the tach is too slow to judge (the running
+         floor when cooling is needed is 25 %, so a needed fan is always judged). A failed fan that recovers clears
+         its bit and the count-based derate recovers through the FSM's slew. */
+      bool judged = a->fan_duty >= 0.2f;
+      bool slow = judged && !(ti->tach_hz[k] >= fmaxf(5.0f, 0.35f * a->fan_duty * APP_TACH_FULL_HZ));
+      a->fan_still_ms[k] = slow ? sat16(a->fan_still_ms[k] + 10u) : 0u;
       if (a->fan_still_ms[k] >= 3000u) fail = (uint8_t)(fail | (1u << k));
     }
     a->fan_fail = fail;
     a->in.fan_ok = fail == 0u;
+    a->in.fans_total = a->n_fans;                             /* E80 (FW-21): the core derates by the failed COUNT */
+    uint8_t nf = 0u;
+    for (uint8_t k = 0u; k < a->n_fans; k++) nf = (uint8_t)(nf + ((fail >> k) & 1u));
+    a->in.fans_failed = nf;
   }
   o->fan_duty[0] = a->fan_duty;
   o->fan_duty[1] = a->fan_duty;
@@ -455,6 +532,16 @@ static void nvm_service(app_t *a) {
       a->nvm_fail = 0u;
     } else if (quiet && a->nvm_fail < 255u) a->nvm_fail++;
   }
+  if (a->factory_pend && a->now_ms - a->t_cfg >= 100u) {      /* E80: FACTORY_RESET — defaults stored, then reboot */
+    app_cfg_default(&a->cfg);
+    a->cfg.vmp.profile = (uint8_t)PMP_PROFILE_NATIVE;
+    if (nvm_put(&a->nvm, APP_NV_CFG, (const uint8_t *)&a->cfg, (uint8_t)sizeof a->cfg, quiet)) {
+      a->factory_pend = false; a->reboot_pend = true;
+      a->t_cfg = a->now_ms;
+    }
+  }
+  if (a->ev.qn || a->ev.lost) evlog_flush(&a->ev, quiet);       /* E80: events append outside delivery; the ring moves
+                                                                   only with both stages stopped (§9 flash discipline) */
   bool hourly = a->now_ms - a->t_cnt >= 3600000u;
   if ((a->cnt_due || hourly) && a->now_ms - a->t_cnt >= 600000u) {   /* at a session end or hourly, at most one per 10 min */
     app_counters_t c = a->cnt;
@@ -477,12 +564,19 @@ static void can_service(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
     bool storm = a->busoff_n >= 10u && a->now_ms - a->busoff_t[a->busoff_i] <= 60000u;
     if (a->now_ms - a->t_busoff >= (storm ? 5000u : 100u)) { o->can_restart = true; a->busoff = false; a->t_busoff = a->now_ms; }
   }
-  if (a->prof->id == PMP_PROFILE_NATIVE && a->vmp.reboot_req && a->txq.n == 0u) o->reboot = true;
+  if (a->prof->id == PMP_PROFILE_NATIVE && a->txq.n == 0u) {
+    if (a->vmp.reboot_req || a->reboot_pend) o->reboot = true;
+    if (a->vmp.boot_req) o->enter_boot = true;                  /* E80: the port writes the handoff and resets */
+    if (a->vmp.factory_req) { a->vmp.factory_req = false; a->factory_pend = true; }
+  }
 }
 
 void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   memset(o, 0, sizeof *o);
   a->now_ms++;
+  a->pfc_us = ti->pfc_exec_us > a->pfc_us ? ti->pfc_exec_us : a->pfc_us;   /* E80 T-44: high-water since boot */
+  a->llc_us = ti->llc_exec_us > a->llc_us ? ti->llc_exec_us : a->llc_us;
+  a->stack_pct = ti->stack_pct > a->stack_pct ? ti->stack_pct : a->stack_pct;
   supervise(a, ti);
   measure(a, ti);
   /* firmware-architecture §2 */
@@ -499,6 +593,10 @@ void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   fans(a, ti, o);
   panel(a, ti, o);
   telemetry(a, ti);
+  events(a);
+  /* E80: a pending image confirms after 60 s of healthy standby — no LATCH/LOCK row since boot (AUTO grid rows do
+     not block a good image; F.30/F.29/F.32 do). The port acts on the rising edge (boot/bootctl.h). */
+  o->boot_ok = a->now_ms >= 60000u && !a->latch_seen && !a->strap_bad && !a->cal_bad && !a->uncal;
   nvm_service(a);
   can_service(a, ti, o);
   /* the sequenced watchdog: a kick every 10 ms, only when both ISRs advanced on every one of those ticks */

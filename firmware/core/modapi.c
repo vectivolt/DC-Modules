@@ -25,7 +25,7 @@ void pmp_cmd_to_ctl(const mod_cmd_t *cmd, const pmp_fsm_t *f, const pmp_in_t *in
   ci->en = f->out.llc_en; ci->stop_ramp = f->out.stop_ramp; ci->cv_active = cv_active;
   ci->v_set = in->vcmd; ci->i_set = cmd->i_set_a; ci->p_set = cmd->p_set_w;
   ci->v_max_mode = f->out.v_max; ci->derate = f->out.derate; ci->fsm_warn = f->out.warn;
-  ci->vin_ll = in->vin_ll; ci->v_out = in->vout_meas; ci->i_out = in->iout_meas;
+  ci->vin_ll = in->vin_ll_min; ci->v_out = in->vout_meas; ci->i_out = in->iout_meas;   /* E80: availability from the LOWEST line */
   ci->grp_active = cmd->grp_active; ci->grp_share_a = cmd->grp_share_a;
   ci->peer_avg_a = cmd->peer_avg_a; ci->peer_n = cmd->peer_n;
 }

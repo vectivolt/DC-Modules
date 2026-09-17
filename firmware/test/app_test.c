@@ -23,21 +23,21 @@ static void ck(const char *name, int cond) {
   if (!cond) { fails++; printf("FAIL %s\n", name); } else printf("PASS %s\n", name);
 }
 
-/* ---------------------------------------------------------------- RAM flash, two 4 KB pages */
+/* ---------------------------------------------------------------- RAM flash: pages 0/1 = records, 2/3 = event ring */
 #define PG 4096u
-static uint8_t flash[2][PG];
+static uint8_t flash[8][PG];
 bool nvm_port_read(uint8_t page, uint32_t off, uint8_t *p, uint32_t n) {
-  if (page > 1u || off + n > PG) return false;
+  if (page > 7u || off + n > PG) return false;
   memcpy(p, flash[page] + off, n);
   return true;
 }
 bool nvm_port_prog(uint8_t page, uint32_t off, const uint8_t *p, uint32_t n) {
-  if (page > 1u || off + n > PG) return false;
+  if (page > 7u || off + n > PG) return false;
   for (uint32_t k = 0; k < n; k++) flash[page][off + k] &= p[k];
   return true;
 }
 bool nvm_port_erase(uint8_t page) {
-  if (page > 1u) return false;
+  if (page > 7u) return false;
   memset(flash[page], 0xFF, PG);
   return true;
 }
@@ -61,6 +61,7 @@ static pmp_frame_t rxq[8];
 static uint8_t rx_n;
 static long kicks = 0;
 static int state_byte = -1;
+static uint8_t rsp_txn; static uint32_t rsp_val; static int rsp_got;   /* E80: last READ_RSP seen by run_ms */
 
 static float counts(int ch, double value) { return (float)(value / pl.cal.ch[ch].gain + pl.cal.ch[ch].off); }
 static double gain(double fn, double q) { return 1.0 / hypot(1.0 + 0.1 * (1.0 - 1.0 / (fn * fn)), q * (fn - 1.0 / fn)); }
@@ -104,6 +105,8 @@ static void plant_llc(app_llc_adc_t *s) {
   s->ires = counts(MCH_IRES, 1.5 * pl.ib); s->vbka = counts(MCH_VBKA, pl.vb); s->vbkb = counts(MCH_VBKB, pl.vb);
 }
 
+static float tach_scale[4] = { 1.0f, 1.0f, 1.0f, 1.0f };   /* E80: per-fan speed knob (fraction of commanded) */
+
 static void plant_tick(app_tick_in_t *ti) {
   bool k = (last_o.do_bits & APP_DO_KPRE) != 0u;
   if (k != pl.kpre_cmd) { pl.kpre_cmd = k; pl.t_kpre = pl.t; }
@@ -113,7 +116,7 @@ static void plant_tick(app_tick_in_t *ti) {
   ti->t_pfc = ti->t_inlet = ti->t_llc = ti->t_xfmr = ntc;
   ti->v24 = (float)(24.0 / (LSB * 9.2)); ti->v15 = (float)(15.0 / (LSB * 5.7)); ti->vrefint = (float)(1.20 / 3.3 * 4096.0);
   ti->di = (uint16_t)(APP_DI_DRV_RDY | (pl.kpre_fb ? APP_DI_RLY_PRE : 0u));
-  for (int n = 0; n < 4; n++) ti->tach_hz[n] = last_o.fan_duty[0] * 120.0f;
+  for (int n = 0; n < 4; n++) ti->tach_hz[n] = last_o.fan_duty[0] * 120.0f * tach_scale[n];
   ti->can_state = pl.can_state;
   ti->stack_pct = 40u;
   ti->pfc_exec_us = 3u; ti->llc_exec_us = 20u;
@@ -133,23 +136,33 @@ static void run_ms(long n) {
     rx_n = 0;
     if (last_o.wdt_kick) kicks++;
     pmp_frame_t f;
-    while (pmp_txq_pop(&app.txq, &f)) if (f.id == 0x1801A001u) state_byte = f.data[0];
+    while (pmp_txq_pop(&app.txq, &f)) {
+      if (f.id == 0x1801A001u) state_byte = f.data[0];
+      if (((f.id >> 16) & 0xFFu) == 0x51u) { rsp_txn = f.data[0]; rsp_val = pmp_get32(f.data + 4); rsp_got = 1; }
+    }
   }
 }
 
-static void boot(bool wdt, const meas_cal_t *cal) {
+static bool boot_no_cal;                                     /* E80: a factory-blank card (no calibration record) */
+static void boot_as(bool wdt, const meas_cal_t *cal, uint8_t profile) {
   memset(flash, 0xFF, sizeof flash);
-  nvm_t n; nvm_mount(&n, PG);
-  app_cfg_t c; app_cfg_default(&c); c.vmp.profile = (uint8_t)PMP_PROFILE_TONHE_V12;
+  nvm_t n; nvm_mount(&n, 0u, PG);
+  app_cfg_t c; app_cfg_default(&c); c.vmp.profile = profile;
+  c.vmp.addr = 0x10u;                                        /* addressed, so READ objects answer (E80) */
   nvm_put(&n, APP_NV_CFG, (const uint8_t *)&c, (uint8_t)sizeof c, true);
+  meas_cal_t def;
+  if (!cal && !boot_no_cal) { meas_cal_default(&def, 50); cal = &def; }   /* E80 (HR-29): tests run CALIBRATED */
   if (cal) nvm_put(&n, APP_NV_CAL, (const uint8_t *)cal, (uint8_t)sizeof *cal, true);
+  for (int k = 0; k < 4; k++) tach_scale[k] = 1.0f;
   memset(&pl, 0, sizeof pl); memset(&last_o, 0, sizeof last_o); memset(&po, 0, sizeof po); memset(&lo, 0, sizeof lo);
   pl.amp = 400.0 * sqrt(2.0 / 3.0); pl.hz = 50.0; pl.load_r = 1e6;
   meas_cal_default(&pl.cal, 50);
-  app_boot_t b = { .rating_counts = AIR50, .wdt_reset = wdt, .uid = 0x12345678u, .fw = 0x00010203u, .nvm_page_size = PG };
+  app_boot_t b = { .rating_counts = AIR50, .wdt_reset = wdt, .uid = 0x12345678u, .fw = 0x00010203u, .nvm_page_size = PG,
+                   .fw_crc = 0xC0DEC0DEu, .boot_ver = 0x01000000u, .boot_state = 0u, .evlog_pages = 2u };
   app_init(&app, &b);
   rx_n = 0; state_byte = -1;
 }
+static void boot(bool wdt, const meas_cal_t *cal) { boot_as(wdt, cal, (uint8_t)PMP_PROFILE_TONHE_V12); }
 
 static void th_start(double v, double i) {   /* TonHe start of module 1 (A.2.4): 0.1 V and 0.01 A per bit */
   uint16_t dv = (uint16_t)lround(v * 10.0), di = (uint16_t)lround(i * 100.0);
@@ -174,7 +187,7 @@ static plant_t snap_pl;
 static app_tick_out_t snap_o;
 static app_pfc_out_t snap_po;
 static app_llc_out_t snap_lo;
-static uint8_t snap_flash[2][PG];
+static uint8_t snap_flash[8][PG];
 static void snapshot(void) { snap_app = app; snap_pl = pl; snap_o = last_o; snap_po = po; snap_lo = lo; memcpy(snap_flash, flash, sizeof flash); }
 static void restore(void) { app = snap_app; pl = snap_pl; last_o = snap_o; po = snap_po; lo = snap_lo; memcpy(flash, snap_flash, sizeof flash); rx_n = 0; }
 
@@ -185,12 +198,13 @@ int main(void) {
   ck("app: boot offsets, precharge and the confirmed bypass reach STANDBY inside 1 s on a 400 VAC line, without a fault",
      app.fsm.st == ST_STANDBY && app.fsm.latched == FC_NONE && app.az_done && !app.az_bad && (last_o.do_bits & APP_DO_KPRE) && pl.kpre_fb);
   ck("app: the watchdog is kicked on every 10 ms slot once both ISRs run (≥ 95 of 100)", kicks - k0 >= 95);
-  printf("      comparator references: F.01 %.3f V · F.03 %.3f V · F.13 %.3f V\n",
-         last_o.dac_v[APP_DAC_IA], last_o.dac_v[APP_DAC_VBUS], last_o.dac_v[APP_DAC_VOUT]);
-  ck("app: the 50 kW air strap gives four fans and the comparator references F.01 2.664 V, F.03 2.158 V, F.13 2.328 V",
+  printf("      comparator references: F.01 %.3f V · F.03 %.3f V · F.13 %.3f V · clamp %.3f V\n",
+         last_o.dac_v[APP_DAC_IA], last_o.dac_v[APP_DAC_VBUS], last_o.dac_v[APP_DAC_VOUT], last_o.dac_v[APP_DAC_CLAMP]);
+  /* E80: F.03 carries the corrected AMC1311 1.44 V common mode (HR-04); F.13 is scheduled by mode — 560 V in LOW (R09) */
+  ck("app: the 50 kW air strap gives four fans and the comparator references F.01 2.664 V, F.03 2.208 V, F.13 (LOW) 1.940 V",
      app.kw == 50u && app.n_fans == 4u && fabsf(last_o.dac_v[APP_DAC_IA] - 2.664f) < 0.01f &&
-     fabsf(last_o.dac_v[APP_DAC_VBUS] - 2.158f) < 0.01f && fabsf(last_o.dac_v[APP_DAC_VOUT] - 2.328f) < 0.01f);
-  ck("app: without a calibration record the module runs on nominal scaling and says so (APP_W_UNCAL)", app.uncal && (app.tlm.warn & APP_W_UNCAL));
+     fabsf(last_o.dac_v[APP_DAC_VBUS] - 2.208f) < 0.01f && fabsf(last_o.dac_v[APP_DAC_VOUT] - 1.940f) < 0.01f);
+  ck("app: idle, the HW-REC-1 clamp reference arms at the mode's F.13 threshold", fabsf(last_o.dac_v[APP_DAC_CLAMP] - last_o.dac_v[APP_DAC_VOUT]) < 0.005f);
 
   pl.load_r = 5.0;
   long t_run = start_run(400.0, 100.0, 6000);
@@ -199,6 +213,14 @@ int main(void) {
   ck("app: a TonHe start (400 V, 100 A) into 5 Ω reaches RUN within 3 s and holds 400 V ± 2 % at 80 A",
      t_run >= 0 && t_run < 3000 && fabs(pl.vo - 400.0) < 8.0 && fabs(pl.iout - 80.0) < 4.0 && app.fsm.latched == FC_NONE);
   ck("app: telemetry reads ON and the TonHe state frame carries it (0x01)", app.tlm.rs == MOD_RS_ON && state_byte == 0x01);
+  /* E80: economizer duty — closed coils hold at 40 % after the 60 ms pull-in; open coils read 0 */
+  ck("app: relay-coil economizer holds KPRE and the closed matrix pair at 40 % after pull-in, open coils at 0",
+     last_o.relay_duty[APP_RLY_KPRE] == 0.4f && last_o.relay_duty[APP_RLY_KPARA] == 0.4f &&
+     last_o.relay_duty[APP_RLY_KPARB] == 0.4f && last_o.relay_duty[APP_RLY_KSER] == 0.0f);
+  /* E80 (HW-REC-1): delivering at 400 V the clamp reference rides v_ref · 1.05 + 10 = 430 V */
+  { float want = (float)((430.0 / app.cal.ch[MCH_VOUT].gain + app.cal.ch[MCH_VOUT].off) * LSB);
+    ck("app: the HW-REC-1 clamp reference follows the running setpoint (430 V at a 400 V command)",
+       fabsf(last_o.dac_v[APP_DAC_CLAMP] - want) < 0.01f); }
   snapshot();
 
   th_stop();
@@ -268,10 +290,55 @@ int main(void) {
   for (int n = 0; n < 9; n++) if (gaps[n] < 100 || gaps[n] > 102) early = 0;
   ck("app: CAN bus-off restarts after 100 ms; the tenth inside a minute holds off 5 s", early && gaps[9] >= 5000);
 
+  boot_no_cal = true; boot(false, NULL); run_ms(500);
+  ck("app: a card with NO calibration record latches F.30 from boot — no precharge, no output, APP_W_UNCAL says why (HR-29)",
+     app.fsm.latched == FC_CAL && app.uncal && (app.tlm.warn & APP_W_UNCAL) &&
+     !(last_o.do_bits & (APP_DO_KPRE | APP_DO_EN_PFC | APP_DO_EN_LLC)));
+  boot_no_cal = false;
+
+  boot(false, NULL); run_ms(1000);
+  pl.load_r = 5.0;
+  (void)start_run(400.0, 100.0, 6000);
+  tach_scale[2] = 0.15f;                                       /* fan 3 at 15 % of its commanded speed */
+  hold(400.0, 100.0, 3500);
+  int one_failed = app.fan_fail == 0x04u && app.in.fans_failed == 1u && app.fsm.latched == FC_NONE;
+  float d_target = app.fsm.out.derate;
+  tach_scale[1] = 0.0f; tach_scale[3] = 0.0f;                  /* three of four gone: nothing can cool full power */
+  hold(400.0, 100.0, 3500);
+  printf("      fan curve: one slow fan -> fail 0x%02X derate %.2f · three failed -> F.%d\n", 0x04, d_target, (int)app.fsm.latched);
+  ck("app: a fan at 15 %% of commanded speed fails the curve in 3 s (0.6 derate on the 4-fan SKU); three failed latch F.25 (HR-25/FW-21)",
+     one_failed && d_target <= 0.61f && d_target > 0.35f && app.fsm.latched == FC_FAN);
+
+  boot_as(false, NULL, (uint8_t)PMP_PROFILE_NATIVE); run_ms(1200);
+  { /* E80: the event ring holds the boot event and a fault set/clear pair; the VMP objects read it back */
+    app_fault_isr(&app, 1u << APP_FLT_VBUS, 0.0f);
+    run_ms(200);
+    int latched = app.fsm.latched == FC_BUS_OVP;
+    pmp_frame_t fr = { 0u, 8u, { 0x99, 0x03, 0x00, 0, 0, 0, 0, 0 } };   /* READ txn 0x99 obj 0x0400 sub 0 */
+    fr.id = (6u << 26) | (1u << 25) | (0x11u << 16) | (0x10u << 8) | 0x01u;
+    fr.data[1] = 0x00; fr.data[2] = 0x04; fr.data[3] = 0;               /* obj 0x0400 little-endian */
+    rxq[rx_n++] = fr;
+    rsp_got = 0; run_ms(2);
+    uint32_t cnt = rsp_got && rsp_txn == 0x99u ? rsp_val : 0u;
+    ck("app: the event log records boot and the F.03 latch, and VMP object 0x0400 reads the count (E80)",
+       latched && cnt >= 2u && evlog_count(&app.ev) == cnt);
+    ck("app: a LATCH row blocks the 60 s boot confirmation (boot_ok stays false)", !last_o.boot_ok && app.latch_seen); }
+
+  boot_as(false, NULL, (uint8_t)PMP_PROFILE_NATIVE); run_ms(61000);
+  ck("app: 60 s of healthy standby raises boot_ok — the port confirms a pending slot on this edge (E80)", last_o.boot_ok);
+  { /* ENTER_BOOT: unlock, then the action — the module reports enter_boot once the acknowledgement has left */
+    pmp_frame_t fu = { (1u << 26) | (1u << 25) | (0x10u << 16) | (0x10u << 8) | 0x01u, 8u, { 0x01, 6, 0, 0, 0, 0, 0, 0 } };
+    pmp_put32(fu.data + 2, 0x32504D56u);
+    fu.data[7] = pmp_crc8_frame(fu.id, fu.data, 7u);
+    rxq[rx_n++] = fu; run_ms(2);
+    pmp_frame_t fb = fu; fb.data[1] = 8; pmp_put32(fb.data + 2, 0u); fb.data[7] = pmp_crc8_frame(fb.id, fb.data, 7u);
+    rxq[rx_n++] = fb; run_ms(3);
+    ck("app: UNLOCK then ENTER_BOOT sets enter_boot for the port (handoff into the bootloader)", last_o.enter_boot); }
+
   boot(false, NULL); run_ms(500);
   { pmp_frame_t fm = { 0x1C90FFA0u, 8u, { 1, 0, 0, 0, 0, 0, 0, 0 } }; rxq[rx_n++] = fm; }
   run_ms(11000);
-  nvm_t n2; nvm_mount(&n2, PG);
+  nvm_t n2; nvm_mount(&n2, 0u, PG);
   app_cfg_t c2;
   int stored = nvm_get(&n2, APP_NV_CFG, (uint8_t *)&c2, (uint8_t)sizeof c2);
   ck("app: a TonHe address-mode change is stored within 10 s on a stopped module and reads back after a remount",

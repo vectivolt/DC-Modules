@@ -55,7 +55,7 @@ flowchart LR
 | Bus (830 V) ↔ control (primary-referenced) | functional | 830 V | spacing per functional table; HV dividers = 8× series 1206 (per-resistor ≤104 V working, 200 V rated) |
 | Board-to-board studs | same domain (bus) | 830 V | stud-stud spacing ≥14 mm |
 | **E65** D1 PFC choke winding ↔ PE-bonded web / plate / M6 bolt (gap pad, insulating clamp cap, bore sleeve) | basic (in series with AC line/bus ↔ PE) | D1 Û_rp ≤ 540 V recurring peak (switch end vs neutral, 50 kHz ripple) | 4 kV impulse type test on the bonded assembly · 100 % part hipot 2.5 kV DC 1 min winding ↔ bond-face + bore electrodes · no PD test (Û_rp ≤ 700 V) |
-| **E67** D2 external Lr and D3 cell primary winding ↔ gap-padded ferrite core (core treated as PE) | basic (bus ↔ PE) | D2/D3 Û_rp 1270 / 1260 / 1280 / 1280 V at 83–203 kHz (30 / 40 / 50 / 50a; full-bridge tank node = bus/2 + Cr peak + Vienna midpoint) | 100 % winding ↔ bonded-face foil 2.5 kV DC · PD sample test 5/lot: PD extinction ≥ 2.0 / 1.9 / 2.0 / 2.0 kV, ≤ 10 pC |
+| **E67** D2 external Lr and D3 cell primary winding ↔ gap-padded ferrite core (core treated as PE) | basic (bus ↔ PE) | D2/D3 Û_rp 1160 / 1170 / 1190 / 1190 V at 83–203 kHz (30 / 40 / 50 / 50a; full-bridge tank node = bus/2 + Cr peak + Vienna midpoint — E80: the FW-34 Σ i = 0 engine correction lowered the recurring midpoint peak; the numbers mirror `stress-audit [INS]`) | 100 % winding ↔ bonded-face foil 2.5 kV DC · PD sample test 5/lot: PD extinction ≥ 1.8 / 1.8 / 1.8 / 1.8 kV, ≤ 10 pC (lots already specified at the earlier 1.9–2.0 kV floor remain acceptable — the requirement only fell) |
 | **E67** D3 cell secondary winding ↔ PE-bonded web / plate (gap pad) | basic (output ↔ PE) | ≤ 1000 V DC (top of the HIGH-mode stack), ripple < 10 V | 100 % part hipot 1.5 kV DC (D3 secondary) · module output ↔ PE 1.5 kV · DC stress: no recurring-peak PD row |
 
 ## 3. Creepage and clearance design values (PD2, mat IIIa — from 62477-1-class tables, VERIFY at DQ)
@@ -120,12 +120,15 @@ A magnetic that is gap-padded or clamped to PE-bonded metal is part of the **bas
 - **Isolated amplifiers and their 5 V bias modules are reinforced-rated** for their domain's working voltage (1000 V output domain /
   830 V bus / AC mains star) — the BOM specifies reinforced-class modules at every Bias5 / PSCAN / PSSH position; the same
   certificate audit applies to the gate-bias and discharge-driver modules, whose barriers parallel the NSI6611's reinforced one.
-- **PV bleeder couplers (VOM1271-class, UPVA/UPVB) — working voltage is the floating-bus offset, not the stack (E74).**
-  Their SELV↔bank barriers see, in normal operation, the bank-negative-to-PE offset of the floating output (with the
-  output Y-caps centering the bus: ≤ ~½·V_out ≈ 500 V DC + ripple; the full 1000 V appears only in the pole-to-earth
-  first fault the charger IMD clears). RFQ acceptance: **V_IORM ≥ the 500 V-class continuous offset AND transient/
-  withstand rating covering the 1000 V first-fault dwell** — a 707 V-pk V_IORM class passes only with this centered-float
-  bound; do not grade these couplers against isolation TEST voltage, and re-check if the charger earthing scheme is not IT.
+- **PV bleeder couplers (VOM1271-class, UPVA/UPVB) — working voltage is the floating-bus offset, not the stack (E74;
+  basis corrected E80, review R38).** The E74 text credited the output Y capacitors with centering the float at ≈ ±½·V_out.
+  **Capacitors set no steady-state DC division** — they shape transients and common-mode AC only; the DC offset settles on
+  the LEAKAGE divider (vehicle, cabinet, measurement chains), and an asymmetric but legal leakage set (e.g. 1 MΩ high side,
+  10 MΩ low side) parks one pole near the full output voltage with no fault present. RFQ acceptance therefore reads:
+  **V_IORM ≥ the maximum continuous pole-to-PE offset the installation's earthing/IMD envelope guarantees — absent such a
+  documented bound, the full 1000 V DC — plus the transient/withstand class for the first-fault dwell.** A 707 V-pk V_IORM
+  part is acceptable only WITH a documented system bound below it; do not grade these couplers against isolation TEST
+  voltage, and never add low-value earthing resistors just to force a centre (they change the floating system and the IMD).
 - **Control domain to PE**: 1 MΩ ∥ 4.7 nF Y1 soft bond — no hard earth loop, leakage < 1 mA budget.
 
 ---

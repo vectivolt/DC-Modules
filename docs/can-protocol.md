@@ -275,6 +275,10 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 0x020B | fan mode | write | 0 normal · 1 quiet · 2 boost |
 | 0x020C | installer power cap | write | 10 W · 0xFFFF none |
 | 0x0300–0x0303 | operating seconds · energy (0.1 kWh) · starts · total latches | read | u32 |
+| 0x0400 | event-log count (E80) | read | u16 — entries readable below |
+| 0x0401–0x0404 | event-log entry words 0–3 (E80) | read · **sub-index = age** (0 = newest) | w0 sequence u32 · w1 time u32 (seconds since boot; UNIX when kind bit 7 is set) · w2 boot u16 \| kind u8 ≪ 16 \| code u8 ≪ 24 · w3 argument u16 |
+| 0x0500 | control-ISR execution high-water (E80) | read | PFC µs ≪ 16 \| LLC µs (DWT since boot — EVT T-44) |
+| 0x0501 | worst painted-stack use (E80) | read | percent u8 |
 
 Configuration objects persist (A/B records with CRC); the module reports the stored value in the ACK.
 
@@ -321,9 +325,14 @@ Keep the load below 50 % (lengthen the telemetry periods or raise the bit rate).
 - **Major (3.0)** changes layouts through new function codes; within a major no code is ever reused with a different layout.
 - **CAN FD:** the first eight bytes of every frame keep their layout; an FD frame may append fields (a 16-bit counter, CRC-16)
   under a new minor with a feature bit.
-- **Service space (bit 24 = 1)** belongs to the bootloader: block transfer with CRC-32 and signature verification
-  ([firmware architecture §9](firmware-architecture.md#9-persistent-data-calibration-and-firmware-update)). The HAL accepts it
-  in every profile.
+- **Service space (bit 24 = 1)** belongs to the bootloader and is accepted in every profile. E80 defines it fully
+  (`firmware/boot/svc.h` is the table of record): a tool (source 0x01–0x0F) broadcasts to 0xFF and SELECTs one module by UID;
+  functions 0x01 SELECT · 0x02 INFO · 0x03 ENTER ("BOOT") · 0x04 BEGIN (size u32 · slot u8) · 0x05 BLOCK (index u16 ·
+  length u16 · CRC-32) · 0x06 DATA (sequence u8 · 1–7 bytes) · 0x07 FINISH (image CRC-32) · 0x08 RESET ("RBT!") ·
+  0x09 ABORT; responses 0x41 SELECT_RSP · 0x42 INFO_RSP · 0x50 ACK. Blocks are 1 KB, acknowledged after program + read-back;
+  a re-sent acknowledged block is acknowledged again (a lost ACK costs a resend, never a restart); FINISH checks the
+  whole-image CRC-32, then the signed header, key, ECDSA-P256 signature and body SHA-256, and only then puts the slot on
+  trial (3 boots to confirm, else rollback); the confirmed slot is never erased; an idle transfer is abandoned after 10 s.
 
 ## 11. What changed from the E73 draft
 

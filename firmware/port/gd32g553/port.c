@@ -1,0 +1,259 @@
+/* port.c — E80 the application image's main loop and interrupt glue: the one file where firmware/hal/app.h meets the metal.
+ * Contexts (firmware-architecture §2/§3): HRTIMER fault IRQ76 (prio 0) → app_fault_isr · ST3 CMP3 IRQ71 at 100 kHz
+ * (prio 1) → app_pfc_isr · master REP IRQ67 at 10 kHz (prio 2) → app_llc_isr · SysTick 1 kHz (prio 14) → app_tick.
+ * The 100 kHz and 10 kHz paths live in TCM (.ramfunc) so flash appends never stall them (§3.5, review HR-26). */
+#include "port.h"
+#include "../../boot/handoff.h"
+#include "flash_map.h"
+#include "../../boot/bootctl.h"
+#include "../../boot/image.h"
+#include <string.h>
+
+static app_t app;                                    /* ~6 KB, SRAM0 */
+static app_tick_out_t out;
+static volatile uint32_t tick_due;
+static pmp_frame_t rxbuf[16];
+
+/* ISR → tick aggregation (each field one writer) */
+static volatile uint16_t pfc_us_max, llc_us_max;
+static float lsum[6]; static uint32_t lsum_n;        /* vout · iout+ · iout− · ires · vbka · vbkb — written at 100 kHz, drained at 10 kHz */
+static app_llc_adc_t llc_mean;
+static float ires_now;
+static volatile uint32_t tach_cnt[4];
+static uint8_t hmi_phase;
+
+#define HANDOFF (*(boot_handoff_t *)FM_HANDOFF)
+
+/* ---------------- 100 kHz: sample set from the previous roll-over trigger, control law, duties for the next roll-over */
+RAMFUNC void hrtimer_st3_isr(void) {
+  uint32_t t0 = DWT_CYCCNT;
+  HRT_STINTC(3) = BIT(3);                            /* CMP3IF */
+  app_pfc_adc_t s;
+  float ires, vout, ioutp, ioutn, t_inlet, vbka, vbkb, v24, vref;
+  adc_read_pfc(&s, &ires, &vout, &ioutp, &ioutn, &t_inlet, &vbka, &vbkb, &v24, &vref);
+  ires_now = ires;
+  app_pfc_out_t po;
+  app_pfc_isr(&app, &s, &po);
+  hrtimer_pfc_apply(&po);
+  lsum[0] += vout; lsum[1] += ioutp; lsum[2] += ioutn; lsum[3] += ires; lsum[4] += vbka; lsum[5] += vbkb;
+  lsum_n++;
+  (void)t_inlet; (void)v24; (void)vref;              /* consumed by the tick path through adc_read_pfc's ring */
+  uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
+  if (us > pfc_us_max) pfc_us_max = (uint16_t)us;
+}
+
+/* ---------------- 10 kHz: the LLC regulator on the 100 kHz means */
+RAMFUNC void hrtimer_mt_isr(void) {
+  uint32_t t0 = DWT_CYCCNT;
+  HRT_MTINTC = BIT(4);                               /* REPIF */
+  uint32_t n = lsum_n ? lsum_n : 1u;
+  llc_mean.vout = lsum[0] / (float)n;
+  llc_mean.iout_p = lsum[1] / (float)n; llc_mean.iout_n = lsum[2] / (float)n;
+  llc_mean.ires = lsum[3] / (float)n;
+  llc_mean.vbka = lsum[4] / (float)n; llc_mean.vbkb = lsum[5] / (float)n;
+  for (int k = 0; k < 6; k++) lsum[k] = 0.0f;
+  lsum_n = 0u;
+  app_llc_out_t lo;
+  app_llc_isr(&app, &llc_mean, &lo);
+  hrtimer_llc_apply(&lo);
+  uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
+  if (us > llc_us_max) llc_us_max = (uint16_t)us;
+}
+
+/* ---------------- highest priority: a hardware latch fired — attribute it while the outputs are already dead */
+RAMFUNC void hrtimer_flt_isr(void) {
+  uint16_t ch = hrtimer_fault_read_clear();
+  if (ch) app_fault_isr(&app, ch, ires_now);
+}
+
+void systick_isr(void) { tick_due++; }
+
+/* tach edges (two pulses per revolution): EXTI 2 (PF2) · 14 (PD14) · 5 (PD5) · 3 (PB3) */
+void exti2_isr(void)  { EXTI_PD = BIT(2);  tach_cnt[0]++; }
+void exti14_isr(void) { EXTI_PD = BIT(14); tach_cnt[1]++; }
+void exti5_isr(void)  { EXTI_PD = BIT(5);  tach_cnt[2]++; }
+void exti3_isr(void)  { EXTI_PD = BIT(3);  tach_cnt[3]++; }
+
+static void exti_init(void) {
+  SYSCFG_EXTISS(0) = (SYSCFG_EXTISS(0) & ~(0xFu << 8)) | (5u << 8);     /* EXTI2 ← PF */
+  SYSCFG_EXTISS(0) = (SYSCFG_EXTISS(0) & ~(0xFu << 12)) | (1u << 12);   /* EXTI3 ← PB */
+  SYSCFG_EXTISS(1) = (SYSCFG_EXTISS(1) & ~(0xFu << 4)) | (3u << 4);     /* EXTI5 ← PD */
+  SYSCFG_EXTISS(3) = (SYSCFG_EXTISS(3) & ~(0xFu << 24)) | (3u << 24);   /* EXTI14 ← PD */
+  EXTI_RTEN |= BIT(2) | BIT(3) | BIT(5) | BIT(14);
+  EXTI_INTEN |= BIT(2) | BIT(3) | BIT(5) | BIT(14);
+  irq_prio(8u, 13u); irq_enable(8u);     /* EXTI2 */
+  irq_prio(9u, 13u); irq_enable(9u);     /* EXTI3 */
+  irq_prio(23u, 13u); irq_enable(23u);   /* EXTI5–9 */
+  irq_prio(40u, 13u); irq_enable(40u);   /* EXTI10–15 */
+}
+
+/* ---------------- TIMER19 fans (25 kHz, CH1 + independent MCH0) · TIMER3 matrix-coil hold PWM (20 kHz) */
+void pwm_out_init(void) {
+  TIM_PSC(TIM19) = 0u; TIM_CAR(TIM19) = 8639u;                       /* 25 kHz at 216 MHz */
+  TIM_CHCTL0(TIM19) = (6u << 12) | BIT(11);                          /* CH1 PWM0 + shadow */
+  TIM_MCHCTL0(TIM19) = (6u << 4) | BIT(3);                           /* MCH0 PWM0 + shadow, MCH0MS = 00 output */
+  TIM_CTL2(TIM19) = (TIM_CTL2(TIM19) & ~(3u << 20));                 /* MCH0 independent of CH0 */
+  TIM_CHCTL2(TIM19) = BIT(4) | BIT(2);                               /* CH1EN · MCH0EN */
+  TIM_CCHP0(TIM19) = BIT(15);                                        /* POEN */
+  TIM_CH1CV(TIM19) = 0u; TIM_MCH0CV(TIM19) = 0u;
+  TIM_CTL0(TIM19) = BIT(7) | BIT(0);                                 /* ARSE + CEN */
+  TIM_PSC(TIM3) = 0u; TIM_CAR(TIM3) = 10799u;                        /* 20 kHz */
+  TIM_CHCTL0(TIM3) = (6u << 4) | BIT(3) | (6u << 12) | BIT(11);      /* CH0/CH1 PWM0 + shadow */
+  TIM_CHCTL2(TIM3) = BIT(0) | BIT(4);
+  TIM_CH0CV(TIM3) = 0u; TIM_CH1CV(TIM3) = 0u;
+  TIM_CTL0(TIM3) = BIT(7) | BIT(0);
+}
+void pwm_fan(float d1, float d2) {
+  TIM_CH1CV(TIM19) = (uint32_t)(d1 * 8640.0f);
+  TIM_MCH0CV(TIM19) = (uint32_t)(d2 * 8640.0f);
+}
+void pwm_relay(const float duty[APP_RLY_COUNT]) {
+  TIM_CH0CV(TIM3) = (uint32_t)(duty[APP_RLY_KSER] * 10800.0f);
+  TIM_CH1CV(TIM3) = (uint32_t)(duty[APP_RLY_KPARA] * 10800.0f);
+  pin_set(BP_KPRE, duty[APP_RLY_KPRE] > 0.0f);        /* no timer pin: full hold (board.h note) */
+  pin_set(BP_KPARB, duty[APP_RLY_KPARB] > 0.0f);
+}
+
+static void hmi_drive(uint8_t seg, uint8_t dig) {     /* one 74HC595 byte, MSB first, then latch and digit select */
+  for (int b = 7; b >= 0; b--) {
+    pin_set(BP_HMI_DAT, (seg >> b) & 1);
+    pin_set(BP_HMI_CLK, 1);
+    pin_set(BP_HMI_CLK, 0);
+  }
+  pin_set(BP_HMI_LAT, 1);
+  pin_set(BP_HMI_LAT, 0);
+  pin_set(BP_HMI_DIG1, dig == 1u);
+  pin_set(BP_HMI_DIG2, dig == 2u);
+}
+
+static uint32_t painted_stack_pct(void);
+
+static nvm_t boot_store;                             /* the boot record's pages (2/3) — confirm path */
+static bootctl_t boot_ctl;
+
+static void tick(void) {
+  static uint32_t tach_last[4];
+  static uint16_t tach_hz_x10[4];
+  static uint32_t ms;
+  ms++;
+  app_tick_in_t ti;
+  memset(&ti, 0, sizeof ti);
+  float rating;
+  adc_read_slow(&ti.t_pfc, &ti.t_llc, &ti.t_xfmr, &rating, &ti.v15);
+  app_pfc_adc_t ps; float ires, vout, ioutp, ioutn;
+  float t_inlet, vbka, vbkb, v24, vref;
+  adc_read_pfc(&ps, &ires, &vout, &ioutp, &ioutn, &t_inlet, &vbka, &vbkb, &v24, &vref);
+  ti.t_inlet = t_inlet; ti.v24 = v24; ti.vrefint = vref;
+  (void)rating;   /* the strap was read once at boot; the live channel is telemetry-only */
+  ti.di = (uint16_t)((pin_get(BP_RLY_FB) ? 0u : APP_DI_RLY_PRE)      /* series mirror chain: HIGH = both mains open */
+                   | (pin_get(BP_DRV_RDY) ? APP_DI_DRV_RDY : 0u)
+                   | (pin_get(BP_BTN1) ? 0u : APP_DI_BTN1) | (pin_get(BP_BTN2) ? 0u : APP_DI_BTN2));
+  if (ms % 100u == 0u) {                                             /* tach: edges per 100 ms → Hz */
+    for (int k = 0; k < 4; k++) {
+      uint32_t c = tach_cnt[k];
+      tach_hz_x10[k] = (uint16_t)((c - tach_last[k]) * 10u);
+      tach_last[k] = c;
+    }
+  }
+  for (int k = 0; k < 4; k++) ti.tach_hz[k] = (float)tach_hz_x10[k];
+  ti.can_state = can_state();
+  ti.stack_pct = (uint8_t)painted_stack_pct();
+  ti.pfc_exec_us = pfc_us_max; ti.llc_exec_us = llc_us_max;
+  pfc_us_max = 0u; llc_us_max = 0u;
+  ti.rx = rxbuf;
+  ti.rx_n = can_rx(rxbuf, 16u);
+
+  app_tick(&app, &ti, &out);
+
+  uint16_t d = out.do_bits;
+  pin_set(BP_QDIS, (d & APP_DO_QDIS) != 0);
+  pin_set(BP_QDISBK, (d & APP_DO_QDISBK) != 0);
+  pin_set(BP_EN_PFC, (d & APP_DO_EN_PFC) != 0);
+  pin_set(BP_EN_LLC, (d & APP_DO_EN_LLC) != 0);
+  pwm_relay(out.relay_duty);                                          /* carries KPRE/KSER/KPARA/KPARB incl. pull-in */
+  pwm_fan(out.fan_duty[0], out.fan_duty[1]);
+  cmpdac_thresholds(out.dac_v);
+  if (out.fault_rearm) hrtimer_rearm(d);
+  if (out.wdt_kick) { wdi_pulse(); fwdgt_kick(); }
+  hmi_phase = out.hmi_dig;
+  hmi_drive(out.hmi_seg, out.hmi_dig);
+  while (app.txq.n && can_tx_ready()) {                               /* drain toward the bus, arbitration order */
+    pmp_frame_t f;
+    if (!pmp_txq_pop(&app.txq, &f)) break;
+    can_tx(&f);
+    break;                                                            /* one mailbox in flight keeps strict order */
+  }
+  if (out.can_restart) can_restart();
+  static int confirmed;
+  if (out.boot_ok && !confirmed && boot_ctl.pending != BOOT_SLOT_NONE) {
+    /* the pending image proved itself: confirm and raise the baseline to this image's own minimum (header field) */
+    uint32_t minv = *(const uint32_t *)(((SCB_VTOR >= FM_SLOT_B) ? FM_SLOT_B : FM_SLOT_A) + 0x14u);
+    if (boot_confirm(&boot_ctl, boot_ctl.pending, minv))
+      (void)nvm_put(&boot_store, BOOTCTL_KIND, (const uint8_t *)&boot_ctl, (uint8_t)sizeof boot_ctl, true);
+    confirmed = 1;
+  }
+  if (out.enter_boot || out.reboot) {
+    HANDOFF.reason = out.enter_boot ? HANDOFF_ENTER : HANDOFF_REBOOT;
+    HANDOFF.streak = 0u;
+    HANDOFF.addr = (app.prof->id == PMP_PROFILE_NATIVE) ? app.vmp.cfg.addr : 0xFEu;
+    HANDOFF.bitrate = app.bitrate;
+    handoff_seal(&HANDOFF);
+    port_reboot();
+  }
+}
+
+/* painted stacks: startup fills [stack limit, sp) with 0xA5; the high-water mark is where the paint ends */
+extern uint32_t _sstack[], _estack[];
+static uint32_t painted_stack_pct(void) {
+  uint32_t total = (uint32_t)((uintptr_t)_estack - (uintptr_t)_sstack), free_words = 0u;
+  for (uint32_t *p = _sstack; p < (uint32_t *)((uintptr_t)_sstack + total) && *p == 0xA5A5A5A5u; p++) free_words++;
+  uint32_t used = total - free_words * 4u;
+  return used * 100u / total;
+}
+
+int main(void) {
+  system_init();
+  board_gpio_init();
+  boot_handoff_t h = HANDOFF;
+  int have_h = handoff_valid(&h);
+
+  app_boot_t b;
+  memset(&b, 0, sizeof b);
+  b.rating_counts = (float)adc_read_once(2u, 3u);                     /* ROLE1 strap on ADC2_IN3, before the engine runs */
+  b.wdt_reset = (port_reset_cause & (BIT(29) | BIT(26))) == BIT(29);  /* FWDGT only; the TPS3430 arrives as a pin reset */
+  b.uid = RD(UID_BASE);
+  b.nvm_page_size = nvm_port_page_size();
+  b.evlog_pages = (uint8_t)(FM_EVLOG_SIZE / nvm_port_page_size());
+  const uint8_t *hdr = (const uint8_t *)((SCB_VTOR >= FM_SLOT_B) ? FM_SLOT_B : FM_SLOT_A);
+  uint32_t body = *(const uint32_t *)(hdr + 0x08);
+  b.fw = *(const uint32_t *)(hdr + 0x10);                             /* image header fields (boot/image.h) */
+  b.fw_crc = (body >= 0x40u && body <= FM_SLOT_SIZE - IMG_HDR_LEN) ? pmp_crc32(hdr, IMG_HDR_LEN + body) : 0u;
+  b.boot_ver = 0x01000000u;                                           /* the shipped bootloader build (VMP object 0x0008) */
+  nvm_mount(&boot_store, 2u, nvm_port_page_size());
+  if (!nvm_get(&boot_store, BOOTCTL_KIND, (uint8_t *)&boot_ctl, (uint8_t)sizeof boot_ctl)) bootctl_default(&boot_ctl);
+  b.boot_state = boot_ctl.state;
+
+  app_init(&app, &b);
+  if (have_h && h.reason == HANDOFF_REBOOT) { /* nothing extra: a clean reboot */ }
+
+  cmpdac_init();
+  adc_init();
+  hrtimer_init();
+  pwm_out_init();
+  exti_init();
+  can_init(app.bitrate, 0);
+  fwdgt_start();
+
+  irq_prio(76u, 0u); irq_enable(76u);          /* HRTIMER faults */
+  irq_prio(71u, 1u); irq_enable(71u);          /* ST3 CMP3 — 100 kHz control */
+  irq_prio(67u, 2u); irq_enable(67u);          /* master — 10 kHz control */
+  SYST_RVR = PORT_SYSCLK_HZ / 1000u - 1u;
+  SYST_CVR = 0u;
+  SCB_SHPR3 = (SCB_SHPR3 & 0x00FFFFFFu) | (0xE0u << 24);   /* SysTick lowest-ish */
+  SYST_CSR = 7u;
+
+  for (;;) {
+    __asm volatile ("wfi");
+    while (tick_due) { tick_due--; tick(); }
+  }
+}
