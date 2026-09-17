@@ -56,8 +56,9 @@ const PAGES = {
       ["BUCK-3V3", [/^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD|REN[12]CARD)$/]],
       ["ANALOG-MID", [/^(RAV[HLIF]|CAV[MFOB]|UAVB)$/]],
       ["ROLE", [/^RROLE[01]$/]],
+      ["ADC-FILTER", [/^CADC\d+$/]],   /* E82 A2-09: 1 nF C0G at every analogue MCU pin — the reservoir the 132 ns SAR aperture needs at the end of a harness */
       ["CARD-IF", [/^JCARD$/]],
-    ], ["MCU", "SWD-BOOT", "SAFETY", "FLT-GROUND", "BUCK-3V3", "ANALOG-MID", "ROLE", "CARD-IF"]],
+    ], ["MCU", "SWD-BOOT", "SAFETY", "FLT-GROUND", "BUCK-3V3", "ANALOG-MID", "ROLE", "ADC-FILTER", "CARD-IF"]],
   ],
   acdc: [
     ["INPUT-EMI", [
@@ -78,11 +79,11 @@ const PAGES = {
     ], ["LINK-BANK", "DISCHARGE", "BUS-STUDS"]],
     ["AC-SENSING", [
       ["STAR", [/^RNS\d[AB]$/]],
-      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^CV1V[AB]$/, /^UIVV1$/]],
-      ["SENSE-VAC2", [/^RV2D\d$/, /^RV2DL$/, /^CV2DF$/, /^CV2V[AB]$/, /^UIVV2$/]],
-      ["SENSE-VAC3", [/^RV3D\d$/, /^RV3DL$/, /^CV3DF$/, /^CV3V[AB]$/, /^UIVV3$/]],
-      ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^CBPV[AB]$/, /^UIVBP$/]],
-      ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^CBMV[AB]$/, /^UIVBM$/]],
+      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^CV1V[AB]$/, /^UIVV1$/, /^RV1O$/]],   /* E82 A2-09: 100 Ω between the iso-amp output and the ADC line */
+      ["SENSE-VAC2", [/^RV2D\d$/, /^RV2DL$/, /^CV2DF$/, /^CV2V[AB]$/, /^UIVV2$/, /^RV2O$/]],
+      ["SENSE-VAC3", [/^RV3D\d$/, /^RV3DL$/, /^CV3DF$/, /^CV3V[AB]$/, /^UIVV3$/, /^RV3O$/]],
+      ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^CBPV[AB]$/, /^UIVBP$/, /^RBPO$/]],
+      ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^CBMV[AB]$/, /^UIVBM$/, /^RBMO$/]],
       ["ISO-BIAS", [/^PS5(AC|BUS)$/, /^C5B(AC|BUS)$/]],
       ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/, /^CAVMA$/]],   /* E81 F-A-15: local AVMID reservoir at the CT row */
       ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOFB]$/, /^UAVB$/]],
@@ -123,10 +124,10 @@ const PAGES = {
       ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/, /^(QPVD|RPVD[BP])$/]],
     ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],
     ["OUTPUT-SENSING", [
-      ["OUTPUT", [/^RSHO$/, /^USHO$/, /^PSSH$/, /^CSH[12B]$/, /^COF[12]$/, /^CYO[12]$/, /^JOUT[PN]$/]],
-      ["SENSE-VBKA", [/^ROAD\d$/, /^ROADL$/, /^COADF$/, /^COAV[AB]$/, /^UIVOA$/]],
-      ["SENSE-VBKB", [/^ROBD\d$/, /^ROBDL$/, /^COBDF$/, /^COBV[AB]$/, /^UIVOB$/]],
-      ["SENSE-VOUT", [/^ROVD\d$/, /^ROVDL$/, /^COVDF$/, /^COVV[AB]$/, /^UIVOV$/]],
+      ["OUTPUT", [/^RSHO$/, /^RSHO[PN]$/, /^USHO$/, /^PSSH$/, /^CSH[12B]$/, /^COF[12]$/, /^CYO[12]$/, /^RBO\d$/, /^JOUT[PN]$/]],   /* E82: RSHOP/RSHON 100 Ω shunt-amp output isolation (A2-09) · RBO1-3 passive output bleeder behind DOUT (M-11) */
+      ["SENSE-VBKA", [/^ROAD\d$/, /^ROADL$/, /^COADF$/, /^COAV[AB]$/, /^UIVOA$/, /^ROAO$/]],
+      ["SENSE-VBKB", [/^ROBD\d$/, /^ROBDL$/, /^COBDF$/, /^COBV[AB]$/, /^UIVOB$/, /^ROBO$/]],
+      ["SENSE-VOUT", [/^ROVD\d$/, /^ROVDL$/, /^COVDF$/, /^COVV[AB]$/, /^UIVOV$/, /^ROVO$/]],
       ["ISO-BIAS", [/^PS5BK[AB]$/, /^C5BBK[AB]$/]],
       ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOFB]$/, /^UAVB$/]],
       ["NTC", [/^JT(LLC|XFR)$/, /^RT(LLC|XFR)P$/, /^CT(LLC|XFR)F$/]],

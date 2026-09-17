@@ -16,7 +16,7 @@
   [
    {
     "designator": "RNS1A",
-    "value": "47k",
+    "value": "33k",
     "block_name": "STAR",
     "pins": [
      {
@@ -33,7 +33,7 @@
    },
    {
     "designator": "RNS1B",
-    "value": "47k",
+    "value": "33k",
     "block_name": "STAR",
     "pins": [
      {
@@ -50,7 +50,7 @@
    },
    {
     "designator": "RNS2A",
-    "value": "47k",
+    "value": "33k",
     "block_name": "STAR",
     "pins": [
      {
@@ -67,7 +67,7 @@
    },
    {
     "designator": "RNS2B",
-    "value": "47k",
+    "value": "33k",
     "block_name": "STAR",
     "pins": [
      {
@@ -84,7 +84,7 @@
    },
    {
     "designator": "RNS3A",
-    "value": "47k",
+    "value": "33k",
     "block_name": "STAR",
     "pins": [
      {
@@ -101,7 +101,7 @@
    },
    {
     "designator": "RNS3B",
-    "value": "47k",
+    "value": "33k",
     "block_name": "STAR",
     "pins": [
      {
@@ -321,7 +321,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VAC1"
+      "signal_name": "UIVV1_OUTP"
      },
      {
       "pin_number": 8,
@@ -361,6 +361,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RV1O",
+    "value": "100",
+    "block_name": "SENSE-VAC1",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVV1_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VAC1"
      }
     ]
    }
@@ -569,7 +586,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VAC2"
+      "signal_name": "UIVV2_OUTP"
      },
      {
       "pin_number": 8,
@@ -609,6 +626,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RV2O",
+    "value": "100",
+    "block_name": "SENSE-VAC2",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVV2_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VAC2"
      }
     ]
    }
@@ -817,7 +851,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VAC3"
+      "signal_name": "UIVV3_OUTP"
      },
      {
       "pin_number": 8,
@@ -857,6 +891,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RV3O",
+    "value": "100",
+    "block_name": "SENSE-VAC3",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVV3_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VAC3"
      }
     ]
    }
@@ -1065,7 +1116,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VBUSP"
+      "signal_name": "UIVBP_OUTP"
      },
      {
       "pin_number": 8,
@@ -1105,6 +1156,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RBPO",
+    "value": "100",
+    "block_name": "SENSE-VBUS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVBP_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VBUSP"
      }
     ]
    }
@@ -1313,7 +1381,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VMID"
+      "signal_name": "UIVBM_OUTP"
      },
      {
       "pin_number": 8,
@@ -1353,6 +1421,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RBMO",
+    "value": "100",
+    "block_name": "SENSE-VMID",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVBM_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VMID"
      }
     ]
    }
@@ -1895,5 +1980,5 @@
   ]
  },
  "warnings": [],
- "total": 100
+ "total": 105
 }

@@ -52,7 +52,7 @@ ck("HR-9", !/DM-CHOKE/.test(db) && !/\^LDM/.test(db) && !/IND-BANK/.test(db),
   "E68 re-point: the AC-side D6 DM chokes are deleted (the star-X2 filter out-attenuates the E65 filter with them); E68c retires the D8 bank inductor too, so no sendust DM/bank choke remains in the BOM");
 // R3: the assertion previously grepped "QA01C-15S18" — a part number that does not exist at
 // MORNSUN (real variants: QA01C = +20/-4 V, QA01C-18 = +18/-3 V). The gate was pinning a typo.
-ck("HR-10", /QA01C\b/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0)");
+ck("HR-10", /mpn: "ISO-GBIAS-15-1W"/.test(db) && /price1k: 0/.test(db.split("biasCommon")[1] ?? ""), "bias modules in BOM; E23 deferred (biasCommon 0). E82 (M-03): the row is now a CLASS — \"QA01C-15\" is not an orderable MORNSUN code, and a gate that greps the prose instead of the mpn is how a fiction survives three reviews");
 ck("HR-11", /C\$\{id\}RST/.test(cells) && /R\$\{id\}BOOT/.test(cells), "NRST cap + BOOT0 strap");
 ck("HR-12", /SQP-10R-25W/.test(db), "pre-insertion pulse resistors");
 
@@ -368,8 +368,9 @@ ck("SHEET-VALUE-TEXT", (() => {
     mpnOf("LBKCARD") === "IND-10u-3A",
     "card-split designators all classify (MCU + 88-way + supervisor + AND + buck were absent from the BOM)");
   ck("AUD-DB-CARD-R", mpnOf("RPD0") === "R0603-10k" && mpnOf("RPDB0") === "R0603-10k" && mpnOf("RFLTC") === "R-small" &&
-    mpnOf("RAGTC") === "R-small" && mpnOf("RBALTA1") === "R2512-22k-HV-AS" && mpnOf("RNS1A") === "R2512-47k-HV-AS" && mpnOf("RV1D0") === "HV73-475k-1%",
-    "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts (E81 F-A-7: the link balance is its OWN 22 k rule now — the artificial star stays 47 k, and splitting the shared rule is what keeps them independent)");
+    mpnOf("RAGTC") === "R-small" && mpnOf("RBALT0A") === "R2512-47k-HV-AS" && mpnOf("RNS1A") === "R2512-33k-HV-AS" && mpnOf("RBO1") === "R2512-150k-HV" &&
+    mpnOf("RSHON") === "R-small" && mpnOf("RV1O") === "R-small" && mpnOf("ROVO") === "R-small" && mpnOf("CADC0") === "MLCC-1n-0402-C0G" && mpnOf("RV1D0") === "HV73-475k-1%",
+    "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts, and every E82 designator lands on its OWN rule: balance back to 47 k (M-10), star to 33 k (M-12), the output bleeder RBO on a 150 k HV rule ahead of the generic one (M-11), and RSHON — which ENDS IN \"ON\" — kept off the 1206 gate-resistor rule (A2-09)");
 }
 ck("AUD-BURDEN27", cells.includes('burden = "22"') && cells.includes('R${id}B`} resistance={burden}') && /R1206-22R-1%/.test(db) && !/R1206-33R-1%/.test(db),
   "line-CT burden default 22 R (E60 re-point of R3: F.01 120 A pk observable through the D1 soft-sat race to 184 A; 40/50 kW 18/13 R via the burden prop; the 33 R clip must never return)");
@@ -431,8 +432,8 @@ ck("R4-5", /Rail3V3 id="A"/.test(boards),
 // transient absolute maximum, and a real gate loop's 1–3 V of overshoot on an 18 V drive crosses it.
 // The whole family moves to the +15/−3 V variant; the 2 W class lands only where a channel drives
 // two dies. O-11 (the −3 V off-bias) stays CLOSED — that half of R4-6 is unchanged.
-ck("R4-6/E81", /QA01C-15/.test(db) && /QA02C-15/.test(db) && !/mpn: "QA01C-18"/.test(db) && /P15/.test(cells) && /N3/.test(cells),
-  "gate-bias pinned to the **+15/−3 V** variant on every channel (E81 F-C-15; the +18 V drive exceeded the second source's static limit), 2 W QA02C only on the two-die LLC channels");
+ck("R4-6/E81+E82", /mpn: "ISO-GBIAS-15-1W"/.test(db) && /mpn: "ISO-GBIAS-15-2W"/.test(db) && !/mpn: "QA01C/.test(db) && !/mpn: "QA02C/.test(db) && /P15/.test(cells) && /N3/.test(cells),
+  "gate-bias pinned to the **+15/−3 V** rails on every channel (E81 F-C-15) and, since E82 (M-03), to a CLASS with an acceptance row instead of the invented order code QA01C-15; the 2 W class lands only on the two-die LLC channels");
 ck("R4-7", /RM24A" resistance="82k"/.test(boards),
   "V24 monitor rescaled 68k->82k: full-scale 30.4 V (+26% observability; the old divider clipped at +7%)");
 ck("R4-8", /UEXCL/.test(boards) && /"net.KSER_STG1", "net.CTL_KPARA"/.test(boards),
@@ -452,8 +453,9 @@ ck("E81-PKG", /footprint="sot23_6"/.test(cells) && /footprint="dfn10"/.test(cell
   "the four datasheet-pinout defects (TPS54202 SOT-23-6 · TPS3430 VSON-10 · TLP152 SO-6 · VOM1271 SOP-4) are fixed in the SYMBOLS, and sheet-netlist-gen now guards symbol-vs-package numbering instead of translating it");
 ck("E81-MIRRORCLAMP", /mirrorClamp/.test(boards) && /D\$\{id\}CM/.test(cells) && /R\[ABC\]\\d\+CM\$/.test(db) && /export const MIRROR_CLAMP = \{ "30kw": false, "40kw": false, "50kw": true, "50kwa": true \}/.test(db),
   "Vienna mirrored RCD clamp: the LAND is on every phase of every board (boards.tsx passes mirrorClamp unconditionally), and WHICH SKUs are populated lives in ONE exported table, MIRROR_CLAMP, which drives the per-part qtyMul — so the BOM, the DPT deck and any DFM sheet read the same source");
-ck("E81-BIAS15", /P15/.test(cells) && /N3/.test(cells) && !/"P18"/.test(cells) && /QA01C-15/.test(db) && /QA02C-15/.test(db) && /PS1H: \{ price1k: 140/.test(db),
-  "gate bias +18/−3 → +15/−3 on EVERY module (F-C-15: the second source is −4/+15 V static), 2 W QA02C class only where a channel drives two dies (40/50 kW)");
+ck("E81-BIAS15/E82-M03", /P15/.test(cells) && /N3/.test(cells) && !/"P18"/.test(cells) && /ISO-GBIAS-15-1W/.test(db) && /ISO-GBIAS-15-2W/.test(db) && /PS1H: \{ price1k: 140/.test(db)
+  && /\+15 V ±5 % at 20–100 % of rated load/.test(db) && /≤ \+17\.5 V at 5 % load/.test(db),
+  "gate bias +18/−3 → +15/−3 on EVERY module (F-C-15), 2 W class only where a channel drives two dies (40/50 kW), and E82 (M-03) puts the LIGHT-LOAD acceptance row on the line — these modules run at ≈17 % load, where an unregulated part rises +10…+18 % and a −4/+15 V device class ends up at 18 V");
 ck("E44-TACH4", /DI10/.test(umodGen) && /"FAN_TACH4"/.test(umodGen) && /\[39,"FAN_TACH4"\]/.test(umodGen),
   "fan-4 tach end-to-end: card pin 90 (freed ROLE0) → way 88 → harness W39 (generator-asserted, donor-proven)");
 ck("E44-CLONE", /skuOverrides\["50kwa"\] = \{ \.\.\.skuOverrides\["50kw"\] \}/.test(db),
@@ -500,7 +502,7 @@ const k5genR6 = readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8");
 ck("R6-A", /wdoNet = nrst \?\?/.test(cells) && !/to=\{nrst\}/.test(cells),
   "the WDO/NRST merge is a net RENAME, not a pin-less net-net trace — the R5 implementation was electrically one node but DREW as two disconnected label groups (the R4-1 face-defect class); one name now labels every pin");
 ck("R6-B", /R6 discharge-timeline honesty/.test(protR6) && /R6: this timer's REAL coverage/.test(protR6) && /F\.21 semantics \(R6\)/.test(fwR6),
-  "discharge is two-phase (active to the 321 V aux brown-out, then passive 2x47k to 60 V, 4-10 min + 62477-1 label) and F.21 is documented as the AC-PRESENT latch — no more powered-to-60V claims");
+  "discharge is two-phase (active to the 321 V aux brown-out, then passive 2x47k to 60 V, 6-10 min nominal / up to 11.9 min at C +20 % + the 62477-1 15 min label) and F.21 is documented as the AC-PRESENT latch — no more powered-to-60V claims");
 ck("R6-C", /INSTANCE- and POLARITY-aware/.test(protR6) && /COMPARATOR-capable/.test(pinmapR6) && /PFC reverse-direction hardware trip/.test(fwR6),
   "reverse-polarity PFC OC has a DESIGNATED us-class path (line-CT -> on-chip CMP -> HRTIMER FLT) with the A6 pin constraint registered at the generator — not just an honesty note");
 ck("R6-D", /CVCCB/.test(cells) && /CSR1/.test(cells),
@@ -536,8 +538,8 @@ ck("R7-E", /DESIGN TARGET until measured/.test(readFileSync(join(ROOT, "docs/pro
 // transcribed 9:9:9 when the panel was introduced at R6-H).
 const k5genR8 = readFileSync(join(ROOT, "calculations/kicad5-gen.mjs"), "utf8");
 const protR8 = readFileSync(join(ROOT, "docs/protection-thresholds.md"), "utf8");
-ck("R8-A", /nSets/.test(readFileSync(join(ROOT, "calculations/stress-audit.mjs"), "utf8")) && /370 \/ 222 \/ 296/.test(protR8) && /retracted at E49/.test(protR8),
-  "discharge model counts the DRAWN balance strings per SKU (30=188k, 40/50=94k full-link); the wrong dismissal is retracted in the register, and verify-independent proves the counts from the netlists");
+ck("R8-A", /nSets/.test(readFileSync(join(ROOT, "calculations/stress-audit.mjs"), "utf8")) && /370 \/ 445 \/ 593/.test(protR8) && /retracted at E49/.test(protR8),
+  "discharge model counts the DRAWN balance strings per SKU (E82 M-10: ONE network per module, 188k full-link on every SKU — 6.2/7.4/9.9 min, the 50 kW now slowest, label 10 → 15 min); the wrong R7 dismissal stays retracted in the register, and verify-independent proves the counts from the netlists");
 // R8-B rev E51: the panel-truth requirement stands (turns + Lm on every dcdc row) but the truth
 // moved — D3-40/50 re-issued 6:6:6 / 5:5:5 on 2×E70 sets (the 9:9:9 and 3-set routes were
 // unbuildable; see E51). The register's R8-B row stays historical.
@@ -546,6 +548,32 @@ ck("R8-B", /6:6\|\|6, pri litz 3850x0\.063/.test(k5genR8) && k5genR8.split("4:4|
   "MAG panels (E67): cell turns per SKU (6:6||6 / 4:4||4 / 4:4||4), the simulated-corner Bpk 159 mT (magnetics-envelope ENV500-55) and the per-cell Lm target on ALL THREE dcdc rows");
 ck("R8-C", /resistance="1k" footprint="2010"/.test(cells) && /R2010-1k-0.75W/.test(db) && /25 °C-ENDPOINT MODEL/.test(db),
   "PV LED feed 1.2k→1k/2010 (≥10 mA held to the 13.5 V rail floor, 31% of rating at the 16.5 V corner) and the gate-voltage claim de-escalated from guarantee to 25 °C-endpoint model with declared ambient + EVT gate");
+
+// ===== E82 (independent validation review, 2026-09-17) — the hardware half of the findings register.
+// Each row is the closure of one MAJOR finding, asserted on the source that owns it. The brief for this
+// round was "do not over-engineer": three of these REMOVE parts or watts, and the two that add parts
+// (RBO, CADC/R{id}O) each pass the seven-question test with a named failure firmware cannot cover.
+const ccSrc = readFileSync(join(ROOT, "calculations/system/current-coordination.mjs"), "utf8");
+const runAll = readFileSync(join(ROOT, "calculations/run-all.sh"), "utf8");
+const magDocs = readFileSync(join(ROOT, "calculations/magnetics/mag-docs.mjs"), "utf8");
+ck("E82-M10", /bal = true/.test(cells) && /bal=\{k === 0\}/.test(boards) && /resistance="47k" footprint="2512"/.test(cells) && !/resistance="22k"/.test(cells),
+  "DC-link balance: ONE network per MODULE at 47 k (E81's 22 k × two banks was 18.9 mA / 15.7 W standing on 40/50 kW, sized against a leakage imbalance built from the datasheet LIMIT rather than the RFQ line E81 itself added)");
+ck("E82-M12", /name=\{`RNS\$\{i\}A`\} resistance="33k"/.test(boards) && /R2512-33k-HV-AS/.test(db),
+  "artificial star 47 k → 33 k: it IS the X-capacitor bleed path and E68's third X stage was never paid for — 5.3 / 6.4 s to 60 V against the 5 s rule for permanently connected equipment");
+ck("E82-M11", /name=\{`RBO\$\{i\}`\} resistance="150k"/.test(boards) && /\^RBO\\d\$/.test(db) && /RBO1 > \.pin1.*net\.OUTP/.test(boards),
+  "passive output bleeder behind DOUT: 3 × 150 k HV across OUTP–OUTN, 1000 → 60 V in 12 s instead of 101 s. The blocking diode is in EVERY commanded discharge path, so no firmware change can reach this 4.7 J store");
+ck("E82-A2-09", /name=\{`CADC\$\{i\}`\} capacitance="1nF"/.test(boards) && /name=\{`R\$\{id\}O`\} resistance="100"/.test(cells) && /name="RSHOP"/.test(cells) && /name="RSHON"/.test(cells)
+  && /\^CADC\\d\+\$/.test(db) && /RSHO\[PN\]/.test(db),
+  "ADC front end completed: 1 nF C0G at every analogue card pin (the 132 ns SAR aperture at the end of a 0.5–1 m harness) and 100 Ω in series with every iso-amp output — the capacitor half of an RC every source already had the resistor for. RSHON is kept off the gate-resistor rule by its own DB entry");
+ck("E82-M07", /R2512-10R-3W-PULSE/.test(db) && !/0\.86 W actual/.test(db),
+  "Vienna snubber re-rated to a 3 W pulse part: E81 took C_SN 100 → 330 pF, which is 2.84 W in a 2 W chip, and the BOM text still quoted the 100 pF figure");
+ck("E82-M04", /SIC-1700-1R-G15/.test(db) && /V_GS 12–15 V/.test(db) && /DRV pin CLAMPS at 15 V/.test(db),
+  "aux switch re-specified at a 12–15 V gate: the NCP1252 DRV clamp is 15 V typ, and the drawn C2M1000170D's 1 Ω is a 20 V-gate figure");
+ck("E82-M02", /ripple ≥ 5\.2 A rms @ 100 kHz \/ 105 °C/.test(db) && /ESR ≤ 80 mΩ @ 100 kHz/.test(db) && /DCLINK-VIENNA/.test(ccSrc) && /min-max zero sequence/.test(ccSrc),
+  "the Vienna's OWN 50 kHz capacitor current is now computed (direct PWM evaluation of the firmware's modulator, shared at 50 kHz against the RFQ ESR) and the can is bought against it — the link deck fed the Vienna as an ideal source, so this term was in no budget anywhere");
+ck("E82-M09a", /L: d2L\("30kw"\)/.test(magDocs) && /llk: d3Lk\("30kw"\)/.test(magDocs) && !/L: "5\.16 µH"/.test(magDocs),
+  "the four generated magnetics DRAWINGS read D2's inductance and D3's cell leakage from magnetics-envelope instead of repeating them — they had carried the pre-E81 5.16/4.07/3.28 µH for a whole revision while every other carrier moved, and a winder builds to the drawing (mag-sync now asserts it per page)");
+ck("E82-M29", /fw-constants-sync/.test(runAll), "a gate now reads hal/meas.c, hal/llc.c and hal/pfc.c against boards.tsx / cells.tsx / tanks.mjs / parts-db — before E82 NOTHING in calculations/ read a firmware constant, and every ADC scale and tank number in the C is hand-copied");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);

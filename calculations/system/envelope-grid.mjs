@@ -15,6 +15,8 @@ const f = (x, d = 2) => Number(x.toFixed(d));
 // E67 rated-point LLC magnetics loss per module (2 D3 cells + D2 at PAR400-full, windings 90 °C — magnetics-envelope rows)
 const MAGW = { "30kw": 2 * (13.5 + 15.0) + 4.8 + 5.2, "40kw": 2 * (20.2 + 14.7) + 5.2 + 8.2, "50kw": 2 * (20.7 + 22.6) + 5.1 + 12.0, "50kwa": 2 * (20.6 + 22.7) + 5.2 + 12.1 };
 
+// E82 (M-06): R_DS(on) slope from the proxy datasheet (C3M0021120K rev 4: 21 → 38 mΩ, 25 → 175 °C = 0.0054 /K; tanks.mjs rHot agrees) — was 0.004
+const RDS_TC = 0.0054;
 const VINS = [285, 300, 330, 400, 450, 475];
 const VOUTS = [150, 200, 250, 300, 400, 500, 750, 1000];   // E67: 500 V = the LOW/HIGH mode edge (both modes legal)
 const LOADS = [0, 0.05, 0.10, 0.25, 0.50, 0.75, 1.0];
@@ -103,8 +105,11 @@ const resFrac = (sku, bank, bus) => {
 const wHard = (t, ctl, bus, fn, FR, bank = 250) => {
   if (ctl !== "PSM") return 0;
   const vr = bus * resFrac(t.sku ?? "30kw", bank, bus);
-  const eLeg = qossV(t, vr) * vr + (t.cs ?? 0) * vr * vr;   // per event, whole leg (2·par dies share it)
-  return 2 * t.par * eLeg * fn * FR;
+  const eLeg = qossV(t, vr) * vr + (t.cs ?? 0) * vr * vr;   // per event and per DIE of the incoming position: its own stored energy + the charge it replaces on its partner
+  // E82 (C-11): per POSITION, like wOff. Each period has two weak-leg events, one heats the high position and one the low, so a
+  // position's `par` dies take ONE event per period: par·eLeg·f. The E81 form returned the whole LEG (2·par·eLeg·f) and the
+  // junction line then divided it by par — every weak-leg die was charged twice. firmware/hal/dielim.c carries eLeg·f per die.
+  return t.par * eLeg * fn * FR;
 };
 const wOff = (t, ctl, bus, Pph, Ip, imPk, fn, FR) => {
   const v1 = 4 * bus / (Math.PI * Math.SQRT2), cosPhi = Math.min(1, Pph / Math.max(v1 * Ip, 1e-9));
@@ -163,17 +168,24 @@ for (const s of SKUS) {
     }
     const Pph2 = PphE, Pout2 = PoutE;
     // PFC side
-    const Pin = Pout2 / 0.97;
-    const Iline = Pin / (Math.sqrt(3) * Vin * 0.99) / s.lanes;      // per-lane phase current
-    const IswR = 35.95 * (Iline / 54.94);
+    const ilineAt = (Po) => Po / 0.97 / (Math.sqrt(3) * Vin * 0.99) / s.lanes;   // per-lane phase current at a delivered power
+    let Iline = ilineAt(Pout2);
+    // E82 (M-06): the Vienna switch conducts the line current for (1 − m·|sin θ|) of each carrier period, m = V̂_phase / (V_bus / 2):
+    // I_sw,rms² = Î²·(1/2 − 4m/(3π)). The pre-E82 grid carried ONE ratio (35.95/54.94 — the m ≈ 0.67 point) at every line and bus,
+    // 39 % high in conduction loss at 400 VAC / 800 V and 22 % LOW at 285 VAC / 830 V, the corner that actually sets T_j.
+    const mIdx = Math.min(1, (Math.SQRT2 * Vin / Math.sqrt(3)) / (bus / 2));
+    const swK = Math.SQRT2 * Math.sqrt(Math.max(0.5 - (4 * mIdx) / (3 * Math.PI), 0.02));
+    let IswR = Iline * swK;
+    const tjPfc = (il) => { let t = HS + 20; for (let i = 0; i < 25; i++) { const par = s.par ?? 1, r = (s.rdsP ?? 0.010) * (1 + RDS_TC * (t - 25));
+      t = HS + (((il * swK) / par) ** 2 * r + ksw * (bus / 2) * (2 / Math.PI) * (il * Math.SQRT2) * 50e3 / par) * RTH; } return t; };
     // losses w/ Tj iteration (per worst package)
     let TjP = HS + 20, TjL = HS + 15;
     for (let i = 0; i < 25; i++) {
       const par = s.par ?? 1;                               // E41: paralleled devices share the pair current
-      const rdsP = (s.rdsP ?? 0.010) * (1 + 0.004 * (TjP - 25));   // E69a: per-SKU PFC die
+      const rdsP = (s.rdsP ?? 0.010) * (1 + RDS_TC * (TjP - 25));   // E69a: per-SKU PFC die
       const Pc = (IswR / par) ** 2 * 2 * rdsP, Psw = ksw * (bus / 2) * (2 / Math.PI) * (Iline * Math.SQRT2) * 50e3 / par;
       TjP = HS + (Pc / 2 + Psw) * RTH;                      // per-PACKAGE dissipation into the SKU's Rth
-      const rdsL = TANKS[s.name].dieP.rds * (1 + 0.004 * (TjL - 25));   // E69a: per-SKU LLC die
+      const rdsL = TANKS[s.name].dieP.rds * (1 + RDS_TC * (TjL - 25));   // E69a: per-SKU LLC die
       const parL = s.parL ?? 1;                             // E44: paralleled LLC — per-PACKAGE share
       const off = wOff(TANKS[s.name], ctl, bus, Pph2, Ip, im * Math.SQRT2, fn, FR);   // E81: turn-off loss per position
       const hard = wHard({ ...TANKS[s.name], sku: s.name }, ctl, bus, fn, FR, bank);    // E81: weak-leg hard turn-on (PSM)
@@ -185,12 +197,15 @@ for (const s of SKUS) {
     // derating curve (100% <=55C -> linear fold).
     let folds = 0;
     let TjD = HS + RTH * jbsW(PoutE / Vout, mode, s.jbs);
-    while ((TjL > 150 || TjD > 150) && folds < 10) {
+    // E82 (C-11 / M-06): the fold is the firmware's junction observer (hal/dielim.c) in grid form — it folds availability for
+    // WHICHEVER die is over the ceiling, the Vienna pair included (low line on a high link, hot: 153–164 °C unfolded).
+    while ((TjL > 150 || TjD > 150 || TjP > 150) && folds < 10) {
       PphE *= 0.93; PoutE *= 0.93; folds++;
+      Iline = ilineAt(PoutE); IswR = Iline * swK; TjP = tjPfc(Iline);
       Ip1 = PphE / (0.9 * NT * bank); Ip = Math.hypot(Ip1, im);
       TjL = HS + 15;
       for (let i = 0; i < 25; i++) {
-        const rdsL = TANKS[s.name].dieP.rds * (1 + 0.004 * (TjL - 25));   // E69a: per-SKU LLC die
+        const rdsL = TANKS[s.name].dieP.rds * (1 + RDS_TC * (TjL - 25));   // E69a: per-SKU LLC die
         const parL = s.parL ?? 1;
         const off = wOff(TANKS[s.name], ctl, bus, PphE, Ip, im * Math.SQRT2, fn, FR);   // E81
         const hard = wHard({ ...TANKS[s.name], sku: s.name }, ctl, bus, fn, FR, bank);
@@ -201,7 +216,7 @@ for (const s of SKUS) {
     if (folds) notes += `thermal derate to ${f(100 * PoutE / Pout, 0)}% `;
     const Pph3 = PphE, Pout3 = PoutE;
     // stage losses (scaled from loss-budget building blocks)
-    const pfcW = s.lanes * 3 * ((IswR ** 2) * 2 * (s.rdsP ?? 0.010) * (1 + 0.004 * (TjP - 25)) / (s.par ?? 1) + ksw * (bus / 2) * (2 / Math.PI) * Iline * Math.SQRT2 * 50e3 / 3 + 12.1 * (Iline / 54.94) ** 1.6 + 33.5 * (Iline / 54.94) ** 2 * 0.8);
+    const pfcW = s.lanes * 3 * ((IswR ** 2) * 2 * (s.rdsP ?? 0.010) * (1 + RDS_TC * (TjP - 25)) / (s.par ?? 1) + ksw * (bus / 2) * (2 / Math.PI) * Iline * Math.SQRT2 * 50e3 / 3 + 12.1 * (Iline / 54.94) ** 1.6 + 33.5 * (Iline / 54.94) ** 2 * 0.8);
     // E67: 4 bridge positions × parL packages (each position conducts half-cycle) · magnetics (2 D3 cells + D2) scaled from the
     // rated envelope losses (~2 % of ... see loss-budget MAG_RATED) · tank ESR/wiring 4 mΩ · 2 bank bridges
     const off3 = wOff(TANKS[s.name], ctl, bus, Pph3, Ip, im * Math.SQRT2, fn, FR);   // E81: 4 positions of turn-off loss

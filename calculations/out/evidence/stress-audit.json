@@ -216,73 +216,97 @@
    "status": "ok",
    "tag": "Tj",
    "name": "30kw PFC FET worst corner",
-   "detail": "117 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+   "detail": "128 °C vs 150 ceiling (abs max 175) — E82: the Vienna modulation-index term and the datasheet R_DS(on) slope are in, and the low-line / 830 V-link corners FOLD instead of reading 153–164 °C [grid, 972 pts]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "30kw LLC FET worst corner",
-   "detail": "150 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+   "detail": "150 °C vs 150 ceiling over EVERY row — the E81 F-L-1 exclusion (150 V, phase shift, two-die SKUs) is gone [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "30kw no FAIL row anywhere in the grid",
+   "detail": "0 FAIL rows of 972 (E81 accepted 108 per two-die SKU)"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "40kw PFC FET worst corner",
-   "detail": "135 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+   "detail": "149 °C vs 150 ceiling (abs max 175) — E82: the Vienna modulation-index term and the datasheet R_DS(on) slope are in, and the low-line / 830 V-link corners FOLD instead of reading 153–164 °C [grid, 972 pts]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "40kw LLC FET worst corner",
-   "detail": "149 °C vs 150 ceiling (corner folds engage per envelope policy) · the registered F-L-1 corner (150 V output, phase shift) reads 279 °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile [grid]"
+   "detail": "145 °C vs 150 ceiling over EVERY row — the E81 F-L-1 exclusion (150 V, phase shift, two-die SKUs) is gone [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "40kw no FAIL row anywhere in the grid",
+   "detail": "0 FAIL rows of 972 (E81 accepted 108 per two-die SKU)"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "50kw PFC FET worst corner",
-   "detail": "118 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+   "detail": "130 °C vs 150 ceiling (abs max 175) — E82: the Vienna modulation-index term and the datasheet R_DS(on) slope are in, and the low-line / 830 V-link corners FOLD instead of reading 153–164 °C [grid, 972 pts]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "50kw LLC FET worst corner",
-   "detail": "135 °C vs 150 ceiling (corner folds engage per envelope policy) · the registered F-L-1 corner (150 V output, phase shift) reads 274 °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile [grid]"
+   "detail": "139 °C vs 150 ceiling over EVERY row — the E81 F-L-1 exclusion (150 V, phase shift, two-die SKUs) is gone [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kw no FAIL row anywhere in the grid",
+   "detail": "0 FAIL rows of 972 (E81 accepted 108 per two-die SKU)"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "50kwa PFC FET worst corner",
-   "detail": "145 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+   "detail": "149 °C vs 150 ceiling (abs max 175) — E82: the Vienna modulation-index term and the datasheet R_DS(on) slope are in, and the low-line / 830 V-link corners FOLD instead of reading 153–164 °C [grid, 972 pts]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "50kwa LLC FET worst corner",
-   "detail": "148 °C vs 150 ceiling (corner folds engage per envelope policy) · the registered F-L-1 corner (150 V output, phase shift) reads 335 °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile [grid]"
+   "detail": "150 °C vs 150 ceiling over EVERY row — the E81 F-L-1 exclusion (150 V, phase shift, two-die SKUs) is gone [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kwa no FAIL row anywhere in the grid",
+   "detail": "0 FAIL rows of 972 (E81 accepted 108 per two-die SKU)"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "30kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "68.5 A rms vs 78 A class · 22 noted rows · worst TjJBS 91 °C (2× 40 A per position) [grid]"
+   "detail": "68.5 A rms vs 78 A class · 27 noted rows · worst TjJBS 90 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "40kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "91.3 A rms vs 100 A class · 108 noted rows · worst TjJBS 108 °C (2× 40 A per position) [grid]"
+   "detail": "91.3 A rms vs 100 A class · 5 noted rows · worst TjJBS 108 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "50kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "114.1 A rms vs 120 A class · 108 noted rows · worst TjJBS 102 °C (2× 40 A per position) [grid]"
+   "detail": "114.1 A rms vs 120 A class · 0 noted rows · worst TjJBS 102 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "50kwa full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "114.1 A rms vs 120 A class · 112 noted rows · worst TjJBS 118 °C (2× 40 A per position) [grid]"
+   "detail": "114.1 A rms vs 120 A class · 21 noted rows · worst TjJBS 118 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
@@ -869,8 +893,8 @@
   {
    "status": "ok",
    "tag": "Xbleed",
-   "name": "X discharge τ after CX2 rev + damper",
-   "detail": "τ 0.87 s ≤ 1 s pluggable rule"
+   "name": "X discharge after the third X stage, 33 k star",
+   "detail": "τ 0.61 s ≤ 1 s pluggable rule · 672 V pk → 60 V in 1.47 s ≤ 5 s permanently-connected rule (E82 M-12: the 47 k star was 0.87 s / 2.1 s on this basis and 5.3 / 6.4 s on the E82 per-phase-star form — over the line either way once E68 added the third stage)"
   },
   {
    "status": "ok",
@@ -948,25 +972,25 @@
    "status": "ok",
    "tag": "R6",
    "name": "30kw discharge timeline (AC removed)",
-   "detail": "active 830→321 V in 0.71 s, then PASSIVE 1×(2×47k)/half: +370 s → total 6.2 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+   "detail": "active 830→321 V in 0.71 s, then PASSIVE 1×(2×47k)/half: +370 s → total 6.2 min nominal, 7.4 min at C +20 % ≤ 15 min label (E82: 50 kW is now the slowest)"
   },
   {
    "status": "ok",
    "tag": "R6",
    "name": "40kw discharge timeline (AC removed)",
-   "detail": "active 830→321 V in 0.86 s, then PASSIVE 2×(2×47k)/half: +222 s → total 3.7 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+   "detail": "active 830→321 V in 0.86 s, then PASSIVE 1×(2×47k)/half: +445 s → total 7.4 min nominal, 8.9 min at C +20 % ≤ 15 min label (E82: 50 kW is now the slowest)"
   },
   {
    "status": "ok",
    "tag": "R6",
    "name": "50kw discharge timeline (AC removed)",
-   "detail": "active 830→321 V in 1.14 s, then PASSIVE 2×(2×47k)/half: +296 s → total 5 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+   "detail": "active 830→321 V in 1.14 s, then PASSIVE 1×(2×47k)/half: +593 s → total 9.9 min nominal, 11.9 min at C +20 % ≤ 15 min label (E82: 50 kW is now the slowest)"
   },
   {
    "status": "ok",
    "tag": "R6",
    "name": "50kwa discharge timeline (AC removed)",
-   "detail": "active 830→321 V in 1.14 s, then PASSIVE 2×(2×47k)/half: +296 s → total 5 min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)"
+   "detail": "active 830→321 V in 1.14 s, then PASSIVE 1×(2×47k)/half: +593 s → total 9.9 min nominal, 11.9 min at C +20 % ≤ 15 min label (E82: 50 kW is now the slowest)"
   },
   {
    "status": "ok",

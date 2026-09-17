@@ -6,7 +6,10 @@
  *             new one, and only then program the page header (the commit) and erase the old page. A power cut at any step
  *             leaves one complete generation: an uncommitted page has no valid header and loses to the old one.
  *   policy    a write of an unchanged payload does nothing; the caller decides whether an erase may run now (the app allows it
- *             only with the converter de-energized, firmware-architecture §9). */
+ *             only with the converter de-energized, firmware-architecture §9).
+ *   layout    E82 (C-04): the header is 16 bytes and every entry is a multiple of 8, so no 64-bit flash row is ever written
+ *             twice — ECC flash refuses a second program of a row and the store used to fail on its first record. A port
+ *             whose program granularity is coarser than 8 bytes needs this file's HDR_LEN and entry_len raised to match. */
 #ifndef PMP_NVM_H
 #define PMP_NVM_H
 #include <stdbool.h>

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
@@ -37,8 +37,8 @@
 | Efficiency at full power, 400 VAC (E81 ledger) | 96.38 % | 96.37 % | 96.32 % | 96.25 % |
 | Worst LLC junction outside the registered fold set (E81) | 149 °C | 149 °C | 135 °C | 148 °C |
 | MTBF (parts count, 40 °C) | 410 kh | 390 kh | 374 kh | 372 kh |
-| Build cost @10k · India basis (E81) | ₹31,533 | ₹35,970 | ₹42,628 | ₹40,555 |
-| China RFQ target @10k | ₹25,852 | ₹29,418 | ₹34,922 | ₹33,142 |
+| Build cost @10k · India basis (E82) | ₹31,613 | ₹36,103 | ₹42,761 | ₹40,688 |
+| China RFQ target @10k | ₹25,920 | ₹29,520 | ₹35,023 | ₹33,243 |
 | **₹ / kW** | 1,051 | 899 | 853 | **811** |
 | RATING strap | 0 Ω | 1 kΩ | 10 kΩ | 15 kΩ |
 
@@ -56,7 +56,7 @@ flowchart LR
     direction TB
     SRC["boards.tsx + cells.tsx<br/>one parameterized source"]
     CARD["one control card<br/>GD32G553VET7 · 88-way slot"]
-    FW["one firmware image<br/>C99 · 291 checks"]
+    FW["one firmware image<br/>C99 · 330 checks"]
   end
   STRAP{"RATING strap<br/>read at boot"}
   SHARED --> STRAP
@@ -107,10 +107,13 @@ The two 50 kW modules are **electrically identical** since E68a; only the way he
 | **Reliability** | no wear-out fans | four monitored fans; a fan death is an alarm and a derate |
 | **₹ / kW @10k** | 853 | **811** |
 
-> [!WARNING]
-> **Both 50 kW SKUs carry the F-L-1 limit (E81).** The 150 V phase-shift corner is registered **NOT SUSTAINABLE** on
-> the two-die SKUs (40 kW and both 50 kW twins): sustained operation below 200 V is a documented specification limit
-> until E82-1. The 30 kW serves that corner folded to 93 %. → [E81 validation report](../docs/e81-validation-report.md)
+> [!NOTE]
+> **E81 F-L-1 is withdrawn at E82.** The 150 V phase-shift corner was registered NOT SUSTAINABLE on the two-die SKUs;
+> re-derived it is ordinary. E81 gave the weak bridge leg a dead time computed on the magnetising current when at load the
+> leg swings on the decayed tank current through L_r alone (now 125 / 186 / 189 ns), the grid charged every weak-leg die
+> twice, and no firmware implemented any fold. **All four SKUs serve the full 150–1000 V range**; the 50 kW air folds
+> 150 V output to 93–80 % at a 55 °C inlet, the 50 kW liquid folds nowhere, and `hal/dielim.c` declines a point its fold
+> cannot cool rather than delivering into it. → [E82 validation report](../docs/e82-validation-report.md)
 
 <details>
 <summary><b>Record — why there are two 50 kW modules</b></summary>
@@ -165,5 +168,5 @@ Controllers that prefer to set unequal shares keep the per-module `SET_OUTPUT` f
 <div align="center">
 <sub><a href="README.md">← Boards</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="30kw/README.md">30 kW Module Walkthrough →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

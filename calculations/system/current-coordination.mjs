@@ -10,7 +10,7 @@
 // Run: node calculations/system/current-coordination.mjs        (run-all, after vienna-switched)
 import { mountFor } from "../thermal/mount.mjs";
 import { shortRacePeak, F11_FAST_US, F11_KILL_US, F11_MON_US } from "../../spice/llc/llc-flux-post.mjs";
-import { CAN, FILM, DRAWN as DCL_DRAWN, DAMP, drawnFor as dclDrawnFor } from "../../spice/dclink/dclink-ripple.mjs";
+import { CAN, FILM, DRAWN as DCL_DRAWN, DAMP, drawnFor as dclDrawnFor, NCAN_HALF, VIENNA_FILM_PER_HALF, VIENNA_STUB_L } from "../../spice/dclink/dclink-ripple.mjs";
 import { ENTRY_FILM } from "../cost/parts-db.mjs";
 import { lMinFor, BANK_FILM, CBANK, RELAY_MAKE_A, FW42_PERMIT_V } from "../../spice/llc/sp-transition.mjs";
 import { readFileSync } from "node:fs";
@@ -297,6 +297,83 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
   ck("SYNC", "boards.tsx DC-DC entry film bank + RC damper (E81 / F-G-1)",
     perSku && (!DCL_DRAWN.damper || (/CFDMP/.test(boards) && /RFDMP/.test(boards))),
     `boards.tsx draws the entry film bank from parts-db ENTRY_FILM (${Object.entries(ENTRY_FILM).map(([k, v]) => `${k} ${v}`).join(" · ")} × 1 µF)${DCL_DRAWN.damper ? ` plus the RC damper CFDMP ${DAMP.C * 1e6} µF + RFDMP ${DAMP.R} Ω across DCP–DCN` : ""} — each SKU's drawn count holds its cans ≤ ${CAN.gateFrac * 100} % of the RFQ line at the 40 nH design stud (the 20-film variant on 30/40 kW = the lever)`);
+  // ---------------- J2b. VIENNA 50 kHz DC-link capacitor current (E82 / M-02) ----------------
+  // The J2 deck above answers ONE question: how the LLC's 2·f_sw bridge ripple divides across the link. It feeds the
+  // Vienna stage as an ideal source behind 50 µH, so the Vienna's OWN capacitor current — the difference between what
+  // the three boost legs inject into the top rail and what the bridge draws — appears in no budget anywhere. It is the
+  // BIGGER term. Closed form is not available for a min-max-injected three-level rectifier, so this is the direct PWM
+  // evaluation of the modulator the firmware actually runs (pfc.c: common centred carrier, min-max zero sequence),
+  // integrated over one line cycle at 1000 carrier periods × 200 sub-steps.
+  //
+  // Share: at 50 kHz the per-phase commutation films are 3 × 1 µF per half (1.06 Ω) and the DC-DC entry film bank is
+  // 2 × (nFilm + 2.2) µF seen from one half (≈ 90 mΩ), against a can bank of ESR_RFQ/n ≈ 10–16 mΩ — the cans take
+  // ≈ 98 % of it. That is the conservative bracket; the E82 switched model with its own split reads about 0.6 ×, and
+  // parts-db sets the purchasing line from the conservative end deliberately.
+  {
+    const dbT = rd("calculations/cost/parts-db.mjs");
+    const rfqA = Number(dbT.match(/ripple ≥ ([\d.]+) A rms @ 100 kHz \/ 105 °C/)?.[1] ?? 0);
+    const rfqEsr = Number(dbT.match(/ESR ≤ (\d+) mΩ @ 100 kHz/)?.[1] ?? 0) / 1000;
+    const AMB = 1.3;          // ≤ 70 °C can ambient vs the 105 °C line — the multiplier the J2 gate already names
+    const ETA = 0.965;        // design-basis sizing efficiency: the LINE sees P_out/η
+    const FSW = 50e3, VFULL = 330;   // design-basis: full power down to 330 VAC line-line, so 340 VAC is NOT derated
+    // I_C,top(rms) for a min-max-injected Vienna: ip(t) = Σ_{i>0} i_j·[leg j not clamped], minus the DC draw
+    const capRms = (P, vll, vdc) => {
+      const vph = vll / Math.sqrt(3), vpk = vph * Math.SQRT2, ipk = Math.SQRT2 * P / (3 * vph), idc = P / vdc;
+      const NC = 1000, NS = 200;
+      let s2 = 0, s2lf = 0, n = 0;
+      for (let c = 0; c < NC; c++) {
+        const th = 2 * Math.PI * (c + 0.5) / NC;
+        const v = [0, 1, 2].map((j) => vpk * Math.sin(th - 2 * Math.PI * j / 3));
+        const i = [0, 1, 2].map((j) => ipk * Math.sin(th - 2 * Math.PI * j / 3));
+        const v0 = -0.5 * (Math.max(...v) + Math.min(...v));                       // min-max zero sequence (pfc.c)
+        const don = [0, 1, 2].map((j) => 1 - Math.min(Math.abs((v[j] + v0) / (vdc / 2)), 1));
+        let ipAvg = 0;
+        for (let j = 0; j < 3; j++) if (i[j] > 0) ipAvg += i[j] * (1 - don[j]);
+        s2lf += (ipAvg - idc) ** 2;                                                 // local-average (≤ 150 Hz) term
+        for (let k = 0; k < NS; k++) {
+          const tri = 1 - Math.abs(2 * ((k + 0.5) / NS) - 1);
+          let ip = 0;
+          for (let j = 0; j < 3; j++) if (!(tri > (1 - don[j])) && i[j] > 0) ip += i[j];
+          s2 += (ip - idc) ** 2; n++;
+        }
+      }
+      const tot = Math.sqrt(s2 / n), lf = Math.sqrt(s2lf / NC);
+      return { tot, lf, hf: Math.sqrt(Math.max(tot * tot - lf * lf, 0)) };
+    };
+    const w = 2 * Math.PI * FSW, inv = (z) => { const d = z.re * z.re + z.im * z.im; return { re: z.re / d, im: -z.im / d }; };
+    const mag = (z) => Math.hypot(z.re, z.im);
+    const worst = { nom: 0, low: 0, sku: "" };
+    for (const sku of Object.keys(TANKS)) {
+      let txt = null;
+      try { txt = rd(`simulation-results/${sku}/dclink-ripple.csv`); } catch { /* J2 already failed on this */ }
+      if (!txt) continue;
+      const lines = txt.split("\n").filter(Boolean);
+      const hdr = lines.find((l) => l.startsWith("corner,")).split(",");
+      const rows = lines.filter((l) => /^(SER|PAR)/.test(l)).map((l) => Object.fromEntries(l.split(",").map((v, i) => [hdr[i], v])));
+      const DCLS = dclDrawnFor(sku);
+      const llc = Math.max(...rows.filter((r) => +r.n_film === DCLS.nFilm && (r.damper === "yes") === DCLS.damper && +r.stud_nH === 40)
+        .map((r) => +r.I_per_elyt_can_A));
+      const n = NCAN_HALF[sku], P = Number(sku.replace(/kwa?$/, "")) * 1e3 / ETA;
+      const Zcan = { re: rfqEsr / n, im: (w * CAN.esl - 1 / (w * CAN.C)) / n };
+      const Zvf = { re: FILM.esr / VIENNA_FILM_PER_HALF, im: w * VIENNA_STUB_L - 1 / (w * VIENNA_FILM_PER_HALF * FILM.C) };
+      const Zef = { re: FILM.esr / DCLS.nFilm, im: -1 / (w * 2 * (DCLS.nFilm * FILM.C + (DCLS.damper ? DAMP.C : 0))) };
+      const Yc = inv(Zcan), Yt = { re: Yc.re + inv(Zvf).re + inv(Zef).re, im: Yc.im + inv(Zvf).im + inv(Zef).im };
+      const share = mag(Yc) / mag(Yt);
+      const at = (vll, vdc) => { const r = capRms(P, vll, vdc); return { r, can: Math.hypot(share * r.hf / n, share * r.lf / n, llc) }; };
+      const nom = at(400, 800), low = at(340, 700);
+      const lim = rfqA * AMB;
+      if (nom.can > worst.nom) { worst.nom = nom.can; worst.low = low.can; worst.sku = sku; }
+      ck("DCLINK-VIENNA", `${sku} link can duty incl. the Vienna 50 kHz term`, rfqA > 0 && rfqEsr > 0 && nom.can <= lim,
+        `400 VAC/800 V: I_C per half ${f(nom.r.tot, 1)} A rms (HF ${f(nom.r.hf, 1)} · LF ${f(nom.r.lf, 1)}), ${f(share * 100, 1)} % to the ${n}-can bank → ` +
+        `${f(nom.can, 2)} A per can with the LLC ${f(llc, 2)} A in quadrature, vs ${f(lim, 2)} A = the parts-db RFQ line ${rfqA} A @100 kHz/105 °C × ${AMB} for a ≤ 70 °C can ambient · ` +
+        `340 VAC/700 V (full power — V_FULL ${VFULL} VAC): I_C per half ${f(low.r.tot, 1)} A → ${f(low.can, 2)} A per can = ${f(100 * low.can / lim, 0)} % of the same allowance ` +
+        `[REGISTERED EXCEEDANCE, parts-db CD[TB] — levers: forced air, a taller can, +1 can per half]`);
+    }
+    ck("DCLINK-VIENNA", "the low-line exceedance is DECLARED on the purchasing line",
+      /REGISTERED EXCEEDANCE/.test(dbT) && /340 VAC/.test(dbT) && /DCLINK-VIENNA/.test(dbT),
+      `parts-db's CD[TB] RFQ line names the 340 VAC full-power corner (worst ${f(worst.low, 2)} A per can on ${worst.sku || "—"}), this gate as its source, and the levers — ` +
+      "a duty this gate computes and nobody buys against is not a finding, it is a comment");
+  }
   // S/P closure: the FW-42 permit against the relay make line is a LOOP-INDUCTANCE requirement on the layout
   for (const sku of Object.keys(TANKS)) {
     const lMin = lMinFor(sku);

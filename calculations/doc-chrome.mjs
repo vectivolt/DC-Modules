@@ -3,7 +3,7 @@
 // docs-lint asserts every tracked page is registered here and carries exactly this chrome.
 import { dirname, relative } from "node:path";
 
-export const REV = "E81";
+export const REV = "E82";
 export const UPDATED = "2026-09-17";
 
 const STATUS = {
@@ -16,23 +16,24 @@ const STATUS = {
 // Reading order = footer prev/next order. [path, family, icon, title, subtitle, status, extra badges [label, message, color]]
 export const PAGES = [
   ["README.md", "hero", "", "DC-Modules", "Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules", "OVERVIEW"],
-  ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB", [["pages", "42_·_5_families", "0969da"]]],
+  ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB", [["pages", "43_·_5_families", "0969da"]]],
   ["docs/architecture.md", "platform", "🏗️", "Platform Architecture", "The module in one read — power path, control plane, protection layers, rails and the product family", "LIVE_SPEC"],
-  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E81, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
+  ["docs/assumptions.md", "platform", "📒", "Decision Register", "Every frozen decision E1–E82, why it was taken, and the evidence that holds it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
   ["docs/e80-recheck-response.md", "platform", "🩺", "E80 External Recheck — Response Register", "Two independent hardware rechecks (33 + 38 findings) triaged claim by claim — fixed, already closed, refuted, or mapped to its test row", "LIVE_SPEC", [["findings", "71_rows_·_2_reviews", "d19a00"]]],
   ["docs/e81-validation-report.md", "platform", "🧪", "E81 Full-System Validation", "Nine independent reviews of the module as one working system — every finding, decision, recalculated number and the bring-up plan with its STOP lines", "LIVE_SPEC", [["reviewers", "9_·_12_refuted", "d19a00"], ["verdict", "READY_FOR_LOW--POWER_TEST", "e3763c"], ["gates", "stress--audit_[DPT]_·_current--coordination", "2ea44f"]]],
+  ["docs/e82-validation-report.md", "platform", "🛡️", "E82 Independent Validation & Production Hardening", "Twelve independent reviews that trusted nothing in the repository, eleven critical findings, and the firmware-first corrections — with the decision table for every part that was proposed", "LIVE_SPEC", [["reviewers", "12_·_9_refuted", "d19a00"], ["critical", "11_found_·_10_fixed_·_1_needs_the_layout", "e3763c"], ["firmware", "330_checks", "2ea44f"]]],
   ["docs/interconnect.md", "platform", "🔌", "Two-Board Sandwich & Interconnect", "Stud pillars, the 40-way harness, grounding, discharge control and the HMI contract", "LIVE_SPEC", [["gate", "module--interconnect--audit", "2ea44f"]]],
   ["docs/control-card-scope.md", "platform", "🧠", "Control-Card Scope", "Why one card runs one module up to 50 kW — connector ways, HRTIMER units and MCU pins", "LIVE_SPEC", [["gate", "cardMap()_refuses_out--of--scope", "2ea44f"]]],
-  ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["firmware", "291_checks_ASan%2FUBSan", "2ea44f"]]],
-  ["docs/firmware-architecture.md", "platform", "🧬", "Firmware Architecture", "Layers, timing, state machines, control and ramping, the protection hierarchy and exception handling — and the reviews that shaped them", "LIVE_SPEC", [["review", "E78%2FE80_·_port_built", "d19a00"]]],
+  ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["firmware", "330_checks_ASan%2FUBSan", "2ea44f"]]],
+  ["docs/firmware-architecture.md", "platform", "🧬", "Firmware Architecture", "Layers, timing, state machines, control and ramping, the protection hierarchy and exception handling — and the reviews that shaped them", "LIVE_SPEC", [["review", "E82_·_port_built", "d19a00"]]],
   ["docs/can-protocol.md", "platform", "📡", "VMP 2.0 Native CAN Protocol", "The module's own protocol — addressing, control, acknowledgement, telemetry, discovery, versioning and the controller contract", "LIVE_SPEC", [["codec", "vmp.c_conformance_·_1M_fuzz", "2ea44f"]]],
   ["docs/can-profile-tonhe-v12.md", "platform", "🔁", "TonHe V1.2 Compatibility Profile", "How a module on the TonHe V1.2 profile behaves on the wire, what it maps to inside, and every ambiguity resolved", "LIVE_SPEC", [["conformance", "spec_examples_byte--exact", "2ea44f"]]],
-  ["boards/README.md", "platform", "🧩", "Boards", "The four module SKUs, the control card, and how the release sheets are produced", "OVERVIEW", [["pins", "7285_verified_·_5_targets", "2ea44f"]]],
+  ["boards/README.md", "platform", "🧩", "Boards", "The four module SKUs, the control card, and how the release sheets are produced", "OVERVIEW", [["pins", "7409_verified_·_5_targets", "2ea44f"]]],
   ["boards/README-module-family.md", "platform", "🔋", "Module Family", "Four SKUs on one lane, one card and one firmware image — why 50 kW is the top module, the two cooling lines, and what a charger gets from every module", "LIVE_SPEC"],
   ["boards/30kw/README.md", "platform", "📋", "30 kW Module Walkthrough", "The canonical board pair, cell by cell — every cell reused unchanged across the family", "LIVE_SPEC"],
   ["docs/protection-thresholds.md", "power", "🛡️", "Protection Thresholds", "The F.xx fault ladder — hardware-fast and supervisory rows, per-SKU windows and current classes", "LIVE_SPEC", [["gate", "review--checks_·_current--coordination", "2ea44f"]]],
   ["docs/current-coordination.md", "power", "⚡", "Current & Protection Coordination", "The worst simulated current in every magnetic and switch, against the trip, sensor and part that must handle it", "LIVE_SPEC", [["gate", "current--coordination_·_CLEAN", "2ea44f"]]],
-  ["docs/thermal-report.md", "power", "🌡️", "Thermal Report", "Where every watt goes, how it leaves the box, and the temperatures that result", "LIVE_SPEC", [["grid", "4536_pts_·_fold_map_·_F--L--1", "d19a00"]]],
+  ["docs/thermal-report.md", "power", "🌡️", "Thermal Report", "Where every watt goes, how it leaves the box, and the temperatures that result", "LIVE_SPEC", [["grid", "4536_pts_·_fold_map_·_no_FAIL_row", "d19a00"]]],
   ["docs/insulation-coordination.md", "power", "🧱", "Insulation Coordination", "The barrier map, creepage and clearance values, the standards matrix and the hipot plan", "LIVE_SPEC"],
   ["docs/busbar-drawings.md", "power", "🔩", "Busbar Drawings & Joint Spec", "Bulk-copper paths, sections, lengths, joints and the torque schedule", "GENERATED", [["owner", "busbar--calc.mjs", "5f8fc0"]]],
   ["docs/magnetics.md", "magnetics", "🧲", "Magnetics Hub", "How every magnetic is designed, proven, built and accepted — methods, materials, the common parts and the four module pages", "LIVE_SPEC", [["gate", "mag--sync_·_rfq--audit_·_magnetics--envelope", "2ea44f"]]],
@@ -44,7 +45,7 @@ export const PAGES = [
   ["docs/simulation-report.md", "verification", "📈", "Simulation Report", "The simulation-truth ledger — every executed run, its result, and what it may be used to claim", "EVIDENCE"],
   ["docs/verification-matrix.md", "verification", "✅", "Verification Matrix & Risk Register", "Every requirement mapped to its evidence, and the risks still open", "LIVE_SPEC", [["verify--independent", "243%2F243", "2ea44f"]]],
   ["docs/evt-plan.md", "verification", "🔬", "EVT Test Plan", "The first-hardware campaign T-00…T-64, and the rule that lets bench results reopen a calculation", "LIVE_SPEC"],
-  ["docs/firmware-verification.md", "verification", "🧪", "Firmware Verification Plan", "Every firmware feature as behaviour, timing, failure, recovery, test and pass criterion — host, HIL, fuzzing, conformance and endurance", "LIVE_SPEC", [["host", "291_checks_·_ASan%2FUBSan", "2ea44f"]]],
+  ["docs/firmware-verification.md", "verification", "🧪", "Firmware Verification Plan", "Every firmware feature as behaviour, timing, failure, recovery, test and pass criterion — host, HIL, fuzzing, conformance and endurance", "LIVE_SPEC", [["host", "330_checks_·_ASan%2FUBSan", "2ea44f"]]],
   ["docs/reliability-budget.md", "verification", "🛡️", "Reliability Budget", "Parts-count MTBF prediction with its basis declared, the wear-out clocks, and how a module fails safe", "LIVE_SPEC", [["gate", "mtbf--budget_·_CONSISTENT", "2ea44f"]]],
   ["calculations/README.md", "verification", "🧮", "Calculations & Gates", "Every engine, audit and generator — and the one command that reproduces the design", "OVERVIEW", [["run--all", "exit_0", "2ea44f"]]],
   ["spice/README.md", "verification", "🖥️", "SPICE Simulation Suites", "The ngspice runners, what each one proves, and where its results land", "OVERVIEW"],

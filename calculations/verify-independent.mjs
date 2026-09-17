@@ -153,9 +153,14 @@ for (const [sku, s] of Object.entries(SK)) {
     `${f(cBank * 1e6, 1)} µF per bank → τ ${f(tauB, 2)} s (≤ 17 s; film-only banks bleed in well under a second) · ${f(0.5 * cBank * 500 * 500 / 4, 2)} J/resistor ≤ 65`);
 }
 { // X-bleed (E68): three star X2 stages (a star C is C/3 line-to-line) + the Δ damper cap (its 10 Ω is ≪ the bleed star)
+  // E82 (M-12): the star resistor is read from the NETLIST, not assumed — E68 added a third X stage and left the 47 k star
+  // in place, which put the terminals over the 5 s rule for permanently connected equipment. Both rules are checked now.
   const A30 = B["30kw"].ac, cX = ((A30.val.get("CX01") + A30.val.get("CX11") + A30.val.get("CX21") + A30.val.get("CX24")) / 3 + (A30.val.get("CDMP1") ?? 0)) * 1e6;
-  const tauX = 0.42 * cX / (2.2 + 2.2);
-  ck("C", "X-cap bleed after the star X2 stages + damper", tauX <= 1.0, `τ ${f(tauX, 2)} s for ${f(cX, 1)} µF line-to-line equivalent (netlist) ≤ 1 s pluggable rule (star unchanged)`);
+  const rStar = A30.val.get("RNS1A");
+  const tauX = 0.42 * cX / (2.2 + 2.2) * (rStar / 47e3);
+  const t60 = tauX * Math.log(475 * Math.SQRT2 / 60);
+  ck("C", "X-cap bleed after the star X2 stages + damper", Math.abs(rStar - 33e3) < 1 && tauX <= 1.0 && t60 <= 5.0,
+    `${f(rStar / 1e3, 0)} k per star element (netlist) · τ ${f(tauX, 2)} s for ${f(cX, 1)} µF line-to-line equivalent ≤ 1 s pluggable rule · 672 V pk → 60 V in ${f(t60, 2)} s ≤ 5 s permanently-connected rule (E82 M-12: 47 k read ${f(t60 * 47 / 33, 2)} s here and 5.3 / 6.4 s on the E82 per-phase-star form)`);
 }
 { // RATING bands with 1% parts
   const v = (R) => 3.3 * R / (R + 10e3);
@@ -168,12 +173,10 @@ for (const [sku, s] of Object.entries(SK)) {
 console.log("\n=== D. THERMAL — closed-form vs grid CSV ===");
 const grid = readFileSync(`${ROOT}/calculations/out/envelope-grid.csv`, "utf8").trim().split("\n").map(r => r.split(","));
 function tjWorst(sku) {
-  // E81 F-L-1: the registered NOT-SUSTAINABLE set (150 V output in phase shift on the two-die SKUs — the weak leg's fixed
-  // hard turn-on; stress-audit carries the register and the spec limit) is excluded here exactly as it is there, so this
-  // file's ceiling check and the closed-form reproduction run on the SERVABLE envelope. The closed-form below re-derives the
-  // turn-off term only — the registered rows carry the hard-turn-on term instead, which the grid owns (deck-anchored).
-  const fl1 = (r) => sku !== "30kw" && r[2] === "150" && r[6] === "PSM";
-  const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "" && !fl1(r));
+  // E82 (C-11): the E81 F-L-1 exclusion (150 V output in phase shift on the two-die SKUs) is GONE here exactly as it is in
+  // stress-audit — the weak leg's dead time was the defect, the grid charged each weak-leg die twice, and with both fixed
+  // no row fails, so the ceiling check and the closed-form reproduction run on EVERY row of the envelope.
+  const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
   const wl = rows.reduce((a, r) => (+r[14] > +a[14] ? r : a));
   return { p: Math.max(...rows.map(r => +r[13])), l: +wl[14], ip: Math.max(...rows.map(r => +r[10])), lRow: wl };
 }
@@ -186,7 +189,8 @@ function tjWorst(sku) {
   const t50 = TANKS["50kw"], fr50 = 1 / (2 * Math.PI * Math.sqrt(t50.Lr * t50.crN * t50.crNF * 1e-9));
   const fsw = +g.lRow[9] * fr50, woffIndep = t50.koff * +g.lRow[8] * +g.lRow[19] * fsw, woffGrid = +g.lRow[18];
   const plate = { cold: 10, room: 45, hot: 65 }[g.lRow[4]];
-  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + woffIndep / par) * 0.65;   // E68 clip mount onto the plate
+  // E82 (M-06): the R_DS(on) slope is the proxy datasheet's 0.0054 /K (21 → 38 mΩ, 25 → 175 °C), typed here independently of the grid
+  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.0054 * (Tj - 25)) + woffIndep / par) * 0.65;   // E68 clip mount onto the plate
   ck("D", "50kw LLC turn-off watts re-derived from k_off · V · I_toff · f_sw", Math.abs(woffIndep - woffGrid) <= 0.12 * Math.max(woffGrid, 1),
     `closed-form ${f(woffIndep, 1)} W/position vs grid ${f(woffGrid, 1)} W (k_off ${f(t50.koff * 1e9, 1)} nJ/(V·A) at C_s ${f(t50.cs * 1e12, 0)} pF, bus ${g.lRow[8]} V, I_toff ${g.lRow[19]} A, f_sw ${f(fsw / 1e3, 0)} kHz)`);
   ck("D", "50kw LLC worst corner reproduces", Math.abs(Tj - g.l) < 4, `closed-form ${f(Tj, 0)} °C vs grid ${g.l} at its worst row (${g.lRow[2]} V ${g.lRow[5]} ${g.lRow[6]} ${g.lRow[4]}, Ip ${ipW} A rms, ${f(woffIndep, 1)} W turn-off per position — ${par} FETs per position, liquid model)`);
@@ -446,9 +450,15 @@ for (const [sku] of Object.entries(SK)) {
   // R8: balance-string count per SKU — the passive-discharge model MUST match the drawn
   // population (the R7 report modeled one 2×47k pair per half everywhere; the 40/50 links
   // have TWO bank blocks in parallel — the external reviewer's retrace was right).
-  const nSets = A.byName.has("RBALT1A") ? 2 : 1;
-  ck("J", `${sku} link balance population`, nSets === (sku === "30kw" ? 1 : 2) && A.netOfPin.get("RBALT0A.pin1") === "DCP" && A.netOfPin.get("RBALB0B.pin2") === "DCN",
-    `${nSets}× (2×47k) per half drawn → ${nSets === 1 ? "188k" : "94k"} full-link (R8-corrected discharge model uses the drawn count)`);
+  // E82 (M-10): ONE network per MODULE on every SKU (cells.tsx `bal`, boards pass bal={k === 0}) — the 40/50 kW banks
+  // fitted the pair TWICE, which is how E81's 22 k became 15.7 W of standby inside the electrolytic bank. The passive
+  // discharge rides these same resistors, so the count, the VALUE and the two end nets are all proven from the netlist.
+  const nSets = A.names.filter((n) => /^RBALT\d+A$/.test(n)).length;   // one "RBALT<bank>A" per fitted network
+  const rBal = A.val.get("RBALT0A");
+  const tPas = 94e3 * ((sku === "30kw" ? 5 : sku === "40kw" ? 6 : 8) * 470e-6) * (rBal / 47e3) / nSets * Math.log(321 / 60);
+  ck("J", `${sku} link balance population`, nSets === 1 && Math.abs(rBal - 47e3) < 1 && A.netOfPin.get("RBALT0A.pin1") === "DCP" && A.netOfPin.get("RBALB0B.pin2") === "DCN"
+    && !A.byName.has("RBALT1A") && !A.byName.has("RBALT2A"),
+    `${nSets}× (2×${f(rBal / 1e3, 0)}k) per half drawn → 188k full-link on EVERY SKU (E82 M-10) → 321→60 V in ${f(tPas, 0)} s = ${f(tPas / 60, 1)} min; banks 1/2 carry cans only`);
   // R7-B: PV bleeder drive at the guaranteed point — V15-fed LEDs behind the shared low-side
   ck("J", `${sku} PV bleeder drive network`, D.netOfPin.get("RPVLA.pin1") === "V15" && D.netOfPin.get("RPVLB.pin1") === "V15" && D.netOfPin.get("UPVA.CAT") === "PV_SINK" && D.netOfPin.get("UPVB.CAT") === "PV_SINK" && D.netOfPin.get("QPVD.C") === "PV_SINK" && D.netOfPin.get("QPVD.E") === "DGND" && D.netOfPin.get("RPVDP.pin1") === D.netOfPin.get("QPVD.B") && Math.abs(D.val.get("RPVBA") - 6.8e6) < 1e3 && Math.abs(D.val.get("RPVLA") - 1000) < 1,
     "1 k/2010 LED feed holds ≥10 mA to the 13.5 V rail floor via QPVD; 6.8 M gate bleed (R7-B/R8 — 25 °C-endpoint model, EVT gates the FET)");

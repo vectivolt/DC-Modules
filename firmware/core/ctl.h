@@ -58,6 +58,7 @@ typedef struct {
   float v_out, i_out;           /* 1 kHz averaged output measurements */
   bool grp_active; float grp_share_a;
   float peer_avg_a; uint8_t peer_n;
+  float die_fold;               /* E82 (C-11): the die-temperature observer's fold (hal/dielim.h), 0 = none … 1 = declined */
 } pmp_ctl_in_t;
 
 typedef struct {

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/reviewers-9_·_12_refuted-d19a00?style=flat-square" alt="reviewers: 9 · 12 refuted"/>
   <img src="https://img.shields.io/badge/verdict-READY_FOR_LOW--POWER_TEST-e3763c?style=flat-square" alt="verdict: READY FOR LOW-POWER TEST"/>
@@ -20,6 +20,8 @@
 > simulation or review; how each finding was cross-checked, graded and fixed; the decisions taken under the user's directives (fans
 > 3/3/0/4, a ≤ 5 % cost ceiling, two protocol options); the recalculated numbers; the readiness verdicts; and the first-prototype
 > bring-up plan with its STOP lines.
+>
+> **Superseded in part by [E82](e82-validation-report.md):** F-L-1 (150 V phase-shift corner) is closed, the bipolar F.01 of F-D-10 / O-15 is withdrawn (C-02), the fold map and the firmware test count are E82's.
 >
 > **Gate coupling** — every number here reproduces with `sh calculations/run-all.sh` (the E81 gates: `stress-audit [DPT]`,
 > `current-coordination [DCLINK] [ZVS] [F.11] [SP] [SYNC]`, `fault-energy [VENT]`, `lisn-precompliance` CM with the LLC source,
@@ -419,7 +421,7 @@ New at E81: `stress-audit [DPT]` (reads the per-SKU double-pulse CSVs), `current
 ---
 
 <div align="center">
-<sub><a href="e80-recheck-response.md">← E80 External Recheck — Response Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="interconnect.md">Two-Board Sandwich & Interconnect →</a></sub>
+<sub><a href="e80-recheck-response.md">← E80 External Recheck — Response Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="e82-validation-report.md">E82 Independent Validation & Production Hardening →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

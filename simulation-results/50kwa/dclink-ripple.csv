@@ -4,9 +4,9 @@
 # GATE: per-can rms ≤ 0.8 × 3.5 A = 2.4 A, per-film rms ≤ 10 A
 # cheapest variant holding every can ≤ 80 % of the 3.5 A class and every film ≤ 10 A at BOTH corners: film20u-damped-stud40n — 978 rupees/module @10k
 corner,variant,bridge_film_uF,n_film,damper,stud_nH,P_sim_kW,Ibr_dc_A,Ibr_ac_rms_A,I_per_bridge_film_A,I_per_elyt_can_A,I_per_vienna_film_A,I_stud_ac_A,Vbus_p1_V,Vbus_p99_V,can_pct_of_class,film_pct_of_line,verdict,extra_films,rupees_at_10k
-SER250-full-bus764,as-drawn,4,4,no,40,40.67,56.12,73.55,41.18,10.66,15.94,111.88,568,973,305,412,OVER,0,0
-SER250-full-bus764,film20u-damped-stud40n,20,20,yes,40,39.87,54.51,60.22,3.26,0.79,1.18,8.32,690,817,23,33,OK,16,978
-SER250-full-bus764,film20u-damped-stud20n,20,20,yes,20,39.87,54.52,60.23,3.52,1.44,2.16,15.15,689,817,41,35,OK,16,978
+SER250-full-bus764,as-drawn,4,4,no,40,46.63,64.54,77.84,45.24,11.8,17.64,123.81,574,971,337,452,OVER,0,0
+SER250-full-bus764,film20u-damped-stud40n,20,20,yes,40,45.64,62.6,65.66,3.58,0.88,1.31,9.19,688,813,25,36,OK,16,978
+SER250-full-bus764,film20u-damped-stud20n,20,20,yes,20,45.64,62.61,65.67,3.86,1.6,2.38,16.73,688,813,46,39,OK,16,978
 PAR400-full,as-drawn,4,4,no,40,45.73,56.24,38.88,11.61,8.09,7.65,64.09,814,863,231,116,OVER,0,0
 PAR400-full,film20u-damped-stud40n,20,20,yes,40,50.49,62.03,41.05,2.5,1.83,1.73,14.49,828,833,52,25,OK,16,978
 PAR400-full,film20u-damped-stud20n,20,20,yes,20,50.04,61.48,40.96,2.38,2.7,2.55,21.36,828,834,77,24,OVER,16,978

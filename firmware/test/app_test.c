@@ -49,6 +49,8 @@ typedef struct {
   bool kpre_cmd, kpre_fb; double t_kpre;
   bool llc_stall; uint8_t can_state;
   double p_llc_in;
+  double i_inject[3];                  /* E82 (C-02): amps added to a phase's CT reading, either polarity */
+  double t_sink_c;                     /* E82 (C-11): what the PFC and LLC sink NTCs read, °C (0 = the 40 °C the suite always used) */
   meas_cal_t cal;                      /* the sense chains as drawn */
 } plant_t;
 
@@ -78,7 +80,9 @@ static void plant_pfc(app_pfc_adc_t *s) {
   double bleed = pl.vbus / 94e3 + ((last_o.do_bits & APP_DO_QDIS) ? pl.vbus / 640.0 : 0.0);
   pl.vbus += ((p_in - pl.p_llc_in) / fmax(pl.vbus, 50.0) - bleed) / 1.88e-3 * dt;
   if (pl.vbus < 0.0) pl.vbus = 0.0;
-  s->ia = counts(MCH_IA, ipk * vg[0] / pl.amp); s->ib = counts(MCH_IB, ipk * vg[1] / pl.amp); s->ic = counts(MCH_IC, ipk * vg[2] / pl.amp);
+  s->ia = counts(MCH_IA, ipk * vg[0] / pl.amp + pl.i_inject[0]);
+  s->ib = counts(MCH_IB, ipk * vg[1] / pl.amp + pl.i_inject[1]);
+  s->ic = counts(MCH_IC, ipk * vg[2] / pl.amp + pl.i_inject[2]);
   for (int k = 0; k < 3; k++) s->vac[k] = counts(MCH_VAC1 + k, vg[k]);
   s->vbus = counts(MCH_VBUS, pl.vbus); s->vmid = counts(MCH_VMID, pl.vbus / 2);
 }
@@ -114,6 +118,10 @@ static void plant_tick(app_tick_in_t *ti) {
   double r = 1e4 * exp(3435.0 * (1.0 / (40.0 + 273.15) - 1.0 / 298.15));
   float ntc = (float)(4095.0 * r / (1e4 + r));
   ti->t_pfc = ti->t_inlet = ti->t_llc = ti->t_xfmr = ntc;
+  if (pl.t_sink_c > 0.0) {                                   /* E82 (C-11): the two SINK zones only — the inlet zone trips at 75 °C */
+    double rs = 1e4 * exp(3435.0 * (1.0 / (pl.t_sink_c + 273.15) - 1.0 / 298.15));
+    ti->t_pfc = ti->t_llc = (float)(4095.0 * rs / (1e4 + rs));
+  }
   ti->v24 = (float)(24.0 / (LSB * 9.2)); ti->v15 = (float)(15.0 / (LSB * 5.7)); ti->vrefint = (float)(1.20 / 3.3 * 4096.0);
   ti->avmid = (float)(1.65 / 3.3 * 4095.0);   /* E81 (F-D-13): the AVMID buffer reads back mid-rail */
   ti->di = (uint16_t)(APP_DI_DRV_RDY | (pl.kpre_fb ? APP_DI_RLY_PRE : 0u));
@@ -245,11 +253,49 @@ int main(void) {
   ck("app: each HRTIMER channel is attributed — CMP4 F.03, CMP0 F.13, the wire-OR F.11 at 95 % of the tank class else F.02, CMP3 F.01 (E81 pin swap) — and both gate enables drop",
      got[0] && got[1] && got[2] && got[3] && got[4]);
 
+  { /* E82 (C-02): F.01's comparators carry the POSITIVE reference only. E81 made the DAC reference follow the sign of the
+       measured current so that a through-window CT's unknown primary orientation stopped mattering — but the comparators
+       are non-inverted into active-HIGH fault inputs, so the negative reference asserts the fault for the whole time the
+       current reads negative, and at idle the sign of ≈ 0 A is noise. The negative polarity is covered instead by a
+       100 kHz |i| test in app_pfc_isr (3-wire Σi = 0 makes a positive comparator trip the backstop) — so the reference
+       must now be the positive one at every sample, a NEGATIVE over-current must still stop the stage inside one ISR and
+       latch F.01, and idle noise around zero must never trip. */
+    restore();
+    int pos_ref = 1;
+    for (int k = 0; k < 400; k++) {                       /* a whole line cycle of both polarities */
+      app_pfc_adc_t ps; plant_pfc(&ps); app_pfc_isr(&app, &ps, &po);
+      if (!(fabsf(last_o.dac_v[APP_DAC_IA] - 2.664f) < 0.01f)) pos_ref = 0;
+    }
+    int quiet = app.fsm.latched == FC_NONE && app.trip_n == app.trip_ack;
+
+    restore();                                            /* idle: the stage off, the CT channels on noise around zero */
+    for (int k = 0; k < 2000; k++) {
+      for (int n = 0; n < 3; n++) pl.i_inject[n] = ((k + n) % 7 - 3) * 0.3;   /* ±0.9 A, ~10 LSB of the 50 kW chain */
+      app_pfc_adc_t ps; plant_pfc(&ps); app_pfc_isr(&app, &ps, &po);
+    }
+    int no_nuisance = app.fsm.latched == FC_NONE && app.trip_n == app.trip_ack;
+    for (int n = 0; n < 3; n++) pl.i_inject[n] = 0.0;
+
+    restore();                                            /* a NEGATIVE over-current on one phase */
+    pl.i_inject[1] = -1.05 * app.fsm.oc_line_a - 130.0;   /* beyond the trip whatever the phase is carrying at this instant of the line cycle (≤ 124 A pk) */
+    app_pfc_adc_t ps; plant_pfc(&ps); app_pfc_isr(&app, &ps, &po);
+    int one_isr = !po.en && app.trip_n != app.trip_ack;
+    run_ms(2);
+    int latched = app.fsm.latched == FC_OC_PFC && !(last_o.do_bits & (APP_DO_EN_PFC | APP_DO_EN_LLC));
+    for (int n = 0; n < 3; n++) pl.i_inject[n] = 0.0;
+    printf("      C-02: F.01 ref %.3f V both half cycles · negative %.0f A stopped in one ISR %d, latched %s\n",
+           (double)last_o.dac_v[APP_DAC_IA], -1.05 * app.fsm.oc_line_a - 130.0, one_isr,
+           app.fsm.latched == FC_OC_PFC ? "F.01" : "none");
+    ck("E82 C-02: the F.01 reference stays positive through both half cycles, a negative over-current stops the PFC inside one ISR and latches F.01, and idle noise around zero never trips",
+       pos_ref && quiet && no_nuisance && one_isr && latched); }
+
   restore(); pl.hz = 40.0; run_ms(400);
   int f37 = app.fsm.latched == FC_LINE_HZ && pmp_fault_class(FC_LINE_HZ) == FCL_AUTO_EXT;
   pl.hz = 50.0; run_ms(3000);
   ck("app: 40 Hz on a live line latches F.37 (AUTO_EXT) and the row clears by itself once 50 Hz is back", f37 && app.fsm.latched == FC_NONE);
 
+  restore(); pl.llc_stall = true; run_ms(1); pl.llc_stall = false; run_ms(150);
+  ck("app (E82 E-15): ONE millisecond without the LLC interrupt is not F.35 — the LATCH row needs three inside 100 ms", app.fsm.latched == FC_NONE);
   restore(); k0 = kicks; pl.llc_stall = true; run_ms(20); pl.llc_stall = false;
   ck("app: an LLC interrupt that stops latches F.35 and the watchdog gets no kick while it is stopped", app.fsm.latched == FC_OVERRUN && kicks == k0);
 
@@ -262,6 +308,35 @@ int main(void) {
   printf("      sag to 230 VAC for 60 ms at 50 kW: output min %.0f V · bus min %.0f V · after %.1f V · fault %d\n", vmin, bmin, pl.vo, app.fsm.latched);
   ck("app: a 60 ms sag to 230 VAC at 50 kW rides through — no latch, the fold-back holds the bus above F.05, 400 V back inside 0.8 s",
      app.fsm.latched == FC_NONE && bmin > 620.0 && fabs(pl.vo - 400.0) < 8.0);
+
+  /* E82 (C-11 / M-06) end to end, 50 kW air. (1) Low line on the 830 V link is a corner the thermal grid folds on a hot
+     day for the VIENNA die (285 VAC: 164 °C unfolded): on a 40 °C sink the module serves it, on a 77 °C sink (55 °C inlet)
+     the junction observer trims the availability until the die sits inside its band — a thermal derate the charge
+     controller can read, not a fault. (2) 150 V into a RESISTOR on the same hot sink has no equilibrium: folding the
+     current drops the voltage, the tank gain falls, the weak leg's residual rises — the module DECLINES the point (0 A
+     available) instead of cooking leg A, and says why. (A pack holds its voltage, so the same corner FOLDS on a pack.) */
+  { boot(false, NULL); pl.amp = 285.0 * sqrt(2.0 / 3.0); run_ms(1000); pl.load_r = 3.7;
+    hold(400.0, 150.0, 8000);
+    double i_cool = pl.iout; int cool_ok = app.fsm.latched == FC_NONE && !(app.ctl.derate_why & PMP_DR_THERMAL) && !app.die.declined;
+    boot(false, NULL); pl.amp = 285.0 * sqrt(2.0 / 3.0); run_ms(1000); pl.load_r = 3.7; pl.t_sink_c = 77.0;
+    hold(400.0, 150.0, 14000);
+    double i_hot = pl.iout; float tj_hot = app.die.tj_pfc;
+    int fold_ok = app.fsm.latched == FC_NONE && (app.ctl.derate_why & PMP_DR_THERMAL) && !app.die.declined &&
+                  i_hot > 0.75 * i_cool && i_hot < 0.97 * i_cool && tj_hot > DIELIM_TJ_C - DIELIM_BAND_K && tj_hot <= DIELIM_TJ_C + 0.5f;
+    boot(false, NULL); run_ms(1000); pl.load_r = 0.94; pl.t_sink_c = 77.0;
+    hold(150.0, 166.0, 12000);
+    printf("      50 kW air at 285 VAC, 400 V into 3.7 ohm: %.1f A on a 40 C sink · %.1f A on a 77 C sink (Vienna Tj est %.0f C) · 150 V into 0.94 ohm at 77 C: %.0f A, declined %d, fault %d\n",
+           i_cool, i_hot, (double)tj_hot, pl.iout, app.die.declined, (int)app.fsm.latched);
+    ck("app (E82 C-11 / M-06): 285 VAC on the 830 V link runs unfolded on a 40 °C sink and folds 3–25 % on a 77 °C sink — thermal derate reported, the Vienna junction estimate inside its band, no fault",
+       cool_ok && i_cool > 100.0 && fold_ok);
+    ck("app (E82 C-11): 150 V into a resistor on a 77 °C sink is DECLINED on the two-die 50 kW air — 0 A available with the thermal-derate bit, no fault latched, the link at its 650 V floor",
+       app.die.declined && app.fsm.latched == FC_NONE && (app.ctl.derate_why & PMP_DR_THERMAL) && pl.iout < 5.0 && app.ctl.i_avail == 0.0f && pl.vbus < 670.0);
+    /* … and the refusal belongs to that POINT, not to the module: stop (the PFC stays warm), ask for 400 V, get it */
+    th_stop(); run_ms(400); pl.load_r = 5.0;
+    hold(400.0, 100.0, 4000);
+    ck("app (E82 C-11): after a declined point a stop and a new start at 400 V delivers — the refusal is not inherited through the warm-standby hold",
+       !app.die.declined && app.fsm.latched == FC_NONE && pl.iout > 70.0);
+    pl.t_sink_c = 0.0; }
 
   meas_cal_t bad; meas_cal_default(&bad, 50); bad.ch[MCH_VOUT].gain *= 1.2f;
   boot(false, &bad); run_ms(500);

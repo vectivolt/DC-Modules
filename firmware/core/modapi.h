@@ -37,6 +37,9 @@ typedef struct {                /* module truth — core + HAL write it once per
   uint64_t fault_bits;          /* bit n−1 = F.n latched (F.31 while locked) */
   uint32_t warn;                /* PMP_W_* */
   bool rearm;                   /* ENABLE held, fresh edge required */
+  bool pfc_en, llc_en;          /* E82 (K-4): the stages actually switching right now. STANDBY's post-stop warm-hold
+                                    (PMP_WARM_HOLD_MS) keeps pfc_en true well after rs has already dropped to
+                                    MOD_RS_READY, which a profile gating a reboot/bootloader action on rs alone would miss. */
   uint32_t recover_ms;          /* AUTO row: ms until the recovery hold completes (0 when none) */
   uint8_t limiter; uint16_t derate_why; float derate;
   float v_set;                  /* the voltage command in force (canonical, after sanitization) */

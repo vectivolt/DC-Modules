@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
@@ -26,7 +26,7 @@
 | **Control** | one control card in the DC-DC slot (JB); the AC-DC board has only the 40-way harness header (JICA) |
 | **Fast trips** | F.01 line 120 A pk · F.11 tank 140 A pk (one window comparator) · DESAT on every SiC switch |
 | **Performance** | η **96.38 %** at 400 VAC full power (E81 ledger) · peak **97.80 %** · worst LLC Tj **149 °C** outside the registered fold set · MTBF ≈ **410 kh** |
-| **Cost** | **₹31,533 @10k** (₹38,832 @1k) · China RFQ target ₹25,852 — [cost roll-up](../../docs/bom-cost.md) |
+| **Cost** | **₹31,613 @10k** (₹38,931 @1k) · China RFQ target ₹25,920 — [cost roll-up](../../docs/bom-cost.md) |
 | **Release sheets** | `DC-Modules 30kW AC-DC (Vienna PFC)` and `30kW DC-DC (full-bridge LLC)` in [`boards/out-pdf/`](../out-pdf/) · KiCad-5 set `kicad5/DC-Modules-30kw-SHIP.zip` |
 
 ## 1. 🔻 AC-DC board — [`acdc.tsx`](acdc.tsx)
@@ -49,7 +49,7 @@ flowchart LR
 |---|---|---|
 | EMI filter (E68b) | conducted emissions | two 3-φ CM chokes (D7) with a 4.7 µF X2 star stage on each side and two at the converter (12 X2 in all), a Y1 trio at two nodes, and the Rd–Cd damper (2.2 µF X1 + 10 Ω 25 W) that keeps the current loop stable — no DM chokes, as InfyPower ships it; DM margin +32.9 dB |
 | `ViennaPhase` × 3 | one PFC phase | 165 µH-class sendust choke, 3 × 0077908A7, N = 39 ± 1 lot-trim ([D1](../../docs/magnetics.md)); **common-source 750 V 20 mΩ-class SiC pair**, one die per position, clip-mounted on Al2O3 (E68a/E69a; RFQ acceptance IDM ≥ 210 A); two 1200 V / 40 A JBS diodes to the rails; 10 Ω + 100 pF RC snubber **and** an RCD clamp per node |
-| `DriverCh` × 3 | isolated gate channel | NSI6611 (DESAT, Miller clamp, UVLO, soft-off) · split Rg 4.7 / 4.7 Ω (E5) · **+15 / −3 V** from a reinforced QA01C-15 / QA02C-15 bias module (E81 decision 8 — the second source's static maximum; O-11 closed) · two series 1 kV DESAT diodes + **47 pF blank** (E60) + 100 Ω series resistor (R5-B) · gate pull-down · Kelvin return |
+| `DriverCh` × 3 | isolated gate channel | NSI6611 (DESAT, Miller clamp, UVLO, soft-off) · split Rg 4.7 / 4.7 Ω (E5) · **+15 / −3 V** from a reinforced ISO-GBIAS-15-1W / -2W bias module (E82 M-03: a class with a light-load acceptance row, not the non-existent QA01C-15 order code) (E81 decision 8 — the second source's static maximum; O-11 closed) · two series 1 kV DESAT diodes + **47 pF blank** (E60) + 100 Ω series resistor (R5-B) · gate pull-down · Kelvin return |
 | `SplitDcLink` | energy buffer | 2 × 5 × 470 µF / **500 V** snap-in (E81 decision 6: worst continuous half 435 V = 87 % of 500 V; 450 V cans remain a listed −₹300 lever at 97 % of rating), balance resistors, sensed midpoint; window 650–830 V, **hardware OVP 860 V** (E2); **16 × 1 µF bridge entry film + 2.2 µF / 0.33 Ω RC damper** (E81 F-G-1) and per-phase film commutation caps (CB-9) |
 | precharge | inrush control | 33 Ω in **two lines** plus a 2-pole bypass (E14b); t₉₅ ≈ 193 ms on the per-SKU deck |
 | discharge | touch safety | 640 Ω active path with a 1200 V SiC switch, default-OFF (E19): 830 → 60 V in **2.0 s** with AC present |
@@ -104,7 +104,7 @@ module-interconnect audit proves every way lands on real electronics on both sid
 |---|---|
 | **Hardware, µs** | line CT comparators F.01 120 A pk → HRTIMER kill · tank window comparator F.11 140 A pk (both polarities) · DESAT on every SiC switch · bus OVP 860 V · output OVP · driver UVLO (aux collapse holds gates low) |
 | **Safety chain** | watchdog WDO ≡ NRST (a hung brain restarts with enables low) · GATE_EN chains with default-OFF pull-downs across the harness · two-stage relay exclusion |
-| **Supervisory** | the full F.xx ladder ([protection thresholds](../../docs/protection-thresholds.md)), exercised by the 26-scenario suite and the C firmware (**291 checks** under ASan/UBSan) |
+| **Supervisory** | the full F.xx ladder ([protection thresholds](../../docs/protection-thresholds.md)), exercised by the 26-scenario suite and the C firmware (**330 checks** under ASan/UBSan) |
 
 ## 5. Top cost drivers (@10k, from [`bom-30kw.csv`](../../calculations/out/bom-30kw.csv))
 
@@ -125,12 +125,12 @@ Mechanical lines (assembly and EOL ₹1,653 · heatsinks ₹1,305 · the two 440
 [cost roll-up](../../docs/bom-cost.md); the method is in the [BOM guide](../../docs/bom-guide.md).
 
 > [!TIP]
-> **How this page is checked** — `kicad5-verify` (1,682 / 1,682 pins on this pair), `schematic-check`, `polarity-audit` and `module-interconnect-audit` on the built netlists; the cost lines come from the generated `calculations/out/bom-30kw.csv`.
+> **How this page is checked** — `kicad5-verify` (1,708 / 1,708 pins on this pair), `schematic-check`, `polarity-audit` and `module-interconnect-audit` on the built netlists; the cost lines come from the generated `calculations/out/bom-30kw.csv`.
 
 ---
 
 <div align="center">
 <sub><a href="../README-module-family.md">← Module Family</a> &nbsp;·&nbsp; <a href="../../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../../docs/protection-thresholds.md">Protection Thresholds →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

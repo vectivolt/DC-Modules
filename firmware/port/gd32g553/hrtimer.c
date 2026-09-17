@@ -6,9 +6,19 @@
  *   PFC   ST3/4/5 = phases A/B/C, center-aligned (CAM), 50 kHz: CAR = 34560, counter 0→CAR→0. One compare (CMP0) in the SET
  *         crossbar makes the symmetric pulse: high on the up-crossing, low on the down-crossing (UM center-aligned set/reset
  *         rule), so ON fraction = (CAR − CMP0)/CAR around the peak — the hal_test carrier exactly. ADC trigger at BOTH
- *         roll-overs (ADCROVM = 00) = 100 kHz regular sampling; the control interrupt is ST3 CMP3 at CAR/2 (fires mid-slope
- *         on both slopes → 100 kHz, 5 µs after each trigger), so the ISR reads a finished conversion set and its duty lands
+ *         roll-overs (ADCROVM = 00) = 100 kHz regular sampling; the sample set is read one update later and the duty lands
  *         at the next roll-over — the one-update transport delay the law models.
+ *   E82 (M-21) THE CONTROL INTERRUPT IS THE ADC RING'S END OF SEQUENCE, NOT A TIMER COMPARE (adc.c CTL_DMACH).
+ *         The real deadline is not the 10 µs update period: the compare SHADOWS load at the next roll-over, so everything
+ *         the ISR does must finish before it. ST3 CMP3 at CAR/2 fired 5 µs after each trigger and the measured worst-case
+ *         PFC ISR is 4.6–6.1 µs — it could miss, landing the duty one half-period late, with jitter.
+ *         CMP3 could NOT simply be moved earlier. With the counter at 0 at t=0, CAR at t=10 µs and 0 at t=20 µs, a compare
+ *         c is crossed on the up slope at 10·c/CAR and on the down slope at 20 − 10·c/CAR: the delay after the two triggers
+ *         is 10·c/CAR and 10 − 10·c/CAR, EQUAL ONLY AT c = CAR/2. Any earlier constant alternates (3 µs / 7 µs at 0.3·CAR)
+ *         — a 100 kHz jitter on the sample-to-apply path, which is worse than the tight budget it buys.
+ *         The ADC sequences finish 2.51–2.82 µs after the trigger, so the longest ring's DMA half/full-transfer flag is a
+ *         symmetric 100 kHz event ≈ 7.2 µs before the roll-over. The sampling instants and the transport delay are
+ *         UNCHANGED — the trigger, the shadow update and the law's 15 µs model all stay as they were.
  *   LLC tick  the master timer runs at 10 kHz (CNTCKDIV = 101 → CAR = 21600) and its repetition interrupt is the LLC control
  *         ISR; master CMP0 feeds ADCTRIG1 (reserved for slower sequences if a port build wants a second rate).
  *   Faults  Table 25-21: FLT0 ← CMP1 (I_B0) · FLT1 ← CMP3 (I_A0, E81 pin swap) · FLT2 ← PB10 pin (wire-OR, active LOW) ·
@@ -29,7 +39,11 @@
 #define DT_DIV    2u
 #define DT_STEP_S 2.3148148e-9f
 #define DT_MAX    388u            /* 898.1 ns — the llc.h ceiling */
-#define DT_MIN    26u             /* 60.2 ns — the llc.h floor */
+/* E82 (M-15/T-12): the floor is 120 ns, not 60. The NSI66x1A's propagation delay is specified 70 ns min / 80 ns typ /
+   110 ns max with NO part-to-part matching figure, so the two drivers of one leg can differ by up to 40 ns; R_g,off 0 Ω
+   against R_g,on 4.7 Ω adds device-level asymmetry worth ≈ 20 ns. A 60 ns programmed dead time does not survive that.
+   Keep this in step with llc.h's LLC_DT_MIN_S — e81_test.c asserts both. */
+#define DT_MIN    52u             /* 120.4 ns — the llc.h floor */
 
 static const uint8_t PFC_ST[3] = { 3u, 4u, 5u };
 
@@ -41,7 +55,13 @@ static void dac_write(uint8_t inst, uint8_t out, uint16_t counts) {
  * CMP7. CMP3's only internal-DAC references are DAC2_OUT1 (MSEL 100) and DAC0_OUT0 (MSEL 101); DAC0_OUT0 belongs to CMP0/VOUT
  * and CMP0/CMP2 between them own both of {DAC2_OUT0, DAC0_OUT0}, so CMP3 must take DAC2_OUT1, I_B0/CMP1 moves to its other
  * option DAC0_OUT1 (MSEL 101), and the HW-REC-1 clamp value moves to DAC3_OUT1 — freed by CMP7 leaving. Five independent
- * thresholds, no sharing (F-D-10's bipolar F.01 needs each phase's own sign).
+ * thresholds, no sharing.
+ * E82 (C-02): every comparator here is non-inverting (CMPxPL = 0, UM §19.4 "0: Output is not inverted") into a fault input
+ * configured ACTIVE HIGH, so a threshold BELOW the 1.65 V AVMID rest level is asserted during normal operation. E81's
+ * bipolar F.01 wrote exactly such a threshold whenever a phase current went negative and would have latched a hardware
+ * fault within one line half-cycle of every boot. The line-OC references are POSITIVE-ONLY again; the negative half is
+ * app.c's 100 kHz software |i| trip, and a genuine negative fault of 2·I_trip or more still reaches a comparator through
+ * Σi = 0 on the other two phases. cmpdac_thresholds() below is the ONLY writer of these DACs, from the 1 ms tick.
  * E81 allocation: CMP3/I_A0 ← DAC2_OUT1 · CMP1/I_B0 ← DAC0_OUT1 · CMP2/I_C0 ← DAC2_OUT0 · CMP4/VBUS ← DAC3_OUT0 ·
  * CMP0/VOUT ← DAC0_OUT0 (MODE = 011 keeps PA4/PA5 analog) · the HW-REC-1 clamp value ← DAC3_OUT1 */
 void cmpdac_init(void) {
@@ -91,6 +111,13 @@ static void fault_cfg(void) {
      6/7/8. Reusing the STxFLTCTL mask left FLT5IE (bus OVP) clear, so F.03 never raised IRQ76 and hrtimer_pfc_apply re-armed
      the outputs every 10 µs. The decoder below and hrtimer_rearm() use the same INTF map. */
   HRT_INTEN = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5) /* SYSFLT */ | BIT(6) /* FLT5 */;
+  /* E82 (D-09): freeze the six fault inputs. FLTxINPROT is bit 7 of each channel's byte (UM §25.5.3: PROT 7 · FC 6:3 ·
+     SRC0 2 · P 1 · EN 0) and is write-once — "this bit-field cannot be modified when FLTxINPROT has been programmed".
+     The hardware protection layer exists because firmware can be wrong, so the firmware must not be able to unarm it:
+     nothing after this point has any business rewriting a fault source, polarity or filter. hrtimer_rearm() clears INTF
+     and re-enables outputs, which these bits do not touch. STxFLTCTL is deliberately left writable — see NOTES. */
+  HRT_FLTINCFG0 |= BIT(7) | BIT(15) | BIT(23) | BIT(31);
+  HRT_FLTINCFG1 |= BIT(7) | BIT(15);
 }
 
 void hrtimer_init(void) {
@@ -123,8 +150,7 @@ void hrtimer_init(void) {
     HRT_STCAR(x) = PFC_CAR;
     HRT_STCMP0V(x) = PFC_CAR;                 /* ON = 0 until the app commands */
   }
-  HRT_STCMP3V(3) = PFC_CAR / 2u;              /* mid-slope: the 100 kHz control interrupt, 5 µs after each sample trigger */
-  HRT_STDMAINTEN(3) = BIT(3);                 /* CMP3IE */
+  /* E82 (M-21): ST3 CMP3 and its interrupt are gone — the control ISR is adc.c's CTL_DMACH end-of-sequence (header) */
 
   /* ---- master: 10 kHz LLC control tick */
   HRT_MTCAR = MT_CAR;

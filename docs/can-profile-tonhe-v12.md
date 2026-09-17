@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/conformance-spec_examples_byte--exact-2ea44f?style=flat-square" alt="conformance: spec examples byte-exact"/>
 </p>
@@ -27,8 +27,7 @@
 
 > [!IMPORTANT]
 > **E81 conformance re-check against the vendor PDF** (the V1.2 document and the GWBZ, UUGreen, NIUERA, Maxwell and ENR protocols
-> were read in full): **24 rules conform**, **3 deviate on purpose** (zero volts = no setpoint rather than V_min; the address-conflict
-> stop; fan fault derates instead of shutting down), **1 vendor frame is named but never defined** (the over/under-voltage setting —
+> were read in full): **24 rules conform**, **4 deviate on purpose** (zero volts = no setpoint rather than V_min; the address-conflict stop; fan fault derates instead of shutting down; fault-word bit 8 also covers F.38, the split-DC-link half-bank overvoltage protection with no vendor bit of its own), **1 vendor frame is named but never defined** (the over/under-voltage setting —
 > now counted and logged instead of silently dropped), and the eight TH-AMB rows below were re-resolved against the page text.
 > GWBZ is a different protocol, not a V1.2 revision — V1.2 is what ships. E81 changes to the profile: the address-set command is
 > deferred to standby instead of refused while delivering; the on-change trigger gap is 200 ms (a 24-module fault storm at
@@ -115,7 +114,7 @@ The periodic frames are phased by address (37 ms × address, modulo 500 ms), so 
 | 5 | module temperature high | F.22 |
 | 6 | fan fault | a failed fan or fan derate — this module derates instead of stopping |
 | 7 | hardware fault | F.11 · F.12 · F.17 · F.19 · F.20 · F.29 · F.30 · F.32 · F.33 · F.34 · F.35 · F.36 · SAFE · the umbrella rules |
-| 8 | bus exception | F.05 |
+| 8 | bus exception | F.05 · F.38 (E82 (K-1): the split-DC-link half-bank overvoltage protection added at E80 has no vendor-defined bit of its own, so it rides this one) |
 | 9 | SCI communication exception | F.27 — reserved; one MCU runs both stages, never set |
 | 10 | discharge fault | F.21 |
 | 11 | PFC shut down by an exception | F.01 · F.02 · F.03 · F.05 · F.06 |
@@ -229,5 +228,5 @@ T-46 in the [firmware verification plan](firmware-verification.md).
 <div align="center">
 <sub><a href="can-protocol.md">← VMP 2.0 Native CAN Protocol</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../boards/README.md">Boards →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -19,7 +19,7 @@ import {
   ViennaPhase, LlcHalfBridgeLeg, LlcTank, BankFilter, SplitDcLink, SeriesParallelRelayMatrix,
   IsoVSense, Bias5Module, AnalogMid, F11Window, CtSensor, NtcInput, ConfigHmi, ControlMcu, CoilDriver,
   Interconnect40, AuxPower, FanPort, IsolatedCan, OutputShunt, SafetyChain, SwdPort,
-  DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP,
+  DischargeCtl, PvGateDrive, Rail3V3, StudFP, RelayMFP, FilmBoxFP, DiscFP, Cm3FP, SnapInFP, TO247_2,
   CardConnector,
 } from "../power-primitives/cells";
 import { cardMap, CARD_MCU_PINS, CARD_INTERNAL } from "./control-card";
@@ -360,7 +360,7 @@ return (
           reference boards): duplicate React keys can silently drop siblings, and the fixed x/sx
           stacked bank 2/3 on bank 1. Offsets are placement-phase coarse; the key is the fix. */}
       {dcBanks.map(([n, k]) => (
-        <SplitDcLink key={k} id={`${k}`} nPerHalf={n} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
+        <SplitDcLink key={k} id={`${k}`} nPerHalf={n} bal={k === 0} dcp="net.DCP" dcn="net.DCN" mid="net.MID"
           x={14 + k * 96} y={-62} sx={10 + k * 14} sy={-62} />
       ))}
 
@@ -381,12 +381,16 @@ return (
       <trace from=".QDISF > .G" to="net.G_QDIS" />
 
       {/* sensing (E25: every HV sense isolated; SELV control domain preserved).
-          AC senses reference a 3×(2×47 k) artificial star (HR-20: 2-series halves per-element
-          V/W — 0.46 W & 152 Vrms each); bus senses reference DCN. NOTE: the star doubles as the
-          X-cap bleed path (τ ≈ 0.42 s) — do not delete without replacing that function. */}
+          AC senses reference a 3×(2×33 k) artificial star (HR-20: 2-series halves per-element
+          V/W); bus senses reference DCN. NOTE: the star doubles as the X-cap bleed path — do not
+          delete without replacing that function.
+          E82 (A1-05): 47 k → 33 k. E68 added a third X stage (18.8 µF★ + the damper per phase) and the
+          star was never re-sized: the terminals took 5.3 s (30/40 kW) / 6.4 s (50 kW) to fall below
+          60 V against the 5 s limit for permanently connected equipment. 33 k: ≈ 3.7 / 4.5 s. Each
+          element 0.57 W at 475 VAC (29 % of the 2 W part), +0.5 W per phase standing. ₹0. */}
       {[1, 2, 3].map(i => [
-        <resistor key={`nsa${i}`} name={`RNS${i}A`} resistance="47k" footprint="2512" pcbX={P.rnsX[0]} pcbY={P.rnsY - i * 7} schX={56} schY={32 - i * 1.6} schSectionName="SENSE" />,
-        <resistor key={`nsb${i}`} name={`RNS${i}B`} resistance="47k" footprint="2512" pcbX={P.rnsX[1]} pcbY={P.rnsY - i * 7} schX={58.4} schY={32 - i * 1.6} schSectionName="SENSE" />,
+        <resistor key={`nsa${i}`} name={`RNS${i}A`} resistance="33k" footprint="2512" pcbX={P.rnsX[0]} pcbY={P.rnsY - i * 7} schX={56} schY={32 - i * 1.6} schSectionName="SENSE" />,
+        <resistor key={`nsb${i}`} name={`RNS${i}B`} resistance="33k" footprint="2512" pcbX={P.rnsX[1]} pcbY={P.rnsY - i * 7} schX={58.4} schY={32 - i * 1.6} schSectionName="SENSE" />,
       ])}
       {[1, 2, 3].map(i => [
         <trace key={`nt1${i}`} from={`.RNS${i}A > .pin1`} to={`net.AC${i}`} schDisplayLabel={`AC${i}`} />,
@@ -500,7 +504,7 @@ export const DcDcBoard = ({ channels, w, h, pw = 30, air = false }: { channels: 
   // E68 (clip mount, 0.8 K/W): 30 kW one LLC die per position (two JBS stay — one cost 135 W); 40/50 kW two LLC dies; the 50 kW air twin drops its third
   // E81: the 30 kW SINGLE die is KEPT (lead decision, cost ceiling) — the turn-off snubber below is
   // what takes it off the cliff, not a second die. `snub` = the per-die 1 kV C0G turn-off capacitor;
-  // its value MIRRORS tanks.mjs `cs` — **1 nF at 30 kW, 680 pF at 40 kW, 1 nF at 50 kW L and A**
+  // its value MIRRORS tanks.mjs `cs` — **330 pF at 30 kW, 680 pF at 40 kW, 1 nF at 50 kW L and A**
   // after the E81 DPT run at the 5 nH loop (680 pF is the 40 kW knee: k_off 5.20 nJ/(V·A), 83.8 %
   // of 1200 V, 379 ns of dead time; 1 nF rings that SKU's PAR500 corner to 91 %) — and
   // verify-independent carries a [SYNC]
@@ -509,7 +513,7 @@ export const DcDcBoard = ({ channels, w, h, pw = 30, air = false }: { channels: 
   // conductor band, not the 41 mm window): 5.16 → 5.00 · 4.07 → 3.99 · 3.28 → 3.20 µH. Total tank
   // Lr is UNCHANGED (5.6 / 4.35 / 3.56 µH), so no simulation fingerprint moves.
   const tank = pw === 50 ? { crN: 11, lr: "3.20uH", burden: "0.30", dPar: 2, fetPar: 2, snub: "1nF" }
-    : pw === 40 ? { crN: 9, lr: "3.99uH", burden: "0.36", dPar: 2, fetPar: 2, snub: "680pF" } : { crN: 7, lr: "5.00uH", burden: "0.47", dPar: 2, fetPar: 1, snub: "330pF" };   // E81 close-out: tanks.mjs cs — the weak leg's ZVS window and the 85 % V_ds line bound the snubber (330 / 470 / 470 pF)
+    : pw === 40 ? { crN: 9, lr: "3.99uH", burden: "0.36", dPar: 2, fetPar: 2, snub: "680pF" } : { crN: 7, lr: "5.00uH", burden: "0.47", dPar: 2, fetPar: 1, snub: "330pF" };   // E81 close-out: tanks.mjs cs — the weak leg's ZVS window and the 85 % V_ds line bound the snubber (330 / 680 / 1000 pF)
   // E81 (F-G-1 FIX-D · F-C-4): DC-link ENTRY FILM COUNT — one constant, one place. 4 × 1 µF put the
   // film bank on a 268–425 kHz anti-resonance with the stud loop, inside the 280–406 kHz 2·fsw band:
   // simulated 12.2 A rms and ~9.5 W in each 470 µF can (2.1–4.6× its HF rating, 5–7× its thermal
@@ -619,11 +623,13 @@ return (
       {/* E81 (F-G-1 FIX-D): the damping half of the fix — ONE 2.2 µF/1100 V film in series with
           0.33 Ω, across the same rails, AT THE BRIDGE. Film alone (FIX-B) drops the can current to
           0.80 A but leaves a 209 V bus ring at the 764 V corner; with the RC the ring falls to 37 V
-          and the can to 0.77 A. The resistor takes the ring energy, so it is a ≥3 W pulse-rated
-          part, not a chip: simulated 1.8 W at the PSM corner. Layout: this pair and the CF# bank
-          share the bridge's own loop — the damper is worthless on a long stub. */}
+          and the can to 0.77 A. The resistor takes the ring energy. E82 (F-H1-7): that energy is
+          7 / 16 / 36 W worst per SKU, not the 1.8 W E81 quoted — every point at f_max puts 2·f_sw
+          on the entry-film / stud resonance — so it is a ≥ 50 W thick-film TO-247 part clipped to
+          the DC-DC heatsink with the dies, non-inductive. Layout: this pair and the CF# bank share
+          the bridge's own loop — the damper is worthless on a long stub. */}
       <capacitor name="CFDMP" capacitance="2.2uF" footprint={FilmBoxFP(27.5)} pcbX={Q.cfX + 68} pcbY={Q.cfY} schX={6 + 8 * 2.4} schY={44} schSectionName="INPUT" />
-      <chip name="RFDMP" footprint={FilmBoxFP(25)} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={Q.cfX + 68} pcbY={Q.cfY - 26} schX={6 + 8 * 2.4} schY={41} schSectionName="INPUT" />
+      <chip name="RFDMP" footprint={<TO247_2 />} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={Q.cfX + 68} pcbY={Q.cfY - 26} schX={6 + 8 * 2.4} schY={41} schSectionName="INPUT" />
       <trace from=".CFDMP > .pin1" to="net.DCP" schDisplayLabel="DCP" />
       <trace from=".CFDMP > .pin2" to=".RFDMP > .A" />
       <trace from=".RFDMP > .B" to="net.DCN" schDisplayLabel="DCN" />
@@ -751,6 +757,20 @@ return (
       <capacitor name="COF2" capacitance="4.7uF" footprint={FilmBoxFP(37.5)} pcbX={Q.cofX} pcbY={Q.cof[1]} schX={88.5} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="CYO1" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 40} schX={91} schY={21.5} schSectionName="OUTPUT" />
       <capacitor name="CYO2" capacitance="4.7nF" footprint={FilmBoxFP(10)} pcbX={w / 2 - 60} pcbY={-h / 2 + 30} schX={93.5} schY={21.5} schSectionName="OUTPUT" />
+      {/* E82 (A1-04): the OUTPUT studs had no discharge path. DOUT blocks the bank bleeders, so the only load on COF1/2
+          (9.4 µF) was the 3.8 MΩ sense divider: τ 36 s, 1000 V → 60 V in ≈ 101 s with 4.7 J on the studs. Three 150 k
+          HV 2512 in series: τ = 4.2 s, < 60 V in ≈ 12 s from 1000 V (≈ 9 s from 500 V); 2.2 W at 1000 V (0.74 W and 333 V
+          per element). Seven-question test: prevents a shock hazard on a disconnected/serviced module · firmware cannot
+          (the diode blocks every commanded path) · seconds · certain × severe · ₹9 · −0.007 % η at 1000 V · the
+          commercial reference carries an ACTIVE output discharge (4 × 75 Ω + 1500 V FET) — the passive form is the
+          cheapest that meets the need. ST_DISCH now also waits for vout < 60 V (firmware). */}
+      {[1, 2, 3].map(i => (
+        <resistor key={`rbo${i}`} name={`RBO${i}`} resistance="150k" footprint="2512" pcbX={Q.outX - 30} pcbY={Q.out[0] - (i - 1) * 9} schX={95.5} schY={28.5 - i * 1.5} schSectionName="OUTPUT" />
+      ))}
+      <trace from=".RBO1 > .pin1" to="net.OUTP" schDisplayLabel="OUTP" />
+      <trace from=".RBO1 > .pin2" to=".RBO2 > .pin1" />
+      <trace from=".RBO2 > .pin2" to=".RBO3 > .pin1" />
+      <trace from=".RBO3 > .pin2" to="net.OUTN" schDisplayLabel="OUTN" />
       <chip name="JOUTP" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={Q.outX} pcbY={Q.out[0]} schX={98} schY={28} schSectionName="OUTPUT" />
       <chip name="JOUTN" footprint={<StudFP />} pinLabels={{ pin1: "P" }} pcbX={Q.outX} pcbY={Q.out[1]} schX={98} schY={25} schSectionName="OUTPUT" />
       <trace from=".JOUTP > .P" to="net.OUTP" schDisplayLabel="OUTP" />
@@ -838,6 +858,17 @@ export const ControlCard = ({ w = 120, h = 80 }: { w?: number; h?: number }) => 
       {Object.entries(CARD_MCU_PINS).map(([way, pin]) => (
         <trace key={way} from={`.UCARD > .pin${pin}`} to={`net.${way}`} schDisplayLabel={way} />
       ))}
+      {/* E82 (A2-09): 1 nF C0G AT every analogue pin. Twenty-two channels reach this MCU over a card connector — twelve of
+          them after a 0.5–1 m harness with a 50 kHz PWM way beside the current-sense ways — and the SAR samples each for
+          132 ns: without a local reservoir the conversion reads the line's ringing and the kick-back of the previous
+          channel (the E81 V15 finding, generalised). Every source already has its series element (CT 200 Ω, iso-amp
+          100 Ω, NTC 10 k, dividers) so this is the capacitor half of an RC that was never completed. Comparator paths
+          (F.01/F.03/F.13) see τ ≤ 0.4 µs. 22 × ₹0.2. */}
+      {Object.keys(CARD_MCU_PINS).filter(w => /^(AIN|ANA|TSNS)\d+$/.test(w)).map((w, i) => [
+        <capacitor key={`c${w}`} name={`CADC${i}`} capacitance="1nF" footprint="0402" pcbX={-50 + (i % 11) * 5} pcbY={-6 - Math.floor(i / 11) * 4} schX={-14 + (i % 11) * 2.4} schY={-14 - Math.floor(i / 11) * 1.6} schSectionName="CONTROL" />,
+        <trace key={`ca${w}`} from={`.CADC${i} > .pin1`} to={`net.${w}`} schDisplayLabel={w} />,
+        <trace key={`cb${w}`} from={`.CADC${i} > .pin2`} to="net.AGND" schDisplayLabel="AGND" />,
+      ])}
       {/* Card-only MCU pins. Without these the MCU has no watchdog kick, no boot strap and no
           debug port -- all three were left behind on the power boards when the MCU moved. */}
       {Object.entries(CARD_INTERNAL).map(([sig, [pin, net]]) => (

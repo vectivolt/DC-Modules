@@ -6,18 +6,19 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 > [!NOTE]
 > **Purpose** — the platform in one read: the product family, the power path stage by stage, the control plane,
 > the protection layers, the auxiliary rails and the thermal snapshot. Values are the frozen set in the
-> [decision register](assumptions.md) (E1–E81), and every number reproduces from `calculations/run-all.sh`.
+> [decision register](assumptions.md) (E1–E82), and every number reproduces from `calculations/run-all.sh`.
 >
 > **Gate coupling** — `verify-independent` (243/243) walks the built netlists behind every structural claim on this
-> page; `loss-budget`, `envelope-grid` and `stress-audit` own the numbers in §6. Where this page and the
-> [E81 validation report](e81-validation-report.md) differ, the E81 report wins.
+> page; `loss-budget`, `envelope-grid` and `stress-audit` own the numbers in §6, and `fw-constants-sync` (28 rows, E82)
+> holds the firmware constants against them. Where this page and the [E82 validation report](e82-validation-report.md)
+> differ, the E82 report wins; E81 remains the register for everything E82 did not move.
 
 ## At a glance
 
@@ -57,13 +58,13 @@ flowchart LR
 
 | Module | Silicon relative to 30 kW | Cooling | ₹ @10k · ₹/kW |
 |---|---|---|---|
-| **30 kW** | baseline — one 750 V 20 mΩ class die per PFC position, **one** SG2M023120LJ per LLC position (E81 decision 2: the second die costs 5.2 % of the module, over the ≤ 5 % ceiling; the 500 V series hot corner folds to 86 % instead) | air, 3 fans (E81) | 31,533 · 1,051 |
-| **40 kW** (E41) | 750 V 15 mΩ class PFC dies; two SG2M023120LJ per LLC position (the fault-pulse rule, E69a-2) | air, 3 fans (E81) | 35,970 · 899 |
-| **50 kW liquid** (E42) | B3M010C075Z PFC dies; two SG2M023120LJ per LLC position | **liquid**, 0 fans | 42,628 · 853 |
-| **50 kW air** (E44) | electrically identical to the liquid module since E68a | air, 4 fans | 40,555 · **811 — cheapest** |
+| **30 kW** | baseline — one 750 V 20 mΩ class die per PFC position, **one** SG2M023120LJ per LLC position (E81 decision 2: the second die costs 5.2 % of the module, over the ≤ 5 % ceiling; the 500 V series hot corner folds to 93–75 % instead) | air, 3 fans (E81) | 31,613 · 1,054 |
+| **40 kW** (E41) | 750 V 15 mΩ class PFC dies; two SG2M023120LJ per LLC position (the fault-pulse rule, E69a-2) | air, 3 fans (E81) | 36,103 · 903 |
+| **50 kW liquid** (E42) | B3M010C075Z PFC dies; two SG2M023120LJ per LLC position | **liquid**, 0 fans | 42,761 · 855 |
+| **50 kW air** (E44) | electrically identical to the liquid module since E68a | air, 4 fans | 40,688 · **814 — cheapest** |
 
 Costs are the India 10k basis generated in [`bom-cost.md`](bom-cost.md), which also carries the China RFQ-target column
-(E69f basis, regenerated at E81: ₹25,852 / 29,418 / 34,922 / 33,142) and the 2U construction scenario (E69e); the family rationale is in
+(E69f basis, regenerated at E82: ₹25,920 / 29,520 / 35,023 / 33,243) and the 2U construction scenario (E69e); the family rationale is in
 [module family](../boards/README-module-family.md).
 
 ## 2. The power path, stage by stage
@@ -126,11 +127,14 @@ flowchart LR
   mode (LOW / HIGH / AUTO, CAN force-LV / force-HV) is latched in standby; relays switch at zero current behind the
   output diode, and AUTO crosses PAR → SER above 500 V and back below 480 V (FW-R12 / FW-R13).
 - **Supervisory firmware** (`firmware/`) is the normative logic: 26 scenarios, group share law, codec, fuzz and invariants —
-  **291 checks under ASan/UBSan** across seven binaries ([firmware guide](firmware-guide.md)). **E78:** three layers — protocol profiles ([VMP 2.0](can-protocol.md), [TonHe V1.2](can-profile-tonhe-v12.md)) → one canonical model → the power core; `host_sim` 121 · `ctl_test` 19 · `proto_test` 40 ([firmware architecture](firmware-architecture.md)). **E79:** the portable real-time HAL (`firmware/hal/`) — the Vienna law, the LLC modulator with its ZVS floor, measurement, NVM and the application — proven on cycle-by-cycle plants (`hal_test` 37 · `app_test` 24); **E80–E81:** the signed boot chain and the review's own checks (`boot_test` 21 · `e81_test` 29).
-- **MCU headroom is measured, not estimated (E81).** The earlier "≈ 35 % CPU by estimate" was replaced by a
+  **330 checks under ASan/UBSan** across seven binaries ([firmware guide](firmware-guide.md)). **E78:** three layers — protocol profiles ([VMP 2.0](can-protocol.md), [TonHe V1.2](can-profile-tonhe-v12.md)) → one canonical model → the power core; `host_sim` 122 · `ctl_test` 20 · `proto_test` 42 ([firmware architecture](firmware-architecture.md)). **E79:** the portable real-time HAL (`firmware/hal/`) — the Vienna law, the LLC modulator with its ZVS floor, measurement, NVM, the E82 junction observer and the application — proven on cycle-by-cycle plants (`hal_test` 45 · `app_test` 29); **E80–E82:** the signed boot chain on a row-granular program-once flash model and the reviews' own checks (`boot_test` 22 · `e81_test` 50).
+- **MCU headroom is measured, not estimated (E81, re-based at E82).** The earlier "≈ 35 % CPU by estimate" was replaced by a
   disassembly count: the worst PFC ISR is **5.8–7.4 µs before the trims, 5.8 µs static after them** (1,250 cycles at
-  216 MHz) against a **≤ 5 µs STOP line measured on silicon at T-64**. The single-update fallback is **forbidden on the
-  40 / 50 kW SKUs**.
+  216 MHz). **E82 (M-21) moved the control interrupt off a timer compare onto the ADC end-of-sequence DMA transfer**, so
+  it now starts ≈ 2.8 µs after the trigger and has **≈ 7.2 µs to the roll-over that loads the compare shadows**, against
+  5.0 µs before — a centre-aligned compare is crossed twice per period and is equal-spaced only at CAR/2, which is why
+  the DMA form was taken instead of moving the compare. T-64 measures both with DWT. The single-update fallback is
+  **forbidden on the 40 / 50 kW SKUs**.
 - **Pin budget:** 74 of 82 usable MCU pins, **8 spare**, 87 of 88 connector ways, 22 analog channels — the arithmetic is in [control-card scope](control-card-scope.md).
 
 ## 4. Protection — three layers
@@ -171,28 +175,32 @@ are [current coordination](current-coordination.md).
 | **V24** | aux secondary | relay coils, fans |
 | **V15** | aux secondary | driver bias modules, card feed |
 | **3.3 V** | sync buck per board (100 k / 27 k EN dividers, R4-4) | local logic and senses |
-| **Isolated bias** | reinforced-class modules, **+15 / −3 V** on every module (E81 decision 8: +18 V exceeds the second source's static maximum) — **QA01C-15**, and the 2 W **QA02C-15** class wherever a channel drives two dies (40 / 50 kW). The catalogue rails ARE the design rails (O-11 closed at E45, reconfirmed E80; −3 V keeps 2 V to the SiC gate's −5 V conditional floor, scoped at DPT) | every floating driver and sense domain |
+| **Isolated bias** | reinforced-class modules, **+15 / −3 V** on every module (E81 decision 8: +18 V exceeds the second source's static maximum) — a CLASS line, **ISO-GBIAS-15-1W** (and the 2 W **ISO-GBIAS-15-2W** wherever a channel drives two dies, 40 / 50 kW), with the acceptance row *+15 V ±5 % at 20–100 % load, ≤ +17.5 V at 5 % load* — E82 (M-03) retired the order code "QA01C-15", which does not exist in MORNSUN's catalogue; the +15 vs +18 V variant follows the frozen MOSFET's recommended V_GS. The catalogue rails ARE the design rails (O-11 closed at E45, reconfirmed E80; −3 V keeps 2 V to the SiC gate's −5 V conditional floor, scoped at DPT) | every floating driver and sense domain |
 
 ## 6. Efficiency and thermal snapshot
 
 | | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---:|---:|---:|---:|
-| η at 400 VAC, full load (E81 ledger — output diode, LLC turn-off and the DPT switching share included) | 96.38 % | 96.35 % | 96.32 % | 96.25 % |
+| η at 400 VAC, full load (E81 ledger — output diode, LLC turn-off and the DPT switching share included; unchanged at E82) | 96.38 % | 96.35 % | 96.32 % | 96.25 % |
 | Peak η (E81 grid) | 97.80 % | 97.73 % | 97.72 % | 97.72 % |
 | Loss at rated (E81 ledger) | 1,126 W | 1,507 W | 1,910 W | 1,950 W |
-| Worst LLC Tj outside the registered fold set (E81 grid) | 149 °C | 149 °C | 135 °C | 148 °C |
-| Worst Vienna Tj · secondary JBS Tj (E81 grid) | 117 · 92 °C | 135 · 108 °C | 120 · 102 °C | **147** · 118 °C |
-| Mount basis (E68a) | 0.8 K/W · 70 °C base | 0.8 K/W · 70 °C | 0.65 K/W · 65 °C plate | 0.8 K/W · 70 °C |
+| Worst LLC Tj on the grid, folds applied (E82) | **150 °C** | 145 °C | 139 °C | **150 °C** |
+| Worst Vienna Tj · secondary JBS Tj (E82 grid) | 128 · 90 °C | **149** · 108 °C | 130 · 102 °C | **149** · 118 °C |
+| Mount basis (E68a, air base per SKU at E81 F-C-2) | 0.8 K/W · 74 °C base | 0.8 K/W · 75 °C | 0.65 K/W · 65 °C plate | 0.8 K/W · 77 °C |
 
 > [!WARNING]
-> **The grid is not fold-free (E81).** Every one of the 4,536 points either passes or is a **registered fold**: the
-> 500 V series full-load hot corner derates (30 kW 86 %, 75 % at ≥ 450 VAC hot, 93 % at 25 °C; 50 kW-air 86 % at
-> ≥ 450 VAC hot; 30 kW 150–250 V hot 93 %), and the **150 V phase-shift corner on the 40 / 50 kW SKUs is registered
-> NOT SUSTAINABLE** (F-L-1) — sustained operation below 200 V on those SKUs is a documented specification limit until
-> E82-1. The 30 kW serves that corner folded to 93 %.
+> **The grid is not fold-free, but nothing on it fails (E82).** All 4,536 points pass — E81 carried 324 FAIL rows,
+> every one of them the 150 V phase-shift corner on the two-die SKUs, and every one is gone. What remains is a **fold
+> map**, all of it at full load: the 500 V series hot corner (30 kW 93 % at 285 VAC down to **75 %** at 450–475 VAC,
+> 93 % at 25 °C · 40 kW 93 % at 450–475 VAC · 50 kW-air 93 % at 330–400, 86 % at 450, 80 % at 475 VAC); the LOW-mode
+> 150–300 V corners (30 kW 93 %, 86 % at 475 VAC · 50 kW-air 93 → 80 %); and, new at E82, the **Vienna die at low line
+> on an 830 V link** (40 kW 93 % at 285 VAC · 50 kW-air 86 % at 285, 93 % at 300–330 VAC) once the grid carries the
+> modulation-index term and the datasheet R_DS(on) slope. The 50 kW liquid folds nowhere. **E81's F-L-1
+> "NOT SUSTAINABLE" limit below 200 V is withdrawn** — it was a weak-leg dead time computed on the magnetising
+> current, a per-die loss counted twice, and a fold no firmware implemented ([E82 C-11](e82-validation-report.md#3-critical-findings-and-what-was-done)).
 
 Every device sits inside its own acceptance line (`stress-audit.mjs`, in run-all). Details:
-[thermal report](thermal-report.md) · [E81 recalculated numbers](e81-validation-report.md#6-recalculated-numbers).
+[thermal report](thermal-report.md) · [E82 recalculated numbers](e82-validation-report.md#7-recalculated-numbers).
 
 ## 7. How the platform got here
 
@@ -209,6 +217,7 @@ timeline
   Per-module pages · E70–E73 : generated BOM and magnetics page per module, PyOpenMagnetics second opinion, four modules only, magnetics review and the inrush closure
   Firmware and production · E74–E80 : external reviews answered, profile-owned timeouts, the portable real-time HAL, the signed A/B boot chain and the register-level GD32G553 port
   Full-system validation · E81 : nine independent reviews of the module as one system — adaptive dead time, turn-off snubbers, DC-link entry film, CM budget, a registered fold map, READY FOR LOW-POWER TEST
+  Independent validation · E82 : twelve reviews under "nothing here is evidence" — 11 CRITICAL found, ten fixed (all nine firmware ones at ₹0; C-10 waits on the layout); weak-leg dead time, a junction observer that folds and declines, positive-only F.01, row-clean journals, a token-purse watchdog, READY FOR BENCH BRING-UP
 ```
 
 Each decision is recorded row by row in the [decision register](assumptions.md); the git history keeps every earlier record.
@@ -221,5 +230,5 @@ Each decision is recorded row by row in the [decision register](assumptions.md);
 <div align="center">
 <sub><a href="README.md">← Documentation Hub</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="assumptions.md">Decision Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

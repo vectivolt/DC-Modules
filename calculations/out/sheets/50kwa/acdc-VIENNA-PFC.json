@@ -518,9 +518,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "DA0T",
@@ -619,8 +619,8 @@
    ],
    "nc_pins": [],
    "value": "10",
-   "query": "R2512-10R-2W 10 Ω 2512 2 W ",
-   "mpn": "R2512-10R-2W"
+   "query": "R2512-10R-3W-PULSE 10 Ω 2512 **3 W pulse-proof** ",
+   "mpn": "R2512-10R-3W-PULSE"
   },
   {
    "designator": "CA0SN",
@@ -1223,9 +1223,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "DB0T",
@@ -1324,8 +1324,8 @@
    ],
    "nc_pins": [],
    "value": "10",
-   "query": "R2512-10R-2W 10 Ω 2512 2 W ",
-   "mpn": "R2512-10R-2W"
+   "query": "R2512-10R-3W-PULSE 10 Ω 2512 **3 W pulse-proof** ",
+   "mpn": "R2512-10R-3W-PULSE"
   },
   {
    "designator": "CB0SN",
@@ -1928,9 +1928,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "DC0T",
@@ -2029,8 +2029,8 @@
    ],
    "nc_pins": [],
    "value": "10",
-   "query": "R2512-10R-2W 10 Ω 2512 2 W ",
-   "mpn": "R2512-10R-2W"
+   "query": "R2512-10R-3W-PULSE 10 Ω 2512 **3 W pulse-proof** ",
+   "mpn": "R2512-10R-3W-PULSE"
   },
   {
    "designator": "CC0SN",

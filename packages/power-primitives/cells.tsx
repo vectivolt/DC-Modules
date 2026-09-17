@@ -694,7 +694,7 @@ export const LlcTank = ({ crN = 9, crVal = "33nF", lr = "4.07uH", ctBurden = "0.
 };
 
 // ---------- split DC link
-export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, bal = true, sec = "DCLINK", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`dclink${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope (2·n + 6) × 6: top half-bank row above the midpoint, bottom row below,
         balance dividers in their own column at right. */}
@@ -705,29 +705,36 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
       <capacitor key={`b${i}`} name={`CDB${id}${i}`} capacitance="470uF" footprint={<SnapInFP />} pcbX={i * 40} pcbY={-45} schX={i * 2} schY={-1.4} schSectionName={sec} />
     ))}
     {/* HR-20: 2-series HV per half — halves per-element V (≈208 V) and W.
-        E81 (F-A-7): 47 k → 22 k. At 47 k the balance current is 4.4 mA per half against a hot
-        can-to-can leakage IMBALANCE of up to ~17 mA (5–8 cans per half, ±30 % spread, 8–10× the
-        20 °C leakage at 85 °C) — the midpoint rails in ~14 s whenever the link sits charged and
-        gated off, which is exactly the F.21 "AC present, discharge impossible" state, and F.06 can
-        only latch, not correct. 22 k: 9.4 mA bleed, 1.96 W per element on the 3 W part (65 %, was
-        31 %), +4.1 W standing per module. Paired with the RFQ leakage line on the can (E81:
-        ≤ 0.5 mA per can at 85 °C / 415 V, graded per half). */}
-    <resistor name={`RBALT${id}A`} resistance="22k" footprint="2512" pcbX={0} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={2.1} schSectionName={sec} />
-    <resistor name={`RBALT${id}B`} resistance="22k" footprint="2512" pcbX={24} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={0.7} schSectionName={sec} />
-    <resistor name={`RBALB${id}A`} resistance="22k" footprint="2512" pcbX={56} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-0.7} schSectionName={sec} />
-    <resistor name={`RBALB${id}B`} resistance="22k" footprint="2512" pcbX={80} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-2.1} schSectionName={sec} />
+        E82 (M-10, "do not over-engineer"): back to 47 k, and ONE network per MODULE (`bal` — the first bank only).
+        E81's 22 k answered a 17 mA leakage IMBALANCE built from the datasheet LIMIT (3·√CV at rated voltage, 20 °C, 5 min)
+        × a hot multiplier × the can count; a formed can at 83 % of rated voltage leaks ≈ 0.3–0.5 mA hot, so the realistic
+        imbalance across 5–8 cans is ≤ ≈ 1.2 mA (the RFQ line E81 itself added: ≤ 0.5 mA per can at 85 °C / 415 V). Against
+        4.4 mA of bleed that is ≤ 56 V of midpoint offset on a link that sits at the rectified crest (283–336 V per half) when
+        the stages are off — and whenever the Vienna runs it balances the midpoint actively. The 22 k network cost 3.9 W per
+        half, and because the 40/50 kW boards instantiate TWO banks it was fitted twice: 18.9 mA and 15.7 W standing in eight
+        2512 parts at 207 V / 1.96 W each, inside the electrolytic bank. Now: 0.92 W per element (46 % of a 2 W part),
+        3.7 W per module at 830 V on every SKU. Firmware owns the rest: F.06 / F.38 watch the midpoint in every energised
+        state. */}
+    {bal ? [
+      <resistor key="rbta" name={`RBALT${id}A`} resistance="47k" footprint="2512" pcbX={0} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={2.1} schSectionName={sec} />,
+      <resistor key="rbtb" name={`RBALT${id}B`} resistance="47k" footprint="2512" pcbX={24} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={0.7} schSectionName={sec} />,
+      <resistor key="rbba" name={`RBALB${id}A`} resistance="47k" footprint="2512" pcbX={56} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-0.7} schSectionName={sec} />,
+      <resistor key="rbbb" name={`RBALB${id}B`} resistance="47k" footprint="2512" pcbX={80} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-2.1} schSectionName={sec} />,
+    ] : null}
     {Array.from({ length: nPerHalf }, (_, i) => [
       <trace key={`tt${i}`} from={`.CDT${id}${i} > .pin1`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />,
       <trace key={`tm${i}`} from={`.CDT${id}${i} > .pin2`} to={mid} schDisplayLabel={mid.replace("net.", "")} />,
       <trace key={`bm${i}`} from={`.CDB${id}${i} > .pin1`} to={mid} schDisplayLabel={mid.replace("net.", "")} />,
       <trace key={`bn${i}`} from={`.CDB${id}${i} > .pin2`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />,
     ])}
-    <trace from={`.RBALT${id}A > .pin1`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
-    <trace from={`.RBALT${id}A > .pin2`} to={`.RBALT${id}B > .pin1`} />
-    <trace from={`.RBALT${id}B > .pin2`} to={mid} schDisplayLabel={mid.replace("net.", "")} />
-    <trace from={`.RBALB${id}A > .pin1`} to={mid} schDisplayLabel={mid.replace("net.", "")} />
-    <trace from={`.RBALB${id}A > .pin2`} to={`.RBALB${id}B > .pin1`} />
-    <trace from={`.RBALB${id}B > .pin2`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
+    {bal ? [
+      <trace key="b1" from={`.RBALT${id}A > .pin1`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />,
+      <trace key="b2" from={`.RBALT${id}A > .pin2`} to={`.RBALT${id}B > .pin1`} />,
+      <trace key="b3" from={`.RBALT${id}B > .pin2`} to={mid} schDisplayLabel={mid.replace("net.", "")} />,
+      <trace key="b4" from={`.RBALB${id}A > .pin1`} to={mid} schDisplayLabel={mid.replace("net.", "")} />,
+      <trace key="b5" from={`.RBALB${id}A > .pin2`} to={`.RBALB${id}B > .pin1`} />,
+      <trace key="b6" from={`.RBALB${id}B > .pin2`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />,
+    ] : null}
   </group>
 );
 
@@ -842,7 +849,13 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
     <trace from={`.UIV${id} > .VDD1`} to={biasP} schDisplayLabel={biasP.replace("net.", "")} />
     <trace from={`.UIV${id} > .VDD2`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.UIV${id} > .GND2`} to={aRet} schDisplayLabel={aRet.replace("net.", "")} />
-    <trace from={`.UIV${id} > .OUTP`} to={out} schDisplayLabel={out.replace("net.", "")} />
+    {/* E82 (A2-09): 100 Ω between the iso-amp output and the line to the ADC. The card now carries 1 nF at every analogue
+        pin (the SAR's charge reservoir for a 132 ns aperture at the END of a harness or a connector — E81 fixed only the two
+        rail dividers); an iso-amp output must not see that capacitance bare. 100 Ω · 1 nF = 0.1 µs: invisible to every loop
+        and to the 23 kHz trip channels. ₹0.3 per channel. */}
+    <resistor layer={lay} name={`R${id}O`} resistance="100" footprint="0603" pcbX={10} pcbY={-64} schX={17} schY={-1} schSectionName={sec} />
+    <trace from={`.UIV${id} > .OUTP`} to={`.R${id}O > .pin1`} />
+    <trace from={`.R${id}O > .pin2`} to={out} schDisplayLabel={out.replace("net.", "")} />
     {outN ? <trace from={`.UIV${id} > .OUTN`} to={outN} /> : null}
   </group>
 );
@@ -1031,8 +1044,12 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
     <trace from={`.RENL${id} > .pin1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
     <trace from={`.RENL${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     {/* E81 (F-F-8): the WDO→NRST leg goes through a 0 Ω LINK. With WDO wire-ORed straight onto
-        NRST a blank chip resets 23 ms after power-up and SWD programming never completes; lifting
-        RWDOL inhibits the reset path for the programming fixture only. The SAFETY path is
+        NRST a blank chip resets 23 ms after power-up and SWD programming never completes. E82
+        (G §9): link-lifting is NOT the production method — a board shipped with the link out has
+        silently lost the RESET half of the safety function. The fixture pogo-pins TPWDI and toggles
+        it every ≈ 10 ms for the SWD session (WDI is otherwise held low by RWDI, and the MCU pin is
+        high-Z under reset), so WDO stays high and NRST stays released; RWDOL stays fitted, and is a
+        bench-debug convenience on EVT boards only. The SAFETY path is
         deliberately upstream of the link — RWPU and both AND inhibits stay on WDO_{id}, so a board
         shipped with the link out still gates its drivers on the watchdog verdict. */}
     <resistor layer={lay} name={`RWDOL${id}`} resistance="0" footprint="0603" pcbX={-6} pcbY={-6} schX={2.6} schY={-0.8} schSectionName={sec} />
@@ -1570,7 +1587,8 @@ export const FanPort = ({ id, pwmNet, sec = "FANS", x = 0, y = 0, sx = 0, sy = 0
     <trace from={`.RFT${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.RFT${id} > .pin2`} to={`net.FAN_TACH${id}`} schDisplayLabel={`FAN_TACH${id}`} />
     {/* E81 (F-A-20): with the PWM pin floating most 4-wire fans run at 100 % — four 24 V fans at
-        ≈25 W is ≈100 W on a 110 W aux, during the ≈5–6 s cold start before firmware takes over, so
+        7–14 W each (E82: the 160 m³/h class the air budget assumes; the BOM line pins ≤ 14 W) plus
+        their start surge on a 110 W aux, during the ≈5–6 s cold start before firmware takes over, so
         the 50 kW-air SKU can brown out the aux before the MCU boots (a restart loop). 10 k to DGND
         = defined 0 % at boot; the module cannot overheat in the first 6 s from cold and the
         NTC-driven F.22–F.24 derates plus the F.25 fan-fail row cover the running case. The zero-fan
@@ -1668,8 +1686,13 @@ export const OutputShunt = ({ inn, out, outN, sec = "OUTPUT", x = 0, y = 0, sx =
     <capacitor name="CSHB" capacitance="1uF" footprint="0805" pcbX={30} pcbY={14} schX={1} schY={-2.2} schSectionName={sec} />
     <trace from=".CSHB > .pin1" to="net.B5OUT" schDisplayLabel="B5OUT" />
     <trace from=".CSHB > .pin2" to=".USHO > .GND1" />
-    <trace from=".USHO > .OUTP" to={out} schDisplayLabel={out.replace("net.", "")} />
-    <trace from={outN ? ".USHO > .OUTN" : ".USHO > .OUTN"} to={outN || "net.SNS_IOUTN"} schDisplayLabel="SNS_IOUTN" />
+    {/* E82 (A2-09): the same 100 Ω output isolation as IsoVSense, on both legs of the differential pair */}
+    <resistor name="RSHOP" resistance="100" footprint="0603" pcbX={46} pcbY={-4} schX={6.4} schY={0.6} schSectionName={sec} />
+    <resistor name="RSHON" resistance="100" footprint="0603" pcbX={46} pcbY={4} schX={6.4} schY={-0.6} schSectionName={sec} />
+    <trace from=".USHO > .OUTP" to=".RSHOP > .pin1" />
+    <trace from=".RSHOP > .pin2" to={out} schDisplayLabel={out.replace("net.", "")} />
+    <trace from=".USHO > .OUTN" to=".RSHON > .pin1" />
+    <trace from=".RSHON > .pin2" to={outN || "net.SNS_IOUTN"} schDisplayLabel="SNS_IOUTN" />
   </group>
 );
 

@@ -6,6 +6,8 @@
 
 #define LSB (3.3f / 4096.0f)
 
+static float clampf(float x, float lo, float hi) { return x < lo ? lo : (x > hi ? hi : x); }
+
 void meas_cal_default(meas_cal_t *c, uint16_t kw) {
   float rb = (kw == 50u) ? 13.0f : (kw == 40u) ? 18.0f : 22.0f;            /* line CT burden (E60) */
   float rr = (kw == 50u) ? 0.30f : (kw == 40u) ? 0.36f : 0.47f;            /* resonant CT burden (E67) */
@@ -56,6 +58,7 @@ uint16_t meas_rating_kw(float v, bool *liquid) {
 void grid_sample(grid_t *g, const float v[3], const float i[3], float fs) {
   float ll[3] = { v[0] - v[1], v[1] - v[2], v[2] - v[0] }, is = i[0] + i[1] + i[2];
   for (int k = 0; k < 3; k++) { g->a_vph[k] += v[k] * v[k]; g->a_vll[k] += ll[k] * ll[k]; g->a_i[k] += i[k] * i[k]; }
+  for (int k = 0; k < 3; k++) { g->a_dcv[k] += v[k]; g->a_dci[k] += i[k]; }   /* E82 (M-18): the same cycle's linear sums */
   g->a_is += is * is;
   g->n++;
   bool up = false;
@@ -67,14 +70,29 @@ void grid_sample(grid_t *g, const float v[3], const float i[3], float fs) {
   if (!relock && !cycle && !timeout) return;
   if (!relock) {                         /* publish the closed cycle, or the timeout with hz = 0 */
     float inv = 1.0f / (float)g->n;
+    float hz = cycle ? fs * inv : 0.0f;
+    /* E82 (M-18): a clean cycle also advances the DC estimate. "Clean" is a locked 45–65 Hz cycle whose per-phase current
+       rms has not moved by more than a quarter — the one test that also catches a clamp, a skip or a burst starting or
+       ending inside the cycle, because that is precisely what moves the rms. Note this runs BEFORE the rms is republished,
+       so g->irms still holds the previous cycle's. */
+    bool clean = cycle && hz > 45.0f && hz < 65.0f;
+    for (int k = 0; k < 3; k++) {
+      float ir = sqrtf(g->a_i[k] * inv);
+      if (fabsf(ir - g->irms[k]) > 0.25f * fmaxf(fmaxf(ir, g->irms[k]), 1.0f)) clean = false;
+    }
     g->seq++;
     for (int k = 0; k < 3; k++) { g->vph[k] = sqrtf(g->a_vph[k] * inv); g->vll[k] = sqrtf(g->a_vll[k] * inv); g->irms[k] = sqrtf(g->a_i[k] * inv); }
     g->isum = sqrtf(g->a_is * inv);
-    g->hz = cycle ? fs * inv : 0.0f;
+    g->hz = hz;
     if (cycle) g->abc = ll[1] < 0.0f;   /* at V_AB's rising crossing V_BC is negative in sequence A-B-C */
+    if (clean) for (int k = 0; k < 3; k++) {
+      g->dcv[k] = clampf(g->dcv[k] + (g->a_dcv[k] * inv - g->dcv[k]) * GRID_DC_KV, -GRID_DC_V_MAX, GRID_DC_V_MAX);
+      g->dci[k] = clampf(g->dci[k] + (g->a_dci[k] * inv - g->dci[k]) * GRID_DC_KI, -GRID_DC_I_MAX, GRID_DC_I_MAX);
+    }
     g->seq++;
   }
   memset(g->a_vph, 0, sizeof g->a_vph); memset(g->a_vll, 0, sizeof g->a_vll); memset(g->a_i, 0, sizeof g->a_i);
+  memset(g->a_dcv, 0, sizeof g->a_dcv); memset(g->a_dci, 0, sizeof g->a_dci);
   g->a_is = 0.0f; g->n = 0u;
   g->locked = up;                        /* a crossing (re)starts a cycle; a timeout waits for the next one */
 }

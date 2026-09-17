@@ -55,6 +55,7 @@ void pmp_tlm_from_core(mod_tlm_t *m, const pmp_fsm_t *f, const pmp_in_t *in, con
   m->fault_bits = (f->latched != FC_NONE ? (1ull << (f->latched - 1u)) : 0ull) | (f->lock ? (1ull << (FC_LOCK - 1u)) : 0ull);
   m->warn = f->out.warn;
   m->rearm = f->need_enable && in->enable_req;
+  m->pfc_en = f->out.pfc_en; m->llc_en = f->out.llc_en;   /* E82 (K-4) */
   m->recover_ms = (m->fclass == FCL_AUTO_EXT || m->fclass == FCL_AUTO_INT) && f->rec_hold_ms > f->rec_ms ? f->rec_hold_ms - f->rec_ms : 0u;
   m->derate = f->out.derate;
   m->limiter = c->limiter; m->derate_why = c->derate_why;

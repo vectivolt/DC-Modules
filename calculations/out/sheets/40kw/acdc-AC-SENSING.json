@@ -28,6 +28,7 @@
   "RV1D_56": "wire",
   "RV1D_67": "wire",
   "UIVV1_VINP": "wire",
+  "UIVV1_OUTP": "wire",
   "RV2D_M": "wire",
   "RV2D_12": "wire",
   "RV2D_23": "wire",
@@ -36,6 +37,7 @@
   "RV2D_56": "wire",
   "RV2D_67": "wire",
   "UIVV2_VINP": "wire",
+  "UIVV2_OUTP": "wire",
   "RV3D_M": "wire",
   "RV3D_12": "wire",
   "RV3D_23": "wire",
@@ -44,6 +46,7 @@
   "RV3D_56": "wire",
   "RV3D_67": "wire",
   "UIVV3_VINP": "wire",
+  "UIVV3_OUTP": "wire",
   "RBPD_M": "wire",
   "RBPD_12": "wire",
   "RBPD_23": "wire",
@@ -52,6 +55,7 @@
   "RBPD_56": "wire",
   "RBPD_67": "wire",
   "UIVBP_VINP": "wire",
+  "UIVBP_OUTP": "wire",
   "RBMD_M": "wire",
   "RBMD_12": "wire",
   "RBMD_23": "wire",
@@ -59,7 +63,8 @@
   "RBMD_45": "wire",
   "RBMD_56": "wire",
   "RBMD_67": "wire",
-  "UIVBM_VINP": "wire"
+  "UIVBM_VINP": "wire",
+  "UIVBM_OUTP": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -439,9 +444,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "33k",
+   "query": "R2512-33k-HV-AS 33 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-33k-HV-AS"
   },
   {
    "designator": "RNS1B",
@@ -459,9 +464,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "33k",
+   "query": "R2512-33k-HV-AS 33 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-33k-HV-AS"
   },
   {
    "designator": "RNS2A",
@@ -479,9 +484,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "33k",
+   "query": "R2512-33k-HV-AS 33 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-33k-HV-AS"
   },
   {
    "designator": "RNS2B",
@@ -499,9 +504,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "33k",
+   "query": "R2512-33k-HV-AS 33 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-33k-HV-AS"
   },
   {
    "designator": "RNS3A",
@@ -519,9 +524,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "33k",
+   "query": "R2512-33k-HV-AS 33 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-33k-HV-AS"
   },
   {
    "designator": "RNS3B",
@@ -539,9 +544,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "33k",
+   "query": "R2512-33k-HV-AS 33 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
+   "mpn": "R2512-33k-HV-AS"
   },
   {
    "designator": "PS5AC",
@@ -879,7 +884,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VAC1"
+     "signal_name": "UIVV1_OUTP"
     },
     {
      "pin_number": 8,
@@ -933,6 +938,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RV1O",
+   "block_name": "SENSE-VAC1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVV1_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VAC1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "RV2D0",
@@ -1166,7 +1191,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VAC2"
+     "signal_name": "UIVV2_OUTP"
     },
     {
      "pin_number": 8,
@@ -1220,6 +1245,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RV2O",
+   "block_name": "SENSE-VAC2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVV2_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VAC2"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "RV3D0",
@@ -1453,7 +1498,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VAC3"
+     "signal_name": "UIVV3_OUTP"
     },
     {
      "pin_number": 8,
@@ -1507,6 +1552,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RV3O",
+   "block_name": "SENSE-VAC3",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVV3_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VAC3"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "RBPD0",
@@ -1740,7 +1805,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VBUSP"
+     "signal_name": "UIVBP_OUTP"
     },
     {
      "pin_number": 8,
@@ -1794,6 +1859,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RBPO",
+   "block_name": "SENSE-VBUS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVBP_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VBUSP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "RBMD0",
@@ -2027,7 +2112,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VMID"
+     "signal_name": "UIVBM_OUTP"
     },
     {
      "pin_number": 8,
@@ -2081,6 +2166,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RBMO",
+   "block_name": "SENSE-VMID",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVBM_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VMID"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "JTPFC",

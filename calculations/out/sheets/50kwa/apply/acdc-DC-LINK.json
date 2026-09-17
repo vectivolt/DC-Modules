@@ -139,7 +139,7 @@
    },
    {
     "designator": "PSQD",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "DISCHARGE",
     "pins": [
      {
@@ -444,7 +444,7 @@
    },
    {
     "designator": "RBALT0A",
-    "value": "22k",
+    "value": "47k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -461,7 +461,7 @@
    },
    {
     "designator": "RBALT0B",
-    "value": "22k",
+    "value": "47k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -478,7 +478,7 @@
    },
    {
     "designator": "RBALB0A",
-    "value": "22k",
+    "value": "47k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -495,7 +495,7 @@
    },
    {
     "designator": "RBALB0B",
-    "value": "22k",
+    "value": "47k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -613,74 +613,6 @@
       "signal_name": "DCN"
      }
     ]
-   },
-   {
-    "designator": "RBALT1A",
-    "value": "22k",
-    "block_name": "LINK-BANK-1",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "DCP"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "RBALT1_M"
-     }
-    ]
-   },
-   {
-    "designator": "RBALT1B",
-    "value": "22k",
-    "block_name": "LINK-BANK-1",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "RBALT1_M"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "MID"
-     }
-    ]
-   },
-   {
-    "designator": "RBALB1A",
-    "value": "22k",
-    "block_name": "LINK-BANK-1",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "MID"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "RBALB1_M"
-     }
-    ]
-   },
-   {
-    "designator": "RBALB1B",
-    "value": "22k",
-    "block_name": "LINK-BANK-1",
-    "pins": [
-     {
-      "pin_number": 1,
-      "name": "pin1",
-      "signal_name": "RBALB1_M"
-     },
-     {
-      "pin_number": 2,
-      "name": "pin2",
-      "signal_name": "DCN"
-     }
-    ]
    }
   ]
  ],
@@ -693,5 +625,5 @@
   ]
  },
  "warnings": [],
- "total": 39
+ "total": 35
 }

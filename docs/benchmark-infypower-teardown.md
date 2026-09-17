@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
   <img src="https://img.shields.io/badge/verdict-architecture_and_BOM_cloned_E67–E69_·_cost_gap_open-d19a00?style=flat-square" alt="verdict: architecture and BOM cloned E67–E69 · cost gap open"/>
@@ -23,7 +23,7 @@
 > architecture and BOM: E67 adopted the full-bridge LLC, the two output modes and the output diode; E68 the clip mount, the
 > star-X2 EMI filter and film-only banks; E69 right-sized dies. Rated efficiency is **96.35 % at 40 kW** (E81 ledger, with
 > the LLC turn-off and DPT switching terms) against InfyPower's "> 96 %". On the India price list the 40 kW module is
-> **₹35,970 at E81, ≈ 52 % above the teardown estimate** — the largest single step left is to buy one REG1K0135A2 and
+> **₹36,103 at E82, ≈ 53 % above the teardown estimate** — the largest single step left is to buy one REG1K0135A2 and
 > measure it.
 >
 > **Read the [E81 re-read](#1-e81-re-read-of-the-teardown-2026-09-17--corrections-and-validations) first.** Four of its
@@ -38,7 +38,7 @@
 | **What we cloned** | full-bridge LLC, two output modes, output blocking diode (E67) · clip mount, star-X2 EMI filter (E68) · right-sized dies (E69) |
 | **What we kept** | isolated sensing on every domain, DESAT + window comparators, one MCU, full-bus SiC aux |
 | **Efficiency** | ours **96.35 %** at 40 kW full power (E81 ledger) against their "> 96 %" |
-| **Cost** | ours **₹35,970** at 10k India basis vs an **estimated ₹23,600** for their BOM on our price list — **≈ +52 %**, and the estimate itself is the largest unknown |
+| **Cost** | ours **₹36,103** at 10k India basis (E82) vs an **estimated ₹23,600** for their BOM on our price list — **≈ +53 %**, and the estimate itself is the largest unknown |
 | **Next step** | buy one REG1K0135A2 and measure it — that replaces the estimate with data |
 
 ## 1. E81 re-read of the teardown (2026-09-17) — corrections and validations
@@ -178,20 +178,20 @@ what their BOM would cost us, not their real cost.
 | Busbars, studs, harness | 705 | in mechanical | — | — |
 | Control | 516 | ~690 | −174 | ours is cheaper |
 | **Module (E69 basis)** | **34,616** | **≈ 23,600** | **≈ +11,000 (+47 %)** | |
-| **Module (E81 basis)** | **35,970** | ≈ 23,600 | **≈ +12,400 (+52 %)** | the E81 design changes (entry film, 500 V cans, bias, CY, snubber) add ₹1,354 — the per-section rows above are the E69 split |
+| **Module (E82 basis)** | **36,103** | ≈ 23,600 | **≈ +12,500 (+53 %)** | the E81 design changes (entry film, 500 V cans, bias, CY, snubber) add ₹1,354 and E82 a further ₹133 (output bleeder, ADC pin filters, iso-amp resistors, a 50 W link damper, less four balance resistors) — the per-section rows above are the E69 split |
 
 ```mermaid
 xychart-beta
   title "40 kW build cost at 10k (₹) — ours vs the InfyPower teardown estimate"
   x-axis ["E65", "E67", "E68a", "E68b", "E68c", "E69", "E81", "E69 + 2U", "Infy est."]
   y-axis "₹ @10k" 0 --> 45000
-  bar [42505, 38048, 36686, 35560, 35048, 34616, 35970, 32680, 23600]
+  bar [42505, 38048, 36686, 35560, 35048, 34616, 36103, 32680, 23600]
 ```
 
 > [!IMPORTANT]
 > **The honest verdict.** The architecture is now InfyPower's, and the clone took ₹7.9k (−19 %) out of the 40 kW
 > module since E65. On the India price list the module is still ≈ 47 % above the teardown estimate (≈ 38 % with the
-> unproven 2U construction; ≈ 52 % on the E81 BOM). The China RFQ-target column puts the 40 kW module at **₹29,418**,
+> unproven 2U construction; ≈ 53 % on the E82 BOM). The China RFQ-target column puts the 40 kW module at **₹29,520**,
 > but that compares a landed China target with an estimate priced in India, so it is not a like-for-like gap. The
 > 2–5 % target is not met by any change the gates can prove today. The largest single unknown is whether the
 > estimate itself is right: **buy one REG1K0135A2 and measure it** (thermals at SER 500 V, device temperatures, gate
@@ -227,7 +227,7 @@ xychart-beta
 | 11 | V / I sensing | shunts + AMC1200 iso-amps, muxed | CTs (line + resonant) + output shunt + AMC1350/1311 | **1** — zero-loss, trip-grade bandwidth |
 | 12 | Hardware protection | shunt comparators + DSP, no DESAT seen [T] | DESAT + CMP/DAC trips + supervisory ladder | **1** — three layers by directive |
 | 13 | Fault handling | datasheet: SCP self-rollback, alarms [D] | F.xx ladder, per-SKU windows, host-proven 54/54 (60/60 since E67) | **1** (their firmware not inspectable) |
-| 14 | Gate drive | 3 iso-driver ICs + gate transformers, no Miller clamp seen | 9 × NSI6611 (DESAT, clamp, soft-off) + QA01C-15 / QA02C-15 (E81: +15 / −3 V) ±bias | **1**, cost noted (~₹1k+) |
+| 14 | Gate drive | 3 iso-driver ICs + gate transformers, no Miller clamp seen | 9 × NSI6611 (DESAT, clamp, soft-off) + ISO-GBIAS-15-1W / -25 (E81: +15 / −3 V) ±bias | **1**, cost noted (~₹1k+) |
 | 15 | Aux power | UCC28C45 flyback, 900 V Si, opto FB [T] | one 110 W 342–860 V flyback, 1700 V SiC, NCP1252D | **1/2** — dearer switch, full-range and balance-neutral |
 | 16 | Thermal / cooling | 3 fans + potted heatsink integration | 3 fans + extrusion tunnel; 50 kW liquid twin | **1**; density consequence in #20 |
 | 17 | EMI / EMC | 2 × CMC, 9 × X2, Y films, MOV + GDT | 2 × CMC, X1-class caps, per-phase DM chokes, MOV Δ + GDT | **1/2** — heavier filter, computed LISN margins |
@@ -359,7 +359,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 |---|---|
 | **InfyPower** | 3 × NOVOSENSE NSi6801 single-channel iso drivers (PFC) + **gate-drive transformers** with low-side push drivers and a PMOS clamp for the LLC bridge [T]; no DESAT, Miller clamp or negative rail mentioned anywhere in the teardown [T]. |
 | **Why** | transformer drive is the cheapest way to four floating gates: no per-channel bias supplies, no iso-driver ICs. Its limits — duty range, no fault feedback, weak hold-off — are acceptable when protection lives in shunt comparators and device ruggedness. |
-| **Ours** | 9 iso-driver channels per module: **NSI6611** (DESAT with 22/47 pF blank, active Miller clamp, UVLO, soft-off) fed by reinforced **QA01C-15 / QA02C-15 (E81: +15 / −3 V)** ±bias modules (+18 / −3 V — O-11 closed E45/E80), split 4.7/4.7 Ω gate resistors, two 1 kV DESAT diodes + 100 Ω per channel. |
+| **Ours** | 9 iso-driver channels per module: **NSI6611** (DESAT with 22/47 pF blank, active Miller clamp, UVLO, soft-off) fed by reinforced **ISO-GBIAS-15-1W / -2W (+15 / −3 V, E81 decision 8)** ±bias modules — E82 (M-03) retired the order code "QA01C-15", which is not an orderable MORNSUN part; the class now carries a light-load acceptance row (+15 V ±5 % at 20–100 % load, ≤ +17.5 V at 5 %), split 4.7/4.7 Ω gate resistors, two 1 kV DESAT diodes + 100 Ω per channel. |
 | **Assessment** | ≈ ₹1–1.5k/module premium over their scheme [C, class prices]. What it buys: per-device short-circuit detection inside the SiC withstand time (next block), a clamped off-state at 140 kHz dv/dt, and a defined negative hold-off — the three things transformer drive cannot give. On a module spec'd for unattended DCFC duty at 55 °C full power, that is the correct side of the trade; their side is the correct one for their cost point. |
 | **Verdict** | **1**. Cost recorded as a known premium, not a lever — removing DESAT would breach the protection philosophy. |
 
@@ -467,7 +467,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | Line | Ours | Their-style | Premium | What it buys |
 |---|---:|---:|---:|---|
 | 3-φ interleaved LLC (6 FETs ₹1,872 + 3 transformers ₹1,632 + tank film ₹653) | 4,157 | ≈ 2,600 [est] | **≈ +1.5k** | +0.4–0.5 pt full-load η, interleaved ripple, smaller banks |
-| Gate drive with DESAT (9 × NSI6611 ₹612 + 9 × QA01C-15 / QA02C-15 (E81: +15 / −3 V) ₹495) | ≈ 1,150 | ≈ 250 [est] | **≈ +0.9k** | per-device short-circuit off inside SCWT, Miller clamp, soft-off |
+| Gate drive with DESAT (9 × NSI6611 ₹612 + 9 × ISO-GBIAS-15-1W / -2W (E81: +15 / −3 V; E82 M-03 made it a class) ₹495) | ≈ 1,150 | ≈ 250 [est] | **≈ +0.9k** | per-device short-circuit off inside SCWT, Miller clamp, soft-off |
 | CT sensing (line + resonant CTs + burdens) | ≈ 700 [est] | ≈ 300 [est] | **≈ +0.4k** | zero-loss, trip-grade bandwidth to the comparators |
 | Mirror-contact 1000 V relay matrix + pre-insertion | ≈ 2,850 | ≈ 1,100 [est] | **≈ +1.3k** | weld-checked isolation — and none of their permanent 0.15–0.44 % series-diode tax |
 | DM chokes + X1-class filter caps | ≈ 1,550 | ≈ 150 [est] | **≈ +1.4k** | computed LISN margin before any hardware exists |
@@ -535,7 +535,36 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the f
 
 </details>
 
-## 27. Where the evidence ends
+## 27. E82 re-read (2026-09-17)
+
+The E82 round re-read the same ChargerLab teardown of the **InfyPower REG1K0135A2** for facts, not for design, and scored
+this module against it block by block. Nothing above is retracted; this is what E82 adds.
+
+| Axis | Reference 40 kW | This module (40 kW row) | E82 verdict |
+|---|---|---|---|
+| PFC switch | Si super-junction 600 V / 22 mΩ on plain low-side drivers, SiC boost diodes | SiC 750 V pair on an isolated DESAT driver | **they are cheaper here.** Si-SJ in the Vienna is the largest philosophy-neutral cost lever left (≈ ₹600–1,000): the boost diodes stay SiC so the switch sees no recovery, and 50 kHz suits SJ parts. Needs its own DPT and thermal run — registered, not executed |
+| PFC protection | comparators on shunts, **no DESAT anywhere** | DESAT on three Vienna channels + comparators | dropping DESAT on the Vienna channels (≈ ₹150) is defensible — no shoot-through path exists in a Vienna leg — but costs driver commonality; decide before layout |
+| LLC bridge | one 33 mΩ die per position at 40 kW, low-Z0 tank, gate transformers | two 23 mΩ dies per position, isolated drivers with DESAT | ours runs cooler and survives a leg fault; theirs is ≈ ₹1,500–3,000 cheaper. The low-Z0 tank is a magnetics + control redesign (next revision) |
+| Current sensing | shunt + AMC1200 | line CTs + output shunt | theirs has DC response; ours needs the E82 mean removal and a CT acceptance test (M-17), shunts are the drawn fallback |
+| Link capacitors | 680 µF / 475 V cans | 470 µF / 500 V cans, now bought against their real 50 kHz duty | equal once the RFQ line is met; their can class is the fallback |
+| Output | film + choke + electrolytic, series diodes, **active** discharge | film only, series diode, passive bleeder (E82) + active link discharge | ours has no electrolytic to age at the output; theirs discharges the studs faster |
+| Aux supply | 900 V Si FET, opto feedback | 1700 V SiC from the full link, primary-side regulation | ours starts from the link with no mains tap; theirs is ≈ ₹150–200 cheaper |
+| Control | two DSPs + analogue muxes | one Cortex-M33 with a window watchdog | ours is simpler and cheaper; E82 made the single controller's supervision real (C-06, C-09, C-11) |
+| Self-protection in firmware | not visible from a teardown | operating-point fold from a junction observer, grid-return re-precharge, DC-injection removal, trip hold, weld and stuck-discharge detection | **ours is ahead** — this is where E82 spent its effort, at ₹0 |
+| Input range | 260–530 VAC | 285–475 VAC, derated below 330 VAC | theirs is wider; ours is a deliberate SiC / copper / EMI saving |
+| Efficiency | > 96 %, peak > 97 % | 96.3 % at full power, peak 97.7–97.8 % | equal |
+| Density | 3.96 kW/L, 15.5 kg, potted | ≈ 2.1–2.6 kW/L estimated, serviceable | **theirs wins**; a layout-phase lever |
+| Cost at volume | ≈ ₹35 k street | ₹36,103 India basis · ≈ ₹29.5 k China RFQ basis | competitive; E82 added 0.3–0.4 % and removed the failure modes that would have cost far more in the field |
+
+**Cost-down levers found and not executed** (each needs an owner decision or bench data): Si-SJ Vienna switches
+(≈ ₹600–1,000) · no DESAT on the Vienna channels (≈ ₹150) · TPS3430 as DNP once EVT proves the internal watchdog with
+the token purse (≈ ₹35–40) · low-Z0 tank, back to one die per position on 40 / 50 kW (≈ ₹1,500–3,000, next revision) ·
+sendust cores from KDM / POCO / CSC for D1 (≈ ₹1,000–1,400) · PV-driver instead of TLP152 + isolated bias on the discharge
+FET (≈ ₹50) · active link discharge as a variant (≈ ₹350–400) · a 900 V Si aux FET fed from a lower node (≈ ₹150–200).
+
+The same table, with the rest of the E82 register, is in the [E82 validation report](e82-validation-report.md#8-against-the-reference-chinese-module).
+
+## 28. Where the evidence ends
 
 > [!WARNING]
 > A teardown shows copper and silicon, not firmware: their control loops, trip latencies, coordination, derating
@@ -553,5 +582,5 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the f
 <div align="center">
 <sub><a href="dfm-production.md">← DFM & Production Flow</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

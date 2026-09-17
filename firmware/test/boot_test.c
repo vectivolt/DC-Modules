@@ -66,14 +66,37 @@ bool nvm_port_read(uint8_t page, uint32_t off, uint8_t *p, uint32_t n) {
   memcpy(p, page_mem[page] + off, n);
   return true;
 }
+/* E82 (C-04): the record pages are the GD32G553 FMC — 64-bit rows with ECC, a second program of a row is refused
+ * (UM §2.3.8, FMC_STAT PGERR), an all-FF write is bypassed and leaves the row erased (UM §2.3.2 note 6). The boot
+ * record, the trial counter and the anti-rollback baseline all live in this store, so the bootloader's decisions are
+ * only proved if the store behaves like the part. The packing is port/gd32g553/nvmport.c's, verbatim. */
+static bool page_row[4][PG / 8u];
+static long store_pgerr = 0;
 bool nvm_port_prog(uint8_t page, uint32_t off, const uint8_t *p, uint32_t n) {
-  if (page > 3u || off + n > PG || store_dead) return false;
-  for (uint32_t i = 0; i < n; i++) page_mem[page][off + i] &= p[i];
+  if (page > 3u || off + n > PG || (off & 3u) || (n & 3u) || store_dead) return false;
+  uint32_t a = off;
+  while (n) {
+    uint32_t lo = 0xFFFFFFFFu, hi = 0xFFFFFFFFu, base = a & ~7u;
+    if (a & 4u) { for (int k = 0; k < 4; k++) hi = (hi & ~(0xFFu << (8 * k))) | ((uint32_t)p[k] << (8 * k)); }
+    else {
+      for (int k = 0; k < 4; k++) lo = (lo & ~(0xFFu << (8 * k))) | ((uint32_t)p[k] << (8 * k));
+      if (n >= 8u) { hi = 0u; for (int k = 0; k < 4; k++) hi |= (uint32_t)p[4 + k] << (8 * k); }
+    }
+    uint32_t used = (a & 4u) ? 4u : (n >= 8u ? 8u : 4u);
+    if (lo != 0xFFFFFFFFu || hi != 0xFFFFFFFFu) {
+      if (page_row[page][base / 8u]) { store_pgerr++; return false; }
+      for (int k = 0; k < 4; k++) page_mem[page][base + k] &= (uint8_t)(lo >> (8 * k));
+      for (int k = 0; k < 4; k++) page_mem[page][base + 4 + k] &= (uint8_t)(hi >> (8 * k));
+      page_row[page][base / 8u] = true;
+    }
+    a += used; p += used; n -= used;
+  }
   return true;
 }
 bool nvm_port_erase(uint8_t page) {
   if (page > 3u || store_dead) return false;
   memset(page_mem[page], 0xFF, PG);
+  memset(page_row[page], 0, sizeof page_row[page]);
   return true;
 }
 
@@ -266,6 +289,7 @@ static int finish(uint32_t crc, uint16_t *reason) {
 
 static void update_tests(void) {
   memset(page_mem, 0xFF, sizeof page_mem);
+  memset(page_row, 0, sizeof page_row);
   memset(slot_mem, 0xFF, sizeof slot_mem);
   memcpy(slot_mem[0], BV_IMG[BV_A_V1].img, BV_IMG[BV_A_V1].len);
   new_updater(&U);
@@ -360,6 +384,10 @@ static void update_tests(void) {
   store_dead = false;
   ck("update: when the record cannot be stored a trial does not run (its boots could not be counted) — the confirmed slot runs",
      p.mode == BOOT_RUN && p.slot == 1u);
+
+  /* E82 (C-04): the whole bootctl + update sequence above ran on the row-granular store. On the target the old 12-byte
+     header made the FIRST boot record fail to program, so none of it stored: no trial count, no baseline, no install. */
+  ck("update (E82 C-04): the boot record store never re-programmed a 64-bit flash row across the whole sequence", store_pgerr == 0);
 }
 
 int main(void) {

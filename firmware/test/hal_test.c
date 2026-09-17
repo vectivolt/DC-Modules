@@ -8,14 +8,16 @@
  *         CC into a battery, saturation on the floor without capacitive mode, burst at light load, tank peak against F.11.
  *   meas  calibration windows, the reference correction, NTC and strap bands, the grid monitor (RMS, frequency, sequence, a lost
  *         phase, loss of line, noise).
- *   nvm   CRC-32 check value, round trip, write-on-change, compaction, a power cut at every programmed byte of an append and at
- *         every step of a compaction.
+ *   nvm   CRC-32 check value, round trip, write-on-change, compaction, a power cut at every programmed 64-bit ROW of an append
+ *         and at every step of a compaction — on a flash model that programs whole ECC rows and refuses a row that is not
+ *         erased, which is what the GD32G553 does (E82 C-04); and the event ring on the same model.
  * What this does NOT prove: the loop gains on the real stage (the regulator gains are ctl.c's placeholders), EMI, the ADC,
  * timer and flash drivers — HIL and EVT rows in docs/firmware-verification.md. Build/run: firmware/run_tests.sh */
 #include "../hal/pfc.h"
 #include "../hal/llc.h"
 #include "../hal/meas.h"
 #include "../hal/nvm.h"
+#include "../hal/evlog.h"
 #include "../core/ctl.h"
 #include "../core/fsm.h"
 #include <math.h>
@@ -139,6 +141,46 @@ static vmet_t vcycle(vsim_t *s) {   /* one line cycle: phase-A THD to h40, true 
   return m;
 }
 
+/* ================================================================ E82 (M-18): DC into the line
+   The line CTs are 50 Hz metering parts: below ≈ 1 Hz they pass NOTHING, so the P-only current loop has no DC feedback of
+   any kind and whatever DC the modulator is asked to produce is opposed by the line resistance alone. The forcing terms are
+   both measurement offsets — a differential offset on the SNS_VAC channels (1 LSB = 1.35 V of line: the AC chains use 14 %
+   of the ADC span, and VAC1/2 sit on ADC1 against VAC3 on ADC3, so their offsets do not cancel) and a residual CT-channel
+   offset after the boot window. This plant is line-cycle averaged — only the DC component is tracked, which is the whole
+   point — but the SENSOR is modelled as the high-pass it physically is, so the test cannot pass against a DC-coupled model:
+   with the CT high-pass removed the "as coded" row below reads a benign fraction of an amp instead of tens of amps.
+   Under test are the real grid_sample() estimator, its clean-cycle gate and its clamps; the modulator's DC path is its own
+   algebra, v_dc[n] = v_used[n] + kp_i·i_used[n], made zero-sum by the min-max zero-sequence injection. */
+typedef struct { double i[3], x[3]; } dcsim_t;
+static double dc_run(int kw, const double dv[3], const double di[3], bool fix, double r_dc, double tau_ct, double sec) {
+  pfc_cfg_t cfg; pfc_cfg_default(&cfg, (uint16_t)kw);
+  grid_t g; memset(&g, 0, sizeof g);
+  dcsim_t s; memset(&s, 0, sizeof s);
+  const double fs = 1e4, dt = 1.0 / fs, w = 2 * PI * 50.0, amp = 400.0 * sqrt(2.0 / 3.0), L = 165e-6;
+  double worst = 0.0;
+  for (long k = 0, n = lround(sec * fs); k < n; k++) {
+    double t = k * dt;
+    float vm[3], im[3];
+    double idc[3];
+    for (int p = 0; p < 3; p++) {
+      double vac = amp * sin(w * t - p * 2 * PI / 3), iac = 60.0 * sin(w * t - p * 2 * PI / 3);
+      s.x[p] += (s.i[p] - s.x[p]) * dt / tau_ct;              /* the CT's magnetizing pole: what reaches the burden is i − x */
+      idc[p] = (s.i[p] - s.x[p]) + di[p];                     /* the DC the burden actually carries, plus the channel offset */
+      vm[p] = (float)(vac + dv[p]);
+      im[p] = (float)(iac + idc[p]);
+    }
+    grid_sample(&g, vm, im, (float)fs);                       /* app.c feeds the RAW samples, as it must */
+    double vd[3], mean = 0.0;
+    for (int p = 0; p < 3; p++) {                             /* the modulator's DC path: v_used + kp_i · i_used */
+      vd[p] = (dv[p] - (fix ? g.dcv[p] : 0.0f)) + cfg.kp_i * (idc[p] - (fix ? g.dci[p] : 0.0f));
+      mean += vd[p] / 3.0;
+    }
+    for (int p = 0; p < 3; p++) s.i[p] += dt * (-(r_dc * s.i[p]) - (vd[p] - mean)) / L;   /* 3-wire: zero-sum forcing */
+    if (t > sec - 0.1) for (int p = 0; p < 3; p++) worst = fmax(worst, fabs(s.i[p]));
+  }
+  return worst;
+}
+
 static void pfc_tests(void) {
   static vsim_t s;
   vsim_init(&s, &D1_50, 400.0, 565.7, 0.0, 1);
@@ -221,7 +263,73 @@ static void pfc_tests(void) {
   bool ran = s.p.run;
   pfc_step(&s.p, &s.cfg, &s.ref, bad, z, 400.0f, 400.0f, 0.0f, 10e-6f);
   ck("pfc: disabled, or a non-finite sample, turns every switch off and resets the loop", off && ran && !s.p.run && s.p.on[0] == 0.0f);
+
+  { /* E82 (M-32): the load dump. fsm.c bus_ref_for() returns the 830 V cap for any bank at or above 395 V — a 400 V output
+       in PAR, an 800 V one in SER, i.e. most real charging — leaving 30 V to the LATCHING 860 V F.03, of which the old
+       15 V skip band spent half before any dynamics, while the voltage integrator still held the pre-dump power and
+       unwound at ki_v·e ≈ 55 kW/s. An EV opening its contactor at full power is a NORMAL end-of-session event, so this
+       has to clear on an aged link too: −20 % is the can tolerance, −36 % adds 20 % of end-of-life loss.
+       NOTE this plant does not reproduce the 856–872 V the review reported: it carries an ideal source behind the boost
+       choke, where the review's model carried the DRAWN CX/CMC input filter, whose ring into the link on the commutation
+       was the extra ~12 V. On THIS plant the dump peaks at 833 V even as coded, so the check below is a regression guard
+       with the two levers in place, not the proof of the finding — the bench row (T-xx) is the arbiter. */
+    int ok = 1; double worst = 0.0;
+    const d1_t *D[3] = { &D1_30, &D1_40, &D1_50 };
+    const double P[3] = { 30e3, 40e3, 50e3 }, CS[3] = { 1.0, 0.80, 0.64 };
+    for (int n = 0; n < 3; n++) for (int c = 0; c < 3; c++) {
+      static vsim_t s; static d1_t d;
+      d = *D[n]; d.c_half *= CS[c];
+      vsim_init(&s, &d, 475.0, 830.0, P[n], 1);      /* the highest line the spec carries, at the 830 V reference */
+      vrun(&s, 0.20);
+      vrec(&s);
+      s.p_load = 0.0;                                 /* the contactor opens: p_llc collapses inside one 100 µs LLC pass */
+      vrun(&s, 0.05);
+      if (s.vb_max > worst) worst = s.vb_max;
+      if (s.vb_max >= 855.0) { ok = 0; printf("      %u kW, link C x %.2f: dump peak %.1f V\n", d.kw, CS[c], s.vb_max); }
+    }
+    printf("      load dump at the 830 V reference, 475 VAC, 30/40/50 kW x link C 1.00/0.80/0.64: worst peak %.1f V"
+           " (F.03 latches at %.0f V)\n", worst, (double)PMP_BUS_OVP_V);
+    ck("E82 M-32 (guard): a full-power load dump at the 830 V bus reference stays under 855 V on every SKU, including a link 36 % down on tolerance and ageing",
+       ok && worst < 855.0); }
+
+  { /* E82 (M-18): ±3 LSB on one voltage channel and one current channel, the residual a calibrated card can still carry
+       (AMC1350 Vos ±1.5 mV = ±0.5 V of line, its output common mode unspecified for drift, and VAC1/2 and VAC3 sit on
+       different converters). 1 LSB of SNS_VAC = 1.347 V of line; 1 LSB of the 30 kW CT chain = 0.0916 A. */
+    const double LSBV = 1.347, LSBI = 0.0916, RATED = 45.1;    /* 30 kW at 400 VAC: 45.1 A rms per phase */
+    double dv[3] = { 3 * LSBV, 0, 0 }, di[3] = { 0, 3 * LSBI, 0 };
+    double none[3] = { 0, 0, 0 };
+    double raw = dc_run(30, dv, di, false, 0.10, 0.30, 10.0);
+    double f5 = dc_run(30, dv, di, true, 0.10, 0.30, 5.0), f10 = dc_run(30, dv, di, true, 0.10, 0.30, 10.0);
+    double clean = dc_run(30, none, none, true, 0.10, 0.30, 10.0);
+    double stiff = dc_run(30, dv, di, true, 0.05, 1.00, 10.0);   /* the least favourable R_dc and CT corner */
+    printf("      DC line current, +3 LSB on one V channel and one I channel: as coded %.2f A (%.0f %% of rated rms)"
+           " · corrected %.3f A at 5 s (%.2f %%), %.3f A at 10 s (%.2f %%) · no offset %.3f A"
+           " · R_dc 50 mOhm, tau_ct 1 s %.3f A\n",
+           raw, 100 * raw / RATED, f5, 100 * f5 / RATED, f10, 100 * f10 / RATED, clean, stiff);
+    /* The last column is a deliberate DOUBLE corner — the lowest line resistance AND the slowest CT — where the estimator
+       and the sensor's own magnetizing pole are closest together; it is held to 1 % rather than 0.5 %. */
+    ck("E82 M-18: with a 50 Hz CT (no DC feedback in the loop) a 3 LSB voltage and 3 LSB current offset inject tens of amps of DC; the per-line-cycle means hold it under 0.5 % of rated rms within 5 s",
+       raw > 5.0 && f5 < 0.005 * RATED && f10 < 0.005 * RATED && clean < 0.005 * RATED && stiff < 0.01 * RATED); }
+
+  { /* E82 (M-18): the estimate must not become a way to hide a broken channel — the clamps bound what it can absorb, and
+       grid_sample's rms / isum (F.29's input) and the boot offset window all stay on the RAW samples. */
+    grid_t g; memset(&g, 0, sizeof g);
+    const double fs = 1e4, w = 2 * PI * 50.0, amp = 326.6;
+    for (long k = 0; k < 200000; k++) {                       /* 20 s: far longer than the 1 s estimator */
+      float v[3], i[3];
+      for (int p = 0; p < 3; p++) {
+        v[p] = (float)(amp * sin(w * k / fs - p * 2 * PI / 3) + (p == 0 ? 400.0 : 0.0));   /* a dead-shorted divider */
+        i[p] = (float)(60.0 * sin(w * k / fs - p * 2 * PI / 3) + (p == 1 ? 40.0 : 0.0));
+      }
+      grid_sample(&g, v, i, (float)fs);
+    }
+    printf("      broken channel: dcv %.1f V (clamp %.0f) · dci %.2f A (clamp %.1f) · isum %.1f A still reaches F.29\n",
+           (double)g.dcv[0], (double)GRID_DC_V_MAX, (double)g.dci[1], (double)GRID_DC_I_MAX, (double)g.isum);
+    ck("E82 M-18: a grossly broken voltage or current channel saturates the correction's clamp instead of being absorbed, and still shows up in isum for F.29",
+       fabsf(g.dcv[0]) <= GRID_DC_V_MAX + 1e-3f && fabsf(g.dcv[0]) >= GRID_DC_V_MAX - 1e-3f &&
+       fabsf(g.dci[1]) <= GRID_DC_I_MAX + 1e-3f && fabsf(g.dci[1]) >= GRID_DC_I_MAX - 1e-3f && g.isum > 20.0f); }
 }
+
 
 /* ================================================================ LLC */
 static double imz(double fn, double q, double ln) {   /* Im(Zin)/Z0 of the FHA tank */
@@ -242,7 +350,7 @@ static double zvs_worst(double q) {   /* the highest capacitive fn over the eigh
 
 typedef struct {
   llc_cfg_t c; llc_t l; pmp_reg_t r; pmp_reg_cfg_t rc;
-  double lr, cr, lm, vbus, cap, vf, rt, i_scale;
+  double lr, cr, lm, vbus, cap, vf, rt, i_scale, v_scale;
   double ilr, vcr, ilm, vo, t_in, t_per, f, duty; int sgn; bool cond, gate;
   double load_r, bat_e, bat_r; bool bat;
   double lcab, rcab, icab, vl, cl; bool cable;   /* E81/F-G-2: DOUT → 5 m output cable → load */
@@ -266,6 +374,7 @@ static void lsim_init_sku(lsim_t *s, int kw, bool low) {   /* tanks.mjs tank + t
   s->lm = (kw == 50) ? 35.6e-6 : (kw == 40) ? 43.5e-6 : 56.0e-6;
   s->i_scale = (kw == 50) ? 166.7 : (kw == 40) ? 133.3 : 100.0;
   s->vbus = 830.0; s->cap = cout_of(kw, low); s->vf = 1.0; s->rt = 0.02;
+  s->v_scale = low ? 500.0 : 1000.0;
   s->lcab = 3.5e-6; s->rcab = 3.5e-3; s->cl = 1e-6;   /* 5 m of pair: 2 × 0.7 µH/m + 2 × 0.35 mΩ/m, ASSUMED */
   llc_step(&s->l, &s->c, false, 0.0f, 400.0f, 0.0f, (float)s->vbus);
   s->f = s->l.f_hz; s->t_per = 1.0 / s->f;
@@ -277,8 +386,9 @@ static void lsim_run(lsim_t *s, double sec, bool rec) {
   for (long k = 0, steps = lround(sec / dt); k < steps; k++) {
     if (k % 2000 == 0) {   /* the 100 µs control period: the regulator and the modulator */
       double vout = s->iout > 0.0 ? s->vo - s->vf : s->vo;
+      /* E82 (M-30): the plant inversion app.c applies — v_scale divided into the modulator's own sensitivity */
       float u = pmp_reg_step(&s->r, &s->rc, true, (float)s->v_ref, (float)s->i_ref, (float)fmin(vout, s->vo), (float)s->iout,
-                             500.0f, (float)s->i_scale, 100e-6f);
+                             (float)s->v_scale * (s->l.k_norm > 0.0f ? s->l.k_norm : 1.0f), (float)s->i_scale, 100e-6f);
       s->l.in_v_ref = (float)s->v_ref;   /* E81 (F-E-08): the burst floor rides the node's reference */
       llc_step(&s->l, &s->c, true, u, (float)s->vo, (float)(s->vo * s->iout), (float)s->vbus);
     }
@@ -365,6 +475,70 @@ static void llc_tests(void) {
        §5.4 battery class is 0.3 Ω incremental — 0.1 Ω is the stiffest case, not the operating one. */
     ck("llc 50 kW CC: 100 A into a 350 V battery (0.1 Ω) holds within ±2 A, under 45 A peak to peak on the DRAWN 61.6 uF bank (200 uF plant: 30 A · E78 gains: 81 A · HIL target 10 A)",
        fabs(sum / 500 - 100.0) < 2.0 && imax - imin < 45.0); }
+
+  { /* E82 (M-30): the gain-margin table this fix exists for. The discrete voltage loop reaches −180° at Nyquist through its
+       own one-sample compute delay alone (at light load the film-only bank puts no pole below 5 kHz), so the margin is
+       |T(z = −1)| = (kp_v + ki_v·dt/2) · (dV/du) / v_scale, and it must stay below 1. dV/du here is differentiated from the
+       FHA gain of the tank against llc_step's OWN duty and frequency, so this check does not share llc.c's arithmetic. */
+    int ok = 1; double worst_on = 0.0, worst_off = 0.0;
+    pmp_reg_cfg_t rc; pmp_reg_cfg_default(&rc);
+    const double coef = rc.kp_v + rc.ki_v * 100e-6 / 2.0;
+    const int KW3[3] = { 30, 40, 50 };
+    for (int n = 0; n < 3; n++) {
+      llc_cfg_t c; llc_cfg_default(&c, (uint16_t)KW3[n]);
+      double ln = (double)c.lm_h * 2.0 * PI * c.fr_hz / c.z0_ohm;
+      for (int m = 0; m < 2; m++) {                       /* m 0 = PAR (v_scale 500), 1 = SER (1000) */
+        double vsc = m ? 1000.0 : 500.0;
+        for (int b = 0; b < 2; b++) {                     /* the two bus references bus_ref_for() can return */
+          double vbus = b ? 830.0 : 650.0;
+          llc_t l; memset(&l, 0, sizeof l);
+          for (int k = 1; k < 100; k++) {
+            double u = k * 0.01, du = 1e-3, g[2];
+            for (int j = 0; j < 2; j++) {                 /* the tank's open-circuit output for u and u + du */
+              llc_t t; memset(&t, 0, sizeof t);
+              llc_step(&t, &c, true, (float)(u + j * du), 300.0f, 0.0f, (float)vbus);
+              double fn = t.f_hz / c.fr_hz, mg = ln * fn * fn / ((ln + 1.0) * fn * fn - 1.0);
+              g[j] = sin(PI * t.duty / 2.0) * mg * vbus / c.n * (m ? 2.0 : 1.0);
+            }
+            double dvdu = fabs(g[1] - g[0]) / du;
+            llc_step(&l, &c, true, (float)u, 300.0f, 0.0f, (float)vbus);   /* the same point, for its published k_norm */
+            for (int q = 0; q < 3000; q++) llc_step(&l, &c, true, (float)u, 300.0f, 0.0f, (float)vbus);  /* settle the 50 ms k_norm estimate */
+            double on = coef * dvdu / (vsc * l.k_norm), off = coef * dvdu / vsc;
+            if (on > worst_on) worst_on = on;
+            if (off > worst_off) worst_off = off;
+          }
+        }
+      }
+    }
+    if (worst_on >= 0.43) ok = 0;
+    printf("      CV |T(z=-1)| worst over 30/40/50 kW x PAR/SER x 650/830 V bus x u 0.01-0.99: %.2f (%.1f dB GM)"
+           " · without the E82 normalisation %.2f (%.1f dB)\n",
+           worst_on, -20.0 * log10(worst_on), worst_off, -20.0 * log10(worst_off));
+    ck("E82 M-30: the CV loop keeps |T(z=-1)| under 0.43 (>= 7.3 dB of gain margin) at every point of the demand map, on every SKU, mode and bus reference — it exceeded 1 before",
+       ok && worst_off > 1.0); }
+
+  { /* E82 (M-30): the corner that limit-cycled. One fixed CV PI pair drove a modulator whose sensitivity dV/du spans 23×
+       over the envelope; in deep phase shift |T(z = −1)| crossed 1 and the loop ran a 5 kHz period-2 cycle, 0–160 V pk-pk
+       on these very functions. llc_step now publishes that sensitivity (k_norm) and the caller divides its voltage-loop
+       gain by it wherever it exceeds the ceiling the gains were validated against; below the ceiling nothing changes.
+       PAR 150/200/250 V is the cable-check and pre-charge band of every low-voltage pack, and the light-load rows are the
+       ones that were unstable. Without the normalisation these rows ring; the band below is 3 % of the setpoint. */
+    int ok = 1; double worst = 0.0; const double V[3] = { 150.0, 200.0, 250.0 };
+    for (int n = 0; n < 3; n++) for (int f = 0; f < 3; f++) {
+      static lsim_t s; lsim_init_sku(&s, 50, true);
+      double frac = (f == 0) ? 0.02 : (f == 1) ? 0.20 : 1.00;
+      s.vbus = 650.0;                                  /* fsm.c bus_ref_for() for a bank under 309 V */
+      s.load_r = V[n] * V[n] / (fmin(50e3, V[n] * 166.7) * frac);
+      s.i_ref = 175.0; s.v_ref = V[n]; s.vo = V[n];
+      lsim_run(&s, 0.30, false);
+      double lo = 1e9, hi = 0.0;
+      for (int k = 0; k < 400; k++) { lsim_run(&s, 100e-6, true); lo = fmin(lo, s.vo); hi = fmax(hi, s.vo); }
+      double ripple = (hi - lo) / V[n];
+      if (ripple > worst) worst = ripple;
+      if (ripple > 0.03) { ok = 0; printf("      PAR %.0f V at %.0f %% load: %.1f–%.1f V (%.1f %% pk-pk)\n", V[n], frac * 100, lo, hi, ripple * 100); }
+    }
+    printf("      PAR 150/200/250 V x 2/20/100 %% load: worst ripple %.2f %% of setpoint\n", worst * 100);
+    ck("E82 M-30: the CV loop holds PAR 150 / 200 / 250 V at 2, 20 and 100 % load without a limit cycle (worst pk-pk <= 3 %)", ok); }
 
   { /* E80: the §5.5 current-step targets through the documented shaper slews (up 1000 A/s, down i_rated / 0.08 s):
        10 → 90 % of rated into the battery, t90 ≤ 150 ms up and ≤ 100 ms down, overshoot ≤ 2 % of rated */
@@ -523,48 +697,84 @@ static void meas_tests(void) {
   ck("grid: loss of line publishes 0 Hz within 80 ms and 0 V within 150 ms", lost && g.hz == 0.0f && g.vll[0] < 1.0f);
 }
 
-/* ================================================================ NVM on a RAM flash with power cuts */
+/* ================================================================ NVM on a RAM flash with power cuts
+ * E82 (C-04): this model is the GD32G553 FMC, not a byte array. The part programs 64-bit ROWS with ECC over each and
+ * refuses a row that is not erased — UM §2.3.8 ("before the double-word programming operation you should check the
+ * address that it has been erased. If the address has not been erased, PGERR bit will set") and FMC_STAT PGERR bit 3
+ * ("When programming to the flash while it is not 0xFFFF FFFF FFFF FFFF, this bit is set by hardware"); an all-FF write
+ * is bypassed and leaves the row erased and programmable (UM §2.3.2 note 6). The byte-granular model this replaces made
+ * every power-cut sweep below pass while the store could not write its FIRST record on the target.
+ * The 4-byte-run packing is copied from port/gd32g553/nvmport.c so the sweeps exercise the real path, and the power
+ * budget counts ROWS and erases — the unit the hardware actually tears at. */
 #define PG 1024u
-static uint8_t flash[2][PG];
-static long budget = -1, progd = 0;   /* programmed bytes and erases left before the power fails (−1 = never) */
+#define NPG 6u                        /* 0,1 records · 2..5 the event ring */
+static uint8_t flash[NPG][PG];
+static bool rowp[NPG][PG / 8u];       /* this row has been programmed: a second program of it raises PGERR */
+static long budget = -1, progd = 0;   /* row programs and erases left before the power fails (−1 = never) */
+static long pgerr = 0;                /* rows the part refused — must stay 0 for every layout this store writes */
 static bool dead = false;
 
 bool nvm_port_read(uint8_t page, uint32_t off, uint8_t *p, uint32_t n) {
-  if (page > 1u || off + n > PG) return false;
+  if (page >= NPG || off + n > PG) return false;
   memcpy(p, flash[page] + off, n);
   return true;
 }
+static bool row_prog(uint8_t page, uint32_t base, uint32_t lo, uint32_t hi) {
+  uint32_t r = base / 8u;
+  if (dead) return false;
+  if (lo == 0xFFFFFFFFu && hi == 0xFFFFFFFFu) return true;   /* bypassed: no ECC written, the row stays erased */
+  if (rowp[page][r]) { pgerr++; return false; }               /* PGERR: the row is not erased */
+  if (budget == 0) { dead = true; rowp[page][r] = true; return false; }   /* torn: the row is left indeterminate */
+  if (budget > 0) budget--;
+  uint8_t *m = flash[page] + base;
+  for (int k = 0; k < 4; k++) m[k] &= (uint8_t)(lo >> (8 * k));
+  for (int k = 0; k < 4; k++) m[4 + k] &= (uint8_t)(hi >> (8 * k));
+  rowp[page][r] = true;
+  progd++;
+  return true;
+}
 bool nvm_port_prog(uint8_t page, uint32_t off, const uint8_t *p, uint32_t n) {
-  if (page > 1u || off + n > PG || dead) return false;
-  for (uint32_t k = 0; k < n; k++) {
-    if (budget == 0) { dead = true; return false; }
-    if (budget > 0) budget--;
-    flash[page][off + k] &= p[k];   /* flash: bits only clear */
-    progd++;
+  if (page >= NPG || off + n > PG || (off & 3u) || (n & 3u) || dead) return false;
+  uint32_t a = off;
+  while (n) {                         /* the packing in nvmport.c, verbatim */
+    uint32_t lo = 0xFFFFFFFFu, hi = 0xFFFFFFFFu, base = a & ~7u;
+    if (a & 4u) { for (int k = 0; k < 4; k++) hi = (hi & ~(0xFFu << (8 * k))) | ((uint32_t)p[k] << (8 * k)); }
+    else {
+      for (int k = 0; k < 4; k++) lo = (lo & ~(0xFFu << (8 * k))) | ((uint32_t)p[k] << (8 * k));
+      if (n >= 8u) { hi = 0u; for (int k = 0; k < 4; k++) hi |= (uint32_t)p[4 + k] << (8 * k); }
+    }
+    uint32_t used = (a & 4u) ? 4u : (n >= 8u ? 8u : 4u);
+    if (!row_prog(page, base, lo, hi)) return false;
+    a += used; p += used; n -= used;
   }
   return true;
 }
 bool nvm_port_erase(uint8_t page) {
-  if (page > 1u || dead) return false;
+  if (page >= NPG || dead) return false;
   if (budget == 0) { dead = true; memset(flash[page], 0xFF, PG / 3); return false; }   /* cut part-way through the erase */
   if (budget > 0) budget--;
   memset(flash[page], 0xFF, PG);
+  memset(rowp[page], 0, sizeof rowp[page]);
   return true;
 }
 static void power(long b) { budget = b; dead = false; }
+static void wipe(void) { memset(flash, 0xFF, sizeof flash); memset(rowp, 0, sizeof rowp); pgerr = 0; power(-1); }
 static void pay(uint8_t *b, uint8_t kind, uint32_t ver) { for (int k = 0; k < 40; k++) b[k] = (uint8_t)(kind * 31u + ver * 7u + (uint32_t)k); }
 
 static void nvm_tests(void) {
   ck("nvm: CRC-32 check value 0xCBF43926", pmp_crc32((const uint8_t *)"123456789", 9) == 0xCBF43926u);
   nvm_t s, m;
   uint8_t a[40], b[40], old[40];
-  memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
+  wipe(); nvm_mount(&s, 0u, PG);
   pay(a, 1, 1); bool put = nvm_put(&s, 1, a, 40, true);
   nvm_mount(&s, 0u, PG); bool got = nvm_get(&s, 1, b, 40) && memcmp(a, b, 40) == 0;
   long before = progd; bool same = nvm_put(&s, 1, a, 40, false) && progd == before;
   bool wrong = !nvm_get(&s, 1, b, 20) && !nvm_get(&s, 2, b, 40);
+  /* E82 (C-04): pgerr == 0 is the check the byte-granular model could not make. With the old 12-byte header the very
+     first record re-programmed the header's own row and `put` was false here. */
   ck("nvm: a blank part formats; a record survives a remount; an unchanged write programs nothing; a wrong length or kind reads nothing",
      put && got && same && wrong);
+  ck("nvm (E82 C-04): the store never programs a 64-bit flash row twice — the part refused nothing", pgerr == 0);
 
   { uint32_t ver[4] = { 0, 0, 0, 0 }, gen0 = s.page_seq; int ok = 1;
     for (uint32_t w = 0; w < 120; w++) {
@@ -573,14 +783,14 @@ static void nvm_tests(void) {
       nvm_mount(&m, 0u, PG);
       for (uint8_t k = 0; k < 4; k++) if (ver[k]) { pay(a, k, ver[k]); if (!nvm_get(&m, k, b, 40) || memcmp(a, b, 40)) ok = 0; }
     }
-    ck("nvm: 120 writes over four kinds compact the store repeatedly; every remount reads the newest of each", ok && s.page_seq >= gen0 + 5u); }
+    ck("nvm: 120 writes over four kinds compact the store repeatedly; every remount reads the newest of each", ok && s.page_seq >= gen0 + 5u && pgerr == 0); }
 
-  { int ok = 1, cases = 0; static uint8_t snap[2][PG];
-    memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
+  { int ok = 1, cases = 0; static uint8_t snap[NPG][PG]; static bool snapr[NPG][PG / 8u];
+    wipe(); nvm_mount(&s, 0u, PG);
     for (uint8_t k = 0; k < 4; k++) { pay(a, k, 1); nvm_put(&s, k, a, 40, true); }
-    memcpy(snap, flash, sizeof flash);
-    for (long cut = 0; cut <= 60; cut++, cases++) {
-      memcpy(flash, snap, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
+    memcpy(snap, flash, sizeof flash); memcpy(snapr, rowp, sizeof rowp);
+    for (long cut = 0; cut <= 20; cut++, cases++) {   /* every 64-bit row of a 56-byte entry, and past it */
+      memcpy(flash, snap, sizeof flash); memcpy(rowp, snapr, sizeof rowp); power(-1); nvm_mount(&s, 0u, PG);
       pay(a, 1, 2); power(cut); bool r = nvm_put(&s, 1, a, 40, false); power(-1);
       nvm_mount(&m, 0u, PG); pay(old, 1, 1);
       bool v = nvm_get(&m, 1, b, 40) && (memcmp(b, a, 40) == 0 || (!r && memcmp(b, old, 40) == 0));
@@ -588,14 +798,16 @@ static void nvm_tests(void) {
       pay(a, 3, 9); bool after = nvm_put(&m, 3, a, 40, true) && nvm_get(&m, 3, b, 40) && memcmp(a, b, 40) == 0;
       if (!v || !after) ok = 0;
     }
-    ck("nvm: a power cut at every byte of an append leaves the old or the new record, the others intact, the store writable", ok && cases == 61); }
+    ck("nvm: a power cut at every 64-bit row of an append leaves the old or the new record, the others intact, the store writable", ok && cases == 21); }
 
-  { int ok = 1; long cases = 0; static uint8_t snap[2][PG]; uint32_t vv[4] = { 0, 0, 0, 0 }, w = 0;
-    memset(flash, 0xFF, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
-    while (s.wr + 52u <= PG) { uint8_t k = (uint8_t)(w++ % 4u); vv[k]++; pay(a, k, vv[k]); nvm_put(&s, k, a, 40, false); }
-    memcpy(snap, flash, sizeof flash);
-    for (long cut = 0; cut <= 240; cut++, cases++) {   /* erase · three copies · the new entry · header · old erase, and past it */
-      memcpy(flash, snap, sizeof flash); power(-1); nvm_mount(&s, 0u, PG);
+  { int ok = 1; long cases = 0; static uint8_t snap[NPG][PG]; static bool snapr[NPG][PG / 8u]; uint32_t vv[4] = { 0, 0, 0, 0 }, w = 0;
+    wipe(); nvm_mount(&s, 0u, PG);
+    /* bounded: a store that cannot append must FAIL this check, not spin here for ever */
+    while (s.wr + 56u <= PG && w < 100u) { uint8_t k = (uint8_t)(w++ % 4u); vv[k]++; pay(a, k, vv[k]); if (!nvm_put(&s, k, a, 40, false)) break; }
+    ok = w < 100u && !s.full;
+    memcpy(snap, flash, sizeof flash); memcpy(snapr, rowp, sizeof rowp);
+    for (long cut = 0; cut <= 40; cut++, cases++) {   /* erase · three copies · the new entry · header · old erase, and past it */
+      memcpy(flash, snap, sizeof flash); memcpy(rowp, snapr, sizeof rowp); power(-1); nvm_mount(&s, 0u, PG);
       pay(a, 2, vv[2] + 1u); power(cut); bool r = nvm_put(&s, 2, a, 40, true); power(-1);
       nvm_mount(&m, 0u, PG); pay(old, 2, vv[2]);
       bool v = nvm_get(&m, 2, b, 40) && (memcmp(b, a, 40) == 0 || (!r && memcmp(b, old, 40) == 0));
@@ -603,7 +815,27 @@ static void nvm_tests(void) {
       pay(a, 0, 77); bool after = nvm_put(&m, 0, a, 40, true) && nvm_get(&m, 0, b, 40) && memcmp(a, b, 40) == 0;
       if (!v || !after) ok = 0;
     }
-    ck("nvm: a power cut at every step of a compaction leaves one complete generation (old or new record, the rest intact)", ok && cases == 241); }
+    ck("nvm: a power cut at every step of a compaction leaves one complete generation (old or new record, the rest intact)", ok && cases == 41); }
+
+  /* E82: the event ring shares this flash and this rule — it was never covered by a test at all. Its 16-byte header and
+     16-byte entries are already row-clean; the point of the check is that they STAY so, and that a storm of one repeated
+     event costs one slot per flush instead of filling the queue with copies of itself (G-21). */
+  { evlog_t l;
+    wipe(); evlog_mount(&l, 2u, 4u, PG);
+    for (int k = 0; k < 40; k++) { evlog_add(&l, 1u, (uint8_t)k, (uint16_t)k, (uint32_t)k); evlog_flush(&l, true); }
+    evlog_t m;
+    evlog_mount(&m, 2u, 4u, PG);
+    evlog_entry_t e;
+    bool newest = evlog_read(&m, 0u, &e) && e.code == 39u && e.arg == 39u;
+    ck("evlog: 40 events across a ring that moves pages survive a remount, newest first, and never re-program a flash row",
+       newest && evlog_count(&m) == 40u && pgerr == 0 && !l.io_err);
+
+    wipe(); evlog_mount(&l, 2u, 4u, PG);
+    for (int k = 0; k < 500; k++) evlog_add(&l, 3u, 7u, 0u, (uint32_t)k);   /* one chattering fault, every tick */
+    uint8_t queued = l.qn;
+    evlog_flush(&l, true);
+    ck("evlog (E82 G-21): a repeated event already in the queue is not queued again — a storm costs one slot per flush, not sixteen",
+       queued == 1u && l.lost == 0u && evlog_count(&l) == 1u); }
 }
 
 int main(void) {

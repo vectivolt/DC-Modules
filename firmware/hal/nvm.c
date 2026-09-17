@@ -2,13 +2,17 @@
 #include "nvm.h"
 #include <string.h>
 
-#define HDR_LEN   12u
+/* E82 (C-04): the flash programs, and carries ECC over, 64-bit rows, and refuses a row that is not erased (GD32G553 UM
+ * §2.3.8 / FMC_STAT PGERR). Every offset this file hands the port must therefore start a fresh row: a 16-byte header and
+ * entries padded to a multiple of 8 keep the CRC — the commit marker — alone in the last row of its entry, programmed
+ * after the payload. The old 12-byte header put the first entry in the header's own upper half and nothing ever stored. */
+#define HDR_LEN   16u
 #define NVM_MAGIC 0x314D564Eu   /* "NVM1" */
-#define ENTRY_MAX (8u + NVM_MAX_LEN + 3u + 4u)
+#define ENTRY_MAX ((8u + NVM_MAX_LEN + 4u + 7u) & ~7u)
 
 static void put32(uint8_t *b, uint32_t v) { b[0] = (uint8_t)v; b[1] = (uint8_t)(v >> 8); b[2] = (uint8_t)(v >> 16); b[3] = (uint8_t)(v >> 24); }
 static uint32_t get32(const uint8_t *b) { return (uint32_t)b[0] | ((uint32_t)b[1] << 8) | ((uint32_t)b[2] << 16) | ((uint32_t)b[3] << 24); }
-static uint32_t entry_len(uint32_t len) { return 8u + ((len + 3u) & ~3u) + 4u; }
+static uint32_t entry_len(uint32_t len) { return (8u + ((len + 3u) & ~3u) + 4u + 7u) & ~7u; }
 
 uint32_t pmp_crc32(const uint8_t *p, size_t n) {
   uint32_t c = 0xFFFFFFFFu;
@@ -25,6 +29,7 @@ static bool read_hdr(uint8_t page, uint32_t *seq) {
 
 static bool write_hdr(uint8_t page, uint32_t seq) {
   uint8_t h[HDR_LEN], chk[HDR_LEN];
+  memset(h, 0xFF, sizeof h);                       /* E82 (C-04): the tail of the second row is pad, not stack */
   put32(h, NVM_MAGIC); put32(h + 4, seq); put32(h + 8, pmp_crc32(h, 8u));
   return nvm_port_prog(page, 0u, h, HDR_LEN) && nvm_port_read(page, 0u, chk, HDR_LEN) && memcmp(h, chk, HDR_LEN) == 0;
 }
@@ -36,7 +41,7 @@ static bool append(uint8_t page, uint32_t off, uint8_t kind, const uint8_t *buf,
   e[0] = kind; e[1] = len; e[2] = 0x5Au; e[3] = 0xA5u; put32(e + 4, seq);
   memcpy(e + 8, buf, len);
   uint32_t crc = pmp_crc32(e, n);
-  while (n & 3u) e[n++] = 0xFFu;
+  while (n + 4u < entry_len(len)) e[n++] = 0xFFu;   /* E82 (C-04): pad so the CRC lands at tot − 4, alone in the last row */
   put32(e + n, crc); n += 4u;
   return nvm_port_prog(page, off, e, n) && nvm_port_read(page, off, chk, n) && memcmp(e, chk, n) == 0;
 }

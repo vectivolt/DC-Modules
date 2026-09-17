@@ -53,6 +53,12 @@
   {
    "status": "ok",
    "tag": "RESERVOIR",
+   "name": "output studs 4.7 J @1000 V behind DOUT",
+   "detail": "3 × 150 k across OUTP–OUTN → τ 4.2 s, 1000 → 60 V in 12 s (was 101 s on the sense divider alone) · 0.74 W and 333 V per element at 1000 V out — firmware CANNOT substitute for this: the blocking diode is in every commanded path, which is why the seven-question test passes a part here"
+  },
+  {
+   "status": "ok",
+   "tag": "RESERVOIR",
    "name": "tank caps (E67 full bridge, 11 × 33 nF worst)",
    "detail": "136 mJ — three orders below any pulse rating; rings down in the tank R"
   },

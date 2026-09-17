@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/owner-bom--gen.mjs-5f8fc0?style=flat-square" alt="owner: bom-gen.mjs"/>
 </p>
@@ -36,10 +36,10 @@
 
 | Build | ₹ @10k | ₹ / kW | China RFQ target ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict (India basis) |
 |---|---:|---:|---:|---:|---:|---:|---|
-| 30 kW module | **31,533** | 1,051 | 25,852 | 862 | 25,000 | 22,000 | ⚠️ over by ₹6,533 |
-| 40 kW module | **35,970** | 899 | 29,418 | 735 | 33,000 | 29,000 | ⚠️ over by ₹2,970 |
-| 50 kW liquid module | **42,628** | 853 | 34,922 | 698 | 43,000 | 39,000 | ✅ under by ₹372 |
-| 50 kW air module | **40,555** | 811 | 33,142 | 663 | 43,000 | 39,000 | ✅ under by ₹2,445 |
+| 30 kW module | **31,613** | 1,054 | 25,920 | 864 | 25,000 | 22,000 | ⚠️ over by ₹6,613 |
+| 40 kW module | **36,103** | 903 | 29,520 | 738 | 33,000 | 29,000 | ⚠️ over by ₹3,103 |
+| 50 kW liquid module | **42,761** | 855 | 35,023 | 700 | 43,000 | 39,000 | ✅ under by ₹239 |
+| 50 kW air module | **40,688** | 814 | 33,243 | 665 | 43,000 | 39,000 | ✅ under by ₹2,312 |
 
 ### Scenario — InfyPower-style 2U construction (E69e, not the design basis)
 
@@ -51,8 +51,8 @@ design and quotes exist.
 
 | Build | Design basis ₹ @10k | 2U scenario ₹ @10k | 2U scenario + China RFQ target |
 |---|---:|---:|---:|
-| 30 kW module | 31,533 | 29,611 | **24,288** |
-| 40 kW module | 35,970 | 34,034 | **27,833** |
+| 30 kW module | 31,613 | 29,691 | **24,356** |
+| 40 kW module | 36,103 | 34,167 | **27,936** |
 
 ## Cost per kW across the family
 
@@ -61,15 +61,15 @@ xychart-beta
   title "Build cost per kW at 10k volume (₹)"
   x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
   y-axis "₹ / kW" 0 --> 1200
-  bar [1051, 899, 853, 811]
+  bar [1054, 903, 855, 814]
 ```
 
 | Module | Cooling | ₹ @10k | **₹ / kW** |
 |---|---|---:|---:|
-| 30 kW module | air · 3 fans | 31,533 | **1051** |
-| 40 kW module | air · 3 fans | 35,970 | **899** |
-| 50 kW liquid module | two coldplates · no fans | 42,628 | **853** |
-| 50 kW air module | air · 4 fans | 40,555 | **811** |
+| 30 kW module | air · 3 fans | 31,613 | **1054** |
+| 40 kW module | air · 3 fans | 36,103 | **903** |
+| 50 kW liquid module | two coldplates · no fans | 42,761 | **855** |
+| 50 kW air module | air · 4 fans | 40,688 | **814** |
 
 Cost per kW falls from 30 to 40 to 50 kW because the control card, the enclosure, the AC entry and the auxiliary supply are
 shared content that does not grow with power. The two 50 kW twins share their electronics; the air twin is the cost headline,
@@ -82,10 +82,10 @@ its sourcing status.
 
 | Module | ₹ @10k | China target | 1k · 5k · 100 pcs | Lines | Page |
 |---|---:|---:|---|---:|---|
-| 30 kW module | **31,533** | 25,852 | 38,832 · 34,676 · 50,409 | 153 | [bom-30kw.md](bom-30kw.md) |
-| 40 kW module | **35,970** | 29,418 | 44,270 · 39,497 · 57,605 | 171 | [bom-40kw.md](bom-40kw.md) |
-| 50 kW liquid module | **42,628** | 34,922 | 52,325 · 46,738 · 67,870 | 175 | [bom-50kw.md](bom-50kw.md) |
-| 50 kW air module | **40,555** | 33,142 | 49,946 · 44,524 · 65,139 | 177 | [bom-50kwa.md](bom-50kwa.md) |
+| 30 kW module | **31,613** | 25,920 | 38,931 · 34,763 · 50,543 | 158 | [bom-30kw.md](bom-30kw.md) |
+| 40 kW module | **36,103** | 29,520 | 44,435 · 39,643 · 57,828 | 173 | [bom-40kw.md](bom-40kw.md) |
+| 50 kW liquid module | **42,761** | 35,023 | 52,491 · 46,884 · 68,093 | 177 | [bom-50kw.md](bom-50kw.md) |
+| 50 kW air module | **40,688** | 33,243 | 50,111 · 44,670 · 65,363 | 179 | [bom-50kwa.md](bom-50kwa.md) |
 
 ## Red-line closure levers (10k basis)
 
@@ -130,5 +130,5 @@ flag (R12).
 <div align="center">
 <sub><a href="../spice/README.md">← SPICE Simulation Suites</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="bom-30kw.md">30 kW Module BOM →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

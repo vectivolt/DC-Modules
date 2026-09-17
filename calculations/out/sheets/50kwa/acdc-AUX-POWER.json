@@ -108,9 +108,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "SIC-1700-1R",
-   "query": "SIC-1700-1R SiC FET 1700 V ~1 Ω ",
-   "mpn": "SIC-1700-1R"
+   "value": "SIC-1700-1R-G15",
+   "query": "SIC-1700-1R-G15 SiC FET 1700 V ~1 Ω **specified at V_GS 12–15 V** ",
+   "mpn": "SIC-1700-1R-G15"
   },
   {
    "designator": "RAUXCS",
@@ -419,7 +419,7 @@
    ],
    "nc_pins": [],
    "value": "470k",
-   "query": "R2512-HV 2512 HV-rated 1 % ",
+   "query": "R2512-HV 2512 HV-rated 1 %, **limiting element voltage ≥ 500 V** ",
    "mpn": "R2512-HV"
   },
   {
@@ -439,7 +439,7 @@
    ],
    "nc_pins": [],
    "value": "470k",
-   "query": "R2512-HV 2512 HV-rated 1 % ",
+   "query": "R2512-HV 2512 HV-rated 1 %, **limiting element voltage ≥ 500 V** ",
    "mpn": "R2512-HV"
   },
   {
@@ -459,7 +459,7 @@
    ],
    "nc_pins": [],
    "value": "1.2M",
-   "query": "R2512-HV 2512 HV-rated 1 % ",
+   "query": "R2512-HV 2512 HV-rated 1 %, **limiting element voltage ≥ 500 V** ",
    "mpn": "R2512-HV"
   },
   {
@@ -479,7 +479,7 @@
    ],
    "nc_pins": [],
    "value": "1.2M",
-   "query": "R2512-HV 2512 HV-rated 1 % ",
+   "query": "R2512-HV 2512 HV-rated 1 %, **limiting element voltage ≥ 500 V** ",
    "mpn": "R2512-HV"
   },
   {

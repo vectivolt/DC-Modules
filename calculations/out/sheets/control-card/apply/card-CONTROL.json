@@ -9,6 +9,7 @@
   "BUCK-3V3",
   "ANALOG-MID",
   "ROLE",
+  "ADC-FILTER",
   "CARD-IF"
  ],
  "chunks": [
@@ -1541,6 +1542,382 @@
   ],
   [
    {
+    "designator": "CADC0",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC1",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC2",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC3",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC4",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN4"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC5",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN5"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC6",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN6"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC7",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN7"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC8",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN8"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC9",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN9"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC10",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN10"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC11",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN11"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC12",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AIN12"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC13",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "TSNS0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC14",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "TSNS1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC15",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA13"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC16",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA14"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC17",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC18",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA16"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC19",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA17"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC20",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA18"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "CADC21",
+    "value": "1nF",
+    "block_name": "ADC-FILTER",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "ANA19"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
+   }
+  ],
+  [
+   {
     "designator": "JCARD",
     "value": "CONN-CARD-88-R",
     "block_name": "CARD-IF",
@@ -1971,5 +2348,5 @@
   ]
  },
  "warnings": [],
- "total": 55
+ "total": 77
 }

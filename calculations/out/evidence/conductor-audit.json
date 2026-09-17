@@ -48,7 +48,7 @@
    "status": "ok",
    "tag": "D2",
    "name": "40kw 2×E70 N 5, litz 10000×0.05 @203 kHz",
-   "detail": "MLT 218 mm · Rdc 0.98 mΩ @25 °C (row ≤1.1) · Sullivan Fr 2.49 → Rac 3.14 mΩ hot (row ≤3.45) → Cu 27.3 W at 93.3 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
+   "detail": "MLT 218 mm · Rdc 0.98 mΩ @25 °C (row ≤1.1) · Sullivan Fr 2.49 → Rac 3.14 mΩ hot (row ≤3.45) → Cu 27.4 W at 93.4 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
   },
   {
    "status": "ok",
@@ -78,13 +78,13 @@
    "status": "ok",
    "tag": "D3",
    "name": "40kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz",
-   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.8 A rms each (SER250-full-bus764; optimum 0.1 mm = 26 W)"
+   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.9 A rms each (SER250-full-bus764; optimum 0.1 mm = 26.1 W)"
   },
   {
    "status": "ok",
    "tag": "D3",
    "name": "40kw cell profiled-litz primary 3536×0.071 mm",
-   "detail": "Sullivan (interleaved k 0.25) Fr 1.25 → 19.1 W at 93.3 A rms"
+   "detail": "Sullivan (interleaved k 0.25) Fr 1.25 → 19.1 W at 93.4 A rms"
   },
   {
    "status": "ok",

@@ -1,6 +1,10 @@
-/* svc.h — E80 the VMP service space (identifier bit 24 = 1): firmware update and boot control, reachable in every protocol
- * profile. Portable C99, sans-IO. One state machine runs in the application (SELECT, INFO, ENTER, RESET) and in the bootloader
- * (all functions); the host supplies information, flash and verification through svc_port_* (link-time, like hal/nvm.h).
+/* svc.h — E80 the VMP service space (identifier bit 24 = 1): firmware update and boot control. Portable C99, sans-IO. The
+ * state machine runs in the BOOTLOADER only (svc_init / svc_rx are called from port/gd32g553/boot_main.c and nowhere else);
+ * the host supplies information, flash and verification through svc_port_* (link-time, like hal/nvm.h).
+ * E82 (G-10): the E80 sentence here claimed the application ran SELECT / INFO / ENTER / RESET and that the space was
+ * "reachable in every protocol profile" — neither was true. The way INTO the bootloader is a sealed HANDOFF_ENTER: the VMP
+ * ENTER_BOOT action on the native profile, or both panel buttons held for 3 s inside the first 10 s after power-up on any
+ * profile (hal/app.c panel()) — the only route a TonHe-profile module has.
  *
  * Identifier: priority 6 · native 1 · space 1 · function · destination · source (docs/can-protocol.md §10). A tool (source
  * 0x01–0x0F) broadcasts every request (destination 0xFF): it SELECTs one module by UID, and only the selected module acts on

@@ -71,7 +71,7 @@ static void tonhe_tests(void) {
      th12_id(6, 0x05, 0xFF, 0xA0) == 0x1805FFA0u && th12_id(2, 0x06, 0x01, 0xA0) == 0x080601A0u && th12_id(6, 0x09, 0xFF, 0xA0) == 0x1809FFA0u &&
      th12_id(7, 0x90, 0xFF, 0xA0) == 0x1C90FFA0u && th12_id(6, 0xAA, 0xFF, 0xA0) == 0x18AAFFA0u);
 
-  th12_init(&t, 0, 0, 1, 1000); m = tlm(); m.rs = MOD_RS_ON; m.v_out = 400.0f; m.i_out = 100.0f;
+  th12_init(&t, 0, 0, 1, 0, 1000); m = tlm(); m.rs = MOD_RS_ON; m.v_out = 400.0f; m.i_out = 100.0f;
   { pmp_frame_t f; th12_enc_state(&t, &m, 1000, &f); const uint8_t g[8] = { 0x01, 0xa0, 0x0f, 0x10, 0x27, 0x00, 0x00, 0x00 };
     ck("TonHe: A.2.1 state frame (ON, 400 V, 100 A, no fault) is byte-exact", f.id == 0x1801A001u && f.dlc == 8u && !memcmp(f.data, g, 8)); }
 
@@ -85,29 +85,29 @@ static void tonhe_tests(void) {
     ck("TonHe: §9.1.3 AC frame (227.7 / 228.1 / 226.3 V, 24 °C) is byte-exact", f.id == 0x180BA001u && !memcmp(f.data, g, 8)); }
 
   { const uint8_t d[8] = { 0x07, 0, 0, 0xAA, 0, 0, 0, 0 }; pmp_frame_t f = mk(0x0803FFA0u, 8, d); m = tlm();
-    th12_t a, b; th12_init(&a, 0, 0, 2, 1000); th12_init(&b, 0, 0, 5, 1000);
+    th12_t a, b; th12_init(&a, 0, 0, 2, 0, 1000); th12_init(&b, 0, 0, 5, 0, 1000);
     th12_rx(&a, &f, 1000, &m, &cmd, &q); th12_rx(&b, &f, 1000, &m, &cmd, &q);
     ck("TonHe: A.2.2 broadcast start of modules 1–3 starts module 2, not module 5", a.run && !b.run); }
 
   { const uint8_t d[8] = { 0x07, 0, 0, 0x00, 0xa0, 0x0f, 0x10, 0x27 }; pmp_frame_t f = mk(0x1004FFA0u, 8, d); m = tlm();
-    th12_t a, b; th12_init(&a, 0, 0, 3, 1000); th12_init(&b, 0, 0, 4, 1000);
+    th12_t a, b; th12_init(&a, 0, 0, 3, 0, 1000); th12_init(&b, 0, 0, 4, 0, 1000);
     th12_rx(&a, &f, 1000, &m, &cmd, &q); th12_rx(&b, &f, 1000, &m, &cmd, &q);
     ck("TonHe: A.2.3 parameter setting 400 V / 100 A reaches module 3 only",
        fabsf(a.v_set - 400.0f) < 0.01f && fabsf(a.i_set - 100.0f) < 0.01f && b.v_set == 0.0f); }
 
   { const uint8_t d[8] = { 0xaa, 0x01, 0xa0, 0x0f, 0x10, 0x27, 0x00, 0x00 }; pmp_frame_t f = mk(0x080601A0u, 8, d); m = tlm();
-    th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q); th12_rx(&t, &f, 1000, &m, &cmd, &q);
+    th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q); th12_rx(&t, &f, 1000, &m, &cmd, &q);
     int n = drain(&q); const uint8_t g[8] = { 0x01, 0, 0, 0, 0, 0, 0, 0 };
     ck("TonHe: A.2.4 start of module 1 (mode byte 0x01 tolerated) runs 400 V / 100 A and confirms 0802a001 01",
        t.run && fabsf(t.v_set - 400.0f) < 0.01f && n == 1 && out[0].id == 0x0802A001u && !memcmp(out[0].data, g, 8)); }
 
   { const uint8_t d1[8] = { 0x20, 0, 0, 0x01, 0xa0, 0x0f, 0x10, 0x27 }, d0[8] = { 0x20, 0, 0, 0x00, 0xa0, 0x0f, 0x10, 0x27 }; m = tlm();
-    th12_t a, b; th12_init(&a, 0, 0, 30, 1000); th12_init(&b, 0, 0, 30, 1000);
+    th12_t a, b; th12_init(&a, 0, 0, 30, 0, 1000); th12_init(&b, 0, 0, 30, 0, 1000);
     pmp_frame_t f1 = mk(0x1004FFA0u, 8, d1), f0 = mk(0x1004FFA0u, 8, d0);
     th12_rx(&a, &f1, 1000, &m, &cmd, &q); th12_rx(&b, &f0, 1000, &m, &cmd, &q);
     ck("TonHe: the address multiple selects the 24-address window (module 30 = multiple 1, bit 5)", a.v_set > 0.0f && b.v_set == 0.0f); }
 
-  { const uint8_t aa[8] = { 0xaa, 0x00, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }; m = tlm(); th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  { const uint8_t aa[8] = { 0xaa, 0x00, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }; m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     pmp_frame_t f = mk(0x080601A0u, 8, aa); th12_rx(&t, &f, 1000, &m, &cmd, &q);
     th12_tick(&t, 20999, &m, &cmd, &q);
     int alive = !t.comm_lost && t.run && cmd.run && cmd.age_ms == 19999u && cmd.timeout_ms == 20000u;
@@ -116,7 +116,7 @@ static void tonhe_tests(void) {
     ck("TonHe: 19.999 s of silence keeps the session; 20.001 s ends it (run and setpoints cleared, CAN-timeout bit)",
        alive && t.comm_lost && !t.run && !cmd.run && t.v_set == 0.0f && (pmp_get16(e.data + 2) & (1u << 2))); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 7, 1000); memset(&q, 0, sizeof q);
+  { m = tlm(); th12_init(&t, 0, 0, 7, 0, 1000); memset(&q, 0, sizeof q);
     const uint8_t set12[8] = { 12, 0, 0, 0, 0, 0, 0, 0 }, manual[8] = { 1, 0, 0, 0, 0, 0, 0, 0 }, autom[8] = { 0 }, set20[8] = { 20, 0, 0, 0, 0, 0, 0, 0 };
     pmp_frame_t fs = mk(0x1809FFA0u, 8, set12), fm = mk(0x1C90FFA0u, 8, manual), fa = mk(0x1C90FFA0u, 8, autom), f20 = mk(0x1809FFA0u, 8, set20);
     th12_rx(&t, &fs, 1000, &m, &cmd, &q); int stays = th12_addr(&t) == 7 && t.addr_can == 12;
@@ -125,14 +125,14 @@ static void tonhe_tests(void) {
     ck("TonHe: address set is stored but automatic mode keeps the local address; manual puts it in force; neither changes while delivering",
        stays && manual_ok && t.addr_mode == 1 && th12_addr(&t) == 12); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 1, 1000);
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000);
     const uint8_t dc[8] = { 0 }, ac[8] = { 1, 0, 0, 0, 0, 0, 0, 0 };
     pmp_frame_t fdc = mk(0x18AAFFA0u, 8, dc), fac = mk(0x18AAFFA0u, 8, ac);
     th12_rx(&t, &fdc, 1000, &m, &cmd, &q); th12_rx(&t, &fac, 1000, &m, &cmd, &q);
     pmp_frame_t e; th12_enc_ext(&t, &m, &e);
     ck("TonHe: DC input mode is refused (counted) and the module keeps reporting AC input", t.unsupported == 1u && !(pmp_get16(e.data) & (1u << 3))); }
 
-  { m = tlm(); m.rs = MOD_RS_ON; th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  { m = tlm(); m.rs = MOD_RS_ON; th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     int nst = 0, nac = 0, next = 0, lat = -1; const uint8_t tm[8] = { 0 };
     for (uint32_t now = 1000; now < 11000; now++) {
       if ((now - 1000u) % 5000u == 0u) { pmp_frame_t f = mk(0x1805FFA0u, 8, tm); th12_rx(&t, &f, now, &m, &cmd, &q); }
@@ -148,7 +148,7 @@ static void tonhe_tests(void) {
     ck("TonHe: 10 s gives 20±2 state, AC and extended frames; a new fault is reported within 50 ms",
        nst >= 20 && nst <= 23 && nac >= 19 && nac <= 21 && next >= 19 && next <= 22 && lat >= 0 && lat <= 50); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     m.fault_bits = FB(3); pmp_frame_t f; th12_enc_state(&t, &m, 1000, &f);
     uint16_t w = pmp_get16(f.data + 5);
     int busov = (f.data[7] & 0x80) && (w & (1u << 11)) && (w & (1u << 7));
@@ -158,7 +158,7 @@ static void tonhe_tests(void) {
     ck("TonHe: umbrella rules — PFC bus OV sets PFC bit 7 and word bits 11 + 7; a 1 s output-OV warning sets bits 13 + 7",
        busov && (w & (1u << 13)) && (w & (1u << 7))); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q); t.run = true;
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q); t.run = true;
     const uint8_t st[8] = { 0x01, 0xa0, 0x0f, 0x10, 0x27, 0, 0, 0 }; pmp_frame_t f = mk(0x1801A001u, 8, st);
     th12_rx(&t, &f, 1000, &m, &cmd, &q); th12_tick(&t, 1001, &m, &cmd, &q); drain(&q);
     pmp_frame_t s; th12_enc_state(&t, &m, 1001, &s);
@@ -166,7 +166,12 @@ static void tonhe_tests(void) {
     th12_tick(&t, 11002, &m, &cmd, &q); drain(&q);
     ck("TonHe: a frame sent under this module's address flags a conflict (PFC bit 4) and blocks delivery until 10 s quiet", during && !t.conflict && cmd.run); }
 
-  { m = tlm(); m.i_out = 60.0f; th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  /* E82 (K-3): before this fix the transmit phase was address-only, so two modules mis-set to the same address computed
+     the identical phase and transmitted in lock-step forever. This fails without the fix (both a.t_state == b.t_state). */
+  { th12_t a, b; th12_init(&a, 0, 0, 9, 0x11111111u, 0); th12_init(&b, 0, 0, 9, 0x22222222u, 0);
+    ck("TonHe: two modules sharing an address but not a UID no longer share a transmit phase", a.t_state != b.t_state); }
+
+  { m = tlm(); m.i_out = 60.0f; th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     const uint8_t grp[8] = { 0x07, 0, 0, 0x00, 0xa0, 0x0f, 0x10, 0x27 }; pmp_frame_t g = mk(0x1004FFA0u, 8, grp);
     th12_rx(&t, &g, 1000, &m, &cmd, &q);
     uint8_t p2[8] = { 0x01, 0xa0, 0x0f, 0, 0, 0, 0, 0 }, p3[8] = { 0x01, 0xa0, 0x0f, 0, 0, 0, 0, 0 };
@@ -178,7 +183,7 @@ static void tonhe_tests(void) {
     ck("TonHe: group frames define the peers; their currents average with this module's (90 A of 3); an outsider and stale peers drop out",
        ok && cmd.peer_n == 0 && isnan(cmd.peer_avg_a)); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     const uint8_t z[8] = { 0xaa, 0, 0, 0, 0, 0, 0, 0 }; pmp_frame_t f = mk(0x080601A0u, 8, z); th12_rx(&t, &f, 1000, &m, &cmd, &q);
     int zero = t.v_set == 0.0f && fabsf(t.i_set - 1.0f) < 1e-3f;
     uint8_t lo[8] = { 0x01, 0, 0, 0x00, 0, 0, 0, 0 }; pmp_put16(lo + 4, 500); pmp_put16(lo + 6, 50000);
@@ -186,18 +191,28 @@ static void tonhe_tests(void) {
     ck("TonHe: zero volts means no setpoint; below-minimum and above-maximum requests serve the range edges (150 V, 1 A, 166.7 A)",
        zero && fabsf(t.v_set - 150.0f) < 1e-3f && fabsf(t.i_set - 166.7f) < 1e-3f); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     const uint8_t bad[8] = { 0x5A, 0, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }; pmp_frame_t f = mk(0x080601A0u, 8, bad); th12_rx(&t, &f, 1000, &m, &cmd, &q);
     int n = drain(&q);
     ck("TonHe: an invalid start/stop byte is confirmed 0x00 (not received) and changes nothing", n == 1 && out[0].data[0] == 0x00 && !t.run && t.v_set == 0.0f); }
 
-  { m = tlm(); th12_init(&t, 0, 0, 1, 1000); memset(&q, 0, sizeof q);
+  /* E82 (K-2): before this fix a short C_M_24 (here 5 of the 6 bytes §9.2.4 needs) was dropped with no reply at all —
+     indistinguishable from a bus glitch — and this same early return also skipped the t_rx presence update below,
+     which used to run unconditionally for any dlc >= 6 frame reaching this case. Fails on either half without the fix. */
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
+    const uint8_t shortss[8] = { 0xaa, 0, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }; pmp_frame_t f = mk(0x080601A0u, 5, shortss);
+    th12_rx(&t, &f, 5000, &m, &cmd, &q);
+    int n2 = drain(&q);
+    ck("TonHe: a short C_M_24 is confirmed 0x00 like a bad command byte, but does not refresh presence or run",
+       n2 == 1 && out[0].data[0] == 0x00 && !t.run && t.t_rx == 1000u); }
+
+  { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     const uint8_t tm[8] = { 0 }, aa[8] = { 0xaa, 0, 0xa0, 0x0f, 0x10, 0x27, 0, 0 };
     pmp_frame_t f = mk(0x1805FFA1u, 8, tm), g = mk(0x080601A1u, 8, aa);
     th12_rx(&t, &f, 9000, &m, &cmd, &q); th12_rx(&t, &g, 9000, &m, &cmd, &q);
     ck("TonHe: frames from any source other than the monitor 0xA0 neither refresh presence nor command", t.t_rx == 1000u && !t.run && drain(&q) == 0); }
 
-  { th12_t fz; m = tlm(); th12_init(&fz, 1, 1, 0, 0); memset(&q, 0, sizeof q); srand(99); int bad = 0;
+  { th12_t fz; m = tlm(); th12_init(&fz, 1, 1, 0, 0, 0); memset(&q, 0, sizeof q); srand(99); int bad = 0;
     static const uint8_t pfs[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x09, 0x0B, 0x90, 0x91, 0xAA, 0x77 };
     for (uint32_t k = 0; k < 1000000u; k++) {
       pmp_frame_t f; f.dlc = (uint8_t)(rand() % 9);
@@ -345,6 +360,11 @@ static void vmp_tests(void) {
     vact(&v, 2, 0x77, 0, 20, &m, &cmd, &q); int unk = reply(&q, 2, VMP_F_ACTION, NULL) == VMP_E_UNSUPPORTED_ITEM;
     m.rs = MOD_RS_ON; vact(&v, 3, VMP_A_REBOOT, VMP_KEY_REBOOT, 30, &m, &cmd, &q); int rbst = reply(&q, 3, VMP_F_ACTION, NULL) == VMP_E_STATE;
     m.rs = MOD_RS_READY; vact(&v, 4, VMP_A_REBOOT, VMP_KEY_REBOOT, 40, &m, &cmd, &q); int rbok = reply(&q, 4, VMP_F_ACTION, NULL) == VMP_OK && v.reboot_req;
+    /* E82 (K-4): STANDBY's post-stop warm-hold keeps the PFC switching well after rs has already dropped to READY.
+       Fails without the fix — delivering() alone reads MOD_RS_READY as idle and would let this through as rbok did. */
+    m.rs = MOD_RS_READY; m.pfc_en = true; v.reboot_req = false;
+    vact(&v, 16, VMP_A_REBOOT, VMP_KEY_REBOOT, 45, &m, &cmd, &q); int rbwarm = reply(&q, 16, VMP_F_ACTION, NULL) == VMP_E_STATE && !v.reboot_req;
+    m.pfc_en = false;
     vrw(&v, VMP_F_WRITE, 5, VMP_O_ADDR, 0x20, 50, &m, &cmd, &q); int locked = reply(&q, 5, VMP_F_WRITE, NULL) == VMP_E_LOCKED;
     vact(&v, 6, VMP_A_UNLOCK, 0x1234, 60, &m, &cmd, &q); int key = reply(&q, 6, VMP_F_ACTION, NULL) == VMP_E_KEY;
     vact(&v, 7, VMP_A_UNLOCK, VMP_KEY_UNLOCK, 70, &m, &cmd, &q); int unl = reply(&q, 7, VMP_F_ACTION, NULL) == VMP_OK;
@@ -357,8 +377,8 @@ static void vmp_tests(void) {
     vrw(&v, VMP_F_READ, 13, 0x7777, 0, 130, &m, &cmd, &q); int nobj = reply(&q, 13, VMP_F_READ, NULL) == VMP_E_UNSUPPORTED_ITEM;
     vrw(&v, VMP_F_WRITE, 14, VMP_O_PROTO, 1, 140, &m, &cmd, &q); int ro = reply(&q, 14, VMP_F_WRITE, NULL) == VMP_E_READ_ONLY;
     vrw(&v, VMP_F_WRITE, 15, VMP_O_ADDR, 0x20, 150, &m, &cmd, &q); int addr = reply(&q, 15, VMP_F_WRITE, NULL) == VMP_OK && v.cfg.addr == 0x20 && v.nv_dirty;
-    ck("VMP: ACTION / READ / WRITE — OK, unsupported, illegal-in-state, locked, bad key, range, read-only, and the applied values",
-       clr && unk && rbst && rbok && locked && key && unl && range && r2 && to && vmax && irat && nobj && ro && addr); }
+    ck("VMP: ACTION / READ / WRITE — OK, unsupported, illegal-in-state, locked, bad key, range, read-only, warm-standby PFC still live, and the applied values",
+       clr && unk && rbst && rbok && rbwarm && locked && key && unl && range && r2 && to && vmax && irat && nobj && ro && addr); }
 
   { vsetup(&v, &ID, 0x10, 0, 0, 0); mod_cmd_init(&cmd); memset(&q, 0, sizeof q);
     uint8_t d[8] = { 0 };
@@ -456,7 +476,7 @@ static void rig_init(rig_t *r) {
 /* the HAL's 1 ms sequence after the profile tick: intent → FSM → shaper → telemetry, on a direct-drive plant */
 static void rig_step(rig_t *r) {
   pmp_cmd_to_in(&r->cmd, &r->in, &r->f);
-  if (r->f.st == ST_PRECHG) r->in.vbus += 5.0f;
+  if (r->f.st == ST_PRECHG && r->in.vbus < 1.414f * r->in.vin_ll_max - 5.0f) r->in.vbus += 5.0f;   /* E82: a precharging link stops at the crest */
   if (r->f.out.pfc_en) r->in.vbus = r->f.out.vbus_ref;
   if (r->f.out.llc_en) {
     float b = (r->in.vcmd > 0.0f) ? fminf(r->in.vcmd, r->f.out.v_max) : 0.0f;
@@ -478,14 +498,14 @@ static void core_tests(void) {
     ck("glue: the profile's timeout reaches the FSM, pulses are consumed once, a group member without permission is not enabled", a && !in.clear_req); }
 
   { const pmp_profile_t *th = pmp_profile_get(PMP_PROFILE_TONHE_V12), *na = pmp_profile_get(PMP_PROFILE_NATIVE), *bad = pmp_profile_get((pmp_profile_id_t)9);
-    th12_t t; th12_init(&t, 0, 0, 1, 0); mod_cmd_t c; mod_cmd_init(&c); mod_tlm_t m = tlm(); pmp_txq_t q; memset(&q, 0, sizeof q);
+    th12_t t; th12_init(&t, 0, 0, 1, 0, 0); mod_cmd_t c; mod_cmd_init(&c); mod_tlm_t m = tlm(); pmp_txq_t q; memset(&q, 0, sizeof q);
     const uint8_t aa[8] = { 0xaa, 0, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }; pmp_frame_t f = mk(0x080601A0u, 8u, aa);
     th->rx(&t, &f, 10, &m, &c, &q); th->tick(&t, 11, &m, &c, &q); drain(&q);
     ck("profiles: registry names and rates, an unbuilt id falls back to native, dispatch through the table reaches the adapter",
        !strcmp(th->name, "tonhe-v1.2") && th->bitrate == 125000u && na->bitrate == 250000u && bad->id == PMP_PROFILE_NATIVE && c.run &&
        fabsf(c.v_set_v - 400.0f) < 0.01f); }
 
-  { rig_t r; rig_init(&r); th12_t t; th12_init(&t, 0, 0, 1, 0);
+  { rig_t r; rig_init(&r); th12_t t; th12_init(&t, 0, 0, 1, 0, 0);
     const uint8_t aa[8] = { 0xaa, 0, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }, tm[8] = { 0 };
     pmp_frame_t start = mk(0x080601A0u, 8u, aa), timing = mk(0x1805FFA0u, 8u, tm);
     int reached = 0, stopped, again = 0;

@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/review-E78%2FE80_·_port_built-d19a00?style=flat-square" alt="review: E78/E80 · port built"/>
+  <img src="https://img.shields.io/badge/review-E82_·_port_built-d19a00?style=flat-square" alt="review: E82 · port built"/>
 </p>
 
 > [!NOTE]
@@ -17,9 +17,10 @@
 > abnormal condition reaches a deterministic state, persistent data and firmware update, and the performance targets.
 >
 > **Gate coupling** — `firmware/run_tests.sh` (in `run-all`) is the evidence for every row marked **FIXED**:
-> `host_sim` 114 · `ctl_test` 18 · `proto_test` 40 · `hal_test` 34 · `app_test` 16, under AddressSanitizer +
-> UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **SPEC** are requirements not yet implemented — since E79 the
-> portable HAL exists (`firmware/hal/`) and the GD32G553 register port does not; rows marked **HW** need a hardware decision.
+> `boot_test` 22 · `host_sim` 122 · `ctl_test` 20 · `proto_test` 42 · `hal_test` 45 · `app_test` 29 · `e81_test` 50 — **330 checks**
+> under AddressSanitizer + UndefinedBehaviorSanitizer (fatal) and `-Werror`. Rows marked **SPEC** are requirements not yet
+> implemented; the portable HAL exists since E79 (`firmware/hal/`) and the register-level GD32G553 port since E80
+> (`firmware/port/gd32g553/`, no vendor library); rows marked **HW** need a hardware decision.
 > The protocols are specified in [VMP 2.0](can-protocol.md) and the [TonHe V1.2 profile](can-profile-tonhe-v12.md); the test
 > matrix is the [firmware verification plan](firmware-verification.md).
 
@@ -32,8 +33,8 @@
 | **Protocols** | VMP 2.0 (native) and TonHe V1.2 — one profile per boot, chosen from the stored configuration; TonHe can be left out of an image at build time |
 | **Protection** | six response levels; every F.xx row carries a recovery class — AUTO_EXT · AUTO_INT · LATCH · LOCK |
 | **Smoothness** | bumpless soft start from the output node, slew-limited references, a 100 ms controlled stop, min-select CV/CC with back-calculation anti-windup, CV share trim |
-| **MCU** | one GD32G553 runs both stages. E79 estimated ≈ 35 % CPU; the E81 disassembly count (reviewer D) put the 100 kHz PFC ISR at 5.8–7.4 µs of its 10 µs period before the E81 trims (grid sampling out of the 100 kHz context, reciprocal, PFEN) — the binding item, measured at T-64 with a **STOP line of ≤ 5 µs worst case** (§3.5) |
-| **Verified on the host** | **291 checks** across seven binaries: the 26 fault scenarios, E60–E81 regressions, every-tick invariants, both protocols against their documents, fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, the signed boot chain, and the E81 adaptive dead time |
+| **MCU** | one GD32G553 runs both stages. E79's "≈ 35 % CPU" was an estimate on a method the E81 review refuted; the E81 disassembly count put the 100 kHz PFC ISR at 5.8–7.4 µs before the trims (grid sampling out of the 100 kHz context, reciprocal, PFEN) and 5.8 µs static after them. **E82 (M-21) moved the control interrupt onto the ADC end-of-sequence DMA transfer: it starts ≈ 2.8 µs after the trigger and has ≈ 7.2 µs to the roll-over that loads the compare shadows**, against 5.0 µs before — T-64 measures both with DWT (§3.5) |
+| **Verified on the host** | **330 checks** across seven binaries: the 26 fault scenarios, E60–E82 regressions, every-tick invariants, both protocols against their documents, fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, the signed boot chain on a row-granular program-once flash model, the E81 adaptive dead time and the E82 weak-leg edge, junction observer and FSM rows |
 | **Before hardware** | loop gains on HIL (§5.4) · T-44/T-47/T-48 on silicon · HW-REC-1/4/5 (§10) — the register port itself is built and gated (E80: `firmware/port/gd32g553/`, no vendor library) |
 
 ## 1. What the review found
@@ -176,7 +177,7 @@ flowchart TB
 | Context | Rate / trigger | Work | WCET budget | Priority |
 |---|---|---|---|---|
 | HRTIMER fault ISR | fault edge | record source (FLT input, I_RES capture for F.11 vs F.02), timestamp — the silicon has already stopped PWM | ≤ 50 µs | highest |
-| PFC control ISR | 100 kHz, carrier peak and valley (FW-EMI-1) | `app_pfc_isr` → `pfc_step`: three current loops on resistive emulation, midpoint balance, the voltage loop; the grid monitor every 10th update; duty loaded at the next half-period | ≤ 3 µs typical, ≤ 5 µs at a line-cycle close (E79 estimate 2.5 / 4.5 µs, §3.5) | 2 |
+| PFC control ISR | 100 kHz, carrier peak and valley (FW-EMI-1); **E82 (M-21): triggered by the ADC end-of-sequence DMA transfer (DMA0 channel 2, half- and full-transfer), not a timer compare** — a centre-aligned compare is crossed twice per period and is equal-spaced only at CAR/2, so moving it would have traded a tight budget for 100 kHz jitter on the sample-to-apply path | `app_pfc_isr` → `pfc_step`: three current loops on resistive emulation, midpoint balance, the voltage loop; the grid monitor every 10th update; duty loaded at the next half-period. **E82: a dead ADC2 or DMA channel now means no control interrupt at all rather than a loop running on frozen samples — `supervise()` surfaces it as F.35 within a tick** | entry at ≈ 2.8 µs, **deadline ≈ 7.2 µs to the roll-over** (was 5.0); ≤ 3 µs typical, ≤ 5 µs at a line-cycle close (E79 estimate 2.5 / 4.5 µs, §3.5) | 2 |
 | LLC control ISR | 10 kHz, ADC end-of-sequence synchronized to HRTIMER | `app_llc_isr`: the bus fold-back, `pmp_reg_step`, `llc_step` | ≤ 30 µs (E79 estimate 2.4 µs) | 3 |
 | CAN ISR | frame event | copy to or from ring buffers — nothing else | ≤ 20 µs | 4 |
 | 1 ms scheduler | 1 kHz timer | the sequence of §2 · slow ADC and plausibility · 10 ms slice (fans, relay economizer, HMI) · 100 ms slice (NVM journal, statistics) | ≤ 400 µs (40 %) | lowest |
@@ -253,13 +254,16 @@ DWT high-water marks surface as VMP object 0x0500 for T-44.
 | PFC update, every 10th · at a line-cycle close | + the voltage-loop integrator and `grid_sample`: + 2 VDIV, then + 4 VSQRT | ≈ 3.5 · 4.5 µs | 35 · 45 % |
 | LLC update | `app_llc_isr` + `pmp_reg_step` + `llc_step`: ≈ 350 instructions, 7 VDIV | ≈ 2.4 µs | 2.4 % of 100 µs |
 | 1 ms tick | measurement, profile, FSM, shaper, telemetry, NVM, CAN | 25–50 µs | 2.5–5 % |
-| **All contexts** | including interrupt entry with lazy FPU stacking | | **≈ 35 % average** |
+| **All contexts** | including interrupt entry with lazy FPU stacking | | ~~≈ 35 % average~~ — **E82 (D-05): this row and the method below are withdrawn.** 1.1 cycles per instruction is not a defensible figure for this core and memory system, and the shares above are computed against the wrong deadline. The only honest numbers are the disassembly count (≈ 1 250 cycles = 5.8 µs static) against the ≈ 7.2 µs budget, and T-44 / T-64 on silicon |
 
 Method: instruction counts from the disassembly of the compiled paths, 1.1 cycles per instruction from TCM (1.3–1.5 from flash
 with wait states), 19 cycles per VDIV and 29 per VSQRT. It is an estimate, not a measurement. **E81:** the disassembly count of
 the shipped ISR was ≈ 1 600 cycles (7.4 µs); after the E81 trims (grid sampling and the offset window moved to the 10 kHz context,
-six divisions removed from the drain, DAC references precomputed, PFEN) it is ≈ 1 250 cycles (5.8 µs static) — T-64 measures it
-against the ≤ 5 µs STOP line. The one-update-per-carrier fallback is **no longer an option on 40 / 50 kW** (input-filter margin
+six divisions removed from the drain, DAC references precomputed, PFEN) it is ≈ 1 250 cycles (5.8 µs static). **E82 (M-21):
+the deadline itself moved.** The interrupt is now raised by the ADC end-of-sequence DMA transfer — the longest ring is ADC2 at
+203 cycles = 2.82 µs (ADC3 fell to 181 = 2.51 µs when VREFINT left it), so the ISR starts ≈ 2.8 µs after the trigger and has
+**≈ 7.2 µs** to the roll-over that loads the compare shadows, against 5.0 µs before. The sampling instants, the trigger edges and
+the 15 µs transport delay the control law models are unchanged. T-64 measures entry and exit with DWT. The one-update-per-carrier fallback is **no longer an option on 40 / 50 kW** (input-filter margin
 0.26 / 0.17 at a 30 µs delay); a miss is trimmed further in the ISR.
 
 ## 4. State machines
@@ -579,8 +583,14 @@ Flow assurance belongs to the cooling cart.
 
 ## 9. Persistent data, calibration and firmware update
 
-**Flash map** *(GD32G553VET7, 512 KB — confirm sector sizes at bring-up)*: bootloader 32 KB · image slot A 200 KB · image slot B
-200 KB · NVM 64 KB (configuration A/B, calibration A/B, counter journal, event log ring) · the rest reserved.
+**Flash map** *(GD32G553VET7, 512 KB, dual bank, 1 KB pages — `OB_USER` DBS = 1, and `erase_page_at` refuses to run without it)*:
+bootloader 32 KB (pages 0…31, write-protected) · image slot A 200 KB · image slot B 200 KB · **E82 (M-20 / G-04): all three
+journals moved to BANK 1** — `FM_BOOTCTL` **0x0807_4000**, `FM_NVM` **0x0807_5000**, `FM_EVLOG` **0x0807_6000**, with 32 KB
+reserved at 0x0807_8000 and bank 0's old 16 KB becoming `FM_SPARE`. The slots, the slot size and the boot region are unchanged,
+so no linker script, signed header or image moved. The point of the move: the slot-A application — the factory image — no longer
+shares a bank with anything it writes, so a configuration, calibration, counter or event append cannot stall interrupt entry.
+The vector table is copied to RAM at start-up and `SCB_VTOR` points at it (M-20 / D-04), and the flash primitives are
+RAM-resident in both images.
 
 **As implemented (E79 records · E80 boot chain):** one power-cut-safe store on two flash pages carries the configuration,
 calibration and counter records (append + CRC-32, newest-of-kind wins, header-last compaction; `hal_test` cuts power at every
@@ -637,12 +647,12 @@ no J1939 PDU1 frame sets the native marker.
 - The fan-complement decision O-16 (2/3/4 fans as built vs a 3/4/5 basis one review asserts — a fifth tach needs a harness way).
 
 > [!TIP]
-> **How this page is checked** — `sh firmware/run_tests.sh` (291 checks, sanitizers fatal) and `npx tsx calculations/control/port-pin-audit.mjs`, which locks the GD32G553 port's pin table to the card generator (56 pins).
+> **How this page is checked** — `sh firmware/run_tests.sh` (330 checks, sanitizers fatal) and `npx tsx calculations/control/port-pin-audit.mjs`, which locks the GD32G553 port's pin table to the card generator (56 pins).
 
 ---
 
 <div align="center">
 <sub><a href="firmware-guide.md">← Firmware Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">VMP 2.0 Native CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
