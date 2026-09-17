@@ -1,10 +1,10 @@
-// dclink-ripple.mjs — E81 / review G (F-G-1): HF RIPPLE SHARE IN THE REAL DC LINK, closing open item E74-1 / R10.
+// dclink-ripple.mjs — HF RIPPLE SHARE IN THE REAL DC LINK.
 //
 // Why it exists: every LLC deck (spice/llc/llc-run.mjs) feeds the full bridge from an IDEAL source, `VBUS bus 0 DC <V>`.
 // No simulation on record therefore knows how the 2·fsw bridge ripple divides between the bridge entry films, the stud /
 // pillar path, the split electrolytic link and the Vienna commutation films — and the link is the one place in the module
-// where a wrong answer is a wear-out failure rather than a bang. This deck is the SAME E67 full bridge (same tank, same
-// behavioural switches with the E81 non-linear Coss, same body diodes) at the SAME operating points the committed
+// where a wrong answer is a wear-out failure rather than a bang. This deck is the SAME full bridge (same tank, same
+// behavioural switches with the non-linear Coss, same body diodes) at the SAME operating points the committed
 // llc-stress.csv solved, with the link network in place of the ideal source:
 //
 //   ideal ±V/2 ──50 µH──┬─ DCP ─┬─ nCan × [Rc + Lc + 470 µF] ─ MID          (electrolytic bank, per half)
@@ -44,10 +44,11 @@ const ROOT = join(HERE, "..", "..");
 const f = (x, d = 2) => (Number.isFinite(x) ? Number(x.toFixed(d)) : "NaN");
 const TDEAD = 120e-9;
 
-// E81 lead decision on the can line: the ASSUMED 3.5 A class (2.5 A @120 Hz × 1.4) with a 60 % line was the deck's first gate; the
-// purchased part carries an RFQ acceptance of ≥ 3.0 A rms @100 kHz / 105 °C (parts-db, 470 µF / 500 V), and the module's can ambient is
-// ≤ 70 °C, where every snap-in datasheet allows ≥ 1.3 × the 105 °C ripple. The gate is 80 % of the 105 °C RFQ line (2.4 A) at the
-// 40 nH design stud — the 20 nH stud is a printed sensitivity — and the 20-film variant is the registered lever (T-43 / T-57).
+// The can line is the PURCHASED part's, not an assumed class: parts-db buys the 470 µF / 500 V can against an RFQ acceptance of
+// ≥ 3.0 A rms @100 kHz / 105 °C, and the module's can ambient is ≤ 70 °C, where every snap-in datasheet allows ≥ 1.3 × the 105 °C
+// ripple. (An assumed 3.5 A class — 2.5 A @120 Hz × 1.4 — with a 60 % line is a guess.) The gate is 80 % of the 105 °C RFQ line
+// (2.4 A) at the 40 nH design stud; the 20 nH stud is a printed sensitivity, and the 20-film variant is the registered lever
+// (T-43 / T-57).
 export const CAN = { C: 470e-6, esr: 0.15, esl: 20e-9, classA: 3.5, rfqA: 3.0, gateFrac: 0.8 };
 export const FILM = { C: 1e-6, esr: 5e-3, esl: 15e-9, rmsA: 10, mpn: "PP-1u-1100" };
 export const DAMP = { C: 2.2e-6, R: 0.33 };
@@ -55,7 +56,7 @@ export const NCAN_HALF = { "30kw": 5, "40kw": 6, "50kw": 8, "50kwa": 8 };
 export const VIENNA_FILM_PER_HALF = 3, VIENNA_STUB_L = 60e-9, SRC_L = 50e-6;
 // what the schematic must draw for the gate to pass — the cheapest sweep point that holds BOTH corners on EVERY SKU
 export const DRAWN = { nFilm: 16, damper: true };   // default; per SKU see drawnFor()
-export const drawnFor = (sku) => ({ nFilm: ENTRY_FILM[sku] ?? DRAWN.nFilm, damper: DRAWN.damper });   // E81 lead decision: 16 × 1 µF + damper is what boards.tsx draws (nEntryFilm); the 20-film variant (−22 % per-can current) is the registered lever if T-57 measures a stud loop ≤ 25 nH — at the 40 nH design stud the 16 µF rows read 27–38 % of class
+export const drawnFor = (sku) => ({ nFilm: ENTRY_FILM[sku] ?? DRAWN.nFilm, damper: DRAWN.damper });   // 16 × 1 µF + damper is what boards.tsx draws (nEntryFilm); the 20-film variant (−22 % per-can current) is the registered lever if T-57 measures a stud loop ≤ 25 nH — at the 40 nH design stud the 16 µF rows read 27–38 % of class
 // the corners the sweep runs, by their llc-stress.csv row name
 export const CORNERS = ["SER250-full-bus764", "PAR400-full"];
 
@@ -70,7 +71,7 @@ export function opPoint(sku, corner) {
 
 function link(nCan, VBUS, Idc, { nFilm = DRAWN.nFilm, damper = DRAWN.damper, studL = 40e-9, studR = 1e-3 } = {}) {   // callers pass drawnFor(sku)
   const Vh = VBUS / 2;
-  let s = `* ---- DC link (E81/F-G-1): ideal source behind ${SRC_L * 1e6} uH per rail, MID grounded; ${nCan} cans/half; ${nFilm} x 1uF bridge film; damper ${damper ? "yes" : "no"}; stud ${studL * 1e9} nH loop
+  let s = `* ---- DC link: ideal source behind ${SRC_L * 1e6} uH per rail, MID grounded; ${nCan} cans/half; ${nFilm} x 1uF bridge film; damper ${damper ? "yes" : "no"}; stud ${studL * 1e9} nH loop
 VSP src_p 0 DC ${Vh}
 LSP src_p dcp ${SRC_L} ic=${Idc.toExponential(5)}
 VSN src_n 0 DC ${-Vh}
@@ -109,7 +110,7 @@ DBL${X} busn leg${X} DBODY
 CSH${X} bh${X} leg${X} ${(csDie * t.par).toExponential(5)}
 CSL${X} leg${X} busn ${(csDie * t.par).toExponential(5)}`;
   const tstop = 400e-6, tstart = tstop - 12 * T;
-  return `* E81/F-G-1 DC-link HF ripple share — ${fingerprint(sku)} corner ${corner} VBUS=${op.VBUS} VBANK=${op.VBANK} fsw=${f(op.fsw / 1e3, 1)}k d=${f(d, 4)}
+  return `* DC-link HF ripple share — ${fingerprint(sku)} corner ${corner} VBUS=${op.VBUS} VBANK=${op.VBANK} fsw=${f(op.fsw / 1e3, 1)}k d=${f(d, 4)}
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
 .model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=${cjo.toExponential(5)} Vj=${COSS_VJ} M=${COSS_M})
 ${link(NCAN_HALF[sku], op.VBUS, op.P / op.VBUS / 0.985, opt)}
@@ -223,7 +224,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     if (!cheapest) anyFail++;
     console.log(`→ ${note}`);
     writeFileSync(join(RES, "dclink-ripple.csv"),
-      `# E81/F-G-1 DC-link HF ripple share (ngspice-46); ${fingerprint(sku)}; ${NCAN_HALF[sku]} × 470 µF per half; netlists spice/generated/dclink-${sku}-*.cir\n` +
+      `# DC-link HF ripple share (ngspice-46); ${fingerprint(sku)}; ${NCAN_HALF[sku]} × 470 µF per half; netlists spice/generated/dclink-${sku}-*.cir\n` +
       `# DRAWN target: ${DRAWN.nFilm} × 1 µF bridge entry film${DRAWN.damper ? ` + RC damper ${DAMP.C * 1e6} µF + ${DAMP.R} Ω` : ""} — current-coordination [DCLINK]/[SYNC] read this line\n` +
       `# ASSUMED: can ESR ${CAN.esr} Ω @100 kHz, ESL ${CAN.esl * 1e9} nH, class ${CAN.classA} A rms (2.5 A @120 Hz × 1.4); film ESR ${FILM.esr * 1e3} mΩ, ESL ${FILM.esl * 1e9} nH, line ${FILM.rmsA} A rms; Vienna stub ${VIENNA_STUB_L * 1e9} nH; source behind ${SRC_L * 1e6} µH/rail\n` +
       `# GATE: per-can rms ≤ ${CAN.gateFrac} × ${CAN.classA} A = ${f(CAN.gateFrac * CAN.rfqA)} A, per-film rms ≤ ${FILM.rmsA} A\n` +

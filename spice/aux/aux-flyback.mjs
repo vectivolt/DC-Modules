@@ -1,13 +1,13 @@
-// aux-flyback.mjs — §28/§18 aux supply validation (V-21) · E65 D4 rev E: the DRAWN circuit, not a behavioral stand-in.
+// aux-flyback.mjs — §28/§18 aux supply validation (V-21) on D4 rev E: the DRAWN circuit, not a behavioral stand-in.
 // Flyback from the FULL unboosted bus (DCP→DCN): runs 321 V (brown-out) … 860 V (OVP corner); every component value is
 // read from calculations/magnetics/d4-flyback.mjs, which parses cells.tsx — the deck cannot drift from the schematic.
 //
-// Why rev E rewrote it (E65 D4-F5, verified by re-running the old decks): the rev C/D deck regulated V24 directly, used a
-// 200 Ω / 1 nF CS filter (drawn: 1 k / 470 pF), 1.38 µH of leakage (k 0.998; acceptance was 12 µH), and a "cycle-by-cycle
-// clamp" that was a linear gate — the switch ran as a ~3 A linear regulator with ~700 V across it. Its energy did not
-// balance (η 61 % at 850 V, 104 % at 342 V) and a 20 ns step gave 493 W in, yet V24 read 24.00 V and every row passed.
+// Why it is built this way: a deck that regulates V24 directly, uses a 200 Ω / 1 nF CS filter (drawn: 1 k / 470 pF),
+// 1.38 µH of leakage (k 0.998, against a 12 µH acceptance) and a linear-gate "cycle-by-cycle clamp" runs the switch as
+// a ~3 A linear regulator with ~700 V across it. Its energy does not balance (η 61 % at 850 V, 104 % at 342 V) and a
+// 20 ns step draws 493 W in, while V24 still reads 24.00 V and every row passes.
 // This deck models the NCP1252D functions that matter (clock set, 160 ns LEB, CS ≥ min(1 V, FB/3, SS/4) reset latch,
-// DCmax, skip, fault timer → latch-off), the drawn R4-3 VCC/zener/NPN loop, the RCD clamp, the rail TVS and RAUX24,
+// DCmax, skip, fault timer → latch-off), the drawn VCC/zener/NPN loop, the RCD clamp, the rail TVS and RAUX24,
 // with leakage at the acceptance maximum. Every run must close its own energy balance, stay physical, and one case is
 // re-run at half the timestep. Corners: 4 SKU loads × 340/560/860 V, FB-open at 860 V (limit + clamp + fault latch),
 // V24/V15 hard shorts at 860 V (ratchet + latch). Cold start (40 ms soft-start) is bench T-29, not simulated.
@@ -25,7 +25,7 @@ mkdirSync(join(RES, "plots"), { recursive: true });
 const f = (x, d = 2) => Number(x.toFixed(d));
 const w = drawn(), FSW = 65e3, T = 1 / FSW, T_STEP = 12e-3;
 
-// kind: matrix (hold → step load at 12 ms) · fbopen (MR-17 single fault: QAUXFB lifted at 12 ms → the 1 V limit every cycle)
+// kind: matrix (hold → step load at 12 ms) · fbopen (single fault: QAUXFB lifted at 12 ms → the 1 V limit every cycle)
 //       short24 / short24bare (V24 shorted behind RAUX24 / at CAUX24) · short15
 function deck({ VIN, sku, kind = "matrix", lk = 1, step = 20e-9 }) {
   const L = SKUS[sku], Lp = D4.Lp * lk, Lm = Lp - D4.llkAcc, tStop = kind === "matrix" ? 20e-3 : kind === "fbopen" ? 30e-3 : 40e-3;
@@ -72,11 +72,11 @@ CVCC vcc 0 220u ic=15.4
 IVCC vcc 0 ${NCP.icc3}
 BL24 v24 0 I=max(v(v24),0)/24*${i24}
 RL15 v15 0 ${r15}
-* rail TVS as drawn (SMBJ26A / SMBJ16A class, MR-17)
+* rail TVS as drawn: SMBJ28A on V24 (V_BR 31.1 V min at 1 mA), SMBJ18A on V15 (V_BR 20.0 V min at 1 mA)
 DTVS24 0 v24 DTV24
 DTVS15 0 v15 DTV15
-.model DTV24 D(Is=1e-12 N=1 BV=28.9 IBV=1m Rs=0.3)
-.model DTV15 D(Is=1e-12 N=1 BV=17.8 IBV=1m Rs=0.2)
+.model DTV24 D(Is=1e-12 N=1 BV=31.1 IBV=1m Rs=0.3)
+.model DTV15 D(Is=1e-12 N=1 BV=20.0 IBV=1m Rs=0.2)
 ${shortNode ? `SSH ${shortNode} 0 shc 0 SWSH\nVSHC shc 0 PULSE(0 1 ${T_STEP} 1u 1u 1 2)` : ""}
 .model SWSH SW(Ron=10m Roff=1e9 Vt=0.5 Vh=0.1)
 * QAUX: VSW = drain current, VS1 = channel current (the node capacitance discharges through the channel)
@@ -99,7 +99,7 @@ DCLA dca cl DSIC
 .model DSIC D(Is=1e-14 N=1.4 Rs=0.5 BV=${w.dclaV} IBV=1u Cjo=20p)
 CCLA cl vin ${w.ccla}
 RCLA cl vin ${w.rcla}
-* drawn R4-3 loop: VCC → RZFB 2.2k → DZAUX 15 V → QAUXFB base (RBEFB 10k) → FB; CFBF 1 nF; FB pull-up 3.5k / 40k internal
+* drawn feedback loop: VCC → RZFB 2.2k → DZAUX 15 V → QAUXFB base (RBEFB 10k) → FB; CFBF 1 nF; FB pull-up 3.5k / 40k internal
 RZFB vcc zk 2.2k
 DZ qb zk DZ15
 .model DZ15 D(Is=1e-12 N=1 BV=15 IBV=1m Rs=5)
@@ -225,7 +225,7 @@ for (const c of CASES) {
       note = `vs ${c.ref} at 20 ns: dV24 ${f(dV, 3)} V · dVds ${f(100 * dVds, 2)} % · dPin ${f(100 * dP, 2)} %`;
     }
   } else if (c.kind === "fbopen") {
-    ok = latched && volts; note = "MR-17 single fault: limit every cycle then the fault latch";
+    ok = latched && volts; note = "single fault: limit every cycle then the fault latch";
   } else {
     // the NCP1252D fault timer (10–20 ms) latches after the deck window; what the deck must prove is that the ratchet it
     // reaches before then stays inside the core and switch classes
@@ -247,7 +247,7 @@ plotSVG({ title: "Aux flyback (D4 rev E drawn circuit), 560 V bus, 50 kW-air loa
     { label: "V15", x: nom.t, y: nom.cols.v15, color: "#3A6B8C" },
   ] });
 writeFileSync(join(RES, "aux-flyback.csv"),
-  `# ngspice-46 drawn-circuit deck (E65 D4 rev E); ${fingerprint(D4, w)}; NCP1252D functions modelled (LEB/latch/FB/3/fault timer), leakage at acceptance max, typ controller timing (tolerance stacks live in d4-flyback); netlists spice/generated/{aux,tstep,clamp,short}-*.cir\n` +
+  `# ngspice-46 drawn-circuit deck (D4 rev E); ${fingerprint(D4, w)}; NCP1252D functions modelled (LEB/latch/FB/3/fault timer), leakage at acceptance max, typ controller timing (tolerance stacks live in d4-flyback); netlists spice/generated/{aux,tstep,clamp,short}-*.cir\n` +
   rows.map((r) => r.join(",")).join("\n") + "\n");
 console.log(`→ simulation-results/30kw/aux-flyback.csv, plots/aux-flyback.svg ${allPass ? "(ALL PASS)" : "(CHECK FAILURES!)"}`);
 process.exit(allPass ? 0 : 1);

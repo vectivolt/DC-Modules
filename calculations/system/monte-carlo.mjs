@@ -1,9 +1,9 @@
 // monte-carlo.mjs — §37 tolerance analysis, executed (not nominal-only sign-off).
 // Batches (10,000 samples each unless noted):
-//  A) Resonant tank, E67 full bridge per SKU (tanks.mjs): Lr = D2 external inductor ±3 % + two D3 cells' leakage ±30 % + loop
+//  A) Resonant tank, full bridge per SKU (tanks.mjs): Lr = D2 external inductor ±3 % + two D3 cells' leakage ±30 % + loop
 //     stray ±20 %; Cr ±5 %; Lm gap-ground ±7 %. Requirement: FHA peak gain ≥ M = n·500/830 at the 500 V-bank mode edge, and
-//     the magnetizing current at fr charges a leg's node capacitance inside the dead time (ZVS). (The E7 batch sampled the
-//     retired 3-section tank — 7 µH / 185 nF — and passed on a design that no longer existed.)
+//     the magnetizing current at fr charges a leg's node capacitance inside the dead time (ZVS). The tank is READ from
+//     tanks.mjs: a batch that samples a hand-typed tank passes on a design that is not built.
 //  B) PFC choke ±12% (core AL lot + turns) → worst-θ ripple + soft-sat floor.
 //  C) Output-V sense chain: 8× 1% top (independent) + 0.1% bottom + iso 0.5% + ADC ref 0.5%
 //     + drift 50 ppm/°C×40 °C → pre-cal and post-2-pt-cal accuracy vs ±0.5% spec.
@@ -28,7 +28,7 @@ const gain = (fn, Q, Ln) => 1 / Math.hypot(1 + (1 / Ln) * (1 - 1 / (fn * fn)), Q
 const pct = (arr, p) => arr.slice().sort((a, b) => a - b)[Math.floor(p / 100 * (arr.length - 1))];
 
 const report = [];
-// ---- A: tank (E67 full bridge, per SKU)
+// ---- A: tank (full bridge, per SKU)
 for (const [sku, t] of Object.entries(TANKS)) {
   let frArr = [], gpkArr = [], imArr = [], zvsFail = 0, gainFail = 0;
   const Mneed = (t.n * 500) / 830, llk = d3Leakage(D3[sku]), L2 = D2[sku].Lnom;
@@ -47,10 +47,10 @@ for (const [sku, t] of Object.entries(TANKS)) {
   }
   report.push([`A tank ${sku}`, `fr ${f(pct(frArr, 1), 1)}–${f(pct(frArr, 99), 1)} kHz (1–99%)`, `FHA peak gain p1=${f(pct(gpkArr, 1))} (need ${f(Mneed)}) → fail ${f(100 * gainFail / N, 2)}%`, `Im p1=${f(pct(imArr, 1), 1)} A · ZVS fail ${f(100 * zvsFail / N, 2)}%`, (gainFail / N <= 0.001 && zvsFail === 0) ? "PASS (FHA floor — the ngspice gain-worst corner is the proof)" : "MARGIN-FAIL"]);
 }
-// ---- B: PFC choke — E60 re-point to the DRAWN D1-30 rev B (3× 0077908A7 catalog core, AL 37 nH/T²
-// ±8 % lot, le 196 mm, N = 39 with the winder's ±1-turn lot-trim) against its OWN acceptance rows
-// (L0 150–185 µH, L@78 A ≥ 75 µH). Rev A's N=36 geometric model (Ae 2.62, le 201) was retired at E51
-// but this batch kept it. Ripple is informational here: the cycle-by-cycle Vienna sim owns the peak
+// ---- B: PFC choke — the DRAWN D1-30 rev B (3× 0077908A7 catalog core, AL 37 nH/T² ±8 % lot,
+// le 196 mm, N = 39 with the winder's ±1-turn lot-trim) against its OWN acceptance rows
+// (L0 150–185 µH, L@78 A ≥ 75 µH). Never the N=36 geometric model (Ae 2.62, le 201), which is not
+// the drawn part. Ripple is informational here: the cycle-by-cycle Vienna sim owns the peak
 // (current-coordination F.01) and proved the 150 kHz EMI basis conservative.
 {
   // Two roll-off curves, two questions: YIELD uses the catalog GUARANTEED minimum (80 %@95 Oe,
@@ -75,7 +75,7 @@ for (const [sku, t] of Object.entries(TANKS)) {
     worstR = Math.max(worstR, dImax);
     if (!okN(Nt, muMin)) accFail++;
   }
-  report.push(["B PFC choke lot ±8 % + trim", `worst ΔIpp ${f(worstR, 1)} A at bus 830 (single-phase formula on the pessimistic fit — vienna-switched owns the peak)`, `acceptance yield on the catalog-minimum curve: fail ${100 * accFail / N}% (pessimistic fit, informational: ${f(100 * accFailFit / N, 1)}%)`, `F.01 120 A pk (E60)`, accFail === 0 ? "PASS" : "CHECK"]);
+  report.push(["B PFC choke lot ±8 % + trim", `worst ΔIpp ${f(worstR, 1)} A at bus 830 (single-phase formula on the pessimistic fit — vienna-switched owns the peak)`, `acceptance yield on the catalog-minimum curve: fail ${100 * accFail / N}% (pessimistic fit, informational: ${f(100 * accFailFit / N, 1)}%)`, `F.01 120 A pk`, accFail === 0 ? "PASS" : "CHECK"]);
 }
 // ---- C: Vout accuracy
 {

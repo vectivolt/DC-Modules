@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// d1-fd.mjs — E65: 2-D eddy-current anchor for the D1 bundle copper at the 50 kHz ripple → calculations/out/d1-fd.csv
+// d1-fd.mjs — 2-D eddy-current anchor for the D1 bundle copper at the 50 kHz ripple → calculations/out/d1-fd.csv
 //
 // Why it exists: the D1 bundles are 9 or 13 strands of 1.6 mm (d/δ ≈ 4.7 at 50 kHz, 100 °C) packed into 1–3 turn layers. The two
 // closed forms disagree there by 2.5× (Ferreira orthogonality on the strands vs Dowell on strand rows) because neither sees the
@@ -181,5 +181,5 @@ for (const [sku, c] of Object.entries(D1)) {
   const r = seen.get(fp);
   rows.push([sku, fp, r.cell, f(r.Feq, 2), f(r.Fb, 2), f(r.fer, 2), f(r.Feq / r.fer, 4), f(r.Fb / r.Feq, 4)]);
 }
-writeFileSync(join(OUT, "d1-fd.csv"), `# E65 D1 2-D eddy-current anchor (calculations/magnetics/d1-fd.mjs): ${FQ / 1e3} kHz, ${T} °C, h ${H * 1e3} mm\n` + rows.map((x) => x.join(",")).join("\n") + "\n");
+writeFileSync(join(OUT, "d1-fd.csv"), `# D1 2-D eddy-current anchor (calculations/magnetics/d1-fd.mjs): ${FQ / 1e3} kHz, ${T} °C, h ${H * 1e3} mm\n` + rows.map((x) => x.join(",")).join("\n") + "\n");
 console.log("→ calculations/out/d1-fd.csv");

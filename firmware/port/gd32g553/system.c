@@ -1,12 +1,12 @@
-/* system.c — E80 clocks, flash timing, watchdogs, DWT, GPIO table. Register facts: facts-system.md (UM lines cited there).
+/* system.c — clocks, flash timing, watchdogs, DWT, GPIO table. Register facts: facts-system.md (UM lines cited there).
  * 216 MHz recipe (UM §4 procedures 1.1/1.2): PMU clock on → LDOVS = 1.15 V while the PLL is closed → FMC WSCNT = 7 →
  * PLL (src /PSC = 4 MHz, ×108 = 432 MHz VCO, /2 = 216 MHz; Q /9 = 48 MHz for CAN) → prescalers /1 → SCS = PLLP.
  * With PORT_HXTAL_HZ set the PLL runs from the crystal with the clock monitor armed; a stuck crystal falls back to IRC8M
  * (hardware forces it) and the port re-locks the PLL from IRC8M — the module keeps regulating; CAN accuracy is then
  * HW-REC-4's problem, reported through the app's CAN warning.
- * E82 (G-09): that whole recipe is SKIPPED when the clock tree already matches it — the bootloader runs this same
- * function, so the application would otherwise tear a working 216 MHz down and rebuild it. E82 (G-05): the crystal wait
- * is bounded in real time by DWT, and E82 (M-28) arms the LVD at the end. */
+ * That whole recipe is SKIPPED when the clock tree already matches it — the bootloader runs this same function, so
+ * the application would otherwise tear a working 216 MHz down and rebuild it. The crystal wait is bounded in real
+ * time by DWT, and the LVD is armed at the end. */
 #include "port.h"
 
 uint32_t port_reset_cause;   /* RCU_RSTSCK at boot, cleared after capture */
@@ -30,7 +30,7 @@ void system_init(void) {
   SCB_CPACR |= (3u << 20) | (3u << 22);        /* FPU CP10/CP11 full access */
   port_reset_cause = RCU_RSTSCK;
   RCU_RSTSCK |= BIT(24);                       /* RSTFC: clear the cause flags for the next reset */
-  /* E82 (G-05): the cycle counter comes up FIRST — the crystal wait below needs a real time base, and a loop-iteration
+  /* The cycle counter comes up FIRST — the crystal wait below needs a real time base, and a loop-iteration
      count is not one (it moves with the prefetch buffer, the caches and the compiler). DWT_CYCCNT counts core clocks,
      so the bound is exact whichever source is running. */
   SCB_DEMCR |= BIT(24);
@@ -38,7 +38,7 @@ void system_init(void) {
 
   RCU_APB1EN |= BIT(28);                       /* PMU */
 
-  /* E82 (G-09): the BOOTLOADER runs this same function and jumps with the PLL already closed on 216 MHz. Re-locking it
+  /* The BOOTLOADER runs this same function and jumps with the PLL already closed on 216 MHz. Re-locking it
      means opening SCS, stopping and restarting the PLL and re-selecting it — a clock glitch delivered to every
      peripheral, including an HRTIMER that on a warm reboot path may still be driving gates, and ~400 µs of the window
      watchdog's budget for nothing. If the PLL is already running from the source and dividers this build wants, the
@@ -47,14 +47,14 @@ void system_init(void) {
   /* SCSS (3:2) is read-only status, so the settled register reads SCS = 3 with every prescaler field at /1 */
   if (!(sys_on_pllp() && (RCU_CTL & BIT(25)) && RCU_PLLR == want && (RCU_CFG0 & ~(3u << 2)) == 3u)) {
     PMU_CTL0 = (PMU_CTL0 & ~(0x1Fu << 11)) | (0x0Eu << 11);   /* LDOVS = 1.15 V (216 MHz needs it), PLL still closed */
-    /* E81 (F-D-7): PFEN with the wait states. The reset value 0x00040600 already has DCEN and ICEN set but NOT the
-       prefetch buffer (UM §2.4.1), and the 1 ms tick runs from flash at 7 wait states — this is free throughput. */
+    /* PFEN with the wait states. The reset value 0x00040600 already has DCEN and ICEN set but NOT the prefetch
+       buffer (UM §2.4.1), and the 1 ms tick runs from flash at 7 wait states — this is free throughput. */
     FMC_WS = (FMC_WS & ~0xFu) | BIT(8) | 7u;   /* PFEN + 7 wait states before raising the clock (Table 2-3) */
 #if PORT_HXTAL_HZ
     RCU_CTL |= BIT(16);                        /* HXTALEN */
-    /* E81 (F-F-1) / E82 (G-05): bounded to 10 ms of REAL time. A crystal starts in 1–5 ms; the E80 form waited 4 M loop
-       iterations (~2 s) and the E81 form 40 k iterations, whose true cost was 30–40 ms once the prefetch buffer was on —
-       either way past the TPS3430's 23.375 ms window, so the card reset before its first WDI edge. */
+    /* Bounded to 10 ms of REAL time. A crystal starts in 1–5 ms, and a loop-iteration bound is not a time bound: its
+       true cost moves with the prefetch buffer, so it can easily run past the TPS3430's 23.375 ms window and reset the
+       card before its first WDI edge. */
     uint32_t hz = sys_on_pllp() ? PORT_SYSCLK_HZ : 8000000u;   /* IRC8M out of reset, else whatever is already selected */
     uint32_t t0 = DWT_CYCCNT;
     while (!(RCU_CTL & BIT(17)) && DWT_CYCCNT - t0 < hz / 100u) {}
@@ -79,13 +79,14 @@ void system_init(void) {
   RCU_APB1EN |= BIT(2);                        /* TIMER3 */
   RCU_APB3EN |= (0xFu << 8) | (0xFu << 17) | BIT(16);   /* ADC0..3 · DAC0..3 · DAC hold clock */
 
-  DWT_CYCCNT = 0u;                             /* re-base for the T-44 budget and µs delays (enabled at entry, G-05) */
+  DWT_CYCCNT = 0u;                             /* re-base for the T-44 budget and µs delays (enabled at entry) */
   DBG_CTL1 |= BIT(12);                         /* halted core: hold FWDGT */
   DBG_CTL2 |= BIT(26) | BIT(20);               /* halted core: hold HRTIMER and TIMER19 (gates freeze safe) */
 
-  /* E82 (M-28): brown-out supervision. The card had none: the MCU ran to its 1.63 V power-down reset (ds Table 4-16)
-     while V3P3 collapsed, and the TPS3430 is a WATCHDOG, not a supply supervisor. The part offers two mechanisms —
-     VBOR, which resets but lives in the option bytes (production setting in NOTES), and the LVD, which firmware owns.
+  /* Brown-out supervision. Without it the MCU runs to its 1.63 V power-down reset (ds Table 4-16) while V3P3
+     collapses, because the TPS3430 is a WATCHDOG, not a supply supervisor. The part offers two mechanisms —
+     VBOR, which resets but lives in the option bytes (BOR_TH = 0b10, 2.5 V falling: set by the production programming flow,
+     docs/dfm-production.md — option bytes are not part of the signed image), and the LVD, which firmware owns.
      LVDT = 100 → 2.75 V (ds Table 4-16 VLVD: 2.75 V rising / 2.65 V falling) sits ~15 % below the ±2.5 % buck's 3.22 V
      floor, so it cannot nuisance-trip, and far above the 1.71 V the part needs to execute. The LVD output drives EXTI
      line 16 (UM §3.4.2); a RISING edge there is the supply crossing DOWN through the threshold. lvd_isr is
@@ -112,7 +113,7 @@ void fwdgt_start(void) {
 }
 void fwdgt_kick(void) { FWDGT_CTL = 0xAAAAu; }
 
-/* WDI: the TPS3430 fixed window takes a FALLING edge per service (HR-02) */
+/* WDI: the TPS3430 fixed window takes a FALLING edge per service */
 void wdi_pulse(void) {
   pin_set(BP_WDI, 1);
   delay_us(2u);
@@ -140,7 +141,7 @@ void board_gpio_init(void) {
     { BP_PWM_A0, PM_AF, 13 }, { BP_PWM_B0, PM_AF, 3 }, { BP_PWM_C0, PM_AF, 13 }, { BP_FLT, PM_AF, 13 },
     { BP_FAN1, PM_AF, 6 }, { BP_FAN2, PM_AF, 6 }, { BP_KSER, PM_AF, 2 },
     { BP_CAN_RX, PM_AF, 9 }, { BP_CAN_TX, PM_AF, 9 },
-    /* E81 (F-D-6): KPARA leaves TIMER3_CH1 for plain GPIO — the UEXCL NOR needs a steady level, not a 20 kHz chop */
+    /* KPARA is plain GPIO, not TIMER3_CH1 — the UEXCL NOR needs a steady level, not a 20 kHz chop */
     { BP_KPARA, PM_OUT, 0 },
     { BP_KPARB, PM_OUT, 0 }, { BP_KPRE, PM_OUT, 0 }, { BP_QDIS, PM_OUT, 0 }, { BP_QDISBK, PM_OUT, 0 },
     { BP_EN_PFC, PM_OUT, 0 }, { BP_EN_LLC, PM_OUT, 0 }, { BP_WDI, PM_OUT, 0 },

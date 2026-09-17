@@ -1,4 +1,4 @@
-# ngspice-46; R2/HR-14 closure — per-SKU precharge/discharge/bank-bleed vs the per-SKU firmware+EOL constants
+# ngspice-46; per-SKU precharge / discharge / bank-bleed vs the per-SKU firmware + EOL constants
 case,t95_or_t60_s,Ipk_A,E_per_R_J,fw_limit_s,verdict
 precharge-30kw,0.193,17.7,113,F.20 50%@0.4s,PASS
 discharge-30kw,1.99,1.33,106,3,PASS

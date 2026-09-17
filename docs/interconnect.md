@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-module--interconnect--audit-2ea44f?style=flat-square" alt="gate: module-interconnect-audit"/>
 </p>
@@ -16,7 +16,7 @@
 > them, how the domains are grounded, how discharge is commanded, and how the HMI behaves.
 >
 > **Gate coupling** — `module-interconnect-audit` walks every boundary of this contract in the built netlists on
-> every battery run (negative-tested: a board swap produces 78 failures).
+> every battery run, and is negative-tested: swapping two boards fails it.
 
 ## At a glance
 
@@ -26,7 +26,7 @@
 | **Control** | 40-way straight-through harness (Micro-Fit 3.0 class, 5 A per contact) | every way, pin for pin, on all four SKUs |
 | **Brain** | one control card in the DC-DC board's 88-way slot | every card way wired and landing on real electronics |
 | **Grounding** | AGND–DGND single-point tie on the card; DGND → PE 1 MΩ ∥ 4.7 nF on the AC-DC board | structural netlist walk |
-| **Identity** | RATING strap encodes the SKU (E24 rev G bands) | strap vs SKU per build |
+| **Identity** | RATING strap encodes the SKU (0 Ω · 1 k · 10 k · 15 k bands) | strap vs SKU per build |
 
 ```mermaid
 flowchart TB
@@ -54,19 +54,12 @@ the coldplates; the magnetics stand in the volume between the boards.
 
 | | AC-DC (lower) | DC-DC (upper) |
 |---|---|---|
-| **Power** | AC studs, per-SKU gG fuses, MOV Δ + GDT, two CM chokes with star-X2 EMI stages (E68b), precharge (2 × 33 Ω + 2-pole bypass, E14 rev B), Vienna phases, split DC link + balance, bus discharge (640 Ω + QDISF) | film commutation caps, LLC legs (paralleled on the 50 kW air), tanks + transformer sections, dual JBS banks, bank caps + bleeders, S/P matrix (+10 Ω pre-insertion, K_OUT — dual at 50 kW), two-stage 74HC02 exclusion, output filter / shunt / studs |
-| **Control side** | line CTs, AC and bus isolated senses, NTC × 2, fans (2 / 3 / 0 / 4 per SKU), aux flyback (bus-fed DCP → MID), local 3.3 V buck (R4-5), coil driver (KPRE, QDIS), 40-way harness header **JICA** | **88-way card slot (JB)**, resonant CTs, bank / output isolated senses, output shunt amplifier, NTC × 2, coil driver (6 relays) + exclusion gates, PV bleeder drive (QPVD, R8), isolated CAN (NSI1042-DSWR), local 3.3 V buck, HMI (2 buttons + 2-digit 7-segment), harness header **JICB** |
+| **Power** | AC studs, per-SKU gG fuses, MOV Δ + GDT, two CM chokes with star-X2 EMI stages, precharge (2 × 33 Ω + 2-pole bypass), Vienna phases, split DC link + balance, bus discharge (640 Ω + QDISF) | film commutation caps, the LLC full bridge (paralleled dies on the 40 / 50 kW positions), tank + two transformer cells, dual JBS banks, film banks + bleeders, S/P matrix (KSER · KPARA · KPARB) with two-stage 74HC02 exclusion, output blocking diode DOUT, output filter / shunt / studs |
+| **Control side** | line CTs, AC and bus isolated senses, NTC × 2, fans (3 / 3 / 0 / 4 per SKU), aux flyback (bus-fed DCP → MID), local 3.3 V buck, coil driver (KPRE, QDIS), 40-way harness header **JICA** | **88-way card slot (JB)**, resonant CT, bank / output isolated senses, output shunt amplifier, NTC × 2, coil driver + exclusion gates, PV bleeder drive (QPVD), isolated CAN (NSI1042-DSWR), local 3.3 V buck, HMI (2 buttons + 2-digit 7-segment), harness header **JICB** |
 
-## 2. The 40-way harness (JICA ↔ JICB, E40)
+## 2. The 40-way harness (JICA ↔ JICB)
 
 With one brain in the DC-DC slot, the harness carries the whole PFC bundle.
-
-> [!WARNING]
-> **The card-side pin assignment moved at E81.** So that the same card can take an STM32G474VET7, phase A's
-> comparator input and the LLC temperature channel swapped footprints — **I_A0 now sits on the old TSNS0 way and
-> T_LLC on the old AIN8 way**. The harness way numbers below are unchanged; `umod-map.gen.ts` is the code-verified
-> map, `port-pin-audit` locks the GD32 port to it, and bring-up **Stage 0** checks the harness pin for pin against
-> it before anything is powered → [E81 bring-up plan](e81-validation-report.md#11-first-prototype-bring-up-plan).
 
 <table>
 <tr><td valign="top" width="55%">
@@ -83,7 +76,7 @@ With one brain in the DC-DC slot, the harness carries the whole PFC bundle.
 | 27–30 · 38–39 | fans | FAN_PWM1–2 · FAN_TACH1–4 |
 | 31–33 | precharge / discharge | CTL_KPRE · CTL_QDIS · RELAY_FB_KPRE |
 | 34–37 | enables and fault | EN_PFC · GATE_EN_A · FLT (wired-OR) · DRV_RDY |
-| 40 | shield | SHLD — PE-bonded at the AC-DC end only (R5-J) |
+| 40 | shield | SHLD — PE-bonded at the AC-DC end only |
 
 </td><td valign="top" width="45%">
 
@@ -113,13 +106,19 @@ pie showData title 40 harness ways by function
 - **Default-OFF is board-side.** Pull-downs sit on both GATE_EN chains, the EN lines, the relay drives and the three
   PWM lines at their receiving end.
 
+> [!WARNING]
+> **The way numbers are the contract; the card-side pins are chosen for second-source compatibility.** Phase A's
+> current sense and the LLC temperature channel take each other's card footprints so that I_A0 lands on a pin that
+> carries a comparator input on the STM32G474VET7 as well as the GD32G553VET7 — otherwise phase A's hardware
+> over-current trip would quietly become software-only on a second-source card. `umod-map.gen.ts` is the
+> code-verified map, `port-pin-audit` locks the GD32 port to it, and bring-up Stage 0 checks the harness pin for pin
+> against it before anything is powered → [validation report](validation-report.md).
+
 > [!IMPORTANT]
 > **Loss of the harness is a safe state.** With GATE_EN_A low or V15 / V24 missing, the AC-DC gates are off in
-> hardware. The card's watchdog covers the brain itself (WDO ≡ NRST, R5-A).
+> hardware. The card's watchdog covers the brain itself (WDO ≡ NRST).
 
-*The pre-E40 two-card 16-way harness and its UART link are retired (decision E40).*
-
-## 3. Grounding (E25)
+## 3. Grounding
 
 ```mermaid
 flowchart LR
@@ -135,26 +134,28 @@ prevents. The control domain is SELV, and every high-voltage measurement crosses
 HMI, SWD, fans and CAN are touch-safe by architecture. CAN is additionally isolated (CGND domain with static bleed)
 for long bus runs between modules in a charger.
 
-## 4. Discharge control (E19 rev B, E47 semantics)
+## 4. Discharge control
 
 > [!CAUTION]
 > **High voltage.** The DC link and output banks hold lethal energy. Service label: **isolate, wait 15 min, AND
-> verify < 60 V** — never "or". (E82 M-10: one balance network per module puts the 50 kW at 9.9 min nominal / 11.9 min at C +20 %.)
+> verify < 60 V** — never "or". One balance network per module puts the 50 kW at 9.9 min nominal and 11.9 min at the
+> +20 % capacitance corner, and the label follows the slowest SKU.
 
 `CTL_QDIS` drives the opto LED active-high (330 Ω). The output stage rides a DCN-referenced isolated module, and the
 QDISF gate has a 10 k pull-down to DCN, so a dead, reset or unprogrammed MCU leaves discharge **off**. Bank bleeders
-are PV-driven (VOM1271 via QPVD at the guaranteed 10 mA point, R8). The discharge timeline has **two phases**:
-active down to the 321 V aux floor, then passive. F.21's real coverage is the AC-present case — see
-[protection thresholds](protection-thresholds.md).
+are PV-driven (VOM1271 via QPVD at the guaranteed 10 mA point). The discharge timeline has **two phases**: active
+down to the 321 V aux floor, then passive. F.21's real coverage is the AC-present case — see
+[protection thresholds §4](protection-thresholds.md#4-discharge-timeline).
 
-**Module ↔ charger boundary at the output studs (E74).** Two functions are the charger/dispenser's, per
-IEC 61851-23, and the module must not duplicate them: (1) **output-bus discharge** — `COF1`+`COF2` (9.4 µF)
-sit downstream of `DOUT`, out of reach of the bank bleeders; on-module decay is the `SNS_VOUT` divider only
-(τ ≈ 36 s, 1000→60 V ≈ 101 s), and the shared DC bus the modules feed is discharged by the dispenser;
-(2) **output polarity screening** — `DOUT` blocks positive back-feed, but a **reversed** battery/bus applied
-while the S/P relays are closed drives a two-diode short through a bank bridge and the matrix. The dispenser
-verifies polarity before closing its contactors; the module closes its matrix only from STANDBY on command.
-With the matrix open there is no through-path between the output studs and the banks.
+**Module ↔ charger boundary at the output studs.** Two functions are the charger/dispenser's, per IEC 61851-23, and
+the module must not duplicate them: (1) **output-bus discharge** — `COF1` + `COF2` (9.4 µF) sit downstream of
+`DOUT`, out of reach of the bank bleeders, so they carry their own 450 kΩ passive bleeder (three 150 kΩ HV elements
+in series, τ ≈ 4.2 s, 1000 → 60 V in ≈ 12 s), while the shared DC bus the modules feed is discharged by the
+dispenser; (2) **output polarity screening** — `DOUT` blocks positive back-feed, but a **reversed** battery or bus
+applied while the S/P relays are closed drives a two-diode short through a bank bridge and the matrix. The dispenser
+verifies polarity before closing its contactors; the module closes its matrix only from STANDBY on command, and a
+connected pack measured below 0 V inhibits the start (F.33). With the matrix open there is no through-path between
+the output studs and the banks.
 
 ## 5. HMI behaviour
 
@@ -179,7 +180,7 @@ stateDiagram-v2
 
 The 2-digit display with SET/▲ (SW1) and ▼/ENTER (SW2) pages through the module CAN address (00–63), the group id,
 the fault-code ring and the firmware version. During a fault the display shows its `F.xx` code. The card drives it
-through a 74HC595 (segments, decoupled per R6-D), two NPN digit multiplexers and two GPIO buttons.
+through a 74HC595 (segments, decoupled per driver), two NPN digit multiplexers and two GPIO buttons.
 
 ## 6. The module interconnect audit (permanent gate)
 
@@ -191,7 +192,7 @@ SKU across every physical boundary:
 | DCP / DCN / PE studs | both boards land the same nets |
 | 40 harness ways | pin for pin, including crossovers |
 | 88 card ways | wired on the board **and** landing on real electronics on the card |
-| RATING strap | encodes the SKU in its E24 rev G band |
+| RATING strap | encodes the SKU in its own band |
 
 > [!TIP]
 > **How this page is checked** — `npx tsx calculations/module-interconnect-audit.mts` in `run-all` — it walks the built netlists and fails if a stud, a harness way or a slot pin does not land on real electronics on both sides.
@@ -199,7 +200,7 @@ SKU across every physical boundary:
 ---
 
 <div align="center">
-<sub><a href="e82-validation-report.md">← E82 Independent Validation & Production Hardening</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
+<sub><a href="validation-report.md">← Validation Report</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

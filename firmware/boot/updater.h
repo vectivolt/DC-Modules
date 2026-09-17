@@ -1,4 +1,4 @@
-/* updater.h — E80 the bootloader behind the service space: the two slots, the boot control record and image verification.
+/* updater.h — the bootloader behind the service space: the two slots, the boot control record and image verification.
  * Portable C99 (boot_test runs it against RAM flash); the port supplies raw flash through boot_flash_* and the record pages
  * through hal/nvm.h. It implements svc_port_* for the bootloader build.
  *   begin    never the confirmed slot; a pending slot being overwritten stops being pending first (stored)
@@ -25,7 +25,7 @@ typedef struct {
 
 /* provided by the port: addr/len inside a slot; the map is valid until the next erase or program */
 const uint8_t *boot_flash_map(uint32_t addr);
-void boot_poll(void);   /* E80: called through long verification — the port kicks its watchdog (rate-limited); host tests no-op */
+void boot_poll(void);   /* called through long verification — the port kicks its watchdog (rate-limited); host tests no-op */
 bool boot_flash_erase(uint32_t addr, uint32_t len);   /* every page touching [addr, addr + len) */
 bool boot_flash_prog(uint32_t addr, const uint8_t *p, uint32_t n);
 

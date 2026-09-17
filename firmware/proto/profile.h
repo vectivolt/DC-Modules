@@ -1,4 +1,4 @@
-/* profile.h — E78 protocol profiles. A profile is the only code that knows a wire format; it fills the canonical command
+/* profile.h — protocol profiles. A profile is the only code that knows a wire format; it fills the canonical command
  * (core/modapi.h) from received frames and encodes the canonical telemetry into its own frames. The HAL runs exactly one
  * profile per boot:
  *   rx   for every received frame (after the CAN acceptance filters)

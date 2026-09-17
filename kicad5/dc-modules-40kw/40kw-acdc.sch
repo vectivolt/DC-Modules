@@ -9,7 +9,7 @@ Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 40 kW - board AC-DC (lower), sheet 1 of 3"
 Comment1 "Module 40 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
-Comment2 "Content: Vienna PFC: 1x 750 V SiC die per position, D1 5x T79 N=26, 12-can link, 3 fans (E68/E69)"
+Comment2 "Content: Vienna PFC: 1x 750 V SiC die per position, D1 5x T79 N=26, 12-can link, 3 fans"
 Comment3 "29 functional sections - 343 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
@@ -72,9 +72,9 @@ MAGNETICS CONSTRUCTION
 Text Notes 43210 16070 0    60   ~ 0
 identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)
 Text Notes 43200 16500 0    60   ~ 0
-D1 LA0-LC0: 5x 0077908A7 KoolMu (CATALOG AL37), N=26 +/-1 lot trim -> L0 116uH, >=61uH @104A pk (E51)
+D1 LA0-LC0: 5x 0077908A7 KoolMu (CATALOG AL37), N=26 +/-1 lot trim -> L0 116uH, >=61uH @104A pk
 Text Notes 43200 16800 0    60   ~ 0
-E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted
+EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; no AC-side DM chokes
 Text Notes 43200 17100 0    60   ~ 0
 Cr at TANK sections
 Wire Notes Line
@@ -5049,7 +5049,7 @@ U 1 1 5E0000CF
 P 44650 5900
 F 0 "F1" H 44650 5740 50  0000 C CNN
 F 1 "FUSE-gG-690V-125A" H 44650 6070 50  0000 C CNN
-F 2 "FUSE_holder_NH00" H 44650 5900 50  0001 C CNN
+F 2 "FUSE_holder_22x58" H 44650 5900 50  0001 C CNN
 F 3 "~" H 44650 5900 50  0001 C CNN
 F 4 "CLASS" H 44650 5900 50  0001 C CNN "LCSC"
 F 5 "FUSE-gG-690V-125A" H 44650 5900 50  0001 C CNN "MPN"
@@ -5070,7 +5070,7 @@ U 1 1 5E0000D0
 P 44650 6300
 F 0 "F2" H 44650 6140 50  0000 C CNN
 F 1 "FUSE-gG-690V-125A" H 44650 6470 50  0000 C CNN
-F 2 "FUSE_holder_NH00" H 44650 6300 50  0001 C CNN
+F 2 "FUSE_holder_22x58" H 44650 6300 50  0001 C CNN
 F 3 "~" H 44650 6300 50  0001 C CNN
 F 4 "CLASS" H 44650 6300 50  0001 C CNN "LCSC"
 F 5 "FUSE-gG-690V-125A" H 44650 6300 50  0001 C CNN "MPN"
@@ -5091,7 +5091,7 @@ U 1 1 5E0000D1
 P 44650 6700
 F 0 "F3" H 44650 6540 50  0000 C CNN
 F 1 "FUSE-gG-690V-125A" H 44650 6870 50  0000 C CNN
-F 2 "FUSE_holder_NH00" H 44650 6700 50  0001 C CNN
+F 2 "FUSE_holder_22x58" H 44650 6700 50  0001 C CNN
 F 3 "~" H 44650 6700 50  0001 C CNN
 F 4 "CLASS" H 44650 6700 50  0001 C CNN "LCSC"
 F 5 "FUSE-gG-690V-125A" H 44650 6700 50  0001 C CNN "MPN"
@@ -5907,7 +5907,7 @@ F 1 "6.8R" H 39450 15770 50  0000 C CNN
 F 2 "RES-TH_L60.0-W9.0-P66.00" H 39450 15600 50  0001 C CNN
 F 3 "~" H 39450 15600 50  0001 C CNN
 F 4 "CLASS" H 39450 15600 50  0001 C CNN "LCSC"
-F 5 "SQP-10R-25W" H 39450 15600 50  0001 C CNN "MPN"
+F 5 "SQP-6R8-25W" H 39450 15600 50  0001 C CNN "MPN"
 	1    39450 15600
 	1    0    0    -1  
 $EndComp
@@ -5928,7 +5928,7 @@ F 1 "6.8R" H 39450 16170 50  0000 C CNN
 F 2 "RES-TH_L60.0-W9.0-P66.00" H 39450 16000 50  0001 C CNN
 F 3 "~" H 39450 16000 50  0001 C CNN
 F 4 "CLASS" H 39450 16000 50  0001 C CNN "LCSC"
-F 5 "SQP-10R-25W" H 39450 16000 50  0001 C CNN "MPN"
+F 5 "SQP-6R8-25W" H 39450 16000 50  0001 C CNN "MPN"
 	1    39450 16000
 	1    0    0    -1  
 $EndComp
@@ -5949,7 +5949,7 @@ F 1 "6.8R" H 39450 16570 50  0000 C CNN
 F 2 "RES-TH_L60.0-W9.0-P66.00" H 39450 16400 50  0001 C CNN
 F 3 "~" H 39450 16400 50  0001 C CNN
 F 4 "CLASS" H 39450 16400 50  0001 C CNN "LCSC"
-F 5 "SQP-10R-25W" H 39450 16400 50  0001 C CNN "MPN"
+F 5 "SQP-6R8-25W" H 39450 16400 50  0001 C CNN "MPN"
 	1    39450 16400
 	1    0    0    -1  
 $EndComp

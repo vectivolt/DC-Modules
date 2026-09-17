@@ -4,9 +4,9 @@
 // physical interface and asserts both sides of each boundary exist and agree:
 //
 //   1. DCP / DCN / PE stud pillars   — present with real pins on BOTH boards
-//   2. 40-way harness (E40)          — straight-through against the single source HARNESS40; SHLD bonded at the
+//   2. 40-way harness               — straight-through against the single source HARNESS40; SHLD bonded at the
 //                                      AC-DC end only; one-sided wires flagged
-//   3. the 88-way card slot (E40)    — every way the module role map expects is wired on the board AND lands on
+//   3. the 88-way card slot          — every way the module role map expects is wired on the board AND lands on
 //                                      real electronics on the card; ways wired on one side only are flagged
 //   4. RATING strap                  — the resistor code the card reads at boot encodes the SKU
 //                                      (0R = 30 kW · 1k = 40 kW · 10k = 50 kW liquid · 15k = 50 kW air)
@@ -67,7 +67,7 @@ export function load(path: string): Board | null {
 }
 
 /* A connector pin may reach its named net THROUGH a series element (the 100 R on the link
- * lines, MR-14). Resolve: direct net, else hop once across any 2-pin component in the group. */
+ * lines). Resolve: direct net, else hop once across any 2-pin component in the group. */
 export function reach(b: Board, pinKey: string): Net | undefined {
   const direct = b.netOfPin.get(pinKey);
   if (direct) return direct;
@@ -112,7 +112,7 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
     else bad(`stud ${net}: acdc=${an ?? "MISSING"} dcdc=${dn ?? "MISSING"}`);
   }
 
-  // ---- 2. 40-way harness (E40): straight-through, single source HARNESS40 ----
+  // ---- 2. 40-way harness: straight-through, single source HARNESS40 ----
   const gnd = (x?: string) => (x === "DGND" ? "GND" : x);
   let hOk = 0;
   for (const [pos, net] of HARNESS40 as [number, string | null][]) {
@@ -130,7 +130,7 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
   }
   ok(`harness: ${hOk} nets verified across all 40 ways (straight-through, SHLD bonded at AC-DC)`);
 
-  // ---- 3. the single 88-way card slot (E40: the DC-DC board hosts the module's one brain) ----
+  // ---- 3. the single 88-way card slot (the DC-DC board hosts the module's one brain) ----
   {
     const roleWays: [string, string | null][] = cardMap("module").map(([w, n]: any) => [w, n]);
     let wired = 0, dead = 0;
@@ -151,7 +151,7 @@ for (const sku of process.argv[2] ? [process.argv[2]] : ["30kw", "40kw", "50kw",
         wired++;
       } else if (boardNet) warn(`module way ${way}: board wires ${boardNet} but the role map has it unused`);
     }
-    if (dead === 0) ok(`module<->card: ${wired} expected ways verified end-to-end (single slot, E40)`);
+    if (dead === 0) ok(`module<->card: ${wired} expected ways verified end-to-end (single slot)`);
     else console.log(`        module<->card: ${wired} checked, ${dead} dead-ended (see FAILs)`);
   }
 

@@ -8,15 +8,15 @@ Title "DC-Modules CONTROL-CARD kW module - schematic set"
 Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules"
-Comment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC, E67)"
-Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card (E40)"
+Comment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC)"
+Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card"
 Comment3 ""
 Comment4 ""
 $EndDescr
 $Sheet
 S 1000 1000 4200 1400
 U 5E00004E
-F0 "Control Card - GD32G553VET7, one card for both converter roles (E35)" 70
+F0 "Control Card - GD32G553VET7, one card for both converter roles" 70
 F1 "control-card-card.sch" 70
 $EndSheet
 $EndSCHEMATC

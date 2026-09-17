@@ -1,4 +1,4 @@
-/* string.h — E80 freestanding (implementations in lib.c) */
+/* string.h — freestanding (implementations in lib.c) */
 #ifndef PORT_STRING_H
 #define PORT_STRING_H
 #include <stddef.h>

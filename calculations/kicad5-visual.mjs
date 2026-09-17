@@ -92,7 +92,7 @@ for (const f of (SKU === "control-card" ? ["control-card-card.sch"] : [`${SKU}-a
       // to collide, because the body width is derived from the longest name.
       for (const pn of entry.pins ?? []) {
         if (!pn.name || pn.name === "~" || entry.namesShown === false) continue;
-        const px = x + pn.x, py = y - pn.y;          // E56: native lib, standard matrix
+        const px = x + pn.x, py = y - pn.y;          // native lib, standard matrix
         const inward = pn.o === "R" ? 1 : pn.o === "L" ? -1 : 0;
         const inwardY = pn.o === "U" ? -1 : pn.o === "D" ? 1 : 0;
         const tx = px + inward * (pn.len + 20), ty = py + inwardY * (pn.len + 20);

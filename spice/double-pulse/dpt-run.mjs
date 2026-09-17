@@ -1,28 +1,26 @@
-// dpt-run.mjs — PER-SKU double-pulse suite (§16, rev E81).
+// dpt-run.mjs — PER-SKU double-pulse suite (§16).
 //
-// WHAT CHANGED AT E81 (C-sic F-C-3 / F-C-5 / F-C-9 / F-C-12). The pre-E81 deck ran ONE 30 kW-class
-// case per family, at a gate network and snubber the schematic does not draw, at a current far below
-// the real one, and at a −4 V off-bias the hardware does not have; nothing in the battery read the
-// resulting CSVs, so 20 of their 30 rows were FAIL rows that no gate saw. This suite instead:
+// A DPT deck is only evidence if it runs the drawn hardware at the real currents and something reads
+// the result, so this suite:
 //   · runs BOTH families for EVERY SKU at that SKU's own simulated currents
 //     (LLC: llc-stress.csv Ifet_toff / Ip_pk · PFC: vienna-switched.csv switch peak),
 //   · reads the gate network, the RC snubber and the RCD clamp OUT OF cells.tsx (drawn() below), so a
 //     schematic edit changes the simulation instead of silently invalidating it,
-//   · uses the drawn −3 V off-bias (QA01C-18) everywhere,
+//   · uses the drawn −3 V off-bias everywhere,
 //   · uses the datasheet-fitted 1200 V model (spice/models/sic-1200-c3m.lib) whose output charge is
 //     the datasheet's, not half of it,
-//   · reports CHANNEL turn-off energy, not the drain-node integral, so the E81 turn-off snubber
+//   · reports CHANNEL turn-off energy, not the drain-node integral, so the turn-off snubber
 //     (tanks.mjs `cs`) is credited correctly, and
 //   · writes a fingerprinted CSV per SKU that calculations/stress-audit.mjs GATES.
 //
-// The PFC 750 V family still runs the SIC750_10R model in sic-behavioral.lib. It was NOT re-fitted at
-// E81: its Cjo 8.7 nF gives Eoss(415 V) = 46 µJ, which is the right order for a 750 V 10 mΩ die, and
+// The PFC 750 V family runs the SIC750_10R model in sic-behavioral.lib, not a re-fit:
+// its Cjo 8.7 nF gives Eoss(415 V) = 46 µJ, which is the right order for a 750 V 10 mΩ die, and
 // the 30/40 kW 20/15 mΩ dies have SMALLER Coss — using the 10 mΩ model there is the conservative
 // direction for turn-off energy and the optimistic one for ring damping. Re-fit it when a real 750 V
 // datasheet lands (RFQ).
 //
 // Run: node spice/double-pulse/dpt-run.mjs
-import { runDeck, trapz, maxIn, minIn, maxSlew } from "../run.mjs";
+import { runDeck, trapz, maxIn, minIn, maxSlew, inputStamp } from "../run.mjs";
 import { plotSVG } from "../../calculations/plot.mjs";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -40,7 +38,7 @@ export const DPT = {
   vLlc: 1200, vPfc: 750,
   vgsFwMax: 1.4,       // V — hot MINIMUM Vgs(th) of the 1200 V class (1.8 V min @25 °C, ~5 mV/K)
   vgsMax: 19, vgsMin: -8,   // C3M0021120K transient absolute maximum gate window
-  // E81 LAYOUT RULE: the LLC commutation loop is specified at 5 nH (laminated bus, bridge films at the
+  // LAYOUT RULE: the LLC commutation loop is specified at 5 nH (laminated bus, bridge films at the
   // package pins), because Vds_pk is dominated by I*sqrt(L/C) and 10 nH cannot meet the 80 % house rule
   // at any cs the ZVS budget allows. EVT T-59 measures it from the ring frequency. 10 nH is kept as a
   // sensitivity row on every corner so the cost of missing the rule is visible.
@@ -49,24 +47,24 @@ export const DPT = {
   // Acceptance. REPETITIVE corners get the 80 % house rule. The +6 % bus row is 880 V, ABOVE the 860 V
   // F.03 hardware trip, so the bridge can only see it for the F.03 kill time (one switching period plus
   // the HRTIMER fault path) — a non-repetitive excursion, held to 90 %.
-  // E81 decision (lead): 0.85 on repetitive corners. At the 5 nH design loop the achievable with 100–165 A turn-off and a 1 kV C0G
+  // 0.85 on repetitive corners. At the 5 nH design loop the achievable with 100–165 A turn-off and a 1 kV C0G
   // snubber is 81–84 % of 1200 V (LLC) and 76–82 % of 750 V (Vienna, single clamp); the DC bus itself sits at ≤ 69 % / 57 %, both die
   // classes are avalanche-rated, and no cheaper network (2.2 nF breaks ZVS at PS150; an RC snubber is CV²f) reaches 80 %. T-59 measures.
   vdsPctRepetitive: 0.85, vdsPctExcursion: 0.90,
-  voff: -3,            // QA01C-18 drawn off-bias
-  rgOffLlcDecided: 0,  // E81 decision: R{id}OFF deleted on the LLC channels (driver ROL 0.3 Ω)
+  voff: -3,            // drawn off-bias
+  rgOffLlcDecided: 0,  // no R{id}OFF on the LLC channels (driver ROL 0.3 Ω)
   // ---- the ZVS dead-time budget that bounds `cs` from ABOVE.
   // HRTIMER dead-time generator: 9-bit count. DTGCKDIV 0 = 578.7 ps/step → 296 ns; DTGCKDIV 1 =
-  // 1.157 ns/step → 592 ns, which is what the E81 adaptive schedule uses. Two independent limits:
+  // 1.157 ns/step → 592 ns, which is what the adaptive schedule uses. Two independent limits:
   //   (a) firmware clamp with margin: the adaptive schedule is clamped to [60, 900] ns on DTGCKDIV 2
   //       (2.3 ns steps, 1.18 µs range), so 0.75 × 900 ns = 675 ns
   //   (b) duty budget: t_dead ≤ 12 % of the PSM period (4.93 µs at f_max 203 kHz) = 592 ns  ← binding
   deadClampNs: 900, deadFrac: 0.75, dutyFrac: 0.12, fswMax: 203e3,
   csMax: 2.2e-9,       // above this the L_loop–cs ring lengthens and Vds_pk comes back (C-sic §snubber)
   csSweep: [0, 150e-12, 330e-12, 470e-12, 1e-9],
-  // per-SKU extra cs candidates the lead is choosing between (E81): 40 kW needs the 470 pF-1 nF gap
-  // resolved because 470 pF leaves its 330 VAC / 500 V-series / 55 C row at eta 94.94 % vs the 95 %
-  // grid floor, while 1 nF rings PAR500 to 91 % of the die rating.
+  // per-SKU extra cs candidates: the 40 kW needs the 470 pF–1 nF gap resolved, because 470 pF leaves
+  // its 330 VAC / 500 V-series / 55 °C row at eta 94.94 % against the 95 % grid floor, while 1 nF
+  // rings PAR500 to 91 % of the die rating.
   csExtra: { "40kw": [680e-12, 820e-12] },
   // FALSIFICATION HOOK. DPT_CS_PF=<n> forces the recommendation to that cs so the stress-audit [DPT]
   // gate can be shown to discriminate (e.g. DPT_CS_PF=4700 must fail the ZVS budget). Not for production.
@@ -91,8 +89,8 @@ export function drawn() {
     pfcRgOn: +pfc[1], pfcRgOff: +pfc[2],
     snubR: +rsn[1], snubC: num(csn[1]),
     clampC: ccl ? num(ccl[1]) : 0,
-    // the RCD clamp as drawn catches PH ABOVE DCP only — there is no mirror to DCN (C-sic F-C-13),
-    // so the negative half-cycle runs with snubber only. Both polarities are `final` rows.
+    // the RCD clamp as drawn catches PH ABOVE DCP only — with no mirror to DCN the negative
+    // half-cycle runs with snubber only. Both polarities are `final` rows.
     clampSingleSided: /name=\{`D\$\{id\}C`\}[\s\S]{0,40}TO247_2/.test(src) && !/name=\{`D\$\{id\}CN`\}/.test(src),
   };
 }
@@ -128,10 +126,10 @@ export function pfcPoints(sku) {
   const row = vs.find((x) => x[0] === k && x[1] === "330-full-bus830-lot92");
   const Isw = Math.round(+row[8]);     // switch peak incl. ripple at the 330 VAC continuous corner
   // The Vienna pair blocks |V_PH − V_MID| ≈ bus/2 in BOTH polarities; the drawn RCD clamps only the
-  // positive one, so the two halves of the line cycle are two different stresses (C-sic F-C-13).
+  // positive one, so the two halves of the line cycle are two different stresses.
   return [
     { tag: "clamped", V: 425, I: Isw, CLAMP: 1, note: "positive half-cycle — PH above DCP, the drawn RCD clamps it" },
-    { tag: "UNCLAMPED", V: 425, I: Isw, CLAMP: 0, note: "negative half-cycle — PH below DCN, NO clamp as drawn (F-C-13)" },
+    { tag: "UNCLAMPED", V: 425, I: Isw, CLAMP: 0, note: "negative half-cycle — PH below DCN, NO clamp as drawn" },
     { tag: "UNCLAMPED-vhi", V: 450.5, I: Isw, CLAMP: 0, note: "+6 % bus, unclamped polarity" },
   ];
 }
@@ -140,8 +138,8 @@ export function pfcPoints(sku) {
 // FREEWHEEL GATE LOOP. The complementary device is held off by OUTL (driver R_OL 0.3 Ohm, DATASHEET
 // NSI66x1A rev 1.1) through R{id}OFF, IN PARALLEL with the driver's internal active Miller clamp
 // (CLAMP tied straight to the gate in cells.tsx; V_CLAMP = VEE2 + 0.8 V at I_CLAMP = 1 A, so ~0.8 Ohm).
-// The pre-E81 deck modelled it as a bare 4.7 Ohm with no clamp at all, which over-states the Miller
-// peak by ~2.3x at Rg_off = 0. R_g(int) 3.3 Ohm is inside the model.
+// Modelling it as a bare 4.7 Ohm with no clamp at all over-states the Miller peak by ~2.3x at
+// Rg_off = 0. R_g(int) 3.3 Ohm is inside the model.
 const fwGateR = (RGOFF) => 1 / (1 / Math.max(RGOFF + 0.3, 0.3) + 1 / 0.8);
 function llcDeck({ V, I, RGON, RGOFF, LLOOP, CS, VOFF, FW = "SIC1200_23R_C" }) {
   const L = 60e-6, t1f = 0.4e-6, t2r = t1f + 1.5e-6, t2f = t2r + 0.8e-6, tstop = t2f + 0.6e-6;
@@ -273,10 +271,10 @@ const MAIN = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1
 if (MAIN) await main();
 async function main() {
 const D = drawn();
-console.log("=== DPT SUITE (E81) — per SKU, at the drawn network and the simulated currents ===");
+console.log("=== DPT SUITE — per SKU, at the drawn network and the simulated currents ===");
 console.log(`drawn(): LLC Rg ${D.llcRgOn}/${D.llcRgOff} Ω · Vienna Rg ${D.pfcRgOn}/${D.pfcRgOff} Ω · snubber ${D.snubR} Ω / ${D.snubC * 1e12} pF · clamp ${f(D.clampC * 1e9, 0)} nF ${D.clampSingleSided ? "(single-sided — no mirror to DCN)" : ""}`);
 if (D.llcRgOff !== DPT.rgOffLlcDecided)
-  console.log(`  NOTE cells.tsx still draws R{id}OFF = ${D.llcRgOff} Ω on the LLC channels; the E81 decision (and tanks.mjs koff) is ${DPT.rgOffLlcDecided} Ω. The final rows (and tanks.koff) use 0 ohm; a drawn-* row carries the schematic value and stress-audit fails until the two agree.`);
+  console.log(`  NOTE cells.tsx still draws R{id}OFF = ${D.llcRgOff} Ω on the LLC channels; the decided value (and tanks.mjs koff) is ${DPT.rgOffLlcDecided} Ω. The final rows (and tanks.koff) use 0 ohm; a drawn-* row carries the schematic value and stress-audit fails until the two agree.`);
 
 const REC = {};   // per-SKU recommendation printed at the end for tanks.mjs
 
@@ -286,7 +284,7 @@ for (const sku of SKUS) {
   mkdirSync(join(RES, "plots"), { recursive: true });
   console.log(`\n--- ${sku}  (par ${t.par}, tanks cs ${Math.round((t.cs ?? 0) * 1e12)} pF, tanks koff ${f((t.koff ?? 0) * 1e9, 2)} nJ/(V·A))`);
 
-  // ---- LLC. Sweep cs at the E81 Rg_off = 0 Ω over this SKU's own three corners, then pick the
+  // ---- LLC. Sweep cs at the drawn Rg_off = 0 Ω over this SKU's own three corners, then pick the
   // recommended cs under the three constraints and re-label those rows `final`.
   const lp = llcPoints(src), zp = zvsPoint(src);
   const base = { RGON: D.llcRgOn, LLOOP: DPT.lloopLlc, VOFF: DPT.voff, RGOFF: DPT.rgOffLlcDecided };
@@ -298,7 +296,7 @@ for (const sku of SKUS) {
   llcCases.push({ ...base, ...lp[2], CS: csT, RGOFF: D.llcRgOff, tag: "drawn-PAR500-full", kind: "drawn",
     note: `cells.tsx R{id}OFF = ${D.llcRgOff} Ω` });
   for (const p of lp) llcCases.push({ ...base, ...p, CS: csT, LLOOP: DPT.lloopLlcSens, tag: `sensL10-${p.tag}`, kind: "sensitivity",
-    note: "the same corner at 10 nH — the cost of missing the E81 5 nH layout rule" });
+    note: "the same corner at 10 nH — the cost of missing the 5 nH layout rule" });
   if (sku === "30kw") llcCases.push({ ...base, ...lp[0], CS: csT, tag: "control-lowVth-fw", kind: "control",
     FW: "SIC1200_23R_LOWVT", note: "freewheel die at the datasheet MIN Vgs(th), hot" });
   const llc = await runFamily(sku, "llc", llcCases);
@@ -331,7 +329,7 @@ for (const sku of SKUS) {
   REC[sku] = best;
   console.log(`     → FINALS at tanks cs = ${best.csp} pF, Rg_off 0 Ω, ${DPT.lloopLlc * 1e9} nH → koff ${f(best.koff, 2)} nJ/(V·A), t_dead ${f(best.td, 0)} ns, worst Vds ${f(best.vpk, 1)} %` +
     (bestFree.csp !== best.csp ? `   (free optimum would be ${bestFree.csp} pF → koff ${f(bestFree.koff, 2)}, Vds ${f(bestFree.vpk, 1)} %)` : ""));
-  // E81 candidate set: the lead picks cs per SKU from these. `final` is whatever tanks.mjs carries
+  // candidate set: cs is picked per SKU from these. `final` is whatever tanks.mjs carries
   // TODAY (so the gate always describes the shipped design); the other candidate rides as final-cs<n>.
   const CAND_CS = [470, 1000, ...(DPT.csExtra[sku] ?? []).map((x) => Math.round(x * 1e12))];
   for (const csp of new Set([...CAND_CS, best.csp])) {
@@ -358,7 +356,7 @@ for (const sku of SKUS) {
   // Both line-cycle polarities at 5 / 7 / 10 nH. The "mirror clamp" variant is the CLAMP=1 result read
   // as the negative half-cycle too, so it costs no extra decks: drawn = max(clamped, unclamped),
   // mirrored = clamped on both halves.
-  // E81: the mirrored RCD clamp is a per-SKU populated option (parts-db MIRROR_CLAMP drives the BOM); where it is fitted the
+  // the mirrored RCD clamp is a per-SKU populated option (parts-db MIRROR_CLAMP drives the BOM); where it is fitted the
   // negative half-cycle FINAL rows run clamped too (CLAMP=1) and say so — the readers (grid, loss-budget, stress-audit) key on
   // the row names, so the drawn clamp state lands in the thermal ledgers without a rename.
   const mirror = !!MIRROR_CLAMP[sku];
@@ -371,8 +369,8 @@ for (const sku of SKUS) {
   const pfc = await runFamily(sku, "pfc", pfcCases);
 
   const fp = (fam, rg, csp) => `# fingerprint: ${fingerprint(sku)} | cs=${Math.round(csp * 1e12)}p | RgOn=${fam === "llc" ? D.llcRgOn : D.pfcRgOn} RgOff=${rg} | Lloop=${(fam === "llc" ? DPT.lloopLlc : DPT.lloopPfc) * 1e9}nH | Voff=${DPT.voff}V | model=${fam === "llc" ? `sic-1200-c3m.lib#${libHash}` : "sic-behavioral.lib:SIC750_10R"}${fam === "pfc" ? ` | mirror=${MIRROR_CLAMP[sku] ? 1 : 0}` : ""}\n`;
-  const crit = (fam) => `# PASS = Vds_pk <= ${Math.round(DPT.vdsPctRepetitive * 100)} % of ${fam === "llc" ? DPT.vLlc : DPT.vPfc} V on REPETITIVE corners (E81: 85 % at the 5 nH design loop), <= ${Math.round(DPT.vdsPctExcursion * 100)} % on the +6 %-bus row\n#   (880 V is above the 860 V F.03 trip, so the bridge sees it only for the F.03 kill time), AND vgs in [${DPT.vgsMin},${DPT.vgsMax}] V` +
-    (fam === "llc" ? ` AND vgs_fw_pk <= ${DPT.vgsFwMax} V (hot MIN Vgs(th) of the 1200 V class; the pre-E81 2.5 V line was the TYPICAL 25 C threshold)\n` : ` (the PFC freewheel is a JBS diode — no gate to hold off)\n`);
+  const crit = (fam) => `# PASS = Vds_pk <= ${Math.round(DPT.vdsPctRepetitive * 100)} % of ${fam === "llc" ? DPT.vLlc : DPT.vPfc} V on REPETITIVE corners (at the 5 nH design loop), <= ${Math.round(DPT.vdsPctExcursion * 100)} % on the +6 %-bus row\n#   (880 V is above the 860 V F.03 trip, so the bridge sees it only for the F.03 kill time), AND vgs in [${DPT.vgsMin},${DPT.vgsMax}] V` +
+    (fam === "llc" ? ` AND vgs_fw_pk <= ${DPT.vgsFwMax} V (hot MIN Vgs(th) of the 1200 V class, not the typical 25 C threshold)\n` : ` (the PFC freewheel is a JBS diode — no gate to hold off)\n`);
   const head = (fam, rg, csp) =>
     `# dpt-${fam} ${sku} — ngspice-46, decks in spice/generated/dpt-${fam}-${sku}-*.cir.\n` +
     `# kind=final is the RECOMMENDED network (LLC: Rg_off 0 + cs; PFC: exactly what cells.tsx draws); kind=sweep/sensitivity/\n` +
@@ -380,13 +378,14 @@ for (const sku of SKUS) {
     `# Eoff_chan = CHANNEL dissipation: drain-node integral minus the device's datasheet Eoss at the settled voltage;\n` +
     `# the cs snubber sits at the package pins and bypasses the sense, and its charge is recovered at the ZVS turn-on.\n` +
     `# Eon_hard = the energy paid per transition IF ZVS does not complete. t_dead_req = n_die,leg*(Qoss(V)+cs*V)/I_toff.\n` +
-    fp(fam, rg, csp) + crit(fam);
+    fp(fam, rg, csp) + crit(fam) +
+    `# inputs ${inputStamp(fam === "llc" ? [`simulation-results/${sku}/llc-stress.csv`] : ["calculations/out/vienna-switched.csv"])}\n`;
   writeFileSync(join(RES, "dpt-llc-metrics.csv"), head("llc", DPT.rgOffLlcDecided, best.CS) + llc.rows.map((r) => r.join(",")).join("\n") + "\n");
   writeFileSync(join(RES, "dpt-pfc-metrics.csv"), head("pfc", D.pfcRgOff, 0) + pfc.rows.map((r) => r.join(",")).join("\n") + "\n");
 
   if (sku === "30kw") for (const { r, name } of [llc.plotted, pfc.plotted].filter(Boolean)) {
     const sel = r.t.map((tt, i) => ({ t: tt, i })).filter((p) => p.t >= 0.25e-6 && p.t <= 2.5e-6);
-    plotSVG({ title: `${name} — Vds / Id / Vgs (ngspice, E81 deck)`, xlabel: "t (s)", ylabel: "Vds (V)", y2label: "Id (A) / Vgs (V)",
+    plotSVG({ title: `${name} — Vds / Id / Vgs (ngspice)`, xlabel: "t (s)", ylabel: "Vds (V)", y2label: "Id (A) / Vgs (V)",
       path: join(RES, "plots", `${name}.svg`),
       series: [{ label: "Vds", x: sel.map((p) => p.t), y: sel.map((p) => r.cols.vds[p.i]) },
         { label: "Id", x: sel.map((p) => p.t), y: sel.map((p) => r.cols.id[p.i]), axis: 1, color: "#3A6B8C" },

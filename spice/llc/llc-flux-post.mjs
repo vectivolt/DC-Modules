@@ -1,9 +1,9 @@
-// llc-flux-post.mjs — E65: turn the power-solved LLC waveforms into a committed magnetics excitation table.
+// llc-flux-post.mjs — turn the power-solved LLC waveforms into a committed magnetics excitation table.
 //
 // The ngspice .out files are git-ignored (tens of MB); the magnetics gates must not depend on them. This
 // post-processor reads the waveform of every simulated corner (llc-stress.csv + llc-envelope.csv) and writes
 // simulation-results/<sku>/llc-flux.csv carrying, per corner:
-//   · Im_pk / Im_pp — primary-referred magnetizing current (E67 full bridge: im = ip − (isa + isb)/n) → D3 flux is Lm·im/(Np·Ae)
+//   · Im_pk / Im_pp — primary-referred magnetizing current (full bridge: im = ip − (isa + isb)/n) → D3 flux is Lm·im/(Np·Ae)
 //   · k_igse_D3     — iGSE core-loss factor of the SIMULATED magnetizing-flux waveform relative to a sinusoid of
 //                     the same peak and frequency (Venkatachalam et al., COMPEL 2002; α 1.55, β 2.8 — the local
 //                     N95/PC95 exponents at 80–180 kHz, 100–250 mT from the TDK N95 curves)
@@ -16,15 +16,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TANKS, fingerprint } from "../../calculations/llc/tanks.mjs";
 import { TOL } from "./llc-run.mjs";
+import { inputStamp } from "../run.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 export const ALPHA = 1.55, BETA = 2.8;
-// peak |Ip| a kill of `killUs` µs after |Ip| first crosses `thr` (committed llc-short.csv envelope). E65: F.11 is a WINDOW
+// peak |Ip| a kill of `killUs` µs after |Ip| first crosses `thr` (committed llc-short.csv envelope). F.11 is a WINDOW
 // comparator (both polarities) diode-ORed onto HRTIMER_FLT2 — 1 µs covers the 220 ns front-end RC, the 40 ns comparator,
 // the fault input, the driver and the SiC fall with margin
 export const F11_KILL_US = 1.0;
-// E81 / review G: the E81 HRTIMER fault filter (0b0011) + comparator ~50 ns + driver ~60 ns + t_d,off ~50 ns makes the REAL kill
+// the HRTIMER fault filter (0b0011) + comparator ~50 ns + driver ~60 ns + t_d,off ~50 ns makes the REAL kill
 // path ≈ 0.3 µs, so 0.5 µs is the budgeted window and 1 µs the conservative one; 3 µs is the observability (ADC-rail) window.
 // llc-short.csv now carries all three as columns, so a consumer never has to walk the envelope twice.
 export const F11_FAST_US = 0.5, F11_MON_US = 3.0;
@@ -66,7 +67,7 @@ const parseOut = (file, n) => {
   }
   return { t, ip, im, ib };
 };
-// E67: AC (ripple) RMS of the bank-A rectifier current — the full bridge has no interleave cancellation; the bank filter
+// AC (ripple) RMS of the bank-A rectifier current — the full bridge has no interleave cancellation; the bank filter
 // (film → Lf → electrolytic) is sized to this committed column
 const rippleRms = (t, x) => { let s = 0, s2 = 0; const T = t.at(-1) - t[0]; for (let i = 1; i < t.length; i++) { const dt = t[i] - t[i - 1]; s += 0.5 * (x[i] + x[i - 1]) * dt; s2 += 0.5 * (x[i] ** 2 + x[i - 1] ** 2) * dt; } return Math.sqrt(Math.max(s2 / T - (s / T) ** 2, 0)); };
 
@@ -90,9 +91,9 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
       out.push([tag, src, r.bank_V, src === "stress" ? 1 : r.P_frac, r.fsw_kHz, d3.pk.toFixed(2), d3.pp.toFixed(2), d3.k.toFixed(3), d2.pk.toFixed(2), d2.k.toFixed(3), r.Ip_rms_A, r.Isec_rms_A, lmScale, rippleRms(w.t, w.ib).toFixed(2)]);
     }
     if (missing) { console.log(`${sku}: ${missing} waveform(s) missing — llc-flux.csv NOT written`); process.exitCode = 1; continue; }
-    // E65: the internal-short race as a committed running-max envelope of |Ip| (E67: the one bridge) after the bank
-    // collapse at 300 µs — current-coordination measures its 3 µs kill window from the F.11 CROSSING on this trace
-    // (sampling at fixed times after the short under-read the 30/40 kW peaks by 17–21 A)
+    // the internal-short race as a committed running-max envelope of |Ip| after the bank collapse at 300 µs —
+    // current-coordination measures its 3 µs kill window from the F.11 CROSSING on this trace. Sampling at fixed
+    // times after the short instead under-reads the 30/40 kW peaks by 17–21 A.
     const sf = join(ROOT, `spice/generated/llc-${sku}-internal-short.out`);
     if (existsSync(sf)) {
       const env = [["t_after_short_us", "ip_abs_runmax_A", ...KILL_COLS.map((u) => `ip_plus${u}us_A`)]];
@@ -102,10 +103,10 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
         const us = k * 0.05;
         env.push([us.toFixed(2), runMax(us).toFixed(2), ...KILL_COLS.map((u) => runMax(us + u).toFixed(2))]);
       }
-      writeFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), `# E65 internal-short |Ip| running max after the 300 µs bank collapse; ${fingerprint(sku)}\n# E81: ip_plusNus_A = the running max N µs LATER — the kill-path budgets (0.5 µs real, 1 µs conservative, 3 µs observability)\n` + env.map((x) => x.join(",")).join("\n") + "\n");
+      writeFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), `# internal-short |Ip| running max after the 300 µs bank collapse; ${fingerprint(sku)}\n# ip_plusNus_A = the running max N µs LATER — the kill-path budgets (0.5 µs real, 1 µs conservative, 3 µs observability)\n# inputs ${inputStamp([`spice/generated/llc-${sku}-*.cir`])}\n` + env.map((x) => x.join(",")).join("\n") + "\n");
     } else { console.log(`  MISSING ${sf} — llc-short.csv not written`); process.exitCode = 1; }
     writeFileSync(join(ROOT, `simulation-results/${sku}/llc-flux.csv`),
-      `# E65 magnetics excitation from ngspice waveforms; ${fingerprint(sku)}; iGSE alpha ${ALPHA} beta ${BETA}\n` + out.map((x) => x.join(",")).join("\n") + "\n");
+      `# magnetics excitation from ngspice waveforms; ${fingerprint(sku)}; iGSE alpha ${ALPHA} beta ${BETA}\n# inputs ${inputStamp([`spice/generated/llc-${sku}-*.cir`])}\n` + out.map((x) => x.join(",")).join("\n") + "\n");
     const worst = out.slice(1).reduce((a, x) => (Number(x[5]) > Number(a[5]) ? x : a));
     console.log(`${sku}: ${out.length - 1} corners → simulation-results/${sku}/llc-flux.csv · worst Im ${worst[5]} A at ${worst[0]} (${worst[4]} kHz, k_iGSE ${worst[7]})`);
   }

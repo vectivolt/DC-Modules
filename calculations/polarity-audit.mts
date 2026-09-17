@@ -30,34 +30,34 @@ const ACDC: Rule[] = [
   { m: /^D([ABC])(\d)T$/, p1: { net: "^PH$1$2$" }, p2: { net: "^DCP$" } },  // Vienna boost top
   { m: /^D([ABC])(\d)B$/, p1: { net: "^DCN$" }, p2: { net: "^PH$1$2$" } },  // Vienna boost bottom
   { m: /^D([ABC])(\d)C$/, p1: { net: "^PH$1$2$" }, p2: { peer: "^C[ABC]\\d+C\\." } }, // phase clamp into RCD cap
-  // E81 (F-C-3/F-C-13): the MIRRORED clamp is the same network reflected to the LOWER rail, so its
+  // The MIRRORED clamp is the same network reflected to the LOWER rail, so its
   // diode faces the other way — anode on the clamp cap, CATHODE on the phase node, catching the
   // half-cycle where PH swings BELOW DCN. Getting this backwards would short DCN to PH through the
   // cap on every positive half-cycle, which is exactly what this gate exists to catch.
   { m: /^D([ABC])(\d)CM$/, p1: { peer: "^C[ABC]\\d+CM\\." }, p2: { net: "^PH$1$2$" } },
   { m: /^D([ABC])(\d)P$/, p1: { net: "^I_$1$2$" }, p2: { net: "^V3P3$" } }, // ADC clamp up
-  // E81 (F-A-9): the AC-DC board's analogue returns moved to its LOCAL DGND — the iso-amp
-  // secondaries draw from a DGND-referenced buck (UBKA, added at R4-5) and were returning over one
-  // harness way to the card's single-point tie. The clamp still points DOWN to the board's analogue
-  // return; only the NAME of that return changed, so the rule accepts either board's convention.
+  // The AC-DC board's analogue returns land on its LOCAL DGND: the iso-amp secondaries draw from a
+  // DGND-referenced buck (UBKA), so returning them over one harness way to the card's single-point
+  // tie would send that current the long way round. The clamp points DOWN to the board's analogue
+  // return either way, so the rule accepts either board's name for it.
   { m: /^D([ABC])(\d)N$/, p1: { net: "^(AGND|DGND)$" }, p2: { net: "^I_$1$2$" } }, // ADC clamp down
   { m: /^DTVS(24|15)$/, p1: { net: "^DGND$" }, p2: { net: "^V$1$" } },  // unidirectional rail TVS
   { m: /^DAUX15$/, p1: { peer: "^TAUX\\." }, p2: { net: "^V15$" } }, // flyback secondary rectifier
-  { m: /^DAUX24$/, p1: { peer: "^TAUX\\." }, p2: { peer: "^(CAUX24|RAUX24)\\.pin1$" } }, // E65: cathode feeds the reservoir, RAUX24 then V24
+  { m: /^DAUX24$/, p1: { peer: "^TAUX\\." }, p2: { peer: "^(CAUX24|RAUX24)\\.pin1$" } }, // cathode feeds the reservoir, RAUX24 then V24
   { m: /^DAUXVC$/, p1: { peer: "^TAUX\\.AXA$" }, p2: { peer: "^UAUX\\.VCC$" } }, // VCC winding rectifier
   { m: /^DCLA$/, p1: { peer: "^TAUX\\.P2$" }, p2: { peer: "^CCLA\\." } },   // RCD clamp diode
-  { m: /^DZAUX$/, p1: { peer: "^QAUXFB\\.B$" }, p2: { peer: "^RZFB\\." } }, // R4-3 zener: reverse-biased ref, cathode toward VCC via RZFB
+  { m: /^DZAUX$/, p1: { peer: "^QAUXFB\\.B$" }, p2: { peer: "^RZFB\\." } }, // aux feedback zener: reverse-biased ref, cathode toward VCC via RZFB
 ];
 const DCDC: Rule[] = [
-  { m: /^DOUT$/, p1: { net: "^BKAP$" }, p2: { net: "^OUTP$" } },           // E67 output blocking diode: bank-A top → output
-  { m: /^D(\d)([AB])[13](P[23])?$/, p1: { peer: "^T$1$2\\." }, p2: { net: "^BK$2P$" } }, // E68 sec. bridge top JBS (cell T1A → film-only bank)
-  { m: /^D(\d)([AB])[24](P[23])?$/, p1: { net: "^BK$2N$" }, p2: { peer: "^T$1$2\\." } }, // E67 sec. bridge bottom JBS
+  { m: /^DOUT$/, p1: { net: "^BKAP$" }, p2: { net: "^OUTP$" } },           // output blocking diode: bank-A top → output
+  { m: /^D(\d)([AB])[13](P[23])?$/, p1: { peer: "^T$1$2\\." }, p2: { net: "^BK$2P$" } }, // sec. bridge top JBS (cell T1A → film-only bank)
+  { m: /^D(\d)([AB])[24](P[23])?$/, p1: { net: "^BK$2N$" }, p2: { peer: "^T$1$2\\." } }, // sec. bridge bottom JBS
   { m: /^D(\d)CP$/, p1: { net: "^I_RES$1$" }, p2: { net: "^V3P3$" } },
   { m: /^D(\d)CN$/, p1: { net: "^AGND$" }, p2: { net: "^I_RES$1$" } },
 ];
-// DESAT steering chain (GateDrive cell, both boards): DST -> 100R (R5-B) -> S1 -> S2 -> drain.
+// DESAT steering chain (GateDrive cell, both boards): DST -> 100R -> S1 -> S2 -> drain.
 // Anodes point at the driver, cathodes march toward the drain — the diodes block the HV node.
-// R5-B moved the recognized anode peer one hop: it now faces the series resistor's far pin.
+// The recognized anode peer is the series resistor's far pin, one hop from the driver pin.
 const DESAT_S1: Rule = { m: /^D(\w+)S1$/, p1: { peer: "^R$1DS\\.pin2$" }, p2: { peer: "^D$1S2\\.pin1$" } };
 ACDC.push(
   DESAT_S1,
@@ -66,7 +66,7 @@ ACDC.push(
 DCDC.push(
   DESAT_S1,
   { m: /^D(\d)HS2$/, p1: { peer: "^D$1HS1\\.pin2$" }, p2: { net: "^DCP$" } },   // high-side drain
-  { m: /^D1LS2$/, p1: { peer: "^D1LS1\\.pin2$" }, p2: { net: "^SWA$" } },   // E67 full bridge: leg A switch node
+  { m: /^D1LS2$/, p1: { peer: "^D1LS1\\.pin2$" }, p2: { net: "^SWA$" } },   // full bridge: leg A switch node
   { m: /^D2LS2$/, p1: { peer: "^D2LS1\\.pin2$" }, p2: { net: "^SWB$" } },   // leg B switch node
 );
 const CARD: Rule[] = [];   // no polarized parts on the card today; a new one FAILs until ruled
@@ -109,7 +109,7 @@ function audit(b: Board, rules: Rule[], tag: string) {
   console.log(`  ok    ${tag}: ${okCount}/${seen} polarized parts verified (+/anode on pin 1)`);
 }
 
-for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {   // E40 + E41 + E42 liquid + E44 air
+for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {   // air 30/40, liquid 50, air 50
   console.log(`\n== polarity — ${sku} ==`);
   const ac = load(`${ROOT}/dist/boards/${sku}/acdc/circuit.json`);
   const dc = load(`${ROOT}/dist/boards/${sku}/dcdc/circuit.json`);

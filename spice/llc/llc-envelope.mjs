@@ -1,7 +1,7 @@
-// llc-envelope.mjs — E65: the D3/D2 MAGNETICS ENVELOPE of the LLC (E67: full bridge), power-solved in ngspice.
+// llc-envelope.mjs — the D3/D2 MAGNETICS ENVELOPE of the full-bridge LLC, power-solved in ngspice.
 //
-// Why it exists: every D3 flux and core-loss check before E65 was evaluated at resonance
-// (140 kHz, 415 V half-cycle → ~108 mT). The E60 power-solved decks show the LLC running BELOW
+// Why it exists: a D3 flux or core-loss check taken at resonance (140 kHz, 415 V half-cycle →
+// ~108 mT) misses the real duty. The power-solved decks show the LLC running BELOW
 // resonance at the top of each S/P range — 77–88 kHz at 500–525 V per bank, full power — where the
 // magnetizing current peaks at 18–25 A and the transformer flux reaches 150–230 mT. Flux there is
 // volt-second pinned by the reflected bank voltage over a longer half-period, and the ferrite loss
@@ -22,9 +22,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const RESROOT = join(HERE, "..", "..", "simulation-results");
 const f = (x, d = 2) => (Number.isFinite(x) ? Number(x.toFixed(d)) : "NaN");
 
-export const ENVELOPE_BANKS = [400, 425, 450, 475, 500];   // E67: 2-mode output caps the bank at 500 V
+export const ENVELOPE_BANKS = [400, 425, 450, 475, 500];   // the 2-mode output caps the bank at 500 V
 export const ENVELOPE_LOADS = [1.0, 0.85, 0.7, 0.55];
-// E81 (F-G-9): Icomm/t_dead/ZVS_fail appended at the end — magnetics-envelope and llc-flux-post read this header by name
+// Icomm/t_dead/ZVS_fail are appended at the end — magnetics-envelope and llc-flux-post read this header by name
 const HDR = ["bank_V", "bus_V", "P_frac", "P_target_W", "P_sim_W", "P_err_pct", "mode", "fsw_kHz", "Im_pk_A", "Ip_rms_A", "Ip_pk_A", "Isec_rms_A", "Vcr_ac_pk_V", "ZVS", "legs_in_rails", "Icomm_min_A", "t_dead_need_ns", "t_dead_used_ns", "ZVS_at_120ns", "ZVS_fail_legs"];
 
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
@@ -45,7 +45,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
       }
     }
     writeFileSync(join(RES, "llc-envelope.csv"),
-      `# E65 ngspice-46 power-solved LLC magnetics envelope; ${fingerprint(sku)}; bank × load at bus=min(830,max(650,2·bank/0.95))\n` +
+      `# ngspice-46 power-solved LLC magnetics envelope; ${fingerprint(sku)}; bank × load at bus=min(830,max(650,2·bank/0.95))\n` +
       rows.map((r) => r.join(",")).join("\n") + "\n");
     console.log(`→ simulation-results/${sku}/llc-envelope.csv`);
   }

@@ -81,7 +81,7 @@
    ],
    "nc_pins": [],
    "value": "NSI1042-DSWR",
-   "query": "NSI1042-DSWR iso CAN transceiver SO-16 ",
+   "query": "NSI1042-DSWR iso CAN transceiver SO-16, -DSWR order suffix. Pin map ",
    "mpn": "NSI1042-DSWR"
   },
   {
@@ -113,7 +113,7 @@
     5
    ],
    "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test ",
+   "query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module, ≥5 kVrms 1-min test. This ",
    "mpn": "ISO5V-RFC-6K"
   },
   {

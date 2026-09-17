@@ -1,4 +1,4 @@
-/* lib.c — E80 freestanding support: the Homebrew arm-none-eabi-gcc ships no libc/libm, so the few calls the firmware
+/* lib.c — freestanding support: the Homebrew arm-none-eabi-gcc ships no libc/libm, so the few calls the firmware
  * makes are provided here. logf is a rational minimax on [1, 2) with exponent split — worst error < 2e-7 relative,
  * far inside the NTC ladder's needs (meas_ntc_c is its only caller). */
 #include <stddef.h>

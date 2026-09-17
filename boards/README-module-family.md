@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
@@ -24,22 +24,22 @@
 |---|---|
 | **What is shared** | one parameterized source (`boards.tsx` + `cells.tsx`), one control card, one firmware image, one connector set |
 | **What scales** | fuse class, Vienna die, PFC choke stack, LLC die count, tank, transformer cells, bank films, trip classes |
-| **What selects the SKU** | a single **RATING strap** read at boot — 0 Ω · 1 kΩ · 10 kΩ · 15 kΩ (3.32 kΩ reserved, E66) |
+| **What selects the SKU** | a single **RATING strap** read at boot — 0 Ω · 1 kΩ · 10 kΩ · 15 kΩ, with a 3.32 kΩ band held in reserve |
 | **Top of the envelope** | **50 kW** — one lane, one brain; above it chargers run modules in parallel (§3) |
-| **Cheapest per kW** | **50 kW air — ₹811 / kW** at the 10k India basis |
+| **Cheapest per kW** | **50 kW air — ₹814 / kW** at the 10k India basis |
 
 ## 1. The four modules
 
 | | **30 kW** | **40 kW** | **50 kW liquid** | **50 kW air** |
 |---|:---:|:---:|:---:|:---:|
 | Output | 150–1000 VDC · 100 A | 150–1000 VDC · 133 A | 150–1000 VDC · 167 A | 150–1000 VDC · 167 A |
-| Cooling | air · **3 fans** (E81) | air · 3 fans | two coldplates · no fans | air · 4 fans |
-| Efficiency at full power, 400 VAC (E81 ledger) | 96.38 % | 96.37 % | 96.32 % | 96.25 % |
-| Worst LLC junction outside the registered fold set (E81) | 149 °C | 149 °C | 135 °C | 148 °C |
-| MTBF (parts count, 40 °C) | 410 kh | 390 kh | 374 kh | 372 kh |
-| Build cost @10k · India basis (E82) | ₹31,613 | ₹36,103 | ₹42,761 | ₹40,688 |
+| Cooling | air · **3 fans** | air · 3 fans | two coldplates · no fans | air · 4 fans |
+| Efficiency at full power, 400 VAC | 96.38 % | 96.34 % | 96.29 % | 96.22 % |
+| Worst junction over the envelope (Vienna · LLC) | 128 · 150 °C | 149 · 145 °C | 130 · 139 °C | 149 · 150 °C |
+| MTBF (parts count, 40 °C) | 403 kh | 385 kh | 369 kh | 367 kh |
+| Build cost @10k · India basis | ₹31,613 | ₹36,103 | ₹42,761 | ₹40,688 |
 | China RFQ target @10k | ₹25,920 | ₹29,520 | ₹35,023 | ₹33,243 |
-| **₹ / kW** | 1,051 | 899 | 853 | **811** |
+| **₹ / kW** | 1,054 | 903 | 855 | **814** |
 | RATING strap | 0 Ω | 1 kΩ | 10 kΩ | 15 kΩ |
 
 ```mermaid
@@ -47,7 +47,7 @@ xychart-beta
   title "Build cost per kW at 10k volume (₹) — generated in docs/bom-cost.md"
   x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
   y-axis "₹ / kW" 0 --> 1200
-  bar [1051, 899, 853, 811]
+  bar [1054, 903, 855, 814]
 ```
 
 ```mermaid
@@ -56,7 +56,7 @@ flowchart LR
     direction TB
     SRC["boards.tsx + cells.tsx<br/>one parameterized source"]
     CARD["one control card<br/>GD32G553VET7 · 88-way slot"]
-    FW["one firmware image<br/>C99 · 330 checks"]
+    FW["one firmware image<br/>portable C99"]
   end
   STRAP{"RATING strap<br/>read at boot"}
   SHARED --> STRAP
@@ -74,9 +74,9 @@ flowchart LR
 |---|---|---|---|
 | Input fuse (gG) | 80 A · 22 × 58 | 125 A · 22 × 58 | 160 A · NH00 |
 | Vienna die per position | 750 V 20 mΩ class | 750 V 15 mΩ class | B3M010C075Z |
-| PFC choke D1 | 3 × T79 Kool Mµ · N 39 | 5 × T79 · N 26 | 5 × T79 · N 24 |
+| PFC choke D1 | 3 × T79 sendust · N 39 | 5 × T79 · N 26 | 5 × T79 · N 24 |
 | LLC dies per position | one SG2M023120LJ | two | two |
-| Resonant tank | 7 × 33 nF · Lr 5.6 µH | 9 × 33 nF · 4.35 µH | 11 × 33 nF · 3.56 µH |
+| Resonant tank (total Lr) | 7 × 33 nF · 5.6 µH | 9 × 33 nF · 4.35 µH | 11 × 33 nF · 3.56 µH |
 | Transformer cells D3 | 2 × E70 per cell · 6:6∥6 | 3 × E70 · 4:4∥4 | 3 × E70 · 4:4∥4 |
 | Output banks · output diode | 9 × 2.2 µF · 150 A | 12 × 2.2 µF · 200 A | 14 × 2.2 µF · 250 A |
 | Trip classes F.01 · F.11 | 120 · 140 A pk | 155 · 180 A pk | 195 · 220 A pk |
@@ -95,37 +95,28 @@ parallel, using the contract below. → [control-card scope](../docs/control-car
 
 ## 4. Two cooling lines at 50 kW
 
-The two 50 kW modules are **electrically identical** since E68a; only the way heat leaves the module differs.
+The two 50 kW modules are **electrically identical** — same silicon, same magnetics, same firmware; only the way heat
+leaves the module differs. Paralleling the LLC dies is what let the air twin exist at all, so the choice between the two
+is cooling infrastructure and service model, not electrical design.
 
-| | 50 kW liquid (E42) | 50 kW air (E44) |
+| | 50 kW liquid | 50 kW air |
 |---|---|---|
 | **Heat path** | two coldplates replace the extrusions; sealed module, zero fans | extrusions + 4 fans (3 front, 1 rear) |
 | **Device mount** | clip on Al2O3 · 0.65 K/W to a 65 °C plate | clip on Al2O3 · 0.8 K/W to a 70 °C base |
-| **Thermal proof** | worst Tj 120 °C (PFC) · 135 °C (LLC) | worst Tj 147 °C (PFC) · 148 °C (LLC) |
-| **Efficiency at full power** | 96.32 % | 96.25 % (the fans' 40 W) |
-| **System boundary** | charger-level cooling loop: coolant ≤ 60 °C, 6.5 L/min per module; plate NTCs and the over-temperature ladder are the module's dry-run protection | airflow only |
+| **Thermal proof** | worst Tj 130 °C (Vienna) · 139 °C (LLC) | worst Tj 149 °C (Vienna) · 150 °C (LLC) |
+| **Efficiency at full power** | 96.29 % | 96.22 % (the fans' 40 W) |
+| **System boundary** | charger-level cooling loop: coolant ≤ 60 °C, 7 L/min per module; plate NTCs and the over-temperature ladder are the module's dry-run protection | airflow only |
 | **Reliability** | no wear-out fans | four monitored fans; a fan death is an alarm and a derate |
-| **₹ / kW @10k** | 853 | **811** |
+| **₹ / kW @10k** | 855 | **814** |
 
 > [!NOTE]
-> **E81 F-L-1 is withdrawn at E82.** The 150 V phase-shift corner was registered NOT SUSTAINABLE on the two-die SKUs;
-> re-derived it is ordinary. E81 gave the weak bridge leg a dead time computed on the magnetising current when at load the
-> leg swings on the decayed tank current through L_r alone (now 125 / 186 / 189 ns), the grid charged every weak-leg die
-> twice, and no firmware implemented any fold. **All four SKUs serve the full 150–1000 V range**; the 50 kW air folds
-> 150 V output to 93–80 % at a 55 °C inlet, the 50 kW liquid folds nowhere, and `hal/dielim.c` declines a point its fold
-> cannot cool rather than delivering into it. → [E82 validation report](../docs/e82-validation-report.md)
-
-<details>
-<summary><b>Record — why there are two 50 kW modules</b></summary>
-
-At E42 an air-cooled 50 kW was declined on five recorded risks — two engine edges (choke family, transformer
-window), magnetics height against the inter-board tunnel, hot-site folds landing on the high-current region where
-real charging sessions sit, and a fan-reliability regression — and the liquid module was built instead. At E44 the
-air twin was built by paralleling the LLC dies, which removed the binding junction-temperature risk; fans had never
-been the limit. Since E68a both twins carry the same silicon, so the choice between them is cooling infrastructure
-and service model, not electrical design.
-
-</details>
+> **All four SKUs serve the full 150–1000 V range, sub-200 V included.** At a 55 °C inlet and full load the 30 kW holds
+> 86–93 % of rated current at 150 / 200 / 250 V and the 50 kW air 80–93 % at 150 V; the 40 kW and the 50 kW liquid fold
+> nowhere below 200 V. Away from 55 °C the low-voltage corners run at 100 %. The fold is not a table the firmware trusts
+> blindly: `hal/dielim.c` estimates the worst die's junction temperature above the measured zone NTC and folds
+> proportionally between 142 and 150 °C, because at these corners the die runs 80–170 K above a heatsink that is still
+> cool. A point the fold cannot bring under the ceiling is **declined** — the module reports 0 A available with the
+> thermal-derate bit rather than delivering into it. → [validation report](../docs/validation-report.md)
 
 ## 5. What a charger gets from every module
 
@@ -168,5 +159,5 @@ Controllers that prefer to set unequal shares keep the per-module `SET_OUTPUT` f
 <div align="center">
 <sub><a href="README.md">← Boards</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="30kw/README.md">30 kW Module Walkthrough →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -1,7 +1,8 @@
-// Shared section map: which designators belong to which functional section.
-// Extracted from schematic-export.mjs so the exporter and the composer cannot drift.
+// Shared section map: which designators belong to which functional section, plus the sheet titles and the
+// title-block identity lines that kicad5-gen prints on every release sheet.
+import { TANKS, DIES } from "./llc/tanks.mjs";
 export const SECTIONS = {
-  // The control card (E35): one card, both converter roles; single-segment target "control-card".
+  // The control card: one card, both converter roles; single-segment target "control-card".
   "control-card": [
     ["MCU GD32G553VET7 & DECOUPLING", /^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA|XCARD|CCARDX[12]|RCARDXF)$/],
     ["SWD + BOOT", /^(JSWDCARD|RCARDBOOT|CCARDRST)$/],
@@ -56,19 +57,24 @@ export const SHEET_TITLES = {
   "50kw/dcdc": "DC-Modules 50 kW liquid — DC-DC board (full-bridge LLC)",
   "50kwa/acdc": "DC-Modules 50 kW air — AC-DC board (Vienna PFC)",
   "50kwa/dcdc": "DC-Modules 50 kW air — DC-DC board (full-bridge LLC)",
-  "control-card": "DC-Modules — Control Card (GD32G553VET7, one card for both converter roles)",
+  "control-card": "DC-Modules — Control Card (GD32G553VET7, one card runs both converters of a module)",
 };
 
 // Which board this sheet is, and where it sits in the product set. Rendered into the title
 // block so a sheet is self-identifying when printed on its own.
+// The DC-DC content line is COMPUTED from the one tank table: typed by hand it had drifted to "1 nF" / "470 pF per die" on
+// the title blocks while the sheets drew (and every gate checked) 330 / 680 / 1000 pF.
+const pF = (c) => (c >= 1e-9 ? `${+(c * 1e9).toFixed(2)} nF` : `${Math.round(c * 1e12)} pF`);
+const llc = (sku, d2, films, extra = "") => { const t = TANKS[sku];
+  return `full-bridge LLC: ${t.par}x ${DIES["23m"].mpn} per position + ${pF(t.cs)}/die turn-off snubber, ${t.crN}x${t.crNF} nF + D2 rev F ${d2} uH, 2 cells, film banks ${films}x2.2 uF, DOUT${extra}`; };
 export const SHEET_IDENT = {
-  "30kw/acdc":  { sku: "30 kW", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x 750 V SiC die per position, D1 3x T79 N=39, 10-can link, 3 fans (E68/E69/E81)" },
-  "30kw/dcdc":  { sku: "30 kW", board: "DC-DC (upper)", sheet: "2 of 3", cells: "full-bridge LLC: 1x SG2M023120LJ per position + 1 nF turn-off snubber, 7x33 nF + D2 rev F 5.00 uH, 2 cells, film banks 9x2.2 uF, DOUT (E67/E68)" },
-  "40kw/acdc":  { sku: "40 kW", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x 750 V SiC die per position, D1 5x T79 N=26, 12-can link, 3 fans (E68/E69)" },
-  "40kw/dcdc":  { sku: "40 kW", board: "DC-DC (upper)", sheet: "2 of 3", cells: "full-bridge LLC: 2x SG2M023120LJ per position + 470 pF/die turn-off snubber, 9x33 nF + D2 rev F 3.99 uH, 2 cells, film banks 12x2.2 uF, DOUT (E67/E68)" },
-  "50kw/acdc":  { sku: "50 kW liquid", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x B3M010C075Z per position, D1 5x T79 N=24, 16-can link, coldplates, 0 fans (E68)" },
-  "50kw/dcdc":  { sku: "50 kW liquid", board: "DC-DC (upper)", sheet: "2 of 3", cells: "full-bridge LLC: 2x SG2M023120LJ per position + 470 pF/die turn-off snubber, 11x33 nF + D2 rev F 3.20 uH, 2 cells, film banks 14x2.2 uF, DOUT (E67/E68)" },
-  "50kwa/acdc": { sku: "50 kW air", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x B3M010C075Z per position, D1 5x T79 N=24, 16-can link, 4 fans (E68)" },
-  "50kwa/dcdc": { sku: "50 kW air", board: "DC-DC (upper)", sheet: "2 of 3", cells: "full-bridge LLC: 2x SG2M023120LJ per position + 470 pF/die turn-off snubber, 11x33 nF + D2 rev F 3.20 uH, 2 cells, film banks 14x2.2 uF, DOUT (E67/E68)" },
-  "control-card": { sku: "30/40/50 kW", board: "Control card", sheet: "3 of 3", cells: "role-agnostic: AC-DC or DC-DC slot via ROLE straps" },
+  "30kw/acdc":  { sku: "30 kW", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x 750 V SiC die per position, D1 3x T79 N=39, 10-can link, 3 fans" },
+  "30kw/dcdc":  { sku: "30 kW", board: "DC-DC (upper)", sheet: "2 of 3", cells: llc("30kw", "5.00", 9) },
+  "40kw/acdc":  { sku: "40 kW", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x 750 V SiC die per position, D1 5x T79 N=26, 12-can link, 3 fans" },
+  "40kw/dcdc":  { sku: "40 kW", board: "DC-DC (upper)", sheet: "2 of 3", cells: llc("40kw", "3.99", 12) },
+  "50kw/acdc":  { sku: "50 kW liquid", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x B3M010C075Z per position, D1 5x T79 N=24, 16-can link, coldplates, 0 fans" },
+  "50kw/dcdc":  { sku: "50 kW liquid", board: "DC-DC (upper)", sheet: "2 of 3", cells: llc("50kw", "3.20", 14) },
+  "50kwa/acdc": { sku: "50 kW air", board: "AC-DC (lower)", sheet: "1 of 3", cells: "Vienna PFC: 1x B3M010C075Z per position, D1 5x T79 N=24, 16-can link, 4 fans" },
+  "50kwa/dcdc": { sku: "50 kW air", board: "DC-DC (upper)", sheet: "2 of 3", cells: llc("50kwa", "3.20", 14) },
+  "control-card": { sku: "30/40/50 kW", board: "Control card", sheet: "3 of 3", cells: "one card per module, seated in the DC-DC slot; module rating read from the RATING strap" },
 };

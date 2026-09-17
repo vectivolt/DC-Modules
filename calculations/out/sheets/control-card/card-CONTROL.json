@@ -499,7 +499,7 @@
     98
    ],
    "value": "GD32G553VET7",
-   "query": "GD32G553VET7 MCU Cortex-M33 216 MHz LQFP100 −40…105 °C ",
+   "query": "GD32G553VET7 MCU Cortex-M33 216 MHz LQFP100 −40…105 °C. The V suffix is the 100-",
    "mpn": "GD32G553VET7"
   },
   {
@@ -649,7 +649,7 @@
    ],
    "nc_pins": [],
    "value": "XTAL-8M-30PPM-3225",
-   "query": "XTAL-8M-30PPM-3225 8 MHz ±30 ppm SMD crystal, 3.2 × 2.5 mm, CL 12 pF ",
+   "query": "XTAL-8M-30PPM-3225 8 MHz ±30 ppm SMD crystal, 3.2 × 2.5 mm, CL 12 pF, on MCU pin",
    "mpn": "XTAL-8M-30PPM-3225"
   },
   {
@@ -1169,7 +1169,7 @@
    ],
    "nc_pins": [],
    "value": "TP-1mm-PAD",
-   "query": "TP-1mm-PAD 1 mm test pad on WDI ",
+   "query": "TP-1mm-PAD 1 mm test pad on WDI — the ATE fixture kicks the watchdog through it ",
    "mpn": "TP-1mm-PAD"
   },
   {
@@ -1269,7 +1269,7 @@
    ],
    "nc_pins": [],
    "value": "TPS54202-class",
-   "query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6 ",
+   "query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6, on the control card and exportin",
    "mpn": "TPS54202-class"
   },
   {

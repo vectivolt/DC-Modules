@@ -1,4 +1,4 @@
-/* vmp.h — E78 VMP 2.0, the native module protocol. docs/can-protocol.md is its specification; this header is the table of
+/* vmp.h — VMP 2.0, the native module protocol. docs/can-protocol.md is its specification; this header is the table of
  * record for identifiers, codes and objects, and the page quotes it.
  *
  * Identifier (29 bit): priority(3) · 1 (native marker = J1939 EDP, so VMP frames never parse as J1939 / TonHe PDU1) ·
@@ -79,7 +79,7 @@ enum { VMP_EV_BOOT = 1, VMP_EV_FAULT_SET = 2, VMP_EV_FAULT_CLEAR = 3, VMP_EV_WAR
 #define VMP_W_ADDR_CONFL  33u
 #define VMP_W_TX_DROP     34u
 #define VMP_W_RX_REJECT   35u
-#define VMP_W_EV_SUPPRESS 36u  /* E81 (K7): EVENT frames were dropped by the per-code rate limit — read 0x0502 for the count */
+#define VMP_W_EV_SUPPRESS 36u  /* EVENT frames were dropped by the per-code rate limit — read 0x0502 for the count */
 
 /* objects (READ / WRITE) */
 enum {
@@ -91,12 +91,12 @@ enum {
   VMP_O_COMM_TO = 0x0205, VMP_O_FAST_MS = 0x0206, VMP_O_SLOW_MS = 0x0207, VMP_O_RAMP_V = 0x0208, VMP_O_RAMP_I = 0x0209,
   VMP_O_DROOP = 0x020A, VMP_O_FAN_MODE = 0x020B, VMP_O_P_CAP = 0x020C,
   VMP_O_OP_S = 0x0300, VMP_O_ENERGY = 0x0301, VMP_O_STARTS = 0x0302, VMP_O_FAULTS = 0x0303,
-  /* E80: the event log (sub-index = age, 0 = newest) and the T-44 timing diagnostics */
+  /* the event log (sub-index = age, 0 = newest) and the T-44 timing diagnostics */
   VMP_O_EV_COUNT = 0x0400, VMP_O_EV_W0 = 0x0401, VMP_O_EV_W1 = 0x0402, VMP_O_EV_W2 = 0x0403, VMP_O_EV_W3 = 0x0404,
   VMP_O_DIAG_EXEC = 0x0500, VMP_O_DIAG_STACK = 0x0501, VMP_O_DIAG_EV_SUP = 0x0502,
-  VMP_O_DIAG_RX_OVR = 0x0503   /* E82 (K-6): CAN RX-mailbox-queue overrun count — the HAL counts it (port/) and answers
-                                   it through aux_read exactly like the other 0x05xx objects; reserved here so the object
-                                   number is on the table of record even before a HAL fills it in */
+  VMP_O_DIAG_RX_OVR = 0x0503   /* CAN RX-mailbox-queue overrun count — the HAL counts it (port/) and answers it
+                                   through aux_read exactly like the other 0x05xx objects; it is on the table of
+                                   record here even where a HAL does not fill it in */
 };
 
 #define VMP_NAK_GAP_MS       100u    /* at most one rejection report per 100 ms */
@@ -125,7 +125,7 @@ typedef struct {                /* identity — read-only, from the HAL */
 
 typedef struct {
   vmp_cfg_t cfg; const vmp_ident_t *id;
-  /* E80: objects the HAL owns (event log, timing) — read-only, registered after vmp_init; the protocol layer stays
+  /* objects the HAL owns (event log, timing) — read-only, registered after vmp_init; the protocol layer stays
      ignorant of HAL types */
   uint32_t (*aux_read)(void *ctx, uint16_t obj, uint8_t sub, bool *ok);
   void *aux_ctx;
@@ -155,9 +155,9 @@ typedef struct {
   uint32_t epoch_s, t_epoch; bool epoch_ok;
   struct { int16_t i_raw; uint32_t t; bool seen; } peer[16];   /* by slot, same group (TLM_SHARE) */
   uint32_t rx_reject, rx_dup;
-  /* E81 (K7): the EVENT path runs at 1 kHz with four events per tick and had no rate limit — a PMP_W_MEAS_GLITCH that
-     chatters on an intermittent sensor computes to ~1000 frames/s ≈ 55 % of a 250 kbit/s bus from ONE module. A small
-     LRU of {kind, code} keeps one frame per VMP_EVENT_GAP_MS per event; anything dropped raises VMP_W_EV_SUPPRESS and
+  /* The EVENT path runs at 1 kHz with four events per tick, so without a rate limit a PMP_W_MEAS_GLITCH that chatters
+     on an intermittent sensor computes to ~1000 frames/s ≈ 55 % of a 250 kbit/s bus from ONE module. A small LRU of
+     {kind, code} keeps one frame per VMP_EVENT_GAP_MS per event; anything dropped raises VMP_W_EV_SUPPRESS and
      increments ev_suppressed (diagnostic object 0x0502), so nothing is silently lost. */
   struct { uint8_t kind, code; uint32_t t; } ev_gate[8];
   uint8_t ev_gate_i; uint32_t ev_suppressed, t_ev_sup;

@@ -1,4 +1,4 @@
-// vienna-switched.mjs — E60: CYCLE-BY-CYCLE 3-φ Vienna simulation with the REAL D1 inductance.
+// vienna-switched.mjs — CYCLE-BY-CYCLE 3-φ Vienna simulation with the REAL D1 inductance.
 // Why it exists: the only PFC simulation on record (spice/pfc/pfc-phase-run.mjs) is an AVERAGED
 // model — no switching ripple, a flat 130 µH, 30 kW only, 800 V bus — so the number the F.01
 // overcurrent trip must clear (instantaneous line-current peak = fundamental + crest ripple on the
@@ -10,7 +10,7 @@
 //   · split-cap bus (the drawn link cans per half) + constant-power LLC load
 //   · regular-sampled triangular PWM, P current loop + resistive emulation, PI voltage loop,
 //     min-max zero-sequence injection + midpoint balancing (the averaged deck's control family)
-//   · E65 D1 excitation: 50 kHz ripple rms (phase A minus its fundamental), core loss by iGSE on the SIMULATED flux
+//   · D1 excitation: 50 kHz ripple rms (phase A minus its fundamental), core loss by iGSE on the SIMULATED flux
 //     (B = ∫v_L dt/(N·Ae·stack) per switching period — Faraday, exact under the L(i) roll-off) with the Magnetics Kool Mµ 26
 //     published equation (MAS), and the recurring switch-end-to-grid-neutral peak (insulation-coordination D1 row)
 // Fidelity: devices ideal (no Rds/Vf, no dead time), control is a reference implementation (the HAL
@@ -28,8 +28,8 @@ export const D1 = {   // drawn D1 rev B parts (magnetics pack) + link cans per h
   "40kw": { P: 40e3, stack: 5, N: 26, cHalf: 6 * 470e-6 },
   "50kw": { P: 50e3, stack: 5, N: 24, cHalf: 8 * 470e-6 },
 };
-// Magnetics 0077908A7 datasheet rev 10/7/2021: AL 37 nH/T² ±8 %, Ae 221 mm², le 196 mm (E60 catalog sync —
-// engines carried 227/201); the 26µ roll-off fit stays the conservative 80 %@75 Oe / 50 %@175 Oe basis
+// Magnetics 0077908A7 datasheet rev 10/7/2021: AL 37 nH/T² ±8 %, Ae 221 mm², le 196 mm (catalog values, not the
+// 227 mm² / 201 mm geometric idealisation); the 26µ roll-off fit stays the conservative 80 %@75 Oe / 50 %@175 Oe basis
 // (catalog minimums are 80 %@95 Oe / 50 %@205 Oe)
 const AL = 37e-9, LE = 0.196, R26 = { a: 2.13e-4, b: 1.637 };
 export const Ld1 = (d, i, lot = 1) => lot * AL * d.stack * d.N * d.N / (1 + R26.a * Math.pow(Math.max(d.N * Math.abs(i) / LE / 79.577, 1e-9), R26.b));
@@ -42,13 +42,13 @@ const KM = DATA.KoolMu_MAS["26"], KI = KM.a / (Math.pow(2 * Math.PI, KM.c - 1) *
 }
 
 // event: { type: "dip", t0, t1, depth } (grid amplitude × depth between t0..t1) | { type: "jump", t0, deg }
-// E65 (EMI-2): `filter` inserts the DRAWN input filter between the grid EMF and D1 (default null = the E60 stiff grid,
+// `filter` inserts the DRAWN input filter between the grid EMF and D1 (default null = a stiff grid,
 // bit-identical): grid Lg+Rg and CMC1 leakage → CX1 (Δ → star 3·C) → CMC2 leakage + D6 L(i) (floating-neutral solve, like
 // D1) → CX2 ∥ damper Rd–Cd (Δ) → D1. The controller then sees what the hardware gives it: the CX2-node voltage through the
 // SNS_VAC divider RC (tauV), its 50 Hz lag rotated out with the other two phases (αβ, a memoryless mix), sampled every `upd`
 // fine steps and applied `lag` updates later (upd 400/lag 1 = double update, 15 µs; upd 800/lag 1 = 1.5·Tsw, 30 µs).
 //   filter = { Lg, Rg, Llk, Rf, C1, C2, Cd, Rd, d6: { L0 µH, roll: [a, b, N/le] }, tauV, upd, lag }
-// E68 (InfyPower filter): `C0` adds the line-side X stage (grid Lg+Rg → C0 → CMC1 Llk+Rcm → C1), `star: true` takes C0/C1/C2 as
+// `C0` adds the line-side X stage (grid Lg+Rg → C0 → CMC1 Llk+Rcm → C1), `star: true` takes C0/C1/C2 as
 // per-phase star values (no 3·C), and `d6: null` drops the DM choke (CMC2 leakage + Rf alone).
 export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, Rg = 0.01, event = null, clamp = 1.05, filter: F = null }) {
   const d = D1[sku], W = 2 * Math.PI * 50, Vpk = VLL * Math.SQRT2 / Math.sqrt(3);
@@ -58,7 +58,7 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
   const i = [0, 0, 0], node = [0, 0, 0], on = [true, true, true], blocked = [false, false, false], m = [0, 0, 0];
   let Vp = vbus / 2, Vn = vbus / 2, Gint = 0, vMN = 0;
   const G0 = Iph / (Vpk / Math.SQRT2);                             // A per V (resistive emulation)
-  // FIRMWARE REQUIREMENT modelled (E60 FW-R6): current-reference AMPLITUDE clamp at clamp × the
+  // FIRMWARE REQUIREMENT modelled: current-reference AMPLITUDE clamp at clamp × the
   // rated crest at the 330 VAC full-power floor — a sag can never command more than this
   const Iclamp = clamp * (d.P / 0.965) / (Math.sqrt(3) * 330) * Math.SQRT2;
   const Kpi = 2 * Math.PI * 3000 * Ld1(d, Iph * Math.SQRT2, lot);   // ~3 kHz current loop at the crest L
@@ -71,7 +71,7 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
   let hIdx = 0, fIdx = 0;
   const upd = F?.upd ?? 400, lag = F?.lag ?? 0, mNext = [0, 0, 0];
   const iG = [0, 0, 0], iF = [0, 0, 0], v1 = [0, 0, 0], v2 = [0, 0, 0], vd = [0, 0, 0], vm = [0, 0, 0], vff = [0, 0, 0], LF = [0, 0, 0];
-  const v0 = [0, 0, 0], iA = [0, 0, 0], cs = F?.star ? 1 : 3;   // E68: line-side stage states · star/Δ capacitance factor
+  const v0 = [0, 0, 0], iA = [0, 0, 0], cs = F?.star ? 1 : 3;   // line-side stage states · star/Δ capacitance factor
   const gHist = new Float64Array(2000);
   let pDamp = 0;
   if (F) for (let k = 0; k < 3; k++) {                          // start on the no-load sinusoidal steady state
@@ -136,7 +136,7 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       if (k === 0 && s >= recStart) { fx.B += vL * dt / NAe; fx.hi = Math.max(fx.hi, fx.B); fx.lo = Math.min(fx.lo, fx.B); fx.int += Math.pow(Math.abs(vL / NAe), KM.c) * dt; }
       i[k] = (!on[k] && ni * i[k] < 0) ? 0 : ni;               // diode stops conduction at zero
     }
-    // E80 (FW-34): 3-wire — the line currents sum to zero. A diode zero clamp removes its phase's last increment from that sum;
+    // 3-wire — the line currents sum to zero. A diode zero clamp removes its phase's last increment from that sum;
     // spread the residue over the phases still conducting, and a phase left conducting alone has no return path, so it is zero
     // (without this a lone phase kept its current: the no-load runaway firmware/test/hal_test.c found in the C port)
     let isum = 0, nc = 0;
@@ -148,7 +148,7 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       if (node[k] < 0) iN += i[k];
     }
     if (F) {                                                   // filter states (symplectic: currents, then node voltages)
-      if (F.C0) {                                               // E68: grid → C0 → CMC1 leakage → C1 (2 µH wiring floor on a stiff grid)
+      if (F.C0) {                                               // grid → C0 → CMC1 leakage → C1 (2 µH wiring floor on a stiff grid)
         for (let k = 0; k < 3; k++) iG[k] += (vg[k] - v0[k] - F.Rg * iG[k]) / Math.max(F.Lg, 2e-6) * dt;
         for (let k = 0; k < 3; k++) iA[k] += (v0[k] - v1[k] - F.Rcm * iA[k]) / F.Llk * dt;
         sub3(iG); sub3(iA);
@@ -214,7 +214,7 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
     for (let j = 0; j < fIdx; j++) { const w = 2 * Math.PI * fq * j * 1e-6; a += iHf[j] * Math.cos(w); b += iHf[j] * Math.sin(w); }
     band += (2 * Math.hypot(a, b) / fIdx) ** 2 / 2;
   }
-  // E65: sustained-oscillation detector — grid-current content between h40 (2 kHz) and h900 (45 kHz) of the last line
+  // sustained-oscillation detector — grid-current content between h40 (2 kHz) and h900 (45 kHz) of the last line
   // cycle against the fundamental; the filter/loop modes sit at 3–25 kHz, a stable loop leaves only PWM residue there
   let g1 = 0, gh = 0;
   if (F) for (let h = 1; h < 900; h = h === 1 ? 40 : h + 1) {
@@ -243,16 +243,16 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const CASES = [
     ["330-full-bus830-lot92", { VLL: 330, vbus: 830, lot: 0.92 }, "worst ripple + softest lot (F.01 basis)"],
     ["330-full-bus800-nom", { VLL: 330, vbus: 800, lot: 1 }, "design point (pack operating row)"],
-    ["400-full-bus830-nom", { VLL: 400, vbus: 830, lot: 1 }, "E65 rated point (loss budget: 400 VAC, bank 400 V puts the bus at the 830 V cap)"],
+    ["400-full-bus830-nom", { VLL: 400, vbus: 830, lot: 1 }, "rated point (loss budget: 400 VAC, bank 400 V puts the bus at the 830 V cap)"],
     ["285-derated-bus650", { VLL: 285, vbus: 650, lot: 0.92, pf: 285 / 330 }, "low-line derate floor"],
     ["475-full-bus650", { VLL: 475, vbus: 650, lot: 1 }, "AS-IS policy at high line: bus BELOW line-line peak 672 V"],
-    ["475-full-busFloor", { VLL: 475, lot: 1, fix: true }, "E60 line-tracking floor 1.08·√2·VLL"],
+    ["475-full-busFloor", { VLL: 475, lot: 1, fix: true }, "line-tracking floor 1.08·√2·VLL"],
     ["500-full-bus650", { VLL: 500, vbus: 650, lot: 1 }, "F.07 edge, AS-IS: 707 V line peak"],
     ["500-full-busFloor", { VLL: 500, lot: 1, fix: true }, "F.07 edge with the floor"],
   ];
   const rows = [["sku", "case", "VLL", "bus_V", "lot_AL", "Pout_W", "Irms_A", "I1pk_A", "Ipk_A", "ripple_half_A", "L_at_pk_uH", "Isw_rms_A", "Id_avg_A", "Id_rms_A", "Id_pk_A", "THD40_pct", "track_err", "overmod_pct", "vbus_min", "vbus_max", "mid_dev_V", "band150_pk_A", "lisn_basis_150_pk_A", "Ihf_rms_A", "dBpp_max_mT", "Pfe_igse_W", "vMN_pk_V", "vSwN_pk_V", "note"]];
   const LISN_DIPP = { "30kw": 21.4, "40kw": 28.0, "50kw": 34.8, "50kwa": 34.8 };   // lisn-precompliance/dm-choke-design triangular ripple basis
-  // E81 / review G (F-G-11): the air twin runs the 50 kW choke, link and control, so it is an ALIAS row — the CSV now covers
+  // the air twin runs the 50 kW choke, link and control, so it is an ALIAS row — the CSV covers
   // all four product SKUs. D1 itself keeps three keys so every consumer that iterates Object.keys(D1) is untouched.
   const ALIAS = { "50kwa": "50kw" };
   const SKUS = [...Object.keys(D1), ...Object.keys(ALIAS)];
@@ -263,6 +263,6 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     rows.push([sku, tag, c.VLL, f(vbus, 0), c.lot, f(r.Pout, 0), f(r.Irms), f(r.I1pk), f(r.Ipk), f(r.ripHalf), f(r.L_at_pk * 1e6), f(r.Isw), f(r.Id.avg), f(r.Id.rms), f(r.Id.pk), f(r.thd, 2), f(r.track, 3), f(r.clipPct, 1), f(r.vbusMin, 0), f(r.vbusMax, 0), f(r.midDev, 1), f(r.band150pk, 3), f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3), f(r.Ihf, 2), f(r.dBpp * 1e3, 1), f(r.PfeW, 2), f(r.vMNpk, 0), f(r.vSwNpk, 0), `"${note}"`]);
     console.log(`${sku} ${tag.padEnd(24)} Irms ${f(r.Irms)} · I1pk ${f(r.I1pk)} · Ipk ${f(r.Ipk)} A (ripple/2 ${f(r.ripHalf)}; L@pk ${f(r.L_at_pk * 1e6)} µH) · sw ${f(r.Isw)} · diode avg ${f(r.Id.avg)}/pk ${f(r.Id.pk)} · THD ${f(r.thd, 2)}% · overmod ${f(r.clipPct, 1)}% · mid ${f(r.midDev, 1)} V · 150 kHz band ${f(r.band150pk, 3)} A pk-eq vs LISN basis ${f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3)} · D1 ripple ${f(r.Ihf, 2)} A rms, ΔB ${f(r.dBpp * 1e3, 1)} mT pp, Fe ${f(r.PfeW, 2)} W · switch end ${f(r.vSwNpk, 0)} V pk to N`);
   }
-  writeFileSync(join(OUT, "vienna-switched.csv"), "# E60 cycle-by-cycle Vienna (calculations/pfc/vienna-switched.mjs): ideal devices, catalog 26µ L(i), stiff grid; E65 D1 excitation (ripple rms, iGSE Kool Mµ 26, switch-end peak)\n" + rows.map((r) => r.join(",")).join("\n") + "\n");
+  writeFileSync(join(OUT, "vienna-switched.csv"), "# cycle-by-cycle Vienna (calculations/pfc/vienna-switched.mjs): ideal devices, catalog 26µ L(i), stiff grid; D1 excitation (ripple rms, iGSE Kool Mµ 26, switch-end peak)\n" + rows.map((r) => r.join(",")).join("\n") + "\n");
   console.log("→ calculations/out/vienna-switched.csv");
 }

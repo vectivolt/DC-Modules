@@ -56,7 +56,7 @@ const FIELDS = [
   ["hipot",       /hi-?pot|hipot|kV|VAC\/1|dielectric/i],
   ["marking",     /marking|label|traceab|lot|serial|polarity dot|dot at start/i],
   ["qty",         /qty|quantity|per SKU|qty \d/i],
-  // E73: the fields a winder also needs to hold a part to its rating — the third element limits a field to the parts it applies to
+  // the fields a winder also needs to hold a part to its rating — the third element limits a field to the parts it applies to
   ["current",     /A rms|A pk|A DC|current rating|A class/],
   ["temp class",  /Class [BFH]\b|Class 200|class [FH]\b|155 °C|180 °C/],
   ["tolerance",   /±|tolerance/],

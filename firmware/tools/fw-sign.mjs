@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// fw-sign.mjs — E80 signed firmware images for the module bootloader, and the boot test vectors. Node >= 18, node:crypto only.
+// fw-sign.mjs — signed firmware images for the module bootloader, and the boot test vectors. Node >= 18, node:crypto only.
 // The layout is firmware/boot/image.h and the slot addresses come from firmware/port/gd32g553/flash_map.h: the bootloader
 // verifies exactly what this tool signs.
 //

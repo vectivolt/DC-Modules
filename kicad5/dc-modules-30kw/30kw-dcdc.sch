@@ -9,7 +9,7 @@ Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 30 kW - board DC-DC (upper), sheet 2 of 3"
 Comment1 "Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
-Comment2 "Content: full-bridge LLC: 1x SG2M023120LJ per position + 1 nF turn-off snubber, 7x33 nF + D2 rev F 5.00 uH, 2 cells, film banks 9x2.2 uF, DOUT (E67/E68)"
+Comment2 "Content: full-bridge LLC: 1x SG2M023120LJ per position + 330 pF/die turn-off snubber, 7x33 nF + D2 rev F 5.00 uH, 2 cells, film banks 9x2.2 uF, DOUT"
 Comment3 "22 functional sections - 282 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
@@ -5048,7 +5048,7 @@ F 0 "CT1" H 25350 16590 50  0000 C CNN
 F 1 "CT-RES-1:100-100A" H 25350 16920 50  0000 C CNN
 F 2 "CT_window_res_1-100" H 25350 16750 50  0001 C CNN
 F 3 "~" H 25350 16750 50  0001 C CNN
-F 4 "DIRECT" H 25350 16750 50  0001 C CNN "LCSC"
+F 4 "CLASS" H 25350 16750 50  0001 C CNN "LCSC"
 F 5 "CT-RES-1:100-100A" H 25350 16750 50  0001 C CNN "MPN"
 	1    25350 16750
 	1    0    0    -1  

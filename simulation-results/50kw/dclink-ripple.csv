@@ -1,4 +1,4 @@
-# E81/F-G-1 DC-link HF ripple share (ngspice-46); 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p; 8 × 470 µF per half; netlists spice/generated/dclink-50kw-*.cir
+# DC-link HF ripple share (ngspice-46); 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p; 8 × 470 µF per half; netlists spice/generated/dclink-50kw-*.cir
 # DRAWN target: 16 × 1 µF bridge entry film + RC damper 2.2 µF + 0.33 Ω — current-coordination [DCLINK]/[SYNC] read this line
 # ASSUMED: can ESR 0.15 Ω @100 kHz, ESL 20 nH, class 3.5 A rms (2.5 A @120 Hz × 1.4); film ESR 5 mΩ, ESL 14.999999999999998 nH, line 10 A rms; Vienna stub 59.99999999999999 nH; source behind 50 µH/rail
 # GATE: per-can rms ≤ 0.8 × 3.5 A = 2.4 A, per-film rms ≤ 10 A

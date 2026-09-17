@@ -1,7 +1,7 @@
-// d1-choke.mjs — E65: the D1 PFC swing-choke model, ONE source for conductor-audit (copper, production Rdc rows), stress-audit
+// d1-choke.mjs — the D1 PFC swing-choke model, ONE source for conductor-audit (copper, production Rdc rows), stress-audit
 // (temperature and the cooling decision), loss-budget (rated loss) and mag-sync (mass).
 //
-// Why it exists (E65 D1 audit + an independent 2-D field check): the conductor gate counted two strand layers (Dowell m = 2,
+// Why it exists (checked against an independent 2-D field solve): counting two strand layers (Dowell m = 2,
 // Fr 11.4) where the 9- and 13-strand bundles put 10–12 strand rows in the bore field; the ΔT rows were typed constants
 // (36/30/41 K) from a 280 cm²/core surface model that overstates the wound stack; the A3 core-loss fit read ≈2× under the
 // Magnetics equation; and three MLTs (0.190 / 0.242 / 0.278 m) were live at once.
@@ -38,12 +38,12 @@ export const row = (sku, tag) => VS.find((r) => r.sku === (sku === "50kwa" ? "50
 // standoff (mount face uncredited), "web1" = one end face gap-padded to the extrusion web, "plate1" = one end face to the coldplate
 const cond = (sku, over) => ({ sku, ...SIM[sku === "50kwa" ? "50kw" : sku], lay: 1, ...over });
 export const D1 = {
-  "30kw": cond("30kw", { nw: 9, d: 1.6e-3, mount: "web1" }),     // E65: bonded like D1-50 (was "air" — the control group below)
+  "30kw": cond("30kw", { nw: 9, d: 1.6e-3, mount: "web1" }),     // bonded like D1-50; the unbonded case is the control group below
   "40kw": cond("40kw", { nw: 13, d: 1.6e-3, mount: "web1" }),
   "50kw": cond("50kw", { nw: 13, d: 1.6e-3, mount: "plate1" }),
   "50kwa": cond("50kwa", { nw: 13, d: 1.6e-3, mount: "web1" }),
 };
-export const D1_REGISTERED = { "30kw": "air", "40kw": "air", "50kw": "plate1", "50kwa": "web1" };   // E51/E60 as drawn
+export const D1_REGISTERED = { "30kw": "air", "40kw": "air", "50kw": "plate1", "50kwa": "web1" };   // as drawn
 // the evaluated alternative to the bond: Type-2 litz of 0.2 mm strands, same copper area, air-cooled (lay-length +3 % Rdc)
 export const D1_LITZ = Object.fromEntries(Object.entries(D1).map(([k, c]) => [k, { ...c, nw: c.nw === 9 ? 576 : 832, d: 0.2e-3, lay: 1.03, mount: "air" }]));
 

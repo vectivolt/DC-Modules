@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-HUB-0969da?style=flat-square" alt="status: navigation hub"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/pages-43_·_5_families-0969da?style=flat-square" alt="pages: 43 · 5 families"/>
+  <img src="https://img.shields.io/badge/pages-41_·_5_families-0969da?style=flat-square" alt="pages: 41 · 5 families"/>
 </p>
 
 > [!NOTE]
@@ -21,27 +21,21 @@
 
 | | |
 |---|---|
-| **Registered pages** | **43**, in five families — every one carries a banner, a status badge, and previous / next navigation generated from one registry |
+| **Registered pages** | **41**, in five families — every one carries a banner, a status badge, and previous / next navigation generated from one registry |
 | **Registry** | `calculations/doc-chrome.mjs` — the masthead, badges and footer of every page; never hand-edited on the page |
-| **Gate** | `node calculations/docs-lint.mjs` — every relative link, every `#anchor`, every masthead and footer, every mermaid type, on all 43 pages. It runs inside `sh calculations/run-all.sh` |
-| **Current revision** | **E82** — twelve independent reviews that trusted nothing in the repository; 11 CRITICAL found, **ten fixed** (C-10 needs the layout and a bench measurement); first-prototype verdict **READY FOR BENCH BRING-UP** |
-| **Start here** | [E82 independent validation](e82-validation-report.md) for the state of the design · [platform architecture](architecture.md) for the module itself |
+| **Gate** | `node calculations/docs-lint.mjs` — every relative link, every `#anchor`, every masthead and footer, every mermaid type, on every registered page. It runs inside `sh calculations/run-all.sh` |
+| **Start here** | [validation report](validation-report.md) for the state of the design · [platform architecture](architecture.md) for the module itself |
 
 ```mermaid
 pie showData
   title Registered pages by family
-  "Platform & modules" : 15
+  "Platform & modules" : 13
   "Production & cost" : 9
   "Verification & simulation" : 8
   "Power stage & protection" : 5
   "Magnetics" : 5
   "Repository overview" : 1
 ```
-
-> [!IMPORTANT]
-> **The E82 validation report is the current register of record.** Where an older page and the E82 report disagree on
-> a number, the E82 report and the engine output behind it win — and the page is corrected, never argued with. The E81
-> report stays as the E81 register; E82 supersedes it on F-L-1, the bipolar F.01, the fold map and the firmware count.
 
 ## 1. Reading paths
 
@@ -64,7 +58,7 @@ flowchart LR
   end
   subgraph REV["Reviewer / auditor"]
     direction TB
-    R0["E82 independent validation"] --> R1["Verification matrix"] --> R2["Simulation toolchain"] --> R3["Simulation report"] --> R4["EVT test plan"]
+    R0["Validation report"] --> R1["Verification matrix"] --> R2["Simulation toolchain"] --> R3["Simulation report"] --> R4["EVT test plan"]
   end
   style NEW stroke:#d19a00,stroke-width:2px
   style ENG stroke:#1a9fb3,stroke-width:2px
@@ -108,7 +102,7 @@ SKU, so each gets a page of its own.
 | **Tip** | shortcuts, external anchors, how to use a table |
 | **Important** | decisions, requirements, questions for the product owner |
 | **Warning** | model limits, known failure modes, fidelity boundaries |
-| **Caution** | safety-critical: high voltage, reinforced insulation, withdrawn evidence |
+| **Caution** | safety-critical: high voltage, reinforced insulation, touch safety |
 
 **Units** — A pk and A rms are always distinguished; ₹ is at the 10k-unit basis unless noted; temperatures are
 inlet or ambient unless labelled Tj or core.
@@ -120,18 +114,16 @@ inlet or ambient unless labelled Tj or core.
 
 | | Document | What it decides | Kept honest by |
 |---|---|---|---|
-| 🛡️ | **[E82 independent validation](e82-validation-report.md)** | **the state of the design today** — twelve independent reviews, eleven CRITICAL findings, the decision table for every proposed part, and the bring-up plan with its STOP lines | `fw-constants-sync` · `review-checks` E82 rows |
-| 🧪 | [E81 full-system validation](e81-validation-report.md) | **the E81 register** — nine independent reviews, every finding, decision and recalculated number as they stood at E81 | `stress-audit` [DPT] · `current-coordination` |
-| 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | `verify-independent` 243/243 |
-| 📒 | [Decision register](assumptions.md) | every frozen decision E1–E82 with provenance and invalidator | rows cited by every gate |
-| 🩺 | [E80 recheck response](e80-recheck-response.md) | two external hardware rechecks (71 rows) triaged claim by claim — fixed, stale, refuted, or mapped to EVT | the E45/E74 review pattern |
+| 🛡️ | **[Validation report](validation-report.md)** | **the state of the design today** — what the independent validation found, what is fixed, what is still open, the decision table for every proposed part, and the bring-up plan with its STOP lines | `fw-constants-sync` · `review-checks` |
+| 🏗️ | [Platform architecture](architecture.md) | the module in one read — power path, control plane, protection layers, rails | `verify-independent` |
+| 📒 | [Decision register](assumptions.md) | every decision in force, with provenance and invalidator | rows cited by every gate |
 | 🔌 | [Two-board sandwich & interconnect](interconnect.md) | stud pillars, 40-way harness, grounding, discharge control, HMI | `module-interconnect-audit` |
 | 🧠 | [Control-card scope](control-card-scope.md) | why one card runs one module up to 50 kW | `cardMap()` refuses out-of-scope |
-| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, output modes, F.21 semantics | `host_sim` 122 · grep-pinned |
-| 🧬 | [Firmware architecture](firmware-architecture.md) | layers, timing, state machines, control and ramping, the protection hierarchy, exception handling, the firmware review, the one-MCU verdict | `run_tests.sh` 330 checks |
+| 💾 | [Firmware guide](firmware-guide.md) | the C99 supervisory core, HAL contract, output modes, F.21 semantics | `host_sim` · grep-pinned |
+| 🧬 | [Firmware architecture](firmware-architecture.md) | layers, timing, state machines, control and ramping, the protection hierarchy, exception handling, the one-MCU verdict | `run_tests.sh` |
 | 📡 | [VMP 2.0 native CAN protocol](can-protocol.md) | addressing, control, acknowledgement, telemetry, discovery, versioning, the controller contract | `vmp.c` · `proto_test` |
 | 🔁 | [TonHe V1.2 compatibility profile](can-profile-tonhe-v12.md) | drop-in behaviour on TonHe V1.2 monitors, the fault-bit map, the ambiguity register | document examples byte-exact |
-| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the release sheets | `kicad5-verify` 7,409 pins |
+| 🧩 | [Boards](../boards/README.md) | the four SKUs, the card, the release sheets | `kicad5-verify` |
 | 🔋 | [Module family](../boards/README-module-family.md) | the four SKUs side by side, why 50 kW is the top module, the two cooling lines, the module-to-charger contract | `bom-gen` · `loss-budget` · `mtbf-budget` |
 | 📋 | [30 kW module walkthrough](../boards/30kw/README.md) | the canonical board pair, cell by cell | — |
 
@@ -141,7 +133,7 @@ inlet or ambient unless labelled Tj or core.
 |---|---|---|---|
 | 🛡️ | [Protection thresholds](protection-thresholds.md) | the F.xx ladder, hardware and supervisory rows, per-SKU windows, the fault-pulse rule | `review-checks` · grep-pinned |
 | ⚡ | [Current & protection coordination](current-coordination.md) | worst current in every magnetic and switch against its trip, sensor and part | `current-coordination` |
-| 🌡️ | [Thermal report](thermal-report.md) | loss budgets, cooling margins, junction and core temperatures, the registered fold map | `loss-budget` · `envelope-grid` |
+| 🌡️ | [Thermal report](thermal-report.md) | loss budgets, cooling margins, junction and core temperatures, the fold map | `loss-budget` · `envelope-grid` |
 | 🧱 | [Insulation coordination](insulation-coordination.md) | barrier map, creepage and clearance, standards, hipot | `stress-audit` INS row |
 | 🔩 | [Busbar drawings](busbar-drawings.md) | bulk-copper sections, joints, torque | generated by `busbar-calc` |
 
@@ -158,7 +150,7 @@ inlet or ambient unless labelled Tj or core.
 |---|---|---|---|
 | 🧪 | [Simulation toolchain](simulation-toolchain.md) | which tool proves what, how to run it, where fidelity ends | physicality · power-solve · fingerprint guards |
 | 📈 | [Simulation report](simulation-report.md) | the executed-runs ledger — never claim beyond it | SPICE result CSVs |
-| ✅ | [Verification matrix](verification-matrix.md) | requirement → evidence, open risks | `verify-independent` 243/243 |
+| ✅ | [Verification matrix](verification-matrix.md) | requirement → evidence, open risks | `verify-independent` |
 | 🔬 | [EVT test plan](evt-plan.md) | the bench campaign T-00…T-64 | sim-vs-bench > 20 % reopens a calc |
 | 🧪 | [Firmware verification plan](firmware-verification.md) | every firmware feature as behaviour → timing → failure → recovery → test → pass, host to endurance | `run_tests.sh` · HIL and EVT planned |
 | 🛡️ | [Reliability budget](reliability-budget.md) | MTBF prediction with its basis, wear-out clocks, no-single-point-of-darkness view | `mtbf-budget` · registered table |
@@ -174,32 +166,37 @@ inlet or ambient unless labelled Tj or core.
 | 📚 | [BOM guide](bom-guide.md) | how the BOM generates, price basis, sourcing statuses and policy | `bom-maturity` |
 | 📍 | [Symbol → package pin map](symbol-pin-map.md) | logical pins to physical pins | generated by `pin-map-export` |
 | 🏭 | [DFM & production flow](dfm-production.md) | assembly, kitting, torque, EOL test, coating | — |
-| 🩻 | [InfyPower teardown benchmark](benchmark-infypower-teardown.md) | block-level audit against the REG1K0135A2, the clone addendum and the remaining cost gap | teardown on file · E62–E69 |
+| 🩻 | [InfyPower teardown benchmark](benchmark-infypower-teardown.md) | block-by-block audit against the REG1K0135A2, what we cloned, and the cost gap that remains | teardown on file · `bom-gen` |
 
 ## 9. Standing rules
 
 > [!IMPORTANT]
-> 1. **Generated pages are regenerated, never hand-edited** — `bom-cost`, the four `bom-<sku>` and `magnetics-<sku>` pages,
->    `symbol-pin-map`, `busbar-drawings`.
-> 2. **Gate-read pages take additive edits only** — `protection-thresholds` and `firmware-guide` carry passages that
->    `review-checks`, `stress-audit` and `current-coordination` assert word for word; the magnetics hub and module pages are
->    parsed by `mag-sync` and `magnetics-rfq-audit`.
-> 3. **Register rows are immutable** — a correction is a new row, never an edit.
-> 4. **Chrome comes from one registry** — every page's banner, title, badges and footer are produced from
+> 1. **A page describes the current design only** — no revision tags, no old value kept beside the current one, no struck rows, no
+>    "what changed" sections. When a value moves, the old one is deleted, not annotated. History lives in `git log`, and `docs-lint` fails a page that carries a history marker.
+> 2. **A decision changes by editing its row** in the [decision register](assumptions.md) — one row, one current value.
+> 3. **Generated pages are regenerated, never hand-edited** — `bom-cost`, the four `bom-<sku>` and `magnetics-<sku>`
+>    pages, `symbol-pin-map`, `busbar-drawings`.
+> 4. **A few phrases are asserted verbatim by a gate.** `review-checks`, `stress-audit`, `current-coordination`,
+>    `mag-sync` and `magnetics-rfq-audit` grep specific sentences and table values out of `protection-thresholds`,
+>    `firmware-guide`, `insulation-coordination`, `magnetics` and the module magnetics pages. Edit the phrase and its
+>    gate in the same change, or the battery fails.
+> 5. **Chrome comes from one registry** — every page's banner, title, badges and footer are produced from
 >    `calculations/doc-chrome.mjs`; `docs-lint` fails if a page drifts, a link breaks or a diagram cannot render.
-> 5. **A number belongs to its engine** — pages quote engine output; when a page and an engine disagree, the page is
->    wrong. The [E82 report](e82-validation-report.md#7-recalculated-numbers) lists every number that moved at E82 and why, and the
->    [E81 report](e81-validation-report.md#6-recalculated-numbers) does the same for E81.
-> 6. **The design face ends at KiCad** — schematics, netlists and the audited KiCad-5 sheets with their PDFs; PCB layout is out
->    of scope, and no EasyEDA layer remains.
+> 6. **A number belongs to its engine** — pages quote engine output; when a page and an engine disagree, the page is
+>    wrong.
+> 7. **Volatile counts live in three places only** — the [repository overview](../README.md) status table, the
+>    [validation report](validation-report.md) and [calculations & gates](../calculations/README.md). Everywhere else
+>    a gate is named without its count, so a page cannot go stale by arithmetic alone.
+> 8. **The design face ends at KiCad** — schematics, netlists and the audited KiCad-5 sheets with their PDFs; PCB
+>    layout is out of scope.
 
 > [!TIP]
-> **How this page is checked** — `node calculations/docs-lint.mjs`, inside `sh calculations/run-all.sh` — it asserts that every one of the 43 pages is registered in `calculations/doc-chrome.mjs`, carries exactly its generated masthead and footer, resolves every relative link and `#anchor`, and opens every mermaid block with a type GitHub renders.
+> **How this page is checked** — `node calculations/docs-lint.mjs`, inside `sh calculations/run-all.sh` — it asserts that every one of the 41 pages is registered in `calculations/doc-chrome.mjs`, carries exactly its generated masthead and footer, resolves every relative link and `#anchor`, and opens every mermaid block with a type GitHub renders.
 
 ---
 
 <div align="center">
 <sub><a href="../README.md">← DC-Modules</a> &nbsp;·&nbsp; <a href="../README.md">🏠 Repository overview</a> &nbsp;·&nbsp; <a href="architecture.md">Platform Architecture →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

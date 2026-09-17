@@ -1,4 +1,4 @@
-* DPT-LLC V=725 I=100.8 Cs=3.3e-10 Rgoff=0 Lloop=5e-9 Voff=-3
+* DPT-LLC V=725 I=100.9 Cs=3.3e-10 Rgoff=0 Lloop=5e-9 Voff=-3
 .include ../models/sic-1200-c3m.lib
 VBUS bus 0 DC 725
 CDC bus 0 100u ic=725
@@ -9,7 +9,7 @@ RGFW gfw fwref 0.218
 VGFW fwref swk -3
 CSD sw s 3.3e-10
 CSF kd swk 3.3e-10
-LLD kd sw 0.00006 ic=100.8
+LLD kd sw 0.00006 ic=100.9
 VSNS sw d1 0
 LD d1 d 2n
 M1 d g ks SIC1200_23R_C

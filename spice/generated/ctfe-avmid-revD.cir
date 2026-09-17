@@ -1,4 +1,4 @@
-* AVMID buffer rev D dual-feedback (MR-11)
+* AVMID buffer dual-feedback (as drawn)
 VDD vdd 0 3.3
 VREF inp 0 1.65
 

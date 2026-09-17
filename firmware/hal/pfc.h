@@ -1,8 +1,8 @@
-/* pfc.h — E79 Vienna rectifier control law. Portable C99, no HAL.
+/* pfc.h — the Vienna rectifier control law. Portable C99, no HAL.
  *
- * The law is the one the cycle-by-cycle engine validated (calculations/pfc/vienna-switched.mjs, E60–E68): a per-phase P current
- * loop on resistive emulation with the sensed phase voltage as feed-forward (its RC lag rotated out, FW-EMI-2), min-max
- * zero-sequence injection with midpoint balancing, regular sampling at the carrier peak and valley (FW-EMI-1) and the FW-R6
+ * The law is the one the cycle-by-cycle engine validated (calculations/pfc/vienna-switched.mjs): a per-phase P current
+ * loop on resistive emulation with the sensed phase voltage as feed-forward (its RC lag rotated out), min-max
+ * zero-sequence injection with midpoint balancing, regular sampling at the carrier peak and valley, and the
  * current-amplitude clamp. The voltage loop is the pfc-control.mjs design (15 Hz, 65°) acting on the current amplitude, with the
  * LLC's input power as feed-forward so a load step does not wait for the 15 Hz loop. The loop commands POWER: the current
  * amplitude is that power over the measured crest, so when the line recovers from a sag the amplitude falls with it at once (an
@@ -11,17 +11,17 @@
  * What the real stage adds to the engine's law:
  *   - the bus reference ramps from the measured bus (a bumpless start from the rectified crest)
  *   - OFF (every switch open — the passive rectifier, which moves no charge while the bus sits above the line crest):
- *       skip   bus above its reference by skip_v, at any load. E82 (M-32): skip alone did NOT keep a load dump under the
- *              860 V F.03 — at the 830 V reference it left 15 V of the 30 V available and the voltage integrator kept the
- *              stage pushing for another 0.55 s. skip_v is 9 V and the integrator is ceilinged against the load
- *              feed-forward while the bus is above its reference; together they hold the dump under 855 V at C −36 %
+ *       skip   bus above its reference by skip_v, at any load. Skip alone does NOT keep a load dump under the 860 V
+ *              F.03 — at the 830 V reference a 15 V band spends half of the 30 V available and the voltage integrator
+ *              keeps the stage pushing for another 0.55 s. skip_v is 9 V and the integrator is ceilinged against the
+ *              load feed-forward while the bus is above its reference; together they hold the dump under 855 V at C −36 %
  *       burst  below 2 % power the stage stops 3 V above the reference and resumes 2 V below it: modulating a near-zero
  *              reference runs the phases in DCM, which pumps charge (the plant ran the bus away at no load)
- *   - amplitude limit, the lowest of: the FW-R6 current clamp; the same power (1.05 × rated input) above 330 VAC; and room for
+ *   - amplitude limit, the lowest of: the i_clamp current clamp; the same power (1.05 × rated input) above 330 VAC; and room for
  *     the line to come back — a line step lands k_step amps per volt on the current during the 15 µs transport delay, before any
  *     sample can answer, so the limit is 1.1 × clamp less k_step × (recent crest − crest). From the plain clamp a 50 % sag
  *     recovered at 184 A (50 kW, 6 % under F.01), and worse from a high line. The crest estimate rises at once and falls in
- *     5 ms; the recent crest falls in 2 s, so a sustained low line gets the full clamp back (E1). Every phase reference is
+ *     5 ms; the recent crest falls in 2 s, so a sustained low line gets the full clamp back. Every phase reference is
  *     clamped to the limit.
  *   - LIMIT tier: a phase current above its reference by i_lim_a turns that switch off for the update, which puts the rail
  *     against the current (the fastest fall the stage has) — the RC-lagged feed-forward cannot carry a line step into F.01
@@ -31,14 +31,14 @@
  *   - the phase sequence is a sign on w_line, so a module wired A-C-B keeps its feed-forward lead
  * Gains per rating come from calculations/pfc (see pfc_cfg_default) and are confirmed on HIL (firmware-architecture §5.4).
  *
- * E81 — THE 50 kHz SINGLE-UPDATE FALLBACK IS FORBIDDEN ON 40 AND 50 kW. docs/firmware-architecture.md §3.5 offered "one
- * update per carrier period (50 kHz), which halves the PFC load" as the answer if the 100 kHz ISR proves too expensive.
+ * THE 50 kHz SINGLE-UPDATE FALLBACK IS FORBIDDEN ON 40 AND 50 kW. One update per carrier period (50 kHz) halves the PFC
+ * load and looks like the answer if the 100 kHz ISR proves too expensive (docs/firmware-architecture.md §3.5).
  * It is not an answer: at Td = 30 µs the current loop's modulus margin against the DRAWN input filter collapses to 0.26
- * (40 kW) and 0.17 (50 kW) against the project's own >= 0.50 criterion (F-G-5; the repo's margin() run with the shipped
- * gains gives 30/40/50 kW = 0.315/0.257/0.170 at 30 µs versus 0.658/0.614/0.544 at 15 µs), and the repo's own switched
- * model oscillates — 78.1 % of fundamental between 2 and 45 kHz on the 30 kW undamped case. kp_i is UNCHANGED and the
- * 100 kHz double update STAYS; the CPU was bought back by moving grid_sample and the boot offset window out of the
- * 100 kHz ISR (app.c), decimating the 10 kHz means in the writer (port.c) and enabling the flash prefetch buffer.
+ * (40 kW) and 0.39 (50 kW) against the project's own >= 0.50 criterion (calculations/pfc/pfc-control.mjs with the shipped
+ * gains and the drawn damper: 30/40/50 kW = 0.32/0.26/0.39 at 30 µs versus 0.63/0.61/0.71 at 15 µs), and the repo's own switched
+ * model oscillates — 78.1 % of fundamental between 2 and 45 kHz on the 30 kW undamped case. The 100 kHz double update
+ * STAYS; the CPU for it is bought by keeping grid_sample and the boot offset window out of the 100 kHz ISR (app.c),
+ * decimating the 10 kHz means in the writer (port.c) and enabling the flash prefetch buffer.
  * `pfc_exec_us` (VMP object 0x0500) measures the result: the bring-up STOP criterion is <= 5 µs worst case. If that is
  * ever missed, the honest levers are a lower crossover (~1.5 kHz, accepting the THD) or CDMP/RDMP on the damper —
  * never this fallback. */
@@ -50,7 +50,7 @@
 typedef struct {
   float kp_i;         /* V/A — 2π · 3 kHz · L_D1 at the clamp crest (delay-limited crossover; lower bandwidth at low current) */
   float kp_v, ki_v;   /* W per V · W per V·s — 15 Hz, 65° on the drawn link capacitance */
-  float i_clamp;      /* A pk — FW-R6: 1.05 × the rated crest at the 330 VAC full-power floor */
+  float i_clamp;      /* A pk — 1.05 × the rated crest at the 330 VAC full-power floor */
   float p_clamp_w;    /* W — the same limit as power: 1.5 · 269.4 V (the 330 VAC crest) · i_clamp */
   float i_lim_a;      /* A — a phase current above its reference by this much turns its switch off (LIMIT, below F.01) */
   float k_step;       /* A per V — 15 µs / L_D1 at the clamp: what the transport delay adds per volt of line step */

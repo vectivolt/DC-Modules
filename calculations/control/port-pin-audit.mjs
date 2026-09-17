@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// port-pin-audit.mjs — E80 gate: the GD32G553 port's pin table (firmware/port/gd32g553/board.h) must agree with the card
+// port-pin-audit.mjs — gate: the GD32G553 port's pin table (firmware/port/gd32g553/board.h) must agree with the card
 // authority (packages/common-components/umod-map.gen.ts) net by net. The port claims PORT/PIN per net; this script maps
 // PORT/PIN → LQFP100 pin number (datasheet Table 2-4, the facts-system §10 extraction) and diffs against UMOD_MCU_PINS +
 // UMOD_MODULE_NETS. Any drift between the card generator and the firmware port fails the build.

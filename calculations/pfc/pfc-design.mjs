@@ -5,15 +5,15 @@
 //
 // PROVENANCE / ASSUMPTIONS (all marked, verify per component-selection.md):
 //  - Rds25 = 10 mΩ (B3M010C075Z class); Rds(T) = Rds25·(1+0.004·(Tj−25))  [≈1.5× @150 °C, SiC-typical, vendor curve TBD]
-//  - Esw_total = k_sw·V·I. E81: k_sw is READ from the per-SKU DPT suite (simulation-results/<sku>/
+//  - Esw_total = k_sw·V·I, with k_sw READ from the per-SKU DPT suite (simulation-results/<sku>/
 //    dpt-pfc-metrics.csv, the `L<loop>-clamped` row at the design loop and the simulated switch
-//    peak) instead of the hand-copied 17.4e-9 that came from a 78 A, 470 pF-snubber, −4 V deck no SKU
-//    ever ran. K_SW below asserts the constant is not optimistic for ANY sku and then uses the worst.
+//    peak) — never hand-copied from a deck no SKU runs. K_SW below asserts the registered constant
+//    is not optimistic for ANY sku and then uses the worst.
 //    Behavioral model, uncertainty band ±40 % until vendor models.
 //  - JBS Vf = 1.35 V @Tj,hot incl. Rd; no reverse recovery (SiC JBS), cap. charge folded into k_sw
 //  - Core: Kool Mµ-class T79 toroid stacks, 0077908A7 catalog geometry (geometry.mjs — datasheet rev 10/7/2021)
 //  - Bias roll-off µpu = 1/(1+1.455e-3·H_Oe^1.513) calibrated to 80%@30 Oe, 50%@75 Oe anchors (catalog curve, VERIFY)
-//  - E65: core loss = Magnetics Kool Mµ published equation (OpenMagnetics MAS, per permeability; the A3 fit read ≈2× low);
+//  - core loss = Magnetics Kool Mµ published equation (OpenMagnetics MAS, per permeability — a simple power fit reads ≈2× low);
 //    copper = 50 Hz + the engine's own 50 kHz ripple rms on the D1 winding model (d1-choke: Magnetics-table MLT, Ferreira per
 //    strand × the 2-D anchor where a drawn build matches, else Ferreira alone — conservative); surface = the wound geometry
 //  - ΔT_core ≈ (P_mW/A_surf_cm²)^0.833 (Magnetics empirical, still air) — a SELECTION filter; the D1 gate is stress-audit
@@ -30,9 +30,9 @@ mkdirSync(OUT, { recursive: true });
 const f = (x, d = 2) => Number(x.toFixed(d));
 
 // ---- operating point (design): 30 kW lane at 330 VAC full power (worst continuous)
-const P_LANE = +(process.env.PFC_P ?? 30e3);   // E41: 40e3 runs the hot-variant design point
+const P_LANE = +(process.env.PFC_P ?? 30e3);   // 40e3 runs the hot-variant design point
 
-// ---- E81: k_sw from the DPT suite, not from a comment. Reads every SKU's design-loop clamped row and
+// ---- k_sw from the DPT suite, never from a comment. Reads every SKU's design-loop clamped row and
 // takes the WORST; the registered 17.4 nJ/(V·A) is kept as a floor assertion so a deck re-run that
 // lowers k_sw cannot silently make this engine optimistic, and one that raises it is adopted.
 const K_SW_REGISTERED = 17.4e-9;
@@ -51,16 +51,16 @@ function kSwFromDpt() {
   return out;
 }
 const KSW = kSwFromDpt();
-// The ENGINE keeps running on the registered constant so that the frozen fsw selection (E3) does not
-// move underneath every downstream engine on a model re-run. The GATE is what carries the truth:
+// The ENGINE keeps running on the registered constant so that the frozen fsw selection does not move
+// underneath every downstream engine on a model re-run. The GATE is what carries the truth:
 // stress-audit [DPT] fails while the registered constant is below the simulated one, and the line
-// below states the consequence. Raising K_SW_REGISTERED is a system decision (it re-opens E3), not a
-// side effect of re-running a SPICE deck.
+// below states the consequence. Raising K_SW_REGISTERED re-opens the carrier-frequency selection, so
+// it is a system decision, not a side effect of re-running a SPICE deck.
 const K_SW = K_SW_REGISTERED;
 export const KSW_DPT = KSW;
 console.log(`k_sw (engine) = ${(K_SW * 1e9).toFixed(1)} nJ/(V·A) registered · DPT per SKU [${KSW.src.join(" · ")}] nJ/(V·A)` +
   (KSW.worst > K_SW_REGISTERED
-    ? `\n  *** the registered constant is ${((KSW.worst / K_SW_REGISTERED - 1) * 100).toFixed(0)} % BELOW the simulated worst (${(KSW.worst * 1e9).toFixed(1)}). At the simulated value this engine REJECTS 50 kHz (Tj 152 °C) and selects 40 kHz — an E3 re-open, gated in stress-audit [DPT]. ***`
+    ? `\n  *** the registered constant is ${((KSW.worst / K_SW_REGISTERED - 1) * 100).toFixed(0)} % BELOW the simulated worst (${(KSW.worst * 1e9).toFixed(1)}). At the simulated value this engine REJECTS 50 kHz (Tj 152 °C) and selects 40 kHz — the carrier-frequency selection re-opens, gated in stress-audit [DPT]. ***`
     : ""));
 const VLL = 330, PIN = P_LANE / 0.965, VBUS = 800;
 const Vph_pk = (VLL / Math.sqrt(3)) * Math.SQRT2;          // 269.4 V
@@ -86,7 +86,7 @@ const Id_rms = Math.sqrt(d2 / N_INT);
 // ---- SiC conduction with Tj iteration (pair = 2 dies in series in Vienna bidirectional switch)
 const RTH_JA = 1.9; // K/W junction→air via TIM+heatsink per device position (thermal calc refines, Phase 8)
 const TAMB_HS = 70; // heatsink ambient at +55 °C inlet (assumption, Phase 8 refines)
-const PAR = +(process.env.PFC_PAR ?? 1);   // E41: 2 = paralleled pair (two B3M per position)
+const PAR = +(process.env.PFC_PAR ?? 1);   // 2 = paralleled pair (two B3M per position)
 function pairLoss(fsw) {
   // pair = TWO TO-247 packages (x PAR when paralleled); each package carries I/PAR.
   let Tj = 100, Pc = 0, Psw = 0;
@@ -105,18 +105,16 @@ function pairLoss(fsw) {
 const Pdiode = 1.35 * (Id_avg / 2) + (Id_rms / Math.SQRT2) ** 2 * 0.012; // Vf + dyn. R (datasheet-class 1200 V/40 A JBS)
 
 // ---- inductor design per fsw
-// Geometry: T79 stacks from geometry.mjs (E65; the 77439A7-class T48 row is retired). Materials: sendust 60µ and 26µ on the
+// Geometry: T79 stacks from geometry.mjs. Materials: sendust 60µ and 26µ on the
 // same geometry (AL = µ0·µr·Ae/le). Roll-off anchors (catalog curves, VERIFY): 60µ 80%@30 Oe · 50%@75 Oe;
 // 26µ 80%@75 Oe · 50%@175 Oe. Swing design: ripple criterion enforced at the worst volt-second angle
 // with the biased L(i(θ)) — not at crest with L0. Soft-sat floor: µpu ≥ 0.35 at Ipk+ΔI/2.
 // Geometries: dimensions → Ae, le, window derived geometrically; AL derived as µ0·µr·Ae/le (self-check:
 // 77439 60µ gives 139.7 nH/T² vs 135 catalog — 3.5% agreement validates the method).
 const GEOMS = [
-  // E65: T48 (77439-class) dropped — no datasheet winding table in geometry.mjs and never selected since E41.
-  // E60: catalog datasheet rev 10/7/2021 = Ae 2.21 cm2 / le 196 mm (E51 had pinned 2.27/201).
-  // E51: Ae pinned to the CATALOG 0077908A7 value (AL 37 nH/T2 at 26u) — the 2.62 cm2
-  // geometric idealisation overstated L ~15% (A3/E35) and the E41/E42 D1 selections inherited
-  // that error; drawings are re-issued at N=26/24 and this engine now shares the core truth.
+  // Only T79: the T48 (77439-class) row has no datasheet winding table in geometry.mjs and is never selected.
+  // Ae / le are the CATALOG 0077908A7 values from the datasheet rev 10/7/2021 (Ae 2.21 cm², le 196 mm, AL 37 nH/T² at
+  // 26µ), NOT a geometric idealisation: 2.62 cm² overstates L by ~15 %, and every D1 selection inherits that error.
   { name: "T79 (OD79/ID49/H17 sendust)", core: "T79", Ae: CORES.T79.Ae, le: CORES.T79.le, Vc: CORES.T79.Ve * 1e6, win: CORES.T79.ds.window_mm2 / 100, cost: 210 },
 ];
 const MATS = [
@@ -125,7 +123,7 @@ const MATS = [
 ];
 const MU0 = 4e-7 * Math.PI;
 const muPU = (m, H_Am) => 1 / (1 + m.a * Math.pow(Math.max(H_Am / 79.577, 1e-9), m.b));
-const STRANDS = [5, 7, 9, 11, 13];                          // E65: taped bundles of 1.6 mm strands (the drawings use 9 and 13)
+const STRANDS = [5, 7, 9, 11, 13];                          // taped bundles of 1.6 mm strands (the drawings use 9 and 13)
 const pvMAS = (mu, fq, Bpk) => { const m = DATA.KoolMu_MAS[String(mu)]; return m.a * Math.pow(Bpk, m.b) * Math.pow(fq, m.c); };   // W/m³
 function inductorDesign(fsw, rippleFrac) {
   const dItgt = rippleFrac * Ipk;

@@ -1,17 +1,17 @@
-// temp-critique.mjs — E58 standing gate: INDEPENDENT temperature-behaviour critique of every
+// temp-critique.mjs — standing gate: INDEPENDENT temperature-behaviour critique of every
 // ferrite magnetic (D2/D3/D4) + the sendust fault chain (D1), against the digitized Ferroxcube
 // 3C95 datasheet surfaces (upb-lea/materialdatabase — see tempdata-3c95.json provenance; PC95/
 // DMR95 are the same material class the drawings specify). The A3/A4 design fits are temperature-
 // BLIND; this gate answers the questions they cannot:
 //   · hot-corner THERMAL RUNAWAY: ferrite loss has a minimum near 60–80 °C and rises above it —
 //     loop gain g = Rth · (dP_fe/dT + dP_cu/dT) must stay < 0.7 at the 130 °C hot-corner core
-//   · COLD (−30 °C, A11 rev C) loss uplift and the cold equilibrium (stable by the negative slope below
+//   · COLD (−30 °C) loss uplift and the cold equilibrium (stable by the negative slope below
 //     the minimum — quantified, not assumed)
 //   · SATURATION vs temperature: Bsat(25 °C)=499 mT → Bsat(100 °C)=401 mT (measured curves;
 //     the digitized T labels were inverted and are corrected by a physics check) — margins for
 //     D3 volt-second flux, D2 envelope + OC-transient flux, and the D4 clamp point at Lp+10 %
 //   · D1 FAULT di/dt chain: catalog-AL soft-saturation from the OC threshold to the CT
-//     observability ceiling inside the HRTIMER kill budget (R6-C/R8 window, now computed)
+//     observability ceiling inside the HRTIMER kill budget (computed, not assumed)
 //   · Lm gap-dominance: amplitude-permeability swing must not move Lm > ±3 % (bins/MC budget)
 // Run: node calculations/magnetics/temp-critique.mjs        (in run-all after stress-audit)
 import { readFileSync } from "node:fs";
@@ -47,13 +47,13 @@ const FE = 1.71, BE = 2.9;
 const pv = (f, B, T) => interp(base, T) * Math.pow(f / 100e3, FE) * Math.pow(B / 0.1, BE); // W/m3
 const dpvdT = (f, B, T) => (pv(f, B, T + 5) - pv(f, B, T - 5)) / 10;
 // scaling-model validation against the OTHER three digitized series (independent of the fit)
-// E81 (F-B-7): this gate was INERT. The keys are "100k_200mT" etc., and `Number("100k")` is NaN, so
-// pv(NaN, NaN, T) was NaN, `NaN > worst` is always false, and `worst` never left 0 — it printed
-// "worst deviation 0% at " (note the empty key) and could not fail. parseFloat repairs the parse.
-// Repaired, the gate fails its own 35 % line at 400k_50mT (55.9 % at 100 °C), so the VALIDATION
-// DOMAIN is now restricted to the (f, B) region the model is actually used in — since E65 the only
-// part still scored by this surface is D4 at 65 kHz and B̂/2 ≈ 75 mT, an interpolation, and the
-// 25–150 kHz / 50–250 mT band is where the error is ≤23 %. Out-of-domain series are still evaluated
+// The keys are "100k_200mT" etc., so the frequency MUST be parsed with parseFloat: `Number("100k")`
+// is NaN, pv(NaN, NaN, T) is NaN, `NaN > worst` is always false, and the gate silently scores every
+// series 0 % and can never fail.
+// The model misses its own 35 % line at 400k_50mT (55.9 % at 100 °C), so the VALIDATION DOMAIN is
+// restricted to the (f, B) region the model is actually used in: the only part scored by this
+// surface is D4 at 65 kHz and B̂/2 ≈ 75 mT, an interpolation, and the 25–150 kHz / 50–250 mT band
+// is where the error is ≤ 23 %. Out-of-domain series are still evaluated
 // and REPORTED so a future re-use of the model outside the band cannot be silent. The line is not
 // widened: an out-of-band point is a domain error, not a tolerance.
 {
@@ -74,21 +74,21 @@ const dpvdT = (f, B, T) => (pv(f, B, T + 5) - pv(f, B, T - 5)) / 10;
     `worst deviation ${f2(worst * 100, 0)}% at ${worstK} (≤35% band — the gate margins below absorb it; A4 stays the conservative design fit) · OUT of domain, reported not gated: ${f2(outWorst * 100, 0)}% at ${outWorstK} — the model is NOT valid at 400 kHz/50 mT and nothing in this repo uses it there (D4 runs 65 kHz / ~75 mT)`);
 }
 const Bsat = (T) => 0.499 + (0.401 - 0.499) / 75 * (T - 25);   // measured 25/100 °C, linear
-console.log(`=== MAGNETICS TEMPERATURE CRITIQUE (E58) — 3C95 measured surfaces; Bsat(130 °C) = ${f2(Bsat(130) * 1e3, 0)} mT ===`);
+console.log(`=== MAGNETICS TEMPERATURE CRITIQUE — 3C95 measured surfaces; Bsat(130 °C) = ${f2(Bsat(130) * 1e3, 0)} mT ===`);
 
 // ---- ferrite op-set: {f, B̂, Ve[m3], Pfe_design(A4 basis)W, Pcu W, Rth K/W (ΔTspec/Ptot), hot core °C}
-const D4R = d4Evaluate(), D4C = d4Evaluate(D4_REGISTERED_E52, DRAWN_E52);   // E65: D4 flux from the computed limit, not a typed 3.2 A
+const D4R = d4Evaluate(), D4C = d4Evaluate(D4_REGISTERED_E52, DRAWN_E52);   // D4 flux from the computed limit, never a typed 3.2 A
 const PARTS = [
-  // E65: the D3 and D2 rows (140 kHz resonant-point flux, hand-typed Pcu and lumped Rth) are RETIRED — the simulated corners
-  // run 77–88 kHz / 150–237 mT (D3) and 170–190 kHz (D2), so every row understated loss 2–3×. Both parts are now proven by
-  // magnetics-envelope: every power-solved corner, iGSE on the ngspice waveform, a core/winding thermal network, runaway.
-  // E65 rev E: ETD44, full-load DCM swing B̂/2 from d4-flyback; Pfe keeps the ETD39 0.6 W basis (covers the 1.4–2.2× iGSE DCM factor)
+  // D3 and D2 have NO row here: a 140 kHz resonant-point flux with hand-typed Pcu and a lumped Rth understates their loss
+  // 2–3×, because the simulated corners run 77–88 kHz / 150–237 mT (D3) and 170–190 kHz (D2). Both parts are proven by
+  // magnetics-envelope instead: every power-solved corner, iGSE on the ngspice waveform, a core/winding thermal network, runaway.
+  // D4: ETD44, full-load DCM swing B̂/2 from d4-flyback; Pfe keeps the 0.6 W basis (it covers the 1.4–2.2× iGSE DCM factor)
   { n: `D4 (${D4.core} DCM amp)`, f: 65e3, B: D4R.Bfull / 2, Ve: CORES[D4.core].Ve, PfeA4: 0.6, Pcu: 1.8, Rth: 12.0, Thot: 120 },
 ];
 // Core flux is VOLT-SECOND driven — Fe persists at FULL value even when the module derates,
 // while Cu falls with load². The two real hot corners are therefore:
 //   (a) 55 °C ambient, 100 % load (full Cu + full Fe — the rated corner)
-//   (b) 75 °C ambient, 40 % load (derating curve floor: Cu ×0.16, Fe full)
+//   (b) 75 °C ambient, 60 % load (the firmware's derate floor at the inlet trip: Cu ×0.36, Fe full)
 // For each: solve the thermal EQUILIBRIUM with the measured pv(T), then measure the distance to
 // the true runaway threshold T_crit where loop gain g(T) = Rth·dP/dT reaches 1.
 const solveEq = (p, amb, cuFrac) => {
@@ -100,14 +100,14 @@ const gAt = (p, T, cuFrac) => p.Rth * (dpvdT(p.f, p.B, T) * p.Ve + p.Pcu * cuFra
 const tCrit = (p, cuFrac) => { let T = 60; while (T < 200 && gAt(p, T, cuFrac) < 1) T += 1; return T; };
 for (const p of PARTS) {
   const fe100 = pv(p.f, p.B, 100) * p.Ve, feCold = pv(p.f, p.B, -30) * p.Ve;
-  const eqA = solveEq(p, 55, 1), eqB = solveEq(p, 75, 0.16);
-  const eq = Math.max(eqA, eqB), cu = eqA >= eqB ? 1 : 0.16;
+  const eqA = solveEq(p, 55, 1), eqB = solveEq(p, 75, 0.36);
+  const eq = Math.max(eqA, eqB), cu = eqA >= eqB ? 1 : 0.36;
   const g = gAt(p, eq, cu), Tc = tCrit(p, cu);
   ck("RUNAWAY", p.n, eq <= 120 && g <= 0.6 && Tc - eq >= 25,
     `hot equilibria ${f2(eqA, 0)} °C (55 amb/full) · ${f2(eqB, 0)} °C (75 amb/derated); worst g(T_eq) = ${f2(g)} ≤ 0.6; runaway threshold T_crit(g=1) ${Tc >= 200 ? "≥200 (search cap)" : Tc} °C — margin ${f2(Tc - eq, 0)} K ≥ 25 (measured pv(T); Fe is volt-second-pinned so it does NOT derate with load — this is why the ΔT acceptance line caps the winder's Rth)`);
   ck("A4-CONSERVATIVE", p.n, fe100 <= p.PfeA4 * 1.10,
     `measured-basis Fe @100 °C = ${f2(fe100, 1)} W vs A4 design ${p.PfeA4} W (design fit must not understate by >10%)`);
-  // cold: equilibrium at −30 °C ambient (A11 rev C floor; the digitized surface starts at ~1 °C and is
+  // cold: equilibrium at the −30 °C ambient floor (the digitized surface starts at ~1 °C and is
   // extrapolated linearly below it; slope below the minimum is negative → stable)
   const Tcold = solveEq(p, -30, 1);
   ck("COLD", p.n, feCold <= 2.2 * fe100 && Tcold < 120,
@@ -120,20 +120,20 @@ for (const p of PARTS) {
   const { stack } = await import("./geometry.mjs");
   let wB = 0, wAt = "";
   for (const [sku, c] of Object.entries(D3C)) for (const r of excitation(sku).rows) {
-    const B = (TANKS[sku].Lm / D3_CELLS) * r.Im_pk_A * r.lm_scale / (c.N * stack(c.core, c.n).Ae);   // E67: Lm/2 per cell
+    const B = (TANKS[sku].Lm / D3_CELLS) * r.Im_pk_A * r.lm_scale / (c.N * stack(c.core, c.n).Ae);   // Lm/2 per cell
     if (B > wB) { wB = B; wAt = `${sku} ${r.corner}`; }
   }
   ck("BSAT", "D3 simulated worst flux at 130 °C core", wB <= 0.5 * Bsat(130),
-    `worst B̂ ${f2(wB * 1e3, 0)} mT (${wAt}, E67 cell envelope) ≤ 50% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * wB / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
+    `worst B̂ ${f2(wB * 1e3, 0)} mT (${wAt}, cell envelope) ≤ 50% of Bsat(130 °C)=${f2(Bsat(130) * 1e3, 0)} mT (${f2(100 * wB / Bsat(130), 0)}%) — loss-limited, never sat-limited`);
   const { shortRacePeak } = await import("../../spice/llc/llc-flux-post.mjs");
-  const F11 = { "30kw": 140, "40kw": 180, "50kw": 220, "50kwa": 220 };   // E67 F.11 classes (current-coordination OC); kill peak 1 µs after the crossing
+  const F11 = { "30kw": 140, "40kw": 180, "50kw": 220, "50kwa": 220 };   // F.11 classes (current-coordination OC); kill peak 1 µs after the crossing
   const bf = Object.entries(D2C).map(([sku, c]) => [sku, c.Lmax * shortRacePeak(sku, F11[sku]).peak / (c.N * stack(c.core, c.n).Ae)]);
   const worst = bf.reduce((a, x) => (x[1] > a[1] ? x : a));
   ck("BSAT", `D2 fault flux (Lmax × F.11 kill peak, worst SKU = ${worst[0]})`, worst[1] <= 0.6 * Bsat(130),
-    `${f2(worst[1] * 1e3, 0)} mT at the crossing-referenced kill (E67 D2 rev F: ${bf.map(([k, v]) => `${k} ${f2(v * 1e3, 0)}`).join(" · ")}) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
+    `${f2(worst[1] * 1e3, 0)} mT at the crossing-referenced kill (D2 rev F: ${bf.map(([k, v]) => `${k} ${f2(v * 1e3, 0)}`).join(" · ")}) vs 60% of Bsat(130) = ${f2(0.6 * Bsat(130) * 1e3, 0)} mT — µs event, trip-limited (per-SKU rows in current-coordination)`);
 }
 ck("BSAT", `D4 at the computed cycle-by-cycle limit, 130 °C (${D4.core})`, D4R.B <= 0.75 * Bsat(130) && D4C.B > 0.75 * Bsat(130),
-  `${f2(D4R.ipkLim, 2)} A (860 V, Lp +${D4.tolL * 100} %, VILIM max, CS lag + tILIM max) → ${f2(D4R.B * 1e3, 0)} mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * D4R.B / Bsat(130), 0)}% absolute) — E65: the E52 "256 mT at a 3.2 A clamp" row read ${f2(D4C.B * 1e3, 0)} mT (${f2(100 * D4C.B / Bsat(130), 0)}%) once the drawn sense chain was computed`);
+  `${f2(D4R.ipkLim, 2)} A (860 V, Lp +${D4.tolL * 100} %, VILIM max, CS lag + tILIM max) → ${f2(D4R.B * 1e3, 0)} mT vs 75% of Bsat(130)=${f2(0.75 * Bsat(130) * 1e3, 0)} mT (${f2(100 * D4R.B / Bsat(130), 0)}% absolute) — a typed 3.2 A clamp current reads 256 mT here; the drawn sense chain computes ${f2(D4C.B * 1e3, 0)} mT (${f2(100 * D4C.B / Bsat(130), 0)}%) at that clamp`);
 // ---- Lm gap dominance: amplitude-permeability swing must not move Lm beyond its ±7% window ----
 {
   const { D3: D3C, D3_CELLS } = await import("./magnetics-envelope.mjs");
@@ -141,28 +141,28 @@ ck("BSAT", `D4 at the computed cycle-by-cycle limit, 130 °C (${D4.core})`, D4R.
   const { stack } = await import("./geometry.mjs");
   const mu25 = interp(D.muAmp["25C"] ?? D.muAmp[Object.keys(D.muAmp)[0]], 0.108);
   const mu100 = interp(D.muAmp["100C"] ?? D.muAmp[Object.keys(D.muAmp).at(-1)], 0.108);
-  const le = 0.149, mu0 = 4e-7 * Math.PI;                         // E67: the SMALLEST D3 cell gap (most µ-sensitive) from the tables
+  const le = 0.149, mu0 = 4e-7 * Math.PI;                         // the SMALLEST D3 cell gap (most µ-sensitive) from the tables
   const g = Math.min(...Object.entries(D3C).map(([sku, c]) => (mu0 * c.N * c.N * stack(c.core, c.n).Ae) / (TANKS[sku].Lm / D3_CELLS)));
   const AL = (mu) => 1 / (g + le / mu);                          // ∝, gap-normalized
   const dev = Math.abs(AL(mu100) / AL(mu25) - 1);
   ck("LM", "gap-ground Lm vs amplitude-µ swing 25↔100 °C", dev <= 0.03,
     `µa(108 mT): ${f2(mu25, 0)} → ${f2(mu100, 0)}; Lm shift ${f2(dev * 100, 1)}% on the smallest cell gap Σ ${f2(g * 1e3, 2)} mm (gap-dominated) ≤ 3% — inside the ±7% window with the grind tolerance`);
 }
-// ---- D1 fault chain: soft-sat di/dt from the OC threshold to the CT ceiling (R6-C/R8) ----
+// ---- D1 fault chain: soft-sat di/dt from the OC threshold to the CT ceiling ----
 {
-  const R26 = { a: 2.13e-4, b: 1.637 }, AL = 37e-9, LE = 0.196;   // E60 catalog le
+  const R26 = { a: 2.13e-4, b: 1.637 }, AL = 37e-9, LE = 0.196;   // catalog le
   const muPU = (H) => 1 / (1 + R26.a * Math.pow(Math.max(H / 79.577, 1e-9), R26.b));
-  // E60 classes: F.01 120/155/195 A pk on 22/18/13 Ω → observability ceilings 184/225/311 A
+  // classes: F.01 120/155/195 A pk on 22/18/13 Ω → observability ceilings 184/225/311 A
   for (const [sku, stack, N, oc, ceil] of [["30kw", 3, 39, 120, 184], ["40kw", 5, 26, 155, 225], ["50kw", 5, 24, 195, 311]]) {
     const L = (i) => muPU(N * i / LE) * AL * 0.92 * stack * N * N;   // AL −8% worst lot
     let i = oc, t = 0, dt = 0.05e-6, V = 560;                        // 560 V worst across the choke in a shoot-through/reverse fault
     while (i < ceil && t < 6e-6) { i += (V / L(i)) * dt; t += dt; }
     const di3 = (() => { let x = oc, tt = 0; while (tt < 3e-6) { x += (V / L(x)) * dt; tt += dt; } return x - oc; })();
     ck("D1-FAULT", `${sku} OC→ceiling time / 3 µs adder`, di3 <= ceil - oc,
-      `L(${oc} A)=${f2(L(oc) * 1e6, 1)} µH (AL−8%) · Δi(3 µs)=${f2(di3, 0)} A ≤ ceiling−threshold ${ceil - oc} A · ceiling reached in ${t >= 6e-6 ? ">6" : f2(t * 1e6, 1)} µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)`);
+      `L(${oc} A)=${f2(L(oc) * 1e6, 1)} µH (AL−8%) · Δi(3 µs)=${f2(di3, 0)} A ≤ ceiling−threshold ${ceil - oc} A · ceiling reached in ${t >= 6e-6 ? ">6" : f2(t * 1e6, 1)} µs — CT stays observing until the HRTIMER kill lands (2–3 µs budget)`);
   }
 }
 // ---- sendust temperature band (no LEA powder data — catalog-class band, VERIFY first-article) ----
-console.log("  info  [SENDUST] Kool Mµ-class µ tempco ≤ ±3% (−55…+125 °C catalog class) — the D1 biased-L floors carry the lot band and the ±1 turn lot-trim absorbs it (D6, the other sendust part, retired at E68b); first-article L(I) at −25/+100 °C is the pack's material-equivalence test");
+console.log("  info  [SENDUST] Kool Mµ-class µ tempco ≤ ±3% (−55…+125 °C catalog class) — the D1 biased-L floors carry the lot band and the ±1 turn lot-trim absorbs it; first-article L(I) at −25/+100 °C is the pack's material-equivalence test");
 console.log(fails ? `\n${fails} TEMP-CRITIQUE FAILURE(S)` : "\nMAGNETICS TEMP CRITIQUE CLEAN — runaway-stable at every hot corner, sat margins hold at 130 °C, cold equilibria stable, fault chain observed end-to-end");
 process.exit(fails ? 1 : 0);

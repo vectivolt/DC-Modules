@@ -596,7 +596,7 @@
    ],
    "nc_pins": [],
    "value": "74HC02",
-   "query": "74HC02 quad NOR SOIC-14 ",
+   "query": "74HC02 quad NOR SOIC-14 — hardware S/P exclusion: KSER coil = KSER ∧ ¬",
    "mpn": "74HC02"
   },
   {
@@ -904,7 +904,7 @@
     40
    ],
    "value": "MICROFIT3-40",
-   "query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact ",
+   "query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact — the PFC bundle cro",
    "mpn": "MICROFIT3-40"
   }
  ]

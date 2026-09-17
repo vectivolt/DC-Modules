@@ -1,4 +1,4 @@
-/* proto_test.c — E78 protocol conformance, robustness, and one core behind every profile.
+/* proto_test.c — protocol conformance, robustness, and one core behind every profile.
  *   frame:      saturating encoders, CRC-8/AUTOSAR check value, priority-aware bounded TX queue
  *   TonHe V1.2: identifiers and golden payloads from the specification's own examples (§9, Appendix A.2), bitmap
  *               addressing with the address multiple, range-edge setpoints, the 20 s communication rule, address mode
@@ -166,8 +166,8 @@ static void tonhe_tests(void) {
     th12_tick(&t, 11002, &m, &cmd, &q); drain(&q);
     ck("TonHe: a frame sent under this module's address flags a conflict (PFC bit 4) and blocks delivery until 10 s quiet", during && !t.conflict && cmd.run); }
 
-  /* E82 (K-3): before this fix the transmit phase was address-only, so two modules mis-set to the same address computed
-     the identical phase and transmitted in lock-step forever. This fails without the fix (both a.t_state == b.t_state). */
+  /* An address-only transmit phase makes two modules mis-set to the same address compute the identical phase and
+     transmit in lock-step forever. This fails if the UID leaves the phase (both a.t_state == b.t_state). */
   { th12_t a, b; th12_init(&a, 0, 0, 9, 0x11111111u, 0); th12_init(&b, 0, 0, 9, 0x22222222u, 0);
     ck("TonHe: two modules sharing an address but not a UID no longer share a transmit phase", a.t_state != b.t_state); }
 
@@ -196,9 +196,9 @@ static void tonhe_tests(void) {
     int n = drain(&q);
     ck("TonHe: an invalid start/stop byte is confirmed 0x00 (not received) and changes nothing", n == 1 && out[0].data[0] == 0x00 && !t.run && t.v_set == 0.0f); }
 
-  /* E82 (K-2): before this fix a short C_M_24 (here 5 of the 6 bytes §9.2.4 needs) was dropped with no reply at all —
-     indistinguishable from a bus glitch — and this same early return also skipped the t_rx presence update below,
-     which used to run unconditionally for any dlc >= 6 frame reaching this case. Fails on either half without the fix. */
+  /* A short C_M_24 (here 5 of the 6 bytes §9.2.4 needs) must be answered, not dropped with no reply at all —
+     indistinguishable from a bus glitch — and it must NOT refresh presence, unlike any dlc >= 6 frame reaching this
+     case. Fails on either half. */
   { m = tlm(); th12_init(&t, 0, 0, 1, 0, 1000); memset(&q, 0, sizeof q);
     const uint8_t shortss[8] = { 0xaa, 0, 0xa0, 0x0f, 0x10, 0x27, 0, 0 }; pmp_frame_t f = mk(0x080601A0u, 5, shortss);
     th12_rx(&t, &f, 5000, &m, &cmd, &q);
@@ -360,8 +360,8 @@ static void vmp_tests(void) {
     vact(&v, 2, 0x77, 0, 20, &m, &cmd, &q); int unk = reply(&q, 2, VMP_F_ACTION, NULL) == VMP_E_UNSUPPORTED_ITEM;
     m.rs = MOD_RS_ON; vact(&v, 3, VMP_A_REBOOT, VMP_KEY_REBOOT, 30, &m, &cmd, &q); int rbst = reply(&q, 3, VMP_F_ACTION, NULL) == VMP_E_STATE;
     m.rs = MOD_RS_READY; vact(&v, 4, VMP_A_REBOOT, VMP_KEY_REBOOT, 40, &m, &cmd, &q); int rbok = reply(&q, 4, VMP_F_ACTION, NULL) == VMP_OK && v.reboot_req;
-    /* E82 (K-4): STANDBY's post-stop warm-hold keeps the PFC switching well after rs has already dropped to READY.
-       Fails without the fix — delivering() alone reads MOD_RS_READY as idle and would let this through as rbok did. */
+    /* STANDBY's post-stop warm-hold keeps the PFC switching well after rs has already dropped to READY.
+       delivering() alone reads MOD_RS_READY as idle and would let this through exactly as rbok does. */
     m.rs = MOD_RS_READY; m.pfc_en = true; v.reboot_req = false;
     vact(&v, 16, VMP_A_REBOOT, VMP_KEY_REBOOT, 45, &m, &cmd, &q); int rbwarm = reply(&q, 16, VMP_F_ACTION, NULL) == VMP_E_STATE && !v.reboot_req;
     m.pfc_en = false;
@@ -476,7 +476,7 @@ static void rig_init(rig_t *r) {
 /* the HAL's 1 ms sequence after the profile tick: intent → FSM → shaper → telemetry, on a direct-drive plant */
 static void rig_step(rig_t *r) {
   pmp_cmd_to_in(&r->cmd, &r->in, &r->f);
-  if (r->f.st == ST_PRECHG && r->in.vbus < 1.414f * r->in.vin_ll_max - 5.0f) r->in.vbus += 5.0f;   /* E82: a precharging link stops at the crest */
+  if (r->f.st == ST_PRECHG && r->in.vbus < 1.414f * r->in.vin_ll_max - 5.0f) r->in.vbus += 5.0f;   /* a precharging link stops at the crest */
   if (r->f.out.pfc_en) r->in.vbus = r->f.out.vbus_ref;
   if (r->f.out.llc_en) {
     float b = (r->in.vcmd > 0.0f) ? fminf(r->in.vcmd, r->f.out.v_max) : 0.0f;

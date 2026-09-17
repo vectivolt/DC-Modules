@@ -1,4 +1,4 @@
-/* hal_test.c — E79 verification of the portable real-time HAL (firmware/hal: pfc, llc, meas, nvm).
+/* hal_test.c — verification of the portable real-time HAL (firmware/hal: pfc, llc, meas, nvm).
  *   pfc   the control law on a cycle-by-cycle Vienna plant — the vienna-switched.mjs state model in C: an ideal bidirectional
  *         switch per phase, boost diodes, a floating neutral with DCM, the soft-saturating D1, the split link, the SNS_VAC RC,
  *         peak and valley sampling with one update of transport delay. Start, load step, steady state (THD, PF, midpoint, peak),
@@ -10,7 +10,7 @@
  *         phase, loss of line, noise).
  *   nvm   CRC-32 check value, round trip, write-on-change, compaction, a power cut at every programmed 64-bit ROW of an append
  *         and at every step of a compaction — on a flash model that programs whole ECC rows and refuses a row that is not
- *         erased, which is what the GD32G553 does (E82 C-04); and the event ring on the same model.
+ *         erased, which is what the GD32G553 does; and the event ring on the same model.
  * What this does NOT prove: the loop gains on the real stage (the regulator gains are ctl.c's placeholders), EMI, the ADC,
  * timer and flash drivers — HIL and EVT rows in docs/firmware-verification.md. Build/run: firmware/run_tests.sh */
 #include "../hal/pfc.h"
@@ -141,7 +141,7 @@ static vmet_t vcycle(vsim_t *s) {   /* one line cycle: phase-A THD to h40, true 
   return m;
 }
 
-/* ================================================================ E82 (M-18): DC into the line
+/* ================================================================ DC into the line
    The line CTs are 50 Hz metering parts: below ≈ 1 Hz they pass NOTHING, so the P-only current loop has no DC feedback of
    any kind and whatever DC the modulator is asked to produce is opposed by the line resistance alone. The forcing terms are
    both measurement offsets — a differential offset on the SNS_VAC channels (1 LSB = 1.35 V of line: the AC chains use 14 %
@@ -235,7 +235,7 @@ static void pfc_tests(void) {
   printf("      30 kW wired A-C-B: THD %.2f %% · PF %.4f · peak %.1f A\n", 100 * m.thd, m.pf, m.pk);
   ck("pfc 30 kW wired A-C-B: THD < 5 %, PF > 0.99, peak under F.01 / 1.2 (100 A)", m.thd < 0.05 && m.pf > 0.99 && m.pk < 100.0);
 
-  /* E81 / review G (F-G-7): THD-40 per RATING at 400 VAC full load, on the real pfc.c law. The README quotes
+  /* THD-40 per RATING at 400 VAC full load, on the real pfc.c law. The README quotes
      0.59 / 0.74 / 1.05 % from spice/pfc/pfc-phase-run.mjs — a 30 kW-ONLY, AVERAGED-switch deck at an 800 V bus with a
      flat 130 µH and no input filter. These rows are the cycle-by-cycle plant with the shipped control law, per rating. */
   {
@@ -264,15 +264,15 @@ static void pfc_tests(void) {
   pfc_step(&s.p, &s.cfg, &s.ref, bad, z, 400.0f, 400.0f, 0.0f, 10e-6f);
   ck("pfc: disabled, or a non-finite sample, turns every switch off and resets the loop", off && ran && !s.p.run && s.p.on[0] == 0.0f);
 
-  { /* E82 (M-32): the load dump. fsm.c bus_ref_for() returns the 830 V cap for any bank at or above 395 V — a 400 V output
-       in PAR, an 800 V one in SER, i.e. most real charging — leaving 30 V to the LATCHING 860 V F.03, of which the old
-       15 V skip band spent half before any dynamics, while the voltage integrator still held the pre-dump power and
-       unwound at ki_v·e ≈ 55 kW/s. An EV opening its contactor at full power is a NORMAL end-of-session event, so this
+  { /* the load dump. fsm.c bus_ref_for() returns the 830 V cap for any bank at or above 395 V — a 400 V output
+       in PAR, an 800 V one in SER, i.e. most real charging — leaving 30 V to the LATCHING 860 V F.03, of which a
+       15 V skip band would spend half before any dynamics, while the voltage integrator still held the pre-dump power
+       and unwound at ki_v·e ≈ 55 kW/s. An EV opening its contactor at full power is a NORMAL end-of-session event, so this
        has to clear on an aged link too: −20 % is the can tolerance, −36 % adds 20 % of end-of-life loss.
-       NOTE this plant does not reproduce the 856–872 V the review reported: it carries an ideal source behind the boost
-       choke, where the review's model carried the DRAWN CX/CMC input filter, whose ring into the link on the commutation
-       was the extra ~12 V. On THIS plant the dump peaks at 833 V even as coded, so the check below is a regression guard
-       with the two levers in place, not the proof of the finding — the bench row (T-xx) is the arbiter. */
+       NOTE this plant does not reproduce the 856–872 V an independent model gives: it carries an ideal source behind
+       the boost choke, where that model carries the DRAWN CX/CMC input filter, whose ring into the link on the
+       commutation is the extra ~12 V. On THIS plant the dump peaks at 833 V, so the check below is a regression guard
+       with the two levers in place, not the arbiter of the absolute number — the bench row is. */
     int ok = 1; double worst = 0.0;
     const d1_t *D[3] = { &D1_30, &D1_40, &D1_50 };
     const double P[3] = { 30e3, 40e3, 50e3 }, CS[3] = { 1.0, 0.80, 0.64 };
@@ -289,10 +289,10 @@ static void pfc_tests(void) {
     }
     printf("      load dump at the 830 V reference, 475 VAC, 30/40/50 kW x link C 1.00/0.80/0.64: worst peak %.1f V"
            " (F.03 latches at %.0f V)\n", worst, (double)PMP_BUS_OVP_V);
-    ck("E82 M-32 (guard): a full-power load dump at the 830 V bus reference stays under 855 V on every SKU, including a link 36 % down on tolerance and ageing",
+    ck("guard: a full-power load dump at the 830 V bus reference stays under 855 V on every SKU, including a link 36 % down on tolerance and ageing",
        ok && worst < 855.0); }
 
-  { /* E82 (M-18): ±3 LSB on one voltage channel and one current channel, the residual a calibrated card can still carry
+  { /* ±3 LSB on one voltage channel and one current channel, the residual a calibrated card can still carry
        (AMC1350 Vos ±1.5 mV = ±0.5 V of line, its output common mode unspecified for drift, and VAC1/2 and VAC3 sit on
        different converters). 1 LSB of SNS_VAC = 1.347 V of line; 1 LSB of the 30 kW CT chain = 0.0916 A. */
     const double LSBV = 1.347, LSBI = 0.0916, RATED = 45.1;    /* 30 kW at 400 VAC: 45.1 A rms per phase */
@@ -308,10 +308,10 @@ static void pfc_tests(void) {
            raw, 100 * raw / RATED, f5, 100 * f5 / RATED, f10, 100 * f10 / RATED, clean, stiff);
     /* The last column is a deliberate DOUBLE corner — the lowest line resistance AND the slowest CT — where the estimator
        and the sensor's own magnetizing pole are closest together; it is held to 1 % rather than 0.5 %. */
-    ck("E82 M-18: with a 50 Hz CT (no DC feedback in the loop) a 3 LSB voltage and 3 LSB current offset inject tens of amps of DC; the per-line-cycle means hold it under 0.5 % of rated rms within 5 s",
+    ck("with a 50 Hz CT (no DC feedback in the loop) a 3 LSB voltage and 3 LSB current offset inject tens of amps of DC; the per-line-cycle means hold it under 0.5 % of rated rms within 5 s",
        raw > 5.0 && f5 < 0.005 * RATED && f10 < 0.005 * RATED && clean < 0.005 * RATED && stiff < 0.01 * RATED); }
 
-  { /* E82 (M-18): the estimate must not become a way to hide a broken channel — the clamps bound what it can absorb, and
+  { /* the estimate must not become a way to hide a broken channel — the clamps bound what it can absorb, and
        grid_sample's rms / isum (F.29's input) and the boot offset window all stay on the RAW samples. */
     grid_t g; memset(&g, 0, sizeof g);
     const double fs = 1e4, w = 2 * PI * 50.0, amp = 326.6;
@@ -325,7 +325,7 @@ static void pfc_tests(void) {
     }
     printf("      broken channel: dcv %.1f V (clamp %.0f) · dci %.2f A (clamp %.1f) · isum %.1f A still reaches F.29\n",
            (double)g.dcv[0], (double)GRID_DC_V_MAX, (double)g.dci[1], (double)GRID_DC_I_MAX, (double)g.isum);
-    ck("E82 M-18: a grossly broken voltage or current channel saturates the correction's clamp instead of being absorbed, and still shows up in isum for F.29",
+    ck("a grossly broken voltage or current channel saturates the correction's clamp instead of being absorbed, and still shows up in isum for F.29",
        fabsf(g.dcv[0]) <= GRID_DC_V_MAX + 1e-3f && fabsf(g.dcv[0]) >= GRID_DC_V_MAX - 1e-3f &&
        fabsf(g.dci[1]) <= GRID_DC_I_MAX + 1e-3f && fabsf(g.dci[1]) >= GRID_DC_I_MAX - 1e-3f && g.isum > 20.0f); }
 }
@@ -353,16 +353,15 @@ typedef struct {
   double lr, cr, lm, vbus, cap, vf, rt, i_scale, v_scale;
   double ilr, vcr, ilm, vo, t_in, t_per, f, duty; int sgn; bool cond, gate;
   double load_r, bat_e, bat_r; bool bat;
-  double lcab, rcab, icab, vl, cl; bool cable;   /* E81/F-G-2: DOUT → 5 m output cable → load */
+  double lcab, rcab, icab, vl, cl; bool cable;   /* DOUT → 5 m output cable → load */
   double v_ref, i_ref, pk, pk_vo, pk_duty, iout;
   long edges, bad, off_periods, below_floor;
 } lsim_t;
 
-/* E81 / review G (F-G-2): the DRAWN output network. E68c made the banks FILM-ONLY — 9 / 12 / 14 × 2.2 µF PER BANK
-   (current-coordination [SYNC] asserts that count against boards.tsx). LOW mode parallels the two banks, HIGH puts
-   them in series, so what one bank's terminals see is 2·n·2.2 µF or n·2.2 µF: 39.6 / 19.8 µF at 30 kW, 52.8 / 26.4 at
-   40 kW, 61.6 / 30.8 at 50 kW. The pre-E81 plant carried a flat 200 µF — 3× to 10× the drawn value — which is why the
-   CV load step was never able to fail here. */
+/* The DRAWN output network. The banks are FILM-ONLY — 9 / 12 / 14 × 2.2 µF PER BANK (current-coordination [SYNC]
+   asserts that count against boards.tsx). LOW mode parallels the two banks, HIGH puts them in series, so what one
+   bank's terminals see is 2·n·2.2 µF or n·2.2 µF: 39.6 / 19.8 µF at 30 kW, 52.8 / 26.4 at 40 kW, 61.6 / 30.8 at
+   50 kW. A flat 200 µF plant — 3× to 10× the drawn value — cannot fail the CV load step at all. */
 static double bank_f(int kw) { return (kw == 50 ? 14 : kw == 40 ? 12 : 9) * 2.2e-6; }
 static double cout_of(int kw, bool low) { return low ? 2.0 * bank_f(kw) : bank_f(kw); }
 
@@ -386,10 +385,10 @@ static void lsim_run(lsim_t *s, double sec, bool rec) {
   for (long k = 0, steps = lround(sec / dt); k < steps; k++) {
     if (k % 2000 == 0) {   /* the 100 µs control period: the regulator and the modulator */
       double vout = s->iout > 0.0 ? s->vo - s->vf : s->vo;
-      /* E82 (M-30): the plant inversion app.c applies — v_scale divided into the modulator's own sensitivity */
+      /* the plant inversion app.c applies — v_scale divided into the modulator's own sensitivity */
       float u = pmp_reg_step(&s->r, &s->rc, true, (float)s->v_ref, (float)s->i_ref, (float)fmin(vout, s->vo), (float)s->iout,
                              (float)s->v_scale * (s->l.k_norm > 0.0f ? s->l.k_norm : 1.0f), (float)s->i_scale, 100e-6f);
-      s->l.in_v_ref = (float)s->v_ref;   /* E81 (F-E-08): the burst floor rides the node's reference */
+      s->l.in_v_ref = (float)s->v_ref;   /* the burst floor rides the node's reference */
       llc_step(&s->l, &s->c, true, u, (float)s->vo, (float)(s->vo * s->iout), (float)s->vbus);
     }
     if (s->t_in >= s->t_per) {   /* period boundary: leg A rises and the modulator's latest values take effect */
@@ -435,7 +434,7 @@ static void llc_tests(void) {
     for (int k = 0; k <= 250; k++) { double q = k * 0.01; if (llc_zvs_fn((float)q) < zvs_worst(q) - 2e-4) ok = 0; }
     ck("llc: the ZVS table never sits below the FHA tank's capacitive boundary at any tolerance corner (Q 0–2.5)", ok); }
 
-  { llc_cfg_t c; llc_cfg_default(&c, 50); llc_t l = { 0 };   /* E81: the plant inputs in_v_ref / in_i_rms read 0 as unknown */
+  { llc_cfg_t c; llc_cfg_default(&c, 50); llc_t l = { 0 };   /* the plant input in_v_ref reads 0 as unknown */
     llc_step(&l, &c, true, 1.0f, 500.0f, 50e3f, 830.0f);
     bool corner = l.f_min_hz <= 0.5767f * c.fr_hz && fabsf(l.f_hz - l.f_min_hz) < 1.0f;
     llc_step(&l, &c, true, c.u_psm, 400.0f, 20e3f, 830.0f);
@@ -452,8 +451,8 @@ static void llc_tests(void) {
     ck("llc: PFM hands over to phase shift at u_psm, duty is linear below, burst stops below 8 % and restarts above 12 %, the floor rises to 1.08 fr into a near-short, disable and NaN stop the bridge",
        at_max && half && b1 && b2 && b3 && heavy && stop && nan_stop); }
 
-  /* E81 / review G: the ramp is ctl.c's SHIPPED pmp_ctl_cfg_default ramp_v_vps = 500 V/s, not the 2000 V/s the E79 test
-     used — on the drawn 61.6 µF bank (the test carried 200 µF) a 4× ramp drove the tank to 434 A against F.11's 220 A. */
+  /* the ramp is ctl.c's SHIPPED pmp_ctl_cfg_default ramp_v_vps = 500 V/s — on the drawn 61.6 µF bank a 4× ramp
+     (2000 V/s) drives the tank to 434 A against F.11's 220 A. */
   { static lsim_t s; lsim_init(&s); s.load_r = 4.0; s.i_ref = 175.0;
     for (int k = 0; k < 8000; k++) { s.v_ref = fmin(400.0, 500.0 * k * 100e-6); lsim_run(&s, 100e-6, true); }
     lsim_run(&s, 0.25, false); s.edges = s.bad = 0;
@@ -468,15 +467,15 @@ static void llc_tests(void) {
     double sum = 0.0, imin = 1e9, imax = 0.0;
     for (int k = 0; k < 500; k++) { lsim_run(&s, 100e-6, true); sum += s.iout; imin = fmin(imin, s.iout); imax = fmax(imax, s.iout); }
     printf("      CC 100 A into 350 V: %.2f A mean, %.1f A peak to peak\n", sum / 500, imax - imin);
-    /* E81 / review G (F-G-2): 30 A peak to peak was measured on the test's OLD 200 µF plant; the DRAWN film-only bank
-       (61.6 µF at 50 kW, E68c) limit-cycles 38 A peak to peak into this 0.1 Ω stability-stress battery with the same
-       ctl.c placeholder gains. The line below bounds what the STRUCTURE guarantees on the drawn hardware and still fails
-       the E78 gains (81 A) and any regression toward them; the §5.4 HIL retune target is ≤ 10 A peak to peak, and the
-       §5.4 battery class is 0.3 Ω incremental — 0.1 Ω is the stiffest case, not the operating one. */
-    ck("llc 50 kW CC: 100 A into a 350 V battery (0.1 Ω) holds within ±2 A, under 45 A peak to peak on the DRAWN 61.6 uF bank (200 uF plant: 30 A · E78 gains: 81 A · HIL target 10 A)",
+    /* A 200 µF plant measures 30 A peak to peak here; the DRAWN film-only bank (61.6 µF at 50 kW) limit-cycles 38 A
+       peak to peak into this 0.1 Ω stability-stress battery with the same ctl.c placeholder gains. The line below
+       bounds what the STRUCTURE guarantees on the drawn hardware and still fails an order-of-magnitude-higher gain
+       pair (81 A) and any regression toward it; the §5.4 HIL retune target is ≤ 10 A peak to peak, and the §5.4
+       battery class is 0.3 Ω incremental — 0.1 Ω is the stiffest case, not the operating one. */
+    ck("llc 50 kW CC: 100 A into a 350 V battery (0.1 Ω) holds within ±2 A, under 45 A peak to peak on the DRAWN 61.6 uF bank (200 uF plant: 30 A · HIL target 10 A)",
        fabs(sum / 500 - 100.0) < 2.0 && imax - imin < 45.0); }
 
-  { /* E82 (M-30): the gain-margin table this fix exists for. The discrete voltage loop reaches −180° at Nyquist through its
+  { /* the gain-margin table. The discrete voltage loop reaches −180° at Nyquist through its
        own one-sample compute delay alone (at light load the film-only bank puts no pole below 5 kHz), so the margin is
        |T(z = −1)| = (kp_v + ki_v·dt/2) · (dV/du) / v_scale, and it must stay below 1. dV/du here is differentiated from the
        FHA gain of the tank against llc_step's OWN duty and frequency, so this check does not share llc.c's arithmetic. */
@@ -512,14 +511,14 @@ static void llc_tests(void) {
     }
     if (worst_on >= 0.43) ok = 0;
     printf("      CV |T(z=-1)| worst over 30/40/50 kW x PAR/SER x 650/830 V bus x u 0.01-0.99: %.2f (%.1f dB GM)"
-           " · without the E82 normalisation %.2f (%.1f dB)\n",
+           " · without the normalisation %.2f (%.1f dB)\n",
            worst_on, -20.0 * log10(worst_on), worst_off, -20.0 * log10(worst_off));
-    ck("E82 M-30: the CV loop keeps |T(z=-1)| under 0.43 (>= 7.3 dB of gain margin) at every point of the demand map, on every SKU, mode and bus reference — it exceeded 1 before",
+    ck("the CV loop keeps |T(z=-1)| under 0.43 (>= 7.3 dB of gain margin) at every point of the demand map, on every SKU, mode and bus reference — it exceeded 1 before",
        ok && worst_off > 1.0); }
 
-  { /* E82 (M-30): the corner that limit-cycled. One fixed CV PI pair drove a modulator whose sensitivity dV/du spans 23×
-       over the envelope; in deep phase shift |T(z = −1)| crossed 1 and the loop ran a 5 kHz period-2 cycle, 0–160 V pk-pk
-       on these very functions. llc_step now publishes that sensitivity (k_norm) and the caller divides its voltage-loop
+  { /* the corner that limit-cycles unnormalised. One fixed CV PI pair drives a modulator whose sensitivity dV/du spans
+       23× over the envelope; in deep phase shift |T(z = −1)| crosses 1 and the loop runs a 5 kHz period-2 cycle,
+       0–160 V pk-pk on these very functions. llc_step publishes that sensitivity (k_norm) and the caller divides its voltage-loop
        gain by it wherever it exceeds the ceiling the gains were validated against; below the ceiling nothing changes.
        PAR 150/200/250 V is the cable-check and pre-charge band of every low-voltage pack, and the light-load rows are the
        ones that were unstable. Without the normalisation these rows ring; the band below is 3 % of the setpoint. */
@@ -538,9 +537,9 @@ static void llc_tests(void) {
       if (ripple > 0.03) { ok = 0; printf("      PAR %.0f V at %.0f %% load: %.1f–%.1f V (%.1f %% pk-pk)\n", V[n], frac * 100, lo, hi, ripple * 100); }
     }
     printf("      PAR 150/200/250 V x 2/20/100 %% load: worst ripple %.2f %% of setpoint\n", worst * 100);
-    ck("E82 M-30: the CV loop holds PAR 150 / 200 / 250 V at 2, 20 and 100 % load without a limit cycle (worst pk-pk <= 3 %)", ok); }
+    ck("the CV loop holds PAR 150 / 200 / 250 V at 2, 20 and 100 % load without a limit cycle (worst pk-pk <= 3 %)", ok); }
 
-  { /* E80: the §5.5 current-step targets through the documented shaper slews (up 1000 A/s, down i_rated / 0.08 s):
+  { /* the §5.5 current-step targets through the documented shaper slews (up 1000 A/s, down i_rated / 0.08 s):
        10 → 90 % of rated into the battery, t90 ≤ 150 ms up and ≤ 100 ms down, overshoot ≤ 2 % of rated */
     static lsim_t s; lsim_init(&s); s.bat = true; s.bat_e = 350.0; s.bat_r = 0.3; s.vo = 351.0; s.v_ref = 450.0; s.i_ref = 16.7;   /* the §5.4 battery class (~0.3 Ω incremental); 0.1 Ω stability is the check above */
     lsim_run(&s, 0.3, false);
@@ -554,10 +553,10 @@ static void llc_tests(void) {
       else if (t_dn < 0 && s.iout <= 150.0 - 0.9 * (150.0 - 16.7)) t_dn = (k - 2000) * 1e-4;
     }
     printf("      CC step 10-90 %%: t90 up %.0f ms · down %.0f ms · peak %.1f A\n", t_up * 1e3, t_dn * 1e3, imax);
-    /* the ≤ 2 % overshoot line of §5.5 is the HIL acceptance for the per-rating gains (§5.4, review R34 — the FHA-plant
+    /* the ≤ 2 % overshoot line of §5.5 is the HIL acceptance for the per-rating gains (§5.4 — the FHA-plant
        arrival overshoot here is ~26 A with the placeholder gains); this check owns what the structure guarantees:
        the ramp-dominated timing, and an overshoot bounded inside the F.15 fast row (130 % of rated for 2 ms) */
-    ck("llc 50 kW CC step 10-90 % into a battery: t90 <= 150 ms up / <= 100 ms down; overshoot bounded under F.15 (2 % target = HIL gate, R34)",
+    ck("llc 50 kW CC step 10-90 % into a battery: t90 <= 150 ms up / <= 100 ms down; overshoot bounded under F.15 (the 2 % target is the HIL gate)",
        t_up > 0 && t_up <= 0.150 && t_dn > 0 && t_dn <= 0.100 && imax < 1.25 * 166.7); }
 
   { static lsim_t s; lsim_init(&s); s.bat = true; s.bat_e = 395.0; s.bat_r = 0.1; s.vo = 396.0; s.v_ref = 400.0; s.i_ref = 175.0;
@@ -568,8 +567,8 @@ static void llc_tests(void) {
       vmin = fmin(vmin, s.vo - s.vf); vmax = fmax(vmax, s.vo - s.vf); imin = fmin(imin, s.iout); imax = fmax(imax, s.iout);
     }
     printf("      CV 400 V into a 395 V battery: %.2f–%.2f V · %.1f–%.1f A\n", vmin, vmax, imin, imax);
-    /* E81 / review G (F-G-2): ±1 % was the 200 µF plant's band; the drawn 61.6 µF bank gives 396.0–403.5 V with the same
-       gains — the same limit cycle as the CC row above, and the same §5.4 HIL retune. */
+    /* ±1 % is a 200 µF plant's band; the drawn 61.6 µF bank gives 396.0–403.5 V with the same gains — the same
+       limit cycle as the CC row above, and the same §5.4 HIL retune. */
     ck("llc 50 kW CV into a battery (395 V, 0.1 Ω): the voltage holds within ±1.5 % on the DRAWN 61.6 uF bank (200 uF plant: ±1 %) and the current stays under F.15's slow row (170 A)",
        vmin > 394.0 && vmax < 406.0 && imax < 170.0); }
 
@@ -587,13 +586,13 @@ static void llc_tests(void) {
     printf("      100 W at 300 V: %.1f–%.1f V · bridge-off periods %ld\n", vmin, vmax, s.off_periods);
     ck("llc 50 kW: 100 W at 300 V bursts and holds the output within ±3 %", s.off_periods > 0 && vmin > 291.0 && vmax < 309.0); }
 
-  /* E81 / review G (F-G-2): CV LOAD STEP on the DRAWN output network — the case the 200 µF plant could not fail, and the
-     only closed-loop case the E68c film-only bank changes. 100 → 25 % and back (the docs/firmware-architecture §5.5 row),
-     at a 480 V bank command, through DOUT and 5 m of cable, sensing at the module stud where SNS_VOUT sits.
+  /* CV LOAD STEP on the DRAWN output network — the case a 200 µF plant cannot fail, and the only closed-loop case the
+     film-only bank changes. 100 → 25 % and back (the docs/firmware-architecture §5.5 row), at a 480 V bank command,
+     through DOUT and 5 m of cable, sensing at the module stud where SNS_VOUT sits.
      Acceptance:
-       · deviation ≤ 10 % — the §5.5 line RESTATED for a film-only output (it read ≤ 3 % when the bank still carried the
-         E67 330 µF electrolytic; 300–550 µF is what 3 % needs, and gain and control-period sweeps do not buy it back)
-       · the CODE's own OVP rows in fsm.c (lead decision E81: protection-thresholds row 14 "cmd +4 %, 2 ms" is STALE):
+       · deviation ≤ 10 % — the §5.5 line for a film-only output (≤ 3 % needs 300–550 µF of output capacitance, and
+         gain and control-period sweeps do not buy it back)
+       · the CODE's own OVP rows in fsm.c, which are the normative ones:
            fast    stack > min(PMP_OUT_OVP_ABS_V 1050, v_max·1.05 + 20) held PMP_OVP_MS = 2 ms
            source  stack > vcmd·1.06 + 20 held PMP_OVP_SRC_MS = 200 ms while iout > PMP_MAKE_IOUT_A = 2 A */
   { int step_ok = 1;
@@ -698,7 +697,7 @@ static void meas_tests(void) {
 }
 
 /* ================================================================ NVM on a RAM flash with power cuts
- * E82 (C-04): this model is the GD32G553 FMC, not a byte array. The part programs 64-bit ROWS with ECC over each and
+ * This model is the GD32G553 FMC, not a byte array. The part programs 64-bit ROWS with ECC over each and
  * refuses a row that is not erased — UM §2.3.8 ("before the double-word programming operation you should check the
  * address that it has been erased. If the address has not been erased, PGERR bit will set") and FMC_STAT PGERR bit 3
  * ("When programming to the flash while it is not 0xFFFF FFFF FFFF FFFF, this bit is set by hardware"); an all-FF write
@@ -770,11 +769,11 @@ static void nvm_tests(void) {
   nvm_mount(&s, 0u, PG); bool got = nvm_get(&s, 1, b, 40) && memcmp(a, b, 40) == 0;
   long before = progd; bool same = nvm_put(&s, 1, a, 40, false) && progd == before;
   bool wrong = !nvm_get(&s, 1, b, 20) && !nvm_get(&s, 2, b, 40);
-  /* E82 (C-04): pgerr == 0 is the check the byte-granular model could not make. With the old 12-byte header the very
-     first record re-programmed the header's own row and `put` was false here. */
+  /* pgerr == 0 is the check a byte-granular model cannot make: with a 12-byte header the very first record
+     re-programs the header's own row and `put` reads false here. */
   ck("nvm: a blank part formats; a record survives a remount; an unchanged write programs nothing; a wrong length or kind reads nothing",
      put && got && same && wrong);
-  ck("nvm (E82 C-04): the store never programs a 64-bit flash row twice — the part refused nothing", pgerr == 0);
+  ck("nvm: the store never programs a 64-bit flash row twice — the part refused nothing", pgerr == 0);
 
   { uint32_t ver[4] = { 0, 0, 0, 0 }, gen0 = s.page_seq; int ok = 1;
     for (uint32_t w = 0; w < 120; w++) {
@@ -817,9 +816,9 @@ static void nvm_tests(void) {
     }
     ck("nvm: a power cut at every step of a compaction leaves one complete generation (old or new record, the rest intact)", ok && cases == 41); }
 
-  /* E82: the event ring shares this flash and this rule — it was never covered by a test at all. Its 16-byte header and
-     16-byte entries are already row-clean; the point of the check is that they STAY so, and that a storm of one repeated
-     event costs one slot per flush instead of filling the queue with copies of itself (G-21). */
+  /* the event ring shares this flash and this rule. Its 16-byte header and 16-byte entries are row-clean; the point
+     of the check is that they STAY so, and that a storm of one repeated event costs one slot per flush instead of
+     filling the queue with copies of itself. */
   { evlog_t l;
     wipe(); evlog_mount(&l, 2u, 4u, PG);
     for (int k = 0; k < 40; k++) { evlog_add(&l, 1u, (uint8_t)k, (uint16_t)k, (uint32_t)k); evlog_flush(&l, true); }
@@ -834,7 +833,7 @@ static void nvm_tests(void) {
     for (int k = 0; k < 500; k++) evlog_add(&l, 3u, 7u, 0u, (uint32_t)k);   /* one chattering fault, every tick */
     uint8_t queued = l.qn;
     evlog_flush(&l, true);
-    ck("evlog (E82 G-21): a repeated event already in the queue is not queued again — a storm costs one slot per flush, not sixteen",
+    ck("evlog: a repeated event already in the queue is not queued again — a storm costs one slot per flush, not sixteen",
        queued == 1u && l.lost == 0u && evlog_count(&l) == 1u); }
 }
 

@@ -379,7 +379,7 @@
    ],
    "nc_pins": [],
    "value": "SMBJ28A",
-   "query": "SMBJ28A TVS **28 V** uni SMB ",
+   "query": "SMBJ28A TVS **28 V** uni SMB — V24 rail clamp for a gross feedback-open fault, n",
    "mpn": "SMBJ28A"
   },
   {
@@ -399,7 +399,7 @@
    ],
    "nc_pins": [],
    "value": "SMBJ18A",
-   "query": "SMBJ18A TVS **18 V** uni SMB ",
+   "query": "SMBJ18A TVS **18 V** uni SMB — V15 rail clamp, fault duty only. 18 V clears the ",
    "mpn": "SMBJ18A"
   },
   {
@@ -744,7 +744,7 @@
    ],
    "nc_pins": [],
    "value": "50m",
-   "query": "R2512-R05-1W-1% 50 mΩ 1 % 1 W 2512 in the V24 distribution after CAUX24 ",
+   "query": "R2512-R05-1W-1% 50 mΩ 1 % 1 W 2512 in the V24 distribution after CAUX24: it hold",
    "mpn": "R2512-R05-1W-1%"
   },
   {
@@ -764,7 +764,7 @@
    ],
    "nc_pins": [],
    "value": "4.7k",
-   "query": "R2512-4k7-1W 4.7 kΩ 1 W 2512 V24 PRELOAD ",
+   "query": "R2512-4k7-1W 4.7 kΩ 1 W 2512 V24 PRELOAD, 5.1 mA / 0.12 W. Fitted because the no",
    "mpn": "R2512-4k7-1W"
   },
   {
@@ -844,7 +844,7 @@
    ],
    "nc_pins": [],
    "value": "TPS54202-class",
-   "query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6 ",
+   "query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6, on the control card and exportin",
    "mpn": "TPS54202-class"
   },
   {
@@ -1494,7 +1494,7 @@
    ],
    "nc_pins": [],
    "value": "MICROFIT3-40",
-   "query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact ",
+   "query": "MICROFIT3-40 40-way inter-board harness header, 5 A/contact — the PFC bundle cro",
    "mpn": "MICROFIT3-40"
   }
  ]

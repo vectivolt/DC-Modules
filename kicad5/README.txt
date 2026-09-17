@@ -13,16 +13,15 @@ and the .pro file. KiCad 6 and later open the legacy format by converting it on 
 The design face ends here: there is no PCB layout and no other CAD export in this repository.
 
 HOW THEY ARE MADE (never hand-edit - regenerate)
-  node calculations/sheet-pages.mjs <target>
-  node calculations/sheet-pages.mjs <target>        REQUIRED FIRST: reads dist netlists into page tables
+  node calculations/sheet-pages.mjs <target>     REQUIRED FIRST: reads dist netlists into page tables
   node calculations/sheet-netlist-gen.mjs <target>
   node calculations/kicad5-gen.mjs <target>      writes dc-modules-<target>/ AND re-zips the SHIP file
   node calculations/kicad5-verify.mjs <target>   re-derives every pin from the files; must read 100 %
   node calculations/kicad5-print.mjs <target>
   node calculations/sheets-to-pdf.mjs            the 9 PDFs in boards/out-pdf/
 
-  Connected pins verified at E72: 30 kW 1582 · 40 kW 1648 · 50 kW 1658 · 50 kW air 1674
-  · card 291 = 6853.
+  kicad5-verify must read 100 % on every target - the current pin count is in the
+  repository overview (README.md) status table.
   Every component carries MPN and LCSC fields - statuses and sourcing rules in docs/bom-guide.md.
 
 footprints/
@@ -32,4 +31,4 @@ footprints/
   Wound magnetics, current transformers and the shunt have no standard land: theirs come
   from the maker's drawing (docs/magnetics-<sku>.md) when layout opens.
 
-Main carries the four module SKUs and their control card only (E72).
+The repository carries the four module SKUs and their control card only.

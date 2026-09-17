@@ -5,7 +5,7 @@
 static float clampf(float x, float lo, float hi) { return x < lo ? lo : (x > hi ? hi : x); }
 
 void pfc_cfg_default(pfc_cfg_t *c, uint16_t kw) {
-  /* E79 derivation (30 / 40 / 50 kW): D1 L(i) on the Kool Mµ 26 roll-off at the clamp crest 74.5 / 61.2 / 46.0 µH
+  /* Derivation (30 / 40 / 50 kW): D1 L(i) on the Kool Mµ 26 roll-off at the clamp crest 74.5 / 61.2 / 46.0 µH
      (vienna-switched.mjs D1 table); voltage loop Gv = η / (s·C·Vbus) on the drawn link 1.175 / 1.41 / 1.88 mF at 800 V,
      15 Hz with a PI zero for 65° (the pfc-control.mjs method, in watts) */
   c->kp_i = (kw == 50u) ? 0.866f : (kw == 40u) ? 1.154f : 1.405f;
@@ -18,9 +18,9 @@ void pfc_cfg_default(pfc_cfg_t *c, uint16_t kw) {
   c->k_mid = 0.5f;
   c->tau_v = 114.6e-6f;   /* (11.5 k ∥ 3.8 M) · 10 nF — pfc-control.mjs TAUV */
   c->ramp_vps = 250.0f;
-  /* E82 (M-32): 15 V did NOT stay under F.03. bus_ref_for() returns the 830 V cap for any bank at or above 395 V — a 400 V
-     output in PAR, an 800 V one in SER, i.e. most real charging — which leaves 30 V to the 860 V trip, and the skip band
-     alone spent half of it before any dynamics. 9 V is still nine times the link's own ripple. */
+  /* The skip band must stay well under F.03: bus_ref_for() returns the 830 V cap for any bank at or above 395 V — a
+     400 V output in PAR, an 800 V one in SER, i.e. most real charging — which leaves 30 V to the 860 V trip, so a 15 V
+     band would spend half of it before any dynamics. 9 V is still nine times the link's own ripple. */
   c->skip_v = 9.0f;
   c->eta_llc = 0.975f;
   c->on_min = 0.01f;      /* 200 ns at 50 kHz */
@@ -45,9 +45,9 @@ void pfc_step(pfc_t *p, const pfc_cfg_t *c, const pfc_ref_t *r, const float i[3]
   float e = p->vref - vbus;
   /* power command: the LLC's input power, then the PI on the bus error; the amplitude is P / (1.5 · Vpk) */
   float ff = fmaxf(isfinite(p_load_w) ? p_load_w : 0.0f, 0.0f) / c->eta_llc;
-  /* E82 (M-32): a load dump (an EV opening its contactor at full power — a normal end-of-session event) collapses the
+  /* A load dump (an EV opening its contactor at full power — a normal end-of-session event) collapses the
      feed-forward within one 100 µs LLC pass, but the integrator still holds the whole pre-dump correction and unwinds only
-     at ki_v·e ≈ 55 kW/s, so the stage kept pushing while the bus climbed into the LATCHING 860 V F.03. The feed-forward is
+     at ki_v·e ≈ 55 kW/s, so unbounded the stage keeps pushing while the bus climbs into the LATCHING 860 V F.03. The feed-forward is
      the honest estimate of what the load now takes, so while the bus is ABOVE its reference the integrator may not claim
      more than a fifth of rated on top of it. It is a ceiling, not a reset: a real load step keeps ff large and is untouched,
      and the ordinary negative-error unwind is unchanged. */

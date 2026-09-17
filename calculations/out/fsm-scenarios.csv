@@ -6,7 +6,7 @@ load step 0→25→100→25%,RUN,-,RUN,-,PASS
 CV→CC→CV (R collapse/restore),RUN,-,RUN,-,PASS
 output open circuit,RUN,-,RUN,-,PASS
 output short → F.16,FAULT,F.16,FAULT|LOCK,F.16,PASS
-ext battery present, stack meets it through the diode (E67),RUN,-,RUN,-,PASS
+ext battery present, stack meets it through the diode,RUN,-,RUN,-,PASS
 reverse backfeed → F.33 inhibit,FAULT,F.33,FAULT|LOCK,F.33,PASS
 phase loss mid-run → F.09,FAULT,F.09,FAULT|LOCK,F.09,PASS
 swell 505 V → F.07,FAULT,F.07,FAULT|LOCK,F.07,PASS
@@ -14,7 +14,7 @@ sag 250 V → F.08,FAULT,F.08,FAULT|LOCK,F.08,PASS
 bus HW OVP 870 V → F.03,FAULT,F.03,FAULT|LOCK,F.03,PASS
 midpoint imbalance → F.06,FAULT,F.06,FAULT|LOCK,F.06,PASS
 S/P up-transition 400→750 V under dwell,RUN,-,RUN,-,PASS
-transition with welded K_PARA → F.17 at the SER start (E67),FAULT,F.17,FAULT|LOCK,F.17,PASS
+transition with welded K_PARA → F.17 at the SER start,FAULT,F.17,FAULT|LOCK,F.17,PASS
 fan fail → DERATE 50%,DERATE,-,DERATE,-,PASS
 OT 118 °C → F.22,FAULT,F.22,FAULT|LOCK,F.22,PASS
 Vout sensor implausible → F.29,FAULT,F.29,FAULT|LOCK,F.29,PASS

@@ -154,7 +154,7 @@
    ],
    "nc_pins": [],
    "value": "1",
-   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "query": "R0805-2R2 per-device series gate R — one on EVERY die including the original dev",
    "mpn": "R0805-2R2"
   },
   {
@@ -174,7 +174,7 @@
    ],
    "nc_pins": [],
    "value": "1",
-   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "query": "R0805-2R2 per-device series gate R — one on EVERY die including the original dev",
    "mpn": "R0805-2R2"
   },
   {
@@ -264,7 +264,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -519,7 +519,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W isolated gate-bias module **+15 V / −3 V**, 1 W class ",
    "mpn": "ISO-GBIAS-15-1W"
   },
   {
@@ -539,7 +539,7 @@
    ],
    "nc_pins": [],
    "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT ",
+   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2, SINGLE die, 2-terminal ",
    "mpn": "SICJBS-1200-40"
   },
   {
@@ -559,7 +559,7 @@
    ],
    "nc_pins": [],
    "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT ",
+   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2, SINGLE die, 2-terminal ",
    "mpn": "SICJBS-1200-40"
   },
   {
@@ -759,7 +759,7 @@
    ],
    "nc_pins": [],
    "value": "WW-470R-10W",
-   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder ",
+   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder. The ",
    "mpn": "WW-470R-10W"
   },
   {
@@ -859,7 +859,7 @@
    ],
    "nc_pins": [],
    "value": "1",
-   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "query": "R0805-2R2 per-device series gate R — one on EVERY die including the original dev",
    "mpn": "R0805-2R2"
   },
   {
@@ -879,7 +879,7 @@
    ],
    "nc_pins": [],
    "value": "1",
-   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "query": "R0805-2R2 per-device series gate R — one on EVERY die including the original dev",
    "mpn": "R0805-2R2"
   },
   {
@@ -969,7 +969,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -1224,7 +1224,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W isolated gate-bias module **+15 V / −3 V**, 1 W class ",
    "mpn": "ISO-GBIAS-15-1W"
   },
   {
@@ -1244,7 +1244,7 @@
    ],
    "nc_pins": [],
    "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT ",
+   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2, SINGLE die, 2-terminal ",
    "mpn": "SICJBS-1200-40"
   },
   {
@@ -1264,7 +1264,7 @@
    ],
    "nc_pins": [],
    "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT ",
+   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2, SINGLE die, 2-terminal ",
    "mpn": "SICJBS-1200-40"
   },
   {
@@ -1464,7 +1464,7 @@
    ],
    "nc_pins": [],
    "value": "WW-470R-10W",
-   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder ",
+   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder. The ",
    "mpn": "WW-470R-10W"
   },
   {
@@ -1564,7 +1564,7 @@
    ],
    "nc_pins": [],
    "value": "1",
-   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "query": "R0805-2R2 per-device series gate R — one on EVERY die including the original dev",
    "mpn": "R0805-2R2"
   },
   {
@@ -1584,7 +1584,7 @@
    ],
    "nc_pins": [],
    "value": "1",
-   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "query": "R0805-2R2 per-device series gate R — one on EVERY die including the original dev",
    "mpn": "R0805-2R2"
   },
   {
@@ -1674,7 +1674,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -1929,7 +1929,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W isolated gate-bias module **+15 V / −3 V**, 1 W class ",
    "mpn": "ISO-GBIAS-15-1W"
   },
   {
@@ -1949,7 +1949,7 @@
    ],
    "nc_pins": [],
    "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT ",
+   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2, SINGLE die, 2-terminal ",
    "mpn": "SICJBS-1200-40"
   },
   {
@@ -1969,7 +1969,7 @@
    ],
    "nc_pins": [],
    "value": "SICJBS-1200-40",
-   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT ",
+   "query": "SICJBS-1200-40 SiC JBS 1200 V 40 A-class TO-247-2, SINGLE die, 2-terminal ",
    "mpn": "SICJBS-1200-40"
   },
   {
@@ -2169,7 +2169,7 @@
    ],
    "nc_pins": [],
    "value": "WW-470R-10W",
-   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder ",
+   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder. The ",
    "mpn": "WW-470R-10W"
   }
  ]

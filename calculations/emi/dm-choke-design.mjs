@@ -1,16 +1,15 @@
-// dm-choke-design.mjs — D6 DM line-choke design engine (E43 verification pass, 2026-09-08).
+// dm-choke-design.mjs — the D7 3-phase CM-choke design engine (second block), plus the AC DM line
+// choke that is NOT fitted and exists here only as the reference the LISN gate grades the drawn
+// filter against.
 //
-// WHY THIS EXISTS: the full-family verification found the D6 line was the ONE magnetic without
-// an engine. The drawing inherited "22 µH" from E22 and the LISN model uses it FLAT, but a DM
-// choke rides the LINE-FREQUENCY crest: its inductance at I_pk is what attenuates the 50 kHz
-// ripple at the worst emission moment. On the platform's own (deliberately conservative,
-// VERIFY-marked) sendust roll-off anchors, the drawn 14 T on ONE OD47 core computes ~12 µH at
-// ZERO bias (not 22) and ~7–8 µH at the 82 A crest — under the registered 15 µH LISN floor at
-// every SKU, worse at 40/50 kW. This engine designs the part per variant the same way
-// pfc-design.mjs designs D1: sweep geometry × material × stack × turns × conductor against the
-// drawing's own acceptance lines, minimize loss + cost.
+// Both halves sweep geometry × material × stack × turns × conductor against their own acceptance
+// lines and minimize loss + cost, the way pfc-design.mjs designs D1. A DM choke has to be graded at
+// the LINE-FREQUENCY crest, not at zero bias: its inductance at I_pk is what attenuates the 50 kHz
+// ripple at the worst emission moment, and on these (deliberately conservative, VERIFY-marked)
+// sendust roll-off anchors a single OD47 core at 14 T computes ~12 µH unbiased and ~7–8 µH at the
+// 82 A crest — a flat catalog "22 µH" would overstate the stage at every SKU.
 //
-// Acceptance lines (magnetics.md D6): L(I_pk) ≥ 15 µH · J ≤ 5.6 A/mm² · ΔT ≤ 45 K convective
+// DM acceptance lines: L(I_pk) ≥ 15 µH · J ≤ 5.6 A/mm² · ΔT ≤ 45 K convective
 // (50 kW liquid: the same number as a plate-bond duty — sealed module) · fill ≤ 40 %.
 // Roll-off model: identical anchors to pfc-design.mjs (conservative vs catalog — real cores
 // only ride HIGHER, so a pass here is a pass in hardware).
@@ -25,7 +24,7 @@ mkdirSync(OUT, { recursive: true });
 const f = (x, d = 2) => Number(x.toFixed(d));
 
 // per-variant line current (worst continuous @330 VAC) and crest incl. PFC ripple share (×1.05,
-// the D6 drawing's own basis: 55 A → 82 A pk). dIpp = the PFC ripple SOURCE the stage attenuates
+// the DM choke's own basis: 55 A → 82 A pk). dIpp = the PFC ripple SOURCE the stage attenuates
 // (D1 engine selections) — the 15 µH floor was set at the 30 kW source, so holding the SAME
 // conducted-emission margin scales the floor ∝ dIpp (att ∝ L at fixed C; source +20·log(dI)).
 const SKUS = {
@@ -34,8 +33,8 @@ const SKUS = {
   "50kw": { Irms: 91.6, Ipk: 136, dIpp: 34.8 },
 };
 
-// geometry set — catalog-class toroids the family already buys (T48 = 77439A7 class, the drawn
-// D6 core; T79 = 0077908/T79 class, the D1 core). T57 is the standard mid size (OD57/ID26/H20).
+// geometry set — catalog-class toroids the family already buys (T48 = 77439A7 class; T79 =
+// 0077908/T79 class, the D1 core). T57 is the standard mid size (OD57/ID26/H20).
 const GEOMS = [
   { name: "T48 (OD47.6, 77439-class)", Ae: 1.99e-4, le: 0.1074, win: 4.27, Asurf: 95, mlt0: 0.062, mltK: 0.016, cost: 95 },
   { name: "T57 (OD57/ID26/H20)", Ae: 3.10e-4, le: 0.1304, win: 5.31, Asurf: 140, mlt0: 0.075, mltK: 0.020, cost: 130 },
@@ -51,15 +50,14 @@ const RHO_CU = 1.68e-8 * 1.33;                       // Cu at ~100 °C
 // conductor options: N×AWG12 bundles (3.31 mm² each) and foil widths at 0.4/0.5 mm — bare CSA
 const CONDS = [9.9e-6, 13.2e-6, 16.5e-6, 16.0e-6, 20.0e-6, 26.4e-6];
 
-// E43: the stage attenuates as L·C. The 15 µH floor was set against the ORIGINAL 2.2 µF CX2;
-// the rev grows CX2 to 4.7 µF X1 (all variants — one cheap cap change, X-bleed tau 0.42→0.66 s,
-// still inside the 1 s pluggable-discharge rule), so the per-variant floor is
+// The stage attenuates as L·C. The 15 µH floor belongs to a 2.2 µF CX2; the drawn CX2 is 4.7 µF X1
+// on every variant (X-bleed τ 0.66 s, inside the 1 s pluggable-discharge rule), so the floor is
 //   L_floor = 15 µH × (dIpp/21.4) × (2.2/4.7)
 // — identical conducted margin at every variant, with the cap carrying its share.
 const L_FLOOR30 = 15e-6, CX2_OLD = 2.2e-6, CX2_NEW = 4.7e-6;
 let all = {};
 const only = process.env.DM_SKU;
-console.log("=== D6 DM choke engine — equal-margin floors (CX2 4.7 uF rev), conservative roll-off anchors ===");
+console.log("=== DM CHOKE REFERENCE (not fitted) — equal-margin floors, conservative roll-off anchors ===");
 for (const [sku, s] of Object.entries(SKUS)) {
   if (only && sku !== only) continue;
   const L_FLOOR = L_FLOOR30 * (s.dIpp / 21.4) * (CX2_OLD / CX2_NEW);
@@ -83,7 +81,7 @@ for (const [sku, s] of Object.entries(SKUS)) {
         const cand = { geom: g.name, mat: mat.name, stack, N, aw_mm2: f(aw * 1e6, 1), J: f(J, 2),
           L0: f(L0 * 1e6, 1), Lpk: f(Lpk * 1e6, 1), Rdc_mR: f(Rdc * 1e3, 2), P: f(P, 1), dT: f(dT, 0),
           fill: f((N * aw * 1e4) / g.win, 2), cost: Math.round(cost),
-          roll: [mat.a, mat.b, N / g.le] };            // E65: L(i) = L0/(1 + a·(roll[2]·i/79.577)^b) — the filter-stability model reads it
+          roll: [mat.a, mat.b, N / g.le] };            // L(i) = L0/(1 + a·(roll[2]·i/79.577)^b) — the filter-stability model reads it
         if (!best || P + cand.cost / 60 < best.P + best.cost / 60) best = cand;
       }
     }
@@ -93,7 +91,7 @@ for (const [sku, s] of Object.entries(SKUS)) {
   console.log(`${sku}: ${best.stack}× ${best.geom} ${best.mat}  N=${best.N}  ${best.aw_mm2} mm² (J ${best.J})`
     + `  L0=${best.L0} µH → ${best.Lpk} µH @ ${s.Ipk} A pk (floor ${best.Lfloor})  P=${best.P} W  ΔT=${best.dT} K  fill=${best.fill}  ₹${best.cost}`);
 }
-// the as-drawn 30 kW part, graded on the same model (the control row — proves the finding)
+// a single-core 30 kW part graded on the same model — the control row that keeps the gate honest
 {
   const g = GEOMS[0], m26 = MATS[1], m60 = MATS[0], s = SKUS["30kw"], N = 14;
   for (const mat of [m26, m60]) {
@@ -103,15 +101,14 @@ for (const [sku, s] of Object.entries(SKUS)) {
       + ` — ${Lpk >= L_FLOOR30 ? "meets" : "MISSES"} the ORIGINAL 15 µH/2.2 µF floor (drawing claims 22 µH ≥70%)`);
   }
 }
-// ---- E65: D7 3-phase CM chokes through the same engine (EMI-3/EMI-4). The registered D7 rows were
-// 20 °C copper on a one-layer turn the OD62 core cannot hold (11.5/15.3/19.2 W) and had no DM-bias
-// line. A CM choke carries ALL the line current: its DM leakage flux Φ = L_lk·I/N rides the nano-
-// crystalline core at every crest (Heldwein/Kolar bound B = (L_cm·I_cm + L_lk·I_dm)/(N·A_Fe), the CM
-// term is mA), so the design lines are:
+// ---- D7 3-phase CM chokes through the same engine. A CM choke carries ALL the line current: its DM
+// leakage flux Φ = L_lk·I/N rides the nanocrystalline core at every crest (Heldwein/Kolar bound
+// B = (L_cm·I_cm + L_lk·I_dm)/(N·A_Fe), the CM term is mA). Copper is graded HOT and the turn has to
+// fit the core it is wound on, so the design lines are:
 //   L_cm(10 kHz) ≥ 2 mH on the CATALOG-MINIMUM µ (−30 %) · B_DM = L_lk,max·I1pk/(N·A_Fe) ≤ 0.6 T
 //   (hot Bsat 1.155 T ÷ ~1.25 sector-ring peaking ÷ 1.5) · J ≤ 5.6 · ΔT ≤ 40 K (5 K under the 45 K
 //   acceptance) on the platform toroid convection formula · windable in ≤ 2 layers.
-// N = 8 and the leakage band 6–12 µH stay the registered basis (leakage is MEASURED at first article;
+// N = 8 and the leakage band 6–12 µH are the registered basis (leakage is MEASURED at first article;
 // the A_Fe floor is set against the band maximum). I1pk = the simulated fundamental crest incl. dips and
 // the 20° jump (vienna-switched.csv), not a hand basis.
 import { readFileSync } from "node:fs";
@@ -137,9 +134,9 @@ import { rho } from "../magnetics/winding-physics.mjs";
     const Acm2 = (Math.PI / 2 * (ODw ** 2 - IDw ** 2) + Math.PI * (ODw + IDw) * Hw) / 100;
     const kg = AFe * le * 7.3e-6 + 3 * N * MLT * A * 8.9e-6;
     return { AFe, le, fits: placed >= 3 * N, layers, MLT, P, dT: Math.pow(P * 1000 / Acm2, 0.833), Lcm: MU0 * MU_MIN * AFe * 1e-6 / (le * 1e-3) * N * N, ODw, Hw, R20: rho(20) * N * MLT / A * 1e6,
-      B: LLK_MAX * s.Ipk / (N * AFe * 1e-6), kg, cost: AFe * le * 7.3e-6 * 1500 + 3 * N * MLT * A * 8.9e-6 * 1050 + 200 };   // ₹1,500/kg cased nanocrystalline [est] · Cu ₹1,050/kg (E65 basis) · ₹200 wind+test [est]
+      B: LLK_MAX * s.Ipk / (N * AFe * 1e-6), kg, cost: AFe * le * 7.3e-6 * 1500 + 3 * N * MLT * A * 8.9e-6 * 1050 + 200 };   // ₹1,500/kg cased nanocrystalline [est] · Cu ₹1,050/kg · ₹200 wind+test [est]
   };
-  console.log("=== D7 3-phase CM choke (E65) — N=8, L_lk ≤ 12 µH band max, catalog-minimum µ, simulated crest ===");
+  console.log("=== D7 3-phase CM choke — N=8, L_lk ≤ 12 µH band max, catalog-minimum µ, simulated crest ===");
   for (const [sku, s0] of Object.entries(SKUS)) {
     if (only && sku !== only) continue;
     const s = { Irms: s0.Irms, Ipk: Math.max(...vs.filter((r) => r[0] === sku).map((r) => +r[7])) };
@@ -157,7 +154,7 @@ import { rho } from "../magnetics/winding-physics.mjs";
     d7[sku] = best;
     console.log(`${sku}: D7 ${best.core} (${best.ref} class, A_Fe ≥ ${best.AFe_mm2} mm²) 3×${N} T ${best.aw_mm2} mm² (J ${best.J}, ${best.layers} layer)  L_cm ≥ ${best.Lcm10k_mH} mH @µmin`
       + `  B_DM ${best.B_T} T @ ${s.Ipk} A pk × 12 µH  P=${best.P} W  ΔT=${best.dT} K  ${best.kg} kg  ₹${best.cost}`);
-    // the as-registered part on the same model (the control row — proves the EMI-4 finding)
+    // the registered OD62 part on the same model — the control row the design has to beat
     const reg = { "30kw": 10, "40kw": 13.3, "50kw": 16.7 }[sku], g = grade(62, 32, 25, reg, s);
     console.log(`  [as-registered control] OD62/32/25 3×8 T ${reg} mm²: ${g.fits ? g.layers + " layer" : "DOES NOT FIT in 2 layers"}, P=${f(g.P, 1)} W (registered ${{ "30kw": 11.5, "40kw": 15.3, "50kw": 19.2 }[sku]}), ΔT=${f(g.dT, 0)} K, J ${f(s.Irms / reg, 2)}, B_DM ${f(g.B, 2)} T`);
   }

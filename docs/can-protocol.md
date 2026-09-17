@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/codec-vmp.c_conformance_·_1M_fuzz-2ea44f?style=flat-square" alt="codec: vmp.c conformance · 1M fuzz"/>
 </p>
@@ -19,7 +19,7 @@
 > **Gate coupling** — [`firmware/proto/vmp.h`](../firmware/proto/vmp.h) is the table of record for every code on this page and
 > `vmp.c` the implementation; `firmware/test/proto_test.c` checks it (layout, CRC, counters, ownership, restart, group laws,
 > status codes, discovery, conflicts, cadence, saturation, 1 M fuzzed frames). Where this page and the header disagree, the
-> header wins and this page is wrong. The E73 draft (v1) never shipped; `can_proto.c` was retired at E78.
+> header wins and this page is wrong.
 
 ## At a glance
 
@@ -30,42 +30,38 @@
 | **Addresses** | controllers 0x01–0x0F · modules 0x10–0xDF (208) · groups 0xE0–0xEF (16) · 0xFE unaddressed · 0xFF all |
 | **Integrity** | CAN CRC-15 on every frame · CRC-8/AUTOSAR over identifier + payload on every frame that can command power or change identity · 4-bit counters on cyclic control |
 | **Liveness** | controller: CTRL every 100 ms, CTRL_HB 1 s with a session id · module: TLM_FAST every 50 ms, MOD_HB 1 s with a session id |
-| **Replies** | every request gets an ACK or READ_RSP with a status; rejected cyclic frames are NAKed (at most one per 100 ms) — E81 (F-F-6): a cyclic CTRL setpoint beyond 1.1 × the 1 000 V ceiling or above 400 A is NAKed RANGE instead of being clamped silently |
+| **Replies** | every request gets an ACK or READ_RSP with a status; rejected cyclic frames are NAKed (at most one per 100 ms) |
 | **Units** | one scaling per quantity: 0.1 V · 0.05 A · 10 W · 1 °C · 0.5 % |
 | **Coexistence** | the native marker (identifier bit 25) keeps VMP frames apart from J1939 and TonHe PDU1 traffic on a shared bus |
 
 > [!IMPORTANT]
-> **Two protocol options, one module (E81 product decision).** Every module ships with both profiles selectable in standby:
-> **TonHe V1.2** for dropping into existing racks and monitors (conformance re-verified at E81 against the vendor PDF: 24 rules
-> conform byte-exact, 3 deliberate safety deviations, 1 undefined vendor frame counted and exposed — see the
-> [TonHe profile page](can-profile-tonhe-v12.md)), and **VMP 2.0** — this page — for new installations, where the controller contract,
-> command-frame CRC, rolling counters, ownership, typed NAKs and the signed update path make it the robust choice. The E81 five-vendor
-> comparison (UUGreen 36.2, ENR S0, NIUERA V1.04, Maxwell V1.50, TonHe V1.2 / GWBZ) found nothing VMP does worse on integrity or
-> liveness; the gaps it found (pack voltage in the control set, readable trip points, altitude derate, input-side telemetry,
-> phase-sequence warnings, event rate limiting, on-change bit-map storms) are registered in §11 with their vendor evidence.
+> **Two protocol options, one module.** Every module ships with both profiles, selectable in standby: **TonHe V1.2** for
+> dropping into existing racks and monitors (see the [TonHe profile page](can-profile-tonhe-v12.md)), and **VMP 2.0** — this
+> page — for new installations, where the controller contract, command-frame CRC, rolling counters, ownership, typed NAKs and
+> the signed update path make it the robust choice.
 
 ## 1. Design rules
 
 What makes this protocol easier to integrate and harder to misuse than the charging-module protocols it learned from (UUGreen,
 ENR, NIUERA, Maxwell, TonHe):
 
-1. **Integers, little-endian, one scaling per quantity.** No floats and no second scaling for the same quantity.
-2. **Cyclic control is full, idempotent state.** RUN, output mode, voltage, current and power travel in one frame; a lost frame
-   is repaired by the next. One-shot actions carry a transaction id and are acknowledged.
-3. **Nothing is silent.** Every request gets a status; every rejected command is NAKed with the reason (rate-limited, never
-   suppressed).
+1. **Integers, little-endian, one scaling per quantity.** No floats, no second scaling for the same quantity.
+2. **Cyclic control is full, idempotent state.** RUN, output mode, voltage, current and power travel in one frame, so a lost
+   frame is repaired by the next. One-shot actions carry a transaction id and are acknowledged.
+3. **Nothing is silent.** Every request gets a status; every rejected command is NAKed with the reason, rate-limited but
+   never suppressed.
 4. **A power command proves its freshness.** CRC-8 over identifier and payload plus a 4-bit counter: a corrupted, misrouted,
    duplicated, late or frozen command cannot keep a module delivering.
-5. **Delivery needs a fresh stream from one owner.** Loss of the stream is a controlled stop; a stream that simply resumes
-   does not restart the module — RUN must be seen 0, then 1.
-6. **Must-understand.** Reserved bits in command frames must be zero, or the frame is rejected: a newer controller asking for a
-   feature an older module lacks gets a NAK, not a guess.
-7. **Capability is data, before and during a session.** Rated and available current and power, the V–I envelope and the
-   feature bits are readable at any time — not only while running.
+5. **Delivery needs a fresh stream from one owner.** Loss of the stream is a controlled stop, and a stream that simply
+   resumes does not restart the module — RUN must be seen 0, then 1.
+6. **Must-understand.** Reserved bits in command frames must be zero: a newer controller asking for a feature an older
+   module lacks gets a NAK, not a guess.
+7. **Capability is data, before and during a session** — rated and available current and power, the V–I envelope and the
+   feature bits are readable at any time.
 8. **Faults are explicit.** One bit per F-code, the primary code, its recovery class and countdown, the re-arm flag, and
    numbered, timestamped events.
-9. **Identity without collisions.** A 32-bit UID, address assignment by UID, and a deterministic outcome when two modules
-   claim one address.
+9. **Identity without collisions.** A 32-bit UID, assignment by UID, and a deterministic outcome when two modules claim one
+   address.
 10. **Versioned growth.** `major.minor` in every heartbeat; additions only in unused codes and reserved fields; layouts are
     never reused.
 
@@ -97,7 +93,7 @@ which carry the address-conflict and share-trim information.
 
 | Topic | Rule |
 |---|---|
-| **Address sources** | stored (CAN-assigned) · HMI 01–99 → 0x10 + n − 1 (00 = unaddressed) · factory default unaddressed |
+| **Address sources** | the stored address (assigned by ADDR_ASSIGN or a WRITE to 0x0200); factory default unaddressed. The front-panel address editor belongs to the TonHe profile, not to this one |
 | **Unaddressed** | ANNOUNCE once a second from 0xFE; no telemetry; accepts only DISCOVER and ADDR_ASSIGN |
 | **Discovery** | DISCOVER (broadcast) → every module (or every unaddressed one) answers ANNOUNCE at a random delay inside the window |
 | **Assignment** | ADDR_ASSIGN (broadcast, CRC) matches the 32-bit UID → address, group, slot; refused while delivering; acknowledged from the new address, which then announces itself |
@@ -141,7 +137,8 @@ sequenceDiagram
 
 - **Counter:** +1 … +7 accepted (up to six frames lost) · the same value = duplicate, ignored and **does not refresh freshness**
   · −8 … −1 = late, rejected with NAK SEQUENCE · after a timeout any value resynchronizes.
-- **Values** above capability are clamped; the applied values are reported in TLM_LIMITS.
+- **Values** above capability are clamped; the applied values are reported in TLM_LIMITS. A setpoint beyond 1.1 × the 1 000 V
+  ceiling, or above 400 A, is a broken controller rather than an ambitious one and is NAKed RANGE.
 - **A voltage below 100 V with no battery on the output is no setpoint:** no start, or a controlled stop while delivering.
 - **The output mode** latches only with every relay open (standby); a change while delivering waits for the next start.
 
@@ -176,10 +173,10 @@ txn u8 · action u8 · argument u32 · reserved u8 = 0 · CRC-8
 | 2 | SHUTDOWN | controlled stop, then link and bank discharge; any state, any controller |
 | 3 | WAKE | OFF → INIT (precharge again); otherwise STATE |
 | 4 | LOCATE | argument = seconds (≤ 3 600) of display and LED locate |
-| 5 | REBOOT | argument "RBT!" (0x21544252); **E82 (K-4): refused with `VMP_E_STATE` while EITHER stage is live, not merely while delivering** — the 60 s warm hold after a stop leaves `pfc_en` true and the matrix relays made, and a reboot there drops the gates mid-switching with the link charged; unicast only |
+| 5 | REBOOT | argument "RBT!" (0x21544252); unicast only; refused `VMP_E_STATE` while **either stage is still switching** — the 60 s warm hold after a stop leaves the PFC running and the matrix made, and a reboot there drops the gates mid-switching with the link charged |
 | 6 | UNLOCK | argument "VMP2" (0x32504D56); opens critical writes for 10 s; unicast only |
-| 7 | FACTORY_RESET | unlocked, unicast only; **E82 (K-4): refused while either stage is live** (before E82 this action had no state gate at all) |
-| 8 | ENTER_BOOT | unlocked, unicast only (firmware update, §10); **E82 (K-4): refused while either stage is live**. A module on the TonHe profile has no ENTER_BOOT action and no reachable SWD header, so its way in is the two-button service entry — both panel buttons held ≥ 3 s inside the first 10 s after power-up with both stages off (G-10) |
+| 7 | FACTORY_RESET | unlocked, unicast only; refused while either stage is still switching |
+| 8 | ENTER_BOOT | unlocked, unicast only (firmware update, §10); refused while either stage is still switching. A module on the TonHe profile has no ENTER_BOOT action and no reachable SWD header, so its way in is the two-button service entry — both panel buttons held ≥ 3 s inside the first 10 s after power-up with both stages off |
 | 9 | RELEASE | the owner gives up ownership |
 
 Actions sent to a group or to 0xFF execute without an acknowledgement; REBOOT, UNLOCK, FACTORY_RESET, ENTER_BOOT and RELEASE are
@@ -211,11 +208,11 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 0x46 | TLM_COOLING | 1 s | fans 1–4 u8 (× 50 rpm) · duty u8 % · failed-fan bits u8 · fan mode u8 · reserved |
 | 0x47 | TLM_SHARE | 200 ms, when in a group | group u8 · slot u8 · I_out i16 · share target u16 · trim i8 (0.1 % of the voltage command) · flags u8 (0 group control · 1 delivery permitted · 2 trim active) |
 | 0x48 | FAULT_BITS | 1 s + ≤ 20 ms after a change | u64: bit n − 1 = F.n latched (F.31 while locked) |
-| 0x49 | WARN_BITS | 1 s + on change | u64: bits 0–31 core warnings · 32 CMD_STALE · 33 ADDR_CONFLICT · 34 TX_DROP · 35 RX_REJECT · **36 EV_SUPPRESS** (E81: EVENT frames were held back by the per-code rate limit — read 0x0502 for the count) |
+| 0x49 | WARN_BITS | 1 s + on change | u64: bits 0–31 core warnings · 32 CMD_STALE · 33 ADDR_CONFLICT · 34 TX_DROP · 35 RX_REJECT · 36 EV_SUPPRESS (EVENT frames held back by the per-code rate limit — read 0x0502 for the count) |
 | 0x4A | FAULT_DETAIL | on change + 1 s while faulted | code u8 · class u8 (0 none · 1 AUTO_EXT · 2 AUTO_INT · 3 LATCH · 4 LOCK) · seconds to recovery u16 (0xFFFF n/a) · reserved · re-arm u8 · last event number u16 |
-| 0x4B | EVENT | on event, **at most one frame per {kind, code} per 200 ms** (E81 K7: a chattering warning computed to 55 % of a 250 kbit/s bus at the 1 kHz tick; anything held back sets WARN bit 36 and counts in 0x0502 — nothing is silently lost) | event number u16 · kind u8 (1 boot · 2 fault set · 3 fault cleared · 4 warning set · 5 warning cleared · 6 state change) · code u8 · ms since boot u32 |
+| 0x4B | EVENT | on event, **at most one per {kind, code} per 200 ms** — a warning chattering on an intermittent sensor computes to ~55 % of a 250 kbit/s bus from one module; anything held back sets WARN bit 36 and counts in 0x0502 | event number u16 · kind u8 (1 boot · 2 fault set · 3 fault cleared · 4 warning set · 5 warning cleared · 6 state change) · code u8 · ms since boot u32 |
 | 0x4C | STATS | 60 s | operating seconds u32 · energy u32 (0.1 kWh) |
-| 0x4E | TLM_PACK | slow period (E81 K1) | pack / external-node voltage behind DOUT u16 0.1 V (0xFFFF = none or unknown) · external node present u8 · reserved — three of five vendor protocols carry it; a controller pre-positions its reference before the contactor closes and sanity-checks a setpoint against the pack |
+| 0x4E | TLM_PACK | slow period | pack / external-node voltage behind DOUT u16 0.1 V (0xFFFF = none or unknown) · external node present u8 · reserved — a controller pre-positions its reference before the contactor closes and sanity-checks a setpoint against the pack |
 | 0x50 | ACK | on request | txn u8 · function u8 · status u8 · detail u8 · value u32 |
 | 0x51 | READ_RSP | on request | txn u8 · object u16 · sub u8 · value u32 |
 | 0x58 | ANNOUNCE | boot · address change · DISCOVER · 1 s while unaddressed | UID u32 · product u16 · version u8 (major << 4 \| minor) · flags u8 (0 addressed · 1 conflict · 2 owned · 3 in a group) |
@@ -225,7 +222,7 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 |---|---|---|---|---|---|---|---|
 | 0 | OFF | 0 | none | 0 | thermal | 0 | line wait |
 | 1 | PRECHARGE | 1 | CV | 1 | fan | 1 | input ride-through |
-| 2 | READY | 2 | CC command | 2 | input voltage (E1) | 2 | thermal derate |
+| 2 | READY | 2 | CC command | 2 | input voltage | 2 | thermal derate |
 | 3 | STARTING | 3 | availability | 3 | power command | 3 | fan derate |
 | 4 | ON | 4 | power command | 4 | group share | 4 | cold standby |
 | 5 | STOPPING | 5 | rated power | 5 | rated-power curve | 5 | no setpoint |
@@ -234,6 +231,7 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 8 | FAULT | 8 | stop | | | 8 | relay feedback unwired |
 | 9 | LOCKED | | | | | 9 | recovering |
 | 10 | DISCHARGE | | | | | 10 | re-arm needed |
+| | | | | | | 11 | communication lost |
 
 ## 6. Acknowledgement status
 
@@ -261,15 +259,15 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | Object | Name | Access | Unit · range |
 |---|---|---|---|
 | 0x0001 | protocol version | read | major << 8 \| minor |
-| 0x0002 | product id | read | 0x0030 · 0x0040 · 0x0050 (liquid) · 0x0051 (air) |
-| 0x0003 | UID | read | u32 |
+| 0x0002 | product id | read | the rating in kW: 30 · 40 · 50 (air and liquid share it — feature bit 6 separates them) |
+| 0x0003 | UID | read | u32 — CRC-32 of the full 96-bit silicon UID |
 | 0x0004 | serial number | read | sub 0–3: four u32 chunks of 16 ASCII characters |
 | 0x0005 | hardware revision | read | u8 |
 | 0x0006 | firmware version | read | major << 24 \| minor << 16 \| patch << 8 \| build |
 | 0x0007 | firmware image CRC-32 | read | u32 |
 | 0x0008 | bootloader version | read | u32 |
 | 0x0009 | boot state | read | 0 running confirmed · 1 update pending · 2 last update failed · 3 rolled back |
-| 0x000A | reset cause | read | u8 |
+| 0x000A | reset cause | read | u8 — the raw reset-flag byte, classified by the module |
 | 0x0100 | feature bits | read | 0 group control · 1 LEVEL law · 2 power limit · 3 reverse power (0) · 4 share trim · 5 fan modes · 6 liquid · 7 bootloader · 8 time sync · 9 TonHe V1.2 profile in the image |
 | 0x0101 · 0x0102 | V_min · V_max | read | 0.1 V |
 | 0x0103 · 0x0104 | rated current · rated power | read | 0.05 A · 10 W |
@@ -286,14 +284,15 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 0x020B | fan mode | write | 0 normal · 1 quiet · 2 boost |
 | 0x020C | installer power cap | write | 10 W · 0xFFFF none |
 | 0x0300–0x0303 | operating seconds · energy (0.1 kWh) · starts · total latches | read | u32 |
-| 0x0400 | event-log count (E80) | read | u16 — entries readable below |
-| 0x0401–0x0404 | event-log entry words 0–3 (E80) | read · **sub-index = age** (0 = newest) | w0 sequence u32 · w1 time u32 (seconds since boot; UNIX when kind bit 7 is set) · w2 boot u16 \| kind u8 ≪ 16 \| code u8 ≪ 24 · w3 argument u16 |
-| 0x0500 | control-ISR execution high-water (E80) | read | PFC µs ≪ 16 \| LLC µs (DWT since boot — EVT T-44) |
-| 0x0501 | worst painted-stack use (E80) | read | percent u8 |
-| 0x0502 | EVENT frames suppressed by the rate limit (E81) | read | count u32 since boot |
-| 0x0503 | `DIAG_RX_OVR` — CAN RX-mailbox-queue overruns (E82 K-6) | read | count u16 since boot: drains that found **all eight RX mailboxes occupied**, i.e. the condition under which a ninth frame is lost. The controller exposes no queue-overrun flag of its own, so this is the only honest evidence a frame was dropped |
+| 0x0400 | event-log count | read | u16 — entries readable below |
+| 0x0401–0x0404 | event-log entry words 0–3 | read · **sub-index = age** (0 = newest) | w0 sequence u32 · w1 time u32 (seconds since boot; UNIX when kind bit 7 is set) · w2 boot u16 \| kind u8 ≪ 16 \| code u8 ≪ 24 · w3 argument u16 |
+| 0x0500 | control-ISR execution high-water | read | PFC µs ≪ 16 \| LLC µs (DWT since boot — EVT T-44) |
+| 0x0501 | worst painted-stack use | read | percent u8 |
+| 0x0502 | EVENT frames suppressed by the rate limit | read | count u32 since boot |
+| 0x0503 | `DIAG_RX_OVR` — CAN RX-mailbox-queue overruns | read | count u16 since boot: drains that found **all eight RX mailboxes occupied**, i.e. the condition under which a ninth frame is lost. The controller exposes no queue-overrun flag of its own, so this is the only honest evidence a frame was dropped |
 
-Configuration objects persist (A/B records with CRC); the module reports the stored value in the ACK.
+Objects at or above 0x0400 are answered by the HAL through the codec's auxiliary read hook, so the codec stays ignorant of
+HAL types. Configuration objects persist (A/B records with CRC); the module reports the stored value in the ACK.
 
 ## 8. Timing and bus load
 
@@ -357,37 +356,24 @@ sequenceDiagram
 - **Major (3.0)** changes layouts through new function codes; within a major no code is ever reused with a different layout.
 - **CAN FD:** the first eight bytes of every frame keep their layout; an FD frame may append fields (a 16-bit counter, CRC-16)
   under a new minor with a feature bit.
-- **Service space (bit 24 = 1)** belongs to the bootloader and is accepted in every profile. E80 defines it fully
-  (`firmware/boot/svc.h` is the table of record): a tool (source 0x01–0x0F) broadcasts to 0xFF and SELECTs one module by UID;
-  functions 0x01 SELECT · 0x02 INFO · 0x03 ENTER ("BOOT") · 0x04 BEGIN (size u32 · slot u8) · 0x05 BLOCK (index u16 ·
-  length u16 · CRC-32) · 0x06 DATA (sequence u8 · 1–7 bytes) · 0x07 FINISH (image CRC-32) · 0x08 RESET ("RBT!") ·
-  0x09 ABORT; responses 0x41 SELECT_RSP · 0x42 INFO_RSP · 0x50 ACK. Blocks are 1 KB, acknowledged after program + read-back;
-  a re-sent acknowledged block is acknowledged again (a lost ACK costs a resend, never a restart); FINISH checks the
-  whole-image CRC-32, then the signed header, key, ECDSA-P256 signature and body SHA-256, and only then puts the slot on
-  trial (3 boots to confirm, else rollback); the confirmed slot is never erased; an idle transfer is abandoned after 10 s.
-
-## 11. What changed from the E73 draft
-
-| Topic | E73 draft (v1, never shipped) | VMP 2.0 |
-|---|---|---|
-| Identifier | priority · type · dest · src · 2-bit group | priority · native marker · space · function · dest · src |
-| Groups | 4 (two identifier bits) | 16 group addresses + 16 slots each |
-| Scalings | mV / mA u32, W / 10, mA / 10 in different frames | one scaling per quantity |
-| Integrity | CAN CRC only | + CRC-8 on commands, counters, duplicate / frozen / late detection |
-| Replies | none | ACK or READ_RSP with 16 status codes |
-| Clear | a level bit repeated in every MODULE_CTL frame | ACTION CLEAR, acknowledged once |
-| Identity and capability | IDENT on request, fields undefined | UID, serial, versions, image CRC, envelope, feature bits |
-| Liveness | SET_OUTPUT age only | counters, ownership, controller and module heartbeat sessions |
-| Faults | 16 + 16 bits across two frames | u64 bits, class, recovery countdown, events |
-| Versioning | none | major.minor, must-understand, reserved-field rules |
+- **Service space (bit 24 = 1)** belongs to the **bootloader** — `firmware/boot/svc.h` is the table of record, and the state
+  machine runs there and nowhere else. A module reaches it through a sealed handoff and a reset: ACTION ENTER_BOOT on this
+  profile, or both panel buttons held ≥ 3 s inside the first 10 s after power-up on any profile. A tool (source 0x01–0x0F)
+  then broadcasts to 0xFF and SELECTs one module by UID; functions 0x01 SELECT · 0x02 INFO · 0x03 ENTER ("BOOT") ·
+  0x04 BEGIN (size u32 · slot u8) · 0x05 BLOCK (index u16 · length u16 · CRC-32) · 0x06 DATA (sequence u8 · 1–7 bytes) ·
+  0x07 FINISH (image CRC-32) · 0x08 RESET ("RBT!") · 0x09 ABORT; responses 0x41 SELECT_RSP · 0x42 INFO_RSP · 0x50 ACK.
+  Blocks are 1 KB, acknowledged after program + read-back; a re-sent acknowledged block is acknowledged again (a lost ACK
+  costs a resend, never a restart); FINISH checks the whole-image CRC-32, then the signed header, key, ECDSA-P256 signature
+  and body SHA-256, and only then puts the slot on trial (3 boots to confirm, else rollback); the confirmed slot is never
+  erased; an idle transfer is abandoned after 10 s.
 
 > [!TIP]
-> **How this page is checked** — `firmware/test/proto_test.c` (42 checks in the 330-check suite) — codec conformance, the worked examples, a 1M-frame malformed-input fuzz, and one core driven through both profiles.
+> **How this page is checked** — `firmware/test/proto_test.c` — codec conformance, the worked examples, a 1M-frame malformed-input fuzz, and one core driven through both profiles.
 
 ---
 
 <div align="center">
 <sub><a href="firmware-architecture.md">← Firmware Architecture</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-profile-tonhe-v12.md">TonHe V1.2 Compatibility Profile →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

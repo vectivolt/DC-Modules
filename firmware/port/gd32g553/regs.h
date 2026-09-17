@@ -1,4 +1,4 @@
-/* regs.h — E80 GD32G553 register definitions, written from the GD32G553 User Manual Rev 1.3 and Datasheet Rev 2.0 with no
+/* regs.h — GD32G553 register definitions, written from the GD32G553 User Manual Rev 1.3 and Datasheet Rev 2.0 with no
  * vendor code (the GigaDevice library's SLA was not accepted). Every block cites the UM lines it was read from
  * (scratchpad extraction: facts-system.md, facts-hrtimer.md, facts-can.md). Only the registers this port uses are here. */
 #ifndef PORT_REGS_H
@@ -65,7 +65,7 @@ enum { PA = 0, PB, PC, PD, PE, PF };
 #define ADC_CTL1(n)   RD(ADC_BASE(n) + 0x08u)    /* SWRCST 30 · ETMRC 29:28 · INREFEN 24 · DMA 8 · CALNUM 6:4 · RSTCLB 3 · CLB 2 · CTN 1 · ADCON 0 (L23955+) */
 #define ADC_RSQ(n, k) RD(ADC_BASE(n) + 0x24u + 4u * (k))   /* RSQ0: RL 23:20 + slot15 · RSQ1..7 two slots · RSQ8 slot 0 (L24154+) */
 #define ADC_RDATA(n)  RD(ADC_BASE(n) + 0x64u)
-/* E82 (D-11): the field positions are confirmed against UM §17.7.26 — ADCCK[3:0] is 23:20 (0000 div1 · 0001 div2 …
+/* The field positions are confirmed against UM §17.7.26 — ADCCK[3:0] is 23:20 (0000 div1 · 0001 div2 …
    1011 div256, "All ADCs are common") and ADCSCK[3:0] is 19:16 (0000 = CLK_ADC asynchronous). 0 = async, /1 = 72 MHz. */
 #define ADC_SYNCCTL   RD(0x50000304u)             /* at ADC0 base: ADCCK 23:20 · ADCSCK 19:16 (L24975+, L25006+) */
 #define ADC_SLOT(ch, smp) ((uint32_t)(ch) | ((uint32_t)(smp) << 5))   /* per-slot: RSQn 4:0 · RSMPn 14:5, t_samp = RSMP + 2.5 cyc (L24480) */

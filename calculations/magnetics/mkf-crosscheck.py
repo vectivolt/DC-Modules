@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# mkf-crosscheck.py — E71: the D2 / D3 constructions re-built in PyOpenMagnetics (OpenMagnetics MKF) and compared with the
+# mkf-crosscheck.py — the D2 / D3 constructions re-built in PyOpenMagnetics (OpenMagnetics MKF) and compared with the
 # in-repo 1-D engines at the same corner. A second, geometry-level opinion, NOT battery evidence: it needs a Python venv
 # (PyOpenMagnetics 1.4.0 wheel, macOS arm64 / Python 3.12 — the 1.7.x sdist does not build here) and is run by hand.
 #
@@ -207,7 +207,7 @@ for sku, d in DATA.items():
         f"MKF {t2:.1f} W ({p2[0][1]:.1f} ohmic + {p2[0][2]:.1f} skin + {p2[0][3]:.1f} prox) vs Sullivan {d['d2cu']:.1f} W → ×{t2 / d['d2cu']:.2f} — the gate's D2 copper is the conservative figure")
     values[sku] = v
 
-# ---- D1, D4, D7 (E73): the magnetics PyOpenMagnetics can hold — the toroid geometry, the Kool Mµ DC-bias curve, the gapped ETD44,
+# ---- D1, D4, D7: the magnetics PyOpenMagnetics can hold — the toroid geometry, the Kool Mµ DC-bias curve, the gapped ETD44,
 # the nanocrystalline permeability ----
 OTHER = node("""
 const { D1 } = await import("./calculations/magnetics/d1-choke.mjs");

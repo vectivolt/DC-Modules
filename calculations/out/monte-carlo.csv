@@ -3,7 +3,7 @@
 "A tank 40kw","fr 135.1–145.4 kHz (1–99%)","FHA peak gain p1=1.214 (need 1.205) → fail 0%","Im p1=37.6 A · ZVS fail 0%","PASS (FHA floor — the ngspice gain-worst corner is the proof)"
 "A tank 50kw","fr 135–145.5 kHz (1–99%)","FHA peak gain p1=1.211 (need 1.205) → fail 0.01%","Im p1=46 A · ZVS fail 0%","PASS (FHA floor — the ngspice gain-worst corner is the proof)"
 "A tank 50kwa","fr 135–145.5 kHz (1–99%)","FHA peak gain p1=1.211 (need 1.205) → fail 0.01%","Im p1=46 A · ZVS fail 0%","PASS (FHA floor — the ngspice gain-worst corner is the proof)"
-"B PFC choke lot ±8 % + trim","worst ΔIpp 27 A at bus 830 (single-phase formula on the pessimistic fit — vienna-switched owns the peak)","acceptance yield on the catalog-minimum curve: fail 0% (pessimistic fit, informational: 2.1%)","F.01 120 A pk (E60)","PASS"
+"B PFC choke lot ±8 % + trim","worst ΔIpp 27 A at bus 830 (single-phase formula on the pessimistic fit — vienna-switched owns the peak)","acceptance yield on the catalog-minimum curve: fail 0% (pessimistic fit, informational: 2.1%)","F.01 120 A pk","PASS"
 "C Vout chain","pre-cal ±0.7% (99% CI) → CAL REQUIRED","post-2pt-cal ±0.18% over ±40 °C","spec ±0.5%","PASS (with EOL cal)"
 "D Iout chain","post-cal ±0.2% (99% CI, ±40 °C)","shunt tempco 30 ppm class + amp drift","spec ±1%","PASS (with EOL cal)"
 "F dead-time","min margin 42.1 ns across N=10k (dt 120 ns nom)","shoot-through requires margin ≤0","","PASS"

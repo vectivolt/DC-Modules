@@ -1,6 +1,6 @@
-/* ctl_test.c — E78 verification of core/ctl.c.
+/* ctl_test.c — verification of core/ctl.c.
  *   shaper:    soft start, bumpless start into a battery, current slew, the controlled-stop ramp, constant power above the
- *              knee, the controller power limit, the divide guard, E1 input derate, derate attribution, the group share,
+ *              knee, the controller power limit, the divide guard, the input derate, derate attribution, the group share,
  *              the CV share trim (rate, clamp, decay, frozen in CC), mode-window clamps, NaN containment
  *   regulator: bounds under fuzz, no windup after long saturation, bumpless CV→CC takeover at the limit, skip hysteresis
  * What this does NOT prove: loop stability and transient numbers on the real LLC — those are HIL/EVT criteria
@@ -64,7 +64,7 @@ int main(void) {
   { pmp_ctl_init(&s); in = base(); in.vin_ll = 300.0f; pmp_ctl_step(&s, &c, &in, dt);
     int ok = near(s.i_avail, 166.7f * 300.0f / 330.0f, 0.02f) && (s.derate_why & PMP_DR_INPUT);
     in.vin_ll = NAN; pmp_ctl_step(&s, &c, &in, dt);
-    ck("shaper: E1 input derate below 330 VAC; an unreadable line gives no availability", ok && s.i_avail == 0.0f); }
+    ck("shaper: input derate below 330 VAC; an unreadable line gives no availability", ok && s.i_avail == 0.0f); }
 
   { pmp_ctl_init(&s); in = base(); in.derate = 0.6f; in.fsm_warn = PMP_W_DERATE_TH; pmp_ctl_step(&s, &c, &in, dt);
     ck("shaper: FSM thermal derate 0.6 → 100 A available, reason THERMAL", near(s.i_avail, 100.02f, 0.02f) && (s.derate_why & PMP_DR_THERMAL)); }
@@ -93,16 +93,16 @@ int main(void) {
     ck("shaper: share trim integrates at its configured rate, clamps at 1 %, decays in CC and without peer data",
        rate && clamp && frozen && s.trim_v > 1.0f && s.trim_v < 1.4f); }
 
-  { /* E82 (M-33): the trim loop must be SLOWER than the peers it listens to. A module in CV is a near-ideal voltage source,
-       so its share moves by 1/R_series per volt of trim, and R_series (busbar + DOUT + shunt) is only 5–15 mΩ. Over one peer
-       period — 500 ms on the slower profile, TonHe V1.2 — the trim must therefore command well under the error it is
-       answering, or paralleled modules hunt instead of sharing. 20 A of error at the stiffest 5 mΩ: the E81 rate of
-       0.5 V/(A·s) moved 5 V = 1000 A of authority per period; the bound below is a quarter of the error. */
+  { /* The trim loop must be SLOWER than the peers it listens to. A module in CV is a near-ideal voltage source, so
+       its share moves by 1/R_series per volt of trim, and R_series (busbar + DOUT + shunt) is only 5–15 mΩ. Over one
+       peer period — 500 ms on the slower profile, TonHe V1.2 — the trim must therefore command well under the error
+       it is answering, or paralleled modules hunt instead of sharing. 20 A of error at the stiffest 5 mΩ: a rate of
+       0.5 V/(A·s) would move 5 V = 1000 A of authority per period; the bound below is a quarter of the error. */
     pmp_ctl_init(&s); in = base(); in.v_out = 400.0f; in.i_out = 80.0f; in.cv_active = true; in.peer_n = 3; in.peer_avg_a = 100.0f;
     for (int k = 0; k < 500; k++) pmp_ctl_step(&s, &c, &in, dt);       /* one 500 ms TonHe peer period */
     float amps = s.trim_v / 0.005f;                                    /* what that trim commands into a 5 mΩ interconnect */
     printf("      share trim after one 500 ms peer period: %.4f V = %.2f A against a 20 A error\n", (double)s.trim_v, (double)amps);
-    ck("E82 M-33: one peer period of share trim answers at most a quarter of the sharing error even into a 5 mOhm interconnect",
+    ck("one peer period of share trim answers at most a quarter of the sharing error even into a 5 mOhm interconnect",
        s.trim_v > 0.0f && amps <= 0.25f * 20.0f); }
 
   /* ---------------- regulator kernel ---------------- */
@@ -154,14 +154,14 @@ int main(void) {
     float u = pmp_reg_step(&r, &rc, false, 400.0f, 100.0f, 390.0f, 50.0f, VS, IS, rdt);
     ck("regulator: disable returns zero demand and clears both integrators", u == 0.0f && r.xv == 0.0f && r.xi == 0.0f); }
 
-  { /* E80 (review R34): the share trim's authority ends at the mode ceiling — +1 % on a 500 V command stays 500 V */
+  { /* the share trim's authority ends at the mode ceiling — +1 % on a 500 V command stays 500 V */
     pmp_ctl_t s2; pmp_ctl_cfg_t c2; pmp_ctl_cfg_default(&c2, 50);
     pmp_ctl_in_t in2 = base();
     pmp_ctl_init(&s2);
     in2.en = true; in2.cv_active = true; in2.v_set = 500.0f; in2.i_set = 100.0f; in2.v_max_mode = 500.0f;
     in2.peer_n = 4; in2.peer_avg_a = 120.0f; in2.i_out = 60.0f; in2.v_out = 500.0f;
     for (int k = 0; k < 400000; k++) pmp_ctl_step(&s2, &c2, &in2, 1e-3f);
-    ck("E80 R34: a saturated positive share trim never carries v_tgt past v_max_mode", s2.trim_v > 4.0f && s2.v_tgt <= 500.0f + 1e-3f);
+    ck("a saturated positive share trim never carries v_tgt past v_max_mode", s2.trim_v > 4.0f && s2.v_tgt <= 500.0f + 1e-3f);
   }
 
   printf("\nRESULT: %d/%d checks passed\n", checks - fails, checks);

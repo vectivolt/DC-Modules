@@ -6,7 +6,7 @@
    "status": "ok",
    "tag": "SIM",
    "name": "30kw LLC deck pinned to the drawn tank",
-   "detail": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p vs tanks.mjs 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+   "detail": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p vs tanks.mjs 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p — a tank change without a re-run fails here, and no SKU's deck can stand in for another's"
   },
   {
    "status": "ok",
@@ -30,7 +30,7 @@
    "status": "ok",
    "tag": "SIM",
    "name": "40kw LLC deck pinned to the drawn tank",
-   "detail": "40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p vs tanks.mjs 40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+   "detail": "40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p vs tanks.mjs 40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p — a tank change without a re-run fails here, and no SKU's deck can stand in for another's"
   },
   {
    "status": "ok",
@@ -54,7 +54,7 @@
    "status": "ok",
    "tag": "SIM",
    "name": "50kw LLC deck pinned to the drawn tank",
-   "detail": "50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p vs tanks.mjs 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+   "detail": "50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p vs tanks.mjs 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p — a tank change without a re-run fails here, and no SKU's deck can stand in for another's"
   },
   {
    "status": "ok",
@@ -78,7 +78,7 @@
    "status": "ok",
    "tag": "SIM",
    "name": "50kwa LLC deck pinned to the drawn tank",
-   "detail": "50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p vs tanks.mjs 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)"
+   "detail": "50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p vs tanks.mjs 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p — a tank change without a re-run fails here, and no SKU's deck can stand in for another's"
   },
   {
    "status": "ok",
@@ -102,13 +102,13 @@
    "status": "ok",
    "tag": "F.01",
    "name": "30kw threshold ≥ 1.2× simulated worst line peak",
-   "detail": "120 A pk vs 97 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.24×"
+   "detail": "120 A pk vs 97 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the firmware's 1.05× reference clamp) → 1.24×"
   },
   {
    "status": "ok",
    "tag": "F.01",
    "name": "30kw high-line bus floor proven",
-   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.75/40.33 %, overmod 74.2/90.5 % → with 1.08·√2·VLL floor: THD 0.08/0.11 % (fsm.c E60)"
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.75/40.33 %, overmod 74.2/90.5 % → with 1.08·√2·VLL floor: THD 0.08/0.11 % (the floor lives in fsm.c)"
   },
   {
    "status": "ok",
@@ -138,13 +138,13 @@
    "status": "ok",
    "tag": "F.01",
    "name": "40kw threshold ≥ 1.2× simulated worst line peak",
-   "detail": "155 A pk vs 127.1 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
+   "detail": "155 A pk vs 127.1 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the firmware's 1.05× reference clamp) → 1.22×"
   },
   {
    "status": "ok",
    "tag": "F.01",
    "name": "40kw high-line bus floor proven",
-   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.61/39.91 %, overmod 75.4/91.5 % → with 1.08·√2·VLL floor: THD 0.12/0.08 % (fsm.c E60)"
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.61/39.91 %, overmod 75.4/91.5 % → with 1.08·√2·VLL floor: THD 0.12/0.08 % (the floor lives in fsm.c)"
   },
   {
    "status": "ok",
@@ -174,13 +174,13 @@
    "status": "ok",
    "tag": "F.01",
    "name": "50kw threshold ≥ 1.2× simulated worst line peak",
-   "detail": "195 A pk vs 159.3 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22×"
+   "detail": "195 A pk vs 159.3 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the firmware's 1.05× reference clamp) → 1.22×"
   },
   {
    "status": "ok",
    "tag": "F.01",
    "name": "50kw high-line bus floor proven",
-   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.6/39.82 %, overmod 75/91.3 % → with 1.08·√2·VLL floor: THD 0.12/0.09 % (fsm.c E60)"
+   "detail": "AS-IS 650 V bus at 475/500 VAC: THD 15.6/39.82 %, overmod 75/91.3 % → with 1.08·√2·VLL floor: THD 0.12/0.09 % (the floor lives in fsm.c)"
   },
   {
    "status": "ok",
@@ -216,19 +216,19 @@
    "status": "ok",
    "tag": "F.11",
    "name": "30kw window-comparator kill + observability",
-   "detail": "|Ip| crosses F.11 1.55 µs after the short → kill peak 196.1 A (+1 µs, ×1.2 ≤ 344.7 A on 0.47 Ω) · monitor peak +3 µs 321.7 A ×1.05 in rail · window 0.99/2.31 V"
+   "detail": "|Ip| crosses F.11 1.5 µs after the short → kill peak 210.3 A (+1 µs, ×1.2 ≤ 344.7 A on 0.47 Ω) · monitor peak +3 µs 321.4 A ×1.05 in rail · window 0.99/2.31 V"
   },
   {
    "status": "ok",
    "tag": "F.11",
    "name": "30kw LLC FET pulse class at the FAST kill peak",
-   "detail": "+0.5 µs 190.8 A ≤ 0.9 × 265 A × 1 die = 238.5 A (HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget) · conservative +1 µs 196.1 A (74 % of I_DM) · monitor +3 µs 321.7 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
+   "detail": "+0.5 µs 198.1 A ≤ 0.9 × 265 A × 1 die = 238.5 A (comparator 50 ns + HRTIMER filter 0b0011 37 ns + driver 60 ns + t_d,off 50 ns ≈ 0.2 µs after the comparator input crosses → 0.5 µs budget) · conservative +1 µs 210.3 A (79 % of I_DM) · monitor +3 µs 321.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "30kw external Lr flux: operating + fault",
-   "detail": "Lmax 5.15 µH (2×E70 N 5): 85 mT at the worst simulated peak (≤110) · 148 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+   "detail": "Lmax 5.15 µH (2×E70 N 5): 85 mT at the worst simulated peak (≤110) · 158 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
   },
   {
    "status": "ok",
@@ -258,19 +258,19 @@
    "status": "ok",
    "tag": "F.11",
    "name": "40kw window-comparator kill + observability",
-   "detail": "|Ip| crosses F.11 1.45 µs after the short → kill peak 243 A (+1 µs, ×1.2 ≤ 450 A on 0.36 Ω) · monitor peak +3 µs 406.4 A ×1.05 in rail · window 1/2.3 V"
+   "detail": "|Ip| crosses F.11 1.4 µs after the short → kill peak 261.2 A (+1 µs, ×1.2 ≤ 450 A on 0.36 Ω) · monitor peak +3 µs 416.2 A ×1.05 in rail · window 1/2.3 V"
   },
   {
    "status": "ok",
    "tag": "F.11",
    "name": "40kw LLC FET pulse class at the FAST kill peak",
-   "detail": "+0.5 µs 243 A ≤ 0.9 × 265 A × 2 die = 477 A (HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget) · conservative +1 µs 243 A (46 % of I_DM) · monitor +3 µs 406.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
+   "detail": "+0.5 µs 251.3 A ≤ 0.9 × 265 A × 2 die = 477 A (comparator 50 ns + HRTIMER filter 0b0011 37 ns + driver 60 ns + t_d,off 50 ns ≈ 0.2 µs after the comparator input crosses → 0.5 µs budget) · conservative +1 µs 261.2 A (49 % of I_DM) · monitor +3 µs 416.2 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "40kw external Lr flux: operating + fault",
-   "detail": "Lmax 4.11 µH (2×E70 N 5): 89 mT at the worst simulated peak (≤110) · 146 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+   "detail": "Lmax 4.11 µH (2×E70 N 5): 89 mT at the worst simulated peak (≤110) · 157 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
   },
   {
    "status": "ok",
@@ -300,19 +300,19 @@
    "status": "ok",
    "tag": "F.11",
    "name": "50kw window-comparator kill + observability",
-   "detail": "|Ip| crosses F.11 1.5 µs after the short → kill peak 302.5 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 504.4 A ×1.05 in rail · window 0.99/2.31 V"
+   "detail": "|Ip| crosses F.11 1.45 µs after the short → kill peak 320 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 510.4 A ×1.05 in rail · window 0.99/2.31 V"
   },
   {
    "status": "ok",
    "tag": "F.11",
    "name": "50kw LLC FET pulse class at the FAST kill peak",
-   "detail": "+0.5 µs 301.7 A ≤ 0.9 × 265 A × 2 die = 477 A (HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget) · conservative +1 µs 302.5 A (57 % of I_DM) · monitor +3 µs 504.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
+   "detail": "+0.5 µs 308.3 A ≤ 0.9 × 265 A × 2 die = 477 A (comparator 50 ns + HRTIMER filter 0b0011 37 ns + driver 60 ns + t_d,off 50 ns ≈ 0.2 µs after the comparator input crosses → 0.5 µs budget) · conservative +1 µs 320 A (60 % of I_DM) · monitor +3 µs 510.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "50kw external Lr flux: operating + fault",
-   "detail": "Lmax 3.29 µH (2×E70 N 5): 88 mT at the worst simulated peak (≤110) · 146 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+   "detail": "Lmax 3.29 µH (2×E70 N 5): 88 mT at the worst simulated peak (≤110) · 154 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
   },
   {
    "status": "ok",
@@ -342,19 +342,19 @@
    "status": "ok",
    "tag": "F.11",
    "name": "50kwa window-comparator kill + observability",
-   "detail": "|Ip| crosses F.11 1.5 µs after the short → kill peak 302.5 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 504.4 A ×1.05 in rail · window 0.99/2.31 V"
+   "detail": "|Ip| crosses F.11 1.45 µs after the short → kill peak 320 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 510.4 A ×1.05 in rail · window 0.99/2.31 V"
   },
   {
    "status": "ok",
    "tag": "F.11",
    "name": "50kwa LLC FET pulse class at the FAST kill peak",
-   "detail": "+0.5 µs 301.7 A ≤ 0.9 × 265 A × 2 die = 477 A (HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget) · conservative +1 µs 302.5 A (57 % of I_DM) · monitor +3 µs 504.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
+   "detail": "+0.5 µs 308.3 A ≤ 0.9 × 265 A × 2 die = 477 A (comparator 50 ns + HRTIMER filter 0b0011 37 ns + driver 60 ns + t_d,off 50 ns ≈ 0.2 µs after the comparator input crosses → 0.5 µs budget) · conservative +1 µs 320 A (60 % of I_DM) · monitor +3 µs 510.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "50kwa external Lr flux: operating + fault",
-   "detail": "Lmax 3.29 µH (2×E70 N 5): 88 mT at the worst simulated peak (≤110) · 146 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
+   "detail": "Lmax 3.29 µH (2×E70 N 5): 88 mT at the worst simulated peak (≤110) · 154 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT"
   },
   {
    "status": "ok",
@@ -378,7 +378,7 @@
    "status": "ok",
    "tag": "OUT",
    "name": "30kw film-only bank: ripple current per film + output ripple voltage",
-   "detail": "9× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 34.4 A rms at SER250-full-bus764 → 3.82 A per film (≤10.5) · worst ripple 0.47 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+   "detail": "9× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 34.4 A rms at SER250-full-bus764 → 3.83 A per film (≤10.5) · worst ripple 0.47 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — film only: no bank inductor and no electrolytic"
   },
   {
    "status": "ok",
@@ -390,7 +390,7 @@
    "status": "ok",
    "tag": "OUT",
    "name": "40kw film-only bank: ripple current per film + output ripple voltage",
-   "detail": "12× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 44.7 A rms at SER250-full-bus764 → 3.72 A per film (≤10.5) · worst ripple 0.44 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+   "detail": "12× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 44.8 A rms at SER250-full-bus764 → 3.73 A per film (≤10.5) · worst ripple 0.46 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — film only: no bank inductor and no electrolytic"
   },
   {
    "status": "ok",
@@ -402,7 +402,7 @@
    "status": "ok",
    "tag": "OUT",
    "name": "50kw film-only bank: ripple current per film + output ripple voltage",
-   "detail": "14× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 55 A rms at SER250-full-bus764 → 3.93 A per film (≤10.5) · worst ripple 0.46 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+   "detail": "14× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 54.9 A rms at SER250-full-bus764 → 3.92 A per film (≤10.5) · worst ripple 0.49 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — film only: no bank inductor and no electrolytic"
   },
   {
    "status": "ok",
@@ -414,7 +414,7 @@
    "status": "ok",
    "tag": "OUT",
    "name": "50kwa film-only bank: ripple current per film + output ripple voltage",
-   "detail": "14× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 55 A rms at SER250-full-bus764 → 3.93 A per film (≤10.5) · worst ripple 0.46 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — E68, no D8 inductor / electrolytic"
+   "detail": "14× 2.2 µF 630 V per bank (ripple at −10 % C) · worst current 54.9 A rms at SER250-full-bus764 → 3.92 A per film (≤10.5) · worst ripple 0.49 % RMS at PS150-Imax (150 V bank, 2·fsw 406 kHz; ≤0.5 %) — film only: no bank inductor and no electrolytic"
   },
   {
    "status": "ok",
@@ -426,7 +426,7 @@
    "status": "ok",
    "tag": "SYNC",
    "name": "boards.tsx film-only bank per rating",
-   "detail": "30 kW 9× · 40 kW 12× · 50 kW 14× 2.2 µF film per bank (E68)"
+   "detail": "30 kW 9× · 40 kW 12× · 50 kW 14× 2.2 µF film per bank"
   },
   {
    "status": "ok",
@@ -444,7 +444,7 @@
    "status": "ok",
    "tag": "DESAT",
    "name": "blanking caps carried by the drawing",
-   "detail": "DriverCh takes cBlank per channel: Vienna pairs 47 pF, LLC half-bridges 18 pF (E81 F-C-8: 10 / 15 pF sat under the 0.4 µs noise floor, 22 pF over 75 % of the SCWT with two dies)"
+   "detail": "DriverCh takes cBlank per channel: Vienna pairs 47 pF, LLC half-bridges 18 pF — 10 / 15 pF sit under the 0.4 µs noise floor, 22 pF runs past 75 % of the SCWT with two dies"
   },
   {
    "status": "ok",
@@ -516,7 +516,7 @@
    "status": "ok",
    "tag": "DCLINK",
    "name": "30kw link electrolytic ripple at 2·fsw with 16 × 1 µF entry film + RC damper",
-   "detail": "per can 1.97 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the deck's first line was 60 % of an assumed 3.5 A class) · per entry film 2.9 A ≤ 10 A — the 4 × 1 µF as drawn before E81 read 8.14 A per can (233 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.12 A per can (61 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
+   "detail": "per can 1.97 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the basis is the purchased can's own line, never a generic 3.5 A class) · per entry film 2.9 A ≤ 10 A — with only 4 × 1 µF of entry film the same deck reads 8.14 A per can (233 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.12 A per can (61 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
   },
   {
    "status": "ok",
@@ -528,7 +528,7 @@
    "status": "ok",
    "tag": "DCLINK",
    "name": "40kw link electrolytic ripple at 2·fsw with 16 × 1 µF entry film + RC damper",
-   "detail": "per can 2.36 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the deck's first line was 60 % of an assumed 3.5 A class) · per entry film 3.7 A ≤ 10 A — the 4 × 1 µF as drawn before E81 read 9.98 A per can (285 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.8 A per can (80 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
+   "detail": "per can 2.36 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the basis is the purchased can's own line, never a generic 3.5 A class) · per entry film 3.7 A ≤ 10 A — with only 4 × 1 µF of entry film the same deck reads 9.98 A per can (285 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.8 A per can (80 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
   },
   {
    "status": "ok",
@@ -540,7 +540,7 @@
    "status": "ok",
    "tag": "DCLINK",
    "name": "50kw link electrolytic ripple at 2·fsw with 20 × 1 µF entry film + RC damper",
-   "detail": "per can 1.83 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the deck's first line was 60 % of an assumed 3.5 A class) · per entry film 3.6 A ≤ 10 A — the 4 × 1 µF as drawn before E81 read 11.8 A per can (337 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.7 A per can (77 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
+   "detail": "per can 1.83 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the basis is the purchased can's own line, never a generic 3.5 A class) · per entry film 3.6 A ≤ 10 A — with only 4 × 1 µF of entry film the same deck reads 11.8 A per can (337 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.7 A per can (77 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
   },
   {
    "status": "ok",
@@ -552,12 +552,12 @@
    "status": "ok",
    "tag": "DCLINK",
    "name": "50kwa link electrolytic ripple at 2·fsw with 20 × 1 µF entry film + RC damper",
-   "detail": "per can 1.83 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the deck's first line was 60 % of an assumed 3.5 A class) · per entry film 3.6 A ≤ 10 A — the 4 × 1 µF as drawn before E81 read 11.8 A per can (337 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.7 A per can (77 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
+   "detail": "per can 1.83 A rms ≤ 2.4 A (80 % of the RFQ line 3 A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the basis is the purchased can's own line, never a generic 3.5 A class) · per entry film 3.6 A ≤ 10 A — with only 4 × 1 µF of entry film the same deck reads 11.8 A per can (337 % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz · SENSITIVITY at a 20 nH stud: 2.7 A per can (77 % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "boards.tsx DC-DC entry film bank + RC damper (E81 / F-G-1)",
+   "name": "boards.tsx DC-DC entry film bank + RC damper",
    "detail": "boards.tsx draws the entry film bank from parts-db ENTRY_FILM (30kw 16 · 40kw 16 · 50kw 20 · 50kwa 20 × 1 µF) plus the RC damper CFDMP 2.2 µF + RFDMP 0.33 Ω across DCP–DCN — each SKU's drawn count holds its cans ≤ 80 % of the RFQ line at the 40 nH design stud (the 20-film variant on 30/40 kW = the lever)"
   },
   {
@@ -593,38 +593,38 @@
   {
    "status": "ok",
    "tag": "SP",
-   "name": "30kw S/P closure at the FW-42 |ΔV| ≤ 25 V permit",
-   "detail": "9 × 2.2 µF film bank (19.8 µF) needs a closure loop ≥ 69 nH to keep the make current under 300 A — a layout line, verifiable; the E60 deck's 1.5 mF bank made this 3 kA and its 205 A headline 7× pessimistic"
+   "name": "30kw S/P closure inside the |ΔV| ≤ 25 V firmware permit",
+   "detail": "9 × 2.2 µF film bank (19.8 µF) needs a closure loop ≥ 69 nH to keep the make current under 300 A — a layout line, and a verifiable one: the make current is set by the film bank the module actually carries, so it must be recomputed whenever that bank changes"
   },
   {
    "status": "ok",
    "tag": "SP",
-   "name": "40kw S/P closure at the FW-42 |ΔV| ≤ 25 V permit",
-   "detail": "12 × 2.2 µF film bank (26.4 µF) needs a closure loop ≥ 92 nH to keep the make current under 300 A — a layout line, verifiable; the E60 deck's 1.5 mF bank made this 3 kA and its 205 A headline 7× pessimistic"
+   "name": "40kw S/P closure inside the |ΔV| ≤ 25 V firmware permit",
+   "detail": "12 × 2.2 µF film bank (26.4 µF) needs a closure loop ≥ 92 nH to keep the make current under 300 A — a layout line, and a verifiable one: the make current is set by the film bank the module actually carries, so it must be recomputed whenever that bank changes"
   },
   {
    "status": "ok",
    "tag": "SP",
-   "name": "50kw S/P closure at the FW-42 |ΔV| ≤ 25 V permit",
-   "detail": "14 × 2.2 µF film bank (30.8 µF) needs a closure loop ≥ 107 nH to keep the make current under 300 A — a layout line, verifiable; the E60 deck's 1.5 mF bank made this 3 kA and its 205 A headline 7× pessimistic"
+   "name": "50kw S/P closure inside the |ΔV| ≤ 25 V firmware permit",
+   "detail": "14 × 2.2 µF film bank (30.8 µF) needs a closure loop ≥ 107 nH to keep the make current under 300 A — a layout line, and a verifiable one: the make current is set by the film bank the module actually carries, so it must be recomputed whenever that bank changes"
   },
   {
    "status": "ok",
    "tag": "SP",
-   "name": "50kwa S/P closure at the FW-42 |ΔV| ≤ 25 V permit",
-   "detail": "14 × 2.2 µF film bank (30.8 µF) needs a closure loop ≥ 107 nH to keep the make current under 300 A — a layout line, verifiable; the E60 deck's 1.5 mF bank made this 3 kA and its 205 A headline 7× pessimistic"
+   "name": "50kwa S/P closure inside the |ΔV| ≤ 25 V firmware permit",
+   "detail": "14 × 2.2 µF film bank (30.8 µF) needs a closure loop ≥ 107 nH to keep the make current under 300 A — a layout line, and a verifiable one: the make current is set by the film bank the module actually carries, so it must be recomputed whenever that bank changes"
   },
   {
    "status": "ok",
    "tag": "SYNC",
    "name": "fsm.c per-rating OC classes",
-   "detail": "HAL programs the CMP DACs from these (120/155/195 line · 140/180/220 tank, E67)"
+   "detail": "HAL programs the CMP DACs from these (120/155/195 line · 140/180/220 tank)"
   },
   {
    "status": "ok",
    "tag": "SYNC",
    "name": "boards.tsx burdens per rating",
-   "detail": "line 22/18/13 Ω · resonant 0.47/0.36/0.30 Ω (E67)"
+   "detail": "line 22/18/13 Ω · resonant 0.47/0.36/0.30 Ω"
   },
   {
    "status": "ok",
@@ -641,7 +641,7 @@
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "protection-thresholds carries the E67 class table",
+   "name": "protection-thresholds carries the full-bridge class table",
    "detail": "per-SKU F.01/F.11 table + DESAT timing note present"
   }
  ]

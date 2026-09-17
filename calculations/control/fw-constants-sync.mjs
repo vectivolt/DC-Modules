@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-// fw-constants-sync.mjs — E82 (M-29) standing gate: the firmware's hard-coded HARDWARE constants,
-// read back out of the C and asserted against the source that owns them.
+// fw-constants-sync.mjs — standing gate: the firmware's hard-coded HARDWARE constants, read back
+// out of the C and asserted against the source that owns them.
 //
-// Why it exists: the E82 knowledge-graph pass found THREE edges between firmware/ and calculations/
-// and none at all to the schematic source. Every ADC scale factor (CT burdens, shunt values, divider
-// ratios), every LLC tank constant and the link capacitance the voltage loop is tuned on are typed
-// into hal/*.c by hand. They are all right today — agents A2 and D re-derived every one — and
-// nothing whatsoever keeps them right. A burden changed in boards.tsx, a tank re-solved in
+// Why it exists: almost nothing else links firmware/ to calculations/, and nothing at all links it
+// to the schematic source. Every ADC scale factor (CT burdens, shunt values, divider ratios), every
+// LLC tank constant and the link capacitance the voltage loop is tuned on are typed into hal/*.c by
+// hand. Without this gate a burden changed in boards.tsx, a tank re-solved in
 // tanks.mjs or a can count changed in the schematic would leave the firmware silently reading the
 // wrong current on a µs-class trip, and no gate in this repository would notice.
 //
@@ -38,7 +37,7 @@ const si = (s) => {
   return m ? Number(m[1]) * ({ k: 1e3, M: 1e6, u: 1e-6, n: 1e-9, p: 1e-12 }[m[2]] ?? 1) : NaN;
 };
 
-console.log("=== FIRMWARE ↔ HARDWARE CONSTANT SYNC (E82 / M-29) — hal/*.c read back against the source that owns each number ===");
+console.log("=== FIRMWARE ↔ HARDWARE CONSTANT SYNC — hal/*.c read back against the source that owns each number ===");
 
 // ---- 1. meas.c vs the drawn sense chains (boards.tsx / cells.tsx / parts-db order codes) ----
 {
@@ -54,7 +53,7 @@ console.log("=== FIRMWARE ↔ HARDWARE CONSTANT SYNC (E82 / M-29) — hal/*.c re
   ck("resonant-CT burden 50/40/30", !!bR && mR.length === 3 && mR.every((v, i) => near(v, Number(bR[i + 1]))),
     `meas.c ${mR.join(" / ")} Ω vs boards.tsx ${bR ? bR.slice(1, 4).join(" / ") : "NOT FOUND"} Ω`);
 
-  // output shunt: the VALUE lives in the parts-db order code (50 mV at the rated current — R5-G/E76)
+  // output shunt: the VALUE lives in the parts-db order code (50 mV at the rated current)
   const codes = [...rd("calculations/cost/parts-db.mjs").matchAll(/SHUNT-50MV-(\d+)A/g)].map((m) => Number(m[1]));
   const want = [167, 133, 100].map((a) => (codes.includes(a) ? 0.050 / a : NaN));
   const mS = trip(meas, /float rs = \(kw == 50u\) \? ([\d.e-]+)f : \(kw == 40u\) \? ([\d.e-]+)f : ([\d.e-]+)f;/);
@@ -114,7 +113,7 @@ console.log("=== FIRMWARE ↔ HARDWARE CONSTANT SYNC (E82 / M-29) — hal/*.c re
     `pfc.c Gv = η/(s·C·Vbus) on ${got.join(" / ")} mF vs the drawn ${["30kw", "40kw", "50kw"].map((s) => NCAN_HALF[s]).join(" / ")} cans per half × 470 µF in series halves = ${want.map((v) => f(v, 3)).join(" / ")} mF`);
 }
 
-// ---- 4. E82 (C-11): the weak-leg dead time and the junction observer — three copies of each number (firmware · the SPICE deck
+// ---- 4. the weak-leg dead time and the junction observer — three copies of each number (firmware · the SPICE deck
 //         that produces the residual anchors · the thermal grid), held together here ----
 {
   const llcH = rd("firmware/hal/llc.h"), die = rd("firmware/hal/dielim.c"), dieH = rd("firmware/hal/dielim.h"), grid = rd("calculations/system/envelope-grid.mjs");
@@ -159,6 +158,20 @@ console.log("=== FIRMWARE ↔ HARDWARE CONSTANT SYNC (E82 / M-29) — hal/*.c re
   }
   const tjFw = num(dieH, /#define DIELIM_TJ_C\s+([\d.]+)f/);
   ck("junction ceiling", tjFw === 150 && /TjL > 150 \|\| TjD > 150 \|\| TjP > 150/.test(grid), `dielim.h ${tjFw} °C vs the grid's fold loop at 150 °C`);
+}
+
+// The over-temperature derate law. The thermal design basis (the derating curve and the derated corner every magnetics
+// gate solves) assumed 40 % power at 75 °C inlet while the firmware delivers 60 % there — nothing compared the two.
+{
+  const app = rd("firmware/hal/app.c"), fsmH = rd("firmware/core/fsm.h"), lb = rd("calculations/thermal/loss-budget.mjs");
+  const zone = app.match(/ZONE\[4\] = \{[^\n]*\n\s*\{ [\d.]+f, [\d.]+f \}, \{ ([\d.]+)f, ([\d.]+)f \}/), floorFw = +(fsmH.match(/#define PMP_DERATE_MIN_TH\s+([\d.]+)f/) ?? [])[1];
+  const der = lb.match(/export const DER = \{ start: (\d+), trip: (\d+), floor: (\d+) \}/);
+  const slope = +(fsmH.match(/#define PMP_DERATE_SLOPE\s+([\d.]+)f/) ?? [])[1], otD = +(fsmH.match(/#define PMP_OT_DERATE_C\s+([\d.]+)f/) ?? [])[1], otT = +(fsmH.match(/#define PMP_OT_TRIP_C\s+([\d.]+)f/) ?? [])[1];
+  ck("derating curve = the firmware's inlet zone", !!zone && !!der && +zone[1] === +der[1] && +zone[2] === +der[2] && near(floorFw * 100, +der[3]) && near(1 - slope * (otT - otD), floorFw),
+    `app.c inlet zone ${zone?.[1]} → ${zone?.[2]} °C, fsm.h floor ${floorFw} (= 1 − ${slope}·(${otT} − ${otD})) vs loss-budget DER ${der?.slice(1).join(" / ")}`);
+  const k2 = (floorFw * floorFw).toFixed(2), env = rd("calculations/magnetics/magnetics-envelope.mjs"), tc = rd("calculations/magnetics/temp-critique.mjs"), sa = rd("calculations/stress-audit.mjs");
+  ck("derated thermal corner solved at the firmware's floor", env.includes(`(${floorFw} / frac) ** 2`) && tc.includes(`solveEq(p, 75, ${k2})`) && sa.includes(`frac: ${floorFw}, lfK: ${k2}`),
+    `magnetics-envelope, temp-critique and stress-audit [D1] solve 75 °C inlet at ${floorFw * 100} % power (copper × ${k2}, iron undiminished)`);
 }
 
 console.log(fails ? `\n${fails} FW-SYNC FAILURE(S) — the firmware and the hardware source disagree; fix the C, not this gate`

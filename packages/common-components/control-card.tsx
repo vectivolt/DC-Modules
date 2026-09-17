@@ -1,32 +1,19 @@
-// control-card.tsx — ONE control card, ONE brain per module (E40). Single p/n, three homes:
-// the module's DC-DC slot (role "module"); the RATING band 3.32 k is reserved.
+// control-card.tsx — ONE control card, ONE MCU per module. A single part number serves the 30 / 40 / 50 kW modules;
+// the card seats in the module's DC-DC slot and reads the module rating from the RATING strap.
 //
-// WHY A CARD (unchanged since E35): the control electronics leave the power/EMI environment,
-// one part number instead of many, and the MCU — the most supply-volatile part in the module —
-// is isolated to a small board that can be re-spun without touching a 6-layer power PCB.
+// WHY A CARD: the control electronics leave the power / EMI environment, one part number replaces many, and the MCU —
+// the most supply-volatile part in the module — sits on a small board that can be re-spun without touching a power PCB.
 //
-// WHY ONE CARD PER MODULE (E40, directive 2026-09-08). The two-card split (AC-DC role + DC-DC
-// role + inter-card UART) created its own problems: two brains per module with a link protocol
-// between them, twice the CAN nodes per charger, and a way/pin budget spent twice. The merged
-// 30 kW single-brain fits the SAME GD32G553VET6 with margin (see calculations/control/
-// umod-pinmap.mts — 73 pins used of 82 usable, 22 analog, all nine PWMs on HRTIMER units), so the
-// second card bought nothing physics demanded. The card seats in the DC-DC slot — the LLC fast
-// loops, S/P relays, HMI and CAN stay local — and the PFC bundle (3× 50 kHz logic-level PWM,
-// 12 senses, enables) crosses the 40-way inter-board harness.
+// WHY ONE CARD PER MODULE: one GD32G553VET7 carries both converters (calculations/control/umod-pinmap.mts — every PWM on
+// an HRTIMER unit, 22 analogue channels). The card sits in the DC-DC slot, so the LLC fast loops, the S/P relays, the
+// HMI and CAN stay local, and the PFC bundle (3 × 50 kHz logic-level PWM, the AC-side senses, enables) crosses the
+// 40-way inter-board harness. One brain means no link protocol inside a module and one CAN node per module.
 //
-// WHY A MODULE STOPS AT 50 kW. A two-lane machine needs 18 PWM / ~30 analog — past this card on both
-// counts. Higher-power chargers parallel modules, each with its own card; docs/control-card-scope.md
-// carries the arithmetic.
+// WHY A MODULE STOPS AT 50 kW: a two-lane machine needs about twice the PWM and analogue count — past this card on both.
+// Higher-power chargers parallel modules, each with its own card; docs/control-card-scope.md carries the arithmetic.
 import { UMOD_WAYS, UMOD_MODULE_NETS, UMOD_MCU_PINS, UMOD_INTERNAL } from "./umod-map.gen";
 
-export const CARD_SCOPE = ["30kw"] as const;   // the module rating this card controls alone
-export const CARD_WAYS = 88;                   // 2 x 44, 0.1 in, keyed — 86 used + 2 spare
-
-export const CARD_SIGNALS = {
-  pwm: 12,     // ways PWM0..11; the module role drives 9 (3 LLC pairs + 3 PFC singles), 3 spare
-  analog: 22,  // AIN0..12 + ANA13..19 + TSNS0..1 — local fast loops keep the rank-0 ADC pins
-  dout: 11, din: 9, safety: 6, can: 2, hmi: 7, rating: 1,
-} as const;
+export const CARD_SCOPE = ["30kw", "40kw", "50kw", "50kwa"] as const;   // the module SKUs one card controls alone (slot: 88 ways, 2 × 44, 0.1 in, keyed)
 
 // MANDATORY board-side obligations — every one is a safety or correctness requirement.
 export const CARD_RULES = [
@@ -43,9 +30,9 @@ export const CARD_RULES = [
   "AVMID travels with its Kelvin return on BOTH the slot and the harness",
   // The fault line is safety-critical and its pull-up sets the wired-OR's idle state.
   "the single merged FLT wired-OR is pulled up and filtered ON the card, at the MCU end",
-  // Identity is ONE resistor code on an ADC pin — no build variants, no slot strap:
-  //   0 R -> 30 kW module controller · 3.32 k (~0.82 V) -> reserved · open -> no host, fault
-  "RATING strap: 0R = module, 3.32k = reserved (E66), open = fault (E24 rev D)",
+  // Identity is ONE resistor code on an ADC pin — no build variants, no slot strap, one firmware image:
+  //   0 R -> 30 kW · 1 k -> 40 kW · 10 k -> 50 kW liquid · 15 k -> 50 kW air · 3.32 k -> reserved · open -> no host, fault
+  "RATING strap: 0R = 30 kW, 1k = 40 kW, 10k = 50 kW liquid, 15k = 50 kW air, 3.32k = reserved, open = fault",
 ] as const;
 
 // ---------------------------------------------------------------------------------------------
@@ -63,13 +50,11 @@ export const cardMap = (role: "module" | "card") => {
   if (role === "module")
     return UMOD_WAYS.map(([w]) =>
       [w, UMOD_MODULE_NETS[w] ? `net.${UMOD_MODULE_NETS[w]}` : null] as [string, string | null]);
-  throw new Error(
-    `cardMap: role "${role}" retired by E40 — the module is single-brain (roles: "module" | "card"). ` +
-    `The acdc/dcdc split cards and their LINK protocol no longer exist.`);
+  throw new Error(`cardMap: unknown role "${role}" — the module has one card (roles: "module" | "card")`);
 };
 
-// THE MCU PIN MAP — GD32G553VET6, LQFP-100. GENERATED (umod-pinmap.mts); every kept way keeps its
-// E35 sheet-audited pin, every extension sits on a documented-capability donor pin (R3 rule).
+// THE MCU PIN MAP — GD32G553VET7, LQFP-100. GENERATED (umod-pinmap.mts); every way sits on a pin whose
+// alternate function the datasheet documents for that use.
 export const CARD_MCU_PINS: Record<string, number> = UMOD_MCU_PINS;
 
 // MCU pins that never reach the connector: the watchdog kick, boot strap and debug port live on
@@ -81,14 +66,10 @@ export const CARD_INTERNAL: Record<string, [number, string]> = {
   SWCLK: [UMOD_INTERNAL.SWCLK, "net.SWCLK_CARD"],
 };
 
-// Connector ways generated by hardware ON the card (safety-AND outputs), with no MCU pin by design.
-export const CARD_NO_MCU_PIN = ["GATE_EN", "GATE_EN_A"] as const;
-
-// E35 HRTIMER pairing, retained as the normative PWM electrical contract (unchanged pins):
-//   LLC legs = complementary pairs on ST0..ST2 (H = PWM0/1/2 ways, L = PWM6/7/8 ways)
-//   PFC phases = single-ended on ST3..ST5 CH0 (PWM3/4/5 ways) — one HRTIMER fault gates all nine.
+// The PWM electrical contract. The full-bridge LLC takes two complementary HRTIMER pairs (leg 1 = PWM0 / PWM6,
+// leg 2 = PWM1 / PWM7); the three Vienna phases are single-ended (PWM3 / 4 / 5); one HRTIMER fault input gates them all.
 export const CARD_PWM_CONTRACT = {
-  llc: [["PWM0", "PWM6"], ["PWM1", "PWM7"], ["PWM2", "PWM8"]],
+  llc: [["PWM0", "PWM6"], ["PWM1", "PWM7"]],
   pfc: ["PWM3", "PWM4", "PWM5"],
-  spare: ["PWM9", "PWM10", "PWM11"],
+  spare: ["PWM2", "PWM8", "PWM9", "PWM10", "PWM11"],
 } as const;

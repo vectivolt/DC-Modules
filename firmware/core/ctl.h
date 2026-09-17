@@ -1,7 +1,7 @@
-/* ctl.h — E78 output reference shaper and regulator kernel. Portable C99, no HAL.
+/* ctl.h — the output reference shaper and regulator kernel. Portable C99, no HAL.
  *
  * pmp_ctl_step (1 kHz, right after pmp_fsm_step) composes the current target from the command, the module's availability
- * (rating × FSM derate × E1 input-voltage derate), the power limits and the group share, then slews the references the
+ * (rating × FSM derate × the input-voltage derate), the power limits and the group share, then slews the references the
  * regulator follows: a bumpless soft start from the output node, slew-limited rises, the controlled-stop ramp and the CV
  * share trim for paralleled modules. It names the limit that binds (telemetry "limiter") and why power is reduced.
  *
@@ -25,12 +25,12 @@ enum { PMP_LIM_NONE = 0, PMP_LIM_CV = 1, PMP_LIM_CC = 2, PMP_LIM_AVAIL = 3, PMP_
 /* why the available power is below rating (bit set) */
 #define PMP_DR_THERMAL  (1u << 0)
 #define PMP_DR_FAN      (1u << 1)
-#define PMP_DR_INPUT    (1u << 2)   /* E1: line below 330 VAC — constant input current */
+#define PMP_DR_INPUT    (1u << 2)   /* line below 330 VAC — constant input current */
 #define PMP_DR_P_CMD    (1u << 3)   /* the controller's power limit binds */
 #define PMP_DR_GROUP    (1u << 4)   /* the group share binds */
 #define PMP_DR_CP       (1u << 5)   /* the rated-power curve binds (output above the knee) */
 
-#define PMP_CTL_VIN_FULL_V   330.0f  /* E1 */
+#define PMP_CTL_VIN_FULL_V   330.0f  /* full-power line floor */
 #define PMP_CTL_VMAX_ABS    1100.0f
 #define PMP_CTL_STOP_S         0.08f /* rated current to zero inside 80 ms — well inside the FSM's 100 ms stop window */
 #define PMP_CTL_TRIM_MIN_FRAC  0.05f /* no share trim below 5 % of rated average current (noise, burst mode) */
@@ -58,7 +58,7 @@ typedef struct {
   float v_out, i_out;           /* 1 kHz averaged output measurements */
   bool grp_active; float grp_share_a;
   float peer_avg_a; uint8_t peer_n;
-  float die_fold;               /* E82 (C-11): the die-temperature observer's fold (hal/dielim.h), 0 = none … 1 = declined */
+  float die_fold;               /* the die-temperature observer's fold (hal/dielim.h), 0 = none … 1 = declined */
 } pmp_ctl_in_t;
 
 typedef struct {

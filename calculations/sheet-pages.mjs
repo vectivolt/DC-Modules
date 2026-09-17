@@ -30,7 +30,7 @@ const idxOf = (names, re) => [...new Set(names.map((n) => n.match(re)?.[1]).filt
 const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
   ["A", "B", "C"].map((ph) => [`PHASE-${ph}${n}`, [
     new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]2?$`), new RegExp(`^RG${ph}${n}[AB][12]$`), new RegExp(`^D${ph}${n}[TBC]M?$`),
-    new RegExp(`^C${ph}${n}(FP|FN|SN|C|CM)$`), new RegExp(`^R${ph}${n}(SN|C|CM)$`),   /* E81: the mirrored RCD clamp D/C/R{ph}{n}CM rides its own phase block */
+    new RegExp(`^C${ph}${n}(FP|FN|SN|C|CM)$`), new RegExp(`^R${ph}${n}(SN|C|CM)$`),   /* the mirrored RCD clamp D/C/R{ph}{n}CM rides its own phase block */
     new RegExp(`^U${ph}${n}G$`), new RegExp(`^PS${ph}${n}G$`),
     new RegExp(`^R${ph}${n}G(ON|OFF|GS|PD|DS)$`), new RegExp(`^D${ph}${n}GS[12]$`),
     new RegExp(`^C${ph}${n}G(BL|B1|B2|BV)$`)]]));
@@ -38,7 +38,7 @@ const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
 /** line CTs: one block per lane */
 const lineCtBlocks = (names) => idxOf(names, /^CTA(\d)$/).map((n) =>
   [`LINE-CTS-${n}`, [new RegExp(`^CT[ABC]${n}$`), new RegExp(`^R[ABC]${n}[BF]$`),
-    new RegExp(`^C[ABC]${n}F$`), new RegExp(`^D[ABC]${n}[PN]$`), /^CAVMA$/]]);   /* E81 F-A-15: the local AVMID reservoir belongs with the CT row it serves */
+    new RegExp(`^C[ABC]${n}F$`), new RegExp(`^D[ABC]${n}[PN]$`), /^CAVMA$/]]);   /* the local AVMID reservoir belongs with the CT row it serves */
 
 /** DC-link capacitor banks: one block per lane (CDT0x/CDB0x + its balance resistors) */
 const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
@@ -46,17 +46,17 @@ const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
 
 
 const PAGES = {
-  // Control card (E35): one page, the 8 card sections as blocks.
+  // Control card: one page, the 8 card sections as blocks.
   card: [
     ["CONTROL", [
-      ["MCU", [/^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/, /^(XCARD|CCARDX[12]|RCARDXF)$/]],   /* E81 F-A-30: the 8 MHz CAN crystal */
+      ["MCU", [/^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/, /^(XCARD|CCARDX[12]|RCARDXF)$/]],   /* the 8 MHz CAN crystal */
       ["SWD-BOOT", [/^(JSWDCARD|RCARDBOOT|CCARDRST)$/]],
-      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|GPA|RDY|WDI|WDOL)CARD|CSFCARD|CWDCARD|CRSTCARD|CANDCARD|TPWDICARD)$/]],   /* E81 F-F-8/F-A-26: WDO→NRST 0 Ω link, WDI pull-down + test point */
+      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|GPA|RDY|WDI|WDOL)CARD|CSFCARD|CWDCARD|CRSTCARD|CANDCARD|TPWDICARD)$/]],   /* WDO→NRST 0 Ω link, WDI pull-down + test point */
       ["FLT-GROUND", [/^(RFLTC|CFLTC|RAGTC)$/]],
       ["BUCK-3V3", [/^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD|REN[12]CARD)$/]],
       ["ANALOG-MID", [/^(RAV[HLIF]|CAV[MFOB]|UAVB)$/]],
       ["ROLE", [/^RROLE[01]$/]],
-      ["ADC-FILTER", [/^CADC\d+$/]],   /* E82 A2-09: 1 nF C0G at every analogue MCU pin — the reservoir the 132 ns SAR aperture needs at the end of a harness */
+      ["ADC-FILTER", [/^CADC\d+$/]],   /* 1 nF C0G at every analogue MCU pin — the reservoir the 132 ns SAR aperture needs at the end of a harness */
       ["CARD-IF", [/^JCARD$/]],
     ], ["MCU", "SWD-BOOT", "SAFETY", "FLT-GROUND", "BUCK-3V3", "ANALOG-MID", "ROLE", "ADC-FILTER", "CARD-IF"]],
   ],
@@ -64,7 +64,7 @@ const PAGES = {
     ["INPUT-EMI", [
       ["AC-ENTRY", [/^JACL\d$/, /^JPE$/, /^F[123]$/]],
       ["SURGE", [/^MOV[123]$/, /^MOVP[123]$/, /^GDT[123]$/]],
-      ["EMI-FILTER", [/^CMC[12]$/, /^CX\d\d$/, /^CY[1-6]$/, /^[CR]DMP[123]$/]],   /* E68: D6 LDM deleted, CX0x star stage added */
+      ["EMI-FILTER", [/^CMC[12]$/, /^CX\d\d$/, /^CY[1-6]$/, /^[CR]DMP[123]$/]],   /* two CM chokes, three star X2 stages, Y caps and the Rd–Cd damper */
       ["PRECHARGE", [/^KPRE[12]$/, /^RPRE[12]$/, /^RKFBP$/]],
     ], ["AC-ENTRY", "SURGE", "EMI-FILTER", "PRECHARGE"]],
     ["VIENNA-PFC", [
@@ -79,52 +79,52 @@ const PAGES = {
     ], ["LINK-BANK", "DISCHARGE", "BUS-STUDS"]],
     ["AC-SENSING", [
       ["STAR", [/^RNS\d[AB]$/]],
-      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^CV1V[AB]$/, /^UIVV1$/, /^RV1O$/]],   /* E82 A2-09: 100 Ω between the iso-amp output and the ADC line */
+      ["SENSE-VAC1", [/^RV1D\d$/, /^RV1DL$/, /^CV1DF$/, /^CV1V[AB]$/, /^UIVV1$/, /^RV1O$/]],   /* 100 Ω between the iso-amp output and the ADC line */
       ["SENSE-VAC2", [/^RV2D\d$/, /^RV2DL$/, /^CV2DF$/, /^CV2V[AB]$/, /^UIVV2$/, /^RV2O$/]],
       ["SENSE-VAC3", [/^RV3D\d$/, /^RV3DL$/, /^CV3DF$/, /^CV3V[AB]$/, /^UIVV3$/, /^RV3O$/]],
       ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^CBPV[AB]$/, /^UIVBP$/, /^RBPO$/]],
       ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^CBMV[AB]$/, /^UIVBM$/, /^RBMO$/]],
       ["ISO-BIAS", [/^PS5(AC|BUS)$/, /^C5B(AC|BUS)$/]],
-      ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/, /^CAVMA$/]],   /* E81 F-A-15: local AVMID reservoir at the CT row */
+      ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/, /^CAVMA$/]],   /* local AVMID reservoir at the CT row */
       ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOFB]$/, /^UAVB$/]],
       ["NTC", [/^JT(PFC|INL)$/, /^RT(PFC|INL)P$/, /^CT(PFC|INL)F$/]],
     ], ["STAR", "SENSE-VAC1", "SENSE-VAC2", "SENSE-VAC3", "SENSE-VBUS", "SENSE-VMID", "ISO-BIAS", "LINE-CTS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
-      // card-split (E35): the MCU/SWD/safety-chain/3V3 moved to the control card; the power board
+      // card-split: the MCU/SWD/safety-chain/3V3 live on the control card; the power board
       // keeps the 88-way interface, its default-OFF pull-downs, the strap, and the local drivers.
       ["CARD-IF", [/^JA$/, /^RPD\d$/, /^RROLE$/]],
       ["GROUNDING", [/^RPET$/, /^CPET$/]],
       ["COIL-DRIVER", [/^UPA$/]],
-      ["RAIL-MON", [/^RM(24|15)[AB]$/, /^CM(24|15)$/]],   /* E81 F-D-4: 100 nF at the divider, the 132 ns aperture needs it */
+      ["RAIL-MON", [/^RM(24|15)[AB]$/, /^CM(24|15)$/]],   /* 100 nF at the divider, the 132 ns aperture needs it */
     ], ["CARD-IF", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
     ["AUX-POWER", [
-      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^(DZAUX|QAUXFB|RZFB|RBEFB|CFBF|CAUXSS)$/, /^DCLA$/, /^CCLA$/, /^RCLA[123]$/]],   /* R4-3: zener-NPN loop replaces the RFB/RCOMP set */
-      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^RAUX24$/, /^RPL24$/, /^CVCCB?$/, /^DTVS(24|15)$/]],   /* E81 F-A-10: V24 preload */
-      ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/, /^REN[12]A$/]],   /* R4-4/R4-5 */
-      ["FANS", [/^JFAN\d$/, /^RFT\d$/, /^RFDT\d$/, /^RFPD\d$/]],   /* E81 F-A-20: defined-low FAN_PWM at boot */
+      ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^(DZAUX|QAUXFB|RZFB|RBEFB|CFBF|CAUXSS)$/, /^DCLA$/, /^CCLA$/, /^RCLA[123]$/]],   /* zener-NPN loop replaces the RFB/RCOMP set */
+      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^RAUX24$/, /^RPL24$/, /^CVCCB?$/, /^DTVS(24|15)$/]],   /* V24 preload */
+      ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/, /^REN[12]A$/]],
+      ["FANS", [/^JFAN\d$/, /^RFT\d$/, /^RFDT\d$/, /^RFPD\d$/]],   /* defined-low FAN_PWM at boot */
       ["INTERCONNECT", [/^JICA$/, /^RAL(TX|RX|TS|RS)$/]],
     ], ["FLYBACK", "RAILS", "BUCK-3V3", "FANS", "INTERCONNECT"]],
   ],
   dcdc: [
     ["LLC-LEGS", [
-      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/, /^CFDMP$/, /^RFDMP$/]],   /* E81 F-G-1 FIX-D: the series-RC damper across the entry film */
-      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL][123]$/]],   /* E67 full bridge: leg A (SWA) */
-      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL][123]$/]],   /* E67 full bridge: leg B (SWB) */
+      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/, /^CFDMP$/, /^RFDMP$/]],   /* the series-RC damper across the entry film */
+      ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL][123]$/]],   /* full bridge: leg A (SWA) */
+      ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL][123]$/]],   /* full bridge: leg B (SWB) */
     ], ["BUS-IN", "LEG-1", "LEG-2"]],
     ["LLC-TANKS", [
-      ["TANK", [/^C1R\d+$/, /^L1R$/, /^T1[AB]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/, /^U1W$/, /^D1W$/, /^C1WB$/, /^C1AVM$/]],   /* E81 F-A-15: the local AVMID reservoir sits with the CT/burden pair it decouples */
+      ["TANK", [/^C1R\d+$/, /^L1R$/, /^T1[AB]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/, /^U1W$/, /^D1W$/, /^C1WB$/, /^C1AVM$/]],   /* the local AVMID reservoir sits with the CT/burden pair it decouples */
       ["RECT-A", [/^D1A[1-4](P[23])?$/]],
       ["RECT-B", [/^D1B[1-4](P[23])?$/]],
-      ["F11-WINDOW", [/^[RC]F11[HML]$/, /^R1WH[AB]$/]],   /* E81 F-A-21: the 1 M positive feedback belongs with the ladder it biases */   /* E67: the ladder was unassigned since E65 (three comparators hid it from R4-3) */
+      ["F11-WINDOW", [/^[RC]F11[HML]$/, /^R1WH[AB]$/]],   /* the 1 M positive feedback belongs with the ladder it biases */
     ], ["TANK", "RECT-A", "RECT-B", "F11-WINDOW"]],
     ["BANKS-SP", [
-      ["BANK-A", [/^CFA\d+$/]],   /* E68 film-only bank */
+      ["BANK-A", [/^CFA\d+$/]],   /* film-only bank */
       ["BANK-B", [/^CFB\d+$/]],
       ["SP-MATRIX", [/^K(SER|PARA|PARB|OUT|PREA|PREB)2?$/, /^RKPU/, /^RPRE[AB]$/, /^DOUT$/]],
       ["BLEEDERS", [/^RBD[AB]\d$/, /^QDIS[AB]$/, /^UPV[AB]$/, /^RPV[LB][AB]$/, /^(QPVD|RPVD[BP])$/]],
     ], ["BANK-A", "BANK-B", "SP-MATRIX", "BLEEDERS"]],
     ["OUTPUT-SENSING", [
-      ["OUTPUT", [/^RSHO$/, /^RSHO[PN]$/, /^USHO$/, /^PSSH$/, /^CSH[12B]$/, /^COF[12]$/, /^CYO[12]$/, /^RBO\d$/, /^JOUT[PN]$/]],   /* E82: RSHOP/RSHON 100 Ω shunt-amp output isolation (A2-09) · RBO1-3 passive output bleeder behind DOUT (M-11) */
+      ["OUTPUT", [/^RSHO$/, /^RSHO[PN]$/, /^USHO$/, /^PSSH$/, /^CSH[12B]$/, /^COF[12]$/, /^CYO[12]$/, /^RBO\d$/, /^JOUT[PN]$/]],   /* RSHOP/RSHON 100 Ω shunt-amp output isolation · RBO1-3 passive output bleeder behind DOUT */
       ["SENSE-VBKA", [/^ROAD\d$/, /^ROADL$/, /^COADF$/, /^COAV[AB]$/, /^UIVOA$/, /^ROAO$/]],
       ["SENSE-VBKB", [/^ROBD\d$/, /^ROBDL$/, /^COBDF$/, /^COBV[AB]$/, /^UIVOB$/, /^ROBO$/]],
       ["SENSE-VOUT", [/^ROVD\d$/, /^ROVDL$/, /^COVDF$/, /^COVV[AB]$/, /^UIVOV$/, /^ROVO$/]],
@@ -133,14 +133,14 @@ const PAGES = {
       ["NTC", [/^JT(LLC|XFR)$/, /^RT(LLC|XFR)P$/, /^CT(LLC|XFR)F$/]],
     ], ["OUTPUT", "SENSE-VBKA", "SENSE-VBKB", "SENSE-VOUT", "ISO-BIAS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
-      // card-split (E35): see the AC-DC CONTROL note — board keeps interface + pull-downs + strap.
-      ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/, /^CROLEB$/]],   /* E81 F-D-4: the RATING strap gets the same 100 nF as the rail monitors */
-      ["COIL-DRIVER", [/^ULB$/, /^UEXCL2?$/, /^CEXCL2?$/]],   /* R4-8 hardware S/P exclusion */
+      // card-split: see the AC-DC CONTROL note — board keeps interface + pull-downs + strap.
+      ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/, /^CROLEB$/]],   /* the RATING strap gets the same 100 nF as the rail monitors */
+      ["COIL-DRIVER", [/^ULB$/, /^UEXCL2?$/, /^CEXCL2?$/]],   /* hardware S/P exclusion */
       ["INTERCONNECT", [/^JICB$/, /^RBL(TX|RX|TS|RS)$/]],
     ], ["CARD-IF", "COIL-DRIVER", "INTERCONNECT"]],
     ["COMMS-HMI", [
       ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/, /^CCV[12]$/, /^CCB5$/]],
-      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^CSR1$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/, /^RHPD[12]$/]],   /* E81 F-A-20: HMI_CLK/HMI_LAT cannot float with the card absent */
+      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^CSR1$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/, /^RHPD[12]$/]],   /* HMI_CLK/HMI_LAT cannot float with the card absent */
     ], ["CAN", "HMI"]],
   ],
 };
@@ -249,7 +249,7 @@ for (const side of (SKU === "control-card" ? ["card"] : ["acdc", "dcdc"])) {
   };
   const seen = new Set();
   const pagesOut = [];
-  // Expand the indexed Vienna/line-CT/link blocks from the netlist (E67: the LLC is one full bridge — fixed pages).
+  // Expand the indexed Vienna/line-CT/link blocks from the netlist (the LLC is one full bridge — fixed pages).
   const names = comps.map((c) => c.name);
   const pagesForSide = PAGES[side].map(([page, blocks, flow]) => {
     let bl = blocks, fl = flow;

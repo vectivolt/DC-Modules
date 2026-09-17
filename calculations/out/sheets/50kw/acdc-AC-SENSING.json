@@ -85,7 +85,7 @@
    ],
    "nc_pins": [],
    "value": "ACX-1100",
-   "query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins ",
+   "query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins. Rate",
    "mpn": "ACX-1100"
   },
   {
@@ -205,7 +205,7 @@
    ],
    "nc_pins": [],
    "value": "ACX-1100",
-   "query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins ",
+   "query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins. Rate",
    "mpn": "ACX-1100"
   },
   {
@@ -325,7 +325,7 @@
    ],
    "nc_pins": [],
    "value": "ACX-1100",
-   "query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins ",
+   "query": "ACX-1100 line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins. Rate",
    "mpn": "ACX-1100"
   },
   {
@@ -577,7 +577,7 @@
     5
    ],
    "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated module ",
    "mpn": "ISO5V-RFC-6K"
   },
   {
@@ -629,7 +629,7 @@
     5
    ],
    "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated module ",
    "mpn": "ISO5V-RFC-6K"
   },
   {

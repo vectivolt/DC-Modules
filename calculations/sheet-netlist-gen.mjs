@@ -40,15 +40,14 @@ const PAGE_TITLES = {
 };
 
 const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SMBJ26A",
-  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15", "BZX84-B15",   /* E81 (F-A-10): the ±2 % reference zener — this Set is what names a diode's anode/cathode, and kicad5-gen REFUSES to seat a glyph whose polarity is unnamed */
+  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15", "BZX84-B15",   /* the ±2 % reference zener — this Set is what names a diode's anode/cathode, and kicad5-gen REFUSES to seat a glyph whose polarity is unnamed */
   "SMBJ18A", "SMBJ28A",
-  "DIODE-1600V-150A-MOD", "DIODE-1600V-200A-MOD", "DIODE-1600V-250A-MOD"]);   /* E67 DOUT: source pin1 = anode (DiodeModFP portHints) */
+  "DIODE-1600V-150A-MOD", "DIODE-1600V-200A-MOD", "DIODE-1600V-250A-MOD"]);   /* DOUT: source pin1 = anode (DiodeModFP portHints) */
 
 const sig = (c, name) => c.pins.find((p) => p.name === name)?.signal_name;
-// E81 (F-A-1/2/3/4): the cells now author the REAL package pin numbers for the four classes whose
-// symbols were drawn on the wrong package, so the branches below are no longer a translation — they
-// are a GUARD. This checks symbol number == emitted number per pin NAME and warns on any drift, so
-// a future symbol edit that re-scrambles a pinout cannot pass silently the way these four did.
+// The cells author the REAL package pin numbers, so the branches below are not a translation — they
+// are a GUARD. This checks symbol number == emitted number per pin NAME and warns on any drift, so a
+// symbol edit that re-scrambles a pinout cannot pass silently.
 const PKG_GUARD = {
   "TPS54202-class": { VIN: 3, GND: 1, SW: 2, FB: 4, EN: 5, BST: 6 },
   "TPS3430-class": { VDD: 1, CWD: 2, SET0: 3, CRST: 4, GND: 5, SET1: 6, WDI: 7, WDO: 8, NC: 9, VDD2: 10 },
@@ -60,7 +59,7 @@ const pkgGuard = (c, m, warn) => {
   for (const pin of c.pins) {
     const w = want[pin.name];
     if (w !== undefined && Number(pin.pin_number) !== w)
-      warn.push(`${c.designator}: symbol pin ${pin.name} is ${pin.pin_number}, package says ${w} (E81 pin-number guard)`);
+      warn.push(`${c.designator}: symbol pin ${pin.name} is ${pin.pin_number}, package says ${w} (pin-number guard)`);
   }
 };
 const P = (n, name, s) => ({ pin_number: n, name, signal_name: s ?? "" });
@@ -74,13 +73,13 @@ function transform(c, page, all, warn) {
 
   if (DIODES.has(m)) {
     out.pins = [P(2, "A", byNum[1]), P(1, "C", byNum[2])];
-  } else if (["B3M010C075Z", "SG2M023120LJ", "SIC-750V-20mR", "SIC-750V-15mR"].includes(m)) {   // E69a classes share the TO-247-4 map
+  } else if (["B3M010C075Z", "SG2M023120LJ", "SIC-750V-20mR", "SIC-750V-15mR"].includes(m)) {   // these classes share the TO-247-4 map
     // TO-247-4 symbol: 1=D 2=S 3=DS 4=G
     out.pins = [P(4, "G", sig(c, "G")), P(1, "D", sig(c, "D")), P(2, "S", sig(c, "S")), P(3, "DS", sig(c, "KS"))];
   } else if (m === "NSI6611") {
-    // R4-2: the CELLS now author the REAL NSI6611ASC map (GND2 = Kelvin, TEST -> GND1, ASC tied
-    // inactive) — this branch is a pure pass-through. The old translation put TEST on the Kelvin,
-    // which the external review correctly flagged; its KSRC!=GND2 warning was the tell.
+    // The CELLS author the REAL NSI6611ASC map (GND2 = Kelvin, TEST -> GND1, ASC tied inactive),
+    // so this branch is a pure pass-through. A translation layer here is what puts TEST on the
+    // Kelvin; the tell is a KSRC != GND2 warning.
     out.pins = [
       P(15, "VCC1", sig(c, "VCC1")), P(9, "GND1", sig(c, "GND1")), P(10, "IN+", sig(c, "INP")),
       P(11, "IN-", sig(c, "INN")), P(14, "RST#/EN", sig(c, "EN")), P(13, "FLT#", sig(c, "FLT")),
@@ -101,9 +100,9 @@ function transform(c, page, all, warn) {
     out.pins = [P(7, "WDI", sig(c, "WDI")), P(5, "GND", gnd), P(11, "EP", gnd),
       P(3, "SET0", sig(c, "SET0")), P(6, "SET1", sig(c, "SET1")), P(8, "WDO#", sig(c, "WDO")),
       P(10, "VDD2", vdd), P(1, "VDD1", vdd),
-      // R3 CLOSED: pin 4 CRST carries the reset-delay cap. E80 (review HR-02/R01, CONFIRMED on the TI datasheet the
-      // reviews quote): CWD 1 nF with SET00 put the window's EARLY boundary at ~15-18 ms — the 10 ms kick contract
-      // (app.c APP_WDT_KICK_MS) serviced it inside the prohibited window, a reset loop. Fixed-window strap instead:
+      // Pin 4 CRST carries the reset-delay cap. Per the TI datasheet, CWD 1 nF with SET00 puts the window's EARLY
+      // boundary at ~15-18 ms, so the 10 ms kick contract (app.c APP_WDT_KICK_MS) would service it inside the
+      // prohibited window — a reset loop. Fixed-window strap instead:
       // CWD unconnected, SET0 low, SET1 high -> valid service after 2.22 ms and before 23.375 ms; 10 ms kicks are legal
       // with no capacitor tolerance in the window. Boot contract: the bootloader kicks every ~10 ms from power-up,
       // chunking image verification (boot/image.h poll); EVT T-48 confirms the window on the fitted part.
@@ -115,17 +114,16 @@ function transform(c, page, all, warn) {
   } else if (m === "TLV9061-class") {
     out.pins = [P(1, "OUT", sig(c, "OUT")), P(4, "IN-", sig(c, "INN")), P(3, "IN+", sig(c, "INP")),
       P(2, "V-", sig(c, "VN")), P(5, "V+", sig(c, "VP"))];
-  } else if (/^NCP1252/.test(m)) {   /* A→D order-code swap (R6-G) — same SOIC-8 cell */
-    // R4-3: cells author the real map now (FB/BO/CS/RT/GND/DRV/VCC/SS) — pass-through.
+  } else if (/^NCP1252/.test(m)) {   /* every NCP1252 order code shares the SOIC-8 cell */
+    // cells author the real map (FB/BO/CS/RT/GND/DRV/VCC/SS) — pass-through.
     out.pins = [P(1, "FB", sig(c, "FB")), P(2, "BO", sig(c, "BO")), P(3, "CS", sig(c, "CS")),
       P(4, "RT", sig(c, "RT")), P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "DRV")),
       P(7, "VCC", sig(c, "VCC")), P(8, "SS", sig(c, "SS"))];
     out.nc = [];
-  } else if (/^(QA0\d|ISO-GBIAS)/.test(m)   /* R4-6 rename: exact-match was drop-class bug #6. E81: the 1 W and 2 W parts share this land and map. E82 (M-03): the class is ISO-GBIAS-15-1W/-2W — the QA0# spellings stay accepted so a half-migrated tree cannot silently drop a module */) {
-    // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. R4-2/R4-6: the cells wire the dual rail explicitly —
-    // COM is the 0 V/Kelvin node, the negative pin is the off-bias rail. E81 (F-C-15): the rails
-    // are +15/−3 V, so the cell pins are P15/N3 (were P18/N4); both spellings are accepted here so
-    // a half-migrated tree cannot silently drop a module the way R4-6 did.
+  } else if (/^(QA0\d|ISO-GBIAS)/.test(m)   /* the 1 W and 2 W gate-bias parts share this land and map; matching the class PREFIX, not an exact code, is what stops a half-migrated tree silently dropping a module */) {
+    // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. The cells wire the dual rail explicitly — COM is the
+    // 0 V/Kelvin node, the negative pin is the off-bias rail. The rails are +15/−3 V, so the cell
+    // pins are P15/N3; the P18/N4 spelling is accepted too for the same reason.
     out.pins = [P(1, "VIN", sig(c, "VIN")), P(2, "GND", sig(c, "GND")),
       P(7, "+VO", sig(c, "P15") ?? sig(c, "P18")), P(6, "0V", sig(c, "COM"))];
     const nNeg = sig(c, "N3") ?? sig(c, "N4");
@@ -142,7 +140,7 @@ function transform(c, page, all, warn) {
       P(4, "COM1", sig(c, "A")), P(6, "NO1", sig(c, "B")),
       P(5, "COM2", sig(c, "M1")), P(3, "NO2", sig(c, "M2"))];
     out.nc = [2, 7];
-  } else if (m.startsWith("SHUNT-")) {   /* R5-G: value-carrying order codes, same 4-terminal cell */
+  } else if (m.startsWith("SHUNT-")) {   /* value-carrying order codes, same 4-terminal cell */
     out.pins = [P(1, "A", sig(c, "A")), P(2, "B", sig(c, "B")), P(3, "KA", sig(c, "KA")), P(4, "KB", sig(c, "KB"))];
     out.nc = [5, 6];
   } else if (/^NSI1042/.test(m)) {   /* -DSWR order code (R7) — same SO-16 translation */
@@ -155,12 +153,12 @@ function transform(c, page, all, warn) {
       P(12, "CANL", sig(c, "CANL")), P(13, "CANH", sig(c, "CANH"))];
     out.nc = [4, 5, 7, 11, 14];
   } else if (m === "CMC-CAN-51uH") {
-    // E80 (review HR-01, CONFIRMED): ACT45B windings are pins 1-4 and 2-3 (TDK ACT45B datasheet circuit). The E73 map
-    // (A1=1 A2=4 / B1=2 B2=3) put the TRANSCEIVER PAIR across winding 1-4 and the CONNECTOR PAIR across 2-3 — no
-    // conductive through-path for either CAN signal on all four exported variants. Correct: CANH flows 1→4, CANL 2→3;
+    // ACT45B windings are pins 1-4 and 2-3 (TDK ACT45B datasheet circuit). Mapping A1=1 A2=4 / B1=2 B2=3 puts the
+    // TRANSCEIVER PAIR across winding 1-4 and the CONNECTOR PAIR across 2-3, leaving no conductive through-path for
+    // either CAN signal on any exported variant. Correct: CANH flows 1→4, CANL 2→3;
     // the bus-side termination/TVS ride the B labels and land on 4/3 with this map.
     out.pins = [P(1, "A1", sig(c, "A1")), P(2, "A2", sig(c, "A2")), P(4, "B1", sig(c, "B1")), P(3, "B2", sig(c, "B2"))];
-  } else if (/^XFMR-LLC-CELL-/.test(m)) {   /* E67 D3 rev D cell: P1 P2 SH SA SB, all five bound */
+  } else if (/^XFMR-LLC-CELL-/.test(m)) {   /* D3 rev D cell: P1 P2 SH SA SB, all five bound */
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));
   } else if (m === "CMC-3PH-2mH-SKU") {
     out.pins = c.pins.map((p) => P(p.pin_number, p.name, p.signal_name));

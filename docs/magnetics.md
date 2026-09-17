@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-mag--sync_·_rfq--audit_·_magnetics--envelope-2ea44f?style=flat-square" alt="gate: mag-sync · rfq-audit · magnetics-envelope"/>
 </p>
@@ -31,8 +31,8 @@ core loss and runaway, copper and proximity, winding temperature, current rating
 resonance, faults and the PyOpenMagnetics second opinion), one governing number each, read from that battery's gate evidence.
 
 Every module also carries one **D4** aux flyback transformer (below), three line CTs, one resonant CT, two catalog buck
-inductors and one catalog CAN choke. There are no DM line chokes (retired at E68b — the star-X2 filter carries the
-differential mode) and no bank inductors (retired at E68c — the banks are film-only).
+inductors and one catalog CAN choke. There are no DM line chokes — the star-X2 filter carries the differential mode —
+and no bank inductors: the output banks are film-only.
 
 ```mermaid
 flowchart LR
@@ -69,7 +69,7 @@ flowchart LR
 
 | Tool or data | What it gives | Where it runs | How to read its result |
 |---|---|---|---|
-| **ngspice-46** power-solved LLC decks | tank, magnetizing and secondary currents, capacitor voltage and switch-node waveforms at every corner, with the control loop solved to target power | `spice/llc/llc-run.mjs` → `llc-envelope.mjs` → `llc-flux-post.mjs` | every row carries the tank fingerprint; a tank change without a re-run fails `current-coordination`. ZVS 64/64 and "legs in rails" must read on every corner |
+| **ngspice-46** power-solved LLC decks | tank, magnetizing and secondary currents, capacitor voltage and switch-node waveforms at every corner, with the control loop solved to target power | `spice/llc/llc-run.mjs` → `llc-envelope.mjs` → `llc-flux-post.mjs` | every row carries the tank fingerprint; a tank change without a re-run fails `current-coordination`. "legs in rails" must read YES on every corner, and ZVS 64/64 on every corner except the registered weak-leg exceptions in phase shift |
 | **vienna-switched** (JS, cycle-by-cycle) | D1 current with the soft-saturating catalog L(i) at lot AL − 8 %, dips and phase jumps included | `calculations/pfc/vienna-switched.mjs` | the peak column sets F.01; the ripple column sets D1 copper and core loss |
 | **upb-lea materialdatabase** (frozen) | TDK N95 loss over f, B and T; LEA-measured N95 permeability; 3C95 surfaces for Bsat(T) | `magnetics-data.json` · `tempdata-3c95.json` | the envelope applies × 1.14 (LEA-measured over datasheet) in the high-flux window; `temp-critique` reads Bsat(130 °C) = 362 mT from the 3C95 set |
 | **OpenMagnetics MAS** (data) | core shapes and a second Steinmetz surface with temperature terms | `geometry.mjs` · `magnetics-envelope.mjs` | the loss used is the larger of the datasheet surface and MAS — the conservative side |
@@ -83,23 +83,23 @@ flowchart LR
 
 ```text
   ok    [D3] 40kw 3×E70 2 cells 4:4∥4 (2 foils) · web2 · R core→wall 0.52 · winding→core 0.58 K/W
-        — core corner ENV500-55 87.3 kHz B̂ 159 mT Fe 47.6 W · copper corner SER250-full-bus764 203 kHz Cu 46.1 W
+        — core corner ENV500-55 87.4 kHz B̂ 158 mT Fe 47.2 W · copper corner SER250-full-bus764 203 kHz Cu 46 W
         · hot-spot 102 °C @55 °C (core 89 °C / winding 102 °C) / 103 °C @75 °C derated · +25 % Rth 108 °C
-        · runaway margin 115 K · B̂ 39 % of hot Bsat
+        · runaway margin 116 K · B̂ 39 % of hot Bsat
 ```
 
 - **Two corners, not one.** Core loss peaks where the bank voltage is highest (flux is volt-second pinned, so a power derate
   does not relieve it); copper peaks where the tank current is highest. The gate finds each by scanning every corner.
 - **Hot-spot 102 °C** against 125 °C at 55 °C inlet, **103 °C** against 135 °C derated, **108 °C** against 155 °C with every
   thermal resistance 25 % worse — three margins, three different failure stories.
-- **Runaway margin 115 K** is the distance to the temperature where the core's loss slope times its thermal resistance reaches
+- **Runaway margin 116 K** is the distance to the temperature where the core's loss slope times its thermal resistance reaches
   one; below that point a hotter core cannot run away.
 - **B̂ 39 % of hot Bsat** — the part is loss-limited, never saturation-limited.
 
 ## Copper — which conductor, and why
 
-Above about 50 kHz the right conductor is set by **proximity effect**, not current density. Four E43–E52 constructions sized
-by DC resistance computed 5–12× their DC resistance at 140 kHz; the conductors on the module pages are chosen from these laws:
+Above about 50 kHz the right conductor is set by **proximity effect**, not current density — a winding sized by DC
+resistance alone can compute 5–12× that resistance at 140 kHz. The conductors on the module pages are chosen from these laws:
 
 ```math
 F_r^{\,\mathrm{Dowell}} = \Delta\left[\zeta_1 + \tfrac{2}{3}\left(m^2-1\right)\zeta_2\right],\qquad \Delta = \frac{h}{\delta}\sqrt{\eta}
@@ -151,16 +151,16 @@ F_r^{\,\mathrm{Sullivan}} = 1 + \frac{\pi^2\,\omega^2\,\mu_0^2\,N^2\,n^2\,d^6\,k
 | 20 | Winder substitutes material or core | any of the above, latent | **spec** — equivalence tests are acceptance; unverified substitution is forbidden |
 | 21 | Proximity-effect copper loss understated | windings far hotter than budget | **gate** — `conductor-audit` at the simulated currents; first-article Rac (T-31) |
 | 22 | A trip set below a real operating peak | nuisance trips at full power | **gate** — every F.xx ≥ 1.2 × the simulated worst peak |
-| 23 | CT / ADC clipping before the kill | fault snapshot under-reads | **gate** — observability through the race; CT front-end deck re-run at the E67 burdens |
+| 23 | CT / ADC clipping before the kill | fault snapshot under-reads | **gate** — observability through the race; CT front-end deck run at the fitted burdens |
 | 24 | A lost gap-pad bond on D2 / D3 | runaway on the sealed plate or on a single web | **gate + construction** — `magnetics-envelope` bond-lost rows; EOL bonded thermal soak; 130 °C cutout loop → F.22 |
 | 25 | Fringing eddies across the innermost D3 foil | foil hot-spot a 1-D model misses | **construction** — gap split equally per set, ≤ 0.5 mm per position; T-31 open-secondary check |
 | 26 | Cold start at −30 °C | loss doubles, slow warm-up | **gate** — `temp-critique` COLD rows: every core self-warms toward its loss minimum |
-| 27 | D1 inrush when the precharge bypass closes (E73) | 200 / 218 / 280 A pk through D1 — F.01 nuisance latch, relay and diode stress | **gate + firmware** — `current-coordination` [INRUSH] on the drawn path; F.01 blanked 60 ms with no PFC enable inside (FW-E73); relay make and JBS IFSM RFQ lines; EVT T-42 |
-| 28 | One fan dead on an air SKU (E73) | D2 / D3 run on reduced airflow while core loss does not derate | **gate** — `magnetics-envelope` [FAN-OUT]: 88–92 °C with the F.25 derate, runaway margin ≥ 120 K |
-| 29 | Current imbalance between the two D3 cells (E73) | the heavier cell runs hotter in LOW mode | **gate** — `magnetics-envelope` [IMBALANCE]: ± 7 % Lm mismatch moves ≤ 8.3 %, inside the copper corner already proven; HIGH mode balances by equal charge |
-| 30 | D7 saturated by common-mode volt-seconds (E73) | CM attenuation lost at the switching frequency | **gate** — `stress-audit` D7 CM flux: 17–27 mT on 1.155 T |
-| 31 | A drawing acceptance row that passes a wrong build or rejects a good one (E73) | wrong gauge shipped, or good parts scrapped | **gate** — D4 Rdc rows held within 1.0–1.25 × the computed build; D3 short-circuit R bracket; RFQ audit now requires current rating, thermal class, tolerance, gap and winding order |
-| 32 | 1-D copper model reads foil edge loss low (E71) | D3 winding hotter than the thermal proof | **second opinion + EVT** — PyOpenMagnetics copper ×1.29–1.32 keeps every class line; the 50 kW air cell's 125 °C design line is a T-31 watch with a computed foil-band fallback |
+| 27 | D1 inrush when the precharge bypass closes | 200 / 218 / 280 A pk through D1 — F.01 nuisance latch, relay and diode stress | **gate + firmware** — `current-coordination` [INRUSH] on the drawn path; F.01 blanked 60 ms with no PFC enable inside; relay make and JBS IFSM RFQ lines; EVT T-42 |
+| 28 | One fan dead on an air SKU | D2 / D3 run on reduced airflow while core loss does not derate | **gate** — `magnetics-envelope` [FAN-OUT]: 86–89 °C with the F.25 derate, runaway margin ≥ 126 K |
+| 29 | Current imbalance between the two D3 cells | the heavier cell runs hotter in LOW mode | **gate** — `magnetics-envelope` [IMBALANCE]: ± 7 % Lm mismatch moves ≤ 8.3 %, inside the copper corner already proven; HIGH mode balances by equal charge |
+| 30 | D7 saturated by common-mode volt-seconds | CM attenuation lost at the switching frequency | **gate** — `stress-audit` D7 CM flux: 17–27 mT on 1.155 T |
+| 31 | A drawing acceptance row that passes a wrong build or rejects a good one | wrong gauge shipped, or good parts scrapped | **gate** — D4 Rdc rows held within 1.0–1.25 × the computed build; D3 short-circuit R bracket; the RFQ audit requires current rating, thermal class, tolerance, gap and winding order on every drawing |
+| 32 | 1-D copper model reads foil edge loss low | D3 winding hotter than the thermal proof | **second opinion + EVT** — PyOpenMagnetics copper ×1.29–1.32 keeps every class line; the 50 kW air cell's 125 °C design line is a T-31 watch with a computed foil-band fallback |
 
 ## Common requirements — every magnetic
 
@@ -171,7 +171,7 @@ F_r^{\,\mathrm{Sullivan}} = 1 + \frac{\pi^2\,\omega^2\,\mu_0^2\,N^2\,n^2\,d^6\,k
 | Thermal basis | full power to +55 °C ambient, derate to +75 °C. D1 / D4 / D7: ΔT limits and thermocouple positions per sheet. D2 / D3: hot-spot type test, bonded as in service, at the simulated corners named on each module page — ≤ 125 °C at 55 °C inlet, ≤ 135 °C at 75 °C inlet derated. A simulation-vs-bench delta above 20 % reopens the gate |
 | VPI (D2, D3) | vacuum-pressure impregnation with a solventless Class H resin; through-build conductivity ≥ 0.6 W/m·K; full penetration shown on the first-article cross-section; bond faces and terminations masked |
 | Two-face bond (D2, D3) | both yoke faces are bond faces: flat ≤ 0.5 mm, clean ferrite, nothing on them. Gap-padded (3 W/m·K class) to the extrusion webs (air SKUs) or the two coldplates (50 kW liquid); end turns potted ≥ 0.8 W/m·K, ≥ 5 mm bridge |
-| Bonded-face insulation | every part bonded to a PE-bonded web or plate carries basic insulation to PE through a glass-reinforced gap pad ≥ 0.5 mm; 100 % hipot winding → foil over the bond faces: 2.5 kV DC (primary and mains windings), ≥ 1.5 kV DC (D3 secondaries). D2 / D3 see 1.26–1.28 kV recurring peaks at 83–203 kHz, so both carry PD sampling |
+| Bonded-face insulation | every part bonded to a PE-bonded web or plate carries basic insulation to PE through a glass-reinforced gap pad ≥ 0.5 mm; 100 % hipot winding → foil over the bond faces: 2.5 kV DC (primary and mains windings), ≥ 1.5 kV DC (D3 secondaries). D2 / D3 see 1.16–1.20 kV recurring peaks at 83–203 kHz, so both carry PD sampling |
 | Over-temperature cutout | NC hermetic snap-action thermostat, 130 ± 5 °C, gold dry-circuit contacts, reinforced-insulated case and leads — one on each D3 cell and on D2 (three per module), on each D1 of the liquid SKU — series-wired into the T_XFMR loop; an open loop reads 150 °C and latches F.22 |
 | Environment | operating −30 … +55 °C full power (derate to +75 °C), cold start ≥ −30 °C, storage −40 … +85 °C; humidity 5–95 % RH non-condensing; adhesives, potting and litz bonding quoted to −40 °C |
 | Vibration | 2 g 10–500 Hz sine survival; toroid stacks epoxy-banded, D1 clamped and 2-point banded |
@@ -204,7 +204,7 @@ potential and the SELV control domain depends on its **reinforced barrier** — 
 | Row | Specification — PMP-MAG-D4 rev E · `XFMR-AUX-FLY-E` · qty 1 |
 |---|---|
 | Function | 110 W-class DCM flyback, 306–860 VDC running range, 65 kHz, Vor ≈ 157 V, NCP1252D cycle-by-cycle limit |
-| Core | **ETD44 PC95-class** (Ae 173 mm²), gapped to **AL 239 nH/T²** — rev E re-core: at the computed limit (860 V · Lp + 5 % · VILIM max · CS filter lag → 4.67 A) the flux is 257 mT = 71 % of Bsat(130 °C); the ETD39 rev D reached 113 % |
+| Core | **ETD44 PC95-class** (Ae 173 mm²), gapped to **AL 239 nH/T²** — at the computed cycle-by-cycle limit (860 V · Lp + 5 % · VILIM max · CS filter lag → 4.67 A) the flux is 257 mT = 71 % of Bsat(130 °C). The core is sized on that limit, not on the nominal clamp current: a smaller ETD39 computes 113 % and saturates |
 | Windings | **Np 38** / N24 = 6 / N15 = 4 / Naux = 4, P/2–S–P/2 sandwich on the 29.5 mm ETD44 former: primary 19 T + 19 T of **Ø 0.50 mm grade-2** enamelled wire (Class 200) inside 3 mm margins · S24 and S15 side by side in one layer of **TIW 0.8 mm²** (OD 1.4 mm, Class F minimum) · Naux 4 T of **Ø 0.30 mm grade 2** · 0.1 mm polyester tape between layers; Lp **345 µH ± 5 %** (100 %) |
 | Current rating | primary **≤ 4.67 A pk** at the cycle-by-cycle limit (860 V, Lp + 5 %), ≈ 0.75 A rms at full load and 306 V · V24 **≤ 2.4 A DC** and V15 **≤ 1.2 A DC** at the heaviest module load (50 kW air) |
 | Leakage | **≤ 4 µH** primary-referred, all secondaries shorted @ 10 kHz (1-D estimate 1.7 µH) — sets the RCD clamp |
@@ -244,27 +244,13 @@ flowchart LR
   style PROD stroke:#2ea44f,stroke-width:2px
 ```
 
-## How the magnetics got here
-
-| Revision | What changed | Why |
-|---|---|---|
-| E51 | windings recomputed on real catalog formers; D1-40 / D1-50 re-issued on the catalog core | drawings demanded 142–294 % of their windows |
-| E58 | temperature critique on measured 3C95 surfaces; FMEA; three-temperature sendust equivalence | the design fits were temperature-blind |
-| E60 | foil gauges and strand sizes from Dowell / Sullivan at the simulated currents | DC-sized windings computed 5–12× their DC resistance |
-| E65 | every D2 / D3 scored at the power-solved corners through a two-node thermal network; VPI, two-face bond, cutout loop | flux had been checked at resonance, where it is lowest |
-| E67 | one full-bridge LLC: two D3 cells in series and one external D2 Lr, no bins | the InfyPower REG1K0135A2 architecture |
-| E68 | D6 DM chokes and D8 bank inductors retired | star-X2 EMI filter and film-only output banks |
-| E70 | one generated magnetics page per module; the RFQ pack, build instructions, FMEA, D4 sheet and conductor page merged here | each SKU's parts differ — one page per module, proof quoted from the gates |
-| E71 | PyOpenMagnetics cross-check of D2 / D3; fringing-corrected gap guides; D3 short-circuit R test | the docs said the tool could not install; the D2 gap guide ignored fringing |
-| E73 | critical-review matrix per module; startup inrush, fan-out, cell imbalance and CM-flux gates; D1 / D4 / D7 in the PyOpenMagnetics cross-check; D4 wire sizes, current rating and Rdc rows corrected | a closure event and three abnormal conditions had no computed check; the D4 sheet named no gauges and its Rdc rows did not match its build |
-
 > [!TIP]
-> **How this page is checked** — `magnetics-rfq-audit` addresses this page's sections **by their heading text** (`## Common requirements`, `## D4 …`), so an H2 here must not be renumbered or renamed; `mag-sync` (48 checks — every carrier agrees with the identity table), `magnetics-rfq-audit` (25 drawings, 0 missing fields), `conductor-audit`, `magnetics-envelope` and `temp-critique`, all inside `run-all`.
+> **How this page is checked** — `magnetics-rfq-audit` addresses this page's sections **by their heading text** (`## Common requirements`, `## D4 …`), so an H2 here must not be renumbered or renamed; `mag-sync` (every carrier agrees with the identity table), `magnetics-rfq-audit` (no drawing missing a field a winder quotes against), `conductor-audit`, `magnetics-envelope` and `temp-critique`, all inside `run-all`.
 
 ---
 
 <div align="center">
 <sub><a href="busbar-drawings.md">← Busbar Drawings & Joint Spec</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-30kw.md">30 kW Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

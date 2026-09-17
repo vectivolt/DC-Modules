@@ -1,4 +1,4 @@
-/* handoff.h — E80 what the application and the bootloader leave each other across a reset: a small CRC-sealed record in no-init
+/* handoff.h — what the application and the bootloader leave each other across a reset: a small CRC-sealed record in no-init
  * RAM (FM_HANDOFF on the target). A power-on reset leaves garbage, which fails the seal and reads as "nothing left".
  *   reason     why the last software reset happened: an expected reboot, a service request, or a fault handler's reset
  *   streak     unexpected resets of a confirmed image in a row (the bootloader counts; the application clears it after 10 min)

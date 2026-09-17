@@ -1,5 +1,5 @@
-// bom-maturity.mjs — E57 standing gate: the BOM is MATURE when every part line resolves to a
-// defensible sourcing state. States (lcsc-map taxonomy + E57's DIRECT):
+// bom-maturity.mjs — standing gate: the BOM is MATURE when every part line resolves to a
+// defensible sourcing state. States (the lcsc-map taxonomy plus DIRECT):
 //   ORDERABLE      a specific catalog part (LCSC or named mpn) verified to meet the rating
 //   SECOND-SOURCE  primary is off-catalog; a verified equivalent is named
 //   DIRECT         vendor-direct order code documented (Talema/Hongfa/MeanWell/Schaffner class)
@@ -27,15 +27,13 @@ for (const m of [...mpns].sort()) {
   if (!substance) { thin.push(`${m} [${st}]`); fails++; }
   if (st === "REVIEW" && !r.note) { thin.push(`${m} [REVIEW without action note]`); fails++; }
 }
-console.log("=== BOM MATURITY (E57) ===");
+console.log("=== BOM MATURITY ===");
 console.log("  " + Object.entries(counts).sort().map(([k, v]) => `${k}: ${v}`).join(" · "));
 if (unmapped.length) console.log("  UNMAPPED:\n    " + unmapped.join("\n    "));
 if (thin.length) console.log("  NO SUBSTANCE:\n    " + thin.join("\n    "));
-// E81 (F-H-9): the two counts disagreed and the report did not say why. `counts` is built from the
-// mpns the BOM ACTUALLY references; this list walks the whole LCSC table, which still holds entries
-// for parts no live parts-db rule names (QA01C-18 and HF167F-250A-M superseded at E81, SHUNT-MANG
-// superseded by the SHUNT-50MV-*A order codes). Both numbers are useful — the live one is the gate,
-// the table-wide one is the decision backlog — so each is labelled for what it is.
+// Two REVIEW counts, each labelled for what it is: `counts` is built from the mpns the BOM ACTUALLY
+// references, while this list walks the whole LCSC table, which also holds entries for parts no live
+// parts-db rule names. The live one is the gate; the table-wide one is the decision backlog.
 const reviews = Object.entries(LCSC).filter(([, v]) => v.status === "REVIEW").map(([k]) => k);
 const liveReviews = reviews.filter((k) => mpns.has(k));
 const retired = reviews.filter((k) => !mpns.has(k));

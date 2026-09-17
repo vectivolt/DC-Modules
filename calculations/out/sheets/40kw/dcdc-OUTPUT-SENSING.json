@@ -75,7 +75,7 @@
    ],
    "nc_pins": [],
    "value": "SHUNT-50MV-100A",
-   "query": "SHUNT-50MV-100A manganin shunt, 50 mV at rated current, Kelvin 4-terminal ",
+   "query": "SHUNT-50MV-100A manganin shunt, 50 mV at rated current, Kelvin 4-terminal — the ",
    "mpn": "SHUNT-50MV-100A"
   },
   {
@@ -157,7 +157,7 @@
     5
    ],
    "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module ≥5 kVrms test ",
+   "query": "ISO5V-RFC-6K iso 15→5 V ≥1 W REINFORCED-rated module, ≥5 kVrms 1-min test. This ",
    "mpn": "ISO5V-RFC-6K"
   },
   {
@@ -459,7 +459,7 @@
     5
    ],
    "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated module ",
    "mpn": "ISO5V-RFC-6K"
   },
   {
@@ -511,7 +511,7 @@
     5
    ],
    "value": "ISO5V-RFC-6K",
-   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated ",
+   "query": "ISO5V-RFC-6K iso 15→5 V reinforced-rated module ",
    "mpn": "ISO5V-RFC-6K"
   },
   {

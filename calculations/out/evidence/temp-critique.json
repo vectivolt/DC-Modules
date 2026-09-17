@@ -12,7 +12,7 @@
    "status": "ok",
    "tag": "RUNAWAY",
    "name": "D4 (ETD44 DCM amp)",
-   "detail": "hot equilibria 76 °C (55 amb/full) · 79 °C (75 amb/derated); worst g(T_eq) = 0.01 ≤ 0.6; runaway threshold T_crit(g=1) ≥200 (search cap) °C — margin 121 K ≥ 25 (measured pv(T); Fe is volt-second-pinned so it does NOT derate with load — this is why the ΔT acceptance line caps the winder's Rth)"
+   "detail": "hot equilibria 76 °C (55 amb/full) · 84 °C (75 amb/derated); worst g(T_eq) = 0.03 ≤ 0.6; runaway threshold T_crit(g=1) ≥200 (search cap) °C — margin 116 K ≥ 25 (measured pv(T); Fe is volt-second-pinned so it does NOT derate with load — this is why the ΔT acceptance line caps the winder's Rth)"
   },
   {
    "status": "ok",
@@ -30,19 +30,19 @@
    "status": "ok",
    "tag": "BSAT",
    "name": "D3 simulated worst flux at 130 °C core",
-   "detail": "worst B̂ 159 mT (30kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited"
+   "detail": "worst B̂ 159 mT (30kw ENV500-55, cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited"
   },
   {
    "status": "ok",
    "tag": "BSAT",
    "name": "D2 fault flux (Lmax × F.11 kill peak, worst SKU = 30kw)",
-   "detail": "148 mT at the crossing-referenced kill (E67 D2 rev F: 30kw 148 · 40kw 146 · 50kw 146 · 50kwa 146) vs 60% of Bsat(130) = 217 mT — µs event, trip-limited (per-SKU rows in current-coordination)"
+   "detail": "158 mT at the crossing-referenced kill (D2 rev F: 30kw 158 · 40kw 157 · 50kw 154 · 50kwa 154) vs 60% of Bsat(130) = 217 mT — µs event, trip-limited (per-SKU rows in current-coordination)"
   },
   {
    "status": "ok",
    "tag": "BSAT",
    "name": "D4 at the computed cycle-by-cycle limit, 130 °C (ETD44)",
-   "detail": "4.67 A (860 V, Lp +5 %, VILIM max, CS lag + tILIM max) → 257 mT vs 75% of Bsat(130)=271 mT (71% absolute) — E65: the E52 \"256 mT at a 3.2 A clamp\" row read 407 mT (113%) once the drawn sense chain was computed"
+   "detail": "4.67 A (860 V, Lp +5 %, VILIM max, CS lag + tILIM max) → 257 mT vs 75% of Bsat(130)=271 mT (71% absolute) — a typed 3.2 A clamp current reads 256 mT here; the drawn sense chain computes 407 mT (113%) at that clamp"
   },
   {
    "status": "ok",
@@ -54,25 +54,25 @@
    "status": "ok",
    "tag": "D1-FAULT",
    "name": "30kw OC→ceiling time / 3 µs adder",
-   "detail": "L(120 A)=45.4 µH (AL−8%) · Δi(3 µs)=46 A ≤ ceiling−threshold 64 A · ceiling reached in 4 µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)"
+   "detail": "L(120 A)=45.4 µH (AL−8%) · Δi(3 µs)=46 A ≤ ceiling−threshold 64 A · ceiling reached in 4 µs — CT stays observing until the HRTIMER kill lands (2–3 µs budget)"
   },
   {
    "status": "ok",
    "tag": "D1-FAULT",
    "name": "40kw OC→ceiling time / 3 µs adder",
-   "detail": "L(155 A)=39.8 µH (AL−8%) · Δi(3 µs)=50 A ≤ ceiling−threshold 70 A · ceiling reached in 4 µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)"
+   "detail": "L(155 A)=39.8 µH (AL−8%) · Δi(3 µs)=50 A ≤ ceiling−threshold 70 A · ceiling reached in 4 µs — CT stays observing until the HRTIMER kill lands (2–3 µs budget)"
   },
   {
    "status": "ok",
    "tag": "D1-FAULT",
    "name": "50kw OC→ceiling time / 3 µs adder",
-   "detail": "L(195 A)=28.7 µH (AL−8%) · Δi(3 µs)=72 A ≤ ceiling−threshold 116 A · ceiling reached in 4.5 µs — CT stays observing until the HRTIMER kill lands (R6-C budget 2–3 µs)"
+   "detail": "L(195 A)=28.7 µH (AL−8%) · Δi(3 µs)=72 A ≤ ceiling−threshold 116 A · ceiling reached in 4.5 µs — CT stays observing until the HRTIMER kill lands (2–3 µs budget)"
   },
   {
    "status": "info",
    "tag": "SENDUST",
    "name": "Kool Mµ-class µ tempco ≤ ±3% (−55…+125 °C catalog class)",
-   "detail": "the D1 biased-L floors carry the lot band and the ±1 turn lot-trim absorbs it (D6, the other sendust part, retired at E68b); first-article L(I) at −25/+100 °C is the pack's material-equivalence test"
+   "detail": "the D1 biased-L floors carry the lot band and the ±1 turn lot-trim absorbs it; first-article L(I) at −25/+100 °C is the pack's material-equivalence test"
   }
  ]
 }

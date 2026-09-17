@@ -1,14 +1,14 @@
-// d4-flyback.mjs — E65 D4 rev E: the ONE aux-flyback design model. stress-audit (V table + D4 rows), temp-critique
+// d4-flyback.mjs — D4 rev E: the ONE aux-flyback design model. stress-audit (V table + D4 rows), temp-critique
 // (BSAT D4) and the aux SPICE deck (spice/aux/aux-flyback.mjs) take every number from here, so a value change moves
 // every carrier together.
 //
-// Why it exists (E65 D4 sweep, verified before implementing): the flux gates assumed Ip = 3.2 A, but the drawn
-// NCP1252D sense chain (1 k / 470 pF ∥ the IC's 26.5 k ramp resistor = 453 ns, plus tILIM ≤150 ns) lets the limit
-// overshoot to 4.6–5.1 A at 830–860 V → 339–410 mT on ETD39 (113 % of Bsat 130 °C). The RCD clamp diode was a
-// 1200 V part blocking Vbus + Vc ≈ 1325 V at the stack-up leakage. The brown-in ignored the IC's IBO hysteresis
-// source (369 V, not 321 V). A V24 hard short ratchets the drawn chain far past saturation before the 10–20 ms
-// fault latch. Everything below is COMPUTED from the drawn cells.tsx values and the NCP1252/D Table 3 limits; the
-// E52 registered design is kept as the control group the gates must reject.
+// Why it exists: a flux gate that assumes Ip = 3.2 A is wrong on this circuit. The drawn NCP1252D sense chain
+// (1 k / 470 pF ∥ the IC's 26.5 k ramp resistor = 453 ns, plus tILIM ≤ 150 ns) lets the limit overshoot to
+// 4.6–5.1 A at 830–860 V → 339–410 mT on an ETD39 (113 % of Bsat 130 °C); the RCD clamp diode blocks
+// Vbus + Vc ≈ 1325 V at the stack-up leakage, not 1200 V; the brown-IN sits at 369 V, not 321 V, once the IC's
+// IBO hysteresis source is counted; and a V24 hard short ratchets the chain far past saturation before the
+// 10–20 ms fault latch. Everything below is COMPUTED from the drawn cells.tsx values and the NCP1252/D Table 3
+// limits, and the ETD39 build is kept as the control group the gates must reject.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,8 +26,8 @@ export const NCP = {
 export const VBUS_MAX = 860;                          // F.03 bus OVP
 export const VLL_START = 285;                         // A4: the module runs (derated) down to 285 VAC → the aux must start there
 
-// per-SKU worst steady aux loads (R2 §J budget; E60 product deltas) — V24 hold → step (relay pull-in + fans 100 %), V15.
-// Moved here from the SPICE deck (E65) so the gate and the deck size the same load.
+// per-SKU worst steady aux loads (§J budget) — V24 hold → step (relay pull-in + fans 100 %), V15.
+// They live here, not in the SPICE deck, so the gate and the deck size the same load.
 export const SKUS = {
   "30kw": { i24h: 0.7, i24s: 1.6, i15: 1.0 },
   "40kw": { i24h: 0.8, i24s: 2.0, i15: 1.1 },
@@ -44,7 +44,7 @@ export const D4 = {
   llkAcc: 4.0e-6,                // P/2–S–P/2 sandwich, all secondaries shorted @10 kHz (1-D estimate ≈2 µH below)
   llkLayout: 1.0e-6,             // V24/V15 rectifier-loop inductance reflected ×n² (≤25 nH V24 loop — layout open item)
   vOvs: 25,                      // clamp overshoot: SiC SBD (no forward recovery) + ~10 nH clamp loop — T-09 scopes it
-  rLoopMin: 0.05, vfShort: 0.9,  // hard-short loop: winding + rectifier dynamic ≥30 + board/short ≥10 mΩ — E73: the winding term is computed below
+  rLoopMin: 0.05, vfShort: 0.9,  // hard-short loop: winding + rectifier dynamic ≥30 + board/short ≥10 mΩ — the winding term is computed below
   idmQaux: 10,                   // 1700 V ~1 Ω SiC pulsed-drain class (C2M1000170D-class datasheet 10 A) — VERIFY at RFQ
   pRcla: 2.0, vRcla: 200,        // RCLA per part: 2512 2 W anti-surge, 200 V working (the conservative thick-film class)
   // P/2–S–P/2 build (pack rows): 19 T + 19 T of 0.5 mm grade-2 (OD 0.55) inside 3 mm margins on the 29.5 mm ETD44 former;
@@ -57,7 +57,7 @@ export const leakageEstimate = (d = D4) => {
   const build = 2 * b.hHalfP + b.hSec + 2 * b.gap, mlt = Math.PI * (F + 2 * FORMER_WALL + build);
   return leakageSPS({ N: d.Np, mlt, b: b.breadth - 2 * b.margin, hS: b.hHalfP, hP: b.hSec, gap: b.gap });
 };
-// E73: the drawn conductors and their DC resistance — the drawing's acceptance rows and the hard-short loop floor read these
+// the drawn conductors and their DC resistance — the drawing's acceptance rows and the hard-short loop floor read these
 // (radial order from the former: P/2 · tape · aux · tape · S24 ∥ S15 side by side · tape · P/2)
 export const WIRE = { p: { d: 0.50e-3 }, s24: { a: 0.8e-6 }, s15: { a: 0.8e-6 }, aux: { d: 0.30e-3 } };
 export const d4Rdc = (d = D4, T = 25) => {
@@ -69,7 +69,7 @@ export const d4Rdc = (d = D4, T = 25) => {
 };
 // the shorted-output loop floor: the colder, smaller secondary winding at −30 °C + rectifier dynamic 30 + board/short 10 mΩ
 D4.rLoopMin = 0.040 + Math.min(d4Rdc(D4, -30).s24, d4Rdc(D4, -30).s15);
-// E52 as registered — the CONTROL GROUP: the gates below must reject it (a gate that cannot fail proves nothing)
+// the ETD39 build — the CONTROL GROUP: the gates below must reject it (a gate that cannot fail proves nothing)
 export const D4_REGISTERED_E52 = { ...D4, rev: "D", mpn: "XFMR-AUX-FLY-D", core: "ETD39", tolL: 0.10, llkAcc: 12e-6, llkLayout: 0 };
 export const DRAWN_E52 = { rcs: 0.31, rcsf: 1e3, ccsf: 470e-12, rcla: 94e3, nRcla: 2, ccla: 10e-9, rbrUp: 4.8e6, rbrLo: 15e3, rst: 940e3, cvcc: 220e-6, r24: 0, dclaV: 1200, qauxV: 1700 };
 
@@ -193,7 +193,7 @@ export const evaluate = (d = D4, w = drawn()) => {
   // 5. cold start: VCC charged from the bus through RAUXST to VCC(on) max, CVCC +20 %, R +1 %, ICC1 max
   r.tStart = (Vbus) => { let V = 0, t = 0; const C = w.cvcc * 1.2, R = w.rst * 1.01, dV = 0.01; while (V < NCP.vccOn[2]) { const I = (Vbus - V) / R - NCP.icc1; if (I <= 0) return Infinity; t += (C * dV) / I; V += dV; } return t; };
   // 6. V24 / V15 hard short at 860 V: ratchet equilibrium (linear L) vs Isat(130 °C) and the QAUX pulse class.
-  //    Every V24 fault past CAUX24 also sees RAUX24 (E65); a CAUX24 or rectifier failure itself does not (residual, T-09)
+  //    Every V24 fault past CAUX24 also sees RAUX24; a CAUX24 or rectifier failure itself does not (residual, T-09)
   r.short24 = Math.max(...[Lmin, Lmax].map((L) => ratchet({ d, w, Vin: VBUS_MAX, L, f: fHiJ, n: n24, R: d.rLoopMin + w.r24 })));
   r.short24bare = Math.max(...[Lmin, Lmax].map((L) => ratchet({ d, w, Vin: VBUS_MAX, L, f: fHiJ, n: n24, R: d.rLoopMin })));
   r.short15 = Math.max(...[Lmin, Lmax].map((L) => ratchet({ d, w, Vin: VBUS_MAX, L, f: fHiJ, n: d.Np / d.N15, R: d.rLoopMin })));
@@ -206,7 +206,7 @@ export const evaluate = (d = D4, w = drawn()) => {
 
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const f = (x, k = 2) => Number(x.toFixed(k));
-  for (const [name, d, w] of [["rev E (drawn)", D4, drawn()], ["E52 control group", D4_REGISTERED_E52, DRAWN_E52]]) {
+  for (const [name, d, w] of [["rev E (drawn)", D4, drawn()], ["rev D / ETD39 control group", D4_REGISTERED_E52, DRAWN_E52]]) {
     const r = evaluate(d, w);
     console.log(`${name}: ${fingerprint(d, w)}`);
     console.log(`  limit Ipk ${f(r.ipkLim)} A → B ${f(r.B * 1e3, 0)} mT = ${f(100 * r.Bpct, 1)} % Bsat130 · fault margin ${f(100 * r.faultMargin, 1)} % (CS ${f(r.csFull, 3)} V) · P ${f(r.pDeliver, 0)}/${f(r.pOut, 0)} W · DCM ${f(r.dcm, 2)} · duty ${f(r.duty, 3)}`);

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // kicad5-gen.mjs — emit the hand-placed schematic in KiCad 5.1 LEGACY format, the only
-// KiCad 5 legacy schematic format — the terminal deliverable face (E56).
+// KiCad 5 legacy schematic format — the terminal deliverable face.
 //
 // The KiCad 5 legacy (pre-S-expression) format was chosen for maximal importer compatibility
 // import-kicad/), which is the pre-S-expression Eeschema format: .sch + .lib + .pro, zipped.
@@ -236,7 +236,7 @@ const partOf = (designator, value) => {
   const ov = (skuOverrides[SKU] ?? {})[designator] ?? {};
   const mpn = ov.mpn ?? rule?.mpn ?? "";
   if (!mpn) return { mpn: "", lc: { status: "UNMAPPED" } };
-  const pkg = fpFor(designator, mpn).match(/^[RCL](\d{4})$/)?.[1];   // E64: the drawn land decides the part
+  const pkg = fpFor(designator, mpn).match(/^[RCL](\d{4})$/)?.[1];   // the drawn land decides the part
   const hit = lcscForPart(mpn, value, pkg);     // family+value+land first, then value, then the per-MPN map
   return { mpn: hit.mpn ?? mpn, lc: hit };
 };
@@ -296,7 +296,7 @@ function passiveLib(kind, n1, n2) {
   else if (kind === "C") draw = "P 2 0 1 12 -20 -40 -20 40 N\nP 2 0 1 12 20 -40 20 40 N\n";
   // CP: straight plate = pin 1 = +, marked with a "+"; curved plate bows away toward pin 2.
   // (Verified in the netlists: every EL-/ELH- instance has pin 1 on the more-positive node.)
-  // NOTE (E56: native emission) the "+" is
+  // NOTE: the "+" is
   // authored at +y to LAND above the wire, and arc endpoint order is chosen for the mirrored file.
   else if (kind === "CP") draw = "P 2 0 1 12 -20 -40 -20 40 N\nA 6 0 44 -646 646 0 1 12 N 25 -40 25 40\n"
     + "P 2 0 1 8 -85 55 -55 55 N\nP 2 0 1 8 -70 40 -70 70 N\n";
@@ -360,7 +360,7 @@ function icLib(rawKey, pins) {
     [/^(TLP152|VOM1271)/, "OPTO"],
     [/^(NSI66|NSI12|NSI10|NSI82|AMC13)/, "ISO"],
     [/^SHUNT-/, "SHUNT"],
-    [/^(QA01C|ISO-GBIAS|ISO5V|B1505)/, "DCDC"],   // E82 (M-03): the gate-bias class renamed QA01C-15 → ISO-GBIAS-15-1W/2W
+    [/^(QA01C|ISO-GBIAS|ISO5V|B1505)/, "DCDC"],   // the gate-bias class is ISO-GBIAS-15-1W/2W
   ];
   {
     const hit = GLYPH_OF.find(([re]) => re.test(nm));
@@ -417,18 +417,18 @@ function shapeOf(c) {
     let ns = c.pins.map((p) => String(p.pin_number)).sort((a, b) => Number(a) - Number(b));
     let l = c.pins.find((p) => String(p.pin_number) === ns[0]);
     let r = c.pins.find((p) => String(p.pin_number) === ns[1]);
-    // R4-1 (external review, 2026-09-08): SEAT POLARIZED PINS SEMANTICALLY, NOT NUMERICALLY.
+    // SEAT POLARIZED PINS SEMANTICALLY, NOT NUMERICALLY.
     // Diode source ports arrive numbered anode=2/cathode=1 while the D glyph draws its anode on
-    // the LEFT seat — numeric seating rendered EVERY diode reversed on the sheets (netlists were
-    // correct throughout; the reviewer read the PDFs faithfully). The anode-named pin now takes
-    // the left seat regardless of number; the emitted symbol variant (e.g. D_21) keeps pin
-    // numbers truthful. Electrolytics are unaffected (pin1/pin2 named, numeric == semantic).
+    // the LEFT seat, so numeric seating draws EVERY diode reversed on the sheets even though the
+    // netlist is right. The anode-named pin takes the left seat regardless of number; the emitted
+    // symbol variant (e.g. D_21) keeps pin numbers truthful. Electrolytics are unaffected
+    // (pin1/pin2 named, numeric == semantic).
     if (c.pins.length === 2) {
       const a = c.pins.find((p) => /^(A|anode|\+)$/i.test(p.name ?? ""));
       const k = c.pins.find((p) => /^(C|K|cathode|-)$/i.test(p.name ?? ""));
       if (a && k) { l = a; r = k; ns = [String(a.pin_number), String(k.pin_number)]; }
       else if (cat === "D")
-        throw new Error(`R4-1 polarity seating: diode ${c.designator} payload has no named anode/cathode pins — refusing to emit a glyph whose orientation cannot be proven`);
+        throw new Error(`polarity seating: diode ${c.designator} payload has no named anode/cathode pins — refusing to emit a glyph whose orientation cannot be proven`);
     }
     const lw = (l?.signal_name?.length ?? 0) * CHW, rw = (r?.signal_name?.length ?? 0) * CHW;
     return { cat, nums: ns, w: 500 + STUB * 2 + lw + rw, h: ROW, lw, rw };
@@ -471,8 +471,8 @@ const KW = SKU.replace(/kwa$/, "").replace("kw", "").toUpperCase();
 const CELLS = { "30kw": "1x", "40kw": "1x hot", "50kw": "1x liquid", "50kwa": "1x air", "control-card": "1x" }[SKU] ?? "?";
 const SIDE_TITLE = {
   acdc: `${KW} kW ACDC board 1of2 - Vienna PFC (${CELLS} cells)`,
-  dcdc: `${KW} kW DCDC board 2of2 - full-bridge LLC (E67)`,
-  card: `Control Card - GD32G553VET7, one card for both converter roles (E35)`,
+  dcdc: `${KW} kW DCDC board 2of2 - full-bridge LLC`,
+  card: `Control Card - GD32G553VET7, one card for both converter roles`,
 };
 for (const [side, pgs] of Object.entries(BOARDS)) {
   const page = { page: `${SKU}-${side}`, title: SIDE_TITLE[side],
@@ -613,11 +613,11 @@ const HAND = {
   // This split was FOUND, not guessed. Probing candidates against the packed frame gave 3 columns
   // 5078x3250 and a 7/7 split 3297x5000, against a packed 3297x4250; keeping both chokes apart --
   // CMC2 ending column one -- lands on 3297x4250 exactly. Frame identical, so nothing moves.
-  // E65: the second Y trio (CY4-6, the stage-1 node) joins the first column beside the X bank it shares a node with;
+  // the second Y trio (CY4-6, the stage-1 node) joins the first column beside the X bank it shares a node with;
   // the CX2-node Rd–Cd damper takes a third column (frame re-probe is the integrator's sheet-pipeline run).
   "INPUT-EMI / EMI-FILTER": [
     ["CMC1", "CX11", "CX12", "CX13", "CY4", "CY5", "CY6", "CMC2"],
-    ["CX01", "CX02", "CX03", "CX21", "CX22", "CX23", "CX24", "CX25", "CX26"],   /* E68: line-side X2 star stage + the doubled converter stage */
+    ["CX01", "CX02", "CX03", "CX21", "CX22", "CX23", "CX24", "CX25", "CX26"],   /* line-side X2 star stage + the doubled converter stage */
     ["CY1", "CY2", "CY3"],
     ["CDMP1", "CDMP2", "CDMP3", "RDMP1", "RDMP2", "RDMP3"],
   ],
@@ -1305,33 +1305,32 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
         ], "", fixed);
       const l1 = legend(below, { x0: p1.x0, x1: p1.x1 }) || legend(pickVoid(used));
       if (l1) used.push(l1);
-      // R6-H: the external reviewer twice noted the sheets carry only magnetic part LABELS
-      // ("XFMR-LLC-... without turns, Lm, Lr") — the construction data lives in
-      // docs/magnetics.md; print the identity lines on the sheet so the drawing is no longer
-      // the only artifact a reviewer holds. Values are the frozen D1/D2/D3/D6 drawings.
+      // A magnetic part LABEL alone ("XFMR-LLC-…" with no turns, Lm or Lr) leaves the construction
+      // data only in docs/magnetics.md, so the identity lines are printed on the sheet itself and
+      // the drawing stands on its own. Values are the frozen D1/D2/D3 drawings.
       const MAG = {
         acdc: {
           "30": ["D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2 -> L0 169uH, >=75uH @82A pk (BIASED value governs ripple/trip calcs)",
-                 "E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted"],
-          "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu (CATALOG AL37), N=26 +/-1 lot trim -> L0 116uH, >=61uH @104A pk (E51)",
-                 "E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted"],
-          "50": ["D1 LA0-LC0: 5x T79 26u sendust (CATALOG AL37), N=24 +/-1 lot trim -> L0 107uH, >=45uH @129.5A pk (E51)",
-                 "E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted"],
+                 "EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; no AC-side DM chokes"],
+          "40": ["D1 LA0-LC0: 5x 0077908A7 KoolMu (CATALOG AL37), N=26 +/-1 lot trim -> L0 116uH, >=61uH @104A pk",
+                 "EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; no AC-side DM chokes"],
+          "50": ["D1 LA0-LC0: 5x T79 26u sendust (CATALOG AL37), N=24 +/-1 lot trim -> L0 107uH, >=45uH @129.5A pk",
+                 "EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; no AC-side DM chokes"],
         },
         dcdc: {
-          "30": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372A2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED",
-                 "D2 L1R (E67 rev F): external Lr 5.00uH +/-3%, 2x E70/33/32, N=5, litz 8000x0.05, distributed gap, bonded"],
-          "40": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 21.75uH/cell +/-7%, Bpk 159mT, BONDED",
-                 "D2 L1R (E67 rev F): external Lr 3.99uH +/-3%, 2x E70/33/32, N=5, litz 10000x0.05, distributed gap, bonded"],
-          "50": ["D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 17.8uH/cell +/-7%, Bpk 159mT, plate/web-BONDED",
-                 "D2 L1R (E67 rev F): external Lr 3.20uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded"],
+          "30": ["D3 T1A/T1B (rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372A2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED",
+                 "D2 L1R (rev F): external Lr 5.00uH +/-3%, 2x E70/33/32, N=5, litz 8000x0.05, distributed gap, bonded"],
+          "40": ["D3 T1A/T1B (rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 21.75uH/cell +/-7%, Bpk 159mT, BONDED",
+                 "D2 L1R (rev F): external Lr 3.99uH +/-3%, 2x E70/33/32, N=5, litz 10000x0.05, distributed gap, bonded"],
+          "50": ["D3 T1A/T1B (rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 17.8uH/cell +/-7%, Bpk 159mT, plate/web-BONDED",
+                 "D2 L1R (rev F): external Lr 3.20uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded"],
         },
       };
       const magRows = MAG[key.endsWith("acdc") ? "acdc" : "dcdc"]?.[KW];
       if (magRows) {
         const magPanel = (V, fixed) => drawPanel(V, "MAGNETICS CONSTRUCTION",
           "identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)",
-          [...magRows, key.endsWith("acdc") ? "Cr at TANK sections" : "total Lr = D2 + 2x cell leakage (acceptance +/-30%) + 0.1uH loop = +/-5% simulated; Cr at TANK", ...(key.endsWith("acdc") ? [] : ["bond loss screened by the EOL bonded thermal soak (T_XFMR NTC rise at fixed load, E65)"])], "", fixed);
+          [...magRows, key.endsWith("acdc") ? "Cr at TANK sections" : "total Lr = D2 + 2x cell leakage (acceptance +/-30%) + 0.1uH loop = +/-5% simulated; Cr at TANK", ...(key.endsWith("acdc") ? [] : ["bond loss screened by the EOL bonded thermal soak (T_XFMR NTC rise at fixed load)"])], "", fixed);
         const m1 = magPanel(pickVoid(used));
         if (m1) used.push(m1);
       }
@@ -1458,13 +1457,13 @@ const BAND = 16000;   // swept 2k..40k: 20k collapses family spread 21500->4500 
   const rootSch = `EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n`
     + `$Descr User 12000 8000\nencoding utf-8\nSheet 1 1\n`
     + `Title "DC-Modules ${KW} kW module - schematic set"\nDate "${DATE}"\nRev "D.1"\n`
-    + `Comp "DC-Modules"\nComment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC, E67)"\n`
-    + `Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card (E40)"\nComment3 ""\nComment4 ""\n$EndDescr\n`
+    + `Comp "DC-Modules"\nComment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC)"\n`
+    + `Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card"\nComment3 ""\nComment4 ""\n$EndDescr\n`
     + `${root}$EndSCHEMATC\n`;
   writeFileSync(join(OUT, `dc-modules-${SKU}.sch`), rootSch);
 }
 
-writeFileSync(join(OUT, `${LIB_NAME}.lib`),   /* E56: native emission — no pre-mirror */
+writeFileSync(join(OUT, `${LIB_NAME}.lib`),   /* native emission — no pre-mirror */
   `EESchema-LIBRARY Version 2.4\n#encoding utf-8\n${[...lib.values()].join("")}#\n#End Library\n`);
 writeFileSync(join(OUT, `${LIB_NAME}.dcm`), `EESchema-DOCLIB  Version 2.0\n#\n#End Doc Library\n`);
 writeFileSync(join(OUT, `dc-modules-${SKU}.pro`),

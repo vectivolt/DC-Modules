@@ -1,5 +1,5 @@
-# E67 ngspice-46 power-solved full-bridge LLC stress; 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p; netlists spice/generated/llc-30kw-*.cir
-# E81 device model: non-linear Coss (body-diode junction Cjo/(1+V/2)^0.5 fitted to Qoss(800 V)=371 nC per die, ×1 dies, on BOTH devices of a leg) + 330 pF linear snubber per die; ZVS window 20 V; deck dead time 119.99999999999999 ns
+# ngspice-46 power-solved full-bridge LLC stress; 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p; netlists spice/generated/llc-30kw-*.cir
+# device model: non-linear Coss (body-diode junction Cjo/(1+V/2)^0.5 fitted to Qoss(800 V)=371 nC per die, ×1 dies, on BOTH devices of a leg) + 330 pF linear snubber per die; ZVS window 20 V; deck dead time 119.99999999999999 ns
 corner,bank_V,bus_V,mode,fsw_kHz,duty,P_target_W,P_sim_W,P_err_pct,Ip_rms_A,Ip_pk_A,crest,Im_pk_A,Vcr_ac_pk_V,Vcr_abs_pk_V,Isec_rms_A,Isec_pk_A,Idiode_avg_A,Ifet_rms_A,Ifet_toff_A,ZVS,legs_in_rails,Icomm_min_A,t_dead_need_ns,t_dead_used_ns,ZVS_at_120ns,ZVS_fail_legs,Vres_A_V,Vres_B_V
 SER250-full,250,650,PFM,198.5,,30000,30023,0.1,67.8,93.9,1.385,11.4,330,330,66.1,88.8,30,47.9,90.5,64/64,YES,90.6,12,120,64/64,-,0,0
 SER250-full-tolHi,250,650,PFM,186.7,,30000,30014,0,68.4,95.1,1.391,13,336,336,66.2,89.2,30,48.3,91.5,64/64,YES,91.6,12,120,64/64,-,0,0

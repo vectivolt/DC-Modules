@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// magnetics-envelope.mjs — E65 standing gate: every LLC magnetic (D3 transformer, D2 trim inductor) evaluated at
-// EVERY power-solved simulated corner — the 14 E60 stress corners and the 20-point E65 bank-voltage × load
-// envelope — instead of at resonance.
+// magnetics-envelope.mjs — standing gate: every LLC magnetic (D3 transformer, D2 trim inductor) evaluated at
+// EVERY power-solved simulated corner — the 14 stress corners and the 20-point bank-voltage × load envelope —
+// never at resonance alone.
 //
-// Why it exists: all D3 flux and core-loss checks were pinned to the resonant point (140 kHz, 415 V half-cycle →
-// 108/90/109 mT). The decks run 77–88 kHz at bank 500–525 V (gain 1.2–1.27 with the bus capped at 830 V), where
-// D3 flux is 1.5–2.2× that and ferrite loss 2–3×; the flux follows bank voltage, not load (it persists at zero
-// load), so a power derate cannot relieve it. Independently verified at E65 (3 skeptic lenses, raw waveforms).
+// Why it exists: pinning D3 flux and core loss to the resonant point (140 kHz, 415 V half-cycle → 108/90/109 mT)
+// misses the real duty. The decks run 77–88 kHz at bank 500–525 V (gain 1.2–1.27 with the bus capped at 830 V),
+// where D3 flux is 1.5–2.2× that and ferrite loss 2–3×; the flux follows bank voltage, not load (it persists at
+// zero load), so a power derate cannot relieve it.
 //
 // Chain, all from committed data:
 //   excitation   simulation-results/<sku>/llc-flux.csv (spice/llc/llc-flux-post.mjs) — Im_pk, Ip_pk, and iGSE
@@ -60,8 +60,8 @@ export const pvSine = (fq, B, T) => CAL * Math.max(datasheet100(fq, B) * tShape(
 const BsatAt = (T) => N95.Bsat_T_25C + ((N95.Bsat_T_100C - N95.Bsat_T_25C) / 75) * (T - 25);
 
 // ---------------- thermal model: two-node network (core, winding) from the real geometry ----------------
-// E65 rev: a lumped part-to-wall resistance hid the two real bottlenecks (independent verifier network): ferrite conducts
-// only ~4 W/mK through a 66 mm set height, and the winding reaches the core only through its former and its own build.
+// A lumped part-to-wall resistance hides the two real bottlenecks: ferrite conducts only ~4 W/mK through a 66 mm set
+// height, and the winding reaches the core only through its former and its own build.
 //   core → wall   ferrite column to the bonded yoke face(s): uniform generation, max-point ΔT = P·L/(2kA) one face,
 //                 P·L/(8kA) both faces (A = leg area; the Lm/trim gap blocks the centre leg for a one-face bond) + gap pad
 //   core → air    forced convection on the unbonded, uncovered faces (air SKUs; h = 24√(v/2.5) + 5 W/m²K)
@@ -100,18 +100,18 @@ const solve2 = (loss, nw, Twall, Tair, cuK, k = 1) => {
 // local air velocity at the magnetics scales with the per-SKU airflow need (thermal-report air budget 128/187/245 m³/h)
 export const V_AIR = { "30kw": 2.0, "40kw": 2.5, "50kw": 0, "50kwa": 3.2 };
 export const wallAt = (sku, Tin, frac) => (sku === "50kw" ? 65 : Tin + 5 + 20 * frac);
-// E65 (ENV-1): the sealed liquid module has no airflow, but its internal air is NOT cool — never-bondable losses hold it at
+// The sealed liquid module has no airflow, but its internal air is NOT cool — never-bondable losses hold it at
 // plate + Q_air·R_air-plate ≈ 110 °C at full load (sweep estimate 95–125 °C); still-air coupling h ≈ 5 W/m²K. The air node
 // can then HEAT a well-bonded part, so it is modelled rather than assumed away.
 const SEALED = { "50kw": { Tfull: 110, h: 5 } };
 const airAt = (sku, Tin, frac) => (SEALED[sku] ? 65 + (SEALED[sku].Tfull - 65) * frac : Tin + 10 * frac);
 
-// ---------------- the E67 constructions (drawings of record after E67) ----------------
-// D3 rev D: the full-bridge transformer is TWO identical E70-stack cells with their primaries in SERIES — one cell per bank.
+// ---------------- the constructions (drawings of record) ----------------
+// D3: the full-bridge transformer is TWO identical E70-stack cells with their primaries in SERIES — one cell per bank.
 // A single n:1:1 core cannot carry the one-bridge copper through the E70 window (13.55 × 44.5 mm) and nothing taller than the
 // 66 mm set fits the inter-board tunnel (MAS shape scan: only PM 87/70 and a powder E 130 sit at 2B ≤ 70 mm with a larger
 // window), so the one-bridge current is split across two cores instead — same bridge, same tank, same n = 2 overall (each cell
-// 1:1, Np:Ns = N:N). Each cell keeps the E65 S1–P–S2 lay-up with S1 ∥ S2 feeding its bank (half the bank current per half).
+// 1:1, Np:Ns = N:N). Each cell carries the S1–P–S2 lay-up with S1 ∥ S2 feeding its bank (half the bank current per half).
 // Cell magnetizing inductance Lm/2 referred to its own N turns; flux linkage Lm/2·Im ≈ 1.3 mV·s on every SKU (volt-second set
 // at the 500 V bank). Foil halves: nf parallel foils per turn (Dowell with N·nf layers). former: TDK B66372 (1-set lN 166 mm,
 // 2-set 230.5 mm) or a 3-set former (lN 293 mm, custom — TDK lists 1- and 2-set only; tooling at RFQ).
@@ -142,9 +142,9 @@ export const D2 = {
   "50kwa": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372A2000" },
 };
 export const LOOP_STRAY = 0.1e-6;                                  // bridge → Cr → D2 → D3 loop on the power PCB (first-article measured)
-export const D2_TOL = 0.03, LEAK_SPREAD = 0.2;                     // D2 gap tolerance; D3 leakage acceptance band — E81 (F-B-3): ±30 % → ±20 % of computed. At ±30 % on the corrected leakage the worst-case Lr stack is ±5.37 % against the ±5 % the decks were solved at (30 kW FAILS, 40/50 kW have 0.08–0.43 % of slack); ±20 % closes it and is what a winder can hold with a measured-and-labelled-per-cell rule, which is the real control anyway
+export const D2_TOL = 0.03, LEAK_SPREAD = 0.2;                     // D2 gap tolerance; D3 leakage acceptance band ±20 % of computed. A ±30 % band stacks the worst-case Lr to ±5.37 % against the ±5 % the decks are solved at (the 30 kW FAILS it, 40/50 kW keep 0.08–0.43 % of slack); ±20 % closes it and is what a winder holds with a measured-and-labelled-per-cell rule, which is the real control anyway
 // radial build of the S1–P–S2 lay-up → per-winding mean turn (production Rdc rows) and leakage
-// E65 (INS-1): the reinforced barrier is margin-built on the E70 former, so P and S conductors are confined to CB = 28 mm of
+// The reinforced barrier is margin-built on the E70 former, so P and S conductors are confined to CB = 28 mm of
 // the 41 mm window (≥6.5 mm margin per side); the field breadth for Dowell/Sullivan stays the window b. 3 barrier-tape layers
 // + shield per side sit in the gap.
 export const CB = 0.028;
@@ -153,11 +153,11 @@ export const d3Build = (c) => {
   return { hS, hP, mltS1: eTurn(c.core, c.n, w + hS / 2), mltP: eTurn(c.core, c.n, w + hS + c.gap + hP / 2), mltS2: eTurn(c.core, c.n, w + hS + 2 * c.gap + hP + hS / 2) };
 };
 // per-cell leakage referred to the cell's N turns; the two cells' primaries are in series, so the tank sees D3_CELLS × this
-// E81 (F-B-3): the MMF breadth is **CB**, the 28 mm conductor band this same file defines — not the
-// 41 mm window height. In the 1-D energy model b is the breadth over which the winding's ampere-turns
-// are distributed; leakage energy ∝ 1/b, so 41 mm under-stated it by 41/28 = 1.46×. Corrected:
-// 0.172 → 0.252 µH (30 kW) and 0.090 → 0.132 µH (40/50 kW) per cell, which re-issues D2 at
-// 5.00 / 3.99 / 3.20 µH. Tank Lr is UNCHANGED (the split moves, not the total), so no simulation
+// The MMF breadth is **CB**, the 28 mm conductor band this same file defines — NOT the 41 mm window
+// height. In the 1-D energy model b is the breadth over which the winding's ampere-turns are
+// distributed and leakage energy ∝ 1/b, so using the window under-states it by 41/28 = 1.46×
+// (0.252 vs 0.172 µH per 30 kW cell, 0.132 vs 0.090 µH per 40/50 kW cell), which moves D2 by the
+// same amount. Tank Lr itself never moves with it (the split moves, not the total), so no simulation
 // fingerprint moves — but a correctly built cell measuring 0.25 µH would have been REJECTED by the
 // old ±30 % acceptance around 0.172 µH, so LEAK_SPREAD tightens to ±20 % to close the stack.
 export const d3Leakage = (c) => { const b = d3Build(c); return leakageSPS({ N: c.N, mlt: b.mltP, b: CB, gap: c.gap, hS: b.hS, hP: b.hP }); };
@@ -189,7 +189,7 @@ export const d3Loss = (sku, c, r) => {                           // ONE cell (bo
   const s = stack(c.core, c.n), fq = r.fsw_kHz * 1e3;
   const B = ((TANKS[sku].Lm / D3_CELLS) * r.lm_scale * r.Im_pk_A) / (c.N * s.Ae);
   const fe = (T) => pvSine(fq, B, T) * r.k_igse_D3 * s.Ve;
-  const g = d3Build(c);                                           // E65: per-winding mean turns (S1 inner, P, S2 outer)
+  const g = d3Build(c);                                           // per-winding mean turns (S1 inner, P, S2 outer)
   const RpDc = (rho(T_WIND) * c.N * g.mltP) / c.cuP;
   const FrP = litzFr({ fq, T: T_WIND, N: c.N, n: c.strands, d: c.dS, b: c.b, k: 0.25 });
   const RsDc = (rho(T_WIND) * c.N * (g.mltS1 + g.mltS2) / 2) / (c.nf * c.foil * c.foilW);
@@ -217,7 +217,7 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
   const res = rows.map((r) => {
     const loss = part === "D3" ? d3Loss(sku, c, r) : d2Loss(sku, c, r);
     const frac = r.source === "envelope" ? r.P_frac : 1;
-    const cu75 = Math.min(1, (0.4 / frac) ** 2);                  // derated to 40 % power at 75 °C inlet — Cu scales, Fe does not
+    const cu75 = Math.min(1, (0.6 / frac) ** 2);                  // the firmware's derate law: 60 % power at the 75 °C inlet trip (fsm.h PMP_DERATE_MIN_TH) — Cu scales, Fe does not
     const e55 = solve2(loss, nw, wallAt(sku, 55, frac), airAt(sku, 55, frac), 1), e75 = solve2(loss, nw, wallAt(sku, 75, 0.4), airAt(sku, 75, 0.4), cu75);
     const st = [solve2(loss, nw, wallAt(sku, 55, frac), airAt(sku, 55, frac), 1, 1.25), solve2(loss, nw, wallAt(sku, 75, 0.4), airAt(sku, 75, 0.4), cu75, 1.25)];
     const Tstress = Math.max(st[0].hot, st[1].hot), Tcore = Math.max(e55.Tc, e75.Tc);
@@ -230,9 +230,9 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
   return { s, nw, mount, w55, w75, wS, wB, wM, fe, cu, ok, res };
 };
 
-// E73 abnormal-condition rows. FAN-OUT: one fan dead on an air SKU — airflow (n−1)/n, the F.25 derate to 50 % halves the current,
+// Abnormal-condition rows. FAN-OUT: one fan dead on an air SKU — airflow (n−1)/n, the F.25 derate to 50 % halves the current,
 // the extrusion web (the magnetics wall) runs hotter on the reduced flow (sink rise ∝ flow^−0.8), core loss stays at every corner.
-export const FANS = { "30kw": 3, "40kw": 3, "50kwa": 4 };          // fault-energy air budget; the liquid SKU has no fans. E81 (F-C-2/F-C-16, user decision): 30 kW 2 → 3 — the air budget had used 30 °C density, so the margin was 1.10× and n−1 exactly 1.00×
+export const FANS = { "30kw": 3, "40kw": 3, "50kwa": 4 };          // fault-energy air budget; the liquid SKU has no fans. The 30 kW carries three because two leave 1.10× of margin and exactly 1.00× on n−1 once the air budget is taken at the real inlet density, not 30 °C
 export const fanOut = (sku, part, c, rows) => {
   const vK = (FANS[sku] - 1) / FANS[sku], s = stack(c.core, c.n), nw = network(part, c, s, c.mount, V_AIR[sku] * vK);
   const wall = 55 + 5 + 20 * 0.5 * Math.pow(1 / vK, 0.8), air = 55 + (10 * 0.5) / vK;
@@ -259,14 +259,14 @@ export const cellImbalance = (sku, c, rows) => {
 const T = (x) => (Number.isFinite(x) ? `${f(x, 0)} °C` : "RUNAWAY");
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   captureEvidence("magnetics-envelope");
-  console.log("=== MAGNETICS ENVELOPE (E65 gate, E67 full bridge) — D3 cells / D2 external Lr at every power-solved corner (stress + bank-voltage × load envelope) ===");
+  console.log("=== MAGNETICS ENVELOPE (full bridge) — D3 cells / D2 external Lr at every power-solved corner (stress + bank-voltage × load envelope) ===");
   for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
     const ex = excitation(sku), t = TANKS[sku];
     ck("DATA", `${sku} excitation table current`, ex.fp && ex.aligned,
       `llc-flux.csv ${ex.rows.length} corners · tank fingerprint ${ex.fp ? "matches" : "STALE — re-run llc-run / llc-envelope / llc-flux-post"} · rows ${ex.aligned ? "aligned with llc-stress + llc-envelope" : "MISALIGNED"}`);
     const k = ex.rows.map((r) => r.k_igse_D3);
     console.log(`  info  [${sku}] iGSE waveform factor D3 ${f(Math.min(...k), 2)}–${f(Math.max(...k), 2)} · D2 ${f(Math.min(...ex.rows.map((r) => r.k_igse_D2)), 2)}–${f(Math.max(...ex.rows.map((r) => r.k_igse_D2)), 2)}`);
-    // Lr split (E67): the external D2 carries Lr − 2 cells' leakage − loop stray; its ±3 % gap tolerance plus the leakage acceptance
+    // Lr split: the external D2 carries Lr − 2 cells' leakage − loop stray; its ±3 % gap tolerance plus the leakage acceptance
     // band (±30 % of computed) must stay inside the ±5 % Lr the tank decks were run at (llc-run.mjs TOL)
     const llk = d3Leakage(D3[sku]), leak = D3_CELLS * llk, dL = D2_TOL * D2[sku].Lnom + LEAK_SPREAD * leak;
     ck("LR", `${sku} D2 + D3 leakage stack inside the simulated Lr tolerance`, D2[sku].Lnom > 0.7 * t.Lr && dL <= (1 - TOL.lo.lr) * t.Lr + 1e-12,
@@ -280,10 +280,10 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
       const lost = c.mount.replace(/2$/, "1"), a = evaluate(sku, part, c, ex.rows, lost);
       console.log(`  info  [${part}-BOND-LOST] ${sku}: one face lost (${lost}) → ${T(a.w55.T55)} @55 / ${T(a.w75.T75)} @75 · +25 % ${T(a.wS.Tstress)} → ${a.ok ? "survives" : "not survivable — screened by the EOL bonded thermal soak"}`);
       if (!a?.ok) unprotected.push(part);
-      // E81 (F-B-4): the END-TURN POTTING carries roughly half the winding heat (network(): Gww =
-      // k_pot·aEnd/t_pot, 0.8 W/mK over a 5 mm bridge) and the gate had a row for a lost yoke GAP
-      // PAD but none for lost or voided POTTING — a manual process step with no measurable
-      // acceptance row on either drawing. Losing it costs +32 K (30 kW D3), +61 K (50 kW liquid D3)
+      // The END-TURN POTTING carries roughly half the winding heat (network(): Gww =
+      // k_pot·aEnd/t_pot, 0.8 W/mK over a 5 mm bridge), and it is a manual process step with no
+      // measurable acceptance row on either drawing, so it needs its own row here beside the lost
+      // yoke gap pad. Losing it costs +32 K (30 kW D3), +61 K (50 kW liquid D3)
       // and +90 K on the 50 kW liquid D2, which breaks Class F by 33 K: the sealed liquid module is
       // worst because it has no airflow at all to fall back on. Screened by a LOADED EOL soak (a
       // fixed-load soak would show a 30–90 K delta) plus 100 % visual + first-article cross-section.
@@ -305,7 +305,7 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
         `LOW mode (banks parallel): the heavier cell's secondary rises ${f(im.worst.d * 100, 1)} % rms at ${im.worst.corner} · its copper at the worst LOW corner ${f(im.hottest.cu, 1)} W (${im.hottest.corner}) ≤ the ${f(cuMax, 1)} W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge`);
     }
     const reg = D3_CONTROL_E65[sku], er = evaluate(sku, "D3", reg, ex.rows);
-    ck("CONTROL", `${sku} gate rejects the E65 section transformer in the one-bridge cell duty (${reg.n}×${reg.core} ${reg.N}:${reg.N}:${reg.N})`, !er.ok,
+    ck("CONTROL", `${sku} gate rejects the section transformer in the one-bridge cell duty (${reg.n}×${reg.core} ${reg.N}:${reg.N}:${reg.N})`, !er.ok,
       `hot-spot ${T(er.w55.T55)} @55 / ${T(er.w75.T75)} @75 · Fe ${f(er.fe.fe100)} W at B̂ ${f(er.fe.B * 1e3, 0)} mT · Cu ${f(er.cu.cu100)} W → ${er.ok ? "PASSES — the gate is blind" : "rejected"}`);
   }
   console.log(fails ? `\n${fails} MAGNETICS ENVELOPE FAILURE(S)` : "\nMAGNETICS ENVELOPE CLEAN — every D3 cell and D2 holds temperature, runaway margin and saturation margin at every simulated corner; the Lr split is inside the simulated tolerance");

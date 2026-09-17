@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/run--all-exit_0-2ea44f?style=flat-square" alt="run-all: exit 0"/>
 </p>
@@ -15,7 +15,7 @@
 > **Purpose** — every number in the documentation traces to a runnable tool in this directory, and one command
 > reproduces the lot. The directory holds exactly the tools the production path uses: design engines, standing
 > gates, the release-sheet pipeline (it ends at KiCad), the sheet-QA suite, the BOM factory and the documentation
-> generators. Superseded tools live in the git history.
+> generators.
 
 ```bash
 sh calculations/run-all.sh
@@ -27,10 +27,10 @@ sh calculations/run-all.sh
 |---|---|
 | **One command** | `sh calculations/run-all.sh` — **exit 0** end to end; every gate runs as its own command so none can pass silently |
 | **What it produces** | the design CSVs in `out/`, the four module BOM pages, the four module magnetics pages, the busbar and pin-map pages |
-| **Standing gates** | stress-audit **158** · current-coordination **102** · mag-sync 48 · magnetics-envelope 30 · fault-energy 23 · conductor-audit 18 · temp-critique 10 |
+| **Standing gates** | stress-audit **163** · current-coordination **107** · review-checks **154** · mag-sync 52 · magnetics-envelope 30 · fw-constants-sync 30 · fault-energy 24 · conductor-audit 18 · temp-critique 11 · repo-hygiene 7 |
 | **Clean-room check** | `verify-independent` **243 / 243** — its own netlist parser and its own physics |
-| **Firmware** | `sh firmware/run_tests.sh` — **330 checks** under ASan/UBSan across seven binaries |
-| **Documentation** | `docs-lint` — 42 registered pages, every link, anchor, masthead, footer and mermaid type |
+| **Firmware** | `sh firmware/run_tests.sh` — **330 checks** under ASan/UBSan across seven binaries; `port-pin-audit` holds 56 port pins against the card generator |
+| **Documentation** | `docs-lint` — 41 registered pages, every link, anchor, masthead, footer and mermaid type |
 
 ## 1. The battery, in the order it runs
 
@@ -54,64 +54,66 @@ flowchart TB
     direction LR
     SA["stress-audit"] --> TC["temp-critique"] --> CA["conductor-audit"] --> ME["magnetics-envelope"] --> FE["fault-energy"] --> CC["current-coordination"] --> MD["mag-docs → 4 module magnetics pages"] --> MS["mag-sync"] --> RFQ["magnetics-rfq-audit"] --> SBY["standby-budget"] --> MTB["mtbf-budget"]
   end
-  subgraph IND["5 · Independent and documentation"]
+  subgraph IND["5 · Independent, hygiene and documentation"]
     direction LR
-    VI["verify-independent 227"] --> FA["footprint-audit"] --> DL["docs-lint"]
+    VI["verify-independent 243"] --> FP["footprint-audit"] --> RH["repo-hygiene"] --> RC["review-checks"] --> DL["docs-lint 41 pages"]
   end
-  FW["6 · firmware run_tests.sh<br/>330 checks · 7 binaries"]
+  FW["6 · port-pin-audit · fw-constants-sync<br/>run_tests.sh 330 checks · 7 binaries<br/>GD32G553 target build"]
   ENG --> BOM --> STR --> PHY --> IND --> FW
   style PHY stroke:#d19a00,stroke-width:2px
   style IND stroke:#2ea44f,stroke-width:2px
 ```
 
-## 1. Engines — the design truth
+## 2. Engines — the design truth
 
 | Tool | Owns |
 |---|---|
-| `design-basis.mjs` | input currents, availability policy, first-pass sizing |
-| `pfc/pfc-design.mjs` | Vienna device losses and the D1 choke search on the **catalog core** (E51) |
+| `design-basis.mjs` | line current and available power per module over the input window |
+| `pfc/pfc-design.mjs` | Vienna device losses and the D1 choke search on the **catalog core** |
 | `pfc/pfc-control.mjs` | current and voltage loops with an ngspice AC cross-check |
-| `pfc/vienna-switched.mjs` | **cycle-by-cycle** 3-φ Vienna — catalog L(i), floating neutral, dips, phase jump, high line (E60); D1 ripple, iGSE core loss, switch-end peak (E65) |
-| `magnetics/d1-choke.mjs` | the D1 PFC choke model — datasheet MLT, strand-resolved ripple copper, wound surfaces, air ∥ bond thermal (E65) |
-| `magnetics/d1-fd.mjs` | 2-D eddy-current anchor for the D1 bundles → `out/d1-fd.csv`, fingerprinted per build (E65) |
+| `pfc/vienna-switched.mjs` | **cycle-by-cycle** 3-φ Vienna — catalog L(i), floating neutral, dips, phase jump, high line; D1 ripple, iGSE core loss, switch-end peak |
+| `magnetics/d1-choke.mjs` | the D1 PFC choke model — datasheet MLT, strand-resolved ripple copper, wound surfaces, air ∥ bond thermal |
+| `magnetics/d1-fd.mjs` | 2-D eddy-current anchor for the D1 bundles → `out/d1-fd.csv`, fingerprinted per build |
 | `llc/llc-design.mjs` | tank synthesis (joint Ln · Q solve), operating map, first-pass transformer basis |
-| `llc/tanks.mjs` | **the one per-SKU tank table** — Lr, Cr, Lm, Coss, D2 turns and area — with the fingerprint every LLC result carries (E60) |
-| `emi/dm-choke-design.mjs` | D7 CM-choke engine per SKU (E65); its retired D6 block stays as the LISN control group |
+| `llc/tanks.mjs` | **the one per-SKU tank table** — Lr, Cr, Lm, Coss, snubber and turn-off coefficient — with the fingerprint every LLC result carries |
+| `emi/dm-choke-design.mjs` | the D7 CM-choke engine per SKU |
 | `emi/lisn-precompliance.mjs` | conducted-emissions tendency per variant |
 | `thermal/loss-budget.mjs` | loss budgets from the power-solved LLC current, JBS vs SR, derating |
-| `thermal/mount.mjs` | the one device-mounting basis every Tj engine reads — clip-mounted TO-247 on Al2O3 (E68a) |
-| `system/envelope-grid.mjs` | the 4-SKU envelope grid — **4,536 points**, every point passing or a registered fold (E81 F-L-1) |
-| `system/monte-carlo.mjs` · `system/fsm-sim.mjs` | §37 tolerance batches · §36 scenario suite |
+| `thermal/mount.mjs` | the one device-mounting basis every Tj engine reads — clip-mounted TO-247 on Al2O3 |
+| `system/envelope-grid.mjs` | the 4-SKU envelope grid — **4,536 points**, every point passing, some carrying a registered thermal fold |
+| `system/monte-carlo.mjs` · `system/fsm-sim.mjs` | tolerance batches (N = 10k) · the scenario suite, 26/26 |
 | `busbar/busbar-calc.mjs` | bulk-copper paths and the joint schedule → `docs/busbar-drawings.md` |
 | `control/umod-pinmap.mts` | **single source** for the card map, harness and MCU pins → `umod-map.gen.ts` |
-| `control/mcu-matrix.mjs` | MCU resource budget CSVs |
 | `plot.mjs` | zero-dependency SVG plotter used by the engines |
 
-## 2. Standing gates
+## 3. Standing gates
 
 | Gate | Proves | Checks |
 |---|---|---:|
-| `cost/bom-maturity.mjs` | every BOM line resolves to an orderable, class, direct, custom or tracked-review status; `bom-gen` itself refuses a line with no status (E61) | — |
+| `cost/bom-maturity.mjs` | every BOM line resolves to an orderable, class, direct, custom or tracked-review status; `bom-gen` itself refuses a line with no status | — |
 | `schematic-check.mjs` | 0 symbol overlaps on every built SKU pair | — |
 | `module-interconnect-audit.mts` | studs · all 40 harness ways · the 88-way slot · RATING straps | — |
 | `polarity-audit.mts` | every polarized part has its + / anode on pin 1, proven from the netlist | — |
-| `stress-audit.mjs` | every device, magnetic, pulse part and protection class against its own line | 127 |
+| `stress-audit.mjs` | every device, magnetic, pulse part and protection class against its own line, including the `[DPT]` device-edge rows | 162 |
 | `magnetics/temp-critique.mjs` | hot equilibria, runaway distance, cold start, saturation at temperature on measured 3C95 | 11 |
 | `magnetics/conductor-audit.mjs` | Dowell / Sullivan AC copper at the simulated currents | 18 |
-| `magnetics/magnetics-envelope.mjs` | D2 / D3 flux, core and copper loss and the two-node thermal network at every power-solved corner | 20 |
-| `magnetics/mag-sync.mjs` | one magnetics identity table asserted across the magnetics docs, parts-db, the KiCad panel and boards.tsx; computed masses | 48 |
-| `system/fault-energy.mjs` | stored energy, wire vs fuse, surge, air and coolant budget | 22 |
-| `system/current-coordination.mjs` | simulated peaks vs trips, observability, per-die fault pulse, DESAT vs SCWT, fault flux, film banks, DOUT | 72 |
-| `system/standby-budget.mjs` | the drawn HV passive network (parsed off the sheets) vs the registered standby arithmetic and the ≤ 10 W target (E64) | — |
-| `reliability/mtbf-budget.mjs` | parts-count MTBF prediction vs the registered table — a BOM change that moves reliability re-registers consciously (E64) | — |
-| `verify-independent.mjs` | clean-room recompute — own netlist parser, own physics, external anchors (§K) | 227 |
-| `footprint-audit.mjs` | the naming queue stays CLOSED — zero unnamed packages, zero MPN / land conflicts (E64) | 0 · 0 |
-| `docs-lint.mjs` | every link and anchor resolves, page chrome matches `doc-chrome.mjs`, diagrams render (E61) | — |
-| `review-checks.mjs` *(run after any schematic edit)* | every audit and review closure R1…R8, E35…E82 as an assertion | 154 |
-| `magnetics-rfq-audit.mjs` | every magnetic drawing on the module pages complete enough to order (E70: in run-all) | 0 missing |
-| `magnetics/mkf-crosscheck.py` *(by hand, Python 3.12 venv with PyOpenMagnetics 1.4.0)* | every custom magnetic re-made in OpenMagnetics MKF: D1 toroid Rdc and Kool Mµ DC bias, D2 / D3 Rdc, gap fringing, 2-D copper and thermal, D4 gap and copper, D7 permeability; evidence quoted by the module pages (E71 · E73) | Rdc ± 5 % · class lines |
+| `magnetics/magnetics-envelope.mjs` | D2 / D3 flux, core and copper loss and the two-node thermal network at every power-solved corner | 30 |
+| `magnetics/mag-sync.mjs` | one magnetics identity table asserted across the magnetics docs, parts-db, the KiCad panel and boards.tsx; computed masses | 52 |
+| `system/fault-energy.mjs` | stored energy, wire vs fuse, surge, air and coolant budget | 24 |
+| `system/current-coordination.mjs` | simulated peaks vs trips, observability, per-die fault pulse, DESAT vs SCWT, fault flux, film banks, D_OUT, the Vienna's own link-capacitor current | 107 |
+| `system/standby-budget.mjs` | the drawn HV passive network (parsed off the sheets) vs the registered standby arithmetic and the ≤ 10 W target | — |
+| `reliability/mtbf-budget.mjs` | parts-count MTBF prediction vs the registered table — a BOM change that moves reliability re-registers consciously | — |
+| `verify-independent.mjs` | clean-room recompute — own netlist parser, own physics, external anchors (§K) | 243 |
+| `footprint-audit.mjs` | the naming queue stays CLOSED — zero unnamed packages, zero MPN / land conflicts | 0 · 0 |
+| `repo-hygiene.mjs` | nothing that is no longer produced, referenced or buildable is still tracked — ignored files, orphaned decks, unused lands, dead parts-db and LCSC rows, repeated keys in the lookup tables, and derived result files that are older than their inputs | 10 |
+| `review-checks.mjs` | every audit and review closure, as an assertion against the page or engine that must still carry it | 154 |
+| `docs-lint.mjs` | every link and anchor resolves, page chrome matches `doc-chrome.mjs`, diagrams render | 41 pages |
+| `magnetics-rfq-audit.mjs` | every magnetic drawing on the module pages complete enough to order | 0 missing |
+| `control/port-pin-audit.mjs` | the GD32G553 port's pin table against the card generator | 56 pins |
+| `control/fw-constants-sync.mjs` | every ADC scale, tank constant, loss coefficient and link C the firmware types by hand, against the source that owns it — the only gate that reads `hal/*.c`; it also holds the derating curve and the derated thermal corner to the firmware's law | 30 rows |
+| `magnetics/mkf-crosscheck.py` *(by hand, Python 3.12 venv with PyOpenMagnetics 1.4.0)* | every custom magnetic re-made in OpenMagnetics MKF: D1 toroid Rdc and Kool Mµ DC bias, D2 / D3 Rdc, gap fringing, 2-D copper and thermal, D4 gap and copper, D7 permeability; evidence quoted by the module pages | Rdc ± 5 % · class lines |
 
-## 3. Release-sheet pipeline — KiCad-5 is the record
+## 4. Release-sheet pipeline — KiCad-5 is the record
 
 ```mermaid
 flowchart LR
@@ -119,12 +121,18 @@ flowchart LR
   style KV stroke:#2ea44f,stroke-width:2.5px
 ```
 
+One command runs the whole pipeline — board builds, sheets, pin verification, the sheet-QA suite, prints and PDFs:
+
+```bash
+sh calculations/release-sheets.sh      # ≈ 20 min; run it after any change to the schematic source or to a BOM description
+```
+
 > [!IMPORTANT]
 > **Order matters.** Sheet pages and netlist generation must re-run after any parts-db value, mpn or description
 > change (descriptions feed the sheet payloads), and prints must run before PDFs. `sheets-to-pdf` waits for
-> headless Chrome's write confirmation rather than its exit, because Chrome 152 does not exit after printing.
+> headless Chrome's write confirmation rather than its exit, because Chrome does not exit after printing.
 
-## 4. Sheet-QA suite — measures the emitted `.sch`, not the intent
+## 5. Sheet-QA suite — measures the emitted `.sch`, not the intent
 
 | Tool | Measures |
 |---|---|
@@ -135,7 +143,7 @@ flowchart LR
 | `kicad5-preview.mjs` · `kicad5-detail.mjs` | sheet and tile renders for eye review |
 | `footprint-gen.mjs` · `footprint-map.mjs` | the drawn lands the footprint audit and the land-aware part resolver read |
 
-## 5. BOM factory and documentation generators
+## 6. BOM factory and documentation generators
 
 | Tool | Writes |
 |---|---|
@@ -146,7 +154,7 @@ flowchart LR
 | `cost/lcsc-map.mjs` · `cost/lcsc-from-build.mjs` | LCSC assignments and their statuses |
 | `pin-map-export.mjs` | [`docs/symbol-pin-map.md`](../docs/symbol-pin-map.md) (generated) |
 | `busbar/busbar-calc.mjs` | [`docs/busbar-drawings.md`](../docs/busbar-drawings.md) (generated) |
-| `doc-chrome.mjs` | the page registry: banner, title, badges and footer for all 37 documentation pages |
+| `doc-chrome.mjs` | the page registry: banner, title, badges and footer for all 41 documentation pages |
 
 Outputs land in `out/`; the CSVs are committed because documents cite them.
 
@@ -158,5 +166,5 @@ Outputs land in `out/`; the CSVs are committed because documents cite them.
 <div align="center">
 <sub><a href="../docs/reliability-budget.md">← Reliability Budget</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../spice/README.md">SPICE Simulation Suites →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
