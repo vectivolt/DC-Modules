@@ -169,11 +169,14 @@
      "pin_number": 3,
      "name": "SGND",
      "signal_name": "CGND"
+    },
+    {
+     "pin_number": 4,
+     "name": "SHLD",
+     "signal_name": "CGND"
     }
    ],
-   "nc_pins": [
-    4
-   ],
+   "nc_pins": [],
    "value": "PH-4",
    "query": "PH-4 CAN connector 4-way",
    "mpn": "PH-4"
@@ -885,6 +888,46 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RHPD1",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "HMI_CLK"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
+   "designator": "RHPD2",
+   "block_name": "HMI",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "HMI_LAT"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
   }
  ]
 }

@@ -19,16 +19,18 @@ void cmpdac_init(void);
 void cmpdac_thresholds(const float dac_v[APP_DAC_COUNT]);
 void hrtimer_pfc_apply(const app_pfc_out_t *o);
 void hrtimer_llc_apply(const app_llc_out_t *o);
-void hrtimer_rearm(uint16_t do_bits);
+void hrtimer_rearm(uint16_t do_bits, uint16_t ch_mask);   /* E81: only the channels in ch_mask are cleared */
 uint16_t hrtimer_fault_read_clear(void);
 
 void adc_init(void);
 uint16_t adc_read_once(unsigned adc, uint8_t ch);
 void adc_read_pfc(app_pfc_adc_t *s, float *ires, float *vout, float *iout, float *iout_n,
                   float *t_inlet, float *vbka, float *vbkb, float *v24, float *vref);
-void adc_read_slow(float *t_pfc, float *t_llc, float *t_xfmr, float *rating, float *v15);
+void adc_read_slow(float *t_pfc, float *t_llc, float *t_xfmr, float *v15, float *avmid);
+float adc_ires_now(void);                      /* E81 (F-E-10): freshest completed I_RES, for the fault ISR */
 
 void can_init(uint32_t bitrate, int listen_only);
+extern uint8_t can_bitrate_bad;                /* E81 (F-F-4): the requested bit rate had no timing table (ran 250 k) */
 uint8_t can_rx(pmp_frame_t *dst, uint8_t max);
 int can_tx_ready(void);
 void can_tx(const pmp_frame_t *f);

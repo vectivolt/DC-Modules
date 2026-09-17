@@ -36,7 +36,10 @@ const IDS = [
   { id: "D1-50", tokens: { "N = 24": [pack], "N=24": [mag, k5, db], "107": [mag, pack, db, boards], "45 µH": [pack] } },
   // E67: the full-bridge tank — D3 rev D transformer cells (primaries in series), D2 rev F external Lr. E68 retired D6 (AC DM chokes)
   // and D8 (bank inductors, the D6 construction): the star-X2 filter and film-only banks need neither.
-  { id: "D2 rev F external Lr", tokens: { "5.16 µH": [mag, pack, db], "4.07 µH": [mag, pack, db], "3.28 µH": [mag, pack, db], "5.16uH": [boards, k5], "4.07uH": [boards, k5], "3.28uH": [boards, k5], "8000×0.05": [mag, pack, db], "10000×0.05": [mag, pack, db], "12000×0.05": [mag, pack, db], "IND-LR-E70-40": [pack, db], "IND-LR-E70-50": [pack, db] } },
+  // E81 (F-B-3): D2 re-issued at 5.00 / 3.99 / 3.20 µH — the D3 cell leakage was computed on the
+  // 41 mm window instead of the 28 mm conductor band, so the SPLIT of Lr between D2 and the two
+  // cells' leakage was wrong by 41/28. Tank Lr is unchanged, so no deck re-runs on this account.
+  { id: "D2 rev F external Lr", tokens: { "5.00 µH": [mag, pack, db], "3.99 µH": [mag, pack, db], "3.20 µH": [mag, pack, db], "5.00uH": [boards, k5], "3.99uH": [boards, k5], "3.20uH": [boards, k5], "8000×0.05": [mag, pack, db], "10000×0.05": [mag, pack, db], "12000×0.05": [mag, pack, db], "IND-LR-E70-40": [pack, db], "IND-LR-E70-50": [pack, db] } },
   { id: "D3 rev D cells", tokens: { "6:6∥6": [mag, pack, db], "4:4∥4": [mag, pack, db], "3850×0.063": [mag, pack, db], "3536×0.071": [mag, pack, db], "XFMR-LLC-CELL-2E70-30": [pack, db], "XFMR-LLC-CELL-3E70-40": [pack, db], "XFMR-LLC-CELL-3E70-50": [pack, db], "B66372A2000": [mag, pack, k5, db] } },
   { id: "D2/D3 build (E65/E67)", tokens: { "VPI": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
   { id: "D4", tokens: { "ETD44": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-E": [pack, db], "≤ 4 µH": [pack] } },   // E65 D4 rev E (d4-flyback)

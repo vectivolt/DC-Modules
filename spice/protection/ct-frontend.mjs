@@ -11,6 +11,7 @@
 // Run: node spice/protection/ct-frontend.mjs
 import { runDeck, maxIn, minIn } from "../run.mjs";
 import { readFileSync, writeFileSync } from "node:fs";
+import { shortRacePeak, F11_FAST_US, F11_MON_US } from "../llc/llc-flux-post.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -103,14 +104,18 @@ const push = (c, m, v, l, ok) => { rows.push([c, m, v, l, ok ? "PASS" : "FAIL"])
 // F.11 + the simulated 3 µs race (still inside the 3.27 V rail); the line chain likewise at 50 Hz.
 const CLS = {
   // E67 full bridge (current-coordination OC table): ONE resonant CT, burdens 0.47/0.36/0.30 Ω, F.11 140/180/220 A.
-  // race11 = crossing-referenced +3 µs monitor peak − F.11 (llc-short.csv via current-coordination: 318.6/417.0/502.7 A).
-  // pkNom is read from the committed power-solved summary, so a tank re-run cannot leave this deck on old peaks.
-  "30kw": { resRb: 0.47, F11: 140, race11: 178.6, lineRb: 22, F01: 120, race01: 46 },
-  "40kw": { resRb: 0.36, F11: 180, race11: 237.0, lineRb: 18, F01: 155, race01: 50 },
-  "50kw": { resRb: 0.30, F11: 220, race11: 282.7, lineRb: 13, F01: 195, race01: 72 },
+  // E81 / review G (F-G-6): race11 used to be three HAND-COPIED numbers (178.6/237.0/282.7) taken from a
+  // current-coordination print. Both pkNom and race11 are now READ from the committed simulation results, so a tank
+  // re-run can never leave this deck on old peaks — the whole point of the tank fingerprint.
+  "30kw": { resRb: 0.47, F11: 140, lineRb: 22, F01: 120, race01: 46 },
+  "40kw": { resRb: 0.36, F11: 180, lineRb: 18, F01: 155, race01: 50 },
+  "50kw": { resRb: 0.30, F11: 220, lineRb: 13, F01: 195, race01: 72 },
 };
-for (const [sku, c] of Object.entries(CLS))
+for (const [sku, c] of Object.entries(CLS)) {
   c.pkNom = JSON.parse(readFileSync(join(HERE, "..", "..", "simulation-results", sku, "llc-stress-summary.json"), "utf8")).ipPkMax;
+  c.race11 = shortRacePeak(sku, c.F11, F11_MON_US).peak - c.F11;   // crossing-referenced +3 µs monitor peak − F.11
+  c.race11fast = shortRacePeak(sku, c.F11, F11_FAST_US).peak - c.F11;
+}
 const lineDeck = (ipk, rb) => ctDeck(ipk, rb, 2500, 50, "1n", 60e-3);
 for (const [sku, c] of Object.entries(CLS)) {
   for (const [what, ipk, lo, hi] of [["nominal-peak", c.pkNom, 0.1, 3.2], ["F11", c.F11, null, null], ["F11+race", c.F11 + c.race11, 0.1, 3.27]]) {
@@ -129,6 +134,7 @@ for (const [sku, c] of Object.entries(CLS)) {
 }
 writeFileSync(join(RES, "ct-frontend.csv"),
   "# ngspice-46; R2 §G closure deck — AVMID dual-feedback stability (MR-11) + corrected resonant burden (CB-16); behavioral 10 MHz op-amp\n" +
+  "# E81/F-G-6: pkNom and the race currents are READ from llc-stress-summary.json and llc-short.csv (no hand-copied peaks); the CT itself is an IDEAL current source — no magnetising branch, no saturation (F-G-8, open)\n" +
   rows.map(r => r.join(",")).join("\n") + "\n");
 console.log(pass ? "\nCT FRONT-END DECK: ALL PASS" : "\nCT FRONT-END DECK: FAILURES");
 process.exit(pass ? 0 : 1);

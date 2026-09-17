@@ -115,6 +115,7 @@ static void plant_tick(app_tick_in_t *ti) {
   float ntc = (float)(4095.0 * r / (1e4 + r));
   ti->t_pfc = ti->t_inlet = ti->t_llc = ti->t_xfmr = ntc;
   ti->v24 = (float)(24.0 / (LSB * 9.2)); ti->v15 = (float)(15.0 / (LSB * 5.7)); ti->vrefint = (float)(1.20 / 3.3 * 4096.0);
+  ti->avmid = (float)(1.65 / 3.3 * 4095.0);   /* E81 (F-D-13): the AVMID buffer reads back mid-rail */
   ti->di = (uint16_t)(APP_DI_DRV_RDY | (pl.kpre_fb ? APP_DI_RLY_PRE : 0u));
   for (int n = 0; n < 4; n++) ti->tach_hz[n] = last_o.fan_duty[0] * 120.0f * tach_scale[n];
   ti->can_state = pl.can_state;
@@ -157,7 +158,10 @@ static void boot_as(bool wdt, const meas_cal_t *cal, uint8_t profile) {
   memset(&pl, 0, sizeof pl); memset(&last_o, 0, sizeof last_o); memset(&po, 0, sizeof po); memset(&lo, 0, sizeof lo);
   pl.amp = 400.0 * sqrt(2.0 / 3.0); pl.hz = 50.0; pl.load_r = 1e6;
   meas_cal_default(&pl.cal, 50);
-  app_boot_t b = { .rating_counts = AIR50, .wdt_reset = wdt, .uid = 0x12345678u, .fw = 0x00010203u, .nvm_page_size = PG,
+  /* E81 (F-E-03): the boot record carries the RAW reset cause (RCU_RSTSCK 31:24). Bit 2 of the byte is EPRSTF — the pin
+     reset the TPS3430's WDO produces, which is the card's dominant watchdog path; bit 3 is POR. */
+  app_boot_t b = { .rating_counts = AIR50, .reset_cause = (uint8_t)(wdt ? (1u << 2) : (1u << 3)),
+                   .uid = 0x12345678u, .fw = 0x00010203u, .nvm_page_size = PG,
                    .fw_crc = 0xC0DEC0DEu, .boot_ver = 0x01000000u, .boot_state = 0u, .evlog_pages = 2u };
   app_init(&app, &b);
   rx_n = 0; state_byte = -1;
@@ -197,7 +201,7 @@ int main(void) {
   run_ms(1000);
   ck("app: boot offsets, precharge and the confirmed bypass reach STANDBY inside 1 s on a 400 VAC line, without a fault",
      app.fsm.st == ST_STANDBY && app.fsm.latched == FC_NONE && app.az_done && !app.az_bad && (last_o.do_bits & APP_DO_KPRE) && pl.kpre_fb);
-  ck("app: the watchdog is kicked on every 10 ms slot once both ISRs run (≥ 95 of 100)", kicks - k0 >= 95);
+  ck("app: the watchdog kick is permitted on ≥ 95 % of ticks once both ISRs run (E81: the port owns the 10 ms cadence)", kicks - k0 >= 950);
   printf("      comparator references: F.01 %.3f V · F.03 %.3f V · F.13 %.3f V · clamp %.3f V\n",
          last_o.dac_v[APP_DAC_IA], last_o.dac_v[APP_DAC_VBUS], last_o.dac_v[APP_DAC_VOUT], last_o.dac_v[APP_DAC_CLAMP]);
   /* E80: F.03 carries the corrected AMC1311 1.44 V common mode (HR-04); F.13 is scheduled by mode — 560 V in LOW (R09) */
@@ -238,7 +242,7 @@ int main(void) {
     run_ms(2);
     got[n] = app.fsm.latched == F[n].want && !(last_o.do_bits & (APP_DO_EN_PFC | APP_DO_EN_LLC));
   }
-  ck("app: each HRTIMER channel is attributed — CMP4 F.03, CMP0 F.13, the wire-OR F.11 at 95 % of the tank class else F.02, CMP7 F.01 — and both gate enables drop",
+  ck("app: each HRTIMER channel is attributed — CMP4 F.03, CMP0 F.13, the wire-OR F.11 at 95 % of the tank class else F.02, CMP3 F.01 (E81 pin swap) — and both gate enables drop",
      got[0] && got[1] && got[2] && got[3] && got[4]);
 
   restore(); pl.hz = 40.0; run_ms(400);

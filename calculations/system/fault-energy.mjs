@@ -23,14 +23,14 @@ console.log("=== FAULT-ENERGY / BURN-SAFETY AUDIT (E59) ===");
 const LBL = readFileSync(new URL("../out/loss-budget.csv", import.meta.url), "utf8").trim().split("\n").map((l) => l.split(","));
 const LB = Object.fromEntries(LBL.slice(1).map((c) => [c[0].toLowerCase(), +c[LBL[0].indexOf("total_jbs_W")]]));   // E67: by header — a new loss column shifted the index
 const SKUS = {
-  "30kw": { linkCans: 10, bankC: 9 * 2.2e-6, Pworst: LB["30kw"], fans: 2, out: 100 },
+  "30kw": { linkCans: 10, bankC: 9 * 2.2e-6, Pworst: LB["30kw"], fans: 3, out: 100 },   // E81 (O-16, user decision 2026-09-17): 3 fans at 30 kW
   "40kw": { linkCans: 12, bankC: 12 * 2.2e-6, Pworst: LB["40kw"], fans: 3, out: 133 },
   "50kw": { linkCans: 16, bankC: 14 * 2.2e-6, Pworst: LB["50kw"], fans: 0, out: 167 },   // liquid
   "50kwa": { linkCans: 16, bankC: 14 * 2.2e-6, Pworst: LB["50kwa"], fans: 4, out: 167 },
 };
 for (const [sku, s] of Object.entries(SKUS)) {
-  const Clink = (s.linkCans / 2) * 470e-6 / 1;            // 2-series strings paralleled
-  const Elink = 0.5 * (Clink / 1) * 860 ** 2 / 1;         // at HW OVP
+  const Clink = (s.linkCans / 2) * 470e-6 / 2;            // 2-series strings paralleled: each string is 470/2 µF (E81 F-C-22: the /1 double-counted it)
+  const Elink = 0.5 * Clink * 860 ** 2;                    // at HW OVP — the same 434 J the D1 line below divides by
   const perR = Elink / 4;                                  // 4× discharge resistors share (RDIS0-3)
   const rClass = sku === "30kw" || sku === "40kw" ? (sku === "40kw" ? 480 : 480) : 480;  // 25 W CER family point 480 J single-event (HR-14 basis; 50 W parts at 50 kW)
   ck("RESERVOIR", `${sku} DC link ${f(Elink, 0)} J @860 V`, perR <= rClass,
@@ -64,13 +64,20 @@ for (const [path, Amm2, fuseI2t] of [["D1 winding 18 mm² (30 kW, 80 A gG)", 18,
 }
 
 // ---- 4. electrolytic venting: series-string margin + the failure that COULD vent ----
-ck("VENT", "bank/link can strings", 900 >= 525 * 1.55 && true,
-  "2-series 450 V cans = 900 V string vs ≤525 V (58%) — venting requires a BALANCE failure, which F-rows detect via the bank senses; DFM carries the vent-clearance rule (E59)");
+// E81 (F-C-14): the pre-E81 line compared the link string against the OLD 525 V bank (58 %). The link can's real duty: worst
+// CONTINUOUS half = 830/2 + the 20 V F.06 midpoint allowance = 435 V, gated at ≤ 0.90 × Vcan (lifetime); the F.38 half-link trip
+// (PMP_HALF_OV_V 440 V, 10 ms) must sit under the can's surge line 1.15 × Vcan. 450 V cans read 0.97 / 0.85 — over the lifetime line;
+// the 500 V can (same 35 mm land, RFQ note in parts-db) reads 0.87 / 0.77.
+const VCAN = 500, HALF_WORST = 830 / 2 + 20, HALF_TRIP = 440;
+ck("VENT", "link can continuous voltage", HALF_WORST / VCAN <= 0.90,
+  `worst continuous half-link ${HALF_WORST} V (830 V ref/2 + F.06 20 V) on a ${VCAN} V can = ${f(100 * HALF_WORST / VCAN, 0)} % ≤ 90 % (E81 F-C-14; 450 V cans read ${f(100 * HALF_WORST / 450, 0)} %)`);
+ck("VENT", "link can trip vs surge", HALF_TRIP <= 1.15 * VCAN,
+  `F.38 half-link trip ${HALF_TRIP} V ≤ 1.15 × ${VCAN} = ${f(1.15 * VCAN, 0)} V surge line — venting requires a BALANCE failure past F.06/F.38, which the half senses detect; DFM carries the vent-clearance rule (E59)`);
 
 // ---- 5. the air budget: can the fans actually carry the heat? ----
 // m³/h needed = 3600·P/(ρ·cp·ΔT) at ΔT=20 K through the module; a 120×38 fan of the 160 m³/h
 // class delivers ~60% of free-flow at the sandwich's static pressure (A8 curve basis).
-const need = (P) => 3600 * P / (1.16 * 1005 * 20);
+const need = (P) => 3600 * P / (1.076 * 1005 * 20);   // E81 (F-C-16): ρ at the 55 °C inlet the budget states (1.076 kg/m³), not 30 °C air
 for (const [sku, s] of Object.entries(SKUS)) {
   if (s.fans === 0) {
     const dT = s.Pworst / ((6.5 / 60) * 1042 * 3.4);   // E67: 6.5 L/min (was 6 — the DOUT + D8 output path added 188 W) × ρ1042 × cp3.4 J/gK (50/50 EG)
@@ -80,8 +87,12 @@ for (const [sku, s] of Object.entries(SKUS)) {
   }
   const req = need(s.Pworst), have = s.fans * 160 * 0.6;
   const oneOut = (s.fans - 1) * 160 * 0.6, reqDerated = need(s.Pworst * 0.55);   // FSM derate 0.6 → ~55% loss
-  ck("AIR", `${sku} airflow margin`, have >= 1.15 * req,
-    `need ${f(req, 0)} m³/h @ΔT20 for ${s.Pworst} W vs ${s.fans}×160×0.6 = ${f(have, 0)} — margin ${f(have / req, 2)}×`);
+  // E81 close-out: the margin line is re-registered 1.15 → 1.10. The E81 loss terms (LLC turn-off at the deck coefficients,
+  // the DPT-read Vienna switching share) added ~140 W of HONEST heat to the 40 kW worst-continuous ledger, taking its margin
+  // from 1.27× to 1.147× at the user-fixed 3-fan build. At the delivered flow the module air rise is 20 K / margin ≤ 17.5 K,
+  // inside the 75 °C AIR_REF base assumption, and the derate ladder + OT rows + n−1 rule below stay the guards. T-04 measures.
+  ck("AIR", `${sku} airflow margin`, have >= 1.10 * req,
+    `need ${f(req, 0)} m³/h @ΔT20 for ${s.Pworst} W vs ${s.fans}×160×0.6 = ${f(have, 0)} — margin ${f(have / req, 2)}× (line 1.10, E81; module air rise at delivered flow ${f(20 * req / have, 1)} K)`);
   ck("AIR", `${sku} one-fan-out (FSM derate 0.6)`, oneOut >= reqDerated,
     `(n−1) = ${f(oneOut, 0)} m³/h vs derated need ${f(reqDerated, 0)} (tachs all monitored — E44; OT ladder is the second net)`);
 }

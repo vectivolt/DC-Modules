@@ -1,0 +1,31 @@
+* DPT-LLC V=650 I=120 Cs=6.8e-10 Rgoff=0 Lloop=5e-9 Voff=-3
+.include ../models/sic-1200-c3m.lib
+VBUS bus 0 DC 650
+CDC bus 0 100u ic=650
+LLP bus kd 5e-9
+MFW kd gfw swk SIC1200_23R_C
+LFWK swk sw 1.5n
+RGFW gfw fwref 0.218
+VGFW fwref swk -3
+CSD sw s 6.8e-10
+CSF kd swk 6.8e-10
+LLD kd sw 0.00006 ic=120
+VSNS sw d1 0
+LD d1 d 2n
+M1 d g ks SIC1200_23R_C
+LKS ks s 1.5n
+LSP s 0 2n
+VDRV drv ks PWL(0 18 4e-7 18 4.05e-7 -3 0.0000019 -3 0.000001905 18 0.0000027 18 0.000002705 -3)
+RGN drv gon 4.7
+DGN gon g DIDEAL
+DGF g drv DIDEAL
+.model DIDEAL D(Is=1e-3 N=0.1)
+.tran 0.2n 0.0000032999999999999997 uic
+.option method=gear reltol=1e-3 abstol=1u vntol=1m
+.control
+set filetype=ascii
+run
+wrdata dpt-llc-40kw-cs680-SER250-PFM.out v(d,ks) v(g,ks) i(VSNS) v(gfw,swk)
+quit
+.endc
+.end

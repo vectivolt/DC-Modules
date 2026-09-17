@@ -89,37 +89,37 @@
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2 rev F external Lr \"5.16 µH\"",
+   "name": "D2 rev F external Lr \"5.00 µH\"",
    "detail": "present in magnetics docs + parts-db"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2 rev F external Lr \"4.07 µH\"",
+   "name": "D2 rev F external Lr \"3.99 µH\"",
    "detail": "present in magnetics docs + parts-db"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2 rev F external Lr \"3.28 µH\"",
+   "name": "D2 rev F external Lr \"3.20 µH\"",
    "detail": "present in magnetics docs + parts-db"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2 rev F external Lr \"5.16uH\"",
+   "name": "D2 rev F external Lr \"5.00uH\"",
    "detail": "present in boards.tsx + kicad5-panel"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2 rev F external Lr \"4.07uH\"",
+   "name": "D2 rev F external Lr \"3.99uH\"",
    "detail": "present in boards.tsx + kicad5-panel"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2 rev F external Lr \"3.28uH\"",
+   "name": "D2 rev F external Lr \"3.20uH\"",
    "detail": "present in boards.tsx + kicad5-panel"
   },
   {

@@ -28,8 +28,30 @@ const MAG_RATED = (sku) => {
   const a = d3Loss(k, D3C[k], r), b = d2Loss(k, D2C[k], r);
   return { xfmrCell: a.fe(90) + a.cu(90), lr: b.fe(90) + b.cu(90) };
 };
+// E81 (review F-C-1): the LLC turn-off loss at the rated point — koff · V_bus · I_toff · f_sw per position, four positions, with
+// V_bus / f_sw / I_toff read from the SAME power-solved PAR400-full deck row that gives IP_NOM (columns bus_V, fsw_kHz, Ifet_toff_A).
+// The pre-E81 ledger had no turn-off term at all (the grid carried a flat 1 / 8 W per position); at the rated point it is
+// 4 × 36–58 W, ≈0.5–0.6 pt of efficiency.
+// E81: the Vienna switching coefficient per SKU from the DPT finals (same reader as envelope-grid; the deck reads cells.tsx, so the
+// drawn clamp state — single RCD or mirrored — is what lands here). Falls back to the E3 constant if the CSV is absent.
+const KSW_PFC = (sku) => {
+  try {
+    const rows = readFileSync(join(OUT, "..", "..", "simulation-results", sku, "dpt-pfc-metrics.csv"), "utf8")
+      .split("\n").filter((l) => l && !l.startsWith("#")).map((l) => l.split(","));
+    const h = rows[0], iK = h.indexOf("koff_nJ_VA"), iC = h.indexOf("case"), iKind = h.indexOf("kind");
+    const fin = rows.slice(1).filter((r) => r[iKind] === "final" && !/vhi/.test(r[iC]) && /-(clamped|UNCLAMPED)$/.test(r[iC])).map((r) => +r[iK]);
+    return fin.length === 2 ? (fin[0] + fin[1]) / 2 * 1e-9 : 17.4e-9;
+  } catch { return 17.4e-9; }
+};
+const LLC_OFF = (sku) => {
+  const c = readFileSync(join(OUT, "..", "..", "simulation-results", sku.toLowerCase(), "llc-stress.csv"), "utf8")
+    .split("\n").find((l) => l.startsWith("PAR400-full,")).split(",");
+  const t = TANKS[sku.toLowerCase()];
+  return 4 * (t.koff ?? t.dieP.koff) * +c[2] * +c[19] * (+c[4] * 1e3);
+};
 const LLC_CH = (ip, sku = "30kW") => ({
   pri: 2 * ip * ip * TANKS[sku.toLowerCase()].dieP.rHot / TANKS[sku.toLowerCase()].par,   // 4 positions × par dies (E69a: per-SKU die), half-period each
+  sw: LLC_OFF(sku),                                                                   // E81: turn-off loss, 4 positions
   xfmr: D3_CELLS * MAG_RATED(sku).xfmrCell,
   tank: MAG_RATED(sku).lr + ip * ip * 0.0012,               // D2 external Lr (envelope) + Cr ESR
 });
@@ -45,7 +67,7 @@ function secondary(IoutCh, sku = "30kw") {
 
 // ---------------- SKU roll-up at rated point (400 VAC in, 800 V bus, out ≥300 V full power)
 const SKUS = [
-  { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 2 },
+  { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 3 },   // E81 (user 2026-09-17): 3 / 3 / 0 / 4 fans
   { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
   { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6.5 L/min)
   { name: "50kWa", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 4, parL: 2 },   // E44 AIR: 4 fans; LLC paralleled (pri conduction halves)
@@ -69,7 +91,7 @@ const EMI_FILTER = { "30kW": emiW("30kw"), "40kW": emiW("40kw"), "50kW": emiW("5
 // E67: output path — the DOUT blocking diode (Vf 1.05 V, the current-coordination basis) carries the whole output current, and the
 // two D8 bank inductors (D6 construction, engine Rdc) each carry half of it in PAR. Missing from the first E67 roll-up (0.3 pt).
 const outW = (Iout) => 1.05 * Iout;   // E68: film-only banks — no D8 copper; the DOUT diode remains
-const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","out_diode_lf_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct"]];
+const rows = [["sku","pfc_semis_W","pfc_mag_W","dclink_W","llc_pri_W","xfmr_W","tank_W","sec_jbs_W","sec_sr_W","out_diode_lf_W","busbar_shunt_W","emi_filter_W","aux_gate_W","fans_W","total_jbs_W","eta_jbs_pct","total_sr_W","eta_sr_pct","pfc_ksw_nJ_VA"]];
 console.log("=== LOSS BUDGET at rated point (400 VAC, ≥300 V out, full power) — rev D incl. EMI filter ===");
 for (const s of SKUS) {
   // E41: k = per-lane power ratio vs the 30 kW design point (1.0 for every legacy row; 1.333 for
@@ -83,7 +105,11 @@ for (const s of SKUS) {
   //   · LLC_CH()/secondary() are already current-parameterized.
   const k = (s.P / s.lanes) / 30e3;
   const rP = { "30kW": 2.0, "40kW": 1.5 }[s.name] ?? 1;   // E69a: PFC die Rds vs the 10 mΩ DPT basis (conduction share scales, switching does not)
-  const pairW = 43.5 * (0.68 * k * k * rP + 0.32 * k), pairParW = 43.5 * (0.68 * k * k / 2 + 0.32 * k);
+  // E81 (F-G-3): the switching share scales with the per-SKU DPT coefficient at the real currents and the DRAWN clamp network
+  // (mean of the two half-cycles, simulation-results/<sku>/dpt-pfc-metrics.csv) against the 17.4 nJ/(V·A) the 0.32 share was built on
+  const kSw = KSW_PFC(s.name.toLowerCase()) / 17.4e-9;
+  const pairW = 43.5 * (0.68 * k * k * rP + 0.32 * k * kSw), pairParW = 43.5 * (0.68 * k * k / 2 + 0.32 * k * kSw);
+  if (Math.abs(kSw - 1) > 0.02) console.log(`  ${s.name} PFC switching share × ${f(kSw, 2)} (E81 DPT finals, drawn clamp network)`);
   const pfcSemis = (3 * pairW + 3 * 24.2 * k) * 0.78 * s.lanes;
   const pfcSemisPar = (3 * pairParW + 3 * 24.2 * k) * 0.78 * s.lanes;
   if (k > 1.01) console.log(`  ${s.name} PFC semi scenarios @330 V corner-scaled: single-FET ${f(pfcSemis / 0.78, 0)} W · 2x-parallel ${f(pfcSemisPar / 0.78, 0)} W (per pair ${f(pairW, 1)} vs ${f(pairParW, 1)} W)`);
@@ -92,7 +118,8 @@ for (const s of SKUS) {
   const llc = LLC_CH(IP_NOM(s.name), s.name);
   // E67: transformer = 2 D3 cells at PAR400-full (30 kW 2×E70 6:6∥6 · 40/50 kW 3×E70 4:4∥4) + the D2 external Lr; the worst
   // THERMAL corners (500 V bank / the 764 V-bus PSM corner) are the envelope gate's job, not efficiency's
-  const pri = llc.pri * s.ch, xf = llc.xfmr * s.ch, tank = llc.tank * s.ch;   // E67: LLC_CH carries the per-position paralleling
+  const pri = (llc.pri + llc.sw) * s.ch, xf = llc.xfmr * s.ch, tank = llc.tank * s.ch;   // E67: LLC_CH carries the per-position paralleling · E81: + turn-off
+  console.log(`  ${s.name} LLC primary: conduction ${f(llc.pri, 0)} W + turn-off ${f(llc.sw, 0)} W (E81, koff · Vbus · Itoff · fsw at PAR400-full)`);
   const { jbsW, srW } = secondary(s.Iout, s.name.toLowerCase());
   const secJ = jbsW * s.ch, secS = srW * s.ch;
   const bus = 0.00015 * s.Iout ** 2 + 25e-6 * s.Iout ** 2; // busbar ~0.15 mΩ + shunt 25 µΩ paths
@@ -105,7 +132,7 @@ for (const s of SKUS) {
   const outP = outW(s.Iout, s.name);
   const totJ = pfcSemis + pfcMag + dclink + pri + xf + tank + secJ + outP + bus + emi + aux + fansW;
   const totS = totJ - secJ + secS;
-  rows.push([s.name, f(pfcSemis), f(pfcMag), f(dclink), f(pri), f(xf), f(tank), f(secJ), f(secS), f(outP), f(bus), f(emi), f(aux), f(fansW), f(totJ), f(100 * s.P / (s.P + totJ), 2), f(totS), f(100 * s.P / (s.P + totS), 2)]);
+  rows.push([s.name, f(pfcSemis), f(pfcMag), f(dclink), f(pri), f(xf), f(tank), f(secJ), f(secS), f(outP), f(bus), f(emi), f(aux), f(fansW), f(totJ), f(100 * s.P / (s.P + totJ), 2), f(totS), f(100 * s.P / (s.P + totS), 2), f(kSw * 17.4, 2)]);   // E81: the PFC switching coefficient this row was built on
   console.log(`${s.name}: JBS total ${f(totJ, 0)} W (η=${f(100 * s.P / (s.P + totJ), 2)}%)  |  SR total ${f(totS, 0)} W (η=${f(100 * s.P / (s.P + totS), 2)}%)  | sec JBS ${f(secJ, 0)} vs SR ${f(secS, 0)} W | DOUT + Lf ${f(outP, 0)} W | EMI filter ${f(emi, 0)} W`);
 }
 writeFileSync(join(OUT, "loss-budget.csv"), rows.map(r => r.join(",")).join("\n") + "\n");
@@ -130,8 +157,8 @@ console.log(`fan-life field costs are priced in — revisit at Phase 17 with rea
 
 // ---------------- heatsink requirement + corners + derating
 // Worst continuous: 330 VAC full power, JBS baseline, +55 °C ambient.
-const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + outW(100) + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
-const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + secondary(100).jbsW + 1.05 * 100;   // E67: DOUT is heatsink-mounted
+const totalWorst30 = PFC_LANE.semis + PFC_LANE.mag + 12 + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).sw + LLC_CH(IP_NOM("30kW")).xfmr + LLC_CH(IP_NOM("30kW")).tank + secondary(100).jbsW + outW(100) + 3.75 + EMI_FILTER["30kW"] * 1.35 + 40 + 20; // filter at 330 V corner: I² ×(54.9/45.3)² ≈ ×1.35
+const semisShare = PFC_LANE.semis + LLC_CH(IP_NOM("30kW")).pri + LLC_CH(IP_NOM("30kW")).sw + secondary(100).jbsW + 1.05 * 100;   // E67: DOUT is heatsink-mounted · E81: + turn-off
 console.log(`\n30 kW worst-corner dissipation ≈ ${f(totalWorst30, 0)} W, of which heatsink-mounted semis ≈ ${f(semisShare, 0)} W`);
 const RthReq = 20 / semisShare;                       // allow 20 K sink-to-air rise at 55 °C ambient → sink ≤75 °C
 console.log(`Heatsink Rth(sink-air) ≤ ${f(RthReq, 3)} K/W @ rated airflow → forced-air extrusion, ~${f(semisShare * 1, 0)} cm² base, 2× 120×38 fans on static-pressure curve (fan calc: ~110 Pa @ 160 m³/h class, VERIFY vendor curve)`);

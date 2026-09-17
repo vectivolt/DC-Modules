@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 > [!NOTE]
@@ -17,7 +17,7 @@
 
 | Rating | Value |
 |---|---|
-| Overvoltage category | **OVC III** at AC mains — 300 V line-to-neutral system (415 V line-to-line) |
+| Overvoltage category | **OVC III** at AC mains — 300 V line-to-neutral insulation class; the rated input is **285–475 VAC line-to-line** (+5 % = 499 V line-to-line, 288 V line-to-neutral, inside the 300 V class). E81 (F-A-17): an earlier copy of this row declared a 415 V system, which under-stated the clearance/creepage basis and the X2-star duty (274 VAC per 305 VAC cap at 475 VAC) |
 | Pollution degree | **PD2** inside the enclosure (filtered forced air) |
 | Altitude | **≤ 2000 m** (derate note above 2000 m in the manual) |
 | Material group | **IIIa** (CTI ≥ 175), FR-4 baseline |
@@ -55,7 +55,7 @@ flowchart LR
 | Bus (830 V) ↔ control (primary-referenced) | functional | 830 V | spacing per functional table; HV dividers = 8× series 1206 (per-resistor ≤104 V working, 200 V rated) |
 | Board-to-board studs | same domain (bus) | 830 V | stud-stud spacing ≥14 mm |
 | **E65** D1 PFC choke winding ↔ PE-bonded web / plate / M6 bolt (gap pad, insulating clamp cap, bore sleeve) | basic (in series with AC line/bus ↔ PE) | D1 Û_rp ≤ 540 V recurring peak (switch end vs neutral, 50 kHz ripple) | 4 kV impulse type test on the bonded assembly · 100 % part hipot 2.5 kV DC 1 min winding ↔ bond-face + bore electrodes · no PD test (Û_rp ≤ 700 V) |
-| **E67** D2 external Lr and D3 cell primary winding ↔ gap-padded ferrite core (core treated as PE) | basic (bus ↔ PE) | D2/D3 Û_rp 1160 / 1170 / 1190 / 1190 V at 83–203 kHz (30 / 40 / 50 / 50a; full-bridge tank node = bus/2 + Cr peak + Vienna midpoint — E80: the FW-34 Σ i = 0 engine correction lowered the recurring midpoint peak; the numbers mirror `stress-audit [INS]`) | 100 % winding ↔ bonded-face foil 2.5 kV DC · PD sample test 5/lot: PD extinction ≥ 1.8 / 1.8 / 1.8 / 1.8 kV, ≤ 10 pC (lots already specified at the earlier 1.9–2.0 kV floor remain acceptable — the requirement only fell) |
+| **E67** D2 external Lr and D3 cell primary winding ↔ gap-padded ferrite core (core treated as PE) | basic (bus ↔ PE) | D2/D3 Û_rp 1160 / 1180 / 1200 / 1200 V at 83–203 kHz (30 / 40 / 50 / 50a; full-bridge tank node = bus/2 + Cr peak + Vienna midpoint — E80: the FW-34 Σ i = 0 engine correction lowered the recurring midpoint peak; the numbers mirror `stress-audit [INS]`) | 100 % winding ↔ bonded-face foil 2.5 kV DC · PD sample test 5/lot: PD extinction ≥ 1.8 / 1.8 / 1.8 / 1.8 kV, ≤ 10 pC (lots already specified at the earlier 1.9–2.0 kV floor remain acceptable — the requirement only fell) |
 | **E67** D3 cell secondary winding ↔ PE-bonded web / plate (gap pad) | basic (output ↔ PE) | ≤ 1000 V DC (top of the HIGH-mode stack), ripple < 10 V | 100 % part hipot 1.5 kV DC (D3 secondary) · module output ↔ PE 1.5 kV · DC stress: no recurring-peak PD row |
 
 ## 3. Creepage and clearance design values (PD2, mat IIIa — from 62477-1-class tables, VERIFY at DQ)
@@ -81,7 +81,7 @@ rev-D 1 MΩ ∥ 4.7 nF static bleed to DGND.
 - [x] Protective separation of external CAN (iso 5 kV part + floating CGND + TVS)
 - [x] Touch-discharge: **bus** < 60 V in **2.0 / 2.4 / 3.2 s** at 30 / 40 / 50 kW (640 Ω active, F.21 per-SKU supervision); **banks** < 60 V in **0.37 / 0.49 / 0.58 s** via the commanded bleeders (F.21b) — the film-only banks (E68c) hold 2–4 J at 500 V; passive balance chains remain the backup. Tool-access marking per 62477 still applies for the passive-only failure case
 - [x] Single-fault: aux collapse → gates held low (T-09); relay weld detected (F.18); fan fail derate
-- [ ] Leakage current budget through Y network (calc pending with final Y values, EMI rev)
+- [x] Leakage current budget through the Y network (E81, final values): CY1-3 3 × 10 nF (raised from 4.7 nF for the LLC bridge's in-band CM fundamental) + CY4-6 3 × 4.7 nF at 274 V line-to-neutral (475 VAC) and 50 Hz → **≈ 3.8 mA** (3.3 mA at 415 VAC). Above the 3.5 mA pluggable line: the module is permanently connected equipment — the high-leakage PE provisions of the 62477-1 class apply (reinforced PE conductor, the warning marking, no residual-current dependence at the module level); CALCULATED, T-14 measures the touch current with the final EMI values
 - [ ] 61851-23 system items delegated to charger integrator documented in manual (IMD, output contactors, gun lock)
 - [ ] EMC immunity plan (surge 61000-4-5 on MOV/fuse network — §27 energy calc at EMI rev)
 - [ ] **E65** bonded magnetics: gap-pad dielectric type test at compressed thickness · D2/D3 PD sample test · per-core common-mode capacitance counted in the LISN budget
@@ -136,5 +136,5 @@ A magnetic that is gap-padded or clamped to PE-bonded metal is part of the **bas
 <div align="center">
 <sub><a href="thermal-report.md">← Thermal Report</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="busbar-drawings.md">Busbar Drawings & Joint Spec →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

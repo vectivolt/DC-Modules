@@ -20,11 +20,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const R47K = 47e3, VBUS = 800, VLL = 400;
 const VPH = VLL / Math.sqrt(3);
 
+// E81 (F-A-7): the link balance strings went 47 k → 22 kΩ (R2512-22k-HV-AS) so the balance current covers the spec-max hot
+// leakage imbalance; the AC-sense star stays on the 47 k part. Both families are counted from the RELEASE sheets by MPN.
 const count47k = (sku, side) => {
   const txt = readFileSync(join(ROOT, `kicad5/dc-modules-${sku}/${sku}-${side}.sch`), "utf8");
   const out = {};
   for (const blk of txt.split("$Comp").slice(1)) {
-    if (!/F \d+ "PS122WF4702T4E"[^\n]*"MPN"/.test(blk)) continue;
+    if (!/F \d+ "(PS122WF4702T4E|R2512-22k-HV-AS)"[^\n]*"MPN"/.test(blk)) continue;
     const ref = blk.match(/F 0 "([^"]*)"/)[1];
     const fam = ref.replace(/\d+[A-Z]?$/, "");
     out[fam] = (out[fam] ?? 0) + 1;
@@ -33,7 +35,9 @@ const count47k = (sku, side) => {
 };
 
 // Registered exact terms (E64) — recomputed every run; drift fails the battery.
-const REG = { "30kw": { star: 1.70, bal: 3.40 }, "40kw": { star: 1.70, bal: 6.81 }, "50kw": { star: 1.70, bal: 6.81 }, "50kwa": { star: 1.70, bal: 6.81 } };
+// E81 (F-A-7): balancers re-registered at 22 kΩ — ×(47/22) on the E64 watts; the +3.9 / +7.7 W of standby is the price of
+// covering the ±17 mA spec-max hot leakage imbalance (LEDGER), and F.21b passive-bleed times shorten by the same ratio.
+const REG = { "30kw": { star: 1.70, bal: 7.27 }, "40kw": { star: 1.70, bal: 14.55 }, "50kw": { star: 1.70, bal: 14.55 }, "50kwa": { star: 1.70, bal: 14.55 } };
 // Estimate band [W at the AC input] until EVT T-00 measures them (R2-era arithmetic, E63):
 const EST = { divider: [0.4, 1.2],   // iso-sense HV dividers (475k-class chains, bus + banks-at-0 + output-at-0)
               aux:     [3.0, 6.0],   // NCP1252D flyback no-load + bias (no skip mode on the D-suffix)
@@ -52,7 +56,8 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const nLink = linkFams.reduce((a, k) => a + ac[k], 0);
   const expLink = sku === "30kw" ? 4 : 8;      // R8-A: one balance set at 30 kW, two paralleled at 40/50
   ck(`${sku} link balance strings drawn`, nLink === expLink, `RBAL* 47k positions = ${nLink} (expect ${expLink})`);
-  const rFull = (4 * R47K) / (nLink / 4);      // each set = 2×(2-series 47k) = 188k across the link; sets parallel
+  const R22K = 22e3;
+  const rFull = (4 * R22K) / (nLink / 4);      // each set = 2×(2-series 22k) = 88k across the link (E81); sets parallel
   const pBal = VBUS ** 2 / rFull;
   const pStar = 3 * (VPH ** 2 / (2 * R47K));
   const r = REG[sku];

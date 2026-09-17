@@ -203,7 +203,7 @@
     {
      "pin_number": 2,
      "name": "IN2",
-     "signal_name": "DGND"
+     "signal_name": "CTL_QDIS"
     },
     {
      "pin_number": 3,
@@ -246,6 +246,11 @@
      "signal_name": "V24"
     },
     {
+     "pin_number": 17,
+     "name": "OUT2",
+     "signal_name": "QDIS_LED"
+    },
+    {
      "pin_number": 18,
      "name": "OUT1",
      "signal_name": "COIL_KPRE"
@@ -257,8 +262,7 @@
     13,
     14,
     15,
-    16,
-    17
+    16
    ],
    "value": "ULN2803A",
    "query": "ULN2803A 8-ch relay coil driver SOIC-18 ",
@@ -296,7 +300,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AGND"
+     "signal_name": "DGND"
     }
    ],
    "nc_pins": [],
@@ -336,13 +340,53 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "AGND"
+     "signal_name": "DGND"
     }
    ],
    "nc_pins": [],
    "value": "10k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
+  },
+  {
+   "designator": "CM24",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SNS_V24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CM15",
+   "block_name": "RAIL-MON",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SNS_V15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
   }
  ]
 }

@@ -17,7 +17,11 @@
 #define TH12_BITRATE        125000u
 #define TH12_COMM_TO_MS      20000u   /* TH750 manual: communication interrupted for 20 s → automatic shutdown, fault reported */
 #define TH12_PERIOD_MS         500u   /* M_C_1 · M_C_3 · M_C_4 */
-#define TH12_TRIGGER_GAP_MS     50u   /* on-change frames are spaced at least this far — a chattering bit cannot flood the bus */
+/* E81 (K §5 fix 5 / K9): 50 → 200 ms. An 8-byte extended frame at 125 kbit/s is ≈150 bits ≈1.2 ms, so two on-change
+   frames per 50 ms is 4.4 % of the bus PER MODULE — a common-mode event across 24 modules computes to 105 %, i.e.
+   saturation, and M_C_4 (priority 7) then starves behind M_C_1 (priority 6) with no bit to report the drop. At 200 ms a
+   24-module storm is 26 %. §8.1's "500 + Trigger" sets no floor, so this stays conforming; steady state is untouched. */
+#define TH12_TRIGGER_GAP_MS    200u
 #define TH12_PEER_STALE_MS    1500u   /* a peer's current older than three periods is not averaged */
 #define TH12_CONFLICT_HOLD_MS 10000u  /* an address conflict clears after this long without a colliding frame */
 #define TH12_WARN_HOLD_MS     1000u   /* output over/under-voltage warnings must persist this long */
@@ -43,6 +47,16 @@ typedef struct {
   bool ovw_on, uvw_on; uint32_t t_ovw, t_uvw;
   bool conflict; uint32_t t_conflict;
   uint32_t unsupported;         /* documented commands this module cannot honour (DC input mode) */
+  /* E81 (K §5 fix 2): §8.1 names an over/under-voltage setting confirmation and Appendix A.1.4 an "(address setting /
+     overvoltage / undervoltage setting) process", but V1.2 defines no such downlink frame. A real monitor may use an
+     undocumented PGN; counting it turns the one open interop unknown into a measurement on the first rack. */
+  uint32_t unknown_pf;          /* frames from 0xA0 with a PF this profile does not implement — accepted and ignored */
+  uint8_t last_unknown_pf;
+  /* E81 (K §5 fix 1): §9.2.5 sets no state precondition on C_M_23, unlike §9.2.6/§9.2.7 which both state one. The
+     address is always stored; it is adopted at the next output-off so the source address never moves mid-stream. */
+  uint8_t addr_pending;         /* 0 = none */
+  bool no_addr;                 /* E81 (K §5 fix 3): Automatic mode with no panel address, for > 5 s — the HMI says so */
+  uint32_t t_noaddr;
   struct { uint8_t group; uint16_t i_ca; uint32_t t; bool seen; } peer[241];   /* index = address */
 } th12_t;
 

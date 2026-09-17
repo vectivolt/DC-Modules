@@ -68,7 +68,10 @@ export const ChokeFP = () => (
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-30} pcbY={-6} holeDiameter="6mm" outerDiameter="6.9mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={30} pcbY={-6} holeDiameter="6mm" outerDiameter="6.9mm" shape="circle" />
-    <courtyardcircle pcbX={0} pcbY={0} radius="44.5mm" />
+    {/* E81 (F-B-2): ⌀89 → ⌀98 courtyard. The FINISHED D1 measures ⌀92 (30 kW) / ⌀94 (40–50 kW)
+        over the banding and the clamp cap, so the drawn courtyard was smaller than the part.
+        (The 62 mm tunnel clash is a MECHANICAL decision — D1 outside the tunnel — not this land.) */}
+    <courtyardcircle pcbX={0} pcbY={0} radius="49mm" />
     </footprint>
 );
 export const Cm3FP = () => (
@@ -184,12 +187,37 @@ export const TrimFP = () => (
     </footprint>
 );
 export const CtFP = () => (
+  // Resonant CT (CT1): a small pass-through window part on its own 10 mm pin row.
   <footprint>
     <platedhole portHints={["pin1"]} pcbX={-5} pcbY={0} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
     <platedhole portHints={["pin2"]} pcbX={5} pcbY={0} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
   
     <courtyardrect pcbX={0} pcbY={0} width="25mm" height="25mm" />
     </footprint>
+);
+// E81 (F-B-9): the LINE CTs are a different part class and need their own land. CtFP's 10 mm pin
+// row inside a 25 × 25 courtyard fits NEITHER CT the drawings name — ACX-1100 is a ⌀42 mm body and
+// the ACX-1150 class is 38.1 × 38.1 mm on a 33.0 mm pin row — so on the drawn land the burden and
+// both clamp diodes sit underneath the CT body and the 40/50 kW part does not fit at all.
+// One land covers both: 33 mm pin row, ⌀45 courtyard; CtSensor moves its measurement row clear.
+export const CtLineFP = () => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-16.5} pcbY={0} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={16.5} pcbY={0} holeDiameter="1.1mm" outerDiameter="2mm" shape="circle" />
+    <courtyardcircle pcbX={0} pcbY={0} radius="22.5mm" />
+  </footprint>
+);
+// E81 (F-A-19): radial aluminium-can land. CAUX24/CAUX15/CVCC are 220 µF/35 V electrolytics — a
+// ⌀8 × 11.5 mm can on a 3.5 mm lead pitch — and were drawn on FilmBoxFP(5): a 5 mm pitch with a
+// 7.2 × 3.5 mm courtyard, a third of the real body. The parts would not fit and DRC could not see
+// the collision (these three are also the only electrolytics outside the DC link, so the BOM line
+// gains the −40 °C / 105 °C / ≥2000 h grade the link cans already carry).
+export const RadialFP = (pitch = 3.5, dia = 8) => (
+  <footprint>
+    <platedhole portHints={["pin1"]} pcbX={-pitch / 2} pcbY={0} holeDiameter="0.8mm" outerDiameter="1.8mm" shape="circle" />
+    <platedhole portHints={["pin2"]} pcbX={pitch / 2} pcbY={0} holeDiameter="0.8mm" outerDiameter="1.8mm" shape="circle" />
+    <courtyardcircle pcbX={0} pcbY={0} radius={`${dia / 2 + 0.5}mm`} />
+  </footprint>
 );
 export const Seg2FP = () => (
   <footprint>
@@ -230,10 +258,15 @@ export const XfmrAuxFP = () => (
 const DRV_PINS = { pin1: "ASC", pin2: "DST", pin3: "GND2", pin4: "OUTH", pin5: "VCC2", pin6: "OUTL", pin7: "CLAMP", pin8: "VEE", pin9: "GND1", pin10: "INP", pin11: "INN", pin12: "RDY", pin13: "FLT", pin14: "EN", pin15: "VCC1", pin16: "TEST" };
 const ISOAMP_PINS = { pin1: "VDD1", pin2: "VINP", pin3: "VINN", pin4: "GND1", pin5: "GND2", pin6: "OUTN", pin7: "OUTP", pin8: "VDD2" };
 
-// ---------- isolated gate-bias module (+18/−4). HR-10: reverted to packaged module p/n for
-// buildability (custom E23 transformer deferred to cost-ECO-1; C_io ≤ 10 pF spec in D5 when it runs).
+// ---------- isolated gate-bias module. E81 (F-C-15): +18/−3 → **+15/−3**. The only registered
+// second source (C3M0021120K class) is rated V_GS −4/+15 V STATIC with +19 V transient absolute
+// maximum, and the DPT shows 18.0 V steady with no ringing in the model — a real gate loop adds
+// 1–3 V of overshoot straight through the absolute maximum. The vendor SCWT classes the DESAT
+// budget is graded against (F-C-8) are 15 V numbers too, and 15 V cuts Q_g·ΔV by 14 %, which is
+// what buys back the bias-module margin of F-C-23. Cost ₹0 — same-price catalogue variant.
+// HR-10: packaged module p/n for buildability (custom E23 transformer deferred to cost-ECO-1).
 export const BiasModule = ({ id, sec = "DRIVE", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
-  <chip name={`PS${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P18", pin4: "COM", pin5: "N4" }} pcbX={x} pcbY={y} schX={sx} schY={sy} schSectionName={sec} />
+  <chip name={`PS${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P15", pin4: "COM", pin5: "N3" }} pcbX={x} pcbY={y} schX={sx} schY={sy} schSectionName={sec} />
 );
 // 5 V isolated bias module (iso-amp primary-side supplies; PSCAN/PSSH pattern)
 export const Bias5Module = ({ id, p5, com, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
@@ -293,7 +326,13 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     {/* E60: DESAT blank is per stage, no default — NSI66x1A worst response (blank + 200 ns LEB +
         300 ns sense-to-OUT + soft-off) must sit inside 75 % of the SiC short-circuit withstand:
         LLC 22 pF → 1.44 µs vs 2 µs (ZVS turn-on tolerates the short blank) · Vienna 47 pF → 2.21 µs
-        vs 4.2 µs (hard turn-on keeps ≥0.8 µs of blank). The IGBT-style 100 pF computed 3.39 µs. */}
+        vs 4.2 µs (hard turn-on keeps ≥0.8 µs of blank). The IGBT-style 100 pF computed 3.39 µs.
+        E81 (F-C-8): the LLC positions carry TWO dies on every SKU, so the soft-off term
+        0.6·Q_g/I_STO DOUBLES — 2 × 162 nC / 0.25 A = 778 ns and the total response went to 1.83 µs,
+        past the 1.5 µs (75 % of a 2 µs SCWT) line. LLC blank 22 → 10 pF: blank 552 → 251 ns, total
+        1.53 µs with both dies. The min-blank floor drops to 328 ns, below the 400 ns noise line, so
+        the ZVS turn-on transient is a named bench check (EVT, with the +15 V gate of F-C-15 — the
+        SCWT classes are 15 V numbers, which is the other half of this finding). */}
     <capacitor layer={lay} name={`C${id}BL`} capacitance={cBlank} footprint="0603" pcbX={14} pcbY={-4.5} schX={1.4} schY={1.9} schSectionName={sec} />
     {/* R5-B: 100 Ω in series with the DESAT pin (standard NSI66x1 practice) — limits the pin
         current during the switch-node dv/dt kick and the diode-capacitance discharge; the
@@ -324,13 +363,13 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
     <trace from={`.U${id} > .RDY`} to="net.DRV_RDY" schDisplayLabel="DRV_RDY" />
     <trace from={`.PS${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.PS${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.PS${id} > .P18`} to={`.U${id} > .VCC2`} />
+    <trace from={`.PS${id} > .P15`} to={`.U${id} > .VCC2`} />
     {/* R4-2 THE structural fix: the bias 0 V, the driver GND2 and the FET Kelvin source are ONE
         node — previously the bias COM floated on a private net while the (fictional) KSRC pin
         held the Kelvin, so gate amplitude and UVLO had no defined source reference. */}
     <trace from={`.PS${id} > .COM`} to={kelvin} />
     <trace from={`.U${id} > .GND2`} to={kelvin} />
-    <trace from={`.PS${id} > .N4`} to={`.U${id} > .VEE`} />
+    <trace from={`.PS${id} > .N3`} to={`.U${id} > .VEE`} />
     <trace from={`.C${id}B1 > .pin1`} to={`.U${id} > .VCC2`} />
     <trace from={`.C${id}B1 > .pin2`} to={kelvin} />
     <trace from={`.C${id}B2 > .pin1`} to={kelvin} maxLength="12mm" />
@@ -355,7 +394,7 @@ export const DriverCh = ({ id, pwm, flt, gate, kelvin, desatNode, rgOn, rgOff, e
 // v3: per-phase film commutation caps DCP–MID / MID–DCN (CB-9 — restores the ≤10 nH loop premise
 // behind the DPT-frozen drive; §P-1 layout note: at the leg pins), snubber C 470p→100p with 2 W R
 // (E28 corrected CV²f = 0.86 W), clamp bleeder to 5 W axial (HR-3, 4.3 W worst-case).
-export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH", sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
+export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH", mirrorClamp = false, sec = "PFC", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`vp${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* PCB envelope 89 x 163, origin at the cell centre. The old layout ran the parts out in one
         200 mm line from the choke, which put the cell 175 mm wide and hung it 27 mm off the board.
@@ -369,31 +408,69 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
                   ridge needs: a rail is only a rail if the devices share one Y.
           y -34   gate-drive channel, directly behind its two switches
           y -46   commutation films, then snubber and clamp below
-        Power flows top-to-bottom inside the cell; the cell as a whole flows left-to-right. */}
+        Power flows top-to-bottom inside the cell; the cell as a whole flows left-to-right.
+
+        E81 LAYOUT RULE (DFM, binding on the layout phase): the VIENNA LEG COMMUTATION LOOP —
+        C{id}FP/C{id}FN → Q{id}A/Q{id}B → D{id}T/D{id}B and back — must measure **≤ 7 nH**, MEASURED
+        AT T-59. Every over-voltage row the E81 decks report (76–79 % of 750 V at 30/40 kW, 82 % on
+        both 50 kW SKUs, all with the 330 pF snubber) is RUN AT 7 nH; at 20 nH the same deck reads
+        95 %, i.e. the loop is the design variable, not a layout preference. The films are inside
+        this cell for exactly that reason and belong at the leg pins. The mirrored clamp below is
+        populated where the measured unclamped polarity needs it. */}
     <inductor name={`L${id}`} inductance={ind} footprint={<ChokeFP />} pcbX={0} pcbY={50} schX={0} schY={0} schSectionName={sec} />
     {/* E68: ONE common-source B3M pair per phase on every SKU (InfyPower practice — single dies on a ceramic-insulated
         clip mount, 0.8 K/W j→sink). The E41 paralleled second pair was bought by the 1.9 K/W pad basis; the grid holds
         114 / 116 / 135 °C at 40 / 50 L / 50 A with one die. */}
     <chip name={`Q${id}A`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-36} pcbY={-14} schX={3} schY={0} schSectionName={sec} />
     <chip name={`Q${id}B`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={-18} pcbY={-14} schX={6} schY={0} schSectionName={sec} />
+    {/* E81 (F-C-19): per-die de-Q. Both dies of the common-source pair rode net.G_{id} DIRECTLY —
+        two 5–6 nF C_iss gates tied together through package lead inductance are an undamped LC
+        loop at 50–200 MHz, and the DPT has one device so no simulation covers the V_GS overshoot
+        it can produce (against the +19 V transient maximum of F-C-15). 1 Ω per die, exactly the
+        practice LlcHalfBridgeLeg already applies to its paralleled positions. +₹1.2/module. */}
+    <resistor name={`RG${id}A1`} resistance="1" footprint="0805" pcbX={-44} pcbY={-26} schX={2} schY={0.9} schSectionName={sec} />
+    <resistor name={`RG${id}B1`} resistance="1" footprint="0805" pcbX={-26} pcbY={-26} schX={5} schY={0.9} schSectionName={sec} />
     <DriverCh id={`${id}G`} cBlank="47pF" pwm={pwm} flt={flt} en={en} gate={`net.G_${id}`} kelvin={`net.KS_${id}`} desatNode={`net.PH${id}`} rgOn="4.7" rgOff="4.7" sec={sec} x={-20} y={-30} sx={4.5} sy={-6.5} />
     <diode name={`D${id}T`} footprint={<TO247_2 />} pcbX={0} pcbY={-14} schX={9.5} schY={1.4} schSectionName={sec} />
     <diode name={`D${id}B`} footprint={<TO247_2 />} pcbX={18} pcbY={-14} schX={9.5} schY={-1.4} schSectionName={sec} />
     <capacitor name={`C${id}FP`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={-30} pcbY={-2} schX={12.5} schY={1.4} schSectionName={sec} />
     <capacitor name={`C${id}FN`} capacitance="1uF" footprint={FilmBoxFP(22.5)} pcbX={2} pcbY={-2} schX={12.5} schY={-1.4} schSectionName={sec} />
     <resistor name={`R${id}SN`} resistance="10" footprint="2512" pcbX={26} pcbY={-24} schX={15.5} schY={0.7} schSectionName={sec} />
-    <capacitor name={`C${id}SN`} capacitance="100pF" footprint="1812" pcbX={26} pcbY={-31} schX={15.5} schY={-0.7} schSectionName={sec} />
+    {/* E81 (F-C-3/13): 100 → 330 pF. The DPT that produced the audited 69.8 %-of-750 V overshoot
+        ran a 470 pF snubber and a two-sided clamp; as drawn (100 pF, one-sided RCD) the unclamped
+        half-cycle reaches 78 % at 30 kW and 85–89 % at 50 kW. 330 pF costs +6 W of CV²f across the
+        module and buys the margin back without a second clamp. */}
+    <capacitor name={`C${id}SN`} capacitance="330pF" footprint="1812" pcbX={26} pcbY={-31} schX={15.5} schY={-0.7} schSectionName={sec} />
     <diode name={`D${id}C`} footprint={<TO247_2 />} pcbX={36} pcbY={-14} schX={18.5} schY={1.4} schSectionName={sec} />
     <capacitor name={`C${id}C`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={40} pcbY={-24} schX={18.5} schY={-1.4} schSectionName={sec} />
     <chip name={`R${id}C`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={2} pcbY={-48} schX={21.5} schY={0} schSectionName={sec} />
+    {/* E81 (F-C-3/F-C-13) MIRRORED RCD CLAMP. The drawn clamp is single-polarity — PH → D{id}C →
+        C{id}C → DCP — so it catches the positive half-cycle only. On the negative half-cycle PH
+        swings BELOW DCN with nothing to catch it, and the DPT at the real currents reads that
+        polarity at 81–92 % of 750 V on a 10 nH loop against 71–78 % clamped. The mirror is the
+        same network reflected to the lower rail: DCN → D{id}CM → C{id}CM, bled by R{id}CM.
+        The LAND IS ON EVERY SKU (one PCB); population is per SKU — 40/50 kW now, 30 kW DNP until
+        the 5 nH-loop run, carried as qtyMul 0 in parts-db so the BOM tells the truth. */}
+    {mirrorClamp ? [
+      <diode key="dcm" name={`D${id}CM`} footprint={<TO247_2 />} pcbX={54} pcbY={-14} schX={18.5} schY={-3.2} schSectionName={sec} />,
+      <capacitor key="ccm" name={`C${id}CM`} capacitance="100nF" footprint={FilmBoxFP(5)} pcbX={58} pcbY={-24} schX={18.5} schY={-4.6} schSectionName={sec} />,
+      <chip key="rcm" name={`R${id}CM`} footprint={FilmBoxFP(54, [48, 8])} pinLabels={{ pin1: "A", pin2: "B" }} pcbX={2} pcbY={-60} schX={21.5} schY={-3.9} schSectionName={sec} />,
+      <trace key="t1" from={`.D${id}CM > .cathode`} to={`net.PH${id}`} />,
+      <trace key="t2" from={`.D${id}CM > .anode`} to={`.C${id}CM > .pin1`} />,
+      <trace key="t3" from={`.C${id}CM > .pin2`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />,
+      <trace key="t4" from={`.R${id}CM > .A`} to={`.C${id}CM > .pin1`} />,
+      <trace key="t5" from={`.R${id}CM > .B`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />,
+    ] : null}
     <trace from={ac} to={`.L${id} > .pin1`} schDisplayLabel={ac.replace("net.", "")} />
     <trace from={`.L${id} > .pin2`} to={`net.PH${id}`} />
     <trace from={`.Q${id}A > .D`} to={`net.PH${id}`} />
-    <trace from={`.Q${id}A > .G`} to={`net.G_${id}`} />
+    <trace from={`.RG${id}A1 > .pin1`} to={`net.G_${id}`} />
+    <trace from={`.RG${id}A1 > .pin2`} to={`.Q${id}A > .G`} />
     <trace from={`.Q${id}A > .KS`} to={`net.KS_${id}`} />
     <trace from={`.Q${id}A > .S`} to={`.Q${id}B > .S`} />
     <trace from={`.Q${id}B > .KS`} to={`net.KS_${id}`} />
-    <trace from={`.Q${id}B > .G`} to={`net.G_${id}`} />
+    <trace from={`.RG${id}B1 > .pin1`} to={`net.G_${id}`} />
+    <trace from={`.RG${id}B1 > .pin2`} to={`.Q${id}B > .G`} />
     <trace from={`.Q${id}B > .D`} to={mid} schDisplayLabel={mid.replace("net.", "")} />
     <trace from={`.D${id}T > .anode`} to={`net.PH${id}`} />
     <trace from={`.D${id}T > .cathode`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
@@ -417,13 +494,28 @@ export const ViennaPhase = ({ id, ac, dcp, dcn, mid, pwm, flt, en, ind = "165uH"
 // ---------- LLC half-bridge leg: 2 FETs + 2 driver channels.
 // v3/E28: node RC snubbers DELETED — ZVS topology needs none and CV²f at 140 kHz (≈45 W for
 // 470 pF/830 V) is untenable; ringing containment is the DPT-frozen gate drive + ≤15 nH loop (§P-2).
-export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 1, sec = "LLC", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
+export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 1, snub = "470pF", sec = "LLC", x = 0, y = 0, sx = 0, sy = 0 }: any) => {
   // E44 → E67: `par` SG2M023120LJ per position (1–3) — paralleled devices share the one driver channel (per-device 2.2 Ω gate R
   // off the shared gate net, Kelvin shared, DESAT watching the common drain node), same practice as the E41 Vienna pairs.
   const np = par === true ? 2 : Number(par) || 1, extra = Array.from({ length: np - 1 }, (_, k) => k + 2);
   return (
   <group name={`leg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* Envelope 24 × 15: half-bridge devices stacked at right, the two driver channels in two clean rows to the left (H above L). */}
+    {/* Envelope 24 × 15: half-bridge devices stacked at right, the two driver channels in two clean rows to the left (H above L).
+
+        E81 LAYOUT RULE (DFM, binding on the layout phase): the LLC BRIDGE COMMUTATION LOOP —
+        entry film bank → Q{id}H → Q{id}L → back — must measure **≤ 5 nH, MEASURED AT T-59**:
+        laminated board-to-board bus, and the CF# bridge films AT THE PACKAGE PINS, not on a stub.
+        The E81 DPT rows that justify R_g,off = 0 Ω and the per-die C_s are RUN AT 5 nH, and C_s's
+        own loop inductance subtracts directly from its effect — a snubber on a stub is not one.
+
+        E81 CM RULE (DFM, binding, T-13 measures): LLC LEG-NODE-TO-PE CAPACITANCE ≤ 100 pF TOTAL,
+        design target 50 pF. The leg nodes swing 830 V at 83–203 kHz, so every picofarad from them
+        to earth is current in the CISPR measurement and in the Y-capacitor balance (F-L-4 counts
+        the LLC bridge as a CM source; F-C-24 puts the driver island at ~3.5 A per transition).
+        Build rule: a SHIELDED thermal interface under the LLC dies — a copper shield layer on the
+        Al2O3 pad, RETURNED TO DCN, not to the heatsink — and the leg nodes on the smallest tab area
+        that carries the current. An unshielded pad under four TO-247 tabs is the single largest
+        leg-to-PE capacitance in the module. */}
     <chip name={`Q${id}H`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={0} pcbY={0} schX={17} schY={1.4} schSectionName={sec} />
     <chip name={`Q${id}L`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={0} schX={17} schY={-5.6} schSectionName={sec} />
     {extra.map((k) => [
@@ -431,6 +523,12 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
       <chip key={`l${k}`} name={`Q${id}L${k}`} footprint={<TO247_4 />} pinLabels={{ pin1: "G", pin2: "D", pin3: "S", pin4: "KS" }} pcbX={18} pcbY={9 * (k - 1)} schX={17 + 3 * (k - 1)} schY={-5.6} schSectionName={sec} />,
       <resistor key={`rh${k}`} name={`RG${id}H${k}`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={9 * (k - 1)} schX={16 + 3 * (k - 1)} schY={0.4} schSectionName={sec} />,
       <resistor key={`rl${k}`} name={`RG${id}L${k}`} resistance="2.2" footprint="0805" pcbX={10} pcbY={9 * (k - 1)} schX={16 + 3 * (k - 1)} schY={-6.6} schSectionName={sec} />,
+      <capacitor key={`ch${k}`} name={`C${id}HOS${k}`} capacitance={snub} footprint="1206" pcbX={4} pcbY={9 * (k - 1) + 4} schX={19 + 3 * (k - 1)} schY={2.4} schSectionName={sec} />,
+      <capacitor key={`cl${k}`} name={`C${id}LOS${k}`} capacitance={snub} footprint="1206" pcbX={22} pcbY={9 * (k - 1) + 4} schX={19 + 3 * (k - 1)} schY={-4.6} schSectionName={sec} />,
+      <trace key={`ch${k}a`} from={`.C${id}HOS${k} > .pin1`} to={`.Q${id}H${k} > .D`} />,
+      <trace key={`ch${k}b`} from={`.C${id}HOS${k} > .pin2`} to={`.Q${id}H${k} > .S`} />,
+      <trace key={`cl${k}a`} from={`.C${id}LOS${k} > .pin1`} to={`.Q${id}L${k} > .D`} />,
+      <trace key={`cl${k}b`} from={`.C${id}LOS${k} > .pin2`} to={`.Q${id}L${k} > .S`} />,
       <trace key={`h${k}g`} from={`.RG${id}H${k} > .pin1`} to={`net.GH_${id}`} />,
       <trace key={`h${k}g2`} from={`.RG${id}H${k} > .pin2`} to={`.Q${id}H${k} > .G`} />,
       <trace key={`h${k}d`} from={`.Q${id}H${k} > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />,
@@ -445,8 +543,30 @@ export const LlcHalfBridgeLeg = ({ id, bus, gnd, sw, pwmH, pwmL, flt, en, par = 
     {/* R5-E: matching 2.2 Ω on the ORIGINAL device of each paralleled position (see ViennaPhase) */}
     {np > 1 ? <resistor name={`RG${id}H1`} resistance="2.2" footprint="0805" pcbX={-8} pcbY={0} schX={16} schY={0.4} schSectionName={sec} /> : null}
     {np > 1 ? <resistor name={`RG${id}L1`} resistance="2.2" footprint="0805" pcbX={26} pcbY={0} schX={16} schY={-6.6} schSectionName={sec} /> : null}
-    <DriverCh id={`${id}H`} cBlank="22pF" pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="2.2" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
-    <DriverCh id={`${id}L`} cBlank="22pF" pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="2.2" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
+    {/* E81 TURN-OFF SNUBBER (C §SNUBBER SWEEP, SIMULATED): ONE 1 kV C0G 1206 drain–source at the
+        PACKAGE PINS of every die. The as-drawn network (2.2 Ω off-gate, no C_s) runs k_off
+        13–15 nJ/(V·A) — 1.43× the datasheet — and drives the 30 kW SER-250 die to 211–248 °C.
+        With C_s fitted and R_g,off = 0 Ω the channel turn-off collapses 8–20× (k_off 2.0 / 6.5 /
+        3.6 nJ/(V·A) at 470 / 150 / 330 pF) AND V_ds,pk drops 84 → 77 %, because C_s is a snubber,
+        not only a soft-switching aid. Its own loop inductance subtracts directly from the effect,
+        so "at the package pins" is the spec, not a layout preference. C_s is bounded ABOVE by the
+        ZVS budget at PS150-Imax (t_dead = n_die·(Q_oss + C_s·V)/I_toff) and by the L_loop–C_s ring
+        above ~2.2 nF — the per-SKU value comes from tanks.mjs `cs`, which verify-independent
+        mirrors as a [SYNC] check so a tank change cannot drift it. Duty is trivial: I_rms ≈ 0.6 A,
+        ≈11 mW per part, and in ZVS the stored charge is recovered (no CV²f term). */}
+    <capacitor name={`C${id}HOS1`} capacitance={snub} footprint="1206" pcbX={4} pcbY={4} schX={19} schY={2.4} schSectionName={sec} />
+    <capacitor name={`C${id}LOS1`} capacitance={snub} footprint="1206" pcbX={22} pcbY={4} schX={19} schY={-4.6} schSectionName={sec} />
+    <trace from={`.C${id}HOS1 > .pin1`} to={`.Q${id}H > .D`} />
+    <trace from={`.C${id}HOS1 > .pin2`} to={`.Q${id}H > .S`} />
+    <trace from={`.C${id}LOS1 > .pin1`} to={`.Q${id}L > .D`} />
+    <trace from={`.C${id}LOS1 > .pin2`} to={`.Q${id}L > .S`} />
+    {/* E81: R{id}OFF 2.2 → 0 Ω on the LLC channels (OUTL straight to the gate, driver R_OL 0.3 Ω).
+        On its own it is NOT free — the un-snubbed peak rises 71 → 77 % and the gate undershoot
+        worsens to −5.6…−6.7 V against the −8 V transient maximum — but WITH C_s fitted it is
+        strictly better on every axis (69/76/77 % of 1200 V, undershoot −5.4 V). The 1206 land is
+        kept so a bench re-fit can put the resistor back. */}
+    <DriverCh id={`${id}H`} cBlank="18pF" pwm={pwmH} flt={flt} en={en} gate={`net.GH_${id}`} kelvin={`net.KH_${id}`} desatNode={bus} rgOn="4.7" rgOff="0" sec={sec} x={0} y={16} sx={4.5} sy={1.4} />
+    <DriverCh id={`${id}L`} cBlank="18pF" pwm={pwmL} flt={flt} en={en} gate={`net.GL_${id}`} kelvin={`net.KL_${id}`} desatNode={sw} rgOn="4.7" rgOff="0" sec={sec} x={54} y={16} sx={4.5} sy={-5.6} />
     <trace from={`.Q${id}H > .D`} to={bus} schDisplayLabel={bus.replace("net.", "")} />
     <trace from={`.Q${id}H > .S`} to={sw} schDisplayLabel={sw.replace("net.", "")} />
     {np > 1 ? [
@@ -503,6 +623,27 @@ export const LlcTank = ({ crN = 9, crVal = "33nF", lr = "4.07uH", ctBurden = "0.
     <chip name="U1W" footprint="soic8" pinLabels={{ pin1: "OUTA", pin2: "INAN", pin3: "INAP", pin4: "GND", pin5: "INBP", pin6: "INBN", pin7: "OUTB", pin8: "VCC" }} pcbX={58} pcbY={-49} schX={13} schY={-6.2} schSectionName={sec} />
     <chip name="D1W" footprint="sot23" pinLabels={{ pin1: "K1", pin2: "K2", pin3: "A" }} pcbX={68} pcbY={-49} schX={17} schY={-5.8} schSectionName={sec} />
     <capacitor name="C1WB" capacitance="100nF" footprint="0603" pcbX={58} pcbY={-58} schX={13} schY={-8.4} schSectionName={sec} />
+    {/* E81 (F-A-15): AVMID had NO bypass anywhere on the DC-DC board. The 1:100 resonant CT's
+        secondary return AND its burden return both land on AVMID — 0.46 A rms at full tank load,
+        1.4–2.2 A pk at the F.11 trip — while the only reservoir (CAVO 10 µF) sits on the card,
+        two connectors and ≈100 nH away (88 Ω at 140 kHz). 8.8 mΩ between the two returns injects
+        4 mV rms onto the reference that ALSO biases the three line CTs on the other board = 0.45 A
+        of apparent line current, and the F.11 thresholds are ratiometric from V3P3 while the
+        signal is referenced to AVMID, so any AVMID movement is a direct threshold error.
+        Layout rule: CT return and burden return adjacent, this cap between them. */}
+    <capacitor name="C1AVM" capacitance="1uF" footprint="0805" pcbX={40} pcbY={-64} schX={4.6} schY={-7} schSectionName={sec} />
+    <trace from=".C1AVM > .pin1" to="net.AVMID" schDisplayLabel="AVMID" />
+    <trace from=".C1AVM > .pin2" to="net.AGND" schDisplayLabel="AGND" />
+    {/* E81 (F-A-21): TLV3202 has no internal hysteresis and F.11 is a latched HARDWARE kill of all
+        nine PWM outputs. 1 MΩ positive feedback from each output to its own + input gives
+        3.3 × R_thev/1 M = 4.6 mV ≈ 1 A of primary current against a 140/181/220 A threshold — enough
+        to stop chatter when I_RES1 dwells on the threshold, negligible against the trip. */}
+    <resistor name="R1WHA" resistance="1M" footprint="0805" pcbX={66} pcbY={-42} schX={15} schY={-4.6} schSectionName={sec} />
+    <resistor name="R1WHB" resistance="1M" footprint="0805" pcbX={66} pcbY={-56} schX={15} schY={-7.8} schSectionName={sec} />
+    <trace from=".R1WHA > .pin1" to=".U1W > .OUTA" />
+    <trace from=".R1WHA > .pin2" to=".U1W > .INAP" />
+    <trace from=".R1WHB > .pin1" to=".U1W > .OUTB" />
+    <trace from=".R1WHB > .pin2" to=".U1W > .INBP" />
     <trace from=".U1W > .INAN" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
     <trace from=".U1W > .INAP" to={vh} schDisplayLabel={vh.replace("net.", "")} />
     <trace from=".U1W > .INBP" to={ctOut} schDisplayLabel={ctOut.replace("net.", "")} />
@@ -563,11 +704,18 @@ export const SplitDcLink = ({ id = "", nPerHalf, dcp, dcn, mid, sec = "DCLINK", 
     {Array.from({ length: nPerHalf }, (_, i) => (
       <capacitor key={`b${i}`} name={`CDB${id}${i}`} capacitance="470uF" footprint={<SnapInFP />} pcbX={i * 40} pcbY={-45} schX={i * 2} schY={-1.4} schSectionName={sec} />
     ))}
-    {/* HR-20: 2-series 47 k HV per half — halves per-element V (≈208 V) and W (≈0.92 W on 3 W) */}
-    <resistor name={`RBALT${id}A`} resistance="47k" footprint="2512" pcbX={0} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={2.1} schSectionName={sec} />
-    <resistor name={`RBALT${id}B`} resistance="47k" footprint="2512" pcbX={24} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={0.7} schSectionName={sec} />
-    <resistor name={`RBALB${id}A`} resistance="47k" footprint="2512" pcbX={56} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-0.7} schSectionName={sec} />
-    <resistor name={`RBALB${id}B`} resistance="47k" footprint="2512" pcbX={80} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-2.1} schSectionName={sec} />
+    {/* HR-20: 2-series HV per half — halves per-element V (≈208 V) and W.
+        E81 (F-A-7): 47 k → 22 k. At 47 k the balance current is 4.4 mA per half against a hot
+        can-to-can leakage IMBALANCE of up to ~17 mA (5–8 cans per half, ±30 % spread, 8–10× the
+        20 °C leakage at 85 °C) — the midpoint rails in ~14 s whenever the link sits charged and
+        gated off, which is exactly the F.21 "AC present, discharge impossible" state, and F.06 can
+        only latch, not correct. 22 k: 9.4 mA bleed, 1.96 W per element on the 3 W part (65 %, was
+        31 %), +4.1 W standing per module. Paired with the RFQ leakage line on the can (E81:
+        ≤ 0.5 mA per can at 85 °C / 415 V, graded per half). */}
+    <resistor name={`RBALT${id}A`} resistance="22k" footprint="2512" pcbX={0} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={2.1} schSectionName={sec} />
+    <resistor name={`RBALT${id}B`} resistance="22k" footprint="2512" pcbX={24} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={0.7} schSectionName={sec} />
+    <resistor name={`RBALB${id}A`} resistance="22k" footprint="2512" pcbX={56} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-0.7} schSectionName={sec} />
+    <resistor name={`RBALB${id}B`} resistance="22k" footprint="2512" pcbX={80} pcbY={-22.5} schX={nPerHalf * 2 + 1} schY={-2.1} schSectionName={sec} />
     {Array.from({ length: nPerHalf }, (_, i) => [
       <trace key={`tt${i}`} from={`.CDT${id}${i} > .pin1`} to={dcp} schDisplayLabel={dcp.replace("net.", "")} />,
       <trace key={`tm${i}`} from={`.CDT${id}${i} > .pin2`} to={mid} schDisplayLabel={mid.replace("net.", "")} />,
@@ -649,7 +797,14 @@ export const CoilDriver = ({ id, ins, outs, sec = "COILS", x = 0, y = 0, sx = 0,
 // biasP/biasG: floating-side rail nodes (share one Bias5Module per domain). outN optional.
 // v4/MR-18: `cf` parameterizes the input filter — channels that feed a hardware OVP comparator
 // (bus/bank/output) use 1 nF (pole ≈ 23 kHz → trip path ≈ 10–20 µs); AC metering keeps 10 nF.
-export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "10nF", sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+// E81 (F-A-9): `aRet` is the COLD-side analogue return. It was hard-wired to net.AGND, which since
+// R4-5 gave the AC-DC board its own DGND-referenced 3.3 V buck meant ≈32 mA of iso-amp secondary
+// current (five AMC-class parts) left the board on ONE harness way, crossed to the card, through
+// RAGTC, and came back over the five harness DGND ways — a ≈0.6 m loop under every AC, bus and
+// midpoint sense. The single-point rule was written when the CARD supplied V3P3 to both boards and
+// was never revisited. The AC-DC board now passes DGND (where its supply already returns); the
+// DC-DC board, which hosts the card, keeps AGND. Harness way 26 stays AVMID's Kelvin return.
+export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "10nF", aRet = "net.AGND", sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`ivs${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* The 8-element divider runs as ONE unbroken string and its LENGTH IS ITS INSULATION: each
         1206 drops about 100 V, and the 6 mm pitch is the working-voltage spacing between elements.
@@ -672,7 +827,7 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
     <trace from={`.C${id}VA > .pin1`} to={`.UIV${id} > .VDD1`} />
     <trace from={`.C${id}VA > .pin2`} to={ref} schDisplayLabel={ref.replace("net.", "")} />
     <trace from={`.C${id}VB > .pin1`} to={`.UIV${id} > .VDD2`} />
-    <trace from={`.C${id}VB > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.C${id}VB > .pin2`} to={aRet} schDisplayLabel={aRet.replace("net.", "")} />
     <trace from={hv} to={`.R${id}D0 > .pin1`} schDisplayLabel={hv.replace("net.", "")} />
     {Array.from({ length: 7 }, (_, i) => (
       <trace key={i} from={`.R${id}D${i} > .pin2`} to={`.R${id}D${i + 1} > .pin1`} />
@@ -686,7 +841,7 @@ export const IsoVSense = ({ id, hv, ref, out, outN, biasP, rBot = "6.8k", cf = "
     <trace from={`.UIV${id} > .GND1`} to={ref} schDisplayLabel={ref.replace("net.", "")} />
     <trace from={`.UIV${id} > .VDD1`} to={biasP} schDisplayLabel={biasP.replace("net.", "")} />
     <trace from={`.UIV${id} > .VDD2`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.UIV${id} > .GND2`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.UIV${id} > .GND2`} to={aRet} schDisplayLabel={aRet.replace("net.", "")} />
     <trace from={`.UIV${id} > .OUTP`} to={out} schDisplayLabel={out.replace("net.", "")} />
     {outN ? <trace from={`.UIV${id} > .OUTN`} to={outN} /> : null}
   </group>
@@ -756,11 +911,12 @@ export const AnalogMid = ({ sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = 
 );
 
 // ---------- line/lane CT sensor (E18) — v3/CB-15: burden + return biased to AVMID, dual clamps
-export const CtSensor = ({ id, out, burden = "22", sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const CtSensor = ({ id, out, burden = "22", aRet = "net.AGND", sec = "CT", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`cts${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
-    {/* PCB: the CT body is 25 mm across, so the burden and clamps sit to its RIGHT, not on top
-        of it. Envelope 57 × 25, one measurement row per phase. */}
-    <chip layer={lay} name={`CT${id}`} footprint={<CtFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    {/* PCB: E81 (F-B-9) — the line CT body is ⌀42 / 38.1 mm across, not 25 mm, so the land is
+        CtLineFP (33 mm pin row, ⌀45 courtyard) and the burden/filter/clamp row moves clear of it.
+        Envelope 85 × 45, one measurement row per phase. */}
+    <chip layer={lay} name={`CT${id}`} footprint={<CtLineFP />} pinLabels={{ pin1: "S1", pin2: "S2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     {/* 27 Ω (R3, landed by audit 2026-09-08): 1:2500 → 0.59 V/55 A rms; the OC observability
         limit 150 A pk reads 1.62 V above AVMID = 3.27 V, inside the 3.3 V rail. The previous
         33 Ω put 150 A pk at 3.63 V — the top of the protection range clipped at the ADC.
@@ -769,11 +925,15 @@ export const CtSensor = ({ id, out, burden = "22", sec = "CT", x = 0, y = 0, sx 
         E60: F.01 = 120/155/195 A pk (1.2× the cycle-by-cycle Vienna worst peak incl. dips and phase
         jumps) on 22/18/13 Ω — observable through the D1 soft-saturation 3 µs race (ceilings
         184/225/311 A). The 27/21.5 Ω values could not see past 150/187 A. */}
-    <resistor layer={lay} name={`R${id}B`} resistance={burden} footprint="1206" pcbX={24} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
-    <resistor layer={lay} name={`R${id}F`} resistance="1k" footprint="0603" pcbX={34} pcbY={0} schX={4} schY={0} schSectionName={sec} />
-    <capacitor layer={lay} name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={44} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
-    <diode layer={lay} name={`D${id}P`} footprint="sod323" pcbX={24} pcbY={9} schX={6.6} schY={1.2} schSectionName={sec} />
-    <diode layer={lay} name={`D${id}N`} footprint="sod323" pcbX={34} pcbY={9} schX={9} schY={1.2} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}B`} resistance={burden} footprint="1206" pcbX={34} pcbY={0} schX={2.2} schY={0} schSectionName={sec} />
+    {/* E81 (F-B-1): 1 k → 200 Ω. With 1 nF the front-end lag was τ = 1 µs, which the F.01 trip
+        race did not model: the fault peak ran 165 → 183 A (30 kW) and 205 → 223 A (40 kW), 7–9 %
+        past 0.8·I_DM. 200 Ω puts τ at 200 ns; the anti-alias corner moves to 796 kHz, still well
+        below the 2.5 MSPS aperture and above every signal the ADC chain uses. */}
+    <resistor layer={lay} name={`R${id}F`} resistance="200" footprint="0603" pcbX={44} pcbY={0} schX={4} schY={0} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}F`} capacitance="1nF" footprint="0603" pcbX={54} pcbY={0} schX={5.6} schY={-1.2} schSectionName={sec} />
+    <diode layer={lay} name={`D${id}P`} footprint="sod323" pcbX={34} pcbY={26} schX={6.6} schY={1.2} schSectionName={sec} />
+    <diode layer={lay} name={`D${id}N`} footprint="sod323" pcbX={44} pcbY={26} schX={9} schY={1.2} schSectionName={sec} />
     <trace from={`.CT${id} > .S1`} to={`.R${id}B > .pin1`} />
     <trace from={`.CT${id} > .S2`} to="net.AVMID" schDisplayLabel="AVMID" />
     <trace from={`.R${id}B > .pin2`} to="net.AVMID" schDisplayLabel="AVMID" />
@@ -783,24 +943,24 @@ export const CtSensor = ({ id, out, burden = "22", sec = "CT", x = 0, y = 0, sx 
     <trace from={`.C${id}F > .pin2`} to="net.AVMID" schDisplayLabel="AVMID" />
     <trace from={`.D${id}P > .anode`} to={out} schDisplayLabel={out.replace("net.", "")} />
     <trace from={`.D${id}P > .cathode`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.D${id}N > .anode`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.D${id}N > .anode`} to={aRet} schDisplayLabel={aRet.replace("net.", "")} />
     <trace from={`.D${id}N > .cathode`} to={out} schDisplayLabel={out.replace("net.", "")} />
   </group>
 );
 
 // ---------- NTC input (remote sensor header + bias + filter; unipolar — no mid-rail needed)
-export const NtcInput = ({ id, out, sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
+export const NtcInput = ({ id, out, aRet = "net.AGND", sec = "SENSE", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`ntc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 8 × 3 */}
     <chip layer={lay} name={`J${id}`} footprint="pinrow2" pinLabels={{ pin1: "P1", pin2: "P2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <resistor layer={lay} name={`R${id}P`} resistance="10k" footprint="0603" pcbX={8} pcbY={0} schX={2.4} schY={1.2} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}F`} capacitance="100nF" footprint="0603" pcbX={14} pcbY={0} schX={4.4} schY={-0.6} schSectionName={sec} />
     <trace from={`.J${id} > .P1`} to={out} schDisplayLabel={out.replace("net.", "")} />
-    <trace from={`.J${id} > .P2`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.J${id} > .P2`} to={aRet} schDisplayLabel={aRet.replace("net.", "")} />
     <trace from={`.R${id}P > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.R${id}P > .pin2`} to={out} schDisplayLabel={out.replace("net.", "")} />
     <trace from={`.C${id}F > .pin1`} to={out} schDisplayLabel={out.replace("net.", "")} />
-    <trace from={`.C${id}F > .pin2`} to="net.AGND" schDisplayLabel="AGND" />
+    <trace from={`.C${id}F > .pin2`} to={aRet} schDisplayLabel={aRet.replace("net.", "")} />
   </group>
 );
 
@@ -824,7 +984,12 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
   return (
   <group name={`sfc${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
     {/* Envelope 12 × 6: watchdog left, AND gate right, straps/pulls in a tidy bottom row */}
-    <chip layer={lay} name={`USUP${id}`} footprint="soic8" pinLabels={{ pin1: "WDI", pin2: "GND", pin3: "SET0", pin4: "SET1", pin5: "WDO", pin6: "VDD", pin7: "CWD", pin8: "CRST" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
+    {/* E81 (F-A-2, DATASHEET TPS3430 Table 5-1): the real part is DRC = VSON-10 + thermal pad —
+        1 VDD1 · 2 CWD · 3 SET0 · 4 CRST · 5 GND · 6 SET1 · 7 WDI · 8 WDO · 9 NC · 10 VDD2, and
+        "the device will not function properly if VDD1 and VDD2 are not externally connected".
+        The drawn 8-pin map put NRST_CARD on the real GND pin and left the supervisor unpowered.
+        Names unchanged; numbering + land corrected and VDD2 bonded to VDD1 below. */}
+    <chip layer={lay} name={`USUP${id}`} footprint="dfn10" pinLabels={{ pin1: "VDD", pin2: "CWD", pin3: "SET0", pin4: "CRST", pin5: "GND", pin6: "SET1", pin7: "WDI", pin8: "WDO", pin9: "NC", pin10: "VDD2" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
     <chip layer={lay} name={`UAND${id}`} footprint="soic14" pinLabels={{ pin1: "A1", pin2: "B1", pin3: "A2", pin4: "B2", pin5: "C2", pin6: "Y2", pin7: "GND", pin8: "Y3", pin9: "A3", pin10: "B3", pin11: "C3", pin12: "Y1", pin13: "C1", pin14: "VCC" }} pcbX={14} pcbY={0} schX={4.5} schY={0.6} schSectionName={sec} />
     <resistor layer={lay} name={`RWPU${id}`} resistance="10k" footprint="0603" pcbX={0} pcbY={8} schX={0} schY={-2} schSectionName={sec} />
     <resistor layer={lay} name={`RENR${id}`} resistance="100k" footprint="0603" pcbX={7} pcbY={8} schX={1.6} schY={-2} schSectionName={sec} />
@@ -853,12 +1018,29 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
     <trace from={`.USUP${id} > .VDD`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.USUP${id} > .SET0`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.USUP${id} > .SET1`} to="net.V3P3" schDisplayLabel="V3P3" />   {/* E80: fixed-window strap (HR-02) */}
+    <trace from={`.USUP${id} > .VDD2`} to="net.V3P3" schDisplayLabel="V3P3" />   {/* E81 (F-A-2): VDD2 MUST be tied to VDD1 externally */}
+    {/* E81 (F-A-26): WDI is floating out of reset and TPS3430 is FALLING-EDGE triggered, so coupled
+        noise could supply spurious kicks. A static level supplies no edges — the window still times
+        out. TPWDI is the fixture probe point F-F-8 asks for (kick the watchdog from the ATE). */}
+    <resistor layer={lay} name={`RWDI${id}`} resistance="10k" footprint="0603" pcbX={-6} pcbY={8} schX={1.6} schY={-3.2} schSectionName={sec} />
+    <trace from={`.RWDI${id} > .pin1`} to={wdi} schDisplayLabel={wdi.replace("net.", "")} />
+    <trace from={`.RWDI${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    <chip layer={lay} name={`TPWDI${id}`} footprint="pinrow1" pinLabels={{ pin1: "P" }} pcbX={-12} pcbY={8} schX={3.2} schY={-3.2} schSectionName={sec} />
+    <trace from={`.TPWDI${id} > .P`} to={wdi} schDisplayLabel={wdi.replace("net.", "")} />
     <trace from={`.CSF${id} > .pin1`} to={`.USUP${id} > .VDD`} />
     <trace from={`.RENL${id} > .pin1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
     <trace from={`.RENL${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.USUP${id} > .WDO`} to={wdoNet} schDisplayLabel={wdoLbl} />
+    {/* E81 (F-F-8): the WDO→NRST leg goes through a 0 Ω LINK. With WDO wire-ORed straight onto
+        NRST a blank chip resets 23 ms after power-up and SWD programming never completes; lifting
+        RWDOL inhibits the reset path for the programming fixture only. The SAFETY path is
+        deliberately upstream of the link — RWPU and both AND inhibits stay on WDO_{id}, so a board
+        shipped with the link out still gates its drivers on the watchdog verdict. */}
+    <resistor layer={lay} name={`RWDOL${id}`} resistance="0" footprint="0603" pcbX={-6} pcbY={-6} schX={2.6} schY={-0.8} schSectionName={sec} />
+    <trace from={`.USUP${id} > .WDO`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
+    <trace from={`.RWDOL${id} > .pin1`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
+    <trace from={`.RWDOL${id} > .pin2`} to={wdoNet} schDisplayLabel={wdoLbl} />
     <trace from={`.RWPU${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
-    <trace from={`.RWPU${id} > .pin2`} to={wdoNet} schDisplayLabel={wdoLbl} />
+    <trace from={`.RWPU${id} > .pin2`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
     {/* R5-A semantics (unchanged by the R6-A rename): a hung MCU is RESTARTED, not merely
         inhibited — WDO (open-drain) rides the MCU NRST network (SwdPort 100 n + MCU 10 k
         pull-up ∥ RWPU), while the AND path still clamps gates during WDO-low. Firmware
@@ -874,11 +1056,11 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
         gate 2 = EN_A AND WDO -> harness (AC-DC) GATE_EN_A. The third inputs tie high so each
         output is exactly (its EN) AND (watchdog verdict); the spare gate 3 stays unused. */}
     <trace from={`.UAND${id} > .A1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
-    <trace from={`.UAND${id} > .B1`} to={wdoNet} schDisplayLabel={wdoLbl} />
+    <trace from={`.UAND${id} > .B1`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
     <trace from={`.UAND${id} > .C1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.UAND${id} > .Y1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
     <trace from={`.UAND${id} > .A2`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
-    <trace from={`.UAND${id} > .B2`} to={wdoNet} schDisplayLabel={wdoLbl} />
+    <trace from={`.UAND${id} > .B2`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
     <trace from={`.UAND${id} > .C2`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.UAND${id} > .Y2`} to={gateEnA} schDisplayLabel={gateEnA.replace("net.", "")} />
     <trace from={`.RGPD${id} > .pin1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
@@ -925,17 +1107,25 @@ export const SwdPort = ({ id, sec = "SWD", x = 0, y = 0, sx = 0, sy = 0 , lay = 
 export const DischargeCtl = ({ id = "", ctl, gateOut, dcn, sec = "DISCH", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`dsch${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 10 × 4.5: LED in from the left, opto center, bias module below, gate net right */}
-    <chip name={`UQD${id}`} footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VEE", pin6: "OUT", pin7: "NC3", pin8: "VCC" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
-    <chip name={`PSQD${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P18", pin4: "COM", pin5: "N4" }} pcbX={0} pcbY={10} schX={0} schY={-1.8} schSectionName={sec} />
-    <resistor name={`RQDL${id}`} resistance="330" footprint="0603" pcbX={-10} pcbY={0} schX={-2.4} schY={0.6} schSectionName={sec} />
+    {/* E81 (F-A-3, DATASHEET Toshiba TLP152 §4): the part is SO-6 — 1 Anode · 2 NC · 3 Cathode ·
+        4 GND(VEE) · 5 VO · 6 VCC. The drawn 8-pin map put the LED cathode on a no-connect, so the
+        LED could never light and commanded bus discharge never operated.
+        Second defect, same finding: a 330 Ω GPIO feed gave IF 3.2–5.2 mA against IFLH(max) 7.5 mA
+        — outside the guaranteed-on region. `ctl` is now the LED SINK net (a spare ULN2803 channel
+        on the same board) and the LED is fed from V15 through 1.2 k: worst case
+        (13.5 − 1.95 − 1.1)/1200 = 8.7 mA ✓, best case 11.6 mA / 0.16 W on a 1206 (64 %).
+        Default-OFF is unchanged — the board's 10 k on CTL_QDIS plus the ULN input threshold. */}
+    <chip name={`UQD${id}`} footprint="soic6" pinLabels={{ pin1: "ANO", pin2: "NC1", pin3: "CAT", pin4: "VEE", pin5: "OUT", pin6: "VCC" }} pcbX={0} pcbY={0} schX={0} schY={0.6} schSectionName={sec} />
+    <chip name={`PSQD${id}`} footprint="pinrow5" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "P15", pin4: "COM", pin5: "N3" }} pcbX={0} pcbY={10} schX={0} schY={-1.8} schSectionName={sec} />
+    <resistor name={`RQDL${id}`} resistance="1.2k" footprint="1206" pcbX={-10} pcbY={0} schX={-2.4} schY={0.6} schSectionName={sec} />
     <resistor name={`RQDG${id}`} resistance="100" footprint="0805" pcbX={12} pcbY={0} schX={2.6} schY={0.6} schSectionName={sec} />
     <resistor name={`RQDPD${id}`} resistance="10k" footprint="0805" pcbX={12} pcbY={6} schX={4.2} schY={-0.8} schSectionName={sec} />
-    <trace from={ctl} to={`.RQDL${id} > .pin1`} schDisplayLabel={ctl.replace("net.", "")} />
+    <trace from={`.RQDL${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.RQDL${id} > .pin2`} to={`.UQD${id} > .ANO`} />
-    <trace from={`.UQD${id} > .CAT`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.UQD${id} > .CAT`} to={ctl} schDisplayLabel={ctl.replace("net.", "")} />
     <trace from={`.PSQD${id} > .VIN`} to="net.V15" schDisplayLabel="V15" />
     <trace from={`.PSQD${id} > .GND`} to="net.DGND" schDisplayLabel="DGND" />
-    <trace from={`.PSQD${id} > .P18`} to={`.UQD${id} > .VCC`} />
+    <trace from={`.PSQD${id} > .P15`} to={`.UQD${id} > .VCC`} />
     <trace from={`.PSQD${id} > .COM`} to={dcn} schDisplayLabel={dcn.replace("net.", "")} />
     {/* R5-C: opto-driver floating bias bypass at the pins */}
     <capacitor name={`CQD${id}`} capacitance="100nF" footprint="0603" pcbX={-6} pcbY={6} schX={1.2} schY={-0.8} schSectionName={sec} />
@@ -963,7 +1153,11 @@ export const DischargeCtl = ({ id = "", ctl, gateOut, dcn, sec = "DISCH", x = 0,
 export const PvGateDrive = ({ id, gateOut, src, sec = "BLEED", x = 0, y = 0, sx = 0, sy = 0 }: any) => (
   <group name={`pvg${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy}>
     {/* Envelope 8 × 2.5 */}
-    <chip name={`UPV${id}`} footprint="soic8" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "NC1", pin4: "NC2", pin5: "VN", pin6: "NC3", pin7: "NC4", pin8: "VP" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    {/* E81 (F-A-4, DATASHEET Vishay VOM1271 rev 1.9 doc 83469): the part is SOP-4 — pins 5–8 do
+        not exist, so the drawn map left VN/VP (the PV output that drives the bleeder gate)
+        unconnected in copper. 1 Anode · 2 Cathode · 3 out− · 4 out+ (pin 3/4 NAMES confirm at RFQ
+        against Vishay's pin-description page; the package itself is datasheet-confirmed). */}
+    <chip name={`UPV${id}`} footprint="soic4" pinLabels={{ pin1: "ANO", pin2: "CAT", pin3: "VN", pin4: "VP" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <resistor name={`RPVL${id}`} resistance="1k" footprint="2010" pcbX={-10} pcbY={0} schX={-2.4} schY={0} schSectionName={sec} />
     <resistor name={`RPVB${id}`} resistance="6.8M" footprint="0805" pcbX={10} pcbY={0} schX={2.6} schY={0} schSectionName={sec} />
     <trace from={`.RPVL${id} > .pin1`} to="net.V15" schDisplayLabel="V15" />
@@ -1040,10 +1234,23 @@ export const ConfigHmi = ({ sec = "HMI", x = 0, y = 0, sx = 0, sy = 0 }: any) =>
     <trace from=".CSW1 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
     <trace from=".CSW2 > .pin1" to="net.BTN2" schDisplayLabel="BTN2" />
     <trace from=".CSW2 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+    {/* E81 (F-A-20): HMI_CLK / HMI_LAT cross the card connector with no pull, so with the card
+        absent or in reset the 74HC595's SRCLK and RCLK float — CMOS crowbar current and garbage on
+        the display, with OE hard-tied low so the outputs are always live. A clock and a latch that
+        cannot float is enough to keep the register quiet; the data line is then harmless. */}
+    <resistor name="RHPD1" resistance="10k" footprint="0603" pcbX={-8} pcbY={28} schX={-2} schY={-3.2} schSectionName={sec} />
+    <resistor name="RHPD2" resistance="10k" footprint="0603" pcbX={-8} pcbY={34} schX={-2} schY={-4.4} schSectionName={sec} />
+    <trace from=".RHPD1 > .pin1" to="net.HMI_CLK" schDisplayLabel="HMI_CLK" />
+    <trace from=".RHPD1 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
+    <trace from=".RHPD2 > .pin1" to="net.HMI_LAT" schDisplayLabel="HMI_LAT" />
+    <trace from=".RHPD2 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
   </group>
 );
 
-// ---------- MCU + decoupling + reset — v3: VDDA/VREF+ fed via ferrite + local caps (MR-7);
+// ---------- MCU + decoupling + reset — v3: VDDA/VREF+ fed via a FERRITE BEAD + local caps (MR-7).
+// E81 (F-A-24): FB{id}A is drawn as a 0 Ω resistor while the comment promised a ferrite; the BOM
+// line has always resolved to FB-600R-0805 (600 Ω @100 MHz), so the part is right and the drawn
+// VALUE was the stale token. Value now states the bead's DC resistance class, not "0".
 // BOOT0/SWD nets bound at board level (CB-13). Pin numbers symbolic pending A6 datasheet closure.
 export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`mcu${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
@@ -1062,7 +1269,31 @@ export const ControlMcu = ({ id, sec = "CONTROL", x = 0, y = 0, sx = 0, sy = 0 ,
       <capacitor layer={lay} key={i} name={`C${id}D${i}`} capacitance="100nF" footprint="0402" pcbX={-9 + i * 5} pcbY={11} schX={-4.5 + i * 2.6} schY={-6.6} schSectionName={sec} />
     ))}
     <resistor layer={lay} name={`R${id}RST`} resistance="10k" footprint="0402" pcbX={16} pcbY={11} schX={9.4} schY={-6.6} schSectionName={sec} />
-    <resistor layer={lay} name={`FB${id}A`} resistance="0" footprint="0805" pcbX={-15} pcbY={11} schX={-4.5} schY={-8.2} schSectionName={sec} />
+    {/* E81 (F-A-30 / F-F-1): THE MODULE HAD NO CRYSTAL. Its only external interface is isolated
+        CAN, and classic CAN needs the SUM of both nodes' clock errors inside the resynchronisation
+        jump width (≤0.5 % per node in practice, ±1.58 % absolute worst case). The GD32 IRC8M is
+        ±2–3 % over −40…+105 °C — 5× the ISO 11898-1 budget at 16 tq / SJW 2. Pins 12/13 (OSC_IN /
+        OSC_OUT) and 8/9 (OSC32) were all FLOATING and free. 8 MHz ±30 ppm + 2 × 12 pF C0G + a 1 MΩ
+        feedback resistor, ground guard under the can; OSC32 stays unfitted (no RTC requirement).
+        Card-only: no connector, harness or power-board impact. Firmware pairs this with
+        PORT_HXTAL_HZ = 8 MHz. +₹10/module. */}
+    <chip layer={lay} name={`X${id}`} footprint="crystal" pinLabels={{ pin1: "X1", pin2: "G1", pin3: "X2", pin4: "G2" }} pcbX={-22} pcbY={-11} schX={-9} schY={-6.6} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}X1`} capacitance="12pF" footprint="0402" pcbX={-27} pcbY={-15} schX={-11} schY={-8.2} schSectionName={sec} />
+    <capacitor layer={lay} name={`C${id}X2`} capacitance="12pF" footprint="0402" pcbX={-17} pcbY={-15} schX={-7} schY={-8.2} schSectionName={sec} />
+    <resistor layer={lay} name={`R${id}XF`} resistance="1M" footprint="0805" pcbX={-22} pcbY={-6} schX={-9} schY={-5} schSectionName={sec} />
+    <trace from={`.X${id} > .X1`} to={`net.OSCIN_${id}`} schDisplayLabel={`OSCIN_${id}`} />
+    <trace from={`.X${id} > .X2`} to={`net.OSCOUT_${id}`} schDisplayLabel={`OSCOUT_${id}`} />
+    <trace from={`.X${id} > .G1`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.X${id} > .G2`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.U${id} > .pin12`} to={`net.OSCIN_${id}`} schDisplayLabel={`OSCIN_${id}`} />
+    <trace from={`.U${id} > .pin13`} to={`net.OSCOUT_${id}`} schDisplayLabel={`OSCOUT_${id}`} />
+    <trace from={`.C${id}X1 > .pin1`} to={`net.OSCIN_${id}`} schDisplayLabel={`OSCIN_${id}`} />
+    <trace from={`.C${id}X1 > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.C${id}X2 > .pin1`} to={`net.OSCOUT_${id}`} schDisplayLabel={`OSCOUT_${id}`} />
+    <trace from={`.C${id}X2 > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
+    <trace from={`.R${id}XF > .pin1`} to={`net.OSCIN_${id}`} schDisplayLabel={`OSCIN_${id}`} />
+    <trace from={`.R${id}XF > .pin2`} to={`net.OSCOUT_${id}`} schDisplayLabel={`OSCOUT_${id}`} />
+    <resistor layer={lay} name={`FB${id}A`} resistance="0.05" footprint="0805" pcbX={-15} pcbY={11} schX={-4.5} schY={-8.2} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}A1`} capacitance="1uF" footprint="0603" pcbX={-15} pcbY={16} schX={-1.9} schY={-8.2} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}A2`} capacitance="100nF" footprint="0402" pcbX={-10} pcbY={16} schX={0.7} schY={-8.2} schSectionName={sec} />
     <capacitor layer={lay} name={`C${id}VR`} capacitance="100nF" footprint="0402" pcbX={-5} pcbY={16} schX={3.3} schY={-8.2} schSectionName={sec} />
@@ -1160,9 +1391,10 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <diode name="DAUX24" footprint="smb" pcbX={72} pcbY={0} schX={11} schY={2.4} schSectionName={sec} />
     <diode name="DAUX15" footprint="smb" pcbX={72} pcbY={8} schX={11} schY={0.8} schSectionName={sec} />
     <diode name="DAUXVC" footprint="smb" pcbX={72} pcbY={16} schX={11} schY={-0.8} schSectionName={sec} />
-    <capacitor name="CAUX24" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={0} schX={13.4} schY={2.4} schSectionName={sec} />
-    <capacitor name="CAUX15" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={8} schX={13.4} schY={0.8} schSectionName={sec} />
-    <capacitor name="CVCC" capacitance="220uF" footprint={FilmBoxFP(5)} pcbX={84} pcbY={16} schX={13.4} schY={-0.8} schSectionName={sec} />
+    {/* E81 (F-A-19): radial aluminium-can land (⌀8 × 11.5 mm, 3.5 mm pitch), not the 5 mm film box */}
+    <capacitor name="CAUX24" capacitance="220uF" footprint={RadialFP()} pcbX={84} pcbY={0} schX={13.4} schY={2.4} schSectionName={sec} />
+    <capacitor name="CAUX15" capacitance="220uF" footprint={RadialFP()} pcbX={84} pcbY={12} schX={13.4} schY={0.8} schSectionName={sec} />
+    <capacitor name="CVCC" capacitance="220uF" footprint={RadialFP()} pcbX={84} pcbY={24} schX={13.4} schY={-0.8} schSectionName={sec} />
     <diode name="DTVS24" footprint="smb" pcbX={98} pcbY={0} schX={15.8} schY={2.4} schSectionName={sec} />
     <diode name="DTVS15" footprint="smb" pcbX={108} pcbY={0} schX={15.8} schY={0.8} schSectionName={sec} />
     <resistor name="RAUXST1" resistance="470k" footprint="2512" pcbX={0} pcbY={10} schX={-0.9} schY={3.4} schSectionName={sec} />
@@ -1187,6 +1419,15 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
     <resistor name="RCLA2" resistance="11k" footprint="2512" pcbX={126} pcbY={-8} schX={9.9} schY={3.4} schSectionName={sec} />
     <resistor name="RCLA3" resistance="11k" footprint="2512" pcbX={138} pcbY={-8} schX={11.7} schY={3.4} schSectionName={sec} />
     <resistor name="RAUX24" resistance="0.05" footprint="2512" pcbX={90} pcbY={0} schX={14.6} schY={3.4} schSectionName={sec} />
+    {/* E81 (F-A-10): V24 PRELOAD. V24 = 6/4 × (VCC + VF,aux) − VF,24 ≈ 24.0 V at load, but at ZERO
+        V24 load (relays de-energised, fans off — the normal standby state) peak charging pushes it
+        to ≈25–26.5 V, against a 26.4 V HF167F maximum coil voltage and 26.4 V-class 24 V fans.
+        4.7 k / 1 W = 5.1 mA, 0.12 W. The rail TVS classes move with it (parts-db: SMBJ16A → 18A on
+        V15, SMBJ26A → 28A on V24 — a standoff BELOW the rail's normal maximum is a heater, not a
+        clamp; both are gross-FB-failure clamps, not rail regulation). */}
+    <resistor name="RPL24" resistance="4.7k" footprint="2512" pcbX={98} pcbY={8} schX={16.6} schY={3.4} schSectionName={sec} />
+    <trace from=".RPL24 > .pin1" to="net.V24" schDisplayLabel="V24" />
+    <trace from=".RPL24 > .pin2" to="net.DGND" schDisplayLabel="DGND" />
     {/* HV startup: DCP → 2× 470 k → VCC reservoir; aux winding takes over via DAUXVC */}
     <trace from=".RAUXST1 > .pin1" to={dcp} schDisplayLabel={dcp.replace("net.", "")} />
     <trace from=".RAUXST1 > .pin2" to=".RAUXST2 > .pin1" />
@@ -1278,7 +1519,12 @@ export const AuxPower = ({ dcp, dcn, sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 }
 // 45.3 k / 10 k = 3.296 V. The DC-DC board previously had NO 3.3 V source at all (CB-17).
 export const Rail3V3 = ({ id = "", sec = "AUX", x = 0, y = 0, sx = 0, sy = 0 , lay = "bottom" }: any) => (
   <group name={`r3v3${id}`} pcbX={x} pcbY={y} schX={sx} schY={sy} schTraceAutoLabelEnabled schMaxTraceDistance={0}>
-    <chip layer={lay} name={`UBK${id}`} footprint="soic8" pinLabels={{ pin1: "VIN", pin2: "GND", pin3: "SW", pin4: "FB", pin5: "EN", pin6: "BST", pin7: "NC1", pin8: "NC2" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
+    {/* E81 (F-A-1, DATASHEET SLVSD26C Table 4-1): TPS54202 is orderable ONLY as DDC = SOT-23-6 —
+        1 GND · 2 SW · 3 VIN · 4 FB · 5 EN · 6 BOOT. The drawn SOIC-8 rotated VIN/GND/SW by three
+        positions, so V15 landed on GND, DGND on SW and the inductor on VIN: both 3.3 V rails dead
+        at first power-up. Pin NAMES are unchanged (every trace addresses by name); only the
+        physical numbering and the land move. */}
+    <chip layer={lay} name={`UBK${id}`} footprint="sot23_6" pinLabels={{ pin1: "GND", pin2: "SW", pin3: "VIN", pin4: "FB", pin5: "EN", pin6: "BST" }} pcbX={0} pcbY={0} schX={0} schY={0} schSectionName={sec} />
     <inductor layer={lay} name={`LBK${id}`} inductance="10uH" footprint={FilmBoxFP(10)} pcbX={14} pcbY={0} schX={3} schY={0.6} schSectionName={sec} />
     <capacitor layer={lay} name={`CBKI${id}`} capacitance="10uF" footprint="0805" pcbX={-8} pcbY={4} schX={-2.6} schY={0.8} schSectionName={sec} />
     <capacitor layer={lay} name={`CBKO${id}`} capacitance="22uF" footprint="0805" pcbX={22} pcbY={4} schX={5.4} schY={0.6} schSectionName={sec} />
@@ -1323,6 +1569,15 @@ export const FanPort = ({ id, pwmNet, sec = "FANS", x = 0, y = 0, sx = 0, sy = 0
     <trace from={`.JFAN${id} > .PWM`} to={pwmNet ?? `net.FAN_PWM${id}`} schDisplayLabel={(pwmNet ?? `net.FAN_PWM${id}`).replace("net.", "")} />
     <trace from={`.RFT${id} > .pin1`} to="net.V3P3" schDisplayLabel="V3P3" />
     <trace from={`.RFT${id} > .pin2`} to={`net.FAN_TACH${id}`} schDisplayLabel={`FAN_TACH${id}`} />
+    {/* E81 (F-A-20): with the PWM pin floating most 4-wire fans run at 100 % — four 24 V fans at
+        ≈25 W is ≈100 W on a 110 W aux, during the ≈5–6 s cold start before firmware takes over, so
+        the 50 kW-air SKU can brown out the aux before the MCU boots (a restart loop). 10 k to DGND
+        = defined 0 % at boot; the module cannot overheat in the first 6 s from cold and the
+        NTC-driven F.22–F.24 derates plus the F.25 fan-fail row cover the running case. The zero-fan
+        liquid SKU already applies this principle to its TACH inputs (RFDT*). */}
+    <resistor name={`RFPD${id}`} resistance="10k" footprint="0603" pcbX={12} pcbY={8} schX={2.8} schY={-1.4} schSectionName={sec} />
+    <trace from={`.RFPD${id} > .pin1`} to={pwmNet ?? `net.FAN_PWM${id}`} schDisplayLabel={(pwmNet ?? `net.FAN_PWM${id}`).replace("net.", "")} />
+    <trace from={`.RFPD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
   </group>
 );
 
@@ -1363,6 +1618,10 @@ export const IsolatedCan = ({ sec = "CAN", x = 0, y = 0, sx = 0, sy = 0 }: any) 
     <trace from=".LCAN > .B1" to=".JCAN > .CANH" />
     <trace from=".LCAN > .B2" to=".JCAN > .CANL" />
     <trace from=".JCAN > .SGND" to="net.CGND" schDisplayLabel="CGND" />
+    {/* E81 (F-A-25): the cable-screen pin was FLOATING — a shield terminal with no bond does
+        nothing. CGND already carries its own RCGB 1 MΩ / CCGB 4.7 nF bleed-and-bond pair to DGND,
+        so bonding the screen there gives the cable CM current a return without a PE loop. */}
+    <trace from=".JCAN > .SHLD" to="net.CGND" schDisplayLabel="CGND" />
     <trace from=".RTERM > .pin1" to=".JTERM > .P1" />
     <trace from=".JTERM > .P2" to=".LCAN > .B1" />
     <trace from=".RTERM > .pin2" to=".LCAN > .B2" />

@@ -1,0 +1,17 @@
+# dpt-pfc 40kw — ngspice-46, decks in spice/generated/dpt-pfc-40kw-*.cir.
+# kind=final is the RECOMMENDED network (LLC: Rg_off 0 + cs; PFC: exactly what cells.tsx draws); kind=sweep/sensitivity/
+# control/drawn are informative and NOT gated. ONE die at the PER-POSITION current (see dpt-run.mjs current convention).
+# Eoff_chan = CHANNEL dissipation: drain-node integral minus the device's datasheet Eoss at the settled voltage;
+# the cs snubber sits at the package pins and bypasses the sense, and its charge is recovered at the ZVS turn-on.
+# Eon_hard = the energy paid per transition IF ZVS does not complete. t_dead_req = n_die,leg*(Qoss(V)+cs*V)/I_toff.
+# fingerprint: 40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p | cs=0p | RgOn=4.7 RgOff=4.7 | Lloop=5nH | Voff=-3V | model=sic-behavioral.lib:SIC750_10R | mirror=0
+# PASS = Vds_pk <= 85 % of 750 V on REPETITIVE corners (E81: 85 % at the 5 nH design loop), <= 90 % on the +6 %-bus row
+#   (880 V is above the 860 V F.03 trip, so the bridge sees it only for the F.03 kill time), AND vgs in [-8,19] V (the PFC freewheel is a JBS diode — no gate to hold off)
+case,kind,V,I_A,Cs_pF,Rg_off,Lloop_nH,Eoff_chan_uJ,koff_nJ_VA,Eon_hard_uJ,Vds_pk_V,Vds_pk_pct,dvdt_Vns,vgs_fw_pk_V,vgs_min_V,t_dead_req_ns,PASS,note
+L5-clamped,final,425,124,0,4.7,5,943.8,17.91,284.4,545.7,72.8,56.7,,-3,,PASS,"positive half-cycle — PH above DCP, the drawn RCD clamps it"
+L5-UNCLAMPED,final,425,124,0,4.7,5,1102.1,20.91,278.4,591.6,78.9,64.4,,-3.05,,PASS,"negative half-cycle — PH below DCN, NO clamp as drawn (F-C-13)"
+L7-clamped,sensitivity,425,124,0,4.7,7,944.2,17.92,264.6,551.3,73.5,57.3,,-3,,PASS,"positive half-cycle — PH above DCP, the drawn RCD clamps it"
+L7-UNCLAMPED,sensitivity,425,124,0,4.7,7,1148.8,21.8,258.9,610.5,81.4,64.3,,-3.01,,PASS,"negative half-cycle — PH below DCN, NO clamp as drawn (F-C-13)"
+L10-clamped,sensitivity,425,124,0,4.7,10,944.5,17.92,240.5,557,74.3,57.5,,-3,,PASS,"positive half-cycle — PH above DCP, the drawn RCD clamps it"
+L10-UNCLAMPED,sensitivity,425,124,0,4.7,10,1213.9,23.03,235.2,636.3,84.8,64.4,,-3,,PASS,"negative half-cycle — PH below DCN, NO clamp as drawn (F-C-13)"
+final-UNCLAMPED-vhi,final,450.5,124,0,4.7,5,1201.7,21.51,310.1,617.8,82.4,65.5,,-3.04,,PASS,"+6 % bus, unclamped polarity — a line excursion, 90 % limit"

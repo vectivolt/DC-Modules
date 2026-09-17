@@ -41,8 +41,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDT01",
@@ -61,8 +61,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDT02",
@@ -81,8 +81,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDT03",
@@ -101,8 +101,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDT04",
@@ -121,8 +121,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDB00",
@@ -141,8 +141,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDB01",
@@ -161,8 +161,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDB02",
@@ -181,8 +181,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDB03",
@@ -201,8 +201,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDB04",
@@ -221,8 +221,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "RBALT0A",
@@ -240,9 +240,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RBALT0B",
@@ -260,9 +260,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RBALB0A",
@@ -280,9 +280,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RBALB0B",
@@ -300,9 +300,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "CDT10",
@@ -321,8 +321,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "CDB10",
@@ -341,8 +341,8 @@
    ],
    "nc_pins": [],
    "value": "470uF",
-   "query": "ELH-470u450 470 µF 450 V snap-in 105 °C, −40 °C category ",
-   "mpn": "ELH-470u450"
+   "query": "ELH-470u500 470 µF **500 V** snap-in 105 °C, −40 °C category ",
+   "mpn": "ELH-470u500"
   },
   {
    "designator": "RBALT1A",
@@ -360,9 +360,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RBALT1B",
@@ -380,9 +380,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RBALB1A",
@@ -400,9 +400,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RBALB1B",
@@ -420,9 +420,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "47k",
-   "query": "R2512-47k-HV-AS 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per posi",
-   "mpn": "R2512-47k-HV-AS"
+   "value": "22k",
+   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-22k-HV-AS"
   },
   {
    "designator": "RDIS0",
@@ -550,30 +550,28 @@
      "signal_name": "UQD_ANO"
     },
     {
-     "pin_number": 2,
+     "pin_number": 3,
      "name": "CAT",
-     "signal_name": "DGND"
+     "signal_name": "QDIS_LED"
     },
     {
-     "pin_number": 5,
+     "pin_number": 4,
      "name": "VEE",
      "signal_name": "DCN"
     },
     {
-     "pin_number": 6,
+     "pin_number": 5,
      "name": "OUT",
      "signal_name": "UQD_OUT"
     },
     {
-     "pin_number": 8,
+     "pin_number": 6,
      "name": "VCC",
      "signal_name": "UQD_VCC"
     }
    ],
    "nc_pins": [
-    3,
-    4,
-    7
+    2
    ],
    "value": "TLP152-class",
    "query": "TLP152-class opto gate driver ",
@@ -595,7 +593,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "UQD_VCC"
     },
     {
@@ -607,9 +605,9 @@
    "nc_pins": [
     5
    ],
-   "value": "QA01C",
-   "query": "QA01C iso 15→18 V module ≥6 kVDC ",
-   "mpn": "QA01C"
+   "value": "QA01C-15",
+   "query": "QA01C-15 iso 15→15 V module ≥6 kVDC ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "RQDL",
@@ -618,7 +616,7 @@
     {
      "pin_number": 1,
      "name": "pin1",
-     "signal_name": "CTL_QDIS"
+     "signal_name": "V15"
     },
     {
      "pin_number": 2,
@@ -627,7 +625,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "330",
+   "value": "1.2k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   },

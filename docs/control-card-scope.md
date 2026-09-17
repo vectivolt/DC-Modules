@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-cardMap()_refuses_out--of--scope-2ea44f?style=flat-square" alt="gate: cardMap() refuses out-of-scope"/>
 </p>
 
@@ -27,7 +27,7 @@
 | HRTIMER slave units | **6** — ST0–ST2 LLC pairs, ST3–ST5 PFC singles | 8 | 2 |
 | Analog ways on the slot | **22** | 22 | 0 |
 | 40-way harness | **40** | 40 | 0 — the last spare way carries TACH4 on the 50 kW air |
-| On-chip comparators for the fast PFC trip | **3** — CMP7 · CMP1 · CMP2 | — | instance-verified at R7 |
+| On-chip comparators for the fast PFC trip | **3** — CMP3 · CMP1 · CMP2 (E81: phase A moved to CMP3/DAC2_OUT1 with the AIN8 ↔ TSNS0 swap so the same card takes an STM32G474VET7) | — | instance-verified at R7, re-audited at E81 |
 
 ```mermaid
 xychart-beta
@@ -193,5 +193,5 @@ is frozen. Flagged, not decided.
 <div align="center">
 <sub><a href="interconnect.md">← Two-Board Sandwich & Interconnect</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-guide.md">Firmware Guide →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

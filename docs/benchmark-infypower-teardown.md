@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
   <img src="https://img.shields.io/badge/verdict-architecture_and_BOM_cloned_E67–E69_·_cost_gap_open-d19a00?style=flat-square" alt="verdict: architecture and BOM cloned E67–E69 · cost gap open"/>
 </p>
@@ -24,6 +24,22 @@
 > star-X2 EMI filter and film-only banks; E69 right-sized dies. Rated efficiency is 96.70 % at 40 kW against InfyPower's
 > "> 96 %". On the India price list the 40 kW module is still ≈ 47 % above the teardown estimate — the largest single step
 > left is to buy one REG1K0135A2 and measure it.
+
+## E81 re-read of the teardown (2026-09-17) — corrections and validations
+
+The ChargerLab article (published 2025-11-10) was re-read line by line during the E81 full-system validation, with the E81
+questions in hand. Four findings correct or sharpen what this page recorded at E67, and two validate E81 decisions taken
+independently. Labels: [T] = stated in the teardown text.
+
+| # | Teardown fact [T] | What this page said | Consequence |
+|---|---|---|---|
+| R1 | The output filter is film (2 × 6 µF / 1000 V at the rectifiers) → **filter inductor** → **550 V electrolytics (220 µF and 47 µF classes)**, with four series discharge resistors and the 1500 V chopper across them | "Output banks: film only" — and E68c retired our Cf–Lf–Ce output filter to film-only **citing this page** | **The E68c premise was a misread.** Our film-only bank stands on its own E81 gates (CV step restated ≤ 10 %, F.14 code thresholds, S/P closure at 28 A), but the InfyPower-validated alternative — ≈ 2 × 220 µF / 550 V per bank behind the filter choke — is now a REGISTERED LEVER: it returns the CV load-step overshoot to ≈ +2 % (the G SIL showed capacitance is the only lever) for ≈ +₹500 / module and a vent-clearance rule |
+| R2 | The LLC bridge input carries **1000 V film, 6 µF parts, two visible per position group** (≈ 12–24 µF total at the bridge) | not recorded — our drawing carried 4 × 1 µF until E81 | **Validates F-G-1 / FIX-D**: the E81 entry-film bank (16–20 × 1 µF + RC damper) lands in the same decade as InfyPower's own practice; the pre-E81 4 µF was our gap, never their design |
+| R3 | The 40 kW LLC bridge runs **four APS ACM035P120QNN 1200 V 33 mΩ TO-247-4** — **one die per position** — potted, on the patented heatsink integration | this page recorded the die count as open [T?] | **Validates the E81 30 kW single-die decision as conservative**: InfyPower ships one 33 mΩ die per position at 40 kW / 133 A (≈ 115 W in that die at the 500 V-series corner on our numbers); our kept single die is 23 mΩ at 30 kW with a documented fold |
+| R4 | The resonant bank is **7 × 3.3 µF / 250 V** film in parallel (≈ 23 µF) with a Litz resonant inductor | this page treated the tank as not extractable | Their tank is a **low-Z₀, low-f_r, low-Q** design (250 V caps ⇒ V_cr swing tens of volts, f_r far below our 140 kHz) — a structurally different LLC operating point. Registered as an **E82 study**: a lower-Z₀ tank changes the F-L-1 weak-leg energy budget and the V_ds ring, at the price of tank rms and magnetics size — the corrected-Coss deck can score it |
+| R5 | The PFC switches are **Sanrise SRC60R022FBS — 600 V silicon superjunction, 22 mΩ** (the SiC in the PFC is only the 1200 V 40 A boost diodes); "full SiC" is the marketing name | this page carried the PFC die class as SiC | Registered **E82 cost option**: 600 V SJ per Vienna position (their practice, at 87 % of rating on a 475 V half-link) against our 750 V SiC class — a die-cost lever that re-opens E69a and the DPT family if taken |
+| R6 | The DC link is **Jianghai CD296 475 V / 680 µF** [T], glued | recorded ✓ | Adds the **475 V can** as the middle option in the E81 can-voltage lever (450 V = 97 % worst continuous · 475 V = 92 % · 500 V = 87 %) |
+| R7 | No DESAT anywhere: PFC drive is NSi6801 (no DESAT) + low-side drivers, LLC drive is **gate-drive transformers + 1 A isolators + a discrete PMOS**; protection is 3 mΩ shunts + AMC1200B + LMV393 comparators; both controllers are 60 MHz F28035 | partially recorded | No action — our NSI6611 DESAT + window comparators + one 216 MHz MCU is the stronger protection and control architecture, at a cost this page's ledger already carries |
 
 ## How to read the evidence
 
@@ -517,5 +533,5 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the f
 <div align="center">
 <sub><a href="dfm-production.md">← DFM & Production Flow</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

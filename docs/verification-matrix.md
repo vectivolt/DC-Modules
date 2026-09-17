@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/verify--independent-227%2F227-2ea44f?style=flat-square" alt="verify-independent: 227/227"/>
 </p>
 
@@ -61,7 +61,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 
 | Requirement (§2) | Evidence | Status |
 |---|---|---|
-| PF ≥ 0.99 · THD ≤ 5 % (stretch 3 %) | `pfc-phase-runs.csv`: THD 0.59–1.05 % full load, 2.55 % at 25 %; cycle-by-cycle Vienna 0.09–0.15 % at 330 VAC | V (averaged + switched fidelity) · P bench T-02 |
+| PF ≥ 0.99 · THD ≤ 5 % (stretch 3 %) | `hal_test` SIL with the shipped law (E81): THD-40 0.76 / 0.65 / 0.69 % at 400 VAC full load, PF 0.9999; cycle-by-cycle Vienna 0.09–0.15 % at 330 VAC; the 30 kW averaged deck (0.59–1.05 %) is superseded | V (averaged + switched fidelity) · P bench T-02 |
 | Output 150–1000 V CV/CC envelope | `simulation-results/<sku>/llc-stress.csv` — power-solved full-bridge decks (E67), ZVS 64/64 on every corner, legs in rails · grid 4,536 points, 0 failures, 0 folds | V analysis · P bench |
 | Peak η ≥ 97 % | `loss-budget.csv` full load 96.62 / 96.70 / 96.56 / 96.48 % (E69, DOUT included); grid peaks 98.11 / 98.26 / 98.30 / 98.30 % | V calc · P calorimetric T-03 |
 | Full power to +55 °C, derate to +75 °C | `derating.csv`; worst Tj ≤ 150 °C with computed folds (`envelope-grid`, `stress-audit`) | V calc · P chamber T-04 |
@@ -162,5 +162,5 @@ The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).
 <div align="center">
 <sub><a href="simulation-report.md">← Simulation Report</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="evt-plan.md">EVT Test Plan →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

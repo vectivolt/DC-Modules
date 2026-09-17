@@ -5,8 +5,8 @@
   {
    "status": "ok",
    "tag": "MODEL",
-   "name": "Steinmetz (f,B) scaling vs the 3 independent digitized series",
-   "detail": "worst deviation 0% at  (≤35% band — the gate margins below absorb it; A4 stays the conservative design fit)"
+   "name": "Steinmetz (f,B) scaling vs the independent digitized series, IN the used domain (25–150 kHz, 50–250 mT)",
+   "detail": "worst deviation 23% at 100k_200mT@100C (≤35% band — the gate margins below absorb it; A4 stays the conservative design fit) · OUT of domain, reported not gated: 56% at 400k_50mT@100C — the model is NOT valid at 400 kHz/50 mT and nothing in this repo uses it there (D4 runs 65 kHz / ~75 mT)"
   },
   {
    "status": "ok",
@@ -30,13 +30,13 @@
    "status": "ok",
    "tag": "BSAT",
    "name": "D3 simulated worst flux at 130 °C core",
-   "detail": "worst B̂ 159 mT (50kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited"
+   "detail": "worst B̂ 159 mT (30kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited"
   },
   {
    "status": "ok",
    "tag": "BSAT",
-   "name": "D2 fault flux (Lmax × F.11 kill peak, worst SKU = 40kw)",
-   "detail": "164 mT at the crossing-referenced kill (E67 D2 rev F: 30kw 163 · 40kw 164 · 50kw 163 · 50kwa 163) vs 60% of Bsat(130) = 217 mT — µs event, trip-limited (per-SKU rows in current-coordination)"
+   "name": "D2 fault flux (Lmax × F.11 kill peak, worst SKU = 30kw)",
+   "detail": "148 mT at the crossing-referenced kill (E67 D2 rev F: 30kw 148 · 40kw 146 · 50kw 146 · 50kwa 146) vs 60% of Bsat(130) = 217 mT — µs event, trip-limited (per-SKU rows in current-coordination)"
   },
   {
    "status": "ok",

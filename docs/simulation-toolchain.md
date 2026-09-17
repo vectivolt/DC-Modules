@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/engine-ngspice--46_·_node_20-5f8fc0?style=flat-square" alt="engine: ngspice-46 · node 20"/>
 </p>
 
@@ -55,7 +55,7 @@ flowchart TB
 |---|---|---|---|---|
 | **ngspice-46** (KLU) | L1 / L2 decks | `node spice/<suite>/<runner>.mjs` → `spice/run.mjs` batch + wrdata parser; decks kept in `spice/generated/` | open, scriptable, deterministic; the whole suite reruns unattended | vendor **encrypted** PSpice SiC models do not load → behavioural devices (L1 band) |
 | **Node.js engines** | L0 / L3 / L4 + the cycle-by-cycle Vienna | `sh calculations/run-all.sh` | no install beyond node; exact reproducibility; gates import the same constants | model fidelity is stated in each file header |
-| **C host-sim** | L3 production logic: FSM scenarios, CAN codec with a 100k-frame fuzz, the group share law on three nodes | `sh firmware/run_tests.sh` → **63/63** under Address / UB sanitizers | runs the shipped C99 core itself, not a model of it | no HAL, no real peripheral timing |
+| **C host-sim** | L3 production logic: FSM scenarios, CAN codec with a 100k-frame fuzz, the group share law on three nodes | `sh firmware/run_tests.sh` → **six binaries under Address / UB sanitizers** (the current count is printed by the script; E81: 37 in `hal_test` alone) | runs the shipped C99 core itself, not a model of it | no HAL, no real peripheral timing |
 | **upb-lea materialdatabase** (frozen extracts) | L4 ferrite loss vs f, B and T · Bsat(T) · µa(T) | `tempdata-3c95.json` → temp-critique · `magnetics-data.json` (TDK N95 curves + LEA-measured N95, upstream commit recorded) → magnetics-envelope | measured datasheet surfaces and a university measurement, not a fit | PC95 / DMR95 / 3C95 / N95 treated as one class; ferrites at zero DC bias — it covers **D2 / D3, not the DC-biased Kool Mµ D1** · calibration and a data defect in [§5.2](#52-materials-and-calibration) |
 | **OpenMagnetics MAS** (data) | L4 core geometry + a second loss surface | `core_shapes` / `core_materials` frozen into `magnetics-data.json` → `geometry.mjs`, magnetics-envelope | vendor-neutral, versioned NDJSON — the database behind MKF, usable without MKF | nominal dimensions; sine-excited, zero-bias Steinmetz fits |
 | **Dowell / Sullivan** (in-repo) | L4 AC copper · 1-D leakage | `winding-physics.mjs`, shared by conductor-audit and magnetics-envelope; clean-room copy in `verify-independent.mjs` §B | closed-form, fast, textbook-validated; the right tool to choose foil gauge and strand count | 1-D fields: gap fringing and foil edge current are under-read — bracketed by MKF ([§5.5](#55-the-pyopenmagnetics-second-opinion)) |
@@ -323,5 +323,5 @@ copper corner. Read it in this order:
 <div align="center">
 <sub><a href="magnetics-50kwa.md">← 50 kW Air Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="simulation-report.md">Simulation Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

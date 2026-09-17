@@ -142,7 +142,7 @@ export const D2 = {
   "50kwa": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372A2000" },
 };
 export const LOOP_STRAY = 0.1e-6;                                  // bridge → Cr → D2 → D3 loop on the power PCB (first-article measured)
-export const D2_TOL = 0.03, LEAK_SPREAD = 0.3;                     // D2 gap tolerance; D3 leakage acceptance band (drawing: ±30 % of computed)
+export const D2_TOL = 0.03, LEAK_SPREAD = 0.2;                     // D2 gap tolerance; D3 leakage acceptance band — E81 (F-B-3): ±30 % → ±20 % of computed. At ±30 % on the corrected leakage the worst-case Lr stack is ±5.37 % against the ±5 % the decks were solved at (30 kW FAILS, 40/50 kW have 0.08–0.43 % of slack); ±20 % closes it and is what a winder can hold with a measured-and-labelled-per-cell rule, which is the real control anyway
 // radial build of the S1–P–S2 lay-up → per-winding mean turn (production Rdc rows) and leakage
 // E65 (INS-1): the reinforced barrier is margin-built on the E70 former, so P and S conductors are confined to CB = 28 mm of
 // the 41 mm window (≥6.5 mm margin per side); the field breadth for Dowell/Sullivan stays the window b. 3 barrier-tape layers
@@ -153,7 +153,14 @@ export const d3Build = (c) => {
   return { hS, hP, mltS1: eTurn(c.core, c.n, w + hS / 2), mltP: eTurn(c.core, c.n, w + hS + c.gap + hP / 2), mltS2: eTurn(c.core, c.n, w + hS + 2 * c.gap + hP + hS / 2) };
 };
 // per-cell leakage referred to the cell's N turns; the two cells' primaries are in series, so the tank sees D3_CELLS × this
-export const d3Leakage = (c) => { const b = d3Build(c); return leakageSPS({ N: c.N, mlt: b.mltP, b: c.b, gap: c.gap, hS: b.hS, hP: b.hP }); };
+// E81 (F-B-3): the MMF breadth is **CB**, the 28 mm conductor band this same file defines — not the
+// 41 mm window height. In the 1-D energy model b is the breadth over which the winding's ampere-turns
+// are distributed; leakage energy ∝ 1/b, so 41 mm under-stated it by 41/28 = 1.46×. Corrected:
+// 0.172 → 0.252 µH (30 kW) and 0.090 → 0.132 µH (40/50 kW) per cell, which re-issues D2 at
+// 5.00 / 3.99 / 3.20 µH. Tank Lr is UNCHANGED (the split moves, not the total), so no simulation
+// fingerprint moves — but a correctly built cell measuring 0.25 µH would have been REJECTED by the
+// old ±30 % acceptance around 0.172 µH, so LEAK_SPREAD tightens to ±20 % to close the stack.
+export const d3Leakage = (c) => { const b = d3Build(c); return leakageSPS({ N: c.N, mlt: b.mltP, b: CB, gap: c.gap, hS: b.hS, hP: b.hP }); };
 export const d2Lext = (sku) => TANKS[sku].Lr - D3_CELLS * d3Leakage(D3[sku]) - LOOP_STRAY;
 for (const [sku, c] of Object.entries(D2)) { c.Lnom = d2Lext(sku); c.Lmax = c.Lnom * (1 + D2_TOL); }
 // D2 single layer of compacted litz (0.6 Cu fill) ≥3 mm clear of the distributed gap
@@ -225,7 +232,7 @@ export const evaluate = (sku, part, c, rows, mountOverride, impregnated = true) 
 
 // E73 abnormal-condition rows. FAN-OUT: one fan dead on an air SKU — airflow (n−1)/n, the F.25 derate to 50 % halves the current,
 // the extrusion web (the magnetics wall) runs hotter on the reduced flow (sink rise ∝ flow^−0.8), core loss stays at every corner.
-export const FANS = { "30kw": 2, "40kw": 3, "50kwa": 4 };          // fault-energy air budget; the liquid SKU has no fans
+export const FANS = { "30kw": 3, "40kw": 3, "50kwa": 4 };          // fault-energy air budget; the liquid SKU has no fans. E81 (F-C-2/F-C-16, user decision): 30 kW 2 → 3 — the air budget had used 30 °C density, so the margin was 1.10× and n−1 exactly 1.00×
 export const fanOut = (sku, part, c, rows) => {
   const vK = (FANS[sku] - 1) / FANS[sku], s = stack(c.core, c.n), nw = network(part, c, s, c.mount, V_AIR[sku] * vK);
   const wall = 55 + 5 + 20 * 0.5 * Math.pow(1 / vK, 0.8), air = 55 + (10 * 0.5) / vK;
@@ -273,6 +280,16 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
       const lost = c.mount.replace(/2$/, "1"), a = evaluate(sku, part, c, ex.rows, lost);
       console.log(`  info  [${part}-BOND-LOST] ${sku}: one face lost (${lost}) → ${T(a.w55.T55)} @55 / ${T(a.w75.T75)} @75 · +25 % ${T(a.wS.Tstress)} → ${a.ok ? "survives" : "not survivable — screened by the EOL bonded thermal soak"}`);
       if (!a?.ok) unprotected.push(part);
+      // E81 (F-B-4): the END-TURN POTTING carries roughly half the winding heat (network(): Gww =
+      // k_pot·aEnd/t_pot, 0.8 W/mK over a 5 mm bridge) and the gate had a row for a lost yoke GAP
+      // PAD but none for lost or voided POTTING — a manual process step with no measurable
+      // acceptance row on either drawing. Losing it costs +32 K (30 kW D3), +61 K (50 kW liquid D3)
+      // and +90 K on the 50 kW liquid D2, which breaks Class F by 33 K: the sealed liquid module is
+      // worst because it has no airflow at all to fall back on. Screened by a LOADED EOL soak (a
+      // fixed-load soak would show a 30–90 K delta) plus 100 % visual + first-article cross-section.
+      const dry = { ...c, pot: false }, ap = evaluate(sku, part, dry, ex.rows);
+      console.log(`  info  [${part}-POT-LOST] ${sku}: end-turn potting lost or voided → ${T(ap.w55.T55)} @55 / ${T(ap.w75.T75)} @75 · +25 % ${T(ap.wS.Tstress)} → ${ap.ok ? "survives" : "NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"}`);
+      if (!ap?.ok) unprotected.push(`${part} (potting)`);
     }
     // bond loss is a PROCESS defect (VPI + gap pad + potting, as InfyPower-class modules pot their magnetics): it is screened by
     // the EOL bonded thermal soak on every module (T_XFMR NTC rise at a fixed load), not by a sensor per part — informational here

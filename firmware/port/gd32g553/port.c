@@ -16,9 +16,11 @@ static pmp_frame_t rxbuf[16];
 
 /* ISR → tick aggregation (each field one writer) */
 static volatile uint16_t pfc_us_max, llc_us_max;
-static float lsum[6]; static uint32_t lsum_n;        /* vout · iout+ · iout− · ires · vbka · vbkb — written at 100 kHz, drained at 10 kHz */
-static app_llc_adc_t llc_mean;
-static float ires_now;
+static float lsum[6]; static uint32_t lsum_n;        /* vout · iout+ · iout− · ires · vbka · vbkb — written at 100 kHz */
+/* E81 (F-E-16): the 100 kHz writer decimates and PUBLISHES into a double buffer; the 10 kHz reader never clears the
+   accumulator, so the old read-divide-clear race against the higher-priority PFC ISR (a 10 % scale error on one channel,
+   deterministic per build) cannot happen. It also moves six FPU divisions out of the 10 kHz ISR (F-D-7). */
+static app_llc_adc_t lmean[2]; static volatile uint8_t lmean_i;
 static volatile uint32_t tach_cnt[4];
 static uint8_t hmi_phase;
 
@@ -31,12 +33,18 @@ RAMFUNC void hrtimer_st3_isr(void) {
   app_pfc_adc_t s;
   float ires, vout, ioutp, ioutn, t_inlet, vbka, vbkb, v24, vref;
   adc_read_pfc(&s, &ires, &vout, &ioutp, &ioutn, &t_inlet, &vbka, &vbkb, &v24, &vref);
-  ires_now = ires;
   app_pfc_out_t po;
   app_pfc_isr(&app, &s, &po);
   hrtimer_pfc_apply(&po);
   lsum[0] += vout; lsum[1] += ioutp; lsum[2] += ioutn; lsum[3] += ires; lsum[4] += vbka; lsum[5] += vbkb;
-  lsum_n++;
+  if (++lsum_n >= 10u) {                             /* E81: decimate in the writer, publish, then reset */
+    uint8_t w = (uint8_t)(lmean_i ^ 1u);
+    lmean[w].vout = lsum[0] * 0.1f; lmean[w].iout_p = lsum[1] * 0.1f; lmean[w].iout_n = lsum[2] * 0.1f;
+    lmean[w].ires = lsum[3] * 0.1f; lmean[w].vbka = lsum[4] * 0.1f; lmean[w].vbkb = lsum[5] * 0.1f;
+    lmean_i = w;
+    for (int k = 0; k < 6; k++) lsum[k] = 0.0f;
+    lsum_n = 0u;
+  }
   (void)t_inlet; (void)v24; (void)vref;              /* consumed by the tick path through adc_read_pfc's ring */
   uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
   if (us > pfc_us_max) pfc_us_max = (uint16_t)us;
@@ -46,15 +54,8 @@ RAMFUNC void hrtimer_st3_isr(void) {
 RAMFUNC void hrtimer_mt_isr(void) {
   uint32_t t0 = DWT_CYCCNT;
   HRT_MTINTC = BIT(4);                               /* REPIF */
-  uint32_t n = lsum_n ? lsum_n : 1u;
-  llc_mean.vout = lsum[0] / (float)n;
-  llc_mean.iout_p = lsum[1] / (float)n; llc_mean.iout_n = lsum[2] / (float)n;
-  llc_mean.ires = lsum[3] / (float)n;
-  llc_mean.vbka = lsum[4] / (float)n; llc_mean.vbkb = lsum[5] / (float)n;
-  for (int k = 0; k < 6; k++) lsum[k] = 0.0f;
-  lsum_n = 0u;
   app_llc_out_t lo;
-  app_llc_isr(&app, &llc_mean, &lo);
+  app_llc_isr(&app, &lmean[lmean_i], &lo);
   hrtimer_llc_apply(&lo);
   uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
   if (us > llc_us_max) llc_us_max = (uint16_t)us;
@@ -63,10 +64,20 @@ RAMFUNC void hrtimer_mt_isr(void) {
 /* ---------------- highest priority: a hardware latch fired — attribute it while the outputs are already dead */
 RAMFUNC void hrtimer_flt_isr(void) {
   uint16_t ch = hrtimer_fault_read_clear();
-  if (ch) app_fault_isr(&app, ch, ires_now);
+  if (ch) app_fault_isr(&app, ch, adc_ires_now());   /* E81 (F-E-10): the freshest completed I_RES, not the 100 kHz cache */
 }
 
-void systick_isr(void) { tick_due++; }
+/* E81 (F-D-9 / F-E-01a): the WDI/FWDGT cadence belongs to SysTick, not to tick(). A blocking flash erase inside tick()
+   queued up to 20 catch-up ticks; the two kicks that landed on `now_ms % 10 == 0` then arrived ~1 ms apart, below the
+   TPS3430's 2.22 ms lower bound, and the 9 + 20 ms gap before them broke the 23.375 ms upper bound. Kicking from the
+   interrupt keeps exactly 10 ms of real time between edges, straight through an erase (which busy-waits with interrupts
+   enabled). The sequenced-watchdog property is preserved: the tick still decides whether kicking is PERMITTED. */
+static volatile uint8_t kick_arm;
+void systick_isr(void) {
+  static uint16_t kick_ms;
+  tick_due++;
+  if (++kick_ms >= 10u) { kick_ms = 0u; if (kick_arm) { wdi_pulse(); fwdgt_kick(); } }
+}
 
 /* tach edges (two pulses per revolution): EXTI 2 (PF2) · 14 (PD14) · 5 (PD5) · 3 (PB3) */
 void exti2_isr(void)  { EXTI_PD = BIT(2);  tach_cnt[0]++; }
@@ -98,9 +109,9 @@ void pwm_out_init(void) {
   TIM_CH1CV(TIM19) = 0u; TIM_MCH0CV(TIM19) = 0u;
   TIM_CTL0(TIM19) = BIT(7) | BIT(0);                                 /* ARSE + CEN */
   TIM_PSC(TIM3) = 0u; TIM_CAR(TIM3) = 10799u;                        /* 20 kHz */
-  TIM_CHCTL0(TIM3) = (6u << 4) | BIT(3) | (6u << 12) | BIT(11);      /* CH0/CH1 PWM0 + shadow */
-  TIM_CHCTL2(TIM3) = BIT(0) | BIT(4);
-  TIM_CH0CV(TIM3) = 0u; TIM_CH1CV(TIM3) = 0u;
+  TIM_CHCTL0(TIM3) = (6u << 4) | BIT(3);                             /* CH0 (KSER) PWM0 + shadow; E81: CH1 retired with KPARA */
+  TIM_CHCTL2(TIM3) = BIT(0);
+  TIM_CH0CV(TIM3) = 0u;
   TIM_CTL0(TIM3) = BIT(7) | BIT(0);
 }
 void pwm_fan(float d1, float d2) {
@@ -109,7 +120,10 @@ void pwm_fan(float d1, float d2) {
 }
 void pwm_relay(const float duty[APP_RLY_COUNT]) {
   TIM_CH0CV(TIM3) = (uint32_t)(duty[APP_RLY_KSER] * 10800.0f);
-  TIM_CH1CV(TIM3) = (uint32_t)(duty[APP_RLY_KPARA] * 10800.0f);
+  /* E81 (F-D-6): KPARA is DC, like KPARB. The UEXCL 74HC02 interlock is a LEVEL gate — a 20 kHz / 40 % chop made
+     Y3 = KPARA ∨ KPARB low for 60 % of every 50 µs, so a faulted {KSER, KPARA, ¬KPARB} would have driven the KSER coil
+     at 60 % of 24 V, far above must-operate, in exactly the fault the gate exists for. +0.42 W of the 110 W aux. */
+  pin_set(BP_KPARA, duty[APP_RLY_KPARA] > 0.0f);
   pin_set(BP_KPRE, duty[APP_RLY_KPRE] > 0.0f);        /* no timer pin: full hold (board.h note) */
   pin_set(BP_KPARB, duty[APP_RLY_KPARB] > 0.0f);
 }
@@ -131,21 +145,25 @@ static uint32_t painted_stack_pct(void);
 static nvm_t boot_store;                             /* the boot record's pages (2/3) — confirm path */
 static bootctl_t boot_ctl;
 
-static void tick(void) {
+static void tick(bool late) {
   static uint32_t tach_last[4];
   static uint16_t tach_hz_x10[4];
+  static uint8_t stack_pct_cached;
   static uint32_t ms;
   ms++;
   app_tick_in_t ti;
   memset(&ti, 0, sizeof ti);
-  float rating;
-  adc_read_slow(&ti.t_pfc, &ti.t_llc, &ti.t_xfmr, &rating, &ti.v15);
+  ti.late = late;
+  adc_read_slow(&ti.t_pfc, &ti.t_llc, &ti.t_xfmr, &ti.v15, &ti.avmid);
   app_pfc_adc_t ps; float ires, vout, ioutp, ioutn;
   float t_inlet, vbka, vbkb, v24, vref;
   adc_read_pfc(&ps, &ires, &vout, &ioutp, &ioutn, &t_inlet, &vbka, &vbkb, &v24, &vref);
   ti.t_inlet = t_inlet; ti.v24 = v24; ti.vrefint = vref;
-  (void)rating;   /* the strap was read once at boot; the live channel is telemetry-only */
-  ti.di = (uint16_t)((pin_get(BP_RLY_FB) ? 0u : APP_DI_RLY_PRE)      /* series mirror chain: HIGH = both mains open */
+  /* E81 (F-A-5, F-D-1 refuted): the HF167F auxiliary is 1 Form A (NO) and the two are in series, so the chain reads LOW
+     only when BOTH bypass contacts are closed and HIGH when at least one is open. The polarity below is correct for that
+     and stays; only this comment was wrong. The chain cannot see a single welded contact — that is the card's parallel-
+     auxiliary ECO, not firmware. */
+  ti.di = (uint16_t)((pin_get(BP_RLY_FB) ? 0u : APP_DI_RLY_PRE)      /* LOW = both bypass contacts closed */
                    | (pin_get(BP_DRV_RDY) ? APP_DI_DRV_RDY : 0u)
                    | (pin_get(BP_BTN1) ? 0u : APP_DI_BTN1) | (pin_get(BP_BTN2) ? 0u : APP_DI_BTN2));
   if (ms % 100u == 0u) {                                             /* tach: edges per 100 ms → Hz */
@@ -157,7 +175,10 @@ static void tick(void) {
   }
   for (int k = 0; k < 4; k++) ti.tach_hz[k] = (float)tach_hz_x10[k];
   ti.can_state = can_state();
-  ti.stack_pct = (uint8_t)painted_stack_pct();
+  /* E81 (F-D-8 / F-E-14): the paint scan is ~43 µs of the 1 ms tick for one diagnostic byte that moves on a scale of
+     minutes. firmware-architecture §3.2 already says 1 Hz. */
+  if (ms % 1000u == 0u) stack_pct_cached = (uint8_t)painted_stack_pct();
+  ti.stack_pct = stack_pct_cached;
   ti.pfc_exec_us = pfc_us_max; ti.llc_exec_us = llc_us_max;
   pfc_us_max = 0u; llc_us_max = 0u;
   ti.rx = rxbuf;
@@ -173,15 +194,17 @@ static void tick(void) {
   pwm_relay(out.relay_duty);                                          /* carries KPRE/KSER/KPARA/KPARB incl. pull-in */
   pwm_fan(out.fan_duty[0], out.fan_duty[1]);
   cmpdac_thresholds(out.dac_v);
-  if (out.fault_rearm) hrtimer_rearm(d);
-  if (out.wdt_kick) { wdi_pulse(); fwdgt_kick(); }
+  if (out.fault_rearm) hrtimer_rearm(d, out.fault_rearm);
+  kick_arm = out.wdt_kick ? 1u : 0u;                                  /* E81: SysTick owns the cadence */
   hmi_phase = out.hmi_dig;
   hmi_drive(out.hmi_seg, out.hmi_dig);
-  while (app.txq.n && can_tx_ready()) {                               /* drain toward the bus, arbitration order */
+  /* E81 (F-E-18): drain until the mailboxes are busy, not one frame per tick. The profile can queue four events per tick
+     plus telemetry, so a 32-deep queue filled in ~11 ticks and dropped exactly the frames that explain a fault storm.
+     MTO (lowest-number-first, can.c CTL1 BIT(4)) keeps transmission in mailbox order, so order survives the batch. */
+  for (int n = 0; n < 8 && app.txq.n && can_tx_ready(); n++) {
     pmp_frame_t f;
     if (!pmp_txq_pop(&app.txq, &f)) break;
     can_tx(&f);
-    break;                                                            /* one mailbox in flight keeps strict order */
   }
   if (out.can_restart) can_restart();
   static int confirmed;
@@ -205,7 +228,7 @@ static void tick(void) {
 /* painted stacks: startup fills [stack limit, sp) with 0xA5; the high-water mark is where the paint ends */
 extern uint32_t _sstack[], _estack[];
 static uint32_t painted_stack_pct(void) {
-  uint32_t total = (uint32_t)((uintptr_t)_estack - (uintptr_t)_sstack), free_words = 0u;
+  uint32_t total = (uint32_t)((uintptr_t)_estack - (uintptr_t)_sstack), free_words = 0u;   /* E81: called at 1 Hz */
   for (uint32_t *p = _sstack; p < (uint32_t *)((uintptr_t)_sstack + total) && *p == 0xA5A5A5A5u; p++) free_words++;
   uint32_t used = total - free_words * 4u;
   return used * 100u / total;
@@ -220,7 +243,12 @@ int main(void) {
   app_boot_t b;
   memset(&b, 0, sizeof b);
   b.rating_counts = (float)adc_read_once(2u, 3u);                     /* ROLE1 strap on ADC2_IN3, before the engine runs */
-  b.wdt_reset = (port_reset_cause & (BIT(29) | BIT(26))) == BIT(29);  /* FWDGT only; the TPS3430 arrives as a pin reset */
+  /* E81 (F-E-03): report the RAW cause and let the HAL classify. The design's primary supervisor is the TPS3430, whose
+     WDO is wire-ORed onto NRST and therefore arrives as EPRSTF (bit 26), not FWDGTRSTF — the old `== BIT(29)` test meant
+     F.32 never fired for the dominant hang path. RSTSCK's flags live at 25..31, so the byte carries all of them. */
+  b.reset_cause = (uint8_t)((port_reset_cause >> 24) & 0xFFu);
+  b.handoff_reboot = have_h && h.reason == HANDOFF_REBOOT;
+  b.hw_rev = PORT_HW_REV;                                             /* E81 (F-D-15): board.h — no strap on the card yet */
   b.uid = RD(UID_BASE);
   b.nvm_page_size = nvm_port_page_size();
   b.evlog_pages = (uint8_t)(FM_EVLOG_SIZE / nvm_port_page_size());
@@ -234,7 +262,6 @@ int main(void) {
   b.boot_state = boot_ctl.state;
 
   app_init(&app, &b);
-  if (have_h && h.reason == HANDOFF_REBOOT) { /* nothing extra: a clean reboot */ }
 
   cmpdac_init();
   adc_init();
@@ -254,6 +281,9 @@ int main(void) {
 
   for (;;) {
     __asm volatile ("wfi");
-    while (tick_due) { tick_due--; tick(); }
+    /* E81 (F-E-01a): a backlog is collapsed into ONE tick, flagged late. Replaying it as fast ticks made supervise() see
+       "three LLC periods missing inside one tick" and latch F.35 on every NVM compaction. */
+    uint32_t n = tick_due;
+    if (n) { tick_due -= n; tick(n > 1u); }
   }
 }

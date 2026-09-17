@@ -6,6 +6,7 @@
   "LEG-2"
  ],
  "net_style_overrides": {
+  "CFDMP_RFDMP": "wire",
   "GH_1": "wire",
   "SWA": "wire",
   "KH_1": "wire",
@@ -175,6 +176,286 @@
    "mpn": "PP-1u-1100"
   },
   {
+   "designator": "CF4",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF5",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF6",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF7",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF8",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF9",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF10",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF11",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF12",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF13",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF14",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CF15",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "PP-1u-1100 1 µF 1100 V film ",
+   "mpn": "PP-1u-1100"
+  },
+  {
+   "designator": "CFDMP",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "CFDMP_RFDMP"
+    }
+   ],
+   "nc_pins": [],
+   "value": "2.2uF",
+   "query": "PP-2u2-1100 2.2 µF 1100 V PP film — the capacitor half of the E81 DC-link entry ",
+   "mpn": "PP-2u2-1100"
+  },
+  {
+   "designator": "RFDMP",
+   "block_name": "BUS-IN",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "CFDMP_RFDMP"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "CER-3W-R33-AX",
+   "query": "CER-3W-R33-AX 0.33 Ω ≥3 W PULSE-rated axial ",
+   "mpn": "CER-3W-R33-AX"
+  },
+  {
    "designator": "Q1H",
    "block_name": "LEG-1",
    "pins": [
@@ -233,6 +514,46 @@
    "value": "SG2M023120LJ",
    "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 ",
    "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "C1HOS1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SWA"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330pF",
+   "query": "C1206-1n-1kV-C0G 1 kV **C0G** 1206 LLC turn-off snubber, ONE per die, drain–sour",
+   "mpn": "C1206-1n-1kV-C0G"
+  },
+  {
+   "designator": "C1LOS1",
+   "block_name": "LEG-1",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SWA"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330pF",
+   "query": "C1206-1n-1kV-C0G 1 kV **C0G** 1206 LLC turn-off snubber, ONE per die, drain–sour",
+   "mpn": "C1206-1n-1kV-C0G"
   },
   {
    "designator": "U1H",
@@ -440,7 +761,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2",
+   "value": "0R",
    "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
    "mpn": "R1206-RG-0.5W"
   },
@@ -480,9 +801,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22pF",
-   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
-   "mpn": "MLCC-22p-0603"
+   "value": "18pF",
+   "query": "MLCC-18p-0603 **18 pF** 0603 C0G ",
+   "mpn": "MLCC-18p-0603"
   },
   {
    "designator": "R1HDS",
@@ -560,7 +881,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "U1H_VCC2"
     },
     {
@@ -570,14 +891,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "U1H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "U1L",
@@ -785,7 +1106,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2",
+   "value": "0R",
    "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
    "mpn": "R1206-RG-0.5W"
   },
@@ -825,9 +1146,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22pF",
-   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
-   "mpn": "MLCC-22p-0603"
+   "value": "18pF",
+   "query": "MLCC-18p-0603 **18 pF** 0603 C0G ",
+   "mpn": "MLCC-18p-0603"
   },
   {
    "designator": "R1LDS",
@@ -905,7 +1226,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "U1L_VCC2"
     },
     {
@@ -915,14 +1236,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "U1L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "Q2H",
@@ -983,6 +1304,46 @@
    "value": "SG2M023120LJ",
    "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 ",
    "mpn": "SG2M023120LJ"
+  },
+  {
+   "designator": "C2HOS1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "DCP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SWB"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330pF",
+   "query": "C1206-1n-1kV-C0G 1 kV **C0G** 1206 LLC turn-off snubber, ONE per die, drain–sour",
+   "mpn": "C1206-1n-1kV-C0G"
+  },
+  {
+   "designator": "C2LOS1",
+   "block_name": "LEG-2",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "SWB"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "330pF",
+   "query": "C1206-1n-1kV-C0G 1 kV **C0G** 1206 LLC turn-off snubber, ONE per die, drain–sour",
+   "mpn": "C1206-1n-1kV-C0G"
   },
   {
    "designator": "U2H",
@@ -1190,7 +1551,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2",
+   "value": "0R",
    "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
    "mpn": "R1206-RG-0.5W"
   },
@@ -1230,9 +1591,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22pF",
-   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
-   "mpn": "MLCC-22p-0603"
+   "value": "18pF",
+   "query": "MLCC-18p-0603 **18 pF** 0603 C0G ",
+   "mpn": "MLCC-18p-0603"
   },
   {
    "designator": "R2HDS",
@@ -1310,7 +1671,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "U2H_VCC2"
     },
     {
@@ -1320,14 +1681,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "U2H_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "U2L",
@@ -1535,7 +1896,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2",
+   "value": "0R",
    "query": "R1206-RG-0.5W gate resistor 1206, 0.5 W-rated ",
    "mpn": "R1206-RG-0.5W"
   },
@@ -1575,9 +1936,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22pF",
-   "query": "MLCC-22p-0603 22 pF 0603 C0G ",
-   "mpn": "MLCC-22p-0603"
+   "value": "18pF",
+   "query": "MLCC-18p-0603 **18 pF** 0603 C0G ",
+   "mpn": "MLCC-18p-0603"
   },
   {
    "designator": "R2LDS",
@@ -1655,7 +2016,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "U2L_VCC2"
     },
     {
@@ -1665,14 +2026,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "U2L_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   }
  ]
 }

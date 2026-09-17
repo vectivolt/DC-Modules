@@ -5,8 +5,8 @@
   {
    "status": "ok",
    "tag": "RESERVOIR",
-   "name": "30kw DC link 869 J @860 V",
-   "detail": "C=2.35 mF → 217 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+   "name": "30kw DC link 435 J @860 V",
+   "detail": "C=1.18 mF → 109 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
   },
   {
    "status": "ok",
@@ -17,8 +17,8 @@
   {
    "status": "ok",
    "tag": "RESERVOIR",
-   "name": "40kw DC link 1043 J @860 V",
-   "detail": "C=2.82 mF → 261 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+   "name": "40kw DC link 521 J @860 V",
+   "detail": "C=1.41 mF → 130 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
   },
   {
    "status": "ok",
@@ -29,8 +29,8 @@
   {
    "status": "ok",
    "tag": "RESERVOIR",
-   "name": "50kw DC link 1390 J @860 V",
-   "detail": "C=3.76 mF → 348 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+   "name": "50kw DC link 695 J @860 V",
+   "detail": "C=1.88 mF → 174 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
   },
   {
    "status": "ok",
@@ -41,8 +41,8 @@
   {
    "status": "ok",
    "tag": "RESERVOIR",
-   "name": "50kwa DC link 1390 J @860 V",
-   "detail": "C=3.76 mF → 348 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
+   "name": "50kwa DC link 695 J @860 V",
+   "detail": "C=1.88 mF → 174 J per discharge resistor vs 480 J family point (50 kW uses the 50 W class — stress Epulse gates the exact parts)"
   },
   {
    "status": "ok",
@@ -89,50 +89,56 @@
   {
    "status": "ok",
    "tag": "VENT",
-   "name": "bank/link can strings",
-   "detail": "2-series 450 V cans = 900 V string vs ≤525 V (58%) — venting requires a BALANCE failure, which F-rows detect via the bank senses; DFM carries the vent-clearance rule (E59)"
+   "name": "link can continuous voltage",
+   "detail": "worst continuous half-link 435 V (830 V ref/2 + F.06 20 V) on a 500 V can = 87 % ≤ 90 % (E81 F-C-14; 450 V cans read 97 %)"
+  },
+  {
+   "status": "ok",
+   "tag": "VENT",
+   "name": "link can trip vs surge",
+   "detail": "F.38 half-link trip 440 V ≤ 1.15 × 500 = 575 V surge line — venting requires a BALANCE failure past F.06/F.38, which the half senses detect; DFM carries the vent-clearance rule (E59)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "30kw airflow margin",
-   "detail": "need 162 m³/h @ΔT20 for 1048.4 W vs 2×160×0.6 = 192 — margin 1.19×"
+   "detail": "need 187 m³/h @ΔT20 for 1125.7 W vs 3×160×0.6 = 288 — margin 1.54× (line 1.10, E81; module air rise at delivered flow 13 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "30kw one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 96 m³/h vs derated need 89 (tachs all monitored — E44; OT ladder is the second net)"
+   "detail": "(n−1) = 192 m³/h vs derated need 103 (tachs all monitored — E44; OT ladder is the second net)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "40kw airflow margin",
-   "detail": "need 211 m³/h @ΔT20 for 1366.6 W vs 3×160×0.6 = 288 — margin 1.36×"
+   "detail": "need 251 m³/h @ΔT20 for 1506.7 W vs 3×160×0.6 = 288 — margin 1.15× (line 1.10, E81; module air rise at delivered flow 17.4 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "40kw one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 192 m³/h vs derated need 116 (tachs all monitored — E44; OT ladder is the second net)"
+   "detail": "(n−1) = 192 m³/h vs derated need 138 (tachs all monitored — E44; OT ladder is the second net)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "50kw liquid loop",
-   "detail": "1782 W into 6.5 L/min 50/50 EG-water → coolant ΔT 4.6 K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder"
+   "detail": "1910 W into 6.5 L/min 50/50 EG-water → coolant ΔT 5 K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "50kwa airflow margin",
-   "detail": "need 281 m³/h @ΔT20 for 1821.7 W vs 4×160×0.6 = 384 — margin 1.37×"
+   "detail": "need 325 m³/h @ΔT20 for 1950.3 W vs 4×160×0.6 = 384 — margin 1.18× (line 1.10, E81; module air rise at delivered flow 16.9 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "50kwa one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 288 m³/h vs derated need 155 (tachs all monitored — E44; OT ladder is the second net)"
+   "detail": "(n−1) = 288 m³/h vs derated need 179 (tachs all monitored — E44; OT ladder is the second net)"
   }
  ]
 }

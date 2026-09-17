@@ -1,6 +1,6 @@
-* CT front-end: Ipri_pk=148.1 A, 1:100, 0.36 ohm, 140000 Hz
+* CT front-end: Ipri_pk=147.9 A, 1:100, 0.36 ohm, 140000 Hz
 VAV avmid 0 1.65
-ICT avmid b SIN(0 1.4809999999999999 140000)
+ICT avmid b SIN(0 1.479 140000)
 RB b avmid 0.36
 RF b adc 1k
 CF adc avmid 220p

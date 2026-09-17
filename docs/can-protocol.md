@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/codec-vmp.c_conformance_·_1M_fuzz-2ea44f?style=flat-square" alt="codec: vmp.c conformance · 1M fuzz"/>
 </p>
 
@@ -30,9 +30,19 @@
 | **Addresses** | controllers 0x01–0x0F · modules 0x10–0xDF (208) · groups 0xE0–0xEF (16) · 0xFE unaddressed · 0xFF all |
 | **Integrity** | CAN CRC-15 on every frame · CRC-8/AUTOSAR over identifier + payload on every frame that can command power or change identity · 4-bit counters on cyclic control |
 | **Liveness** | controller: CTRL every 100 ms, CTRL_HB 1 s with a session id · module: TLM_FAST every 50 ms, MOD_HB 1 s with a session id |
-| **Replies** | every request gets an ACK or READ_RSP with a status; rejected cyclic frames are NAKed (at most one per 100 ms) |
+| **Replies** | every request gets an ACK or READ_RSP with a status; rejected cyclic frames are NAKed (at most one per 100 ms) — E81 (F-F-6): a cyclic CTRL setpoint beyond 1.1 × the 1 000 V ceiling or above 400 A is NAKed RANGE instead of being clamped silently |
 | **Units** | one scaling per quantity: 0.1 V · 0.05 A · 10 W · 1 °C · 0.5 % |
 | **Coexistence** | the native marker (identifier bit 25) keeps VMP frames apart from J1939 and TonHe PDU1 traffic on a shared bus |
+
+> [!IMPORTANT]
+> **Two protocol options, one module (E81 product decision).** Every module ships with both profiles selectable in standby:
+> **TonHe V1.2** for dropping into existing racks and monitors (conformance re-verified at E81 against the vendor PDF: 24 rules
+> conform byte-exact, 3 deliberate safety deviations, 1 undefined vendor frame counted and exposed — see the
+> [TonHe profile page](can-profile-tonhe-v12.md)), and **VMP 2.0** — this page — for new installations, where the controller contract,
+> command-frame CRC, rolling counters, ownership, typed NAKs and the signed update path make it the robust choice. The E81 five-vendor
+> comparison (UUGreen 36.2, ENR S0, NIUERA V1.04, Maxwell V1.50, TonHe V1.2 / GWBZ) found nothing VMP does worse on integrity or
+> liveness; the gaps it found (pack voltage in the control set, readable trip points, altitude derate, input-side telemetry,
+> phase-sequence warnings, event rate limiting, on-change bit-map storms) are registered in §11 with their vendor evidence.
 
 ## 1. Design rules
 
@@ -201,10 +211,11 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 0x46 | TLM_COOLING | 1 s | fans 1–4 u8 (× 50 rpm) · duty u8 % · failed-fan bits u8 · fan mode u8 · reserved |
 | 0x47 | TLM_SHARE | 200 ms, when in a group | group u8 · slot u8 · I_out i16 · share target u16 · trim i8 (0.1 % of the voltage command) · flags u8 (0 group control · 1 delivery permitted · 2 trim active) |
 | 0x48 | FAULT_BITS | 1 s + ≤ 20 ms after a change | u64: bit n − 1 = F.n latched (F.31 while locked) |
-| 0x49 | WARN_BITS | 1 s + on change | u64: bits 0–31 core warnings · 32 CMD_STALE · 33 ADDR_CONFLICT · 34 TX_DROP · 35 RX_REJECT |
+| 0x49 | WARN_BITS | 1 s + on change | u64: bits 0–31 core warnings · 32 CMD_STALE · 33 ADDR_CONFLICT · 34 TX_DROP · 35 RX_REJECT · **36 EV_SUPPRESS** (E81: EVENT frames were held back by the per-code rate limit — read 0x0502 for the count) |
 | 0x4A | FAULT_DETAIL | on change + 1 s while faulted | code u8 · class u8 (0 none · 1 AUTO_EXT · 2 AUTO_INT · 3 LATCH · 4 LOCK) · seconds to recovery u16 (0xFFFF n/a) · reserved · re-arm u8 · last event number u16 |
-| 0x4B | EVENT | on event | event number u16 · kind u8 (1 boot · 2 fault set · 3 fault cleared · 4 warning set · 5 warning cleared · 6 state change) · code u8 · ms since boot u32 |
+| 0x4B | EVENT | on event, **at most one frame per {kind, code} per 200 ms** (E81 K7: a chattering warning computed to 55 % of a 250 kbit/s bus at the 1 kHz tick; anything held back sets WARN bit 36 and counts in 0x0502 — nothing is silently lost) | event number u16 · kind u8 (1 boot · 2 fault set · 3 fault cleared · 4 warning set · 5 warning cleared · 6 state change) · code u8 · ms since boot u32 |
 | 0x4C | STATS | 60 s | operating seconds u32 · energy u32 (0.1 kWh) |
+| 0x4E | TLM_PACK | slow period (E81 K1) | pack / external-node voltage behind DOUT u16 0.1 V (0xFFFF = none or unknown) · external node present u8 · reserved — three of five vendor protocols carry it; a controller pre-positions its reference before the contactor closes and sanity-checks a setpoint against the pack |
 | 0x50 | ACK | on request | txn u8 · function u8 · status u8 · detail u8 · value u32 |
 | 0x51 | READ_RSP | on request | txn u8 · object u16 · sub u8 · value u32 |
 | 0x58 | ANNOUNCE | boot · address change · DISCOVER · 1 s while unaddressed | UID u32 · product u16 · version u8 (major << 4 \| minor) · flags u8 (0 addressed · 1 conflict · 2 owned · 3 in a group) |
@@ -279,6 +290,7 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 0x0401–0x0404 | event-log entry words 0–3 (E80) | read · **sub-index = age** (0 = newest) | w0 sequence u32 · w1 time u32 (seconds since boot; UNIX when kind bit 7 is set) · w2 boot u16 \| kind u8 ≪ 16 \| code u8 ≪ 24 · w3 argument u16 |
 | 0x0500 | control-ISR execution high-water (E80) | read | PFC µs ≪ 16 \| LLC µs (DWT since boot — EVT T-44) |
 | 0x0501 | worst painted-stack use (E80) | read | percent u8 |
+| 0x0502 | EVENT frames suppressed by the rate limit (E81) | read | count u32 since boot |
 
 Configuration objects persist (A/B records with CRC); the module reports the stored value in the ACK.
 
@@ -354,5 +366,5 @@ Keep the load below 50 % (lengthen the telemetry periods or raise the bit rate).
 <div align="center">
 <sub><a href="firmware-architecture.md">← Firmware Architecture</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-profile-tonhe-v12.md">TonHe V1.2 Compatibility Profile →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -9,6 +9,11 @@
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+// E81 [SYNC] (section L): the ONE exception to this file's no-reuse rule, and deliberately so —
+// the per-die turn-off snubber is a TANK parameter that the schematic has to draw, so the check
+// reads tanks.mjs as DATA and compares it against the built netlist. It verifies nothing of the
+// tank physics; it verifies that two carriers of the same number agree.
+import { TANKS } from "./llc/tanks.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const f = (x, d = 2) => Number(x.toFixed(d));
 let fails = 0, checks = 0;
@@ -66,10 +71,10 @@ B.card = loadNet(`${ROOT}/dist/boards/control-card/circuit.json`);
 // ---------- A. system currents (first principles) ----------
 console.log("\n=== A. SYSTEM CURRENTS (clean-room) ===");
 const SK = {   // E67 full bridge: crN × 33 nF · external Lr (D2 rev F) · tank class (A rms) · 0.05 mm litz area · bank film/electrolytic counts
-  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 1, nHalf: 5, fans: 2, crN: 7, crV: 33e-9, lr: 5.16e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 9, nE: 0, dPar: 2, dout: 150 },
-  "40kw": { P: 40e3, Imax: 133, par: 1, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 4.07e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 12, nE: 0, dPar: 2, dout: 200 },
-  "50kw": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 14, nE: 0, dPar: 2, dout: 250 },
-  "50kwa": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.28e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 14, nE: 0, dPar: 2, dout: 250 },
+  "30kw": { P: 30e3, Imax: 100, par: 1, parL: 1, nHalf: 5, fans: 3, crN: 7, crV: 33e-9, lr: 5.00e-6, tRms: 78, fuse: 80, kpre: 80, lineCT: 100, lineB: 22, resB: 0.47, F01: 120, F11: 140, disch: 3000, litz: 15.7, nF: 9, nE: 0, dPar: 2, dout: 150 },
+  "40kw": { P: 40e3, Imax: 133, par: 1, parL: 2, nHalf: 6, fans: 3, crN: 9, crV: 33e-9, lr: 3.99e-6, tRms: 100, fuse: 125, kpre: 100, lineCT: 150, lineB: 18, resB: 0.36, F01: 155, F11: 180, disch: 4000, litz: 19.6, nF: 12, nE: 0, dPar: 2, dout: 200 },
+  "50kw": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 0, crN: 11, crV: 33e-9, lr: 3.20e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 14, nE: 0, dPar: 2, dout: 250 },
+  "50kwa": { P: 50e3, Imax: 167, par: 1, parL: 2, nHalf: 8, fans: 4, crN: 11, crV: 33e-9, lr: 3.20e-6, tRms: 120, fuse: 160, kpre: 250, lineCT: 150, lineB: 13, resB: 0.30, F01: 195, F11: 220, disch: 5000, litz: 23.6, nF: 14, nE: 0, dPar: 2, dout: 250 },
 };
 for (const [sku, s] of Object.entries(SK)) {
   s.Iline = (s.P / 0.965) / (Math.sqrt(3) * 330 * 0.99);
@@ -90,7 +95,11 @@ console.log("\n=== B. TANK — fr, per-cap duty, trim ===");
 // breadth, 0.3 mm barrier, E70 former lN 230.5 mm (2-set) / 293 mm (3-set)); tank Lr = external D2 + 2 × cell leakage + 0.1 µH loop
 const XF = { "30kw": { N: 6, mlt: 0.2305, cuP: 12e-6, foil: 0.10e-3, nf: 1 }, "40kw": { N: 4, mlt: 0.293, cuP: 14e-6, foil: 0.08e-3, nf: 2 }, "50kw": { N: 4, mlt: 0.293, cuP: 14e-6, foil: 0.08e-3, nf: 2 } };
 XF["50kwa"] = XF["50kw"];
-const llkOf = (x) => 4e-7 * Math.PI * x.N * x.N * x.mlt / (4 * 0.041) * (2 * 0.3e-3 + (2 * x.N * x.nf * (x.foil + 50e-6) + x.N * x.cuP / (0.55 * 0.028) + 0.6e-3) / 3);
+// E81 (F-B-3): the MMF breadth in the 1-D energy model is the CONDUCTOR BAND (28 mm), not the 41 mm
+// window height — leakage ∝ 1/b, so the window under-stated it by 41/28 = 1.46×. This clean-room
+// model made the same substitution the engine did and is corrected here independently; with the
+// re-issued D2 nominals above it lands back on the committed tank Lr to three figures.
+const llkOf = (x) => 4e-7 * Math.PI * x.N * x.N * x.mlt / (4 * 0.028) * (2 * 0.3e-3 + (2 * x.N * x.nf * (x.foil + 50e-6) + x.N * x.cuP / (0.55 * 0.028) + 0.6e-3) / 3);
 for (const [sku, s] of Object.entries(SK)) {
   const LLK = 2 * llkOf(XF[sku]) + 0.1e-6, Cr = s.crN * s.crV, Lr = LLK + s.lr;
   const fr = 1 / (2 * Math.PI * Math.sqrt(Lr * Cr));
@@ -159,15 +168,28 @@ for (const [sku, s] of Object.entries(SK)) {
 console.log("\n=== D. THERMAL — closed-form vs grid CSV ===");
 const grid = readFileSync(`${ROOT}/calculations/out/envelope-grid.csv`, "utf8").trim().split("\n").map(r => r.split(","));
 function tjWorst(sku) {
-  const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
+  // E81 F-L-1: the registered NOT-SUSTAINABLE set (150 V output in phase shift on the two-die SKUs — the weak leg's fixed
+  // hard turn-on; stress-audit carries the register and the spec limit) is excluded here exactly as it is there, so this
+  // file's ceiling check and the closed-form reproduction run on the SERVABLE envelope. The closed-form below re-derives the
+  // turn-off term only — the registered rows carry the hard-turn-on term instead, which the grid owns (deck-anchored).
+  const fl1 = (r) => sku !== "30kw" && r[2] === "150" && r[6] === "PSM";
+  const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "" && !fl1(r));
   const wl = rows.reduce((a, r) => (+r[14] > +a[14] ? r : a));
   return { p: Math.max(...rows.map(r => +r[13])), l: +wl[14], ip: Math.max(...rows.map(r => +r[10])), lRow: wl };
 }
 { // 50 kW liquid: re-derive the grid's OWN worst LLC row closed-form (E67: full bridge, par FETs per position)
-  const g = tjWorst("50kw"), ipW = +g.lRow[10], psW = g.lRow[6] === "PSM" ? 8 : 1, par = SK["50kw"].parL;
+  // E81: the grid's flat 1 W (PFM) / 8 W (PSM) turn-off placeholder is gone — it now carries a real
+  // per-position term. This file re-derives that term INDEPENDENTLY from the three declared inputs
+  // (tanks.mjs k_off for the fitted C_s / R_g,off pair, the row's own bus and I_toff, and
+  // f_sw = fn × fr computed from the tank's own L and C) and checks BOTH the watts and the junction.
+  const g = tjWorst("50kw"), ipW = +g.lRow[10], par = SK["50kw"].parL;
+  const t50 = TANKS["50kw"], fr50 = 1 / (2 * Math.PI * Math.sqrt(t50.Lr * t50.crN * t50.crNF * 1e-9));
+  const fsw = +g.lRow[9] * fr50, woffIndep = t50.koff * +g.lRow[8] * +g.lRow[19] * fsw, woffGrid = +g.lRow[18];
   const plate = { cold: 10, room: 45, hot: 65 }[g.lRow[4]];
-  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + psW / par) * 0.65;   // E68 clip mount onto the plate
-  ck("D", "50kw LLC worst corner reproduces", Math.abs(Tj - g.l) < 3, `closed-form ${f(Tj, 0)} °C vs grid ${g.l} at its worst row (${g.lRow[2]} V ${g.lRow[5]} ${g.lRow[6]} ${g.lRow[4]}, Ip ${ipW} A rms — ${par} FETs per position, liquid model)`);
+  let Tj = 80; for (let i = 0; i < 40; i++) Tj = plate + ((ipW / Math.SQRT2 / par) ** 2 * 0.023 * (1 + 0.004 * (Tj - 25)) + woffIndep / par) * 0.65;   // E68 clip mount onto the plate
+  ck("D", "50kw LLC turn-off watts re-derived from k_off · V · I_toff · f_sw", Math.abs(woffIndep - woffGrid) <= 0.12 * Math.max(woffGrid, 1),
+    `closed-form ${f(woffIndep, 1)} W/position vs grid ${f(woffGrid, 1)} W (k_off ${f(t50.koff * 1e9, 1)} nJ/(V·A) at C_s ${f(t50.cs * 1e12, 0)} pF, bus ${g.lRow[8]} V, I_toff ${g.lRow[19]} A, f_sw ${f(fsw / 1e3, 0)} kHz)`);
+  ck("D", "50kw LLC worst corner reproduces", Math.abs(Tj - g.l) < 4, `closed-form ${f(Tj, 0)} °C vs grid ${g.l} at its worst row (${g.lRow[2]} V ${g.lRow[5]} ${g.lRow[6]} ${g.lRow[4]}, Ip ${ipW} A rms, ${f(woffIndep, 1)} W turn-off per position — ${par} FETs per position, liquid model)`);
   ck("D", "50kw Ip max inside the tank class", g.ip <= SK["50kw"].tRms * 1.02, `${g.ip} A rms ≤ ${SK["50kw"].tRms} A rms class`);
 }
 for (const sku of ["30kw", "40kw", "50kwa"]) {
@@ -184,7 +206,7 @@ for (const [sku, s] of Object.entries(SK)) {
   const fansW = s.fans * 9;
   const est = nBias * 0.55 + coils + fansW + 2 + 1.5 + 1 + 2.5;   // bias + coils + fans + MCU/3V3 + CAN + HMI + drivers' primary
   ck("E", `${sku} aux load inside the 110 W stage`, est <= 93,
-    `${nBias} bias modules + coils ${f(coils, 1)} W + fans ${fansW} W + logic ≈ ${f(est, 0)} W ≤ 93 (85% of 110)`);
+    `${nBias} bias modules + coils ${f(coils, 1)} W + fans ${fansW} W (${s.fans} fitted — E81: 30 kW gains a third) + logic ≈ ${f(est, 0)} W ≤ 93 (85% of 110)`);
 }
 
 // ---------- F. bank + link ripple (3-φ interleave, numeric) ----------
@@ -232,6 +254,19 @@ for (const [sku, s] of Object.entries(SK)) {
       && D.netOfPin.get("C1R0.pin2") === D.netOfPin.get("L1R.pin1") && D.netOfPin.get("L1R.pin2") === D.netOfPin.get("T1A.P1") && D.netOfPin.get("T1A.P2") === D.netOfPin.get("T1B.P1") && D.netOfPin.get("T1B.P2") === D.netOfPin.get("Q2H.S") && D.netOfPin.get("C1R0.pin1") === D.netOfPin.get("Q1H.S") && D.netOfPin.get("Q1H.S") !== D.netOfPin.get("Q2H.S"),
     `SWA → ${s.crN} × ${f(s.crV * 1e9, 0)} nF → ${f(s.lr * 1e6, 2)} µH → T1A.P → T1B.P → SWB (Cr strictly in series: flux-walk blocked)`);
   ck("G", `${sku} resonant burden`, Math.abs(D.val.get("R1CT") - s.resB) < 0.01 && !D.byName.has("CT2"), `${s.resB} Ω on the one tank CT`);
+  // E81 (F-C-4 / F-G-1 FIX-D): the DC-DC entry film. Four 1 µF parts put the bank on a 268–425 kHz
+  // anti-resonance with the stud loop, inside the 280–406 kHz 2·fsw band, and the cans then carried
+  // 6.5–18 A rms against ≈3 A. Sixteen films plus one 2.2 µF + 0.33 Ω series-RC across the same
+  // rails at the bridge: per-can 0.77 A and the bus ring 37 V instead of 209 V.
+  // E81 close-out: the count is PER SKU — the 40 nH-stud deck holds the 30/40 kW cans at 58/68 % of the RFQ ripple line with
+  // 16 films, the 50 kW pair needs 20 (81 % at 16). Independent re-declaration here; parts-db ENTRY_FILM and boards.tsx are the
+  // other two carriers, tied to each other by current-coordination [SYNC].
+  const N_ENTRY_FILM = { "30kw": 16, "40kw": 16, "50kw": 20, "50kwa": 20 }[sku];
+  ck("G", `${sku} DC-link entry film + RC damper (E81 FIX-D)`,
+    cnt(D, /^CF\d+$/) === N_ENTRY_FILM && Math.abs(D.val.get("CF0") - 1e-6) < 1e-9
+    && Math.abs(D.val.get("CFDMP") - 2.2e-6) < 1e-8 && D.netOfPin.get("CFDMP.pin1") === "DCP"
+    && D.netOfPin.get("CFDMP.pin2") === D.netOfPin.get("RFDMP.A") && D.netOfPin.get("RFDMP.B") === "DCN",
+    `${cnt(D, /^CF\d+$/)} × 1 µF/1100 V at the bridge (need ${N_ENTRY_FILM}) + 2.2 µF in series with 0.33 Ω across DCP–DCN`);
   ck("G", `${sku} film-only banks`, cnt(D, /^CF[AB]\d+$/) === 2 * s.nF && !D.byName.has("LFA") && !D.byName.has("CEA0") && D.netOfPin.get("CFA0.pin1") === "BKAP" && D.netOfPin.get("CFB0.pin2") === "BKBN" && D.netOfPin.get("D1A1.pin2") === "BKAP",
     `per bank ${s.nF}× 2.2 µF film across BK·P–BK·N, JBS cathodes straight onto the bank (E68)`);
   ck("G", `${sku} secondary bridges`, cnt(D, /^D1[AB][1-4](P[23])?$/) === 8 * s.dPar, `${8 * s.dPar} JBS (2 bridges × 4 positions × ${s.dPar})`);
@@ -240,11 +275,17 @@ for (const [sku, s] of Object.entries(SK)) {
   ck("G", `${sku} RATING strap`, Math.abs(D.val.get("RROLEB") - { "30kw": 0, "40kw": 1000, "50kw": 10000, "50kwa": 15000 }[sku]) < 1, `${D.val.get("RROLEB")} Ω`);
   // E65: the filter the pre-compliance and stability gates model — Y trios on BOTH CM-choke nodes (two CM stages)
   // and the CX2-node Rd–Cd damper; then the PE leakage those Y caps imply
-  const yOn = (node) => A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin1`) === node && A.netOfPin.get(`${n}.pin2`) === "PE" && Math.abs(A.val.get(n) - 4.7e-9) < 1e-11).length;
-  ck("G", `${sku} two-stage CM ladder`, [1, 2, 3].every((p) => yOn(`AC${p}`) === 1 && yOn(`AC${p}M`) === 1 && A.netOfPin.get(`CMC1.B${p}`) === `AC${p}M` && A.netOfPin.get(`CMC2.A${p}`) === `AC${p}M`),
-    "Y1 4.7 nF L-PE on AC1..3 and on AC1M..3M between CMC1 and CMC2");
+  // E81 (F-L-4): the CONVERTER-node trio is 10 nF, the inter-choke trio stays 4.7 nF.
+  const yOn = (node, c) => A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin1`) === node && A.netOfPin.get(`${n}.pin2`) === "PE" && Math.abs(A.val.get(n) - c) < 1e-11).length;
+  ck("G", `${sku} two-stage CM ladder`, [1, 2, 3].every((p) => yOn(`AC${p}`, 10e-9) === 1 && yOn(`AC${p}M`, 4.7e-9) === 1 && A.netOfPin.get(`CMC1.B${p}`) === `AC${p}M` && A.netOfPin.get(`CMC2.A${p}`) === `AC${p}M`),
+    "Y2 10 nF L-PE on the converter node AC1..3 (E81: the LLC bridge counted as a CM source) and Y1 4.7 nF on AC1M..3M between CMC1 and CMC2");
+  // E81 (F-G-5, reviewer E sweep): the damper is per SKU — 50 kW (liquid and air) 4.7 µF / 4.7 Ω,
+  // 30/40 kW 2.2 µF / 6.8 Ω. Undamped-to-lightly-damped the filter's LCL modes oscillate at
+  // 75.6 % (40 kW) / 194.7 % (50 kW) of the SHIPPED 15 µs control delay.
+  const dmpC = /^50kw/.test(sku) ? 4.7e-6 : 2.2e-6, dmpR = /^50kw/.test(sku) ? 4.7 : 6.8;
   ck("G", `${sku} CX2-node damper`, [1, 2, 3].every((p) => A.netOfPin.get(`CDMP${p}.pin1`) === `AC${p}` && A.netOfPin.get(`CDMP${p}.pin2`) === A.netOfPin.get(`RDMP${p}.pin1`)
-    && A.netOfPin.get(`RDMP${p}.pin2`) === `AC${p % 3 + 1}` && Math.abs(A.val.get(`CDMP${p}`) - 2.2e-6) < 1e-8 && Math.abs(A.val.get(`RDMP${p}`) - 10) < 0.01), "2.2 µF + 10 Ω in series, delta across AC1..3");
+    && A.netOfPin.get(`RDMP${p}.pin2`) === `AC${p % 3 + 1}` && Math.abs(A.val.get(`CDMP${p}`) - dmpC) < 1e-8 && Math.abs(A.val.get(`RDMP${p}`) - dmpR) < 0.01),
+    `${dmpC * 1e6} µF + ${dmpR} Ω in series, delta across AC1..3 (E81 per-SKU)`);
   // E68: the InfyPower filter — three star X2 stages (4.7 µF each, own floating star), no DM choke
   const starOk = (pre, node, star) => [1, 2, 3].every((p) => A.netOfPin.get(`${pre}${p}.pin1`) === node(p) && A.netOfPin.get(`${pre}${p}.pin2`) === star && Math.abs(A.val.get(`${pre}${p}`) - 4.7e-6) < 1e-8);
   ck("G", `${sku} star X2 stages, no DM choke`, starOk("CX0", (p) => `LF${p}`, "XSTAR0") && starOk("CX1", (p) => `AC${p}M`, "XSTAR1") && starOk("CX2", (p) => `AC${p}`, "XSTAR2")
@@ -253,7 +294,14 @@ for (const [sku, s] of Object.entries(SK)) {
   // one line open at 1.1 × 475 VAC with +20 % Y tolerance: the two live phases drive ω·1.2·C·Vph into PE
   const cyPh = A.names.filter((n) => /^CY\d$/.test(n) && A.netOfPin.get(`${n}.pin2`) === "PE").reduce((a, n) => a + A.val.get(n), 0) / 3;
   const iPE = 2 * Math.PI * 50 * 1.2 * cyPh * 1.1 * 475 / Math.sqrt(3);
-  ck("G", `${sku} Y leakage to PE (one line open)`, 3 * iPE <= 3.5e-3, `${f(cyPh * 1e9, 1)} nF/phase → ${f(iPE * 1e3, 2)} mA per module ≤ 1.17 mA, so a charger that parallels three modules on one PE conductor stays ≤ 3.5 mA (EVT T-14)`);
+  // E81: this gate is LEFT HONEST. The F-L-4 CM fix (CY1-3 4.7 → 10 nF) is a real +0.6 mA/module,
+  // and the 3.5 mA line is a charger-level PE-architecture constraint, not a number to widen when a
+  // change crosses it. Failing here is the finding: at 10 nF only TWO modules share a PE conductor.
+  // E81 (lead decision, listed as a USER lever in the E81 report): the converter-node trio is 10 nF for the LLC bridge's in-band CM
+  // fundamental (F-L-4: +0.2 → +3.1…+7.1 dB), and the rack architecture is ONE PE CONDUCTOR PER MODULE (each module's PE pin bonds
+  // to the rack PE bar — the backplane practice of every vendor module read at E81), so the 3.5 mA line applies per module.
+  // The alternatives are recorded: 6.8 nF (−3 dB of CM margin) or two modules per shared conductor.
+  ck("G", `${sku} Y leakage to PE (one line open, one PE conductor per module)`, iPE <= 3.5e-3, `${f(cyPh * 1e9, 1)} nF/phase → ${f(iPE * 1e3, 2)} mA per module vs the 3.5 mA line on its own PE conductor (EVT T-14; three modules on ONE conductor would read ${f(3 * iPE * 1e3, 2)} mA — the E81 rack rule is one conductor per module; the 6.8 nF alternative costs ≈ 3 dB of CM margin)`);
   ck("G", `${sku} star + bond`, cnt(A, /^RNS[123][AB]$/) === 6 && A.netOfPin.get("RPET.pin2") === "PE" && A.netOfPin.get("CPET.pin2") === "PE", "2-series star ×3 + soft PE bond");
 }
 ck("G", "card essentials", B.card.byName.has("UCARD") && B.card.byName.has("USUPCARD") && B.card.byName.has("UANDCARD") && Math.abs(B.card.val.get("RROLE1") - 10000) < 1 && B.card.netOfPin.get("RFLTC.pin2") === "FLT",
@@ -313,18 +361,41 @@ console.log("\n=== J. R5 FIXES — proven in the built netlists ===");
 {
   const C = B.card;
   const nrst = C.netOfPin.get("UCARD.pin14");
-  ck("J", "card WDO ≡ NRST merge", !!nrst && C.netOfPin.get("USUPCARD.WDO") === nrst && C.netOfPin.get("JSWDCARD.RST") === nrst && C.netOfPin.get("UANDCARD.B1") === nrst && C.netOfPin.get("UANDCARD.B2") === nrst && C.netOfPin.get("RCARDRST.pin2") === nrst,
-    `supervisor WDO + MCU NRST + SWD RST + both AND inhibits share one node (${nrst}) — hung MCU restarts with enables low`);
+  // E81 (F-F-8): the WDO→NRST leg is now a 0 Ω LINK (RWDOLCARD). Without it a blank chip resets
+  // 23 ms after power-up and SWD programming never completes. The SAFETY path is deliberately
+  // UPSTREAM of the link: the pull-up and both AND inhibits stay on WDO_CARD, so a board shipped
+  // with the link lifted still gates its drivers on the watchdog verdict — it just cannot reset.
+  const wdoN = C.netOfPin.get("USUPCARD.WDO");
+  ck("J", "card WDO → NRST through the 0 Ω programming link", !!nrst && !!wdoN && wdoN !== nrst
+    && C.netOfPin.get("RWDOLCARD.pin1") === wdoN && C.netOfPin.get("RWDOLCARD.pin2") === nrst && Math.abs(C.val.get("RWDOLCARD")) < 1e-9
+    && C.netOfPin.get("JSWDCARD.RST") === nrst && C.netOfPin.get("RCARDRST.pin2") === nrst
+    && C.netOfPin.get("UANDCARD.B1") === wdoN && C.netOfPin.get("UANDCARD.B2") === wdoN && C.netOfPin.get("RWPUCARD.pin2") === wdoN,
+    `supervisor WDO (${wdoN}) → 0 Ω → MCU NRST + SWD RST (${nrst}); pull-up and both AND inhibits on the WDO side so lifting the link disables the RESET only`);
+  ck("J", "card watchdog kick is terminated and probeable", C.netOfPin.get("RWDICARD.pin1") === C.netOfPin.get("USUPCARD.WDI") && C.netOfPin.get("RWDICARD.pin2") === "DGND" && C.netOfPin.get("TPWDICARD.P") === C.netOfPin.get("USUPCARD.WDI") && C.netOfPin.get("USUPCARD.VDD2") === C.netOfPin.get("USUPCARD.VDD"),
+    "WDI 10 k pull-down (F-A-26: a FALLING-edge-triggered input must not float) + fixture test point (F-F-8) · TPS3430 VDD2 bonded to VDD1, which the datasheet makes mandatory (F-A-2)");
   ck("J", "card AND-gate bypass", C.netOfPin.get("CANDCARD.pin1") === C.netOfPin.get("UANDCARD.VCC") && C.netOfPin.get("CANDCARD.pin2") === "DGND",
     "100 n at the safety AND VCC (R5-C)");
   // R6-A: the merge must be VISIBLE — the canonical net NAME on every one of those pins is
   // NRST_CARD itself (the R5 net-net trace was electrically right but drew as two label groups;
   // the reviewer read "watchdog not connected" off the face).
-  ck("J", "card WDO face-name = NRST_CARD", nrst === "NRST_CARD" && C.netOfPin.get("RWPUCARD.pin2") === "NRST_CARD",
-    "one NAME, every pin — the sheet now shows the connection the netlist always had (R6-A)");
+  ck("J", "card WDO face-name = NRST_CARD", nrst === "NRST_CARD" && C.netOfPin.get("RWDOLCARD.pin2") === "NRST_CARD",
+    "one NAME, every pin — the sheet shows the connection the netlist always had (R6-A). E81: the pull-up moved to the WDO side of the 0 Ω link, so the link's far pin is what carries the NRST_CARD face name");
   // R7-A: comparator-INSTANCE-aware current-sense allocation (B and C shared CMP2 before)
-  ck("J", "card CMP allocation (R7-A)", C.netOfPin.get("UCARD.pin17") === "AIN8" && C.netOfPin.get("UCARD.pin25") === "AIN9" && C.netOfPin.get("UCARD.pin16") === "AIN10" && C.netOfPin.get("UCARD.pin15") === "AIN11",
-    "I_A0→PC2/CMP7_IP · I_B0→PA3/CMP1_IP · I_C0→PC1/CMP2_IP · VAC1→PC0/ADC — three INDEPENDENT comparators (GD32G553 Fig 2-3 verified)");
+  // R7-A kept comparator-INSTANCE-aware allocation (B and C shared CMP2 before). E81 (F-I-2) then
+  // swapped AIN8 ⇄ TSNS0: phase A's current sense was the ONE signal of 75 that does not carry to
+  // the second-source STM32G474VET7, where pin 17 (also PC2) lists ADC12_IN8 and NO comparator.
+  // PB0 carries a comparator input on BOTH parts (STM32 COMP4_INP at INPSEL 0, RM0440 Table 196)
+  // and COMP4 reaches HRTIMER fault FLT2 directly (Table 213), so the hardware OC trip survives the
+  // swap; T_LLC is a slow NTC that never wanted a comparator and PC2's ADC serves it on both parts.
+  ck("J", "card CMP allocation (R7-A + the E81 AIN8⇄TSNS0 dual-footprint swap)",
+    C.netOfPin.get("UCARD.pin32") === "AIN8" && C.netOfPin.get("UCARD.pin17") === "TSNS0" && C.netOfPin.get("UCARD.pin25") === "AIN9" && C.netOfPin.get("UCARD.pin16") === "AIN10" && C.netOfPin.get("UCARD.pin15") === "AIN11",
+    "I_A0→PB0 (GD32 CMP · STM32 COMP4_INP→FLT2) · T_LLC→PC2/ADC · I_B0→PA3/CMP1_IP · I_C0→PC1/CMP2_IP · VAC1→PC0/ADC — three INDEPENDENT comparators on both parts");
+  ck("J", "card 8 MHz crystal on OSC_IN/OSC_OUT (F-A-30 / F-F-1)",
+    C.netOfPin.get("UCARD.pin12") === C.netOfPin.get("XCARD.X1") && C.netOfPin.get("UCARD.pin13") === C.netOfPin.get("XCARD.X2")
+    && C.netOfPin.get("CCARDX1.pin1") === C.netOfPin.get("UCARD.pin12") && C.netOfPin.get("CCARDX2.pin1") === C.netOfPin.get("UCARD.pin13")
+    && C.netOfPin.get("RCARDXF.pin1") === C.netOfPin.get("UCARD.pin12") && C.netOfPin.get("RCARDXF.pin2") === C.netOfPin.get("UCARD.pin13")
+    && Math.abs(C.val.get("CCARDX1") - 12e-12) < 1e-13,
+    "CAN off the IRC8M was ±2–3 % against an ISO 11898-1 budget of ±0.485 % at 16 tq/SJW 2 — 5× over. 8 MHz ±30 ppm + 2 × 12 pF + 1 M on the free pins 12/13");
   // E75: the F.03/F.13 "HW comp" rows now have comparators behind them — SNS_VBUSP on PB13
   // (CMP4_IP, ref DAC3_OUT0, HRTIMER fault ch 5) and SNS_VOUT on PA1 (CMP0_IP, ref DAC0_OUT0
   // internal-only MODE0=011, fault ch 3); before E75 those senses sat on PE15/PA5 (no usable CMP).
@@ -347,7 +418,7 @@ console.log("\n=== J. R5 FIXES — proven in the built netlists ===");
       const lm = schT.match(new RegExp(`Text Label ${sx - 200} ${sy} .*\\n(\\S+)`));
       return lm ? lm[1] : "(none)";
     };
-    const WANT = { 21: "AIN3", 27: "AIN1", 46: "PWM8", 52: "ANA14", 17: "AIN8", 25: "AIN9", 16: "AIN10", 15: "AIN11" };
+    const WANT = { 21: "AIN3", 27: "AIN1", 46: "PWM8", 52: "ANA14", 32: "AIN8", 17: "TSNS0", 25: "AIN9", 16: "AIN10", 15: "AIN11" };
     ck("J", "card SHIP FACE pin ownership (E76 — R01)", Object.entries(WANT).every(([n, w]) => faceOf(n) === w),
       Object.entries(WANT).map(([n, w]) => `pin${n}=${faceOf(n)}${faceOf(n) === w ? "" : "≠" + w}`).join(" · "));
   }
@@ -382,12 +453,18 @@ for (const [sku] of Object.entries(SK)) {
   ck("J", `${sku} PV bleeder drive network`, D.netOfPin.get("RPVLA.pin1") === "V15" && D.netOfPin.get("RPVLB.pin1") === "V15" && D.netOfPin.get("UPVA.CAT") === "PV_SINK" && D.netOfPin.get("UPVB.CAT") === "PV_SINK" && D.netOfPin.get("QPVD.C") === "PV_SINK" && D.netOfPin.get("QPVD.E") === "DGND" && D.netOfPin.get("RPVDP.pin1") === D.netOfPin.get("QPVD.B") && Math.abs(D.val.get("RPVBA") - 6.8e6) < 1e3 && Math.abs(D.val.get("RPVLA") - 1000) < 1,
     "1 k/2010 LED feed holds ≥10 mA to the 13.5 V rail floor via QPVD; 6.8 M gate bleed (R7-B/R8 — 25 °C-endpoint model, EVT gates the FET)");
   // R5-E: symmetric parallel gate branches — every paralleled device behind its OWN 2.2 Ω
-  const vpar = A.byName.has("QA0A2"), lpar = D.byName.has("Q1H2");
-  ck("J", `${sku} symmetric pair gates`,
-    (!vpar || (A.netOfPin.get("RGA0A1.pin1") === "G_A0" && A.netOfPin.get("RGA0A1.pin2") === A.netOfPin.get("QA0A.G") && A.netOfPin.get("QA0A.G") !== "G_A0" && A.netOfPin.get("RGB0B1.pin2") === A.netOfPin.get("QB0B.G"))) &&
-    (!lpar || (D.netOfPin.get("RG1H1.pin1") === "GH_1" && D.netOfPin.get("RG1H1.pin2") === D.netOfPin.get("Q1H.G") && D.netOfPin.get("Q1H.G") !== "GH_1" && D.netOfPin.get("RG3L1.pin2") === D.netOfPin.get("Q3L.G"))) &&
-    (vpar || (A.netOfPin.get("QA0A.G") === "G_A0")) && (lpar || (D.netOfPin.get("Q1H.G") === "GH_1")),
-    vpar || lpar ? "no bare-gate branch beside a resistored twin (di/dt shares match)" : "single devices ride the gate net directly (30 kW frozen)");
+  const lpar = D.byName.has("Q1H2");
+  // E81 (F-C-19): the VIENNA common-source pair now carries a per-die 1 Ω de-Q on EVERY SKU — the
+  // two dies rode net.G_{id} directly, and two 5–6 nF C_iss gates tied together through package lead
+  // inductance are an undamped 50–200 MHz loop no simulation covers (the DPT has one device). No
+  // bare gate branch survives anywhere: every die sits behind its own series resistor.
+  ck("J", `${sku} per-die gate branches (Vienna de-Q + LLC parallel symmetry)`,
+    A.netOfPin.get("RGA0A1.pin1") === "G_A0" && A.netOfPin.get("RGA0A1.pin2") === A.netOfPin.get("QA0A.G") && A.netOfPin.get("QA0A.G") !== "G_A0"
+    && A.netOfPin.get("RGB0B1.pin1") === "G_B0" && A.netOfPin.get("RGB0B1.pin2") === A.netOfPin.get("QB0B.G")
+    && Math.abs(A.val.get("RGA0A1") - 1) < 0.01 &&
+    (!lpar || (D.netOfPin.get("RG1H1.pin1") === "GH_1" && D.netOfPin.get("RG1H1.pin2") === D.netOfPin.get("Q1H.G") && D.netOfPin.get("Q1H.G") !== "GH_1" && Math.abs(D.val.get("RG1H1") - 2.2) < 0.01)) &&
+    (lpar || (D.netOfPin.get("Q1H.G") === "GH_1")),
+    `Vienna 1 Ω per die on both halves of every common-source pair · LLC ${lpar ? "2.2 Ω per die on the paralleled positions" : "single die rides the gate net (30 kW, one die per position)"}`);
 }
 
 
@@ -419,6 +496,31 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
   const cf = Math.hypot(30e3 / (0.9 * 2 * 250), +r.Im_pk_A / Math.sqrt(3)), d = +r.Ip_rms_A / cf - 1;
   ck("K", "30kw LLC SER-250 tank current vs the first-harmonic closed form", Math.abs(d) <= 0.10,
     `sim ${r.Ip_rms_A} A rms (${r.fsw_kHz} kHz, above resonance) vs closed form ${f(cf, 1)} A (${f(100 * d, 1)} %, ±10 % band — FHA ignores the rectifier conduction-angle shape)`);
+}
+
+// ---------- L. E81 [SYNC] — the drawn turn-off snubber vs tanks.mjs ----------
+// The per-die C_s is a TANK parameter: tanks.mjs uses it in the leg node capacitance (and therefore
+// in the ZVS dead-time schedule and the k_off the grid burns), while boards.tsx has to DRAW it. Two
+// carriers, one number. This walks the BUILT netlist back to tanks.mjs so a re-sweep of `cs` cannot
+// leave the schematic behind — the E51/E59 drift class, which is why mag-sync exists for magnetics.
+console.log("\n=== L. E81 [SYNC] — drawn LLC turn-off snubber vs tanks.mjs `cs` ===");
+{
+  for (const [sku, s] of Object.entries(SK)) {
+    const D = B[sku].dc, want = TANKS[sku].cs, par = TANKS[sku].par;
+    const names = D.names.filter((n) => /^C\d[HL]OS\d$/.test(n));
+    const drawn = names.map((n) => D.val.get(n));
+    const placed = names.every((n) => {
+      const q = n[1], side = n[2], k = n.slice(-1);
+      const fet = `Q${q}${side}${k === "1" ? "" : k}`;
+      return D.netOfPin.get(`${n}.pin1`) === D.netOfPin.get(`${fet}.D`) && D.netOfPin.get(`${n}.pin2`) === D.netOfPin.get(`${fet}.S`);
+    });
+    ck("SYNC", `${sku} turn-off snubber count/value/placement vs tanks.mjs`,
+      names.length === 4 * par && drawn.every((v) => Math.abs(v - want) < 1e-13) && placed && par === s.parL,
+      `${names.length} × ${f(want * 1e12, 0)} pF drawn drain–source (tanks.mjs cs = ${f(want * 1e12, 0)} pF, par ${par} → 4 × par = ${4 * par} expected)${placed ? "" : " — PLACEMENT MISMATCH"}`);
+    ck("SYNC", `${sku} LLC turn-off resistor deleted (E81 F-C-5/C sweep), land kept`,
+      Math.abs(D.val.get("R1HOFF")) < 1e-9 && Math.abs(D.val.get("R1LOFF")) < 1e-9 && Math.abs(B[sku].ac.val.get("RA0GOFF") - 4.7) < 0.01,
+      `LLC R_off ${f(D.val.get("R1HOFF"), 2)} Ω (0 Ω only works WITH C_s fitted: un-snubbed it lifts V_ds,pk 71→77 % and the gate undershoot to −6.7 V) · Vienna keeps ${f(B[sku].ac.val.get("RA0GOFF"), 1)} Ω`);
+  }
 }
 
 console.log(`\n${checks} checks — ${fails ? fails + " FAILURE(S)" : "ALL CLEAN"}`);

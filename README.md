@@ -6,18 +6,18 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/decision_register-E1–E73-f2b705?style=for-the-badge" alt="decision register E1 to E73"/>
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_0_fail-2ea44f?style=for-the-badge" alt="envelope grid 4536 points, 0 failures"/>
-  <img src="https://img.shields.io/badge/independent_checks-226%2F226-2ea44f?style=for-the-badge" alt="independent verifier 226 of 226"/>
+  <img src="https://img.shields.io/badge/independent_checks-243%2F243-2ea44f?style=for-the-badge" alt="independent verifier 243 of 243"/>
   <img src="https://img.shields.io/badge/firmware-260_checks_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 260 checks"/>
 </p>
 <p align="center">
-  <img src="https://img.shields.io/badge/schematic_pins-6853%2F6853_·_5_targets-2ea44f?style=flat-square" alt="6853 of 6853 schematic pins verified"/>
+  <img src="https://img.shields.io/badge/schematic_pins-7285%2F7285_·_5_targets-2ea44f?style=flat-square" alt="7285 of 7285 schematic pins verified"/>
   <img src="https://img.shields.io/badge/review_checks-140_pass-2ea44f?style=flat-square" alt="140 review checks pass"/>
   <img src="https://img.shields.io/badge/BOM-mature_·_10k_basis-2ea44f?style=flat-square" alt="BOM mature"/>
   <img src="https://img.shields.io/badge/stack-TSCircuit_·_ngspice--46_·_C99_·_KiCad--5-5f8fc0?style=flat-square" alt="toolchain"/>
@@ -44,9 +44,9 @@ resistor.
 | | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|:---:|:---:|:---:|:---:|
 | **Output** | 150–1000 V · 100 A | 150–1000 V · 133 A | 150–1000 V · 167 A | 150–1000 V · 167 A |
-| **Cooling** | air · 2 fans | air · 3 fans | sealed coldplates | air · 4 fans |
-| **Efficiency** (full power, 400 VAC) | 96.62 % | 96.70 % | 96.56 % | 96.48 % |
-| **₹ @10k** (India basis) | 30,033 | 34,616 | 40,481 | 38,404 |
+| **Cooling** | air · 3 fans | air · 3 fans | sealed coldplates | air · 4 fans |
+| **Efficiency** (full power, 400 VAC — E81 ledger with the LLC turn-off and DPT switching terms) | 96.43 % | 96.36 % | 96.31 % | 96.24 % |
+| **₹ @10k** (India basis, E81 BOM) | 31,533 | 35,970 | 42,410 | 40,338 |
 | **₹ / kW** | 1,001 | 865 | 810 | **768** |
 | **China RFQ target ₹ @10k** (E69f) | 24,639 | 28,319 | 33,182 | 31,398 |
 
@@ -63,17 +63,17 @@ xychart-beta
 | Requirement | Target | Achieved | Evidence |
 |---|---|---|---|
 | Input | 3-φ 285–475 VAC | full power 330–475 VAC; 86 % constant-current derate at 285 VAC (a calculated trade that saves ~16 % of SiC, copper and EMI) | [architecture](docs/architecture.md) |
-| Output | 150–1000 VDC, CV/CC | two output modes (E67): **LOW ≤ 500 V** banks in parallel, **HIGH ≥ 500 V** in series, latched in standby (AUTO crosses above 500 V and back below 480 V); PFM down to fn ≈ 0.59, then phase shift at 1.45·fr; ZVS on every simulated edge | [firmware guide](docs/firmware-guide.md) |
+| Output | 150–1000 VDC, CV/CC | two output modes (E67): **LOW ≤ 500 V** banks in parallel, **HIGH ≥ 500 V** in series, latched in standby (AUTO crosses above 500 V and back below 480 V); PFM down to fn ≈ 0.59, then phase shift at 1.45·fr; zero-voltage switching held by a per-leg adaptive dead time (E81: non-linear Coss + snubber in the deck — the light-load corners are T-58's) | [firmware guide](docs/firmware-guide.md) |
 | Output current | per SKU | **100 / 133 / 167 A**; constant current below the 300 V knee, constant power above | [module family](boards/README-module-family.md) |
-| THD | ≤ 5 % (stretch 3 %) | **0.59–1.05 %** at full power, 2.55 % at 25 % load (line-cycle control simulation) | [simulation report](docs/simulation-report.md) |
-| Efficiency | peak ≥ 97 % | **peak 98.11–98.30 %** · full power at 400 VAC **96.62 / 96.70 / 96.56 / 96.48 %** (output diode included; InfyPower states > 96 %) | [thermal report](docs/thermal-report.md) |
+| THD | ≤ 5 % (stretch 3 %) | **0.76 / 0.65 / 0.69 %** THD-40 at 400 VAC full power (30 / 40 / 50 kW — the shipped firmware law in the cycle-by-cycle SIL, E81; the earlier 0.59–1.05 % came from a 30 kW averaged deck with a retired law) | [simulation report](docs/simulation-report.md) |
+| Efficiency | peak ≥ 97 % | **peak 97.72–97.80 %** · full power at 400 VAC **96.43 / 96.36 / 96.31 / 96.24 %** (E81: output diode, LLC turn-off energy and the double-pulse switching coefficient all included; InfyPower states > 96 %) | [thermal report](docs/thermal-report.md) |
 | Thermal envelope | full power to +55 °C | 4,536 grid points (1,134 per module) with **0 violations and 0 folds**; worst Tj **139 °C** against the 150 °C ceiling | [thermal report](docs/thermal-report.md) |
 | Environment | match the market | **−30…+75 °C** (full power to 55 °C), ≤ 95 % RH non-condensing, ≤ 2000 m, conformal coating, IP55 fans | [teardown benchmark](docs/benchmark-infypower-teardown.md) |
 | Accuracy | ±0.5 % V · ±1 % I | **±0.18 % / ±0.2 %** after the mandatory 2-point EOL calibration (10k-sample Monte-Carlo) | [verification matrix](docs/verification-matrix.md) |
 | Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak (E69); the precharge-bypass closure pulse (200 / 218 / 280 A) blanked 60 ms with relays, diodes and fuses sized to it (E73); DESAT response 1.44 µs against a 2 µs SiC withstand | [current coordination](docs/current-coordination.md) |
 | Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet; PyOpenMagnetics second opinion: Rdc ± 2.5 %, class lines hold at its higher D3 copper (50 kW air D3 130 °C vs the 125 °C design line — first-article watch) | [magnetics hub](docs/magnetics.md) |
-| EMI | CISPR-class conducted pre-compliance | InfyPower star-X2 filter (E68b): DM margin **+32.9 / +30.6 / +28.7 dB**, CM +8 dB at 200 pF switch-node capacitance; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
-| Build cost at 10k | red-line ₹25k / 33k / 43k | **₹30,033 / 34,616 / 40,481 / 38,404** India basis · **₹24,639 / 28,319 / 33,182 / 31,398** China RFQ target | [BOM & cost](docs/bom-cost.md) |
+| EMI | CISPR-class conducted pre-compliance | InfyPower star-X2 filter (E68b): DM margin **+32.9 / +30.6 / +28.7 dB**; CM re-derived at E81 with the LLC bridge counted as a second source (its fundamental sits inside the band above 150 kHz): **+3.1 dB** at the 100 pF leg-node requirement, +7.1 dB at the 50 pF design target, with CY1-3 raised to 10 nF — T-13 measures it; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
+| Build cost at 10k | red-line ₹25k / 33k / 43k | **₹31,533 / 35,970 / 42,410 / 40,338** India basis (E81 BOM: +5.00 / +3.91 / +4.77 / +5.04 % over E80, levers listed in the E81 report) · **₹25,852 / 29,418 / 34,748 / 32,968** China RFQ target | [BOM & cost](docs/bom-cost.md) |
 
 ## 🏗️ Architecture
 
@@ -119,7 +119,7 @@ flowchart LR
   E["Engines<br/>PFC · LLC · loss · grid 4,536 pts<br/>Monte-Carlo 8 × 10k · FSM 26/26"] --> B["BOM factory<br/>bom-gen · bom-maturity · China column"]
   B --> S["Structure audits<br/>schematic · interconnect · polarity"]
   S --> P["Physics gates<br/>stress 130 · temp-critique 11 · conductor 18 · envelope 30<br/>mag-sync 48 · fault-energy 22 · coordination 81"]
-  P --> I["Clean-room verifier<br/>226 independent checks"]
+  P --> I["Clean-room verifier<br/>243 independent checks"]
   I --> D["Docs and footprints<br/>docs-lint · footprint-audit"]
   D --> F["Firmware<br/>host_sim 63/63 ASan/UBSan"]
   P --> G["Generated pages<br/>4 module BOMs · 4 module magnetics<br/>from gate evidence"]
@@ -131,7 +131,7 @@ flowchart LR
 | Also run on every change | Result |
 |---|---|
 | `review-checks.mjs` — every external-review and audit closure, as assertions | **140 pass** |
-| `kicad5-verify.mjs` — pin-level check of the release schematics | **6,853 / 6,853 connected pins** across 5 targets |
+| `kicad5-verify.mjs` — pin-level check of the release schematics | **7,285 / 7,285 connected pins** across 5 targets |
 | SPICE suites — power-solved LLC per SKU, CT front-ends, precharge / discharge, aux flyback | all pass · [toolchain](docs/simulation-toolchain.md) |
 | `magnetics-rfq-audit.mjs` — every magnetic drawing on the module pages complete enough to order (in run-all since E70) | 0 missing fields · 25 drawings |
 
@@ -182,10 +182,10 @@ flowchart LR
 |---|---|---|---|---|
 | Rated power · max output current | 30 kW · 100 A | 40 kW · 133 A | 50 kW · 167 A | 50 kW · 167 A |
 | Worst continuous line current | 55.9 A | 73.3 A | 91.6 A | 91.6 A |
-| Efficiency — full power at 400 VAC | 96.62 % | 96.70 % | 96.56 % | 96.48 % |
-| Efficiency — peak | 98.11 % | 98.26 % | 98.30 % | 98.30 % |
+| Efficiency — full power at 400 VAC (E81 ledger) | 96.43 % | 96.36 % | 96.31 % | 96.24 % |
+| Efficiency — peak (E81 grid) | 97.80 % | 97.73 % | 97.72 % | 97.72 % |
 | Loss at rated | 1,049 W | 1,367 W | 1,782 W | 1,822 W |
-| Cooling | 2 fans · airflow 1.19× | 3 fans · 1.36× | 2 coldplates · 0 fans · ≤ 60 °C coolant · 6.5 L/min · ΔT 4.6 K | 4 fans (3 front + 1 rear) · 1.37× |
+| Cooling | 3 fans · airflow 1.65× (E81: 55 °C air density, O-16 closed) | 3 fans · 1.27× | 2 coldplates · 0 fans · ≤ 60 °C coolant · 6.5 L/min · ΔT 4.6 K | 4 fans (3 front + 1 rear) · 1.27× |
 | Device mount (E68a) | clip on Al2O3 · 0.8 K/W to a 70 °C base | = 30 kW | 0.65 K/W to a 65 °C plate | = 30 kW |
 | Vienna silicon (one die per position, E68a/E69a) | 750 V 20 mΩ class | 750 V 15 mΩ class | B3M010C075Z | B3M010C075Z |
 | PFC choke D1 | 3 × 0077908A7 · N = 39 | 5 × 0077908A7 · N = 26 | 5 × 0077908A7 · N = 24 | = 50 kW liquid |
@@ -201,7 +201,7 @@ flowchart LR
 | Bus discharge to < 60 V | 2.0 s (F.21 window 3 s) | 2.4 s (4 s) | 3.2 s (5 s) | 3.2 s (5 s) |
 | MTBF (parts count, 40 °C, E69 classifier) | 422 kh | 402 kh | 396 kh | 394 kh |
 | RATING strap | 0 Ω | 1 k | 10 k | 15 k |
-| **BOM @10k · ₹/kW** | **₹30,033 · 1,001** | **₹34,616 · 865** | **₹40,481 · 810** | **₹38,404 · 768** |
+| **BOM @10k · ₹/kW** (E81) | **₹31,533 · 1,051** | **₹35,970 · 899** | **₹42,410 · 848** | **₹40,338 · 807** |
 | China RFQ target @10k (E69f) | ₹24,639 | ₹28,319 | ₹33,182 | ₹31,398 |
 
 </details>
@@ -313,7 +313,7 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 
 - [x] Frozen decision register E1–E73
 - [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
-- [x] Release schematics — five KiCad-5 targets, 6,853 / 6,853 connected pins, nine board PDFs
+- [x] Release schematics — five KiCad-5 targets, 7,285 / 7,285 connected pins, nine board PDFs
 - [x] InfyPower architecture and BOM clone — full-bridge LLC, two output modes, output diode (E67); clip mount, star-X2 filter, film-only banks (E68); right-sized dies, fault-pulse gate, China cost column (E69)
 - [x] Module family — 30 kW · 40 kW · 50 kW liquid · 50 kW air on one lane, one card and one firmware image
 - [x] Three adversarial audits and five external review rounds answered with executed fixes and permanent gates
@@ -329,5 +329,5 @@ Specified and packaged, but physically waiting on hardware, labs or third partie
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

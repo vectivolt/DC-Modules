@@ -4,9 +4,177 @@
  "rows": [
   {
    "status": "ok",
+   "tag": "DPT",
+   "name": "30kw LLC deck pinned to the drawn tank + snubber",
+   "detail": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p | cs=330p | RgOn=4.7 RgOff=0 | Lloop=5nH | Voff=-3V | model=sic-1200-c3m.lib#07a229f69dac — expected to contain \"30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p | cs=330p\" (re-run spice/double-pulse/dpt-run.mjs after any tanks.mjs or cells.tsx edit)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "30kw cells.tsx draws the E81 LLC turn-off network",
+   "detail": "cells.tsx R{id}OFF = 0 Ω on the LLC channels vs the E81 decision 0 Ω (tanks.koff is measured at 0 Ω; at 0 Ω the same deck reads 3 nJ/(V·A))"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "30kw LLC final rows",
+   "detail": "4 final rows, 0 FAIL (worst 80.8 % of 1200 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "30kw PFC final rows",
+   "detail": "3 final rows, 0 FAIL (worst 79.2 % of 750 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "30kw tanks.koff not optimistic vs the DPT",
+   "detail": "tanks 3.4 nJ/(V·A) vs simulated worst final 3.39 at the cs the CSV was run with (330 pF) / Rg_off 0 Ω — the grid's turn-off term reads tanks.koff; tanks currently carries cs 330 pF"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "30kw cs inside the ZVS dead-time budget",
+   "detail": "PS150-Imax lagging leg needs 172 ns of dead time at cs 330 pF vs 591 ns (min of 75 % of the 592 ns HRTIMER range and 8 % of the 203 kHz period)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw LLC deck pinned to the drawn tank + snubber",
+   "detail": "40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p | cs=680p | RgOn=4.7 RgOff=0 | Lloop=5nH | Voff=-3V | model=sic-1200-c3m.lib#07a229f69dac — expected to contain \"40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p | cs=680p\" (re-run spice/double-pulse/dpt-run.mjs after any tanks.mjs or cells.tsx edit)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw cells.tsx draws the E81 LLC turn-off network",
+   "detail": "cells.tsx R{id}OFF = 0 Ω on the LLC channels vs the E81 decision 0 Ω (tanks.koff is measured at 0 Ω; at 0 Ω the same deck reads 2.7 nJ/(V·A))"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw LLC final rows",
+   "detail": "4 final rows, 0 FAIL (worst 88.9 % of 1200 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw PFC final rows",
+   "detail": "3 final rows, 0 FAIL (worst 82.4 % of 750 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw tanks.koff not optimistic vs the DPT",
+   "detail": "tanks 5.3 nJ/(V·A) vs simulated worst final 5.24 at the cs the CSV was run with (680 pF) / Rg_off 0 Ω — the grid's turn-off term reads tanks.koff; tanks currently carries cs 680 pF"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw cs inside the ZVS dead-time budget",
+   "detail": "PS150-Imax lagging leg needs 122 ns of dead time at cs 680 pF vs 591 ns (min of 75 % of the 592 ns HRTIMER range and 8 % of the 203 kHz period)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw LLC deck pinned to the drawn tank + snubber",
+   "detail": "50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p | cs=1000p | RgOn=4.7 RgOff=0 | Lloop=5nH | Voff=-3V | model=sic-1200-c3m.lib#07a229f69dac — expected to contain \"50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p | cs=1000p\" (re-run spice/double-pulse/dpt-run.mjs after any tanks.mjs or cells.tsx edit)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw cells.tsx draws the E81 LLC turn-off network",
+   "detail": "cells.tsx R{id}OFF = 0 Ω on the LLC channels vs the E81 decision 0 Ω (tanks.koff is measured at 0 Ω; at 0 Ω the same deck reads 2.2 nJ/(V·A))"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw LLC final rows",
+   "detail": "4 final rows, 0 FAIL (worst 87.5 % of 1200 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw PFC final rows",
+   "detail": "3 final rows, 0 FAIL (worst 78.8 % of 750 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw tanks.koff not optimistic vs the DPT",
+   "detail": "tanks 4 nJ/(V·A) vs simulated worst final 3.86 at the cs the CSV was run with (1000 pF) / Rg_off 0 Ω — the grid's turn-off term reads tanks.koff; tanks currently carries cs 1000 pF"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw cs inside the ZVS dead-time budget",
+   "detail": "PS150-Imax lagging leg needs 115 ns of dead time at cs 1000 pF vs 591 ns (min of 75 % of the 592 ns HRTIMER range and 8 % of the 203 kHz period)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa LLC deck pinned to the drawn tank + snubber",
+   "detail": "50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p | cs=1000p | RgOn=4.7 RgOff=0 | Lloop=5nH | Voff=-3V | model=sic-1200-c3m.lib#07a229f69dac — expected to contain \"50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p | cs=1000p\" (re-run spice/double-pulse/dpt-run.mjs after any tanks.mjs or cells.tsx edit)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa cells.tsx draws the E81 LLC turn-off network",
+   "detail": "cells.tsx R{id}OFF = 0 Ω on the LLC channels vs the E81 decision 0 Ω (tanks.koff is measured at 0 Ω; at 0 Ω the same deck reads 2.2 nJ/(V·A))"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa LLC final rows",
+   "detail": "4 final rows, 0 FAIL (worst 87.5 % of 1200 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa PFC final rows",
+   "detail": "3 final rows, 0 FAIL (worst 78.8 % of 750 V)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa tanks.koff not optimistic vs the DPT",
+   "detail": "tanks 4 nJ/(V·A) vs simulated worst final 3.86 at the cs the CSV was run with (1000 pF) / Rg_off 0 Ω — the grid's turn-off term reads tanks.koff; tanks currently carries cs 1000 pF"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa cs inside the ZVS dead-time budget",
+   "detail": "PS150-Imax lagging leg needs 115 ns of dead time at cs 1000 pF vs 591 ns (min of 75 % of the 592 ns HRTIMER range and 8 % of the 203 kHz period)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "30kw thermal ledgers carry the simulated PFC switching coefficient",
+   "detail": "loss-budget row built on 18.1 nJ/(V·A) vs the deck's final rows (both half-cycles, drawn clamp, 5 nH) 18.1; pfc-design's frozen E3 basis is 17.4 (fsw re-selection = registered option)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "40kw thermal ledgers carry the simulated PFC switching coefficient",
+   "detail": "loss-budget row built on 19.4 nJ/(V·A) vs the deck's final rows (both half-cycles, drawn clamp, 5 nH) 19.4; pfc-design's frozen E3 basis is 17.4 (fsw re-selection = registered option)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kw thermal ledgers carry the simulated PFC switching coefficient",
+   "detail": "loss-budget row built on 18.9 nJ/(V·A) vs the deck's final rows (both half-cycles, drawn clamp, 5 nH) 18.9; pfc-design's frozen E3 basis is 17.4 (fsw re-selection = registered option)"
+  },
+  {
+   "status": "ok",
+   "tag": "DPT",
+   "name": "50kwa thermal ledgers carry the simulated PFC switching coefficient",
+   "detail": "loss-budget row built on 18.9 nJ/(V·A) vs the deck's final rows (both half-cycles, drawn clamp, 5 nH) 18.9; pfc-design's frozen E3 basis is 17.4 (fsw re-selection = registered option)"
+  },
+  {
+   "status": "ok",
    "tag": "V",
    "name": "PFC FET 750 V class (B3M010C075Z 50 kW · 20/15 mΩ class 30/40 kW, E69a)",
-   "detail": "560 V of 750 V = 75% (limit 76%) — 560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule; 650 V dies are REJECTED (86 %)"
+   "detail": "592 V of 750 V = 79% (limit 85%) — E81: READ from simulation-results/*/dpt-pfc-metrics.csv (worst final row, both line-cycle polarities, drawn snubber + the drawn RCD clamp state, 5 nH design loop; E81 acceptance 85 % repetitive — was a typed 560 V"
   },
   {
    "status": "ok",
@@ -18,7 +186,7 @@
    "status": "ok",
    "tag": "V",
    "name": "LLC FET SG2M023120LJ",
-   "detail": "876 V of 1200 V = 73% (limit 80%) — 830 V bus + DPT 73% ring"
+   "detail": "1007 V of 1200 V = 84% (limit 85%) — E81: READ from simulation-results/*/dpt-llc-metrics.csv (worst final row, drawn network + cs snubber, 5 nH design loop; E81 acceptance 85 % repetitive — was a typed 876 V"
   },
   {
    "status": "ok",
@@ -48,85 +216,85 @@
    "status": "ok",
    "tag": "Tj",
    "name": "30kw PFC FET worst corner",
-   "detail": "112 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+   "detail": "117 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "30kw LLC FET worst corner",
-   "detail": "139 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+   "detail": "150 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "40kw PFC FET worst corner",
-   "detail": "127 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
-  },
-  {
-   "status": "ok",
-   "tag": "Tj",
-   "name": "40kw LLC FET worst corner",
-   "detail": "98 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
-  },
-  {
-   "status": "ok",
-   "tag": "Tj",
-   "name": "50kw PFC FET worst corner",
-   "detail": "116 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
-  },
-  {
-   "status": "ok",
-   "tag": "Tj",
-   "name": "50kw LLC FET worst corner",
-   "detail": "99 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
-  },
-  {
-   "status": "ok",
-   "tag": "Tj",
-   "name": "50kwa PFC FET worst corner",
    "detail": "135 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
   },
   {
    "status": "ok",
    "tag": "Tj",
+   "name": "40kw LLC FET worst corner",
+   "detail": "149 °C vs 150 ceiling (corner folds engage per envelope policy) · the registered F-L-1 corner (150 V output, phase shift) reads 279 °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kw PFC FET worst corner",
+   "detail": "118 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kw LLC FET worst corner",
+   "detail": "135 °C vs 150 ceiling (corner folds engage per envelope policy) · the registered F-L-1 corner (150 V output, phase shift) reads 274 °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile [grid]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
+   "name": "50kwa PFC FET worst corner",
+   "detail": "145 °C vs 150 ceiling (abs max 175) [grid, 972 pts]"
+  },
+  {
+   "status": "ok",
+   "tag": "Tj",
    "name": "50kwa LLC FET worst corner",
-   "detail": "114 °C vs 150 ceiling (corner folds engage per envelope policy) [grid]"
+   "detail": "148 °C vs 150 ceiling (corner folds engage per envelope policy) · the registered F-L-1 corner (150 V output, phase shift) reads 335 °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "30kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "68.5 A rms vs 78 A class · 0 noted rows · worst TjJBS 91 °C (2× 40 A per position) [grid]"
+   "detail": "68.5 A rms vs 78 A class · 22 noted rows · worst TjJBS 91 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "40kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "91.3 A rms vs 100 A class · 0 noted rows · worst TjJBS 103 °C (2× 40 A per position) [grid]"
+   "detail": "91.3 A rms vs 100 A class · 108 noted rows · worst TjJBS 108 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "50kw full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "114 A rms vs 120 A class · 0 noted rows · worst TjJBS 102 °C (2× 40 A per position) [grid]"
+   "detail": "114.1 A rms vs 120 A class · 108 noted rows · worst TjJBS 102 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "E67",
    "name": "50kwa full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj",
-   "detail": "114 A rms vs 120 A class · 0 noted rows · worst TjJBS 116 °C (2× 40 A per position) [grid]"
+   "detail": "114.1 A rms vs 120 A class · 112 noted rows · worst TjJBS 118 °C (2× 40 A per position) [grid]"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "30kw PFC boost diode",
-   "detail": "12.1 W → Tj ≈ 80 °C (0.8 K/W to 70 °C ref)"
+   "detail": "12.1 W → Tj ≈ 84 °C (0.8 K/W to 74 °C ref)"
   },
   {
    "status": "ok",
    "tag": "Tj",
    "name": "40kw PFC boost diode",
-   "detail": "19.2 W → Tj ≈ 85 °C (0.8 K/W to 70 °C ref)"
+   "detail": "19.2 W → Tj ≈ 90 °C (0.8 K/W to 75 °C ref)"
   },
   {
    "status": "ok",
@@ -138,7 +306,7 @@
    "status": "ok",
    "tag": "Tj",
    "name": "50kwa PFC boost diode",
-   "detail": "27.4 W → Tj ≈ 92 °C (0.8 K/W to 70 °C ref)"
+   "detail": "27.4 W → Tj ≈ 99 °C (0.8 K/W to 77 °C ref)"
   },
   {
    "status": "ok",
@@ -324,31 +492,31 @@
    "status": "ok",
    "tag": "INS",
    "name": "bonded magnetics carry their basic-barrier rows at the computed recurring peaks",
-   "detail": "D1 540 V (≤700 V: hipot + impulse, no PD) · D2/D3 1160 / 1170 / 1190 / 1190 V (30/40/50/50a — PD sample test at ≥ 1.8 / 1.8 / 1.8 / 1.8 kV) → rows present"
+   "detail": "D1 540 V (≤700 V: hipot + impulse, no PD) · D2/D3 1160 / 1180 / 1200 / 1200 V (30/40/50/50a — PD sample test at ≥ 1.8 / 1.8 / 1.8 / 1.8 kV) → rows present"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "30kw external Lr Bpk",
-   "detail": "86 mT at Lmax 5.31 µH × 78 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+   "detail": "83 mT at Lmax 5.15 µH × 78 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "40kw external Lr Bpk",
-   "detail": "87 mT at Lmax 4.19 µH × 100 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+   "detail": "85 mT at Lmax 4.11 µH × 100 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "50kw external Lr Bpk",
-   "detail": "84 mT at Lmax 3.38 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+   "detail": "82 mT at Lmax 3.29 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "50kwa external Lr Bpk",
-   "detail": "84 mT at Lmax 3.38 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
+   "detail": "82 mT at Lmax 3.29 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F)"
   },
   {
    "status": "ok",
@@ -360,19 +528,19 @@
    "status": "ok",
    "tag": "D3",
    "name": "40kw cell Bpk at the worst simulated corner",
-   "detail": "159 mT at ENV500-55 (87.3 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+   "detail": "158 mT at ENV500-55 (87.4 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
   },
   {
    "status": "ok",
    "tag": "D3",
    "name": "50kw cell Bpk at the worst simulated corner",
-   "detail": "159 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+   "detail": "158 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
   },
   {
    "status": "ok",
    "tag": "D3",
    "name": "50kwa cell Bpk at the worst simulated corner",
-   "detail": "159 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
+   "detail": "158 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope)"
   },
   {
    "status": "ok",
@@ -474,7 +642,7 @@
    "status": "ok",
    "tag": "EMI",
    "name": "CM conducted margin on the drawn ladder [lisn]",
-   "detail": "8 dB worst vs Class A QP at Cp 200 pF (±20 dB estimate; the single-trio control row lives in lisn-precompliance)"
+   "detail": "3.1 dB worst vs Class A QP at Cp 200 pF (±20 dB estimate; the single-trio control row lives in lisn-precompliance)"
   },
   {
    "status": "ok",
@@ -534,7 +702,7 @@
    "status": "ok",
    "tag": "BRD",
    "name": "50kw resonant burden rail budget",
-   "detail": "503 A pk (F.11 monitor peak, E67 crossing-referenced) → 3.16 V on 0.30 Ω"
+   "detail": "504 A pk (F.11 monitor peak, E67 crossing-referenced) → 3.16 V on 0.30 Ω"
   },
   {
    "status": "ok",

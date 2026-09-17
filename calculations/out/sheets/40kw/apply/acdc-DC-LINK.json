@@ -118,7 +118,7 @@
      {
       "pin_number": 3,
       "name": "Cathode",
-      "signal_name": "DGND"
+      "signal_name": "QDIS_LED"
      },
      {
       "pin_number": 4,
@@ -139,7 +139,7 @@
    },
    {
     "designator": "PSQD",
-    "value": "QA01C",
+    "value": "QA01C-15",
     "block_name": "DISCHARGE",
     "pins": [
      {
@@ -166,13 +166,13 @@
    },
    {
     "designator": "RQDL",
-    "value": "330",
+    "value": "1.2k",
     "block_name": "DISCHARGE",
     "pins": [
      {
       "pin_number": 1,
       "name": "pin1",
-      "signal_name": "CTL_QDIS"
+      "signal_name": "V15"
      },
      {
       "pin_number": 2,
@@ -444,7 +444,7 @@
    },
    {
     "designator": "RBALT0A",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -461,7 +461,7 @@
    },
    {
     "designator": "RBALT0B",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -478,7 +478,7 @@
    },
    {
     "designator": "RBALB0A",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -495,7 +495,7 @@
    },
    {
     "designator": "RBALB0B",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-0",
     "pins": [
      {
@@ -548,7 +548,7 @@
    },
    {
     "designator": "RBALT1A",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-1",
     "pins": [
      {
@@ -565,7 +565,7 @@
    },
    {
     "designator": "RBALT1B",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-1",
     "pins": [
      {
@@ -582,7 +582,7 @@
    },
    {
     "designator": "RBALB1A",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-1",
     "pins": [
      {
@@ -599,7 +599,7 @@
    },
    {
     "designator": "RBALB1B",
-    "value": "47k",
+    "value": "22k",
     "block_name": "LINK-BANK-1",
     "pins": [
      {

@@ -46,6 +46,18 @@ const DM_E65 = (lk, Ld6) => [{ L: lk }, { C: 3 * 2.2e-6 }, { L: lk + Ld6 }, { C:
 const attDM = (fHz) => dmLadder(fHz, DM_E68(9e-6));   // legacy lane columns (30 kW ripple) on the drawn filter, mid leakage
 // CM: trapezoid dv/dt spectrum: Vn ≈ 2·Vbus/(π n)·sinc-ish with corner at 1/(π·tr); i_cm = Vn·ω·Cp
 const TR = 9e-9, CP = 200e-12, VSW = 425;
+// E81 (F-L-4): the LLC bridge is a SECOND CM source on the same extrusion — two leg nodes swinging the full 830 V bus at the PFM
+// frequency (77–203 kHz) into their own die-to-heatsink capacitance. Envelope treatment: at a measurement frequency f the largest
+// LLC harmonic that can land there is n = f / f_sw,max (203 kHz), amplitude 2·V/(π·n), corner 1/(π·t_r) with t_r ≈ 830 V / the DPT's
+// 80 V/ns ≈ 10 ns; the two legs are taken in phase (worst case). The two sources add as amplitude envelopes (conservative).
+// RESULT: the LLC FUNDAMENTAL sits inside the CISPR band whenever f_sw ≥ 150 kHz (fn ≥ 1.07 and every PSM corner at f_max) — a 528 V
+// tone into the leg-node capacitance. At 200 pF (the CP basis) the drawn ladder reads −8.7 dB; at 100 pF −2.7 dB; the +3 dB line needs
+// ≤ 50 pF. E81 DESIGN REQUIREMENT (DFM + T-39 STOP): LLC leg-node-to-PE capacitance ≤ 50 pF in total — a shielded thermal interface
+// under the LLC dies (copper shield layer on the Al2O3 pad returned to DCN), leg nodes on the smallest tab area. With CY1-3 at 10 nF
+// (below) the requirement is ≤ 100 pF (+3.1 dB) with a 50 pF design target (+7.1 dB). PSM at f_r instead of f_max would take the
+// fundamental out of the band but the E67 scan showed +20 % tank rms at the 764 V corner — rejected. CP_LLC below is the requirement.
+const VSW_LLC = 830, FSW_LLC_MAX = 203e3, TR_LLC = 10e-9, CP_LLC = 100e-12;
+const vnLlc = (fHz) => (2 * VSW_LLC) / (Math.PI * Math.max(1, fHz / FSW_LLC_MAX)) * (fHz < 1 / (Math.PI * TR_LLC) ? 1 : 1 / (Math.PI * TR_LLC) / fHz);
 // E65 (EMI-1): the CM path is solved as the DRAWN ladder, not a squared 30 kHz per-stage corner. Converter-side
 // Norton source → Y trio on AC1..3 (CY1-3) → CMC2 (+LDM/3) → Y trio on AC1M..3M (CY4-6, E65) → CMC1 → LISN
 // (3 lines in parallel, 50/3 Ω). verify-independent proves the netlist carries exactly this ladder. The
@@ -70,7 +82,12 @@ const ladder = (fHz, stages) => {
   }
   return gain;
 };
-const CM_DRAWN = [{ L: LCM, C: CY3 }, { L: LCM, C: CY3 }];   // LISN←CMC1←CY4-6←CMC2←CY1-3 (LDM/3 ≈ 4 µH in the CM path: < 0.3 %, dropped)
+// E81 (F-L-4): the converter-side trio CY1-3 goes 4.7 → 10 nF (Y2 class) so the LLC bridge's in-band fundamental has margin: with the
+// LLC source counted the 4.7 nF trio read +0.2 dB at a 50 pF leg-node capacitance; at 10 nF it reads +7.1 dB (50 pF) / +3.1 dB (100 pF).
+// Touch current at 475 VAC: 3 × 10 nF + 3 × 4.7 nF at 274 V L-N ≈ 3.8 mA — the permanently-connected / high-leakage PE provision applies
+// (stated in insulation-coordination). The single-trio control below keeps failing, so the gate still discriminates.
+const CY3_CONV = 3 * 10e-9;
+const CM_DRAWN = [{ L: LCM, C: CY3 }, { L: LCM, C: CY3_CONV }];   // LISN←CMC1←CY4-6 (3 × 4.7 nF)←CMC2←CY1-3 (3 × 10 nF, E81) (LDM/3 ≈ 4 µH in the CM path: < 0.3 %, dropped)
 const CM_1709611 = [{ L: 2 * LCM, C: CY3 }];                  // control: the single-trio board
 const attCM = (fHz, st = CM_DRAWN) => ladder(fHz, st);
 
@@ -87,7 +104,7 @@ for (let n = 3; n * FSW <= 30e6; n++) {
   }
   const nCorner = 1 / (Math.PI * TR);
   const vn = (2 * VSW) / (Math.PI * n) * (fHz < nCorner ? 1 : nCorner / fHz);
-  const icm = vn * 2 * Math.PI * fHz * CP * attCM(fHz);
+  const icm = (vn * CP + vnLlc(fHz) * CP_LLC) * 2 * Math.PI * fHz * attCM(fHz);   // E81: Vienna + LLC CM sources
   const cm = dbuv(icm * 25);
   const lim = limitA(fHz);
   const worst = Math.max(dm[1], cm);
@@ -125,20 +142,21 @@ console.log(`Worst margin: ${f(worstMargin)} dB at ${f(worstAt / 1e3, 0)} kHz (p
 }
 // ---- E65 (EMI-1): CM margin gate on the drawn two-stage ladder — the CM path had no exit code at all
 {
-  const cmWorst = (cp, st) => {
+  const cmWorst = (cp, st, cpLlc = CP_LLC * (cp / CP)) => {
     let wm = 1e9, wa = 0;
     for (let n = 3; n * FSW <= 30e6; n++) {
       const fHz = n * FSW, nCorner = 1 / (Math.PI * TR);
       const vn = (2 * VSW) / (Math.PI * n) * (fHz < nCorner ? 1 : nCorner / fHz);
-      const m = limitA(fHz) - dbuv(vn * 2 * Math.PI * fHz * cp * attCM(fHz, st) * 25);
+      const m = limitA(fHz) - dbuv((vn * cp + vnLlc(fHz) * cpLlc) * 2 * Math.PI * fHz * attCM(fHz, st) * 25);   // E81: Vienna + LLC sources
       if (m < wm) { wm = m; wa = fHz; }
     }
     return [wm, wa];
   };
   const [m0, a0] = cmWorst(CP, CM_DRAWN), [mc] = cmWorst(CP, CM_1709611);
   let cpMax = CP; while (cmWorst(cpMax + 10e-12, CM_DRAWN)[0] >= 3) cpMax += 10e-12;
-  console.log(`CM (drawn ladder CY1-3 · CMC2 · CY4-6 · CMC1, µ(f) roll-off ${f(muNano(150e3) / muNano(10e3), 2)} at 150 kHz): worst margin ${f(m0)} dB at ${f(a0 / 1e3, 0)} kHz @ Cp ${CP * 1e12} pF`
+  console.log(`CM (drawn ladder CY1-3 · CMC2 · CY4-6 · CMC1, µ(f) roll-off ${f(muNano(150e3) / muNano(10e3), 2)} at 150 kHz; E81: Vienna 425 V @ ${CP * 1e12} pF + LLC 830 V @ ${CP_LLC * 1e12} pF sources): worst margin ${f(m0)} dB at ${f(a0 / 1e3, 0)} kHz @ Cp ${CP * 1e12} pF`
     + ` · ${[400e-12, 600e-12].map((c) => `${c * 1e12} pF ${f(cmWorst(c, CM_DRAWN)[0])} dB`).join(" · ")} · Cp budget for +3 dB = ${f(cpMax * 1e12, 0)} pF switch-node→PE`);
+  console.log(`  E81 LLC leg-node capacitance requirement ≤ ${CP_LLC * 1e12} pF (shielded pad): the LLC fundamental (528 V envelope at 150–203 kHz) alone reads ${[50e-12, 100e-12, 200e-12].map((c) => `${c * 1e12} pF → ${f(cmWorst(CP, CM_DRAWN, c)[0])} dB`).join(" · ")} — T-39 measures it; STOP below +3 dB`);
   console.log(`  [1709611 control] one Y trio (CMC1+CMC2 = 4 mH vs 14.1 nF): worst CM margin ${f(mc)} dB — the +22 dB the squared-corner model printed was a second stage that was not drawn`);
   if (m0 < 3 || mc >= 3) { console.log("  CM MARGIN UNDER +3 dB (or the control no longer fails) — CM filter insufficient"); process.exitCode = 1; }
 }

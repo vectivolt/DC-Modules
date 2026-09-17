@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/firmware-260_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 260 checks ASan/UBSan"/>
 </p>
 
@@ -175,8 +175,8 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   are low through every WDO-low and every boot.
 - **PFC reverse-direction hardware trip (R6/E47 · R7-A allocation):** the comparator channels
   are now pinned INSTANCE-aware (the R6 "CMP-capable" rule missed that B and C shared CMP2's
-  two inputs): **I_A0 = PC2/CMP7_IP, I_B0 = PA3/CMP1_IP, I_C0 = PC1/CMP2_IP**, DAC thresholds
-  on the IM sides, outputs → HRTIMER fault. ADC map change that rides along: **I_B0 is now
+  two inputs): **I_A0 = PB0/CMP3_IP (E81 pin swap; was PC2/CMP7), I_B0 = PA3/CMP1_IP, I_C0 = PC1/CMP2_IP**, DAC thresholds
+  on the IM sides (E81: the 100 kHz ISR sets the DAC sign from the measured current — both polarities trip), outputs → HRTIMER fault (A → FLT1, B → FLT0, C → FLT4). ADC map change that rides along: **I_B0 is now
   ADC0_IN3 (PA3) and SNS_VAC1 is ADC01_IN5 (PC0)** — update the channel table with the pin
   map, both regenerate from umod-pinmap. Each phase carries ONE threshold on the DESAT-blind
   polarity by design (the other polarity is DESAT's); the ~2–3 µs figure is a design target
@@ -474,5 +474,5 @@ normative (E24); syncing the JS model is an open E76 line.
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-architecture.md">Firmware Architecture →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -838,22 +838,17 @@
      "signal_name": "PV_SINK"
     },
     {
-     "pin_number": 5,
+     "pin_number": 3,
      "name": "VN",
      "signal_name": "BKAN"
     },
     {
-     "pin_number": 8,
+     "pin_number": 4,
      "name": "VP",
      "signal_name": "G_QDISA"
     }
    ],
-   "nc_pins": [
-    3,
-    4,
-    6,
-    7
-   ],
+   "nc_pins": [],
    "value": "VOM1271T",
    "query": "VOM1271T photovoltaic MOSFET driver w/ integrated turn-off ",
    "mpn": "VOM1271T"
@@ -913,22 +908,17 @@
      "signal_name": "PV_SINK"
     },
     {
-     "pin_number": 5,
+     "pin_number": 3,
      "name": "VN",
      "signal_name": "BKBN"
     },
     {
-     "pin_number": 8,
+     "pin_number": 4,
      "name": "VP",
      "signal_name": "G_QDISB"
     }
    ],
-   "nc_pins": [
-    3,
-    4,
-    6,
-    7
-   ],
+   "nc_pins": [],
    "value": "VOM1271T",
    "query": "VOM1271T photovoltaic MOSFET driver w/ integrated turn-off ",
    "mpn": "VOM1271T"

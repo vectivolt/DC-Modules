@@ -44,6 +44,7 @@ typedef struct {                /* module truth — core + HAL write it once per
   float v_min, v_max, i_rated, p_rated;   /* capability in force (v_max follows the output mode) */
   /* HAL-filled measurements (NaN where not fitted) */
   float v_out, i_out, v_bus, v_mid_imb, v_bank_a, v_bank_b;
+  float v_ext; bool ext_connected;        /* E81 (K1): the pack/external node behind DOUT — 3 of 5 vendors carry it */
   float vin_ll, vin_ph[3], line_hz;
   float t_inlet, t_pfc, t_llc, t_xfmr, t_diode, t_bank, t_mcu, t_coolant;
   uint16_t fan_rpm[4]; uint8_t fan_duty, fan_fail;

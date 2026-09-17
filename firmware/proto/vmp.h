@@ -42,7 +42,7 @@ enum {
   VMP_F_DISCOVER = 0x18, VMP_F_ADDR_ASSIGN = 0x19, VMP_F_TIME_SYNC = 0x1F,
   VMP_F_TLM_FAST = 0x40, VMP_F_TLM_LIMITS = 0x41, VMP_F_TLM_DERATE = 0x42, VMP_F_TLM_AC = 0x43, VMP_F_TLM_DC = 0x44,
   VMP_F_TLM_THERMAL = 0x45, VMP_F_TLM_COOLING = 0x46, VMP_F_TLM_SHARE = 0x47, VMP_F_FAULT_BITS = 0x48, VMP_F_WARN_BITS = 0x49,
-  VMP_F_FAULT_DETAIL = 0x4A, VMP_F_EVENT = 0x4B, VMP_F_STATS = 0x4C, VMP_F_ACK = 0x50, VMP_F_READ_RSP = 0x51,
+  VMP_F_FAULT_DETAIL = 0x4A, VMP_F_EVENT = 0x4B, VMP_F_STATS = 0x4C, VMP_F_TLM_PACK = 0x4E, VMP_F_ACK = 0x50, VMP_F_READ_RSP = 0x51,
   VMP_F_ANNOUNCE = 0x58, VMP_F_MOD_HB = 0x59
 };
 
@@ -79,6 +79,7 @@ enum { VMP_EV_BOOT = 1, VMP_EV_FAULT_SET = 2, VMP_EV_FAULT_CLEAR = 3, VMP_EV_WAR
 #define VMP_W_ADDR_CONFL  33u
 #define VMP_W_TX_DROP     34u
 #define VMP_W_RX_REJECT   35u
+#define VMP_W_EV_SUPPRESS 36u  /* E81 (K7): EVENT frames were dropped by the per-code rate limit — read 0x0502 for the count */
 
 /* objects (READ / WRITE) */
 enum {
@@ -92,7 +93,7 @@ enum {
   VMP_O_OP_S = 0x0300, VMP_O_ENERGY = 0x0301, VMP_O_STARTS = 0x0302, VMP_O_FAULTS = 0x0303,
   /* E80: the event log (sub-index = age, 0 = newest) and the T-44 timing diagnostics */
   VMP_O_EV_COUNT = 0x0400, VMP_O_EV_W0 = 0x0401, VMP_O_EV_W1 = 0x0402, VMP_O_EV_W2 = 0x0403, VMP_O_EV_W3 = 0x0404,
-  VMP_O_DIAG_EXEC = 0x0500, VMP_O_DIAG_STACK = 0x0501
+  VMP_O_DIAG_EXEC = 0x0500, VMP_O_DIAG_STACK = 0x0501, VMP_O_DIAG_EV_SUP = 0x0502
 };
 
 #define VMP_NAK_GAP_MS       100u    /* at most one rejection report per 100 ms */
@@ -143,7 +144,7 @@ typedef struct {
   uint32_t t_addr; bool conflict; uint32_t t_conflict;
   bool announce_due; uint32_t t_announce;
   /* telemetry */
-  uint32_t t_fast, t_limits, t_derate, t_ac, t_dc, t_therm, t_cool, t_share, t_bits, t_detail, t_hb, t_stats;
+  uint32_t t_fast, t_limits, t_derate, t_ac, t_dc, t_therm, t_cool, t_share, t_bits, t_detail, t_hb, t_stats, t_pack;
   uint8_t tx_cnt; uint16_t event_no;
   bool boot_event, have_ev;
   pmp_fault_t ev_fault; uint32_t ev_warn; uint8_t ev_rs;
@@ -151,7 +152,14 @@ typedef struct {
   uint32_t epoch_s, t_epoch; bool epoch_ok;
   struct { int16_t i_raw; uint32_t t; bool seen; } peer[16];   /* by slot, same group (TLM_SHARE) */
   uint32_t rx_reject, rx_dup;
+  /* E81 (K7): the EVENT path runs at 1 kHz with four events per tick and had no rate limit — a PMP_W_MEAS_GLITCH that
+     chatters on an intermittent sensor computes to ~1000 frames/s ≈ 55 % of a 250 kbit/s bus from ONE module. A small
+     LRU of {kind, code} keeps one frame per VMP_EVENT_GAP_MS per event; anything dropped raises VMP_W_EV_SUPPRESS and
+     increments ev_suppressed (diagnostic object 0x0502), so nothing is silently lost. */
+  struct { uint8_t kind, code; uint32_t t; } ev_gate[8];
+  uint8_t ev_gate_i; uint32_t ev_suppressed, t_ev_sup;
 } vmp_t;
+#define VMP_EVENT_GAP_MS 200u
 
 void vmp_cfg_default(vmp_cfg_t *c);
 void vmp_init(vmp_t *v, const vmp_cfg_t *cfg, const vmp_ident_t *id, uint32_t now_ms);

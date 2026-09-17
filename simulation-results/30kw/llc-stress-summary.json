@@ -1,28 +1,36 @@
 {
-  "fingerprint": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss250p",
+  "fingerprint": "30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p",
   "worstCorner": "SER250-full-bus764",
-  "ipPkMax": 112.7,
-  "ipRmsMax": 70.4,
-  "imPkMax": 43.8,
-  "vcrAcMax": 565,
+  "ipPkMax": 112.6,
+  "ipRmsMax": 70.5,
+  "imPkMax": 43.7,
+  "vcrAcMax": 566,
   "isRmsMax": 69.2,
-  "isPkMax": 108.5,
+  "isPkMax": 108.4,
   "idAvgMax": 30,
   "fetRmsMax": 49.8,
-  "fetToffMax": 91,
-  "zvsAll": true,
+  "fetToffMax": 91.5,
+  "zvsAll": false,
+  "tDeadNeedMaxNs": 176,
+  "iCommMin": 6.4,
+  "zvsFailCorners": [
+    "SER250-full-bus764:AH|AL",
+    "PAR200-Imax:AH|AL",
+    "PS150-Imax:AH|AL"
+  ],
+  "cossModel": "nonlinear Cjo/(1+V/2)^0.5 fitted to Qoss(800 V)=371 nC/die + 330 pF snubber/die, both devices; ZVS window 20 V",
   "legsInRails": true,
   "capability": true,
   "race": {
-    "pre": 112.686343,
-    "at2us": 200.349156,
-    "at3us": 209.07549,
-    "at5us": 342.019435,
-    "at10us": 370.262936,
-    "at40us": 370.262936
+    "pre": 100.767703,
+    "at2us": 187.730651,
+    "at3us": 196.069505,
+    "at5us": 328.418278,
+    "at10us": 362.067188,
+    "at40us": 362.067188
   },
   "shortFmax": {
     "rms": 155.9,
-    "pk": 248.7
+    "pk": 248.5
   }
 }

@@ -378,9 +378,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "SMBJ26A",
-   "query": "SMBJ26A TVS 26 V uni SMB ",
-   "mpn": "SMBJ26A"
+   "value": "SMBJ28A",
+   "query": "SMBJ28A TVS **28 V** uni SMB ",
+   "mpn": "SMBJ28A"
   },
   {
    "designator": "DTVS15",
@@ -398,9 +398,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "SMBJ16A",
-   "query": "SMBJ16A TVS 16 V uni SMB ",
-   "mpn": "SMBJ16A"
+   "value": "SMBJ18A",
+   "query": "SMBJ18A TVS **18 V** uni SMB ",
+   "mpn": "SMBJ18A"
   },
   {
    "designator": "RAUXST1",
@@ -518,9 +518,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "BZT52-C15",
-   "query": "BZT52-C15 15 V zener SOD-123 ",
-   "mpn": "BZT52-C15"
+   "value": "BZX84-B15",
+   "query": "BZX84-B15 15 V **±2 %** zener ",
+   "mpn": "BZX84-B15"
   },
   {
    "designator": "RZFB",
@@ -748,6 +748,26 @@
    "mpn": "R2512-R05-1W-1%"
   },
   {
+   "designator": "RPL24",
+   "block_name": "RAILS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "V24"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "4.7k",
+   "query": "R2512-4k7-1W 4.7 kΩ 1 W 2512 V24 PRELOAD ",
+   "mpn": "R2512-4k7-1W"
+  },
+  {
    "designator": "CVCCB",
    "block_name": "RAILS",
    "pins": [
@@ -793,18 +813,18 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 2,
      "name": "GND",
      "signal_name": "DGND"
     },
     {
-     "pin_number": 3,
+     "pin_number": 2,
      "name": "SW",
      "signal_name": "UBKA_SW"
+    },
+    {
+     "pin_number": 3,
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 4,
@@ -822,10 +842,7 @@
      "signal_name": "UBKA_BST"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "TPS54202-class",
    "query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6 ",
    "mpn": "TPS54202-class"
@@ -1041,6 +1058,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "RFPD1",
+   "block_name": "FANS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "FAN_PWM1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
    "designator": "JFAN2",
    "block_name": "FANS",
    "pins": [
@@ -1089,6 +1126,26 @@
    "value": "10k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
+  },
+  {
+   "designator": "RFPD2",
+   "block_name": "FANS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "FAN_PWM2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
   },
   {
    "designator": "JFAN3",
@@ -1141,6 +1198,26 @@
    "mpn": "R-small"
   },
   {
+   "designator": "RFPD3",
+   "block_name": "FANS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "FAN_PWM2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
+  },
+  {
    "designator": "JFAN4",
    "block_name": "FANS",
    "pins": [
@@ -1189,6 +1266,26 @@
    "value": "10k",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
+  },
+  {
+   "designator": "RFPD4",
+   "block_name": "FANS",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "FAN_PWM2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "HV73-475k-1% 475 kΩ 1206 1% anti-surge ",
+   "mpn": "HV73-475k-1%"
   },
   {
    "designator": "JICA",

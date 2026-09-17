@@ -40,10 +40,29 @@ const PAGE_TITLES = {
 };
 
 const DIODES = new Set(["US1M", "US2G", "UF-400V-3A", "1N4148WS", "SMBJ16A", "SMBJ26A",
-  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15",
+  "SIC-SBD-1700V", "SICJBS-1200-10", "SICJBS-1200-20", "SICJBS-1200-40", "BZT52-C15", "BZX84-B15",   /* E81 (F-A-10): the ±2 % reference zener — this Set is what names a diode's anode/cathode, and kicad5-gen REFUSES to seat a glyph whose polarity is unnamed */
+  "SMBJ18A", "SMBJ28A",
   "DIODE-1600V-150A-MOD", "DIODE-1600V-200A-MOD", "DIODE-1600V-250A-MOD"]);   /* E67 DOUT: source pin1 = anode (DiodeModFP portHints) */
 
 const sig = (c, name) => c.pins.find((p) => p.name === name)?.signal_name;
+// E81 (F-A-1/2/3/4): the cells now author the REAL package pin numbers for the four classes whose
+// symbols were drawn on the wrong package, so the branches below are no longer a translation — they
+// are a GUARD. This checks symbol number == emitted number per pin NAME and warns on any drift, so
+// a future symbol edit that re-scrambles a pinout cannot pass silently the way these four did.
+const PKG_GUARD = {
+  "TPS54202-class": { VIN: 3, GND: 1, SW: 2, FB: 4, EN: 5, BST: 6 },
+  "TPS3430-class": { VDD: 1, CWD: 2, SET0: 3, CRST: 4, GND: 5, SET1: 6, WDI: 7, WDO: 8, NC: 9, VDD2: 10 },
+  "TLP152-class": { ANO: 1, NC1: 2, CAT: 3, VEE: 4, OUT: 5, VCC: 6 },
+  "VOM1271T": { ANO: 1, CAT: 2, VN: 3, VP: 4 },
+};
+const pkgGuard = (c, m, warn) => {
+  const want = PKG_GUARD[m]; if (!want) return;
+  for (const pin of c.pins) {
+    const w = want[pin.name];
+    if (w !== undefined && Number(pin.pin_number) !== w)
+      warn.push(`${c.designator}: symbol pin ${pin.name} is ${pin.pin_number}, package says ${w} (E81 pin-number guard)`);
+  }
+};
 const P = (n, name, s) => ({ pin_number: n, name, signal_name: s ?? "" });
 
 function transform(c, page, all, warn) {
@@ -51,6 +70,7 @@ function transform(c, page, all, warn) {
   const out = { designator: c.designator, value: c.value, block_name: c.block_name,
     pins: [], nc: [] };   // every classified component is ALWAYS emitted — a skip path was the entire silent-drop bug family
   const byNum = Object.fromEntries(c.pins.map((p) => [p.pin_number, p.signal_name]));
+  pkgGuard(c, m, warn);
 
   if (DIODES.has(m)) {
     out.pins = [P(2, "A", byNum[1]), P(1, "C", byNum[2])];
@@ -77,7 +97,7 @@ function transform(c, page, all, warn) {
     out.pins = [P(1, "A1", sig(c, "ANO")), P(2, "C1", sig(c, "CAT")),
       P(4, "A2", sig(c, "VP")), P(3, "C2", sig(c, "VN"))];
   } else if (m === "TPS3430-class") {
-    const gnd = sig(c, "GND"), vdd = sig(c, "VDD");
+    const gnd = sig(c, "GND"), vdd = sig(c, "VDD") ?? sig(c, "VDD1");
     out.pins = [P(7, "WDI", sig(c, "WDI")), P(5, "GND", gnd), P(11, "EP", gnd),
       P(3, "SET0", sig(c, "SET0")), P(6, "SET1", sig(c, "SET1")), P(8, "WDO#", sig(c, "WDO")),
       P(10, "VDD2", vdd), P(1, "VDD1", vdd),
@@ -101,15 +121,15 @@ function transform(c, page, all, warn) {
       P(4, "RT", sig(c, "RT")), P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "DRV")),
       P(7, "VCC", sig(c, "VCC")), P(8, "SS", sig(c, "SS"))];
     out.nc = [];
-  } else if (m.startsWith("QA01C")   /* R4-6 rename: exact-match was drop-class bug #6 */) {
-    // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. If COM net == paired driver VEE net, COM is the -4V
-    // rail: COM->5 and 0V->driver KSRC net. Else unipolar: COM->6, NC 5.
-    // R4-2/R4-6: the cells now wire the dual rail explicitly — COM is the 0 V/Kelvin node,
-    // N4 the negative rail. Direct mapping; the old driver-lookup heuristic is retired.
-    out.pins = [P(1, "VIN", sig(c, "VIN")), P(2, "GND", sig(c, "GND")), P(7, "+VO", sig(c, "P18")),
-      P(6, "0V", sig(c, "COM"))];
-    const n4 = sig(c, "N4");
-    if (n4) out.pins.push(P(5, "-VO", n4)); else out.nc = [5];
+  } else if (/^QA0\d/.test(m)   /* R4-6 rename: exact-match was drop-class bug #6. E81: QA01C-15 (1 W) and QA02C-15 (2 W) share this land and map */) {
+    // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. R4-2/R4-6: the cells wire the dual rail explicitly —
+    // COM is the 0 V/Kelvin node, the negative pin is the off-bias rail. E81 (F-C-15): the rails
+    // are +15/−3 V, so the cell pins are P15/N3 (were P18/N4); both spellings are accepted here so
+    // a half-migrated tree cannot silently drop a module the way R4-6 did.
+    out.pins = [P(1, "VIN", sig(c, "VIN")), P(2, "GND", sig(c, "GND")),
+      P(7, "+VO", sig(c, "P15") ?? sig(c, "P18")), P(6, "0V", sig(c, "COM"))];
+    const nNeg = sig(c, "N3") ?? sig(c, "N4");
+    if (nNeg) out.pins.push(P(5, "-VO", nNeg)); else out.nc = [5];
   } else if (m === "ISO5V-RFC-6K") {
     out.pins = [P(2, "Vin", sig(c, "VIN")), P(1, "GND", sig(c, "GND")),
       P(4, "+Vo", sig(c, "P5")), P(3, "-Vo", sig(c, "COM"))];

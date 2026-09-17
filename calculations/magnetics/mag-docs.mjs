@@ -147,7 +147,8 @@ function reviewMatrix(sku) {
       "—", "3-wire, Σi = 0", "—"],
     ["Resonance · switching transients",
       g("stress-audit", (r) => r.tag === "EMI" && /current loop/.test(r.name), /modulus margin ≥ ([\d.]+)/, (m) => `filter–loop modulus margin ≥ ${m[1]}`),
-      g("current-coordination", (r) => r.tag === "SIM" && S.test(r.name) && /physical/.test(r.name), /ZVS on all 4 switches every corner/, () => "ZVS on every edge at 32 corners"),
+      // E81: the ZVS verdict moved to its own [ZVS] row with the registered F-L-1 weak-leg exceptions; the matrix reads that row
+      g("current-coordination", (r) => r.tag === "ZVS" && S.test(r.name), /every other corner ZVS on all four switches/, () => "ZVS on every edge outside the registered F-L-1 set (E81)"),
       g("stress-audit", (r) => r.tag === "V" && /secondary JBS/.test(r.name), /(\d+) V of 1200 V = (\d+)%/, (m) => `secondary ring ${m[1]} V = ${m[2]} % of the 1200 V rectifiers`),
       g("stress-audit", (r) => r.tag === "V" && /aux switch/.test(r.name), /(\d+) V of 1700 V = (\d+)%/, (m) => `switch ${m[1]} V = ${m[2]} % with the clamp · SRF ≥ 650 kHz`), "—", "—"],
     ["Faults · abnormal operation",

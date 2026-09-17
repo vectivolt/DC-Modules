@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 > [!NOTE]
@@ -53,7 +53,7 @@ flowchart LR
 | **1 · SMT** | Both boards, double-sided reflow; selective or wave solder for the driver pin rows, relays and film capacitors | — |
 | **2 · THT power** | TO-247 rows loose-fit → clamp bars → snap-in capacitors → studs | — |
 | **3 · Magnetics fit** | D1 chokes on an M6 centre bolt through a GF-PPS clamp cap, gap pad on the bonded face, 2-point banding · D2 and both D3 cells with **both yoke faces gap-padded** to the upper and lower extrusion webs (coldplates on the 50 kW liquid), clamp bars, end turns potted · each D3 cell's measured leakage label recorded against the module serial (no bins since E67 — EOL confirms fr) · cutout thermostats series-wired into the T_XFMR loop | pad compression witness on every D2 / D3 face (feeler gauge against the pad's compressed thickness) |
-| **4 · Board test** | Boards A (AC-DC) and B (DC-DC) tested separately at low voltage with a **test control card** in the harness: aux rails · card program and boot through its JSWD header (BOOT0 strapped low, CB-13) · gate pulses into a dummy RC load (PWM-off isolation, §45) · relay click **and mirror-contact readback** (E30) · HMI and CAN on board B | 100 % |
+| **4 · Board test** | Boards A (AC-DC) and B (DC-DC) tested separately at low voltage with a **test control card** in the harness: aux rails · card program and boot through its JSWD header (BOOT0 strapped low, CB-13; **E81 F-F-8: the fixture opens the WDO → NRST 0 Ω link and drives WDI, or connects under reset — a blank chip is otherwise reset by the TPS3430 every 23 ms**) · gate pulses into a dummy RC load (PWM-off isolation, §45) · relay click **and mirror-contact readback** (E30) · HMI and CAN on board B | 100 % |
 | **5 · Conformal coat** | Acrylic coating, both boards and the card (E52) — after board test so a fault is reworked before coating | mask set agreed at first article |
 | **6 · Clip mount** (E68a) | every TO-247 die to its extrusion or coldplate through a 0.635 mm Al2O3 insulator with thermal grease, held by a spring clip — the 0.8 K/W (air) / 0.65 K/W (liquid) junction-to-base basis every Tj gate uses | clip force within the clip vendor's band · grease coverage witness 1 / 50 · T-38 verifies the Rth at EVT |
 | **7 · Sandwich mate** | Pillar studs DCP / DCN / PE at 12 N·m with Belleville washers · 40-way harness (HARNESS40) with retention clip · shield drain to PE at the AC-DC end only | EOL milliohm check |
@@ -144,5 +144,5 @@ Records go to MES as a serial-keyed CSV; firmware locks its lifetime counters at
 <div align="center">
 <sub><a href="symbol-pin-map.md">← Symbol → Package Pin Map</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="benchmark-infypower-teardown.md">InfyPower Teardown Benchmark →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

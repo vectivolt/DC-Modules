@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/conformance-spec_examples_byte--exact-2ea44f?style=flat-square" alt="conformance: spec examples byte-exact"/>
 </p>
 
@@ -21,8 +21,21 @@
 > ([firmware architecture §2](firmware-architecture.md#2-architecture)).
 >
 > **Gate coupling** — [`firmware/proto/tonhe_v12.c`](../firmware/proto/tonhe_v12.c) implements this page;
-> `firmware/test/proto_test.c` checks it, including every example frame of the document byte for byte and the end-to-end
-> start → 20 s loss → restart through the real FSM.
+> `firmware/test/proto_test.c` checks it, including every example frame of the document byte for byte (except the §9.1.1 PFC
+> byte, where the document contradicts its own table — see TH-AMB-1) and the end-to-end start → 20 s loss → restart through the
+> real FSM.
+
+> [!IMPORTANT]
+> **E81 conformance re-check against the vendor PDF** (the V1.2 document and the GWBZ, UUGreen, NIUERA, Maxwell and ENR protocols
+> were read in full): **24 rules conform**, **3 deviate on purpose** (zero volts = no setpoint rather than V_min; the address-conflict
+> stop; fan fault derates instead of shutting down), **1 vendor frame is named but never defined** (the over/under-voltage setting —
+> now counted and logged instead of silently dropped), and the eight TH-AMB rows below were re-resolved against the page text.
+> GWBZ is a different protocol, not a V1.2 revision — V1.2 is what ships. E81 changes to the profile: the address-set command is
+> deferred to standby instead of refused while delivering; the on-change trigger gap is 200 ms (a 24-module fault storm at
+> 125 kbit/s computed to 105 % bus load at 50 ms); the zero-volt deviation is reported in the fault word; automatic-mode addressing
+> without a panel address fails loudly on the HMI; a malformed start still counts as presence; the current minimum follows the
+> rating. This is one of the module's **two protocol options** — TonHe V1.2 for drop-in racks, [VMP 2.0](can-protocol.md) for new
+> installations.
 
 ## At a glance
 
@@ -50,7 +63,7 @@ priorities of the document.
 | C_M_2 | 0x000400 | 4 | 0xFF (or own) | processing flag · group + multiple · voltage u16 0.1 V · current u16 0.01 A | if addressed: new setpoints (range edges, §4); the group is recorded; does not start or stop |
 | C_M_3 | 0x000500 | 6 | 0xFF | 8 × 0x00 | monitor presence; the content is ignored |
 | C_M_24 | 0x000600 | 2 | own only | 0xAA / 0x55 · mode byte · voltage · current · reserved | start or stop with setpoints; always answered with M_C_2 — 0x01 for a valid command byte, 0x00 for anything else (and then nothing changes) |
-| C_M_23 | 0x000900 | 6 | own or 0xFF | new address 1–240 | stored; in force in manual mode; accepted only with the output off |
+| C_M_23 | 0x000900 | 6 | own or 0xFF | new address 1–240 | stored at once and persisted; in force in manual mode; **applied at the next standby** (E81: the document sets no state precondition, so a renumbering monitor is no longer refused mid-delivery — the source address never moves mid-stream) |
 | C_M_12 | 0x009000 | 7 | own or 0xFF | 0 automatic · 1 manual | accepted only with the output off; stored |
 | C_M_4 | 0x00AA00 | 6 | own or 0xFF | 0 DC input · 1 AC input | AC accepted; DC refused and counted — this is an AC-input module |
 
@@ -136,7 +149,7 @@ The periodic frames are phased by address (37 ms × address, modulo 500 ms), so 
 
 | Behaviour | Source | This module |
 |---|---|---|
-| Setpoints beyond the module range are served at the range edge | §9.2.2 notes 1–2 | voltage 150–1 000 V · current 1 A – rated; a zero voltage is "no setpoint" (TH-AMB-4) |
+| Setpoints beyond the module range are served at the range edge | §9.2.2 notes 1–2 | voltage 150–1 000 V · current minimum derived from the rating (E81) – rated; a zero voltage is "no setpoint" (TH-AMB-4) and, while a start is pending on it, is reported as M_C_4 fault-word bit 0 so the monitor never sees a silent 0x00 (E81) |
 | A start uses the latest setpoints | §9.2.1 (C_M_1 carries none) | a start with no setpoint waits in READY and reports nothing new |
 | Stop | — | a controlled stop: current out in ≤ 100 ms, then the LLC stops |
 | Communication loss | TH750 manual: "interrupted for 20 s → shutdown, report" | > 20 s without a monitor frame → controlled stop, CAN-timeout bit, run request cleared; the setpoints are cleared once the output is off; a new start command is required |
@@ -199,5 +212,5 @@ T-46 in the [firmware verification plan](firmware-verification.md).
 <div align="center">
 <sub><a href="can-protocol.md">← VMP 2.0 Native CAN Protocol</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../boards/README.md">Boards →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

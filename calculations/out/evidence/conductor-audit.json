@@ -42,7 +42,7 @@
    "status": "ok",
    "tag": "D2",
    "name": "30kw 2×E70 N 5, litz 8000×0.05 @203 kHz",
-   "detail": "MLT 216 mm · Rdc 1.21 mΩ @25 °C (row ≤1.35) · Sullivan Fr 1.96 → Rac 3.04 mΩ hot (row ≤3.35) → Cu 15.1 W at 70.4 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
+   "detail": "MLT 216 mm · Rdc 1.21 mΩ @25 °C (row ≤1.35) · Sullivan Fr 1.96 → Rac 3.04 mΩ hot (row ≤3.35) → Cu 15.1 W at 70.5 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
   },
   {
    "status": "ok",
@@ -54,7 +54,7 @@
    "status": "ok",
    "tag": "D2",
    "name": "50kw 2×E70 N 5, litz 12000×0.05 @203 kHz",
-   "detail": "MLT 221 mm · Rdc 0.82 mΩ @25 °C (row ≤0.92) · Sullivan Fr 3.15 → Rac 3.34 mΩ hot (row ≤3.7) → Cu 45 W at 116 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
+   "detail": "MLT 221 mm · Rdc 0.82 mΩ @25 °C (row ≤0.92) · Sullivan Fr 3.15 → Rac 3.34 mΩ hot (row ≤3.7) → Cu 45 W at 116.1 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope"
   },
   {
    "status": "ok",
@@ -66,7 +66,7 @@
    "status": "ok",
    "tag": "D3",
    "name": "30kw cell profiled-litz primary 3850×0.063 mm",
-   "detail": "Sullivan (interleaved k 0.25) Fr 1.32 → 15.6 W at 70.4 A rms"
+   "detail": "Sullivan (interleaved k 0.25) Fr 1.32 → 15.7 W at 70.5 A rms"
   },
   {
    "status": "ok",
@@ -78,7 +78,7 @@
    "status": "ok",
    "tag": "D3",
    "name": "40kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz",
-   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.9 A rms each (SER250-full-bus764; optimum 0.1 mm = 26.1 W)"
+   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.8 A rms each (SER250-full-bus764; optimum 0.1 mm = 26 W)"
   },
   {
    "status": "ok",
@@ -96,13 +96,13 @@
    "status": "ok",
    "tag": "D3",
    "name": "50kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz",
-   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 41.9 W at 57.1 A rms each (SER250-full-bus764; optimum 0.1 mm = 40.5 W)"
+   "detail": "h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 41.8 W at 57 A rms each (SER250-full-bus764; optimum 0.1 mm = 40.4 W)"
   },
   {
    "status": "ok",
    "tag": "D3",
    "name": "50kw cell profiled-litz primary 3536×0.071 mm",
-   "detail": "Sullivan (interleaved k 0.25) Fr 1.25 → 29.5 W at 116 A rms"
+   "detail": "Sullivan (interleaved k 0.25) Fr 1.25 → 29.5 W at 116.1 A rms"
   },
   {
    "status": "ok",

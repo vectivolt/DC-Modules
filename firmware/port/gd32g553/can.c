@@ -23,6 +23,8 @@ static void inactive_leave(void) {
   while (CAN_CTL0(B) & BIT(24)) {}
 }
 
+uint8_t can_bitrate_bad;                       /* E81 (F-F-4): can_init was asked for a rate it has no table for */
+
 void can_init(uint32_t bitrate, int listen_only) {
   RCU_APB2RST |= BIT(9); RCU_APB2RST &= ~BIT(9);
   CAN_CTL0(B) &= ~BIT(31);                     /* CANDIS off */
@@ -33,6 +35,9 @@ void can_init(uint32_t bitrate, int listen_only) {
   CAN_CTL0(B) = (CAN_CTL0(B) & ~0x1Fu) | 15u;  /* MSZ: 16 units — mailboxes 0..15 */
   /* 48 MHz CANCLK, 16 tq, sample point 87.5 % (facts-can §3, assert-checked):
      125 k = BAUDPSC 23 → 0x02E114C1 · 250 k = 11 → 0x016114C1 · 500 k = 5 → 0x00A114C1 */
+  /* E81 (F-F-4): 250 k is an explicit branch and anything else falls back to it AND reports — the old silent `else`
+     would have run the wrong bit timing for any future caller that violated cfg_sanitize's {125,250,500} invariant. */
+  can_bitrate_bad = (bitrate != 125000u && bitrate != 250000u && bitrate != 500000u);
   CAN_BT(B) = (bitrate == 125000u) ? 0x02E114C1u : (bitrate == 500000u) ? 0x00A114C1u : 0x016114C1u;
   CAN_CTL1(B) = BIT(6) | BIT(4) | (listen_only ? BIT(3) : 0u);   /* ABORDIS manual recovery · MTO lowest-number-first · MMOD */
   CAN_CTL0(B) |= BIT(17) | BIT(16) | BIT(12);  /* SRDIS · RPFQEN (rx queue + private masks) · MST (aborts allowed) */
@@ -84,6 +89,7 @@ void can_tx(const pmp_frame_t *f) {
 }
 
 uint8_t can_state(void) {   /* 0 active · 1 passive · 2 bus-off (ERRSI 5:4; BOF sticky until restarted) */
+  if (can_bitrate_bad) return 1u;   /* E81 (F-F-4): an unrecognised bit rate ran the 250 k table — report it as a CAN warning */
   uint32_t e = CAN_ERR1(B);
   if ((e & (3u << 4)) >= (2u << 4) || (e & BIT(2))) return 2u;
   return (e & (3u << 4)) ? 1u : 0u;

@@ -33,13 +33,15 @@
 #include "../proto/tonhe_v12.h"
 #endif
 
-/* HRTIMER fault channels (umod-pinmap E48 / E75, GD32G553 UM Table 25-21) */
+/* HRTIMER fault channels (umod-pinmap E48 / E75 / E81, GD32G553 UM Table 25-21) */
 #define APP_FLT_IB     0u   /* CMP1 ← I_B0 */
+#define APP_FLT_IA     1u   /* E81: CMP3 ← I_A0 (PB0 after the reviewer-I §7 pin swap; was CMP7 → channel 7) */
 #define APP_FLT_EXT    2u   /* the FLT wire-OR on PB10: gate-driver DESAT and the F.11 tank window */
 #define APP_FLT_VOUT   3u   /* CMP0 ← SNS_VOUT */
 #define APP_FLT_IC     4u   /* CMP2 ← I_C0 */
 #define APP_FLT_VBUS   5u   /* CMP4 ← SNS_VBUSP */
-#define APP_FLT_IA     7u   /* CMP7 ← I_A0 */
+#define APP_FLT_LINE_OC ((1u << APP_FLT_IA) | (1u << APP_FLT_IB) | (1u << APP_FLT_IC))
+#define APP_FLT_ALL    0x3Fu
 
 #define APP_DO_KPRE    (1u << 0)   /* CTL_KPRE — precharge bypass */
 #define APP_DO_KSER    (1u << 1)
@@ -75,15 +77,17 @@ enum { APP_RLY_KPRE = 0, APP_RLY_KSER, APP_RLY_KPARA, APP_RLY_KPARB, APP_RLY_COU
 #define APP_W_CAN      (1u << 19)  /* CAN error-passive or bus-off */
 #define APP_W_STACK    (1u << 20)  /* a stack past 70 % of its size */
 #define APP_W_OVERRUN  (1u << 21)  /* control deadlines missed in the last 100 ms, below the F.35 verdict */
+#define APP_W_FLUX     (1u << 22)  /* E81 (F-E-15): a DC component in the resonant current — transformer flux walk */
 
 typedef struct { float ia, ib, ic, vbus, vmid, vac[3]; } app_pfc_adc_t;        /* counts at this peak or valley */
 typedef struct { float vout, iout_p, iout_n, ires, vbka, vbkb; } app_llc_adc_t; /* counts, the mean of the period's samples */
 typedef struct { float on[3]; bool en; } app_pfc_out_t;
-typedef struct { float f_hz, duty; bool gate; } app_llc_out_t;
+typedef struct { float f_hz, duty, dead_s, dead_a_s, dead_b_s; bool gate; } app_llc_out_t;   /* E81: per-leg ZVS transitions to program (dead_s = the longer, for single-value readers) */
 
 typedef struct {
   float t_pfc, t_inlet, t_llc, t_xfmr;   /* NTC counts */
-  float v24, v15, vrefint;               /* counts */
+  float v24, v15, vrefint, avmid;        /* counts — E81 (F-D-13): AVMID is converted and checked */
+  bool late;                             /* E81 (F-E-01a): this tick is a collapsed backlog — the heartbeat re-baselines */
   uint16_t di;                           /* APP_DI_* */
   float tach_hz[4];
   uint8_t can_state;                     /* 0 error-active · 1 error-passive · 2 bus-off */
@@ -97,8 +101,9 @@ typedef struct {
   float relay_duty[APP_RLY_COUNT];       /* E80: economizer duty per coil (0 = open) */
   float fan_duty[2];                     /* FAN_PWM1 · FAN_PWM2 (fans 3 and 4 share PWM2) */
   float dac_v[APP_DAC_COUNT];            /* comparator references, volts on the 3.3 V DAC scale */
-  bool wdt_kick;                         /* pulse WDI */
-  bool fault_rearm;                      /* clear the HRTIMER fault latches */
+  bool wdt_kick;                         /* E81: kicking is PERMITTED — the port owns the 10 ms cadence (F-D-9) */
+  uint16_t fault_rearm;                  /* E81 (F-E-11): the HRTIMER fault channels to clear (APP_FLT_* bits; 0 = none) */
+  bool disch_intent;                     /* E81 (F-E-02): a commanded discharge is in progress — survive a reset */
   bool can_restart; uint32_t can_bitrate;
   bool reboot;                           /* a profile's reboot, once its acknowledgement has left */
   bool enter_boot;                       /* E80: ACTION ENTER_BOOT accepted — reset into the bootloader (handoff.h) */
@@ -109,7 +114,10 @@ typedef struct {
 
 typedef struct {
   float rating_counts;                   /* ROLE1 strap */
-  bool wdt_reset;                        /* the reset cause was the watchdog */
+  uint8_t reset_cause;                   /* E81 (F-E-03): RCU_RSTSCK bits 31:24 raw — the HAL classifies */
+  uint8_t hw_rev;                        /* E81 (F-D-15): card revision strap (0 = rev A) */
+  bool handoff_reboot;                   /* the last reset was a deliberate, sealed reboot */
+  bool disch_pending;                    /* E81 (F-E-02): the pre-reset handoff says a discharge was commanded */
   uint32_t uid, fw, nvm_page_size;
   uint32_t fw_crc, boot_ver;             /* E80: from the image header / bootloader (0 when absent) */
   uint8_t boot_state;                    /* E80: VMP object 0x0009 (boot/bootctl.h state) */
@@ -129,7 +137,7 @@ typedef struct { uint32_t op_s, energy_wh, starts; uint16_t faults; } app_counte
 typedef struct { float sum, lo, hi; } app_az_t;
 typedef struct { app_az_t ch[3]; uint32_t n, gen; } app_azs_t;
 
-typedef struct { bool en, ser; float v_ref, i_ref, v_scale, fold_hi_v; } app_llc_ref_t;
+typedef struct { bool en, ser; float v_ref, i_ref, v_scale, fold_hi_v, fold_crest_v; } app_llc_ref_t;   /* E81: fold_crest_v = 1.414·VLL_max (F-E-05) */
 
 typedef struct {
   /* identity and configuration */
@@ -161,8 +169,16 @@ typedef struct {
   volatile uint8_t flt_n[5]; uint8_t flt_seen[5];
   /* tick state */
   uint32_t pfc_last, llc_last, ovr_win; uint8_t wdt_good; bool hb_ok, ovr_seen;
-  uint32_t grid_seen; float g_vph[3], g_hz; uint16_t hz_bad_ms, isum_bad_ms, ref_bad_ms, rails_ms;
+  uint32_t grid_seen; float g_vph[3], g_hz; uint16_t hz_bad_ms, isum_bad_ms, ref_bad_ms, rails_ms, avmid_bad_ms, flux_ms;
   bool hz_bad, isum_bad, ext;
+  /* E81 (F-D-7): the 1-in-10 line-cycle work moved out of the 100 kHz ISR. The PFC ISR fills the spare half of a double
+     buffer and publishes an index; the 10 kHz LLC ISR does grid_sample() and the boot offset window from it. */
+  struct { float v[3], i[3], ia, ib, ic; } g_buf[2];
+  volatile uint8_t g_idx, g_new;
+  float ires_dc;                          /* E81 (F-E-15): slow DC estimate of I_RES — a transformer flux-walk proxy */
+  /* E81 (F-D-10): bipolar F.01. Only the SIGN changes per sample, so the tick precomputes both references per channel
+     and the 100 kHz ISR just selects one — three FPU divisions stay out of the hot path (F-D-7). */
+  float dac_oc_pos[3], dac_oc_neg[3], dac_oc[3];
   float t_zone[4];
   float fan_duty; uint32_t fan_on_ms; uint16_t fan_still_ms[4]; uint8_t fan_fail;
   uint16_t b1_ms, b2_ms; bool edit; uint8_t edit_addr; uint16_t edit_ms;

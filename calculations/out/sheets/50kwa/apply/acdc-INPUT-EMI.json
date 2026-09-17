@@ -214,7 +214,7 @@
    },
    {
     "designator": "GDT1",
-    "value": "GDT-3k5-20kA",
+    "value": "GDT-2k5-20kA",
     "block_name": "SURGE",
     "pins": [
      {
@@ -231,7 +231,7 @@
    },
    {
     "designator": "GDT2",
-    "value": "GDT-3k5-20kA",
+    "value": "GDT-2k5-20kA",
     "block_name": "SURGE",
     "pins": [
      {
@@ -248,7 +248,7 @@
    },
    {
     "designator": "GDT3",
-    "value": "GDT-3k5-20kA",
+    "value": "GDT-2k5-20kA",
     "block_name": "SURGE",
     "pins": [
      {
@@ -545,7 +545,7 @@
    },
    {
     "designator": "CY1",
-    "value": "4.7nF",
+    "value": "10nF",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -562,7 +562,7 @@
    },
    {
     "designator": "CY2",
-    "value": "4.7nF",
+    "value": "10nF",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -579,7 +579,7 @@
    },
    {
     "designator": "CY3",
-    "value": "4.7nF",
+    "value": "10nF",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -647,7 +647,7 @@
    },
    {
     "designator": "CDMP1",
-    "value": "2.2uF",
+    "value": "4.7uF",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -664,7 +664,7 @@
    },
    {
     "designator": "CDMP2",
-    "value": "2.2uF",
+    "value": "4.7uF",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -681,7 +681,7 @@
    },
    {
     "designator": "CDMP3",
-    "value": "2.2uF",
+    "value": "4.7uF",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -698,7 +698,7 @@
    },
    {
     "designator": "RDMP1",
-    "value": "10",
+    "value": "4.7",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -715,7 +715,7 @@
    },
    {
     "designator": "RDMP2",
-    "value": "10",
+    "value": "4.7",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -732,7 +732,7 @@
    },
    {
     "designator": "RDMP3",
-    "value": "10",
+    "value": "4.7",
     "block_name": "EMI-FILTER",
     "pins": [
      {
@@ -859,7 +859,7 @@
    },
    {
     "designator": "RKFBP",
-    "value": "10k",
+    "value": "330",
     "block_name": "PRECHARGE",
     "pins": [
      {

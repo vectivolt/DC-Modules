@@ -50,7 +50,7 @@ node calculations/pin-map-export.mjs > /dev/null
 node calculations/docs-lint.mjs
 npx tsx calculations/control/port-pin-audit.mjs
 sh firmware/run_tests.sh > /dev/null
-echo "FIRMWARE LOGIC OK — boot_test 21 · host_sim 121 · ctl_test 19 · proto_test 40 · hal_test 35 · app_test 24 (E80)"
+echo "FIRMWARE LOGIC OK — boot_test 21 · host_sim 121 · ctl_test 19 · proto_test 40 · hal_test 37 · app_test 24 · e81_test 29 (E81) — 291 checks"
 # E80: the GD32G553 target cross-build (register-level port, no vendor library) — runs where the bare-metal GCC exists
 if command -v arm-none-eabi-gcc > /dev/null 2>&1; then
   sh firmware/port/gd32g553/build.sh > /dev/null 2>&1

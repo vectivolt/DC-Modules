@@ -47,6 +47,7 @@ static mod_run_state_t run_state(const pmp_fsm_t *f, const pmp_in_t *in) {
 }
 
 void pmp_tlm_from_core(mod_tlm_t *m, const pmp_fsm_t *f, const pmp_in_t *in, const pmp_ctl_t *c, const pmp_ctl_cfg_t *cc) {
+  m->v_ext = in->vext; m->ext_connected = in->ext_connected;   /* E81 (K1) */
   m->rs = run_state(f, in);
   m->st = f->st; m->mode = f->out.mode; m->omode = f->omode;
   m->fault = f->lock ? FC_LOCK : f->latched;

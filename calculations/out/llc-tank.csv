@@ -1,28 +1,28 @@
 sku,param,value,unit,tolerance,note
 30kw,fr,139.9,kHz,±5%,Lr ±5 % (D2 ±3 % + leakage band) with Cr ±5 %
 30kw,n,2,,exact,2 cells 6:6 with primaries in series
-30kw,Lr,5.6,µH,±5%,D2 5.16 µH + 2× cell leakage + 0.1 µH loop
+30kw,Lr,5.6,µH,±5%,D2 5 µH + 2× cell leakage + 0.1 µH loop
 30kw,Cr,231,nF,±5%,7× 33 nF 1200 V resonant-duty film in parallel
 30kw,Lm,56,µH,±7%,primary-referred; 28 µH per cell
 30kw,Ln,10,,,E67 ngspice scan
 30kw,Q_500V,0.182,,,at a 500 V bank full power
 40kw,fr,140,kHz,±5%,Lr ±5 % (D2 ±3 % + leakage band) with Cr ±5 %
 40kw,n,2,,exact,2 cells 4:4 with primaries in series
-40kw,Lr,4.35,µH,±5%,D2 4.07 µH + 2× cell leakage + 0.1 µH loop
+40kw,Lr,4.35,µH,±5%,D2 3.99 µH + 2× cell leakage + 0.1 µH loop
 40kw,Cr,297,nF,±5%,9× 33 nF 1200 V resonant-duty film in parallel
 40kw,Lm,43.5,µH,±7%,primary-referred; 21.75 µH per cell
 40kw,Ln,10,,,E67 ngspice scan
 40kw,Q_500V,0.189,,,at a 500 V bank full power
 50kw,fr,140,kHz,±5%,Lr ±5 % (D2 ±3 % + leakage band) with Cr ±5 %
 50kw,n,2,,exact,2 cells 4:4 with primaries in series
-50kw,Lr,3.56,µH,±5%,D2 3.28 µH + 2× cell leakage + 0.1 µH loop
+50kw,Lr,3.56,µH,±5%,D2 3.2 µH + 2× cell leakage + 0.1 µH loop
 50kw,Cr,363,nF,±5%,11× 33 nF 1200 V resonant-duty film in parallel
 50kw,Lm,35.6,µH,±7%,primary-referred; 17.8 µH per cell
 50kw,Ln,10,,,E67 ngspice scan
 50kw,Q_500V,0.193,,,at a 500 V bank full power
 50kwa,fr,140,kHz,±5%,Lr ±5 % (D2 ±3 % + leakage band) with Cr ±5 %
 50kwa,n,2,,exact,2 cells 4:4 with primaries in series
-50kwa,Lr,3.56,µH,±5%,D2 3.28 µH + 2× cell leakage + 0.1 µH loop
+50kwa,Lr,3.56,µH,±5%,D2 3.2 µH + 2× cell leakage + 0.1 µH loop
 50kwa,Cr,363,nF,±5%,11× 33 nF 1200 V resonant-duty film in parallel
 50kwa,Lm,35.6,µH,±7%,primary-referred; 17.8 µH per cell
 50kwa,Ln,10,,,E67 ngspice scan

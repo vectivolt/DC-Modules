@@ -6,16 +6,16 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/pins-6853_verified_·_5_targets-2ea44f?style=flat-square" alt="pins: 6853 verified · 5 targets"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/pins-7285_verified_·_5_targets-2ea44f?style=flat-square" alt="pins: 7285 verified · 5 targets"/>
 </p>
 
 > [!NOTE]
 > **Purpose** — what lives in `boards/`: the four buildable module SKUs, the control card, and the pipeline that
 > turns them into audited release sheets.
 >
-> **Gate coupling** — `kicad5-verify` checks every connected pin of every release sheet (6,853 across five targets);
+> **Gate coupling** — `kicad5-verify` checks every connected pin of every release sheet (7,285 across five targets);
 > `module-interconnect-audit`, `polarity-audit` and `schematic-check` walk the built netlists in run-all.
 
 ## At a glance
@@ -27,7 +27,7 @@
 | [`50kw/`](50kw/) | 50 kW **liquid** (E42): coldplates, zero fans, 11 × 33 nF tank, DOUT 250 A | 1,658 | 322 · 276 |
 | [`50kwa/`](50kwa/) | 50 kW **air** (E44): electrically the liquid module since E68a, 4 fans | 1,674 | 326 · 276 |
 | [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120 × 80 mm, 88-way) — one part number, every seat | 291 | 49 |
-| [`out-pdf/`](out-pdf/) | the nine release PDFs rendered from the audited KiCad-5 sheets | **6,853 total** | — |
+| [`out-pdf/`](out-pdf/) | the nine release PDFs rendered from the audited KiCad-5 sheets | **7,285 total** | — |
 
 All four SKUs come from one parameterized source, [`boards.tsx`](../packages/common-components/boards.tsx), built
 from the cells in [`cells.tsx`](../packages/power-primitives/cells.tsx); the card learns its SKU from one RATING strap.
@@ -83,5 +83,5 @@ The 40 and 50 kW deltas are recorded in register rows E41, E42, E44 and E67–E6
 <div align="center">
 <sub><a href="../docs/can-profile-tonhe-v12.md">← TonHe V1.2 Compatibility Profile</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="README-module-family.md">Module Family →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

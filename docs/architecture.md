@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 > [!NOTE]
@@ -53,7 +53,7 @@ flowchart LR
 
 | Module | Silicon relative to 30 kW | Cooling | ₹ @10k · ₹/kW |
 |---|---|---|---|
-| **30 kW** | baseline — one 750 V 20 mΩ class die per PFC position, one SG2M023120LJ per LLC position | air, 2 fans | 30,033 · 1,001 |
+| **30 kW** | baseline — one 750 V 20 mΩ class die per PFC position, two SG2M023120LJ per LLC position (E81: the E68 single die was conduction-limited at the 500 V series corner) | air, 3 fans (E81) | see the BOM page |
 | **40 kW** (E41) | 750 V 15 mΩ class PFC dies; two SG2M023120LJ per LLC position (the fault-pulse rule, E69a-2) | air, 3 fans | 34,616 · 865 |
 | **50 kW liquid** (E42) | B3M010C075Z PFC dies; two SG2M023120LJ per LLC position | **liquid**, 0 fans | 40,481 · 810 |
 | **50 kW air** (E44) | electrically identical to the liquid module since E68a | air, 4 fans | 38,404 · **768 — cheapest** |
@@ -84,7 +84,7 @@ flowchart LR
   subgraph CARD["Control card · GD32G553VET7"]
     direction TB
     HR["HRTIMER<br/>LLC legs A + B on two pairs (hardware dead-time)<br/>ST3–ST5 PFC singles"]
-    CMP["on-chip comparators<br/>CMP7 · CMP1 · CMP2 (phase A · B · C)"]
+    CMP["on-chip comparators<br/>CMP3 · CMP1 · CMP2 (phase A · B · C; E81 pin swap)"]
     ADC["22 analog channels"]
     FLT["merged FLT → HRTIMER_FLT2"]
     COM["CAN 2.0B · HMI · RATING strap"]
@@ -148,7 +148,7 @@ flowchart TB
   style L3 stroke:#3f7fc4,stroke-width:2px
 ```
 
-The fast layer has no firmware in the loop. Per-phase line CTs feed on-chip comparators (A / B / C on CMP7 / CMP1 /
+The fast layer has no firmware in the loop. Per-phase line CTs feed on-chip comparators (A / B / C on CMP3 / CMP1 /
 CMP2, instance-verified at E48), which kill the HRTIMER on the polarity DESAT cannot see. NSI6611 DESAT (100 Ω
 series resistor, R5-B) covers the forward polarity. Resonant over-current comparators, bus and output OVP, driver
 UVLO and the relay exclusion complete it. The watchdog's open-drain WDO gates the enable **and** resets the MCU. The
@@ -199,5 +199,5 @@ Each decision is recorded row by row in the [decision register](assumptions.md);
 <div align="center">
 <sub><a href="README.md">← Documentation Hub</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="assumptions.md">Decision Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

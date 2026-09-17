@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square" alt="status: evidence record"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 > [!NOTE]
@@ -19,19 +19,19 @@
 
 | Evidence | Run | Result | Status |
 |---|---|---|---|
-| Device edge | double-pulse, behavioural SiC | overshoot 70 % with the RCD clamp · ± 40 % energy band | ✅ current |
+| Device edge | double-pulse, per SKU at the REAL turn-off currents (LLC 91–165 A, Vienna 94–157 A), −3 V, drawn networks + the E81 snubber, 5 nH design loop (E81) | LLC 84–89 % of 1200 V repetitive / ≤ 89 % at the +6 % bus row · Vienna 76–85 % of 750 V · k_off 2.4–5.2 · k_sw 22–26 nJ/(V·A); every final row PASS at the E81 lines (85 % / 90 %), gated by `stress-audit [DPT]` · ± 40 % energy band | ✅ current (E81) |
 | PFC control loops | analytical Bode + ngspice AC sweep | fc 2,976 Hz, PM 50.2° · voltage loop 15 Hz, PM 65° | ✅ current |
 | PFC line cycle | averaged-switch 3-level Vienna | THD-40 0.59 / 0.74 / 1.05 % full power | ✅ current |
 | Vienna cycle by cycle | JS switched model, catalog L(i) | peaks 97.0 / 127.2 / 159.4 A with dips and a 20° jump | ✅ current |
 | Filter and current loop | `pfc-control` with the star-X2 filter | modulus margin 0.65 / 0.61 / 0.54, no sustained oscillation | ✅ current |
-| Full-bridge LLC | power-solved ngspice per SKU, 32 corners | ZVS 64/64 on every corner · worst tank peak 112.7 / 148.1 / 182.8 A | ✅ current |
+| Full-bridge LLC | power-solved ngspice per SKU, 32 corners, E81: non-linear Coss (371 nC at 800 V) + the per-die snubber, 20 V ZVS window, per-leg adaptive dead time | ZVS on every switch at every corner EXCEPT the registered weak-leg (leg A) exceptions — PAR200-I_max and PS150-I_max on every SKU, SER250 at the high-line bus floor on the 30 kW — where the leg's charge exceeds the energy its decaying current can move; the deck reports the residual and the grid folds those corners · worst tank peak 112.7 / 148.1 / 182.8 A | ✅ current (E81) |
 | Tank tolerance | Monte-Carlo 10k per SKU on the E67 tanks | FHA peak gain p1 1.212–1.217 vs 1.205 · ZVS fail 0 % | ✅ current |
 | CT front ends | ngspice at the E67 burdens | F.11 + race ADC peak ≤ 3.131 V | ✅ current |
 | Precharge, discharge, bank bleed | ngspice per SKU | t95 193 / 231 / 310 ms · bus 1.99 / 2.39 / 3.19 s · banks 0.37 / 0.49 / 0.58 s | ✅ current |
 | Precharge-bypass closure | JS switched model: D1 L(i), CMC leakage, rectifier, link | 200 / 218 / 280 A pk ≈ 1.5 ms · F.01 blanked 60 ms (E73) · relays, diodes, fuses inside their lines | ✅ current |
 | Aux flyback | drawn-circuit ngspice per SKU, D4 rev E | 16 PASS rows + 1 recorded residual | ✅ current |
 | Magnetics second opinion | PyOpenMagnetics 1.4.0 (MKF), by hand | Rdc ± 2.5 % · D3 copper × 1.29–1.32 of 1-D · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line | 🟡 watch — first-article short-circuit R decides (T-31) |
-| Envelope grid | averaged, temperature-iterated | 4,536 points · 0 failures · 0 folds · max Tj 139 °C | ✅ current |
+| Envelope grid | averaged, temperature-iterated, E81 turn-off + DPT switching terms, 74 / 75 / 77 °C air base | 4,536 points · folds only at the 500 V series / 55 °C corner (30 kW 80–86 %, 50 kW-air 86–93 %) · max Tj 149 °C | ✅ current (E81) |
 | Conducted pre-compliance | per-phase LISN ladder | DM + 32.9 / + 30.6 / + 28.7 dB · CM + 8 dB at 200 pF | 🟡 estimate — never a compliance claim |
 | System scenarios | JS FSM + C host suite | 26 / 26 · 63 / 63 under ASan / UBSan | ✅ current at logic fidelity |
 | Series / parallel physics | ngspice closure deck | 205 A through a contact at a 2 V bank mismatch | ✅ current — why the relays close only at 0 A |
@@ -128,5 +128,5 @@ class (T-41), relay life and partial discharge. These are hardware by nature; no
 <div align="center">
 <sub><a href="simulation-toolchain.md">← Simulation Toolchain</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="verification-matrix.md">Verification Matrix & Risk Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

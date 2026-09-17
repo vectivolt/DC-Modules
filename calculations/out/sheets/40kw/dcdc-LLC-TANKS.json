@@ -828,6 +828,66 @@
    "mpn": "MLCC-small"
   },
   {
+   "designator": "C1AVM",
+   "block_name": "TANK",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AVMID"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1uF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "R1WHA",
+   "block_name": "F11-WINDOW",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "U1W_OUTA"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "F11_VH"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1M",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "R1WHB",
+   "block_name": "F11-WINDOW",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "U1W_OUTB"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "I_RES1"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1M",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
    "designator": "RF11H",
    "block_name": "F11-WINDOW",
    "pins": [

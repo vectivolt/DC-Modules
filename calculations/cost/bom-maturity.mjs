@@ -31,7 +31,15 @@ console.log("=== BOM MATURITY (E57) ===");
 console.log("  " + Object.entries(counts).sort().map(([k, v]) => `${k}: ${v}`).join(" · "));
 if (unmapped.length) console.log("  UNMAPPED:\n    " + unmapped.join("\n    "));
 if (thin.length) console.log("  NO SUBSTANCE:\n    " + thin.join("\n    "));
+// E81 (F-H-9): the two counts disagreed and the report did not say why. `counts` is built from the
+// mpns the BOM ACTUALLY references; this list walks the whole LCSC table, which still holds entries
+// for parts no live parts-db rule names (QA01C-18 and HF167F-250A-M superseded at E81, SHUNT-MANG
+// superseded by the SHUNT-50MV-*A order codes). Both numbers are useful — the live one is the gate,
+// the table-wide one is the decision backlog — so each is labelled for what it is.
 const reviews = Object.entries(LCSC).filter(([, v]) => v.status === "REVIEW").map(([k]) => k);
-console.log(`  tracked REVIEW decisions (${reviews.length}): ${reviews.join(", ")}`);
+const liveReviews = reviews.filter((k) => mpns.has(k));
+const retired = reviews.filter((k) => !mpns.has(k));
+console.log(`  REVIEW decisions on LIVE BOM lines (${liveReviews.length}): ${liveReviews.join(", ")}`);
+if (retired.length) console.log(`  REVIEW rows for RETIRED/unreferenced mpns, table-wide (${retired.length}): ${retired.join(", ")}`);
 console.log(fails ? `\n${fails} MATURITY FAILURE(S)` : "\nBOM MATURE — every line ORDERABLE / SECOND-SOURCE / DIRECT / CLASS(spec) / CUSTOM(drawing) / tracked-REVIEW");
 process.exit(fails ? 1 : 0);

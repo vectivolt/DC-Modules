@@ -316,7 +316,7 @@
      {
       "pin_number": 5,
       "name": "GND2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 7,
@@ -360,7 +360,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    }
@@ -564,7 +564,7 @@
      {
       "pin_number": 5,
       "name": "GND2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 7,
@@ -608,7 +608,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    }
@@ -812,7 +812,7 @@
      {
       "pin_number": 5,
       "name": "GND2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 7,
@@ -856,7 +856,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    }
@@ -1060,7 +1060,7 @@
      {
       "pin_number": 5,
       "name": "GND2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 7,
@@ -1104,7 +1104,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    }
@@ -1308,7 +1308,7 @@
      {
       "pin_number": 5,
       "name": "GND2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 7,
@@ -1352,7 +1352,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    }
@@ -1461,7 +1461,7 @@
      {
       "pin_number": 2,
       "name": "P2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    },
@@ -1495,7 +1495,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    },
@@ -1512,7 +1512,7 @@
      {
       "pin_number": 2,
       "name": "P2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    },
@@ -1546,7 +1546,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    }
@@ -1588,7 +1588,7 @@
    },
    {
     "designator": "RA0F",
-    "value": "1k",
+    "value": "200",
     "block_name": "LINE-CTS-0",
     "pins": [
      {
@@ -1645,7 +1645,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 1,
@@ -1690,7 +1690,7 @@
    },
    {
     "designator": "RB0F",
-    "value": "1k",
+    "value": "200",
     "block_name": "LINE-CTS-0",
     "pins": [
      {
@@ -1747,7 +1747,7 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 1,
@@ -1792,7 +1792,7 @@
    },
    {
     "designator": "RC0F",
-    "value": "1k",
+    "value": "200",
     "block_name": "LINE-CTS-0",
     "pins": [
      {
@@ -1849,12 +1849,29 @@
      {
       "pin_number": 2,
       "name": "A",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      },
      {
       "pin_number": 1,
       "name": "C",
       "signal_name": "I_C0"
+     }
+    ]
+   },
+   {
+    "designator": "CAVMA",
+    "value": "1uF",
+    "block_name": "LINE-CTS-0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AVMID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
      }
     ]
    }
@@ -1878,5 +1895,5 @@
   ]
  },
  "warnings": [],
- "total": 99
+ "total": 100
 }

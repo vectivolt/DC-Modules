@@ -111,6 +111,244 @@
       "signal_name": "DCN"
      }
     ]
+   },
+   {
+    "designator": "CF4",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF5",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF6",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF7",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF8",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF9",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF10",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF11",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF12",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF13",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF14",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CF15",
+    "value": "1uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "CFDMP",
+    "value": "2.2uF",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "CFDMP_RFDMP"
+     }
+    ]
+   },
+   {
+    "designator": "RFDMP",
+    "value": "CER-3W-R33-AX",
+    "block_name": "BUS-IN",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "CFDMP_RFDMP"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCN"
+     }
+    ]
    }
   ],
   [
@@ -165,6 +403,40 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KL_1"
+     }
+    ]
+   },
+   {
+    "designator": "C1HOS1",
+    "value": "330pF",
+    "block_name": "LEG-1",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SWA"
+     }
+    ]
+   },
+   {
+    "designator": "C1LOS1",
+    "value": "330pF",
+    "block_name": "LEG-1",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "SWA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
      }
     ]
    },
@@ -342,7 +614,7 @@
    },
    {
     "designator": "R1HOFF",
-    "value": "2.2",
+    "value": "0R",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -376,7 +648,7 @@
    },
    {
     "designator": "C1HBL",
-    "value": "22pF",
+    "value": "18pF",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -444,7 +716,7 @@
    },
    {
     "designator": "PS1H",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -648,7 +920,7 @@
    },
    {
     "designator": "R1LOFF",
-    "value": "2.2",
+    "value": "0R",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -682,7 +954,7 @@
    },
    {
     "designator": "C1LBL",
-    "value": "22pF",
+    "value": "18pF",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -750,7 +1022,7 @@
    },
    {
     "designator": "PS1L",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -833,6 +1105,40 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KL_2"
+     }
+    ]
+   },
+   {
+    "designator": "C2HOS1",
+    "value": "330pF",
+    "block_name": "LEG-2",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "DCP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SWB"
+     }
+    ]
+   },
+   {
+    "designator": "C2LOS1",
+    "value": "330pF",
+    "block_name": "LEG-2",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "SWB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
      }
     ]
    },
@@ -1010,7 +1316,7 @@
    },
    {
     "designator": "R2HOFF",
-    "value": "2.2",
+    "value": "0R",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -1044,7 +1350,7 @@
    },
    {
     "designator": "C2HBL",
-    "value": "22pF",
+    "value": "18pF",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -1112,7 +1418,7 @@
    },
    {
     "designator": "PS2H",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -1316,7 +1622,7 @@
    },
    {
     "designator": "R2LOFF",
-    "value": "2.2",
+    "value": "0R",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -1350,7 +1656,7 @@
    },
    {
     "designator": "C2LBL",
-    "value": "22pF",
+    "value": "18pF",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -1418,7 +1724,7 @@
    },
    {
     "designator": "PS2L",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -1454,5 +1760,5 @@
  "warnings": [
   "blocks over 24 comps (split risk): LEG-1, LEG-2"
  ],
- "total": 63
+ "total": 81
 }

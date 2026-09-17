@@ -29,8 +29,8 @@ const idxOf = (names, re) => [...new Set(names.map((n) => n.match(re)?.[1]).filt
 /** Vienna: one block per (phase, lane) — 3 at 30 kW, 6 at 60 kW, 12 at 120 kW */
 const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
   ["A", "B", "C"].map((ph) => [`PHASE-${ph}${n}`, [
-    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]2?$`), new RegExp(`^RG${ph}${n}[AB][12]$`), new RegExp(`^D${ph}${n}[TBC]$`),
-    new RegExp(`^C${ph}${n}(FP|FN|SN|C)$`), new RegExp(`^R${ph}${n}(SN|C)$`),
+    new RegExp(`^L${ph}${n}$`), new RegExp(`^Q${ph}${n}[AB]2?$`), new RegExp(`^RG${ph}${n}[AB][12]$`), new RegExp(`^D${ph}${n}[TBC]M?$`),
+    new RegExp(`^C${ph}${n}(FP|FN|SN|C|CM)$`), new RegExp(`^R${ph}${n}(SN|C|CM)$`),   /* E81: the mirrored RCD clamp D/C/R{ph}{n}CM rides its own phase block */
     new RegExp(`^U${ph}${n}G$`), new RegExp(`^PS${ph}${n}G$`),
     new RegExp(`^R${ph}${n}G(ON|OFF|GS|PD|DS)$`), new RegExp(`^D${ph}${n}GS[12]$`),
     new RegExp(`^C${ph}${n}G(BL|B1|B2|BV)$`)]]));
@@ -38,7 +38,7 @@ const viennaBlocks = (names) => idxOf(names, /^LA(\d)$/).flatMap((n) =>
 /** line CTs: one block per lane */
 const lineCtBlocks = (names) => idxOf(names, /^CTA(\d)$/).map((n) =>
   [`LINE-CTS-${n}`, [new RegExp(`^CT[ABC]${n}$`), new RegExp(`^R[ABC]${n}[BF]$`),
-    new RegExp(`^C[ABC]${n}F$`), new RegExp(`^D[ABC]${n}[PN]$`)]]);
+    new RegExp(`^C[ABC]${n}F$`), new RegExp(`^D[ABC]${n}[PN]$`), /^CAVMA$/]]);   /* E81 F-A-15: the local AVMID reservoir belongs with the CT row it serves */
 
 /** DC-link capacitor banks: one block per lane (CDT0x/CDB0x + its balance resistors) */
 const dcLinkBlocks = (names) => idxOf(names, /^CDT(\d)\d$/).map((n) =>
@@ -49,9 +49,9 @@ const PAGES = {
   // Control card (E35): one page, the 8 card sections as blocks.
   card: [
     ["CONTROL", [
-      ["MCU", [/^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/]],
+      ["MCU", [/^(UCARD|CCARDD\d|CCARDA[12]|CCARDVR|RCARDRST|FBCARDA)$/, /^(XCARD|CCARDX[12]|RCARDXF)$/]],   /* E81 F-A-30: the 8 MHz CAN crystal */
       ["SWD-BOOT", [/^(JSWDCARD|RCARDBOOT|CCARDRST)$/]],
-      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|GPA|RDY)CARD|CSFCARD|CWDCARD|CRSTCARD|CANDCARD)$/]],
+      ["SAFETY", [/^(USUPCARD|UANDCARD|R(WPU|ENR|ENL|GPD|GPA|RDY|WDI|WDOL)CARD|CSFCARD|CWDCARD|CRSTCARD|CANDCARD|TPWDICARD)$/]],   /* E81 F-F-8/F-A-26: WDO→NRST 0 Ω link, WDI pull-down + test point */
       ["FLT-GROUND", [/^(RFLTC|CFLTC|RAGTC)$/]],
       ["BUCK-3V3", [/^(UBKCARD|LBKCARD|CBK[IO]CARD|CBSTCARD|RBKF[12]CARD|REN[12]CARD)$/]],
       ["ANALOG-MID", [/^(RAV[HLIF]|CAV[MFOB]|UAVB)$/]],
@@ -67,9 +67,9 @@ const PAGES = {
       ["PRECHARGE", [/^KPRE[12]$/, /^RPRE[12]$/, /^RKFBP$/]],
     ], ["AC-ENTRY", "SURGE", "EMI-FILTER", "PRECHARGE"]],
     ["VIENNA-PFC", [
-      ["PHASE-A", [/^LA0$/, /^QA0[AB]2?$/, /^DA0[TBC]$/, /^CA0(FP|FN|SN|C)$/, /^RA0(SN|C)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD|DS)$/, /^DA0GS[12]$/, /^RGA0[AB][12]$/, /^CA0G(BL|B1|B2|BV)$/]],
-      ["PHASE-B", [/^LB0$/, /^QB0[AB]2?$/, /^DB0[TBC]$/, /^CB0(FP|FN|SN|C)$/, /^RB0(SN|C)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD|DS)$/, /^DB0GS[12]$/, /^RGB0[AB][12]$/, /^CB0G(BL|B1|B2|BV)$/]],
-      ["PHASE-C", [/^LC0$/, /^QC0[AB]2?$/, /^DC0[TBC]$/, /^CC0(FP|FN|SN|C)$/, /^RC0(SN|C)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD|DS)$/, /^DC0GS[12]$/, /^RGC0[AB][12]$/, /^CC0G(BL|B1|B2|BV)$/]],
+      ["PHASE-A", [/^LA0$/, /^QA0[AB]2?$/, /^DA0[TBC]M?$/, /^CA0(FP|FN|SN|C|CM)$/, /^RA0(SN|C|CM)$/, /^UA0G$/, /^PSA0G$/, /^RA0G(ON|OFF|GS|PD|DS)$/, /^DA0GS[12]$/, /^RGA0[AB][12]$/, /^CA0G(BL|B1|B2|BV)$/]],
+      ["PHASE-B", [/^LB0$/, /^QB0[AB]2?$/, /^DB0[TBC]M?$/, /^CB0(FP|FN|SN|C|CM)$/, /^RB0(SN|C|CM)$/, /^UB0G$/, /^PSB0G$/, /^RB0G(ON|OFF|GS|PD|DS)$/, /^DB0GS[12]$/, /^RGB0[AB][12]$/, /^CB0G(BL|B1|B2|BV)$/]],
+      ["PHASE-C", [/^LC0$/, /^QC0[AB]2?$/, /^DC0[TBC]M?$/, /^CC0(FP|FN|SN|C|CM)$/, /^RC0(SN|C|CM)$/, /^UC0G$/, /^PSC0G$/, /^RC0G(ON|OFF|GS|PD|DS)$/, /^DC0GS[12]$/, /^RGC0[AB][12]$/, /^CC0G(BL|B1|B2|BV)$/]],
     ], ["PHASE-A", "PHASE-B", "PHASE-C"]],
     ["DC-LINK", [
       ["LINK-BANK", [/^CD[TB]0\d$/, /^RBAL[TB]0[AB]$/]],
@@ -84,7 +84,7 @@ const PAGES = {
       ["SENSE-VBUS", [/^RBPD\d$/, /^RBPDL$/, /^CBPDF$/, /^CBPV[AB]$/, /^UIVBP$/]],
       ["SENSE-VMID", [/^RBMD\d$/, /^RBMDL$/, /^CBMDF$/, /^CBMV[AB]$/, /^UIVBM$/]],
       ["ISO-BIAS", [/^PS5(AC|BUS)$/, /^C5B(AC|BUS)$/]],
-      ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/]],
+      ["LINE-CTS", [/^CT[ABC]0$/, /^R[ABC]0[BF]$/, /^C[ABC]0F$/, /^D[ABC]0[PN]$/, /^CAVMA$/]],   /* E81 F-A-15: local AVMID reservoir at the CT row */
       ["ANALOG-MID", [/^RAV[HLIF]$/, /^CAV[MOFB]$/, /^UAVB$/]],
       ["NTC", [/^JT(PFC|INL)$/, /^RT(PFC|INL)P$/, /^CT(PFC|INL)F$/]],
     ], ["STAR", "SENSE-VAC1", "SENSE-VAC2", "SENSE-VAC3", "SENSE-VBUS", "SENSE-VMID", "ISO-BIAS", "LINE-CTS", "ANALOG-MID", "NTC"]],
@@ -94,27 +94,27 @@ const PAGES = {
       ["CARD-IF", [/^JA$/, /^RPD\d$/, /^RROLE$/]],
       ["GROUNDING", [/^RPET$/, /^CPET$/]],
       ["COIL-DRIVER", [/^UPA$/]],
-      ["RAIL-MON", [/^RM(24|15)[AB]$/]],
+      ["RAIL-MON", [/^RM(24|15)[AB]$/, /^CM(24|15)$/]],   /* E81 F-D-4: 100 nF at the divider, the 132 ns aperture needs it */
     ], ["CARD-IF", "GROUNDING", "COIL-DRIVER", "RAIL-MON"]],
     ["AUX-POWER", [
       ["FLYBACK", [/^UAUX$/, /^QAUX$/, /^RAUX(CS|G|RT|ST[12])$/, /^RCSF$/, /^CCSF$/, /^TAUX$/, /^RBR(1A|1B|2)$/, /^(DZAUX|QAUXFB|RZFB|RBEFB|CFBF|CAUXSS)$/, /^DCLA$/, /^CCLA$/, /^RCLA[123]$/]],   /* R4-3: zener-NPN loop replaces the RFB/RCOMP set */
-      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^RAUX24$/, /^CVCCB?$/, /^DTVS(24|15)$/]],
+      ["RAILS", [/^DAUX(24|15|VC)$/, /^CAUX(24|15)$/, /^RAUX24$/, /^RPL24$/, /^CVCCB?$/, /^DTVS(24|15)$/]],   /* E81 F-A-10: V24 preload */
       ["BUCK-3V3", [/^UBKA$/, /^LBKA$/, /^CBK[IO]A$/, /^CBSTA$/, /^RBKF[12]A$/, /^REN[12]A$/]],   /* R4-4/R4-5 */
-      ["FANS", [/^JFAN\d$/, /^RFT\d$/, /^RFDT\d$/]],
+      ["FANS", [/^JFAN\d$/, /^RFT\d$/, /^RFDT\d$/, /^RFPD\d$/]],   /* E81 F-A-20: defined-low FAN_PWM at boot */
       ["INTERCONNECT", [/^JICA$/, /^RAL(TX|RX|TS|RS)$/]],
     ], ["FLYBACK", "RAILS", "BUCK-3V3", "FANS", "INTERCONNECT"]],
   ],
   dcdc: [
     ["LLC-LEGS", [
-      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/]],
+      ["BUS-IN", [/^JDC[PN]$/, /^JPEB$/, /^CF\d+$/, /^CFDMP$/, /^RFDMP$/]],   /* E81 F-G-1 FIX-D: the series-RC damper across the entry film */
       ["LEG-1", [/^(Q|U|PS|R|D|C)1[HL]/, /^RG1[HL][123]$/]],   /* E67 full bridge: leg A (SWA) */
       ["LEG-2", [/^(Q|U|PS|R|D|C)2[HL]/, /^RG2[HL][123]$/]],   /* E67 full bridge: leg B (SWB) */
     ], ["BUS-IN", "LEG-1", "LEG-2"]],
     ["LLC-TANKS", [
-      ["TANK", [/^C1R\d+$/, /^L1R$/, /^T1[AB]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/, /^U1W$/, /^D1W$/, /^C1WB$/]],
+      ["TANK", [/^C1R\d+$/, /^L1R$/, /^T1[AB]$/, /^CT1$/, /^R1C[TF]$/, /^C1CF$/, /^D1C[PN]$/, /^U1W$/, /^D1W$/, /^C1WB$/, /^C1AVM$/]],   /* E81 F-A-15: the local AVMID reservoir sits with the CT/burden pair it decouples */
       ["RECT-A", [/^D1A[1-4](P[23])?$/]],
       ["RECT-B", [/^D1B[1-4](P[23])?$/]],
-      ["F11-WINDOW", [/^[RC]F11[HML]$/]],   /* E67: the ladder was unassigned since E65 (three comparators hid it from R4-3) */
+      ["F11-WINDOW", [/^[RC]F11[HML]$/, /^R1WH[AB]$/]],   /* E81 F-A-21: the 1 M positive feedback belongs with the ladder it biases */   /* E67: the ladder was unassigned since E65 (three comparators hid it from R4-3) */
     ], ["TANK", "RECT-A", "RECT-B", "F11-WINDOW"]],
     ["BANKS-SP", [
       ["BANK-A", [/^CFA\d+$/]],   /* E68 film-only bank */
@@ -133,13 +133,13 @@ const PAGES = {
     ], ["OUTPUT", "SENSE-VBKA", "SENSE-VBKB", "SENSE-VOUT", "ISO-BIAS", "ANALOG-MID", "NTC"]],
     ["CONTROL", [
       // card-split (E35): see the AC-DC CONTROL note — board keeps interface + pull-downs + strap.
-      ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/]],
+      ["CARD-IF", [/^JB$/, /^RPDB\d$/, /^RROLEB$/, /^CROLEB$/]],   /* E81 F-D-4: the RATING strap gets the same 100 nF as the rail monitors */
       ["COIL-DRIVER", [/^ULB$/, /^UEXCL2?$/, /^CEXCL2?$/]],   /* R4-8 hardware S/P exclusion */
       ["INTERCONNECT", [/^JICB$/, /^RBL(TX|RX|TS|RS)$/]],
     ], ["CARD-IF", "COIL-DRIVER", "INTERCONNECT"]],
     ["COMMS-HMI", [
       ["CAN", [/^UCAN$/, /^PSCAN$/, /^LCAN$/, /^JCAN$/, /^RTERM$/, /^JTERM$/, /^TVSCAN$/, /^RCGB$/, /^CCGB$/, /^CCV[12]$/, /^CCB5$/]],
-      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^CSR1$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/]],
+      ["HMI", [/^DISP1$/, /^USR1$/, /^RSEG\d$/, /^CSR1$/, /^QDIG[12]$/, /^RDIG[12]$/, /^SW[12]$/, /^RSW[12]$/, /^CSW[12]$/, /^RHPD[12]$/]],   /* E81 F-A-20: HMI_CLK/HMI_LAT cannot float with the card absent */
     ], ["CAN", "HMI"]],
   ],
 };

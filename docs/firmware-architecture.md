@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/review-E78%2FE80_·_port_built-d19a00?style=flat-square" alt="review: E78/E80 · port built"/>
 </p>
 
@@ -32,7 +32,7 @@
 | **Protocols** | VMP 2.0 (native) and TonHe V1.2 — one profile per boot, chosen from the stored configuration; TonHe can be left out of an image at build time |
 | **Protection** | six response levels; every F.xx row carries a recovery class — AUTO_EXT · AUTO_INT · LATCH · LOCK |
 | **Smoothness** | bumpless soft start from the output node, slew-limited references, a 100 ms controlled stop, min-select CV/CC with back-calculation anti-windup, CV share trim |
-| **MCU** | one GD32G553 runs both stages — ≈ 35 % CPU by static estimate; the 100 kHz PFC update is the binding item (§3.5) |
+| **MCU** | one GD32G553 runs both stages. E79 estimated ≈ 35 % CPU; the E81 disassembly count (reviewer D) put the 100 kHz PFC ISR at 5.8–7.4 µs of its 10 µs period before the E81 trims (grid sampling out of the 100 kHz context, reciprocal, PFEN) — the binding item, measured at T-64 with a **STOP line of ≤ 5 µs worst case** (§3.5) |
 | **Verified on the host** | 222 checks: the 26 fault scenarios, E60–E79 regressions, every-tick invariants, both protocols against their documents, 2 M fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end |
 | **Before hardware** | loop gains on HIL (§5.4) · T-44/T-47/T-48 on silicon · HW-REC-1/4/5 (§10) — the register port itself is built and gated (E80: `firmware/port/gd32g553/`, no vendor library) |
 
@@ -218,7 +218,19 @@ the 100 ms slice with the control ISRs executing from RAM or from the bank not b
 A plausibility row only affects what it covers. F.29 latches only when a signal a protection row depends on is invalid for
 its persistence (3 ms, E77).
 
-### 3.5 One MCU for both stages — the verdict (E79)
+### 3.5 One MCU for both stages — the verdict (E79, re-examined at E81)
+
+> [!IMPORTANT]
+> **E81.** Reviewer D's disassembly count of the shipped 100 kHz PFC ISR was **5.8–7.4 µs**, not the 2.5–4.5 µs estimated below —
+> a CPU margin near 1.35× instead of ≥ 2×. Two remedies were examined. The documented fallback (one PFC update per carrier,
+> 30 µs transport delay) is **forbidden on 40 / 50 kW**: the input-filter modulus margin drops to 0.26 / 0.17 there (reviewer E's
+> sweep on the drawn damper; the 0.50 line is GM ≥ 6 dB, PM ≥ 29°), and no damper value that fits the module recovers it. The
+> ISR is therefore trimmed instead (grid sampling and the line-cycle work moved to the 10 kHz / 1 kHz contexts, reciprocal
+> multiplies, PFEN), and the bring-up STOP line is **≤ 5 µs worst case** (T-64, `pfc_exec_us`). **MCU decision:** the GD32G553VET7
+> stays the first-prototype primary (216 MHz, TCM, this register-level port with its host suite); the card is pin-compatible with
+> the STM32G474VET7 from E81 (I_A0 ↔ T_LLC swap gives DAC-referenced comparators on both parts) as the second source / ecosystem
+> path — at 170 MHz it would force the forbidden fallback unless the trims land first, so the production primary is chosen after
+> T-64.
 
 **Yes.** The GD32G553 runs the Vienna PFC, the LLC and the supervisory stack from one Cortex-M33 core with margin, on two
 conditions: both control interrupts execute from TCM RAM, and EVT T-44 confirms the estimate below with the DWT counter.
@@ -229,7 +241,7 @@ DWT high-water marks surface as VMP object 0x0500 for T-44.
 | Resource | Needed | GD32G553VET7 |
 |---|---|---|
 | Core | single-precision float in the 100 kHz path | Cortex-M33 at 216 MHz, single-precision FPU, DSP extension |
-| PWM | LLC legs A and B with hardware dead time · three Vienna phases on one carrier · a hardware kill | HRTIMER at 145 ps; ST0 / ST1 for the legs and ST3–ST5 for the phases in the pin map; fault channels for CMP0 · CMP1 · CMP2 · CMP4 · CMP7 and the FLT wire-OR |
+| PWM | LLC legs A and B with hardware dead time — **adaptive from E81**: t_dead = 1.25 · 2 · n_die · (Q_oss(V_bus) + C_s·V_bus) / I_comm per LEG per 10 kHz step, clamped 60–900 ns (DTGCKDIV 2) — leg A on I_m,pk (the weak leg in phase shift), leg B on the measured tank peak in PSM (the deck loses every ZVS edge when the strong leg waits 900 ns), both on the turn-off estimate in PFM, so the light-load PS150 corner keeps ZVS with the turn-off snubber fitted and the heavy-load corners do not pay the fixed-120 ns body-diode term · three Vienna phases on one carrier · a hardware kill | HRTIMER at 145 ps; ST0 / ST1 for the legs and ST3–ST5 for the phases in the pin map; fault channels for CMP0 · CMP1 · CMP2 · CMP3 (E81, was CMP7) · CMP4 and the FLT wire-OR |
 | Analog | 5 channels per PFC update, 4 per LLC period, about 14 slow | four 12-bit ADCs at up to 5.3 Msps each — about 15 % used |
 | Fast protection | 5 comparators with DAC references | 8 comparators, DAC internal outputs |
 | Communication | one CAN at 125–500 kbit/s | 3 CAN-FD |
@@ -244,9 +256,11 @@ DWT high-water marks surface as VMP object 0x0500 for T-44.
 | **All contexts** | including interrupt entry with lazy FPU stacking | | **≈ 35 % average** |
 
 Method: instruction counts from the disassembly of the compiled paths, 1.1 cycles per instruction from TCM (1.3–1.5 from flash
-with wait states), 19 cycles per VDIV and 29 per VSQRT. It is an estimate, not a measurement. If T-44 measures the PFC update
-above 5 µs, the fallback is one update per carrier period (50 kHz — the 30 µs delay E65 already analysed), which halves the
-PFC load.
+with wait states), 19 cycles per VDIV and 29 per VSQRT. It is an estimate, not a measurement. **E81:** the disassembly count of
+the shipped ISR was ≈ 1 600 cycles (7.4 µs); after the E81 trims (grid sampling and the offset window moved to the 10 kHz context,
+six divisions removed from the drain, DAC references precomputed, PFEN) it is ≈ 1 250 cycles (5.8 µs static) — T-64 measures it
+against the ≤ 5 µs STOP line. The one-update-per-carrier fallback is **no longer an option on 40 / 50 kW** (input-filter margin
+0.26 / 0.17 at a 30 µs delay); a miss is trimmed further in the ISR.
 
 ## 4. State machines
 
@@ -379,7 +393,7 @@ saturation, takeover within 1 A of the limit with no demand step, skip hysteresi
 | Start, cold standby → regulated | ≤ 3.0 s | PFC off, matrix open, make-permit bleed included |
 | Voltage setpoint step ± 10 % | ramp-limited; overshoot ≤ 1 %; within ± 0.5 % ≤ 100 ms after the ramp | resistive 20–100 % |
 | Current setpoint step 10 ↔ 90 % | t90 ≤ 150 ms up, ≤ 100 ms down; overshoot ≤ 2 % of rated | battery emulator |
-| Load step 25 ↔ 100 % in CV | deviation ≤ 3 %; back within ± 0.5 % in ≤ 50 ms | resistive |
+| Load step 25 ↔ 100 % in CV | deviation ≤ 10 % at the module stud (E81: the film-only bank of 9.9–61.6 µF overshoots +4.9 … +9.7 % on the shipped gains in the SIL — the earlier 3 % line was met only by a 200 µF test plant the product does not carry; a gain or control-period change moves it < 1 pp, only capacitance does); back within ± 0.5 % in ≤ 50 ms; must not reach F.14 (mode-max × 1.05 + 20 V / 2 ms) | resistive, DOUT + 5 m cable |
 | Load dump from 100 % | peak ≤ V_set · 1.05 + 10 V; no F.13 latch | EV contactor opens; needs HW-REC-1 |
 | CV ↔ CC transition | current overshoot ≤ 2 % of rated; voltage overshoot ≤ 1 %; no limit cycle above 0.5 % | battery reaching its CV setpoint |
 | Accuracy | V ± 0.5 % (≥ 150 V) · I ± 1 % (20–100 %) · ± 0.5 A below 50 A | after EOL calibration |
@@ -605,7 +619,7 @@ no J1939 PDU1 frame sets the native marker.
 | HW-REC-1 | A non-latching, cycle-by-cycle output-overvoltage clamp: SNS_VOUT on a second comparator into an HRTIMER external event at v_ref · 1.05 + 10 V; keep CMP0 as the latching F.13 with its threshold scheduled by mode (LOW 560 V · HIGH 1 050 V) | FW-19: a load dump in LOW mode has no hardware clamp below 1 050 V, and a lowered latch would trip on every dump | a pin re-allocation in `umod-pinmap` if a comparator input is free (the E75 pattern), else one external comparator | user decision; T-45 measures |
 | HW-REC-2 | Confirm every matrix relay and the bypass pair land their mirror contacts on the card ways the HAL reads | F.19 needs them (the ways exist since E30) | HAL mapping check | confirm at bring-up |
 | HW-REC-3 | A hard-wired module inhibit input | TonHe TH750 modules carry a "module shutdown signal" pair on the output connector; some cabinets wire it | one opto-isolated digital input | per customer |
-| HW-REC-4 (E80) | Fit an 8–24 MHz crystal on OSCIN/OSCOUT (pins 12/13, unallocated today) | IRC8M is ±2.5 % over temperature; classic CAN needs ~±0.5 % — the port runs HXTAL-PLL with the clock monitor when fitted (IRC8M fallback keeps the module regulating) and best-effort CAN otherwise | two pads + crystal + loads | **fit before EVT CAN interop (T-46)** |
+| HW-REC-4 (E80) — **closed at E81** (8 MHz crystal + 2 × 12 pF + 1 MΩ on pins 12/13, `PORT_HXTAL_HZ` 8 MHz, 20 ms bounded start wait) | Fit an 8–24 MHz crystal on OSCIN/OSCOUT (pins 12/13, unallocated today) | IRC8M is ±2.5 % over temperature; classic CAN needs ~±0.5 % — the port runs HXTAL-PLL with the clock monitor when fitted (IRC8M fallback keeps the module regulating) and best-effort CAN otherwise | two pads + crystal + loads | **fit before EVT CAN interop (T-46)** |
 | HW-REC-5 (E80, review HR-23) | Route DRV_RDY into the safety AND's spare third inputs | an asynchronous global gate-off when any driver bias fails, ahead of the 10 ms firmware supervision | rewire two AND inputs on the card | user decision |
 
 ## 11. Open before release
@@ -627,5 +641,5 @@ no J1939 PDU1 frame sets the native marker.
 <div align="center">
 <sub><a href="firmware-guide.md">← Firmware Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">VMP 2.0 Native CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
