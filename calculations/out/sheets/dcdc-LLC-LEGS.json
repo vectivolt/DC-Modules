@@ -576,7 +576,7 @@
    ],
    "nc_pins": [],
    "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
    "mpn": "QA01C-18"
   },
   {
@@ -921,7 +921,7 @@
    ],
    "nc_pins": [],
    "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
    "mpn": "QA01C-18"
   },
   {
@@ -1326,7 +1326,7 @@
    ],
    "nc_pins": [],
    "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
    "mpn": "QA01C-18"
   },
   {
@@ -1671,7 +1671,7 @@
    ],
    "nc_pins": [],
    "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
+   "query": "QA01C-18 iso gate-bias module +18/−3 V ",
    "mpn": "QA01C-18"
   }
  ]

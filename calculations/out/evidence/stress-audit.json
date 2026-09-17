@@ -324,7 +324,7 @@
    "status": "ok",
    "tag": "INS",
    "name": "bonded magnetics carry their basic-barrier rows at the computed recurring peaks",
-   "detail": "D1 540 V (≤700 V: hipot + impulse, no PD) · D2/D3 1270 / 1260 / 1280 / 1280 V (30/40/50/50a — PD sample test at ≥ 2.0 / 1.9 / 2.0 / 2.0 kV) → rows present"
+   "detail": "D1 540 V (≤700 V: hipot + impulse, no PD) · D2/D3 1160 / 1170 / 1190 / 1190 V (30/40/50/50a — PD sample test at ≥ 1.8 / 1.8 / 1.8 / 1.8 kV) → rows present"
   },
   {
    "status": "ok",
@@ -480,7 +480,7 @@
    "status": "ok",
    "tag": "EMI",
    "name": "current loop vs drawn filter [pfc-control]",
-   "detail": "modulus margin ≥ 0.54 (P/PI, 15 µs, damped) · switched-model 2–45 kHz ≤ 0.11 % · undamped 30 µs control ≥ 59 % · RDMP ≤ 5.9 W of 25"
+   "detail": "modulus margin ≥ 0.54 (P/PI, 15 µs, damped) · switched-model 2–45 kHz ≤ 0.11 % · undamped 30 µs control ≥ 46 % · RDMP ≤ 5.9 W of 25"
   },
   {
    "status": "ok",

@@ -137,7 +137,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 |---|---|
 | Inductance | **5.16 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
 | Current rating | **70.4 A rms** at the copper corner (203 kHz) · **112.7 A pk** at the worst simulated corner · 209.1 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
-| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372B2000** — powder cores prohibited in this slot |
+| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372A2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **8000×0.05** mm (15.7 mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
 | Gap | distributed centre-leg gap **Σ ≈ 9.5 mm in 10 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 5.16 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
 | Rdc · Rac | Rdc **≤ 1.35 mΩ** @ 25 °C (100 %) · Rac **≤ 3.35 mΩ** @ 203 kHz, 100 °C (sample 5 / lot) |
@@ -180,7 +180,7 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 | Row | Specification — PMP-MAG-D3-30 rev D |
 |---|---|
 | Ratio · magnetizing | **6:6∥6 exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **28 µH ± 7 %** per cell @ 10 kHz, 0.1 V |
-| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class · TDK B66372B2000 (2-set, lN 230.5 mm) |
+| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class · TDK B66372A2000 (2-set, lN 230.5 mm) |
 | Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **0.778 µH/T² (Σ gap ≈ 2.3 mm with fringing)** on the assembled cell |
 | Current rating | primary **70.4 A rms** / **112.7 A pk** · each secondary half **34.6 A rms** / 54.3 A pk at the worst simulated corner · 83–203 kHz |
 | Primary | **TIW-served litz 3850×0.063 mm (12 mm²)**, one layer |
@@ -330,7 +330,7 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 | Part | Fastest honest route for the first 30 kW build |
 |---|---|
 | D1 | wind in-house on stocked 0077908A7 cores with 1.6 mm grade-2 wire to this sheet; measure L₀, L @ Ipk and Rdc against the rows |
-| D2 · D3 | stocked TDK E70/33/32 N95 sets and B66372B2000 formers; litz to order; wind to this sheet and measure Lm, leakage and Rac at 140 kHz (EVT T-31 / T-34) before trusting any tank result |
+| D2 · D3 | stocked TDK E70/33/32 N95 sets and B66372A2000 formers; litz to order; wind to this sheet and measure Lm, leakage and Rac at 140 kHz (EVT T-31 / T-34) before trusting any tank result |
 | D7 | Schaffner RT8131-63-2M8 from stock |
 | CTs | Talema catalogue parts (ACX line CTs, AS-series resonant CT) |
 | D4 | bring the control up on a catalogue 24 V supply (Mean Well RSDH-150-24 class plus a 24 → 15 V converter) until the ETD44 part arrives |

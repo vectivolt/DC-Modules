@@ -19,6 +19,7 @@
 typedef struct { uint32_t off, seq, pcrc; uint8_t len; bool have; } nvm_rec_t;
 
 typedef struct {
+  uint8_t base;                /* E80: this store's first port page — pages base and base + 1 (several stores share the hooks) */
   uint32_t page_size;          /* bytes per page, a multiple of 4 */
   uint8_t active;              /* page 0 or 1 */
   uint32_t page_seq;           /* generation of the active page */
@@ -28,13 +29,13 @@ typedef struct {
   nvm_rec_t rec[NVM_KINDS];
 } nvm_t;
 
-/* provided by the port: page ∈ {0, 1}, off within the page; false on a controller error */
+/* provided by the port: page = a store's base + 0 or 1, off within the page; false on a controller error */
 bool nvm_port_read(uint8_t page, uint32_t off, uint8_t *p, uint32_t n);
 bool nvm_port_prog(uint8_t page, uint32_t off, const uint8_t *p, uint32_t n);
 bool nvm_port_erase(uint8_t page);
 
 uint32_t pmp_crc32(const uint8_t *p, size_t n);   /* CRC-32/ISO-HDLC, check "123456789" = 0xCBF43926 */
-void nvm_mount(nvm_t *s, uint32_t page_size);     /* formats page 0 only when neither page holds a valid header */
+void nvm_mount(nvm_t *s, uint8_t base, uint32_t page_size);   /* formats the first page only when neither holds a valid header */
 bool nvm_get(nvm_t *s, uint8_t kind, uint8_t *buf, uint8_t len);
 /* true when the payload is stored (or already was); false when it is not — a write error, or a compaction is due and
    may_erase is false (retry later) */

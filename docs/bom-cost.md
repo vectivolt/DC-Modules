@@ -36,7 +36,7 @@
 
 | Build | ₹ @10k | ₹ / kW | China RFQ target ₹ @10k | ₹ / kW | Red-line | Stretch | Verdict (India basis) |
 |---|---:|---:|---:|---:|---:|---:|---|
-| 30 kW module | **30,033** | 1,001 | 24,639 | 821 | 25,000 | 22,000 | ⚠️ over by ₹5,033 |
+| 30 kW module | **30,032** | 1,001 | 24,639 | 821 | 25,000 | 22,000 | ⚠️ over by ₹5,032 |
 | 40 kW module | **34,616** | 865 | 28,319 | 708 | 33,000 | 29,000 | ⚠️ over by ₹1,616 |
 | 50 kW liquid module | **40,481** | 810 | 33,182 | 664 | 43,000 | 39,000 | ✅ under by ₹2,519 |
 | 50 kW air module | **38,404** | 768 | 31,398 | 628 | 43,000 | 39,000 | ✅ under by ₹4,596 |
@@ -51,8 +51,8 @@ design and quotes exist.
 
 | Build | Design basis ₹ @10k | 2U scenario ₹ @10k | 2U scenario + China RFQ target |
 |---|---:|---:|---:|
-| 30 kW module | 30,033 | 28,442 | **23,348** |
-| 40 kW module | 34,616 | 32,680 | **26,735** |
+| 30 kW module | 30,032 | 28,441 | **23,347** |
+| 40 kW module | 34,616 | 32,680 | **26,734** |
 
 ## Cost per kW across the family
 
@@ -66,7 +66,7 @@ xychart-beta
 
 | Module | Cooling | ₹ @10k | **₹ / kW** |
 |---|---|---:|---:|
-| 30 kW module | air · 2 fans | 30,033 | **1001** |
+| 30 kW module | air · 2 fans | 30,032 | **1001** |
 | 40 kW module | air · 3 fans | 34,616 | **865** |
 | 50 kW liquid module | two coldplates · no fans | 40,481 | **810** |
 | 50 kW air module | air · 4 fans | 38,404 | **768** |
@@ -82,10 +82,10 @@ its sourcing status.
 
 | Module | ₹ @10k | China target | 1k · 5k · 100 pcs | Lines | Page |
 |---|---:|---:|---|---:|---|
-| 30 kW module | **30,033** | 24,639 | 36,984 · 33,030 · 47,990 | 142 | [bom-30kw.md](bom-30kw.md) |
+| 30 kW module | **30,032** | 24,639 | 36,984 · 33,030 · 47,990 | 142 | [bom-30kw.md](bom-30kw.md) |
 | 40 kW module | **34,616** | 28,319 | 42,616 · 38,042 · 55,372 | 149 | [bom-40kw.md](bom-40kw.md) |
-| 50 kW liquid module | **40,481** | 33,182 | 49,681 · 44,411 · 64,300 | 149 | [bom-50kw.md](bom-50kw.md) |
-| 50 kW air module | **38,404** | 31,398 | 47,296 · 42,192 · 61,562 | 151 | [bom-50kwa.md](bom-50kwa.md) |
+| 50 kW liquid module | **40,481** | 33,182 | 49,680 · 44,411 · 64,299 | 149 | [bom-50kw.md](bom-50kw.md) |
+| 50 kW air module | **38,404** | 31,398 | 47,295 · 42,192 · 61,561 | 151 | [bom-50kwa.md](bom-50kwa.md) |
 
 ## Red-line closure levers (10k basis)
 

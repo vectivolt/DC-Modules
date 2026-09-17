@@ -1,0 +1,68 @@
+#!/bin/sh
+# build.sh — E80 the GD32G553 target build: bootloader ELF/bin + application ELFs for slot A and slot B, then the signed
+# images (firmware/tools/fw-sign.mjs, development key firmware/boot/keys/dev). No vendor library: regs.h carries the
+# register truth (UM Rev 1.3, cited line by line). -Werror; every warning is a defect.
+# Usage: sh build.sh [out-dir]   (default firmware/port/gd32g553/out)
+set -e
+cd "$(dirname "$0")"
+OUT="${1:-out}"
+mkdir -p "$OUT"
+FW=../..
+
+CC="arm-none-eabi-gcc -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard \
+  -std=c99 -Os -g -ffunction-sections -fdata-sections -ffreestanding -fno-math-errno -fno-builtin-logf \
+  -Wall -Wextra -Werror -I$FW -I. -Iinclude -DPMP_TARGET_GD32G553"
+LD="-nostdlib -Wl,--gc-sections -Wl,--print-memory-usage"
+LIBGCC=$(arm-none-eabi-gcc -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard -print-libgcc-file-name)
+
+CORE="$FW/core/fsm.c $FW/core/group.c $FW/core/ctl.c $FW/core/modapi.c"
+PROTO="$FW/proto/frame.c $FW/proto/vmp.c $FW/proto/tonhe_v12.c $FW/proto/profile.c"
+HAL="$FW/hal/app.c $FW/hal/pfc.c $FW/hal/llc.c $FW/hal/meas.c $FW/hal/nvm.c $FW/hal/evlog.c"
+PORT="startup.c system.c hrtimer.c adc.c can.c nvmport.c lib.c"
+BOOT="$FW/boot/sha256.c $FW/boot/p256.c $FW/boot/image.c $FW/boot/bootctl.c $FW/boot/svc.c $FW/boot/updater.c"
+
+# compile to named objects first: the linker script places whole objects (pfc.o, llc.o …) into TCM by name,
+# which silently fails on the compiler's temporary object names if sources go straight to the link.
+OBJ="$OUT/obj"
+mkdir -p "$OBJ"
+APPOBJS=""
+for f in $CORE $PROTO $HAL $FW/boot/bootctl.c port.c $PORT; do
+  o="$OBJ/$(basename "$f" .c).o"
+  $CC -c "$f" -o "$o"
+  APPOBJS="$APPOBJS $o"
+done
+BOOTOBJS=""
+for f in $BOOT boot_main.c; do
+  o="$OBJ/boot_$(basename "$f" .c).o"
+  $CC -c "$f" -o "$o"
+  BOOTOBJS="$BOOTOBJS $o"
+done
+for f in $FW/hal/nvm.c $FW/proto/frame.c $PORT; do BOOTOBJS="$BOOTOBJS $OBJ/$(basename "$f" .c).o"; done
+
+# application: one link per slot (execute in place — the load address is part of the signed header)
+for SLOT in A B; do
+  BASE=$( [ "$SLOT" = A ] && echo 0x0800C000 || echo 0x08040000 )
+  sed "s/@SLOT_BASE@/$BASE/" app.ld.in > "$OUT/app_$SLOT.ld"
+  arm-none-eabi-gcc -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard $LD -T "$OUT/app_$SLOT.ld" \
+    $APPOBJS "$LIBGCC" -o "$OUT/app_$SLOT.elf" 2> "$OUT/app_$SLOT.mem"
+  cat "$OUT/app_$SLOT.mem"
+  arm-none-eabi-objcopy -O binary "$OUT/app_$SLOT.elf" "$OUT/app_$SLOT.body"
+done
+
+# bootloader
+arm-none-eabi-gcc -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard $LD -T boot.ld \
+  $BOOTOBJS "$LIBGCC" -o "$OUT/boot.elf" 2> "$OUT/boot.mem"
+cat "$OUT/boot.mem"
+arm-none-eabi-objcopy -O binary "$OUT/boot.elf" "$OUT/boot.bin"
+
+arm-none-eabi-size "$OUT/boot.elf" "$OUT/app_A.elf" "$OUT/app_B.elf"
+
+# signed images (development key; production signs offline with its own key)
+if [ -f "$FW/boot/keys/dev/private.pem" ]; then
+  V="${PMP_FW_VERSION:-1.0.0.1}"
+  node "$FW/tools/fw-sign.mjs" sign "$FW/boot/keys/dev/private.pem" "$OUT/app_A.body" "$OUT/app_A.img" \
+    --slot A --version "$V" --min 1.0.0.0
+  node "$FW/tools/fw-sign.mjs" sign "$FW/boot/keys/dev/private.pem" "$OUT/app_B.body" "$OUT/app_B.img" \
+    --slot B --version "$V" --min 1.0.0.0
+fi
+echo "TARGET BUILD OK"

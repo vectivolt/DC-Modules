@@ -20,6 +20,7 @@
 #include "llc.h"
 #include "meas.h"
 #include "nvm.h"
+#include "evlog.h"
 #include "../core/fsm.h"
 #include "../core/ctl.h"
 #include "../core/modapi.h"
@@ -54,7 +55,18 @@
 #define APP_DI_BTN1    (1u << 2)   /* pressed */
 #define APP_DI_BTN2    (1u << 3)
 
-enum { APP_DAC_IA = 0, APP_DAC_IB, APP_DAC_IC, APP_DAC_VBUS, APP_DAC_VOUT, APP_DAC_COUNT };
+/* APP_DAC_CLAMP is HW-REC-1 firmware readiness: the non-latching cycle-by-cycle output clamp's reference
+   (v_ref · 1.05 + 10 V, never above the latching F.13 threshold). The port maps it only when the hardware exists. */
+enum { APP_DAC_IA = 0, APP_DAC_IB, APP_DAC_IC, APP_DAC_VBUS, APP_DAC_VOUT, APP_DAC_CLAMP, APP_DAC_COUNT };
+/* E80: relay-coil economizer duties (firmware-guide E26): 100 % pull-in for 60 ms after a close command, then 40 % hold
+   at 20 kHz. Order: KPRE · KSER · KPARA · KPARB. do_bits stays the boolean truth; a port without a PWM-capable pin for a
+   coil drives the full duty. */
+enum { APP_RLY_KPRE = 0, APP_RLY_KSER, APP_RLY_KPARA, APP_RLY_KPARB, APP_RLY_COUNT };
+#define APP_RLY_PULL_MS 60u
+#define APP_RLY_HOLD    0.4f
+/* E80 (review HR-25/R25): fan supervision is a curve, not a floor — full-speed tach of the selected fan (two pulses per
+   revolution); a fan below 35 % of the speed its duty commands for 3 s has failed. Calibrate at EVT with the chosen fan. */
+#define APP_TACH_FULL_HZ 120.0f
 
 /* the HAL's warnings, above the core's PMP_W_* bits in mod_tlm_t.warn */
 #define APP_W_UNCAL    (1u << 16)  /* no calibration record: nominal scaling (±3 % class) */
@@ -82,12 +94,16 @@ typedef struct {
 
 typedef struct {
   uint16_t do_bits;                      /* APP_DO_* */
+  float relay_duty[APP_RLY_COUNT];       /* E80: economizer duty per coil (0 = open) */
   float fan_duty[2];                     /* FAN_PWM1 · FAN_PWM2 (fans 3 and 4 share PWM2) */
   float dac_v[APP_DAC_COUNT];            /* comparator references, volts on the 3.3 V DAC scale */
   bool wdt_kick;                         /* pulse WDI */
   bool fault_rearm;                      /* clear the HRTIMER fault latches */
   bool can_restart; uint32_t can_bitrate;
   bool reboot;                           /* a profile's reboot, once its acknowledgement has left */
+  bool enter_boot;                       /* E80: ACTION ENTER_BOOT accepted — reset into the bootloader (handoff.h) */
+  bool boot_ok;                          /* E80: 60 s of healthy standby and no LATCH/LOCK row since boot — the port
+                                            confirms a pending slot (boot/bootctl.h) on its rising edge */
   uint8_t hmi_seg, hmi_dig;              /* segments (bit 0 = a … bit 7 = DP) for digit 1 or 2 */
 } app_tick_out_t;
 
@@ -95,6 +111,9 @@ typedef struct {
   float rating_counts;                   /* ROLE1 strap */
   bool wdt_reset;                        /* the reset cause was the watchdog */
   uint32_t uid, fw, nvm_page_size;
+  uint32_t fw_crc, boot_ver;             /* E80: from the image header / bootloader (0 when absent) */
+  uint8_t boot_state;                    /* E80: VMP object 0x0009 (boot/bootctl.h state) */
+  uint8_t evlog_pages;                   /* E80: port pages 4 … 4 + n − 1 hold the event ring (0 = no event log); pages 2/3 are the bootloader's record store */
 } app_boot_t;
 
 #define APP_CFG_VERSION 1u
@@ -148,6 +167,10 @@ typedef struct {
   float fan_duty; uint32_t fan_on_ms; uint16_t fan_still_ms[4]; uint8_t fan_fail;
   uint16_t b1_ms, b2_ms; bool edit; uint8_t edit_addr; uint16_t edit_ms;
   uint32_t op_ms, t_cfg, t_cnt; float e_mws; bool llc_was, cnt_due; uint8_t nvm_fail;
+  /* E80: event log, bootloader glue, diagnostics, relay economizer */
+  evlog_t ev; pmp_fault_t ev_prev; bool latch_seen, factory_pend, reboot_pend;
+  uint16_t pfc_us, llc_us; uint8_t stack_pct;
+  uint16_t rly_ms[APP_RLY_COUNT];
   bool busoff; uint32_t t_busoff, busoff_t[10]; uint8_t busoff_i, busoff_n;
 } app_t;
 

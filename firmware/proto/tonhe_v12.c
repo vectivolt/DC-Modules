@@ -139,7 +139,7 @@ void th12_enc_state(const th12_t *t, const mod_tlm_t *m, uint32_t now, pmp_frame
   if (fb & FB(15)) w |= 1u << 4;                                     /* output overcurrent */
   if (fb & FB(22)) w |= 1u << 5;                                     /* temperature high */
   if ((m->warn & PMP_W_DERATE_FAN) || m->fan_fail) w |= 1u << 6;     /* fan fault (this module derates instead of stopping) */
-  if (fb & FB(5)) w |= 1u << 8;                                      /* bus exception (bus bias is PFC bit 5 — the §9.1.1 example) */
+  if (fb & (FB(5) | FB(38))) w |= 1u << 8;                           /* bus exception (bus bias / E80 half-link OV F.38) */
   if (fb & FB(27)) w |= 1u << 9;                                     /* internal communication (F.27 — reserved, one brain) */
   if (fb & FB(21)) w |= 1u << 10;                                    /* discharge fault */
   if (fb & (FB(1) | FB(2) | FB(3) | FB(5) | FB(6))) w |= 1u << 11;   /* PFC shut down by an exception */

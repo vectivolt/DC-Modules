@@ -72,7 +72,7 @@ MAGNETICS CONSTRUCTION
 Text Notes 31160 17820 0    60   ~ 0
 identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)
 Text Notes 31150 18250 0    60   ~ 0
-D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372B2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED
+D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 2x E70/33/32 (B66372A2000), 6:6||6, pri litz 3850x0.063 + sec foil 0.10x28 halves, Lm 28uH/cell +/-7%, Bpk 159mT, BONDED
 Text Notes 31150 18550 0    60   ~ 0
 D2 L1R (E67 rev F): external Lr 5.16uH +/-3%, 2x E70/33/32, N=5, litz 8000x0.05, distributed gap, bonded
 Text Notes 31150 18850 0    60   ~ 0

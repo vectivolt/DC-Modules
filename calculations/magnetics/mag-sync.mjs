@@ -37,7 +37,7 @@ const IDS = [
   // E67: the full-bridge tank — D3 rev D transformer cells (primaries in series), D2 rev F external Lr. E68 retired D6 (AC DM chokes)
   // and D8 (bank inductors, the D6 construction): the star-X2 filter and film-only banks need neither.
   { id: "D2 rev F external Lr", tokens: { "5.16 µH": [mag, pack, db], "4.07 µH": [mag, pack, db], "3.28 µH": [mag, pack, db], "5.16uH": [boards, k5], "4.07uH": [boards, k5], "3.28uH": [boards, k5], "8000×0.05": [mag, pack, db], "10000×0.05": [mag, pack, db], "12000×0.05": [mag, pack, db], "IND-LR-E70-40": [pack, db], "IND-LR-E70-50": [pack, db] } },
-  { id: "D3 rev D cells", tokens: { "6:6∥6": [mag, pack, db], "4:4∥4": [mag, pack, db], "3850×0.063": [mag, pack, db], "3536×0.071": [mag, pack, db], "XFMR-LLC-CELL-2E70-30": [pack, db], "XFMR-LLC-CELL-3E70-40": [pack, db], "XFMR-LLC-CELL-3E70-50": [pack, db], "B66372B2000": [mag, pack, k5, db] } },
+  { id: "D3 rev D cells", tokens: { "6:6∥6": [mag, pack, db], "4:4∥4": [mag, pack, db], "3850×0.063": [mag, pack, db], "3536×0.071": [mag, pack, db], "XFMR-LLC-CELL-2E70-30": [pack, db], "XFMR-LLC-CELL-3E70-40": [pack, db], "XFMR-LLC-CELL-3E70-50": [pack, db], "B66372A2000": [mag, pack, k5, db] } },
   { id: "D2/D3 build (E65/E67)", tokens: { "VPI": [mag, pack, db], "magnetics-envelope": [mag, pack] } },
   { id: "D4", tokens: { "ETD44": [mag, pack, db], "Np 38": [pack], "XFMR-AUX-FLY-E": [pack, db], "≤ 4 µH": [pack] } },   // E65 D4 rev E (d4-flyback)
 ];

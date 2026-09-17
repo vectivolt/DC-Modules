@@ -1,0 +1,7 @@
+# Private keys never enter the repository. The committed artifacts are the PUBLIC key table (keys_dev.h) and the
+# generated test vectors (test/boot_vectors.h); regenerate both with a fresh key via:
+#   node firmware/tools/fw-sign.mjs keygen firmware/boot/keys/dev
+#   node firmware/tools/fw-sign.mjs keys firmware/boot/keys/dev/public.pem 0xDE000001 > firmware/boot/keys_dev.h
+#   node firmware/tools/fw-sign.mjs vectors firmware/boot/keys/dev/private.pem 0xDE000001 > firmware/test/boot_vectors.h
+# Production keys are generated OFFLINE and only their public halves ever reach a bootloader build.
+*/private.pem

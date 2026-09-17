@@ -33,7 +33,7 @@ typedef struct {
 static void sim_init(sim_t *s) {
   memset(s, 0, sizeof *s);
   pmp_fsm_init(&s->f);
-  s->in.vin_ll = 400; s->in.phases_ok = 3; s->in.vmid_frac = 0.5f;
+  s->in.vin_ll = s->in.vin_ll_min = s->in.vin_ll_max = 400; s->in.phases_ok = 3; s->in.vmid_frac = 0.5f;
   s->in.fan_ok = true; s->in.aux_ok = true; s->in.wdt_ok = true;
   s->in.vcmd = 400; s->in.icmd = 100;
   s->p.temp = 60; s->rload_ovr = 0;
@@ -146,8 +146,8 @@ SCRIPT(sc_short) { sc_en(s); if (s->t == 1400) s->rload_ovr = 0.02f; }
 SCRIPT(sc_extok) { if (s->t == 1) { s->in.ext_connected = true; s->in.vext = 400; } sc_en(s); }
 SCRIPT(sc_extrev) { if (s->t == 1) { s->in.ext_connected = true; s->in.vext = -350; } sc_en(s); }
 SCRIPT(sc_phloss) { sc_en(s); if (s->t == 1500) s->in.phases_ok = 2; }
-SCRIPT(sc_swell) { sc_en(s); if (s->t == 1500) s->in.vin_ll = 505; }
-SCRIPT(sc_sag) { sc_en(s); if (s->t == 1500) s->in.vin_ll = 250; }
+SCRIPT(sc_swell) { sc_en(s); if (s->t == 1500) s->in.vin_ll = s->in.vin_ll_min = s->in.vin_ll_max = 505; }
+SCRIPT(sc_sag) { sc_en(s); if (s->t == 1500) s->in.vin_ll = s->in.vin_ll_min = s->in.vin_ll_max = 250; }
 SCRIPT(sc_busov) { sc_en(s); if (s->t == 1500) s->p.bus = 870; }
 SCRIPT(sc_mid) { sc_en(s); if (s->t == 1500) s->in.vmid_frac = 0.44f; }
 SCRIPT(sc_modesw) { sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
@@ -159,7 +159,7 @@ SCRIPT(sc_lowforced) { if (s->t == 1) { s->in.vcmd = 700; s->in.omode_req = OMOD
 SCRIPT(sc_highlow) { if (s->t == 1) { s->in.vcmd = 450; s->in.omode_req = OMODE_HIGH; } sc_en(s); }
 SCRIPT(sc_reqrun) { if (s->t == 1) s->in.vcmd = 750; sc_en(s); if (s->t == 1500) s->in.omode_req = OMODE_LOW; }
 SCRIPT(sc_hyst) { if (s->t == 1) s->in.vcmd = 510; sc_en(s); if (s->t == 1500) s->in.vcmd = 490; }
-SCRIPT(sc_hiline) { if (s->t == 1) { s->in.vin_ll = 475; s->in.vcmd = 300; } sc_en(s); }
+SCRIPT(sc_hiline) { if (s->t == 1) { s->in.vin_ll = s->in.vin_ll_min = s->in.vin_ll_max = 475; s->in.vcmd = 300; } sc_en(s); }
 SCRIPT(sc_weld) { if (s->t == 1) s->welded_para = true; sc_en(s); if (s->t == 1200) s->in.vcmd = 750; }
 /* E65: EV sends its maximum (800 V) as vcmd while the pack sits at 450 V — must start PAR, never SER at bank 225 V */
 SCRIPT(sc_extlow) { if (s->t == 1) { s->in.ext_connected = true; s->in.vext = 450; s->in.vcmd = 800; } sc_en(s); s->rload_ovr = 4.5f; }
@@ -275,7 +275,7 @@ int main(void) {
   /* -------- E77 firmware review: every reproduced defect is a regression check (direct drive, no plant) -------- */
   {
     pmp_fsm_t f; pmp_in_t in;
-    #define E77_BASE() do { pmp_fsm_init(&f); memset(&in, 0, sizeof in); in.vin_ll = 400; in.phases_ok = 3; in.vmid_frac = 0.5f; \
+    #define E77_BASE() do { pmp_fsm_init(&f); memset(&in, 0, sizeof in); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400; in.phases_ok = 3; in.vmid_frac = 0.5f; \
       in.fan_ok = in.aux_ok = in.wdt_ok = true; in.vcmd = 400; in.icmd = 100; in.temp_max_c = 60; in.vbus = 400; } while (0)
     #define E77_STEP(n) do { for (long k_ = 0; k_ < (long)(n); k_++) pmp_fsm_step(&f, &in); } while (0)
     /* drive to RUN at a PAR bank: precharge ramp, the PFC regulates to its reference, banks meet the command */
@@ -301,9 +301,9 @@ int main(void) {
     E77_RUN(400); in.vbank_a = in.vbank_b = 470; in.vout_meas = 469; in.iout_meas = 40; E77_STEP(250);
     ck("E77 F.13 sourcing row: stack 470 V over a 400 V command at 40 A for 250 ms latches", f.latched == FC_OUT_OVP);
 
-    E77_BASE(); in.vin_ll = 0; in.vbus = 330; E77_STEP(200);
+    E77_BASE(); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 0; in.vbus = 330; E77_STEP(200);
     ck("E77 AC sense reads 0 in precharge: the bypass never closes, the wait is reported", f.st == ST_PRECHG && !f.out.k_pre && (f.out.warn & PMP_W_LINE_WAIT));
-    E77_BASE(); in.vin_ll = NAN; in.vbus = 330; E77_STEP(20);
+    E77_BASE(); in.vin_ll = in.vin_ll_min = in.vin_ll_max = NAN; in.vbus = 330; E77_STEP(20);
     ck("E77 AC sense NaN in precharge: F.29 instead of a silent park", f.latched == FC_SENSOR);
     E77_RUN(400); in.temp_max_c = NAN; E77_STEP(5);
     ck("E77 temperature NaN in RUN: F.29 (OT and derate would be blind)", f.latched == FC_SENSOR);
@@ -319,9 +319,9 @@ int main(void) {
     in.vcmd = NAN; in.enable_req = true; E77_STEP(500);
     ck("E77 voltage command NaN: no start (was: RUN at the 500 V PAR ceiling)", f.st == ST_STANDBY && !f.out.pfc_en && (f.out.warn & PMP_W_NO_SETPOINT));
 
-    E77_RUN(400); in.vin_ll = 255; E77_STEP(1); in.vin_ll = 400; E77_STEP(5);
+    E77_RUN(400); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 255; E77_STEP(1); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400; E77_STEP(5);
     ck("E77 1 ms sag to 255 VAC rides through (row 8: 100 ms)", f.latched == FC_NONE);
-    E77_RUN(400); in.vin_ll = 255; E77_STEP(99); in.vin_ll = 400; E77_STEP(5);
+    E77_RUN(400); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 255; E77_STEP(99); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400; E77_STEP(5);
     ck("E77 99 ms sag rides through", f.latched == FC_NONE);
     E77_RUN(400); in.phases_ok = 2; E77_STEP(1); in.phases_ok = 3; E77_STEP(5);
     ck("E77 1 ms phase dropout rides through (row 9: 40 ms)", f.latched == FC_NONE);
@@ -393,7 +393,7 @@ int main(void) {
      corrupted state, overrun, the product mode dwell, SAFE hold, WAKE (direct drive, relay mirrors follow their coils) -------- */
   {
     pmp_fsm_t f; pmp_in_t in;
-    #define E78_BASE() do { pmp_fsm_init(&f); memset(&in, 0, sizeof in); in.vin_ll = 400; in.phases_ok = 3; in.vmid_frac = 0.5f; \
+    #define E78_BASE() do { pmp_fsm_init(&f); memset(&in, 0, sizeof in); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400; in.phases_ok = 3; in.vmid_frac = 0.5f; \
       in.fan_ok = in.aux_ok = in.wdt_ok = true; in.vcmd = 400; in.icmd = 100; in.temp_max_c = 60; in.vbus = 400; } while (0)
     #define E78_STEP(n) do { for (long k_ = 0; k_ < (long)(n); k_++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); } } while (0)
     #define E78_RUN(vb) do { E78_BASE(); in.relay_fb_wired = 0x0F; in.vcmd = (vb); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { \
@@ -417,17 +417,17 @@ int main(void) {
     E78_RUN(400); in.enable_req = false; in.iout_meas = 1.0f; E78_STEP(2);
     ck("E78 the controlled stop ends as soon as the output current is below 2 A", f.st == ST_STANDBY && !f.out.llc_en);
 
-    E78_RUN(400); in.vin_ll = 250; E78_STEP(110);
+    E78_RUN(400); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250; E78_STEP(110);
     { int lat = f.latched == FC_IN_UV && pmp_fault_class(f.latched) == FCL_AUTO_EXT && (f.out.warn & PMP_W_RECOVERING);
-      in.vin_ll = 280; E78_STEP(1999); int held = f.st == ST_FAULT;
+      in.vin_ll = in.vin_ll_min = in.vin_ll_max = 280; E78_STEP(1999); int held = f.st == ST_FAULT;
       E78_STEP(2);
       ck("E78 an input sag (F.08 AUTO_EXT) clears 2 s after the line is back inside the start window, into STANDBY awaiting a fresh ENABLE",
          lat && held && f.st == ST_STANDBY && f.latched == FC_NONE && f.need_enable && (f.out.warn & PMP_W_REARM)); }
 
     { E78_RUN(400); int sags = 0;
       for (int k = 0; k < 8; k++) {
-        in.vin_ll = 250; E78_STEP(110); if (f.latched == FC_IN_UV) sags++;
-        in.vin_ll = 400; for (int t = 0; t < 70000 && f.st == ST_FAULT; t++) E78_STEP(1);
+        in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250; E78_STEP(110); if (f.latched == FC_IN_UV) sags++;
+        in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400; for (int t = 0; t < 70000 && f.st == ST_FAULT; t++) E78_STEP(1);
         E78_RESTART();
       }
       ck("E78 eight grid sags inside ten minutes never lock the module (AUTO_EXT does not count toward F.31); the hold doubles to 64 s",
@@ -445,7 +445,7 @@ int main(void) {
     { int oc = f.latched == FC_OUT_OC && pmp_fault_class(FC_OUT_OC) == FCL_LATCH;
       in.iout_meas = 0; E78_STEP(70000); int stays = f.st == ST_FAULT;
       in.clear_req = true; E78_STEP(1); in.clear_req = false; int cleared = f.st == ST_STANDBY;
-      E78_RUN(400); in.vin_ll = 250; E78_STEP(110); in.clear_req = true; E78_STEP(5); in.clear_req = false;
+      E78_RUN(400); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250; E78_STEP(110); in.clear_req = true; E78_STEP(5); in.clear_req = false;
       ck("E78 a LATCH row (F.15) waits for CLEAR however long; CLEAR cannot end an AUTO row whose condition is still present",
          oc && stays && cleared && f.st == ST_FAULT && f.latched == FC_IN_UV); }
 
@@ -472,6 +472,72 @@ int main(void) {
     E78_RUN(400); in.ctl_overrun = true; E78_STEP(1); in.ctl_overrun = false;
     ck("E78 the HAL's control-overrun verdict latches F.35", f.latched == FC_OVERRUN);
 
+
+    /* ============================================================ E80: the external-recheck rows (HR-xx/R-xx) */
+    { /* R06/HR-24: a 280/505/505 V set — the old "farthest from 400" scalar chose 280 and hid the overvoltage */
+      E78_RUN(400);
+      in.vin_ll = 280; in.vin_ll_min = 280; in.vin_ll_max = 505; E78_STEP(25);
+      int ov = f.latched == FC_IN_OV;
+      E78_BASE(); in.relay_fb_wired = 0x0F; in.vin_ll = 280; in.vin_ll_min = 280; in.vin_ll_max = 505; E78_STEP(10);
+      int wait = f.st == ST_PRECHG && !f.out.k_pre && (f.out.warn & PMP_W_LINE_WAIT);
+      ck("E80 R06: 280/505/505 V latches F.07 from the HIGHEST line in 20 ms, and precharge refuses the window", ov && wait); }
+
+    { /* HR-06/R10: one half at 454 V with the total and midpoint rows both satisfied latches F.38 */
+      E78_RUN(400);
+      in.vbus = 830; in.vmid_frac = 454.0f / 830.0f; E78_STEP(8); int early = f.latched == FC_NONE;
+      E78_STEP(4);
+      ck("E80 HR-06: a 454 V half-link (830 V total, 39 V midpoint — inside F.03 and F.06) latches F.38 after 10 ms",
+         early && f.latched == FC_HALF_OV); }
+
+    { /* HR-28: a PFC that never reaches its reference is bounded by F.34 */
+      E78_BASE(); in.relay_fb_wired = 0x0F;
+      in.enable_req = true; in.relay_fb = PMP_RLY_PRE; in.vbus = 566;
+      for (int t_ = 0; t_ < 300 && f.st != ST_STANDBY; t_++) { if (f.st == ST_PRECHG) in.vbus += 5; E78_STEP(1); }
+      long t_latch = -1;
+      for (long t_ = 0; t_ < 12000; t_++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); if (f.latched != FC_NONE) { t_latch = t_; break; } }
+      ck("E80 HR-28: an energized PFC ramp that never reaches 0.95 x ref latches F.34 inside the 8 s window",
+         t_latch > 7000 && t_latch <= 8500 && f.latched == FC_START_TO); }
+
+    { /* HR-09/R07: mismatched banks block the PAR make until the bleeders equalize them */
+      E78_BASE(); in.relay_fb_wired = 0x0F; in.relay_fb = PMP_RLY_PRE; in.enable_req = true;
+      in.vbus = 700; in.vout_meas = 400; in.ext_connected = true; in.vext = 400;
+      in.vbank_a = 300; in.vbank_b = 20;   /* both below the node - the old permit closed here */
+      for (int t_ = 0; t_ < 140; t_++) { if (f.out.pfc_en) in.vbus = f.out.vbus_ref; E78_STEP(1); }   /* through the 60 ms bypass blank */
+      int blocked = !f.out.k_para && !f.out.k_parb && f.out.q_disch_bk;
+      in.vbank_a = 30; E78_STEP(3);
+      ck("E80 HR-09: a 280 V bank mismatch holds the PAR make (bleeders on); 10 V of mismatch closes it",
+         blocked && f.out.k_para && f.out.k_parb); }
+
+    { /* HR-11/R11: an undischargeable link (source still applied) latches F.21 and ENDS the dump commands */
+      E78_RUN(400); in.shutdown_req = true; E78_STEP(1); in.shutdown_req = false;
+      in.vbus = 530; in.vbank_a = in.vbank_b = 30;   /* the precharge path holds the bus: AC not isolated */
+      int dumped = 0;
+      for (long t_ = 0; t_ < 11000 && f.latched == FC_NONE; t_++) { dumped = f.out.q_disch; E78_STEP(1); }   /* default F.21 window 9 s */
+      ck("E80 HR-11: a bus held up by a live source latches F.21 at the window and turns the dump OFF (isolate upstream, then verify)",
+         dumped && f.latched == FC_DISCH && !f.out.q_disch && !f.out.q_disch_bk); }
+
+    { /* HR-08: the soft start waits out matrix operate + bounce after the close command (no mirror contacts on the matrix) */
+      E78_BASE(); in.relay_fb_wired = PMP_RLY_PRE; in.relay_fb = PMP_RLY_PRE; in.enable_req = true;
+      in.vbus = 700; in.vout_meas = 0;
+      long t_close = -1, t_llc = -1;
+      for (long t_ = 0; t_ < 2000 && !f.out.llc_en; t_++) {
+        if (f.out.pfc_en) in.vbus = f.out.vbus_ref;
+        pmp_fsm_step(&f, &in);
+        if (t_close < 0 && (f.out.k_para || f.out.k_parb)) t_close = t_;
+        if (t_llc < 0 && f.out.llc_en) t_llc = t_;
+      }
+      ck("E80 HR-08: LLC enable trails the matrix close command by the 40 ms settle wait",
+         t_close > 0 && t_llc >= t_close + 40 && t_llc <= t_close + 60); }
+
+    { /* FW-21/E80: fan derate by count - 4-fan SKU: one failed 0.6, two 0.3, three latch F.25 (AUTO_INT) */
+      E78_RUN(400); in.fans_total = 4; in.fans_failed = 1; E78_STEP(3000); float d1 = f.out.derate;
+      in.fans_failed = 2; E78_STEP(3000); float d2 = f.out.derate;
+      in.fans_failed = 3; E78_STEP(5);
+      int latched3 = f.latched == FC_FAN && pmp_fault_class(FC_FAN) == FCL_AUTO_INT;
+      in.fans_failed = 0; in.fan_ok = true;
+      ck("E80 FW-21: failed-fan derate by count (0.6 / 0.3 on the 4-fan SKU) and F.25 when nothing can run",
+         d1 == 0.6f && d2 == 0.3f && latched3); }
+
     { E78_RUN(400); in.ext_connected = true; int t_sw = -1;
       for (int t = 0; t < 3000; t++) { in.vext = (t < 100) ? 400.0f : 505.0f; in.vout_meas = in.vext; E78_STEP(1); if (t_sw < 0 && f.st == ST_MODESW) t_sw = t; }
       ck("E78 the AUTO crossover waits the 1 s product dwell (the header carried a 30 ms test value)", t_sw >= 1095 && t_sw <= 1110); }
@@ -483,9 +549,13 @@ int main(void) {
       ck("E78 after an aux collapse SAFE ends only after 500 ms of stable aux, and the restart needs a fresh ENABLE", safe && hold && f.st == ST_STANDBY && f.need_enable); }
 
     E78_RUN(400); in.shutdown_req = true; E78_STEP(1); in.shutdown_req = false; in.vbus = 30; E78_STEP(5);
-    { int off = f.st == ST_OFF;
+    { /* E80 (review HR-12): the link alone below 60 V is NOT discharged — both banks must be too */
+      int held = f.st == ST_DISCH && f.out.q_disch_bk;
+      in.vbank_a = in.vbank_b = 30; E78_STEP(5);
+      int off = f.st == ST_OFF && !f.out.q_disch && !f.out.q_disch_bk;
       in.wake_req = true; E78_STEP(1); in.wake_req = false;
-      ck("E78 WAKE is the public exit from OFF (back through INIT and precharge)", off && (f.st == ST_INIT || f.st == ST_PRECHG)); }
+      ck("E80 discharge completes only with the link AND both banks below 60 V (HR-12); E78 WAKE exits OFF through precharge",
+         held && off && (f.st == ST_INIT || f.st == ST_PRECHG)); }
 
     { E78_BASE(); for (int k = 0; k < 300; k++) { in.desat_flt = true; E78_STEP(1); in.desat_flt = false; f.lock = false; f.latched = FC_NONE; f.st = ST_STANDBY; }
       ck("E78 the lifetime latch counter saturates at 255 instead of wrapping", f.fault_count == 255); }

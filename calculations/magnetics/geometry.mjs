@@ -18,7 +18,7 @@ const S = DATA.shapes_mm;
 // Catalog effective parameters (per single set / single core). Sources in the comments; dimensions from MAS.
 export const CORES = {
   E70: { dims: S["E 70/33/32"], Ae: 683e-6, le: 0.149, Ve: 102e-6, kgSet: 0.50,          // TDK E70/33/32 (B66371), set = 2 halves
-         lN1: 0.166, lNstep: 2 * S["E 70/33/32"].C / 1000 },                                 // TDK former B66372B1000 lN 166 mm; +1 set adds 2·C (B66372B2000 = 230.5 ✓)
+         lN1: 0.166, lNstep: 2 * S["E 70/33/32"].C / 1000 },                                 // TDK former B66372B1000 lN 166 mm; +1 set adds 2·C (B66372x2000 = 230.5 ✓ — A/B suffix is material class, same geometry; E80/HR-18 build uses A2000, class F 155 °C / V-0)
   PQ50: { dims: S["PQ 50/50"], Ae: 328e-6, le: 0.113, Ve: 37.1e-6, kgSet: 0.195,           // TDK/Ferroxcube PQ50/50
           lN1: 0.115, lNstep: 2 * S["PQ 50/50"].C / 1000 },                                  // single-post former lN; side-by-side sets form a racetrack: +2·C per set
   ETD39: { dims: S["ETD 39/20/13"], Ae: 125e-6, le: 0.0922, Ve: 11.5e-6, kgSet: 0.060 },
@@ -71,7 +71,7 @@ export const eTurn = (core, n, r) => { const s = stack(core, n); return s.mlt - 
 // ---- self-check: the catalog former anchors must reproduce (fails loudly if data drift) ----
 {
   const two = stack("E70", 2).mlt;
-  if (Math.abs(two - 0.2305) > 0.004) throw new Error(`geometry: E70 2-set MLT ${two} ≠ TDK B66372B2000 lN 0.2305 m`);
+  if (Math.abs(two - 0.2305) > 0.004) throw new Error(`geometry: E70 2-set MLT ${two} ≠ TDK B66372x2000 lN 0.2305 m`);
   if (Math.abs(stack("E70", 1).Ae - 683e-6) > 1e-9) throw new Error("geometry: E70 Ae drift");
   const ds = CORES.T79.ds, c = ds.coated_mm;
   if (Math.abs(toroidMlt("T79", 1, 0) * 1000 - (c.OD_max - c.ID_min + 2 * c.HT_max)) > 0.1) throw new Error("geometry: T79 winding table 0 % row ≠ coated (OD − ID) + 2·HT");

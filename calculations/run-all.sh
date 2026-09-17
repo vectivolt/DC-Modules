@@ -48,6 +48,12 @@ echo "FOOTPRINT AUDIT CLEAN (0 unnamed - 0 mismatched)"
 node calculations/busbar/busbar-calc.mjs > /dev/null
 node calculations/pin-map-export.mjs > /dev/null
 node calculations/docs-lint.mjs
+npx tsx calculations/control/port-pin-audit.mjs
 sh firmware/run_tests.sh > /dev/null
-echo "FIRMWARE LOGIC OK — host_sim 114 · ctl_test 18 · proto_test 40 · hal_test 34 · app_test 16 (E79)"
+echo "FIRMWARE LOGIC OK — boot_test 21 · host_sim 121 · ctl_test 19 · proto_test 40 · hal_test 35 · app_test 24 (E80)"
+# E80: the GD32G553 target cross-build (register-level port, no vendor library) — runs where the bare-metal GCC exists
+if command -v arm-none-eabi-gcc > /dev/null 2>&1; then
+  sh firmware/port/gd32g553/build.sh > /dev/null 2>&1
+  echo "TARGET BUILD OK — boot + slot A/B images signed (firmware/port/gd32g553/out)"
+fi
 echo "ALL CALCULATIONS REPRODUCED OK"

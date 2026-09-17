@@ -135,8 +135,17 @@ export function vienna(sku, { VLL, Pout, vbus, lot = 1, fsw = 50e3, cycles = 4, 
       const ni = i[k] + vL / L * dt;
       if (k === 0 && s >= recStart) { fx.B += vL * dt / NAe; fx.hi = Math.max(fx.hi, fx.B); fx.lo = Math.min(fx.lo, fx.B); fx.int += Math.pow(Math.abs(vL / NAe), KM.c) * dt; }
       i[k] = (!on[k] && ni * i[k] < 0) ? 0 : ni;               // diode stops conduction at zero
-      if (!on[k] && node[k] > 0) iP += i[k];
-      if (!on[k] && node[k] < 0) iN += i[k];
+    }
+    // E80 (FW-34): 3-wire — the line currents sum to zero. A diode zero clamp removes its phase's last increment from that sum;
+    // spread the residue over the phases still conducting, and a phase left conducting alone has no return path, so it is zero
+    // (without this a lone phase kept its current: the no-load runaway firmware/test/hal_test.c found in the C port)
+    let isum = 0, nc = 0;
+    for (let k = 0; k < 3; k++) if (i[k] !== 0) { isum += i[k]; nc++; }
+    for (let k = 0; k < 3; k++) if (i[k] !== 0) i[k] = nc === 1 ? 0 : i[k] - isum / nc;
+    for (let k = 0; k < 3; k++) {
+      if (blocked[k] || on[k]) continue;
+      if (node[k] > 0) iP += i[k];
+      if (node[k] < 0) iN += i[k];
     }
     if (F) {                                                   // filter states (symplectic: currents, then node voltages)
       if (F.C0) {                                               // E68: grid → C0 → CMC1 leakage → C1 (2 µH wiring floor on a stiff grid)

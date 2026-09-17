@@ -116,7 +116,7 @@ const airAt = (sku, Tin, frac) => (SEALED[sku] ? 65 + (SEALED[sku].Tfull - 65) *
 // at the 500 V bank). Foil halves: nf parallel foils per turn (Dowell with N·nf layers). former: TDK B66372 (1-set lN 166 mm,
 // 2-set 230.5 mm) or a 3-set former (lN 293 mm, custom — TDK lists 1- and 2-set only; tooling at RFQ).
 export const D3 = {
-  "30kw": { core: "E70", n: 2, N: 6, cuP: 12e-6, strands: 3850, dS: 0.063e-3, foil: 0.10e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "B66372B2000" },
+  "30kw": { core: "E70", n: 2, N: 6, cuP: 12e-6, strands: 3850, dS: 0.063e-3, foil: 0.10e-3, nf: 1, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "B66372A2000" },
   "40kw": { core: "E70", n: 3, N: 4, cuP: 14e-6, strands: 3536, dS: 0.071e-3, foil: 0.08e-3, nf: 2, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "3-set custom" },
   "50kw": { core: "E70", n: 3, N: 4, cuP: 14e-6, strands: 3536, dS: 0.071e-3, foil: 0.08e-3, nf: 2, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "plate2", pot: true, former: "3-set custom" },
   "50kwa": { core: "E70", n: 3, N: 4, cuP: 14e-6, strands: 3536, dS: 0.071e-3, foil: 0.08e-3, nf: 2, foilW: 0.028, b: 0.041, gap: 0.3e-3, mount: "web2", pot: true, former: "3-set custom" },
@@ -136,10 +136,10 @@ export const D3_CONTROL_E65 = {
 // extrusion webs (the 66 mm stack spans the 62 mm tunnel through the board cut-outs), plate2 = both coldplates; pot = end turns
 // encapsulated in ≥0.8 W/mK silicone bridged ≥5 mm to the web/plate
 export const D2 = {
-  "30kw": { core: "E70", n: 2, N: 5, strands: 8000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372B2000" },
-  "40kw": { core: "E70", n: 2, N: 5, strands: 10000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372B2000" },
-  "50kw": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "plate2", pot: true, former: "B66372B2000" },
-  "50kwa": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372B2000" },
+  "30kw": { core: "E70", n: 2, N: 5, strands: 8000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372A2000" },
+  "40kw": { core: "E70", n: 2, N: 5, strands: 10000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372A2000" },
+  "50kw": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "plate2", pot: true, former: "B66372A2000" },
+  "50kwa": { core: "E70", n: 2, N: 5, strands: 12000, dS: 0.05e-3, b: 0.041, mount: "web2", pot: true, former: "B66372A2000" },
 };
 export const LOOP_STRAY = 0.1e-6;                                  // bridge → Cr → D2 → D3 loop on the power PCB (first-article measured)
 export const D2_TOL = 0.03, LEAK_SPREAD = 0.3;                     // D2 gap tolerance; D3 leakage acceptance band (drawing: ±30 % of computed)

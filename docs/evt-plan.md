@@ -2,7 +2,7 @@
 
 # 🔬 EVT Test Plan
 
-<sub>The first-hardware campaign T-00…T-49, and the rule that lets bench results reopen a calculation</sub>
+<sub>The first-hardware campaign T-00…T-56, and the rule that lets bench results reopen a calculation</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
@@ -34,7 +34,8 @@
 | EMI and insulation | T-08 · T-13 · T-14 · **T-39** |
 | Relays, output modes and output stage | T-07 · ~~T-24~~ · **T-35** · **T-36** · **T-40** |
 | Magnetics and tank | T-25 · **T-31** · **T-34** |
-| Firmware, control and protocol | **T-44** · **T-45** · **T-46** · **T-47** · **T-48** · **T-49** |
+| Firmware, control and protocol | **T-44** · **T-45** · **T-46** · **T-47** · **T-48** · **T-49** · **T-52** · **T-53** · **T-54** (E80) |
+| Auxiliary and slow-path hardware (E80) | **T-55** · **T-56** |
 
 </td><td valign="top" width="48%">
 
@@ -183,6 +184,11 @@ interoperability. The IDs in brackets are rows of the [firmware verification pla
 | T-47 | **Parallel sharing** — four modules on one output in CC and CV (battery emulator reaching its CV point), voltage calibration spread ± 0.3 % on purpose; hot join, member removal, one module derated with the LEVEL law | ± 5 % of the average at ≥ 10 % load · ± 10 % within 3 s of a change · group sum ≤ request + 1 % (G-01…G-07) |
 | T-48 | **Control transients** — C-01…C-12 per SKU: soft start, voltage and current steps, 25 ↔ 100 % load steps, CV ↔ CC, the power-limit crossing, a 330 → 285 VAC sag at full load, frequency-response injection | the performance targets of firmware architecture §5.5 · PM ≥ 45°, GM ≥ 6 dB at every envelope corner |
 | T-49 | **Fault and recovery cycling** — 1 000 cycles each of grid sag, phase loss, over-temperature (heater on the NTC), communication loss, relay feedback open, watchdog reset and aux brownout | every cycle ends in the documented state and recovers by the documented rule · no lockout from grid rows · no spurious gate pulse (D-03, D-05) |
+| T-52 | **Boot and update on the target (E80)** — 100 field updates over CAN at each bit rate incl. power cuts at every stage (block, FINISH, trial boot 1–3, confirm), a corrupted image, a foreign signature, a downgrade below the baseline, and the reset-streak path into safe mode | the confirmed image always runs · no cut leaves an unbootable module · every refusal matches `boot_test`'s codes · trial confirm at 60 s healthy standby exactly |
+| T-53 | **Watchdog window on the fitted TPS3430 (E80, review HR-02)** — WDI/WDO/NRST scoped over −40…105 °C: the 10 ms kick train, boot-to-first-kick incl. the bootloader's chunked verification, one deliberately early (< 2.22 ms) and one late (> 23.375 ms) kick | normal operation never resets · the early and the late kick each reset through NRST · gate enables provably low through every reset |
+| T-54 | **Fan tach curve calibration (E80, review HR-25)** — the selected fan's tach vs duty at 24 V ± 10 %, −20…70 °C, clean and dust-loaded | `APP_TACH_FULL_HZ` set from data · the 35 % curve floor sits ≥ 2 × above the healthy worst case at every duty ≥ 20 % · a blocked rotor and a 50 % obstruction both fail inside 3 s |
+| T-55 | **Auxiliary fault matrix (E80, reviews R22/R23/HR-22)** — per-rail budgets with the FINAL fan MPN (steady, cold fan start, stall), feedback open/short, one rail unloaded, reservoir/rectifier short; V15/V24 TVS energy and clamp voltages recorded | rails inside their windows at every corner · a feedback fault ends within the TVS pulse ratings with the downstream absolute maxima honoured · fan inrush does not brown the control domain |
+| T-56 | **PV bleeder drive hot and humid (E80, reviews R26/HR-14)** — loaded V_GS and bank decay with the exact MOSFET at 85 °C / 85 % RH coupons and the LED at its rail floor | measured decay ≤ 1.5 × the drawn model · V_GS ≥ V_th(max) + 2 V loaded · a contaminated coupon still meets the F.21b window |
 
 **E79 — what T-44 now checks against.** A static estimate from the compiled interrupt paths
 ([firmware architecture §3.5](firmware-architecture.md)) puts the PFC update at ≈ 2.5 µs typical and ≈ 4.5 µs at a line-cycle

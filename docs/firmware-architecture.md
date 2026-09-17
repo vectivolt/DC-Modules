@@ -2,13 +2,13 @@
 
 # 🧬 Firmware Architecture
 
-<sub>Layers, timing, state machines, control and ramping, the protection hierarchy and exception handling — and the review that shaped them</sub>
+<sub>Layers, timing, state machines, control and ramping, the protection hierarchy and exception handling — and the reviews that shaped them</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
   <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/review-E78_·_25_findings-d19a00?style=flat-square" alt="review: E78 · 25 findings"/>
+  <img src="https://img.shields.io/badge/review-E78%2FE80_·_port_built-d19a00?style=flat-square" alt="review: E78/E80 · port built"/>
 </p>
 
 > [!NOTE]
@@ -34,7 +34,7 @@
 | **Smoothness** | bumpless soft start from the output node, slew-limited references, a 100 ms controlled stop, min-select CV/CC with back-calculation anti-windup, CV share trim |
 | **MCU** | one GD32G553 runs both stages — ≈ 35 % CPU by static estimate; the 100 kHz PFC update is the binding item (§3.5) |
 | **Verified on the host** | 222 checks: the 26 fault scenarios, E60–E79 regressions, every-tick invariants, both protocols against their documents, 2 M fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end |
-| **Before hardware** | the GD32G553 register port of `hal/app.h` (§11) · loop gains on HIL (§5.4) · HW-REC-1 (fast output clamp) |
+| **Before hardware** | loop gains on HIL (§5.4) · T-44/T-47/T-48 on silicon · HW-REC-1/4/5 (§10) — the register port itself is built and gated (E80: `firmware/port/gd32g553/`, no vendor library) |
 
 ## 1. What the review found
 
@@ -66,11 +66,26 @@ without contaminating the core. **FIXED** = code and a test in this pass (E78). 
 | FW-18 | Low | A core-level "fresh ENABLE after boot" would lose a TonHe start command that arrives during precharge | a TonHe monitor's single start command ignored | **FIXED** by design — "a restart needs a fresh request" lives in the profile (VMP holds RUN until RUN = 0; a TonHe start is an event) |
 | FW-19 | **High** | Output OV: the F.13 comparator (CMP0) latches at a fixed 1 050 V. In LOW mode (banks parallel, ≤ 500 V) an EV contactor opening at full current meets no hardware clamp below 1 050 V; the 10 kHz loop needs ~100 µs, and 167 A × 100 µs into ~34 µF is ≈ 490 V | bank and terminal-capacitor overvoltage on a load dump in LOW mode, or a nuisance latch if the threshold is simply lowered | **HW** — HW-REC-1 (§10); until decided, the HAL schedules the CMP0 threshold by mode (firmware may tighten) and T-45 measures the dump |
 | FW-20 | Medium | One temperature input, one derate slope; the protection table lists per-zone limits | a cool inlet can hide a hot transformer loop, or the reverse | **FIXED** (E79) — each zone's derate and trip mapped onto the core's 105 / 115 °C scale (§7, `hal/app.c`) |
-| FW-21 | Medium | Fan failure derates to a fixed 0.5 | the 50 kW air module with one fan out is sized for 0.6 (E59 air budget) | **SPEC** — derate by failed-fan count (§7); E79 supervises every tach, but the core input is still one `fan_ok` (0.5) |
-| FW-22 | Medium | No design for NVM, calibration integrity, boot or firmware update | corruption, wear and interrupted updates had no defined outcome | **FIXED** (E79) for records — a power-cut-safe two-page store (`hal/nvm.c`) and the calibration windows (F.30) · **SPEC** — boot and firmware update (§9) |
+| FW-21 | Medium | Fan failure derates to a fixed 0.5 | the 50 kW air module with one fan out is sized for 0.6 (E59 air budget) | **FIXED** (E80) — the core derates by failed count (`pmp_fan_derate`: 4-fan 0.6 / 0.3, 2–3-fan 0.5, none left = F.25 AUTO_INT) and the HAL judges each tach against a duty-proportional curve (HR-25) |
+| FW-22 | Medium | No design for NVM, calibration integrity, boot or firmware update | corruption, wear and interrupted updates had no defined outcome | **FIXED** — E79 records (`hal/nvm.c`, F.30) · **E80 boot chain built**: signed A/B images (SHA-256 + ECDSA-P256, node-vector-proven), trial/confirm/rollback record, service-space update protocol, event ring (§9, `firmware/boot/`, `hal/evlog.c`) |
 | FW-23 | Low | Line frequency is not supervised (a PLL unlock must stop the PFC) | undefined behaviour on a drifting generator | **FIXED** (E79) — F.37: outside 45–65 Hz, or no zero crossing on a live line, for 200 ms; AUTO_EXT (`app_test`) |
 | FW-24 | Low | F.27 (internal link) was retired at E40 but is still evaluated on `link_age_ms` | none if the HAL feeds 0 | documented: the HAL feeds 0; one MCU runs both stages |
 | FW-25 | Low | Row 4 (bus OV firmware, 845 V) duplicates the 860 V hardware trip and the bus-reference clamp | over-guarding; it was never implemented | recommendation: retire row 4 |
+
+### 1.1a What the E80 external recheck fixed (two independent reviews, docs/e80-recheck-response.md)
+
+| # | Sev | What was wrong | Fixed as |
+|---|---|---|---|
+| FW-36 | **Critical** | The CAN choke's physical map crossed the ACT45B windings — no through-path on any exported variant (HR-01) | netlist map corrected; five KiCad sets regenerated at 100 % |
+| FW-37 | **Critical** | The watchdog strap (CWD 1 nF, SET00) made every correct 10 ms kick an early-window violation (HR-02/R01) | fixed-window strap CWD-open/SET01; bootloader chunk-kicks through image verification; EVT T-48 |
+| FW-38 | **Critical** | One worst-from-nominal line scalar hid a 280/505/505 V overvoltage from F.07 and precharge (R06/HR-24) | `vin_ll_min`/`vin_ll_max` split; every row reads its own side |
+| FW-39 | **Critical** | 860 V total + 40 V midpoint permitted a 450 V half-link bank at 454–468 V (HR-06/R10) | F.38: either half > 440 V / 10 ms latches |
+| FW-40 | High | The AMC1311/AMC1350 nominal transfers were off (1.39 vs 1.44 V VCM; 0.205 vs 0.200 + input loading) (HR-04/05) | corrected nominals; an UNCALIBRATED card now inhibits delivery (F.30, HR-29) |
+| FW-41 | High | Discharge called itself done on the bus alone; a live source fed the dump past F.21 unbounded (HR-11/12) | OFF needs link + both banks < 60 V; F.21 ends the dump commands |
+| FW-42 | High | The matrix make was trusted one tick after the coil bit; PAR ignored bank-to-bank mismatch (HR-08/09) | 40 ms make-settle wait; PAR permit adds \|ΔV\| ≤ 25 V |
+| FW-43 | Medium | A stalled PFC ramp was energized and unsupervised in STANDBY (HR-28) | the ramp counts inside F.34's 8 s window |
+| FW-44 | Medium | F.13 stayed at 1050 V in LOW mode; the share trim could push the final target past the ceiling (R09/R34) | mode-scheduled CMP0 (560/1050 V); final `v_tgt` clamp; HW-REC-1 reference armed on its own DAC |
+| FW-45 | Medium | Fan health = "5 Hz at any duty"; one boolean hid the count (HR-25/R25) | duty-proportional tach curve + count-based derate + F.25 |
 
 ### 1.1 What implementing the HAL found (E79)
 
@@ -207,6 +222,9 @@ its persistence (3 ms, E77).
 
 **Yes.** The GD32G553 runs the Vienna PFC, the LLC and the supervisory stack from one Cortex-M33 core with margin, on two
 conditions: both control interrupts execute from TCM RAM, and EVT T-44 confirms the estimate below with the DWT counter.
+E80: the register-level port exists and enforces the first condition — `firmware/port/gd32g553/app.ld.in` places the whole
+100 kHz path (`pfc_step`, the ISR glue, `grid_sample`, the DMA readers) at 0x1000xxxx, and the built ELF proves it; the
+DWT high-water marks surface as VMP object 0x0500 for T-44.
 
 | Resource | Needed | GD32G553VET7 |
 |---|---|---|
@@ -480,7 +498,7 @@ exit from FAULT, SAFE or a communication loss needs a fresh request (§4.3).
 - No derate inside the normal line window.
 - No PLL (E79): the Vienna law is resistive emulation on the sensed phase voltages, and the grid monitor takes frequency and
   phase sequence from hysteretic zero crossings — there is nothing to unlock.
-- No relay-coil economizer (E79): it would save 1–2 W while the matrix is closed, and cold standby opens the matrix anyway.
+- ~~No relay-coil economizer (E79)~~ — reversed at E80: the aux budget review (R23) values the ~4 W of coil relief, and the pins were already timer-capable; the app emits per-coil duties (60 ms pull-in, 40 % hold — firmware-guide E26). KPRE/KPARB hold at full duty until their pins' PWM mapping is confirmed at bring-up (port note).
 
 ## 7. Thermal, cooling and derating
 
@@ -550,11 +568,17 @@ Flow assurance belongs to the cooling cart.
 **Flash map** *(GD32G553VET7, 512 KB — confirm sector sizes at bring-up)*: bootloader 32 KB · image slot A 200 KB · image slot B
 200 KB · NVM 64 KB (configuration A/B, calibration A/B, counter journal, event log ring) · the rest reserved.
 
-**As implemented (E79, `hal/nvm.c`):** one power-cut-safe store on two flash pages carries the configuration, calibration and
-counter records. Entries are appended with a CRC-32; the newest valid entry of a kind wins; a full page compacts into the other
-and commits by writing its header last. `hal_test` cuts the power at every programmed byte of an append and at every step of a
-compaction. The application programs nothing while the LLC delivers and erases only with both stages stopped. The event log and
-the firmware update below are not implemented yet.
+**As implemented (E79 records · E80 boot chain):** one power-cut-safe store on two flash pages carries the configuration,
+calibration and counter records (append + CRC-32, newest-of-kind wins, header-last compaction; `hal_test` cuts power at every
+byte). The application programs nothing while the LLC delivers and erases only with both stages stopped — and the control
+ISRs execute from TCM, so an append under the PFC never stalls them (review HR-26; T-44 measures it). **E80 adds the rest of
+this section as code:** the event ring (`hal/evlog.c` — 16-byte CRC'd entries, torn-slot skip, ring-move only with both
+stages off, VMP objects 0x0400–0x0404), the signed image chain (`boot/sha256.c`, `boot/p256.c`, `boot/image.c` — vectors
+generated by node's OpenSSL and an independent BigInt signer, checked by `boot_test`), the boot decision record
+(`boot/bootctl.c` — trial boots counted and stored before every jump, 3-boot rollback, reset-streak safe mode, minimum-version
+baseline raised on confirm) and the service-space update protocol (`boot/svc.c`/`boot/updater.c` — SELECT/INFO/BEGIN/BLOCK/
+DATA/FINISH/RESET, 1 KB blocks, lost-acknowledgement resends, the confirmed slot never erased). `firmware/tools/fw-sign.mjs`
+signs release images; the development key table lives in `boot/keys_dev.h`, production keys stay offline.
 
 | Record | Contents | Written | Integrity |
 |---|---|---|---|
@@ -581,19 +605,22 @@ no J1939 PDU1 frame sets the native marker.
 | HW-REC-1 | A non-latching, cycle-by-cycle output-overvoltage clamp: SNS_VOUT on a second comparator into an HRTIMER external event at v_ref · 1.05 + 10 V; keep CMP0 as the latching F.13 with its threshold scheduled by mode (LOW 560 V · HIGH 1 050 V) | FW-19: a load dump in LOW mode has no hardware clamp below 1 050 V, and a lowered latch would trip on every dump | a pin re-allocation in `umod-pinmap` if a comparator input is free (the E75 pattern), else one external comparator | user decision; T-45 measures |
 | HW-REC-2 | Confirm every matrix relay and the bypass pair land their mirror contacts on the card ways the HAL reads | F.19 needs them (the ways exist since E30) | HAL mapping check | confirm at bring-up |
 | HW-REC-3 | A hard-wired module inhibit input | TonHe TH750 modules carry a "module shutdown signal" pair on the output connector; some cabinets wire it | one opto-isolated digital input | per customer |
+| HW-REC-4 (E80) | Fit an 8–24 MHz crystal on OSCIN/OSCOUT (pins 12/13, unallocated today) | IRC8M is ±2.5 % over temperature; classic CAN needs ~±0.5 % — the port runs HXTAL-PLL with the clock monitor when fitted (IRC8M fallback keeps the module regulating) and best-effort CAN otherwise | two pads + crystal + loads | **fit before EVT CAN interop (T-46)** |
+| HW-REC-5 (E80, review HR-23) | Route DRV_RDY into the safety AND's spare third inputs | an asynchronous global gate-off when any driver bias fails, ahead of the 10 ms firmware supervision | rewire two AND inputs on the card | user decision |
 
 ## 11. Open before release
 
-- The GD32G553 register port of `hal/app.h` — clocks, HRTIMER (carrier, dead time, fault channels), ADC groups and triggers,
-  comparators and DAC references, CAN-FD, flash, watchdog, DWT, TCM placement. It needs the GigaDevice GD32G5x3 firmware
-  library; the portable HAL behind it is E79.
-- The bootloader, firmware update and event log (§9).
-- `vienna-switched.mjs` needs the Σ i = 0 correction before it is used for light-load results (FW-34).
-- Loop gains per rating on HIL (§5.4); the timing budget measured on the target (T-44).
-- HW-REC-1.
+- Loop gains per rating on HIL (§5.4) — the §5.5 CC-arrival overshoot (~26 A on the FHA plant with the placeholder gains)
+  is the acceptance those gains must close (review R34; the timing halves of §5.5 already hold on the plant).
+- The timing budget measured on the target (T-44) and the boot/update chain exercised on silicon (T-52); the watchdog
+  window on the fitted TPS3430 (T-53); the tach curve's full-speed constant for the selected fan (T-54).
+- HW-REC-1 (the non-latching output clamp — its reference is already computed and armed on `APP_DAC_CLAMP`), HW-REC-4
+  (crystal) and HW-REC-5 (DRV_RDY into the AND) — hardware decisions.
+- The GC4D20120D rectifier identity (DO-NOT-ORDER hold, `lcsc-map`), and the loss-ledger reconciliation O-17 — both in
+  [the E80 response register](e80-recheck-response.md).
 - TonHe V1.2 interoperability on real equipment (T-46) — resolves TH-AMB-1 … TH-AMB-11.
 - `fsm-sim.mjs` (the JS twin) lags the C core since E76; the C core is normative (E24).
-- The E77 working-tree changes the review found have no register row of their own; E78 records them as its base.
+- The fan-complement decision O-16 (2/3/4 fans as built vs a 3/4/5 basis one review asserts — a fifth tach needs a harness way).
 
 ---
 

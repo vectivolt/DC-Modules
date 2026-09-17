@@ -89,7 +89,10 @@ enum {
   VMP_O_ADDR = 0x0200, VMP_O_GROUP = 0x0201, VMP_O_SLOT = 0x0202, VMP_O_BITRATE = 0x0203, VMP_O_PROFILE = 0x0204,
   VMP_O_COMM_TO = 0x0205, VMP_O_FAST_MS = 0x0206, VMP_O_SLOW_MS = 0x0207, VMP_O_RAMP_V = 0x0208, VMP_O_RAMP_I = 0x0209,
   VMP_O_DROOP = 0x020A, VMP_O_FAN_MODE = 0x020B, VMP_O_P_CAP = 0x020C,
-  VMP_O_OP_S = 0x0300, VMP_O_ENERGY = 0x0301, VMP_O_STARTS = 0x0302, VMP_O_FAULTS = 0x0303
+  VMP_O_OP_S = 0x0300, VMP_O_ENERGY = 0x0301, VMP_O_STARTS = 0x0302, VMP_O_FAULTS = 0x0303,
+  /* E80: the event log (sub-index = age, 0 = newest) and the T-44 timing diagnostics */
+  VMP_O_EV_COUNT = 0x0400, VMP_O_EV_W0 = 0x0401, VMP_O_EV_W1 = 0x0402, VMP_O_EV_W2 = 0x0403, VMP_O_EV_W3 = 0x0404,
+  VMP_O_DIAG_EXEC = 0x0500, VMP_O_DIAG_STACK = 0x0501
 };
 
 #define VMP_NAK_GAP_MS       100u    /* at most one rejection report per 100 ms */
@@ -118,6 +121,10 @@ typedef struct {                /* identity — read-only, from the HAL */
 
 typedef struct {
   vmp_cfg_t cfg; const vmp_ident_t *id;
+  /* E80: objects the HAL owns (event log, timing) — read-only, registered after vmp_init; the protocol layer stays
+     ignorant of HAL types */
+  uint32_t (*aux_read)(void *ctx, uint16_t obj, uint8_t sub, bool *ok);
+  void *aux_ctx;
   bool nv_dirty;                          /* configuration changed — the HAL stores it (rate-limited, CRC) and clears this */
   bool reboot_req, factory_req, boot_req; /* the HAL acts once the acknowledgement has left */
   uint32_t t_boot;

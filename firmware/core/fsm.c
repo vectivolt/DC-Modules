@@ -17,7 +17,7 @@ pmp_fclass_t pmp_fault_class(pmp_fault_t c) {
   switch (c) {
   case FC_NONE: return FCL_NONE;
   case FC_IN_OV: case FC_IN_UV: case FC_PH_LOSS: case FC_LINE_HZ: return FCL_AUTO_EXT;  /* the grid's */
-  case FC_BUS_UV: case FC_MID_IMB: case FC_OT: return FCL_AUTO_INT;   /* the module's, recoverable, counted */
+  case FC_BUS_UV: case FC_MID_IMB: case FC_OT: case FC_FAN: return FCL_AUTO_INT;   /* the module's, recoverable, counted */
   /* F.34 stays LATCH: a start that neither completed nor faulted has no known cause, and retrying it re-energizes the stall */
   case FC_LOCK: return FCL_LOCK;
   default: return FCL_LATCH;
@@ -60,7 +60,15 @@ static bool in_range(float x, float lo, float hi) { return isfinite(x) && x >= l
 static bool recovered(const pmp_fsm_t *f, const pmp_in_t *in) {
   if (in->hal_fault == f->latched) return false;   /* E79: the HAL still holds the row (F.37 while the frequency is out) */
   if (f->latched == FC_OT)return in_range(in->temp_max_c, -60.0f, PMP_OT_RECOVER_C);
-  return in_range(in->vin_ll, PMP_IN_UV_RECOVER_V, PMP_IN_OV_RECOVER_V) && in->phases_ok >= 3;
+  if (f->latched == FC_FAN) return pmp_fan_derate(in) > 0.0f;   /* E80: a fan runs again */
+  return in->vin_ll_min >= PMP_IN_UV_RECOVER_V && in->vin_ll_max <= PMP_IN_OV_RECOVER_V && in->phases_ok >= 3;
+}
+
+float pmp_fan_derate(const pmp_in_t *in) {
+  if (in->fans_total == 0u) return in->fan_ok ? 1.0f : 0.5f;
+  if (in->fans_failed == 0u) return 1.0f;
+  if (in->fans_total >= 4u) return (in->fans_failed == 1u) ? 0.6f : (in->fans_failed == 2u) ? 0.3f : 0.0f;
+  return (in->fans_failed == 1u) ? 0.5f : 0.0f;
 }
 
 void pmp_fsm_init(pmp_fsm_t *f) {
@@ -98,7 +106,9 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
      impossible for PMP_BAD_SAMPLE_MS is a sensing fault (F.29) — before E77 a NaN temperature, bus or current command made
      every comparison false, so OT, bus UV/OV and F.15 went blind while the module kept running. Setpoints are the
      controller's, not the module's: non-finite or negative reads as 0 (no delivery), above the ceiling clamps. */
-  bool meas_ok = in_range(in->vin_ll, 0.0f, 700.0f) && in_range(in->vbus, -20.0f, 1100.0f) && in_range(in->vmid_frac, 0.0f, 1.0f)
+  bool meas_ok = in_range(in->vin_ll, 0.0f, 700.0f) && in_range(in->vin_ll_min, 0.0f, 700.0f)
+              && in_range(in->vin_ll_max, 0.0f, 700.0f) && in->vin_ll_max >= in->vin_ll_min
+              && in_range(in->vbus, -20.0f, 1100.0f) && in_range(in->vmid_frac, 0.0f, 1.0f)
               && in_range(in->vbank_a, -20.0f, 650.0f) && in_range(in->vbank_b, -20.0f, 650.0f)
               && in_range(in->vout_meas, -50.0f, 1150.0f) && in_range(in->iout_meas, -50.0f, 400.0f)
               && in_range(in->temp_max_c, -60.0f, 200.0f) && (!in->ext_connected || in_range(in->vext, -1150.0f, 1150.0f));
@@ -152,12 +162,18 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     /* E67: behind the output diode Vout sits at the stack (minus Vf) while the module delivers; a battery above it only
        reverse-biases the diode — so the plausibility window is one-sided when a vehicle is connected */
     /* E77: rows 6–9 carry their documented persistence (a 1 ms sag, phase dropout or midpoint spike latched before) */
-    bool inov = in->vin_ll > PMP_IN_OV_V, inuv = in->vin_ll < PMP_IN_UV_V, ph = in->phases_ok < 3;
+    /* E80 (review R06/HR-24): overvoltage reads the HIGHEST line, undervoltage the LOWEST — the old single scalar
+       (farthest from 400 V) selected 280 V out of a 280/505/505 V set and hid the overvoltage entirely */
+    bool inov = in->vin_ll_max > PMP_IN_OV_V, inuv = in->vin_ll_min < PMP_IN_UV_V, ph = in->phases_ok < 3;
     if (inov || inuv || ph) o->warn |= PMP_W_IN_RIDE;
     if (persist(&f->p_inov, inov, PMP_IN_OV_MS)) latch(f, FC_IN_OV);
     if (persist(&f->p_inuv, inuv, PMP_IN_UV_MS)) latch(f, FC_IN_UV);
     if (persist(&f->p_ph, ph, PMP_PH_LOSS_MS)) { o->derate = 0.0f; latch(f, FC_PH_LOSS); }
     if (persist(&f->p_mid, fabsf(in->vmid_frac - 0.5f) * in->vbus > PMP_MID_IMB_V, PMP_MID_MS)) latch(f, FC_MID_IMB);
+    /* E80 (review HR-06/R10): each half-link absolutely — 860 V total and ±40 V midpoint together still let one
+       450 V bank reach 454–468 V without either row firing */
+    if (persist(&f->p_half, fmaxf(in->vmid_frac, 1.0f - in->vmid_frac) * in->vbus > PMP_HALF_OV_V, PMP_HALF_OV_MS))
+      latch(f, FC_HALF_OV);
     /* E77 F.13 firmware mirror on the module's OWN stack: above the mode ceiling (or Vout above 1050 V) for 2 ms, or above
        its command while it sources current for 200 ms (a CV failure). Comparing Vout with the command latched whenever a
        battery sat above the setpoint behind DOUT, or ENABLE arrived before the first SET_OUTPUT with a battery present. */
@@ -167,6 +183,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       latch(f, FC_OUT_OVP);
     if (o->mode == MODE_SER && o->k_ser && fabsf(in->vbank_a - in->vbank_b) > PMP_BANK_IMB_V) latch(f, FC_BANK_IMB);
     if (in->temp_max_c > PMP_OT_TRIP_C) latch(f, FC_OT);
+    if (pmp_fan_derate(in) <= 0.0f) latch(f, FC_FAN);   /* E80: too few fans left for any power (FW-21) */
     /* E76: the plausibility check is LOW-SIDE ONLY — vout above the stack is a legitimate
        reverse-biased-diode condition (a higher battery, or the terminal capacitors holding an
        earlier voltage that only the 3.8 MOhm divider drains after a downward step); the high
@@ -179,10 +196,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
        with the thermal time constant. Reductions act at once. */
     if (f->latched == FC_NONE) {
       float th = fminf(1.0f, fmaxf(PMP_DERATE_MIN_TH, 1.0f - PMP_DERATE_SLOPE * (in->temp_max_c - PMP_OT_DERATE_C)));
-      float tgt = in->fan_ok ? th : fminf(th, 0.5f);
+      float fan = pmp_fan_derate(in), tgt = fminf(th, fan);   /* E80: by failed-fan count (FW-21) */
       o->derate = (tgt < o->derate) ? tgt : fminf(tgt, o->derate + PMP_DERATE_UP_PER_MS);
       if (th < 1.0f) o->warn |= PMP_W_DERATE_TH;
-      if (!in->fan_ok) o->warn |= PMP_W_DERATE_FAN;
+      if (fan < 1.0f) o->warn |= PMP_W_DERATE_FAN;
     }
     /* graceful, not latched (F.28); E76 (review R07): a graceful event must never downgrade a latch that fired this tick.
        E78: the timeout belongs to the active protocol profile, and a delivering module ramps its current out before stopping. */
@@ -194,7 +211,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if (in->link_age_ms > PMP_LINK_TO_MS) latch(f, FC_LINK);
     /* E65: recomputed every tick — a session that starts low (bus 650 V) and climbs to a 525 V bank would otherwise
        run gain 1.6, outside every simulated corner (the reference was only set in STANDBY) */
-    o->vbus_ref = bus_ref_for(o->mode, fmaxf(vcmd, in->vout_meas), in->vin_ll);
+    o->vbus_ref = bus_ref_for(o->mode, fmaxf(vcmd, in->vout_meas), in->vin_ll_max);   /* E80: the floor tracks the HIGHEST line */
   }
   if (operating) {
     /* E77 row 15 as documented: relative to the RATED current, 130 % for 2 ms or 102 % for 100 ms — the CC loop limits below
@@ -236,8 +253,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
        to the true crest dumped through the relay; a NaN reading parked the module here with no fault. A non-finite reading
        is now F.29 (above); an out-of-range line waits, reported, and the F.20 window only counts while the line is valid.
        E78: "in range" is the start window (275–485 VAC), 15 V inside the trip rows, so a grid at an edge cannot cycle it. */
-    float crest = 1.414f * in->vin_ll;
-    bool line_ok = in->vin_ll >= PMP_IN_UV_RECOVER_V && in->vin_ll <= PMP_IN_OV_RECOVER_V && in->phases_ok >= 3;
+    /* E80 (review R06): the bypass-close threshold uses the HIGHEST line's crest (the rectifier charges to it), and the
+       start window holds every line — min above UV, max below OV. The old scalar let a 280/505/505 V set close at 356 V. */
+    float crest = 1.414f * in->vin_ll_max;
+    bool line_ok = in->vin_ll_min >= PMP_IN_UV_RECOVER_V && in->vin_ll_max <= PMP_IN_OV_RECOVER_V && in->phases_ok >= 3;
     o->k_pre = false;
     if (!line_ok) { f->prechg_ms = 0; o->warn |= PMP_W_LINE_WAIT; break; }
     f->prechg_ms++;
@@ -265,6 +284,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       if (o->pfc_en || o->k_ser || o->k_para || o->k_parb) {
         if (++f->idle_ms > PMP_WARM_HOLD_MS && fabsf(in->iout_meas) < PMP_MAKE_IOUT_A) {
           o->pfc_en = false; o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = false;
+          f->p_make = 0;   /* E80: the matrix opened — the next close waits again */
         }
       } else { f->idle_ms = 0; if (o->k_pre) o->warn |= PMP_W_COLD_STBY; }
     } else f->idle_ms = 0;
@@ -279,13 +299,16 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       pmp_mode_t m = (f->omode == OMODE_LOW) ? MODE_PAR : (f->omode == OMODE_HIGH) ? MODE_SER
                    : (v_start > PMP_XOVER_DN_V) ? MODE_SER : MODE_PAR;
       o->pfc_en = true;
-      o->vbus_ref = bus_ref_for(m, v_start, in->vin_ll);
+      o->vbus_ref = bus_ref_for(m, v_start, in->vin_ll_max);
       /* E76 (review R02): readiness is RELATIVE TO THE COMMANDED REFERENCE. The old fixed
          "vbus > 700" could never pass at any point where bus_ref_for() returns < 700 — a
          correctly regulated 650 V bus (every PAR start below ~332 V, every SER start below
          ~665 V) left the module in STANDBY forever. 0.95·ref always demands a real boost:
          the FW-R7 line floor (1.08·√2·VLL) keeps 0.95·ref above the unloaded rectifier crest. */
-      if (in->vbus > 0.95f * o->vbus_ref) {
+      /* E80 (review HR-28): the PFC ramp itself sits inside the F.34 window — a boost that never reaches its
+         reference (a stalled stage, a wrong sense) was energized in STANDBY with no bound at all */
+      if (!(in->vbus > 0.95f * o->vbus_ref)) { if (++f->start_ms > PMP_START_TO_MS) latch(f, FC_START_TO); }
+      else {
         if (in->ext_connected && in->vext < 0.0f) { latch(f, FC_BACKFEED); break; }
         o->mode = m;
         o->v_max = (m == MODE_SER) ? PMP_SER_VMAX_V : PMP_PAR_VMAX_V;
@@ -300,19 +323,28 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
              bleeders run (τ ≈ 0.17–0.27 s — the permit lands in 0.12–0.7 s). The LLC stays
              OFF through the wait so it cannot fight the bleed. */
           float vlim = fmaxf(in->ext_connected ? in->vext : in->vout_meas, PMP_MAKE_FLOOR_V) - PMP_MAKE_MARGIN_V;
+          /* E80 (review HR-09/R07): PAR additionally bounds the BANK-TO-BANK mismatch — closing both parallel
+             contacts equalizes the banks through them (E = C·ΔV²/4), which the output current cannot see; 25 V on
+             30.8 µF is < 5 mJ. The bleeders run until both conditions hold. */
           bool safe = fabsf(in->iout_meas) < PMP_MAKE_IOUT_A &&
                       ((o->mode == MODE_SER) ? (in->vbank_a + in->vbank_b <= vlim)
-                                             : (fmaxf(in->vbank_a, in->vbank_b) <= vlim));
+                                             : (fmaxf(in->vbank_a, in->vbank_b) <= vlim &&
+                                                fabsf(in->vbank_a - in->vbank_b) <= PMP_BANK_IMB_V));
           o->q_disch_bk = !safe;
           if (safe) {
             o->q_disch_bk = false;
             if (o->mode == MODE_PAR) { o->k_para = true; o->k_parb = true; }
             else o->k_ser = true;
+            f->p_make = 0;   /* E80 (HR-08): the settle wait starts at the close command */
           } else if (++f->start_ms > PMP_START_TO_MS) latch(f, FC_START_TO);   /* F.34: bleeder/permit stall */
         } else {
           o->q_disch_bk = false;
           /* E78: the soft start waits until every wired contact confirms its command (F.19 bounds the wait) */
           if (((pmp_relay_cmd(o) ^ in->relay_fb) & in->relay_fb_wired) != 0u) break;
+          /* E80 (review HR-08): the matrix relays have no mirror contacts (E67), so the coil bit is not a settled
+             contact — wait out operate + bounce once after the close command. A warm restart's counter is already
+             past the wait, so contacts that never opened add nothing. */
+          if (f->p_make < PMP_RELAY_MAKE_MS) { f->p_make++; break; }
           o->llc_en = true;
           float stack = (o->mode == MODE_SER) ? in->vbank_a + in->vbank_b : fmaxf(in->vbank_a, in->vbank_b);
           /* E67: a welded matrix contact shows during the soft start — in SER a welded K_PARA holds bank A at 0 V (F.17) */
@@ -359,7 +391,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if (f->sw_step == 10) { o->llc_en = false; }
     /* the mode-switch invariant is "EVERY matrix contact open" — opened at zero current (LLC stopped, diode blocking);
        E76 (review R03): the bank bleeders start with the open, so the make-permit in STANDBY is reached quickly */
-    if (f->sw_step == 20) { o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = true; }
+    if (f->sw_step == 20) { o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = true; f->p_make = 0; }
     /* E75: the open->close command gap must exceed the relay's DIODE-SUPPRESSED release — the ULN
      * clamp freewheels the coil, stretching drop-out 2-3x vs the unsuppressed figure. Hand back to
      * STANDBY at step 70: earliest re-close is then >=51 ms after the open command, against the
@@ -374,6 +406,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if (persist(&f->p_aux, in->aux_ok, PMP_AUX_STABLE_MS)) { f->st = ST_STANDBY; f->p_aux = 0; }
     break;
   case ST_FAULT: {
+    o->q_disch = false; o->q_disch_bk = false;   /* E80 (HR-11): no unsupervised dump in FAULT — SHUTDOWN re-runs it bounded */
     /* E78: AUTO rows clear themselves once their condition has been gone for the recovery hold. CLEAR ends a LATCH row, or an
        AUTO row whose condition is already gone (it skips the hold, never the condition). Every exit demands a fresh ENABLE. */
     pmp_fclass_t cl = pmp_fault_class(f->latched);
@@ -397,8 +430,16 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     break;
   case ST_DISCH:
     f->disch_ms++;
-    if (in->vbus < 60.0f) { f->st = ST_OFF; o->q_disch = false; o->q_disch_bk = false; }
-    else if (f->disch_ms > f->disch_to_ms) latch(f, FC_DISCH);   /* F.21 — discharge kept commanded */
+    /* E80 (review HR-12/R12): discharged means the LINK AND BOTH BANKS below 60 V — a bus at 59 V with banks at
+       400 V previously entered OFF and removed the bank bleeders */
+    if (in->vbus < 60.0f && in->vbank_a < 60.0f && in->vbank_b < 60.0f) { f->st = ST_OFF; o->q_disch = false; o->q_disch_bk = false; }
+    else if (f->disch_ms > f->disch_to_ms) {
+      latch(f, FC_DISCH);   /* F.21 — the module is NOT discharged; the code says so */
+      /* E80 (review HR-11/R11): a maintained source (the permanent precharge-resistor path with AC still applied) would
+         otherwise feed the 640 Ω dump for as long as the fault stands — beyond any pulse rating. The dump commands end
+         with the window; F.21 = "isolate upstream, then verify", never "keep burning". */
+      o->q_disch = false; o->q_disch_bk = false;
+    }
     break;
   case ST_OFF:
     if (in->wake_req) { f->st = ST_INIT; f->need_enable = true; }   /* E78: the public exit from OFF */

@@ -326,7 +326,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 |---|---|
 | **InfyPower** | 3 × NOVOSENSE NSi6801 single-channel iso drivers (PFC) + **gate-drive transformers** with low-side push drivers and a PMOS clamp for the LLC bridge [T]; no DESAT, Miller clamp or negative rail mentioned anywhere in the teardown [T]. |
 | **Why** | transformer drive is the cheapest way to four floating gates: no per-channel bias supplies, no iso-driver ICs. Its limits — duty range, no fault feedback, weak hold-off — are acceptable when protection lives in shunt comparators and device ruggedness. |
-| **Ours** | 9 iso-driver channels per module: **NSI6611** (DESAT with 22/47 pF blank, active Miller clamp, UVLO, soft-off) fed by reinforced **QA01C-18** ±bias modules (+18 / −4 V drawn; −3 V catalogue — O-11 open), split 4.7/4.7 Ω gate resistors, two 1 kV DESAT diodes + 100 Ω per channel. |
+| **Ours** | 9 iso-driver channels per module: **NSI6611** (DESAT with 22/47 pF blank, active Miller clamp, UVLO, soft-off) fed by reinforced **QA01C-18** ±bias modules (+18 / −3 V — O-11 closed E45/E80), split 4.7/4.7 Ω gate resistors, two 1 kV DESAT diodes + 100 Ω per channel. |
 | **Assessment** | ≈ ₹1–1.5k/module premium over their scheme [C, class prices]. What it buys: per-device short-circuit detection inside the SiC withstand time (next block), a clamped off-state at 140 kHz dv/dt, and a defined negative hold-off — the three things transformer drive cannot give. On a module spec'd for unattended DCFC duty at 55 °C full power, that is the correct side of the trade; their side is the correct one for their cost point. |
 | **Verdict** | **1**. Cost recorded as a known premium, not a lever — removing DESAT would breach the protection philosophy. |
 

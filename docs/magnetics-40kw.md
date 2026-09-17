@@ -137,7 +137,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 |---|---|
 | Inductance | **4.07 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
 | Current rating | **93.3 A rms** at the copper corner (203 kHz) · **148.1 A pk** at the worst simulated corner · 267.1 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
-| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372B2000** — powder cores prohibited in this slot |
+| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372A2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **10000×0.05** mm (19.6 mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
 | Gap | distributed centre-leg gap **Σ ≈ 12.0 mm in 12 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 4.07 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
 | Rdc · Rac | Rdc **≤ 1.1 mΩ** @ 25 °C (100 %) · Rac **≤ 3.45 mΩ** @ 203 kHz, 100 °C (sample 5 / lot) |
@@ -313,7 +313,7 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 
 | Gate | Check | Result | |
 |---|---|---|:---:|
-| `current-coordination` | 40kw threshold ≥ 1.2× simulated worst line peak | 155 A pk vs 127.2 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22× | ✅ |
+| `current-coordination` | 40kw threshold ≥ 1.2× simulated worst line peak | 155 A pk vs 127.1 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22× | ✅ |
 | `current-coordination` | 40kw observability through the 3 µs kill race | Δi(3 µs, 560 V, L(i) at AL−8 %) = 49.9 A → 204.9 A ≤ ceiling 225 A on 18 Ω · threshold at 2.77 V ≤ 3 V | ✅ |
 | `current-coordination` | 40kw threshold ≥ 1.2× simulated worst tank peak | 180 A pk vs 148.1 A (SER250-full-bus764) → 1.22× | ✅ |
 | `current-coordination` | 40kw window-comparator kill + observability | \|Ip\| crosses F.11 1.35 µs after the short → kill peak 267.1 A (+1 µs, ×1.2 ≤ 450 A on 0.36 Ω) · monitor peak +3 µs 417 A ×1.05 in rail · window 1/2.3 V | ✅ |
@@ -329,7 +329,7 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 | Part | Fastest honest route for the first 40 kW build |
 |---|---|
 | D1 | wind in-house on stocked 0077908A7 cores with 1.6 mm grade-2 wire to this sheet; measure L₀, L @ Ipk and Rdc against the rows |
-| D2 · D3 | stocked TDK E70/33/32 N95 sets and B66372B2000 formers (the 3-set former is custom — a machined or stacked-former prototype is acceptable for EVT); litz to order; wind to this sheet and measure Lm, leakage and Rac at 140 kHz (EVT T-31 / T-34) before trusting any tank result |
+| D2 · D3 | stocked TDK E70/33/32 N95 sets and B66372A2000 formers (the 3-set former is custom — a machined or stacked-former prototype is acceptable for EVT); litz to order; wind to this sheet and measure Lm, leakage and Rac at 140 kHz (EVT T-31 / T-34) before trusting any tank result |
 | D7 | custom wind on a cased T 80/50/25 nanocrystalline core; qualify the DM-bias row before the LISN scan |
 | CTs | Talema catalogue parts (ACX line CTs, AS-series resonant CT) |
 | D4 | bring the control up on a catalogue 24 V supply (Mean Well RSDH-150-24 class plus a 24 → 15 V converter) until the ETD44 part arrives |

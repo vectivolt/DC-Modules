@@ -107,12 +107,12 @@
       "signal_name": "UCAN_CANH"
      },
      {
-      "pin_number": 4,
+      "pin_number": 2,
       "name": "A2",
       "signal_name": "UCAN_CANL"
      },
      {
-      "pin_number": 2,
+      "pin_number": 4,
       "name": "B1",
       "signal_name": "LCAN_B1"
      },

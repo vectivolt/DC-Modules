@@ -135,7 +135,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 |---|---|
 | Inductance | **3.28 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
 | Current rating | **116 A rms** at the copper corner (203 kHz) · **182.8 A pk** at the worst simulated corner · 329.7 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
-| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372B2000** — powder cores prohibited in this slot |
+| Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372A2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **12000×0.05** mm (23.6 mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
 | Gap | distributed centre-leg gap **Σ ≈ 15.0 mm in 15 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 3.28 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
 | Rdc · Rac | Rdc **≤ 0.92 mΩ** @ 25 °C (100 %) · Rac **≤ 3.7 mΩ** @ 203 kHz, 100 °C (sample 5 / lot) |
@@ -328,7 +328,7 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 | Part | Fastest honest route for the first 50 kW air build |
 |---|---|
 | D1 | wind in-house on stocked 0077908A7 cores with 1.6 mm grade-2 wire to this sheet; measure L₀, L @ Ipk and Rdc against the rows |
-| D2 · D3 | stocked TDK E70/33/32 N95 sets and B66372B2000 formers (the 3-set former is custom — a machined or stacked-former prototype is acceptable for EVT); litz to order; wind to this sheet and measure Lm, leakage and Rac at 140 kHz (EVT T-31 / T-34) before trusting any tank result |
+| D2 · D3 | stocked TDK E70/33/32 N95 sets and B66372A2000 formers (the 3-set former is custom — a machined or stacked-former prototype is acceptable for EVT); litz to order; wind to this sheet and measure Lm, leakage and Rac at 140 kHz (EVT T-31 / T-34) before trusting any tank result |
 | D7 | custom wind on a cased T 90/50/30 nanocrystalline core; qualify the DM-bias row before the LISN scan |
 | CTs | Talema catalogue parts (ACX line CTs, AS-series resonant CT) |
 | D4 | bring the control up on a catalogue 24 V supply (Mean Well RSDH-150-24 class plus a 24 → 15 V converter) until the ETD44 part arrives |
