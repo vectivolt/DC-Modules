@@ -101,15 +101,14 @@ writeFileSync(join(OUT, "pfc-loops.csv"), [
 ].join("\n") + "\n");
 console.log("→ calculations/out/pfc-loops.csv");
 
-// ---------- E65 (EMI-2): the current loop against the DRAWN input filter and the grid ----------
+// ---------- the current loop against the DRAWN input filter and the grid ----------
 // Both loop models above (and vienna-switched) closed the current loop on a bare inductor / stiff grid. The drawn
-// filter (E68: CX0 4.7 µF★ · CMC1 leakage · CX1 4.7 µF★ · CMC2 leakage · CX2 4.7 µF★ — the InfyPower star-X2 filter, no DM choke;
-// E65 was CMC1 leakage · CX1 2.2 µF Δ · CMC2 leakage + D6 L(i) · CX2 4.7 µF Δ) peaks at 3–25 kHz, beside the 3 kHz
-// crossover, and nothing damped it. Two checks, both able to fail:
+// filter (CX0 4.7 µF★ · CMC1 leakage · CX1 4.7 µF★ · CMC2 leakage · CX2 4.7 µF★ — a star-X2 ladder with no DM choke)
+// peaks at 3–25 kHz, beside the 3 kHz crossover; the Rd–Cd damper is what holds the loop up. Two checks, both able to fail:
 //  (1) small-signal — converter admittance Y(s) = [1 − e^(−sTd)·H(s)·(ff − C(s)·G0)] / [s·L1 + C(s)·e^(−sTd)] (P or
 //      PI current controller C, resistive emulation G0, feed-forward of the SENSED phase voltage through the drawn
-//      SNS_VAC RC H) against the filter output impedance Zo (grid Lg/Rg of A9 + 0/100 µH, leakage band, D6 at L0 and
-//      at crest, D1 at L0 and at crest, winding R only — no ESR/core-loss damping claimed). Nyquist winding count of
+//      SNS_VAC RC H) against the filter output impedance Zo (grid Lg/Rg + 0/100 µH, leakage band,
+//      D1 at L0 and at crest, winding R only — no ESR/core-loss damping claimed). Nyquist winding count of
 //      1 + Y·Zo (−1 encircled = unstable) and the modulus margin min|1 + Y·Zo| (≥ 0.5 ⇒ GM ≥ 6 dB, PM ≥ 29°).
 //  (2) time-domain — vienna() with the filter states, the same RC-sensed feed-forward and a real sampling delay; a
 //      sustained oscillation shows as grid-current content between 2 and 45 kHz.
@@ -117,9 +116,8 @@ import { readFileSync as readJson } from "node:fs";
 import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
 {
   const CH = JSON.parse(readJson(join(OUT, "dm-choke-design.json"), "utf8"));
-  // E81 / review G (F-G-5): the gate used to run on `2π·3 kHz·L_D1(Ipk, lot −8 %)` — close to, but not equal to, what the
-  // firmware ships. The SHIPPED proportional gain is now READ OUT of firmware/hal/pfc.c and gated, so a HIL retune that
-  // raises it has to pass this margin before it can land.
+  // The SHIPPED proportional gain is READ OUT of firmware/hal/pfc.c and gated, so a HIL retune that raises it has to
+  // pass this margin before it can land.
   const PFC_C = readJson(join(OUT, "..", "..", "firmware", "hal", "pfc.c"), "utf8");
   const kpm = PFC_C.match(/c->kp_i\s*=\s*\(kw == 50u\)\s*\?\s*([\d.]+)f\s*:\s*\(kw == 40u\)\s*\?\s*([\d.]+)f\s*:\s*([\d.]+)f;/);
   if (!kpm) throw new Error("pfc-control: could not read c->kp_i out of firmware/hal/pfc.c — the gate must run on the shipped gain");
@@ -128,12 +126,18 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
   const cmul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
   const cdiv = (a, b) => { const q = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / q, (a[1] * b[0] - a[0] * b[1]) / q]; };
   const cpar = (a, b) => cdiv(cmul(a, b), cadd(a, b));
-  // drawn values (verify-independent proves them on every netlist): E68 X bank = 4.7 µF★ X2 at LF, AC·M and 2 × 4.7 µF★ at AC (one at
-  // the converter node left 24 W in each damper R); E65 damper CDMP 2.2 µF + RDMP 10 Ω Δ across AC1..3; SNS_VAC divider 8×475 k
-  // over 11.5 k with 10 nF (cells.tsx IsoVSense)
-  const X2 = 4.7e-6, C2X = 2 * 4.7e-6, CD = 2.2e-6, RD = 10, TAUV = (11.5e3 * 3.8e6 / (11.5e3 + 3.8e6)) * 10e-9;
+  // drawn values (verify-independent proves them on every netlist): X bank = 4.7 µF★ X2 at LF, AC·M and 2 × 4.7 µF★ at AC
+  // (a single stage at the converter node would leave 24 W in each damper R); SNS_VAC divider 8 × 475 k over 11.5 k
+  // with 10 nF (cells.tsx IsoVSense)
+  const X2 = 4.7e-6, C2X = 2 * 4.7e-6, TAUV = (11.5e3 * 3.8e6 / (11.5e3 + 3.8e6)) * 10e-9;
+  // the Rd–Cd damper is per SKU and is READ from the drawing, so this proof is about the network that is built
+  const bsrc = readJson(join(OUT, "..", "..", "packages", "common-components", "boards.tsx"), "utf8");
+  const dC = bsrc.match(/name=\{`CDMP\$\{i\}`\} capacitance=\{pw === 50 \? "([\d.]+)uF" : "([\d.]+)uF"\}/), dR = bsrc.match(/name=\{`RDMP\$\{i\}`\} resistance=\{pw === 50 \? "([\d.]+)" : "([\d.]+)"\}/);
+  if (!dC || !dR) throw new Error("pfc-control: the CDMP / RDMP damper values could not be read from boards.tsx");
+  const DAMPER = Object.fromEntries(["30kw", "40kw", "50kw"].map((k) => [k, { CD: +dC[k === "50kw" ? 1 : 2] * 1e-6, RD: +dR[k === "50kw" ? 1 : 2] }]));
+  const dTag = (k) => `CDMP ${DAMPER[k].CD * 1e6}uF+RDMP ${DAMPER[k].RD}R`;
   const VPH = 330 / Math.sqrt(3), FWDELAY = 15e-6, GRIDS = [[0, 0.01], [30e-6, 0.02], [100e-6, 0.02]];
-  const margin = ({ L1, Lg, Rg, Llk, Rcm, Kp, wz, Td, G0, ff, damp }) => {
+  const margin = ({ L1, Lg, Rg, Llk, Rcm, Kp, wz, Td, G0, ff, damp, CD, RD }) => {
     let wind = 0, prev = null, md = Infinity, fAt = 0;
     const NPTS = 6000;
     for (let k = -NPTS; k <= NPTS; k++) {
@@ -142,9 +146,9 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
       const e = cx(Math.cos(w * Td), -Math.sin(w * Td)), H = cdiv(cx(1), cx(1, w * TAUV));
       const Cc = cmul(cx(Kp), cadd(cx(1), cdiv(cx(wz), s)));
       const Y = cdiv(csub(cx(1), cmul(cmul(e, H), csub(cx(ff), cmul(Cc, cx(G0))))), cadd(cmul(cx(L1), s), cmul(Cc, e)));
-      const Z0 = cpar(cadd(cx(Rg), cmul(cx(Lg), s)), cdiv(cx(1), cmul(cx(X2), s)));                 // E68: star X2 stages, no D6
+      const Z0 = cpar(cadd(cx(Rg), cmul(cx(Lg), s)), cdiv(cx(1), cmul(cx(X2), s)));                 // star X2 stages, no DM choke
       const Z1 = cpar(cadd(Z0, cadd(cx(Rcm), cmul(cx(Llk), s))), cdiv(cx(1), cmul(cx(X2), s)));
-      let Zc2 = cdiv(cx(1), cmul(cx(C2X), s));                                                           // E68: converter-side star X2 bank
+      let Zc2 = cdiv(cx(1), cmul(cx(C2X), s));                                                           // converter-side star X2 bank
       if (damp) Zc2 = cpar(Zc2, cadd(cx(RD / 3), cdiv(cx(1), cmul(cx(3 * CD), s))));
       const T = cadd(cx(1), cmul(Y, cpar(cadd(Z1, cadd(cx(Rcm), cmul(cx(Llk), s))), Zc2)));
       const a = Math.atan2(T[1], T[0]);
@@ -158,8 +162,8 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
   let bad = 0;
   console.log("\nE65 CURRENT LOOP vs DRAWN INPUT FILTER (modulus margin min|1+Y·Zo|; 0 = unstable)");
   for (const sku of ["30kw", "40kw", "50kw"]) {
-    const d = D1[sku], d7 = CH.d7[sku];
-    const Rcm = d7.P / (3 * 1.05 * { "30kw": 55.9, "40kw": 73.3, "50kw": 91.6 }[sku] ** 2);   // hot winding R: one D7 winding (E68: no D6)
+    const d = D1[sku], d7 = CH.d7[sku], { CD, RD } = DAMPER[sku];
+    const Rcm = d7.P / (3 * 1.05 * { "30kw": 55.9, "40kw": 73.3, "50kw": 91.6 }[sku] ** 2);   // hot winding R: one D7 winding
     const Ipk = d7.Ipk, G0 = (d.P / 0.965) / (3 * VPH * VPH);
     // P = the vienna-switched reference (3 kHz at the crest L); PI = the same proportional gain with the zero placed above
     // (KiI/KpI). The single-gain PI above was placed on a 100 µH plant: on the 40/50 kW D1 (crest 50–42 µH at lot −8 %) its
@@ -171,12 +175,12 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
       let worst = { m: Infinity };
       const ctl = ff ? ctl0 : `${ctl0} noFF`;
       for (const [Lg, Rg] of GRIDS) for (const Llk of d7.Llk_band_uH.map((x) => x * 1e-6)) for (const i of [0, Ipk]) {
-        const r = margin({ L1: Ld1(d, i, 0.92), Lg, Rg, Llk, Rcm, Kp: c.Kp, wz: c.wz, Td, G0, ff, damp });
+        const r = margin({ L1: Ld1(d, i, 0.92), Lg, Rg, Llk, Rcm, Kp: c.Kp, wz: c.wz, Td, G0, ff, damp, CD, RD });
         if (r.m < worst.m) worst = { ...r, at: `Lg ${Lg * 1e6} µH · L_lk ${Llk * 1e6} µH · ${i ? "crest" : "zero-crossing"} L`, };
       }
       const gated = ff && damp && Td === FWDELAY && ctl0 !== "PI@1.87", ok = worst.m >= 0.5;
       if (gated && !ok) bad++;
-      csv.push([sku, "small-signal", ctl, f(Td * 1e6, 0), damp ? "CDMP 2.2uF+RDMP 10R" : "none", "0/30/100", f(worst.m, 2), "", `"worst at ${worst.at} (${f(worst.fAt / 1e3, 1)} kHz)"`]);
+      csv.push([sku, "small-signal", ctl, f(Td * 1e6, 0), damp ? dTag(sku) : "none", "0/30/100", f(worst.m, 2), "", `"worst at ${worst.at} (${f(worst.fAt / 1e3, 1)} kHz)"`]);
       console.log(`  ${sku} ${ctl.padEnd(10)} Td ${f(Td * 1e6, 0)} µs ${damp ? "damped  " : "undamped"}: ${worst.m === 0 ? "UNSTABLE" : "margin " + f(worst.m, 2)} at ${worst.at} ≈${f(worst.fAt / 1e3, 1)} kHz${gated ? (ok ? "  [gate ≥0.5 ok]" : "  [GATE FAIL <0.5]") : ""}`);
     }
     console.log(`  ${sku} FW-EMI-3 current-loop proportional gain 2π·3 kHz·L_D1(${Ipk} A, lot −8 %) = ${f(CTL.P.Kp, 2)} V/A (L ${f(Ld1(d, Ipk, 0.92) * 1e6, 1)} µH; the single PI carries ${f(KpI * VHALF, 2)} V/A)`);
@@ -188,17 +192,17 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
       const r = run(Lg, Rg, true, 400), ok = r.oscPct <= 1;
       if (!ok) bad++;
       pD = Math.max(pD, r.pDamp);
-      csv.push([sku, "time-domain", "P+FF", 15, "CDMP 2.2uF+RDMP 10R", f(Lg * 1e6, 0), f(r.oscPct, 2), f(r.pDamp, 2), `"2-45 kHz grid-current content, % of fundamental; Ipk ${f(r.Ipk, 1)} A"`]);
+      csv.push([sku, "time-domain", "P+FF", 15, dTag(sku), f(Lg * 1e6, 0), f(r.oscPct, 2), f(r.pDamp, 2), `"2-45 kHz grid-current content, % of fundamental; Ipk ${f(r.Ipk, 1)} A"`]);
       console.log(`  ${sku} time-domain damped Td 15 µs Lg ${f(Lg * 1e6, 0)} µH: 2–45 kHz content ${f(r.oscPct, 2)} % of fundamental · damper ${f(r.pDamp, 2)} W · Ipk ${f(r.Ipk, 1)} A ${ok ? "ok" : "SUSTAINED OSCILLATION"}`);
     }
     const c30 = run(100e-6, 0.02, false, 800), h30 = run(100e-6, 0.02, true, 800), u15 = run(30e-6, 0.02, false, 400);
     if (!Number.isFinite(c30.oscPct)) c30.oscPct = 999;             // a run-away to overflow is an oscillation too
     if (!(c30.oscPct >= 10)) bad++;                                // the control must still fail, or the detector is blind
     csv.push([sku, "time-domain", "P+FF", 30, "none", 100, f(c30.oscPct, 1), "", '"control: undamped at the pfc-control 1.5 Tsw basis"']);
-    csv.push([sku, "time-domain", "P+FF", 30, "CDMP 2.2uF+RDMP 10R", 100, f(h30.oscPct, 2), f(h30.pDamp, 2), '"damper alone at 1.5 Tsw (P structure)"']);
-    // E81 / review G (F-G-5): this row USED to be labelled "quiet in the switched model" — true only at 30 kW. At 40 and
-    // 50 kW the undamped filter runs 75 % and 195 % of fundamental in 2–45 kHz at the SHIPPED 15 µs delay: the damper is the
-    // only thing holding the current loop up, it is a single unmonitored film, and an open CDMP is an undetected instability.
+    csv.push([sku, "time-domain", "P+FF", 30, dTag(sku), 100, f(h30.oscPct, 2), f(h30.pDamp, 2), '"damper alone at 1.5 Tsw (P structure)"']);
+    // At 40 and 50 kW the undamped filter runs tens of percent of fundamental in 2–45 kHz at the SHIPPED 15 µs delay: the
+    // damper is the only thing holding the current loop up, it is a single unmonitored film, and an open CDMP is an
+    // undetected instability — so the row is reported as a hazard, not as "quiet".
     csv.push([sku, "time-domain-HAZARD", "P+FF", 15, "none", 30, f(u15.oscPct, 2), "",
       `"HAZARD: undamped at the SHIPPED 15 µs delay this rating runs ${f(u15.oscPct, 1)} % of fundamental in 2-45 kHz — CDMP is a single unmonitored part with no detection in pfc.c"`]);
     console.log(`  ${sku} [control] undamped Td 30 µs Lg 100 µH: ${f(c30.oscPct, 1)} % (${c30.oscPct >= 10 ? "oscillates — detector live" : "DID NOT OSCILLATE — detector blind"}) · damped at 30 µs: ${f(h30.oscPct, 2)} % · [HAZARD] undamped at the shipped 15 µs, Lg 30 µH: ${f(u15.oscPct, 2)} % of fundamental${u15.oscPct > 10 ? " — the damper is load-bearing, not insurance" : ""}`);
@@ -207,7 +211,7 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
     const okR = pRes <= 0.5 * 25;
     if (!okR) bad++;
     const eOn = 0.5 * CD * (1.1 * 475 * Math.SQRT2) ** 2;           // line-connect at the crest: the series R takes ½·C·V²
-    csv.push([sku, "damper-duty", "-", "-", "RDMP 10R 25W", "-", f(pRes, 2), "", `"W per resistor worst (${f(100 * pRes / 25, 0)}% of 25 W); ${f(eOn, 2)} J per line-connect; standby 50 Hz at 400 VAC ${f(3 * p50(400), 2)} W total"`]);
+    csv.push([sku, "damper-duty", "-", "-", `RDMP ${RD}R 25W`, "-", f(pRes, 2), "", `"W per resistor worst (${f(100 * pRes / 25, 0)}% of 25 W); ${f(eOn, 2)} J per line-connect; standby 50 Hz at 400 VAC ${f(3 * p50(400), 2)} W total"`]);
     console.log(`  ${sku} RDMP duty ${f(pRes, 2)} W per resistor worst (${f(100 * pRes / 25, 0)} % of the 25 W part) · ${f(eOn, 2)} J per line-connect · standby 50 Hz share at 400 VAC ${f(3 * p50(400), 2)} W ${okR ? "ok" : "OVER 50 %"}`);
   }
   writeFileSync(join(OUT, "pfc-filter-stability.csv"), csv.map((r) => r.join(",")).join("\n") + "\n");

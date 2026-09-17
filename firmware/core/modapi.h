@@ -1,4 +1,4 @@
-/* modapi.h — E78 the ONE internal module-control data model.
+/* modapi.h — the ONE internal module-control data model.
  *
  * A protocol profile (firmware/proto/) is the only code that knows a wire format. It writes mod_cmd_t from the frames it
  * accepts and encodes mod_tlm_t into its own frames. The power core (fsm, ctl, group) reads mod_cmd_t only through
@@ -37,9 +37,9 @@ typedef struct {                /* module truth — core + HAL write it once per
   uint64_t fault_bits;          /* bit n−1 = F.n latched (F.31 while locked) */
   uint32_t warn;                /* PMP_W_* */
   bool rearm;                   /* ENABLE held, fresh edge required */
-  bool pfc_en, llc_en;          /* E82 (K-4): the stages actually switching right now. STANDBY's post-stop warm-hold
+  bool pfc_en, llc_en;          /* the stages actually switching right now. STANDBY's post-stop warm-hold
                                     (PMP_WARM_HOLD_MS) keeps pfc_en true well after rs has already dropped to
-                                    MOD_RS_READY, which a profile gating a reboot/bootloader action on rs alone would miss. */
+                                    MOD_RS_READY, which a profile gating a reboot/bootloader action on rs alone misses. */
   uint32_t recover_ms;          /* AUTO row: ms until the recovery hold completes (0 when none) */
   uint8_t limiter; uint16_t derate_why; float derate;
   float v_set;                  /* the voltage command in force (canonical, after sanitization) */
@@ -47,7 +47,7 @@ typedef struct {                /* module truth — core + HAL write it once per
   float v_min, v_max, i_rated, p_rated;   /* capability in force (v_max follows the output mode) */
   /* HAL-filled measurements (NaN where not fitted) */
   float v_out, i_out, v_bus, v_mid_imb, v_bank_a, v_bank_b;
-  float v_ext; bool ext_connected;        /* E81 (K1): the pack/external node behind DOUT — 3 of 5 vendors carry it */
+  float v_ext; bool ext_connected;        /* the pack/external node behind DOUT — 3 of 5 vendors carry it */
   float vin_ll, vin_ph[3], line_hz;
   float t_inlet, t_pfc, t_llc, t_xfmr, t_diode, t_bank, t_mcu, t_coolant;
   uint16_t fan_rpm[4]; uint8_t fan_duty, fan_fail;

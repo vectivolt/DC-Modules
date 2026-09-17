@@ -6,31 +6,31 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/firmware-330_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 330 checks ASan/UBSan"/>
 </p>
 
 > [!NOTE]
-> **Purpose** — the supervisory C99 core: its state machine, the HAL contract a port must honour, boot identity,
-> F.21 semantics and the contracts added by the external review rounds R5–R7 and by E60.
+> **Purpose** — the working guide to the firmware tree: what each file owns, the supervisory state machine, how one image
+> serves four module identities, the contract a port must honour, the electrical contract the card and the firmware share,
+> and the host suite that proves it. The layered design, the timing budget and the protection hierarchy are in the
+> [firmware architecture](firmware-architecture.md); the row-by-row trip values are in
+> [protection thresholds](protection-thresholds.md).
 >
-> **Gate coupling** — `review-checks` (R6-B, R6-C, R6-E) and `stress-audit` assert passages of this file word for
-> word, so edits here are **additive**: superseded values are marked, never deleted.
+> **Gate coupling** — `review-checks` and `stress-audit` assert passages of this file word for word, so the electrical
+> contract in §5 must keep saying what it says today.
 
 ## At a glance
 
 | | |
 |---|---|
-| **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
+| **Language / dependencies** | portable C99 in `core/`, `proto/`, `hal/` and `boot/` — no HAL, no RTOS, no heap; the MCU port is the only file set that touches a register |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
-| **Verification** | `sh firmware/run_tests.sh` — **330 checks** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror`, across seven binaries: `boot_test` 22 · `host_sim` **122** · `ctl_test` 20 · `proto_test` 42 · `hal_test` 45 · `app_test` 29 · `e81_test` **50** (E81 + E82) |
-| **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 7 group share-law checks · the E67 output-mode latch · codec guards · a 1M-frame fuzz · the per-tick relay-exclusion invariant · cycle-by-cycle Vienna and LLC plants · the signed boot chain and power-cut update storms · the E81 adaptive dead time, demand map, per-rating fan count and fault channels · the E82 rows — a row-granular program-once flash model, the weak-leg dead-time floor, the junction observer and its decline, the positive-only F.01 with its 100 kHz magnitude trip, and the new FSM rows (§17) |
+| **Verification** | `sh firmware/run_tests.sh` — seven binaries under AddressSanitizer + UndefinedBehaviorSanitizer with `-Werror` |
+| **What the suite covers** | the 26 fault scenarios · rating windows · the current-coordination classes · the group share law · the output-mode latch · codec conformance and a 1 M-frame fuzz · the per-tick relay-exclusion invariant · cycle-by-cycle Vienna and LLC plants · the signed boot chain and power-cut update storms · the adaptive dead time and the weak-leg edge · the junction observer and its decline · the positive-only F.01 with its 100 kHz magnitude trip |
 | **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — selected by the RATING strap (the 3.32 k band is reserved) |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
-
-The `firmware/` tree holds the **normative** control-plane logic, verified against the same plant and the same
-26 fault scenarios as the design-phase model. Run it yourself:
 
 ```bash
 sh firmware/run_tests.sh
@@ -40,521 +40,258 @@ sh firmware/run_tests.sh
 
 | File | Contents |
 |---|---|
-| `firmware/core/fsm.h` | states, fault codes (`F.xx` ↔ `FC_*`), threshold constants (mirror of [protection-thresholds.md](protection-thresholds.md)), I/O structs, API |
-| `firmware/core/fsm.c` | `pmp_fsm_step()` — 1 ms supervisory tick: HW-fault mirror → supervisory checks → state machine (precharge, enable chain, pre-insertion S/P sequencing, K_OUT gate, dwell, weld check, lockout, discharge) |
-| `firmware/core/can_proto.{h,c}` | CAN 2.0B codec per [can-protocol.md](can-protocol.md): 29-bit ID pack/parse, SET_OUTPUT / MODULE_CTL / STATUS1/2 / TEMPS / BUS frames — little-endian, DLC- and range-guarded, contradiction-rejecting |
-| `firmware/test/host_sim.c` | the verification rig: behavioral plant + 26 scripted scenarios + CSU suite + codec round-trips + fuzz + the per-tick matrix-exclusion invariant |
-| `firmware/run_tests.sh` | one-command build & run with sanitizers, `-Werror` |
+| `core/fsm.{h,c}` | `pmp_fsm_step()` — the 1 ms supervisory tick: input sanitization → the hardware-fault mirror → supervisory rows → the state machine (precharge, enable chain, matrix make-permit, mode change, discharge, lockout). `fsm.h` also carries the threshold constants that mirror [protection-thresholds.md](protection-thresholds.md) |
+| `core/ctl.{h,c}` | the reference shaper (1 kHz) and the regulator kernel (control ISR) |
+| `core/group.{h,c}` | the group share law, run on every module card |
+| `core/modapi.{h,c}` | the canonical command and telemetry model between a protocol profile and the core |
+| `proto/` | `frame.c` codecs and TX queue · `profile.c` registry · `vmp.c` ([VMP 2.0](can-protocol.md)) · `tonhe_v12.c` ([TonHe V1.2](can-profile-tonhe-v12.md)) |
+| `hal/` | `pfc.c` Vienna law · `llc.c` modulator · `dielim.c` junction observer · `meas.c` calibration and grid monitor · `nvm.c` record store · `evlog.c` event ring · `app.c` the interrupt entries and the 1 ms sequence, sans-IO |
+| `boot/` | the signed image, the boot decision record, the service-space update protocol, SHA-256 and ECDSA-P256 |
+| `port/gd32g553/` | the register-level port: clocks, HRTIMER, ADC and DMA, comparators and DAC, CAN, flash, watchdog, linker scripts, `build.sh` |
+| `test/` | `host_sim.c` · `ctl_test.c` · `proto_test.c` · `hal_test.c` · `app_test.c` · `boot_test.c` · `rules_test.c` |
+| `run_tests.sh` | one-command build and run with sanitizers and `-Werror` |
 
 ## 2. The FSM
 
 ```mermaid
 stateDiagram-v2
   [*] --> INIT
-  INIT --> PRECHG : aux OK
-  PRECHG --> STANDBY : bus ≥ 90% line pk → KPRE bypass
-  PRECHG --> FAULT : F.20 timeout
-  STANDBY --> RUN : ENABLE · bank sequence done · K_OUT gate (E12b)
-  RUN --> DERATE : fan / OT / input derate
+  INIT --> PRECHG : aux OK (F.26 after 5 s without it)
+  PRECHG --> STANDBY : line in the start window · link settled · bypass closes
+  PRECHG --> FAULT : F.20 · or the grid rows after 10 s of waiting
+  STANDBY --> RUN : fresh ENABLE · setpoint · make-permit · contacts settled · stack at target
+  RUN --> DERATE : thermal / fan / input / junction fold
   DERATE --> RUN : condition cleared
-  RUN --> MODESW : crossover request + 30 s dwell
-  MODESW --> STANDBY : I→0 · PWM off · BBM · weld check · mode flip
-  MODESW --> FAULT : F.18 weld
+  RUN --> MODESW : AUTO crossover + 1 s dwell
+  MODESW --> STANDBY : matrix open ≥ 51 ms, then re-select through the make-permit
   RUN --> FAULT : any latched F.xx
-  RUN --> SAFE : aux collapse (driver-UVLO holds gates low)
-  SAFE --> STANDBY : aux back
-  FAULT --> STANDBY : CLEAR + fresh ENABLE required
-  FAULT --> LOCK : 5 latches / window (F.31)
-  STANDBY --> SHUTDOWN : off request
-  SHUTDOWN --> DISCH : Q_DISCH on
-  DISCH --> [*] : F.21-supervised · AC-present latch · AC-removed two-phase
+  RUN --> SAFE : aux collapse (driver UVLO holds the gates low)
+  SAFE --> STANDBY : aux stable 500 ms + fresh ENABLE
+  FAULT --> STANDBY : CLEAR or the AUTO hold + fresh ENABLE
+  FAULT --> LOCK : 5 counted latches in 10 min (F.31)
+  STANDBY --> SHUTDOWN : shutdown request, from any state
+  SHUTDOWN --> DISCH : dump and bank bleeders on
+  DISCH --> OFF : link and both banks < 60 V, then the output node
+  OFF --> INIT : WAKE
 ```
 
-> [!WARNING]
-> **E67 supersedes the K_OUT rows of this section.** The output blocking diode replaced K_OUT and the pre-insertion relays:
-> the output mode is latched in standby and the S/P relays close at zero current before the soft start — see
-> [E67 — two output modes and a diode output](#11-e67--two-output-modes-and-a-diode-output-2026-09-13). The E12b text below
-> stays as the record of why a blind close was dangerous.
+Three rules exist because verification broke their predecessors, and they are the ones to preserve through any refactor:
 
-Two rules that exist because verification **broke** their predecessors:
+1. **The stack must reach its target before RUN.** After a series ↔ parallel change the banks legitimately sit at the *old*
+   mode's ceiling; entering RUN unconditionally guarantees an OVP trip, or hits a connected vehicle. RUN entry needs
+   `|stack − target| < max(10 V, 5 %)`, target = the external node when a vehicle is present, else the command clamped to
+   the mode ceiling.
+2. **A short is low voltage *with* current.** "Current above 110 %" is unreachable while a healthy CC loop caps at 100 %.
+   F.16 is V < 50 V **and** I > max(90 % of the command, 10 % of rated) for 10 ms — and it is not evaluated during a
+   controlled stop, because a deliberate ramp into a resistive load looks exactly like it.
+3. **The matrix closes only into a safe difference.** Zero measured current, and the new stack at least 10 V below the output
+   node (the battery when connected, else the terminal capacitors, with a 60 V floor); in parallel the two banks must also be
+   within 25 V of each other. The bank bleeders run until the permit is met. Without it, a parallel → series change
+   forward-biases the output diode through a making contact with roughly a joule behind it — weld class.
 
-1. **E12b — the K_OUT gate.** After a series↔parallel transition the banks legitimately sit at
-   the *old* mode's ceiling; closing K_OUT unconditionally guarantees an OVP trip (or hits a
-   connected vehicle). The C port caught this — the JS model had masked it. K_OUT now closes only
-   when `|stack − target| < max(10 V, 5 %)`, target = v_ext if a vehicle is present, else v_cmd.
-2. **F.16 rev B.** The original short-circuit criterion (I > 110 %) is unreachable when a healthy
-   CC loop caps current at 100 % — found by the scenario suite. Now: V < 50 V **and** I > 90 %·I_cmd
-   sustained 10 ms.
+The relay matrix never switches load current: the output blocking diode does the isolating, the output mode is latched in
+standby, and a crossover in RUN ramps the current to zero, opens every contact, waits out the diode-suppressed release and
+re-starts. A make-permit wait or a soft start that neither completes nor faults is bounded by F.34 at 8 s.
 
-## 3. S/P transition, as the firmware actually runs it
+## 3. One image, four identities
 
-```mermaid
-sequenceDiagram
-  participant CAN as Controller (CAN)
-  participant LLC as Card FSM
-  participant K as Relay matrix
-  CAN->>LLC: SET_OUTPUT 750 V (was 400 V)
-  Note over LLC: crossover request → 30 s dwell timer
-  LLC->>LLC: ramp I_cmd → 0
-  LLC->>LLC: LLC PWM off · K_OUT open
-  LLC->>K: open K_PARA/K_PARB (break-before-make)
-  Note over LLC,K: 20 ms settle · weld check:<br/>banks still tracking + readback ⇒ F.18 latch
-  LLC->>K: close K_SER
-  LLC->>LLC: re-regulate banks → stack ≈ 750 V
-  Note over LLC: E12b gate satisfied
-  LLC->>K: close K_OUT
-  LLC->>CAN: STATUS2 mode=HV · resume current
-```
+The control card is one part number and one firmware image. At boot, before any enable, the HAL reads the **RATING** strap on
+ROLE1's ADC input (the card's 10 k pull-up to V3P3 against the board's strap to DGND) and calls `pmp_fsm_set_rating_kw()`:
 
-## 4. Porting to the GD32G553 (the HAL contract)
+| Strap | Reading | Identity | Discharge window | `i_rated` | F.01 / F.11 class |
+|---|---|---|---|---|---|
+| 0 R | < 0.15 V | 30 kW | 3 000 ms | 100 A | 120 / 140 A pk |
+| 1 k | 0.15–0.55 V | 40 kW | 4 000 ms | 133.3 A | 155 / 180 A pk |
+| 3.32 k | 0.55–1.24 V | reserved — no host, F.30 | — | — | — |
+| 10 k | 1.24–1.82 V | 50 kW liquid | 5 000 ms | 166.7 A | 195 / 220 A pk |
+| 15 k | 1.82–2.30 V | 50 kW air | 5 000 ms | 166.7 A | 195 / 220 A pk |
+| open | > 2.30 V | no host, F.30 | — | — | — |
 
-`pmp_fsm_step()` is pure logic over `pmp_in_t` → `pmp_out_t`. The MCU integration layer must:
+An undecoded strap keeps the worst-case discharge window and the 30 kW current classes — the longest window can only delay an
+F.21 report, never miss it, and the lowest thresholds can only trip earlier. It also latches F.30, so nothing is delivered.
 
-1. call it from a 1 ms tick (watchdog-supervised; a missed WDI window drops the gates AND resets the MCU — WDO ≡ NRST, R5-A);
-2. populate `pmp_in_t` from calibrated ADC/CT/NTC channels (pin maps in `boards.tsx`, EOL cal per [dfm-production.md](dfm-production.md));
-3. mirror `out.pwm_kill` and driver `FLT` lines in **hardware** (HRTIM fault inputs + comparators) — firmware re-asserts, silicon acts first;
-4. map `out.k_*` through the ULN drivers and read back contact states into `relay_fb[]`;
-5. keep `PMP_MODE_DWELL_MS` at its product timebase (30 000 ms; the host suite compresses time 1000×);
-6. (single-brain, E40) there is no inter-MCU link — external CAN starvation is F.28; the 40-way harness carries no protocol, only signals with board-side default-OFF.
+Both 50 kW bands are the same converter: same link, same window, same classes. Only the fan personality differs, and that is
+decided by the band: the liquid module is sealed with **zero** fans (the HAL ties `fan_ok` true and ignores the tach inputs,
+which the board holds defined-low so an accidental read is "stopped", the fail-safe direction), while the air module has
+**four** supervised tachs. The 30 and 40 kW modules have **three** fans each. The liquid module's plate NTCs land on the same
+T_PFC / T_LLC channels, and that OT ladder *is* the loss-of-coolant protection: a dry plate at rated load crosses it in
+seconds. Flow assurance (pump, flow meter) belongs to the cooling cart.
 
-> **E79 — the contract above is implemented by the portable HAL** (`firmware/hal/`, sans-IO). `app_pfc_isr`, `app_llc_isr`,
-> `app_fault_isr` and `app_tick` fill `pmp_in_t`, run the §2 sequence of the [firmware architecture](firmware-architecture.md),
-> attribute the HRTIMER fault channels, program the comparator references and read the bypass mirror contact
-> (`relay_fb_wired` = the KPRE pair). Item 5 is superseded: the product dwell is 1 000 ms (E78). What a GD32G553 port still
-> writes is the peripheral layer — clocks, HRTIMER, ADC groups and triggers, comparators and DAC, CAN-FD, the flash pages behind
-> `nvm_port_*`, the WDI pulse, DWT, and TCM placement of both control interrupts. Evidence: `hal_test` 34 · `app_test` 16.
+## 4. The HAL contract
 
-The ONE card (E40) runs the whole vocabulary — precharge, enables, S/P matrix, discharge — and the
-same `F.xx` codes appear on the HMI and in CAN telemetry (STATUS2/FAULT_EVT).
+`pmp_fsm_step()` is pure logic over `pmp_in_t` → `pmp_out_t`, and the portable HAL in `firmware/hal/` already implements the
+whole contract sans-IO: `app_pfc_isr`, `app_llc_isr`, `app_fault_isr` and `app_tick` fill `pmp_in_t`, run the 1 ms sequence,
+attribute the HRTIMER fault channels, program the comparator references, drive the relays and fans, and own the NVM policy.
 
+What a port therefore has to provide is the peripheral layer only:
 
----
+1. a 1 ms tick that calls `app_tick`, and the two control interrupts that call `app_pfc_isr` (100 kHz) and `app_llc_isr`
+   (10 kHz) — both placed in TCM, with the vector table in RAM;
+2. calibrated ADC groups and DMA rings behind `app_pfc_adc_t`, `app_llc_adc_t` and the slow channels;
+3. the HRTIMER carrier, the per-leg dead times the modulator asks for, and the fault channels wired to the comparators and
+   the external FLT input — firmware re-asserts, silicon acts first;
+4. the comparator and DAC references from `app_tick_out_t.dac_v[]`, the digital outputs from `do_bits`, and the relay
+   economizer duties from `relay_duty[]`;
+5. the mirror-contact and driver-ready inputs in `di`, the tach edge counters, and the panel shift register;
+6. CAN (receive into a ring, transmit from the queue, bus-off restart on request) and the flash primitives behind
+   `nvm_port_*`;
+7. the WDI pulse on the port's own 10 ms of real time, taken only when `app_tick` grants permission;
+8. DWT execution timing, the reset-cause byte, the silicon UID, the factory reference word and the no-init handoff page.
 
-## 5. Board rev C integration notes (2026-09-05)
+There is no inter-MCU link: one card runs both stages, so a starved external CAN stream is F.28 and nothing else. Enable
+outputs must never be configured with reset retention — the whole safety argument relies on reset meaning pulled-down
+defaults.
 
-> [!WARNING]
-> **Dated notes — read with this table.** The passages below are kept word for word because review gates assert
-> them. Where a later decision changed a constant, the current value is here:
->
-> | Constant in the notes below | Current value | Decided at |
-> |---|---|---|
-> | line CT burden 27 Ω (50 kW: 21.5 Ω) | **22 / 18 / 13 Ω** (30 / 40 / 50 kW) | E60 |
-> | resonant CT burden 2.0 Ω, F.11 70 A pk at DAC 3.05 V (50 kW: 1.6 Ω) | **1.2 / 0.91 / 0.75 Ω · F.11 85 / 115 / 145 A pk** | E60 |
-> | `PMP_DISCH_TO_MS` 3000 / 5500 / 9000 ms | **3000 / 4000 / 5000 ms** from the strap | E41 / E42 |
-> | ROLE0 slot strap, "each MCU drives its own EN" | **removed** — one brain, RATING is the only strap | E40 |
-> | suite 49 / 49 or 50 / 50 | **54 / 54** | E60 |
+## 5. Board integration notes
 
-The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to the rev C hardware:
+The electrical contract between the card and the firmware. These are the passages the review gates assert.
 
-- **ADC scaling (rev D — R2 CB-16):** CT channels are biased at AVMID (VREF/2 ≈ 1.65 V) with
-  **per-family burdens**: line `i = (raw·3.3/4096 − 1.65) / 27 · 2500` (27 Ω — R3/audit: 33 Ω clipped 150 A pk observability at the 3.3 V rail); resonant
-  `i = (raw·3.3/4096 − 1.65) / 2.0 · 100` (2.0 Ω burden — the 33 Ω constant here was the R2
-  CB-16 defect; F.11 comparator DAC = 3.05 V for 70 A pk). AC phase-voltage channels come from
-  ±5 V iso amps (gain 0.41, output centered mid-rail): bipolar conversion with the amp's datasheet
-  offset. Bus/bank/output channels are unipolar 0–2 V iso-amp outputs. `SNS_IOUT`/`SNS_IOUTN`
-  form a software differential (subtract before scaling — MR-6). **Rail monitors** SNS_V24/SNS_V15
-  (pins 51/52): ÷7.8 and ÷5.7 dividers — alarm at ±15 %.
-- **Fault path (E40 merge):** the ONE wired-OR `FLT` lands on card pin 47 (PB10 —
-  HRTIMER_FLT2 hardware trip); latch F.02/F.12-class faults from it. It is also the F.32
-  visibility path after a watchdog restart.
-- **Bank discharge (rev D — E33):** on SHUTDOWN, after `q_disch`, assert `CTL_QDISBK` (pin 75) —
-  both bank bleeders fire (τ ≈ 4–17 s per SKU); supervise as F.21b (2× τ timeout per SKU). The
-  bus F.21 timeout is now implemented in `fsm.c` with `PMP_DISCH_TO_MS` (override per SKU at
-  build: 3000/5500/9000 ms).
-- **Watchdog (R5-A rev):** kick `WDI` inside the CWD-programmed window from the control loop
-  tick. The external WD's open-drain `WDO` is BOTH a hard input to the GATE_EN AND (E27) AND
-  wire-ORed onto `NRST_CARD` (R5-A): a missed window now drops the gates and RESETS the MCU —
-  a hung brain restarts with every enable low instead of re-arming milliseconds later with its
-  EN GPIOs still latched high. HAL contract: (1) EN/CTL_* GPIOs must NEVER be configured with
-  reset retention — the whole mechanism relies on reset ⇒ pulled-down defaults; (2) boot must
-  reach the first WDI kick inside the CWD startup window (§K sizes CWD against measured flash
-  boot + init at EVT); (3) after restart, log the reset-cause register and raise F.32 — the
-  event is visible even though hardware already made it safe; (4) **PG10-NRST stays in NRST
-  mode — the option bytes must NEVER remap it to GPIO** (R6: the whole mechanism rides on
-  pin 14 being reset). Repeated watchdog resets hold the module safe by construction: gates
-  are low through every WDO-low and every boot.
-- **PFC reverse-direction hardware trip (R6/E47 · R7-A allocation):** the comparator channels
-  are now pinned INSTANCE-aware (the R6 "CMP-capable" rule missed that B and C shared CMP2's
-  two inputs): **I_A0 = PB0/CMP3_IP (E81 pin swap; was PC2/CMP7), I_B0 = PA3/CMP1_IP, I_C0 = PC1/CMP2_IP**, DAC thresholds
-  on the IM sides (E81: the 100 kHz ISR sets the DAC sign from the measured current — both polarities trip), outputs → HRTIMER fault (A → FLT1, B → FLT0, C → FLT4). ADC map change that rides along: **I_B0 is now
-  ADC0_IN3 (PA3) and SNS_VAC1 is ADC01_IN5 (PC0)** — update the channel table with the pin
-  map, both regenerate from umod-pinmap. Each phase carries ONE threshold on the DESAT-blind
-  polarity by design (the other polarity is DESAT's); the ~2–3 µs figure is a design target
-  until EVT measures threshold-to-gate-off in both polarities (the ACX CT's HF response is
-  not vendor-specified).
-- **Output-current sign (R6-E):** VINP rides the shunt's KB (OUTN side), VINN rides KA — so
-  **positive (SNS_IOUT − SNS_IOUTN) = delivering current to the vehicle**. Verify with a small
-  known load before closing the current loop.
-- **Cold-start budget (R6-G):** the aux controller is the NCP1252 **D** version (no 120 ms
-  pre-start delay, 5 V UVLO hysteresis) with a 220 µF VCC reservoir; expect ≈5–6 s from AC
-  apply to rails-up at a 565 V precharged bus (nominal 400 VLL; ≈8 s at low line with the
-  100 µA worst startup draw — size any boot supervision to ≥10 s) (0.59 mA through the 940 k startup feed). The
-  CSU's staggered-enable already tolerates this.
-- **F.21 semantics (R6):** the discharge timeout's real coverage is the AC-PRESENT case
-  (bus held up by the permanent RPRE rectifier path → timer expires → FC_DISCH = "isolate
-  upstream"). In the AC-removed case the aux browns out at ~321 V bus mid-discharge, the MCU
-  dies un-faulted, and the passive balance path + enclosure label finish the job (3.7–6.2 min
-  to <60 V per SKU — R8-corrected balance-string model, per protection-thresholds). Do not chase a latched F.21 after AC removal.
-- **Enable:** each MCU drives its own `EN_PFC`/`EN_LLC` high only in states where gating is legal;
-  the AND with the peer + WD forms `GATE_EN_A/B`. There is no PWM_KILL net anymore.
-- **Relay feedback:** `relay_fb[]` reads the card ways DI0–DI5 = KSER, KPARA, KPARB, KOUT,
-  KPREA, KPREB mirror contacts (low = main open; a dual-relay function carries series mirrors
-  on one net — low = BOTH mains open) and DI8 = the KPRE1+KPRE2 series chain (high = both
-  open). Way→pin authority: `umod-map.gen.ts`. F.19 evaluates exactly as coded.
-- **Discharge:** `CTL_QDIS` is active-high into an opto LED; default (reset/tri-state) = OFF.
-  No inversion vs the FSM's `discharge_cmd`.
-- **Relay economization (E26):** after 60 ms pull-in at 100 % duty, PWM coil hold at ~40 %
-  (24 V coils, 20 kHz) — halves steady 24 V demand; implement in the HAL coil driver.
-- **Boot/provisioning:** BOOT0 strapped low, SWD on the JSWD headers (CB-13); EOL flow per
-  dfm-production.md step 4 is now physically possible.
+- **ADC scaling.** The CT channels (three line, one resonant) are biased at AVMID ≈ 1.65 V and are *ratiometric* to VREF; the
+  iso-amp and divider channels are absolute, so the internal-reference correction `k_ref` applies to them. Nominal transfers:
+  line CTs 2500 : 1 into 22 / 18 / 13 Ω (30 / 40 / 50 kW) · resonant CT 100 : 1 into 0.47 / 0.36 / 0.30 Ω · DC channels
+  (bus, midpoint, banks, output) through an AMC1311-class amplifier, 1.44 V output common mode · AC phase voltages through
+  an AMC1350-class amplifier, differential gain 0.40, with the ~1.25 MΩ input loading the 11.5 k divider bottom · output
+  shunt 0.500 / 0.376 / 0.299 mΩ at a differential gain of 8 (50 mV at the rated code). **Rail monitors** SNS_V24 (82 k /
+  10 k) and SNS_V15 (47 k / 10 k), in-window at 20.4–27.6 V and 12.75–17.25 V. The EOL fixture writes the per-channel gain
+  and offset; a record more than 10 % off a nominal gain, more than 150 counts off a nominal offset, or missing altogether,
+  latches F.30 and inhibits delivery — there is deliberately no CAN write path for calibration.
+- **Output-current sign.** VINP rides the shunt's KB (OUTN side) and VINN rides KA, so
+  **positive (SNS_IOUT − SNS_IOUTN) = delivering current to the vehicle**. Verify it with a small known load before closing
+  the current loop; every protection row and every telemetry sign follows this orientation.
+- **AVMID is a measured channel, not an assumption.** Every bipolar sense is referenced to that buffer, so a drifting
+  buffer or ladder moves all three phase currents and the F.01 / F.11 thresholds together. It is converted every tick and
+  must read 1.65 V ± 50 mV; 100 ms outside that is F.29.
+- **Fault path.** One wired-OR `FLT` line (active low, pulled up on the card) lands on PB10 / HRTIMER_FLT2 and carries both
+  the gate drivers' DESAT outputs and the resonant window comparator. **F.11 attribution** happens in the fault ISR: it reads
+  the freshest *completed* I_RES conversion at the edge, and a magnitude at or above 90 % of the tank class is the tank's
+  (F.11), otherwise the drivers' (F.02). The tank slews tens of amps per microsecond, so the cached control-period value was
+  not fresh enough to tell them apart.
+- **PFC reverse-direction hardware trip.** The line-current comparators are allocated instance-aware — **I_A0 = PB0 /
+  CMP3_IP, I_B0 = PA3 / CMP1_IP, I_C0 = PC1 / CMP2_IP** — with their outputs on HRTIMER fault channels 1, 0 and 4. Each DAC
+  carries the **positive** reference only: the comparators are non-inverting into active-high fault inputs, so a reference
+  below AVMID would assert the fault for the whole time the measured current reads negative — at idle, where the sign of
+  ≈ 0 A is noise, that is F.01 within milliseconds of boot. The negative polarity is covered instead by a magnitude test on
+  the raw current in the 100 kHz interrupt, which is sign-blind by construction, backed by Σ i = 0: in a three-wire stage a
+  negative excursion beyond twice the trip always shows as a positive one at or above the trip somewhere else, and the
+  comparator catches that in nanoseconds. The device-level DESAT covers the forward direction only; the ≈ 2–3 µs
+  threshold-to-gate-off figure is a design target until EVT measures it in both polarities, because the CT's HF response is
+  not vendor-specified.
+- **Watchdog.** The external supervisor runs a fixed window: a falling WDI edge is valid 2.22–23.375 ms after the last one.
+  Its open-drain WDO is both a hard input to the gate-enable AND and wire-ORed onto NRST, so a missed window drops the gates
+  *and* resets the MCU — a hung brain restarts with every enable low instead of re-arming milliseconds later with its enable
+  pins still latched high. Three port obligations follow: the reset pin stays in reset mode and must never be remapped to
+  GPIO in the option bytes; the WDI cadence is owned by the tick interrupt (real time), not by the main loop, and a flash
+  operation buys its own bounded allowance with a fresh edge at the operation; and the reset cause is read at boot and
+  raised as F.32 even though the hardware has already made the card safe.
+- **Relays.** Only the bypass pair has a mirror contact, on a series normally-open auxiliary chain: the input reads LOW when
+  **both** bypass contacts are closed and HIGH when at least one is open, so the port inverts it. The matrix relays carry no
+  mirror contacts, which is why the soft start waits out operate plus bounce (40 ms) after a close command instead of
+  trusting the coil bit, and why `relay_fb_wired` names the bypass alone. **Relay economization:** after 60 ms of pull-in at
+  100 % duty the coil is held at 40 % on a 20 kHz chop, which roughly halves the steady 24 V demand. KSER rides a timer
+  channel and is chopped; KPARA is held DC on purpose (the exclusion interlock is a *level* gate — a 40 % chop would make it
+  low for 60 % of every period, releasing the very interlock it exists for), and KPRE and KPARB hold DC because their pins
+  carry no timer channel.
+- **Discharge.** `CTL_QDIS` is active-high into an opto LED and `CTL_QDISBK` drives the bank bleeders; both default OFF in
+  hardware at reset and tri-state. SHUTDOWN commands both, and DISCH supervises them: the dump ends when the link and both
+  banks read below 60 V on plausible samples for 100 ms, and then the output node is waited out under its own 20 s bound
+  (nothing in the module dumps the studs — only the passive bleeder does, and a connected pack never falls at all), which is
+  why that bound expiring is not a fault.
+- **F.21 semantics.** The discharge timeout's real coverage is the **AC-present** case: the bus is held up through the
+  permanent precharge path, the timer expires, and F.21 means "isolate upstream, then verify" — never "keep burning", so the
+  dump commands end with the row. A link that has stopped falling (under 2 V per 100 ms sample, three samples running) is
+  reported the same way at 300 ms rather than at the end of the window, because it is being fed and the dump resistors are
+  carrying several times their rating while it is. If the bypass mirror still reads closed 200 ms into the dump, the
+  maintained source is named: F.18, reported when the dump ends so the report cannot abandon the discharge. With AC
+  **removed** the aux browns out mid-discharge at a few hundred volts of link and the MCU dies un-faulted; the passive
+  balance path and the enclosure label finish the job over the minutes that
+  [protection thresholds](protection-thresholds.md) tabulates. Do not chase a latched F.21 after AC removal.
+- **Enables.** Each stage's enable is a GPIO into its safety AND with the supervisor and the driver-ready signal; there is no
+  separate kill net on the card, and `out.pwm_kill` is the FSM's own software gate on those two GPIOs.
+- **Cold-start budget.** The aux controller is the NCP1252 **D** version (no mandatory pre-start delay, 5 V UVLO hysteresis)
+  with a 220 µF VCC reservoir: expect ≈ 5–6 s from AC apply to rails-up at a 565 V precharged bus (nominal 400 V line), and
+  ≈ 8 s at low line with the worst startup draw. Size any boot supervision at ≥ 10 s.
+- **Boot and provisioning.** BOOT0 strapped low, SWD on the card's headers; the EOL flow of
+  [dfm-production.md](dfm-production.md) writes the calibration record.
 
-## 6. Card boot identity (E35/E37 — one image, straps decide)
+## 6. Control contracts in firmware
 
-The control card is ONE part number and ONE firmware image for both converter roles and both
-ratings. At boot, before any enable, the HAL must:
+### 6.1 Current coordination
 
-1. Read **ROLE0** (GPIO, pin 90): low = AC-DC slot (board ties the way to DGND), high/floating
-   (card 10k pull-up) = DC-DC slot. Configure the role personality (PWM semantics, AIN map,
-   DO/DI meanings) accordingly.
-2. Read **ROLE1/RATING** (ADC, pin 38) against the card's 10 k pull-up to V3P3 and the board's
-   strap to DGND — decode per the **rev F band table below** (0R/1k/3.32k/10k/open). Call
-   `pmp_fsm_set_rating_kw()` with the decoded rating — it narrows the F.21
-   discharge-supervision window; an undecoded strap keeps the worst-case default, which can
-   only delay the F.21 report, never miss it. (This step originally read ~1.65 V as "60 kW" —
-   two-card era; rev F reassigns that band, see below.)
-
-**E24 rev D (E40): RATING is the only strap — ROLE0 and the inter-card LINK are gone.** Bands: <0.41 V (0 R) → **module controller** (one brain, PFC+LLC) · 0.41–1.24 V (3.32 k) → reserved · >2.4 V (open) → no host, fault. Formerly rev C: Board strap 3.32 k against the card 10 k pullup
-reads ≈0.82 V. Windows (**rev G, E44**): <0.15 V (0R) → 30 kW · 0.15–0.55 V (1k) → **40 kW** ·
-0.55–1.24 V (3.32k) → reserved (no host, fault) · 1.24–1.82 V (10k) → **50 kW LIQUID** · 1.82–2.30 V (15k) →
-**50 kW AIR** · >2.4 V → no board / fault. (Rev F had retired the stale two-card-era 10 k =
-"60 kW" reading; rev G splits its band for the air twin — ±1 % separations proven by the
-verify-independent gate.) Both 50 kW bands call `pmp_fsm_set_rating_kw(50)` — same 16-can link,
-same 5000 ms F.21 window; ONLY the fan personality differs and it is HAL band-decided. Windows:
-3000/4000/**5000**/5500-legacy ms. ROLE0 is a don't-care. Same image, four identities.
-
-**50 kW AIR HAL notes (E44):** four fans — FAN_PWM1 drives fans 1–2's rail... fans 1/2 on
-PWM1/PWM2 individually, fans 3+4 gang FAN_PWM2 (rear pair). ALL FOUR tachs supervised:
-TACH1–3 on the E40/E41 pins, **TACH4 on pin 90 / way 88 / harness W39** (E44). Fan-fail derate
-per the existing `fan_ok` path; the 4-fan set runs the family's ~395 W/fan density.
-
-**50 kW liquid HAL notes (E42):** the module is sealed with ZERO fans — HAL ties `fan_ok = true`
-permanently, leaves FAN_PWM0/1 outputs idle and ignores the tach inputs (the board holds all
-three tach ways defined-LOW via RFDT terminators, so an accidental read reports "stopped", the
-fail-safe direction). The plate NTCs land on the same T_PFC/T_LLC channels; the existing OT
-ladder (derate at `PMP_OT_DERATE_C`, trip 115 °C) IS the loss-of-coolant protection — a dry
-plate at rated load crosses the ladder in seconds, well inside the 10 ms FSM tick. Flow
-assurance itself (pump, flow meter) is the cooling cart's job, charger-level per the E42 system
-boundary. Sense calibration constants for the re-scaled CT burdens (21.5 Ω line / 1.6 Ω
-resonant) are rating-keyed like every other cal row. **R4-7:** the V24 monitor divider is
-82k/10k on every variant (24 V reads 2.609 V, full-scale 30.4 V) — update the cal constant;
-the old 68k basis clipped at 25.7 V.
-
----
-
-## 7. E60 — current coordination in firmware (2026-09-13)
-
-> [!IMPORTANT]
-> Four normative changes land in `firmware/core/fsm.c` and are proven by `firmware/test/host_sim.c`
-> (**54/54**, four new checks). Source of the numbers: [`docs/protection-thresholds.md`](protection-thresholds.md)
-> § "E60 current-coordination classes" and the standing gate `calculations/system/current-coordination.mjs`.
-
-| Req | What the code does | Why (simulated) |
+| Contract | What the code does | Why |
 |---|---|---|
-| **FW-R6** PFC reference clamp | HAL current loop clamps the reference **amplitude** at 1.05 × the rated crest at 330 VAC | cycle-by-cycle Vienna: dips/phase jumps then add ≈3 A, not a trip |
-| **FW-R7** bus floor | `vbus_ref = clamp(max(2·bank/0.95, 1.08·√2·VLL), 650, 830)` (`PMP_BUS_LINE_K`) | 475/500 VAC on a 650 V floor: 75–92 % overmodulation, 15–40 % THD → 0.1 % with the floor |
-| **FW-R8** start mode | STANDBY selects SER only above `PMP_XOVER_DN_V` (525 V), the same threshold RUN uses | SER at 500–525 V = bank 250 V = 2× PAR tank current; the 40 kW LLC folds to 75–93 % there |
-| **OC DAC classes** | `pmp_fsm_set_rating_kw()` sets `oc_line_a` / `oc_tank_a` = **120/140 · 155/180 · 195/220 A pk** (30/40/50 — E67: one full-bridge tank CT, so the tank class is the whole-bridge peak, not a per-section one); HAL writes the CMP DACs from these — firmware may tighten, never loosen | 1.2 × simulated worst peak; observability through the 3 µs race on the E60 burdens |
+| PFC reference clamp | the current-loop reference amplitude is clamped at 1.05 × the rated crest at the 330 VAC full-power floor, and further reduced by the room a line step needs during the transport delay | the cycle-by-cycle Vienna model shows dips and phase jumps adding a few amps on top, which must not reach F.01 |
+| Bus-reference floor | `vbus_ref = clamp(max(2 · bank / 0.95, 1.08 · √2 · V_LL), 650, 830)`, recomputed every tick | a Vienna rectifier cannot regulate below the line-line crest: 475 VAC on a 650 V bus is 75 % overmodulation and 15 % THD; with the floor it is 0.1 % |
+| Bus reference follows the output | the reference leads the *measured output* by `PMP_BUS_LEAD_V` (25 V), not the command | vehicles send their maximum voltage as the setpoint and charge in constant current far below it; taking the reference from the command parked the link at 830 V over a 330 V pack, which puts the bridge at f_max and into phase shift across the mainstream range |
+| Start mode from the battery | the start mode uses the external node when a vehicle is connected; the RUN crossover uses the measured output | choosing series from an EV's maximum-voltage command ran the banks under their floor |
+| Over-current classes | `pmp_fsm_set_rating_kw()` sets `oc_line_a` / `oc_tank_a` from the strap (§3) and the HAL writes the comparator DACs from them — firmware may tighten, never loosen | 1.2 × the simulated worst peak, with observability through the fault-path rise time. One full-bridge tank CT, so the tank class is the whole-bridge peak |
 
-Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥ 1.08·√2·VLL* ·
-*50 kW OC classes 195/145* · *40 kW OC classes 155/115*. Default before the strap is read = the
-30 kW classes (the lowest thresholds — an undecoded strap can only trip earlier, never later).
+### 6.2 The PFC current loop against the input filter
 
+The input filter is part of the plant. Three properties keep the loop stable against it, and the margins were computed with
+all three in place:
 
-## 8. E65 — magnetics protection and bus-reference control (2026-09-13)
-
-> [!IMPORTANT]
-> Additive. Normative in `firmware/core/fsm.c` / `fsm.h`, proven by `firmware/test/host_sim.c` (**55 / 55** after E66).
-> Thresholds and rows: [`docs/protection-thresholds.md`](protection-thresholds.md) § 5.
-
-| Req | What the code does | Why |
+| Contract | What the code does | Why |
 |---|---|---|
-| **FW-R9** bus reference every tick | `bus_ref_for(mode, max(vcmd, vout_meas), vin_ll)` runs in RUN/DERATE, not only in STANDBY | a session that starts low and climbs kept a 650 V bus under a 525 V bank (gain 1.6, outside the simulated envelope) |
-| **FW-R10** S/P from the battery | start mode uses `vext` when a vehicle is connected; the RUN crossover uses `vout_meas` | an EV's vcmd is often its maximum voltage; SER chosen from it ran banks under the 250 V floor |
-| **FW-R11** NTC open-loop guard | `pmp_ntc_guard_c(t_c, adc_frac)` returns `PMP_NTC_OPEN_C` (150 °C) when `adc_frac ≥ PMP_NTC_OPEN_FRAC` (0.98) — the HAL passes every zone through it before taking `temp_max_c` | the six D3/D2 bond-loss cutouts sit in series with the T_XFMR NTC; an open loop must latch F.22, not read "very cold" |
-| **HAL — F.11 attribution** | on a FLT edge, capture I_RES1–3 (ADC); a capture beyond ±F.11 reports F.11, otherwise F.02 | the E65 window comparators share the FLT wire-OR with the gate-driver DESAT outputs |
+| Loop delay | phase currents are sampled at the carrier peak **and** valley (100 kHz) and the duty computed from a sample is loaded at the next half-period — sample → PWM ≤ 15 µs | with the damped filter the modulus margin is 0.53–0.65 at 15 µs across the grid-inductance and leakage corners; at a 30 µs single-update delay it collapses (see [architecture §3.5](firmware-architecture.md#35-one-mcu-for-both-stages)) |
+| Voltage feed-forward | the feed-forward and the resistive-emulation reference use the sensed phase voltages with the divider's RC lag rotated out by mixing the other two phases: v′ₖ = vₖ + ωτ · (vₖ₋₁ − vₖ₊₁)/√3 | without it the same margins drop to 0.36–0.43 |
+| Gain per rating | the current-loop proportional gain is 2π · 3 kHz · L_D1 at the clamp crest, from the strap | one gain placed on a bare inductor crosses over far too high on the real D1 roll-off and is unstable at any extra delay |
 
-Host-sim checks added: *vcmd 800 V / battery 450 V starts PAR* · *bus reference follows a climbing bank (300 → 520 V)* ·
-*open NTC / cutout loop latches F.22* · *the guard passes a healthy −40 °C reading*.
+Not firmware, but the acceptance for all three: a grid-impedance step test at Lg ≈ 100 µH per phase, with several paralleled
+modules on one transformer and the loop delay measured on the scope.
 
-## 9. E66 — group share law on every module card (2026-09-13)
+### 6.3 Output modes and the precharge window
 
-> [!IMPORTANT]
-> `firmware/core/group.c` / `group.h` run on every module card. The RATING strap band 3.32 k (0.55–1.24 V) is
-> **reserved** — the HAL treats it as no host, fault. Protocol:
-> [`docs/can-protocol.md`](can-protocol.md) GROUP_SET 0x12.
+| Contract | What the code does | Why |
+|---|---|---|
+| Output mode | `omode_req` ∈ {AUTO, LOW, HIGH} is latched in STANDBY only. LOW → banks parallel, ceiling 500 V · HIGH → banks series, ceiling 1 000 V, refused below 480 V · AUTO → series above 500 V, else parallel | a bank tops out at 500 V, which is the edge the tank was solved for |
+| AUTO crossover | in AUTO only: parallel → series when the battery (or the command with no vehicle) exceeds 500 V, series → parallel below 480 V; ramp to zero, open every contact, re-select through the make-permit, soft start again | 20 V of hysteresis, and the battery voltage rather than the request decides |
+| Series screen | on a series start, a bank difference above 25 V once either bank passes 50 V, held 10 ms, latches **F.17** | a welded parallel contact ties the bank tops and shows up as imbalance at the first series ramp |
+| Precharge bypass | the bypass closes when the link has **settled** — two consecutive 20 ms samples moving less than 3 V — and sits above 0.85 × the rectified crest of the highest line | a settled link bounds the closing step at the resistor drop, whatever the wave shape. A fixed fraction of the *sinusoidal* crest is unreachable on flat-topped mains (real crest factor 1.36–1.40), and F.20 is a counted latch, so five attempts locked the module |
+| F.01 blanking | 60 ms from the bypass close command, line-over-current channels only; no PFC enable inside the window; the HAL clears those HRTIMER latches at its end | the residual step drives an LC pulse through the input choke and the rectifier into the link, above F.01, with the PFC not yet switching. Only the three line channels are blanked — clearing the bus or output OVP latch sixty times running would undo a hardware latch the window has nothing to say about |
 
-When a charger runs modules in parallel, its controller is the group master and broadcasts GROUP_SET at 10 Hz. Call
-`pmp_group_frame()` for every decoded frame and `pmp_group_step()` every 1 ms; the result feeds the module's current setpoint and
-its delivery permission (together with ENABLE and a fresh frame — otherwise the FSM's F.28 ramp-off applies).
+### 6.4 Magnetics and thermal protection
+
+| Contract | What the code does | Why |
+|---|---|---|
+| NTC open-loop guard | `pmp_ntc_guard_c()` returns 150 °C when a zone's ADC fraction reaches 0.98, and every zone passes through it before the worst is taken | the transformer bond-loss cutouts sit in series with the T_XFMR NTC, so an open cutout or a broken lead must latch F.22 rather than read "very cold". A healthy sensor at −40 °C reads ≤ 0.96, so the guard cannot fire on cold |
+| Zone mapping | each zone's own derate and trip are mapped onto the core's 105 / 115 °C scale and the worst is handed over | one derate slope over one sensor lets a cool inlet hide a hot transformer loop, or the reverse |
+| Junction fold | `hal/dielim.c` estimates the worst die's junction temperature from the operating point every millisecond and folds availability across 142–150 °C | the corners that need folding run the die 80–170 K above a base that is still cool, so the NTC ladder never sees them |
+
+### 6.5 Group share law
+
+The charger controller is the group master and broadcasts one group frame; every module derives its own share from that one
+frame, so no module infers its peers by hearing and there is no split brain. Call `pmp_group_frame()` for each decoded frame
+and `pmp_group_step()` every 1 ms; the result feeds the current setpoint and the delivery permission.
 
 | Rule | Value | Why |
 |---|---|---|
-| share | own bit set ? min(own I_avail, I_req / members) : 0 | one frame from one observer — no module infers its peers by hearing, so no split brain |
-| lower / raise | lower at once; raise only after `PMP_GRP_HOLD_MS` 1300 ms | a peer still on an older, larger share has missed every frame for > 1 s and already ramped to zero |
-| staggered delivery | own bit present ≥ HOLD + rank × `PMP_GRP_STAGGER_MS` 300 ms (rank = member bits below own) | deterministic start order without an election |
-| stale | no frame for > `PMP_GRP_STALE_MS` 1000 ms → share 0, no delivery | matches `PMP_CAN_TO_MS`; F.28 does the rest |
+| share | own bit set ? min(own available current, request ÷ members) : 0 | one observer, one arithmetic |
+| lower / raise | lower at once; raise only after 1 300 ms, and a *grown* pending target restarts the hold | a peer still on an older, larger share has by then missed every frame for longer than the stale window and already ramped to zero, so the sum never exceeds the request |
+| staggered delivery | own bit present for the hold + rank × 300 ms (rank = member bits below own) | a deterministic start order without an election |
+| stale | no frame for 1 000 ms → share 0, no delivery | the FSM's graceful communication-loss ramp does the rest |
 
-Host-sim checks (3 nodes on one frame stream): *sum of shares never exceeds I_req through join, drop, partition and re-join* ·
-*staggered first delivery by rank* · *equal share 450 A / 3* · *a node missing frames > 1 s goes to zero* · *2-node share clamps
-at the module cap* · *non-member never delivers* · *GROUP_SET codec round-trip + guards* (+ 100k-frame decoder fuzz).
+## 7. The host suite
 
----
+`run_tests.sh` builds each binary with `-std=c99 -Wall -Wextra -Werror -O1` under AddressSanitizer and UndefinedBehaviorSanitizer
+with `-fno-sanitize-recover=undefined`, and runs them in order:
 
-## 10. E65 — PFC current loop against the input filter (2026-09-13)
-
-> [!IMPORTANT]
-> The input EMI filter was never inside a control model: `pfc-control.mjs` closed the current loop on a bare
-> 100 µH plant and `vienna-switched.mjs` on a stiff grid. With the drawn filter (CMC leakage · CX1 · D6 · CX2) and
-> the A9 grid, the undamped loop is **unstable** — the switched model oscillates at the 1.5·Tsw basis (63–90 % of
-> the fundamental between 2 and 45 kHz, Lg 100 µH) and the small-signal Nyquist check has no margin even at 15 µs.
-> The schematic now carries a CX2-node Rd–Cd damper (CDMP1-3 2.2 µF + RDMP1-3 10 Ω, delta). The three
-> requirements below are what the margins were computed with; the standing gate is `calculations/pfc/pfc-control.mjs`
-> (`out/pfc-filter-stability.csv`) and its `[EMI]` row in `stress-audit.mjs`.
-
-| Req | What the code does | Why (computed) |
-|---|---|---|
-| **FW-EMI-1** loop delay | Phase currents sampled at carrier peak **and** valley (100 kHz); the duty computed from a sample is loaded at the next half-period — total sample→PWM delay **≤ 15 µs** | damped filter: modulus margin min\|1+Y·Zo\| **0.53–0.65** at 15 µs (P and PI, Lg 0/30/100 µH, leakage 6–12 µH, D1/D6 at zero-crossing and crest); at the 1.5·Tsw = 30 µs single-update basis only 0.18–0.33 |
-| **FW-EMI-2** voltage feed-forward | Feed-forward and the resistive-emulation reference use SNS_VAC1..3 as drawn (divider RC τ ≈ 115 µs), with the 50 Hz lag rotated out by mixing the other two phases: v′ₖ = vₖ + ωτ·(vₖ₋₁ − vₖ₊₁)/√3 | without the feed-forward the damped margins drop to 0.36–0.43 |
-| **FW-EMI-3** gain per rating | Current-loop proportional gain = 2π·3 kHz·L_D1 at the simulated crest, lot −8 %: **1.27 / 1.04 / 0.78 V/A** (30/40/50 kW, from the strap); PI zero no higher than the 425 Hz of the loop design | the single PI (1.87 V/A, placed on a 100 µH plant) crosses at 5–7 kHz on the 40/50 kW D1 and is unstable at 30 µs even with the damper |
-
-Not firmware: EVT line — a grid-impedance step test at Lg ≈ 100 µH per phase (and several paralleled modules on one
-transformer) with the loop delay measured on the scope, before the margins above are called verified.
-
-
-## 11. E67 — two output modes and a diode output (2026-09-13)
-
-> [!IMPORTANT]
-> E67 follows the charging-module convention in the UUGreen, ENR, Tonhe, NIUERA and Maxwell CAN protocols: a LOW
-> (< 500 V) and a HIGH (> 500 V) output range, chosen before the module starts. The output blocking diode (InfyPower
-> practice) removes K_OUT and the pre-insertion relays, so the relay matrix never switches current. This supersedes the
-> "S/P transition" diagram above: there is no RUN-time relay transition with a dwell or a weld check any more.
-
-| Req | What the code does | Why |
-|---|---|---|
-| **FW-R12** output mode | `in->omode_req` ∈ {`OMODE_AUTO`, `OMODE_LOW`, `OMODE_HIGH`} is latched into `f->omode` in STANDBY only. LOW → banks parallel, `v_max` 500 V · HIGH → banks series, `v_max` 1000 V, refused below `PMP_XOVER_UP_V` (480 V) · AUTO → start SER above `PMP_XOVER_DN_V` (500 V), else PAR | a bank tops out at 500 V (gain M ≤ 1.205) — the tank was solved for that edge, not for the E60 525 V in-run hysteresis |
-| **FW-R12b** AUTO crossover | only in AUTO: PAR → SER when the battery (or vcmd with no vehicle) exceeds 500 V, SER → PAR below 480 V; ramp to zero, swap relays at zero current, soft-start again | 20 V hysteresis; the battery voltage, not the EV's request, decides (FW-R10) |
-| **FW-R13** diode output | relays close before the soft start; with a SER start, `fabsf(vbank_a − vbank_b) > PMP_BANK_IMB_V` once either bank passes 50 V latches **F.17** | a welded K_PARA/K_PARB ties the bank tops; it shows as imbalance at the first SER ramp. `PMP_WELD_DV_V` / `PMP_WELD_MS` stay defined but unused |
-| **FW-R14** F.11 classes | `oc_tank_a` 140 / 180 / 220 A (default 140) from the rating strap | protection-thresholds § 6 |
-| **HAL — CAN mapping** | MODULE_CTL b2 force-HV → `OMODE_HIGH`, b3 force-LV → `OMODE_LOW`, neither → `OMODE_AUTO` (both set is rejected by `can_proto.c`) | a request in RUN is held until the next STANDBY (host_sim `reqrun`) |
-
-```mermaid
-stateDiagram-v2
-  [*] --> STANDBY
-  STANDBY --> STANDBY: latch omode_req
-  STANDBY --> PAR: LOW, or AUTO with V ≤ 500 V
-  STANDBY --> SER: HIGH with V ≥ 480 V, or AUTO with V > 500 V
-  STANDBY --> STANDBY: HIGH with V < 480 V (refused)
-  PAR --> RUN_PAR: relays closed at 0 A, soft start
-  SER --> RUN_SER: relays closed at 0 A, soft start, F.17 screen
-  RUN_PAR --> SER: AUTO and V > 500 V (ramp to 0 A first)
-  RUN_SER --> PAR: AUTO and V < 480 V (ramp to 0 A first)
-```
-
-Host tests added (host_sim 60/60): `start490`, `start510`, `lowforced`, `highlow`, `reqrun`, `hyst` (510 → 490 V), and the
-F.11 class checks 195 A / 220 A and 155 A / 180 A.
-
-
-## 12. E73 — precharge-bypass closure window (2026-09-14)
-
-> [!IMPORTANT]
-> Additive. The bypass closure at 90 % of line peak drives a 200 / 218 / 280 A pk pulse through D1 while the PFC is idle —
-> above F.01 on every SKU at 475 VAC ([protection thresholds § 8](protection-thresholds.md#8-e73-startup-coordination-2026-09-14--f01-blanked-while-the-precharge-bypass-closes)).
-
-| Item | Code | Why |
-|---|---|---|
-| Window | `PMP_PRE_BLANK_MS` = 60 ms, loaded when `k_pre` is commanded in `ST_PRECHG` | relay operate ≤ 25 ms + bounce ≤ 5 ms + the ≤ 2 ms pulse, with margin |
-| F.01 mirror | `if (in->oc_pfc_flt && f->pre_blank_ms == 0) latch(f, FC_OC_PFC)` | the inrush flag is read-clear and ignored inside the window only |
-| PFC enable | `ST_STANDBY` returns early while `pre_blank_ms` is non-zero | F.01 is never blanked while the PFC switches |
-| HAL contract | clear the HRTIMER FLT2 event latch when the window ends, before the first PWM | the hardware break stays armed throughout |
-
-Host tests added (in `host_sim`, now 121 checks): *E73 bypass-closure inrush on F.01 is blanked* · *no PFC enable inside the blank
-window* · *F.01 line OC while switching latches*. Negative test: with the blank removed, the inrush scenario latches F.01.
-
-## 13. E75 — OVP comparator allocation + mode-swap release margin (2026-09-14)
-
-> [!IMPORTANT]
-> Additive. An external review asked which comparator instances back the F.03/F.13 "HW comp" rows
-> and whether the mode-swap gap covers the relay's diode-suppressed release; the audit confirmed
-> both gaps ([protection thresholds §2 footnote](protection-thresholds.md)).
-
-| Item | Contract | Why |
-|---|---|---|
-| F.03 bus OVP | HAL configures **CMP4**: IP = PB13/pin 52 (SNS_VBUSP, also ADC2_IN4 for metering), IM = **DAC3_OUT0** at the 860 V code; output → **HRTIMER fault channel 5** (`FLTyINSRC = 01`), latch armed before the first PWM | before E75 SNS_VBUSP sat on PE15 — no CMP function existed; the analog latch path of the footnote had no comparator behind it |
-| F.13 output OVP | HAL configures **CMP0**: IP = PA1/pin 21 (SNS_VOUT, also ADC01_IN1), IM = **DAC0_OUT0 with MODE0 = 011** (buffer off, internal-only — PA4/SNS_VAC2 keeps its pin); output → **fault channel 3** | film-only output ≈ 24 µF at 167 A slews 2.6–5.6 V/µs — a firmware path is orders too slow; PA5 (the old pin) offered only CMP1_IM, and CMP1 is phase B's |
-| ADC re-map | SNS_VBUSP = ADC2_IN4 · SNS_VOUT = ADC01_IN1 (were ADC3_IN1 / ADC1_IN12) | the two channel-table constants move with the pins |
-| Mode swap | `ST_MODESW` flips at **step 70** (was 40): open command at step 20 → earliest re-close ≥ 51 ms later | the ULN COM clamp freewheels the coil — diode-suppressed release stretches 2–3×; the matrix-relay RFQ line is release + bounce ≤ 35 ms suppressed. An overlap would dump a charged film bank (~3 J at 500 V) through two making contacts |
-
-Gates: `verify-independent` §J asserts pin 52 = ANA14 and pin 21 = AIN3 from the built card netlist; `host_sim`
-stays green (the per-tick exclusion invariant runs through the widened swap).
-
-## 14. E76 — supervisory-logic hardening (2026-09-14)
-
-> [!IMPORTANT]
-> Additive. The fifth external review compiled the cores and reproduced nine defects with adversarial
-> inputs; all are closed firmware-only. The defect table with mechanisms lives in
-> [protection thresholds §9](protection-thresholds.md#9-e76-supervisory-logic-hardening-2026-09-14--the-fifth-external-reviews-firmware-counterexamples-closed).
-> This section is the changed CONTRACT.
-
-| Contract | Now |
+| Suite | Scope |
 |---|---|
-| Start readiness | `vbus > 0.95 · vbus_ref` (was a fixed 700 V that blocked every sub-700 V reference — R02) |
-| Matrix make | only at ≤ 2 A and new stack ≥ 10 V **below** the output node (battery, else terminal caps, 60 V floor); bank bleeders (`out.q_disch_bk`, **new output — HAL maps to CTL_QDISBK**) run from the MODESW open until the permit; LLC off through the wait; stall → **F.34** at 8 s |
-| Output-mode change | latches only with every matrix contact open; otherwise routes through ST_MODESW (open + bleed + re-select in STANDBY — ST_MODESW no longer flips `out.mode` itself) |
-| STOP / re-arm | `enable_req=false` in RUN/DERATE → STANDBY with LLC off; `need_enable` (fault clear, CAN timeout) clears **only** when enable is observed low — the host must drop and re-assert ENABLE |
-| Safety scope | OT / input / midpoint / OVP / sensor / CAN checks run whenever PFC or LLC is enabled, not just in RUN; STANDBY enable requires `aux_ok`; latches always win over graceful transitions |
-| Derate | recomputed every tick (5 °C recovery hysteresis); RUN/DERATE are one delivering super-state, AUTO crossover evaluated in both |
-| Sensor plausibility | low-side only (`stack − vout > 20 %` with LLC on) — the high side belongs to F.13 |
-| Group share | a **grown** pending raise target restarts the 1.3 s hold (`pend_da`); equal/smaller never does |
-| Shutdown | `q_disch` **and** `q_disch_bk` both command through ST_DISCH (E33 contract) |
-
-Host suite: **77/77** — 63 legacy + 14 new (R02 ×2, R03 scenario + every-tick make-permit invariant,
-R04, R05 ×3 incl. every-tick aux invariant, R06 ×2, R07, R09, F.34, group R08). The plant now follows
-`vbus_ref`, conducts DOUT on physics (any state), models the bank bleeders and terminal-capacitor
-node, and the lock scenario re-arms through the public contract instead of poking `need_enable`.
-`fsm-sim.mjs` (26 JS scenarios) still passes but lags the C core in the E76 areas — the C core is
-normative (E24); syncing the JS model is an open E76 line.
-
-## 15. E78 — the protocol-neutral core (2026-09-15)
-
-> [!IMPORTANT]
-> Additive. The firmware now has three layers — protocol profiles, one canonical model, the power core — specified with the
-> review findings FW-01…FW-25 in [firmware architecture](firmware-architecture.md). The native protocol is
-> [VMP 2.0](can-protocol.md); the [TonHe V1.2 profile](can-profile-tonhe-v12.md) is the drop-in compatibility profile.
-> Suites: `host_sim` **114**, `ctl_test` **18**, `proto_test` **40** — ASan + UBSan (fatal) + `-Werror`. The review started
-> from the E77 working-tree core (input sanitization, row persistence, the F.31 window, warm hold, the public shutdown), which
-> had no register row; E78 records it as its base.
-
-| Contract | Now |
-|---|---|
-| Communication timeout | owned by the active profile: `pmp_fsm_set_comm_timeout_ms()` (VMP 1 s default, TonHe 20 s); `PMP_CAN_TO_MS` is only the boot default |
-| Controlled stop | STOP, communication loss and a lost setpoint set `out.stop_ramp`; `core/ctl.c` takes the current to zero in 80 ms; the LLC stops below 2 A or at 100 ms; F.16 is not evaluated during it; a withdrawn STOP continues the session |
-| Recovery classes | `pmp_fault_class()`: AUTO_EXT (F.07 · F.08 · F.09) and AUTO_INT (F.05 · F.06 · F.22 · **F.26 at E82**) clear after a 2 → 64 s hold once their condition is gone; LATCH needs CLEAR; F.31 counts every latch except AUTO_EXT. **E82 (E-08): an F.05 the line explains inside 200 ms is re-filed retroactively as F.07 / F.08 / F.09 and its F.31 count taken back** — the rms line values are up to a cycle stale when F.05 fires |
-| Relay feedback | inputs `relay_fb` / `relay_fb_wired` (`PMP_RLY_*` bits, 1 = main contact closed); F.19 on a 100 ms mismatch; the PFC waits for a confirmed bypass and the soft start for confirmed contacts; `PMP_W_RELAY_FB_OFF` while nothing is wired — the production HAL wires all four |
-| New rows | F.35 (`ctl_overrun`, the HAL's deadline verdict; **E82: three missed ticks inside one 100 ms window, not one**) · F.36 (undefined state value) |
-| New inputs | `wake_req` (OFF → INIT) · `ctl_overrun` · `relay_fb` · `relay_fb_wired` |
-| Start and recovery window | 275–485 VAC; the trip rows stay 260 / 500 VAC |
-| Mode dwell | `PMP_MODE_DWELL_MS` = 1 000 ms — the build value is the product value (supersedes the "30 000 ms, compressed 1000× on the host" HAL line above) |
-| SAFE | left after 500 ms of stable aux; the restart needs a fresh ENABLE |
-| Fresh request after a reset | the profile's rule, not the core's: VMP holds RUN until RUN = 0; a TonHe start is an event |
-| Reference shaping | `core/ctl.c`: soft start from the output node, 500 V/s and 1 000 A/s rises, E1 input derate, power limits, group share, CV share trim; regulator kernel with min-select and back-calculation anti-windup |
-| Protocol layer | `core/modapi.h` canonical model · `proto/` profiles and registry · `can_proto.{h,c}` (v1, never shipped) retired |
-| HAL 1 ms order | profile rx → profile tick → `pmp_cmd_to_in` → `pmp_fsm_step` → `pmp_cmd_to_ctl` → `pmp_ctl_step` → commit references → telemetry → TX |
-
-## 16. E80 addendum (additive)
-
-- **Host suite is now seven binaries / 330 checks**: `boot_test` (SHA-256 · ECDSA-P256 against OpenSSL + BigInt vectors ·
-  signed images · boot decision · update protocol on a row-granular, program-once flash model since E82) joined the five E79
-  suites at E80, and `e81_test` (29 checks at E81, **50 at E82**) at E81; `run_tests.sh` runs all seven.
-- **The GD32G553 register port is built** (`firmware/port/gd32g553/` — no vendor library; every register cited to UM
-  Rev 1.3): 216 MHz clock recipe, HRTIMER center-aligned Vienna carrier + PFM/PSM legs (the fixed 120 ns dead time was **replaced at E81 by the per-leg adaptive law** — 60–900 ns, clamped, computed from Q_oss(V_bus) + C_s·V_bus over the commutating current), the six
-  fault channels of Table 25-21, four ADCs on one 100 kHz trigger with double-buffered DMA rings, CMP/DAC thresholds,
-  CAN mailbox driver with manual bus-off recovery, FWDGT + the TPS3430 WDI contract, TCM placement of the whole 100 kHz
-  path, and `build.sh` producing the bootloader plus signed slot-A/B images. `port-pin-audit` (run-all) locks its pin
-  table to `umod-map.gen.ts` — 56 pins.
-- **Watchdog contract update (review HR-02)**: the TPS3430 now runs the FIXED window (CWD open, SET0 low, SET1 high) —
-  a falling WDI edge is valid 2.22–23.375 ms after the last one; the app kicks every 10 ms as before, and the BOOTLOADER
-  kicks from power-up, chunking image verification (a 208 KB SHA-256 pass takes ~40 ms and must be split). EVT T-53.
-- **Relay economization is live** (the E26 instruction above): the app emits per-coil duties — 100 % for 60 ms after a
-  close command, then 40 % hold at 20 kHz (`app_tick_out_t.relay_duty[]`); KSER/KPARA ride TIMER3 PWM, KPRE/KPARB hold
-  full until their pins' PWM capability is confirmed at bring-up.
-- **Calibration policy (review HR-29)**: a card with NO calibration record latches F.30 at boot exactly like an
-  implausible one — nominal-scaling delivery is gone; the EOL fixture is the only calibration writer.
-
-## 17. E82 addendum (additive) — what twelve independent reviews changed
-
-Full register: [E82 validation report](e82-validation-report.md). Nine of the eleven CRITICAL findings were firmware, all
-closed at ₹0. Every behavioural change below carries a check that fails without it.
-
-**Boot and supervision.** The window watchdog is fed from a **token purse the main loop must keep paying into** — a hung loop
-resets within 30 ms plus one window, where E81's sticky flag let SysTick service both watchdogs through 5 s of a dead loop
-(C-06). `port/port.c flash_service()` services it around every flash operation (`port_kick_grant(5)` plus a direct WDI edge
-when the last one is ≥ 2.5 ms old, interrupts masked ≈ 1 µs); `boot_kick()`, SysTick and `flash_service()` share **one edge
-clock** (`wdi_t`), and `nvmport.c` calls it before every operation and after every page erase. The signature check is split into
-4 KB hash pieces (an un-serviced P-256 verification measured **90–105 ms** by instruction-accurate emulation, against the
-TPS3430's 23.375 ms window — twice per boot), the flash primitives are RAM-resident, and the crystal wait is bounded by DWT to
-10 ms instead of a 40 000-iteration loop that measured 30–40 ms (C-01). `EPRSTF` joined the reset-streak mask, so
-`BOOT_STREAK` is reachable for the only reset kind this board produces (WDO is wire-ORed onto NRST). The bootloader joins the
-bus **listen-only** until it hears a frame at the handoff rate, drains RX until the mailboxes are empty, and identifies itself by
-a CRC-32 of the **full 96-bit UID** — `RD(UID_BASE)` alone is the wafer/lot word and collided between lots. A production build
-(`PRODUCTION=1`) refuses a key under `keys/dev/`, and **two signing keys ship from day one** so rotation is "sign the next
-release with key 2" and needs no bootloader change. `panel()` gains a **two-button service entry** — both buttons held ≥ 3 s
-inside the first 10 s with both stages off — the only route into the bootloader for a TonHe-profile module (G-10).
-
-**Storage.** The journal's 12-byte header put every record on a flash row that was already programmed, so **nothing ever
-persisted** and the calibration E80 made mandatory could never be stored (C-04). The layout is now a 16-byte header, 8-aligned
-entries, and the CRC commit marker alone in the entry's last row, programmed after the payload. All three journals moved to
-**bank 1 — `FM_BOOTCTL` 0x0807_4000, `FM_NVM` 0x0807_5000, `FM_EVLOG` 0x0807_6000** — so the slot-A application no longer
-shares a bank with anything it writes. A two-bit flash-ECC error inside that window raises an NMI which `startup.c` now clears,
-counts (`port_flash_ecc`, budget 16) and **returns** from, leaving the reader's CRC to treat the entry as torn; anything outside
-the window still resets (G-14). An event already queued is not queued again, so a chattering fault no longer spends a page erase
-per repetition.
-
-**Measurement.** VREFINT was converted with a 132 ns aperture where the part needs ≥ 17.1 µs, which raised F.29 about 100 ms
-after every boot (C-03). It is out of the 100 kHz ring, read **once at boot at 28.5 µs** with the ADC divider moved to 36 MHz,
-and the part's **factory `VREFINT_CAL` word** replaces the 1.20 V nominal, so the bandgap spread cancels in `kr`. The control
-interrupt moved from a timer compare to the **ADC end-of-sequence DMA transfer**: it starts ≈ 2.8 µs after the trigger and has
-≈ **7.2 µs** to the roll-over, against 5.0 µs before (M-21). Per-cycle DC removal on the sensed voltages and the CT channels
-takes a 3-LSB offset from **23 A to 0.17 A** of DC line current on a high-pass-sensor plant, with separate rates for the
-voltages (τ ≈ 80 ms) and the currents (τ ≈ 0.7 s) so the two estimators cannot chase each other (M-18).
-
-**Protection.** E81's bipolar F.01 loaded a reference **below AVMID** into a non-inverting comparator on an active-high fault
-input — a fault asserted in normal operation (C-02). The references are positive-only; the negative polarity is a 100 kHz
-software magnitude trip on the raw current through the same `trip_n` / `trip_ack` path, and Σi = 0 makes the other two
-comparators the hardware backstop. **Hardware trips are held until the supervisor has seen and latched them** — E81's control
-interrupts re-armed the outputs 10 µs / 100 µs later (C-09). `latch()` no longer drops later faults, so a DESAT that follows a
-grid sag is not lost (C-08), and a wake **clears a stale latch** while a LOCK survives it — before E82 a latched code survived
-shutdown → wake and the module then ignored STOP and a pulled CAN cable (C-07). The fault-input configuration is locked
-(`FLTxINPROT`) once set, and the LVD is armed at 2.75 V.
-
-**State machine.** The bypass closes on a **settled** link — two 20 ms steps under 3 V and ≥ 0.85 × crest — because 0.97 × √2 ×
-V_rms is unreachable on flat-topped mains, which settles at 0.949–0.993 of the sinusoidal crest and produced F.20 then LOCK
-after five tries (C-05). The bypass opens on every latch and recovery re-precharges; a CLEAR after F.20 now really
-re-precharges (the window used to be left spent). F.18 became the **bypass weld**, read off the KPRE mirror during the commanded
-discharge and reported when the dump ends; F.15 gained a command-relative arm; F.26 latches after 5 s of missing aux in INIT or
-SAFE; F.21 also ends a dump that has stopped falling, and the discharge-complete test now includes the output node under its own
-20 s bound whose expiry is not a fault; F.28 sets `PMP_W_COMMS_LOST`. An aux dip opens the matrix commands with the coils so the
-re-make goes through the permit, and the second fan PWM group starts 300 ms after the first, behind 500 ms of in-spec rails.
-
-**Control.** `hal/dielim.c` is a **junction observer**: the grid's own closed-form losses at the operating point in force, a
-first-order estimate above the measured base (τ 0.5 s), a proportional fold across **142–150 °C** into `pmp_ctl_in_t.die_fold`,
-and a **decline** — latched until the LLC is stopped, so it is not inherited through the 60 s warm-standby hold — for a junction the fold cannot cool. Before E82 the derate ladder read a
-heatsink NTC and none of the folding corners heats the sink first (C-11). `weak_dead_s()` gives leg A in phase shift
-0.82·(π/2)·√(L_r·C_node) = **125 / 186 / 189 ns**; the dead-time floor is 120 ns everywhere. The link reference now **leads the
-measured output by `PMP_BUS_LEAD_V` (25 V)** instead of jumping to the command — vehicles send their maximum voltage as the
-setpoint and charge in constant current far below it, which parked the link at 830 V over a 330 V pack. The CV loop takes a
-**gain ceiling** from the modulator's own sensitivity (`llc_t.k_norm`, worst |T(z = −1)| 1.79 → 0.43) rather than a re-tuned
-`kp_v`; the tank rms is computed from the operating point (`llc_t.i_rms`; `in_i_rms` and the `APP_W_FLUX` flux-walk bit are
-gone — a CT has no DC response and never could have seen a flux walk); and the share trim runs at 0.002 V/(A·s), slower than the
-slowest peer refresh.
-
-**Protocol.** A short `C_M_24` is confirmed 0x00 like a bad command byte but does not refresh presence; the TonHe transmit phase
-mixes the UID with the address so two modules on the same mis-set address collide with probability ≈ 1/500 per pair instead of
-always; REBOOT, ENTER_BOOT and FACTORY_RESET are **refused while either stage is live** (the 60 s warm hold kept the PFC
-switching); and VMP object **0x0503 `DIAG_RX_OVR`** counts drains that found all eight RX mailboxes occupied — the controller's
-only evidence of a lost frame.
-
-**Rejected by the lead after checking**: advancing `now_ms` in real time across a collapsed tick backlog (it turns a timing bug
-into missed supervision unless every `% == 0` slice becomes a crossing); a BOR option-byte read-back raising F.30; F.11
-140 → 120 A; a link maximum of 815 V; phase shift at a lower frequency (tested — worse); and shifting the other leg.
-
+| `boot_test` | SHA-256 and P-256 vectors, signed-image acceptance and every refusal code, the boot decision table, the update protocol end to end on a flash model that behaves like the real FMC (8-byte rows, a second program of a row refused) |
+| `host_sim` | the 26 fault scenarios on a behavioural plant with relay mirror contacts, the protection and recovery regressions, three group-law nodes, and the every-tick invariants (relay exclusion, make-permit, aux) |
+| `ctl_test` | the shaper's rules and the regulator's properties: bounds, no windup, bumpless transfer at the limit, NaN containment, slew and stop-ramp limits, the junction fold and the share trim |
+| `proto_test` | frame helpers, TonHe V1.2 and VMP 2.0 conformance (the vendor document's example frames byte for byte), a 1 M-frame fuzz per profile, and one core driven through both profiles |
+| `hal_test` | the Vienna law on a cycle-by-cycle plant (start, load step, dump, THD / PF / midpoint, deep sags, a phase jump, reversed sequence) · the LLC modulator on a switched tank (the ZVS table against the FHA corners, CV, CC into a battery, the floor, burst, the weak-leg dead time) · measurement and DC removal · the record store under a power cut at every byte and step |
+| `app_test` | the application end to end on averaged plants: boot to delivery, the controlled stop, each fault channel, F.30 / F.32 / F.35 / F.37, the watchdog gate, sag ride-through, CAN bus-off, configuration storage, the F.01 reference through both half cycles, and the junction observer's fold and decline |
+| `rules_test` | the review rows kept as regressions: the dead-time floor and the weak-leg edge, the FSM rows added with them, the per-rating fan count and fault channels, and the protocol fixes |
 
 > [!TIP]
-> **How this page is checked** — `sh firmware/run_tests.sh` — **330 checks** under ASan/UBSan across seven binaries, with `-Werror`; several passages of this page are asserted word for word by `calculations/review-checks.mjs`.
+> **How this page is checked** — `sh firmware/run_tests.sh` under ASan/UBSan across seven binaries, with `-Werror`; several passages of §5 are asserted word for word by `calculations/review-checks.mjs` and `calculations/stress-audit.mjs`.
 
 ---
 
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-architecture.md">Firmware Architecture →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

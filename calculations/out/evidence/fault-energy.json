@@ -12,7 +12,7 @@
    "status": "ok",
    "tag": "RESERVOIR",
    "name": "30kw bank 2 J @500 V",
-   "detail": "per bleeder-chain resistor 0.6 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+   "detail": "per bleeder-chain resistor 0.6 J ≤ 65 J (registered line; passive 47k backup path is W-trivial)"
   },
   {
    "status": "ok",
@@ -24,7 +24,7 @@
    "status": "ok",
    "tag": "RESERVOIR",
    "name": "40kw bank 3 J @500 V",
-   "detail": "per bleeder-chain resistor 0.8 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+   "detail": "per bleeder-chain resistor 0.8 J ≤ 65 J (registered line; passive 47k backup path is W-trivial)"
   },
   {
    "status": "ok",
@@ -36,7 +36,7 @@
    "status": "ok",
    "tag": "RESERVOIR",
    "name": "50kw bank 4 J @500 V",
-   "detail": "per bleeder-chain resistor 1 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+   "detail": "per bleeder-chain resistor 1 J ≤ 65 J (registered line; passive 47k backup path is W-trivial)"
   },
   {
    "status": "ok",
@@ -48,7 +48,7 @@
    "status": "ok",
    "tag": "RESERVOIR",
    "name": "50kwa bank 4 J @500 V",
-   "detail": "per bleeder-chain resistor 1 J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)"
+   "detail": "per bleeder-chain resistor 1 J ≤ 65 J (registered line; passive 47k backup path is W-trivial)"
   },
   {
    "status": "ok",
@@ -59,7 +59,7 @@
   {
    "status": "ok",
    "tag": "RESERVOIR",
-   "name": "tank caps (E67 full bridge, 11 × 33 nF worst)",
+   "name": "tank caps (full bridge, 11 × 33 nF worst)",
    "detail": "136 mJ — three orders below any pulse rating; rings down in the tank R"
   },
   {
@@ -72,7 +72,7 @@
    "status": "ok",
    "tag": "SURGE",
    "name": "MOV single-shot energy vs class",
-   "detail": "Ipk ≈ 1550 A, E ≈ 39 J vs S20K550 class (Wmax ~160 J, Imax 6.5 kA 8/20) — and the MOV Δ + series GDT sits BEFORE the chokes (HR-7 netlist gate), so no magnetics see the un-clamped front"
+   "detail": "Ipk ≈ 1550 A, E ≈ 39 J vs S20K550 class (Wmax ~160 J, Imax 6.5 kA 8/20) — and the MOV Δ + series GDT sits BEFORE the chokes (asserted by the netlist gate), so no magnetics see the un-clamped front"
   },
   {
    "status": "ok",
@@ -96,55 +96,55 @@
    "status": "ok",
    "tag": "VENT",
    "name": "link can continuous voltage",
-   "detail": "worst continuous half-link 435 V (830 V ref/2 + F.06 20 V) on a 500 V can = 87 % ≤ 90 % (E81 F-C-14; 450 V cans read 97 %)"
+   "detail": "worst continuous half-link 435 V (830 V ref/2 + F.06 20 V) on a 500 V can = 87 % ≤ 90 % (450 V cans read 97 %)"
   },
   {
    "status": "ok",
    "tag": "VENT",
    "name": "link can trip vs surge",
-   "detail": "F.38 half-link trip 440 V ≤ 1.15 × 500 = 575 V surge line — venting requires a BALANCE failure past F.06/F.38, which the half senses detect; DFM carries the vent-clearance rule (E59)"
+   "detail": "F.38 half-link trip 440 V ≤ 1.15 × 500 = 575 V surge line — venting requires a BALANCE failure past F.06/F.38, which the half senses detect; DFM carries the vent-clearance rule"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "30kw airflow margin",
-   "detail": "need 187 m³/h @ΔT20 for 1125.7 W vs 3×160×0.6 = 288 — margin 1.54× (line 1.10, E81; module air rise at delivered flow 13 K)"
+   "detail": "need 188 m³/h @ΔT20 for 1127 W vs 3×160×0.6 = 288 — margin 1.54× (line 1.10; module air rise at delivered flow 13 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
-   "name": "30kw one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 192 m³/h vs derated need 103 (tachs all monitored — E44; OT ladder is the second net)"
+   "name": "30kw one-fan-out (FSM derate 0.5)",
+   "detail": "(n−1) = 192 m³/h vs derated need 84 (tachs all monitored; OT ladder is the second net)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "40kw airflow margin",
-   "detail": "need 252 m³/h @ΔT20 for 1516.7 W vs 3×160×0.6 = 288 — margin 1.14× (line 1.10, E81; module air rise at delivered flow 17.5 K)"
+   "detail": "need 253 m³/h @ΔT20 for 1519.1 W vs 3×160×0.6 = 288 — margin 1.14× (line 1.10; module air rise at delivered flow 17.6 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
-   "name": "40kw one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 192 m³/h vs derated need 139 (tachs all monitored — E44; OT ladder is the second net)"
+   "name": "40kw one-fan-out (FSM derate 0.5)",
+   "detail": "(n−1) = 192 m³/h vs derated need 114 (tachs all monitored; OT ladder is the second net)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "50kw liquid loop",
-   "detail": "1910 W into 6.5 L/min 50/50 EG-water → coolant ΔT 5 K ≤ 5 (E42 basis 4 K at 1,585 W) — cart-side flow assurance, module dry-run = plate NTC ladder"
+   "detail": "1925 W into 7 L/min 50/50 EG-water → coolant ΔT 4.66 K ≤ 5 (the 65 °C plate reference is 60 °C inlet + 5 K) — cart-side flow assurance, module dry-run = plate NTC ladder"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "50kwa airflow margin",
-   "detail": "need 325 m³/h @ΔT20 for 1950.3 W vs 4×160×0.6 = 384 — margin 1.18× (line 1.10, E81; module air rise at delivered flow 16.9 K)"
+   "detail": "need 327 m³/h @ΔT20 for 1964.9 W vs 4×160×0.6 = 384 — margin 1.17× (line 1.10; module air rise at delivered flow 17 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "50kwa one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 288 m³/h vs derated need 179 (tachs all monitored — E44; OT ladder is the second net)"
+   "detail": "(n−1) = 288 m³/h vs derated need 180 (tachs all monitored; OT ladder is the second net)"
   }
  ]
 }

@@ -1,10 +1,9 @@
-// prechg-disch.mjs — R2 closure deck (§G additions / HR-14): precharge, bus discharge and bank
-// bleed at ALL THREE SKU capacitances — the original §25 runs existed for 30 kW only while the
-// firmware/EOL constants were silently 30 kW-shaped. Verifies, per SKU:
+// prechg-disch.mjs — §G deck: precharge, bus discharge and bank bleed at EVERY SKU capacitance.
+// Running 30 kW only leaves the firmware / EOL constants silently 30 kW-shaped. Verifies, per SKU:
 //   · precharge (475 VAC worst, 2×33 Ω in L1/L2, 6-pulse): t95, Ipk, per-resistor energy
 //   · firmware F.20 as coded (abort iff t>400 ms AND bus<50 % line pk): must NOT trip
 //   · bus discharge 640 Ω from 850 V: t(<60 V) vs per-SKU PMP_DISCH_TO_MS (3.0/5.5/9.0 s)
-//   · bank bleed 8.8 kΩ from 500 V (film-only banks, E68c): t(<60 V) vs the registered F.21b window
+//   · bank bleed 8.8 kΩ from 500 V (film-only banks): t(<60 V) vs the registered F.21b window
 // Run: node spice/protection/prechg-disch.mjs
 import { runDeck } from "../run.mjs";
 import { writeFileSync } from "node:fs";
@@ -14,11 +13,11 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const RES = join(HERE, "..", "..", "simulation-results", "30kw");
 const f = (x, d = 1) => Number(x.toFixed(d));
 
-// E60: the product SKUs (link halves 5/6/8 × 470 µF in series · bank strings 2/3/4 × 235 µF ·
-// PMP_DISCH_TO_MS 3000/4000/5000 · F.21b = 2.5·τ, τ = 8.8 k·C_bank) — the retired 60/120 kW rows are gone
+// The product SKUs: link halves 5/6/8 × 470 µF in series · PMP_DISCH_TO_MS 3000/4000/5000 ·
+// F.21b = 2.5·τ, τ = 8.8 k·C_bank
 const SKUS = [
-  // E68c: the banks are film-only — 9 / 12 / 14 × 2.2 µF — and top out at 500 V (E67). The bleed limit stays the registered F.21b
-  // window (2.5·τ of the retired E60 strings, protection-thresholds): it now holds by a wide margin.
+  // The banks are film-only — 9 / 12 / 14 × 2.2 µF — and top out at 500 V. The bleed limit is the registered F.21b
+  // window in protection-thresholds, which the film bank holds by a wide margin.
   { name: "30kw", Cs: 5 * 470e-6 / 2, Cbank: 9 * 2.2e-6, dischTO: 3.0, bleedTO: 10.34 },
   { name: "40kw", Cs: 6 * 470e-6 / 2, Cbank: 12 * 2.2e-6, dischTO: 4.0, bleedTO: 15.51 },
   { name: "50kw", Cs: 8 * 470e-6 / 2, Cbank: 14 * 2.2e-6, dischTO: 5.0, bleedTO: 20.68 },   // 50kwa identical link/banks
@@ -100,7 +99,7 @@ for (const s of SKUS) {
   }
 }
 writeFileSync(join(RES, "prechg-disch-sku.csv"),
-  "# ngspice-46; R2/HR-14 closure — per-SKU precharge/discharge/bank-bleed vs the per-SKU firmware+EOL constants\n" +
+  "# ngspice-46; per-SKU precharge / discharge / bank-bleed vs the per-SKU firmware + EOL constants\n" +
   rows.map(r => r.join(",")).join("\n") + "\n");
 console.log(pass ? "\nPRECHG/DISCH PER-SKU DECK: ALL PASS" : "\nPRECHG/DISCH PER-SKU DECK: FAILURES");
 process.exit(pass ? 0 : 1);

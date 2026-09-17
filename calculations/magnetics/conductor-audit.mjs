@@ -1,12 +1,12 @@
-// conductor-audit.mjs — E60 standing gate: AC copper physics of every power winding, at the SIMULATED
+// conductor-audit.mjs — standing gate: AC copper physics of every power winding, at the SIMULATED
 // currents and frequencies (llc-stress / vienna-switched), against each drawing's own acceptance rows.
 // Models: IEC 60028 annealed Cu (ρ20 1.7241e-8 Ω·m, α 0.00393/K) · skin depth δ = √(ρ/(π f µ0)) ·
 // Dowell (1966) for foil and round-wire layers (porosity-corrected Δ) · Sullivan (TPEL 1999) litz
 // proximity factor (shared: winding-physics.mjs). Geometry: geometry.mjs (catalog former lN, per-winding radial build)
-// — E65: constructions come from the magnetics-envelope tables, so a drawing change moves both gates together.
-// Why it exists: the E51 construction rev moved the D3 secondaries to 0.20/0.25/0.30 mm copper foil,
-// 5–7 layers each, at 140–190 kHz — h/δ ≈ 1.0–1.5, where Dowell puts Rac/Rdc at 5–12 while the pack
-// row says ≤1.35 and the loss budget carried 1.15. Nothing computed it until this gate.
+// — constructions come from the magnetics-envelope tables, so a drawing change moves both gates together.
+// Why it exists: the D3 secondaries are 0.20/0.25/0.30 mm copper foil, 5–7 layers each, at 140–190 kHz —
+// h/δ ≈ 1.0–1.5, where Dowell puts Rac/Rdc at 5–12 while a typed pack row says ≤ 1.35 and a loss budget
+// carries 1.15. Nothing else in the chain computes it.
 // Run: node calculations/magnetics/conductor-audit.mjs
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -29,11 +29,11 @@ const llc = (sku) => {
 };
 const vs = readFileSync(join(ROOT, "calculations/out/vienna-switched.csv"), "utf8").split("\n").filter((l) => l && !l.startsWith("#"));
 const vh = vs[0].split(","), VS = vs.slice(1).map((l) => { const c = l.match(/("[^"]*"|[^,]+)/g); return Object.fromEntries(c.map((v, i) => [vh[i], v])); });
-console.log("=== CONDUCTOR AUDIT (E60 gate · E67 full-bridge constructions) — Dowell/Sullivan AC copper at the simulated currents ===");
+console.log("=== CONDUCTOR AUDIT (full-bridge constructions) — Dowell/Sullivan AC copper at the simulated currents ===");
 console.log(`  info  Cu IEC 60028: ρ(100 °C) = ${f(rho(100) * 1e8, 3)}e-8 Ω·m · δ(50 kHz) ${f(delta(50e3, T) * 1e3, 3)} mm · δ(140 kHz) ${f(delta(140e3, T) * 1e3, 3)} mm · δ(190 kHz) ${f(delta(190e3, T) * 1e3, 3)} mm`);
 
 // ---------------- D1: taped round-wire bundles at 50 Hz + 50 kHz ripple ----------------
-// E65 (d1-choke): the E60 row counted two layers of strands (Dowell m = 2, Fr 11.4) and 0.170/0.190 m turns. The bundles put 8–10
+// D1 copper is NOT two layers of strands (Dowell m = 2, Fr 11.4) on 0.170/0.190 m turns: the bundles put 8–10
 // strand rows in the bore field: copper is now Ferreira on every strand at its own radius × the 2-D shielding factor solved by
 // d1-fd (twisted/transposed bundle = design basis), on the datasheet MLT; temperature is proven in stress-audit.
 // Production rows at 25 °C (D1-F4): an absolute row ≤15 % above the build that still passes a good part at the lot-trim N+1 with
@@ -44,13 +44,13 @@ export const D1_LOT_WINDOW = 0.05;
 for (const [sku, row] of Object.entries(D1ROWS)) {
   const c = D1C[sku], r = VS.find((x) => x.sku === sku && x.case === "330-full-bus830-lot92"), L = d1Loss(c, r, T);
   ck("D1", `${sku} bundle ${c.nw}× ${c.d * 1e3} mm, ${c.N} T on ${c.stack}×T79`, L.fd.ok && L.fd.k2D >= 0.5 && L.fd.k2D <= 1,
-    `MLT ${f(L.g.mlt * 1e3, 0)} mm (Magnetics table, K ${f(L.g.K * 100, 0)} %) · 50 Hz ${f(L.I1, 1)} A → ${f(L.lf, 1)} W · 50 kHz ripple ${f(L.Ihf, 2)} A rms at Fr ${f(L.Fr, 1)} (Ferreira ${f(L.FrFerreira, 1)} × 2-D ${f(L.fd.k2D, 3)}; a flat untwisted bundle computes ${f(L.hfUntwisted, 1)} W) → ${f(L.hf, 1)} W · Cu ${f(L.lf + L.hf, 1)} W hot — the E60 m = 2 model read ${f(L.Ihf * L.Ihf * L.Rdc * dowell(Math.pow(Math.PI / 4, 0.75) * (c.d / delta(50e3, T)) * Math.sqrt(0.85), 2), 1)} W ripple copper [${L.fd.src}]`);
+    `MLT ${f(L.g.mlt * 1e3, 0)} mm (Magnetics table, K ${f(L.g.K * 100, 0)} %) · 50 Hz ${f(L.I1, 1)} A → ${f(L.lf, 1)} W · 50 kHz ripple ${f(L.Ihf, 2)} A rms at Fr ${f(L.Fr, 1)} (Ferreira ${f(L.FrFerreira, 1)} × 2-D ${f(L.fd.k2D, 3)}; a flat untwisted bundle computes ${f(L.hfUntwisted, 1)} W) → ${f(L.hf, 1)} W · Cu ${f(L.lf + L.hf, 1)} W hot — a two-layer Dowell (m = 2) model reads ${f(L.Ihf * L.Ihf * L.Rdc * dowell(Math.pow(Math.PI / 4, 0.75) * (c.d / delta(50e3, T)) * Math.sqrt(0.85), 2), 1)} W ripple copper [${L.fd.src}]`);
   const good = (L.Rdc25 * (c.N + 1) / c.N) * 1.03 / (1 - 0.0225), twoOpen = (L.Rdc25 * c.nw) / (c.nw - 2), oneOpen = c.nw / (c.nw - 1) - 1;
   ck("D1", `${sku} production Rdc row @25 °C catches open strands`, row.rdc25 <= 1.15 * L.Rdc25 && row.rdc25 >= good && twoOpen > row.rdc25 && oneOpen > D1_LOT_WINDOW + 0.03,
-    `build ${f(L.Rdc25 * 1e3)} mΩ · row ≤${f(row.rdc25 * 1e3)} mΩ (${f(100 * (row.rdc25 / L.Rdc25 - 1), 0)} % above; worst good part ${f(good * 1e3)}; 2 strands open ${f(twoOpen * 1e3)}) · lot window ±${D1_LOT_WINDOW * 100} % vs one open strand +${f(100 * oneOpen, 1)} % — the E60 lines ≤11 / 7.0 / 6.5 mΩ passed a third of the strands open`);
+    `build ${f(L.Rdc25 * 1e3)} mΩ · row ≤${f(row.rdc25 * 1e3)} mΩ (${f(100 * (row.rdc25 / L.Rdc25 - 1), 0)} % above; worst good part ${f(good * 1e3)}; 2 strands open ${f(twoOpen * 1e3)}) · lot window ±${D1_LOT_WINDOW * 100} % vs one open strand +${f(100 * oneOpen, 1)} % — a row set by round numbers instead of the build passes a part with a third of its strands open`);
 }
 
-// ---------------- D2: the external resonant inductor at the tank current (E67 rev F) ----------------
+// ---------------- D2: the external resonant inductor at the tank current (rev F) ----------------
 // Construction from magnetics-envelope D2: 2×E70, N 5, compacted 0.05 mm litz single layer ≥3 mm clear of a distributed gap. Proximity
 // ∝ N²n²d⁶/b²; Rac is minimal near Sullivan Fr ≈ 2 at the worst corner. Thermal: magnetics-envelope.
 // Production rows: Rdc @25 °C (catches a wrong strand count) and Rac @100 °C at the worst simulated RMS corner.
@@ -63,7 +63,7 @@ for (const [sku, row] of Object.entries(D2ROWS)) {
     `MLT ${f(mlt * 1e3, 0)} mm · Rdc ${f(Rdc25 * 1e3)} mΩ @25 °C (row ≤${f(row.rdc25 * 1e3)}) · Sullivan Fr ${f(Fr)} → Rac ${f(Rdc * Fr * 1e3)} mΩ hot (row ≤${f(row.rac * 1e3)}) → Cu ${f(I * I * Rdc * Fr, 1)} W at ${f(I, 1)} A rms (${worst.corner}) — thermal proof: magnetics-envelope`);
 }
 
-// ---------------- D3 cells: profiled-litz primary + copper-foil secondary halves (E67 rev D) ----------------
+// ---------------- D3 cells: profiled-litz primary + copper-foil secondary halves (rev D) ----------------
 const FOILS = [0.05, 0.08, 0.10, 0.127, 0.15, 0.20, 0.25, 0.30].map((x) => x * 1e-3);
 // Two identical cells, primaries in series; each cell's secondary is S1 ∥ S2 around the primary, so each half carries HALF the bank
 // current in nf foils per turn (Dowell m = N·nf). Primaries in TIW-served litz. Per-winding mean turns from the radial build.
@@ -87,13 +87,13 @@ for (const [sku, row] of Object.entries(D3ROWS)) {
   ck("D3", `${sku} production Rdc rows @25 °C match the ${w.n}×${w.core} cell build`, r25.p <= row.p && r25.s1 <= row.s1 && r25.s2 <= row.s2 && r25.p >= 0.85 * row.p && r25.s2 >= 0.85 * row.s2,
     `MLT S1/P/S2 ${f(g.mltS1 * 1e3, 0)}/${f(g.mltP * 1e3, 0)}/${f(g.mltS2 * 1e3, 0)} mm → P ${f(r25.p * 1e3)} (≤${f(row.p * 1e3)}) · S1 ${f(r25.s1 * 1e3)} (≤${f(row.s1 * 1e3)}) · S2 ${f(r25.s2 * 1e3)} (≤${f(row.s2 * 1e3)}) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught`);
 }
-// D4 aux flyback primary (65 kHz DCM): informational. E65 rev E = P/2–S–P/2 sandwich on ETD44 — each 19 T half is ONE layer
+// D4 aux flyback primary (65 kHz DCM): informational. The rev E P/2–S–P/2 sandwich on ETD44 puts each 19 T half in ONE layer
 // (0.5 mm grade-2 or 2×0.35 mm bifilar both fit the 23.5 mm margin-to-margin breadth), so Dowell m = 1 per half
 {
   const Fr05 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.5e-3 / delta(65e3, T)) * Math.sqrt(0.8), 1);
   const Fr035 = dowell(Math.pow(Math.PI / 4, 0.75) * (0.35e-3 / delta(65e3, T)) * Math.sqrt(0.8), 1);
-  console.log(`  info  [D4] primary @65 kHz (rev E sandwich, one layer per half): 0.5 mm single Fr ${f(Fr05)} vs 2×0.35 mm bifilar Fr ${f(Fr035)} — both inside the ~1 W copper budget at ~1 A rms (the E52 two-layer build read Fr ${f(dowell(Math.pow(Math.PI / 4, 0.75) * (0.5e-3 / delta(65e3, T)) * Math.sqrt(0.8), 2))})`);
+  console.log(`  info  [D4] primary @65 kHz (rev E sandwich, one layer per half): 0.5 mm single Fr ${f(Fr05)} vs 2×0.35 mm bifilar Fr ${f(Fr035)} — both inside the ~1 W copper budget at ~1 A rms (a two-layer build reads Fr ${f(dowell(Math.pow(Math.PI / 4, 0.75) * (0.5e-3 / delta(65e3, T)) * Math.sqrt(0.8), 2))})`);
 }
-console.log("  info  [GAP] Dowell/Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor — D2: distributed gap ≤1.0 mm per segment + ≥3 mm litz clearance (E65), measured Rac includes it · D3: Lm gap split equally per set (≤0.5 mm/position) because S1 foil is innermost; T-31 open-secondary check + S1 thermocouple, FEMMT run closes the number");
+console.log("  info  [GAP] Dowell/Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor — D2: distributed gap ≤1.0 mm per segment + ≥3 mm litz clearance, measured Rac includes it · D3: Lm gap split equally per set (≤0.5 mm/position) because S1 foil is innermost; T-31 open-secondary check + S1 thermocouple, FEMMT run closes the number");
 console.log(fails ? `\n${fails} CONDUCTOR FAILURE(S)` : "\nCONDUCTOR AUDIT CLEAN — every winding's AC resistance inside its own acceptance row at the simulated corner");
 if (fileURLToPath(import.meta.url) === process.argv[1]) process.exit(fails ? 1 : 0);

@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-bom--maturity_·_MATURE-2ea44f?style=flat-square" alt="gate: bom-maturity · MATURE"/>
 </p>
@@ -25,7 +25,7 @@
 | **Price basis** | `cost/parts-db.mjs` ₹ @1k with a p10k break; the China column is a landed **target**, not a quote |
 | **Family total @10k** | ₹31,613 · 36,103 · 42,761 · 40,688 → [BOM & cost](bom-cost.md) |
 | **Gate** | `bom-maturity` — every line ORDERABLE / SECOND-SOURCE / DIRECT / CLASS(spec) / CUSTOM(drawing) / tracked-REVIEW, or the battery stops |
-| **Open REVIEW lines** | 9 on live BOM lines (C-number read-back is purchasing work, listed on each module page) |
+| **Open REVIEW lines** | listed on each module page with their action notes; C-number read-back is purchasing work |
 
 ## 1. How the BOM is made
 
@@ -56,8 +56,8 @@ is found on the sheet of the same name.
 | 100 pcs | × 1.35 | × 1.15 | prototype and pilot |
 | 1k | × 1.00 | × 1.00 | parts-db reference — direct-manufacturer RFQ target, assumption A7 (± 25 %) |
 | 5k | × 0.88 | × 0.93 | ramp |
-| **10k** | **× 0.80 + per-part `p10k` quotes** | **× 0.87** | **planning basis** since the ≥ 10k units / yr directive (A7 rev B) |
-| China RFQ target (E69f) | semis × 0.75 · magnetics and capacitors × 0.80 · ICs, modules, relays, protection × 0.85 · passives, connectors × 0.90 | PCBs × 0.75 · other mechanical × 0.85 · India assembly × 1.00 | the landed price a China RFQ must reach — a flagged target, not a quote; duty per HSN code to confirm with a customs broker |
+| **10k** | **× 0.80 + per-part `p10k` quotes** | **× 0.87** | **planning basis** — the product runs at ≥ 10k units / yr (assumption A7) |
+| China RFQ target | semis × 0.75 · magnetics and capacitors × 0.80 · ICs, modules, relays, protection × 0.85 · passives, connectors × 0.90 | PCBs × 0.75 · other mechanical × 0.85 · India assembly × 1.00 | the landed price a China RFQ must reach — a flagged target, not a quote; duty per HSN code to confirm with a customs broker |
 
 Never LCSC retail. Every line carries a **second source**, and every custom part carries a drawing — the module
 [magnetics pages](magnetics.md#the-four-module-pages) — so any winder or fabricator can quote.
@@ -84,7 +84,7 @@ A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part nu
   750 V 20 mΩ class ≥ 210 A; 15 mΩ class ≥ 260 A) — a part that misses its line reverts that SKU ([protection thresholds](protection-thresholds.md)).
 - **RFQ round 1** issues with the drive specification fixed, so quotes are comparable — SiC vendors, NOVOSENSE, GigaDevice,
   Hongfa, film-capacitor makers and the core and winding houses, in India and China.
-- **Lifecycle** — every candidate is an active, volume part as of 2026-09; re-verified at RFQ.
+- **Lifecycle** — every candidate is an active, volume part, re-verified at RFQ.
 - **LCSC-only parts** (no direct manufacturer line) are not accepted for the production BOM.
 
 ## 5. BOM maturity — the standing gate
@@ -103,5 +103,5 @@ A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part nu
 <div align="center">
 <sub><a href="bom-50kwa.md">← 50 kW Air Module BOM</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="symbol-pin-map.md">Symbol → Package Pin Map →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

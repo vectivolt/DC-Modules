@@ -203,13 +203,13 @@
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2/D3 build (E65/E67) \"VPI\"",
+   "name": "D2/D3 build \"VPI\"",
    "detail": "present in magnetics docs + parts-db"
   },
   {
    "status": "ok",
    "tag": "SYNC",
-   "name": "D2/D3 build (E65/E67) \"magnetics-envelope\"",
+   "name": "D2/D3 build \"magnetics-envelope\"",
    "detail": "present in magnetics docs"
   },
   {

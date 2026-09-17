@@ -1,4 +1,4 @@
-/* evlog.h — E80 the event log: fixed 16-byte entries in a ring over consecutive flash pages, through the same port hooks as
+/* evlog.h — the event log: fixed 16-byte entries in a ring over consecutive flash pages, through the same port hooks as
  * hal/nvm.h (pages base … base + pages − 1). Portable C99.
  *   page    a 16-byte header (magic, generation, CRC-32) then entries; the valid page with the highest generation is the head
  *   entry   sequence u32 · time u32 · boot u16 · kind u8 · code u8 · arg u16 · CRC-16 (low half of CRC-32 over the 14 bytes).

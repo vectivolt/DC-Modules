@@ -1,4 +1,4 @@
-* E67 full-bridge LLC 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p VBUS=830 VBANK=475 fsw=91.249k PFM tdeadA=120n tdeadB=120n
+* full-bridge LLC 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p VBUS=830 VBANK=475 fsw=91.249k PFM tdeadA=120n tdeadB=120n
 * E81 Coss model: body-diode junction Cjo=9.750n Vj=2 M=0.5 per position (Qoss(800 V)=742 nC) + linear snubber 2000 pF drain-source on BOTH devices
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
 .model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=9.75034e-9 Vj=2 M=0.5)

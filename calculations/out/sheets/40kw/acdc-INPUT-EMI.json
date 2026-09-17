@@ -359,7 +359,7 @@
    ],
    "nc_pins": [],
    "value": "CMC-3PH-2mH-SKU",
-   "query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, line-current-rated windin",
+   "query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, winding rated to the SKU ",
    "mpn": "CMC-3PH-2mH-SKU"
   },
   {
@@ -399,7 +399,7 @@
    ],
    "nc_pins": [],
    "value": "CMC-3PH-2mH-SKU",
-   "query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, line-current-rated windin",
+   "query": "CMC-3PH-2mH-SKU 3-phase CM choke 2 mH nanocrystalline, winding rated to the SKU ",
    "mpn": "CMC-3PH-2mH-SKU"
   },
   {
@@ -419,7 +419,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -439,7 +439,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -459,7 +459,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -479,7 +479,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -499,7 +499,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -519,7 +519,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -539,7 +539,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -559,7 +559,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -579,7 +579,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -599,7 +599,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -619,7 +619,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -639,7 +639,7 @@
    ],
    "nc_pins": [],
    "value": "4.7uF",
-   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch ",
+   "query": "X2-4u7-305 X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch — twelve caps in thr",
    "mpn": "X2-4u7-305"
   },
   {
@@ -659,7 +659,7 @@
    ],
    "nc_pins": [],
    "value": "10nF",
-   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 ",
+   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3. 10 nF is siz",
    "mpn": "Y2-10n-300"
   },
   {
@@ -679,7 +679,7 @@
    ],
    "nc_pins": [],
    "value": "10nF",
-   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 ",
+   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3. 10 nF is siz",
    "mpn": "Y2-10n-300"
   },
   {
@@ -699,7 +699,7 @@
    ],
    "nc_pins": [],
    "value": "10nF",
-   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 ",
+   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3. 10 nF is siz",
    "mpn": "Y2-10n-300"
   },
   {
@@ -779,7 +779,7 @@
    ],
    "nc_pins": [],
    "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
+   "query": "X1-2u2-530 X1 2.2 µF 530 VAC, delta across the 475 VAC line-line ",
    "mpn": "X1-2u2-530"
   },
   {
@@ -799,7 +799,7 @@
    ],
    "nc_pins": [],
    "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
+   "query": "X1-2u2-530 X1 2.2 µF 530 VAC, delta across the 475 VAC line-line ",
    "mpn": "X1-2u2-530"
   },
   {
@@ -819,7 +819,7 @@
    ],
    "nc_pins": [],
    "value": "2.2uF",
-   "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
+   "query": "X1-2u2-530 X1 2.2 µF 530 VAC, delta across the 475 VAC line-line ",
    "mpn": "X1-2u2-530"
   },
   {
@@ -839,8 +839,8 @@
    ],
    "nc_pins": [],
    "value": "6.8",
-   "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
-   "mpn": "SQP-10R-25W"
+   "query": "SQP-6R8-25W 6.8 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
+   "mpn": "SQP-6R8-25W"
   },
   {
    "designator": "RDMP2",
@@ -859,8 +859,8 @@
    ],
    "nc_pins": [],
    "value": "6.8",
-   "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
-   "mpn": "SQP-10R-25W"
+   "query": "SQP-6R8-25W 6.8 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
+   "mpn": "SQP-6R8-25W"
   },
   {
    "designator": "RDMP3",
@@ -879,8 +879,8 @@
    ],
    "nc_pins": [],
    "value": "6.8",
-   "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
-   "mpn": "SQP-10R-25W"
+   "query": "SQP-6R8-25W 6.8 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
+   "mpn": "SQP-6R8-25W"
   },
   {
    "designator": "KPRE1",
@@ -919,7 +919,7 @@
    ],
    "nc_pins": [],
    "value": "HF167F-80A-M",
-   "query": "HF167F-80A-M power relay ≥80 A/line w/ mirror contact ",
+   "query": "HF167F-80A-M power relay ≥80 A/line with a mirror contact — the precharge bypass",
    "mpn": "HF167F-80A-M"
   },
   {
@@ -959,7 +959,7 @@
    ],
    "nc_pins": [],
    "value": "HF167F-80A-M",
-   "query": "HF167F-80A-M power relay ≥80 A/line w/ mirror contact ",
+   "query": "HF167F-80A-M power relay ≥80 A/line with a mirror contact — the precharge bypass",
    "mpn": "HF167F-80A-M"
   },
   {

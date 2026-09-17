@@ -19,7 +19,7 @@ export function runDeck(name, deckText, varLabels, { timeoutMs = 300000 } = {}) 
   const log = (proc.stdout || "") + (proc.stderr || "");
   return parse(name, outPath, log, varLabels, deckPath);
 }
-// E65: parallel variant (the aux matrix runs 17 drawn-circuit decks); also returns every `.meas` result by lower-case name
+// parallel variant (the aux matrix runs 17 drawn-circuit decks); also returns every `.meas` result by lower-case name
 export function runDeckAsync(name, deckText, varLabels, { timeoutMs = 900000 } = {}) {
   const deckPath = join(GEN, `${name}.cir`);
   const outPath = join(GEN, `${name}.out`);
@@ -75,3 +75,20 @@ export const maxSlew = (t, y, t0, t1, win = 2e-9) => {
   }
   return m;
 };
+
+// A derived result file records what it was computed FROM, so a gate can tell when its inputs have moved on without it
+// (calculations/repo-hygiene.mjs re-computes every stamp it finds). `specs` are repo-relative paths; a `*` in the file
+// name is a glob. The stamp line reads:  # inputs <hash> <- <spec>,<spec>
+import { createHash } from "node:crypto";
+import { readdirSync, readFileSync as rfs } from "node:fs";
+export function inputStamp(specs) {
+  const root = join(SPICE_DIR, "..");
+  const files = specs.flatMap((s) => {
+    if (!s.includes("*")) return [s];
+    const dir = s.slice(0, s.lastIndexOf("/")), [pre, post] = s.slice(s.lastIndexOf("/") + 1).split("*");
+    return readdirSync(join(root, dir)).filter((f) => f.startsWith(pre) && f.endsWith(post)).map((f) => `${dir}/${f}`);
+  }).sort();
+  const h = createHash("sha256");
+  for (const f of files) h.update(f).update("\0").update(rfs(join(root, f)));
+  return `${h.digest("hex").slice(0, 12)} <- ${specs.join(",")}`;
+}

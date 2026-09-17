@@ -1,4 +1,4 @@
-# ngspice-46 drawn-circuit deck (E65 D4 rev E); D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V; NCP1252D functions modelled (LEB/latch/FB/3/fault timer), leakage at acceptance max, typ controller timing (tolerance stacks live in d4-flyback); netlists spice/generated/{aux,tstep,clamp,short}-*.cir
+# ngspice-46 drawn-circuit deck (D4 rev E); D4E:ETD44/38:6:4:4/Lp345u±5%/Llk4+1u/Rcs0.28/CS1k-100p/CL33k-10n/DCLA1700V; NCP1252D functions modelled (LEB/latch/FB/3/fault timer), leakage at acceptance max, typ controller timing (tolerance stacks live in d4-flyback); netlists spice/generated/{aux,tstep,clamp,short}-*.cir
 case,VIN,sku,Lp_uH,v24_settle,v24_dip,v24_max,v15_min,Pin_W,Pout_W,eta,closure_pct,Psw_W,Pclamp_W,vds_max_V,vr_max_V,vc_max_V,ilm_max_A,B_mT,latched,verdict,note
 aux-30kw-340,340,30kw,345,22.86,22.12,22.88,14.5,53,47.3,0.893,0.56,0.53,1.69,584,574,243,2.22,115,no,PASS,energy closes to 0.6 %
 aux-30kw-560,560,30kw,345,22.86,22.13,22.88,14.51,53.3,47.3,0.888,1.03,0.63,1.69,854,841,293,3.16,164,no,PASS,energy closes to 1 %
@@ -13,7 +13,7 @@ aux-50kwa-340,340,50kwa,345,22.58,21.47,22.6,14.14,71.3,64.1,0.899,0.2,0.54,1.99
 aux-50kwa-560,560,50kwa,345,22.58,21.48,22.61,14.15,71.5,64.2,0.897,0.53,0.56,1.99,828,817,267,2.64,137,no,PASS,energy closes to 0.5 %
 aux-50kwa-860,860,50kwa,345,22.59,21.49,22.61,14.16,72.3,64.1,0.887,1.26,0.94,1.98,1162,1149,301,3.31,172,no,PASS,energy closes to 1.3 %
 tstep-50kwa-860,860,50kwa,345,22.58,21.49,22.61,14.16,72.1,64.1,0.889,1.13,0.88,1.98,1162,1148,301,3.31,172,no,PASS,vs aux-50kwa-860 at 20 ns: dV24 0.005 V · dVds 0.03 % · dPin 0.24 %
-clamp-fbopen-860,860,50kwa,327.7,22.54,22.51,29.37,14.61,183.2,164,0.895,0.49,1.51,4.5,1255,1238,394,4.11,202,yes,PASS,MR-17 single fault: limit every cycle then the fault latch
+clamp-fbopen-860,860,50kwa,327.7,22.54,22.51,31.74,14.61,182.5,165.4,0.906,0.46,1.46,4.75,1266,1249,405,4.11,202,yes,PASS,single fault: limit every cycle then the fault latch
 short-v24-860,860,50kwa,327.7,22.54,0,22.56,3.42,3.7,1.2,0.336,9.12,0.18,0.13,1093,1082,232,5.81,286,no,PASS,ratchet bounded before the fault latch (B 286 mT ≤ 308 · 5.77 A ≤ 8 A)
 short-v24bare-860,860,50kwa,327.7,22.54,0,22.57,3.42,44,3.9,0.088,5.07,0.89,1.6,1175,1160,314,6.82,336,yes,INFO,residual (no RAUX24 in the loop) — informational
 short-v15-860,860,50kwa,327.7,22.54,15.44,22.57,0,12.5,0.9,0.076,6.55,0.47,0.29,1092,1082,231,5.75,283,no,PASS,ratchet bounded before the fault latch (B 283 mT ≤ 308 · 5.71 A ≤ 8 A)

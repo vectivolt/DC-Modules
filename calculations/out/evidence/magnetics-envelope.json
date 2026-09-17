@@ -11,7 +11,7 @@
   {
    "status": "info",
    "tag": "30kw",
-   "name": "iGSE waveform factor D3 0.9–0.95 · D2 0.94–1.65",
+   "name": "iGSE waveform factor D3 0.9–0.95 · D2 0.95–1.65",
    "detail": ""
   },
   {
@@ -24,37 +24,37 @@
    "status": "ok",
    "tag": "D3",
    "name": "30kw 2×E70 2 cells 6:6∥6 · web2 · R core→wall 0.77 · winding→core 0.88 K/W",
-   "detail": "core corner ENV500-55 87.5 kHz B̂ 159 mT Fe 31.8 W · copper corner SER250-full-bus764 202.9 kHz Cu 45.8 W · hot-spot 106 °C @55 °C (SER250-full-bus764; core 90 °C / winding 106 °C) / 102 °C @75 °C derated (ENV500-55) · +25 % Rth 114 °C · runaway margin 117 K · B̂ 39 % of hot Bsat"
+   "detail": "core corner ENV500-55 87.5 kHz B̂ 159 mT Fe 31.8 W · copper corner SER250-full-bus764 202.9 kHz Cu 45.8 W · hot-spot 106 °C @55 °C (SER250-full-bus764; core 90 °C / winding 106 °C) / 103 °C @75 °C derated (ENV500-55) · +25 % Rth 114 °C · runaway margin 116 K · B̂ 39 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D3-BOND-LOST",
    "name": "30kw",
-   "detail": "one face lost (web1) → 110 °C @55 / 115 °C @75 · +25 % 126 °C → not survivable — screened by the EOL bonded thermal soak"
+   "detail": "one face lost (web1) → 110 °C @55 / 116 °C @75 · +25 % 128 °C → not survivable — screened by the EOL bonded thermal soak"
   },
   {
    "status": "info",
    "tag": "D3-POT-LOST",
    "name": "30kw",
-   "detail": "end-turn potting lost or voided → 138 °C @55 / 105 °C @75 · +25 % 160 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
+   "detail": "end-turn potting lost or voided → 138 °C @55 / 107 °C @75 · +25 % 160 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "30kw 2×E70 N 5 · 5.15 µH max · web2 · R core→wall 0.77 · winding→core 0.75 K/W",
-   "detail": "core corner SER250-full-bus764 202.9 kHz B̂ 85 mT Fe 28.1 W · copper corner SER250-full-bus764 202.9 kHz Cu 15.1 W · hot-spot 94 °C @55 °C (SER250-full-bus764; core 94 °C / winding 93 °C) / 100 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 103 °C · runaway margin 160 K · B̂ 21 % of hot Bsat"
+   "detail": "core corner SER250-full-bus764 202.9 kHz B̂ 85 mT Fe 28.1 W · copper corner SER250-full-bus764 202.9 kHz Cu 15.1 W · hot-spot 94 °C @55 °C (SER250-full-bus764; core 94 °C / winding 93 °C) / 100 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 104 °C · runaway margin 160 K · B̂ 21 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D2-BOND-LOST",
    "name": "30kw",
-   "detail": "one face lost (web1) → 104 °C @55 / 110 °C @75 · +25 % 118 °C → survives"
+   "detail": "one face lost (web1) → 104 °C @55 / 111 °C @75 · +25 % 120 °C → survives"
   },
   {
    "status": "info",
    "tag": "D2-POT-LOST",
    "name": "30kw",
-   "detail": "end-turn potting lost or voided → 104 °C @55 / 102 °C @75 · +25 % 113 °C → survives"
+   "detail": "end-turn potting lost or voided → 104 °C @55 / 105 °C @75 · +25 % 113 °C → survives"
   },
   {
    "status": "info",
@@ -83,8 +83,8 @@
   {
    "status": "ok",
    "tag": "CONTROL",
-   "name": "30kw gate rejects the E65 section transformer in the one-bridge cell duty (2×E70 7:7:7)",
-   "detail": "hot-spot 165 °C @55 / 99 °C @75 · Fe 20.6 W at B̂ 136 mT · Cu 60.9 W → rejected"
+   "name": "30kw gate rejects the section transformer in the one-bridge cell duty (2×E70 7:7:7)",
+   "detail": "hot-spot 165 °C @55 / 113 °C @75 · Fe 20.6 W at B̂ 136 mT · Cu 60.9 W → rejected"
   },
   {
    "status": "ok",
@@ -108,37 +108,37 @@
    "status": "ok",
    "tag": "D3",
    "name": "40kw 3×E70 2 cells 4:4∥4 (2 foils) · web2 · R core→wall 0.52 · winding→core 0.58 K/W",
-   "detail": "core corner ENV500-55 87.4 kHz B̂ 158 mT Fe 47.2 W · copper corner SER250-full-bus764 203 kHz Cu 46 W · hot-spot 102 °C @55 °C (SER250-full-bus764; core 89 °C / winding 102 °C) / 103 °C @75 °C derated (ENV500-55) · +25 % Rth 108 °C · runaway margin 116 K · B̂ 39 % of hot Bsat"
+   "detail": "core corner ENV500-55 87.4 kHz B̂ 158 mT Fe 47.2 W · copper corner SER250-full-bus764 203 kHz Cu 46.1 W · hot-spot 102 °C @55 °C (SER250-full-bus764; core 89 °C / winding 102 °C) / 103 °C @75 °C derated (ENV500-55) · +25 % Rth 108 °C · runaway margin 116 K · B̂ 39 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D3-BOND-LOST",
    "name": "40kw",
-   "detail": "one face lost (web1) → 106 °C @55 / 118 °C @75 · +25 % 132 °C → not survivable — screened by the EOL bonded thermal soak"
+   "detail": "one face lost (web1) → 106 °C @55 / 120 °C @75 · +25 % 135 °C → not survivable — screened by the EOL bonded thermal soak"
   },
   {
    "status": "info",
    "tag": "D3-POT-LOST",
    "name": "40kw",
-   "detail": "end-turn potting lost or voided → 118 °C @55 / 105 °C @75 · +25 % 131 °C → survives"
+   "detail": "end-turn potting lost or voided → 118 °C @55 / 107 °C @75 · +25 % 131 °C → survives"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "40kw 2×E70 N 5 · 4.11 µH max · web2 · R core→wall 0.77 · winding→core 0.76 K/W",
-   "detail": "core corner SER250-full-bus764 203 kHz B̂ 89 mT Fe 31.2 W · copper corner SER250-full-bus764 203 kHz Cu 27.3 W · hot-spot 100 °C @55 °C (SER250-full-bus764; core 97 °C / winding 100 °C) / 101 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 106 °C · runaway margin 159 K · B̂ 22 % of hot Bsat"
+   "detail": "core corner SER250-full-bus764 203 kHz B̂ 89 mT Fe 31.3 W · copper corner SER250-full-bus764 203 kHz Cu 27.4 W · hot-spot 100 °C @55 °C (SER250-full-bus764; core 97 °C / winding 100 °C) / 103 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 107 °C · runaway margin 157 K · B̂ 22 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D2-BOND-LOST",
    "name": "40kw",
-   "detail": "one face lost (web1) → 112 °C @55 / 113 °C @75 · +25 % 125 °C → survives"
+   "detail": "one face lost (web1) → 112 °C @55 / 115 °C @75 · +25 % 127 °C → survives"
   },
   {
    "status": "info",
    "tag": "D2-POT-LOST",
    "name": "40kw",
-   "detail": "end-turn potting lost or voided → 120 °C @55 / 105 °C @75 · +25 % 135 °C → survives"
+   "detail": "end-turn potting lost or voided → 120 °C @55 / 110 °C @75 · +25 % 135 °C → survives"
   },
   {
    "status": "info",
@@ -162,13 +162,13 @@
    "status": "ok",
    "tag": "IMBALANCE",
    "name": "40kw D3 cell current share with a ±7 % Lm mismatch between the two cells",
-   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 8 % rms at ENV500-55 · its copper at the worst LOW corner 33.1 W (PS150-Imax) ≤ the 46 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 8 % rms at ENV500-55 · its copper at the worst LOW corner 33.9 W (PS150-Imax) ≤ the 46.1 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
   },
   {
    "status": "ok",
    "tag": "CONTROL",
-   "name": "40kw gate rejects the E65 section transformer in the one-bridge cell duty (2×E70 6:6:6)",
-   "detail": "hot-spot 131 °C @55 / 102 °C @75 · Fe 31.5 W at B̂ 158 mT · Cu 83.1 W → rejected"
+   "name": "40kw gate rejects the section transformer in the one-bridge cell duty (2×E70 6:6:6)",
+   "detail": "hot-spot 131 °C @55 / 105 °C @75 · Fe 31.5 W at B̂ 158 mT · Cu 83.3 W → rejected"
   },
   {
    "status": "ok",
@@ -192,37 +192,37 @@
    "status": "ok",
    "tag": "D3",
    "name": "50kw 3×E70 2 cells 4:4∥4 (2 foils) · plate2 · R core→wall 0.52 · winding→core 0.58 K/W",
-   "detail": "core corner ENV500-55 87 kHz B̂ 158 mT Fe 47 W · copper corner SER250-full-bus764 203 kHz Cu 71.3 W · hot-spot 103 °C @55 °C (SER250-full-bus764; core 85 °C / winding 103 °C) / 84 °C @75 °C derated (ENV500-55) · +25 % Rth 114 °C · runaway margin 112 K · B̂ 37 % of hot Bsat"
+   "detail": "core corner ENV500-55 87 kHz B̂ 158 mT Fe 47 W · copper corner SER250-full-bus764 203 kHz Cu 71.3 W · hot-spot 103 °C @55 °C (SER250-full-bus764; core 85 °C / winding 103 °C) / 85 °C @75 °C derated (ENV500-55) · +25 % Rth 115 °C · runaway margin 112 K · B̂ 37 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D3-BOND-LOST",
    "name": "50kw",
-   "detail": "one face lost (plate1) → 133 °C @55 / 123 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak"
+   "detail": "one face lost (plate1) → 133 °C @55 / 128 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak"
   },
   {
    "status": "info",
    "tag": "D3-POT-LOST",
    "name": "50kw",
-   "detail": "end-turn potting lost or voided → 164 °C @55 / 94 °C @75 · +25 % 203 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
+   "detail": "end-turn potting lost or voided → 164 °C @55 / 99 °C @75 · +25 % 203 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "50kw 2×E70 N 5 · 3.29 µH max · plate2 · R core→wall 0.77 · winding→core 0.77 K/W",
-   "detail": "core corner SER250-full-bus764 203 kHz B̂ 88 mT Fe 30.6 W · copper corner SER250-full-bus764 203 kHz Cu 45 W · hot-spot 97 °C @55 °C (SER250-full-bus764; core 93 °C / winding 97 °C) / 84 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 106 °C · runaway margin 167 K · B̂ 21 % of hot Bsat"
+   "detail": "core corner SER250-full-bus764 203 kHz B̂ 88 mT Fe 30.6 W · copper corner SER250-full-bus764 203 kHz Cu 45 W · hot-spot 97 °C @55 °C (SER250-full-bus764; core 93 °C / winding 97 °C) / 86 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 106 °C · runaway margin 167 K · B̂ 21 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D2-BOND-LOST",
    "name": "50kw",
-   "detail": "one face lost (plate1) → 152 °C @55 / 107 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak"
+   "detail": "one face lost (plate1) → 151 °C @55 / 114 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak"
   },
   {
    "status": "info",
    "tag": "D2-POT-LOST",
    "name": "50kw",
-   "detail": "end-turn potting lost or voided → 184 °C @55 / 98 °C @75 · +25 % 265 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
+   "detail": "end-turn potting lost or voided → 184 °C @55 / 112 °C @75 · +25 % 265 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
   },
   {
    "status": "info",
@@ -234,13 +234,13 @@
    "status": "ok",
    "tag": "IMBALANCE",
    "name": "50kw D3 cell current share with a ±7 % Lm mismatch between the two cells",
-   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 7.8 % rms at ENV500-55 · its copper at the worst LOW corner 51.6 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 7.8 % rms at ENV500-55 · its copper at the worst LOW corner 53 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
   },
   {
    "status": "ok",
    "tag": "CONTROL",
-   "name": "50kw gate rejects the E65 section transformer in the one-bridge cell duty (2×E70 6:6:6)",
-   "detail": "hot-spot 156 °C @55 / 83 °C @75 · Fe 31.4 W at B̂ 158 mT · Cu 128.8 W → rejected"
+   "name": "50kw gate rejects the section transformer in the one-bridge cell duty (2×E70 6:6:6)",
+   "detail": "hot-spot 156 °C @55 / 92 °C @75 · Fe 31.4 W at B̂ 158 mT · Cu 128.8 W → rejected"
   },
   {
    "status": "ok",
@@ -264,43 +264,43 @@
    "status": "ok",
    "tag": "D3",
    "name": "50kwa 3×E70 2 cells 4:4∥4 (2 foils) · web2 · R core→wall 0.52 · winding→core 0.58 K/W",
-   "detail": "core corner ENV500-55 87 kHz B̂ 158 mT Fe 47 W · copper corner SER250-full-bus764 203 kHz Cu 71.3 W · hot-spot 116 °C @55 °C (SER250-full-bus764; core 94 °C / winding 116 °C) / 102 °C @75 °C derated (ENV500-55) · +25 % Rth 127 °C · runaway margin 120 K · B̂ 39 % of hot Bsat"
+   "detail": "core corner ENV500-55 87 kHz B̂ 158 mT Fe 47 W · copper corner SER250-full-bus764 203 kHz Cu 71.3 W · hot-spot 116 °C @55 °C (SER250-full-bus764; core 94 °C / winding 116 °C) / 103 °C @75 °C derated (ENV500-55) · +25 % Rth 127 °C · runaway margin 119 K · B̂ 39 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D3-BOND-LOST",
    "name": "50kwa",
-   "detail": "one face lost (web1) → 123 °C @55 / 116 °C @75 · +25 % 139 °C → survives"
+   "detail": "one face lost (web1) → 124 °C @55 / 119 °C @75 · +25 % 139 °C → not survivable — screened by the EOL bonded thermal soak"
   },
   {
    "status": "info",
    "tag": "D3-POT-LOST",
    "name": "50kwa",
-   "detail": "end-turn potting lost or voided → 145 °C @55 / 105 °C @75 · +25 % 169 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
+   "detail": "end-turn potting lost or voided → 145 °C @55 / 109 °C @75 · +25 % 170 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
   },
   {
    "status": "ok",
    "tag": "D2",
    "name": "50kwa 2×E70 N 5 · 3.29 µH max · web2 · R core→wall 0.77 · winding→core 0.77 K/W",
-   "detail": "core corner SER250-full-bus764 203 kHz B̂ 88 mT Fe 30.6 W · copper corner SER250-full-bus764 203 kHz Cu 45 W · hot-spot 109 °C @55 °C (SER250-full-bus764; core 101 °C / winding 109 °C) / 101 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 118 °C · runaway margin 159 K · B̂ 22 % of hot Bsat"
+   "detail": "core corner SER250-full-bus764 203 kHz B̂ 88 mT Fe 30.6 W · copper corner SER250-full-bus764 203 kHz Cu 45 W · hot-spot 109 °C @55 °C (SER250-full-bus764; core 101 °C / winding 109 °C) / 103 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 118 °C · runaway margin 157 K · B̂ 22 % of hot Bsat"
   },
   {
    "status": "info",
    "tag": "D2-BOND-LOST",
    "name": "50kwa",
-   "detail": "one face lost (web1) → 118 °C @55 / 111 °C @75 · +25 % 135 °C → survives"
+   "detail": "one face lost (web1) → 118 °C @55 / 116 °C @75 · +25 % 135 °C → survives"
   },
   {
    "status": "info",
    "tag": "D2-POT-LOST",
    "name": "50kwa",
-   "detail": "end-turn potting lost or voided → 141 °C @55 / 105 °C @75 · +25 % 167 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
+   "detail": "end-turn potting lost or voided → 141 °C @55 / 116 °C @75 · +25 % 167 °C → NOT survivable — drawing row: end-turn encapsulation >= 0.8 W/mK class, bridge >= 5 mm to the bond face, 100 % visual + cross-section on the first article and 1/lot; EOL soak must be LOADED"
   },
   {
    "status": "info",
    "tag": "BOND",
    "name": "50kwa",
-   "detail": "D3 (potting) + D2 (potting) cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md)"
+   "detail": "D3 + D3 (potting) + D2 (potting) cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md)"
   },
   {
    "status": "ok",
@@ -318,13 +318,13 @@
    "status": "ok",
    "tag": "IMBALANCE",
    "name": "50kwa D3 cell current share with a ±7 % Lm mismatch between the two cells",
-   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 7.8 % rms at ENV500-55 · its copper at the worst LOW corner 51.6 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
+   "detail": "LOW mode (banks parallel): the heavier cell's secondary rises 7.8 % rms at ENV500-55 · its copper at the worst LOW corner 53 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge"
   },
   {
    "status": "ok",
    "tag": "CONTROL",
-   "name": "50kwa gate rejects the E65 section transformer in the one-bridge cell duty (2×E70 6:6:6)",
-   "detail": "hot-spot 169 °C @55 / 102 °C @75 · Fe 31.4 W at B̂ 158 mT · Cu 128.8 W → rejected"
+   "name": "50kwa gate rejects the section transformer in the one-bridge cell duty (2×E70 6:6:6)",
+   "detail": "hot-spot 169 °C @55 / 115 °C @75 · Fe 31.4 W at B̂ 158 mT · Cu 128.8 W → rejected"
   }
  ]
 }

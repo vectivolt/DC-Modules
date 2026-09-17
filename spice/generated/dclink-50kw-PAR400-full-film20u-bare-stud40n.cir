@@ -1,7 +1,7 @@
-* E81/F-G-1 DC-link HF ripple share — 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p corner PAR400-full VBUS=830 VBANK=400 fsw=150k d=0.5
+* DC-link HF ripple share — 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p corner PAR400-full VBUS=830 VBANK=400 fsw=150k d=0.5
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
 .model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=9.75034e-9 Vj=2 M=0.5)
-* ---- DC link (E81/F-G-1): ideal source behind 50 uH per rail, MID grounded; 8 cans/half; 20 x 1uF bridge film; damper no; stud 40 nH loop
+* ---- DC link: ideal source behind 50 uH per rail, MID grounded; 8 cans/half; 20 x 1uF bridge film; damper no; stud 40 nH loop
 VSP src_p 0 DC 415
 LSP src_p dcp 0.00005 ic=6.11791e+1
 VSN src_n 0 DC -415

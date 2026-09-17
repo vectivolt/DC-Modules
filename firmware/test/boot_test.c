@@ -1,4 +1,4 @@
-/* boot_test.c — E80 verification of the bootloader's portable logic (firmware/boot).
+/* boot_test.c — verification of the bootloader's portable logic (firmware/boot).
  *   sha256    "abc", the empty message and lengths across the one- and two-block padding boundaries, one-shot and in uneven
  *             pieces, against node's OpenSSL (boot_vectors.h)
  *   p256      every generated vector: node- and BigInt-signed, high-s, mutated digests and signatures, r or s of 0, n or all
@@ -66,7 +66,7 @@ bool nvm_port_read(uint8_t page, uint32_t off, uint8_t *p, uint32_t n) {
   memcpy(p, page_mem[page] + off, n);
   return true;
 }
-/* E82 (C-04): the record pages are the GD32G553 FMC — 64-bit rows with ECC, a second program of a row is refused
+/* The record pages are the GD32G553 FMC — 64-bit rows with ECC, a second program of a row is refused
  * (UM §2.3.8, FMC_STAT PGERR), an all-FF write is bypassed and leaves the row erased (UM §2.3.2 note 6). The boot
  * record, the trial counter and the anti-rollback baseline all live in this store, so the bootloader's decisions are
  * only proved if the store behaves like the part. The packing is port/gd32g553/nvmport.c's, verbatim. */
@@ -385,9 +385,9 @@ static void update_tests(void) {
   ck("update: when the record cannot be stored a trial does not run (its boots could not be counted) — the confirmed slot runs",
      p.mode == BOOT_RUN && p.slot == 1u);
 
-  /* E82 (C-04): the whole bootctl + update sequence above ran on the row-granular store. On the target the old 12-byte
-     header made the FIRST boot record fail to program, so none of it stored: no trial count, no baseline, no install. */
-  ck("update (E82 C-04): the boot record store never re-programmed a 64-bit flash row across the whole sequence", store_pgerr == 0);
+  /* The whole bootctl + update sequence above runs on the row-granular store. On the target a 12-byte header would
+     make the FIRST boot record fail to program, so none of it would store: no trial count, no baseline, no install. */
+  ck("update: the boot record store never re-programmed a 64-bit flash row across the whole sequence", store_pgerr == 0);
 }
 
 int main(void) {

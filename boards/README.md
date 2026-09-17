@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/pins-7409_verified_·_5_targets-2ea44f?style=flat-square" alt="pins: 7409 verified · 5 targets"/>
 </p>
@@ -15,19 +15,22 @@
 > **Purpose** — what lives in `boards/`: the four buildable module SKUs, the control card, and the pipeline that
 > turns them into audited release sheets.
 >
-> **Gate coupling** — `kicad5-verify` checks every connected pin of every release sheet (7,409 across five targets);
+> **Gate coupling** — `kicad5-verify` checks every connected pin of every release sheet;
 > `module-interconnect-audit`, `polarity-audit` and `schematic-check` walk the built netlists in run-all.
 
 ## At a glance
 
-| Source | What it is | Connected pins verified | Components (AC-DC · DC-DC) |
-|---|---|---:|---|
-| [`30kw/`](30kw/) | the canonical module — [walkthrough](30kw/README.md) | 1,708 | 341 · 282 |
-| [`40kw/`](40kw/) | 40 kW air (E41): 15 mΩ-class PFC dies, 5-stack choke, 9 × 33 nF tank, two LLC dies per position, 125 A class, 3 fans | 1,768 | 343 · 306 |
-| [`50kw/`](50kw/) | 50 kW **liquid** (E42): coldplates, zero fans, 11 × 33 nF tank, DOUT 250 A | 1,780 | 342 · 316 |
-| [`50kwa/`](50kwa/) | 50 kW **air** (E44): electrically the liquid module since E68a, 4 fans | 1,804 | 350 · 316 |
-| [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120 × 80 mm, 88-way) — one part number, every seat | 349 | 77 |
-| [`out-pdf/`](out-pdf/) | the nine release PDFs rendered from the audited KiCad-5 sheets | **7,409 total** | — |
+| Source | What it is | Components (AC-DC · DC-DC) |
+|---|---|---|
+| [`30kw/`](30kw/) | the canonical module — [walkthrough](30kw/README.md) | 341 · 282 |
+| [`40kw/`](40kw/) | 40 kW air: 15 mΩ-class Vienna dies, 5-stack PFC choke, 9 × 33 nF tank, two LLC dies per position, 125 A fuse class, 3 fans | 343 · 306 |
+| [`50kw/`](50kw/) | 50 kW **liquid**: coldplates, zero fans, 11 × 33 nF tank, D_OUT 250 A class | 342 · 316 |
+| [`50kwa/`](50kwa/) | 50 kW **air**: electrically identical to the liquid twin, 4 fans | 350 · 316 |
+| [`control-card.tsx`](control-card.tsx) | the **control card** (GD32G553VET7, 120 × 80 mm, 88-way) — one part number, every seat | 77 |
+| [`out-pdf/`](out-pdf/) | the nine release PDFs rendered from the audited KiCad-5 sheets | — |
+
+`kicad5-verify` re-derives every pin of every SHIP target from the emitted files and must read 100 % — the current
+count is in the [repository overview](../README.md) status table.
 
 All four SKUs come from one parameterized source, [`boards.tsx`](../packages/common-components/boards.tsx), built
 from the cells in [`cells.tsx`](../packages/power-primitives/cells.tsx); the card learns its SKU from one RATING strap.
@@ -37,12 +40,13 @@ Why the family looks the way it does: [module family](README-module-family.md).
 
 | | Role | Contents |
 |---|---|---|
-| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · gG fuses (80 / 125 / 160 A per SKU) · MOV + GDT · 2 CM chokes + three star-X2 stages + damper (E68b, no DM chokes) · precharge + bypass · Vienna phases (one clip-mounted 750 V SiC die per position) · split DC link · isolated discharge · line CTs + isolated senses · 110 W full-bus aux flyback (NCP1252D) · local 3.3 V buck · fans (**3 / 3 / 0 / 4** per SKU, E81) · **40-way harness header** (no card slot — E40) |
-| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · one full-bridge LLC (E67: two legs, one or two dies per position) · one Cr bank + D2 external Lr + resonant CT · two D3 transformer cells · JBS bridges · film-only banks (E68c) + PV-driven bleeders · zero-current S/P relays + two-stage exclusion · output blocking diode DOUT · shunt, studs · isolated CAN · HMI · **the 88-way card slot** |
+| 🔻 **AC-DC board** (lower) | grid → DC bus | AC studs · gG fuses (80 / 125 / 160 A per SKU) · MOV + GDT · 2 CM chokes + three star-X2 stages + damper (no DM chokes) · precharge + bypass · Vienna phases (one clip-mounted 750 V SiC die per position) · split DC link · isolated discharge · line CTs + isolated senses · 110 W full-bus aux flyback (NCP1252D) · local 3.3 V buck · fans (**3 / 3 / 0 / 4** per SKU) · **40-way harness header** (no card slot) |
+| 🔺 **DC-DC board** (upper) | DC bus → 150–1000 V | film commutation caps · one full-bridge LLC (two legs, one or two dies per position) · one Cr bank + D2 external Lr + resonant CT · two D3 transformer cells · JBS bridges · film-only banks + PV-driven bleeders · zero-current S/P relays + two-stage exclusion · output blocking diode D_OUT · shunt, studs · isolated CAN · HMI · **the 88-way card slot** |
 
-The boards mount **face to face**: TO-247 rows, clip-mounted on Al2O3 (E68a), face outward onto two heatsink extrusions (liquid coldplates on the
-50 kW liquid SKU, with the magnetics gap-pad-bonded to the plate webs). Power crosses on bolted DCP / DCN / PE stud
-pillars and control on the 40-way harness. Full contract: [interconnect](../docs/interconnect.md).
+The boards mount **face to face**: TO-247 rows, clip-mounted on Al2O3, face outward onto two heatsink extrusions
+(liquid coldplates on the 50 kW liquid SKU, with the magnetics gap-pad-bonded to the plate webs). Power crosses on
+bolted DCP / DCN / PE stud pillars and control on the 40-way harness. Full contract:
+[interconnect](../docs/interconnect.md).
 
 ## 2. From source to release sheet
 
@@ -61,7 +65,7 @@ flowchart LR
 ```
 
 ```bash
-# build one board netlist (layout is a later phase — netlist mode is the working default, E36)
+# build one board netlist (netlist mode is the working default — PCB layout is out of scope)
 TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ignore-routing-drc
 ```
 
@@ -71,20 +75,20 @@ node calculations/sheet-pages.mjs 30kw && node calculations/sheet-netlist-gen.mj
 ```
 
 > [!TIP]
-> **The release sheets are `kicad5/DC-Modules-<target>-SHIP.zip`.** Cross-section connectivity is net-labels only
-> (E34) — wires never leave their section frame — and the library uses native KiCad conventions since E56, so the
-> zips open correctly in eeschema.
+> **The release sheets are `kicad5/DC-Modules-<target>-SHIP.zip`.** Cross-section connectivity is net-labels only —
+> wires never leave their section frame — and the library uses native KiCad conventions, so the zips open correctly
+> in eeschema.
 
-The 40 and 50 kW deltas are recorded in register rows E41, E42, E44 and E67–E69 and in the variant tables of
-[magnetics](../docs/magnetics.md); the family rationale is in [module family](README-module-family.md).
+What differs between the SKUs is listed side by side in [module family](README-module-family.md) and, per magnetic,
+in the variant tables of [magnetics](../docs/magnetics.md).
 
 > [!TIP]
-> **How this page is checked** — `node calculations/kicad5-verify.mjs <target>` — 7,409 / 7,409 connected pins across the five SHIP targets — with `module-interconnect-audit`, `polarity-audit` and `schematic-check` walking the built netlists inside `run-all`.
+> **How this page is checked** — `node calculations/kicad5-verify.mjs <target>` — every connected pin of all five SHIP targets — with `module-interconnect-audit`, `polarity-audit` and `schematic-check` walking the built netlists inside `run-all`.
 
 ---
 
 <div align="center">
 <sub><a href="../docs/can-profile-tonhe-v12.md">← TonHe V1.2 Compatibility Profile</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="README-module-family.md">Module Family →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

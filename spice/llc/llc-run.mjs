@@ -1,26 +1,26 @@
 // llc-run.mjs — per-SKU, POWER-SOLVED full-bridge LLC switching validation (ngspice-46).
-// E60 method, E67 topology. Each corner's fsw (PFM) or phase shift (PS) is SOLVED against the simulated bank power, per SKU
+// Each corner's fsw (PFM) or phase shift (PS) is SOLVED against the simulated bank power, per SKU
 // tank (calculations/llc/tanks.mjs), and the deck reports what protection and magnetics need — tank peak and RMS, magnetizing
 // peak, Cr AC voltage, secondary/diode currents, FET turn-off current, ZVS on all four switches — plus tolerance corners and an
 // internal-short transient for the F.11 timing race.
-// E67: one full bridge (legs A/B, `par` FETs per position lumped as conductance + Coss) → Cr → Lr → transformer n:1:1 (Lm on the
-// primary, two secondaries into bank A/B through SiC bridges). PS is a TRUE phase shift of leg B at f_max = 1.45·fr (hybrid PFM →
-// PSM: below the PFM gain floor the bridge stays at f_max and phase-shifts; the E60 half-bridge deck used a duty surrogate at fr,
-// which on one bridge ran 111 A rms / 199 A pk at the 764 V-bus corner against 93 / 148 A at f_max — E67 scan).
+// One full bridge (legs A/B, `par` FETs per position lumped as conductance + Coss) → Cr → Lr → transformer n:1:1 (Lm on the
+// primary, two secondaries into bank A/B through SiC bridges). PS is a TRUE phase shift of leg B at f_max = 1.45·fr (hybrid
+// PFM → PSM: below the PFM gain floor the bridge stays at f_max and phase-shifts). A duty surrogate at fr is not the same
+// thing: on one bridge it runs 111 A rms / 199 A pk at the 764 V-bus corner against 93 / 148 A at f_max.
 // Output modes: LOW ≤ 500 V (banks parallel) / HIGH ≥ 500 V (banks series), set in standby — so the bank spans 150–500 V and the
 // corners below are the two mode edges plus the interior.
 // Method limits (unchanged, documented): banks are ideal V-sources (op-point), FETs are gate-modulated conductances, JBS are
 // behavioral diodes; device-edge fidelity is the DPT level's job. Run: node spice/llc/llc-run.mjs [sku ...]
 //
-// E81 / review G (F-G-9) — NON-LINEAR Coss. Until E81 each leg node carried ONE LINEAR capacitor of `tanks.mjs t.coss`, so a
-// ZVS transition moved 250 pF × V of charge per die where the real die moves `dieP.qoss800` = 371 nC at 800 V (2.9 × more), and
-// only ONE device's capacitance was modelled where a real leg must discharge the outgoing device AND charge the incoming one.
-// Now the die's output capacitance IS the body diode's junction capacitance (Cds is that junction), fitted as
+// NON-LINEAR Coss. One LINEAR capacitor of `tanks.mjs t.coss` per leg node is not usable here: a ZVS transition would move
+// 250 pF × V of charge per die where the real die moves `dieP.qoss800` = 371 nC at 800 V (2.9 × more), and only ONE device's
+// capacitance would be modelled where a real leg must discharge the outgoing device AND charge the incoming one.
+// The die's output capacitance IS the body diode's junction capacitance (Cds is that junction), fitted as
 //   C(V) = Cjo/(1+V/Vj)^M  with  M = 0.5, Vj = 2 V   →   Q(V) = Cjo·Vj/(1−M)·[(1+V/Vj)^(1−M) − 1]
 // and Cjo solved per die so that Q(800 V) = dieP.qoss800. For the 23 mΩ die that is Cjo = 4.876 nF, which also returns
-// C(800 V) = 243 pF — i.e. the fit reproduces BOTH the datasheet charge and the 250 pF small-signal value the E60 deck used.
-// The E81 turn-off snubber `tanks.mjs t.cs` stays LINEAR and sits drain–source on every die of both devices.
-// The ZVS acceptance window is 20 V (was 50 V on an 830 V bus = 6 % of the rail).
+// C(800 V) = 243 pF — i.e. the fit reproduces BOTH the datasheet charge and the 250 pF small-signal value.
+// The turn-off snubber `tanks.mjs t.cs` stays LINEAR and sits drain–source on every die of both devices.
+// The ZVS acceptance window is 20 V; 50 V on an 830 V bus would be 6 % of the rail.
 import { runDeck } from "../run.mjs";
 import { plotSVG } from "../../calculations/plot.mjs";
 import { TANKS, fingerprint } from "../../calculations/llc/tanks.mjs";
@@ -34,22 +34,22 @@ const f = (x, d = 2) => (Number.isFinite(x) ? Number(x.toFixed(d)) : "NaN");
 const TDEAD = 120e-9, CYC = 16;
 export const FMAX = 1.45;                           // PFM ceiling as a multiple of fr; PSM runs here
 export const busFor = (bank) => Math.min(830, Math.max(650, (2 * bank) / 0.95));
-export const ZVS_WIN = 20;                          // V from the rail still counted as zero-voltage turn-on (F-G-9: was 50)
-// E81 Coss fit: C(V) = Cjo/(1+V/Vj)^M, Q(V) = Cjo·Vj/(1−M)·[(1+V/Vj)^(1−M) − 1]; Cjo solved from Qoss(800 V)
+export const ZVS_WIN = 20;                          // V from the rail still counted as zero-voltage turn-on
+// Coss fit: C(V) = Cjo/(1+V/Vj)^M, Q(V) = Cjo·Vj/(1−M)·[(1+V/Vj)^(1−M) − 1]; Cjo solved from Qoss(800 V)
 export const COSS_M = 0.5, COSS_VJ = 2;
 const qShape = (V) => (COSS_VJ / (1 - COSS_M)) * (Math.pow(1 + V / COSS_VJ, 1 - COSS_M) - 1);
 export const cjoFor = (qoss800) => qoss800 / qShape(800);              // F per die
 export const qossDie = (V, qoss800) => cjoFor(qoss800) * qShape(V);    // C per die at V
 
-// E81 / review G: PER-LEG dead time. E82: the E81 sentence here had the two legs' names swapped. With B delayed by d·T, leg B's
-// edges END the active state — it turns off at the tank peak and slews fast — and leg A's edges END the zero state: leg A is the
-// WEAK leg (llc-stress.csv Vres_A), commutating on whatever the zero state left of the tank current. The HRTIMER programs ST0 and
-// ST1 separately.
+// PER-LEG dead time. With B delayed by d·T, leg B's edges END the active state — it turns off at the tank peak and slews fast —
+// and leg A's edges END the zero state: leg A is the WEAK leg (llc-stress.csv Vres_A), commutating on whatever the zero state
+// left of the tank current. Getting the two names the wrong way round schedules the long edge on the fast leg. The HRTIMER
+// programs ST0 and ST1 separately.
 export function deck(t, { VBUS, VBANK, fsw, duty = null, tol = {}, shortAt = null, tstop, tstart, tdead = TDEAD, tdeadA = tdead, tdeadB = tdead }) {
   const T = 1 / fsw, d = duty ?? 0.5;
   const pwOf = (td) => T / 2 - td - 20e-9;
   const Cr = t.Cr * (tol.cr ?? 1), Lr = t.Lr * (tol.lr ?? 1), Lm = t.Lm * (tol.lm ?? 1), Ls = Lm / (t.n * t.n);
-  const csDie = t.cs ?? 0, cjo = cjoFor(t.dieP.qoss800) * t.par;   // E81: non-linear Coss per POSITION (par dies), snubber separate
+  const csDie = t.cs ?? 0, cjo = cjoFor(t.dieP.qoss800) * t.par;   // non-linear Coss per POSITION (par dies), snubber separate
   const at = (x) => (((x % 1) + 1) % 1 * T).toExponential(5);
   const leg = (X, hi, lo, pw) => `
 VGH${X} gh${X} 0 PULSE(0 1 ${at(hi)} 20n 20n ${pw.toExponential(5)} ${T.toExponential(5)})
@@ -62,8 +62,8 @@ DBL${X} 0 leg${X} DBODY
 CSH${X} bh${X} leg${X} ${(csDie * t.par).toExponential(5)}
 CSL${X} leg${X} 0 ${(csDie * t.par).toExponential(5)}`;
   const src = shortAt === null ? `DC ${VBANK}` : `PWL(0 ${VBANK} ${shortAt.toExponential(5)} ${VBANK} ${(shortAt + 1e-6).toExponential(5)} 0.5)`;
-  return `* E67 full-bridge LLC ${fingerprint(t.sku)} VBUS=${VBUS} VBANK=${VBANK} fsw=${f(fsw / 1e3, 3)}k ${duty === null ? "PFM" : `PS d=${f(duty, 4)}`} tdeadA=${f(tdeadA * 1e9, 0)}n tdeadB=${f(tdeadB * 1e9, 0)}n${shortAt === null ? "" : " INTERNAL-SHORT"}
-* E81 Coss model: body-diode junction Cjo=${(cjo * 1e9).toFixed(3)}n Vj=${COSS_VJ} M=${COSS_M} per position (Qoss(800 V)=${(t.dieP.qoss800 * t.par * 1e9).toFixed(0)} nC) + linear snubber ${(csDie * t.par * 1e12).toFixed(0)} pF drain-source on BOTH devices
+  return `* full-bridge LLC ${fingerprint(t.sku)} VBUS=${VBUS} VBANK=${VBANK} fsw=${f(fsw / 1e3, 3)}k ${duty === null ? "PFM" : `PS d=${f(duty, 4)}`} tdeadA=${f(tdeadA * 1e9, 0)}n tdeadB=${f(tdeadB * 1e9, 0)}n${shortAt === null ? "" : " INTERNAL-SHORT"}
+* Coss model: body-diode junction Cjo=${(cjo * 1e9).toFixed(3)}n Vj=${COSS_VJ} M=${COSS_M} per position (Qoss(800 V)=${(t.dieP.qoss800 * t.par * 1e9).toFixed(0)} nC) + linear snubber ${(csDie * t.par * 1e12).toFixed(0)} pF drain-source on BOTH devices
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
 .model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=${cjo.toExponential(5)} Vj=${COSS_VJ} M=${COSS_M})
 VBUS bus 0 DC ${VBUS}
@@ -123,16 +123,16 @@ export function sim(name, t, cfg) {
   const pk = (a) => a.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
   const im = c.ip.map((v, i) => v - (c.isa[i] + c.isb[i]) / t.n);
   let zvs = 0, edges = 0, toff = 0, iComm = Infinity;
-  const bad = [], legZ = { A: [0, 0], B: [0, 0] }, iCommLeg = { A: Infinity, B: Infinity }, vRes = { A: 0, B: 0 };   // E81: worst residual at an incoming edge, per leg
-  // E81 (F-G-9): the window is ZVS_WIN = 20 V from the rail (was 50), and the leg voltage is read at the LAST sample BEFORE the
-  // gate starts to rise. Reading it at the g>0.5 crossing (the pre-E81 check) sampled the node after the channel — already at
-  // gOn/2 — had snapped it to the rail, so every corner scored ZVS whatever the dead time.
+  const bad = [], legZ = { A: [0, 0], B: [0, 0] }, iCommLeg = { A: Infinity, B: Infinity }, vRes = { A: 0, B: 0 };   // worst residual at an incoming edge, per leg
+  // The window is ZVS_WIN = 20 V from the rail, and the leg voltage is read at the LAST sample BEFORE the gate starts to rise.
+  // Reading it at the g>0.5 crossing samples the node after the channel — already at gOn/2 — has snapped it to the rail, which
+  // scores every corner as ZVS whatever the dead time.
   const edge = (g, L, high, tag) => {
     for (let i = 1; i < n; i++) if (g[i] > 0.5 && g[i - 1] <= 0.5) {
       let j = i - 1; while (j > 0 && g[j] > 0.02) j--;
       edges++;
       const okz = high ? L[j] >= cfg.VBUS - ZVS_WIN : L[j] <= ZVS_WIN;
-      vRes[tag[0]] = Math.max(vRes[tag[0]], Math.min(cfg.VBUS, Math.max(0, high ? cfg.VBUS - L[j] : L[j])));   // E81: what the incoming die switches against
+      vRes[tag[0]] = Math.max(vRes[tag[0]], Math.min(cfg.VBUS, Math.max(0, high ? cfg.VBUS - L[j] : L[j])));   // what the incoming die switches against
       legZ[tag[0]][1]++; if (okz) { zvs++; legZ[tag[0]][0]++; } else if (!bad.includes(tag)) bad.push(tag);
     }
   };
@@ -144,7 +144,7 @@ export function sim(name, t, cfg) {
   // dead time the leg NEEDS: the outgoing device's charge plus the incoming device's, at the worst commutation current
   const qNode = 2 * t.par * (qossDie(cfg.VBUS, t.dieP.qoss800) + (t.cs ?? 0) * cfg.VBUS);
   const tNeed = iComm > 0.05 ? qNode / iComm : Infinity;
-  const need = (L) => (iCommLeg[L] > 0.05 ? qNode / iCommLeg[L] : Infinity);   // the E81 law, per leg
+  const need = (L) => (iCommLeg[L] > 0.05 ? qNode / iCommLeg[L] : Infinity);   // the charge ÷ current law, per leg
   return {
     r, P: cfg.VBANK * (avg(c.ibka) + avg(c.ibkb)), iComm, tNeed, zvsBad: bad.join("|"), tDead: cfg.tdead ?? TDEAD,
     iCommA: iCommLeg.A, iCommB: iCommLeg.B, tNeedA: need("A"), tNeedB: need("B"),
@@ -153,30 +153,30 @@ export function sim(name, t, cfg) {
     ipRms: rms(c.ip), ipPk: pk(c.ip), imPk: pk(im), vcrAc: (Math.max(...c.vcr) - Math.min(...c.vcr)) / 2, vcrAbs: pk(c.vcr),
     isRms: rms(c.isa), isPk: pk(c.isa), idAvg: c.isa.reduce((s, v, i) => i ? s + 0.25 * (Math.abs(v) + Math.abs(c.isa[i - 1])) * (r.t[i] - r.t[i - 1]) : s, 0) / span,
     fetRms: rms(c.ihs), fetToff: toff, zvs: `${zvs}/${edges}`, zvsOk: edges > 0 && zvs === edges,
-    // physicality guard (E60): a leg outside the rails by more than a diode drop invalidates the run instead of passing silently
+    // physicality guard: a leg outside the rails by more than a diode drop invalidates the run instead of passing silently
     legOk: [c.legA, c.legB].every((a) => Math.min(...a) >= -30 && Math.max(...a) <= cfg.VBUS + 30),
   };
 }
 
 // solve fsw (PFM) or phase shift (PS) so the simulated bank power meets the target (±1.5 %)
-// E81 (F-G-9 / F-C-7): the shipped modulator programs an ADAPTIVE dead time,
+// The shipped modulator programs an ADAPTIVE dead time,
 //   t_dead = n_die,leg · (Qoss(V) + cs·V) / I_toff,  n_die,leg = 2·par,  clamped to [60 ns, 900 ns]   (firmware/hal/llc.c)
 // so a corner that loses ZVS at the deck's fixed 120 ns is re-simulated at the dead time the law would program, and THAT is
-// the committed row. `ZVS@120ns` keeps the fixed-dead-time answer on record — it is what the pre-E81 deck silently assumed.
-export const DT_MIN = 120e-9, DT_MAX = 900e-9;   // HRTIMER clamp at DTGCKDIV 2 (E81, lead) · E82 (M-15): the floor is 120 ns — NSI66x1A 70/80/110 ns, unmatched (hal/llc.h LLC_DT_MIN_S)
-// E82 (C-11 / F-H1-1): in phase shift the WEAK leg (leg A — its edges END the zero state) gets the firmware's VALLEY time, not the
-// charge ÷ current law. At load the zero state ends with the rectifier conducting, so the leg swings on the decayed tank current
-// through L_r alone, reaches its valley in ≈ a quarter period of L_r against the leg's node capacitance, and swings BACK — the E81
-// law's 200–900 ns found the node at the rail again and turned on hard against the whole link. hal/llc.c weak_dead_s() programs
+// the committed row. `ZVS@120ns` keeps the fixed-dead-time answer on record, which is what a deck without the law assumes.
+export const DT_MIN = 120e-9, DT_MAX = 900e-9;   // HRTIMER clamp at DTGCKDIV 2; the 120 ns floor is the unmatched NSI66x1A 70/80/110 ns propagation (hal/llc.h LLC_DT_MIN_S)
+// In phase shift the WEAK leg (leg A — its edges END the zero state) gets the firmware's VALLEY time, NOT the charge ÷ current
+// law. At load the zero state ends with the rectifier conducting, so the leg swings on the decayed tank current through L_r
+// alone, reaches its valley in ≈ a quarter period of L_r against the leg's node capacitance, and swings BACK: a 200–900 ns edge
+// there finds the node at the rail again and turns on hard against the whole link. hal/llc.c weak_dead_s() programs
 // k·(π/2)·√(L_r·C_node), C_node = 2·par·(Q_oss(V)/V + cs), k = 0.82 on the firmware's own charge law (nominal L_r — the
 // firmware knows nothing else); calculations/control/fw-constants-sync.mjs holds the two copies together.
 export const WEAK_K = 0.82;
 export const weakDead = (t, VBUS) => Math.min(Math.max(WEAK_K * (Math.PI / 2) * Math.sqrt(t.Lr * 2 * t.par * (t.dieP.qoss800 * Math.sqrt(VBUS / 800) / VBUS + (t.cs ?? 0))), DT_MIN), DT_MAX);
 export function solve(tag, t, { VBANK, P, ps = false, tol, VBUS = busFor(VBANK) }) {
   const name = `llc-${t.sku}-${tag}`;
-  // E81 per-leg (lead, after the G deck): a single dead time for both legs loses the WEAK leg (leg A in phase shift commutates on
-  // I_m alone; leg B, the shifted leg, near the tank peak) — each leg is re-solved at 1.25 × ITS OWN need, the schedule the firmware
-  // programs (llc.c dead_a_s / dead_b_s). `tdead` may be a number (both legs) or { a, b }.
+  // A single dead time for both legs loses the WEAK leg (leg A ends the zero state; leg B, the shifted leg, turns off near the
+  // tank peak), so each leg is re-solved at 1.25 × ITS OWN need, the schedule the firmware programs (llc.c dead_a_s / dead_b_s).
+  // `tdead` may be a number (both legs) or { a, b }.
   const legs = (tdead) => (typeof tdead === "number" || tdead == null) ? { tdead, tdeadA: tdead, tdeadB: tdead } : { tdead: Math.max(tdead.a, tdead.b), tdeadA: tdead.a, tdeadB: tdead.b };
   const at = (x, tdead) => sim(name, t, { VBUS, VBANK, fsw: x * t.fr, tol, ...legs(tdead) });
   // one full power solve at a GIVEN dead time (the dead time removes duty, so the solve must be redone at it, not just re-run)
@@ -190,8 +190,8 @@ export function solve(tag, t, { VBANK, P, ps = false, tol, VBUS = busFor(VBANK) 
     };
     if (ps) return psAtFmax();
     let fn = FMAX, s = at(fn, tdead);
-    // E67: gain still too high at f_max → the hybrid controller phase-shifts at f_max (a regulated point; the E60 "BURST" label
-    // reported the unregulated f_max currents, 5–15 % above the target power)
+    // gain still too high at f_max → the hybrid controller phase-shifts at f_max, which is a REGULATED point; reporting the
+    // unregulated f_max currents instead reads 5–15 % above the target power
     if (s.P >= P) return psAtFmax();
     let prev = fn;
     while (s.P < P && fn > 0.5) { prev = fn; fn = Math.round((fn - 0.05) * 100) / 100; s = at(fn, tdead); }
@@ -203,7 +203,7 @@ export function solve(tag, t, { VBANK, P, ps = false, tol, VBUS = busFor(VBANK) 
   const s0 = solveAt(TDEAD);
   const clampDt = (x) => Math.min(Math.max(x, DT_MIN), DT_MAX);
   if (s0.mode === "PS") {
-    // E82: a phase-shift row is ALWAYS committed at what the firmware programs there — leg A the valley time, leg B its own need
+    // a phase-shift row is ALWAYS committed at what the firmware programs there — leg A the valley time, leg B its own need
     const td = { a: weakDead(t, VBUS), b: clampDt((Number.isFinite(s0.tNeedB) ? s0.tNeedB : s0.tNeed) * 1.25) };
     const s1 = solveAt(td);
     return { ...s1, tNeed: s0.tNeed, zvs120: s0.zvs, zvsBad120: s0.zvsBad };
@@ -218,10 +218,10 @@ export function solve(tag, t, { VBANK, P, ps = false, tol, VBUS = busFor(VBANK) 
   return { ...s1, tNeed: s0.tNeed, zvs120: s0.zvs, zvsBad120: s0.zvsBad };
 }
 
-// E67: Lr ±5 % = external D2 gapped to ±3 % plus the D3 leakage spread (±30 % of ~0.5 µH) — no trim bins
+// Lr ±5 % = external D2 gapped to ±3 % plus the D3 leakage spread — no trim bins
 export const TOL = { hi: { lr: 1.05, cr: 1.05, lm: 0.93 }, lo: { lr: 0.95, cr: 0.95, lm: 1.07 }, gainWorst: { lr: 1.05, cr: 0.95, lm: 1.07 } };
-// E81 (F-G-9): the last three columns are APPENDED — current-coordination reads x[3] and x[8] positionally
-const HDR = ["corner", "bank_V", "bus_V", "mode", "fsw_kHz", "duty", "P_target_W", "P_sim_W", "P_err_pct", "Ip_rms_A", "Ip_pk_A", "crest", "Im_pk_A", "Vcr_ac_pk_V", "Vcr_abs_pk_V", "Isec_rms_A", "Isec_pk_A", "Idiode_avg_A", "Ifet_rms_A", "Ifet_toff_A", "ZVS", "legs_in_rails", "Icomm_min_A", "t_dead_need_ns", "t_dead_used_ns", "ZVS_at_120ns", "ZVS_fail_legs", "Vres_A_V", "Vres_B_V"];   // E81: residual leg voltage at the incoming edge (0 = full ZVS)
+// the last three columns are APPENDED — current-coordination reads x[3] and x[8] positionally
+const HDR = ["corner", "bank_V", "bus_V", "mode", "fsw_kHz", "duty", "P_target_W", "P_sim_W", "P_err_pct", "Ip_rms_A", "Ip_pk_A", "crest", "Im_pk_A", "Vcr_ac_pk_V", "Vcr_abs_pk_V", "Isec_rms_A", "Isec_pk_A", "Idiode_avg_A", "Ifet_rms_A", "Ifet_toff_A", "ZVS", "legs_in_rails", "Icomm_min_A", "t_dead_need_ns", "t_dead_used_ns", "ZVS_at_120ns", "ZVS_fail_legs", "Vres_A_V", "Vres_B_V"];   // residual leg voltage at the incoming edge (0 = full ZVS)
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
 const skus = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(TANKS);
 for (const sku of skus) {
@@ -233,7 +233,7 @@ for (const sku of skus) {
     ["SER250-full", { VBANK: 250, P: t.P }, "HIGH-mode floor (Vout 500 V, banks series) at full power — the current-critical corner"],
     ["SER250-full-tolHi", { VBANK: 250, P: t.P, tol: TOL.hi }, "Lr+5 % Cr+5 % Lm−7 %"],
     ["SER250-full-tolLo", { VBANK: 250, P: t.P, tol: TOL.lo }, "Lr−5 % Cr−5 % Lm+7 %"],
-    ["SER250-full-bus764", { VBANK: 250, P: t.P, VBUS: 764, ps: true }, "E60 high-line bus floor (1.08·√2·500 VAC): M 0.65 → PS"],
+    ["SER250-full-bus764", { VBANK: 250, P: t.P, VBUS: 764, ps: true }, "high-line bus floor (1.08·√2·500 VAC): M 0.65 → PS"],
     ["PAR500-full", { VBANK: 500, P: t.P }, "gain-critical mode edge: LOW 500 V ≡ HIGH 1000 V (same bank V and power), bus 830, M 1.205"],
     ["PAR500-full-gainWorst", { VBANK: 500, P: t.P, tol: TOL.gainWorst }, "lowest peak gain: Lr+5 % Cr−5 % Lm+7 %"],
     ["SER750-full", { VBANK: 375, P: t.P }, "HIGH mode interior, bus 789"],
@@ -273,8 +273,8 @@ for (const sku of skus) {
     ],
   });
   writeFileSync(join(RES, "llc-stress.csv"),
-    `# E67 ngspice-46 power-solved full-bridge LLC stress; ${fingerprint(sku)}; netlists spice/generated/llc-${sku}-*.cir\n` +
-    `# E81 device model: non-linear Coss (body-diode junction Cjo/(1+V/${COSS_VJ})^${COSS_M} fitted to Qoss(800 V)=${Math.round(t.dieP.qoss800 * 1e9)} nC per die, ×${t.par} dies, on BOTH devices of a leg) + ${Math.round((t.cs ?? 0) * 1e12)} pF linear snubber per die; ZVS window ${ZVS_WIN} V; deck dead time ${TDEAD * 1e9} ns\n` +
+    `# ngspice-46 power-solved full-bridge LLC stress; ${fingerprint(sku)}; netlists spice/generated/llc-${sku}-*.cir\n` +
+    `# device model: non-linear Coss (body-diode junction Cjo/(1+V/${COSS_VJ})^${COSS_M} fitted to Qoss(800 V)=${Math.round(t.dieP.qoss800 * 1e9)} nC per die, ×${t.par} dies, on BOTH devices of a leg) + ${Math.round((t.cs ?? 0) * 1e12)} pF linear snubber per die; ZVS window ${ZVS_WIN} V; deck dead time ${TDEAD * 1e9} ns\n` +
     rows.map((x) => x.join(",")).join("\n") + "\n" +
     `# internal-short race from ${worst.tag}: pre ${f(race.pre, 1)} A, +2us ${f(race.at2us, 1)}, +3us ${f(race.at3us, 1)}, +5us ${f(race.at5us, 1)}, +10us ${f(race.at10us, 1)}, +40us ${f(race.at40us, 1)} A\n` +
     `# dead-short at 1.45 fr (bus 650, bank 0.5 V): Ip ${f(fm.ipRms, 1)} A rms / ${f(fm.ipPk, 1)} A pk\n`);
@@ -284,7 +284,7 @@ for (const sku of skus) {
     ipPkMax: mx("Ip_pk_A"), ipRmsMax: mx("Ip_rms_A"), imPkMax: mx("Im_pk_A"), vcrAcMax: mx("Vcr_ac_pk_V", 0),
     isRmsMax: mx("Isec_rms_A"), isPkMax: mx("Isec_pk_A"), idAvgMax: mx("Idiode_avg_A"), fetRmsMax: mx("Ifet_rms_A"), fetToffMax: mx("Ifet_toff_A"),
     zvsAll: rows.slice(1).every((x) => { const [a, b] = String(x[HDR.indexOf("ZVS")]).split("/"); return a === b && +b > 0; }),
-    // E81 (F-G-9): the worst dead time any corner needs, and where ZVS is lost at the 120 ns the deck programs
+    // the worst dead time any corner needs, and where ZVS is lost at the 120 ns the deck programs
     tDeadNeedMaxNs: mx("t_dead_need_ns", 0), iCommMin: Math.min(...col("Icomm_min_A")),
     zvsFailCorners: rows.slice(1).filter((x) => x[HDR.indexOf("ZVS_fail_legs")] !== "-").map((x) => `${x[0]}:${x[HDR.indexOf("ZVS_fail_legs")]}`),
     cossModel: `nonlinear Cjo/(1+V/${COSS_VJ})^${COSS_M} fitted to Qoss(800 V)=${Math.round(TANKS[sku].dieP.qoss800 * 1e9)} nC/die + ${Math.round((TANKS[sku].cs ?? 0) * 1e12)} pF snubber/die, both devices; ZVS window ${ZVS_WIN} V`,

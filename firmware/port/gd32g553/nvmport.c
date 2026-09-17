@@ -1,10 +1,10 @@
-/* nvmport.c — E80 the flash back end (FMC facts: facts-system §3). One global page map (flash_map.h):
+/* nvmport.c — the flash back end (FMC facts: facts-system §3). One global page map (flash_map.h):
  *   port page 0/1 → FM_NVM (application records) · 2/3 → FM_BOOTCTL (boot record) · 4.. → FM_EVLOG (event ring).
  * The FMC programs 64 bits at a time (two CBUS word writes, 8-byte aligned) onto erased cells only; hal/nvm.c and
  * hal/evlog.c program 4-byte-aligned runs, so the port assembles each pair into one double word and pads with 0xFF —
  * flash AND semantics make the pad writes idempotent (all-FF double words are skipped: ECC bypass rule, UM L4762).
- * E82 (C-04): that pad is only legal on an ERASED row — a second program of the same row raises PGERR (UM §2.3.8), so
- * both journals hand this port 8-byte-aligned runs and no row is ever written twice.
+ * That pad is only legal on an ERASED row — a second program of the same row raises PGERR (UM §2.3.8), so both
+ * journals hand this port 8-byte-aligned runs and no row is ever written twice.
  * DBS = 1 (dual bank, 1 KB pages) is the supported shape, checked before every erase; nvm_port_page_size() reports it.
  * Timing: double word ≈ 80 µs typical, page erase 1 ms typical / 20 ms max (DS Table 4-25) — the application's §9
  * discipline (append with the LLC off, erase with both stages off; ISRs execute from TCM) keeps that out of the control
@@ -14,13 +14,13 @@
 #include "flash_map.h"
 
 #define PAGE_SZ 1024u
-/* E82 (C-01b): every FMC operation is bounded by the datasheet — DS Rev 2.0 Table 4-25: page erase 1 ms min / 20 ms MAX,
+/* Every FMC operation is bounded by the datasheet — DS Rev 2.0 Table 4-25: page erase 1 ms min / 20 ms MAX,
  * double word 80 µs typical. 50 ms covers the erase with 2.5× margin; past it the FMC is dead and the caller is told so
  * instead of spinning for ever. FLASH_WAIT_MS and the watchdog grant flash_service() buys are the same number, so a
  * wait that runs long outlives its services and ends in a watchdog reset rather than a silent hang. */
 #define FLASH_WAIT_MS 50u
 
-/* E82 (C-01b, M-20): the FMC stalls CBUS on the bank it is erasing or programming, so NOTHING in that bank executes
+/* The FMC stalls CBUS on the bank it is erasing or programming, so NOTHING in that bank executes
  * meanwhile — not the loop, not the watchdog service. The primitives therefore live in RAM (.ramfunc) and service the
  * window watchdog BEFORE each operation: one page erase (≤ 20 ms) or one 1 KB block (128 × 80 µs ≈ 10 ms) then fits
  * inside one TPS3430 window (23.375 ms). The bootloader overrides this with its WDI pulse, the application with
@@ -39,13 +39,13 @@ uint32_t nvm_port_page_size(void) { return PAGE_SZ; }
 RAMFUNC static void fmc_unlock(void) {
   if (FMC_CTL & BIT(31)) { FMC_KEY = 0x45670123u; FMC_KEY = 0xCDEF89ABu; }
 }
-/* E82 (G-17): the FMC is left locked between operations, so a runaway pointer cannot erase the bootloader */
+/* The FMC is left locked between operations, so a runaway pointer cannot erase the bootloader */
 RAMFUNC static int fmc_done(int ok) { FMC_CTL |= BIT(31); return ok; }
 
 RAMFUNC static int fmc_wait(void) {
   uint32_t t0 = DWT_CYCCNT;
   while (FMC_STAT & BIT(16))
-    if (DWT_CYCCNT - t0 > FLASH_WAIT_MS * (PORT_SYSCLK_HZ / 1000u)) return 0;   /* E82 (C-01b): a dead FMC is not a hang */
+    if (DWT_CYCCNT - t0 > FLASH_WAIT_MS * (PORT_SYSCLK_HZ / 1000u)) return 0;   /* a dead FMC is not a hang */
   uint32_t st = FMC_STAT;
   FMC_STAT = st & 0xFAu;                        /* clear the error flags (rc_w1) */
   return (st & 0xFAu) == 0u;
@@ -84,7 +84,7 @@ RAMFUNC bool nvm_port_prog(uint8_t page, uint32_t off, const uint8_t *p, uint32_
 }
 
 RAMFUNC static bool erase_page_at(uint32_t addr) {
-  /* E82 (G-15): the page arithmetic below is the DBS = 1 shape (dual bank, 1 KB pages). On a part whose option byte says
+  /* The page arithmetic below is the DBS = 1 shape (dual bank, 1 KB pages). On a part whose option byte says
      single bank the same index addresses a 2 KB page at half the intended offset — page 9 would erase inside the
      bootloader. Refuse instead; production programming sets DBS (see the manufacturing note). */
   if (!(FMC_OBCTL & BIT(22))) return false;
@@ -97,7 +97,7 @@ RAMFUNC static bool erase_page_at(uint32_t addr) {
   FMC_CTL |= BIT(16);                           /* START */
   int ok = fmc_wait();
   FMC_CTL &= ~BIT(1);
-  flash_service();                              /* E82: an erase may have held the bank (and its SysTick) for 20 ms — fresh edge now */
+  flash_service();                              /* an erase may have held the bank (and its SysTick) for 20 ms — fresh edge now */
   return fmc_done(ok);
 }
 
@@ -109,8 +109,8 @@ RAMFUNC bool nvm_port_erase(uint8_t page) {
 /* ---- the bootloader's raw-slot interface (boot/updater.h) */
 const uint8_t *boot_flash_map(uint32_t addr) { return (const uint8_t *)addr; }
 
-/* E82 (C-01b): a slot is up to 208 pages — 208 ms typical and 4.2 s at the datasheet maximum, where the old loop held
-   WDI still and every BEGIN reset the card mid-erase. erase_page_at() services the watchdog per page from RAM. */
+/* A slot is up to 208 pages — 208 ms typical and 4.2 s at the datasheet maximum, so a loop that held WDI still would
+   reset the card mid-erase on every BEGIN. erase_page_at() services the watchdog per page from RAM. */
 RAMFUNC bool boot_flash_erase(uint32_t addr, uint32_t len) {
   for (uint32_t a = addr & ~(PAGE_SZ - 1u); a < addr + len; a += PAGE_SZ)
     if (!erase_page_at(a)) return false;

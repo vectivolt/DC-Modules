@@ -1,4 +1,4 @@
-/* bootctl.h — E80 which image runs. Portable C99; the bootloader decides, the application confirms, boot_test covers both.
+/* bootctl.h — which image runs. Portable C99; the bootloader decides, the application confirms, boot_test covers both.
  *
  * The record lives in its own two-page journal (hal/nvm.c, kind BOOTCTL_KIND, its own flash pages):
  *   confirmed     the slot that has proven itself (60 s healthy in the application), BOOT_SLOT_NONE before the first boot

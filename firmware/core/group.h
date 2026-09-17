@@ -1,4 +1,4 @@
-/* group.h — E66: charger-controller-mastered group share law, run on EVERY module card.
+/* group.h — the charger-controller-mastered group share law, run on EVERY module card.
  * When a charger runs several modules in parallel, the charger controller (A13, outside module scope) is the group
  * master — there is no supervisor card to lose — and broadcasts GROUP_CTRL (VMP_F_GROUP_CTRL = 0x02, vmp.h) at 10 Hz:
  * demand + membership bitmap. Each module derives its own
@@ -10,7 +10,6 @@
  *           deterministic staggered starts with no election
  *   stale   no frame for > PMP_GRP_STALE_MS → share 0, no delivery (the FSM's F.28 ramp-off does the rest)
  * The per-module CTRL (VMP_F_CTRL = 0x01, vmp.h) path stays: controllers that water-fill unequal shares keep using it.
- * (E82 (K-5): this comment named an earlier draft's frame numbering — GROUP_SET/SET_OUTPUT never shipped; corrected.)
  * Portable C99, no HAL. Proven in firmware/test/host_sim.c (3-node co-simulation, sum-of-shares invariant every tick). */
 #ifndef PMP_GROUP_H
 #define PMP_GROUP_H
@@ -27,7 +26,7 @@ typedef struct {
   bool have, member, raising;
   pmp_group_set_t last;
   uint32_t t_frame, t_member, t_raise, share_da;
-  uint32_t pend_da;         /* E76 (review R08): the pending raise target — a GROWN target restarts the hold */
+  uint32_t pend_da;         /* the pending raise target — a GROWN target restarts the hold */
 } pmp_group_t;
 
 typedef struct { uint32_t i_set_da; bool deliver; } pmp_group_out_t;

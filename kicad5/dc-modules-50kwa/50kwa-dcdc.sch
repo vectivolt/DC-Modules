@@ -9,7 +9,7 @@ Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 50 kW air - board DC-DC (upper), sheet 2 of 3"
 Comment1 "Module 50 kW air = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
-Comment2 "Content: full-bridge LLC: 2x SG2M023120LJ per position + 470 pF/die turn-off snubber, 11x33 nF + D2 rev F 3.20 uH, 2 cells, film banks 14x2.2 uF, DOUT (E67/E68)"
+Comment2 "Content: full-bridge LLC: 2x SG2M023120LJ per position + 1 nF/die turn-off snubber, 11x33 nF + D2 rev F 3.20 uH, 2 cells, film banks 14x2.2 uF, DOUT"
 Comment3 "22 functional sections - 316 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
@@ -72,13 +72,13 @@ MAGNETICS CONSTRUCTION
 Text Notes 25210 21570 0    60   ~ 0
 identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)
 Text Notes 25200 22000 0    60   ~ 0
-D3 T1A/T1B (E67 rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 17.8uH/cell +/-7%, Bpk 159mT, plate/web-BONDED
+D3 T1A/T1B (rev D): 2 cells, primaries in series -> n 2; each 3x E70/33/32 (3-set former), 4:4||4, pri litz 3536x0.071 + sec 2x foil 0.08x28 halves, Lm 17.8uH/cell +/-7%, Bpk 159mT, plate/web-BONDED
 Text Notes 25200 22300 0    60   ~ 0
-D2 L1R (E67 rev F): external Lr 3.20uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded
+D2 L1R (rev F): external Lr 3.20uH +/-3%, 2x E70/33/32, N=5, litz 12000x0.05, distributed gap, bonded
 Text Notes 25200 22600 0    60   ~ 0
 total Lr = D2 + 2x cell leakage (acceptance +/-30%) + 0.1uH loop = +/-5% simulated; Cr at TANK
 Text Notes 25200 22900 0    60   ~ 0
-bond loss screened by the EOL bonded thermal soak (T_XFMR NTC rise at fixed load, E65)
+bond loss screened by the EOL bonded thermal soak (T_XFMR NTC rise at fixed load)
 Wire Notes Line
 	500 500 3600 500
 Wire Notes Line
@@ -5860,7 +5860,7 @@ F 0 "CT1" H 32850 10190 50  0000 C CNN
 F 1 "CT-RES-1:100-150A" H 32850 10520 50  0000 C CNN
 F 2 "CT_window_res_1-100" H 32850 10350 50  0001 C CNN
 F 3 "~" H 32850 10350 50  0001 C CNN
-F 4 "DIRECT" H 32850 10350 50  0001 C CNN "LCSC"
+F 4 "CLASS" H 32850 10350 50  0001 C CNN "LCSC"
 F 5 "CT-RES-1:100-150A" H 32850 10350 50  0001 C CNN "MPN"
 	1    32850 10350
 	1    0    0    -1  

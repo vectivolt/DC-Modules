@@ -9,7 +9,7 @@ Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 30 kW - board AC-DC (lower), sheet 1 of 3"
 Comment1 "Module 30 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
-Comment2 "Content: Vienna PFC: 1x 750 V SiC die per position, D1 3x T79 N=39, 10-can link, 3 fans (E68/E69/E81)"
+Comment2 "Content: Vienna PFC: 1x 750 V SiC die per position, D1 3x T79 N=39, 10-can link, 3 fans"
 Comment3 "28 functional sections - 341 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr
@@ -74,7 +74,7 @@ identity per docs/magnetics.md (turns, gap, litz, acceptance lines live there)
 Text Notes 11200 21500 0    60   ~ 0
 D1 LA0-LC0: 3x 0077908A7 KoolMu, N=39 (+/-1 lot trim), 3x(6x1mm) 18mm2 -> L0 169uH, >=75uH @82A pk (BIASED value governs ripple/trip calcs)
 Text Notes 11200 21800 0    60   ~ 0
-E68 EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; D6 DM chokes deleted
+EMI: CMC1 + 12x X2 4.7uF in 3 star stages + CMC2 + RC damper; no AC-side DM chokes
 Text Notes 11200 22100 0    60   ~ 0
 Cr at TANK sections
 Wire Notes Line
@@ -5855,7 +5855,7 @@ F 1 "6.8R" H 38700 9020 50  0000 C CNN
 F 2 "RES-TH_L60.0-W9.0-P66.00" H 38700 8850 50  0001 C CNN
 F 3 "~" H 38700 8850 50  0001 C CNN
 F 4 "CLASS" H 38700 8850 50  0001 C CNN "LCSC"
-F 5 "SQP-10R-25W" H 38700 8850 50  0001 C CNN "MPN"
+F 5 "SQP-6R8-25W" H 38700 8850 50  0001 C CNN "MPN"
 	1    38700 8850
 	1    0    0    -1  
 $EndComp
@@ -5876,7 +5876,7 @@ F 1 "6.8R" H 38700 9420 50  0000 C CNN
 F 2 "RES-TH_L60.0-W9.0-P66.00" H 38700 9250 50  0001 C CNN
 F 3 "~" H 38700 9250 50  0001 C CNN
 F 4 "CLASS" H 38700 9250 50  0001 C CNN "LCSC"
-F 5 "SQP-10R-25W" H 38700 9250 50  0001 C CNN "MPN"
+F 5 "SQP-6R8-25W" H 38700 9250 50  0001 C CNN "MPN"
 	1    38700 9250
 	1    0    0    -1  
 $EndComp
@@ -5897,7 +5897,7 @@ F 1 "6.8R" H 38700 9820 50  0000 C CNN
 F 2 "RES-TH_L60.0-W9.0-P66.00" H 38700 9650 50  0001 C CNN
 F 3 "~" H 38700 9650 50  0001 C CNN
 F 4 "CLASS" H 38700 9650 50  0001 C CNN "LCSC"
-F 5 "SQP-10R-25W" H 38700 9650 50  0001 C CNN "MPN"
+F 5 "SQP-6R8-25W" H 38700 9650 50  0001 C CNN "MPN"
 	1    38700 9650
 	1    0    0    -1  
 $EndComp

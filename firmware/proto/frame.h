@@ -1,4 +1,4 @@
-/* frame.h — E78 the CAN frame and the byte-level rules every protocol profile shares: little-endian packing, saturating
+/* frame.h — the CAN frame and the byte-level rules every protocol profile shares: little-endian packing, saturating
  * float → integer conversion (casting a NaN or out-of-range float to an integer type is undefined behaviour in C, so every
  * encoder goes through these), CRC-8/AUTOSAR, and a bounded, priority-aware transmit queue. */
 #ifndef PMP_FRAME_H

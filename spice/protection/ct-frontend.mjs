@@ -1,15 +1,15 @@
-// ct-frontend.mjs — R2 closure deck (§G additions): resonant CT front-end at the corrected
-// 2.0 Ω burden (CB-16) + AVMID buffer stability with the MR-11 dual-feedback network.
+// ct-frontend.mjs — §G deck: the resonant CT front-end on its drawn burden + AVMID buffer
+// stability on the dual-feedback network.
 // Two questions, answered by simulation instead of assertion:
 //   1. Does the AVMID buffer (behavioral 10 MHz-GBW op-amp) ring or oscillate into its 10 µF
-//      reservoir with the rev-D network (4.7 Ω isolation, 10 k DC / 100 pF AC feedback)?
-//      The rev-C topology (op-amp OUT hard-tied to the 10 µF) is run side-by-side as the
+//      reservoir with the drawn network (4.7 Ω isolation, 10 k DC / 100 pF AC feedback)?
+//      The op-amp-OUT-hard-tied-to-the-10 µF topology is run side-by-side as the
 //      regression baseline — it is expected to ring/oscillate.
-//   2. Does the corrected resonant chain (46 A rms → 1:100 → 2.0 Ω → 1 k/1 nF) keep the ADC
+//   2. Does the resonant chain (46 A rms → 1:100 → burden → 1 k/1 nF) keep the ADC
 //      node inside the rails at the worst operating peak, land F.11/F.01 at the DAC point, and stay
 //      inside the 3.27 V rail through the simulated 3 µs fault race?
 // Run: node spice/protection/ct-frontend.mjs
-import { runDeck, maxIn, minIn } from "../run.mjs";
+import { runDeck, maxIn, minIn, inputStamp } from "../run.mjs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { shortRacePeak, F11_FAST_US, F11_MON_US } from "../llc/llc-flux-post.mjs";
 import { dirname, join } from "node:path";
@@ -38,7 +38,7 @@ CAVF opo inn 2.2n`
 CAVO avmid 0 10u ic=1.65
 RAVF avmid inn 0.001
 CAVF opo inn 1f`;
-  return `* AVMID buffer ${revD ? "rev D dual-feedback (MR-11)" : "rev C direct-into-10uF (baseline)"}
+  return `* AVMID buffer ${revD ? "dual-feedback (as drawn)" : "direct-into-10uF (reference topology)"}
 VDD vdd 0 3.3
 VREF inp 0 1.65
 ${OPAMP("OA", "inp", "inn", "opo")}
@@ -83,7 +83,7 @@ const rows = [["case", "metric", "value", "limit", "verdict"]];
 let pass = true;
 const push = (c, m, v, l, ok) => { rows.push([c, m, v, l, ok ? "PASS" : "FAIL"]); if (!ok) pass = false; console.log(`${c} · ${m} = ${v} (limit ${l}) → ${ok ? "PASS" : "FAIL"}`); };
 
-// 1a. rev D buffer: settle after the pulse, quantify ring
+// 1a. the drawn buffer: settle after the pulse, quantify ring
 {
   const r = runDeck("ctfe-avmid-revD", avmidDeck(true).replace("NAME.out", "ctfe-avmid-revD.out"), ["avmid", "opo"]);
   const late = { max: maxIn(r.t, r.cols.avmid, 2.5e-3, 4e-3), min: minIn(r.t, r.cols.avmid, 2.5e-3, 4e-3) };
@@ -92,21 +92,20 @@ const push = (c, m, v, l, ok) => { rows.push([c, m, v, l, ok ? "PASS" : "FAIL"])
   push("avmid-revD", "steady ripple pk-pk (V)", f(ringPP, 4), "≤0.01", ringPP <= 0.01);
   push("avmid-revD", "clamp-pulse dip (V)", f(dip), "≥1.55", dip >= 1.55);
 }
-// 1b. rev C baseline: expected to ring — recorded as the regression reference (not a PASS/FAIL row)
+// 1b. the hard-tied baseline: expected to ring — recorded as the regression reference (not a PASS/FAIL row)
 {
   const r = runDeck("ctfe-avmid-revC", avmidDeck(false).replace("NAME.out", "ctfe-avmid-revC.out"), ["avmid", "opo"]);
   const ringPP = maxIn(r.t, r.cols.avmid, 2.5e-3, 4e-3) - minIn(r.t, r.cols.avmid, 2.5e-3, 4e-3);
   rows.push(["avmid-revC-baseline", "steady ripple pk-pk (V)", f(ringPP, 4), "reference (expected ringing)", "REF"]);
-  console.log(`avmid-revC-baseline · ripple pk-pk = ${f(ringPP, 4)} V (reference topology — ${ringPP > 0.01 ? "rings as predicted (MR-11 confirmed)" : "note: behavioral model under-predicts ring"})`);
+  console.log(`avmid-revC-baseline · ripple pk-pk = ${f(ringPP, 4)} V (reference topology — ${ringPP > 0.01 ? "rings as predicted" : "note: behavioral model under-predicts ring"})`);
 }
-// 2. E60/E67 per-SKU chains (current-coordination classes): the resonant chain at the power-solved ngspice
+// 2. per-SKU chains (current-coordination classes): the resonant chain at the power-solved ngspice
 // worst nominal peak (in-rails, no clamp conduction), at F.11 (lands at the computed DAC point) and at
 // F.11 + the simulated 3 µs race (still inside the 3.27 V rail); the line chain likewise at 50 Hz.
 const CLS = {
-  // E67 full bridge (current-coordination OC table): ONE resonant CT, burdens 0.47/0.36/0.30 Ω, F.11 140/180/220 A.
-  // E81 / review G (F-G-6): race11 used to be three HAND-COPIED numbers (178.6/237.0/282.7) taken from a
-  // current-coordination print. Both pkNom and race11 are now READ from the committed simulation results, so a tank
-  // re-run can never leave this deck on old peaks — the whole point of the tank fingerprint.
+  // ONE resonant CT on the full-bridge tank (current-coordination OC table): burdens 0.47/0.36/0.30 Ω, F.11 140/180/220 A.
+  // Both pkNom and race11 are READ from the committed simulation results, never hand-copied from a print, so a tank
+  // re-run cannot leave this deck on old peaks — which is the whole point of the tank fingerprint.
   "30kw": { resRb: 0.47, F11: 140, lineRb: 22, F01: 120, race01: 46 },
   "40kw": { resRb: 0.36, F11: 180, lineRb: 18, F01: 155, race01: 50 },
   "50kw": { resRb: 0.30, F11: 220, lineRb: 13, F01: 195, race01: 72 },
@@ -133,8 +132,9 @@ for (const [sku, c] of Object.entries(CLS)) {
   }
 }
 writeFileSync(join(RES, "ct-frontend.csv"),
-  "# ngspice-46; R2 §G closure deck — AVMID dual-feedback stability (MR-11) + corrected resonant burden (CB-16); behavioral 10 MHz op-amp\n" +
-  "# E81/F-G-6: pkNom and the race currents are READ from llc-stress-summary.json and llc-short.csv (no hand-copied peaks); the CT itself is an IDEAL current source — no magnetising branch, no saturation (F-G-8, open)\n" +
+  "# ngspice-46; CT front-end deck — AVMID dual-feedback stability + the resonant-CT burden; behavioral 10 MHz op-amp\n" +
+  "# pkNom and the race currents are READ from llc-stress-summary.json and llc-short.csv (no hand-copied peaks); the CT itself is an IDEAL current source — no magnetising branch, no saturation (F-G-8, open)\n" +
+  `# inputs ${inputStamp(["30kw", "40kw", "50kw"].flatMap((s) => [`simulation-results/${s}/llc-stress-summary.json`, `simulation-results/${s}/llc-short.csv`]))}\n` +
   rows.map(r => r.join(",")).join("\n") + "\n");
 console.log(pass ? "\nCT FRONT-END DECK: ALL PASS" : "\nCT FRONT-END DECK: FAILURES");
 process.exit(pass ? 0 : 1);

@@ -1,4 +1,4 @@
-/* app.ld.in — E80 application-image linker template. build.sh instantiates it with SLOT_BASE (A or B) + IMG_HDR_LEN 0x200:
+/* app.ld.in — the application-image linker template. build.sh instantiates it with SLOT_BASE (A or B) + IMG_HDR_LEN 0x200:
  * the image body starts at slot + 0x200 (the signed header sits in front — boot/image.h), the vector table first.
  * TCM (0x1000 0000, 32 KB) carries the control-ISR code (.ramfunc): flash program/erase never stalls it (§3.5).
  * SRAM0 ends 64 bytes short of 0x2001 4000 — that tail is the no-init boot handoff (flash_map.h FM_HANDOFF). */

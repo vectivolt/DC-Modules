@@ -1,4 +1,4 @@
-* AVMID buffer rev C direct-into-10uF (baseline)
+* AVMID buffer direct-into-10uF (reference topology)
 VDD vdd 0 3.3
 VREF inp 0 1.65
 

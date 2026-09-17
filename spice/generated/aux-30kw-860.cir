@@ -37,11 +37,11 @@ CVCC vcc 0 220u ic=15.4
 IVCC vcc 0 0.0035
 BL24 v24 0 I=max(v(v24),0)/24*(0.7+0.9*u(time-0.012))
 RL15 v15 0 15
-* rail TVS as drawn (SMBJ26A / SMBJ16A class, MR-17)
+* rail TVS as drawn: SMBJ28A on V24 (V_BR 31.1 V min at 1 mA), SMBJ18A on V15 (V_BR 20.0 V min at 1 mA)
 DTVS24 0 v24 DTV24
 DTVS15 0 v15 DTV15
-.model DTV24 D(Is=1e-12 N=1 BV=28.9 IBV=1m Rs=0.3)
-.model DTV15 D(Is=1e-12 N=1 BV=17.8 IBV=1m Rs=0.2)
+.model DTV24 D(Is=1e-12 N=1 BV=31.1 IBV=1m Rs=0.3)
+.model DTV15 D(Is=1e-12 N=1 BV=20.0 IBV=1m Rs=0.2)
 
 .model SWSH SW(Ron=10m Roff=1e9 Vt=0.5 Vh=0.1)
 * QAUX: VSW = drain current, VS1 = channel current (the node capacitance discharges through the channel)
@@ -64,7 +64,7 @@ DCLA dca cl DSIC
 .model DSIC D(Is=1e-14 N=1.4 Rs=0.5 BV=1700 IBV=1u Cjo=20p)
 CCLA cl vin 1e-8
 RCLA cl vin 33000
-* drawn R4-3 loop: VCC → RZFB 2.2k → DZAUX 15 V → QAUXFB base (RBEFB 10k) → FB; CFBF 1 nF; FB pull-up 3.5k / 40k internal
+* drawn feedback loop: VCC → RZFB 2.2k → DZAUX 15 V → QAUXFB base (RBEFB 10k) → FB; CFBF 1 nF; FB pull-up 3.5k / 40k internal
 RZFB vcc zk 2.2k
 DZ qb zk DZ15
 .model DZ15 D(Is=1e-12 N=1 BV=15 IBV=1m Rs=5)

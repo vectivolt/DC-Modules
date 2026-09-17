@@ -1,10 +1,10 @@
-// geometry.mjs — E65: the ONE source of magnetic-core geometry for every magnetics engine and gate.
+// geometry.mjs — the ONE source of magnetic-core geometry for every magnetics engine and gate.
 //
 // Why it exists: turn lengths were hand-typed per gate. The PQ50/50 multi-set parts carried a single-post
 // MLT (0.115 m) while their flux math multiplied Ae by the set count, and the 5×T79 D1 stacks carried
 // 0.190 m in the audits (shorter than the bare 5-stack cross-section perimeter, 0.201 m), 0.278 m in pfc-design (mlt0 +
 // mltK·stack, off by one core) and 0.242 m here (its mlt0 sat at the datasheet's 50 % fill) against 0.225–0.227 m from the
-// Magnetics winding table (E65 D1: the T79 turn now comes from that table). Every MLT, Ae, Ve and window below is computed from
+// Magnetics winding table (the T79 turn comes from that table). Every MLT, Ae, Ve and window below is computed from
 // catalog data (IEC 63093 dimensions frozen from OpenMagnetics/MAS in magnetics-data.json; TDK/Magnetics
 // effective parameters and former mean turn lengths) so a stack change moves every carrier together.
 import { readFileSync } from "node:fs";
@@ -18,11 +18,11 @@ const S = DATA.shapes_mm;
 // Catalog effective parameters (per single set / single core). Sources in the comments; dimensions from MAS.
 export const CORES = {
   E70: { dims: S["E 70/33/32"], Ae: 683e-6, le: 0.149, Ve: 102e-6, kgSet: 0.50,          // TDK E70/33/32 (B66371), set = 2 halves
-         lN1: 0.166, lNstep: 2 * S["E 70/33/32"].C / 1000 },                                 // TDK former B66372B1000 lN 166 mm; +1 set adds 2·C (B66372x2000 = 230.5 ✓ — A/B suffix is material class, same geometry; E80/HR-18 build uses A2000, class F 155 °C / V-0)
+         lN1: 0.166, lNstep: 2 * S["E 70/33/32"].C / 1000 },                                 // TDK former B66372B1000 lN 166 mm; +1 set adds 2·C (B66372x2000 = 230.5 ✓ — A/B suffix is material class, same geometry; the build uses A2000, class F 155 °C / V-0)
   PQ50: { dims: S["PQ 50/50"], Ae: 328e-6, le: 0.113, Ve: 37.1e-6, kgSet: 0.195,           // TDK/Ferroxcube PQ50/50
           lN1: 0.115, lNstep: 2 * S["PQ 50/50"].C / 1000 },                                  // single-post former lN; side-by-side sets form a racetrack: +2·C per set
   ETD39: { dims: S["ETD 39/20/13"], Ae: 125e-6, le: 0.0922, Ve: 11.5e-6, kgSet: 0.060 },
-  ETD44: { dims: S["ETD 44/22/15"], Ae: 173e-6, le: 0.103, Ve: 17.8e-6, kgSet: 0.094 },       // TDK ETD 44/22/15 (B66365) — D4 rev E (E65)
+  ETD44: { dims: S["ETD 44/22/15"], Ae: 173e-6, le: 0.103, Ve: 17.8e-6, kgSet: 0.094 },       // TDK ETD 44/22/15 (B66365) — D4 rev E
   T79: { dims: S["T 79/48/17"], Ae: 221e-6, le: 0.196, Ve: 43.4e-6, kgCore: 0.240,         // Magnetics 0077908A7 Kool Mµ 26 (datasheet rev 10/7/2021: 240 g)
          ds: DATA.T79_0077908A7 },                                                            // winding-length table, coated limits, surface areas
   T57: { Ae: 3.10e-4, le: 0.1304, mlt0: 0.075, mltK: 0.020 },                               // dm-choke-design catalog set

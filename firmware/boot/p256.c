@@ -70,7 +70,7 @@ static void mont_inv(uint32_t *r, const uint32_t *a, const mod_t *m, void (*poll
   for (int i = 255; i >= 0; i--) {
     mont_mul(x, x, x, m);
     if ((e[i / 32] >> (i % 32)) & 1u) mont_mul(x, x, a, m);
-    if (poll && (i & 15) == 0) poll();                 /* E82 (LV-1): ≤ 32 Montgomery products between services */
+    if (poll && (i & 15) == 0) poll();                 /* ≤ 32 Montgomery products between services */
   }
   memcpy(r, x, sizeof x);
 }
@@ -161,7 +161,7 @@ bool p256_verify_poll(const uint8_t pub[64], const uint8_t hash[32], const uint8
     pt_dbl(&x, &x);
     unsigned k = ((u1[i / 32] >> (i % 32)) & 1u) | (((u2[i / 32] >> (i % 32)) & 1u) << 1);
     if (k) pt_add(&x, &x, &tab[k]);
-    if (poll) poll();                                  /* E82 (LV-1): one ladder step ≈ 50 k instructions ≈ 0.4 ms */
+    if (poll) poll();                                  /* one ladder step ≈ 50 k instructions ≈ 0.4 ms */
   }
   if (is_zero(x.z)) return false;
   mont_inv(t, x.z, &MP, poll); mont_mul(t, t, t, &MP); mont_mul(t, x.x, t, &MP); from_mont(t, t, &MP);   /* affine x = X / Z² */

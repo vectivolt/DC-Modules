@@ -1,12 +1,12 @@
-/* dielim.h — E82 (C-11 / M-06): the die-temperature observer behind the operating-point fold. Portable C99, no HAL.
+/* dielim.h — the die-temperature observer behind the operating-point fold. Portable C99, no HAL.
  *
  * WHY. The thermal grid (calculations/system/envelope-grid.mjs) holds every junction at ≤ 150 °C only by FOLDING the
  * available current at a handful of corners — the 500 V series corner on a hot day, low line on a high link, and above all
  * phase shift at low output voltage, where the weak bridge leg turns on hard against the link and burns a LOAD-INDEPENDENT
- * 60–130 W per die. The grid called that "the FSM's derate ladder in grid form". It is not: the ladder reads a heatsink
- * NTC, and none of these corners heats the sink first — the die runs 80–170 K above a base that is still at 75 °C, so the
- * ladder never moves and nothing else in the firmware knew the operating point at all. Sub-200 V delivery on the two-die
- * SKUs was "a documented spec limit" that any charge controller could simply command.
+ * 60–130 W per die. The FSM's derate ladder cannot stand in for that fold: the ladder reads a heatsink NTC, and none of
+ * these corners heats the sink first — the die runs 80–170 K above a base that is still at 75 °C, so the ladder never
+ * moves. Without an observer nothing in the firmware knows the operating point at all, and sub-200 V delivery on the
+ * two-die SKUs becomes a spec limit that any charge controller can simply command past.
  *
  * WHAT. The grid's own closed-form losses, evaluated forward every millisecond for the point in force (bank and link
  * volts, switching frequency, phase-shift duty, tank and line current) into a first-order junction estimate above the

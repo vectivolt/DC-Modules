@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// mag-docs.mjs — E70: one magnetics page per module SKU (docs/magnetics-<sku>.md), generated on every battery run.
+// mag-docs.mjs — one magnetics page per module SKU (docs/magnetics-<sku>.md), generated on every battery run.
 //
 // Each page is the whole story of that module's magnetics: what each part does, the drawing to quote, the proof the gates
 // computed at the simulated corners (quoted row by row from calculations/out/evidence/*.json — never retyped), how a
@@ -29,12 +29,12 @@ const EV = Object.fromEntries(["stress-audit", "conductor-audit", "magnetics-env
   .map((g) => { const p = join(OUT, "evidence", `${g}.json`); if (!existsSync(p)) throw new Error(`mag-docs: ${g} evidence missing — run the gate first`); return [g, JSON.parse(readFileSync(p, "utf8"))]; }));
 for (const [g, e] of Object.entries(EV)) if (e.exit !== 0) throw new Error(`mag-docs: ${g} did not pass (exit ${e.exit}) — a failing gate cannot be published as proof`);
 const rows = (gate, pred) => EV[gate].rows.filter(pred).map((r) => ({ gate, ...r }));
-// E71: the PyOpenMagnetics second opinion runs by hand in a Python venv (calculations/magnetics/mkf-crosscheck.py) — optional here,
+// the PyOpenMagnetics second opinion runs by hand in a Python venv (calculations/magnetics/mkf-crosscheck.py) — optional here,
 // but a failing run is never published
 const MKF_PATH = join(OUT, "evidence", "mkf-crosscheck.json"), MKF = existsSync(MKF_PATH) ? JSON.parse(readFileSync(MKF_PATH, "utf8")) : null;
 if (MKF && MKF.exit !== 0) throw new Error("mag-docs: mkf-crosscheck did not pass — re-run it or remove its evidence file");
 const mkfRows = (pred) => (MKF ? MKF.rows.filter(pred).map((r) => ({ gate: "mkf-crosscheck", ...r })) : []);
-// E73 review matrix: one number per (part, mechanism), read from the gate rows — a missing row stops the page, a missing optional MKF row reads "—"
+// review matrix: one number per (part, mechanism), read from the gate rows — a missing row stops the page, a missing optional MKF row reads "—"
 const grab = (gate, pred, re, optional = false) => {
   const src = gate === "mkf-crosscheck" ? MKF?.rows ?? [] : EV[gate].rows;
   const r = src.find(pred), m = r && `${r.name} — ${r.detail}`.match(re);
@@ -65,7 +65,7 @@ const bom = (sku) => {
 
 // ---- the registered drawings, per SKU (construction identity = the engines' tables; acceptance lines = the register) ----
 const T = (sku) => TANKS[base(sku)];
-// E82 (M-09a): the ONE source for the D2 external inductance and the D3 cell leakage — magnetics-envelope computes both
+// the ONE source for the D2 external inductance and the D3 cell leakage — magnetics-envelope computes both
 // from tanks.mjs (Lr − D3_CELLS × cell leakage − loop stray). mag-sync asserts the generated page carries these strings.
 const d2L = (sku) => `${(D2[sku].Lnom * 1e6).toFixed(2)} µH`;
 const d3Lk = (sku) => `${(d3Leakage(D3[sku]) * 1e6).toFixed(3)} µH`;
@@ -73,13 +73,12 @@ void LOOP_STRAY; void D3_CELLS;
 const DRAW = {
   D1: {
     "30kw": { mpn: "IND-PFC-165u", dwg: "PMP-MAG-D1-30 rev C", L0: "150–185 µH (165 nom)", Lpk: "L @ 78 A pk ≥ 75 µH", rdc: "≤ 6.9 mΩ @ 25 °C (build 6.08) and within ±5 % of the lot median", op: "54.7 A fundamental + 6.3 A rms 50 kHz ripple at 330 VAC", size: "⌀ 92 × H 88 mm", mass: "1.9 kg", layers: "21 / 15 / 3", cut: "≥ 7.1 m", tt: "74 A DC → hot-spot ≤ 19 K above the plate", cutout: "not required — one lost pad computes 131 °C, inside Class F (stress-audit)" },
-    "40kw": { mpn: "IND-PFC-116u-40", dwg: "PMP-MAG-D1-40 rev C", L0: "106–135 µH (125 nom — 5 × AL 37 at N = 26; the 116u class name is historical, E74)", Lpk: "L @ 104 A pk ≥ 61 µH", rdc: "≤ 4.55 mΩ @ 25 °C (build 3.97) and within ±5 % of the lot median", op: "72.9 A fundamental + 7.83 A rms ripple at 330 VAC", size: "⌀ 94 × H 115 mm", mass: "2.8 kg", layers: "17 / 9", cut: "≥ 6.9 m", tt: "95.9 A DC → hot-spot ≤ 22 K above the plate", cutout: "not required — one lost pad computes 116 °C, inside Class F (stress-audit)" },
+    "40kw": { mpn: "IND-PFC-116u-40", dwg: "PMP-MAG-D1-40 rev C", L0: "106–135 µH (125 nom — 5 × AL 37 at N = 26; the 116u in the part number is a class name, not this nominal)", Lpk: "L @ 104 A pk ≥ 61 µH", rdc: "≤ 4.55 mΩ @ 25 °C (build 3.97) and within ±5 % of the lot median", op: "72.9 A fundamental + 7.83 A rms ripple at 330 VAC", size: "⌀ 94 × H 115 mm", mass: "2.8 kg", layers: "17 / 9", cut: "≥ 6.9 m", tt: "95.9 A DC → hot-spot ≤ 22 K above the plate", cutout: "not required — one lost pad computes 116 °C, inside Class F (stress-audit)" },
     "50kw": { mpn: "IND-PFC-107u-50", dwg: "PMP-MAG-D1-50 rev C", L0: "98–124 µH (107 nom)", Lpk: "L @ 129.5 A pk ≥ 45 µH", rdc: "≤ 4.15 mΩ @ 25 °C (build 3.63) and within ±5 % of the lot median", op: "91.2 A fundamental + 10.16 A rms ripple at 330 VAC", size: "⌀ 94 × H 115 mm", mass: "2.7 kg", layers: "17 / 7", cut: "≥ 6.4 m", tt: "117.3 A DC → hot-spot ≤ 26 K above the plate", cutout: "**mandatory on the liquid SKU** — a lost pad has no air path in the sealed module: NC 130 ± 5 °C thermostat on each D1 clamp cap, in the magnetics cutout loop" },
   },
-  // E82 (M-09a): L and the D3 cell leakage are READ from magnetics-envelope (Lr − D3_CELLS × cell leakage − loop stray),
-  // never typed. They were hand-typed at their PRE-E81 values (5.16 / 4.07 / 3.28 µH) for a whole revision while parts-db,
-  // boards.tsx, the hub page and the gate all carried the re-issued 5.00 / 3.99 / 3.20 — and a winder builds to the DRAWING,
-  // so the ±5 % every deck was solved at was being spent on a transcription. mag-sync now asserts this per page.
+  // L and the D3 cell leakage are READ from magnetics-envelope (Lr − D3_CELLS × cell leakage − loop stray), never typed:
+  // a winder builds to the DRAWING, so a hand-typed value that drifts from the gate spends the ±5 % the decks are solved
+  // at on a transcription. mag-sync asserts both values per page.
   D2: {
     "30kw": { mpn: "IND-LR-E70-30", dwg: "PMP-MAG-D2-30 rev F", L: d2L("30kw"), gap: "Σ ≈ 8.3 mm", rdc: "≤ 1.35 mΩ", rac: "≤ 3.35 mΩ", pd: "≥ 2.0 kV", mass: "1.3 kg" },
     "40kw": { mpn: "IND-LR-E70-40", dwg: "PMP-MAG-D2-40 rev F", L: d2L("40kw"), gap: "Σ ≈ 10.5 mm", rdc: "≤ 1.1 mΩ", rac: "≤ 3.45 mΩ", pd: "≥ 1.9 kV", mass: "1.3 kg" },
@@ -100,7 +99,7 @@ const D7 = JSON.parse(readFileSync(join(OUT, "dm-choke-design.json"), "utf8")).d
 const D7_ACC = { "30kw": { irms: 55.9, dm: 83, od: 95, h: 40 }, "40kw": { irms: 73.3, dm: 110, od: 95, h: 40 }, "50kw": { irms: 91.6, dm: 138, od: 106, h: 46 } };
 
 
-// ---- E73: every magnetic × every failure mechanism, one number each ----
+// ---- every magnetic × every failure mechanism, one number each ----
 function reviewMatrix(sku) {
   const b = base(sku), n = (x) => (x ? x : "—"), S = skuRe(sku), B = skuRe(b), W2 = DRAW.D2[b], W3 = DRAW.D3[b], CT = DRAW.CT[b];
   const sum = JSON.parse(readFileSync(join(ROOT, "simulation-results", sku, "llc-stress-summary.json"), "utf8"));
@@ -156,8 +155,11 @@ function reviewMatrix(sku) {
       "—", "3-wire, Σi = 0", "—"],
     ["Resonance · switching transients",
       g("stress-audit", (r) => r.tag === "EMI" && /current loop/.test(r.name), /modulus margin ≥ ([\d.]+)/, (m) => `filter–loop modulus margin ≥ ${m[1]}`),
-      // E81: the ZVS verdict moved to its own [ZVS] row with the registered F-L-1 weak-leg exceptions; the matrix reads that row
-      g("current-coordination", (r) => r.tag === "ZVS" && S.test(r.name), /every other corner ZVS on all four switches/, () => "ZVS on every edge outside the registered F-L-1 set (E81)"),
+      // the [ZVS] row registers the phase-shift corners where the weak leg (leg A) turns on with a residual; read its own residuals
+      g("current-coordination", (r) => r.tag === "ZVS" && S.test(r.name), /registered weak-leg[\s\S]*every other corner ZVS on all four switches/, (m) => {
+        const v = [...m[0].matchAll(/residual (\d+(?:\.\d+)?) V of/g)].map((x) => +x[1]);
+        return `ZVS on all four switches at every corner except ${v.length} phase-shift corners, where the weak leg turns on with ${Math.min(...v)}–${Math.max(...v)} V of residual — the thermal grid and the firmware junction observer carry that loss`;
+      }),
       g("stress-audit", (r) => r.tag === "V" && /secondary JBS/.test(r.name), /(\d+) V of 1200 V = (\d+)%/, (m) => `secondary ring ${m[1]} V = ${m[2]} % of the 1200 V rectifiers`),
       g("stress-audit", (r) => r.tag === "V" && /aux switch/.test(r.name), /(\d+) V of 1700 V = (\d+)%/, (m) => `switch ${m[1]} V = ${m[2]} % with the clamp · SRF ≥ 650 kHz`), "—", "—"],
     ["Faults · abnormal operation",
@@ -251,7 +253,7 @@ gate reports, and a failing gate stops the battery before this page is written.
 | \`temp-critique\` | saturation at the 130 °C cutout, cold equilibria and the fault chain on measured 3C95 surfaces | B̂ ≤ 50 % Bsat(130 °C) · fault flux ≤ 60 % |
 | \`current-coordination\` | D2 flux at the F.11 kill peak and CT observability through each trip's race | ≤ 217 mT · the kill lands inside the ADC rail |
 | \`mag-sync\` | the identity of every part against every carrier, and the computed mass | tokens present · mass within ± 20 % |
-| \`mkf-crosscheck\` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv. **Dated evidence:** this run predates the E81 D2 re-issue, so its \`MKF-GAP\` row quotes the pre-E81 target (5.16 / 4.07 / 3.28 µH). The BUILD value is the one in the build-and-hold points below, which \`mag-docs\` reads from \`magnetics-envelope\` — the fringing CONCLUSION (+13…+14 %, so grind toward AL) is unaffected by a 3 % target move | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
+| \`mkf-crosscheck\` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv, so its \`MKF-GAP\` row can quote a D2 target (5.16 / 4.07 / 3.28 µH) the drawing above has moved past. **Build to the build-and-hold points below**, which \`mag-docs\` reads from \`magnetics-envelope\`; this row is here for its fringing CONCLUSION (+13…+14 %, so grind toward AL), which a 3 % target move does not change | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
 
 ## D1 — PFC boost choke · qty 3 · \`${W1.mpn}\`
 
@@ -292,7 +294,7 @@ leads. **H1** L₀ inside the window, Rdc, turns photo. (6) Varnish per the hub'
 ## D2 — external resonant inductor · qty 1 · \`${W2.mpn}\`
 
 The one gapped inductor of the full-bridge tank (InfyPower practice): it carries Lr ${(t.Lr * 1e6).toFixed(2)} µH minus the two D3 cells'
-leakage and the 0.1 µH loop stray, at full AC swing and tank potential, 77–203 kHz (E82 M-09d: 82 kHz is the lowest steady-state point; 77 kHz = 0.55·f_r is the firmware's transient floor and the part must take it). No bins — the ± 3 % gap tolerance plus the ± 30 %
+leakage and the 0.1 µH loop stray, at full AC swing and tank potential, 77–203 kHz (82 kHz is the lowest steady-state point; 77 kHz = 0.55·f_r is the firmware's transient floor and the part must take it). No bins — the ± 3 % gap tolerance plus the ± 30 %
 cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 
 | Row | Specification — ${W2.dwg} |
@@ -337,7 +339,7 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 
 | Row | Specification — ${W3.dwg} |
 |---|---|
-| Ratio · magnetizing | **${W3.turns} exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **${W3.Lm} ± 7 %** per cell @ 10 kHz, 0.1 V · **E82 (F-H1-6): the two cells of a module ship as a MATCHED PAIR, L_m within ± 3 % of each other** (gapped together, labelled A / B) — their primaries are in series on one C_r, so they divide the applied volt-seconds by their magnetizing impedance: a ± 7 % pair reads 513 / 481 V on the two banks at 1000 V series and + 7 % flux on the higher-L_m cell |
+| Ratio · magnetizing | **${W3.turns} exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **${W3.Lm} ± 7 %** per cell @ 10 kHz, 0.1 V · **the two cells of a module ship as a MATCHED PAIR, L_m within ± 3 % of each other** (gapped together, labelled A / B) — their primaries are in series on one C_r, so they divide the applied volt-seconds by their magnetizing impedance: a ± 7 % pair reads 513 / 481 V on the two banks at 1000 V series and + 7 % flux on the higher-L_m cell |
 | Core · former | **${W3.sets} × E70/33/32** PC95 / N95 / 3C95-class · ${W3.former} |
 | Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **${V ? W3.AL.replace(/Σ gap ≈ [\d.]+ mm/, `Σ gap ≈ ${V.d3GapMm.toFixed(1)} mm with fringing`) : W3.AL}** on the assembled cell |
 | Current rating | primary **${LS.ipRmsMax} A rms** / **${LS.ipPkMax} A pk** · each secondary half **${(LS.isRmsMax / 2).toFixed(1)} A rms** / ${(LS.isPkMax / 2).toFixed(1)} A pk at the worst simulated corner · 77–203 kHz (82 kHz lowest steady state · 77 kHz = the firmware's transient floor, 0.55·f_r) |
@@ -389,8 +391,8 @@ label with the post-VPI leakage and serial.
 
 ## D7 — 3-phase common-mode choke · qty 2 · \`CMC-3PH-2mH-SKU\`
 
-Two CM stages with Y1 trios on the node between them and on the converter side (E65); the X2 star stages of the E68b filter carry the
-differential mode, so no DM choke exists. The choke's own leakage (6–12 µH) rides every line crest, so its DM-bias flux is an acceptance
+Two CM stages with Y1 trios on the node between them and on the converter side; the X2 star stages of the input filter carry the
+differential mode, so the module has no AC-side DM choke. The choke's own leakage (6–12 µH) rides every line crest, so its DM-bias flux is an acceptance
 line, not a typical.${b === "30kw" ? " **At 30 kW the catalog Schaffner RT8131-63-2M8 is the primary part** (63 A / 2.8 mH, 89.1 A pk above the 82.6 A crest); this drawing is its second source." : ""}
 
 | Row | Specification — PMP-MAG-D7-${b.replace("kw", "")} rev B |

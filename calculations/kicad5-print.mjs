@@ -3,7 +3,7 @@
 // kicad5-preview is a deliberate layout sketch (boxes + dots) and kicad5-detail renders full
 // fidelity but only as inspection tiles. This is the deliverable renderer: one SVG per sheet at
 // full size, with the real library glyphs (zigzag R, plates, diode triangles, FET/relay/xfmr
-// function glyphs — audit E35 follow-up), every pin number and name, net-label text, junction
+// function glyphs), every pin number and name, net-label text, junction
 // dots, section frames, footer notes and a title block. sheets-to-pdf consumes these.
 //
 // Run: node calculations/kicad5-print.mjs [sku]   ->  calculations/out/print/<sheet>.svg
@@ -101,7 +101,7 @@ for (const file of readdirSync(SCH).filter((f) => f !== `dc-modules-${SKU}.sch` 
     for (const p of s.pins) {
       const px = c.x + p.x, py = c.y - p.y;   /* E56 native matrix */
       const dx = p.o === "R" ? p.len : p.o === "L" ? -p.len : 0;
-      // E56 native: orientation U points toward a body ABOVE (screen-up = −y), D below.
+      // native: orientation U points toward a body ABOVE (screen-up = −y), D below.
       const dy = p.o === "U" ? -p.len : p.o === "D" ? p.len : 0;
       g += `<line x1="${px}" y1="${py}" x2="${px + dx}" y2="${py + dy}" stroke="${INK}" stroke-width="6"/>`;
       g += `<circle cx="${px}" cy="${py}" r="8" fill="#b03030"/>`;

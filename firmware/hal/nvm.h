@@ -1,4 +1,4 @@
-/* nvm.h — E79 power-cut-safe record store on two flash pages. Portable C99; the port supplies read / program / erase.
+/* nvm.h — the power-cut-safe record store on two flash pages. Portable C99; the port supplies read / program / erase.
  *   entry     kind · length · marker · sequence · payload · CRC-32, appended to the active page. The newest valid entry of a kind
  *             wins. A torn entry (power cut while programming) fails its marker or CRC and is never trusted — nor is anything
  *             after it, and nothing more is appended behind it.
@@ -7,8 +7,8 @@
  *             leaves one complete generation: an uncommitted page has no valid header and loses to the old one.
  *   policy    a write of an unchanged payload does nothing; the caller decides whether an erase may run now (the app allows it
  *             only with the converter de-energized, firmware-architecture §9).
- *   layout    E82 (C-04): the header is 16 bytes and every entry is a multiple of 8, so no 64-bit flash row is ever written
- *             twice — ECC flash refuses a second program of a row and the store used to fail on its first record. A port
+ *   layout    the header is 16 bytes and every entry is a multiple of 8, so no 64-bit flash row is ever written twice —
+ *             ECC flash refuses a second program of a row, and a store that does it fails on its first record. A port
  *             whose program granularity is coarser than 8 bytes needs this file's HDR_LEN and entry_len raised to match. */
 #ifndef PMP_NVM_H
 #define PMP_NVM_H
@@ -22,7 +22,7 @@
 typedef struct { uint32_t off, seq, pcrc; uint8_t len; bool have; } nvm_rec_t;
 
 typedef struct {
-  uint8_t base;                /* E80: this store's first port page — pages base and base + 1 (several stores share the hooks) */
+  uint8_t base;                /* this store's first port page — pages base and base + 1 (several stores share the hooks) */
   uint32_t page_size;          /* bytes per page, a multiple of 4 */
   uint8_t active;              /* page 0 or 1 */
   uint32_t page_seq;           /* generation of the active page */

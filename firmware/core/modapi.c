@@ -25,7 +25,7 @@ void pmp_cmd_to_ctl(const mod_cmd_t *cmd, const pmp_fsm_t *f, const pmp_in_t *in
   ci->en = f->out.llc_en; ci->stop_ramp = f->out.stop_ramp; ci->cv_active = cv_active;
   ci->v_set = in->vcmd; ci->i_set = cmd->i_set_a; ci->p_set = cmd->p_set_w;
   ci->v_max_mode = f->out.v_max; ci->derate = f->out.derate; ci->fsm_warn = f->out.warn;
-  ci->vin_ll = in->vin_ll_min; ci->v_out = in->vout_meas; ci->i_out = in->iout_meas;   /* E80: availability from the LOWEST line */
+  ci->vin_ll = in->vin_ll_min; ci->v_out = in->vout_meas; ci->i_out = in->iout_meas;   /* availability from the LOWEST line */
   ci->grp_active = cmd->grp_active; ci->grp_share_a = cmd->grp_share_a;
   ci->peer_avg_a = cmd->peer_avg_a; ci->peer_n = cmd->peer_n;
 }
@@ -47,7 +47,7 @@ static mod_run_state_t run_state(const pmp_fsm_t *f, const pmp_in_t *in) {
 }
 
 void pmp_tlm_from_core(mod_tlm_t *m, const pmp_fsm_t *f, const pmp_in_t *in, const pmp_ctl_t *c, const pmp_ctl_cfg_t *cc) {
-  m->v_ext = in->vext; m->ext_connected = in->ext_connected;   /* E81 (K1) */
+  m->v_ext = in->vext; m->ext_connected = in->ext_connected;   /* the pack/external node behind DOUT */
   m->rs = run_state(f, in);
   m->st = f->st; m->mode = f->out.mode; m->omode = f->omode;
   m->fault = f->lock ? FC_LOCK : f->latched;
@@ -55,7 +55,7 @@ void pmp_tlm_from_core(mod_tlm_t *m, const pmp_fsm_t *f, const pmp_in_t *in, con
   m->fault_bits = (f->latched != FC_NONE ? (1ull << (f->latched - 1u)) : 0ull) | (f->lock ? (1ull << (FC_LOCK - 1u)) : 0ull);
   m->warn = f->out.warn;
   m->rearm = f->need_enable && in->enable_req;
-  m->pfc_en = f->out.pfc_en; m->llc_en = f->out.llc_en;   /* E82 (K-4) */
+  m->pfc_en = f->out.pfc_en; m->llc_en = f->out.llc_en;   /* the stages actually switching */
   m->recover_ms = (m->fclass == FCL_AUTO_EXT || m->fclass == FCL_AUTO_INT) && f->rec_hold_ms > f->rec_ms ? f->rec_hold_ms - f->rec_ms : 0u;
   m->derate = f->out.derate;
   m->limiter = c->limiter; m->derate_why = c->derate_why;

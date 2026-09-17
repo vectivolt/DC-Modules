@@ -1,4 +1,4 @@
-/* image.h — E80 the signed application image. Portable C99.
+/* image.h — the signed application image. Portable C99.
  *
  * An image is IMG_HDR_LEN bytes of header in front of the application's vector table. It is written to slot A or slot B and
  * executes in place; each slot has its own link address, so a release carries one signed image per slot (the tool refuses a
@@ -24,7 +24,7 @@
 #define IMG_MAGIC     0x49504D50u   /* "PMPI" as little-endian bytes */
 #define IMG_HDR_VER   1u
 #define IMG_HDR_LEN   0x200u        /* the vector table lands on a 512-byte boundary (VTOR alignment) */
-#define IMG_HW_UMOD_A (1u << 0)     /* the E40 module card, GD32G553VET7 */
+#define IMG_HW_UMOD_A (1u << 0)     /* the module card, GD32G553VET7 */
 
 typedef struct { uint32_t id; uint8_t xy[64]; } img_key_t;
 typedef struct { uint32_t size, load, version, min_version, hw, key_id; } img_info_t;
@@ -36,10 +36,10 @@ enum { IMG_OK = 0, IMG_E_HEADER = 1, IMG_E_SIZE = 2, IMG_E_LOAD = 3, IMG_E_HW = 
    hw_id: this card's IMG_HW_* bit · min_version: the baseline in force (0 to learn the version of whatever is there).
    Checks the header fields, then the key, the signature over the header, and the body hash — the cheap checks first.
    Returns IMG_OK or the first failure; info carries the header fields whenever the header parsed.
-   poll (may be NULL) is the target watchdog's service. E82 (C-01): it runs every 4 KB of body hashing (≈ 1.6 ms) AND inside
-   the signature check — once per ladder step and every 16th squaring of the two inversions — because one P-256 verification
-   is 12.7 M instructions ≈ 90–105 ms at 216 MHz, four TPS3430 windows (23.375 ms late edge), not the "≈ 9 ms" E80 assumed;
-   the longest un-serviced stretch is now ≈ 0.6 ms. The port's poll rate-limits itself above the 2.22 ms early edge. */
+   poll (may be NULL) is the target watchdog's service. It runs every 4 KB of body hashing (≈ 1.6 ms) AND inside the
+   signature check — once per ladder step and every 16th squaring of the two inversions — because one P-256
+   verification is 12.7 M instructions ≈ 90–105 ms at 216 MHz, four TPS3430 windows (23.375 ms late edge). The longest
+   un-serviced stretch is ≈ 0.6 ms. The port's poll rate-limits itself above the 2.22 ms early edge. */
 int img_verify(const uint8_t *img, uint32_t cap, uint32_t slot_base, uint32_t hw_id, uint32_t min_version,
                const img_key_t *keys, uint32_t n_keys, img_info_t *info, void (*poll)(void));
 #endif

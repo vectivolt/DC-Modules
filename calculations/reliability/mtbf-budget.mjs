@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// mtbf-budget.mjs — E64 standing gate: a parts-count reliability PREDICTION for every module SKU,
+// mtbf-budget.mjs — standing gate: a parts-count reliability PREDICTION for every module SKU,
 // computed from the generated BOM CSVs (so it moves when the BOM moves, and only then).
 //
 // Method: Telcordia SR-332-class parts-count, Method I style — sum a base failure rate (FIT,
@@ -21,10 +21,10 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // FIT per unit at 40 °C, quality II — SR-332-class base rates, conservative side of published tables.
-// E69: whole-word matching, tried first on the part's own noun phrase (the description before its first " (", " —", ";"
-// or ": "). The E64 substring regexes matched inside words — "density" hit NSI, "InfyPower" hit nF, "contact" hit CT — so
-// PFC chokes and line CTs were filed as isolators, the resonant inductor and aux transformer as MLCCs, the gate-bias
-// modules as Si semis and the TVS clamps as logic ICs.
+// Whole-word matching, tried first on the part's own noun phrase (the description before its first " (", " —", ";"
+// or ": "). Substring matching over the whole description misfiles parts: "density" matches inside NSI, "InfyPower"
+// inside nF and "contact" inside CT, which files PFC chokes and line CTs as isolators, the resonant inductor and aux
+// transformer as MLCCs, the gate-bias modules as Si semis and the TVS clamps as logic ICs.
 const CLASSES = [
   { name: "SiC power die",        fit: 20,  m: (d) => /\bSiC (MOSFET|JBS|FET|Schottky)\b|\bSiC diode\b/.test(d) },
   { name: "magnetic (wound)",     fit: 4,   m: (d) => /\b(choke|transformer|inductor|CT|current transformer)\b/i.test(d) && !/^\s*[\d.]+\s*[kM]?Ω/.test(d) },
@@ -49,31 +49,19 @@ const classify = (desc) => {
 const PCB_FIT = 5;      // per board (2 power boards + 1 card)
 const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 
-// REGISTERED at E68c (single dies E68a · star-X2 filter E68b · film-only banks E68c, and the film caps no longer classed as Si
-// semis — "rectifier-side" in a capacitor's text had put the E67 bank films at 10 FIT each). E68a was 2661/2809/2875/2887 FIT,
-// E67 2757/2953/2999/3259, E64 3081/3297/3396/3552 — recomputed every run, ±1 % drift fails.
-// E69 RE-REGISTERED on the corrected classifier and a column-true BOM CSV (maker names with commas had shifted the custom
-// magnetics and CT rows out of the count; MLCCs had been filed as ICs and bias modules). E68c read 2613/2753/2791/2803.
-// E81 RE-REGISTERED. The gate is doing its job: E81 adds real parts, so FIT rises and MTBF falls,
-// and that has to be a DELIBERATE re-registration rather than a silently-moving number. The driver
-// is the DC-link entry film going 4 → 16 × 1 µF (F-C-4/F-G-1) plus the per-die LLC turn-off
-// snubbers, the mirrored Vienna clamp on the 50s and the 30 kW third fan — i.e. part COUNT, not
-// part stress. The 500 V link cans pull the other way (a can at 87 % of rating instead of 92–98 %
-// is the single biggest real-life improvement in this revision) but this model prices parts, not
-// derating, so it cannot see that; the honest reading is "more parts, each less stressed".
-// E82 RE-REGISTERED (independent-validation round). The net is +14 / +7 / +14 / +14 FIT — under 0.6 % — and it is the
-// sum of two opposite moves. UP: 22 × 1 nF C0G at the card analogue pins, 10 × 100 Ω iso-amp output resistors and
-// 3 × 150 k output bleeders (A2-09 / M-11) — 35 chip parts per module, all at 0.35–0.5 FIT. DOWN: the DC-link balance
-// network drops from two 4-element strings to one on the 40/50 kW (M-10). A parts-count model prices COUNT, not stress,
-// so it cannot see what this revision actually bought: the balance elements go from 1.96 W (65 % of rating) to 0.92 W
-// (46 %), the Vienna snubber from 142 % of its part to 95 %, and the DC-link can is now bought against its REAL duty
-// (M-02) instead of a line that omitted the Vienna's own 50 kHz term. Fewer hot parts is not visible here; it is the point.
-const REGISTERED = { "30kw": { fit: 2453, mtbfKh: 408 }, "40kw": { fit: 2571, mtbfKh: 389 }, "50kw": { fit: 2680, mtbfKh: 373 }, "50kwa": { fit: 2694, mtbfKh: 371 } };
+// The REGISTERED table is the FIT picture the platform has consciously accepted. The gate recomputes it from the generated
+// BOM CSVs on every run and fails on ±1 % drift, so a BOM change that moves the reliability picture has to be re-registered
+// on purpose instead of sliding. Read it knowing what a parts-count model can and cannot see: it prices part COUNT, never
+// part STRESS. Adding cheap chip parts (ADC-pin capacitors, iso-amp output resistors, output bleeders at 0.35–0.5 FIT each)
+// raises FIT even when they make the module safer, and buying a part more derated — a link can at 87 % of rating rather
+// than 98 %, a balance element at 46 % rather than 65 %, a Vienna snubber at 95 % rather than 142 % — does not show up here
+// at all. "More parts, each less stressed" is the honest reading of a rising total, not a regression.
+const REGISTERED = { "30kw": { fit: 2483, mtbfKh: 403 }, "40kw": { fit: 2601, mtbfKh: 385 }, "50kw": { fit: 2710, mtbfKh: 369 }, "50kwa": { fit: 2724, mtbfKh: 367 } };
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };
 const f0 = (x) => Math.round(x);
 
-console.log("=== MTBF BUDGET (E64) — parts-count prediction, 40 °C basis, wear-out reported separately ===");
+console.log("=== MTBF BUDGET — parts-count prediction, 40 °C basis, wear-out reported separately ===");
 export const results = {};
 for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const rows = readFileSync(join(ROOT, `calculations/out/bom-${sku}.csv`), "utf8").trim().split("\n").slice(1)
@@ -99,9 +87,9 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
     .map(([k, v]) => `${k} ${f0(v)} (${f0((100 * v) / fit)}%)`).join(" · ");
   console.log(`        drivers: ${top}`);
 }
-console.log(`  wear-out (separate clocks, not in the MTBF): fans L10 ≥70 kh @40 °C (dual-ball spec, E52) — the
-  first scheduled maintenance item; DC-link/bank electrolytics ≥ ~8 y at the E29 ripple/endurance basis and
-  55 °C-corner duty; HV relays are cycle-limited (session-rated, mirror-checked at every operation, E30);
+console.log(`  wear-out (separate clocks, not in the MTBF): fans L10 ≥70 kh @40 °C (dual-ball spec) — the
+  first scheduled maintenance item; DC-link electrolytics ≥ ~8 y at the RFQ ripple/endurance basis and
+  55 °C-corner duty; HV relays are cycle-limited (session-rated, mirror-checked at every operation);
   acrylic coating re-inspection at service.
   Benchmark context: the REG1K0135A2 family publishes "MTBF 500 kh" with no stated basis [D] — a 25 °C
   ground-benign Telcordia figure is routinely 3–5× a 40 °C one on identical hardware; the honest comparison is

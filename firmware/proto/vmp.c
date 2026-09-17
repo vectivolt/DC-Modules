@@ -12,7 +12,7 @@ static uint8_t group_addr(const vmp_t *v) {
 static bool delivering(const mod_tlm_t *m) {
   return m->rs == MOD_RS_ON || m->rs == MOD_RS_STARTING || m->rs == MOD_RS_STOPPING || m->rs == MOD_RS_MODE_CHANGE;
 }
-/* E82 (K-4): delivering() alone misses STANDBY's post-stop warm-hold window (PMP_WARM_HOLD_MS, fsm.c), where rs has
+/* delivering() alone misses STANDBY's post-stop warm-hold window (PMP_WARM_HOLD_MS, fsm.c), where rs has
    already dropped to MOD_RS_READY but the PFC (and, briefly, the LLC) are still switching for a fast restart. REBOOT /
    FACTORY_RESET / ENTER_BOOT have no orderly-stop step of their own (unlike SHUTDOWN), so they must wait for both. */
 static bool stages_live(const mod_tlm_t *m) { return delivering(m) || m->pfc_en || m->llc_en; }
@@ -118,9 +118,9 @@ static void rx_ctrl(vmp_t *v, const pmp_frame_t *f, uint32_t now, pmp_txq_t *tx)
   int verdict = cnt_verdict(v->cnt_ok, v->cnt, c);
   if (verdict == 0) { v->rx_dup++; return; }
   if (verdict < 0) { nak(v, now, tx, src, VMP_F_CTRL, VMP_E_SEQUENCE, c); return; }
-  /* E81 (F-F-6): the CYCLIC setpoints get the coarse range check the WRITE path always had. The power stage was never
-     at risk — fsm.c's v_max and ctl.c's i_avail/p_avail clamp independently — but a broken controller got no NAK, no
-     rejection code, and telemetry echoed its impossible setpoint back as if the module had agreed to it. */
+  /* The CYCLIC setpoints get the same coarse range check as the WRITE path. The power stage is not at risk either
+     way — fsm.c's v_max and ctl.c's i_avail/p_avail clamp independently — but without it a broken controller gets no
+     NAK and no rejection code, and telemetry echoes its impossible setpoint back as if the module had agreed to it. */
   float vs = (float)pmp_get16(d + 1) * 0.1f, is = (float)pmp_get16(d + 3) * 0.05f;
   if (vs > PMP_SER_VMAX_V * 1.1f) { nak(v, now, tx, src, VMP_F_CTRL, VMP_E_RANGE, 1u); return; }
   if (is > 400.0f) { nak(v, now, tx, src, VMP_F_CTRL, VMP_E_RANGE, 3u); return; }
@@ -379,14 +379,14 @@ static uint64_t warn_bits(const vmp_t *v, const mod_tlm_t *m, uint32_t age, pmp_
   if (v->conflict) w |= 1ull << VMP_W_ADDR_CONFL;
   if (tx->dropped) w |= 1ull << VMP_W_TX_DROP;
   if (v->rx_reject) w |= 1ull << VMP_W_RX_REJECT;
-  if (v->ev_suppressed) w |= 1ull << VMP_W_EV_SUPPRESS;   /* E81 (K7): events were rate-limited — 0x0502 has the count */
+  if (v->ev_suppressed) w |= 1ull << VMP_W_EV_SUPPRESS;   /* events were rate-limited — 0x0502 has the count */
   return w;
 }
 
 #define W_REPORT (PMP_W_LINE_WAIT | PMP_W_IN_RIDE | PMP_W_DERATE_TH | PMP_W_DERATE_FAN | PMP_W_NO_SETPOINT | PMP_W_MEAS_GLITCH | \
                   PMP_W_RELAY_FB_OFF | PMP_W_RECOVERING | PMP_W_REARM)
 
-/* E81 (K7): one EVENT per {kind, code} per VMP_EVENT_GAP_MS. Returns false when this one is being suppressed. */
+/* One EVENT per {kind, code} per VMP_EVENT_GAP_MS. Returns false when this one is being suppressed. */
 static bool ev_allow(vmp_t *v, uint32_t now, uint8_t kind, uint8_t code) {
   for (unsigned k = 0u; k < 8u; k++)
     if (v->ev_gate[k].kind == kind && v->ev_gate[k].code == code) {
@@ -516,7 +516,7 @@ void vmp_tick(vmp_t *v, uint32_t now, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_tx
     for (unsigned k = 0u; k < 8u; k++) d[k] = (uint8_t)pmp_sat_i8(z[k], 1.0f);
     emit(tx, VMP_P_SLOW, VMP_F_TLM_THERMAL, VMP_ADDR_ALL, me, d);
   }
-  /* E81 (K1): the pack / external node behind DOUT. UUGreen, ENR and GWBZ all carry it; a controller needs it to
+  /* the pack / external node behind DOUT. UUGreen, ENR and GWBZ all carry it; a controller needs it to
      pre-position its reference before the contactor closes and to sanity-check a setpoint against a plausible pack.
      b0–1 pack voltage u16 0.1 V (0xFFFF = none or unknown) · b2 external node present · b3–7 reserved 0. */
   if (due(&v->t_pack, now, v->cfg.slow_ms)) {

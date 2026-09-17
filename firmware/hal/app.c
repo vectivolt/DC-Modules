@@ -9,20 +9,21 @@
 #define APP_FOLD_LO_V    (PMP_BUS_UV_V + 5.0f)   /* the LLC takes nothing at 625 V; F.05 latches below 620 V */
 #define APP_WDT_KICK_MS  10u
 #define APP_AZ_N         2000u                     /* boot offset window: 200 ms at 10 kHz, ten line cycles */
-/* E82 (C-02): F.01 is POSITIVE-reference plus a software magnitude test. E81 (F-A-8 / F-D-10, O-15) made the DAC reference
-   follow the sign of the measured current so that a through-window CT's unknown primary orientation stopped mattering; but
-   the comparators are non-inverted into active-HIGH fault inputs, so loading AVMID − k·I_trip asserts the fault for the
-   whole time the current reads negative — at idle, where the sign of ≈ 0 A is noise, that is F.01 within milliseconds of
-   boot. The CT-orientation problem is answered instead by |i| in app_pfc_isr, which is sign-blind by construction, backed by
-   Σi = 0: in a 3-wire stage a negative fault beyond 2·I_trip always shows as a positive one at or above I_trip elsewhere. */
+/* F.01 is a POSITIVE DAC reference plus a software magnitude test (trip polarity is open decision O-15; EVT injection
+   decides). A reference that follows the sign of the measured current would let a through-window CT's unknown primary
+   orientation stop mattering, but the comparators are non-inverted into active-HIGH fault inputs, so loading
+   AVMID − k·I_trip asserts the fault for the whole time the current reads negative — at idle, where the sign of ≈ 0 A is
+   noise, that is F.01 within milliseconds of boot. The CT-orientation problem is answered instead by |i| in app_pfc_isr,
+   which is sign-blind by construction, backed by Σi = 0: in a 3-wire stage a negative fault beyond 2·I_trip always shows
+   as a positive one at or above I_trip elsewhere. */
 #define LSB              (3.3f / 4096.0f)
 
 enum { FLT_OC = 0, FLT_DESAT, FLT_VBUS, FLT_VOUT, FLT_TANK };
 typedef char app_nv_records_fit[(sizeof(app_cfg_t) <= NVM_MAX_LEN && sizeof(meas_cal_t) <= NVM_MAX_LEN) ? 1 : -1];
 
 static float clampf(float x, float lo, float hi) { return x < lo ? lo : (x > hi ? hi : x); }
-#define BIT8(n) ((uint8_t)(1u << (n)))   /* E81: RCU_RSTSCK bits 31:24 packed into app_boot_t.reset_cause */
-static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok);   /* E80: registered on the native profile */
+#define BIT8(n) ((uint8_t)(1u << (n)))   /* RCU_RSTSCK bits 31:24 packed into app_boot_t.reset_cause */
+static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok);   /* registered on the native profile */
 static uint16_t sat16(uint32_t x) { return x > 0xFFFFu ? 0xFFFFu : (uint16_t)x; }
 
 void app_cfg_default(app_cfg_t *c) {
@@ -40,8 +41,8 @@ void app_init(app_t *a, const app_boot_t *b) {
   a->kw = meas_rating_kw(b->rating_counts * 3.3f / 4095.0f, &a->liquid);
   a->strap_bad = a->kw == 0u;
   if (a->strap_bad) a->kw = 30u;                 /* the tightest current classes; F.30 keeps the output off */
-  /* E81 (user decision 2026-09-17): 30 kW 3 fans · 40 kW 3 · 50 kW liquid 0 · 50 kW air 4. The 30 kW third fan lands on
-     FAN_TACH3 / FAN_PWM2 and recovers the air-budget margin F-C-2 took away (55 °C inlet, 16–18 K module rise). */
+  /* Fan count per rating: 30 kW 3 · 40 kW 3 · 50 kW liquid 0 · 50 kW air 4. The 30 kW third fan lands on
+     FAN_TACH3 / FAN_PWM2 and carries the air-budget margin at 55 °C inlet (16–18 K module rise). */
   a->n_fans = a->liquid ? 0u : (a->kw == 50u) ? 4u : 3u;
   pmp_fsm_init(&a->fsm);
   pmp_fsm_set_rating_kw(&a->fsm, a->kw);
@@ -60,10 +61,10 @@ void app_init(app_t *a, const app_boot_t *b) {
   if (nvm_get(&a->nvm, APP_NV_CAL, (uint8_t *)&cal, (uint8_t)sizeof cal)) {
     if (meas_cal_plausible(&cal, a->kw)) a->cal = cal; else a->cal_bad = true;
   } else a->uncal = true;
-  /* E82 (D-07): the bandgap spreads a few percent part to part and the 3V3 buck another ±2.5 %; judged against a NOMINAL
-     1.20 V the two together cross the ±5 % reference window (F.29) on a corner unit that has nothing wrong with it. The
-     part carries its own factory reading — with it the window sees the rail alone. Applied before AND after calibration,
-     so the channel gains the calibration stores were taken with the same reference the module runs on. */
+  /* The bandgap spreads a few percent part to part and the 3V3 buck another ±2.5 %; judged against a NOMINAL 1.20 V the
+     two together cross the ±5 % reference window (F.29) on a corner unit that has nothing wrong with it. The part
+     carries its own factory reading — with it the window sees the rail alone. Applied before AND after calibration, so
+     the channel gains the calibration stores hold were taken with the same reference the module runs on. */
   if (b->vrefint_v > 1.10f && b->vrefint_v < 1.30f) a->cal.vrefint_v = b->vrefint_v;
   app_cfg_t cfg;
   if (!nvm_get(&a->nvm, APP_NV_CFG, (uint8_t *)&cfg, (uint8_t)sizeof cfg) || cfg.version != APP_CFG_VERSION) app_cfg_default(&cfg);
@@ -74,10 +75,10 @@ void app_init(app_t *a, const app_boot_t *b) {
   a->cfg = cfg;
   (void)nvm_get(&a->nvm, APP_NV_COUNTERS, (uint8_t *)&a->cnt, (uint8_t)sizeof a->cnt);
 
-  /* E81 (F-E-03): the card's real supervisor is the TPS3430, whose WDO is wire-ORed onto NRST — it arrives as EPRSTF
-     (RSTSCK bit 26, i.e. bit 2 of this byte), never as FWDGTRSTF (bit 29 → bit 5), so the old `== FWDGT` test meant F.32
-     never fired for the dominant hang path. Any reset that is neither power-on (bit 27 → 3) nor a sealed reboot is a
-     watchdog event. The raw byte goes out as VMP object 0x000A and into the event ring. */
+  /* The card's real supervisor is the TPS3430, whose WDO is wire-ORed onto NRST — it arrives as EPRSTF (RSTSCK bit 26,
+     i.e. bit 2 of this byte), never as FWDGTRSTF (bit 29 → bit 5), so testing for FWDGT alone would leave F.32 silent
+     on the dominant hang path. Any reset that is neither power-on (bit 27 → 3) nor a sealed reboot is a watchdog
+     event. The raw byte goes out as VMP object 0x000A and into the event ring. */
   a->ident.reset_cause = b->reset_cause;
   a->ident.hw_rev = b->hw_rev;
   a->wdt_boot = (b->reset_cause & (BIT8(5) | BIT8(6))) != 0u ||                       /* FWDGT · WWDGT */
@@ -87,7 +88,7 @@ void app_init(app_t *a, const app_boot_t *b) {
   a->ident.features = (uint16_t)(VMP_FEAT_GROUP | VMP_FEAT_LEVEL_LAW | VMP_FEAT_P_LIMIT | VMP_FEAT_SHARE_TRIM |
                                  VMP_FEAT_FAN_MODES | VMP_FEAT_TIME_SYNC | VMP_FEAT_BOOTLOADER |
                                  (a->liquid ? VMP_FEAT_LIQUID : 0u) | (PMP_WITH_TONHE_V12 ? VMP_FEAT_TONHE_V12 : 0u));
-  if (b->evlog_pages) {                       /* E80: the event ring sits behind the record store's pages */
+  if (b->evlog_pages) {                       /* the event ring sits behind the record store's pages */
     evlog_mount(&a->ev, 4u, b->evlog_pages, b->nvm_page_size);   /* port pages: 0/1 records · 2/3 boot control · 4… events */
     evlog_add(&a->ev, 1u /* boot */, a->ident.reset_cause, (uint16_t)(b->fw & 0xFFFFu), 0u);
   }
@@ -101,7 +102,7 @@ void app_init(app_t *a, const app_boot_t *b) {
 #endif
   {
     vmp_init(&a->vmp, &a->cfg.vmp, &a->ident, 0u);
-    a->vmp.aux_read = app_aux_read; a->vmp.aux_ctx = a;   /* E80: event-log and timing objects */
+    a->vmp.aux_read = app_aux_read; a->vmp.aux_ctx = a;   /* event-log and timing objects */
     a->prof_ctx = &a->vmp;
     a->bitrate = a->vmp.cfg.bitrate;
     if (a->vmp.cfg.ramp_v_vps) a->ctl_cfg.ramp_v_vps = (float)a->vmp.cfg.ramp_v_vps;
@@ -109,14 +110,14 @@ void app_init(app_t *a, const app_boot_t *b) {
     a->ctl_cfg.droop_ohm = (float)a->vmp.cfg.droop_mohm * 1.0e-3f;
   }
 
-  /* E81 (F-E-02): a commanded discharge survives a reset. Without this, pmp_fsm_init's unconditional ST_INIT → ST_PRECHG
-     re-energised the link to the line crest with no command and no fault — 500 V back on the studs while a technician read
-     "discharging". The intent rides the no-init handoff page the port already keeps. */
+  /* A commanded discharge survives a reset. Without this, pmp_fsm_init's unconditional ST_INIT → ST_PRECHG re-energises
+     the link to the line crest with no command and no fault — 500 V back on the studs while a technician reads
+     "discharging". The intent rides the no-init handoff page the port keeps. */
   if (b->disch_pending) pmp_fsm_resume_shutdown(&a->fsm);
   a->in.vmid_frac = 0.5f;
   a->in.fan_ok = true;
   a->in.wdt_ok = true;
-  a->in.relay_fb_wired = PMP_RLY_PRE;   /* the bypass pair has its mirror contact; the matrix relays have none (E67) */
+  a->in.relay_fb_wired = PMP_RLY_PRE;   /* the bypass pair has its mirror contact; the matrix relays have none */
   a->pfc_ref.w_line = a->pfc_sh.w_line = a->w_line;
 }
 
@@ -132,11 +133,11 @@ void app_pfc_isr(app_t *a, const app_pfc_adc_t *s, app_pfc_out_t *o) {
   float i[3] = { meas_val(c, MCH_IA, s->ia, k), meas_val(c, MCH_IB, s->ib, k), meas_val(c, MCH_IC, s->ic, k) };
   float v[3] = { meas_val(c, MCH_VAC1, s->vac[0], k), meas_val(c, MCH_VAC2, s->vac[1], k), meas_val(c, MCH_VAC3, s->vac[2], k) };
   float vbus = meas_val(c, MCH_VBUS, s->vbus, k), vn = meas_val(c, MCH_VMID, s->vmid, k);
-  /* E81 (F-D-7): the line-cycle work is handed to the 10 kHz context. grid_sample carries four vsqrt and two vdiv and the
-     offset window three more branches — ~360 cycles that used to land on one 100 kHz tick in ten and made the WORST-case
-     PFC ISR 7.4 µs against a 10 µs deadline. Nine floats and an index cost ~15 cycles on the same tick.
-     E82 (M-18): this hands over the RAW samples, before the DC correction below — the grid monitor's rms, isum (F.29) and
-     the boot offset window must all keep seeing the chain as it really is. */
+  /* The line-cycle work is handed to the 10 kHz context. grid_sample carries four vsqrt and two vdiv and the offset
+     window three more branches — ~360 cycles, which landing on one 100 kHz tick in ten would make the WORST-case PFC
+     ISR 7.4 µs against a 10 µs deadline. Nine floats and an index cost ~15 cycles on the same tick.
+     This hands over the RAW samples, before the DC correction below — the grid monitor's rms, isum (F.29) and the boot
+     offset window must all keep seeing the chain as it really is. */
   if (++a->grid_div >= 10u) {
     a->grid_div = 0u;
     uint8_t w = (uint8_t)(a->g_idx ^ 1u);
@@ -145,20 +146,20 @@ void app_pfc_isr(app_t *a, const app_pfc_adc_t *s, app_pfc_out_t *o) {
     a->g_idx = w;
     a->g_new = 1u;
   }
-  /* E82 (C-02): F.01's comparators carry the POSITIVE reference only (outputs(), and see below); the negative polarity is
+  /* F.01's comparators carry the POSITIVE reference only (outputs(), and the file header); the negative polarity is
      covered by this magnitude test plus Σi = 0 — in a 3-wire stage a negative fault beyond 2·I_trip necessarily shows as a
      positive one at or above I_trip in another phase, which the comparator catches in ns. This runs on the RAW current, so
-     protection never depends on the M-18 correction path, and it takes the same route a hardware trip takes: trip_n holds
-     both stages off from the o->en line below, and app_tick latches F.01 on the next 1 ms pass. (app_fault_isr is also
-     called from the HRTIMER fault vector; a preemption can lose one COUNT, never the inequality the tick tests.) */
+     protection never depends on the DC-correction path below, and it takes the same route a hardware trip takes: trip_n
+     holds both stages off from the o->en line below, and app_tick latches F.01 on the next 1 ms pass. (app_fault_isr is
+     also called from the HRTIMER fault vector; a preemption can lose one COUNT, never the inequality the tick tests.) */
   for (int n = 0; n < 3; n++)
     if (fabsf(i[n]) > a->fsm.oc_line_a) { app_fault_isr(a, 1u << APP_FLT_IA, 0.0f); break; }
-  /* E82 (M-18): the DC the loop cannot see. A CT passes nothing below ≈ 1 Hz, so the P-only current loop has no DC feedback
-     at all and a measurement offset — dominated by the SNS_VAC channels, 1 LSB = 1.35 V of line — drives real DC line
-     current through the line resistance alone. Both means are zero by physics, so the per-cycle estimate IS the offset. */
+  /* the DC the loop cannot see. A CT passes nothing below ≈ 1 Hz, so the P-only current loop has no DC feedback at all
+     and a measurement offset — dominated by the SNS_VAC channels, 1 LSB = 1.35 V of line — drives real DC line current
+     through the line resistance alone. Both means are zero by physics, so the per-cycle estimate IS the offset. */
   for (int n = 0; n < 3; n++) { i[n] -= a->grid.dci[n]; v[n] -= a->grid.dcv[n]; }
   pfc_step(&a->pfc, &a->pfc_cfg, &a->pfc_ref, i, v, vbus - vn, vn, a->p_llc, APP_PFC_DT);
-  o->en = a->pfc.run && a->trip_n == a->trip_ack;   /* E82 (LV-4): a hardware trip holds the stage off until the tick has latched it */
+  o->en = a->pfc.run && a->trip_n == a->trip_ack;   /* a hardware trip holds the stage off until the tick has latched it */
   for (int n = 0; n < 3; n++) o->on[n] = a->pfc.on[n];
   a->vbus_now = vbus;
   a->pa_vbus += vbus; a->pa_vmid += vn;
@@ -173,7 +174,7 @@ void app_pfc_isr(app_t *a, const app_pfc_adc_t *s, app_pfc_out_t *o) {
 
 void app_llc_isr(app_t *a, const app_llc_adc_t *s, app_llc_out_t *o) {
   if (a->llc_commit) { a->llc_ref = a->llc_sh; a->llc_commit = 0u; __asm__ volatile ("" ::: "memory"); }
-  /* E81 (F-D-7): the 10 kHz line-cycle work the PFC ISR handed over */
+  /* the 10 kHz line-cycle work the PFC ISR handed over */
   if (a->g_new) {
     a->g_new = 0u;
     const float *gv = a->g_buf[a->g_idx].v, *gi = a->g_buf[a->g_idx].i;
@@ -194,29 +195,25 @@ void app_llc_isr(app_t *a, const app_llc_adc_t *s, app_llc_out_t *o) {
   float stack = r->ser ? va + vb : fmaxf(va, vb);
   /* bus fold-back: below its reference the LLC takes less, so a sag rides on the power the clamped PFC can still draw instead of
      collapsing the bus into F.05 */
-  /* E81 (F-E-05): the floor tracks the LINE CREST. Fixed at 625 V it let a 475 VAC site (crest 671.8 V) sit between the
-     crest and the reference — the rectifier conducting uncontrolled, line current unshaped — while the LLC still drew
-     52 % of rated power and no row fired. Below the crest the Vienna cannot regulate, so the LLC takes nothing. */
+  /* the floor tracks the LINE CREST. Fixed at 625 V it would let a 475 VAC site (crest 671.8 V) sit between the crest
+     and the reference — the rectifier conducting uncontrolled, line current unshaped — while the LLC still drew 52 %
+     of rated power and no row fired. Below the crest the Vienna cannot regulate, so the LLC takes nothing. */
   float fold_lo = fmaxf(APP_FOLD_LO_V, r->fold_crest_v);
   float kb = clampf((a->vbus_now - fold_lo) / fmaxf(r->fold_hi_v - fold_lo, 10.0f), 0.0f, 1.0f);
   /* the terminal while the diode conducts; the stack while a battery or charged terminal capacitors above it block the diode */
-  /* E82 (M-30): the voltage loop's gain is divided by the modulator's own sensitivity at the point it is standing on
-     (llc.h k_norm, from the previous 100 µs pass — it moves far slower than the loop). Folding it into v_scale is exactly
-     kp_v/(v_scale·k_norm), a plant inversion, and it leaves ctl.c's gains and llc.c's validated map alone. Without it one
-     fixed PI pair drove a map whose sensitivity spans 23×, and the phase-shift end limit-cycled at 5 kHz. */
+  /* the voltage loop's gain is divided by the modulator's own sensitivity at the point it is standing on (llc.h k_norm,
+     from the previous 100 µs pass — it moves far slower than the loop). Folding it into v_scale is exactly
+     kp_v/(v_scale·k_norm), a plant inversion, and it leaves ctl.c's gains and llc.c's validated map alone. Without it
+     one fixed PI pair drives a map whose sensitivity spans 23×, and the phase-shift end limit-cycles at 5 kHz. */
   float u = pmp_reg_step(&a->reg, &a->reg_cfg, r->en, r->v_ref, r->i_ref * kb, fminf(vout, stack), iout,
                          r->v_scale * (a->llc.k_norm > 0.0f ? a->llc.k_norm : 1.0f),
                          a->ctl_cfg.i_rated_a, APP_LLC_DT);
-  /* E81: the two extra plant inputs (llc.h) — the DC link for the ZVS charge, the node reference for the burst floor */
+  /* the two extra plant inputs (llc.h) — the DC link for the ZVS charge, the node reference for the burst floor */
   a->llc.in_v_ref = r->ser ? 0.5f * r->v_ref : r->v_ref;
   llc_step(&a->llc, &a->llc_cfg, r->en, u, r->ser ? 0.5f * stack : stack, stack * iout, a->vbus_now);
-  o->gate = a->llc.gate && a->trip_n == a->trip_ack;   /* E82 (LV-4): no re-strike into a tripped tank / DESAT / OVP */
+  o->gate = a->llc.gate && a->trip_n == a->trip_ack;   /* no re-strike into a tripped tank / DESAT / OVP */
   o->f_hz = a->llc.f_hz; o->duty = a->llc.duty; o->dead_s = a->llc.dead_s;
   o->dead_a_s = a->llc.dead_a_s; o->dead_b_s = a->llc.dead_b_s;
-  /* E82 (M-31): the F-E-15 flux-walk proxy is GONE. It filtered the same aliased I_RES channel, so near f_sw = 100 or
-     200 kHz the alias landed at DC and APP_W_FLUX fired on frequency coincidence alone — and a current transformer has no
-     DC response to begin with (B-magnetics M-6), so it never could have seen a flux walk. a->ires_dc stays 0, which holds
-     the warning off; the dead state and its row are listed in NOTES.md for removal. */
   a->p_llc = r->en ? fmaxf(vout * iout, 0.0f) : 0.0f;
   a->la_vout += vout; a->la_iout += iout; a->la_vbka += va; a->la_vbkb += vb;
   if (++a->la_n >= 10u) {
@@ -234,7 +231,7 @@ void app_llc_isr(app_t *a, const app_llc_adc_t *s, app_llc_out_t *o) {
 }
 
 void app_fault_isr(app_t *a, uint16_t ch, float ires_counts) {
-  a->trip_n++;   /* E82 (LV-4): hold both stages off until app_tick acknowledges (after the FSM saw it and the refs are committed) */
+  a->trip_n++;   /* hold both stages off until app_tick acknowledges (after the FSM saw it and the refs are committed) */
   if (ch & ((1u << APP_FLT_IA) | (1u << APP_FLT_IB) | (1u << APP_FLT_IC))) a->flt_n[FLT_OC]++;
   if (ch & (1u << APP_FLT_VBUS)) a->flt_n[FLT_VBUS]++;
   if (ch & (1u << APP_FLT_VOUT)) a->flt_n[FLT_VOUT]++;
@@ -254,7 +251,7 @@ static bool took(app_t *a, int kind) {   /* a fault event the tick has not seen 
 }
 
 /* -------------------------------------------------------------------------------------------------------------------- tick */
-static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok) {   /* E80: VMP objects 0x04xx / 0x05xx */
+static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok) {   /* VMP objects 0x04xx / 0x05xx */
   app_t *a = ctx;
   *ok = true;
   switch (obj) {
@@ -271,15 +268,15 @@ static uint32_t app_aux_read(void *ctx, uint16_t obj, uint8_t sub, bool *ok) {  
   }
   case VMP_O_DIAG_EXEC: return ((uint32_t)a->pfc_us << 16) | a->llc_us;      /* T-44: worst ISR µs since the last read tick */
   case VMP_O_DIAG_STACK: return a->stack_pct;
-  case VMP_O_DIAG_EV_SUP: return a->vmp.ev_suppressed;   /* E81 (K7): EVENT frames dropped by the per-code rate limit */
-  case VMP_O_DIAG_RX_OVR: return a->can_rx_ovr;          /* E82 (K-6): the only evidence of a lost frame the controller offers */
+  case VMP_O_DIAG_EV_SUP: return a->vmp.ev_suppressed;   /* EVENT frames dropped by the per-code rate limit */
+  case VMP_O_DIAG_RX_OVR: return a->can_rx_ovr;          /* the only evidence of a lost frame the controller has */
   default: break;
   }
   *ok = false;
   return 0u;
 }
 
-static void events(app_t *a) {   /* E80: fault transitions into the ring (flushed by nvm_service, never while delivering) */
+static void events(app_t *a) {   /* fault transitions into the ring (flushed by nvm_service, never while delivering) */
   pmp_fault_t l = a->fsm.latched;
   if (l == a->ev_prev) return;
   uint8_t kind = (l != FC_NONE) ? 2u : 3u;                     /* fault set / cleared (vmp EVENT kinds) */
@@ -297,18 +294,18 @@ static void events(app_t *a) {   /* E80: fault transitions into the ring (flushe
 static void supervise(app_t *a, const app_tick_in_t *ti) {
   uint32_t pc = a->pfc_count, lc = a->llc_count, dp = pc - a->pfc_last, dl = lc - a->llc_last;
   a->pfc_last = pc; a->llc_last = lc;
-  /* E81 (F-E-01a): a tick that stands for a backlog of missed milliseconds is not evidence about the ISRs. The catch-up
-     ticks used to run back to back, each seeing dl ≈ 0, and fired the "three LLC periods missing" verdict — so the
-     firmware's own flash writes latched F.35 (a LATCH row, which also blocked A/B image confirmation) on the first
-     configuration write of every module's life. Re-baseline and judge nothing. */
+  /* A tick that stands for a backlog of missed milliseconds is not evidence about the ISRs. Judged, catch-up ticks run
+     back to back, each seeing dl ≈ 0, and fire the "three LLC periods missing" verdict — so the firmware's own flash
+     writes would latch F.35 (a LATCH row, which also blocks A/B image confirmation) on the first configuration write
+     of every module's life. Re-baseline and judge nothing. */
   if (ti->late) { a->hb_ok = true; a->in.ctl_overrun = false; return; }
   bool warm = a->now_ms > 20u;                                  /* the first ticks line the ISR phases up */
   a->hb_ok = dp > 0u && dl > 0u;
   bool miss = warm && (dp < 98u || dp > 102u || dl < 9u || dl > 11u);
   bool slow = ti->pfc_exec_us > 10u || ti->llc_exec_us > 100u;  /* ran past its own period */
   if (miss || slow) a->ovr_win++;
-  /* E82 (E-15): F.35 is a LATCH row, and the "three LLC periods missing inside one tick" arm used to fire it on ONE sample —
-     a single preempted millisecond took a module out of service until a technician cleared it. The hardware trips do not
+  /* F.35 is a LATCH row, and the "three LLC periods missing inside one tick" arm must not fire on ONE sample — a single
+     preempted millisecond would take a module out of service until a technician cleared it. The hardware trips do not
      depend on this row, so it can afford evidence: three such ticks inside one 100 ms window. */
   if (warm && dl <= 7u && a->ovr_hard < 255u) a->ovr_hard++;
   bool verdict = a->ovr_hard >= 3u;                              /* a STOPPED interrupt still latches inside 3 ms */
@@ -330,7 +327,7 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   if (ref_ok) a->k_ref += (kr - a->k_ref) * 0.01f;
   a->ref_bad_ms = ref_ok ? 0u : sat16(a->ref_bad_ms + 1u);
 
-  /* E81 (F-D-13): AVMID is converted and judged. Every bipolar sense (three line CTs, the resonant CT, the F.11 window)
+  /* AVMID is converted and judged. Every bipolar sense (three line CTs, the resonant CT, the F.11 window)
      is referenced to this buffer; if it or its 10 k/10 k ladder drifts, all three phase currents and the F.01/F.11
      thresholds shift together and only the once-per-boot offset window would ever have noticed. 1.65 V ± 50 mV. */
   float avmid = ti->avmid * (3.3f / 4095.0f) / a->k_ref;
@@ -380,8 +377,8 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
     a->grid_seen = q;
     float mx = fmaxf(fmaxf(vll[0], vll[1]), vll[2]), mn = fminf(fminf(vll[0], vll[1]), vll[2]);
     in->vin_ll = (mx - 400.0f > 400.0f - mn) ? mx : mn;          /* display keeps the line farthest from nominal */
-    in->vin_ll_min = mn; in->vin_ll_max = mx;                    /* E80 (R06/HR-24): each protection row reads its own side */
-    a->iline_rms = fmaxf(fmaxf(irms[0], irms[1]), irms[2]);      /* E82 (C-11): the Vienna die model reads the worst phase */
+    in->vin_ll_min = mn; in->vin_ll_max = mx;                    /* each protection row reads its own side */
+    a->iline_rms = fmaxf(fmaxf(irms[0], irms[1]), irms[2]);      /* the Vienna die model reads the worst phase */
     float vmax = fmaxf(fmaxf(vph[0], vph[1]), vph[2]), imean = (irms[0] + irms[1] + irms[2]) / 3.0f;
     bool loaded = a->pfc.run && imean > 0.05f * a->pfc_cfg.i_clamp;
     uint8_t ok = 0u;
@@ -423,25 +420,22 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   if (took(a, FLT_VOUT) && h == FC_NONE) h = FC_OUT_OVP;
   if (took(a, FLT_TANK) && h == FC_NONE) h = FC_TANK_OC;
   if (h == FC_NONE) {
-    /* E80 (review HR-29/R04): NO calibration record inhibits delivery like a bad one — with the corrected nominal
-       transfers a blank card still carries the sense chains' full part tolerances; the EOL fixture writes the record
-       (there is deliberately no CAN write path for calibration). APP_W_UNCAL names the cause next to F.30. */
+    /* NO calibration record inhibits delivery exactly like a bad one — even with the nominal transfers a blank card
+       still carries the sense chains' full part tolerances; the EOL fixture writes the record (there is deliberately
+       no CAN write path for calibration). APP_W_UNCAL names the cause next to F.30. */
     if (a->strap_bad || a->cal_bad || a->uncal) h = FC_CAL;
     else if (a->az_bad || a->ref_bad_ms >= 100u || a->isum_bad_ms >= 20u || a->avmid_bad_ms >= 100u) h = FC_SENSOR;
     else if (ti->stack_pct >= 90u) h = FC_INTERNAL;
     else if (a->hz_bad_ms >= 200u) h = FC_LINE_HZ;
   }
-  /* E81 (F-E-15): the two D3 cells have their primaries in series on one Cr, so Cr blocks a common-mode DC but cannot
-     correct a DIFFERENTIAL flux imbalance between them. The resonant CT's slow mean is the cheapest proxy; 2 % of the
-     tank class held for 100 ms is a warning, not a latch (F.11 and the 130 °C cutouts remain the only detectors of a
-     real walk — recorded as a gap in the FMEA). */
-  bool flux = a->fsm.out.llc_en && fabsf(a->ires_dc) > 0.02f * a->fsm.oc_tank_a;
-  a->flux_ms = flux ? sat16(a->flux_ms + 1u) : 0u;
+  /* No flux-walk detector: the series Cr blocks a common-mode DC, and the resonant CT has no DC response and is sampled
+     asynchronously to the tank, so a differential imbalance between the two cells is not observable here. F.11 and the
+     130 °C magnetics cutouts are what act on a real walk. */
 
   in->hal_fault = h;
   in->wdt_ok = !(a->wdt_boot && a->now_ms <= 1u);             /* a watchdog reset reports F.32 once */
   in->relay_fb = (ti->di & APP_DI_RLY_PRE) ? PMP_RLY_PRE : 0u;
-  in->link_age_ms = 0u;                                       /* F.27 retired: one brain (E40) */
+  in->link_age_ms = 0u;                                       /* no inter-card link exists: one MCU runs both stages */
 }
 
 static void commit(app_t *a) {
@@ -451,8 +445,8 @@ static void commit(app_t *a) {
   a->pfc_sh.en = fo->pfc_en && !fo->pwm_kill && a->fsm.pre_blank_ms == 0u;
   a->pfc_sh.vbus_ref = fo->vbus_ref;
   a->pfc_sh.w_line = a->w_line;
-  __asm__ volatile ("" ::: "memory");                   /* E81 (F-E-17): C11 orders volatile against volatile only — the
-                                                           non-volatile shadow stores may otherwise sink past this flag */
+  __asm__ volatile ("" ::: "memory");                   /* C11 orders volatile against volatile only — the non-volatile
+                                                           shadow stores may otherwise sink past this flag */
   a->pfc_commit = 1u;
   a->llc_commit = 0u;
   __asm__ volatile ("" ::: "memory");
@@ -462,8 +456,8 @@ static void commit(app_t *a) {
   a->llc_sh.i_ref = a->ctl.i_ref;
   a->llc_sh.v_scale = fmaxf(fo->v_max, PMP_PAR_VMAX_V);
   a->llc_sh.fold_hi_v = fmaxf(fo->vbus_ref - 10.0f, APP_FOLD_LO_V + 10.0f);
-  a->llc_sh.fold_crest_v = 1.414f * a->in.vin_ll_max;   /* E81 (F-E-05) */
-  __asm__ volatile ("" ::: "memory");                   /* E81 (F-E-17): the shadow stores must precede the flag */
+  a->llc_sh.fold_crest_v = 1.414f * a->in.vin_ll_max;   /* the fold floor tracks the line crest */
+  __asm__ volatile ("" ::: "memory");                   /* the shadow stores must precede the flag */
   a->llc_commit = 1u;
 }
 
@@ -475,24 +469,24 @@ static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
                           (fo->k_parb ? APP_DO_KPARB : 0u) | (fo->q_disch ? APP_DO_QDIS : 0u) | (fo->q_disch_bk ? APP_DO_QDISBK : 0u) |
                           (a->pfc_sh.en ? APP_DO_EN_PFC : 0u) | (a->llc_sh.en ? APP_DO_EN_LLC : 0u));
   /* the comparator references from the rating and the calibration in force (firmware may tighten, never loosen).
-     E82 (C-02): POSITIVE reference only. E81's "bipolar" F.01 loaded AVMID − k·I_trip whenever the measured current read
-     negative, and with non-inverted comparators into active-HIGH fault inputs that reference asserts the fault for the whole
-     negative half cycle — including at idle, where the sign of ≈ 0 A is noise. The negative polarity is covered instead by
-     Σi = 0 and the 100 kHz magnitude test in app_pfc_isr. */
+     POSITIVE reference only: a bipolar F.01 would load AVMID − k·I_trip whenever the measured current read negative,
+     and with non-inverted comparators into active-HIGH fault inputs that reference asserts the fault for the whole
+     negative half cycle — including at idle, where the sign of ≈ 0 A is noise. The negative polarity is covered
+     instead by Σi = 0 and the 100 kHz magnitude test in app_pfc_isr. */
   for (int n = 0; n < 3; n++) {
     a->dac_oc_pos[n] = dac_v(&a->cal, MCH_IA + n, a->fsm.oc_line_a);
     o->dac_v[APP_DAC_IA + n] = a->dac_oc_pos[n];
   }
   o->dac_v[APP_DAC_VBUS] = dac_v(&a->cal, MCH_VBUS, PMP_BUS_OVP_V);
-  /* E80 (review R09/HR-07, FW-19): the F.13 comparator threshold follows the output mode — LOW mode's banks meet a
-     hardware limit at 560 V instead of the HIGH-mode 1050 V (the documented interim until HW-REC-1 is decided; an EV
-     contactor opening ends the session anyway, so the latch is the protective outcome, not a nuisance) */
+  /* the F.13 comparator threshold follows the output mode — LOW mode's banks meet a hardware limit at 560 V instead
+     of the HIGH-mode 1050 V (the documented interim until HW-REC-1 is decided; an EV contactor opening ends the
+     session anyway, so the latch is the protective outcome, not a nuisance) */
   float th13 = (fo->v_max <= PMP_PAR_VMAX_V) ? 560.0f : PMP_OUT_OVP_ABS_V;
   o->dac_v[APP_DAC_VOUT] = dac_v(&a->cal, MCH_VOUT, th13);
   /* HW-REC-1 readiness: the non-latching clamp reference rides the active CV setpoint; armed high when idle */
   float vr = a->ctl.v_ref;
   o->dac_v[APP_DAC_CLAMP] = dac_v(&a->cal, MCH_VOUT, (vr > 50.0f) ? fminf(vr * 1.05f + 10.0f, th13) : th13);
-  /* E80: relay-coil economizer (firmware-guide E26) — 60 ms pull-in, then 40 % hold at 20 kHz; aux-budget relief (R23) */
+  /* relay-coil economizer (docs/firmware-guide.md, relay economization) — 60 ms pull-in, then 40 % hold at 20 kHz, which is what keeps the coils inside the aux budget */
   static const uint16_t RLY_DO[APP_RLY_COUNT] = { APP_DO_KPRE, APP_DO_KSER, APP_DO_KPARA, APP_DO_KPARB };
   for (int r = 0; r < APP_RLY_COUNT; r++) {
     if (!(o->do_bits & RLY_DO[r])) { a->rly_ms[r] = 0u; o->relay_duty[r] = 0.0f; }
@@ -501,17 +495,17 @@ static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
       o->relay_duty[r] = (a->rly_ms[r] <= APP_RLY_PULL_MS) ? 1.0f : APP_RLY_HOLD;
     }
   }
-  /* E73: the latches clear through the bypass-closure blank, and once a latched row has cleared.
-     E81 (F-E-11): the blank is an F.01 rule — clear only the three line-OC channels inside it. Clearing F.03 (bus OVP) or
-     F.13 (output OVP) sixty times in a row would undo a hardware latch the blank has nothing to say about, and E73's own
-     inrush measurement (605 → 726 V) is close enough to F.03 to matter the moment a stage is enabled in the window. */
+  /* the latches clear through the bypass-closure blank, and once a latched row has cleared. The blank is an F.01 rule,
+     so only the three line-OC channels clear inside it: clearing F.03 (bus OVP) or F.13 (output OVP) sixty times in a
+     row would undo a hardware latch the blank has nothing to say about, and the closure inrush itself (605 → 726 V)
+     is close enough to F.03 to matter the moment a stage is enabled in the window. */
   o->fault_rearm = a->fsm.pre_blank_ms > 0u ? (uint16_t)APP_FLT_LINE_OC
                  : (st0 == ST_FAULT && a->fsm.st != ST_FAULT && a->fsm.st != ST_LOCK) ? (uint16_t)APP_FLT_ALL : 0u;
-  o->disch_intent = a->fsm.st == ST_SHUTDOWN || a->fsm.st == ST_DISCH;   /* E81 (F-E-02) */
+  o->disch_intent = a->fsm.st == ST_SHUTDOWN || a->fsm.st == ST_DISCH;   /* the port keeps it across a reset */
 }
 
 static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
-  if (a->n_fans == 0u) { a->in.fan_ok = true; return; }       /* 50 kW liquid: sealed, no fans (E42) */
+  if (a->n_fans == 0u) { a->in.fan_ok = true; return; }       /* 50 kW liquid: sealed, no fans */
   if (a->now_ms % 10u == 0u) {
     const pmp_out_t *fo = &a->fsm.out;
     float t = a->in.temp_max_c, p = fmaxf(a->in.vout_meas * a->in.iout_meas, 0.0f) / a->ctl_cfg.p_rated_w;
@@ -522,10 +516,10 @@ static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
     if (a->cfg.vmp.fan_mode == 1u) d = fminf(d, 0.6f);        /* quiet: the thermal derate absorbs the rest */
     else if (a->cfg.vmp.fan_mode == 2u && need) d = 1.0f;     /* boost */
     if (d == 0.0f && a->fan_duty > 0.0f && a->now_ms - a->fan_on_ms < 10000u) d = a->fan_duty;   /* at least 10 s on */
-    /* E82 (M-08): the 50 kW-air aux budget is ≈ 120 W on a 110 W stage, and the NCP1252's over-current protection is a
-       LATCH — once it trips, only a power cycle clears it. So nothing starts on a rail that has not been in spec for
-       500 ms (rails_ms is the measured rails, not in.aux_ok: the fans must not wait on the boot offset window, which
-       needs the stages running), and the two fan PWM channels never start together. */
+    /* The 50 kW-air aux budget is ≈ 120 W on a 110 W stage, and the NCP1252's over-current protection is a LATCH —
+       once it trips, only a power cycle clears it. So nothing starts on a rail that has not been in spec for 500 ms
+       (rails_ms is the measured rails, not in.aux_ok: the fans must not wait on the boot offset window, which needs
+       the stages running), and the two fan PWM channels never start together. */
     if (a->rails_ms < 500u) d = 0.0f;
     if (d > a->fan_duty || d < a->fan_duty - 0.1f || d == 0.0f) {   /* 10 % hysteresis on the way down */
       if (a->fan_duty == 0.0f && d > 0.0f) a->fan_on_ms = a->now_ms;
@@ -533,10 +527,10 @@ static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
     }
     uint8_t fail = 0u;
     for (uint8_t k = 0u; k < a->n_fans; k++) {
-      /* E80 (review HR-25/R25): the floor scales with the command — 5 Hz (150 rpm) used to pass at ANY duty, so a
-         fan at 4 % of its commanded speed read healthy. Below 20 % duty the tach is too slow to judge (the running
-         floor when cooling is needed is 25 %, so a needed fan is always judged). A failed fan that recovers clears
-         its bit and the count-based derate recovers through the FSM's slew. */
+      /* the floor scales with the command — a fixed 5 Hz (150 rpm) passes at ANY duty, so a fan at 4 % of its
+         commanded speed would read healthy. Below 20 % duty the tach is too slow to judge (the running floor when
+         cooling is needed is 25 %, so a needed fan is always judged). A failed fan that recovers clears its bit and
+         the count-based derate recovers through the FSM's slew. */
       bool judged = a->fan_duty >= 0.2f;
       bool slow = judged && !(ti->tach_hz[k] >= fmaxf(5.0f, 0.35f * a->fan_duty * APP_TACH_FULL_HZ));
       a->fan_still_ms[k] = slow ? sat16(a->fan_still_ms[k] + 10u) : 0u;
@@ -544,13 +538,13 @@ static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
     }
     a->fan_fail = fail;
     a->in.fan_ok = fail == 0u;
-    a->in.fans_total = a->n_fans;                             /* E80 (FW-21): the core derates by the failed COUNT */
+    a->in.fans_total = a->n_fans;                             /* the core derates by the failed COUNT */
     uint8_t nf = 0u;
     for (uint8_t k = 0u; k < a->n_fans; k++) nf = (uint8_t)(nf + ((fail >> k) & 1u));
     a->in.fans_failed = nf;
   }
   o->fan_duty[0] = a->fan_duty;
-  /* E82 (M-08): FAN_PWM2 (fans 3–4, or the 30 kW third fan) trails the first group by 300 ms, so four fans never draw
+  /* FAN_PWM2 (fans 3–4, or the 30 kW third fan) trails the first group by 300 ms, so four fans never draw
      their starting current together. The card carries two fan PWM channels, so this is the whole firmware half of the
      stagger — fans 1 and 2 share FAN_PWM1 and always start together, which is a hardware fact, not a policy. */
   o->fan_duty[1] = (a->now_ms - a->fan_on_ms < 300u) ? 0.0f : a->fan_duty;
@@ -581,16 +575,16 @@ static void panel(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
       a->edit = false;
     }
   } else if (hold1 && idle && a->b2_ms == 0u) { a->edit = true; a->edit_addr = a->cfg.panel_addr; a->edit_ms = 0u; }
-  /* E82 (G-10): BOTH buttons held for 3 s inside the first 10 s after power-up = service request. It is the only way into
-     the bootloader that needs no VMP controller: a TonHe-profile module has no ENTER_BOOT action and its SWD header is
-     behind the 88-way connector. Both stages must be off, like every other reboot (K-4). */
+  /* BOTH buttons held for 3 s inside the first 10 s after power-up = service request. It is the only way into the
+     bootloader that needs no VMP controller: a TonHe-profile module has no ENTER_BOOT action and its SWD header is
+     behind the 88-way connector. Both stages must be off, like every other reboot. */
   if (a->now_ms < 10000u && idle && a->b1_ms >= 3000u && a->b2_ms >= 3000u) o->enter_boot = true;
 
   uint8_t d1, d2;
   int f = (int)a->tlm.fault;
   if (a->fsm.lock) { d1 = 0x38u; d2 = 0x3Fu; }                                   /* "LO" */
 #if PMP_WITH_TONHE_V12
-  /* E81 (K §5 fix 3): TonHe §9.2.6 promises automatic address assignment at power-on and defines no mechanism. With no
+  /* TonHe §9.2.6 promises automatic address assignment at power-on and defines no mechanism. With no
      panel address the module is correctly silent on the bus — and invisible. Show "A-" so a commissioning engineer sees
      the cause in seconds instead of hunting a dark slot. */
   else if (a->prof->id == PMP_PROFILE_TONHE_V12 && a->th.no_addr && f == 0) { d1 = 0x77u; d2 = 0x40u; }
@@ -638,8 +632,7 @@ static void telemetry(app_t *a, const app_tick_in_t *ti) {
   m->uptime_s = a->now_ms / 1000u; m->op_s = a->cnt.op_s; m->energy_wh = a->cnt.energy_wh; m->starts = a->cnt.starts;
   m->fault_total = sat16((uint32_t)a->cnt.faults + a->fsm.fault_count);   /* cnt.faults is the boot base */
   m->warn |= (a->uncal ? APP_W_UNCAL : 0u) | (a->az_gave_up ? APP_W_OFFSET : 0u) | (a->nvm_fail >= 3u ? APP_W_NVM : 0u) |
-             (ti->can_state != 0u ? APP_W_CAN : 0u) | (ti->stack_pct >= 70u ? APP_W_STACK : 0u) | (a->ovr_seen ? APP_W_OVERRUN : 0u) |
-             (a->flux_ms >= 100u ? APP_W_FLUX : 0u);
+             (ti->can_state != 0u ? APP_W_CAN : 0u) | (ti->stack_pct >= 70u ? APP_W_STACK : 0u) | (a->ovr_seen ? APP_W_OVERRUN : 0u);
 }
 
 static void nvm_service(app_t *a) {
@@ -666,7 +659,7 @@ static void nvm_service(app_t *a) {
       a->nvm_fail = 0u;
     } else if (quiet && a->nvm_fail < 255u) a->nvm_fail++;
   }
-  if (a->factory_pend && a->now_ms - a->t_cfg >= 100u) {      /* E80: FACTORY_RESET — defaults stored, then reboot */
+  if (a->factory_pend && a->now_ms - a->t_cfg >= 100u) {      /* FACTORY_RESET — defaults stored, then reboot */
     app_cfg_default(&a->cfg);
     a->cfg.vmp.profile = (uint8_t)PMP_PROFILE_NATIVE;
     if (nvm_put(&a->nvm, APP_NV_CFG, (const uint8_t *)&a->cfg, (uint8_t)sizeof a->cfg, quiet)) {
@@ -674,7 +667,7 @@ static void nvm_service(app_t *a) {
       a->t_cfg = a->now_ms;
     }
   }
-  if (a->ev.qn || a->ev.lost) evlog_flush(&a->ev, quiet);       /* E80: events append outside delivery; the ring moves
+  if (a->ev.qn || a->ev.lost) evlog_flush(&a->ev, quiet);       /* events append outside delivery; the ring moves
                                                                    only with both stages stopped (§9 flash discipline) */
   bool hourly = a->now_ms - a->t_cnt >= 3600000u;
   if ((a->cnt_due || hourly) && a->now_ms - a->t_cnt >= 600000u) {   /* at a session end or hourly, at most one per 10 min */
@@ -700,12 +693,12 @@ static void can_service(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   }
   if (a->prof->id == PMP_PROFILE_NATIVE && a->txq.n == 0u) {
     if (a->vmp.reboot_req || a->reboot_pend) o->reboot = true;
-    if (a->vmp.boot_req) o->enter_boot = true;                  /* E80: the port writes the handoff and resets */
+    if (a->vmp.boot_req) o->enter_boot = true;                  /* the port writes the handoff and resets */
     if (a->vmp.factory_req) { a->vmp.factory_req = false; a->factory_pend = true; }
   }
 }
 
-/* E82 (C-11): one step of the junction observer (hal/dielim.h) on the point the stages are standing on. The LLC loss needs
+/* One step of the junction observer (hal/dielim.h) on the point the stages are standing on. The LLC loss needs
    the modulator's frequency, phase-shift duty and tank rms and counts only while the bridge is gated (a burst's off time
    cools); the Vienna loss needs the line and the worst phase current. A stopped stage's estimate falls back onto its base
    (a die is there in a second, a restart takes longer), and stopping the LLC forgets a declined point: the PFC stays warm
@@ -723,8 +716,8 @@ static void die_limit(app_t *a, pmp_ctl_in_t *ci) {
 void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   memset(o, 0, sizeof *o);
   a->now_ms++;
-  uint8_t trip_snap = a->trip_n;   /* E82 (LV-4): only the trips that exist NOW are acknowledged at the end of this tick */
-  a->pfc_us = ti->pfc_exec_us > a->pfc_us ? ti->pfc_exec_us : a->pfc_us;   /* E80 T-44: high-water since boot */
+  uint8_t trip_snap = a->trip_n;   /* only the trips that exist NOW are acknowledged at the end of this tick */
+  a->pfc_us = ti->pfc_exec_us > a->pfc_us ? ti->pfc_exec_us : a->pfc_us;   /* T-44: high-water since boot */
   a->llc_us = ti->llc_exec_us > a->llc_us ? ti->llc_exec_us : a->llc_us;
   a->stack_pct = ti->stack_pct > a->stack_pct ? ti->stack_pct : a->stack_pct;
   a->can_rx_ovr = ti->can_rx_ovr;
@@ -741,19 +734,19 @@ void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   die_limit(a, &ci);
   pmp_ctl_step(&a->ctl, &a->ctl_cfg, &ci, 1.0e-3f);
   commit(a);
-  a->trip_ack = trip_snap;         /* E82 (LV-4): the FSM has seen those trips and its (dis)enables are committed to the ISRs */
+  a->trip_ack = trip_snap;         /* the FSM has seen those trips and its (dis)enables are committed to the ISRs */
   outputs(a, o, st0);
   fans(a, ti, o);
   panel(a, ti, o);
   telemetry(a, ti);
   events(a);
-  /* E80: a pending image confirms after 60 s of healthy standby — no LATCH/LOCK row since boot (AUTO grid rows do
+  /* a pending image confirms after 60 s of healthy standby — no LATCH/LOCK row since boot (AUTO grid rows do
      not block a good image; F.30/F.29/F.32 do). The port acts on the rising edge (boot/bootctl.h). */
   o->boot_ok = a->now_ms >= 60000u && !a->latch_seen && !a->strap_bad && !a->cal_bad && !a->uncal;
   nvm_service(a);
   can_service(a, ti, o);
-  /* the sequenced watchdog. E81 (F-D-9): the HAL says whether kicking is PERMITTED — both ISRs advanced on each of the
-     last 10 ticks — and the port pulses WDI on its own 10 ms of real time, so a blocking flash erase can no longer bunch
-     two edges inside the TPS3430's 2.22 ms lower bound or stretch past its 23.375 ms upper one. */
+  /* the sequenced watchdog: the HAL says whether kicking is PERMITTED — both ISRs advanced on each of the last
+     10 ticks — and the port pulses WDI on its own 10 ms of real time, so a blocking flash erase cannot bunch two
+     edges inside the TPS3430's 2.22 ms lower bound or stretch past its 23.375 ms upper one. */
   o->wdt_kick = a->wdt_good >= APP_WDT_KICK_MS;
 }

@@ -219,7 +219,7 @@
    ],
    "nc_pins": [],
    "value": "IND-LR-E70-30",
-   "query": "IND-LR-E70-30 D2-30 rev F ",
+   "query": "IND-LR-E70-30 D2-30 rev F: EXTERNAL resonant inductor 5.00 µH ±3% on 2× E70/33/3",
    "mpn": "IND-LR-E70-30"
   },
   {
@@ -254,7 +254,7 @@
    ],
    "nc_pins": [],
    "value": "XFMR-LLC-CELL-2E70-30",
-   "query": "XFMR-LLC-CELL-2E70-30 D3-30 rev D ",
+   "query": "XFMR-LLC-CELL-2E70-30 D3-30 rev D: full-bridge LLC transformer CELL ",
    "mpn": "XFMR-LLC-CELL-2E70-30"
   },
   {
@@ -289,7 +289,7 @@
    ],
    "nc_pins": [],
    "value": "XFMR-LLC-CELL-2E70-30",
-   "query": "XFMR-LLC-CELL-2E70-30 D3-30 rev D ",
+   "query": "XFMR-LLC-CELL-2E70-30 D3-30 rev D: full-bridge LLC transformer CELL ",
    "mpn": "XFMR-LLC-CELL-2E70-30"
   },
   {

@@ -1,4 +1,4 @@
-/* meas.h — E79 measurement pipeline. Portable C99, no HAL.
+/* meas.h — the measurement pipeline. Portable C99, no HAL.
  *   calibration   value = gain · (counts − offset) per channel. The defaults are the drawn sense chains at nominal part values; an
  *                 EOL record replaces them, and a record outside ±10 % gain or ±150 counts offset of nominal is F.30.
  *                 Channels on AVMID (the CTs) are ratiometric to VREF; the iso-amp and divider channels are absolute, so the
@@ -6,7 +6,7 @@
  *   grid monitor  per-line-cycle RMS of the phase and line voltages, the line currents and their sum; the frequency from the
  *                 hysteretic zero crossing of V_AB; the phase sequence. Published under a sequence counter: the writer (the
  *                 PFC ISR) makes it odd while writing, a reader retries until it copies an even, unchanged value.
- *   NTC · strap   the 10 k / B3435 divider through pmp_ntc_guard_c · the E24 rev G rating bands (fsm.h) */
+ *   NTC · strap   the 10 k / B3435 divider through pmp_ntc_guard_c · the rating bands (fsm.h) */
 #ifndef PMP_MEAS_H
 #define PMP_MEAS_H
 #include <stdbool.h>
@@ -30,7 +30,7 @@ float meas_ntc_c(float frac);                      /* frac = counts / 4095 */
 uint16_t meas_rating_kw(float volts, bool *liquid); /* 30 · 40 · 50, or 0 for no host / the reserved band */
 
 #define GRID_HYS_V 20.0f
-/* E82 (M-18): the per-line-cycle DC estimate the PFC current loop subtracts before it acts. The Vienna's current loop is
+/* The per-line-cycle DC estimate the PFC current loop subtracts before it acts. The Vienna's current loop is
    P-only, so any DC the modulator is asked to produce is opposed by the line resistance ALONE (tens of mΩ) — and the line
    CTs pass nothing below ≈ 1 Hz, so the loop cannot even see the result. Both forcing terms are measurement offsets: a
    differential offset on the three SNS_VAC channels (1 LSB = 1.35 V of line — the AC chains use 14 % of the ADC span, and
@@ -52,11 +52,11 @@ uint16_t meas_rating_kw(float volts, bool *liquid); /* 30 · 40 · 50, or 0 for 
 #define GRID_DC_I_MAX 1.6f    /* A — 2 % of the smallest SKU's i_clamp (80.8 A); ≈ 17 LSB on the 30 kW CT chain */
 typedef struct {
   float vph[3], vll[3], irms[3], isum, hz;   /* published; hz = 0 when no cycle closed inside 60 ms */
-  float dcv[3], dci[3];                      /* E82 (M-18): published DC estimate of the sensed phase voltages and line currents */
+  float dcv[3], dci[3];                      /* published DC estimate of the sensed phase voltages and line currents */
   bool abc;
   uint32_t seq;
   float a_vph[3], a_vll[3], a_i[3], a_is;    /* working state */
-  float a_dcv[3], a_dci[3];                  /* E82 (M-18): the same cycle's LINEAR sums */
+  float a_dcv[3], a_dci[3];                  /* the same cycle's LINEAR sums */
   uint32_t n;
   bool pos, locked;
 } grid_t;

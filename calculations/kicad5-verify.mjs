@@ -97,7 +97,7 @@ for (const f of readdirSync(SRC).filter((x) => x.endsWith(".json")).sort()) {
     const sym = LIB.get(c.lib);
     if (!sym) { problems.push(`${page.page}: unknown symbol ${c.lib} for ${c.ref}`); continue; }
     for (const p of sym.pins) {
-      // E56: native lib + the standard "1 0 0 -1" instance matrix → sheet pin = (ux+px, uy−py).
+      // native lib + the standard "1 0 0 -1" instance matrix → sheet pin = (ux+px, uy−py).
       const k = key(c.x + p.x, c.y - p.y);
       if (!pinAt.has(k)) pinAt.set(k, []);
       pinAt.get(k).push(`${c.ref}.${p.num}`);

@@ -2,13 +2,14 @@
 // docs-lint.mjs — E61 documentation gate. Every tracked Markdown file must:
 //   · resolve every relative link, image and #anchor (GitHub heading slugs),
 //   · be registered in doc-chrome.mjs and carry exactly its masthead (banner, H1, subtitle, badges) and footer,
-//   · open every mermaid block with a diagram type GitHub renders.
+//   · open every mermaid block with a diagram type GitHub renders,
+//   · carry no history markers (revision tags, review ids, struck text): pages describe the current design.
 // Run: node calculations/docs-lint.mjs
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { PAGES, footer, masthead, page } from "./doc-chrome.mjs";
+import { PAGES, REV, footer, masthead, page } from "./doc-chrome.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MERMAID = /^(flowchart|graph|sequenceDiagram|stateDiagram-v2|classDiagram|erDiagram|pie|xychart-beta|quadrantChart|timeline|gantt|mindmap|journey)\b/;
@@ -82,6 +83,22 @@ for (const rel of files) {
   }
 }
 for (const [p] of PAGES) if (!files.includes(p)) fail(p, "registered in doc-chrome but not tracked");
+// ---- history markers. A page describes the design as it is; how it got there lives in git. Revision tags, review-round
+// and finding ids, struck text and "superseded / retired" narrative are what made these pages contradict themselves, so
+// they fail the lint. Allowed look-alikes: E70 / E65 cores, E24 / E96 / E12 resistor series, the vendor's "E2" (EEPROM)
+// flag in the TonHe profile, and the documentation revision the chrome prints.
+const HISTORY = [
+  [/\bE(?!70\b|65\/|24\b|96\b|12\b|2 fault)\d{1,2}[a-z]?\b/, "revision tag"],
+  [/~~[^~]+~~/, "struck-through text"],
+  [/\bpre-E\d|\b[Ss]uperseded\b|\bSUPERSEDED\b|\bretracted\b|\bre-point(ed)?\b|customer directive \d{4}|\bRETIRED\b/, "history narrative"],
+  [/\bR[1-8]-[A-Z]\b|\b(HR|CB|MR|AUD)-\d|\bF-[A-Z]\d?-\d/, "review or finding id"],
+];
+const chromeRev = new RegExp(`rev[- ]${REV}|revision ${REV}|indexed at ${REV}`, "g");
+for (const rel of files)
+  readFileSync(join(ROOT, rel), "utf8").split("\n").forEach((line, i) => {
+    const s = line.replace(chromeRev, "");
+    for (const [re, what] of HISTORY) { const m = s.match(re); if (m) fail(rel, `line ${i + 1}: ${what} "${m[0]}" — pages describe the current design; history lives in git`); }
+  });
 console.log(`\n${files.length} documents · ${links} relative links · ${diagrams} diagrams`);
 console.log(fails ? `${fails} DOCUMENTATION FAILURE(S)` : "DOCS LINT CLEAN — every link resolves, every document carries its masthead and hub footer, every diagram renders");
 process.exit(fails ? 1 : 0);

@@ -24,14 +24,14 @@ int img_verify(const uint8_t *img, uint32_t cap, uint32_t slot_base, uint32_t hw
   uint8_t h[32];
   sha256(img, 0x40u, h);
   if (poll) poll();
-  /* E82 (LV-1): the signature check is ≈ 12.9 M instructions ≈ 90–105 ms at 216 MHz (measured on the -Os build under a
-     Cortex-M33 emulator; the E80 "≈ 9 ms" was an estimate, 10× low) — four TPS3430 windows. It is serviced from INSIDE the
-     ladder now; with WDO on NRST the old form reset the part during every boot, for ever. */
+  /* The signature check is ≈ 12.9 M instructions ≈ 90–105 ms at 216 MHz (measured on the -Os build under a Cortex-M33
+     emulator) — four TPS3430 windows. It is serviced from INSIDE the ladder: with WDO on NRST an unserviced
+     verification resets the part during every boot, for ever. */
   if (!p256_verify_poll(key->xy, h, img + 0x40, poll)) return IMG_E_SIGNATURE;
   if (poll) poll();
   sha256_t s;
   sha256_init(&s);
-  for (uint32_t off = 0u; off < info->size; off += 0x1000u) {         /* E82: 4 KB pieces (≈ 1.6 ms each), a kick between them */
+  for (uint32_t off = 0u; off < info->size; off += 0x1000u) {         /* 4 KB pieces (≈ 1.6 ms each), a kick between them */
     uint32_t n = info->size - off < 0x1000u ? info->size - off : 0x1000u;
     sha256_update(&s, img + IMG_HDR_LEN + off, n);
     if (poll) poll();

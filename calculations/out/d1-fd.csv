@@ -1,4 +1,4 @@
-# E65 D1 2-D eddy-current anchor (calculations/magnetics/d1-fd.mjs): 50 kHz, 100 °C, h 0.1 mm
+# D1 2-D eddy-current anchor (calculations/magnetics/d1-fd.mjs): 50 kHz, 100 °C, h 0.1 mm
 sku,fingerprint,cell,Fr_equal,Fr_bundle,Fr_ferreira_cell,k2D,k_bundle
 30kw,N39·nw9·d1.6·x3·L21/15/3,3/2/1,57.31,29.84,83.53,0.6861,0.5206
 40kw,N26·nw13·d1.6·x5·L17/9,2/1,44.74,20.33,67.37,0.6642,0.4545

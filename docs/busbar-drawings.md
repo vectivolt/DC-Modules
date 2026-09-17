@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/owner-busbar--calc.mjs-5f8fc0?style=flat-square" alt="owner: busbar-calc.mjs"/>
 </p>
@@ -95,12 +95,12 @@ Busbar set ≈ **₹1188** (copper × 1.6 fabrication) · BOM mechanical line "b
 | Relay lugs (KSER / KPARA / KPARB) | M6 | 8 N·m | ≤ 80 µΩ |
 | Shunt terminals | M8, Kelvin taps untouched | 12 N·m | calibration validates |
 | AC input studs | M8 | 12 N·m | ≤ 60 µΩ |
-| Choke centre bolt (D1 stacks) | M6 + silicone pad; ≥ 3 kg stacks add two-point banding | first article | leads are soldered flying leads — the old M5 lug row predated D1 rev B |
+| Choke centre bolt (D1 stacks) | M6 + silicone pad; ≥ 3 kg stacks add two-point banding | first article | D1 leads are soldered flying leads, not lugs |
 
 ---
 
 <div align="center">
 <sub><a href="insulation-coordination.md">← Insulation Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics.md">Magnetics Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

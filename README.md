@@ -6,22 +6,21 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
+  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/decision_register-E1–E82-f2b705?style=for-the-badge" alt="decision register E1 to E82"/>
-  <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_fold_map-d19a00?style=for-the-badge" alt="envelope grid 4536 points with a registered fold map"/>
+  <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_no_FAIL_row-d19a00?style=for-the-badge" alt="envelope grid 4536 points, no FAIL row"/>
   <img src="https://img.shields.io/badge/independent_checks-243%2F243-2ea44f?style=for-the-badge" alt="independent verifier 243 of 243"/>
   <img src="https://img.shields.io/badge/firmware-330_checks_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 330 checks"/>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/schematic_pins-7409%2F7409_·_5_targets-2ea44f?style=flat-square" alt="7409 of 7409 schematic pins verified"/>
-  <img src="https://img.shields.io/badge/docs-43_pages_·_lint_clean-2ea44f?style=flat-square" alt="43 documentation pages, docs-lint clean"/>
+  <img src="https://img.shields.io/badge/docs-41_pages_·_lint_clean-2ea44f?style=flat-square" alt="41 documentation pages, docs-lint clean"/>
   <img src="https://img.shields.io/badge/BOM-mature_·_10k_basis-2ea44f?style=flat-square" alt="BOM mature"/>
   <img src="https://img.shields.io/badge/stack-TSCircuit_·_ngspice--46_·_C99_·_KiCad--5-5f8fc0?style=flat-square" alt="toolchain"/>
-  <img src="https://img.shields.io/badge/E82-READY_FOR_BENCH_BRING--UP-e3763c?style=flat-square" alt="E82 verdict: ready for bench bring-up"/>
+  <img src="https://img.shields.io/badge/verdict-READY_FOR_BENCH_BRING--UP-e3763c?style=flat-square" alt="verdict: ready for bench bring-up"/>
   <img src="https://img.shields.io/badge/©_Vectivolt-all_rights_reserved-555?style=flat-square" alt="all rights reserved"/>
 </p>
 
@@ -31,33 +30,22 @@
 > claim to a preserved ngspice netlist, every component to a schematic reference, and every rupee to a generated
 > BOM line. **What it is not yet** — bench-validated or certified hardware (see [Honesty boundary](#honesty)).
 >
-> **Scope** — the four modules only (E72). The earlier 100 / 150 kW multi-module product material is preserved on
-> branch `backup/with-100-150kw-products`.
-
-> [!IMPORTANT]
-> **Latest review — E82 independent validation and production hardening.** Twelve independent reviewers re-derived the
-> module with one rule — nothing in this repository counts as evidence — and found **11 CRITICAL** defects, nine of them
-> in firmware: the first prototype would not have started, and once started would not have been safe. **Ten of the eleven are
-> fixed** — every firmware CRITICAL, at ₹0 — and every firmware MAJOR is implemented and tested; nine reviewer claims were
-> rejected after checking. **C-10 (commutation-loop inductance) cannot be closed on paper**: it is a property of a layout that
-> does not exist yet, and Stage 7 measures it before any high-power run. **First-prototype verdict: READY FOR BENCH BRING-UP** — the port has still never run on silicon, and full
-> power waits on the loop-inductance measurement (C-10). → **[E82 validation report](docs/e82-validation-report.md)** ·
-> the E81 register stays as written in **[E81 validation report](docs/e81-validation-report.md)**
+> **Scope** — the four modules and their control card.
 
 **Where to go first**
 
 | If you are here to… | Start at | Then |
 |---|---|---|
-| **judge the design** | [E82 validation report](docs/e82-validation-report.md) | [E81 register](docs/e81-validation-report.md) · [verification matrix](docs/verification-matrix.md) · [simulation report](docs/simulation-report.md) |
+| **judge the design** | [validation report](docs/validation-report.md) | [verification matrix](docs/verification-matrix.md) · [simulation report](docs/simulation-report.md) |
 | **understand the module** | [platform architecture](docs/architecture.md) | [module family](boards/README-module-family.md) · [decision register](docs/assumptions.md) |
 | **build or buy one** | [BOM & cost](docs/bom-cost.md) | [BOM guide](docs/bom-guide.md) · [DFM & production](docs/dfm-production.md) |
 | **write or port firmware** | [firmware guide](docs/firmware-guide.md) | [firmware architecture](docs/firmware-architecture.md) · [CAN protocol](docs/can-protocol.md) |
-| **plan the bench campaign** | [EVT test plan](docs/evt-plan.md) | [E82 bring-up plan](docs/e82-validation-report.md#10-first-prototype-bring-up-plan) |
+| **plan the bench campaign** | [EVT test plan](docs/evt-plan.md) | [bring-up plan](docs/validation-report.md#8-first-prototype-bring-up-plan) |
 
 ## 1. ⚡ The platform in sixty seconds
 
-A module is **one AC-DC board (Vienna PFC) and one DC-DC board (full-bridge LLC, E67)** bolted face to face, run by
-**one control card** — a single GD32G553VET7 brain that drives every PWM on the module (E40). Four module SKUs
+A module is **one AC-DC board (Vienna PFC) and one DC-DC board (full-bridge LLC)** bolted face to face, run by
+**one control card** — a single GD32G553VET7 brain that drives every PWM on the module. Four module SKUs
 share those boards, that card and one firmware image; the card learns which SKU it sits in from a single strap
 resistor.
 
@@ -65,10 +53,10 @@ resistor.
 |---|:---:|:---:|:---:|:---:|
 | **Output** | 150–1000 V · 100 A | 150–1000 V · 133 A | 150–1000 V · 167 A | 150–1000 V · 167 A |
 | **Cooling** | air · 3 fans | air · 3 fans | sealed coldplates | air · 4 fans |
-| **Efficiency** (full power, 400 VAC — E81 ledger with the LLC turn-off and DPT switching terms) | 96.38 % | 96.35 % | 96.32 % | 96.25 % |
-| **₹ @10k** (India basis, E82 BOM) | 31,613 | 36,103 | 42,761 | 40,688 |
+| **Efficiency** (full power, 400 VAC) | 96.38 % | 96.34 % | 96.29 % | 96.22 % |
+| **₹ @10k** (India basis) | 31,613 | 36,103 | 42,761 | 40,688 |
 | **₹ / kW** | 1,054 | 903 | 855 | **814** |
-| **China RFQ target ₹ @10k** (E69f basis, regenerated at E82) | 25,920 | 29,520 | 35,023 | 33,243 |
+| **China RFQ target ₹ @10k** | 25,920 | 29,520 | 35,023 | 33,243 |
 
 ```mermaid
 xychart-beta
@@ -83,29 +71,29 @@ xychart-beta
 | Requirement | Target | Achieved | Evidence |
 |---|---|---|---|
 | Input | 3-φ 285–475 VAC | full power 330–475 VAC; 86 % constant-current derate at 285 VAC (a calculated trade that saves ~16 % of SiC, copper and EMI) | [architecture](docs/architecture.md) |
-| Output | 150–1000 VDC, CV/CC | two output modes (E67): **LOW ≤ 500 V** banks in parallel, **HIGH ≥ 500 V** in series, latched in standby (AUTO crosses above 500 V and back below 480 V); PFM down to the shipped fn floor **0.55** (E81; the earlier 0.59 predates the firmware law), then phase shift at 1.45·fr; zero-voltage switching held by a per-leg adaptive dead time (E81: non-linear Coss + snubber in the deck — the light-load corners are T-58's) | [firmware guide](docs/firmware-guide.md) |
+| Output | 150–1000 VDC, CV/CC | two output modes: **LOW ≤ 500 V** banks in parallel, **HIGH ≥ 500 V** in series, latched in standby (AUTO crosses above 500 V and back below 480 V); PFM down to the fn floor **0.55**, then phase shift at 1.45·fr; zero-voltage switching held by a per-leg adaptive dead time on the non-linear C_oss, with a valley-timed 125 / 186 / 189 ns edge on the weak leg in phase shift | [firmware guide](docs/firmware-guide.md) |
 | Output current | per SKU | **100 / 133 / 167 A**; constant current below the 300 V knee, constant power above | [module family](boards/README-module-family.md) |
-| THD | ≤ 5 % (stretch 3 %) | **0.76 / 0.65 / 0.69 %** THD-40 at 400 VAC full power (30 / 40 / 50 kW — the shipped firmware law in the cycle-by-cycle SIL, E81; the earlier 0.59–1.05 % came from a 30 kW averaged deck with a retired law). **E82 (M-30): THD and power factor are specified from 25 % load to full load** (≤ 5 % THD, PF ≥ 0.98); below that the Vienna runs discontinuous by design and the cabinet sheds modules rather than idling them — the 30 kW / 400 VAC curve reads THD 1.09 / 2.24 / 3.89 / 7.06 / 16.35 / 87.3 % and PF 0.995 / 0.988 / 0.974 / 0.950 / 0.860 / 0.666 at 100 / 50 / 30 / 20 / 10 / 5 % load | [simulation report](docs/simulation-report.md) |
-| Efficiency | peak ≥ 97 % | **peak 97.72–97.80 %** · full power at 400 VAC **96.38 / 96.35 / 96.32 / 96.25 %** (E81 ledger: output diode, LLC turn-off energy and the double-pulse switching coefficient all included; InfyPower states > 96 %) | [thermal report](docs/thermal-report.md) |
-| Thermal envelope | full power to +55 °C | 4,536 grid points (1,134 per module). **No FAIL row anywhere** (E82; E81 carried 324, all of them the 150 V phase-shift corner at up to 337 °C): worst junction **150 °C** at the 150 °C ceiling — the per-SKU table and the four fold regions are in the [thermal report](docs/thermal-report.md#3-junction-temperatures--worst-point-of-the-4536-point-grid). **E81's F-L-1 "NOT SUSTAINABLE" limit below 200 V is closed** — it was a weak-leg dead time computed on the magnetising current (now 125 / 186 / 189 ns), a per-die loss counted twice in the grid, and a fold that no firmware implemented; `hal/dielim.c` is now a junction observer that folds 142–150 °C and declines a point it cannot cool — see [C-11](docs/e82-validation-report.md#3-critical-findings-and-what-was-done) | [thermal report](docs/thermal-report.md) |
+| THD | ≤ 5 % (stretch 3 %) | **0.76 / 0.65 / 0.69 %** THD-40 at 400 VAC full power (30 / 40 / 50 kW, the shipped firmware law in the cycle-by-cycle SIL). THD and power factor are specified **from 25 % load to full load** (≤ 5 % THD, PF ≥ 0.98); below that the Vienna runs discontinuous by design and the cabinet sheds modules rather than idling them — the 30 kW / 400 VAC curve reads THD 1.09 / 2.24 / 3.89 / 7.06 / 16.35 / 87.3 % and PF 0.995 / 0.988 / 0.974 / 0.950 / 0.860 / 0.666 at 100 / 50 / 30 / 20 / 10 / 5 % load | [simulation report](docs/simulation-report.md) |
+| Efficiency | peak ≥ 97 % | **peak 97.78 / 97.84 / 97.80 / 97.79 %** · full power at 400 VAC **96.38 / 96.34 / 96.29 / 96.22 %**, output diode, LLC turn-off energy and the double-pulse switching coefficient all included | [thermal report](docs/thermal-report.md) |
+| Thermal envelope | full power to +55 °C | 4,536 grid points (1,134 per module), **no FAIL row anywhere**: worst junction **150 °C** at the 150 °C ceiling. The corners that would exceed it carry a registered fold, and `hal/dielim.c` implements it as a junction observer — it estimates the worst die above the measured zone NTC, folds between 142 and 150 °C, and **declines** a point it cannot cool instead of delivering into it | [thermal report](docs/thermal-report.md#3-junction-temperatures--the-worst-point-of-the-grid) |
 | Environment | match the market | **−30…+75 °C** (full power to 55 °C), ≤ 95 % RH non-condensing, ≤ 2000 m, conformal coating, IP55 fans | [teardown benchmark](docs/benchmark-infypower-teardown.md) |
 | Accuracy | ±0.5 % V · ±1 % I | **±0.18 % / ±0.2 %** after the mandatory 2-point EOL calibration (10k-sample Monte-Carlo) | [verification matrix](docs/verification-matrix.md) |
-| Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak (E69); the precharge-bypass closure pulse (200 / 218 / 280 A) blanked 60 ms with relays, diodes and fuses sized to it (E73); DESAT response 1.44 µs against a 2 µs SiC withstand. **E82 (C-02):** the F.01 comparator reference is **positive-only** — E81's bipolar reference sat below AVMID on an active-high fault input and asserted a standing fault — with a 100 kHz software magnitude trip on the raw current for the negative polarity (≤ 10 µs) and Σi = 0 making the other two comparators the hardware backstop. **E82 (C-09):** a hardware trip is held until the supervisor has latched it; nothing re-arms the outputs. **E82 (H2-2):** an F.01 inside 500 ms of a disturbed line is filed as F.08 — self-recovering, uncounted, re-precharged (the EMI filter rings 121–199 A pk at a line return, through the boost diodes, which no switch can stop); on a quiet line F.01 still latches | [current coordination](docs/current-coordination.md) |
+| Protection | trips above every real peak | **F.01 120 / 155 / 195 A · F.11 140 / 180 / 220 A** — each ≥ 1.2 × the simulated worst peak; every SiC die ≤ 0.8 × IDM at its fault peak; the precharge-bypass closure pulse (200 / 218 / 280 A) blanked 60 ms with relays, diodes and fuses sized to it; DESAT response 1.34 µs (LLC) / 2.21 µs (Vienna) against 2 / 4.2 µs SiC withstand classes. The F.01 comparator reference is **positive-only**, with a 100 kHz software magnitude trip on the raw current for the negative polarity (≤ 10 µs) and Σi = 0 making the other two comparators the hardware backstop. A hardware trip is held until the supervisor has latched it; nothing re-arms the outputs. An F.01 inside 500 ms of a disturbed line is filed as F.08 — self-recovering, uncounted, re-precharged, because the EMI filter rings 121–199 A pk at a line return through the boost diodes, which no switch can stop; on a quiet line F.01 still latches | [current coordination](docs/current-coordination.md) |
 | Magnetics copper | windings inside their Rac rows | Rac/Rdc ≤ 1.35 and ΔT ≤ 40 K on every winding at the simulated currents; D3 / D2 hot-spot ≤ 116 °C at 55 °C inlet; PyOpenMagnetics second opinion: Rdc ± 2.5 %, class lines hold at its higher D3 copper (50 kW air D3 130 °C vs the 125 °C design line — first-article watch) | [magnetics hub](docs/magnetics.md) |
-| EMI | CISPR-class conducted pre-compliance | InfyPower star-X2 filter (E68b): DM margin **+32.9 / +30.6 / +28.7 dB**; CM re-derived at E81 with the LLC bridge counted as a second source (its fundamental sits inside the band above 150 kHz): **+3.1 dB** at the 100 pF leg-node requirement, +7.1 dB at the 50 pF design target, with CY1-3 raised to 10 nF — T-13 measures it; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
-| Build cost at 10k | red-line ₹25k / 33k / 43k | **₹31,613 / 36,103 / 42,761 / 40,688** India basis (E82 BOM: +₹80 / 133 / 133 / 133 over E81 — **+0.25…0.37 %** — for the output bleeder, the ADC pin filters, the iso-amp output resistors and a correctly rated link damper, less four balance resistors on 40 / 50 kW; [decision table](docs/e82-validation-report.md#4-does-it-earn-its-place--the-decision-table)) · **₹25,920 / 29,520 / 35,023 / 33,243** China RFQ target. 30 kW over the red-line by ₹6,613, 40 kW by ₹3,103; both 50 kW under | [BOM & cost](docs/bom-cost.md) |
+| EMI | CISPR-class conducted pre-compliance | star-X2 filter, no DM chokes: DM margin **+32.9 / +30.6 / +28.7 dB**; CM counts the LLC bridge as a second source (its fundamental sits inside the band above 150 kHz): **+3.1 dB** at the 100 pF leg-node requirement, +7.1 dB at the 50 pF design target, with CY1-3 at 10 nF — T-13 measures it; current loop stable with the damper | [simulation report](docs/simulation-report.md) |
+| Build cost at 10k | red-line ₹25k / 33k / 43k | **₹31,613 / 36,103 / 42,761 / 40,688** India basis · **₹25,920 / 29,520 / 35,023 / 33,243** China RFQ target. 30 kW over the red-line by ₹6,613, 40 kW by ₹3,103; both 50 kW under | [BOM & cost](docs/bom-cost.md) |
 
 ## 3. 🏗️ Architecture
 
 ```mermaid
 flowchart LR
-  AC(["3-φ 285–475 VAC"]) --> EMI["gG fuses 80 / 125 / 160 A<br/>MOV Δ + GDT · 2 CMC + star X2 (E68b)"]
+  AC(["3-φ 285–475 VAC"]) --> EMI["gG fuses 80 / 125 / 160 A<br/>MOV Δ + GDT · 2 CMC + star X2"]
   EMI --> PRE["precharge<br/>2 × 33 Ω + bypass"]
   PRE --> V["Vienna PFC · 50 kHz<br/>one 750 V SiC die per position · 1200 V JBS"]
   V --> BUS[("split DC bus<br/>650–830 V · OVP 860 V")]
   BUS --> LLC["full-bridge LLC · fr 140 kHz<br/>1200 V SiC · Cr + D2 external Lr"]
   LLC --> XF["2 × D3 transformer cells<br/>primaries in series · n 2"]
-  XF --> BK["banks A + B<br/>SiC JBS bridges · film only (E68c)"]
+  XF --> BK["banks A + B<br/>SiC JBS bridges · film only"]
   BK --> SP["S/P relays at 0 A<br/>LOW ≤ 500 V · HIGH ≥ 500 V"]
   SP --> DO["output diode DOUT<br/>1600 V"]
   DO --> OUT(["150–1000 VDC<br/>100 / 133 / 167 A"])
@@ -119,135 +107,91 @@ flowchart LR
   style CARD stroke:#2ea44f,stroke-width:2.5px
 ```
 
-- **Two-board sandwich (E17).** TO-247 rows, clip-mounted on Al2O3 insulators (E68a), face outward onto two heatsink extrusions, or onto liquid coldplates
-  on the 50 kW liquid SKU. Magnetics sit in the airflow tunnel between the boards. Power crosses on bolted
-  DCP / DCN / PE stud pillars and control crosses on a 40-way harness.
+- **Two-board sandwich.** TO-247 rows, clip-mounted on Al2O3 insulators, face outward onto two heatsink extrusions,
+  or onto liquid coldplates on the 50 kW liquid SKU. Magnetics sit in the airflow tunnel between the boards. Power
+  crosses on bolted DCP / DCN / PE stud pillars and control crosses on a 40-way harness.
   → [interconnect](docs/interconnect.md)
-- **One brain per module (E40).** The card in the DC-DC slot runs the Vienna and the LLC together: 74 of 82 MCU
-  pins (8 spare), 22 analog channels, every PWM on HRTIMER units, one merged fault line. The RATING strap selects
-  30 / 40 / 50 L / 50 A (the 3.32 k band is reserved since E66). → [control-card scope](docs/control-card-scope.md)
+- **One brain per module.** The card in the DC-DC slot runs the Vienna and the LLC together: 75 of 82 usable MCU
+  pins (7 spare), 22 analog channels, every PWM on HRTIMER units, one merged fault line. The RATING strap selects
+  30 / 40 / 50 L / 50 A, with a fifth band held in reserve. → [control-card scope](docs/control-card-scope.md)
 - **Protection in layers.** DESAT and comparator trips act in microseconds with no firmware in the loop. A
   hardware relay interlock and a watchdog that resets the MCU sit beside them. The supervisory F.xx ladder with
   per-SKU windows covers everything slower. → [protection thresholds](docs/protection-thresholds.md)
 
-## 4. 🧪 How every claim is checked
+## 4. 📊 Status
 
-`sh calculations/run-all.sh` runs the whole battery in one pass. A single failure stops it.
+`sh calculations/run-all.sh` runs the whole battery in one pass and exits 0. A single failure stops it.
 
-```mermaid
-flowchart LR
-  E["Engines<br/>PFC · LLC · loss · grid 4,536 pts<br/>Monte-Carlo 8 × 10k · FSM 26/26"] --> B["BOM factory<br/>bom-gen · bom-maturity · China column"]
-  B --> S["Structure audits<br/>schematic · interconnect · polarity"]
-  S --> P["Physics gates<br/>stress 158 · temp-critique 10 · conductor 18 · envelope 30<br/>mag-sync 48 · fault-energy 23 · coordination 102"]
-  P --> I["Clean-room verifier<br/>243 independent checks"]
-  I --> D["Docs and footprints<br/>docs-lint 43 pages · footprint-audit"]
-  D --> F["Firmware<br/>330 checks · 7 binaries<br/>ASan/UBSan"]
-  P --> G["Generated pages<br/>4 module BOMs · 4 module magnetics<br/>from gate evidence"]
-  G --> D
-  style I stroke:#2ea44f,stroke-width:2.5px
-  style P stroke:#d19a00,stroke-width:2px
-```
+| | Where it stands |
+|---|---|
+| **Design battery** | `run-all` **exit 0** · `review-checks` **154 / 154** closure assertions · `verify-independent` **243 / 243** clean-room checks |
+| **Physics gates** | stress-audit **163** · current-coordination **107** · mag-sync **52** · magnetics-envelope **30** · fw-constants-sync **30 rows** · fault-energy **24** · conductor-audit **18** · temp-critique **11** · repo-hygiene **7** |
+| **Thermal envelope** | **4,536** grid points (1,134 per SKU), **0 FAIL**, worst junction 150 °C |
+| **Release schematics** | **7,409 / 7,409** connected pins across five KiCad-5 targets · nine board PDFs |
+| **Firmware** | **330 checks** under ASan/UBSan across seven binaries · target build clean: bootloader 11.9 kB of 32 kB, application ≈ 49.6 kB of a 207.5 kB slot · `port-pin-audit` 56 pins |
+| **Documentation** | **41** registered pages, `docs-lint` clean |
+| **Build cost @10k** | India basis ₹31,613 / 36,103 / 42,761 / 40,688 · China RFQ target ₹25,920 / 29,520 / 35,023 / 33,243 |
+| **First prototype** | **READY FOR BENCH BRING-UP.** The port has never run on silicon, and full power waits on the commutation-loop measurement — [validation report](docs/validation-report.md) |
 
 | Also run on every change | Result |
 |---|---|
-| `review-checks.mjs` — every external-review and audit closure, as assertions | **154 / 154 pass** (E81: 141 rows; the E82 round added nine closure rows and re-pointed six that a moved number had left matching prose) |
-| `kicad5-verify.mjs` — pin-level check of the release schematics | **7,409 / 7,409 connected pins** across 5 targets |
-| SPICE suites — power-solved LLC per SKU, CT front-ends, precharge / discharge, aux flyback | all pass · [toolchain](docs/simulation-toolchain.md) |
-| `magnetics-rfq-audit.mjs` — every magnetic drawing on the module pages complete enough to order (in run-all since E70) | 0 missing fields · 25 drawings |
-
-<details>
-<summary><b>The audit trail</b> — every layer earned its place by catching something real</summary>
-
-| Found by | Defect | Fix (now frozen) |
-|---|---|---|
-| Double-pulse test (L1) | 33 nH assumed loop → 115 % V<sub>DS</sub> | ≤ 10 nH layout rule + RCD clamp to rail → 70 % (E5) |
-| DPT energy feedback | measured k<sub>sw</sub> 2.2 × datasheet → Tj 175 °C at 100 kHz | switching frequency 100 → 50 kHz (E3) |
-| Monte-Carlo §37 | 17.7 % of tanks miss peak gain | leakage-binned trim, gap-ground Lm, 500/525 V hysteresis, capability 1.39 (E7/E9) |
-| S/P transient simulation | 2 V bank mismatch → 205 A through a closing contact | 10 Ω pre-insertion relays + ΔV rule (E12) |
-| C firmware port | model masked a blind K_OUT closure → guaranteed OVP | E12b gate before K_OUT closes |
-| R1 adversarial audit | 15 critical blockers | closed the same day (rev C) |
-| R2 re-audit | 7 new criticals — a board with no 3.3 V source, mis-scaled sensing, … | closed the same day (rev D); the assertion suite began |
-| R3 external PDF review | MCU pin numbering from an STM32-derived map | allocation regenerated from the GD32 datasheet |
-| E35 margin audit | trim inductor unbuildable (~43 W core loss); drawings short of their own copper | magnetics rev B/C, catalog CT/CMC adoption |
-| E37 interconnect audit | RATING strap hard-coded; connector bought as two unmateable headers | per-SKU straps, mating pair — interconnect gate in run-all |
-| E40 single-brain migration | two cards per module doubled every way, pin and link | one card per module; −₹293 per module measured |
-| E41 stress validation | the registered 40 kW choke was unbuildable; the 100 A fuse failed its derate rule | 5-stack D1-40 + 125 A class; stress-audit joins run-all |
-| E42 liquid closure | at the revved 50 kW trip points both CT burdens clipped the 3.3 V ADC rail | burdens re-scaled; BRD check family added |
-| E43 family verification | the DM choke had no engine — its inherited 22 µH could not exist at the line crest | dm-choke engine, crest-biased floors, CX2 → 4.7 µF, LISN rebuilt: +4.9 / +5.7 / +5.6 dB |
-| R4 external review (E45) | fictional NSI6611 / NCP1252 pin maps, floating driver bias, wrong-sign aux feedback, an unpowered 3.3 V island | all fixed and gated R4-1…R4-8; the "reversed diodes" were one rendering defect |
-| R5 external review (E46) | watchdog only inhibited a hung MCU; missing DESAT series resistors; an MCU order code that does not exist | WDO wired onto NRST; 100 Ω DESAT resistors; second exclusion stage; VET7 |
-| R6 external review (E47) | aux controller could not cold-start (A-suffix); watchdog merge invisible on the sheet | NCP1252D + 220 µF; renamed WDO net; two-phase discharge timeline |
-| R7 external review (E48) | phases B and C shared one comparator's two inputs | AIN9 ↔ AIN11 swap — three independent comparators |
-| R8 external review (E49) | our own discharge arithmetic (parallel balance strings) and two turns transcriptions | per-SKU discharge model, 7:7:7 / 6:6:6 panels, retraction registered |
-| E51 magnetics recompute | transformer windings demanded 142–294 % of real formers | compacted litz + foil on catalog E70 formers |
-| E56 KiCad-native face | a mirrored importer silently mis-wired 454 pins | EasyEDA layer removed; 7,784 / 7,784 pins verified |
-| E58 temperature critique | temperature-blind loss fits; inverted digitized B-H labels | measured 3C95 surfaces; equilibria and runaway computed every run |
-| **E60 coordination + copper** | the LLC deck had no body diodes (±6 kV legs); trips at or below real peaks; foils at Rac/Rdc 5–7 | power-solved decks, new trip classes, 22/47 pF blanks, 0.10/0.127 mm foil, E70 trims |
-| E67 InfyPower parity | the first loss roll-up omitted the output diode and bank filter (109–188 W); the land classifier had named every 0603 part 0805; the F.11 ladder was missing from every sheet since E65 | loss roll-up fixed; 0603 value rows; sheet-pages fails on any unassigned part |
-| E68 BOM clone I | `run-all` gates on `a && b` lines could not fail (the MTBF gate had failed silently); the MTBF classifier counted bank films as silicon | every gate is its own command; classifier fixed |
-| **E69 BOM clone II** | the PFC pulse check still assumed the retired paralleled pair; a single 16 mΩ LLC die at 40 kW needed IDM ≥ 334 A; printed title blocks read "Content: ?" (50 kW) and "3-phase LLC"; the CT front-end deck still ran the E65 burdens; the BOM CSV shifted columns on maker names with commas, and the MTBF classifier matched keywords inside words | per-die fault-pulse gate, 40 kW keeps two dies, IDM lines at RFQ; title blocks per board; CT deck re-run at E67 classes; RFC 4180 CSV; whole-word classifier, MTBF re-registered |
-| E70 per-module pages | 40 / 50 kW BOM lines described 30 kW parts; unquoted commas shifted CSV columns; the MTBF classifier matched inside words; the cost categoriser filed the 50 kW resonant inductor as misc; three decks still ran retired values | one generated BOM and magnetics page per module from the gates' own evidence; 51 → 37 documents; classifiers and decks fixed |
-| **E71 second opinion** | the docs said PyOpenMagnetics could not install (the 1.4.0 wheel runs); the D2 gap guide ignored fringing (+14 % L); the D3 Rac/Rdc sample test would reject good parts; MKF reads the D3 foil copper ~30 % above the 1-D model | `mkf-crosscheck.py`; fringing-corrected gap guides; short-circuit R test against the 1-D … MKF bracket; 50 kW air D3 at MKF copper = first-article watch; retired footprint envelopes removed |
-| E72 modules only | the firmware guide still listed 10 CSU host scenarios retired at E66; the interconnect gate's header described a 16-way harness and a 60 kW strap; the control-card scope still described three LLC sections; the README check counts had drifted | the repository narrowed to the four modules, the 100 / 150 kW material preserved on a backup branch, every stale text corrected |
-| E74–E77 external reviews | a 36-finding PDF set, four paper fixes and one open line | every claim re-derived, retractions registered |
-| E78–E79 firmware and HAL | CAN timeout owned by the wrong layer; no recovery classes; the real-time laws unproven | profile-owned timeouts, AUTO/LATCH classes, the portable HAL proven on cycle-by-cycle plants |
-| E80 production completion | two external hardware rechecks (71 rows); no signed update path; a vendor-library dependency in the port | signed A/B boot chain + CAN update, register-level GD32G553 port, every recheck row answered |
-| **E81 full-system validation** | the module had never been reviewed as one working system: a fixed 120 ns dead time lost ZVS; the loss ledger omitted LLC turn-off; the DC-link entry film and the CM budget were wrong as drawn; "0 folds" hid a corner that is not sustainable | nine independent reviews · 12 hypotheses refuted · adaptive dead time, 330 / 680 / 1000 pF snubbers, 16–20 × 1 µF entry film + damper, CY 10 nF, 3 / 3 / 0 / 4 fans, a registered fold map and the [F-L-1](docs/e81-validation-report.md#10-readiness-verdicts) limit |
-| **E82 independent validation** | nothing in the repository was allowed to count as evidence: the first prototype would not have started (the window watchdog is violated all along the boot path; a comparator reference below mid-rail is a standing F.01; VREFINT sampled for 132 ns; the journal re-programs flash rows so nothing persists; a bypass rule flat-topped mains never reaches) and once started would not have been safe (both watchdogs fed behind a sticky flag; a latch that survived a wake; later faults dropped; hardware trips re-armed 10 µs later; folds that existed only in a spreadsheet) | twelve independent reviews · nine claims rejected · **11 CRITICAL found, ten fixed — all nine firmware ones at ₹0; C-10 (commutation-loop inductance) cannot be closed on paper and Stage 7 measures it** — token-purse watchdog, positive-only F.01 + a 100 kHz magnitude trip, row-clean journals, a settled-link bypass, trips held until acknowledged, `hal/dielim.c` junction observer, a link reference that leads the output, `fw-constants-sync`; +₹80–133 per module for the output bleeder, ADC pin filters and a 50 W link damper ([E82](docs/e82-validation-report.md)) |
-| **E73 magnetics review** | closing the precharge bypass at 90 % of line peak drove 200–280 A through D1 — above F.01 on every SKU, a fault at every high-line start; the D4 sheet named no wire sizes and its Rdc rows passed a wrong gauge and rejected a good aux winding; fan-out, D3 cell imbalance and D7 CM flux had no computed check | F.01 blanked 60 ms at closure with no PFC enable inside (host_sim 63/63, negative-tested); relay make and JBS IFSM RFQ lines; [INRUSH] · [FAN-OUT] · [IMBALANCE] · D7 CM-flux · D4 Rdc gates; PyOpenMagnetics on D1 / D4 / D7; a critical-review matrix on every module page |
-
-</details>
+| SPICE suites — power-solved LLC per SKU, double pulse, DC-link ripple, CT front-ends, precharge / discharge, aux flyback | all pass · [toolchain](docs/simulation-toolchain.md) |
+| `magnetics-rfq-audit.mjs` — every magnetic drawing on the module pages complete enough to order | 0 missing fields · 25 drawings |
+| `footprint-audit.mjs` — every part names a package, every named part matches its drawn land | 0 unnamed · 0 mismatched |
 
 ## 5. 🧩 The module family
 
 <details>
 <summary><b>Variant specification table</b> — every number engine-derived and gate-verified</summary>
 
-| Specification | 30 kW | 40 kW (E41) | 50 kW liquid (E42) | 50 kW air (E44) |
+| Specification | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---|---|---|---|
 | Rated power · max output current | 30 kW · 100 A | 40 kW · 133 A | 50 kW · 167 A | 50 kW · 167 A |
 | Worst continuous line current | 55.9 A | 73.3 A | 91.6 A | 91.6 A |
-| Efficiency — full power at 400 VAC (E81 ledger) | 96.38 % | 96.35 % | 96.32 % | 96.25 % |
-| Efficiency — peak (E81 grid) | 97.80 % | 97.73 % | 97.72 % | 97.72 % |
-| Loss at rated (E81 ledger) | 1,126 W | 1,507 W | 1,910 W | 1,950 W |
-| Cooling | 3 fans · airflow 1.65× (E81: 55 °C air density, O-16 closed) | 3 fans · 1.27× | 2 coldplates · 0 fans · ≤ 60 °C coolant · 6.5 L/min · ΔT 4.6 K | 4 fans (3 front + 1 rear) · 1.27× |
-| Device mount (E68a) | clip on Al2O3 · 0.8 K/W to a 70 °C base | = 30 kW | 0.65 K/W to a 65 °C plate | = 30 kW |
-| Vienna silicon (one die per position, E68a/E69a) | 750 V 20 mΩ class | 750 V 15 mΩ class | B3M010C075Z | B3M010C075Z |
+| Efficiency — full power at 400 VAC | 96.38 % | 96.34 % | 96.29 % | 96.22 % |
+| Efficiency — peak over the envelope | 97.78 % | 97.84 % | 97.80 % | 97.79 % |
+| Loss at rated | 1,127 W | 1,519 W | 1,925 W | 1,965 W |
+| Cooling | 3 fans · airflow margin 1.54× | 3 fans · 1.14× | 2 coldplates · 0 fans · ≤ 60 °C coolant · 7 L/min · ΔT 4.7 K | 4 fans (3 front + 1 rear) · 1.17× |
+| Device mount | clip on Al2O3 · 0.8 K/W to a 70 °C base | = 30 kW | 0.65 K/W to a 65 °C plate | = 30 kW |
+| Vienna silicon (one die per position) | 750 V 20 mΩ class | 750 V 15 mΩ class | B3M010C075Z | B3M010C075Z |
 | PFC choke D1 | 3 × 0077908A7 · N = 39 | 5 × 0077908A7 · N = 26 | 5 × 0077908A7 · N = 24 | = 50 kW liquid |
-| EMI filter (E68b) · worst DM margin | 2 CMC + 12 × 4.7 µF X2 in three star stages + damper · +32.9 dB | same · +30.6 dB | same · +28.7 dB | = 50 kW liquid |
-| LLC silicon (full bridge, E67) | 4 × SG2M023120LJ | 8 × (two per position) | 8 × | 8 × |
-| LLC tank (fr 140 kHz · Ln 10 · n 2) | 7 × 33 nF · Lr 5.6 µH (D2 rev F 5.16 µH) | 9 × 33 nF · 4.35 µH (4.07 µH) | 11 × 33 nF · 3.56 µH (3.28 µH) | = 50 kW liquid |
+| EMI filter · worst DM margin | 2 CMC + 12 × 4.7 µF X2 in three star stages + damper · +32.9 dB | same · +30.6 dB | same · +28.7 dB | = 50 kW liquid |
+| LLC silicon (full bridge) | 4 × SG2M023120LJ | 8 × (two per position) | 8 × | 8 × |
+| LLC tank (fr 140 kHz · Ln 10 · n 2) | 7 × 33 nF · Lr 5.6 µH (D2 rev F 5.00 µH) | 9 × 33 nF · 4.35 µH (3.99 µH) | 11 × 33 nF · 3.56 µH (3.20 µH) | = 50 kW liquid |
+| LLC turn-off snubber per die | 330 pF C0G | 680 pF | 1000 pF | = 50 kW liquid |
 | Transformer (D3 rev D, two cells) | 2 × E70 per cell · 6:6∥6 | 3 × E70 · 4:4∥4 | 3 × E70 · 4:4∥4 | = 50 kW liquid |
 | Secondary rectifiers | 16 × 40 A SiC JBS | 16 × | 16 × | 16 × |
-| Output banks (E68c) · output diode DOUT | 9 × 2.2 µF film per bank · 150 A class | 12 × · 200 A | 14 × · 250 A | 14 × · 250 A |
+| Output banks · output diode DOUT | 9 × 2.2 µF film per bank · 150 A class | 12 × · 200 A | 14 × · 250 A | 14 × · 250 A |
 | Trip classes F.01 · F.11 | 120 · 140 A pk | 155 · 180 A pk | 195 · 220 A pk | = 50 kW liquid |
 | Input fuse (gG) | 80 A · 22 × 58 | 125 A · 22 × 58 | 160 A · NH00 | 160 A · NH00 |
 | DC link | 10 cans | 12 | 16 | 16 |
 | Bus discharge to < 60 V | 2.0 s (F.21 window 3 s) | 2.4 s (4 s) | 3.2 s (5 s) | 3.2 s (5 s) |
-| MTBF (parts count, 40 °C, E69 classifier) | 410 kh | 390 kh | 374 kh | 372 kh |
+| MTBF (parts count, 40 °C) | 403 kh | 385 kh | 369 kh | 367 kh |
 | RATING strap | 0 Ω | 1 k | 10 k | 15 k |
-| **BOM @10k · ₹/kW** (E82) | **₹31,613 · 1,054** | **₹36,103 · 903** | **₹42,761 · 855** | **₹40,688 · 814** |
-| China RFQ target @10k (E69f basis, regenerated at E82) | ₹25,920 | ₹29,520 | ₹35,023 | ₹33,243 |
+| **BOM @10k · ₹/kW** | **₹31,613 · 1,054** | **₹36,103 · 903** | **₹42,761 · 855** | **₹40,688 · 814** |
+| China RFQ target @10k | ₹25,920 | ₹29,520 | ₹35,023 | ₹33,243 |
 
 </details>
 
-Since E68a the **two 50 kW modules are electrically identical**: the air twin is the cheapest build per kW, and the
+The **two 50 kW modules are electrically identical**: the air twin is the cheapest build per kW, and the
 liquid SKU buys a sealed, fanless module for ₹2,073 more. Modules run in parallel through their own output blocking
 diodes, sharing current by commanded constant current over CAN with staggered starts. → [module family](boards/README-module-family.md)
 
-## 6. 📦 Deliverables
+## 6. 🗺️ Repository map
 
-The release face is the audited **KiCad-5 set** in `kicad5/`, rendered to print-fidelity PDFs in
-[`boards/out-pdf/`](boards/out-pdf/) — nine PDFs:
-
-| PDF | Contents |
+| Path | What is in it |
 |---|---|
-| `DC-Modules 30kW AC-DC (Vienna PFC)` · `30kW DC-DC (full-bridge LLC)` | the 30 kW module pair |
-| `DC-Modules 40kW AC-DC (Vienna PFC, E41)` · `40kW DC-DC (full-bridge LLC)` | 40 kW air |
-| `DC-Modules 50kW … liquid` · `50kW-Air …` | the two 50 kW twins |
-| `DC-Modules Control Card (GD32G553VET7)` | the one card, every seat |
+| `packages/` | the schematic source of record — `power-primitives/cells.tsx` (every reusable cell), `common-components/boards.tsx` (the four SKUs from one parameterized source), the gate-driver, sensing, magnetics and control-interface libraries |
+| `boards/` | the four buildable SKUs, `control-card.tsx`, and the nine release PDFs in `out-pdf/` → [boards](boards/README.md) |
+| `calculations/` | every engine, standing gate, the BOM factory, the release-sheet pipeline and the documentation generators; outputs in `out/` → [calculations & gates](calculations/README.md) |
+| `spice/` | the ngspice runners, their persisted decks in `generated/`, and the device models → [SPICE suites](spice/README.md) |
+| `simulation-results/` | the committed per-SKU result CSVs and plots the gates read |
+| `firmware/` | `core/` supervisory C99 · `hal/` the real-time Vienna and LLC laws · `proto/` VMP 2.0 and TonHe V1.2 · `boot/` the signed A/B chain · `port/gd32g553/` the register-level port · `test/` the host binaries |
+| `kicad5/` | the audited KiCad-5 release set and the generated footprints |
+| `docs/` | the 41 registered documentation pages → [documentation hub](docs/README.md) |
+| `dist/` | built netlists (`tsci build` output), git-ignored |
 
-## 7. 🚀 Quickstart
+## 7. 🚀 Reproduce it
 
 ```bash
 # prerequisites: node ≥ 20, ngspice ≥ 46 (brew install ngspice), a C compiler
@@ -255,12 +199,13 @@ npm install
 ```
 
 ```bash
-# reproduce every calculation, audit, BOM, verifier and the firmware suite
-sh calculations/run-all.sh
+sh calculations/run-all.sh              # every engine, gate, BOM, generator and the firmware suite — exit 0
+sh firmware/run_tests.sh                # the host binaries alone, under ASan/UBSan
+sh firmware/port/gd32g553/build.sh      # the Cortex-M33 bootloader and signed A/B images, -Werror
 ```
 
 ```bash
-# build one board netlist (netlist mode — PCB layout is a later phase, E36)
+# build one board netlist (netlist mode — PCB layout is out of scope)
 TSCI_NO_ROUTE=1 npx tsci build boards/30kw/acdc.tsx --ignore-placement-drc --ignore-routing-drc
 ```
 
@@ -274,7 +219,20 @@ node calculations/sheet-pages.mjs 30kw && node calculations/sheet-netlist-gen.mj
 node spice/llc/llc-run.mjs 30kw 40kw 50kw 50kwa && node spice/llc/llc-envelope.mjs && node spice/llc/llc-flux-post.mjs && node spice/protection/ct-frontend.mjs && node spice/protection/prechg-disch.mjs && node spice/aux/aux-flyback.mjs
 ```
 
-## 8. 💾 Supervisory firmware
+## 8. 📦 Deliverables
+
+The release face is the audited **KiCad-5 set** in `kicad5/`, rendered to print-fidelity PDFs in
+[`boards/out-pdf/`](boards/out-pdf/) — nine PDFs:
+
+| PDF | Contents |
+|---|---|
+| `DC-Modules 30kW AC-DC (Vienna PFC)` · `DC-Modules 30kW DC-DC (full-bridge LLC)` | the 30 kW module pair |
+| `DC-Modules 40kW AC-DC (Vienna PFC)` · `DC-Modules 40kW DC-DC (full-bridge LLC)` | 40 kW air |
+| `DC-Modules 50kW AC-DC (Vienna PFC, liquid)` · `DC-Modules 50kW DC-DC (full-bridge LLC, liquid)` | the 50 kW liquid twin |
+| `DC-Modules 50kW-Air AC-DC (Vienna PFC)` · `DC-Modules 50kW-Air DC-DC (full-bridge LLC)` | the 50 kW air twin |
+| `DC-Modules Control Card (GD32G553VET7)` | the one card, every seat |
+
+## 9. 💾 Supervisory firmware
 
 Portable **C99**, sans-IO, one image for every seat: the supervisory core (`firmware/core/`), the VMP 2.0 and TonHe V1.2
 profiles (`firmware/proto/`), the real-time HAL with the Vienna and LLC laws (`firmware/hal/`), the signed A/B boot chain
@@ -282,24 +240,24 @@ profiles (`firmware/proto/`), the real-time HAL with the Vienna and LLC laws (`f
 port** (`firmware/port/gd32g553/`, no vendor library — built and signed by `port/gd32g553/build.sh`, its pin table gated
 against the card generator). The host suite runs **330 checks under ASan/UBSan** across seven binaries, from the 26 fault
 scenarios to cycle-by-cycle converter plants and power-cut update storms. → [firmware guide](docs/firmware-guide.md) ·
-[CAN protocol](docs/can-protocol.md) · [E80 recheck response](docs/e80-recheck-response.md)
+[CAN protocol](docs/can-protocol.md)
 
 | Binary | What it proves | Checks |
 |---|---|---:|
-| `boot_test` | SHA-256, ECDSA-P256, the signed image, the boot decision, the update protocol on a row-granular, program-once flash model (E82 C-04) | 22 |
-| `host_sim` | the supervisory core: 26 fault scenarios, every-tick invariants, the E60–E82 rows | **122** |
+| `boot_test` | SHA-256, ECDSA-P256, the signed image, the boot decision, the update protocol on a row-granular, program-once flash model | 22 |
+| `host_sim` | the supervisory core: 26 fault scenarios, every-tick invariants | **122** |
 | `ctl_test` | the reference shaper and regulator kernel, the share trim against the peer refresh | 20 |
 | `proto_test` | TonHe V1.2 + VMP 2.0 conformance and fuzz, one core through both profiles | 42 |
 | `hal_test` | the portable real-time HAL on cycle-by-cycle Vienna and LLC plants, measurement, power-cut-safe NVM, the junction observer | 45 |
 | `app_test` | the module application end to end: interrupts, the 1 ms sequence, faults, NVM, CAN, the F.01 magnitude trip and the fold / decline | 29 |
-| `e81_test` | the E81 and E82 reviews' own checks — dead-time floor and weak-leg edge, the FSM rows, the fold, the protocol fixes | **50** |
+| `rules_test` | the review suites' own checks — dead-time floor and weak-leg edge, the FSM rows, the fold, the protocol fixes | **50** |
 | | **`sh firmware/run_tests.sh`** | **330** |
 
 ```mermaid
 stateDiagram-v2
   [*] --> INIT
   INIT --> PRECHG : aux OK
-  PRECHG --> STANDBY : bus ≥ 90 % of line peak, bypass closed
+  PRECHG --> STANDBY : link settled, bypass closed
   STANDBY --> RUN : enable, output mode latched, relays closed at 0 A
   RUN --> DERATE : thermal or input derate
   DERATE --> RUN
@@ -312,17 +270,17 @@ stateDiagram-v2
   DISCH --> [*] : bus < 60 V
 ```
 
-## 9. 📚 Documentation
+## 10. 📚 Documentation
 
-Start at the **[documentation hub](docs/README.md)** — 43 registered pages in five families, with one BOM page and one magnetics page per module, each with a banner, a
+Start at the **[documentation hub](docs/README.md)** — 41 registered pages in five families, with one BOM page and one magnetics page per module, each with a banner, a
 status badge and next/previous navigation. `docs-lint` fails the battery if a link, anchor, masthead or diagram breaks.
 
 | Start here | To understand |
 |---|---|
-| **[E81 full-system validation](docs/e81-validation-report.md)** | **the current state of the design — every finding, decision, recalculated number and the bring-up plan** |
+| **[Validation report](docs/validation-report.md)** | **the state of the design today — the defect classes found and closed, what is still open, the decision table and the bring-up plan** |
 | [Platform architecture](docs/architecture.md) | the module in one read |
 | [Module family](boards/README-module-family.md) | the four SKUs side by side, the two 50 kW cooling lines, what a charger gets from each module |
-| [Decision register](docs/assumptions.md) | every frozen decision E1–E82, with provenance and invalidator |
+| [Decision register](docs/assumptions.md) | every decision in force, with provenance and invalidator |
 | [Current & protection coordination](docs/current-coordination.md) | the worst current in every magnetic and switch against its trip |
 | [Magnetics hub](docs/magnetics.md) · module pages [30](docs/magnetics-30kw.md) · [40](docs/magnetics-40kw.md) · [50 L](docs/magnetics-50kw.md) · [50 A](docs/magnetics-50kwa.md) | every custom magnetic — drawing, gate proof, build, tests, cost |
 | [Simulation toolchain](docs/simulation-toolchain.md) | which tool proves what, and where fidelity ends |
@@ -331,7 +289,7 @@ status badge and next/previous navigation. `docs-lint` fails the battery if a li
 
 <a name="honesty"></a>
 
-## 10. ⚖️ Honesty boundary
+## 11. ⚖️ Honesty boundary
 
 > [!IMPORTANT]
 > **If it wasn't executed, it isn't claimed.** Nothing here is called *verified* without an executed artifact in
@@ -339,39 +297,34 @@ status badge and next/previous navigation. `docs-lint` fails the battery if a li
 
 Specified and packaged, but physically waiting on hardware, labs or third parties:
 
-- 🔧 **PCB layout** — parked by directive (E36); the schematics carry the layout rules.
-- 🔬 **EVT T-00…T-64** — double-pulse bench, both-polarity short-circuit timing, clip-mount Rth (T-38), die pulse class (T-41), the E81 additions (assembled link impedance T-57, ZVS at the light-load corners T-58, loop inductance T-59, PFC ISR on silicon T-64), thermal and EMI chambers, protection injection, first-article winding Rac, a −30 °C cold soak.
+- 🔧 **PCB layout** — out of scope by directive; the schematics carry the layout rules, and the ≤ 10 nH commutation loop is one of them.
+- 🔬 **EVT T-00…T-64** — double-pulse bench, both-polarity short-circuit timing, clip-mount Rth (T-38), die pulse class (T-41), assembled link impedance (T-57), ZVS at the light-load corners (T-58), loop inductance (T-59), PFC ISR on silicon (T-64), thermal and EMI chambers, protection injection, first-article winding Rac, a −30 °C cold soak.
 - 📜 **Compliance certification** — a lab and certification-body activity.
 - 🤝 **Vendor RFQ pricing** — BOM prices are RFQ targets (±25 %) until quotes land; the China column is a landed target (duty per HSN code to confirm with a customs broker), and the InfyPower cost comparison rests on a teardown estimate.
-- 🖥️ **MCU port and bring-up** — the portable real-time HAL is host-proven on cycle-by-cycle plants (E79); the GD32G553 port is register-level with **no vendor library** and builds and signs here, but its timing is unmeasured until silicon — the worst PFC ISR is 5.8 µs static by disassembly, and **E82 (M-21) moved the control interrupt onto the ADC end-of-sequence transfer, which raises its budget to the roll-over from 5.0 to ≈ 7.2 µs** (T-64 measures both with DWT); the single-update fallback is forbidden on the 40 / 50 kW SKUs.
+- 🖥️ **MCU port and bring-up** — the portable real-time HAL is host-proven on cycle-by-cycle plants; the GD32G553 port is register-level with **no vendor library** and builds and signs here, but its timing is unmeasured until silicon — the worst PFC ISR is 5.8 µs static by disassembly, and the control interrupt runs off the ADC end-of-sequence transfer, which puts its budget at ≈ 7.2 µs to the roll-over (T-64 measures both with DWT); the single-update fallback is forbidden on the 40 / 50 kW SKUs.
 
-## 11. 🗺️ Roadmap
+## 12. 🔓 What is still open
 
-- [x] Frozen decision register E1–E82
-- [x] Simulation matrix closed — power-solved LLC per SKU, cycle-by-cycle Vienna, current coordination, AC copper
-- [x] Release schematics — five KiCad-5 targets, 7,409 / 7,409 connected pins, nine board PDFs
-- [x] InfyPower architecture and BOM clone — full-bridge LLC, two output modes, output diode (E67); clip mount, star-X2 filter, film-only banks (E68); right-sized dies, fault-pulse gate, China cost column (E69)
-- [x] Module family — 30 kW · 40 kW · 50 kW liquid · 50 kW air on one lane, one card and one firmware image
-- [x] Three adversarial audits and five external review rounds answered with executed fixes and permanent gates
-- [x] E81 full-system validation — nine independent reviews, every domain re-derived, fixed and re-gated; verdict **READY FOR LOW-POWER TEST**
-- [x] E82 independent validation and production hardening — twelve reviews under "nothing here is evidence", 11 CRITICAL found and **ten fixed** (all nine firmware ones, ₹0; C-10 needs the layout), the E81 F-L-1 limit closed, the production programming flow specified; first-prototype verdict **READY FOR BENCH BRING-UP**
-- [ ] First-prototype bring-up Stages 0–12, with loop inductance (C-10 / T-59) measured before any high-power run
-- [ ] Buy and measure one InfyPower REG1K0135A2 → replace the teardown cost and thermal estimates with data
-- [ ] RFQ round 1 (SiC with the IDM acceptance lines, magnetics, relays; India and China suppliers) → cost closure
-- [ ] Remaining clone levers: drive clone (approved, deferred), flat-core D1 + 2U mechanics, 900 V aux
-- [ ] PCB layout under the sandwich envelope
-- [ ] Prototype build (prototype routes on each module magnetics page) → EVT → model recalibration
-- [ ] Compliance campaign → certification
+Every open item, the assumption made for it and the bench row that closes it are listed in the
+**[validation report](docs/validation-report.md#9-what-remains-open)**. The short form:
+the commutation-loop inductance is a property of a layout that does not exist yet and is measured before any
+high-power run; three device classes are bought against RFQ acceptance lines instead of datasheets; the line CT's
+µs step response and the DC-link can's 100 kHz current rating are RFQ acceptance rows with drawn fallbacks; and the
+port has never run on silicon.
+
+Ahead of the bring-up itself: buy and measure one InfyPower REG1K0135A2 to replace the teardown cost and thermal
+estimates with data, run RFQ round 1 against the IDM and duty acceptance lines, and decide the levers listed in the
+[teardown benchmark](docs/benchmark-infypower-teardown.md).
 
 > [!TIP]
 > **How this page is checked** — every count, ₹ and margin on this page comes from an artifact in the repository;
 > `sh calculations/run-all.sh` regenerates them and `node calculations/docs-lint.mjs` fails if any link, anchor,
-> masthead or diagram on any of the 43 registered pages breaks.
+> masthead or diagram on any registered page breaks.
 
 ---
 
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -1,4 +1,4 @@
-# E81/F-G-4 parallel-closure mismatch study; 30kw: 9 × 2.2 µF FILM-ONLY bank = 19.8 µF/bank (E68c, was 1.5 mF)
+# parallel-closure mismatch study; 30kw: 9 × 2.2 µF FILM-ONLY bank = 19.8 µF/bank
 # relay 300 A make (HF161F/CHC-D120 class, RFQ) + 2 mΩ contact; loop inductance swept 50/150/300 nH
 # FW-42 permit |ΔV| ≤ 25 V needs loop L ≥ 69 nH — current-coordination [SP] gates that
 # weld detection: 10 A on one bank → dV/dt 505.1 kV/s → 1.5 V in 3 µs

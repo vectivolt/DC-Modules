@@ -4,12 +4,12 @@ EELAYER END
 $Descr User 18600 12800
 encoding utf-8
 Sheet 1 1
-Title "DC-Modules — Control Card (GD32G553VET7, one card for both converter roles)"
+Title "DC-Modules — Control Card (GD32G553VET7, one card runs both converters of a module)"
 Date "2026-09-06"
 Rev "D.4"
 Comp "DC-Modules 30/40/50 kW - board Control card, sheet 3 of 3"
 Comment1 "Module 30/40/50 kW = two-board sandwich: sheet 1 AC-DC (lower) + sheet 2 DC-DC (upper), bolted DCP/DCN/PE studs + 40-way control harness"
-Comment2 "Content: role-agnostic: AC-DC or DC-DC slot via ROLE straps"
+Comment2 "Content: one card per module, seated in the DC-DC slot; module rating read from the RATING strap"
 Comment3 "9 functional sections - 77 components - cross-section links are global net labels; wires are pin stubs only"
 Comment4 "Every component carries MPN + LCSC fields (CLASS = buy to class spec, CUSTOM = made to drawing)"
 $EndDescr

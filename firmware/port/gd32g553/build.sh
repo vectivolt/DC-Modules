@@ -1,5 +1,5 @@
 #!/bin/sh
-# build.sh — E80 the GD32G553 target build: bootloader ELF/bin + application ELFs for slot A and slot B, then the signed
+# build.sh — the GD32G553 target build: bootloader ELF/bin + application ELFs for slot A and slot B, then the signed
 # images (firmware/tools/fw-sign.mjs, development key firmware/boot/keys/dev). No vendor library: regs.h carries the
 # register truth (UM Rev 1.3, cited line by line). -Werror; every warning is a defect.
 # Usage: sh build.sh [out-dir]   (default firmware/port/gd32g553/out)
@@ -57,10 +57,11 @@ arm-none-eabi-objcopy -O binary "$OUT/boot.elf" "$OUT/boot.bin"
 
 arm-none-eabi-size "$OUT/boot.elf" "$OUT/app_A.elf" "$OUT/app_B.elf"
 
-# signed images. E82 (G-11): PRODUCTION=1 signs with PMP_SIGN_KEY and refuses the development key — the key table
+# signed images. PRODUCTION=1 signs with PMP_SIGN_KEY and refuses the development key — the key table
 # compiled into the bootloader (keys_dev.h) and the key that signs the image must both be production or both be dev,
 # and nothing else in the build distinguishes them. A production bootloader is built the same way with PMP_KEYS
-# pointing at the production table; key rotation needs no PKI, only a second row in that table (see NOTES).
+# pointing at the production table; key rotation needs no PKI: the bootloader selects the key by key_id from that table
+# (boot/image.c), so a production table carries the live key and a spare whose private half never leaves the offline store.
 V="${PMP_FW_VERSION:-1.0.0.1}"
 KEY="${PMP_SIGN_KEY:-$FW/boot/keys/dev/private.pem}"
 if [ "${PRODUCTION:-0}" = 1 ]; then
@@ -78,5 +79,8 @@ if [ -f "$KEY" ]; then
     node "$FW/tools/fw-sign.mjs" sign "$KEY" "$OUT/app_$SLOT.body" "$OUT/app_$SLOT.img" \
       --slot "$SLOT" --version "$V" --min 1.0.0.0
   done
+else
+  echo "images NOT signed: no key at $KEY (private keys are never committed — create a development key with"
+  echo "  node firmware/tools/fw-sign.mjs keygen firmware/boot/keys/dev   and rebuild keys_dev.h as firmware/boot/keys/.gitignore describes)"
 fi
 echo "TARGET BUILD OK"

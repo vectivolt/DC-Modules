@@ -15,7 +15,7 @@
 //
 // Run: node calculations/footprint-gen.mjs  ->  kicad5/footprints/*.kicad_mod
 
-import { writeFileSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -133,7 +133,7 @@ ${rect(c * 2, c * 2, "F.CrtYd", 0.05)}
 // from what the schematic actually asks for.
 const wanted = new Set();
 for (const dir of readdirSync(join(ROOT, "kicad5")).filter((d) => d.startsWith("dc-modules-"))) {
-  for (const f of readdirSync(join(ROOT, "kicad5", dir)).filter((x) => /^\d.*\.sch$/.test(x))) {
+  for (const f of readdirSync(join(ROOT, "kicad5", dir)).filter((x) => x.endsWith(".sch") && !x.startsWith("dc-modules-"))) {   // every drawn sheet incl. the control card; the project root sheet holds no parts
     for (const blk of readFileSync(join(ROOT, "kicad5", dir, f), "utf8").split("$Comp").slice(1)) {
       const m = blk.match(/^F 2 "([^"]+)"/m);
       if (m) wanted.add(m[1]);
@@ -157,12 +157,14 @@ for (const name of [...wanted].sort()) {
   if (mf) { writeFileSync(join(OUT, `${name}.kicad_mod`), row(name, +mf[1], +mf[2], HOLE.MicroFit, true, "Molex Micro-Fit 3.0 header")); made.push(name); n++; continue; }
   const hd = name.match(/^HDR-TH_(\d+)P-P([\d.]+)-V-M$/);
   if (hd) { writeFileSync(join(OUT, `${name}.kicad_mod`), row(name, +hd[1], +hd[2], HOLE.HDR, false, "Vertical male pin header")); made.push(name); n++; continue; }
-  const hd2 = name.match(/^HDR-TH_(\d+)P-2R-P([\d.]+)-V-M$/);   // E64: dual-row (2×n/2) keyed header — the 88-way card slot
+  const hd2 = name.match(/^HDR-TH_(\d+)P-2R-P([\d.]+)-V-M$/);   // dual-row (2×n/2) keyed header — the 88-way card slot
   if (hd2) { writeFileSync(join(OUT, `${name}.kicad_mod`), row(name, +hd2[1], +hd2[2], HOLE.HDR, true, "Vertical dual-row male pin header, keyed")); made.push(name); n++; continue; }
   const ds = name.match(/^DISC-(\d+)mm_RM(\d+)$/);
   if (ds) { writeFileSync(join(OUT, `${name}.kicad_mod`), disc(name, +ds[1], +ds[2], "Radial disc MOV")); made.push(name); n++; continue; }
   const gd = name.match(/^GDT-(\d+)mm_RM(\d+)$/);
   if (gd) { writeFileSync(join(OUT, `${name}.kicad_mod`), disc(name, +gd[1], +gd[2], "Gas discharge tube")); made.push(name); n++; continue; }
 }
+// a land no sheet asks for any more is deleted, so the library holds exactly what the sheets use
+for (const f of readdirSync(OUT).filter((x) => x.endsWith(".kicad_mod") && !made.includes(x.slice(0, -10)))) { unlinkSync(join(OUT, f)); console.log(`   removed unused ${f}`); }
 console.log(`${n} footprints written to kicad5/footprints/`);
 made.forEach((m) => console.log(`   ${m}`));

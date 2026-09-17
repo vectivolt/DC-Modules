@@ -1,4 +1,4 @@
-/* board.h — E80 the E40 module card on the GD32G553VET7 (LQFP100). One table owns every pin; the
+/* board.h — the module card on the GD32G553VET7 (LQFP100). One table owns every pin; the
  * calculations/control/port-pin-audit.mjs gate diffs it against packages/common-components/umod-map.gen.ts, so the card
  * generator and this port cannot drift apart. Pin evidence: datasheet Table 2-4 (facts-system §10); AF numbers from the
  * datasheet AF tables (HRTIMER pins AF13 except PC8 = AF3; TIMER19 PE3/PE4 = AF6; TIMER3 PD12/PD13 = AF2; CAN1 PB5/PB6 = AF9). */
@@ -8,14 +8,14 @@
 
 /* build configuration */
 #ifndef PORT_HXTAL_HZ
-#define PORT_HXTAL_HZ 8000000u    /* E81 (F-F-1): the card gains an 8 MHz crystal — IRC8M's ±2.5 % is 5x ISO 11898-1's
-                                     ±0.485 % budget at 16 tq / SJW 2. system_init still falls back to IRC8M if the crystal
-                                     never starts — E82 (C-01d): inside 10 ms of core clocks by DWT, because the E81 loop count
-                                     ran 20–40 ms, past the TPS3430's 23.375 ms window — so a crystal-less prototype boots. */
+#define PORT_HXTAL_HZ 8000000u    /* the card carries an 8 MHz crystal — IRC8M's ±2.5 % is 5x ISO 11898-1's ±0.485 %
+                                     budget at 16 tq / SJW 2. system_init still falls back to IRC8M if the crystal never
+                                     starts — inside 10 ms of core clocks by DWT, well under the TPS3430's 23.375 ms
+                                     window — so a crystal-less prototype boots. */
 #endif
 #define PORT_SYSCLK_HZ 216000000u
 #define PORT_CANCLK_HZ  48000000u /* CK_PLLQ = 432 MHz VCO / 9 — with PORT_HXTAL_HZ 0 this is IRC8M-derived (±2.5 %),
-                                     outside CAN's ~±0.5 % need: HW-REC-4 stands; the bus runs best-effort until the
+                                     outside CAN's ~±0.5 % need: HW-REC-4 applies; the bus runs best-effort until the
                                      crystal lands (docs/firmware-architecture.md §10). */
 
 /* PIN(port, pin) → one row of the table below */
@@ -31,7 +31,7 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_IOUT     PA, 7     /* AIN4  · ADC1_IN3  */
 #define BP_VAC1     PC, 0     /* AIN11 · ADC01_IN5 */
 #define BP_I_C0     PC, 1     /* AIN10 · ADC01_IN6 · CMP2_IP */
-#define BP_T_LLC    PC, 2     /* TSNS0 · ADC01_IN7 (E81 swap: was I_A0/CMP7_IP — reviewer I §7) */
+#define BP_T_LLC    PC, 2     /* TSNS0 · ADC01_IN7 */
 #define BP_AVMID    PC, 3     /* AVMID · ADC01_IN8 (bias readback) */
 #define BP_IOUTN    PC, 4     /* AIN5  · ADC1_IN4  */
 #define BP_VBKB     PD, 8     /* AIN7  · ADC3_IN11 */
@@ -42,7 +42,7 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_VAC3     PE, 8     /* ANA13 · ADC23_IN5 */
 #define BP_V15      PE, 12    /* ANA17 · ADC2_IN14 */
 #define BP_T_PFC    PE, 13    /* ANA18 · ADC2_IN2  */
-#define BP_I_A0     PB, 0     /* AIN8  · ADC0_IN12 · CMP3_IP (E81 swap: was T_LLC; CMP3 → HRTIMER FLT1, Table 25-21) */
+#define BP_I_A0     PB, 0     /* AIN8  · ADC0_IN12 · CMP3_IP (CMP3 → HRTIMER FLT1, Table 25-21) */
 #define BP_T_XFMR   PB, 1     /* TSNS1 · ADC2_IN0  */
 #define BP_VBUS     PB, 13    /* ANA14 · ADC2_IN4 · CMP4_IP */
 
@@ -63,16 +63,16 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_KPARA    PD, 13    /* DO1 · TIMER3_CH1 AF2 (economizer PWM) */
 
 /* -------- plain digital */
-#define BP_KPARB    PD, 7     /* DO2 · GPIO (no timer on this pin: coil held at full duty — E80 port note) */
+#define BP_KPARB    PD, 7     /* DO2 · GPIO (no timer on this pin: coil held at full duty) */
 #define BP_KPRE     PE, 5     /* DO9 · GPIO (TIMER19_MCH1 candidate; enable PWM hold at bring-up once MCH1 mapping is confirmed) */
 #define BP_QDIS     PE, 6     /* DO10 · GPIO (opto LED, not a coil) */
 #define BP_QDISBK   PB, 2     /* DO6 · GPIO */
 #define BP_EN_PFC   PD, 0     /* EN_A into the GATE_EN_A safety AND */
 #define BP_EN_LLC   PD, 1     /* EN_B into the GATE_EN safety AND */
 #define BP_DRV_RDY  PC, 12    /* wired-OR driver power-good, pull-up on the board */
-#define BP_RLY_FB   PD, 6     /* DI8 · RELAY_FB_KPRE (E81 F-A-5: series NO auxiliary chain — LOW = both bypass contacts
+#define BP_RLY_FB   PD, 6     /* DI8 · RELAY_FB_KPRE (series NO auxiliary chain — LOW = both bypass contacts
                                  closed, HIGH = at least one open → invert) */
-#define BP_WDI      PF, 10    /* internal · TPS3430 WDI: a FALLING edge every 10 ms (fixed window 2.22–23.375 ms, HR-02) */
+#define BP_WDI      PF, 10    /* internal · TPS3430 WDI: a FALLING edge every 10 ms (fixed window 2.22–23.375 ms) */
 #define BP_TACH1    PF, 2     /* DI6 · EXTI2  */
 #define BP_TACH2    PD, 14    /* DI7 · EXTI14 */
 #define BP_TACH3    PD, 5     /* DI9 · EXTI5  */
@@ -87,12 +87,12 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_BTN1     PD, 2     /* pressed = low (pull-up) */
 #define BP_BTN2     PB, 4
 
-/* E81 (F-D-15): the card carries ONE identity strap (RATING), which encodes rating, not board revision — a signed image
- * that must behave differently on rev A and rev B has no way to tell them apart, and the A/B updater will push either
- * image to either board. The decided fix is a strap on way DI0 (slot pin 85 = PD3, unused, net currently null): open =
- * rev A, 10 k to DGND = rev B, +Rs 0.10. It is a CARD change and must land before the first build; until the way has a
- * net in packages/common-components (and a row in calculations/control/port-pin-audit.mjs's NET map), the port reports
- * the build-time constant below, which VMP object 0x0005 already carries. Replace with pin_get(PD,3) when it exists. */
+/* The card carries ONE identity strap (RATING), which encodes rating, not board revision — a signed image that must
+ * behave differently on rev A and rev B has no way to tell them apart, and the A/B updater will push either image to
+ * either board. The planned strap is on way DI0 (slot pin 85 = PD3, unused, net currently null): open = rev A, 10 k to
+ * DGND = rev B, +Rs 0.10. It is a CARD change and must land before the first build; until the way has a net in
+ * packages/common-components (and a row in calculations/control/port-pin-audit.mjs's NET map), the port reports the
+ * build-time constant below, which VMP object 0x0005 carries. Replace with pin_get(PD,3) when it exists. */
 #ifndef PORT_HW_REV
 #define PORT_HW_REV 0u
 #endif

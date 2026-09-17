@@ -1,4 +1,4 @@
-/* app_test.c — E79 the module application end to end: app_init, the PFC and LLC interrupts at their rates and the 1 ms tick,
+/* app_test.c — the module application end to end: app_init, the PFC and LLC interrupts at their rates and the 1 ms tick,
  * driving the core, the TonHe V1.2 profile and the HAL modules against averaged plants — grid, precharge path, PFC power, LLC
  * tank gain, bank and terminal nodes behind the output diode, bypass mirror contact, NTCs, fans, a CAN monitor and a RAM flash.
  *   what it proves: the §2 sequence and every cross-context path — boot offsets, configuration and calibration records,
@@ -49,8 +49,8 @@ typedef struct {
   bool kpre_cmd, kpre_fb; double t_kpre;
   bool llc_stall; uint8_t can_state;
   double p_llc_in;
-  double i_inject[3];                  /* E82 (C-02): amps added to a phase's CT reading, either polarity */
-  double t_sink_c;                     /* E82 (C-11): what the PFC and LLC sink NTCs read, °C (0 = the 40 °C the suite always used) */
+  double i_inject[3];                  /* amps added to a phase's CT reading, either polarity */
+  double t_sink_c;                     /* what the PFC and LLC sink NTCs read, °C (0 = the suite's default 40 °C) */
   meas_cal_t cal;                      /* the sense chains as drawn */
 } plant_t;
 
@@ -63,7 +63,7 @@ static pmp_frame_t rxq[8];
 static uint8_t rx_n;
 static long kicks = 0;
 static int state_byte = -1;
-static uint8_t rsp_txn; static uint32_t rsp_val; static int rsp_got;   /* E80: last READ_RSP seen by run_ms */
+static uint8_t rsp_txn; static uint32_t rsp_val; static int rsp_got;   /* last READ_RSP seen by run_ms */
 
 static float counts(int ch, double value) { return (float)(value / pl.cal.ch[ch].gain + pl.cal.ch[ch].off); }
 static double gain(double fn, double q) { return 1.0 / hypot(1.0 + 0.1 * (1.0 - 1.0 / (fn * fn)), q * (fn - 1.0 / fn)); }
@@ -109,7 +109,7 @@ static void plant_llc(app_llc_adc_t *s) {
   s->ires = counts(MCH_IRES, 1.5 * pl.ib); s->vbka = counts(MCH_VBKA, pl.vb); s->vbkb = counts(MCH_VBKB, pl.vb);
 }
 
-static float tach_scale[4] = { 1.0f, 1.0f, 1.0f, 1.0f };   /* E80: per-fan speed knob (fraction of commanded) */
+static float tach_scale[4] = { 1.0f, 1.0f, 1.0f, 1.0f };   /* per-fan speed knob (fraction of commanded) */
 
 static void plant_tick(app_tick_in_t *ti) {
   bool k = (last_o.do_bits & APP_DO_KPRE) != 0u;
@@ -118,12 +118,12 @@ static void plant_tick(app_tick_in_t *ti) {
   double r = 1e4 * exp(3435.0 * (1.0 / (40.0 + 273.15) - 1.0 / 298.15));
   float ntc = (float)(4095.0 * r / (1e4 + r));
   ti->t_pfc = ti->t_inlet = ti->t_llc = ti->t_xfmr = ntc;
-  if (pl.t_sink_c > 0.0) {                                   /* E82 (C-11): the two SINK zones only — the inlet zone trips at 75 °C */
+  if (pl.t_sink_c > 0.0) {                                   /* the two SINK zones only — the inlet zone trips at 75 °C */
     double rs = 1e4 * exp(3435.0 * (1.0 / (pl.t_sink_c + 273.15) - 1.0 / 298.15));
     ti->t_pfc = ti->t_llc = (float)(4095.0 * rs / (1e4 + rs));
   }
   ti->v24 = (float)(24.0 / (LSB * 9.2)); ti->v15 = (float)(15.0 / (LSB * 5.7)); ti->vrefint = (float)(1.20 / 3.3 * 4096.0);
-  ti->avmid = (float)(1.65 / 3.3 * 4095.0);   /* E81 (F-D-13): the AVMID buffer reads back mid-rail */
+  ti->avmid = (float)(1.65 / 3.3 * 4095.0);   /* the AVMID buffer reads back mid-rail */
   ti->di = (uint16_t)(APP_DI_DRV_RDY | (pl.kpre_fb ? APP_DI_RLY_PRE : 0u));
   for (int n = 0; n < 4; n++) ti->tach_hz[n] = last_o.fan_duty[0] * 120.0f * tach_scale[n];
   ti->can_state = pl.can_state;
@@ -152,21 +152,21 @@ static void run_ms(long n) {
   }
 }
 
-static bool boot_no_cal;                                     /* E80: a factory-blank card (no calibration record) */
+static bool boot_no_cal;                                     /* a factory-blank card (no calibration record) */
 static void boot_as(bool wdt, const meas_cal_t *cal, uint8_t profile) {
   memset(flash, 0xFF, sizeof flash);
   nvm_t n; nvm_mount(&n, 0u, PG);
   app_cfg_t c; app_cfg_default(&c); c.vmp.profile = profile;
-  c.vmp.addr = 0x10u;                                        /* addressed, so READ objects answer (E80) */
+  c.vmp.addr = 0x10u;                                        /* addressed, so READ objects answer */
   nvm_put(&n, APP_NV_CFG, (const uint8_t *)&c, (uint8_t)sizeof c, true);
   meas_cal_t def;
-  if (!cal && !boot_no_cal) { meas_cal_default(&def, 50); cal = &def; }   /* E80 (HR-29): tests run CALIBRATED */
+  if (!cal && !boot_no_cal) { meas_cal_default(&def, 50); cal = &def; }   /* tests run CALIBRATED */
   if (cal) nvm_put(&n, APP_NV_CAL, (const uint8_t *)cal, (uint8_t)sizeof *cal, true);
   for (int k = 0; k < 4; k++) tach_scale[k] = 1.0f;
   memset(&pl, 0, sizeof pl); memset(&last_o, 0, sizeof last_o); memset(&po, 0, sizeof po); memset(&lo, 0, sizeof lo);
   pl.amp = 400.0 * sqrt(2.0 / 3.0); pl.hz = 50.0; pl.load_r = 1e6;
   meas_cal_default(&pl.cal, 50);
-  /* E81 (F-E-03): the boot record carries the RAW reset cause (RCU_RSTSCK 31:24). Bit 2 of the byte is EPRSTF — the pin
+  /* the boot record carries the RAW reset cause (RCU_RSTSCK 31:24). Bit 2 of the byte is EPRSTF — the pin
      reset the TPS3430's WDO produces, which is the card's dominant watchdog path; bit 3 is POR. */
   app_boot_t b = { .rating_counts = AIR50, .reset_cause = (uint8_t)(wdt ? (1u << 2) : (1u << 3)),
                    .uid = 0x12345678u, .fw = 0x00010203u, .nvm_page_size = PG,
@@ -209,10 +209,10 @@ int main(void) {
   run_ms(1000);
   ck("app: boot offsets, precharge and the confirmed bypass reach STANDBY inside 1 s on a 400 VAC line, without a fault",
      app.fsm.st == ST_STANDBY && app.fsm.latched == FC_NONE && app.az_done && !app.az_bad && (last_o.do_bits & APP_DO_KPRE) && pl.kpre_fb);
-  ck("app: the watchdog kick is permitted on ≥ 95 % of ticks once both ISRs run (E81: the port owns the 10 ms cadence)", kicks - k0 >= 950);
+  ck("app: the watchdog kick is permitted on ≥ 95 % of ticks once both ISRs run (the port owns the 10 ms cadence)", kicks - k0 >= 950);
   printf("      comparator references: F.01 %.3f V · F.03 %.3f V · F.13 %.3f V · clamp %.3f V\n",
          last_o.dac_v[APP_DAC_IA], last_o.dac_v[APP_DAC_VBUS], last_o.dac_v[APP_DAC_VOUT], last_o.dac_v[APP_DAC_CLAMP]);
-  /* E80: F.03 carries the corrected AMC1311 1.44 V common mode (HR-04); F.13 is scheduled by mode — 560 V in LOW (R09) */
+  /* F.03 carries the AMC1311 1.44 V common mode; F.13 is scheduled by mode — 560 V in LOW */
   ck("app: the 50 kW air strap gives four fans and the comparator references F.01 2.664 V, F.03 2.208 V, F.13 (LOW) 1.940 V",
      app.kw == 50u && app.n_fans == 4u && fabsf(last_o.dac_v[APP_DAC_IA] - 2.664f) < 0.01f &&
      fabsf(last_o.dac_v[APP_DAC_VBUS] - 2.208f) < 0.01f && fabsf(last_o.dac_v[APP_DAC_VOUT] - 1.940f) < 0.01f);
@@ -225,11 +225,11 @@ int main(void) {
   ck("app: a TonHe start (400 V, 100 A) into 5 Ω reaches RUN within 3 s and holds 400 V ± 2 % at 80 A",
      t_run >= 0 && t_run < 3000 && fabs(pl.vo - 400.0) < 8.0 && fabs(pl.iout - 80.0) < 4.0 && app.fsm.latched == FC_NONE);
   ck("app: telemetry reads ON and the TonHe state frame carries it (0x01)", app.tlm.rs == MOD_RS_ON && state_byte == 0x01);
-  /* E80: economizer duty — closed coils hold at 40 % after the 60 ms pull-in; open coils read 0 */
+  /* economizer duty — closed coils hold at 40 % after the 60 ms pull-in; open coils read 0 */
   ck("app: relay-coil economizer holds KPRE and the closed matrix pair at 40 % after pull-in, open coils at 0",
      last_o.relay_duty[APP_RLY_KPRE] == 0.4f && last_o.relay_duty[APP_RLY_KPARA] == 0.4f &&
      last_o.relay_duty[APP_RLY_KPARB] == 0.4f && last_o.relay_duty[APP_RLY_KSER] == 0.0f);
-  /* E80 (HW-REC-1): delivering at 400 V the clamp reference rides v_ref · 1.05 + 10 = 430 V */
+  /* HW-REC-1: delivering at 400 V the clamp reference rides v_ref · 1.05 + 10 = 430 V */
   { float want = (float)((430.0 / app.cal.ch[MCH_VOUT].gain + app.cal.ch[MCH_VOUT].off) * LSB);
     ck("app: the HW-REC-1 clamp reference follows the running setpoint (430 V at a 400 V command)",
        fabsf(last_o.dac_v[APP_DAC_CLAMP] - want) < 0.01f); }
@@ -250,16 +250,16 @@ int main(void) {
     run_ms(2);
     got[n] = app.fsm.latched == F[n].want && !(last_o.do_bits & (APP_DO_EN_PFC | APP_DO_EN_LLC));
   }
-  ck("app: each HRTIMER channel is attributed — CMP4 F.03, CMP0 F.13, the wire-OR F.11 at 95 % of the tank class else F.02, CMP3 F.01 (E81 pin swap) — and both gate enables drop",
+  ck("app: each HRTIMER channel is attributed — CMP4 F.03, CMP0 F.13, the wire-OR F.11 at 95 % of the tank class else F.02, CMP3 F.01 — and both gate enables drop",
      got[0] && got[1] && got[2] && got[3] && got[4]);
 
-  { /* E82 (C-02): F.01's comparators carry the POSITIVE reference only. E81 made the DAC reference follow the sign of the
-       measured current so that a through-window CT's unknown primary orientation stopped mattering — but the comparators
-       are non-inverted into active-HIGH fault inputs, so the negative reference asserts the fault for the whole time the
+  { /* F.01's comparators carry the POSITIVE reference only. A DAC reference that follows the sign of the measured
+       current would make a through-window CT's unknown primary orientation immaterial, but the comparators are
+       non-inverted into active-HIGH fault inputs, so a negative reference asserts the fault for the whole time the
        current reads negative, and at idle the sign of ≈ 0 A is noise. The negative polarity is covered instead by a
-       100 kHz |i| test in app_pfc_isr (3-wire Σi = 0 makes a positive comparator trip the backstop) — so the reference
-       must now be the positive one at every sample, a NEGATIVE over-current must still stop the stage inside one ISR and
-       latch F.01, and idle noise around zero must never trip. */
+       100 kHz |i| test in app_pfc_isr (3-wire Σi = 0 makes a positive comparator trip the backstop) — so the
+       reference is the positive one at every sample, a NEGATIVE over-current still stops the stage inside one ISR
+       and latches F.01, and idle noise around zero never trips. */
     restore();
     int pos_ref = 1;
     for (int k = 0; k < 400; k++) {                       /* a whole line cycle of both polarities */
@@ -283,10 +283,10 @@ int main(void) {
     run_ms(2);
     int latched = app.fsm.latched == FC_OC_PFC && !(last_o.do_bits & (APP_DO_EN_PFC | APP_DO_EN_LLC));
     for (int n = 0; n < 3; n++) pl.i_inject[n] = 0.0;
-    printf("      C-02: F.01 ref %.3f V both half cycles · negative %.0f A stopped in one ISR %d, latched %s\n",
+    printf("      F.01 ref %.3f V both half cycles · negative %.0f A stopped in one ISR %d, latched %s\n",
            (double)last_o.dac_v[APP_DAC_IA], -1.05 * app.fsm.oc_line_a - 130.0, one_isr,
            app.fsm.latched == FC_OC_PFC ? "F.01" : "none");
-    ck("E82 C-02: the F.01 reference stays positive through both half cycles, a negative over-current stops the PFC inside one ISR and latches F.01, and idle noise around zero never trips",
+    ck("the F.01 reference stays positive through both half cycles, a negative over-current stops the PFC inside one ISR and latches F.01, and idle noise around zero never trips",
        pos_ref && quiet && no_nuisance && one_isr && latched); }
 
   restore(); pl.hz = 40.0; run_ms(400);
@@ -295,7 +295,7 @@ int main(void) {
   ck("app: 40 Hz on a live line latches F.37 (AUTO_EXT) and the row clears by itself once 50 Hz is back", f37 && app.fsm.latched == FC_NONE);
 
   restore(); pl.llc_stall = true; run_ms(1); pl.llc_stall = false; run_ms(150);
-  ck("app (E82 E-15): ONE millisecond without the LLC interrupt is not F.35 — the LATCH row needs three inside 100 ms", app.fsm.latched == FC_NONE);
+  ck("app: ONE millisecond without the LLC interrupt is not F.35 — the LATCH row needs three inside 100 ms", app.fsm.latched == FC_NONE);
   restore(); k0 = kicks; pl.llc_stall = true; run_ms(20); pl.llc_stall = false;
   ck("app: an LLC interrupt that stops latches F.35 and the watchdog gets no kick while it is stopped", app.fsm.latched == FC_OVERRUN && kicks == k0);
 
@@ -309,7 +309,7 @@ int main(void) {
   ck("app: a 60 ms sag to 230 VAC at 50 kW rides through — no latch, the fold-back holds the bus above F.05, 400 V back inside 0.8 s",
      app.fsm.latched == FC_NONE && bmin > 620.0 && fabs(pl.vo - 400.0) < 8.0);
 
-  /* E82 (C-11 / M-06) end to end, 50 kW air. (1) Low line on the 830 V link is a corner the thermal grid folds on a hot
+  /* the junction observer end to end, 50 kW air. (1) Low line on the 830 V link is a corner the thermal grid folds on a hot
      day for the VIENNA die (285 VAC: 164 °C unfolded): on a 40 °C sink the module serves it, on a 77 °C sink (55 °C inlet)
      the junction observer trims the availability until the die sits inside its band — a thermal derate the charge
      controller can read, not a fault. (2) 150 V into a RESISTOR on the same hot sink has no equilibrium: folding the
@@ -327,14 +327,14 @@ int main(void) {
     hold(150.0, 166.0, 12000);
     printf("      50 kW air at 285 VAC, 400 V into 3.7 ohm: %.1f A on a 40 C sink · %.1f A on a 77 C sink (Vienna Tj est %.0f C) · 150 V into 0.94 ohm at 77 C: %.0f A, declined %d, fault %d\n",
            i_cool, i_hot, (double)tj_hot, pl.iout, app.die.declined, (int)app.fsm.latched);
-    ck("app (E82 C-11 / M-06): 285 VAC on the 830 V link runs unfolded on a 40 °C sink and folds 3–25 % on a 77 °C sink — thermal derate reported, the Vienna junction estimate inside its band, no fault",
+    ck("app: 285 VAC on the 830 V link runs unfolded on a 40 °C sink and folds 3–25 % on a 77 °C sink — thermal derate reported, the Vienna junction estimate inside its band, no fault",
        cool_ok && i_cool > 100.0 && fold_ok);
-    ck("app (E82 C-11): 150 V into a resistor on a 77 °C sink is DECLINED on the two-die 50 kW air — 0 A available with the thermal-derate bit, no fault latched, the link at its 650 V floor",
+    ck("app: 150 V into a resistor on a 77 °C sink is DECLINED on the two-die 50 kW air — 0 A available with the thermal-derate bit, no fault latched, the link at its 650 V floor",
        app.die.declined && app.fsm.latched == FC_NONE && (app.ctl.derate_why & PMP_DR_THERMAL) && pl.iout < 5.0 && app.ctl.i_avail == 0.0f && pl.vbus < 670.0);
     /* … and the refusal belongs to that POINT, not to the module: stop (the PFC stays warm), ask for 400 V, get it */
     th_stop(); run_ms(400); pl.load_r = 5.0;
     hold(400.0, 100.0, 4000);
-    ck("app (E82 C-11): after a declined point a stop and a new start at 400 V delivers — the refusal is not inherited through the warm-standby hold",
+    ck("app: after a declined point a stop and a new start at 400 V delivers — the refusal is not inherited through the warm-standby hold",
        !app.die.declined && app.fsm.latched == FC_NONE && pl.iout > 70.0);
     pl.t_sink_c = 0.0; }
 
@@ -370,7 +370,7 @@ int main(void) {
   ck("app: CAN bus-off restarts after 100 ms; the tenth inside a minute holds off 5 s", early && gaps[9] >= 5000);
 
   boot_no_cal = true; boot(false, NULL); run_ms(500);
-  ck("app: a card with NO calibration record latches F.30 from boot — no precharge, no output, APP_W_UNCAL says why (HR-29)",
+  ck("app: a card with NO calibration record latches F.30 from boot — no precharge, no output, APP_W_UNCAL says why",
      app.fsm.latched == FC_CAL && app.uncal && (app.tlm.warn & APP_W_UNCAL) &&
      !(last_o.do_bits & (APP_DO_KPRE | APP_DO_EN_PFC | APP_DO_EN_LLC)));
   boot_no_cal = false;
@@ -385,11 +385,11 @@ int main(void) {
   tach_scale[1] = 0.0f; tach_scale[3] = 0.0f;                  /* three of four gone: nothing can cool full power */
   hold(400.0, 100.0, 3500);
   printf("      fan curve: one slow fan -> fail 0x%02X derate %.2f · three failed -> F.%d\n", 0x04, d_target, (int)app.fsm.latched);
-  ck("app: a fan at 15 %% of commanded speed fails the curve in 3 s (0.6 derate on the 4-fan SKU); three failed latch F.25 (HR-25/FW-21)",
+  ck("app: a fan at 15 %% of commanded speed fails the curve in 3 s (0.6 derate on the 4-fan SKU); three failed latch F.25",
      one_failed && d_target <= 0.61f && d_target > 0.35f && app.fsm.latched == FC_FAN);
 
   boot_as(false, NULL, (uint8_t)PMP_PROFILE_NATIVE); run_ms(1200);
-  { /* E80: the event ring holds the boot event and a fault set/clear pair; the VMP objects read it back */
+  { /* the event ring holds the boot event and a fault set/clear pair; the VMP objects read it back */
     app_fault_isr(&app, 1u << APP_FLT_VBUS, 0.0f);
     run_ms(200);
     int latched = app.fsm.latched == FC_BUS_OVP;
@@ -399,12 +399,12 @@ int main(void) {
     rxq[rx_n++] = fr;
     rsp_got = 0; run_ms(2);
     uint32_t cnt = rsp_got && rsp_txn == 0x99u ? rsp_val : 0u;
-    ck("app: the event log records boot and the F.03 latch, and VMP object 0x0400 reads the count (E80)",
+    ck("app: the event log records boot and the F.03 latch, and VMP object 0x0400 reads the count",
        latched && cnt >= 2u && evlog_count(&app.ev) == cnt);
     ck("app: a LATCH row blocks the 60 s boot confirmation (boot_ok stays false)", !last_o.boot_ok && app.latch_seen); }
 
   boot_as(false, NULL, (uint8_t)PMP_PROFILE_NATIVE); run_ms(61000);
-  ck("app: 60 s of healthy standby raises boot_ok — the port confirms a pending slot on this edge (E80)", last_o.boot_ok);
+  ck("app: 60 s of healthy standby raises boot_ok — the port confirms a pending slot on this edge", last_o.boot_ok);
   { /* ENTER_BOOT: unlock, then the action — the module reports enter_boot once the acknowledgement has left */
     pmp_frame_t fu = { (1u << 26) | (1u << 25) | (0x10u << 16) | (0x10u << 8) | 0x01u, 8u, { 0x01, 6, 0, 0, 0, 0, 0, 0 } };
     pmp_put32(fu.data + 2, 0x32504D56u);

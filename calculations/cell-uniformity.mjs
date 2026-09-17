@@ -28,7 +28,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const canon = (s) => s.replace(/\d+/g, "#");
 // families that are pure replication and MUST be uniform; everything else may legitimately differ
 // per SKU (bank cap count, fan count, MCU pin usage, per-board control nets)
-const MUST = [/ LLC-LEGS \/ LEG-#$/, / LLC-TANKS \/ TANK-#$/, / VIENNA-PFC \/ PHASE-[ABC]#$/];   // E50: keys are "<sku> <family>"
+const MUST = [/ LLC-LEGS \/ LEG-#$/, / LLC-TANKS \/ TANK-#$/, / VIENNA-PFC \/ PHASE-[ABC]#$/];   // keys are "<sku> <family>"
 
 const families = new Map();
 for (const SKU of ["30kw", "40kw", "50kw", "50kwa"]) for (const SIDE of ["acdc", "dcdc"]) {
@@ -67,7 +67,7 @@ for (const SKU of ["30kw", "40kw", "50kw", "50kwa"]) for (const SIDE of ["acdc",
       ...comps.filter((c) => inside(c, fr)).map((c) => `C:${c.lib}|${c.val}`),
       ...labels.filter((l) => inside(l, fr)).map((l) => `N:${canon(l.n)}`),
     ].sort().join(";");
-    // E50: family key includes the SKU — replication is a WITHIN-sheet claim. Pooling across
+    // family key includes the SKU — replication is a WITHIN-sheet claim. Pooling across
     // SKUs false-fails on legitimate per-variant differences (paralleled gate branches, tank
     // cap counts, trim bins) — the measure-like-with-like rule.
     const fam = `${SKU} ${canon(t.txt)}`;

@@ -8,8 +8,8 @@ Title "DC-Modules 30 kW module - schematic set"
 Date "2026-09-06"
 Rev "D.1"
 Comp "DC-Modules"
-Comment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC, E67)"
-Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card (E40)"
+Comment1 "AC-DC board (Vienna PFC) + DC-DC board (full-bridge LLC)"
+Comment2 "one Vienna PFC + one full-bridge LLC per module; one control card"
 Comment3 ""
 Comment4 ""
 $EndDescr
@@ -22,7 +22,7 @@ $EndSheet
 $Sheet
 S 6200 1000 4200 1400
 U 5E000271
-F0 "30 kW DCDC board 2of2 - full-bridge LLC (E67)" 70
+F0 "30 kW DCDC board 2of2 - full-bridge LLC" 70
 F1 "30kw-dcdc.sch" 70
 $EndSheet
 $EndSCHEMATC

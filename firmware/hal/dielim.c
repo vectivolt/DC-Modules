@@ -9,7 +9,7 @@ void dielim_cfg_default(dielim_cfg_t *c, uint16_t kw, bool liquid) {
   c->llc_cs_f = (kw == 50u) ? 1000.0e-12f : (kw == 40u) ? 680.0e-12f : 330.0e-12f;   /* tanks.mjs cs */
   c->llc_qoss800_c = 371.0e-9f;                                         /* tanks.mjs DIES["23m"].qoss800 — the RFQ bound (llc.c) */
   c->llc_par = (kw == 30u) ? 1u : 2u;
-  /* weak-leg residual / link against gain M, with the E82 dead times. Deck anchors (llc-stress.csv Vres_A, 30 / 40 / 50 kW):
+  /* weak-leg residual / link against gain M, at the programmed dead times. Deck anchors (llc-stress.csv Vres_A, 30 / 40 / 50 kW):
      PS150 at 650 V, M 0.46: 0.45 / 0.60 / 0.60 · PAR200, M 0.62: 0.19 / 0.40 / 0.41 · SER250 at 764 V, M 0.65: 0.11 /
      0.30 / 0.30 · PAR250, M 0.77: 0. The independent switched model agrees inside ten points and adds 0.63 at M 0.41
      (PS150 on a 725 V link, 50 kW). The lines below sit 0.02–0.12 above every one of them. */

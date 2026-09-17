@@ -1,4 +1,4 @@
-# §35 full grid (E67 rev: full-bridge tanks, LOW/HIGH mode edge at 500 V, PSM at f_max, line-tracking bus floor), averaged fidelity; PASS = Tj<=150, Ip_rms<=tank class (78/100/120 A rms), fn in [0.45,1.45], eta floor
+# §35 full grid (full-bridge tanks, LOW/HIGH mode edge at 500 V, PSM at f_max, line-tracking bus floor), averaged fidelity; PASS = Tj<=150, Ip_rms<=tank class (78/100/120 A rms), fn in [0.45,1.45], eta floor
 sku,Vin,Vout,load,temp,mode,ctl,Pout_W,bus_V,fn,Ip_rms_A,Iline_A,eta_pct,Tj_pfc_C,Tj_llc_C,PASS,notes,Tj_jbs_C,Woff_pos_W,Itoff_A
 30kw,285,150,0,cold,PAR,IDLE,0,650,,0,0,,,,PASS,standby
 30kw,285,150,0,room,PAR,IDLE,0,650,,0,0,,,,PASS,standby

@@ -432,7 +432,7 @@
    ],
    "nc_pins": [],
    "value": "2.2uF",
-   "query": "PP-2u2-1100 2.2 µF 1100 V PP film — the capacitor half of the E81 DC-link entry ",
+   "query": "PP-2u2-1100 2.2 µF 1100 V PP film — the capacitor half of the DC-link entry DAMP",
    "mpn": "PP-2u2-1100"
   },
   {
@@ -482,7 +482,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — full-bridge LLC switch, clip-mo",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -512,7 +512,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — full-bridge LLC switch, clip-mo",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -642,7 +642,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -897,7 +897,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W LLC-channel isolated gate-bias module, **+15 V / −3 V**, 1 W cla",
    "mpn": "ISO-GBIAS-15-1W"
   },
   {
@@ -987,7 +987,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -1242,7 +1242,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W LLC-channel isolated gate-bias module, **+15 V / −3 V**, 1 W cla",
    "mpn": "ISO-GBIAS-15-1W"
   },
   {
@@ -1272,7 +1272,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — full-bridge LLC switch, clip-mo",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -1302,7 +1302,7 @@
    ],
    "nc_pins": [],
    "value": "SG2M023120LJ",
-   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 ",
+   "query": "SG2M023120LJ SiC MOSFET 1200 V 23 mΩ TO-247-4L — full-bridge LLC switch, clip-mo",
    "mpn": "SG2M023120LJ"
   },
   {
@@ -1432,7 +1432,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -1687,7 +1687,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W LLC-channel isolated gate-bias module, **+15 V / −3 V**, 1 W cla",
    "mpn": "ISO-GBIAS-15-1W"
   },
   {
@@ -1777,7 +1777,7 @@
    ],
    "nc_pins": [],
    "value": "NSI6611",
-   "query": "NSI6611 iso gate driver 10 A, DESAT/Miller",
+   "query": "NSI6611 iso gate driver 10 A, DESAT / Miller clamp ",
    "mpn": "NSI6611"
   },
   {
@@ -2032,7 +2032,7 @@
    ],
    "nc_pins": [],
    "value": "ISO-GBIAS-15-1W",
-   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "query": "ISO-GBIAS-15-1W LLC-channel isolated gate-bias module, **+15 V / −3 V**, 1 W cla",
    "mpn": "ISO-GBIAS-15-1W"
   }
  ]

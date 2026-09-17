@@ -1,9 +1,9 @@
-/* startup.c — E80 vectors and reset for both images (Cortex-M33; vector table per UM Table 5-2, facts files).
+/* startup.c — vectors and reset for both images (Cortex-M33; vector table per UM Table 5-2, facts files).
  * Reset: paint the stack, copy .data, zero .bss, copy .ramfunc into TCM (0x1000 0000 — always mapped, no enable bit),
  * copy the vector table into RAM and point VTOR there, then main. Any unhandled fault forces every HRTIMER output off
  * and the enables low, then waits for the watchdog: gates are low by hardware through reset and boot (§3.3). */
 #include "regs.h"
-#include "flash_map.h"   /* E82 (G-14): the journal window nmi_handler is allowed to absorb an ECC fault in */
+#include "flash_map.h"   /* the journal window nmi_handler is allowed to absorb an ECC fault in */
 #include <stdint.h>
 typedef __UINTPTR_TYPE__ uintptr_t;
 
@@ -15,8 +15,8 @@ extern uint32_t _sstack[], _estack[];
 int main(void);
 static void vtor_to_ram(void);   /* defined with VECTORS at the foot of the file */
 
-/* E82 (M-20): the slot the bootloader entered. SCB_VTOR used to be that address all the way through, and port.c reads
-   it to find the running image's header; once the table moves to RAM it no longer is, so it is captured here. */
+/* The slot the bootloader entered. port.c reads it to find the running image's header, and SCB_VTOR stops being that
+   address once the table moves to RAM, so it is captured here. */
 uint32_t port_slot_vtor;
 
 void reset_handler(void) {
@@ -27,16 +27,16 @@ void reset_handler(void) {
   for (uint32_t *d = _sbss; d < _ebss;) *d++ = 0u;
   s = _siramfunc;
   for (uint32_t *d = _sramfunc; d < _eramfunc;) *d++ = *s++;
-  /* E82 (M-20): the ISR BODIES were already in TCM, but exception ENTRY reads the vector table, and on an image running
-     from slot A that table shares flash bank 0 with the NVM journal, the boot record and the event log. UM §2.3.4: RWW
-     is bank-granular — "while a read operation is performed in a bank, the OTHER bank can be accessed for another
-     operation" — so every journal append (80 µs per double word, ds Table 4-25) and every log page erase (1–20 ms)
-     stalled interrupt entry for the whole operation. An evlog flush during a fault storm could therefore freeze the
-     100 kHz loop for milliseconds with the Vienna PWM held at its last duty, and SysTick could not run either, so no
-     WDI edge went out. The copy lives in ordinary SRAM0 rather than TCM: what matters is only that it is not on the
-     flash bus, and .bss needs no linker-script region, so the BOOTLOADER image (boot.ld, no TCM) gets the same
-     protection from this one file. The bootloader's jump contract is untouched: it still loads MSP and VTOR from the
-     slot and enters here, and port_slot_vtor captures that address before this overwrites it. */
+  /* The ISR bodies live in TCM, but exception ENTRY reads the vector table, and on an image running from slot A that
+     table shares flash bank 0 with the NVM journal, the boot record and the event log. UM §2.3.4: RWW is
+     bank-granular — "while a read operation is performed in a bank, the OTHER bank can be accessed for another
+     operation" — so left in flash, every journal append (80 µs per double word, ds Table 4-25) and every log page
+     erase (1–20 ms) would stall interrupt entry for the whole operation. An evlog flush during a fault storm would
+     then freeze the 100 kHz loop for milliseconds with the Vienna PWM held at its last duty, and SysTick could not run
+     either, so no WDI edge would go out. The copy lives in ordinary SRAM0 rather than TCM: what matters is only that
+     it is not on the flash bus, and .bss needs no linker-script region, so the BOOTLOADER image (boot.ld, no TCM)
+     gets the same protection from this one file. The bootloader's jump contract is untouched: it still loads MSP and
+     VTOR from the slot and enters here, and port_slot_vtor captures that address before this overwrites it. */
   port_slot_vtor = SCB_VTOR;
   vtor_to_ram();
   __asm volatile ("dsb\n isb");
@@ -50,13 +50,13 @@ void default_handler(void) {
   for (;;) {}                                   /* no WDI kicks: the TPS3430 resets through NRST */
 }
 
-/* E82 (G-14): two-bit flash ECC faults absorbed since reset, saturating. Also the loop guard — see nmi_handler. */
+/* Two-bit flash ECC faults absorbed since reset, saturating. Also the loop guard — see nmi_handler. */
 volatile uint8_t port_flash_ecc;
 #define FLASH_ECC_BUDGET 16u
 
 void nmi_handler(void) {                        /* HXTAL clock monitor: hardware already fell back to IRC8M */
   if (RCU_INT & BIT(7)) RCU_INT |= BIT(23);     /* clear CKMIF; the PLL is re-locked from IRC8M by system_init after reset */
-  /* E82 (G-14): a power cut inside a double-word program leaves that 64-bit row "in an indeterminate state" (UM §2.3.8),
+  /* A power cut inside a double-word program leaves that 64-bit row "in an indeterminate state" (UM §2.3.8),
      and the next read of it is a two-bit ECC error: FMC_ECCCS ECCDET0 (31) and SYSCFG_STAT FLASHECCIF (2) set, and an
      NMI is generated (UM §2.3.2) — there is no enable bit to turn it off. Both journals are appended exactly when power
      is failing (fault → log → brown-out), so this is a field event, and falling into default_handler() would reset the
@@ -89,7 +89,7 @@ WEAK_ISR(hardfault_handler); WEAK_ISR(memmanage_handler); WEAK_ISR(busfault_hand
 WEAK_ISR(svc_handler); WEAK_ISR(pendsv_handler); WEAK_ISR(systick_isr);
 WEAK_ISR(exti2_isr); WEAK_ISR(exti3_isr); WEAK_ISR(exti5_isr); WEAK_ISR(exti14_isr);
 WEAK_ISR(hrtimer_mt_isr); WEAK_ISR(pfc_ctl_isr); WEAK_ISR(hrtimer_flt_isr);
-/* E82 (M-28): the LVD fires through EXTI line 16 on IRQ 1. default_handler is the whole response — every HRTIMER
+/* The LVD fires through EXTI line 16 on IRQ 1. default_handler is the whole response — every HRTIMER
    output to idle-inactive, both stage enables low, then spin without a WDI edge so the TPS3430 resets the card. */
 WEAK_ISR(lvd_isr);
 
@@ -103,10 +103,10 @@ static const vec_t VECTORS[16 + 130] = {
   memmanage_handler, busfault_handler, usagefault_handler, 0, 0, 0, 0,
   svc_handler, 0, 0, pendsv_handler, systick_isr,
   /* IRQ 0.. */
-  [16 + 1] = lvd_isr,            /* LVD / VAVD / VOVD / VUVD through EXTI (E82 M-28) */
+  [16 + 1] = lvd_isr,            /* LVD / VAVD / VOVD / VUVD through EXTI */
   [16 + 8] = exti2_isr,          /* EXTI2 */
   [16 + 9] = exti3_isr,          /* EXTI3 */
-  [16 + 13] = pfc_ctl_isr,       /* DMA0 channel2 global: ADC2 end of sequence = 100 kHz Vienna control (E82 M-21) */
+  [16 + 13] = pfc_ctl_isr,       /* DMA0 channel2 global: ADC2 end of sequence = 100 kHz Vienna control */
   [16 + 23] = exti5_9_isr,       /* EXTI5–9 */
   [16 + 40] = exti10_15_isr,     /* EXTI10–15 */
   [16 + 67] = hrtimer_mt_isr,    /* HRTIMER interrupt0: master (10 kHz LLC tick) */

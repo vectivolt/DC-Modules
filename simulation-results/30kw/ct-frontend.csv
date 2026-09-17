@@ -1,21 +1,22 @@
-# ngspice-46; R2 §G closure deck — AVMID dual-feedback stability (MR-11) + corrected resonant burden (CB-16); behavioral 10 MHz op-amp
-# E81/F-G-6: pkNom and the race currents are READ from llc-stress-summary.json and llc-short.csv (no hand-copied peaks); the CT itself is an IDEAL current source — no magnetising branch, no saturation (F-G-8, open)
+# ngspice-46; CT front-end deck — AVMID dual-feedback stability + the resonant-CT burden; behavioral 10 MHz op-amp
+# pkNom and the race currents are READ from llc-stress-summary.json and llc-short.csv (no hand-copied peaks); the CT itself is an IDEAL current source — no magnetising branch, no saturation (F-G-8, open)
+# inputs c9ac82202dbb <- simulation-results/30kw/llc-stress-summary.json,simulation-results/30kw/llc-short.csv,simulation-results/40kw/llc-stress-summary.json,simulation-results/40kw/llc-short.csv,simulation-results/50kw/llc-stress-summary.json,simulation-results/50kw/llc-short.csv
 case,metric,value,limit,verdict
 avmid-revD,steady ripple pk-pk (V),0,≤0.01,PASS
 avmid-revD,clamp-pulse dip (V),1.639,≥1.55,PASS
 avmid-revC-baseline,steady ripple pk-pk (V),0.0041,reference (expected ringing),REF
 ctfe-res-30kw-nominal-peak,ADC max/min (V),2.17/1.13,≤3.2 & ≥0.1,PASS
 ctfe-res-30kw-F11,comparator peak (V),2.296,2.308±0.08,PASS
-ctfe-res-30kw-F11+race,ADC max/min (V),3.122/0.178,≤3.27 & ≥0.1,PASS
+ctfe-res-30kw-F11+race,ADC max/min (V),3.133/0.167,≤3.27 & ≥0.1,PASS
 ctfe-line-30kw-F01,ADC peak (V),2.706,2.706±0.05,PASS
 ctfe-line-30kw-F01+race,ADC peak (V),3.111,≤3.27,PASS
 ctfe-res-40kw-nominal-peak,ADC max/min (V),2.173/1.127,≤3.2 & ≥0.1,PASS
 ctfe-res-40kw-F11,comparator peak (V),2.286,2.298±0.08,PASS
-ctfe-res-40kw-F11+race,ADC max/min (V),3.109/0.191,≤3.27 & ≥0.1,PASS
+ctfe-res-40kw-F11+race,ADC max/min (V),3.121/0.179,≤3.27 & ≥0.1,PASS
 ctfe-line-40kw-F01,ADC peak (V),2.766,2.766±0.05,PASS
 ctfe-line-40kw-F01+race,ADC peak (V),3.126,≤3.27,PASS
 ctfe-res-50kw-nominal-peak,ADC max/min (V),2.188/1.112,≤3.2 & ≥0.1,PASS
 ctfe-res-50kw-F11,comparator peak (V),2.298,2.31±0.08,PASS
-ctfe-res-50kw-F11+race,ADC max/min (V),3.143/0.157,≤3.27 & ≥0.1,PASS
+ctfe-res-50kw-F11+race,ADC max/min (V),3.153/0.147,≤3.27 & ≥0.1,PASS
 ctfe-line-50kw-F01,ADC peak (V),2.664,2.664±0.05,PASS
 ctfe-line-50kw-F01+race,ADC peak (V),3.038,≤3.27,PASS

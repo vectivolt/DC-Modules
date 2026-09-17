@@ -1,4 +1,4 @@
-/* math.h — E80 freestanding math for the target (Homebrew arm-none-eabi-gcc ships no newlib). Everything the firmware
+/* math.h — freestanding math for the target (Homebrew arm-none-eabi-gcc ships no newlib). Everything the firmware
  * calls maps to an FPU instruction or a builtin except logf (lib.c) and floor (below). -fno-math-errno lets sqrtf
  * compile to VSQRT; fminf/fmaxf compile to VMINNM/VMAXNM on the M33. */
 #ifndef PORT_MATH_H

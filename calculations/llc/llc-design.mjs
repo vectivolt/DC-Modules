@@ -1,5 +1,5 @@
-// llc-design.mjs — Phase 6 (§13/§14): LLC tank synthesis check + operating map + magnetics summary. REV E (E67 full bridge).
-// The tank of record lives in tanks.mjs (chosen by the E67 ngspice scan); this engine is its first-harmonic cross-check:
+// llc-design.mjs — Phase 6 (§13/§14): LLC tank synthesis check + operating map + magnetics summary, full bridge.
+// The tank of record lives in tanks.mjs (chosen by the ngspice scan); this engine is its first-harmonic cross-check:
 //   · gain at the gain-critical mode edge (500 V bank, bus 830 → M 1.205): FHA floor + the ngspice gain-worst corner solved
 //   · an FHA operating map over both output modes (LOW 150–500 V banks parallel · HIGH 500–1000 V banks series)
 //   · the D3 cell / D2 external-Lr constructions and their rated-point losses from magnetics-envelope
@@ -22,7 +22,7 @@ const gain = (fn, Q, Ln) => 1 / Math.hypot(1 + (1 / Ln) * (1 - 1 / (fn * fn)), Q
 const busFor = (bank) => Math.min(830, Math.max(650, (2 * bank) / 0.95));
 const peak = (Q, Ln) => { let m = 0, at = 1; for (let fn = 0.55; fn <= 1.2; fn += 0.001) { const g = gain(fn, Q, Ln); if (g > m) { m = g; at = fn; } } return { m, at }; };
 
-console.log("=== LLC DESIGN (E67 full bridge) — FHA cross-check of tanks.mjs, operating map, magnetics summary ===");
+console.log("=== LLC DESIGN (full bridge) — FHA cross-check of tanks.mjs, operating map, magnetics summary ===");
 const mapRows = [["sku", "mode", "out_V", "bank_V", "bus_V", "load_frac", "M", "fn", "fsw_kHz", "ctl", "Ip_rms_A", "Is_rms_A", "Vcr_pk_V"]];
 const tankRows = ["sku,param,value,unit,tolerance,note"];
 for (const [sku, t] of Object.entries(TANKS)) {
@@ -61,7 +61,7 @@ for (const [sku, t] of Object.entries(TANKS)) {
     `${sku},Lr,${f(t.Lr * 1e6, 2)},µH,±5%,D2 ${f(c2.Lnom * 1e6, 2)} µH + ${D3_CELLS}× cell leakage + ${f(LOOP_STRAY * 1e6, 1)} µH loop`,
     `${sku},Cr,${f(t.Cr * 1e9, 0)},nF,±5%,${t.crN}× 33 nF 1200 V resonant-duty film in parallel`,
     `${sku},Lm,${f(t.Lm * 1e6, 1)},µH,±7%,primary-referred; ${f(t.Lm / D3_CELLS * 1e6, 2)} µH per cell`,
-    `${sku},Ln,${f(Ln, 1)},,,E67 ngspice scan`, `${sku},Q_500V,${f(Q500, 3)},,,at a 500 V bank full power`);
+    `${sku},Ln,${f(Ln, 1)},,,ngspice scan`, `${sku},Q_500V,${f(Q500, 3)},,,at a 500 V bank full power`);
 }
 writeFileSync(join(OUT, "llc-opmap.csv"), mapRows.map((r) => r.join(",")).join("\n") + "\n");
 writeFileSync(join(OUT, "llc-tank.csv"), tankRows.join("\n") + "\n");

@@ -1,4 +1,4 @@
-/* sha256.h — E80 SHA-256 (FIPS 180-4). Portable C99, no heap. The bootloader hashes the image body and the signed header with
+/* sha256.h — SHA-256 (FIPS 180-4). Portable C99, no heap. The bootloader hashes the image body and the signed header with
  * it; boot_test checks it against node's OpenSSL on vectors across the one- and two-block padding boundaries. */
 #ifndef PMP_SHA256_H
 #define PMP_SHA256_H

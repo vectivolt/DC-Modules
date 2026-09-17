@@ -1,5 +1,5 @@
 // busbar-calc.mjs — §34/§48: every bulk-current path per SKU: RMS current, cross-section, R, loss,
-// ΔT, inductance, Cu-vs-Al decision. Paths: 3× AC input, DC+, MID, DC−, OUT+, OUT− plus the E17
+// ΔT, inductance, Cu-vs-Al decision. Paths: 3× AC input, DC+, MID, DC−, OUT+, OUT− plus the
 // board-to-board stud pillars. Emits calculations/out/busbar.csv + docs/busbar-drawings.md.
 // Method: J-limited sizing (Cu 3 A/mm² bulk, Al 2 A/mm²), R = ρL/A at 90 °C, ΔT from natural+forced
 // convection h=25 W/m²K on exposed bar area, partial-inductance L ≈ 0.2·l·(ln(2l/(w+t))+0.5) µH (l in m).
@@ -19,7 +19,7 @@ const DENS = { Cu: 8900, Al: 2700 }, PRICE = { Cu: 950, Al: 260 }; // ₹/kg
 const SKUS = [
   { name: "30kw", Iac: 54.9, Idc: 39, Iout: 100, len: { ac: 0.25, dc: 0.30, out: 0.30 } },
   { name: "40kw", Iac: 73.2, Idc: 52, Iout: 133, len: { ac: 0.25, dc: 0.30, out: 0.30 } },
-  { name: "50kw", Iac: 91.6, Idc: 65, Iout: 167, len: { ac: 0.25, dc: 0.30, out: 0.30 } },   // E61: 50 kW row added (liquid and air share every bulk current)
+  { name: "50kw", Iac: 91.6, Idc: 65, Iout: 167, len: { ac: 0.25, dc: 0.30, out: 0.30 } },   // liquid and air share every bulk current
 ];
 const bars = (s) => [
   { path: "AC L1/L2/L3 (each)", I: s.Iac, l: s.len.ac, mat: "Cu", crit: "EMI zone: keep short, no Al joints in filter loop" },
@@ -115,7 +115,7 @@ md.push(`## Joint schedule (all SKUs)
 | Relay lugs (KSER / KPARA / KPARB) | M6 | 8 N·m | ≤ 80 µΩ |
 | Shunt terminals | M8, Kelvin taps untouched | 12 N·m | calibration validates |
 | AC input studs | M8 | 12 N·m | ≤ 60 µΩ |
-| Choke centre bolt (D1 stacks) | M6 + silicone pad; ≥ 3 kg stacks add two-point banding | first article | leads are soldered flying leads — the old M5 lug row predated D1 rev B |
+| Choke centre bolt (D1 stacks) | M6 + silicone pad; ≥ 3 kg stacks add two-point banding | first article | D1 leads are soldered flying leads, not lugs |
 
 ${footer("docs/busbar-drawings.md")}`);
 writeFileSync(join(OUT, "..", "..", "docs", "busbar-drawings.md"), md.join("\n") + "\n");
