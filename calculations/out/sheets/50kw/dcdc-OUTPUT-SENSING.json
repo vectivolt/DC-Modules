@@ -12,6 +12,10 @@
  "net_style_overrides": {
   "RSHO_KA": "wire",
   "RSHO_KB": "wire",
+  "USHO_OUTN": "wire",
+  "USHO_OUTP": "wire",
+  "RBO_M": "wire",
+  "RBO_23": "wire",
   "ROAD_M": "wire",
   "ROAD_12": "wire",
   "ROAD_23": "wire",
@@ -20,6 +24,7 @@
   "ROAD_56": "wire",
   "ROAD_67": "wire",
   "UIVOA_VINP": "wire",
+  "UIVOA_OUTP": "wire",
   "ROBD_M": "wire",
   "ROBD_12": "wire",
   "ROBD_23": "wire",
@@ -28,6 +33,7 @@
   "ROBD_56": "wire",
   "ROBD_67": "wire",
   "UIVOB_VINP": "wire",
+  "UIVOB_OUTP": "wire",
   "ROVD_M": "wire",
   "ROVD_12": "wire",
   "ROVD_23": "wire",
@@ -35,7 +41,8 @@
   "ROVD_45": "wire",
   "ROVD_56": "wire",
   "ROVD_67": "wire",
-  "UIVOV_VINP": "wire"
+  "UIVOV_VINP": "wire",
+  "UIVOV_OUTP": "wire"
  },
  "net_class_overrides": {
   "PE": "ground"
@@ -103,12 +110,12 @@
     {
      "pin_number": 6,
      "name": "OUTN",
-     "signal_name": "SNS_IOUTN"
+     "signal_name": "USHO_OUTN"
     },
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_IOUT"
+     "signal_name": "USHO_OUTP"
     },
     {
      "pin_number": 8,
@@ -214,6 +221,46 @@
    "mpn": "MLCC-1u-0805"
   },
   {
+   "designator": "RSHOP",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "USHO_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_IOUT"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "RSHON",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "USHO_OUTN"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_IOUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
+  },
+  {
    "designator": "COF1",
    "block_name": "OUTPUT",
    "pins": [
@@ -292,6 +339,66 @@
    "value": "4.7nF",
    "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
    "mpn": "Y1-4n7-440"
+  },
+  {
+   "designator": "RBO1",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "RBO_M"
+    }
+   ],
+   "nc_pins": [],
+   "value": "150k",
+   "query": "R2512-150k-HV 150 kOhm 1 % 2512 HV, Umax >= 400 V, 3-series across the OUTPUT st",
+   "mpn": "R2512-150k-HV"
+  },
+  {
+   "designator": "RBO2",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RBO_M"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "RBO_23"
+    }
+   ],
+   "nc_pins": [],
+   "value": "150k",
+   "query": "R2512-150k-HV 150 kOhm 1 % 2512 HV, Umax >= 400 V, 3-series across the OUTPUT st",
+   "mpn": "R2512-150k-HV"
+  },
+  {
+   "designator": "RBO3",
+   "block_name": "OUTPUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "RBO_23"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "OUTN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "150k",
+   "query": "R2512-150k-HV 150 kOhm 1 % 2512 HV, Umax >= 400 V, 3-series across the OUTPUT st",
+   "mpn": "R2512-150k-HV"
   },
   {
    "designator": "JOUTP",
@@ -659,7 +766,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VBKA"
+     "signal_name": "UIVOA_OUTP"
     },
     {
      "pin_number": 8,
@@ -713,6 +820,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "ROAO",
+   "block_name": "SENSE-VBKA",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVOA_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VBKA"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "ROBD0",
@@ -946,7 +1073,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VBKB"
+     "signal_name": "UIVOB_OUTP"
     },
     {
      "pin_number": 8,
@@ -1000,6 +1127,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "ROBO",
+   "block_name": "SENSE-VBKB",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVOB_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VBKB"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "ROVD0",
@@ -1233,7 +1380,7 @@
     {
      "pin_number": 7,
      "name": "OUTP",
-     "signal_name": "SNS_VOUT"
+     "signal_name": "UIVOV_OUTP"
     },
     {
      "pin_number": 8,
@@ -1287,6 +1434,26 @@
    "value": "100nF",
    "query": "MLCC-small filter/decoupling MLCC 0402–0805",
    "mpn": "MLCC-small"
+  },
+  {
+   "designator": "ROVO",
+   "block_name": "SENSE-VOUT",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "UIVOV_OUTP"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "SNS_VOUT"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100",
+   "query": "R-small 100 Ω 0603 1 % series isolation between an isolated-amplifier output and",
+   "mpn": "R-small"
   },
   {
    "designator": "JTLLC",

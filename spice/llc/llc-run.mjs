@@ -41,9 +41,10 @@ const qShape = (V) => (COSS_VJ / (1 - COSS_M)) * (Math.pow(1 + V / COSS_VJ, 1 - 
 export const cjoFor = (qoss800) => qoss800 / qShape(800);              // F per die
 export const qossDie = (V, qoss800) => cjoFor(qoss800) * qShape(V);    // C per die at V
 
-// E81 / review G: PER-LEG dead time. In PSM leg A is the LEADING leg (it turns off at the tank peak and slews fast, so a
-// long dead time lets the tank current reverse and pull the node back before the incoming gate) and leg B is the LAGGING
-// leg (it commutates on the magnetizing current alone and needs a long one). The HRTIMER programs ST0 and ST1 separately.
+// E81 / review G: PER-LEG dead time. E82: the E81 sentence here had the two legs' names swapped. With B delayed by d·T, leg B's
+// edges END the active state — it turns off at the tank peak and slews fast — and leg A's edges END the zero state: leg A is the
+// WEAK leg (llc-stress.csv Vres_A), commutating on whatever the zero state left of the tank current. The HRTIMER programs ST0 and
+// ST1 separately.
 export function deck(t, { VBUS, VBANK, fsw, duty = null, tol = {}, shortAt = null, tstop, tstart, tdead = TDEAD, tdeadA = tdead, tdeadB = tdead }) {
   const T = 1 / fsw, d = duty ?? 0.5;
   const pwOf = (td) => T / 2 - td - 20e-9;
@@ -162,7 +163,15 @@ export function sim(name, t, cfg) {
 //   t_dead = n_die,leg · (Qoss(V) + cs·V) / I_toff,  n_die,leg = 2·par,  clamped to [60 ns, 900 ns]   (firmware/hal/llc.c)
 // so a corner that loses ZVS at the deck's fixed 120 ns is re-simulated at the dead time the law would program, and THAT is
 // the committed row. `ZVS@120ns` keeps the fixed-dead-time answer on record — it is what the pre-E81 deck silently assumed.
-export const DT_MIN = 60e-9, DT_MAX = 900e-9;   // HRTIMER clamp at DTGCKDIV 2 (E81, lead)
+export const DT_MIN = 120e-9, DT_MAX = 900e-9;   // HRTIMER clamp at DTGCKDIV 2 (E81, lead) · E82 (M-15): the floor is 120 ns — NSI66x1A 70/80/110 ns, unmatched (hal/llc.h LLC_DT_MIN_S)
+// E82 (C-11 / F-H1-1): in phase shift the WEAK leg (leg A — its edges END the zero state) gets the firmware's VALLEY time, not the
+// charge ÷ current law. At load the zero state ends with the rectifier conducting, so the leg swings on the decayed tank current
+// through L_r alone, reaches its valley in ≈ a quarter period of L_r against the leg's node capacitance, and swings BACK — the E81
+// law's 200–900 ns found the node at the rail again and turned on hard against the whole link. hal/llc.c weak_dead_s() programs
+// k·(π/2)·√(L_r·C_node), C_node = 2·par·(Q_oss(V)/V + cs), k = 0.82 on the firmware's own charge law (nominal L_r — the
+// firmware knows nothing else); calculations/control/fw-constants-sync.mjs holds the two copies together.
+export const WEAK_K = 0.82;
+export const weakDead = (t, VBUS) => Math.min(Math.max(WEAK_K * (Math.PI / 2) * Math.sqrt(t.Lr * 2 * t.par * (t.dieP.qoss800 * Math.sqrt(VBUS / 800) / VBUS + (t.cs ?? 0))), DT_MIN), DT_MAX);
 export function solve(tag, t, { VBANK, P, ps = false, tol, VBUS = busFor(VBANK) }) {
   const name = `llc-${t.sku}-${tag}`;
   // E81 per-leg (lead, after the G deck): a single dead time for both legs loses the WEAK leg (leg A in phase shift commutates on
@@ -192,12 +201,18 @@ export function solve(tag, t, { VBANK, P, ps = false, tol, VBUS = busFor(VBANK) 
     return { ...at(lo, tdead), VBUS, fsw: lo * t.fr, duty: null, mode: "PFM" };
   };
   const s0 = solveAt(TDEAD);
+  const clampDt = (x) => Math.min(Math.max(x, DT_MIN), DT_MAX);
+  if (s0.mode === "PS") {
+    // E82: a phase-shift row is ALWAYS committed at what the firmware programs there — leg A the valley time, leg B its own need
+    const td = { a: weakDead(t, VBUS), b: clampDt((Number.isFinite(s0.tNeedB) ? s0.tNeedB : s0.tNeed) * 1.25) };
+    const s1 = solveAt(td);
+    return { ...s1, tNeed: s0.tNeed, zvs120: s0.zvs, zvsBad120: s0.zvsBad };
+  }
   if (!s0.zvsBad || !Number.isFinite(s0.tNeed)) return { ...s0, zvs120: s0.zvs, zvsBad120: s0.zvsBad };
   // ZVS lost at the fixed 120 ns: re-SOLVE at the dead time the adaptive law programs for this corner. It is NOT escalated
   // beyond that — a corner whose leading leg runs out of magnetizing current does not recover with a longer dead time (the
   // charging current decays and reverses before the node reaches the rail), it recovers with less cs or less Lm. Widening
   // the dead time past the law's value only eats duty; the committed row is what the law would actually program.
-  const clampDt = (x) => Math.min(Math.max(x, DT_MIN), DT_MAX);
   const td = { a: clampDt((Number.isFinite(s0.tNeedA) ? s0.tNeedA : s0.tNeed) * 1.25), b: clampDt((Number.isFinite(s0.tNeedB) ? s0.tNeedB : s0.tNeed) * 1.25) };
   const s1 = solveAt(td);
   return { ...s1, tNeed: s0.tNeed, zvs120: s0.zvs, zvsBad120: s0.zvsBad };

@@ -47,6 +47,12 @@ void evlog_mount(evlog_t *l, uint8_t base, uint8_t pages, uint32_t page_size) {
 }
 
 void evlog_add(evlog_t *l, uint8_t kind, uint8_t code, uint16_t arg, uint32_t t) {
+  /* E82 (G-21): a storm is one event repeating. A chattering fault calling in on every tick used to fill the queue with
+     sixteen copies of itself, and each flush wrote sixteen slots — the ring moved, and spent a page erase, sixteen times
+     faster than the news in it justified. An event already waiting in the queue is not added again; the flush still
+     emits it once, so a genuine recurrence after the flush is logged normally and nothing is hidden. */
+  for (uint8_t i = 0u; i < l->qn; i++)
+    if (l->q[i].kind == kind && l->q[i].code == code && l->q[i].arg == arg) return;
   if (l->qn == EVLOG_Q) {
     memmove(l->q, l->q + 1, (EVLOG_Q - 1u) * sizeof l->q[0]);
     l->qn--;

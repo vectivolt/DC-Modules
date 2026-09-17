@@ -1,5 +1,8 @@
 /* boot.ld — E80 bootloader image at FM_BOOT (0x0800 0000, 32 KB). Not signed (it is the root of trust); its vector
- * table is the power-on table. No TCM section — nothing here is deadline-critical. */
+ * table is the power-on table.
+ * E82 (M-20): .ramfunc is not an optimisation here, it is correctness. The bootloader executes from bank 0 and erases
+ * slot A in bank 0; while the FMC holds a bank nothing in it is fetchable (UM §2.3.4 gives read-while-write ACROSS
+ * banks only), so nvmport.c's flash primitives and boot_main.c's watchdog service run from SRAM. */
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 32K

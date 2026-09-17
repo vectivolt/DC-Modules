@@ -1,6 +1,7 @@
 /* p256.c — see p256.h. Constants: p, n and their Montgomery companions (R = 2^256) computed with BigInt and cross-checked by
  * boot_test through every signature it verifies. */
 #include "p256.h"
+#include <stddef.h>
 #include <string.h>
 
 typedef struct { const uint32_t *m, *r2, *one; uint32_t minv; } mod_t;   /* modulus · R² mod m · R mod m · −m⁻¹ mod 2^32 */
@@ -61,7 +62,7 @@ static void mont_mul(uint32_t *r, const uint32_t *a, const uint32_t *b, const mo
 }
 static void to_mont(uint32_t *r, const uint32_t *a, const mod_t *m) { mont_mul(r, a, m->r2, m); }
 static void from_mont(uint32_t *r, const uint32_t *a, const mod_t *m) { mont_mul(r, a, ONE, m); }
-static void mont_inv(uint32_t *r, const uint32_t *a, const mod_t *m) {   /* a^(m−2), Montgomery form in and out; a ≠ 0 */
+static void mont_inv(uint32_t *r, const uint32_t *a, const mod_t *m, void (*poll)(void)) {   /* a^(m−2), Montgomery form in and out; a ≠ 0 */
   static const uint32_t TWO[8] = { 2u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
   uint32_t e[8], x[8];
   sub(e, m->m, TWO);
@@ -69,6 +70,7 @@ static void mont_inv(uint32_t *r, const uint32_t *a, const mod_t *m) {   /* a^(m
   for (int i = 255; i >= 0; i--) {
     mont_mul(x, x, x, m);
     if ((e[i / 32] >> (i % 32)) & 1u) mont_mul(x, x, a, m);
+    if (poll && (i & 15) == 0) poll();                 /* E82 (LV-1): ≤ 32 Montgomery products between services */
   }
   memcpy(r, x, sizeof x);
 }
@@ -131,6 +133,10 @@ static void be_to_w(uint32_t *w, const uint8_t *b) {
 }
 
 bool p256_verify(const uint8_t pub[64], const uint8_t hash[32], const uint8_t sig[64]) {
+  return p256_verify_poll(pub, hash, sig, NULL);
+}
+
+bool p256_verify_poll(const uint8_t pub[64], const uint8_t hash[32], const uint8_t sig[64], void (*poll)(void)) {
   uint32_t r[8], s[8], e[8], qx[8], qy[8], t[8], u[8], w[8], u1[8], u2[8];
   be_to_w(r, sig); be_to_w(s, sig + 32); be_to_w(e, hash); be_to_w(qx, pub); be_to_w(qy, pub + 32);
   if (is_zero(r) || is_zero(s) || cmp(r, N) >= 0 || cmp(s, N) >= 0) return false;
@@ -144,7 +150,7 @@ bool p256_verify(const uint8_t pub[64], const uint8_t hash[32], const uint8_t si
   if (cmp(t, u) != 0) return false;
 
   if (cmp(e, N) >= 0) sub(e, e, N);                                                         /* e < 2^256 < 2n */
-  to_mont(w, s, &MN); mont_inv(w, w, &MN);                                                  /* w = s⁻¹ */
+  to_mont(w, s, &MN); mont_inv(w, w, &MN, poll);                                                  /* w = s⁻¹ */
   to_mont(u1, e, &MN); mont_mul(u1, u1, w, &MN); from_mont(u1, u1, &MN);                   /* u1 = e·w */
   to_mont(u2, r, &MN); mont_mul(u2, u2, w, &MN); from_mont(u2, u2, &MN);                   /* u2 = r·w */
 
@@ -155,9 +161,10 @@ bool p256_verify(const uint8_t pub[64], const uint8_t hash[32], const uint8_t si
     pt_dbl(&x, &x);
     unsigned k = ((u1[i / 32] >> (i % 32)) & 1u) | (((u2[i / 32] >> (i % 32)) & 1u) << 1);
     if (k) pt_add(&x, &x, &tab[k]);
+    if (poll) poll();                                  /* E82 (LV-1): one ladder step ≈ 50 k instructions ≈ 0.4 ms */
   }
   if (is_zero(x.z)) return false;
-  mont_inv(t, x.z, &MP); mont_mul(t, t, t, &MP); mont_mul(t, x.x, t, &MP); from_mont(t, t, &MP);   /* affine x = X / Z² */
+  mont_inv(t, x.z, &MP, poll); mont_mul(t, t, t, &MP); mont_mul(t, x.x, t, &MP); from_mont(t, t, &MP);   /* affine x = X / Z² */
   if (cmp(t, N) >= 0) sub(t, t, N);
   return cmp(t, r) == 0;
 }

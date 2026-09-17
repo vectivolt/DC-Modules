@@ -8,11 +8,11 @@
   "isRmsMax": 69.2,
   "isPkMax": 108.4,
   "idAvgMax": 30,
-  "fetRmsMax": 49.8,
+  "fetRmsMax": 49.9,
   "fetToffMax": 91.5,
   "zvsAll": false,
   "tDeadNeedMaxNs": 176,
-  "iCommMin": 6.4,
+  "iCommMin": 6.2,
   "zvsFailCorners": [
     "SER250-full-bus764:AH|AL",
     "PAR200-Imax:AH|AL",
@@ -22,12 +22,12 @@
   "legsInRails": true,
   "capability": true,
   "race": {
-    "pre": 100.767703,
-    "at2us": 187.730651,
-    "at3us": 196.069505,
-    "at5us": 328.418278,
-    "at10us": 362.067188,
-    "at40us": 362.067188
+    "pre": 112.326405,
+    "at2us": 198.124682,
+    "at3us": 210.324823,
+    "at5us": 346.216258,
+    "at10us": 376.333834,
+    "at40us": 376.333834
   },
   "shortFmax": {
     "rms": 155.9,

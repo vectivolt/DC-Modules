@@ -7,11 +7,12 @@
  * reviewer I §7 pin swap): I_A0 is PB0 = ADC0_IN12 and T_LLC is PC2 = ADC01_IN7, AVMID (PC3, ADC01_IN8) is converted at last,
  * the live RATING slot is gone (it could not settle and nothing read it), and the two 8–10 kOhm rail dividers get their own
  * sample time:
- *   ADC0: I_B0(3) · I_A0(12) · VOUT(1) · I_RES(0) · AVMID(8) · T_LLC(7)    6 conversions ≈ 1.8 µs at 72 MHz
- *   ADC1: I_C0(6) · VAC1(5) · VAC2(15) · IOUT(3) · IOUTN(4) · T_INLET(2)   6 ≈ 1.8 µs
- *   ADC2: VBUS(4) · VMID(6) · T_PFC(2) · T_XFMR(0) · V15(14 @ SMP_HIZ)     5 ≈ 2.8 µs
- *   ADC3: VAC3(5) · VBKA(12) · VBKB(11) · V24(7 @ SMP_HIZ) · VREFINT(20)   5 ≈ 2.8 µs
- * Every ring is double-buffered (2 × sequence, circular DMA): the ISR reads the half the DMA is not filling. */
+ *   ADC0: I_B0(3) · I_A0(12) · VOUT(1) · I_RES(0) · AVMID(8) · T_LLC(7)    6 × 22 cyc = 132 = 1.83 µs at 72 MHz
+ *   ADC1: I_C0(6) · VAC1(5) · VAC2(15) · IOUT(3) · IOUTN(4) · T_INLET(2)   6 × 22        = 132 = 1.83 µs
+ *   ADC2: VBUS(4) · VMID(6) · T_PFC(2) · T_XFMR(0) · V15(14 @ SMP_HIZ)     4 × 22 + 115  = 203 = 2.82 µs  ← longest
+ *   ADC3: VAC3(5) · VBKA(12) · VBKB(11) · V24(7 @ SMP_HIZ)                 3 × 22 + 115  = 181 = 2.51 µs
+ * Every ring is double-buffered (2 × sequence, circular DMA): the ISR reads the half the DMA is not filling, and the
+ * end of the LONGEST ring raises the 100 kHz control interrupt (CTL_DMACH below, E82 M-21). */
 #include "port.h"
 
 #define DMA_CHCTL(x)  RD(DMA0_BASE + 0x08u + 0x14u * (x))
@@ -20,21 +21,37 @@
 #define DMA_CHMADDR(x) RD(DMA0_BASE + 0x14u + 0x14u * (x))
 #define DMAMUX_CFG(x) RD(DMAMUX_BASE + 0x04u * (x))
 
-enum { N0 = 6, N1 = 6, N2 = 5, N3 = 5 };
+enum { N0 = 6, N1 = 6, N2 = 5, N3 = 4 };
+/* E82 (M-21): the control interrupt is the end of the LONGEST ring, not a timer compare. ADC2 is that ring (2.82 µs),
+   so DMA0 channel 2's half/full transfer flags fire once per sequence = 100 kHz, ≈ 7.2 µs before the roll-over that
+   loads the compare shadows, against 5 µs from the old ST3 CMP3. See hrtimer.c's timing block for why CMP3 could not
+   simply be moved earlier (a single compare in center-aligned mode is symmetric only at CAR/2). */
+#define CTL_DMACH 2u
 volatile uint16_t adc_buf0[2 * N0], adc_buf1[2 * N1], adc_buf2[2 * N2], adc_buf3[2 * N3];
 
-/* half-select: DMA CNT counts DOWN from 2N; remaining > N means it is filling the SECOND half → read the first */
-#define HALF(x, n) ((DMA_CHCNT(x) > (uint32_t)(n)) ? 0u : (uint32_t)(n))
+/* half-select. DMA CNT is the REMAINING count: it starts at 2N and counts DOWN, so remaining > N means fewer than N words have
+   been written — the DMA is filling the FIRST half and the complete one is the SECOND; remaining ≤ N means the first half is
+   complete. E82 (D-03): the E80 form had the two swapped. At the control interrupt (5 µs after the trigger, conversions done
+   in ≤ 2.8 µs) CNT is exactly N or 2N, and the swapped form returned the half written one trigger EARLIER every time: all
+   100 kHz samples were 10 µs stale and the real PFC transport delay was 25 µs, not the 15 µs the gains are derived for. */
+#define HALF(x, n) ((DMA_CHCNT(x) > (uint32_t)(n)) ? (uint32_t)(n) : 0u)
 
 static const uint8_t SEQ0[N0] = { 3, 12, 1, 0, 8, 7 };
 static const uint8_t SEQ1[N1] = { 6, 5, 15, 3, 4, 2 };
 static const uint8_t SEQ2[N2] = { 4, 6, 2, 0, 14 };
-static const uint8_t SEQ3[N3] = { 5, 12, 11, 7, 20 };
-#define SMP 7u   /* 9.5 + 12.5 cycles ≈ 0.31 µs per conversion at 72 MHz */
+/* E82 (C-03/D-02): VREFINT (ADC3_IN20, UM §17.4 "VREFINT is internally connected to … ADC3_IN20") has LEFT this
+   sequence. ds Table 4-36 note 2 asks for a sampling time of NOT LESS THAN 17.1 µs on VREFINT and the temperature
+   sensor — longer than the whole 10 µs frame, so no RSMP code can make it legal here. At SMP 7 (131.9 ns) the sample
+   capacitor moved ≈7 % of the way from the previous slot (SNS_V24 at ≈2.6 V) toward the 1.2 V bandgap, so the ADC
+   reported ≈3150 counts instead of ≈1490, k_ref ≈ 0.47, and app.c's ±5 % reference check latched F.29 100 ms after
+   every boot. It is now read once at boot by adc_vrefint_read() at 36 MHz × 1025.5 cycles = 28.5 µs. */
+static const uint8_t SEQ3[N3] = { 5, 12, 11, 7 };
+#define SMP 7u   /* 9.5 + 12.5 cycles = 22 = 0.31 µs per conversion at 72 MHz */
 /* E81 (F-D-4): SNS_V15 (47 k || 10 k = 8.25 kOhm) and SNS_V24 (82 k || 10 k = 8.91 kOhm) drive the sample capacitor from
    ~9 kOhm; at SMP 7 the 131.9 ns aperture admits 927 Ohm (ds Table 4-35: t_s/(C_ADC·ln 2^14) − R_ADC), so V15 read 12.6 V
-   on a 30 kW card and aux_ok was never true. SMP 100 = 112.5 cycles = 1.56 µs → 18.6 kOhm, and both sequences still fit
-   the 10 µs window (5 slots: 4×22 + 112.5 = 200.5 cycles = 2.78 µs). */
+   on a 30 kW card and aux_ok was never true. E82 (D-12): the arithmetic in that note was slack — RSMP 100 is 102.5
+   SAMPLE cycles (regs.h: t_samp = RSMP + 2.5) = 1.42 µs → 18.6 kOhm admitted, and 115 cycles with the conversion, so
+   ADC2's five slots are 4×22 + 115 = 203 cycles = 2.82 µs. The conclusion (both fit the 10 µs frame) is unchanged. */
 #define SMP_HIZ 100u
 static uint8_t slot_smp(unsigned n, uint8_t ch) {
   return ((n == 2u && ch == 14u) || (n == 3u && ch == 7u)) ? SMP_HIZ : SMP;   /* V15 · V24 */
@@ -63,7 +80,10 @@ static void one_adc(unsigned n, const uint8_t *ch, unsigned len, volatile uint16
   DMA_CHPADDR(dmach) = ADC_BASE(n) + 0x64u;      /* ADC_RDATA */
   DMA_CHMADDR(dmach) = (uint32_t)buf;
   DMA_CHCNT(dmach) = 2u * len;
-  DMA_CHCTL(dmach) = (1u << 10) | (1u << 8) | BIT(7) | BIT(5) | (3u << 12) | BIT(0);   /* 16-bit both · MNAGA · circular · ultra prio · EN */
+  /* E82 (M-21): the control ring also raises HTFIE/FTFIE (UM §8.5.3 DMA_CHxCTL: ERRIE 3 · HTFIE 2 · FTFIE 1 · CHEN 0).
+     Half transfer = the first sequence finished, full transfer = the second: one interrupt per sequence, 100 kHz. */
+  uint32_t ie = (dmach == CTL_DMACH) ? (BIT(2) | BIT(1)) : 0u;
+  DMA_CHCTL(dmach) = (1u << 10) | (1u << 8) | BIT(7) | BIT(5) | (3u << 12) | ie | BIT(0);   /* 16-bit both · MNAGA · circular · ultra prio · EN */
   ADC_CTL1(n) |= BIT(8) | (1u << 28) | (n == 3u ? BIT(24) : 0u);   /* DMA · ETMRC rising · ADC3: VREFINT on */
   TRIGSEL_ADC(n) = TRIGSEL_IN_HRT_ADCTRIG(0);    /* every sequence from HRTIMER ADC trigger 0 (both PFC roll-overs) */
 }
@@ -76,14 +96,16 @@ void adc_init(void) {
   one_adc(3u, SEQ3, N3, adc_buf3, 3u);
 }
 
-/* single blocking conversion before the engine starts (the rating strap read in app_init's boot record) */
-uint16_t adc_read_once(unsigned n, uint8_t ch) {
-  ADC_CTL1(n) = BIT(0);
+/* single blocking conversion before the engine starts. ctl1_extra carries the channel's own CTL1 bits (INREFEN for the
+   internal reference), smp the per-slot RSMP code — a strap settles in 1.4 µs, the bandgap needs 28 µs (see below). */
+static uint16_t adc_once(unsigned n, uint8_t ch, uint16_t smp, uint32_t ctl1_extra) {
+  ADC_CTL1(n) = BIT(0) | ctl1_extra;
   delay_us(2u);
   ADC_CTL1(n) |= BIT(2);
   while (ADC_CTL1(n) & BIT(2)) {}
+  if (ctl1_extra) delay_us(20u);                 /* t_START of the internal reference before its first sample */
   ADC_RSQ(n, 0) = 0u;
-  ADC_RSQ(n, 8) = ADC_SLOT(ch, 100u);
+  ADC_RSQ(n, 8) = ADC_SLOT(ch, smp);
   ADC_CTL1(n) |= BIT(30);                        /* SWRCST */
   while (!(ADC_STAT(n) & BIT(1))) {}
   uint32_t v = ADC_RDATA(n);
@@ -91,9 +113,25 @@ uint16_t adc_read_once(unsigned n, uint8_t ch) {
   return (uint16_t)v;
 }
 
+uint16_t adc_read_once(unsigned n, uint8_t ch) { return adc_once(n, ch, 100u, 0u); }   /* the ROLE1 rating strap */
+
+/* E82 (C-03/D-02): the internal reference, once, before adc_init() takes the ADCs over. ds Table 4-36 note 2 wants
+   ≥ 17.1 µs of sampling; the RSMP field is 10 bits (regs.h ADC_SLOT), so 1023 gives 1025.5 cycles — 14.2 µs at the
+   72 MHz the engine runs at, which is short. ADCCK 0001 halves the asynchronous ADC clock to 36 MHz (UM §17.7.26
+   ADC_SYNCCTL: ADCCK[3:0] at 23:20, 0000 = div1 … 0001 = div2; "All ADCs are common"), making it 28.5 µs. The divider
+   is restored here and adc_init() rewrites ADC_SYNCCTL = 0 anyway, so the 100 kHz engine still runs at 72 MHz.
+   Boot-only is enough: V3P3 is a ±2.5 % buck, VREFP = VDDA = V3P3, and a rail that later leaves that band is caught by
+   the V15/V24 rails check and by M-28's LVD — see NOTES for why a 1 Hz refresh was not added. */
+uint16_t adc_vrefint_read(void) {
+  ADC_SYNCCTL = (1u << 20);                      /* ADCCK = div2 → 36 MHz */
+  uint16_t v = adc_once(3u, 20u, 1023u, BIT(24));   /* ADC3_IN20, INREFEN */
+  ADC_SYNCCTL = 0u;
+  return v;
+}
+
 /* the PFC ISR's sample set (counts), read from the halves the DMA is not writing */
 void adc_read_pfc(app_pfc_adc_t *s, float *ires, float *vout, float *iout, float *iout_n,
-                  float *t_inlet, float *vbka, float *vbkb, float *v24, float *vref) {
+                  float *t_inlet, float *vbka, float *vbkb, float *v24) {
   uint32_t h0 = HALF(0u, N0), h1 = HALF(1u, N1), h2 = HALF(2u, N2), h3 = HALF(3u, N3);
   s->ib = (float)adc_buf0[h0 + 0u]; s->ia = (float)adc_buf0[h0 + 1u];
   *vout = (float)adc_buf0[h0 + 2u]; *ires = (float)adc_buf0[h0 + 3u];
@@ -103,7 +141,7 @@ void adc_read_pfc(app_pfc_adc_t *s, float *ires, float *vout, float *iout, float
   s->vbus = (float)adc_buf2[h2 + 0u]; s->vmid = (float)adc_buf2[h2 + 1u];
   s->vac[2] = (float)adc_buf3[h3 + 0u];
   *vbka = (float)adc_buf3[h3 + 1u]; *vbkb = (float)adc_buf3[h3 + 2u];
-  *v24 = (float)adc_buf3[h3 + 3u]; *vref = (float)adc_buf3[h3 + 4u];
+  *v24 = (float)adc_buf3[h3 + 3u];
 }
 
 void adc_read_slow(float *t_pfc, float *t_llc, float *t_xfmr, float *v15, float *avmid) {

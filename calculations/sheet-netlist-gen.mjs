@@ -121,7 +121,7 @@ function transform(c, page, all, warn) {
       P(4, "RT", sig(c, "RT")), P(5, "GND", sig(c, "GND")), P(6, "DRV", sig(c, "DRV")),
       P(7, "VCC", sig(c, "VCC")), P(8, "SS", sig(c, "SS"))];
     out.nc = [];
-  } else if (/^QA0\d/.test(m)   /* R4-6 rename: exact-match was drop-class bug #6. E81: QA01C-15 (1 W) and QA02C-15 (2 W) share this land and map */) {
+  } else if (/^(QA0\d|ISO-GBIAS)/.test(m)   /* R4-6 rename: exact-match was drop-class bug #6. E81: the 1 W and 2 W parts share this land and map. E82 (M-03): the class is ISO-GBIAS-15-1W/-2W — the QA0# spellings stay accepted so a half-migrated tree cannot silently drop a module */) {
     // Symbol: 1=VIN 2=GND 5=-VO 6=0V 7=+VO. R4-2/R4-6: the cells wire the dual rail explicitly —
     // COM is the 0 V/Kelvin node, the negative pin is the off-bias rail. E81 (F-C-15): the rails
     // are +15/−3 V, so the cell pins are P15/N3 (were P18/N4); both spellings are accepted here so

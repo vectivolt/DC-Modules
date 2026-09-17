@@ -239,6 +239,30 @@
   {
    "status": "ok",
    "tag": "SYNC",
+   "name": "magnetics-30kw.md drawing = gate",
+   "detail": "D2 5.00 µH and D3 cell leakage 0.252 µH on the page — both computed from tanks.mjs Lr − 2 × cell leakage − 0.09999999999999999 µH loop, never typed"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "magnetics-40kw.md drawing = gate",
+   "detail": "D2 3.99 µH and D3 cell leakage 0.132 µH on the page — both computed from tanks.mjs Lr − 2 × cell leakage − 0.09999999999999999 µH loop, never typed"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "magnetics-50kw.md drawing = gate",
+   "detail": "D2 3.20 µH and D3 cell leakage 0.132 µH on the page — both computed from tanks.mjs Lr − 2 × cell leakage − 0.09999999999999999 µH loop, never typed"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
+   "name": "magnetics-50kwa.md drawing = gate",
+   "detail": "D2 3.20 µH and D3 cell leakage 0.132 µH on the page — both computed from tanks.mjs Lr − 2 × cell leakage − 0.09999999999999999 µH loop, never typed"
+  },
+  {
+   "status": "ok",
+   "tag": "SYNC",
    "name": "D1-30 mass",
    "detail": "computed 1.9 kg (core 0.72 + Cu 1.01 +10% build) vs documented 2.2 kg"
   },

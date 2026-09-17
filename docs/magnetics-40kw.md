@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/owner-mag--docs.mjs-5f8fc0?style=flat-square" alt="owner: mag-docs.mjs"/>
 </p>
@@ -22,21 +22,21 @@
 | Part | Function | Qty | Construction | ₹ / unit @10k | ₹ @10k | Status |
 |---|---|---:|---|---:|---:|---|
 | **D1** | PFC boost choke · `IND-PFC-116u-40` | 3 | 5 × 0077908A7 Kool Mµ 26µ, N = 26 ± 1, 13 × 1.6 mm bundle | 992 | 2,976 | CUSTOM |
-| **D2** | external resonant inductor · `IND-LR-E70-40` | 1 | 2 × E70/33/32 PC95-class, N 5, litz 10000×0.05 mm, 4.07 µH ± 3 % | 862 | 862 | CUSTOM |
+| **D2** | external resonant inductor · `IND-LR-E70-40` | 1 | 2 × E70/33/32 PC95-class, N 5, litz 10000×0.05 mm, 3.99 µH ± 3 % | 862 | 862 | CUSTOM |
 | **D3** | full-bridge transformer cell · `XFMR-LLC-CELL-3E70-40` | 2 | 3 × E70/33/32 per cell, 4:4∥4, primaries of the two cells in series (n = 2) | 1,147 | 2,294 | CUSTOM |
 | **D7** | 3-phase CM choke · `CMC-3PH-2mH-SKU` | 2 | nanocrystalline T 80/50/25 (A_Fe ≥ 281 mm²), 3 × 8 T, 20 mm² | 1,062 | 2,123 | CUSTOM |
 | **D4** | 110 W aux flyback · `XFMR-AUX-FLY-E` | 1 | ETD44 PC95, Np 38 / 6 / 4 / 4, reinforced barrier (common to every SKU) | 184 | 184 | CUSTOM |
 | **CT** | line current transformer · `CT-LINE-2500-150A` | 3 | Talema ACX-1150 class (2500:1, 150 A), burden 18 Ω | 76 | 228 | DIRECT |
-| **CT** | resonant current transformer · `CT-RES-1:100-150A` | 1 | 1:100, 150 A rms class (tank class 100 A = 67 %), burden 0.36 Ω | 72 | 72 | DIRECT |
+| **CT** | resonant current transformer · `CT-RES-1:100-150A` | 1 | 1:100, 150 A rms class (tank class 100 A = 67 %), burden 0.36 Ω | 132 | 132 | DIRECT |
 | **—** | 3.3 V buck inductor (catalog) · `CYA0630-10UH` | 2 | 10 µH 3 A shielded | 5 | 10 | ORDERABLE |
 | **—** | CAN common-mode choke (catalog) · `ACT45B-510-2P-TL003` | 1 | 51 µH, 2-line | 6 | 6 | ORDERABLE |
-| **Total** | | | | | **8,755** | |
+| **Total** | | | | | **8,815** | |
 
 ```mermaid
 flowchart LR
   AC(["3-φ AC"]) --> D7["D7 · CM chokes × 2<br/>T 80/50/25"] --> D1["D1 · PFC chokes × 3<br/>5 × T79 · N 26"]
   D1 --> BUS[("split DC bus<br/>650–830 V")]
-  BUS --> FB["full-bridge LLC"] --> TANK["Cr 9 × 33 nF + D2 4.07 µH"] --> D3["D3 cells × 2<br/>4:4∥4 · primaries in series"] --> BK["banks A + B"]
+  BUS --> FB["full-bridge LLC"] --> TANK["Cr 9 × 33 nF + D2 3.99 µH"] --> D3["D3 cells × 2<br/>4:4∥4 · primaries in series"] --> BK["banks A + B"]
   BUS --> D4["D4 · aux flyback"]
   LCT["line CTs × 3 · 18 Ω"] -.- D1
   RCT["resonant CT · 0.36 Ω"] -.- TANK
@@ -54,9 +54,9 @@ PyOpenMagnetics cross-check; the drawing lines each number is held to sit in the
 |---|---|---|---|---|---|---|
 | **Saturation · flux margin** | L 63 µH @ 104 A ≥ 61 µH | B̂ 22 % of hot Bsat · 146 mT at the F.11 kill ≤ 217 | B̂ 39 % of hot Bsat · family worst 44 % of Bsat(130 °C) | 257 mT = 71.1 % of Bsat(130 °C) at the current limit ≤ 75 % | DM 0.59 T ≤ 0.6 · CM 27 mT | no saturation below 194 A pk (1.25 × F.01) |
 | **Core loss · thermal runaway** | Fe 6.4 W at the 50 kHz ripple | Fe 31.2 W · runaway margin 159 K | Fe 47.2 W · runaway margin 116 K | runaway margin 121 K · cold start self-warms | nanocrystalline at line frequency — negligible | — |
-| **Copper · skin · proximity** | Cu 26 + 13.3 W · ripple Fr 44.5 | Fr 2.49 · Cu 27.3 W · MKF ×0.49 | foil Fr 1.17 · Cu 46 W · MKF ×1.32 | primary Fr 1.05 (sandwich) | 17 W per choke | — |
+| **Copper · skin · proximity** | Cu 26 + 13.3 W · ripple Fr 44.5 | Fr 2.49 · Cu 27.4 W · MKF ×0.49 | foil Fr 1.17 · Cu 46 W · MKF ×1.32 | primary Fr 1.05 (sandwich) | 17 W per choke | — |
 | **Winding temperature** | 88 °C @ 55 °C ≤ 120 | 100 °C @ 55 °C ≤ 125 · +25 % Rth 106 ≤ 155 | 102 °C @ 55 °C ≤ 125 · +25 % Rth 108 ≤ 155 | ΔT ≤ 45 K at 110 W (type test) | ΔT 32 K ≤ 45 | ΔT ≤ 30 K at class current |
-| **Current rating · density** | 2.84 A/mm² ≤ 5.5 | 93.3 A rms · 147.8 A pk · 5.1 A/mm² | P 93.3 A rms (6.7 A/mm²) · each half 45.8 A rms (10.2 A/mm²) — loss-governed | ≤ 4.67 A pk primary · V24 2 A · V15 1.1 A | 3.67 A/mm² ≤ 5.6 | 150 A line · 150 A rms class resonant |
+| **Current rating · density** | 2.84 A/mm² ≤ 5.5 | 93.4 A rms · 147.9 A pk · 5.1 A/mm² | P 93.4 A rms (6.7 A/mm²) · each half 45.9 A rms (10.2 A/mm²) — loss-governed | ≤ 4.67 A pk primary · V24 2 A · V15 1.1 A | 3.67 A/mm² ≤ 5.6 | 150 A line · 150 A rms class resonant |
 | **Insulation · HV stress** | basic to PE · 2.5 kV DC hipot · impulse 4 kV | basic to PE · PD extinction ≥ 1.9 kV | **reinforced** · 4.25 kV DC 100 % · PD ≥ 1.9 kV | **reinforced** · 4.25 kV DC 100 % · 8.0 / 12.6 mm | 2.5 kV AC winding ↔ winding | 4 kV catalogue hipot |
 | **Leakage · coupling** | — | carries the tank Lr (± 3 %) | cell 0.132 µH · Lr stack ± 4 % ≤ 5 % | 1-D 1.7 µH · accept ≤ 4 µH | 6–12 µH, measured at first article | — |
 | **DC bias** | engine 50.4 % ≤ material data 61.6 % at the floor | series Cr blocks DC (flux-walk proof) | series Cr blocks DC (flux-walk proof) | DCM — resets every cycle | 3-wire Σi = 0; DM rides as leakage flux | — |
@@ -78,7 +78,7 @@ gate reports, and a failing gate stops the battery before this page is written.
 | `temp-critique` | saturation at the 130 °C cutout, cold equilibria and the fault chain on measured 3C95 surfaces | B̂ ≤ 50 % Bsat(130 °C) · fault flux ≤ 60 % |
 | `current-coordination` | D2 flux at the F.11 kill peak and CT observability through each trip's race | ≤ 217 mT · the kill lands inside the ADC rail |
 | `mag-sync` | the identity of every part against every carrier, and the computed mass | tokens present · mass within ± 20 % |
-| `mkf-crosscheck` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
+| `mkf-crosscheck` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv. **Dated evidence:** this run predates the E81 D2 re-issue, so its `MKF-GAP` row quotes the pre-E81 target (5.16 / 4.07 / 3.28 µH). The BUILD value is the one in the build-and-hold points below, which `mag-docs` reads from `magnetics-envelope` — the fringing CONCLUSION (+13…+14 %, so grind toward AL) is unaffected by a 3 % target move | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
 
 ## D1 — PFC boost choke · qty 3 · `IND-PFC-116u-40`
 
@@ -130,16 +130,16 @@ leads. **H1** L₀ inside the window, Rdc, turns photo. (6) Varnish per the hub'
 ## D2 — external resonant inductor · qty 1 · `IND-LR-E70-40`
 
 The one gapped inductor of the full-bridge tank (InfyPower practice): it carries Lr 4.35 µH minus the two D3 cells'
-leakage and the 0.1 µH loop stray, at full AC swing and tank potential, 83–203 kHz. No bins — the ± 3 % gap tolerance plus the ± 30 %
+leakage and the 0.1 µH loop stray, at full AC swing and tank potential, 77–203 kHz (E82 M-09d: 82 kHz is the lowest steady-state point; 77 kHz = 0.55·f_r is the firmware's transient floor and the part must take it). No bins — the ± 3 % gap tolerance plus the ± 30 %
 cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 
 | Row | Specification — PMP-MAG-D2-40 rev F |
 |---|---|
-| Inductance | **4.07 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
-| Current rating | **93.3 A rms** at the copper corner (203 kHz) · **147.8 A pk** at the worst simulated corner · 243 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
+| Inductance | **3.99 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
+| Current rating | **93.4 A rms** at the copper corner (203 kHz) · **147.9 A pk** at the worst simulated corner · 243 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
 | Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372A2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **10000×0.05** mm (19.6 mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
-| Gap | distributed centre-leg gap **Σ ≈ 12.0 mm in 12 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 4.07 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
+| Gap | distributed centre-leg gap **Σ ≈ 12.0 mm in 12 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 3.99 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
 | Rdc · Rac | Rdc **≤ 1.1 mΩ** @ 25 °C (100 %) · Rac **≤ 3.45 mΩ** @ 203 kHz, 100 °C (sample 5 / lot) |
 | Insulation · hipot · PD | basic insulation to PE through former + spacer + VPI class H · 100 % winding → bonded-face foil 2.5 kV DC · PD 5 / lot, extinction **≥ 1.9 kV**, ≤ 10 pC |
 | Thermal | both yoke faces gap-padded to the upper and lower extrusion webs, end turns potted to the web · hot-spot ≤ 125 °C at 55 °C inlet (type test, thermocouples beside a gap and on the winding) |
@@ -156,7 +156,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 | `magnetics-envelope` | D2-BOND-LOST · 40kw | one face lost (web1) → 112 °C @55 / 113 °C @75 · +25 % 125 °C → survives | ℹ️ |
 | `stress-audit` | 40kw external Lr Bpk | 85 mT at Lmax 4.11 µH × 100 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F) | ✅ |
 | `stress-audit` | 40kw external Lr litz J | 10000×0.05 mm litz (19.6 mm²): J 5.1 A/mm² ≤ 5.6 at the 100 A class | ✅ |
-| `conductor-audit` | 40kw 2×E70 N 5, litz 10000×0.05 @203 kHz | MLT 218 mm · Rdc 0.98 mΩ @25 °C (row ≤1.1) · Sullivan Fr 2.49 → Rac 3.14 mΩ hot (row ≤3.45) → Cu 27.3 W at 93.3 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope | ✅ |
+| `conductor-audit` | 40kw 2×E70 N 5, litz 10000×0.05 @203 kHz | MLT 218 mm · Rdc 0.98 mΩ @25 °C (row ≤1.1) · Sullivan Fr 2.49 → Rac 3.14 mΩ hot (row ≤3.45) → Cu 27.4 W at 93.4 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope | ✅ |
 | `current-coordination` | 40kw external Lr flux: operating + fault | Lmax 4.11 µH (2×E70 N 5): 89 mT at the worst simulated peak (≤110) · 146 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT | ✅ |
 | `magnetics-envelope` | 40kw D2 with one of 3 fans dead at 55 °C inlet (F.25 derate 50 %) | airflow ×0.67 · web 74 °C · air 63 °C → hot-spot 88 °C (SER250-full-bus764) ≤ 135 °C derated line · runaway margin 172 K ≥ 25 — core loss does not derate, copper does | ✅ |
 | `mkf-crosscheck` | MKF-GAP · 40kw D2 L from the drawn gap Σ 10.56 mm in 11 × 0.96 mm | Zhang 4.63 µH (+13.8 %) · Muehlethaler 4.64 · Partridge 4.43 · Balakrishnan 4.47 · Stenglein 7.44 vs 4.07 µH ± 3 % → with fringing Σ ≈ 12.0 mm (12 × 1.00 mm) reaches the target — ground to AL either way; this is the first-grind guide | ℹ️ |
@@ -165,7 +165,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 
 </details>
 
-**Build and hold points.** (1) Grind or space the centre-leg gap in segments of ≤ 1.0 mm toward the AL that gives 4.07 µH at N 5; glue,
+**Build and hold points.** (1) Grind or space the centre-leg gap in segments of ≤ 1.0 mm toward the AL that gives 3.99 µH at N 5; glue,
 cure clamped, re-measure (cure shifts AL about 1 %). (2) Wrap a ≥ 3 mm radial spacer over the former so the litz stays out of the gap
 field. (3) Wind 5 turns of 10000×0.05 mm litz in one layer. (4) Tin the served ends at 400 ± 20 °C. **H1** L inside ± 3 %, Rdc.
 (5) VPI class H with the yoke faces masked. **H2** L re-check, Rac sample. (6) Fit the cutout beside a gap. **H3** 2.5 kV DC winding →
@@ -179,13 +179,13 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 
 | Row | Specification — PMP-MAG-D3-40 rev D |
 |---|---|
-| Ratio · magnetizing | **4:4∥4 exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **21.75 µH ± 7 %** per cell @ 10 kHz, 0.1 V |
+| Ratio · magnetizing | **4:4∥4 exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **21.75 µH ± 7 %** per cell @ 10 kHz, 0.1 V · **E82 (F-H1-6): the two cells of a module ship as a MATCHED PAIR, L_m within ± 3 % of each other** (gapped together, labelled A / B) — their primaries are in series on one C_r, so they divide the applied volt-seconds by their magnetizing impedance: a ± 7 % pair reads 513 / 481 V on the two banks at 1000 V series and + 7 % flux on the higher-L_m cell |
 | Core · former | **3 × E70/33/32** PC95 / N95 / 3C95-class · 3-set former, lN 293 mm (custom — tooling in the part price) |
 | Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **1.359 µH/T² (Σ gap ≈ 2.0 mm with fringing)** on the assembled cell |
-| Current rating | primary **93.3 A rms** / **147.8 A pk** · each secondary half **45.8 A rms** / 71.2 A pk at the worst simulated corner · 83–203 kHz |
+| Current rating | primary **93.4 A rms** / **147.9 A pk** · each secondary half **45.9 A rms** / 71.2 A pk at the worst simulated corner · 77–203 kHz (82 kHz lowest steady state · 77 kHz = the firmware's transient floor, 0.55·f_r) |
 | Primary | **TIW-served litz 3536×0.071 mm (14 mm²)**, one layer |
 | Secondary halves | 2 × Cu foil 0.08 × 28 mm per turn · MLT S1 / P / S2 253 / 272 / 290 mm |
-| Leakage | per cell, both halves shorted, 140 kHz, after VPI: **0.090 µH ± 30 %** — measured and labelled |
+| Leakage | per cell, both halves shorted, 140 kHz, after VPI: **0.132 µH ± 30 %** — measured and labelled |
 | Rdc @ 25 °C (100 %) | P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ |
 | AC resistance (sample 5 / lot) | short-circuit R at 203 kHz with both halves shorted (the leakage fixture), referred to P, 25 °C — expected **4.65–6.12 mΩ** (1-D … MKF); the first article fixes the lot line at its median + 10 %. Not a per-winding open-circuit Rac/Rdc: that loses the interleaved field cancellation and rejects good parts |
 | Insulation system | Class H — VPI class H · TIW grade Class F minimum · pri ↔ sec **reinforced**, one barrier system: TIW wall + ≥ 3 barrier-tape layers between each shield and its secondary · shields to SH → DCN on the board |
@@ -215,8 +215,8 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 | `magnetics-envelope` | D3-BOND-LOST · 40kw | one face lost (web1) → 106 °C @55 / 118 °C @75 · +25 % 132 °C → not survivable — screened by the EOL bonded thermal soak | ℹ️ |
 | `magnetics-envelope` | BOND · 40kw | D3 cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md) | ℹ️ |
 | `stress-audit` | 40kw cell Bpk at the worst simulated corner | 158 mT at ENV500-55 (87.4 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope) | ✅ |
-| `conductor-audit` | 40kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz | h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.8 A rms each (SER250-full-bus764; optimum 0.1 mm = 26 W) | ✅ |
-| `conductor-audit` | 40kw cell profiled-litz primary 3536×0.071 mm | Sullivan (interleaved k 0.25) Fr 1.25 → 19.1 W at 93.3 A rms | ✅ |
+| `conductor-audit` | 40kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz | h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 27 W at 45.9 A rms each (SER250-full-bus764; optimum 0.1 mm = 26.1 W) | ✅ |
+| `conductor-audit` | 40kw cell profiled-litz primary 3536×0.071 mm | Sullivan (interleaved k 0.25) Fr 1.25 → 19.1 W at 93.4 A rms | ✅ |
 | `conductor-audit` | 40kw production Rdc rows @25 °C match the 3×E70 cell build | MLT S1/P/S2 253/272/290 mm → P 1.36 (≤1.55) · S1 3.97 (≤4.5) · S2 4.55 (≤5.1) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught | ✅ |
 | `temp-critique` | D3 simulated worst flux at 130 °C core | worst B̂ 159 mT (30kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited | ✅ |
 | `magnetics-envelope` | 40kw D3 with one of 3 fans dead at 55 °C inlet (F.25 derate 50 %) | airflow ×0.67 · web 74 °C · air 63 °C → hot-spot 89 °C (ENV500-55) ≤ 135 °C derated line · runaway margin 126 K ≥ 25 — core loss does not derate, copper does | ✅ |
@@ -315,7 +315,7 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 |---|---|---|:---:|
 | `current-coordination` | 40kw threshold ≥ 1.2× simulated worst line peak | 155 A pk vs 127.1 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22× | ✅ |
 | `current-coordination` | 40kw observability through the 3 µs kill race | Δi(3 µs, 560 V, L(i) at AL−8 %) = 49.9 A → 204.9 A ≤ ceiling 225 A on 18 Ω · threshold at 2.77 V ≤ 3 V | ✅ |
-| `current-coordination` | 40kw threshold ≥ 1.2× simulated worst tank peak | 180 A pk vs 147.8 A (SER250-full-bus764) → 1.22× | ✅ |
+| `current-coordination` | 40kw threshold ≥ 1.2× simulated worst tank peak | 180 A pk vs 147.9 A (SER250-full-bus764) → 1.22× | ✅ |
 | `current-coordination` | 40kw window-comparator kill + observability | \|Ip\| crosses F.11 1.45 µs after the short → kill peak 243 A (+1 µs, ×1.2 ≤ 450 A on 0.36 Ω) · monitor peak +3 µs 406.4 A ×1.05 in rail · window 1/2.3 V | ✅ |
 | `current-coordination` | 40kw LLC FET pulse class at the FAST kill peak | +0.5 µs 243 A ≤ 0.9 × 265 A × 2 die = 477 A (HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget) · conservative +1 µs 243 A (46 % of I_DM) · monitor +3 µs 406.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die | ✅ |
 | `stress-audit` | line CT class @40 kW | E60: the 40 kW joins the 150 A class (ACX-1150) — F.01 155 A + 50 A race needs linearity past the ACX-1100's ~179 A at 18 R; 30 kW keeps ACX-1100 (55 A, F.01 120 A on 22 R) | ✅ |
@@ -349,5 +349,5 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 <div align="center">
 <sub><a href="magnetics-30kw.md">← 30 kW Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-50kw.md">50 kW Liquid Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

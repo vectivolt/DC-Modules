@@ -82,16 +82,28 @@ int main(void) {
 
   { pmp_ctl_init(&s); in = base(); in.v_out = 400.0f; in.i_out = 80.0f; in.cv_active = true; in.peer_n = 3; in.peer_avg_a = 100.0f;
     for (int k = 0; k < 100; k++) pmp_ctl_step(&s, &c, &in, dt);
-    int rate = near(s.trim_v, 1.0f, 0.05f) && s.trim_active;
-    for (int k = 0; k < 20000; k++) pmp_ctl_step(&s, &c, &in, dt);
+    int rate = near(s.trim_v, 100.0f * c.trim_rate_vpas * 20.0f * dt, 1e-4f) && s.trim_active;
+    for (int k = 0; k < 400000; k++) pmp_ctl_step(&s, &c, &in, dt);
     int clamp = near(s.trim_v, 4.0f, 1e-3f) && near(s.v_tgt, 404.0f, 1e-3f);
     in.cv_active = false; float before = s.trim_v;
     for (int k = 0; k < 1000; k++) pmp_ctl_step(&s, &c, &in, dt);
     int frozen = s.trim_v < before && !s.trim_active;
     in.cv_active = true; in.peer_avg_a = NAN;
     for (int k = 0; k < 5000; k++) pmp_ctl_step(&s, &c, &in, dt);
-    ck("shaper: share trim integrates at 0.5 V/(A·s), clamps at 1 %, decays in CC and without peer data",
+    ck("shaper: share trim integrates at its configured rate, clamps at 1 %, decays in CC and without peer data",
        rate && clamp && frozen && s.trim_v > 1.0f && s.trim_v < 1.4f); }
+
+  { /* E82 (M-33): the trim loop must be SLOWER than the peers it listens to. A module in CV is a near-ideal voltage source,
+       so its share moves by 1/R_series per volt of trim, and R_series (busbar + DOUT + shunt) is only 5–15 mΩ. Over one peer
+       period — 500 ms on the slower profile, TonHe V1.2 — the trim must therefore command well under the error it is
+       answering, or paralleled modules hunt instead of sharing. 20 A of error at the stiffest 5 mΩ: the E81 rate of
+       0.5 V/(A·s) moved 5 V = 1000 A of authority per period; the bound below is a quarter of the error. */
+    pmp_ctl_init(&s); in = base(); in.v_out = 400.0f; in.i_out = 80.0f; in.cv_active = true; in.peer_n = 3; in.peer_avg_a = 100.0f;
+    for (int k = 0; k < 500; k++) pmp_ctl_step(&s, &c, &in, dt);       /* one 500 ms TonHe peer period */
+    float amps = s.trim_v / 0.005f;                                    /* what that trim commands into a 5 mΩ interconnect */
+    printf("      share trim after one 500 ms peer period: %.4f V = %.2f A against a 20 A error\n", (double)s.trim_v, (double)amps);
+    ck("E82 M-33: one peer period of share trim answers at most a quarter of the sharing error even into a 5 mOhm interconnect",
+       s.trim_v > 0.0f && amps <= 0.25f * 20.0f); }
 
   /* ---------------- regulator kernel ---------------- */
   pmp_reg_cfg_t rc; pmp_reg_cfg_default(&rc);
@@ -148,7 +160,7 @@ int main(void) {
     pmp_ctl_init(&s2);
     in2.en = true; in2.cv_active = true; in2.v_set = 500.0f; in2.i_set = 100.0f; in2.v_max_mode = 500.0f;
     in2.peer_n = 4; in2.peer_avg_a = 120.0f; in2.i_out = 60.0f; in2.v_out = 500.0f;
-    for (int k = 0; k < 20000; k++) pmp_ctl_step(&s2, &c2, &in2, 1e-3f);
+    for (int k = 0; k < 400000; k++) pmp_ctl_step(&s2, &c2, &in2, 1e-3f);
     ck("E80 R34: a saturated positive share trim never carries v_tgt past v_max_mode", s2.trim_v > 4.0f && s2.v_tgt <= 500.0f + 1e-3f);
   }
 

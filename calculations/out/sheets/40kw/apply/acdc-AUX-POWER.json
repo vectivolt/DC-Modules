@@ -59,7 +59,7 @@
    },
    {
     "designator": "QAUX",
-    "value": "SIC-1700-1R",
+    "value": "SIC-1700-1R-G15",
     "block_name": "FLYBACK",
     "pins": [
      {

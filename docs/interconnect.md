@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-module--interconnect--audit-2ea44f?style=flat-square" alt="gate: module-interconnect-audit"/>
 </p>
@@ -138,8 +138,8 @@ for long bus runs between modules in a charger.
 ## 4. Discharge control (E19 rev B, E47 semantics)
 
 > [!CAUTION]
-> **High voltage.** The DC link and output banks hold lethal energy. Service label: **isolate, wait 10 min, AND
-> verify < 60 V** — never "or".
+> **High voltage.** The DC link and output banks hold lethal energy. Service label: **isolate, wait 15 min, AND
+> verify < 60 V** — never "or". (E82 M-10: one balance network per module puts the 50 kW at 9.9 min nominal / 11.9 min at C +20 %.)
 
 `CTL_QDIS` drives the opto LED active-high (330 Ω). The output stage rides a DCN-referenced isolated module, and the
 QDISF gate has a 10 k pull-down to DCN, so a dead, reset or unprogrammed MCU leaves discharge **off**. Bank bleeders
@@ -199,7 +199,7 @@ SKU across every physical boundary:
 ---
 
 <div align="center">
-<sub><a href="e81-validation-report.md">← E81 Full-System Validation</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
+<sub><a href="e82-validation-report.md">← E82 Independent Validation & Production Hardening</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

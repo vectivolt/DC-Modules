@@ -12,4 +12,11 @@
 /* pub: X ‖ Y, 64 bytes big-endian (uncompressed, no 0x04 prefix) · hash: the 32-byte digest of the signed data ·
    sig: r ‖ s, 64 bytes big-endian (IEEE P1363) */
 bool p256_verify(const uint8_t pub[64], const uint8_t hash[32], const uint8_t sig[64]);
+
+/* E82 (LV-1): the same verification with a service hook. One verification is ≈ 12.9 M executed Cortex-M33 instructions
+   (measured on the -Os bootloader build: ≈ 90–105 ms at 216 MHz, NOT the ≈ 9 ms the E80 comment assumed), four times the
+   TPS3430 fixed window's 23.375 ms upper bound — with WDO wired to NRST an unserviced verification resets the part for ever.
+   poll (may be NULL) runs once per ladder step (≈ 0.4 ms) and every 16 squarings of the two inversions (≈ 0.2 ms); the
+   port's poll rate-limits the actual WDI edges (≥ 5 ms apart), so calling it often is free. */
+bool p256_verify_poll(const uint8_t pub[64], const uint8_t hash[32], const uint8_t sig[64], void (*poll)(void));
 #endif

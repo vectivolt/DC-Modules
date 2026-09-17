@@ -1,11 +1,11 @@
-* E81/F-G-1 DC-link HF ripple share — 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p corner SER250-full-bus764 VBUS=764 VBANK=250 fsw=202.9k d=0.3245
+* E81/F-G-1 DC-link HF ripple share — 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p corner SER250-full-bus764 VBUS=764 VBANK=250 fsw=202.9k d=0.3398
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
 .model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=4.87517e-9 Vj=2 M=0.5)
 * ---- DC link (E81/F-G-1): ideal source behind 50 uH per rail, MID grounded; 5 cans/half; 12 x 1uF bridge film; damper yes; stud 40 nH loop
 VSP src_p 0 DC 382
-LSP src_p dcp 0.00005 ic=3.98610e+1
+LSP src_p dcp 0.00005 ic=3.98623e+1
 VSN src_n 0 DC -382
-LSN src_n dcn 0.00005 ic=-3.98610e+1
+LSN src_n dcn 0.00005 ic=-3.98623e+1
 RMID mid 0 1u
 VPC0 dcp pa0 DC 0
 RPC0 pa0 pb0 0.15
@@ -142,8 +142,8 @@ DBLA busn legA DBODY
 CSHA bhA legA 3.30000e-10
 CSLA legA busn 3.30000e-10
 
-VGHB ghB 0 PULSE(0 1 1.59931e-6 20n 20n 2.32427e-6 4.92854e-6)
-VGLB glB 0 PULSE(0 1 4.06358e-6 20n 20n 2.32427e-6 4.92854e-6)
+VGHB ghB 0 PULSE(0 1 1.67472e-6 20n 20n 2.32427e-6 4.92854e-6)
+VGLB glB 0 PULSE(0 1 4.13898e-6 20n 20n 2.32427e-6 4.92854e-6)
 VHSB bus bhB DC 0
 BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*28.57142857142857)
 BSLB legB busn I=v(legB,busn)*(2e-5+v(glB)*28.57142857142857)

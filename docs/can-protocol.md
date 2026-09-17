@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/codec-vmp.c_conformance_·_1M_fuzz-2ea44f?style=flat-square" alt="codec: vmp.c conformance · 1M fuzz"/>
 </p>
@@ -176,10 +176,10 @@ txn u8 · action u8 · argument u32 · reserved u8 = 0 · CRC-8
 | 2 | SHUTDOWN | controlled stop, then link and bank discharge; any state, any controller |
 | 3 | WAKE | OFF → INIT (precharge again); otherwise STATE |
 | 4 | LOCATE | argument = seconds (≤ 3 600) of display and LED locate |
-| 5 | REBOOT | argument "RBT!" (0x21544252); not while delivering; unicast only |
+| 5 | REBOOT | argument "RBT!" (0x21544252); **E82 (K-4): refused with `VMP_E_STATE` while EITHER stage is live, not merely while delivering** — the 60 s warm hold after a stop leaves `pfc_en` true and the matrix relays made, and a reboot there drops the gates mid-switching with the link charged; unicast only |
 | 6 | UNLOCK | argument "VMP2" (0x32504D56); opens critical writes for 10 s; unicast only |
-| 7 | FACTORY_RESET | unlocked, not delivering, unicast only |
-| 8 | ENTER_BOOT | unlocked, not delivering, unicast only (firmware update, §10) |
+| 7 | FACTORY_RESET | unlocked, unicast only; **E82 (K-4): refused while either stage is live** (before E82 this action had no state gate at all) |
+| 8 | ENTER_BOOT | unlocked, unicast only (firmware update, §10); **E82 (K-4): refused while either stage is live**. A module on the TonHe profile has no ENTER_BOOT action and no reachable SWD header, so its way in is the two-button service entry — both panel buttons held ≥ 3 s inside the first 10 s after power-up with both stages off (G-10) |
 | 9 | RELEASE | the owner gives up ownership |
 
 Actions sent to a group or to 0xFF execute without an acknowledgement; REBOOT, UNLOCK, FACTORY_RESET, ENTER_BOOT and RELEASE are
@@ -291,6 +291,7 @@ value). Requests share a token bucket of 20 per second; an empty bucket answers 
 | 0x0500 | control-ISR execution high-water (E80) | read | PFC µs ≪ 16 \| LLC µs (DWT since boot — EVT T-44) |
 | 0x0501 | worst painted-stack use (E80) | read | percent u8 |
 | 0x0502 | EVENT frames suppressed by the rate limit (E81) | read | count u32 since boot |
+| 0x0503 | `DIAG_RX_OVR` — CAN RX-mailbox-queue overruns (E82 K-6) | read | count u16 since boot: drains that found **all eight RX mailboxes occupied**, i.e. the condition under which a ninth frame is lost. The controller exposes no queue-overrun flag of its own, so this is the only honest evidence a frame was dropped |
 
 Configuration objects persist (A/B records with CRC); the module reports the stored value in the ACK.
 
@@ -381,12 +382,12 @@ sequenceDiagram
 | Versioning | none | major.minor, must-understand, reserved-field rules |
 
 > [!TIP]
-> **How this page is checked** — `firmware/test/proto_test.c` (40 checks in the 291-check suite) — codec conformance, the worked examples, a 1M-frame malformed-input fuzz, and one core driven through both profiles.
+> **How this page is checked** — `firmware/test/proto_test.c` (42 checks in the 330-check suite) — codec conformance, the worked examples, a 1M-frame malformed-input fuzz, and one core driven through both profiles.
 
 ---
 
 <div align="center">
 <sub><a href="firmware-architecture.md">← Firmware Architecture</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-profile-tonhe-v12.md">TonHe V1.2 Compatibility Profile →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

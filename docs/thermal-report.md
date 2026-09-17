@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/grid-4536_pts_·_fold_map_·_F--L--1-d19a00?style=flat-square" alt="grid: 4536 pts · fold map · F-L-1"/>
+  <img src="https://img.shields.io/badge/grid-4536_pts_·_fold_map_·_no_FAIL_row-d19a00?style=flat-square" alt="grid: 4536 pts · fold map · no FAIL row"/>
 </p>
 
 > [!NOTE]
@@ -54,8 +54,9 @@
 | **Peak η** over the envelope | 97.80 % | 97.73 % | 97.72 % | 97.72 % |
 | **Cooling** | air · 3 fans | air · 3 fans | 2 coldplates · 0 fans | air · 4 fans |
 | **Airflow margin** at the 55 °C inlet density | **1.65×** | 1.27× | coolant ΔT 4.6 K | 1.27× |
-| **Worst LLC Tj** outside the registered fold set | **149 °C** | **149 °C** | 135 °C | 148 °C |
-| **Grid** | 4,536 points · every point passes or is a registered fold (§3) | | | |
+| **Worst LLC Tj** on the grid, folds applied (E82) | **150 °C** | 145 °C | 139 °C | **150 °C** |
+| **Worst Vienna Tj** on the grid, folds applied (E82) | 128 °C | **149 °C** | 130 °C | **149 °C** |
+| **Grid** | 4,536 points · **no FAIL row anywhere** (E82; E81 had 324, all at the 150 V phase-shift corner) — §3 | | | |
 
 > [!WARNING]
 > **Two loss terms entered the ledger at E81** — the LLC turn-off energy per position and the Vienna switching
@@ -165,31 +166,49 @@ EVT (A8).
 
 ## 3. Junction temperatures — worst point of the 4,536-point grid
 
-| SKU | Vienna SiC | LLC SiC | Secondary JBS | Binding corner (E81 grid: turn-off term, DPT switching coefficient, 74 / 75 / 77 °C air base) |
+| SKU | Vienna SiC | LLC SiC | Secondary JBS | Binding corner (E82 grid: per-die weak-leg turn-on term, Vienna modulation-index term and datasheet R_DS(on) slope, 74 / 75 / 77 °C air base) |
 |---|---:|---:|---:|---|
-| 30 kW | 117 °C | **149 °C** (after fold) | 92 °C | LLC at the 500 V series corner · 55 °C — the single die per position (E68, kept at E81 under the ≤ 5 % cost ceiling) |
-| 40 kW | 135 °C | **149 °C** | 108 °C | LLC at the 500 V series corner · 55 °C (two dies, 680 pF snubber) |
-| 50 kW liquid | **120 °C** | 135 °C | 102 °C | PFC at 285 VAC · LOW · 65 °C plate |
-| 50 kW air | **147 °C** | 148 °C (after fold) | 118 °C | PFC at 285 VAC · LOW · 55 °C (k_sw 26 nJ/(V·A) as drawn; the E81 mirror clamp trims it) |
+| 30 kW | 128 °C | **150 °C** (after fold) | 90 °C | LLC at 200 V parallel · 450 VAC · 55 °C, folded 93 % — the single die per position (E68, kept at E81 under the ≤ 5 % cost ceiling); the Vienna worst is 285 VAC on the 830 V link |
+| 40 kW | **149 °C** (after fold) | 145 °C (after fold) | 108 °C | Vienna at 300 VAC on the 830 V link · 55 °C, folded 93 % (the E82 modulation-index term); LLC at the 500 V series corner · 475 VAC, folded 93 % |
+| 50 kW liquid | **130 °C** | 139 °C | 102 °C | PFC at 285 VAC · 400 V parallel · 65 °C plate — **no fold anywhere on this SKU** |
+| 50 kW air | **149 °C** (after fold) | **150 °C** (after fold) | 118 °C | LLC at the 500 V series corner · 450 VAC · 55 °C, folded 86 %; Vienna at 300 VAC on the 830 V link, folded 93 % (k_sw 26 nJ/(V·A) as drawn; the E81 mirror clamp trims it) |
 
-**Where the grid folds (E81, final).** The policy ceiling is **150 °C** (absolute rating 175 °C); above it the FSM derate ladder
-folds power in 7 % steps. Two registered regions remain after the E81 corrections; everything else — every line, load, ambient and
-output point — runs at 100 % with the worst junction at 149 / 149 / 135 / 148 °C (30 / 40 / 50 / 50-air, excluding the registered set).
+**Where the grid folds (E82, final).** The policy ceiling is **150 °C** (absolute rating 175 °C); above it the FSM derate ladder
+folds power in 7 % steps, and `hal/dielim.c` now implements it against a junction *observer* rather than the heatsink NTC (below).
+**Every one of the 4,536 points passes** — E81 carried 324 FAIL rows, all of them the 150 V phase-shift corner on the two-die SKUs
+at up to 337 °C, and every one of them is gone. All four regions below are **full load**; everything not listed runs at 100 %.
 
 | Region | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---|---|---|---|
-| 500 V series, full load (phase shift / high fn at the line-tracking bus floor) | 55 °C: **86 %**, 75 % at ≥ 450 VAC · 25 °C: 93 % at ≥ 450 VAC | 100 % | 100 % | 55 °C: **86 %** at ≥ 450 VAC |
-| 150 V output, hot, LOW mode (30 kW only — the two-die SKUs are the F-L-1 register below) | 55 °C: **93 %** | — | — | — |
+| 500 V series, hot (phase shift / high fn at the line-tracking bus floor) | 55 °C: **93 %** at 285 VAC, 86 % at 300, 80 % at 330–400, **75 %** at 450–475 · 25 °C: 93 % at 450–475 VAC | 55 °C: **93 %** at 450–475 VAC | 100 % | 55 °C: **93 %** at 330–400 VAC, 86 % at 450, **80 %** at 475 |
+| LOW-mode output 150 / 200 / 250 / 300 V, hot | 55 °C: **93 %** at 150 / 200 V (86 % at 475 VAC) · 250 V 93 % to 400 VAC, 86 % at 450–475 · 300 V 93 % at 475 VAC only | 100 % | 100 % | 55 °C, 150 V: **93 %** to 400 VAC, 86 % at 450, **80 %** at 475 |
+| Low line on the 830 V link — the Vienna die (E82: modulation-index term + R_DS(on) slope) | 100 % | 55 °C: **93 %** at 285 VAC, output 400 / 500 V parallel and 1000 V series | 100 % | 55 °C: **86 %** at 285 VAC and **93 %** at 300–330 VAC, output ≥ 400 V parallel / ≥ 750 V series |
+| 25 °C ambient | 500 V series at 450–475 VAC: 93 % | 100 % | 100 % | 100 % |
 
-> [!WARNING]
-> **F-L-1 (registered, deck-validated): the 150 V output class in continuous phase shift is NOT SUSTAINABLE on the two-die SKUs**
-> (40 kW, 50 kW liquid and air) at any load or ambient. With the real output charge the weak leg cannot slew its node at that
-> corner (the deck's residual is 85–95 % of the bus), and the incoming die's hard turn-on is a fixed ≈ 90–170 W per die that no
-> power fold removes — a differential deck run (1 000 pF vs 100 pF snubber, fixed duty) measured the charge-replacement energy at
-> 1.0–1.4 × the model now in the grid. Until the E82-1 modulation change lands (burst-PFM at low banks · reduced-frequency phase
-> shift · the low-Z₀ tank of the benchmark re-read R4), **sustained delivery below ≈ 200 V on those SKUs is a documented spec
-> limit** — TonHe's own TH750 floor is 200 V — and the OT ladder is the hardware guard. The 30 kW (one die, 330 pF) serves the
-> corner folded at 93 %.
+> [!NOTE]
+> **E81's F-L-1 is CLOSED at E82 — it was three defects, not a physical limit.** E81 registered the 150 V phase-shift class as
+> **NOT SUSTAINABLE** on the two-die SKUs (229–335 °C at any load, "a documented spec limit below 200 V"). Re-derived from first
+> principles the corner is ordinary: **(1)** E81 gave the weak bridge leg — leg A, whose edges *end* the zero state — a 200–900 ns
+> dead time on the premise that it commutates on the magnetising current alone. At load the zero state ends with the rectifier
+> conducting, so the leg swings on the decayed tank current through L_r alone, reaches its valley in ≈ a quarter period and swings
+> **back**; `hal/llc.c weak_dead_s()` now programs 0.82·(π/2)·√(L_r·C_node) = **125 / 186 / 189 ns** (30 / 40 / 50 kW), and
+> `spice/llc/llc-run.mjs` programs the same edge (`weakDead`, `DT_MIN` 120 ns) and has been re-run. **(2)** `envelope-grid.mjs wHard`
+> returned the whole *leg's* loss while the junction line divided it by `par` only — every weak-leg die was charged twice.
+> **(3)** Nothing in firmware implemented any fold at all: the derate ladder read a heatsink NTC, and these corners heat a die
+> 80–170 K above a sink still sitting at 75 °C. The new residuals in `simulation-results/<sku>/llc-stress.csv` (Vres/link, 30 / 40 /
+> 50 kW) are PS150 at a 650 V link **0.45 / 0.60 / 0.60** (E81: 0.38 / 0.99 / 0.98), PAR200 0.19 / 0.40 / 0.41, SER250 at 764 V
+> 0.11 / 0.30 / 0.30 and PAR250 0 — an independent switched model agrees inside ten points at the same dead time.
+> → [E82 C-11](e82-validation-report.md#3-critical-findings-and-what-was-done)
+
+> [!IMPORTANT]
+> **The folds are now real (E82 C-11).** `hal/dielim.c` is a junction **observer**, not a static ceiling: every millisecond it takes
+> the worst-die loss at the operating point in force, raises a first-order junction estimate above the measured zone NTC
+> (τ `DIELIM_TAU_S` 0.5 s, R_th 0.80 K/W air / 0.65 K/W liquid) and folds availability proportionally over **142–150 °C**
+> (`DIELIM_TJ_C` 150, `DIELIM_BAND_K` 8 — narrow on purpose: the grid folds ABOVE 150 °C, so a corner it lists at 100 % must not lose more than a few percent here) through `pmp_ctl_in_t.die_fold`, with `PMP_DR_THERMAL` set. A fold that reaches 1 with a
+> stage running is **declined** — latched until the LLC is stopped, so it is not inherited through the 60 s warm-standby hold — so the bridge cannot idle into burst, cool, deliver and cycle.
+> An observer rather than a ceiling because every start crosses deep phase shift for a few hundred milliseconds, where a static
+> ceiling reads 0 A and the module never starts. `fw-constants-sync` (28 rows) holds every coefficient against `tanks.mjs`,
+> `mount.mjs`, this grid and the DPT files, and asserts the firmware's residual map ≥ every phase-shift row of the deck.
 
 Every value rests on the clip-mount Rth, which EVT T-38 must confirm within +15 %, and on the air base,
 which T-04 measures on both extrusions.
@@ -460,5 +479,5 @@ plot `simulation-results/30kw/plots/derating-curve.svg`.
 <div align="center">
 <sub><a href="current-coordination.md">← Current & Protection Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="insulation-coordination.md">Insulation Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

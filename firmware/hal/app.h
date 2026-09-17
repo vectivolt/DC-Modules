@@ -18,6 +18,7 @@
 #define PMP_APP_H
 #include "pfc.h"
 #include "llc.h"
+#include "dielim.h"
 #include "meas.h"
 #include "nvm.h"
 #include "evlog.h"
@@ -91,6 +92,7 @@ typedef struct {
   uint16_t di;                           /* APP_DI_* */
   float tach_hz[4];
   uint8_t can_state;                     /* 0 error-active · 1 error-passive · 2 bus-off */
+  uint16_t can_rx_ovr;                   /* E82 (K-6): drains that found every RX mailbox occupied — frames may have been lost */
   uint8_t stack_pct;                     /* worst painted stack */
   uint16_t pfc_exec_us, llc_exec_us;     /* longest ISR execution since the last tick (DWT) */
   const pmp_frame_t *rx; uint8_t rx_n;   /* frames received since the last tick, acceptance-filtered */
@@ -114,6 +116,7 @@ typedef struct {
 
 typedef struct {
   float rating_counts;                   /* ROLE1 strap */
+  float vrefint_v;                       /* E82 (D-07): the part's own factory VREFINT (V); 0 = not available */
   uint8_t reset_cause;                   /* E81 (F-E-03): RCU_RSTSCK bits 31:24 raw — the HAL classifies */
   uint8_t hw_rev;                        /* E81 (F-D-15): card revision strap (0 = rev A) */
   bool handoff_reboot;                   /* the last reset was a deliberate, sealed reboot */
@@ -144,6 +147,7 @@ typedef struct {
   uint16_t kw; uint8_t n_fans; bool liquid, strap_bad, cal_bad, uncal, wdt_boot;
   app_cfg_t cfg; app_counters_t cnt; bool cfg_dirty;
   pfc_cfg_t pfc_cfg; llc_cfg_t llc_cfg; pmp_ctl_cfg_t ctl_cfg; pmp_reg_cfg_t reg_cfg; meas_cal_t cal;
+  dielim_cfg_t die_cfg; dielim_t die; float iline_rms;   /* E82 (C-11): junction observer · worst phase rms for it */
   nvm_t nvm;
   /* the core and the protocol */
   pmp_fsm_t fsm; pmp_in_t in; pmp_ctl_t ctl; mod_cmd_t cmd; mod_tlm_t tlm;
@@ -167,25 +171,28 @@ typedef struct {
   uint32_t az_gen; bool az_done, az_bad, az_gave_up; uint8_t az_try;
   /* fault ISR — one counter per kind, the tick keeps what it has seen */
   volatile uint8_t flt_n[5]; uint8_t flt_seen[5];
+  /* E82 (LV-4): the hardware trip HOLD. trip_n counts HRTIMER fault interrupts (one writer: app_fault_isr); trip_ack is the
+     count the 1 ms sequence has carried through the FSM and committed (one writer: app_tick). While they differ the two
+     control interrupts command their outputs OFF — without it the port's unconditional CHOUTEN writes re-armed a tripped
+     stage 10 µs (PFC) / 100 µs (LLC) later, for as long as the tick took to latch (1 ms, or 20+ ms behind a flash erase). */
+  volatile uint8_t trip_n; uint8_t trip_ack;
   /* tick state */
-  uint32_t pfc_last, llc_last, ovr_win; uint8_t wdt_good; bool hb_ok, ovr_seen;
+  uint32_t pfc_last, llc_last, ovr_win; uint8_t wdt_good, ovr_hard; bool hb_ok, ovr_seen;
   uint32_t grid_seen; float g_vph[3], g_hz; uint16_t hz_bad_ms, isum_bad_ms, ref_bad_ms, rails_ms, avmid_bad_ms, flux_ms;
   bool hz_bad, isum_bad, ext;
   /* E81 (F-D-7): the 1-in-10 line-cycle work moved out of the 100 kHz ISR. The PFC ISR fills the spare half of a double
      buffer and publishes an index; the 10 kHz LLC ISR does grid_sample() and the boot offset window from it. */
   struct { float v[3], i[3], ia, ib, ic; } g_buf[2];
   volatile uint8_t g_idx, g_new;
-  float ires_dc;                          /* E81 (F-E-15): slow DC estimate of I_RES — a transformer flux-walk proxy */
-  /* E81 (F-D-10): bipolar F.01. Only the SIGN changes per sample, so the tick precomputes both references per channel
-     and the 100 kHz ISR just selects one — three FPU divisions stay out of the hot path (F-D-7). */
-  float dac_oc_pos[3], dac_oc_neg[3], dac_oc[3];
+  float ires_dc;                          /* E82 (M-31): DEAD — a CT has no DC response, so this never was a flux-walk proxy */
+  float dac_oc_pos[3];                    /* E82 (C-02): the F.01 comparator reference, positive polarity only */
   float t_zone[4];
   float fan_duty; uint32_t fan_on_ms; uint16_t fan_still_ms[4]; uint8_t fan_fail;
   uint16_t b1_ms, b2_ms; bool edit; uint8_t edit_addr; uint16_t edit_ms;
   uint32_t op_ms, t_cfg, t_cnt; float e_mws; bool llc_was, cnt_due; uint8_t nvm_fail;
   /* E80: event log, bootloader glue, diagnostics, relay economizer */
   evlog_t ev; pmp_fault_t ev_prev; bool latch_seen, factory_pend, reboot_pend;
-  uint16_t pfc_us, llc_us; uint8_t stack_pct;
+  uint16_t pfc_us, llc_us, can_rx_ovr; uint8_t stack_pct;
   uint16_t rly_ms[APP_RLY_COUNT];
   bool busoff; uint32_t t_busoff, busoff_t[10]; uint8_t busoff_i, busoff_n;
 } app_t;

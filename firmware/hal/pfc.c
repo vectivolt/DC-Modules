@@ -18,7 +18,10 @@ void pfc_cfg_default(pfc_cfg_t *c, uint16_t kw) {
   c->k_mid = 0.5f;
   c->tau_v = 114.6e-6f;   /* (11.5 k ∥ 3.8 M) · 10 nF — pfc-control.mjs TAUV */
   c->ramp_vps = 250.0f;
-  c->skip_v = 15.0f;      /* the 830 V reference ceiling + 15 V stays 15 V under F.03 */
+  /* E82 (M-32): 15 V did NOT stay under F.03. bus_ref_for() returns the 830 V cap for any bank at or above 395 V — a 400 V
+     output in PAR, an 800 V one in SER, i.e. most real charging — which leaves 30 V to the 860 V trip, and the skip band
+     alone spent half of it before any dynamics. 9 V is still nine times the link's own ripple. */
+  c->skip_v = 9.0f;
   c->eta_llc = 0.975f;
   c->on_min = 0.01f;      /* 200 ns at 50 kHz */
 }
@@ -41,7 +44,15 @@ void pfc_step(pfc_t *p, const pfc_cfg_t *c, const pfc_ref_t *r, const float i[3]
   p->vref = (r->vbus_ref > p->vref) ? fminf(r->vbus_ref, p->vref + up) : fmaxf(r->vbus_ref, p->vref - 2.0f * up);
   float e = p->vref - vbus;
   /* power command: the LLC's input power, then the PI on the bus error; the amplitude is P / (1.5 · Vpk) */
-  float p_cmd = fmaxf(isfinite(p_load_w) ? p_load_w : 0.0f, 0.0f) / c->eta_llc + c->kp_v * e + p->xi;
+  float ff = fmaxf(isfinite(p_load_w) ? p_load_w : 0.0f, 0.0f) / c->eta_llc;
+  /* E82 (M-32): a load dump (an EV opening its contactor at full power — a normal end-of-session event) collapses the
+     feed-forward within one 100 µs LLC pass, but the integrator still holds the whole pre-dump correction and unwinds only
+     at ki_v·e ≈ 55 kW/s, so the stage kept pushing while the bus climbed into the LATCHING 860 V F.03. The feed-forward is
+     the honest estimate of what the load now takes, so while the bus is ABOVE its reference the integrator may not claim
+     more than a fifth of rated on top of it. It is a ceiling, not a reset: a real load step keeps ff large and is untouched,
+     and the ordinary negative-error unwind is unchanged. */
+  if (e < 0.0f) p->xi = fminf(p->xi, 0.2f * c->p_clamp_w);
+  float p_cmd = ff + c->kp_v * e + p->xi;
   float k_i = 0.6667f * inv_vpk;
   float i_max = fminf(fminf(c->i_clamp, c->p_clamp_w * k_i), fmaxf(1.1f * c->i_clamp - c->k_step * (p->vnom - vpk), 0.0f));
   p->skip = e < -c->skip_v;

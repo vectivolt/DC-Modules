@@ -80,7 +80,10 @@ static void plant_step(sim_t *s) {
   bool out = s->f.st == ST_RUN || s->f.st == ST_DERATE;
   if (stack - 1.0f > p->voutc) p->voutc = stack - 1.0f;              /* diode charges the node up */
   else if (out && o->llc_en) p->voutc = fmaxf(stack - 1.0f, 0.0f);   /* a connected load pulls it down with the stack */
-  else p->voutc -= p->voutc * 0.000028f;                             /* else only the 3.8 MOhm divider drains it */
+  /* E82 (E-10): the terminal node now carries the passive 450 kOhm bleeder the hardware review added (tau ~4.2 s:
+     1000 V -> 60 V in ~12 s). Before it, only the 3.8 MOhm sense divider drained the node (tau ~36 s, the old
+     0.000028f here) and the studs stayed live for minutes after a "completed" discharge. */
+  else p->voutc -= p->voutc * 0.000238f;
   float node = s->in.ext_connected ? s->in.vext : p->voutc;
   p->vout = fmaxf(stack - 1.0f, node);
   p->iout = (out && o->llc_en) ? fminf(stack / fmaxf(rload, 0.01f), ilim * 1.02f) : 0;
@@ -182,8 +185,12 @@ SCRIPT(sc_canto) { sc_en(s); if (s->t > 900) s->in.can_age_ms += 2; }
 SCRIPT(sc_link) { sc_en(s); if (s->t > 1500) s->in.link_age_ms += 2; }
 /* E77: shutdown through the PUBLIC input (the scripts used to write s->f.st — the core had no request) */
 SCRIPT(sc_shut) { sc_en(s); if (s->t == 1200) s->in.shutdown_req = true; }
-/* F.21 rating plumbing (card strap, one image): bus held up so discharge can never finish */
-SCRIPT(sc_dstuck) { sc_en(s); if (s->t == 100) s->in.shutdown_req = true; if (s->t > 100) s->p.bus = 300; }
+/* F.21 rating plumbing (card strap, one image): the link falls at 50 V/s — too slowly to finish inside any window, but
+   fast enough that it IS discharging, so only the rating window can end it (E82/A1-06's stall rule stays out of it) */
+SCRIPT(sc_dstuck) { sc_en(s); if (s->t == 100) s->in.shutdown_req = true; if (s->t > 100) s->p.bus += 6.95f; }
+/* E82 (A1-06): the AC is still applied, so the permanent precharge path holds the link where the 640 Ohm dump chain
+   balances it — the link does not move and each 25 W RDIS part carries ~154 W for the whole window */
+SCRIPT(sc_dpinned) { sc_en(s); if (s->t == 100) s->in.shutdown_req = true; if (s->t > 100) s->p.bus = 300; }
 /* -------- E76 adversarial set (external review R02-R09 counterexamples) -------- */
 SCRIPT(sc_lowv) { if (s->t == 1) s->in.vcmd = 300; sc_en(s); }                     /* R02: 650 V reference must start */
 SCRIPT(sc_servlow) { if (s->t == 1) s->in.vcmd = 560; sc_en(s); }                  /* R02: SER at ref < 700 must start */
@@ -224,7 +231,7 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_swell, 3000);  expect("swell F.07", &s, "|FAULT|LOCK|", FC_IN_OV, 1);
   sim_init(&s); runsim(&s, sc_sag, 3000);    expect("sag F.08", &s, "|FAULT|LOCK|", FC_IN_UV, 1);
   sim_init(&s); runsim(&s, sc_busov, 3000);  expect("bus OVP F.03", &s, "|FAULT|LOCK|", FC_BUS_OVP, 1);
-  sim_init(&s); runsim(&s, sc_mid, 3000);    expect("midpoint F.06", &s, "|FAULT|LOCK|", FC_MID_IMB, 1);
+  sim_init(&s); runsim(&s, sc_mid, 3000);    expect("midpoint F.06 → F.38 (E82: at 800 V a 48 V imbalance is also a 448 V half — the LATCH row wins)", &s, "|FAULT|LOCK|", FC_HALF_OV, 1);
   sim_init(&s); runsim(&s, sc_modesw, 3000); expect("S/P transition w/ dwell", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.out.k_ser);
   sim_init(&s); runsim(&s, sc_start490, 3000); expect("E67 start at 490 V selects LOW/PAR", &s, "|RUN|", -1, s.f.out.mode == MODE_PAR && s.f.out.k_para && !s.f.out.k_ser && s.f.out.v_max == 500.0f);
   sim_init(&s); runsim(&s, sc_start510, 3000); expect("E67 start at 510 V selects HIGH/SER (line = 500 V)", &s, "|RUN|", -1, s.f.out.mode == MODE_SER && s.f.out.k_ser && !s.f.out.k_para);
@@ -249,7 +256,9 @@ int main(void) {
   sim_init(&s); runsim(&s, sc_wdt, 3000);    expect("watchdog F.32", &s, "|FAULT|LOCK|", FC_WDT, 1);
   sim_init(&s); runsim(&s, sc_canto, 3000);  expect("CAN timeout -> standby+re-enable", &s, "|STANDBY|", -1, s.f.need_enable);
   sim_init(&s); runsim(&s, sc_link, 3000);   expect("link loss F.27", &s, "|FAULT|LOCK|", FC_LINK, 1);
-  sim_init(&s); runsim(&s, sc_shut, 3000);   expect("shutdown discharge <60V", &s, "|OFF|", -1, s.p.bus < 60);
+  /* E82 (E-10): OFF now also waits for the terminal node, which only the 450 kOhm bleeder drains (~8 s from 400 V) */
+  sim_init(&s); runsim(&s, sc_shut, 12000);  expect("shutdown discharge <60V (link, banks AND the output node)", &s, "|OFF|", -1,
+    s.p.bus < 60 && s.p.voutc < 60);
   sim_init(&s); runsim(&s, sc_lock, 3000);   expect("5 faults -> LOCK", &s, "|LOCK|", -1, s.f.lock);
 
   /* -------- E76 adversarial set (external review R02-R09) -------- */
@@ -280,7 +289,7 @@ int main(void) {
     #define E77_STEP(n) do { for (long k_ = 0; k_ < (long)(n); k_++) pmp_fsm_step(&f, &in); } while (0)
     /* drive to RUN at a PAR bank: precharge ramp, the PFC regulates to its reference, banks meet the command */
     #define E77_RUN(vb) do { E77_BASE(); in.vcmd = (vb); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { \
-      if (f.st == ST_PRECHG) in.vbus += 5; if (f.out.pfc_en) in.vbus = f.out.vbus_ref; in.enable_req = t_ > 200; \
+      if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5; if (f.out.pfc_en) in.vbus = f.out.vbus_ref; in.enable_req = t_ > 200; \
       if (f.out.llc_en) { in.vbank_a = in.vbank_b = (vb); in.vout_meas = (vb) - 1; in.iout_meas = 50; } pmp_fsm_step(&f, &in); } } while (0)
 
     E77_RUN(400); in.icmd = 0; for (int k = 0; k < 40; k++) { in.iout_meas = 50.0f * (1 - k / 40.0f); E77_STEP(1); }
@@ -293,7 +302,7 @@ int main(void) {
     ck("E77 F.15 slow row: 105 % of rated for 150 ms latches", f.latched == FC_OUT_OC);
     E77_RUN(400); in.ext_connected = true; in.vext = 480; in.vout_meas = 480; in.vcmd = 400; E77_STEP(300);
     ck("E77 battery 480 V above a 400 V command behind DOUT: no F.13", f.latched == FC_NONE);
-    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG) in.vbus += 5; E77_STEP(1); }
+    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5; E77_STEP(1); }
     in.ext_connected = true; in.vext = 420; in.vout_meas = 420; in.vcmd = 0; in.icmd = 0; in.enable_req = true; E77_STEP(20);
     ck("E77 ENABLE before the first setpoint with a battery present: no F.13", f.latched == FC_NONE);
     E77_RUN(400); in.vbank_a = in.vbank_b = 560; in.vout_meas = 559; E77_STEP(3);
@@ -315,7 +324,7 @@ int main(void) {
     ck("E77 current command NaN keeps F.15 armed (400 A latches)", f.latched == FC_OUT_OC);
     E77_RUN(400); in.icmd = -1; E77_STEP(20);
     ck("E77 negative current command reads as 0 A, no fault", f.latched == FC_NONE);
-    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG) in.vbus += 5; E77_STEP(1); }
+    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5; E77_STEP(1); }
     in.vcmd = NAN; in.enable_req = true; E77_STEP(500);
     ck("E77 voltage command NaN: no start (was: RUN at the 500 V PAR ceiling)", f.st == ST_STANDBY && !f.out.pfc_en && (f.out.warn & PMP_W_NO_SETPOINT));
 
@@ -351,7 +360,7 @@ int main(void) {
       if (f.out.llc_en) { in.vbank_a = in.vbank_b = 400; in.vout_meas = 399; in.iout_meas = 50; } E77_STEP(1); }
     ck("E77 restart from cold standby reaches RUN through the make-permit", f.st == ST_RUN);
 
-    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG) in.vbus += 5; E77_STEP(1); }
+    E77_BASE(); for (int t = 0; t < 400; t++) { if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5; E77_STEP(1); }
     in.enable_req = true; for (int t = 0; t < 300 && !f.out.llc_en; t++) { if (f.out.pfc_en) in.vbus = f.out.vbus_ref; E77_STEP(1); }
     int soft = f.out.llc_en; in.enable_req = false; E77_STEP(2);
     ck("E77 STOP during the soft start stops the LLC (was left switching in STANDBY)", soft && !f.out.llc_en && f.st == ST_STANDBY);
@@ -388,6 +397,10 @@ int main(void) {
   checks++; if (s.f.oc_line_a != 155.0f || s.f.oc_tank_a != 180.0f) { fails++; puts("FAIL E67 40 kW OC classes"); } else puts("PASS E67 40 kW OC classes 155/180 A pk");
   sim_init(&s); /* no setter: worst-case default window must NOT latch this early */
   runsim(&s, sc_dstuck, 4500);               expect("stuck discharge, default window still open", &s, "|DISCH|", -1, s.f.out.q_disch);
+  /* E82 (A1-06): the same rating, but the link is HELD — the dump is stopped at 300 ms of "not falling", not at 5 s */
+  sim_init(&s); pmp_fsm_set_rating_kw(&s.f, 50);
+  runsim(&s, sc_dpinned, 900);               expect("E82 A1-06: a held link stops the dump at 300 ms of no fall, not at the 5 s window", &s, "|FAULT|LOCK|", FC_DISCH,
+    !s.f.out.q_disch && !s.f.out.q_disch_bk && s.f.disch_ms <= 500);
 
   /* -------- E78: the protocol-neutral core — profile-owned timeout, controlled stop, recovery classes, relay feedback,
      corrupted state, overrun, the product mode dwell, SAFE hold, WAKE (direct drive, relay mirrors follow their coils) -------- */
@@ -397,7 +410,7 @@ int main(void) {
       in.fan_ok = in.aux_ok = in.wdt_ok = true; in.vcmd = 400; in.icmd = 100; in.temp_max_c = 60; in.vbus = 400; } while (0)
     #define E78_STEP(n) do { for (long k_ = 0; k_ < (long)(n); k_++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); } } while (0)
     #define E78_RUN(vb) do { E78_BASE(); in.relay_fb_wired = 0x0F; in.vcmd = (vb); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { \
-      if (f.st == ST_PRECHG) in.vbus += 5; if (f.out.pfc_en) in.vbus = f.out.vbus_ref; in.enable_req = t_ > 200; \
+      if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5; if (f.out.pfc_en) in.vbus = f.out.vbus_ref; in.enable_req = t_ > 200; \
       if (f.out.llc_en) { in.vbank_a = in.vbank_b = (vb); in.vout_meas = (vb) - 1; in.iout_meas = 50; } E78_STEP(1); } } while (0)
     #define E78_RESTART() do { in.enable_req = false; E78_STEP(1); for (int t_ = 0; t_ < 4000 && f.st != ST_RUN; t_++) { in.enable_req = true; \
       if (f.out.pfc_en) in.vbus = f.out.vbus_ref; if (f.out.llc_en) { in.vbank_a = in.vbank_b = 400; in.vout_meas = 399; in.iout_meas = 50; } E78_STEP(1); } } while (0)
@@ -420,9 +433,10 @@ int main(void) {
     E78_RUN(400); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250; E78_STEP(110);
     { int lat = f.latched == FC_IN_UV && pmp_fault_class(f.latched) == FCL_AUTO_EXT && (f.out.warn & PMP_W_RECOVERING);
       in.vin_ll = in.vin_ll_min = in.vin_ll_max = 280; E78_STEP(1999); int held = f.st == ST_FAULT;
-      E78_STEP(2);
-      ck("E78 an input sag (F.08 AUTO_EXT) clears 2 s after the line is back inside the start window, into STANDBY awaiting a fresh ENABLE",
-         lat && held && f.st == ST_STANDBY && f.latched == FC_NONE && f.need_enable && (f.out.warn & PMP_W_REARM)); }
+      E78_STEP(2); int reprech = f.st == ST_PRECHG && !f.out.k_pre;   /* E82 (A1-02): every latch opened the bypass — recovery re-precharges */
+      in.vbus = 1.414f * 280.0f - 5.0f; E78_STEP(150);
+      ck("E78 an input sag (F.08 AUTO_EXT) clears 2 s after the line is back inside the start window, into STANDBY awaiting a fresh ENABLE (E82: through a fresh precharge)",
+         lat && held && reprech && f.st == ST_STANDBY && f.out.k_pre && f.latched == FC_NONE && f.need_enable && (f.out.warn & PMP_W_REARM)); }
 
     { E78_RUN(400); int sags = 0;
       for (int k = 0; k < 8; k++) {
@@ -444,14 +458,14 @@ int main(void) {
     E78_RUN(400); in.iout_meas = 140; E78_STEP(3);
     { int oc = f.latched == FC_OUT_OC && pmp_fault_class(FC_OUT_OC) == FCL_LATCH;
       in.iout_meas = 0; E78_STEP(70000); int stays = f.st == ST_FAULT;
-      in.clear_req = true; E78_STEP(1); in.clear_req = false; int cleared = f.st == ST_STANDBY;
+      in.clear_req = true; E78_STEP(1); in.clear_req = false; int cleared = f.st == ST_PRECHG && f.latched == FC_NONE;   /* E82 (A1-02): CLEAR re-precharges */
       E78_RUN(400); in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250; E78_STEP(110); in.clear_req = true; E78_STEP(5); in.clear_req = false;
       ck("E78 a LATCH row (F.15) waits for CLEAR however long; CLEAR cannot end an AUTO row whose condition is still present",
          oc && stays && cleared && f.st == ST_FAULT && f.latched == FC_IN_UV); }
 
     { E78_BASE(); in.relay_fb_wired = 0x0F; int pfc_seen = 0;
       for (int t = 0; t < 1000 && f.latched == FC_NONE; t++) {
-        if (f.st == ST_PRECHG) in.vbus += 5;
+        if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5;
         in.enable_req = t > 200;
         in.relay_fb = pmp_relay_cmd(&f.out) & (uint8_t)~PMP_RLY_PRE;   /* the bypass contact never closes */
         pmp_fsm_step(&f, &in); if (f.out.pfc_en) pfc_seen = 1;
@@ -492,7 +506,7 @@ int main(void) {
     { /* HR-28: a PFC that never reaches its reference is bounded by F.34 */
       E78_BASE(); in.relay_fb_wired = 0x0F;
       in.enable_req = true; in.relay_fb = PMP_RLY_PRE; in.vbus = 566;
-      for (int t_ = 0; t_ < 300 && f.st != ST_STANDBY; t_++) { if (f.st == ST_PRECHG) in.vbus += 5; E78_STEP(1); }
+      for (int t_ = 0; t_ < 300 && f.st != ST_STANDBY; t_++) { if (f.st == ST_PRECHG && in.vbus < 1.414f * in.vin_ll_max - 5.0f) in.vbus += 5; E78_STEP(1); }
       long t_latch = -1;
       for (long t_ = 0; t_ < 12000; t_++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); if (f.latched != FC_NONE) { t_latch = t_; break; } }
       ck("E80 HR-28: an energized PFC ramp that never reaches 0.95 x ref latches F.34 inside the 8 s window",
@@ -549,9 +563,10 @@ int main(void) {
       ck("E78 after an aux collapse SAFE ends only after 500 ms of stable aux, and the restart needs a fresh ENABLE", safe && hold && f.st == ST_STANDBY && f.need_enable); }
 
     E78_RUN(400); in.shutdown_req = true; E78_STEP(1); in.shutdown_req = false; in.vbus = 30; E78_STEP(5);
-    { /* E80 (review HR-12): the link alone below 60 V is NOT discharged — both banks must be too */
+    { /* E80 (review HR-12): the link alone below 60 V is NOT discharged — both banks must be too.
+         E82 (E-10): nor is it discharged while the output studs hold 400 V, and the exit carries a 100 ms persistence */
       int held = f.st == ST_DISCH && f.out.q_disch_bk;
-      in.vbank_a = in.vbank_b = 30; E78_STEP(5);
+      in.vbank_a = in.vbank_b = 30; in.vout_meas = 30; E78_STEP(105);
       int off = f.st == ST_OFF && !f.out.q_disch && !f.out.q_disch_bk;
       in.wake_req = true; E78_STEP(1); in.wake_req = false;
       ck("E80 discharge completes only with the link AND both banks below 60 V (HR-12); E78 WAKE exits OFF through precharge",

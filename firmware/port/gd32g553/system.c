@@ -3,46 +3,72 @@
  * PLL (src /PSC = 4 MHz, ×108 = 432 MHz VCO, /2 = 216 MHz; Q /9 = 48 MHz for CAN) → prescalers /1 → SCS = PLLP.
  * With PORT_HXTAL_HZ set the PLL runs from the crystal with the clock monitor armed; a stuck crystal falls back to IRC8M
  * (hardware forces it) and the port re-locks the PLL from IRC8M — the module keeps regulating; CAN accuracy is then
- * HW-REC-4's problem, reported through the app's CAN warning. */
+ * HW-REC-4's problem, reported through the app's CAN warning.
+ * E82 (G-09): that whole recipe is SKIPPED when the clock tree already matches it — the bootloader runs this same
+ * function, so the application would otherwise tear a working 216 MHz down and rebuild it. E82 (G-05): the crystal wait
+ * is bounded in real time by DWT, and E82 (M-28) arms the LVD at the end. */
 #include "port.h"
 
 uint32_t port_reset_cause;   /* RCU_RSTSCK at boot, cleared after capture */
 
-static void pll_config(uint32_t src_hxtal) {
-  /* PLLPSC divides the source to 4 MHz; PLLN 108 → VCO 432 MHz; P /2 → 216 MHz; Q /9 → 48 MHz (CAN); R /6 → 72 MHz (ADC) */
+/* PLLPSC divides the source to 4 MHz; PLLN 108 → VCO 432 MHz; P /2 → 216 MHz; Q /9 → 48 MHz (CAN); R /6 → 72 MHz (ADC) */
+static uint32_t pll_word(uint32_t src_hxtal) {
   uint32_t psc = src_hxtal ? (PORT_HXTAL_HZ / 4000000u - 1u) : 1u;
-  RCU_PLLR = (6u << 27) | (9u << 23) | (src_hxtal ? BIT(22) : 0u) | BIT(21) | BIT(20) | BIT(19) | (0u << 16) |
-             (108u << 6) | psc;
+  return (6u << 27) | (9u << 23) | (src_hxtal ? BIT(22) : 0u) | BIT(21) | BIT(20) | BIT(19) | (0u << 16) |
+         (108u << 6) | psc;
+}
+
+static void pll_config(uint32_t src_hxtal) {
+  RCU_PLLR = pll_word(src_hxtal);
   RCU_CTL |= BIT(24);                          /* PLLEN */
   while (!(RCU_CTL & BIT(25))) {}              /* PLLSTB (lock ≤ 400 µs) */
 }
+
+static uint32_t sys_on_pllp(void) { return (RCU_CFG0 & (3u << 2)) == (3u << 2); }
 
 void system_init(void) {
   SCB_CPACR |= (3u << 20) | (3u << 22);        /* FPU CP10/CP11 full access */
   port_reset_cause = RCU_RSTSCK;
   RCU_RSTSCK |= BIT(24);                       /* RSTFC: clear the cause flags for the next reset */
+  /* E82 (G-05): the cycle counter comes up FIRST — the crystal wait below needs a real time base, and a loop-iteration
+     count is not one (it moves with the prefetch buffer, the caches and the compiler). DWT_CYCCNT counts core clocks,
+     so the bound is exact whichever source is running. */
+  SCB_DEMCR |= BIT(24);
+  DWT_CTRL |= 1u;
 
   RCU_APB1EN |= BIT(28);                       /* PMU */
-  PMU_CTL0 = (PMU_CTL0 & ~(0x1Fu << 11)) | (0x0Eu << 11);   /* LDOVS = 1.15 V (216 MHz needs it), PLL still closed */
-  /* E81 (F-D-7): PFEN with the wait states. The reset value 0x00040600 already has DCEN and ICEN set but NOT the
-     prefetch buffer (UM §2.4.1), and the 1 ms tick runs from flash at 7 wait states — this is free throughput. */
-  FMC_WS = (FMC_WS & ~0xFu) | BIT(8) | 7u;     /* PFEN + 7 wait states before raising the clock (Table 2-3) */
 
+  /* E82 (G-09): the BOOTLOADER runs this same function and jumps with the PLL already closed on 216 MHz. Re-locking it
+     means opening SCS, stopping and restarting the PLL and re-selecting it — a clock glitch delivered to every
+     peripheral, including an HRTIMER that on a warm reboot path may still be driving gates, and ~400 µs of the window
+     watchdog's budget for nothing. If the PLL is already running from the source and dividers this build wants, the
+     clock tree is left strictly alone and only the peripheral selects, enables and debug holds below are applied. */
+  uint32_t want = pll_word(PORT_HXTAL_HZ && (RCU_CTL & BIT(17)) ? 1u : 0u);
+  /* SCSS (3:2) is read-only status, so the settled register reads SCS = 3 with every prescaler field at /1 */
+  if (!(sys_on_pllp() && (RCU_CTL & BIT(25)) && RCU_PLLR == want && (RCU_CFG0 & ~(3u << 2)) == 3u)) {
+    PMU_CTL0 = (PMU_CTL0 & ~(0x1Fu << 11)) | (0x0Eu << 11);   /* LDOVS = 1.15 V (216 MHz needs it), PLL still closed */
+    /* E81 (F-D-7): PFEN with the wait states. The reset value 0x00040600 already has DCEN and ICEN set but NOT the
+       prefetch buffer (UM §2.4.1), and the 1 ms tick runs from flash at 7 wait states — this is free throughput. */
+    FMC_WS = (FMC_WS & ~0xFu) | BIT(8) | 7u;   /* PFEN + 7 wait states before raising the clock (Table 2-3) */
 #if PORT_HXTAL_HZ
-  RCU_CTL |= BIT(16);                          /* HXTALEN */
-  /* E81 (F-F-1): bounded to ~20 ms of IRC8M time (≈4 cycles/iteration at 8 MHz). A crystal starts in 1–5 ms; waiting the
-     old 4 M iterations (~2 s) would have let the TPS3430's 23.375 ms window reset the part before the first WDI edge. */
-  for (uint32_t t = 0u; t < 40000u && !(RCU_CTL & BIT(17)); t++) {}
-  if (RCU_CTL & BIT(17)) {
-    RCU_CTL |= BIT(19);                        /* CKMEN — a stuck crystal forces IRC8M and raises the NMI (CKMIF) */
-    pll_config(1u);
-  } else pll_config(0u);                       /* the crystal never started: run from IRC8M (HW-REC-4 reported by CAN warn) */
+    RCU_CTL |= BIT(16);                        /* HXTALEN */
+    /* E81 (F-F-1) / E82 (G-05): bounded to 10 ms of REAL time. A crystal starts in 1–5 ms; the E80 form waited 4 M loop
+       iterations (~2 s) and the E81 form 40 k iterations, whose true cost was 30–40 ms once the prefetch buffer was on —
+       either way past the TPS3430's 23.375 ms window, so the card reset before its first WDI edge. */
+    uint32_t hz = sys_on_pllp() ? PORT_SYSCLK_HZ : 8000000u;   /* IRC8M out of reset, else whatever is already selected */
+    uint32_t t0 = DWT_CYCCNT;
+    while (!(RCU_CTL & BIT(17)) && DWT_CYCCNT - t0 < hz / 100u) {}
+    if (RCU_CTL & BIT(17)) {
+      RCU_CTL |= BIT(19);                      /* CKMEN — a stuck crystal forces IRC8M and raises the NMI (CKMIF) */
+      pll_config(1u);
+    } else pll_config(0u);                     /* the crystal never started: run from IRC8M (HW-REC-4 reported by CAN warn) */
 #else
-  pll_config(0u);
+    pll_config(0u);
 #endif
-  RCU_CFG0 = 0u;                               /* AHB/APB1/APB2/APB3 = /1 (216 MHz each, timer clock = CK_APB) */
-  RCU_CFG0 = (RCU_CFG0 & ~3u) | 3u;            /* SCS = CK_PLLP */
-  while ((RCU_CFG0 & (3u << 2)) != (3u << 2)) {}
+    RCU_CFG0 = 0u;                             /* AHB/APB1/APB2/APB3 = /1 (216 MHz each, timer clock = CK_APB) */
+    RCU_CFG0 = (RCU_CFG0 & ~3u) | 3u;          /* SCS = CK_PLLP */
+    while (!sys_on_pllp()) {}
+  }
 
   RCU_CFG2 |= BIT(19) | (1u << 26) | (1u << 28);   /* HRTIMER ← CK_SYS · ADC0/1/2 and ADC3 ← CK_PLLR (72 MHz) */
   RCU_CFG1 = (RCU_CFG1 & ~(3u << 10)) | (2u << 10);   /* CAN1 ← CK_PLLQ 48 MHz */
@@ -53,11 +79,21 @@ void system_init(void) {
   RCU_APB1EN |= BIT(2);                        /* TIMER3 */
   RCU_APB3EN |= (0xFu << 8) | (0xFu << 17) | BIT(16);   /* ADC0..3 · DAC0..3 · DAC hold clock */
 
-  SCB_DEMCR |= BIT(24);                        /* DWT cycle counter for the T-44 budget and µs delays */
-  DWT_CYCCNT = 0u;
-  DWT_CTRL |= 1u;
+  DWT_CYCCNT = 0u;                             /* re-base for the T-44 budget and µs delays (enabled at entry, G-05) */
   DBG_CTL1 |= BIT(12);                         /* halted core: hold FWDGT */
   DBG_CTL2 |= BIT(26) | BIT(20);               /* halted core: hold HRTIMER and TIMER19 (gates freeze safe) */
+
+  /* E82 (M-28): brown-out supervision. The card had none: the MCU ran to its 1.63 V power-down reset (ds Table 4-16)
+     while V3P3 collapsed, and the TPS3430 is a WATCHDOG, not a supply supervisor. The part offers two mechanisms —
+     VBOR, which resets but lives in the option bytes (production setting in NOTES), and the LVD, which firmware owns.
+     LVDT = 100 → 2.75 V (ds Table 4-16 VLVD: 2.75 V rising / 2.65 V falling) sits ~15 % below the ±2.5 % buck's 3.22 V
+     floor, so it cannot nuisance-trip, and far above the 1.71 V the part needs to execute. The LVD output drives EXTI
+     line 16 (UM §3.4.2); a RISING edge there is the supply crossing DOWN through the threshold. lvd_isr is
+     default_handler: outputs to idle-inactive, both enables low, then no WDI so the TPS3430 resets the card. */
+  PMU_CTL0 = (PMU_CTL0 & ~(7u << 5)) | (4u << 5) | BIT(4);   /* LVDT = 2.75 V · LVDEN */
+  EXTI_RTEN |= BIT(16);
+  EXTI_INTEN |= BIT(16);
+  irq_prio(1u, 0u); irq_enable(1u);            /* LVD / VAVD / VOVD / VUVD through EXTI (UM Table 5-2 IRQ 1) */
 }
 
 void delay_us(uint32_t us) {

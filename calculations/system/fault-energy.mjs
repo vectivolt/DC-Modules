@@ -39,6 +39,19 @@ for (const [sku, s] of Object.entries(SKUS)) {
   ck("RESERVOIR", `${sku} bank ${f(Ebank, 0)} J @500 V`, Ebank / 4 <= 65,
     `per bleeder-chain resistor ${f(Ebank / 4, 1)} J ≤ 65 J (E33 line; passive 47k backup path is W-trivial)`);
 }
+// E82 (M-11): the OUTPUT studs are the THIRD store and, until now, the only one with no dump path at all —
+// DOUT conducts bank→output only, so every commanded discharge (QDISF, the PV-driven bank bleeders) is blocked
+// by the diode and the firmware cannot reach it. COF1+COF2 sat on the 3.8 MΩ sense divider alone: 101 s to 60 V
+// with 4.7 J on exposed studs. RBO1–RBO3 (3 × 150 k HV 2512 in series) is the whole fix.
+{
+  const boards = readFileSync(new URL("../../packages/common-components/boards.tsx", import.meta.url), "utf8");
+  const Cout = 2 * 4.7e-6, Vout = 1000, nRbo = (boards.match(/name=\{`RBO\$\{i\}`\}/g) ?? []).length ? 3 : 0;
+  const R = nRbo * 150e3, E = 0.5 * Cout * Vout ** 2;
+  const t60 = R * Cout * Math.log(Vout / 60), pEl = R ? (Vout ** 2 / R) / nRbo : Infinity, vEl = R ? Vout / nRbo : Infinity;
+  ck("RESERVOIR", `output studs ${f(E, 1)} J @1000 V behind DOUT`, nRbo === 3 && t60 <= 30 && pEl <= 1.0 && vEl <= 400,
+    `${nRbo} × 150 k across OUTP–OUTN → τ ${f(R * Cout, 1)} s, 1000 → 60 V in ${f(t60, 0)} s (was 101 s on the sense divider alone) · ${f(pEl, 2)} W and ${f(vEl, 0)} V per element at 1000 V out ` +
+    `— firmware CANNOT substitute for this: the blocking diode is in every commanded path, which is why the seven-question test passes a part here`);
+}
 ck("RESERVOIR", "tank caps (E67 full bridge, 11 × 33 nF worst)", 0.5 * 363e-9 * 865 ** 2 < 0.2,
   `${f(0.5 * 363e-9 * 865 ** 2 * 1000, 0)} mJ — three orders below any pulse rating; rings down in the tank R`);
 // E60: at the 50 kW observability ceiling (311 A on 13 Ω) the D1-50 is soft-saturated — L(311 A,

@@ -389,7 +389,7 @@
    },
    {
     "designator": "PSA0G",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "PHASE-A0",
     "pins": [
      {
@@ -1006,7 +1006,7 @@
    },
    {
     "designator": "PSB0G",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "PHASE-B0",
     "pins": [
      {
@@ -1623,7 +1623,7 @@
    },
    {
     "designator": "PSC0G",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "PHASE-C0",
     "pins": [
      {

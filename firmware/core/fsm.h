@@ -87,6 +87,9 @@ typedef struct {            /* measured / external inputs, engineering units */
 #define PMP_W_RELAY_FB_OFF (1u << 8)   /* E78: no relay feedback wired — F.19 cannot see a failed contact */
 #define PMP_W_RECOVERING   (1u << 9)   /* E78: an AUTO row is waiting out its recovery hold */
 #define PMP_W_REARM        (1u << 10)  /* E78: ENABLE is held, but a fresh edge is required after a module-initiated stop */
+#define PMP_W_COMMS_LOST   (1u << 11)  /* E82 (E-20): the controller is past its timeout — F.28 stops the module gracefully and
+                                          never writes a fault code, so a technician saw a module that stopped for no stated
+                                          reason (warn = 0, fault = 0). The bit is the report; the row stays un-latched. */
 
 typedef struct {            /* commands to drivers/relays/loops */
   bool pfc_en, llc_en, pwm_kill;
@@ -112,6 +115,9 @@ typedef struct {
   uint8_t counted;          /* E78: latches that count toward F.31 — AUTO_EXT rows do not */
   bool lock, need_enable;
   uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms, pre_blank_ms;
+  float vin_nom;            /* E82 (H2-2): the line this site normally has — follows vin_ll_min up at once, falls over ≈ 5 s */
+  uint16_t line_evt_ms;     /* E82 (H2-2): ms since the line was last disturbed (saturating) */
+  float pre_v_prev, pre_v_last;   /* E82 (E-02): the two last 100 ms link samples of the running precharge */
   uint32_t start_ms;        /* E76: STANDBY energized-start supervision (F.34 window) */
   uint32_t disch_to_ms;     /* F.21 window — runtime per rating (card strap), default = macro */
   uint32_t can_to_ms;       /* E78: communication timeout — owned by the active protocol profile (pmp_fsm_set_comm_timeout_ms) */
@@ -120,7 +126,11 @@ typedef struct {
   float i_rated_a;          /* E77: rated output current from the strap — the F.15 rows are relative to it (row 15) */
   /* E77: persistence counters (consecutive ms a row's condition has held) — the rows' documented detection times */
   uint16_t p_bad, p_mid, p_inov, p_inuv, p_ph, p_busuv, p_ocf, p_ocs, p_ovpa, p_ovps;
-  uint16_t p_relay, p_aux;  /* E78: F.19 persistence · aux-stable hold out of SAFE */
+  uint16_t p_relay, p_aux;  /* E78: F.19 persistence · aux-stable hold out of SAFE (E82 E-09: also the INIT aux wait) */
+  uint16_t p_occ;           /* E82 (E-07): ms the output current has stood above the COMMAND by the F.15c margin */
+  uint16_t p_disch;         /* E82 (E-10): ms the link and both banks have read below 60 V on plausible samples */
+  uint8_t stall_n;          /* E82 (A1-06): consecutive 100 ms discharge samples in which the link did not fall */
+  float disch_v;            /* E82 (A1-06): the link 100 ms ago */
   uint16_t p_half;          /* E80: F.38 half-link persistence */
   uint16_t p_bank;          /* E81 (F-E-06): F.17 bank-imbalance persistence — the doc's 10 ms, which it never had */
   uint16_t p_line;          /* E81 (F-E-13): ms parked in PRECHG on an out-of-range line */
@@ -175,7 +185,6 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_SHORT_V         50.0f
 #define PMP_SHORT_I_FRAC     0.90f
 #define PMP_SHORT_MS        10u
-#define PMP_OC_FRAC          1.30f
 #define PMP_CAN_TO_MS     1000u     /* E78: the native profile's default; a profile sets its own at boot */
 #define PMP_LINK_TO_MS      50u
 /* E73: the precharge bypass closes at 90 % of line peak (fsm.c) and the remaining ≤ 10 % step drives an LC pulse through D1,
@@ -183,7 +192,10 @@ const char *pmp_state_name(pmp_state_t s);
  * [INRUSH]), above F.01. The PFC is not switching then, so F.01 is blanked for this window: relay operate ≤ 25 ms + bounce ≤ 5 ms +
  * the ≤ 10 ms pulse, with margin. PFC enable waits for the window to end. The HAL clears the HRTIMER fault latch at its end. */
 #define PMP_PRE_BLANK_MS    60u
-#define PMP_WELD_DV_V        1.5f
+/* E82 (E-05): F.18 was declared and never implemented — a welded bypass pole is invisible while the contact is COMMANDED
+   closed, which is every state but precharge and the commanded discharge, and precharge is over in 61 ms (below F.19's
+   100 ms window). The discharge is the one place the command is open for long enough to mean something, so the release is
+   checked there. PMP_WELD_DV_V (a dV test that was never written) is retired with the finding. */
 #define PMP_WELD_MS        200u
 /* E78: the build value IS the product value (it read "30 u, scaled: 30 s in product" — a macro cannot be both, and a 30 s dwell
    would hold a battery that climbed past the 500 V PAR ceiling at zero current for 30 s). The 20 V hysteresis below prevents
@@ -209,6 +221,12 @@ const char *pmp_state_name(pmp_state_t s);
 #define PMP_BUS_MIN_V      650.0f
 #define PMP_BUS_MAX_V      830.0f
 #define PMP_BUS_LINE_K       1.08f
+/* E82 (C-11): the link reference LEADS THE MEASURED OUTPUT by this much instead of jumping to the command. Vehicles send
+   their MAXIMUM voltage as the setpoint and charge in constant current far below it, so a reference taken from the command
+   parked the link at 830 V over a 330 V pack: gain 0.80 instead of 0.95 — the bridge pushed up to f_max and into phase shift
+   in the middle of the mainstream range, with the turn-off and weak-leg losses that go with it — and every start into a
+   discharged output crossed deep phase shift against the full 830 V (the weak-leg energy goes with V²). */
+#define PMP_BUS_LEAD_V      25.0f
 /* E65: magnetics bond-loss cover — six NC 130 °C cutouts (one per D3/D2) run in series with the T_XFMR NTC. Any open
    cutout, or a broken NTC lead, pulls the channel to the rail; the HAL passes every NTC zone through this guard before
    taking the zone max, so an open loop reports PMP_NTC_OPEN_C and latches F.22 instead of reading "very cold".
@@ -226,11 +244,28 @@ static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac
 #define PMP_IN_UV_MS         100u    /* row 8 — FW-R6 clamps the current reference through the ride-through */
 #define PMP_PH_LOSS_MS        40u    /* row 9 */
 #define PMP_BUS_UV_MS         10u    /* row 5 */
+/* E82 (E-08): F.05 is the module's row (AUTO_INT, counted toward F.31) — but at 400 VAC the passive rectifier crest is
+   566 V, under the fixed 620 V floor, so ANY line interruption longer than the link's ride-through (≈ 12 ms at rated
+   power) latches it, and five brown-outs inside ten minutes locked the module. The line is the cause, yet vin_ll_min/max
+   are per-cycle rms values and so are up to one cycle (20 ms) STALE when the row fires: the grid evidence arrives AFTER
+   the effect. The row is therefore re-filed as the grid's — and its count taken back — if the line is found outside its
+   window inside this window. A bus that collapses on a HEALTHY line stays the module's, and stays counted. */
+#define PMP_BUSUV_GRID_MS    200u
 #define PMP_OC_FAST_FRAC      1.30f  /* row 15: 130 % of the RATED current for 2 ms (the CC loop is the primary limiter; the
                                         old test against the COMMAND latched whenever a controller lowered its setpoint) */
 #define PMP_OC_FAST_MS         2u
 #define PMP_OC_SLOW_FRAC      1.02f  /* row 15: 102 % of rated for 100 ms */
 #define PMP_OC_SLOW_MS       100u
+/* E82 (E-07): row 15 relative to the COMMAND, restored with margin and persistence. E77 removed the old iout > 1.3·icmd
+   test because it latched on every ramp-down; nothing then limited delivery against what the vehicle asked for, and the
+   CC loop — a wound-up integrator, a shorted shunt amplifier, a stuck reference — became its own only supervisor:
+   160 A into a 10 A request ran for 60 s with no row. The margin is wide enough that no CC transient reaches it (the
+   loop's own overshoot class is ~25 % of the COMMAND) and the 500 ms is five times the slow row's, so it can only fire
+   on a delivery that is wrong, not late. Suppressed while the stop ramp takes the output down and while nothing is
+   commanded (a zero command is the ramp-down case E77 was fixing; F.15 fast/slow and the hardware rows stay armed). */
+#define PMP_OC_CMD_FRAC       0.15f  /* of RATED, added to the command */
+#define PMP_OC_CMD_MIN_A      5.0f   /* … or this, whichever is larger: a 2 A command must not sit against a 0.3 A band */
+#define PMP_OC_CMD_MS        500u
 #define PMP_OUT_OVP_ABS_V   1050.0f  /* row 13 firmware mirror (CMP0 is the fast path, E75) */
 #define PMP_OVP_MS             2u
 #define PMP_OVP_SRC_MS       200u    /* the module's OWN stack above its command while it sources current: a CV failure.
@@ -240,6 +275,9 @@ static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac
 #define PMP_BANK_IMB_MS       10u    /* E81 (F-E-06): protection-thresholds row 17 — F.17 needs 10 ms, not one sample */
 #define PMP_LINE_WAIT_MS   10000u    /* E81 (F-E-13): PRECHG on an out-of-range line is reported after this, not held
                                         silently with the precharge resistors carrying the 110 W bus-fed aux */
+#define PMP_PRE_SETTLE_MS     20u    /* E82 (E-02): the link is sampled every 20 ms of precharge … */
+#define PMP_PRE_SETTLE_DV    3.0f    /* … and has settled when two consecutive 20 ms steps moved it < 3 V: ≤ 18 V below its final value at τ = 124 ms */
+#define PMP_BYPASS_MIN_K    0.85f    /* … provided it sits above this fraction of 1.414·V_LL(rms) (flat-topped mains: 0.96–0.99) */
 #define PMP_BYPASS_CLOSE_K  0.97f    /* E81 (F-A-11): the bypass closes at this fraction of the rectified crest. At 0.90 the
                                         residual step charged the link through the HF167F's 30 A making contacts at
                                         165–280 A; 0.97 puts the pulse at ~40–60 A for ~100 ms more of precharge. */
@@ -253,12 +291,28 @@ static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac
    at the edge cannot cycle the module (TonHe TH750 publishes the same 15 V class: 270/285, 490/475 VAC). */
 #define PMP_IN_OV_RECOVER_V  485.0f
 #define PMP_IN_UV_RECOVER_V  275.0f
+/* E82 (H2-2): F.01 at a LINE RETURN is the grid's, not the module's. After a sag or an interruption the link sits near the
+   line crest; when the line steps back the EMI filter rings above it and the boost DIODES conduct a surge the switches
+   cannot stop — 121–199 A pk against F.01 at 120 / 155 / 195 A on a stiff (50 µH) site, the 30 kW worst because the surge
+   is the filter's and barely scales with the rating. The comparator is right to fire; what was wrong is the class: F.01
+   is a LATCH row, so every utility dip took the module out of service until somebody sent a CLEAR. A line over-current
+   inside PMP_LINE_EVT_MS of a disturbed line (a phase missing, or the lowest line more than 10 % under what this site
+   normally shows — the absolute 260 V row never sees a −30 % sag from 400 V) is filed as F.08, AUTO_EXT and uncounted:
+   the latch opens the bypass, the recovery re-precharges through the 33 Ω parts, and delivery resumes by itself. The same
+   trip on a quiet line is still F.01 and still latches. */
+#define PMP_LINE_EVT_K       0.90f
+#define PMP_LINE_EVT_MS      500u
 #define PMP_OT_RECOVER_C     (PMP_OT_DERATE_C - 5.0f)
 #define PMP_RECOVER_MS      2000u    /* first AUTO hold; doubles per consecutive AUTO latch */
 #define PMP_RECOVER_STEPS      6u    /* 2 · 4 · 8 · 16 · 32 · 64 s */
 #define PMP_STOP_RAMP_MS     100u    /* STOP / communication loss: current to < PMP_MAKE_IOUT_A, then the LLC stops */
 #define PMP_RELAY_FB_MS      100u    /* F.19: operate ≤ 25 ms + bounce ≤ 5 ms, diode-suppressed release ≤ 35 ms */
 #define PMP_AUX_STABLE_MS    500u    /* SAFE → STANDBY only after the aux has held this long */
+/* E82 (E-09): F.26 existed as a code and was never latched, and neither INIT nor SAFE had a bound — a dead V15 rail, an
+   open DRV_RDY or an ADC channel stuck low presented as a module that does nothing, reports nothing and answers telemetry
+   with PRECHARGE or SAFE for ever. The row is AUTO_INT: it is the module's, and it clears itself when the rail returns
+   (recovered() reads aux_ok, not the line — an aux row must not self-clear into the same dead rail). */
+#define PMP_AUX_WAIT_MS     5000u
 /* E76 (review R05): a start that neither completes nor faults must not stay energized unsupervised —
    the STANDBY make-permit wait and the soft-start each fit well inside this window (bank bleed to the
    permit level is 0.12–0.7 s; the CV ramp is sub-second); a stall latches F.34. */
@@ -275,4 +329,19 @@ static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac
 #ifndef PMP_DISCH_TO_MS
 #define PMP_DISCH_TO_MS   9000u
 #endif
+/* E82 (E-10): the dump ended on ONE sample of three channels — a single glitched low reading finished a discharge with
+   the link at 700 V. Every other row in this file carries a persistence; this one now does too, on plausible samples. */
+#define PMP_DISCH_OK_MS    100u
+/* E82 (E-10): the OUTPUT node is not part of that window. Nothing in the module dumps it — the new passive 450 kΩ
+   bleeder is the only path (τ ≈ 4.2 s: 1000 V → 60 V in ≈ 12 s, three times the 3–5 s F.21 window), and a connected pack
+   never falls at all. So the node is waited out AFTER the link and banks are down, under its own bound, and its
+   expiry is not a fault: the link and both banks — everything the module can act on — are already discharged. */
+#define PMP_DISCH_OUT_MS 20000u
+/* E82 (A1-06): a discharge commanded with the AC still applied is fed through the permanent precharge path: the link
+   stops falling at the level where the 640 Ω dump chain balances that feed, and ~154 W then stands in each 25 W RDIS
+   part for the whole F.21 window. A link that is not falling is not discharging — report F.21 and stop the dump at
+   300 ms instead of at 3–9 s. Checked only while the link is above the 60 V exit level (the tail of a healthy dump is
+   slow by construction, and by then there is nothing left to dissipate). */
+#define PMP_DISCH_STALL_DV   2.0f    /* < 2 V per 100 ms sample = dV/dt > −20 V/s */
+#define PMP_DISCH_STALL_N      3u    /* … in three consecutive samples */
 #endif

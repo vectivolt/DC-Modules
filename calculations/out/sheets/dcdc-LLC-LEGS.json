@@ -451,9 +451,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "CER-3W-R33-AX",
-   "query": "CER-3W-R33-AX 0.33 Ω ≥3 W PULSE-rated axial ",
-   "mpn": "CER-3W-R33-AX"
+   "value": "RTF-50W-R33-TO247",
+   "query": "RTF-50W-R33-TO247 0.33 Ω ≥ 50 W THICK-FILM NON-INDUCTIVE power resistor, TO-247 ",
+   "mpn": "RTF-50W-R33-TO247"
   },
   {
    "designator": "Q1H",
@@ -896,9 +896,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "U1L",
@@ -1241,9 +1241,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "Q2H",
@@ -1686,9 +1686,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "U2L",
@@ -2031,9 +2031,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-15",
-   "query": "QA01C-15 LLC-channel iso gate-bias module **+15/−3 V** ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W LLC-channel iso gate-bias module **+15/−3 V** ",
+   "mpn": "ISO-GBIAS-15-1W"
   }
  ]
 }

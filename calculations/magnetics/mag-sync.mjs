@@ -11,7 +11,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { D2 as D2C, D3 as D3C, d3Build, d2Mlt } from "./magnetics-envelope.mjs";
+import { D2 as D2C, D3 as D3C, d3Build, d2Mlt, d3Leakage, D3_CELLS, LOOP_STRAY } from "./magnetics-envelope.mjs";
 import { stack, CORES } from "./geometry.mjs";
 import { D1 as D1C, geom as d1Geom } from "./d1-choke.mjs";
 import { captureEvidence } from "../evidence.mjs";
@@ -55,6 +55,23 @@ for (const { id, tokens } of IDS)
     const missing = uniq.filter((c) => !normed.get(c).includes(norm(tok))).map((c) => NAMES.get(c));
     ck(`${id} "${tok}"`, missing.length === 0, missing.length ? `MISSING in ${missing.join(", ")}` : `present in ${uniq.map((c) => NAMES.get(c)).join(" + ")}`);
   }
+
+// ---- E82 (M-09a): THE DRAWING MAY NEVER DISAGREE WITH THE GATE ------------------------------
+// The checks above match against the CONCATENATION of the hub page and the four module pages, so a
+// value present on the hub hides its absence from every drawing. That is exactly what happened: the
+// E81 D2 re-issue (5.16/4.07/3.28 → 5.00/3.99/3.20 µH) reached parts-db, boards.tsx, kicad5 and the
+// hub, while `mag-docs.mjs` kept the pre-E81 numbers hand-typed in its D2/D3 drawing rows for a whole
+// revision — and a winder builds to the DRAWING, so L_r would have come back +6…+7.5 % against the
+// ±5 % every deck was solved at. mag-docs now READS magnetics-envelope; this asserts it PER PAGE.
+{
+  const L = (sku) => `${(D2C[sku].Lnom * 1e6).toFixed(2)} µH`, lk = (sku) => `${(d3Leakage(D3C[sku]) * 1e6).toFixed(3)} µH`;
+  for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
+    const page = norm(readFileSync(join(ROOT, "docs", `magnetics-${sku}.md`), "utf8"));
+    const b = sku === "50kwa" ? "50kw" : sku;
+    ck(`magnetics-${sku}.md drawing = gate`, page.includes(norm(L(b))) && page.includes(norm(lk(b))),
+      `D2 ${L(b)} and D3 cell leakage ${lk(b)} on the page — both computed from tanks.mjs Lr − ${D3_CELLS} × cell leakage − ${LOOP_STRAY * 1e6} µH loop, never typed`);
+  }
+}
 
 // ---- computed masses (kg): core Ve[cm3]×ρ + Cu(MLT[m]×Neff×CSA[mm2])×8.9g/cm3, ×1.10 build ----
 const RHO = { sendust: 7.0, ferrite: 4.85 };   // g/cm3 (Kool Mµ ~7.0; MnZn ~4.85)

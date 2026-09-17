@@ -8,6 +8,7 @@
   "BUCK-3V3",
   "ANALOG-MID",
   "ROLE",
+  "ADC-FILTER",
   "CARD-IF"
  ],
  "net_style_overrides": {
@@ -2040,6 +2041,446 @@
    "value": "CONN-CARD-88-R",
    "query": "CONN-CARD-88-R 88-way 2×44 2.54 mm card interface, RECEPTACLE side ",
    "mpn": "CONN-CARD-88-R"
+  },
+  {
+   "designator": "CADC0",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC1",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC2",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN2"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC3",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN3"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC4",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN4"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC5",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN5"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC6",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN6"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC7",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN7"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC8",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN8"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC9",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN9"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC10",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN10"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC11",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN11"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC12",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "AIN12"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC13",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "TSNS0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC14",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "TSNS1"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC15",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA13"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC16",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA14"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC17",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA15"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC18",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA16"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC19",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA17"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC20",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA18"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
+  },
+  {
+   "designator": "CADC21",
+   "block_name": "ADC-FILTER",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "ANA19"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "AGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1nF",
+   "query": "MLCC-1n-0402-C0G 1 nF 0402 C0G/NP0 50 V — ADC sampling reservoir at the card's a",
+   "mpn": "MLCC-1n-0402-C0G"
   },
   {
    "designator": "RFLTC",

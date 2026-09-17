@@ -15,7 +15,12 @@ void pmp_ctl_cfg_default(pmp_ctl_cfg_t *c, uint16_t kw) {
   c->ramp_i_aps = 1000.0f;      /* 10 → 90 % of 166.7 A in 0.13 s */
   c->droop_ohm = 0.0f;          /* accuracy first; the share trim equalizes paralleled modules */
   c->trim_max_frac = 0.01f;
-  c->trim_rate_vpas = 0.5f;
+  /* E82 (M-33): the trim loop must be slower than the peers it listens to. A module in CV is a near-ideal voltage source, so
+     its share of the load moves by 1/R_series — busbar, DOUT and shunt, 5–15 mΩ — per volt of trim: at 0.5 V/(A·s) the loop
+     crossed over near 8 Hz against peer currents that arrive every 200 ms (VMP TLM_SHARE) or 500 ms (TonHe), which is a
+     hunting loop, not a sharing one. 0.002 still answers a 10 A mismatch in a few seconds, far faster than any CV taper,
+     and is slow enough for the SLOWER of the two profiles, so it needs no profile plumbing. */
+  c->trim_rate_vpas = 0.002f;
 }
 
 void pmp_ctl_init(pmp_ctl_t *s) { *s = (pmp_ctl_t){0}; }
@@ -23,10 +28,14 @@ void pmp_ctl_init(pmp_ctl_t *s) { *s = (pmp_ctl_t){0}; }
 void pmp_ctl_step(pmp_ctl_t *s, const pmp_ctl_cfg_t *c, const pmp_ctl_in_t *in, float dt) {
   float vout = fmaxf(fin0(in->v_out), 0.0f), iout = fin0(in->i_out);
   float k_in = clampf(fin0(in->vin_ll) / PMP_CTL_VIN_FULL_V, 0.0f, 1.0f);   /* E1: full power from 330 VAC, constant current below */
-  float der = clampf(fin0(in->derate), 0.0f, 1.0f);
+  /* E82 (C-11): the NTC ladder (in->derate) cannot see a die that runs 80–170 K over a cool sink — phase shift at low
+     output voltage, the 500 V series corner, low line on a high link. The HAL's junction observer folds for those; it
+     multiplies the availability the charge controller is TOLD, and reads as a thermal derate. */
+  float die = clampf(fin0(in->die_fold), 0.0f, 1.0f);
+  float der = clampf(fin0(in->derate), 0.0f, 1.0f) * (1.0f - die);
   s->i_avail = c->i_rated_a * der * k_in;
   s->p_avail = c->p_rated_w * der * k_in;
-  s->derate_why = (uint16_t)(((in->fsm_warn & PMP_W_DERATE_TH) ? PMP_DR_THERMAL : 0u) |
+  s->derate_why = (uint16_t)((((in->fsm_warn & PMP_W_DERATE_TH) || die > 0.0f) ? PMP_DR_THERMAL : 0u) |
                              ((in->fsm_warn & PMP_W_DERATE_FAN) ? PMP_DR_FAN : 0u) | (k_in < 1.0f ? PMP_DR_INPUT : 0u));
   float p_cmd = (isfinite(in->p_set) && in->p_set >= 0.0f) ? in->p_set : INFINITY;
   s->p_lim = fminf(s->p_avail, p_cmd);
@@ -77,6 +86,9 @@ void pmp_reg_cfg_default(pmp_reg_cfg_t *c) {
      the cycle-by-cycle 50 kW tank (firmware/test/hal_test.c). A stiff battery puts ~70 per-unit of current on one unit of demand,
      so the current proportional gain must stay far below 1/70. These keep the tank under F.11 and the battery current within a
      few amps; the §5.5 transient targets remain HIL work. */
+  /* E82 (M-30): these stay as the HIL and the cycle-by-cycle plant validated them. The loop gain is held constant instead
+     by the caller, which scales v_scale by llc_t.k_norm — the modulator's own sensitivity at the operating point — so that
+     (kp_v + ki_v·dt/2)·(dV/du)/v_scale is ≈ 0.355 (9 dB of gain margin) everywhere rather than 0.03 … 1.23. */
   c->kp_v = 0.5f; c->ki_v = 150.0f;
   c->kp_i = 0.01f; c->ki_i = 40.0f;
   c->tt_s = 1.0e-3f;

@@ -9,8 +9,9 @@
 /* build configuration */
 #ifndef PORT_HXTAL_HZ
 #define PORT_HXTAL_HZ 8000000u    /* E81 (F-F-1): the card gains an 8 MHz crystal — IRC8M's ±2.5 % is 5x ISO 11898-1's
-                                     ±0.485 % budget at 16 tq / SJW 2. system_init still falls back to IRC8M inside 20 ms
-                                     if the crystal never starts, so a crystal-less prototype still boots and regulates. */
+                                     ±0.485 % budget at 16 tq / SJW 2. system_init still falls back to IRC8M if the crystal
+                                     never starts — E82 (C-01d): inside 10 ms of core clocks by DWT, because the E81 loop count
+                                     ran 20–40 ms, past the TPS3430's 23.375 ms window — so a crystal-less prototype boots. */
 #endif
 #define PORT_SYSCLK_HZ 216000000u
 #define PORT_CANCLK_HZ  48000000u /* CK_PLLQ = 432 MHz VCO / 9 — with PORT_HXTAL_HZ 0 this is IRC8M-derived (±2.5 %),
@@ -30,7 +31,7 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_IOUT     PA, 7     /* AIN4  · ADC1_IN3  */
 #define BP_VAC1     PC, 0     /* AIN11 · ADC01_IN5 */
 #define BP_I_C0     PC, 1     /* AIN10 · ADC01_IN6 · CMP2_IP */
-#define BP_T_LLC    PC, 2     /* AIN8  · ADC01_IN7 (E81 swap: was I_A0/CMP7_IP — reviewer I §7) */
+#define BP_T_LLC    PC, 2     /* TSNS0 · ADC01_IN7 (E81 swap: was I_A0/CMP7_IP — reviewer I §7) */
 #define BP_AVMID    PC, 3     /* AVMID · ADC01_IN8 (bias readback) */
 #define BP_IOUTN    PC, 4     /* AIN5  · ADC1_IN4  */
 #define BP_VBKB     PD, 8     /* AIN7  · ADC3_IN11 */
@@ -41,7 +42,7 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_VAC3     PE, 8     /* ANA13 · ADC23_IN5 */
 #define BP_V15      PE, 12    /* ANA17 · ADC2_IN14 */
 #define BP_T_PFC    PE, 13    /* ANA18 · ADC2_IN2  */
-#define BP_I_A0     PB, 0     /* TSNS0 · ADC0_IN12 · CMP3_IP (E81 swap: was T_LLC; CMP3 → HRTIMER FLT1, Table 25-21) */
+#define BP_I_A0     PB, 0     /* AIN8  · ADC0_IN12 · CMP3_IP (E81 swap: was T_LLC; CMP3 → HRTIMER FLT1, Table 25-21) */
 #define BP_T_XFMR   PB, 1     /* TSNS1 · ADC2_IN0  */
 #define BP_VBUS     PB, 13    /* ANA14 · ADC2_IN4 · CMP4_IP */
 

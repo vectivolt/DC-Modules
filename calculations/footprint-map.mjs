@@ -104,7 +104,8 @@ export const FOOTPRINT = {
   "ELH-470u500": "CAP-TH_L30.0-W30.0-P10.00",          // same 35 mm land as the 450 V can (F-C-6)
   "PP-2u2-1100": "CAP-TH_L31.5-W13.0-P27.50",          // DC-link entry damper cap (F-G-1 FIX-D)
   "CER-3W-R33-AX": "RES-TH_L25.0-W6.0-P30.00",         // 0.33 Ω >=3 W pulse axial, damper resistor
-  "C1206-1n-1kV-C0G": "C1206", "C1206-470p-1kV-C0G": "C1206",   // LLC per-die turn-off snubbers
+  "RTF-50W-R33-TO247": "TO-247-2_L15.9-W5.0-P10.88-L",   // E82 (F-H1-7): the damper resistor is a heatsink-clipped TO-247 thick-film part (7–36 W)
+  "C1206-1n-1kV-C0G": "C1206", "C1206-470p-1kV-C0G": "C1206", "C1206-330p-1kV-C0G": "C1206", "C1206-680p-1kV-C0G": "C1206",   // LLC per-die turn-off snubbers
   "C1812-330p-1k": "C1812",                            // Vienna snubber re-size (F-C-3/13)
   "MLCC-18p-0603": "C0603",                            // LLC DESAT blank (F-C-8)
   "R2512-22k-HV-AS": "R2512",                          // DC-link balance string (F-A-7)
@@ -119,6 +120,13 @@ export const FOOTPRINT = {
   "SQP-4R7-25W": "RES-TH_L60.0-W9.0-P66.00",           // 50 kW filter damper resistor
   "HFE18V-250A-AUX": "CONTACTOR_250A_stud_aux",        // 50 kW bypass, contactor class (F-H-8)
   "Y2-10n-300": "CAP-TH_L11.0-W6.0-P10.00",   // E81 F-L-4: 10 nF Y2, same 10 mm pitch, thicker body — layout re-check
+  // ---- E82 (independent validation review): every part this round added or re-classed -----------
+  "R2512-33k-HV-AS": "R2512",                          // artificial star / X-cap bleed 47 k → 33 k (M-12)
+  "R2512-150k-HV": "R2512",                            // passive output bleeder RBO1-3 behind DOUT (M-11)
+  "R2512-10R-3W-PULSE": "R2512",                       // Vienna snubber re-rated to 3 W pulse (M-07) — same land
+  "MLCC-1n-0402-C0G": "C0402",                         // ADC sampling reservoir at the card analogue pins (A2-09)
+  "SIC-1700-1R-G15": "TO-247-3_L15.9-W5.0-P5.44-L",    // aux switch re-specified at a 15 V gate (M-04) — package still the MR-23 placeholder
+  "ISO-GBIAS-15-1W": "PWRM-TH_QA01C", "ISO-GBIAS-15-2W": "PWRM-TH_QA01C",   // gate-bias CLASS replaces the invented QA01C-15/-15 2 W (M-03); same SIP land family
 };
 export const footprintFor = (mpn) => FOOTPRINT[mpn] ?? "";
 

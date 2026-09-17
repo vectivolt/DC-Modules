@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-bom--maturity_·_MATURE-2ea44f?style=flat-square" alt="gate: bom-maturity · MATURE"/>
 </p>
@@ -23,7 +23,7 @@
 |---|---|
 | **Source of truth** | the **built boards** — `tsci` netlists + the audited sheet payloads, never a typed spreadsheet |
 | **Price basis** | `cost/parts-db.mjs` ₹ @1k with a p10k break; the China column is a landed **target**, not a quote |
-| **Family total @10k** | ₹31,533 · 35,970 · 42,628 · 40,555 → [BOM & cost](bom-cost.md) |
+| **Family total @10k** | ₹31,613 · 36,103 · 42,761 · 40,688 → [BOM & cost](bom-cost.md) |
 | **Gate** | `bom-maturity` — every line ORDERABLE / SECOND-SOURCE / DIRECT / CLASS(spec) / CUSTOM(drawing) / tracked-REVIEW, or the battery stops |
 | **Open REVIEW lines** | 9 on live BOM lines (C-number read-back is purchasing work, listed on each module page) |
 
@@ -103,5 +103,5 @@ A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part nu
 <div align="center">
 <sub><a href="bom-50kwa.md">← 50 kW Air Module BOM</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="symbol-pin-map.md">Symbol → Package Pin Map →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

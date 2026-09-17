@@ -49,8 +49,11 @@ node calculations/busbar/busbar-calc.mjs > /dev/null
 node calculations/pin-map-export.mjs > /dev/null
 node calculations/docs-lint.mjs
 npx tsx calculations/control/port-pin-audit.mjs
-sh firmware/run_tests.sh > /dev/null
-echo "FIRMWARE LOGIC OK — boot_test 21 · host_sim 121 · ctl_test 19 · proto_test 40 · hal_test 37 · app_test 24 · e81_test 29 (E81) — 291 checks"
+# E82 (M-29): the ONLY gate that reads hal/*.c against the hardware source — ADC scales, tank constants, link C
+node calculations/control/fw-constants-sync.mjs
+# E82: the banner COUNTS what ran instead of quoting a number typed at the last revision (it said 291 while 327 ran)
+FW_LOG=$(mktemp); sh firmware/run_tests.sh > "$FW_LOG"
+echo "FIRMWARE LOGIC OK — $(grep -c '^PASS' "$FW_LOG") checks across $(grep -c '^RESULT' "$FW_LOG") binaries ($(grep '^RESULT' "$FW_LOG" | sed 's/RESULT: \([0-9]*\)\/.*/\1/' | paste -sd'+' -)), sanitizers fatal"; rm -f "$FW_LOG"
 # E80: the GD32G553 target cross-build (register-level port, no vendor library) — runs where the bare-metal GCC exists
 if command -v arm-none-eabi-gcc > /dev/null 2>&1; then
   sh firmware/port/gd32g553/build.sh > /dev/null 2>&1

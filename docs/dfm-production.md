@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
@@ -139,6 +139,54 @@ Records go to MES as a serial-keyed CSV; firmware locks its lifetime counters at
 | two board designs per SKU from **one** cell library | busbar lengths |
 | one control card — its RATING strap tells it which SKU it runs | CT burden values (E60) |
 
+
+## 7. Production programming and the E82 RFQ acceptance rows
+
+**Programmed once per card, in the same SWD fixture pass, at card level** — `JSWD CARD` sits behind the 88-way connector and
+is unreachable in an assembled module, so everything after final assembly goes over CAN. Firmware writes none of these
+(E82 G-11 / G-15 / M-28).
+
+| Setting | Value | Why |
+|---|---|---|
+| `OB_USER` **DBS** | **1** — dual bank, 1 KB pages | the whole flash map and `nvmport.c`'s page arithmetic assume it; on a single-bank part the same index addresses a 2 KB page at half the offset and page 9 would erase **inside the bootloader**. `erase_page_at` now refuses to run without it |
+| `OB_USER` **BOR_TH** | **0b10** ≈ 2.6 V rising / **2.5 V** falling, 100 mV hysteresis, 254 µs temporisation | the TPS3430 is a watchdog only: between V_POR and VDD(min) its own Table 7-1 says the watchdog is **disabled and WDO stays high**, so the MCU is unsupervised on a sagging 3V3 unless BOR is set. The part's default is "no BOR function". Firmware's LVD at 2.75 V interrupts; it does not reset — that half is the option byte |
+| **WP** pages 0…31 | write-protected | the 32 KB bootloader. `erase_page_at` takes a raw address and only its callers bound it |
+| **SPC** | production units: any value but 0xAA / 0xCC (low protection) · EVT boards: 0xAA | SWD is otherwise wide open — the firmware can be read out **and arbitrary unsigned firmware written**, which makes the signed-image chain decorative for anyone with physical access |
+| `nBOOT1` / BOOT0 | leave default | BOOT0 already carries a 10 kΩ pull-down (`SwdPort R{id}BOOT`) — verified, no fixture action |
+
+**In the same pass:** read back the full **96-bit UID** and bind it to the serial number (it is now the service identity —
+`pmp_crc32(UID_BASE, 12)`; `RD(UID_BASE)` alone is the wafer/lot word and collided between lots, so two modules answered
+SELECT identically); write the boot control record with **`confirmed = 0`** so the first boot does not re-run "adopt the newest
+verifying slot" and write flash; write the calibration record. **Free functional gate:** release the fixture's WDI drive and
+confirm the module resets within 23.4 ms — the only test that proves the whole WDO → NRST chain end to end.
+
+> [!IMPORTANT]
+> **Do not make link-lifting the programming method.** Lifting `RWDOL` (0 Ω, WDO → NRST) to program a blank chip is a manual
+> de-solder and re-solder per board beside the supervisor, and a board shipped with the link out has silently lost the *reset*
+> half of the safety function. It is also unnecessary: **`TPWDI` already exists** (E81 F-F-8). The fixture pogo-pins `TPWDI`
+> and toggles it every ≈ 10 ms for the whole SWD session — WDI is otherwise held low by `RWDI` 10 k and PF10 is high-Z under
+> reset, so there is no contention, WDO stays high and NRST stays released. Keep `RWDOL` as a 2-pin header on **EVT boards
+> only** (+₹0.05) for bench debug, where the same problem appears at every breakpoint.
+
+**Signing keys.** A build with `PRODUCTION=1` refuses a key path under `keys/dev/`, refuses a missing `PMP_SIGN_KEY`, and
+refuses to build while `firmware/boot/keys_dev.h` still carries a `0xDE0…` development key id. **Ship two keys from day one** —
+a live production key and a spare whose private half never leaves the offline store — so rotation is "sign the next release with
+key 2 and stop using key 1", with no bootloader change and no visit to any module. Accepted limitation: the bootloader is not
+field-updatable, so the key *table* is fixed for the product's life.
+
+### Purchasing acceptance rows added at E82
+
+These are lines on the RFQ, not fixture steps — a duty a gate computes and nobody buys against is a comment, not a finding.
+
+| Part | Acceptance row | Why |
+|---|---|---|
+| Fans | electrical class **≤ 0.6 A at 24 V (≤ 14 W)** at 100 % PWM, start surge ≤ 1.5 A for ≤ 0.3 s | the 110 W aux is sized on it (i24s 1.6–2.4 A). The 160 m³/h class draws 7–14 W; the "≈ 25 W per fan" in a `cells.tsx` comment was wrong, and a 25 W fan overloads the four-fan SKU into the NCP1252's latched over-current |
+| Precharge resistors `RPRE1/2` | flameproof, **FAIL-OPEN under sustained overload** | a shorted link puts **4.8 kW (400 VAC) … 8.4 kW (530 VAC)** on each and nothing in the module can disconnect it — the part opening without flame *is* the protection |
+| Link damper resistor `RFDMP` | **`RTF-50W-R33-TO247`** — 0.33 Ω, ≥ 50 W thick-film non-inductive TO-247, clipped to the DC-DC heatsink, ₹95 @1k | it dissipates **7 / 16 / 36 W** per SKU whenever the bridge runs at f_max (2·f_sw = 406 kHz on the entry-film / stud resonance); the repo's own link deck reads 10.4 A rms = 35.6 W at 50 kW SER250 / 764 V. A 0.33 / 0.68 / 1.0 / 2.2 Ω sweep dissipates the same ≈ 40 W and lets the bus ring 127 → 185–206 V, so the value stays. E81's "≥ 3 W axial, simulated 1.8 W" is withdrawn |
+| Damper capacitor `CFDMP` | **I_rms ≥ 12 A at 400 kHz / 85 °C** | it carries the damper current at the same resonance |
+| DC-link can `CD[TB]` | **ripple ≥ 5.2 A rms at 100 kHz / 105 °C, ESR ≤ 80 mΩ at 100 kHz** | the Vienna's own 50 kHz capacitor current was in no budget before E82 (M-02): **5.7 / 6.5 / 5.9 A per can at 400 VAC / 800 V**. At 340 VAC the duty is **6.7 / 7.6 / 7.0 A = 99–112 % of the allowance** — a declared exceedance with its levers on the purchasing line (forced air first, then a taller can, then + 1 can per half) |
+
+
 > [!TIP]
 > **How this page is checked** — the EOL steps derive from [EVT](evt-plan.md) rows and the torque and joint schedule from the generated [busbar drawings](busbar-drawings.md); the assembly content itself is proven at the first build, not by a gate.
 
@@ -147,5 +195,5 @@ Records go to MES as a serial-keyed CSV; firmware locks its lifetime counters at
 <div align="center">
 <sub><a href="symbol-pin-map.md">← Symbol → Package Pin Map</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="benchmark-infypower-teardown.md">InfyPower Teardown Benchmark →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

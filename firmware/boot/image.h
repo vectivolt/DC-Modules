@@ -36,9 +36,10 @@ enum { IMG_OK = 0, IMG_E_HEADER = 1, IMG_E_SIZE = 2, IMG_E_LOAD = 3, IMG_E_HW = 
    hw_id: this card's IMG_HW_* bit · min_version: the baseline in force (0 to learn the version of whatever is there).
    Checks the header fields, then the key, the signature over the header, and the body hash — the cheap checks first.
    Returns IMG_OK or the first failure; info carries the header fields whenever the header parsed.
-   poll (may be NULL) runs every 32 KB of body hashing: the target watchdog's kick lives there — a 208 KB body takes
-   ~40 ms of SHA-256 at 216 MHz, past the TPS3430 fixed window's 23.375 ms late edge (E80/HR-02); the port's poll
-   rate-limits itself above the 2.22 ms early edge. */
+   poll (may be NULL) is the target watchdog's service. E82 (C-01): it runs every 4 KB of body hashing (≈ 1.6 ms) AND inside
+   the signature check — once per ladder step and every 16th squaring of the two inversions — because one P-256 verification
+   is 12.7 M instructions ≈ 90–105 ms at 216 MHz, four TPS3430 windows (23.375 ms late edge), not the "≈ 9 ms" E80 assumed;
+   the longest un-serviced stretch is now ≈ 0.6 ms. The port's poll rate-limits itself above the 2.22 ms early edge. */
 int img_verify(const uint8_t *img, uint32_t cap, uint32_t slot_base, uint32_t hw_id, uint32_t min_version,
                const img_key_t *keys, uint32_t n_keys, img_info_t *info, void (*poll)(void));
 #endif

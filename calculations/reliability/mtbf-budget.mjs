@@ -61,7 +61,14 @@ const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 // part stress. The 500 V link cans pull the other way (a can at 87 % of rating instead of 92–98 %
 // is the single biggest real-life improvement in this revision) but this model prices parts, not
 // derating, so it cannot see that; the honest reading is "more parts, each less stressed".
-const REGISTERED = { "30kw": { fit: 2439, mtbfKh: 410 }, "40kw": { fit: 2564, mtbfKh: 390 }, "50kw": { fit: 2666, mtbfKh: 375 }, "50kwa": { fit: 2680, mtbfKh: 373 } };
+// E82 RE-REGISTERED (independent-validation round). The net is +14 / +7 / +14 / +14 FIT — under 0.6 % — and it is the
+// sum of two opposite moves. UP: 22 × 1 nF C0G at the card analogue pins, 10 × 100 Ω iso-amp output resistors and
+// 3 × 150 k output bleeders (A2-09 / M-11) — 35 chip parts per module, all at 0.35–0.5 FIT. DOWN: the DC-link balance
+// network drops from two 4-element strings to one on the 40/50 kW (M-10). A parts-count model prices COUNT, not stress,
+// so it cannot see what this revision actually bought: the balance elements go from 1.96 W (65 % of rating) to 0.92 W
+// (46 %), the Vienna snubber from 142 % of its part to 95 %, and the DC-link can is now bought against its REAL duty
+// (M-02) instead of a line that omitted the Vienna's own 50 kHz term. Fewer hot parts is not visible here; it is the point.
+const REGISTERED = { "30kw": { fit: 2453, mtbfKh: 408 }, "40kw": { fit: 2571, mtbfKh: 389 }, "50kw": { fit: 2680, mtbfKh: 373 }, "50kwa": { fit: 2694, mtbfKh: 371 } };
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };
 const f0 = (x) => Math.round(x);

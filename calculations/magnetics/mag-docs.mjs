@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { D1 } from "./d1-choke.mjs";
-import { D2, D3 } from "./magnetics-envelope.mjs";
+import { D2, D3, d3Leakage, D3_CELLS, LOOP_STRAY } from "./magnetics-envelope.mjs";
 import { TANKS } from "../llc/tanks.mjs";
 import { SKUS as AUX_LOADS } from "./d4-flyback.mjs";
 import { masthead, footer } from "../doc-chrome.mjs";
@@ -65,21 +65,30 @@ const bom = (sku) => {
 
 // ---- the registered drawings, per SKU (construction identity = the engines' tables; acceptance lines = the register) ----
 const T = (sku) => TANKS[base(sku)];
+// E82 (M-09a): the ONE source for the D2 external inductance and the D3 cell leakage — magnetics-envelope computes both
+// from tanks.mjs (Lr − D3_CELLS × cell leakage − loop stray). mag-sync asserts the generated page carries these strings.
+const d2L = (sku) => `${(D2[sku].Lnom * 1e6).toFixed(2)} µH`;
+const d3Lk = (sku) => `${(d3Leakage(D3[sku]) * 1e6).toFixed(3)} µH`;
+void LOOP_STRAY; void D3_CELLS;
 const DRAW = {
   D1: {
     "30kw": { mpn: "IND-PFC-165u", dwg: "PMP-MAG-D1-30 rev C", L0: "150–185 µH (165 nom)", Lpk: "L @ 78 A pk ≥ 75 µH", rdc: "≤ 6.9 mΩ @ 25 °C (build 6.08) and within ±5 % of the lot median", op: "54.7 A fundamental + 6.3 A rms 50 kHz ripple at 330 VAC", size: "⌀ 92 × H 88 mm", mass: "1.9 kg", layers: "21 / 15 / 3", cut: "≥ 7.1 m", tt: "74 A DC → hot-spot ≤ 19 K above the plate", cutout: "not required — one lost pad computes 131 °C, inside Class F (stress-audit)" },
     "40kw": { mpn: "IND-PFC-116u-40", dwg: "PMP-MAG-D1-40 rev C", L0: "106–135 µH (125 nom — 5 × AL 37 at N = 26; the 116u class name is historical, E74)", Lpk: "L @ 104 A pk ≥ 61 µH", rdc: "≤ 4.55 mΩ @ 25 °C (build 3.97) and within ±5 % of the lot median", op: "72.9 A fundamental + 7.83 A rms ripple at 330 VAC", size: "⌀ 94 × H 115 mm", mass: "2.8 kg", layers: "17 / 9", cut: "≥ 6.9 m", tt: "95.9 A DC → hot-spot ≤ 22 K above the plate", cutout: "not required — one lost pad computes 116 °C, inside Class F (stress-audit)" },
     "50kw": { mpn: "IND-PFC-107u-50", dwg: "PMP-MAG-D1-50 rev C", L0: "98–124 µH (107 nom)", Lpk: "L @ 129.5 A pk ≥ 45 µH", rdc: "≤ 4.15 mΩ @ 25 °C (build 3.63) and within ±5 % of the lot median", op: "91.2 A fundamental + 10.16 A rms ripple at 330 VAC", size: "⌀ 94 × H 115 mm", mass: "2.7 kg", layers: "17 / 7", cut: "≥ 6.4 m", tt: "117.3 A DC → hot-spot ≤ 26 K above the plate", cutout: "**mandatory on the liquid SKU** — a lost pad has no air path in the sealed module: NC 130 ± 5 °C thermostat on each D1 clamp cap, in the magnetics cutout loop" },
   },
+  // E82 (M-09a): L and the D3 cell leakage are READ from magnetics-envelope (Lr − D3_CELLS × cell leakage − loop stray),
+  // never typed. They were hand-typed at their PRE-E81 values (5.16 / 4.07 / 3.28 µH) for a whole revision while parts-db,
+  // boards.tsx, the hub page and the gate all carried the re-issued 5.00 / 3.99 / 3.20 — and a winder builds to the DRAWING,
+  // so the ±5 % every deck was solved at was being spent on a transcription. mag-sync now asserts this per page.
   D2: {
-    "30kw": { mpn: "IND-LR-E70-30", dwg: "PMP-MAG-D2-30 rev F", L: "5.16 µH", gap: "Σ ≈ 8.3 mm", rdc: "≤ 1.35 mΩ", rac: "≤ 3.35 mΩ", pd: "≥ 2.0 kV", mass: "1.3 kg" },
-    "40kw": { mpn: "IND-LR-E70-40", dwg: "PMP-MAG-D2-40 rev F", L: "4.07 µH", gap: "Σ ≈ 10.5 mm", rdc: "≤ 1.1 mΩ", rac: "≤ 3.45 mΩ", pd: "≥ 1.9 kV", mass: "1.3 kg" },
-    "50kw": { mpn: "IND-LR-E70-50", dwg: "PMP-MAG-D2-50 rev F", L: "3.28 µH", gap: "Σ ≈ 13.1 mm", rdc: "≤ 0.92 mΩ", rac: "≤ 3.7 mΩ", pd: "≥ 2.0 kV", mass: "1.35 kg" },
+    "30kw": { mpn: "IND-LR-E70-30", dwg: "PMP-MAG-D2-30 rev F", L: d2L("30kw"), gap: "Σ ≈ 8.3 mm", rdc: "≤ 1.35 mΩ", rac: "≤ 3.35 mΩ", pd: "≥ 2.0 kV", mass: "1.3 kg" },
+    "40kw": { mpn: "IND-LR-E70-40", dwg: "PMP-MAG-D2-40 rev F", L: d2L("40kw"), gap: "Σ ≈ 10.5 mm", rdc: "≤ 1.1 mΩ", rac: "≤ 3.45 mΩ", pd: "≥ 1.9 kV", mass: "1.3 kg" },
+    "50kw": { mpn: "IND-LR-E70-50", dwg: "PMP-MAG-D2-50 rev F", L: d2L("50kw"), gap: "Σ ≈ 13.1 mm", rdc: "≤ 0.92 mΩ", rac: "≤ 3.7 mΩ", pd: "≥ 2.0 kV", mass: "1.35 kg" },
   },
   D3: {
-    "30kw": { mpn: "XFMR-LLC-CELL-2E70-30", dwg: "PMP-MAG-D3-30 rev D", sets: 2, former: "TDK B66372A2000 (2-set, lN 230.5 mm)", turns: "6:6∥6", Lm: "28 µH", AL: "0.778 µH/T² (Σ gap ≈ 2.2 mm)", pri: "TIW-served litz 3850×0.063 mm (12 mm²)", sec: "Cu foil 0.10 × 28 mm, one per turn", mlt: "189 / 211 / 232 mm", llk: "0.172 µH", rdc: "P ≤ 2.1 · S1 half ≤ 8.0 · S2 half ≤ 9.8 mΩ", pd: "≥ 2.0 kV", size: "≤ 70.5 × 65.9 × 91 mm plus headers", mass: "1.3 kg" },
-    "40kw": { mpn: "XFMR-LLC-CELL-3E70-40", dwg: "PMP-MAG-D3-40 rev D", sets: 3, former: "3-set former, lN 293 mm (custom — tooling in the part price)", turns: "4:4∥4", Lm: "21.75 µH", AL: "1.359 µH/T² (Σ gap ≈ 1.9 mm)", pri: "TIW-served litz 3536×0.071 mm (14 mm²)", sec: "2 × Cu foil 0.08 × 28 mm per turn", mlt: "253 / 272 / 290 mm", llk: "0.090 µH", rdc: "P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ", pd: "≥ 1.9 kV", size: "≤ 70.5 × 65.9 × 120 mm plus headers", mass: "1.85 kg" },
-    "50kw": { mpn: "XFMR-LLC-CELL-3E70-50", dwg: "PMP-MAG-D3-50 rev D", sets: 3, former: "3-set former, lN 293 mm (custom — shared with D3-40)", turns: "4:4∥4", Lm: "17.8 µH", AL: "1.113 µH/T² (Σ gap ≈ 2.3 mm)", pri: "TIW-served litz 3536×0.071 mm (14 mm²)", sec: "2 × Cu foil 0.08 × 28 mm per turn", mlt: "253 / 272 / 290 mm", llk: "0.090 µH", rdc: "P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ", pd: "≥ 2.0 kV", size: "≤ 70.5 × 65.9 × 120 mm plus headers", mass: "1.85 kg" },
+    "30kw": { mpn: "XFMR-LLC-CELL-2E70-30", dwg: "PMP-MAG-D3-30 rev D", sets: 2, former: "TDK B66372A2000 (2-set, lN 230.5 mm)", turns: "6:6∥6", Lm: "28 µH", AL: "0.778 µH/T² (Σ gap ≈ 2.2 mm)", pri: "TIW-served litz 3850×0.063 mm (12 mm²)", sec: "Cu foil 0.10 × 28 mm, one per turn", mlt: "189 / 211 / 232 mm", llk: d3Lk("30kw"), rdc: "P ≤ 2.1 · S1 half ≤ 8.0 · S2 half ≤ 9.8 mΩ", pd: "≥ 2.0 kV", size: "≤ 70.5 × 65.9 × 91 mm plus headers", mass: "1.3 kg" },
+    "40kw": { mpn: "XFMR-LLC-CELL-3E70-40", dwg: "PMP-MAG-D3-40 rev D", sets: 3, former: "3-set former, lN 293 mm (custom — tooling in the part price)", turns: "4:4∥4", Lm: "21.75 µH", AL: "1.359 µH/T² (Σ gap ≈ 1.9 mm)", pri: "TIW-served litz 3536×0.071 mm (14 mm²)", sec: "2 × Cu foil 0.08 × 28 mm per turn", mlt: "253 / 272 / 290 mm", llk: d3Lk("40kw"), rdc: "P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ", pd: "≥ 1.9 kV", size: "≤ 70.5 × 65.9 × 120 mm plus headers", mass: "1.85 kg" },
+    "50kw": { mpn: "XFMR-LLC-CELL-3E70-50", dwg: "PMP-MAG-D3-50 rev D", sets: 3, former: "3-set former, lN 293 mm (custom — shared with D3-40)", turns: "4:4∥4", Lm: "17.8 µH", AL: "1.113 µH/T² (Σ gap ≈ 2.3 mm)", pri: "TIW-served litz 3536×0.071 mm (14 mm²)", sec: "2 × Cu foil 0.08 × 28 mm per turn", mlt: "253 / 272 / 290 mm", llk: d3Lk("50kw"), rdc: "P ≤ 1.55 · S1 half ≤ 4.5 · S2 half ≤ 5.1 mΩ", pd: "≥ 2.0 kV", size: "≤ 70.5 × 65.9 × 120 mm plus headers", mass: "1.85 kg" },
   },
   CT: {
     "30kw": { line: "Talema ACX-1100 (2500:1, 100 A)", lineMpn: "ACX-1100", rb: "22 Ω", F01: 120, sat01: "150 A pk", obs01: "166 A", res: "1:100, 100 A rms class (tank class 78 A = 78 %)", resMpn: "CT-RES-1:100-100A", rr: "0.47 Ω", F11: 140, lin11: "335 A pk (1.05 × the 318.6 A monitor peak)" },
@@ -242,7 +251,7 @@ gate reports, and a failing gate stops the battery before this page is written.
 | \`temp-critique\` | saturation at the 130 °C cutout, cold equilibria and the fault chain on measured 3C95 surfaces | B̂ ≤ 50 % Bsat(130 °C) · fault flux ≤ 60 % |
 | \`current-coordination\` | D2 flux at the F.11 kill peak and CT observability through each trip's race | ≤ 217 mT · the kill lands inside the ADC rail |
 | \`mag-sync\` | the identity of every part against every carrier, and the computed mass | tokens present · mass within ± 20 % |
-| \`mkf-crosscheck\` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
+| \`mkf-crosscheck\` | the D2 / D3 builds re-made in PyOpenMagnetics (OpenMagnetics MKF): winding Rdc from its own turn layout, the drawn gap under five fringing models, 2-D copper loss, and the thermal network at that copper — run by hand in a Python venv. **Dated evidence:** this run predates the E81 D2 re-issue, so its \`MKF-GAP\` row quotes the pre-E81 target (5.16 / 4.07 / 3.28 µH). The BUILD value is the one in the build-and-hold points below, which \`mag-docs\` reads from \`magnetics-envelope\` — the fringing CONCLUSION (+13…+14 %, so grind toward AL) is unaffected by a 3 % target move | Rdc ± 5 % · class lines (+25 % Rth ≤ 155 °C, runaway ≥ 25 K) at MKF's copper; ℹ️ where only a design line moves |
 
 ## D1 — PFC boost choke · qty 3 · \`${W1.mpn}\`
 
@@ -283,7 +292,7 @@ leads. **H1** L₀ inside the window, Rdc, turns photo. (6) Varnish per the hub'
 ## D2 — external resonant inductor · qty 1 · \`${W2.mpn}\`
 
 The one gapped inductor of the full-bridge tank (InfyPower practice): it carries Lr ${(t.Lr * 1e6).toFixed(2)} µH minus the two D3 cells'
-leakage and the 0.1 µH loop stray, at full AC swing and tank potential, 83–203 kHz. No bins — the ± 3 % gap tolerance plus the ± 30 %
+leakage and the 0.1 µH loop stray, at full AC swing and tank potential, 77–203 kHz (E82 M-09d: 82 kHz is the lowest steady-state point; 77 kHz = 0.55·f_r is the firmware's transient floor and the part must take it). No bins — the ± 3 % gap tolerance plus the ± 30 %
 cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 
 | Row | Specification — ${W2.dwg} |
@@ -328,10 +337,10 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 
 | Row | Specification — ${W3.dwg} |
 |---|---|
-| Ratio · magnetizing | **${W3.turns} exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **${W3.Lm} ± 7 %** per cell @ 10 kHz, 0.1 V |
+| Ratio · magnetizing | **${W3.turns} exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **${W3.Lm} ± 7 %** per cell @ 10 kHz, 0.1 V · **E82 (F-H1-6): the two cells of a module ship as a MATCHED PAIR, L_m within ± 3 % of each other** (gapped together, labelled A / B) — their primaries are in series on one C_r, so they divide the applied volt-seconds by their magnetizing impedance: a ± 7 % pair reads 513 / 481 V on the two banks at 1000 V series and + 7 % flux on the higher-L_m cell |
 | Core · former | **${W3.sets} × E70/33/32** PC95 / N95 / 3C95-class · ${W3.former} |
 | Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **${V ? W3.AL.replace(/Σ gap ≈ [\d.]+ mm/, `Σ gap ≈ ${V.d3GapMm.toFixed(1)} mm with fringing`) : W3.AL}** on the assembled cell |
-| Current rating | primary **${LS.ipRmsMax} A rms** / **${LS.ipPkMax} A pk** · each secondary half **${(LS.isRmsMax / 2).toFixed(1)} A rms** / ${(LS.isPkMax / 2).toFixed(1)} A pk at the worst simulated corner · 83–203 kHz |
+| Current rating | primary **${LS.ipRmsMax} A rms** / **${LS.ipPkMax} A pk** · each secondary half **${(LS.isRmsMax / 2).toFixed(1)} A rms** / ${(LS.isPkMax / 2).toFixed(1)} A pk at the worst simulated corner · 77–203 kHz (82 kHz lowest steady state · 77 kHz = the firmware's transient floor, 0.55·f_r) |
 | Primary | **${W3.pri}**, one layer |
 | Secondary halves | ${W3.sec} · MLT S1 / P / S2 ${W3.mlt} |
 | Leakage | per cell, both halves shorted, 140 kHz, after VPI: **${W3.llk} ± 30 %** — measured and labelled |

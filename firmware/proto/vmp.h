@@ -93,7 +93,10 @@ enum {
   VMP_O_OP_S = 0x0300, VMP_O_ENERGY = 0x0301, VMP_O_STARTS = 0x0302, VMP_O_FAULTS = 0x0303,
   /* E80: the event log (sub-index = age, 0 = newest) and the T-44 timing diagnostics */
   VMP_O_EV_COUNT = 0x0400, VMP_O_EV_W0 = 0x0401, VMP_O_EV_W1 = 0x0402, VMP_O_EV_W2 = 0x0403, VMP_O_EV_W3 = 0x0404,
-  VMP_O_DIAG_EXEC = 0x0500, VMP_O_DIAG_STACK = 0x0501, VMP_O_DIAG_EV_SUP = 0x0502
+  VMP_O_DIAG_EXEC = 0x0500, VMP_O_DIAG_STACK = 0x0501, VMP_O_DIAG_EV_SUP = 0x0502,
+  VMP_O_DIAG_RX_OVR = 0x0503   /* E82 (K-6): CAN RX-mailbox-queue overrun count — the HAL counts it (port/) and answers
+                                   it through aux_read exactly like the other 0x05xx objects; reserved here so the object
+                                   number is on the table of record even before a HAL fills it in */
 };
 
 #define VMP_NAK_GAP_MS       100u    /* at most one rejection report per 100 ms */

@@ -12,6 +12,10 @@ static uint8_t group_addr(const vmp_t *v) {
 static bool delivering(const mod_tlm_t *m) {
   return m->rs == MOD_RS_ON || m->rs == MOD_RS_STARTING || m->rs == MOD_RS_STOPPING || m->rs == MOD_RS_MODE_CHANGE;
 }
+/* E82 (K-4): delivering() alone misses STANDBY's post-stop warm-hold window (PMP_WARM_HOLD_MS, fsm.c), where rs has
+   already dropped to MOD_RS_READY but the PFC (and, briefly, the LLC) are still switching for a fast restart. REBOOT /
+   FACTORY_RESET / ENTER_BOOT have no orderly-stop step of their own (unlike SHUTDOWN), so they must wait for both. */
+static bool stages_live(const mod_tlm_t *m) { return delivering(m) || m->pfc_en || m->llc_en; }
 static uint8_t popcount16(uint16_t x) { uint8_t n = 0u; while (x) { n = (uint8_t)(n + (x & 1u)); x >>= 1; } return n; }
 static uint32_t hash32(uint32_t x) { x ^= x >> 16; x *= 0x7FEB352Du; x ^= x >> 15; x *= 0x846CA68Bu; x ^= x >> 16; return x; }
 static bool due(uint32_t *t_last, uint32_t now, uint32_t period) {
@@ -270,10 +274,10 @@ static void rx_action(vmp_t *v, const pmp_frame_t *f, uint32_t now, const mod_tl
   case VMP_A_SHUTDOWN: cmd->shutdown = true; break;                        /* stopping is always permitted, owner or not */
   case VMP_A_WAKE: if (m->rs != MOD_RS_OFF) st = VMP_E_STATE; else cmd->wake = true; break;
   case VMP_A_LOCATE: cmd->locate_s = (uint16_t)(arg > 3600u ? 3600u : arg); break;
-  case VMP_A_REBOOT: st = arg != VMP_KEY_REBOOT ? VMP_E_KEY : delivering(m) ? VMP_E_STATE : VMP_OK; if (st == VMP_OK) v->reboot_req = true; break;
+  case VMP_A_REBOOT: st = arg != VMP_KEY_REBOOT ? VMP_E_KEY : stages_live(m) ? VMP_E_STATE : VMP_OK; if (st == VMP_OK) v->reboot_req = true; break;
   case VMP_A_UNLOCK: if (arg != VMP_KEY_UNLOCK) st = VMP_E_KEY; else { v->unlocked = true; v->t_unlock = now; } break;
-  case VMP_A_FACTORY_RESET: st = !unlocked(v, now) ? VMP_E_LOCKED : delivering(m) ? VMP_E_STATE : VMP_OK; if (st == VMP_OK) v->factory_req = true; break;
-  case VMP_A_ENTER_BOOT: st = !unlocked(v, now) ? VMP_E_LOCKED : delivering(m) ? VMP_E_STATE : VMP_OK; if (st == VMP_OK) v->boot_req = true; break;
+  case VMP_A_FACTORY_RESET: st = !unlocked(v, now) ? VMP_E_LOCKED : stages_live(m) ? VMP_E_STATE : VMP_OK; if (st == VMP_OK) v->factory_req = true; break;
+  case VMP_A_ENTER_BOOT: st = !unlocked(v, now) ? VMP_E_LOCKED : stages_live(m) ? VMP_E_STATE : VMP_OK; if (st == VMP_OK) v->boot_req = true; break;
   case VMP_A_RELEASE: if (v->owner == src) { v->owner = 0u; v->run = false; } else st = VMP_E_OWNED; break;
   default: st = VMP_E_UNSUPPORTED_ITEM; break;
   }

@@ -24,6 +24,7 @@ static void inactive_leave(void) {
 }
 
 uint8_t can_bitrate_bad;                       /* E81 (F-F-4): can_init was asked for a rate it has no table for */
+uint16_t can_rx_congested;                     /* E82 (G-20): drains that found every mailbox occupied — frames may have been lost */
 
 void can_init(uint32_t bitrate, int listen_only) {
   RCU_APB2RST |= BIT(9); RCU_APB2RST &= ~BIT(9);
@@ -53,6 +54,9 @@ void can_init(uint32_t bitrate, int listen_only) {
 uint8_t can_rx(pmp_frame_t *dst, uint8_t max) {
   uint8_t n = 0u;
   uint32_t stat = CAN_STAT(B);
+  /* E82 (G-20): the controller reports no queue-overrun flag, but a pass that finds all eight mailboxes full is the
+     condition under which a ninth frame is lost. Count it — it is the only honest congestion evidence available. */
+  if ((stat & (((1u << RXN) - 1u) << RXMB0)) == (((1u << RXN) - 1u) << RXMB0) && can_rx_congested < 0xFFFFu) can_rx_congested++;
   for (uint32_t mb = RXMB0; mb < RXMB0 + RXN && n < max; mb++) {
     if (!(stat & BIT(mb))) continue;
     uint32_t d0;
@@ -100,7 +104,9 @@ void can_restart(void) {   /* manual bus-off recovery: after BORF, ABORDIS 0 →
   if (e & BIT(19)) {
     CAN_CTL1(B) &= ~BIT(6);
     CAN_ERR1(B) = BIT(19) | BIT(2);            /* clear BORF + BOF */
-    for (uint32_t t = 0u; t < 100000u && !(CAN_ERR1(B) & BIT(18)); t++) {}   /* SYN */
+    /* E82 (G-20): no wait for SYN. Recovery needs 128 × 11 recessive bits — 11.3 ms at 125 k — so the old 100 000-iteration
+       spin (3.2 ms of the 1 ms tick) always timed out anyway, and the UM is explicit that raising ABORDIS again only
+       disables the NEXT recovery, never the one in progress. */
     CAN_CTL1(B) |= BIT(6);
   }
 }

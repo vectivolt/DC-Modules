@@ -31,10 +31,15 @@
 #define FMC_KEY       RD(0x40022008u)   /* 0x45670123 then 0xCDEF89AB unlocks FMC_CTL (L4874) */
 #define FMC_STAT      RD(0x40022010u)   /* BUSY 16 · PGSERR 7 · PGMERR 6 · PGAERR 5 · WPERR 4 · PGERR 3 · OPRERR 1 · ENDF 0 (L5884+) */
 #define FMC_CTL       RD(0x40022014u)   /* LK 31 · START 16 · MER1 15 · BKSEL 12 · PNSEL 10:3 · MER0 2 · PER 1 · PG 0 (L5969+) */
+#define FMC_ECCCS     RD(0x40022018u)   /* ECCDET0 31 · ECCCOR0 30 · ECCDET1 29 · ECCCOR1 28 (all rc_w1) · ECCCORIE 24 ·
+                                           SYS_ECC 22 · BK_ECC 20 · ECCADDR 18:0 (UM §2.4.7, L6097+). DBS = 1: only
+                                           ECCDET0/ECCCOR0 are live, 29/28 are reserved. ECCDET0 → NMI, no enable bit. */
 #define FMC_OBCTL     RD(0x40022020u)   /* DBS bit 22: 1 = dual bank, 1 KB pages (L4614+, L6258) */
 
 /* ---------------- SYSCFG (0x4001 0000, L2490) · EXTI (0x4001 0400, L11340) */
 #define SYSCFG_EXTISS(n) RD(0x40010008u + 4u * (n))   /* EXTISS0..3: 4-bit port codes 0=PA 1=PB 2=PC 3=PD 4=PE 5=PF (L2642+) */
+#define SYSCFG_STAT   RD(0x4001001Cu)   /* NMIPINIF 4 (r) · CKNMIIF 3 · FLASHECCIF 2 · SRAM0ECCSEIF 1 · SRAM0ECCMEIF 0,
+                                           rc_w1 (UM §1.7.8, L2991+). FLASHECCIF and FMC_ECCCS ECCDET0 clear together. */
 #define EXTI_INTEN    RD(0x40010400u)
 #define EXTI_RTEN     RD(0x40010408u)
 #define EXTI_FTEN     RD(0x4001040Cu)
@@ -60,11 +65,16 @@ enum { PA = 0, PB, PC, PD, PE, PF };
 #define ADC_CTL1(n)   RD(ADC_BASE(n) + 0x08u)    /* SWRCST 30 · ETMRC 29:28 · INREFEN 24 · DMA 8 · CALNUM 6:4 · RSTCLB 3 · CLB 2 · CTN 1 · ADCON 0 (L23955+) */
 #define ADC_RSQ(n, k) RD(ADC_BASE(n) + 0x24u + 4u * (k))   /* RSQ0: RL 23:20 + slot15 · RSQ1..7 two slots · RSQ8 slot 0 (L24154+) */
 #define ADC_RDATA(n)  RD(ADC_BASE(n) + 0x64u)
-#define ADC_SYNCCTL   RD(0x50000304u)             /* at ADC0 base: ADCCK 19:16(? see facts: ADCCK codes /1../256) · ADCSCK (L24975+) */
+/* E82 (D-11): the field positions are confirmed against UM §17.7.26 — ADCCK[3:0] is 23:20 (0000 div1 · 0001 div2 …
+   1011 div256, "All ADCs are common") and ADCSCK[3:0] is 19:16 (0000 = CLK_ADC asynchronous). 0 = async, /1 = 72 MHz. */
+#define ADC_SYNCCTL   RD(0x50000304u)             /* at ADC0 base: ADCCK 23:20 · ADCSCK 19:16 (L24975+, L25006+) */
 #define ADC_SLOT(ch, smp) ((uint32_t)(ch) | ((uint32_t)(smp) << 5))   /* per-slot: RSQn 4:0 · RSMPn 14:5, t_samp = RSMP + 2.5 cyc (L24480) */
 
 /* ---------------- DMA0 + DMAMUX (bases 0x4002 0000 / 0x4002 0800, L16047/L16999) — filled by adc.c from its own extraction */
 #define DMA0_BASE     0x40020000u
+/* per channel x the flag nibble is 4x: GIF · FTFIF · HTFIF · ERRIF (UM §8.5.1/8.5.2, L16150+); CHxCTL ERRIE 3 HTFIE 2 FTFIE 1 */
+#define DMA_INTF      RD(DMA0_BASE + 0x00u)
+#define DMA_INTC      RD(DMA0_BASE + 0x04u)
 #define DMAMUX_BASE   0x40020800u
 
 /* ---------------- TRIGSEL (base 0x4001 8400, L12337) */

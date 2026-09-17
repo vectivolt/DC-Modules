@@ -71,12 +71,12 @@
      {
       "pin_number": 6,
       "name": "OUTN",
-      "signal_name": "SNS_IOUTN"
+      "signal_name": "USHO_OUTN"
      },
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_IOUT"
+      "signal_name": "USHO_OUTP"
      },
      {
       "pin_number": 8,
@@ -164,6 +164,40 @@
     ]
    },
    {
+    "designator": "RSHOP",
+    "value": "100",
+    "block_name": "OUTPUT",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "USHO_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_IOUT"
+     }
+    ]
+   },
+   {
+    "designator": "RSHON",
+    "value": "100",
+    "block_name": "OUTPUT",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "USHO_OUTN"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_IOUTN"
+     }
+    ]
+   },
+   {
     "designator": "COF1",
     "value": "4.7uF",
     "block_name": "OUTPUT",
@@ -228,6 +262,57 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "PE"
+     }
+    ]
+   },
+   {
+    "designator": "RBO1",
+    "value": "150k",
+    "block_name": "OUTPUT",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBO_M"
+     }
+    ]
+   },
+   {
+    "designator": "RBO2",
+    "value": "150k",
+    "block_name": "OUTPUT",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBO_M"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "RBO_23"
+     }
+    ]
+   },
+   {
+    "designator": "RBO3",
+    "value": "150k",
+    "block_name": "OUTPUT",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RBO_23"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "OUTN"
      }
     ]
    },
@@ -460,7 +545,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VBKA"
+      "signal_name": "UIVOA_OUTP"
      },
      {
       "pin_number": 8,
@@ -500,6 +585,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "ROAO",
+    "value": "100",
+    "block_name": "SENSE-VBKA",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVOA_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VBKA"
      }
     ]
    }
@@ -708,7 +810,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VBKB"
+      "signal_name": "UIVOB_OUTP"
      },
      {
       "pin_number": 8,
@@ -748,6 +850,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "ROBO",
+    "value": "100",
+    "block_name": "SENSE-VBKB",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVOB_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VBKB"
      }
     ]
    }
@@ -956,7 +1075,7 @@
      {
       "pin_number": 7,
       "name": "OUTP",
-      "signal_name": "SNS_VOUT"
+      "signal_name": "UIVOV_OUTP"
      },
      {
       "pin_number": 8,
@@ -996,6 +1115,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "AGND"
+     }
+    ]
+   },
+   {
+    "designator": "ROVO",
+    "value": "100",
+    "block_name": "SENSE-VOUT",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "UIVOV_OUTP"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "SNS_VOUT"
      }
     ]
    }
@@ -1211,5 +1347,5 @@
   ]
  },
  "warnings": [],
- "total": 61
+ "total": 69
 }

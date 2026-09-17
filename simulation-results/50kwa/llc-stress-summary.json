@@ -1,18 +1,18 @@
 {
   "fingerprint": "50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p",
   "worstCorner": "SER250-full-bus764",
-  "ipPkMax": 182.6,
+  "ipPkMax": 182.5,
   "ipRmsMax": 116.1,
   "imPkMax": 68.2,
   "vcrAcMax": 598,
   "isRmsMax": 114.1,
-  "isPkMax": 175.7,
+  "isPkMax": 175.9,
   "idAvgMax": 50.1,
   "fetRmsMax": 82.3,
   "fetToffMax": 148,
   "zvsAll": false,
   "tDeadNeedMaxNs": 382,
-  "iCommMin": 30.3,
+  "iCommMin": 10.7,
   "zvsFailCorners": [
     "SER250-full-bus764:AH|AL",
     "PAR200-Imax:AH|AL",
@@ -22,12 +22,12 @@
   "legsInRails": true,
   "capability": true,
   "race": {
-    "pre": 157.774887,
-    "at2us": 301.670449,
-    "at3us": 302.518885,
-    "at5us": 504.3628,
-    "at10us": 556.716786,
-    "at40us": 556.716786
+    "pre": 171.979859,
+    "at2us": 314.080579,
+    "at3us": 320.028187,
+    "at5us": 528.095382,
+    "at10us": 577.014439,
+    "at40us": 577.014439
   },
   "shortFmax": {
     "rms": 245,

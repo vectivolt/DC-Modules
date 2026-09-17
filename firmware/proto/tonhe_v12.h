@@ -60,7 +60,9 @@ typedef struct {
   struct { uint8_t group; uint16_t i_ca; uint32_t t; bool seen; } peer[241];   /* index = address */
 } th12_t;
 
-void th12_init(th12_t *t, uint8_t addr_mode, uint8_t addr_can, uint8_t addr_local, uint32_t now_ms);
+/* E82 (K-3): uid is this module's 32-bit silicon identity (the same value vmp_ident_t.uid carries) — folded into the
+   periodic-frame phase below so two modules mis-set to the same address do not transmit in lock-step forever. */
+void th12_init(th12_t *t, uint8_t addr_mode, uint8_t addr_can, uint8_t addr_local, uint32_t uid, uint32_t now_ms);
 uint8_t th12_addr(const th12_t *t);   /* the address in force; 0 = none (silent, addressed commands ignored) */
 void th12_rx(th12_t *t, const pmp_frame_t *f, uint32_t now_ms, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_txq_t *tx);
 void th12_tick(th12_t *t, uint32_t now_ms, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_txq_t *tx);

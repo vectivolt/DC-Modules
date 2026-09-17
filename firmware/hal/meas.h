@@ -30,11 +30,33 @@ float meas_ntc_c(float frac);                      /* frac = counts / 4095 */
 uint16_t meas_rating_kw(float volts, bool *liquid); /* 30 · 40 · 50, or 0 for no host / the reserved band */
 
 #define GRID_HYS_V 20.0f
+/* E82 (M-18): the per-line-cycle DC estimate the PFC current loop subtracts before it acts. The Vienna's current loop is
+   P-only, so any DC the modulator is asked to produce is opposed by the line resistance ALONE (tens of mΩ) — and the line
+   CTs pass nothing below ≈ 1 Hz, so the loop cannot even see the result. Both forcing terms are measurement offsets: a
+   differential offset on the three SNS_VAC channels (1 LSB = 1.35 V of line — the AC chains use 14 % of the ADC span, and
+   VAC1/2 sit on ADC1 against VAC3 on ADC3, so their offsets do not cancel) and a residual offset on a CT channel after the
+   boot window. Both are removable for free: the true mean of a 3-wire phase-voltage set is zero, and the true mean of a
+   line current is zero, so the measured mean of each IS its channel's offset.
+   The estimate is slow (≈ 1 s, GRID_DC_K per cycle) and frozen on any cycle that is not a clean locked 45–65 Hz cycle whose
+   rms did not move — a clamp entering or leaving mid-cycle is exactly what moves rms, so that one test covers it. The bands
+   are wide enough for every plausible residual and far too narrow to absorb a broken channel, which still reaches F.29
+   through isum and the boot window (both of which stay on the RAW samples). */
+/* Two rates, because the two means are not equally trustworthy. The phase voltages' true mean is zero by physics at every
+   instant, whatever the line or the load is doing, so that estimate can be quick. The line currents' mean is only the
+   channel's offset once the CT has finished passing whatever real DC is present (its magnetizing pole is 0.2–1 s), so that
+   one must be slower than the voltage estimate — otherwise it learns the DC the voltage offset is still producing and the
+   two chase each other for seconds. */
+#define GRID_DC_KV    0.25f  /* per closed cycle → τ ≈ 80 ms at 50 Hz (the sensed phase voltages) */
+#define GRID_DC_KI    0.03f   /* per closed cycle → τ ≈ 0.7 s at 50 Hz (the CT channels) */
+#define GRID_DC_V_MAX 15.0f   /* V — ≈ 11 LSB of SNS_VAC */
+#define GRID_DC_I_MAX 1.6f    /* A — 2 % of the smallest SKU's i_clamp (80.8 A); ≈ 17 LSB on the 30 kW CT chain */
 typedef struct {
   float vph[3], vll[3], irms[3], isum, hz;   /* published; hz = 0 when no cycle closed inside 60 ms */
+  float dcv[3], dci[3];                      /* E82 (M-18): published DC estimate of the sensed phase voltages and line currents */
   bool abc;
   uint32_t seq;
   float a_vph[3], a_vll[3], a_i[3], a_is;    /* working state */
+  float a_dcv[3], a_dci[3];                  /* E82 (M-18): the same cycle's LINEAR sums */
   uint32_t n;
   bool pos, locked;
 } grid_t;

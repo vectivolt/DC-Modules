@@ -403,7 +403,7 @@
    },
    {
     "designator": "RFDMP",
-    "value": "CER-3W-R33-AX",
+    "value": "RTF-50W-R33-TO247",
     "block_name": "BUS-IN",
     "pins": [
      {
@@ -940,7 +940,7 @@
    },
    {
     "designator": "PS1H",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -1246,7 +1246,7 @@
    },
    {
     "designator": "PS1L",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "LEG-1",
     "pins": [
      {
@@ -1798,7 +1798,7 @@
    },
    {
     "designator": "PS2H",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "LEG-2",
     "pins": [
      {
@@ -2104,7 +2104,7 @@
    },
    {
     "designator": "PS2L",
-    "value": "QA01C-15",
+    "value": "ISO-GBIAS-15-1W",
     "block_name": "LEG-2",
     "pins": [
      {

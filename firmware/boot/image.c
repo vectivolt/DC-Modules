@@ -24,15 +24,15 @@ int img_verify(const uint8_t *img, uint32_t cap, uint32_t slot_base, uint32_t hw
   uint8_t h[32];
   sha256(img, 0x40u, h);
   if (poll) poll();
-  if (!p256_verify(key->xy, h, img + 0x40)) return IMG_E_SIGNATURE;   /* ≈ 9 ms at 216 MHz: inside one window */
-  /* E81 (F-F-9): kick here too. Without it the longest gap between two watchdog services in the whole verification is
-     p256_verify (≈9 ms) + the FIRST 32 KB body chunk (≈8–12 ms) back to back = 15–21 ms against the TPS3430's 23.375 ms
-     upper bound — likely inside, on two estimates and no measurement. Splitting it removes the dependency. */
+  /* E82 (LV-1): the signature check is ≈ 12.9 M instructions ≈ 90–105 ms at 216 MHz (measured on the -Os build under a
+     Cortex-M33 emulator; the E80 "≈ 9 ms" was an estimate, 10× low) — four TPS3430 windows. It is serviced from INSIDE the
+     ladder now; with WDO on NRST the old form reset the part during every boot, for ever. */
+  if (!p256_verify_poll(key->xy, h, img + 0x40, poll)) return IMG_E_SIGNATURE;
   if (poll) poll();
   sha256_t s;
   sha256_init(&s);
-  for (uint32_t off = 0u; off < info->size; off += 0x8000u) {         /* the body in 32 KB pieces, a kick between them */
-    uint32_t n = info->size - off < 0x8000u ? info->size - off : 0x8000u;
+  for (uint32_t off = 0u; off < info->size; off += 0x1000u) {         /* E82: 4 KB pieces (≈ 1.6 ms each), a kick between them */
+    uint32_t n = info->size - off < 0x1000u ? info->size - off : 0x1000u;
     sha256_update(&s, img + IMG_HDR_LEN + off, n);
     if (poll) poll();
   }

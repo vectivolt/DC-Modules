@@ -15,13 +15,13 @@ Comment4 ""
 $EndDescr
 $Sheet
 S 1000 1000 4200 1400
-U 5E00028A
+U 5E000293
 F0 "50 kW ACDC board 1of2 - Vienna PFC (1x liquid cells)" 70
 F1 "50kw-acdc.sch" 70
 $EndSheet
 $Sheet
 S 6200 1000 4200 1400
-U 5E00028B
+U 5E000294
 F0 "50 kW DCDC board 2of2 - full-bridge LLC (E67)" 70
 F1 "50kw-dcdc.sch" 70
 $EndSheet

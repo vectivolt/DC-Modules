@@ -237,9 +237,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22k",
-   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
-   "mpn": "R2512-22k-HV-AS"
+   "value": "47k",
+   "query": "R2512-47k-HV-AS **47 kOhm** 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RBALT0B",
@@ -257,9 +257,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22k",
-   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
-   "mpn": "R2512-22k-HV-AS"
+   "value": "47k",
+   "query": "R2512-47k-HV-AS **47 kOhm** 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RBALB0A",
@@ -277,9 +277,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22k",
-   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
-   "mpn": "R2512-22k-HV-AS"
+   "value": "47k",
+   "query": "R2512-47k-HV-AS **47 kOhm** 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RBALB0B",
@@ -297,9 +297,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "22k",
-   "query": "R2512-22k-HV-AS **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per ",
-   "mpn": "R2512-22k-HV-AS"
+   "value": "47k",
+   "query": "R2512-47k-HV-AS **47 kOhm** 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per ",
+   "mpn": "R2512-47k-HV-AS"
   },
   {
    "designator": "RDIS0",
@@ -482,9 +482,9 @@
    "nc_pins": [
     5
    ],
-   "value": "QA01C-15",
-   "query": "QA01C-15 iso 15→15 V module ≥6 kVDC ",
-   "mpn": "QA01C-15"
+   "value": "ISO-GBIAS-15-1W",
+   "query": "ISO-GBIAS-15-1W iso 15→15 V module ≥6 kVDC ",
+   "mpn": "ISO-GBIAS-15-1W"
   },
   {
    "designator": "RQDL",

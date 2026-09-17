@@ -360,7 +360,7 @@ function icLib(rawKey, pins) {
     [/^(TLP152|VOM1271)/, "OPTO"],
     [/^(NSI66|NSI12|NSI10|NSI82|AMC13)/, "ISO"],
     [/^SHUNT-/, "SHUNT"],
-    [/^(QA01C|ISO5V|B1505)/, "DCDC"],
+    [/^(QA01C|ISO-GBIAS|ISO5V|B1505)/, "DCDC"],   // E82 (M-03): the gate-bias class renamed QA01C-15 → ISO-GBIAS-15-1W/2W
   ];
   {
     const hit = GLYPH_OF.find(([re]) => re.test(nm));

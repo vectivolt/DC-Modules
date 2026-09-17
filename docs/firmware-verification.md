@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/rev-E82-f2b705?style=flat-square" alt="revision E82"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/host-291_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 291 checks · ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/host-330_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 330 checks · ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -26,7 +26,7 @@
 
 | Level | Where | What it proves | Status |
 |---|---|---|---|
-| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, and (E80) the signed boot chain — SHA-256/ECDSA-P256 against OpenSSL-derived vectors, image acceptance, trial/rollback, the update protocol under drops and power cuts, and (E81) the adaptive LLC dead time, the demand map, the per-rating fan count and the protocol fixes | **291 checks, green** |
+| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, and (E80) the signed boot chain — SHA-256/ECDSA-P256 against OpenSSL-derived vectors, image acceptance, trial/rollback, the update protocol under drops and power cuts, and (E81) the adaptive LLC dead time, the demand map, the per-rating fan count and the protocol fixes, and (E82) the row-granular program-once flash model, the weak-leg dead-time floor, the junction observer with its decline, the positive-only F.01 with its 100 kHz magnitude trip and the new FSM rows | **330 checks, green** |
 | **L2 static** | cppcheck + clang-tidy (bugprone, cert, misc), a MISRA C:2012 subset, stack-depth analysis | no undefined-behaviour classes, bounded stacks, no implicit narrowing on the wire path | planned |
 | **L3 HIL** | the production control card against a real-time plant, with two CAN interfaces and fault injection | timing, loops, sequencing, bus behaviour, NVM and update paths on the real MCU | planned |
 | **L4 EVT** | power hardware: T-44…T-49 with the existing T-03, T-06, T-16, T-35, T-42 | control transients, protection and interoperability on real power | planned |
@@ -34,7 +34,7 @@
 
 ```mermaid
 flowchart LR
-  SRC["firmware/core · firmware/proto · firmware/hal · firmware/boot"] --> L1["L1 host · run_tests.sh<br/>291 checks · 7 binaries<br/>sanitizers fatal"]
+  SRC["firmware/core · firmware/proto · firmware/hal · firmware/boot"] --> L1["L1 host · run_tests.sh<br/>330 checks · 7 binaries<br/>sanitizers fatal"]
   SRC --> L2["L2 static<br/>MISRA subset · stack depth"]
   L1 --> RA["run-all.sh<br/>every commit"]
   L2 --> L3["L3 HIL · nightly<br/>real card · real-time plant · CAN fuzz"]
@@ -185,11 +185,13 @@ flowchart LR
 
 | Suite | Scope |
 |---|---|
-| `host_sim` 114 | the 26 fault scenarios on a behavioural plant with relay mirror contacts, E60–E78 regressions, three group-law nodes, every-tick invariants (relay exclusion, make-permit, aux) |
-| `ctl_test` 18 | shaper rules and regulator properties (§1.2) |
-| `proto_test` 40 | frame helpers, TonHe V1.2 and VMP 2.0 conformance and fuzz, one core behind both profiles |
-| `hal_test` 34 | E79: the Vienna law on a cycle-by-cycle plant — start, load step and dump, steady THD / PF / midpoint, 50 % and 75 % sags, a 480 VAC sag, a 30° jump, sequence A-C-B · the LLC modulator on a switched tank — the ZVS table against the FHA corners, CV, CC into a battery, the floor, burst · measurement · the NVM store under a power cut at every byte and step |
-| `app_test` 16 | E79: the application end to end through TonHe V1.2 on averaged plants — boot to delivery, the stop, each fault channel, F.30 · F.32 · F.35 · F.37, the watchdog gate, sag ride-through, a start above the setpoint, CAN bus-off, configuration storage |
+| `boot_test` 22 | SHA-256 and P-256 vectors, signed-image acceptance and every refusal code, the boot decision table, the update protocol end to end — **E82: on a flash model that is the GD32 FMC (8-byte rows, a second program of a row refused, an all-FF write bypassed, the 4-byte-run packing copied from `nvmport.c`), with the power budget counting ROWS and erases rather than bytes** |
+| `host_sim` 122 | the 26 fault scenarios on a behavioural plant with relay mirror contacts, E60–E82 regressions, three group-law nodes, every-tick invariants (relay exclusion, make-permit, aux) — **E82 adds a link pinned by AC during a dump (F.21 at ≤ 500 ms instead of 5 s) and the discharge that waits for the output node** |
+| `ctl_test` 20 | shaper rules and regulator properties (§1.2) — **E82: availability multiplied by (1 − `die_fold`) with `PMP_DR_THERMAL` set and a declined point reading 0 A, and one share-trim period answering at most a quarter of the sharing error into a 5 mΩ interconnect** |
+| `proto_test` 42 | frame helpers, TonHe V1.2 and VMP 2.0 conformance and fuzz, one core behind both profiles — **E82: a short `C_M_24` confirmed 0x00 without refreshing presence or running; two modules on one address desynchronised by their UIDs; REBOOT NAKed `VMP_E_STATE` in the warm hold** |
+| `hal_test` 45 | E79: the Vienna law on a cycle-by-cycle plant — start, load step and dump, steady THD / PF / midpoint, 50 % and 75 % sags, a 480 VAC sag, a 30° jump, sequence A-C-B · the LLC modulator on a switched tank — the ZVS table against the FHA corners, CV, CC into a battery, the floor, burst · measurement · the NVM store under a power cut at every byte and step. **E82 adds: the store never programs a 64-bit row twice (negative run: 10 checks fail with only the layout reverted); the two evlog checks the ring never had; DC line current 23.04 A → 0.169 A on a plant that models the CT as the high-pass it physically is, with the clamps proven not to be a hiding place; the CV gain ceiling (worst |T(z = −1)| 1.79 → 0.43); and the weak-leg dead-time floor** |
+| `e81_test` 50 | the E81 and E82 reviews' own checks: the dead-time floor and the weak-leg edge, the FSM rows F-A-7/11 and F-E-02/05/06/07/09/13 plus the E82 rows E-05…E-20, the per-rating fan count and fault channels, the fold, and the TonHe / VMP protocol fixes |
+| `app_test` 29 | E79: the application end to end through TonHe V1.2 on averaged plants — boot to delivery, the stop, each fault channel, F.30 · F.32 · F.35 · F.37, the watchdog gate, sag ride-through, a start above the setpoint, CAN bus-off, configuration storage. **E82 adds: the F.01 reference reading 2.664 V through both half cycles with −205 A on one phase stopping the stage inside one ISR while 2 000 ISRs of ±0.9 A idle noise never trip; and three end-to-end junction-observer rows — 50 kW air at 285 VAC on the 830 V link into 400 V / 3.7 Ω delivers 108 A on a 40 °C sink and 100 A on a 77 °C sink with `PMP_DR_THERMAL` set and the Vienna junction estimate at 144 °C (no fault), while 150 V into a resistor on a 77 °C sink on the two-die 50 kW air is DECLINED — 0 A available with the thermal-derate bit, no fault latched, the link at its 650 V floor. and the refusal is NOT inherited — after a declined point, a stop and a fresh start at 400 V delivers — stopping the LLC forgets the refusal, because each junction estimate falls back onto its base whenever its stage is off** |
 
 To add: line and branch coverage with llvm-cov (target ≥ 90 % of `core/` and `proto/`), and a layer check that fails if any
 `core/` file includes a `proto/` header.
@@ -259,12 +261,12 @@ T-48 control transients · T-49 fault and recovery cycling — procedures and cr
 | T-52…T-56 | Boot/update on silicon · the TPS3430 window · the fan curve constant · the aux fault matrix · PV bleeder hot/humid | [EVT plan](evt-plan.md) | planned |
 
 > [!TIP]
-> **How this page is checked** — `sh firmware/run_tests.sh` is L1 and runs in `run-all` (291 checks, sanitizers fatal); L2–L4 are the HIL, fuzzing and endurance campaigns this page specifies.
+> **How this page is checked** — `sh firmware/run_tests.sh` is L1 and runs in `run-all` (330 checks, sanitizers fatal); L2–L4 are the HIL, fuzzing and endurance campaigns this page specifies.
 
 ---
 
 <div align="center">
 <sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E82 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

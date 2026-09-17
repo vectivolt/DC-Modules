@@ -14,7 +14,7 @@ cd "$(dirname "$0")"
 CC="cc -std=c99 -Wall -Wextra -Werror -O1 -fsanitize=address,undefined -fno-sanitize-recover=undefined"
 CORE="core/fsm.c core/group.c core/ctl.c core/modapi.c"
 PROTO="proto/frame.c proto/vmp.c proto/tonhe_v12.c proto/profile.c"
-HAL="hal/pfc.c hal/llc.c hal/meas.c hal/nvm.c hal/evlog.c"
+HAL="hal/pfc.c hal/llc.c hal/meas.c hal/nvm.c hal/evlog.c hal/dielim.c"
 BOOT="boot/sha256.c boot/p256.c boot/image.c boot/bootctl.c boot/svc.c boot/updater.c"
 $CC $BOOT hal/nvm.c proto/frame.c test/boot_test.c -o /tmp/pmp_boot_test -lm
 /tmp/pmp_boot_test

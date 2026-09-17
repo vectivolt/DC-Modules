@@ -112,16 +112,16 @@ for (const [n, v, cls, lim, why] of V)
 const grid = readFileSync(join(ROOT, "calculations/out/envelope-grid.csv"), "utf8").trim().split("\n").map(r => r.split(","));
 for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
-  // E81 F-L-1 (deck-validated by the differential cs run): the 150 V output class in phase shift is NOT SUSTAINABLE on the
-  // two-die SKUs at ANY load or ambient — the weak leg's hard turn-on is a fixed ≈ 90–170 W per die that no fold removes.
-  // The corner is REGISTERED (E82-1 owns the fix: burst-PFM policy · reduced-f PSM · the low-Z₀ tank of benchmark R4); until
-  // then sustained sub-200 V delivery on 40 / 50 kW is a documented spec limit (TonHe's own TH750 floor is 200 V) and the OT
-  // ladder is the hardware guard. The 30 kW (one die, 330 pF) SERVES the corner folded ≥ 90 %.
-  const fl1 = (r) => sku !== "30kw" && r[2] === "150" && r[6] === "PSM";
-  const tjp = Math.max(...rows.map(r => +r[13])), tjl = Math.max(...rows.filter(r => !fl1(r)).map(r => +r[14]));
-  const tjlFl1 = Math.max(0, ...rows.filter(fl1).map(r => +r[14]));
-  ck("Tj", `${sku} PFC FET worst corner`, tjp <= 150, `${tjp} °C vs 150 ceiling (abs max 175) [grid, ${rows.length} pts]`);
-  ck("Tj", `${sku} LLC FET worst corner`, tjl <= 150.5, `${tjl} °C vs 150 ceiling (corner folds engage per envelope policy)${tjlFl1 ? ` · the registered F-L-1 corner (150 V output, phase shift) reads ${tjlFl1} °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile` : ""} [grid]`);
+  // E82 (C-11) CLOSES E81 F-L-1. E81 registered the 150 V class in phase shift as NOT SUSTAINABLE on the two-die SKUs (229–335 °C
+  // at any load) and excluded those rows from this check. Three things were wrong, none of them the hardware: the firmware gave the
+  // weak leg a 200–900 ns dead time and the node had swung back to the rail by then (hal/llc.c weak_dead_s now programs the valley,
+  // 125 / 186 / 189 ns, and the deck commits its rows at the same edge — fw-constants-sync holds the two together); the grid charged
+  // every weak-leg die twice; and nothing in firmware implemented any fold (hal/dielim.c does now). There is no exclusion any more:
+  // EVERY row of every SKU is judged against the ceiling.
+  const tjp = Math.max(...rows.map(r => +r[13])), tjl = Math.max(...rows.map(r => +r[14]));
+  ck("Tj", `${sku} PFC FET worst corner`, tjp <= 150.5, `${tjp} °C vs 150 ceiling (abs max 175) — E82: the Vienna modulation-index term and the datasheet R_DS(on) slope are in, and the low-line / 830 V-link corners FOLD instead of reading 153–164 °C [grid, ${rows.length} pts]`);
+  ck("Tj", `${sku} LLC FET worst corner`, tjl <= 150.5, `${tjl} °C vs 150 ceiling over EVERY row — the E81 F-L-1 exclusion (150 V, phase shift, two-die SKUs) is gone [grid]`);
+  ck("Tj", `${sku} no FAIL row anywhere in the grid`, rows.every(r => r[15] === "PASS"), `${rows.filter(r => r[15] !== "PASS").length} FAIL rows of ${rows.length} (E81 accepted 108 per two-die SKU)`);
 }
 // E42/E44/E67 grid-shape asserts: the full-bridge tank class must deliver the FULL envelope on every SKU — no tank-ceiling clamps
 // (no availability clamp exists in firmware). E69a (user decision 2026-09-13): thermal folds are accepted ONLY at the forced-HIGH
@@ -133,24 +133,25 @@ for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const r = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
   const ipMax = Math.max(...r.map(r => +r[10])), notes = r.filter(r => (r[16] ?? "") !== "");
   const tjd = Math.max(...r.map(r => +r[17] || 0));
-  // E81 accepted fold / exception table (documented in thermal-report §3 and the E81 report §6). Every row not listed here must be
-  // 100 % and PASS. (1) 500 V series, full load, 55 °C: 40 / 50 kW ≥ 93 % at ≤ 400 VAC and ≥ 85 % at 450–475 VAC (phase shift at
-  // f_max on the line-tracking bus floor); the 30 kW single die (kept under the ≤ 5 % cost ceiling, user decision 2026-09-17) ≥ 85 %
-  // at ≤ 400 VAC and ≥ 75 % at 450–475 VAC. (2) F-L-1 — the current-limited LOW-mode corners in phase shift at f_max, 55 °C: with the
-  // real SiC output charge the WEAK leg hard-switches there against the residual the deck reports (llc-stress.csv Vres_A), a loss
-  // that does not scale with power: 150 V — 30 kW ≥ 90 %, 40 kW and 50 kW liquid ≥ 50 %, 50 kW AIR cannot hold the corner at any
-  // load (registered as NOT SUSTAINABLE at 55 °C — an E82 modulation change: burst PFM below ≈ 200 V bank / phase shift at a lower
-  // frequency / secondary-side modulation); 200–250 V — ≥ 85 % on every SKU. (3) the 40 kW 330 VAC / 500 V-series / 55 °C row reads
-  // η 94.95 % against the 95 % floor (its 470 pF snubber is the only value that keeps the weak leg's window) — registered at ≥ 94.9 %.
-  const foldFloor = (sku, vin, temp) => temp === "room" ? 93 : sku === "30kw" ? (vin >= 450 ? 75 : 85) : (vin >= 450 ? 85 : 93);   // room (25 °C ambient) folds: ≥ 93 % only, at ≥ 450 VAC
-  const fl1Floor = (sku, vout) => vout <= 150 ? (sku === "30kw" ? 90 : -1) : 85;   // −1 = any state accepted (the registered F-L-1 NOT-SUSTAINABLE set: 150 V · PSM · two-die SKUs)
+  // E82 accepted fold table (thermal-report §3, E82 report §7) — every row not listed here must be 100 % and PASS, and NO row may
+  // FAIL. The folds are what firmware/hal/dielim.c converges to (a junction observer on the measured base temperature with these
+  // same loss terms); all of them are full-load rows, and all but one are at 55 °C ambient:
+  //  (1) 500 V series (the forced-HIGH mode edge, bank 250 V): 30 kW ≥ 75 % hot and ≥ 93 % at 25 °C from 450 VAC (one die per
+  //      position, the user's cost decision of 2026-09-17); 40 kW ≥ 93 %; 50 kW air ≥ 80 %.
+  //  (2) LOW mode at ≤ 300 V, hot: 30 kW ≥ 86 %; 50 kW air ≥ 80 % at 150 V. The 40 kW and the 50 kW liquid serve it unfolded.
+  //  (3) low line (≤ 330 VAC) on the 830 V link (output ≥ 400 V parallel / ≥ 750 V series), hot — the VIENNA die, new at E82 with
+  //      the modulation-index term: 40 kW ≥ 93 % (285 VAC only); 50 kW air ≥ 86 %.
   const foldPct = (row) => +(row[16].match(/^thermal derate to (\d+)% $/)?.[1] ?? -100);
-  const allowed = (row) =>
-    (row[2] === "500" && row[5] === "SER" && (row[4] === "hot" || (row[4] === "room" && +row[1] >= 450)) && row[15] === "PASS" && foldPct(row) >= foldFloor(row[0], +row[1], row[4])) ||
-    (row[0] === "40kw" && row[1] === "330" && row[2] === "500" && row[5] === "SER" && row[4] === "hot" && /eta<95/.test(row[16]) && +row[12] >= 94.9) ||
-    (+row[2] <= 250 && row[5] === "PAR" && row[6] === "PSM" && row[4] === "hot" &&
-      (fl1Floor(row[0], +row[2]) < 0 || (row[15] === "PASS" && foldPct(row) >= fl1Floor(row[0], +row[2])))) ||
-    (row[0] !== "30kw" && row[2] === "150" && row[6] === "PSM");   // the registered F-L-1 set: any temp, any load, FAIL tolerated
+  const FLOOR = { ser500: { "30kw": 75, "40kw": 93, "50kw": 100, "50kwa": 80 }, low: { "30kw": 86, "40kw": 100, "50kw": 100, "50kwa": 80 }, line: { "30kw": 100, "40kw": 93, "50kw": 100, "50kwa": 86 } };
+  const allowed = (row) => {
+    if (row[15] !== "PASS" || row[3] !== "1") return false;
+    const sk = row[0], vin = +row[1], vout = +row[2], hot = row[4] === "hot", pct = foldPct(row);
+    if (vout === 500 && row[5] === "SER") return hot ? pct >= FLOOR.ser500[sk] : (row[4] === "room" && vin >= 450 && sk === "30kw" && pct >= 93);
+    if (!hot) return false;
+    if (row[5] === "PAR" && vout <= 300 && (sk !== "50kwa" || vout === 150)) return pct >= FLOOR.low[sk];
+    if (vin <= 330 && ((row[5] === "PAR" && vout >= 400) || (row[5] === "SER" && vout >= 750))) return pct >= FLOOR.line[sk] && (sk !== "40kw" || vin === 285);
+    return false;
+  };
   const bad = notes.filter((row) => !allowed(row));
   ck("E67", `${sku} full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj`, ipMax <= TANK_CLASS[sku] * 1.02 && bad.length === 0 && tjd <= 150.5,
     `${f(ipMax)} A rms vs ${TANK_CLASS[sku]} A class · ${notes.length} noted rows · worst TjJBS ${tjd} °C (${JBS_POS[sku].n}× ${JBS_POS[sku].cls} A per position) [grid]`);
@@ -388,7 +389,17 @@ for (const [sku, nHalf, cls] of [["30kw", 5, 160], ["40kw", 6, 160], ["50kw", 8,
 ck("Epulse", "50 kW 50 W parts ordered", /CER-50W-33R-AX/.test(db) && /CER-50W-160R-AX/.test(db),
   "RPRE1/2 + RDIS0-3 skuOverrides at 50 kW carry the 50 W VALUE codes (R5-G)");
 // X-cap bleed with the E43 CX2 4.7 µF + the E65 CX2-node damper 2.2 µF (star unchanged; verify-independent reads the netlist)
-ck("Xbleed", "X discharge τ after CX2 rev + damper", 0.42 * (2.2 + 4.7 + 2.2) / 4.4 <= 1.0, `τ ${f(0.42 * 9.1 / 4.4, 2)} s ≤ 1 s pluggable rule`);
+// E82 (M-12): the star is the ONLY X-cap bleed path and E68 added a THIRD X stage without re-sizing it.
+// Same registered basis as before (τ = 2R · C_line-to-line, the E43/E65 reference point 0.42 s at 4.4 µF on the
+// 2 × 47 k star), now at 33 k — and checked against BOTH rules, because only one of them was ever written down:
+// the 1 s PLUGGABLE τ rule, and the 5 s to 60 V rule that actually applies to permanently connected equipment.
+{
+  const TAU47 = 0.42 / 4.4;                                   // s per µF line-to-line on the 2 × 47 k star (registered E43/E65)
+  const cLL = (2.2 + 4.7 + 2.2);                              // line-to-line equivalent of the drawn star + delta damper (µF)
+  const tau = TAU47 * (33 / 47) * cLL, t60 = tau * Math.log(475 * Math.SQRT2 / 60);
+  ck("Xbleed", "X discharge after the third X stage, 33 k star", tau <= 1.0 && t60 <= 5.0,
+    `τ ${f(tau, 2)} s ≤ 1 s pluggable rule · 672 V pk → 60 V in ${f(t60, 2)} s ≤ 5 s permanently-connected rule (E82 M-12: the 47 k star was ${f(tau * 47 / 33, 2)} s / ${f(t60 * 47 / 33, 2)} s on this basis and 5.3 / 6.4 s on the E82 per-phase-star form — over the line either way once E68 added the third stage)`);
+}
 
 // ---------------- 4. protection classes [reg + E35/F6 derate rule] ------------------------------
 const FUSE = { "30kw": { A: 80, I: 55.9 }, "40kw": { A: 125, I: 73.3 }, "50kw": { A: 160, I: 91.6 }, "50kwa": { A: 160, I: 91.6 } };
@@ -424,19 +435,21 @@ const fwDoc = readFileSync(join(ROOT, "docs/firmware-guide.md"), "utf8");
 {
   const VBO = D4R.bo.off[1];                                 // NCP1252 BO: 321 V (E65: RBR 2×1.2M / 7.5k, read off cells.tsx)
   ck("R6", "aux brown-out threshold as drawn", Math.abs(VBO - 321) < 2, `1 V × (1+${D4W.rbrUp / 1e6}M/${D4W.rbrLo / 1e3}k) = ${f(VBO, 0)} V — the active-discharge floor (brown-in ${f(D4R.bo.on[1], 0)} V adds IBO·Rup)`);
-  // R8 correction (external review retrace): the 40/50 kW links carry TWO SplitDcLink banks,
-  // each with its own 2×47k pair per half → the pairs PARALLEL (47k/half, 94k full-link);
-  // only the single-bank 30 kW is 188k. The R7 report dismissed the reviewer's 222 s as an
-  // arithmetic slip — the slip was OURS, and this model now counts the drawn strings per SKU
-  // (verify-independent proves the counts against the netlists).
-  for (const [sku, nHalf, nSets] of [["30kw", 5, 1], ["40kw", 6, 2], ["50kw", 8, 2], ["50kwa", 8, 2]]) {
+  // R8 correction (external review retrace): the model counts the DRAWN strings per SKU, not an assumed one.
+  // E82 (M-10): there is now ONE balance network per MODULE on every SKU (cells.tsx `bal`, boards pass bal={k === 0}),
+  // so nSets = 1 everywhere — 94 k per half / 188 k full-link — and the SLOWEST SKU flips from the 30 kW to the 50 kW
+  // (more link capacitance behind the same resistors): 6.2 / 7.4 / 9.9 min. That is why the service label moves 10 → 15 min:
+  // at 9.9 min nominal the +20 % capacitance corner is 11.9 min, i.e. the old label was inside the nominal number and
+  // outside the tolerance band. The ceiling below is the LABEL, and it is now checked at that corner, not at nominal.
+  const CAN_TOL = 1.20, LABEL_S = 900;                       // snap-in electrolytic +20 % · service-label 15 min (protection-thresholds)
+  for (const [sku, nHalf, nSets] of [["30kw", 5, 1], ["40kw", 6, 1], ["50kw", 8, 1], ["50kwa", 8, 1]]) {
     const Clink = nHalf * 470e-6 / 2;                        // series halves
     const tAct = 640 * Clink * Math.log(830 / VBO);          // QDISF powered phase
-    const tPas = (94e3 / nSets) * (nHalf * 470e-6) * Math.log(VBO / 60); // per-half pairs in parallel
-    ck("R6", `${sku} discharge timeline (AC removed)`, tAct < 1.5 && tAct + tPas < 660,
-      `active 830→${f(VBO, 0)} V in ${f(tAct, 2)} s, then PASSIVE ${nSets}×(2×47k)/half: +${f(tPas, 0)} s → total ${f((tAct + tPas) / 60, 1)} min ≤ 11 min label ceiling (R8: 30 kW is the slowest at 6.2 min)`);
+    const tPas = (94e3 / nSets) * (nHalf * 470e-6) * Math.log(VBO / 60); // per-half strings in parallel
+    ck("R6", `${sku} discharge timeline (AC removed)`, tAct < 1.5 && (tAct + tPas) * CAN_TOL < LABEL_S,
+      `active 830→${f(VBO, 0)} V in ${f(tAct, 2)} s, then PASSIVE ${nSets}×(2×47k)/half: +${f(tPas, 0)} s → total ${f((tAct + tPas) / 60, 1)} min nominal, ${f((tAct + tPas) * CAN_TOL / 60, 1)} min at C +20 % ≤ ${LABEL_S / 60} min label (E82: 50 kW is now the slowest)`);
   }
-  ck("R6", "discharge honesty lives in the docs", /R6 discharge-timeline honesty/.test(protDoc) && /wait 10 min/.test(protDoc) && /F\.21 semantics \(R6\)/.test(fwDoc),
+  ck("R6", "discharge honesty lives in the docs", /R6 discharge-timeline honesty/.test(protDoc) && /wait 15 min/.test(protDoc) && /F\.21 semantics \(R6\)/.test(fwDoc),
     "protection-thresholds two-phase note + 62477-1 label text + firmware-guide F.21 real-coverage note");
 }
 {

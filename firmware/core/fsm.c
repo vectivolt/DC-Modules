@@ -17,7 +17,8 @@ pmp_fclass_t pmp_fault_class(pmp_fault_t c) {
   switch (c) {
   case FC_NONE: return FCL_NONE;
   case FC_IN_OV: case FC_IN_UV: case FC_PH_LOSS: case FC_LINE_HZ: return FCL_AUTO_EXT;  /* the grid's */
-  case FC_BUS_UV: case FC_MID_IMB: case FC_OT: case FC_FAN: return FCL_AUTO_INT;   /* the module's, recoverable, counted */
+  /* E82 (E-09): F.26 joins them — a rail that comes back is a recovery, not a service call */
+  case FC_BUS_UV: case FC_MID_IMB: case FC_OT: case FC_FAN: case FC_AUX_UV: return FCL_AUTO_INT;   /* the module's, recoverable, counted */
   /* F.34 stays LATCH: a start that neither completed nor faulted has no known cause, and retrying it re-energizes the stall */
   case FC_LOCK: return FCL_LOCK;
   default: return FCL_LATCH;
@@ -25,12 +26,25 @@ pmp_fclass_t pmp_fault_class(pmp_fault_t c) {
 }
 
 static void latch(pmp_fsm_t *f, pmp_fault_t code) {
-  if (f->latched != FC_NONE || f->lock) return;
+  if (f->lock) return;
   pmp_fclass_t cl = pmp_fault_class(code);
+  if (f->latched != FC_NONE) {
+    /* E82 (E-03): the first row used to mask every later one, and the DESAT / line-OC events are read-clear edges — a grid sag
+       (AUTO_EXT) followed by the DESAT it provoked lost the DESAT, self-cleared after its hold and restarted into the faulted
+       leg. A LATCH-class row now REPLACES a self-clearing one; equal or lower classes are still dropped (first cause wins). */
+    pmp_fclass_t was = pmp_fault_class(f->latched);
+    if (!((was == FCL_AUTO_EXT || was == FCL_AUTO_INT) && cl == FCL_LATCH)) return;
+  }
   f->latched = code;
   if (f->fault_count < 0xFFu) f->fault_count++;       /* lifetime statistic; E78: saturating (it wrapped at 256) */
   f->st = ST_FAULT;
   f->out.pfc_en = false; f->out.llc_en = false; f->out.pwm_kill = true; f->out.stop_ramp = false;
+  /* E82 (A1-02 / E-12): EVERY latch opens the precharge bypass (both stages are already off, so the contacts break only the
+     aux draw). It used to stay closed through FAULT: a 0.5–4 s interruption — an auto-recloser dead time — let the aux pull
+     the link down towards its 321 V brown-out, and the returning line then charged it through the closed contacts, the
+     saturating D1 chokes and ONE boost diode: 380–650 A against a 250 A IFSM class. The FAULT exit already routes through
+     ST_PRECHG when k_pre is false (E79), so recovery re-precharges through the 33 Ω parts and re-proves F.20. */
+  f->out.k_pre = false;
   f->rec_ms = 0;
   if (cl == FCL_AUTO_EXT || cl == FCL_AUTO_INT) {      /* E78: the recovery hold doubles per consecutive AUTO latch */
     if (f->t_ms - f->last_auto_ms > PMP_LOCK_WINDOW_MS) f->auto_streak = 0;
@@ -47,6 +61,19 @@ static void latch(pmp_fsm_t *f, pmp_fault_t code) {
   if (f->counted >= PMP_LOCK_COUNT && f->t_ms - f->lock_t[f->lock_i] <= PMP_LOCK_WINDOW_MS) { f->lock = true; f->st = ST_LOCK; }
 }
 
+/* E82 (E-08): re-file a latched row as another one and TAKE BACK the count it made toward F.31. Only the counting is
+   undone — the module stays faulted, with the same recovery hold — so the sole effect is that a grid event stops walking
+   a healthy module toward LOCK. The ring slot is stamped one full window into the past (unsigned, so it is wrap-safe)
+   instead of cleared: a zeroed slot reads as "0 ms ago" for the first ten minutes after boot and would lock the module
+   itself. latch() refuses to latch anything while f->lock, so a lock seen here can only be the one this latch just set. */
+static void recount(pmp_fsm_t *f, pmp_fault_t code) {
+  f->latched = code;
+  if (f->counted) f->counted--;
+  f->lock_i = (uint8_t)((f->lock_i + PMP_LOCK_COUNT - 1u) % PMP_LOCK_COUNT);
+  f->lock_t[f->lock_i] = f->t_ms - PMP_LOCK_WINDOW_MS - 1u;
+  if (f->lock) { f->lock = false; f->st = ST_FAULT; }
+}
+
 /* E77: consecutive-ms persistence — a row fires only after its condition has held for its documented detection time */
 static bool persist(uint16_t *c, bool cond, uint16_t ms) {
   *c = cond ? (uint16_t)(*c < 0xFFFFu ? *c + 1u : *c) : 0u;
@@ -59,6 +86,7 @@ static bool in_range(float x, float lo, float hi) { return isfinite(x) && x >= l
    stalled start) re-prove themselves on the restart, so they need only a healthy line. */
 static bool recovered(const pmp_fsm_t *f, const pmp_in_t *in) {
   if (in->hal_fault == f->latched) return false;   /* E79: the HAL still holds the row (F.37 while the frequency is out) */
+  if (f->latched == FC_AUX_UV) return in->aux_ok;   /* E82 (E-09): the rail itself, never the line */
   if (f->latched == FC_OT)return in_range(in->temp_max_c, -60.0f, PMP_OT_RECOVER_C);
   if (f->latched == FC_FAN) return pmp_fan_derate(in) > 0.0f;   /* E80: a fan runs again */
   return in->vin_ll_min >= PMP_IN_UV_RECOVER_V && in->vin_ll_max <= PMP_IN_OV_RECOVER_V && in->phases_ok >= 3;
@@ -83,6 +111,7 @@ void pmp_fsm_init(pmp_fsm_t *f) {
      seen low; an event must arrive) — so the profiles own it (vmp.c holds RUN until it sees RUN = 0; a TonHe start is an
      event). A core-level hold here would strand a TonHe module whose one start command arrived during precharge. */
   f->st = ST_INIT;
+  f->line_evt_ms = 0xFFFFu;                       /* E82 (H2-2): no line event on record */
   f->out.derate = 1.0f;
   f->out.mode = MODE_PAR;
   f->out.v_max = PMP_PAR_VMAX_V;
@@ -105,6 +134,12 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   f->t_ms++;
   o->pwm_kill = false;
   o->warn = 0;
+  /* E82 (E-06): the shutdown path is exempt from EVERY latch site, not just the HAL's. Only in->hal_fault carried this
+     guard; the bus-OVP mirror, DESAT, F.01, F.32, F.35 and the F.29 persistence did not — and ST_FAULT ends the dump
+     (E80 HR-11), so one late tick (F.35 fires on a single one, and nvm_service flushes the event ring during exactly
+     this window) left the link at 700 V with a fault on the panel and no further discharge ever attempted. A row that
+     fires here has nothing left to protect: both stages are already off. F.21 still bounds the dump. */
+  bool on_shutdown = f->st == ST_SHUTDOWN || f->st == ST_DISCH || f->st == ST_OFF;
 
   /* ---------------- E77: inputs are sanitized before any row reads them. A measurement that is non-finite or physically
      impossible for PMP_BAD_SAMPLE_MS is a sensing fault (F.29) — before E77 a NaN temperature, bus or current command made
@@ -118,7 +153,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
               && in_range(in->temp_max_c, -60.0f, 200.0f) && (!in->ext_connected || in_range(in->vext, -1150.0f, 1150.0f));
   if (f->st != ST_INIT && f->st != ST_OFF && f->st != ST_LOCK) {
     if (!meas_ok) o->warn |= PMP_W_MEAS_GLITCH;
-    if (persist(&f->p_bad, !meas_ok, PMP_BAD_SAMPLE_MS)) latch(f, FC_SENSOR);
+    if (persist(&f->p_bad, !meas_ok, PMP_BAD_SAMPLE_MS) && !on_shutdown) latch(f, FC_SENSOR);   /* E82 (E-06) */
   }
   float vcmd = (isfinite(in->vcmd) && in->vcmd > 0.0f) ? fminf(in->vcmd, PMP_SER_VMAX_V) : 0.0f;
   float icmd = (isfinite(in->icmd) && in->icmd > 0.0f) ? fminf(in->icmd, f->i_rated_a) : 0.0f;
@@ -130,16 +165,26 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
      F.34 after 8 s — every time, with no explanation. The module now stays in STANDBY and says PMP_W_NO_SETPOINT. */
   bool have_sp = vcmd >= PMP_VCMD_START_MIN_V;
 
-  /* ---------------- hardware-fast mirror (comparators do this in <µs; firmware re-asserts) */
-  if (in->vbus > PMP_BUS_OVP_V) latch(f, FC_BUS_OVP);
-  if (in->desat_flt) latch(f, FC_DESAT);
-  if (in->oc_pfc_flt && f->pre_blank_ms == 0) latch(f, FC_OC_PFC);   /* E73: blanked while the precharge bypass closes */
+  /* ---------------- hardware-fast mirror (comparators do this in <µs; firmware re-asserts). E82 (E-06): all of these
+     now carry the shutdown-path guard the HAL row always had. */
+  if (in->vbus > PMP_BUS_OVP_V && !on_shutdown) latch(f, FC_BUS_OVP);
+  if (in->desat_flt && !on_shutdown) latch(f, FC_DESAT);
+  /* E82 (H2-2): the site's normal line and the time since it was last disturbed (fsm.h PMP_LINE_EVT_*) */
+  if (isfinite(in->vin_ll_min)) {
+    if (in->vin_ll_min > f->vin_nom) f->vin_nom = in->vin_ll_min; else f->vin_nom += (in->vin_ll_min - f->vin_nom) * 2.0e-4f;
+  }
+  bool line_evt = in->phases_ok < 3 || in->vin_ll_min < PMP_LINE_EVT_K * f->vin_nom;
+  f->line_evt_ms = line_evt ? 0u : (uint16_t)(f->line_evt_ms < 0xFFFFu ? f->line_evt_ms + 1u : 0xFFFFu);
+  if (in->oc_pfc_flt && f->pre_blank_ms == 0 && !on_shutdown)                        /* E73: blanked while the bypass closes */
+    latch(f, f->line_evt_ms <= PMP_LINE_EVT_MS ? FC_IN_UV : FC_OC_PFC);
   if (f->pre_blank_ms) f->pre_blank_ms--;
-  if (!in->wdt_ok) latch(f, FC_WDT);
-  if (in->ctl_overrun) latch(f, FC_OVERRUN);                        /* E78: the HAL's deadline verdict (firmware-architecture §3) */
+  if (!in->wdt_ok && !on_shutdown) latch(f, FC_WDT);
+  if (in->ctl_overrun && !on_shutdown) latch(f, FC_OVERRUN);        /* E78: the HAL's deadline verdict (firmware-architecture §3) */
   /* E79: rows the HAL decides. Not on the shutdown path: an AUTO row latched in OFF would recover into precharge and restart a
      module that was shut down on purpose. */
-  if (in->hal_fault != FC_NONE && f->st != ST_SHUTDOWN && f->st != ST_DISCH && f->st != ST_OFF) latch(f, in->hal_fault);
+  if (in->hal_fault != FC_NONE && !on_shutdown) latch(f, in->hal_fault);
+  /* E82 (E-20): F.28 is graceful by design and wrote no code anywhere — say it, without latching it */
+  if (in->can_age_ms > f->can_to_ms) o->warn |= PMP_W_COMMS_LOST;
   if (!in->aux_ok) {
     o->pfc_en = false; o->llc_en = false; o->stop_ramp = false;
     if (f->st == ST_RUN || f->st == ST_DERATE) { f->st = ST_SAFE; f->need_enable = true; }   /* E78: module-initiated → re-arm */
@@ -147,6 +192,11 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
        latch after 100 ms and replace the designed SAFE → (500 ms) → STANDBY recovery with a row needing a CAN CLEAR.
        The matrix settle timer is re-armed too: when the aux returns the contacts have just re-closed and are bouncing. */
     f->p_relay = 0; f->p_make = 0;
+    /* E82 (E-13): and the matrix COMMANDS go with the coils. They were held asserted, so the contacts re-made the
+       instant the rail returned — driven by hardware, ahead of the 500 ms SAFE hold and without the E76/R03 make-permit
+       (zero current, the new stack below the output node). Nothing changes physically here: the coils are already dead.
+       Clearing the commands makes SAFE → STANDBY re-prove the permit before it closes them again. */
+    o->k_ser = false; o->k_para = false; o->k_parb = false;
   }
 
   /* E76 (review R06): the enable release is the public STOP — and the RE-ARM. need_enable (set by a
@@ -234,7 +284,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if (in->link_age_ms > PMP_LINK_TO_MS) latch(f, FC_LINK);
     /* E65: recomputed every tick — a session that starts low (bus 650 V) and climbs to a 525 V bank would otherwise
        run gain 1.6, outside every simulated corner (the reference was only set in STANDBY) */
-    o->vbus_ref = bus_ref_for(o->mode, fmaxf(vcmd, in->vout_meas), in->vin_ll_max);   /* E80: the floor tracks the HIGHEST line */
+    o->vbus_ref = bus_ref_for(o->mode, fmaxf(fminf(vcmd, in->vout_meas + PMP_BUS_LEAD_V), in->vout_meas), in->vin_ll_max);   /* E80: the floor tracks the HIGHEST line · E82: the output leads, not the command */
   }
   if (operating) {
     /* E77 row 15 as documented: relative to the RATED current, 130 % for 2 ms or 102 % for 100 ms — the CC loop limits below
@@ -242,7 +292,11 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
        setpoint faster than the loop ramps the output, i.e. on every normal ramp-down to a stop. */
     bool ocf = persist(&f->p_ocf, in->iout_meas > PMP_OC_FAST_FRAC * f->i_rated_a, PMP_OC_FAST_MS);
     bool ocs = persist(&f->p_ocs, in->iout_meas > PMP_OC_SLOW_FRAC * f->i_rated_a, PMP_OC_SLOW_MS);
-    if (ocf || ocs) latch(f, FC_OUT_OC);
+    /* E82 (E-07): and relative to the COMMAND again — rated-only rows let a failed CC loop deliver 0.96 of rated into a
+       0.06 request for as long as it liked. Wide margin, 500 ms, and only while something is actually commanded. */
+    bool occ = persist(&f->p_occ, icmd > 0.0f && !o->stop_ramp &&
+                       in->iout_meas > icmd + fmaxf(PMP_OC_CMD_FRAC * f->i_rated_a, PMP_OC_CMD_MIN_A), PMP_OC_CMD_MS);
+    if (ocf || ocs || occ) latch(f, FC_OUT_OC);
     /* row 16: the current floor keeps a zero command from reading any low-voltage current as a short */
     /* E78: not while the controlled stop takes the output down on purpose (found by proto_test: a stop into a resistive load
        reads as "low voltage with current"). The ramp ends inside 100 ms; F.15 fast and the hardware trips stay armed. */
@@ -268,10 +322,21 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   }
   f->shut_prev = in->shutdown_req;
 
+  /* ---------------- E82 (E-08): F.05 is re-filed as the grid's if the line is found out of its window within
+     PMP_BUSUV_GRID_MS of the latch (last_auto_ms is that latch: F.05 is an AUTO row). The rms line values lag the event
+     by up to a cycle, so this window is the only way the row can see its own cause. A collapse on a healthy line — the
+     case F.05 is really for, a failing PFC or a shorted link — keeps its AUTO_INT class and its count. */
+  if (f->latched == FC_BUS_UV && f->t_ms - f->last_auto_ms <= PMP_BUSUV_GRID_MS &&
+      (in->vin_ll_min < PMP_IN_UV_RECOVER_V || in->vin_ll_max > PMP_IN_OV_RECOVER_V || in->phases_ok < 3))
+    recount(f, in->phases_ok < 3 ? FC_PH_LOSS : (in->vin_ll_max > PMP_IN_OV_RECOVER_V ? FC_IN_OV : FC_IN_UV));
+
   /* ---------------- state machine */
   switch (f->st) {
   case ST_INIT:
-    if (in->aux_ok) f->st = ST_PRECHG;
+    /* E82 (E-09): the wait for the aux is bounded and reported (F.26). p_aux is free here — SAFE's stable hold uses it
+       only in SAFE — but it is cleared on the way out so that hold still starts from zero. */
+    if (in->aux_ok) { f->st = ST_PRECHG; f->p_aux = 0; }
+    else if (persist(&f->p_aux, true, PMP_AUX_WAIT_MS)) latch(f, FC_AUX_UV);
     break;
   case ST_PRECHG: {
     /* E77: the bypass closes only on an in-range line with all phases present. Before E77 an AC-sense channel reading 0
@@ -289,7 +354,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
        showed the CAN address and a technician saw a module that "does nothing". After 10 s it is reported as the grid
        row it is: F.07/F.08 are AUTO_EXT, so it clears itself the moment the supply comes back. */
     if (!line_ok) {
-      f->prechg_ms = 0;
+      f->prechg_ms = 0; f->pre_v_prev = 0.0f; f->pre_v_last = 0.0f;
       o->warn |= PMP_W_LINE_WAIT;
       if (persist(&f->p_line, true, PMP_LINE_WAIT_MS))
         latch(f, in->vin_ll_max > PMP_IN_OV_RECOVER_V ? FC_IN_OV : FC_IN_UV);
@@ -297,7 +362,16 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     }
     f->p_line = 0;
     f->prechg_ms++;
-    if (in->vbus >= PMP_BYPASS_CLOSE_K * crest) { o->k_pre = true; f->pre_blank_ms = PMP_PRE_BLANK_MS; f->st = ST_STANDBY; }
+    /* E82 (E-02): the close rule is "the link has STOPPED RISING", not "the link reached 0.97 × 1.414 × V_rms". That product
+       is the crest of a SINUSOID; real mains is flat-topped (crest factor 1.36–1.40), so the rectified peak sits at
+       0.96–0.99 of it before the bus-fed aux (drawn through the 33 Ω parts), two diode drops and the ±1 % sense chains are
+       counted — the 0.97 line was unreachable on ordinary supplies and F.20 is LATCH + counted: five tries locked the module.
+       A settled link bounds the closing step at the resistor drop (a few volts) whatever the wave shape. PMP_BYPASS_MIN_K
+       only rejects a link that settled absurdly low (a shorted bus is the 0.5·crest row below). */
+    if (f->prechg_ms % PMP_PRE_SETTLE_MS == 1u) { f->pre_v_prev = f->pre_v_last; f->pre_v_last = in->vbus; }
+    bool settled = f->prechg_ms > 3u * PMP_PRE_SETTLE_MS && fabsf(f->pre_v_last - f->pre_v_prev) < PMP_PRE_SETTLE_DV
+                   && fabsf(in->vbus - f->pre_v_last) < PMP_PRE_SETTLE_DV;
+    if (settled && in->vbus >= PMP_BYPASS_MIN_K * crest) { o->k_pre = true; f->pre_blank_ms = PMP_PRE_BLANK_MS; f->st = ST_STANDBY; }
     else if ((f->prechg_ms > 400 && in->vbus < 0.5f * crest) || f->prechg_ms > PMP_PRECHG_MAX_MS) latch(f, FC_PRECHG);
     break; }
   case ST_STANDBY:
@@ -336,7 +410,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       pmp_mode_t m = (f->omode == OMODE_LOW) ? MODE_PAR : (f->omode == OMODE_HIGH) ? MODE_SER
                    : (v_start > PMP_XOVER_DN_V) ? MODE_SER : MODE_PAR;
       o->pfc_en = true;
-      o->vbus_ref = bus_ref_for(m, v_start, in->vin_ll_max);
+      o->vbus_ref = bus_ref_for(m, fmaxf(fminf(v_start, in->vout_meas + PMP_BUS_LEAD_V), in->vout_meas), in->vin_ll_max);   /* E82: as in RUN */
       /* E76 (review R02): readiness is RELATIVE TO THE COMMANDED REFERENCE. The old fixed
          "vbus > 700" could never pass at any point where bus_ref_for() returns < 700 — a
          correctly regulated 650 V bus (every PAR start below ~332 V, every SER start below
@@ -440,7 +514,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     break;
   case ST_SAFE:
     /* E78: the aux must hold for PMP_AUX_STABLE_MS — a rail hovering at its UVLO otherwise cycles the converter */
-    if (persist(&f->p_aux, in->aux_ok, PMP_AUX_STABLE_MS)) { f->st = ST_STANDBY; f->p_aux = 0; }
+    if (persist(&f->p_aux, in->aux_ok, PMP_AUX_STABLE_MS)) { f->st = ST_STANDBY; f->p_aux = 0; f->start_ms = 0; }
+    /* E82 (E-09): and an aux that never comes back is F.26, not an unbounded silent park. start_ms is zero on every
+       entry to SAFE (RUN and MODESW both clear it) and STANDBY clears it again on the way out. */
+    else if (!in->aux_ok && ++f->start_ms > PMP_AUX_WAIT_MS) latch(f, FC_AUX_UV);
     break;
   case ST_FAULT: {
     o->q_disch = false; o->q_disch_bk = false;   /* E80 (HR-11): no unsupervised dump in FAULT — SHUTDOWN re-runs it bounded */
@@ -454,7 +531,11 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if ((in->clear_req && !f->lock && (!is_auto || gone)) || (is_auto && f->rec_ms >= f->rec_hold_ms)) {
       /* E79: back through precharge when the bypass is open (a latch during precharge or discharge) — STANDBY with the bypass
          open never starts, because the PFC waits for the bypass feedback, and never says why */
+      /* E82: prechg_ms is reset with the state. It was not, and it is never reset on an in-range line, so a CLEAR after
+         F.20 re-entered precharge with the counter already past PMP_PRECHG_MAX_MS and re-latched F.20 on the next tick,
+         for ever — the one fault a technician clears at the panel was the one that could not be cleared. */
       f->latched = FC_NONE; f->st = o->k_pre ? ST_STANDBY : ST_PRECHG; f->need_enable = true; f->rec_ms = 0;
+      f->prechg_ms = 0; f->pre_v_prev = 0.0f; f->pre_v_last = 0.0f;
     }
     break; }
   case ST_LOCK:                                                     /* only power-cycle/service exits */
@@ -463,23 +544,59 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     o->pfc_en = false; o->llc_en = false; o->k_pre = false; o->q_disch = true;
     o->q_disch_bk = true;   /* E76: banks bleed with the bus (E33 shutdown contract; F.21b supervises HAL-side) */
     f->disch_ms = 0;
+    f->p_disch = 0; f->stall_n = 0; f->weld_ms = 0; f->disch_v = in->vbus;   /* E82 (E-05/E-10/A1-06) */
     f->st = ST_DISCH;
     break;
-  case ST_DISCH:
+  case ST_DISCH: {
     f->disch_ms++;
+    /* E82 (E-05): the bypass is commanded open here and stays open for seconds — the only window in which a welded pole
+       is observable (precharge is over in 61 ms, below F.19's 100 ms; everywhere else the contact is commanded closed).
+       Reported at the end of the dump, never during it, so the report cannot abandon the discharge (E-06). */
+    f->weld_ms = ((in->relay_fb_wired & PMP_RLY_PRE) && (in->relay_fb & PMP_RLY_PRE)) ? f->weld_ms + 1u : 0u;
     /* E80 (review HR-12/R12): discharged means the LINK AND BOTH BANKS below 60 V — a bus at 59 V with banks at
-       400 V previously entered OFF and removed the bank bleeders */
-    if (in->vbus < 60.0f && in->vbank_a < 60.0f && in->vbank_b < 60.0f) { f->st = ST_OFF; o->q_disch = false; o->q_disch_bk = false; }
-    else if (f->disch_ms > f->disch_to_ms) {
-      latch(f, FC_DISCH);   /* F.21 — the module is NOT discharged; the code says so */
-      /* E80 (review HR-11/R11): a maintained source (the permanent precharge-resistor path with AC still applied) would
-         otherwise feed the 640 Ω dump for as long as the fault stands — beyond any pulse rating. The dump commands end
-         with the window; F.21 = "isolate upstream, then verify", never "keep burning". */
-      o->q_disch = false; o->q_disch_bk = false;
+       400 V previously entered OFF and removed the bank bleeders. E82 (E-10): for PMP_DISCH_OK_MS, on samples that
+       are physically possible — one glitched low reading used to end the dump with the link at 700 V. */
+    bool bulk = persist(&f->p_disch, meas_ok && in->vbus < 60.0f && in->vbank_a < 60.0f && in->vbank_b < 60.0f,
+                        PMP_DISCH_OK_MS);
+    /* E82 (A1-06): a link that is not falling is not discharging — it is being fed (AC still applied through the
+       permanent precharge path) and the 25 W dump parts are carrying ~154 W each. Judged only while the link is up. */
+    if (!bulk && in->vbus >= 60.0f && f->disch_ms % 100u == 0u) {
+      f->stall_n = (meas_ok && in->vbus > f->disch_v - PMP_DISCH_STALL_DV) ? (uint8_t)(f->stall_n + 1u) : 0u;
+      f->disch_v = in->vbus;
     }
-    break;
+    if (!bulk) {
+      /* the window supervises the DUMP: once the link and banks are down and the dump has ended, a later glitched or
+         implausible sample is not a failed discharge, and the node wait below has its own bound */
+      if (o->q_disch && (f->stall_n >= PMP_DISCH_STALL_N || f->disch_ms > f->disch_to_ms)) {
+        /* E80 (review HR-11/R11): a maintained source would otherwise feed the 640 Ω dump for as long as the fault
+           stands — beyond any pulse rating. The dump commands end with the window; F.21 = "isolate upstream, then
+           verify", never "keep burning". E82 (E-05): a welded bypass IS that maintained source — name it (F.18). */
+        o->q_disch = false; o->q_disch_bk = false;
+        if (f->weld_ms > PMP_WELD_MS) latch(f, FC_WELD);
+        else latch(f, FC_DISCH);   /* F.21 — the module is NOT discharged; the code says so */
+      }
+      break;
+    }
+    o->q_disch = false; o->q_disch_bk = false;   /* the link and both banks are down: nothing left for the dump to do */
+    /* E82 (E-10): the output studs are the last thing a technician touches, and no dump reaches them — only the passive
+       450 kΩ bleeder (τ ≈ 4.2 s). So OFF waits for the node too, under its own bound (PMP_DISCH_OUT_MS), skipped when a
+       pack is connected because the module cannot discharge a vehicle and must not try. The bound expiring is not a
+       fault: everything the module can act on is already discharged (a slow bleeder is the only thing it can mean). */
+    if (in->ext_connected || in->vout_meas < 60.0f || f->disch_ms > PMP_DISCH_OUT_MS) {
+      if (f->weld_ms > PMP_WELD_MS) latch(f, FC_WELD);            /* F.18: the bypass never released */
+      else if (f->weld_ms == 0u) f->st = ST_OFF;                  /* … and a discharge shorter than the release
+                                                                     allowance waits it out rather than skipping it */
+    }
+    break; }
   case ST_OFF:
-    if (in->wake_req) { f->st = ST_INIT; f->need_enable = true; }   /* E78: the public exit from OFF */
+    /* E82 (E-04 / E-14): SHUTDOWN → DISCH → OFF never cleared f->latched, and four rules are gated on latched == FC_NONE (the
+       public STOP, the comms-loss stop, the derate recompute): after fault → shutdown → wake → ENABLE the module delivered
+       with a stale code and could be stopped neither by dropping ENABLE nor by pulling the CAN cable. A LOCK survives. */
+    if (in->wake_req) {
+      if (f->lock) { f->st = ST_LOCK; break; }
+      f->latched = FC_NONE; f->rec_ms = 0;
+      f->st = ST_INIT; f->need_enable = true; f->prechg_ms = 0; f->pre_v_prev = 0.0f; f->pre_v_last = 0.0f;
+    }
     break;
   default:   /* E78: a state value the enum does not define (memory corruption) is a fault, never a silent no-op */
     o->pfc_en = false; o->llc_en = false; o->pwm_kill = true; o->stop_ramp = false;

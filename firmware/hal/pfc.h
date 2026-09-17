@@ -11,7 +11,10 @@
  * What the real stage adds to the engine's law:
  *   - the bus reference ramps from the measured bus (a bumpless start from the rectified crest)
  *   - OFF (every switch open — the passive rectifier, which moves no charge while the bus sits above the line crest):
- *       skip   bus above its reference by skip_v, at any load — a load dump never reaches the 860 V F.03 trip
+ *       skip   bus above its reference by skip_v, at any load. E82 (M-32): skip alone did NOT keep a load dump under the
+ *              860 V F.03 — at the 830 V reference it left 15 V of the 30 V available and the voltage integrator kept the
+ *              stage pushing for another 0.55 s. skip_v is 9 V and the integrator is ceilinged against the load
+ *              feed-forward while the bus is above its reference; together they hold the dump under 855 V at C −36 %
  *       burst  below 2 % power the stage stops 3 V above the reference and resumes 2 V below it: modulating a near-zero
  *              reference runs the phases in DCM, which pumps charge (the plant ran the bus away at no load)
  *   - amplitude limit, the lowest of: the FW-R6 current clamp; the same power (1.05 × rated input) above 330 VAC; and room for

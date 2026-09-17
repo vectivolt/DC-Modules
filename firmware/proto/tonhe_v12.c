@@ -14,14 +14,20 @@ uint8_t th12_addr(const th12_t *t) {
   return (a >= 1u && a <= 240u) ? a : 0u;
 }
 
-void th12_init(th12_t *t, uint8_t addr_mode, uint8_t addr_can, uint8_t addr_local, uint32_t now) {
+/* same finisher as vmp.c's static hash32 (kept file-local, matching that file's own choice not to share it) — cheap
+   avalanche so a UID's low bits (which may carry wafer/die coordinates, not noise) still spread uniformly mod 500 */
+static uint32_t hash32(uint32_t x) { x ^= x >> 16; x *= 0x7FEB352Du; x ^= x >> 15; x *= 0x846CA68Bu; x ^= x >> 16; return x; }
+
+void th12_init(th12_t *t, uint8_t addr_mode, uint8_t addr_can, uint8_t addr_local, uint32_t uid, uint32_t now) {
   memset(t, 0, sizeof *t);
   t->addr_mode = addr_mode ? 1u : 0u; t->addr_can = addr_can; t->addr_local = addr_local;
   t->group = 0xFFu;
   for (unsigned a = 0u; a < 241u; a++) t->peer[a].group = 0xFFu;
   t->t_rx = now;                    /* a module on a silent bus reports the communication loss after 20 s as well */
-  /* the periodic frames are phased by address, so a rack of modules does not transmit in one burst */
-  uint32_t ph = (uint32_t)th12_addr(t) * 37u % TH12_PERIOD_MS;
+  /* the periodic frames are phased by address, so a rack of modules does not transmit in one burst — E82 (K-3): address
+     alone made two modules mis-set to the same address transmit in lock-step forever (a real bus-error collision every
+     period, not a one-off race); the UID breaks the tie without moving the documented period */
+  uint32_t ph = ((uint32_t)th12_addr(t) * 37u + hash32(uid)) % TH12_PERIOD_MS;
   t->t_state = now - TH12_PERIOD_MS + ph;
   t->t_ac = now - TH12_PERIOD_MS + (ph + 150u) % TH12_PERIOD_MS;
   t->t_ext = now - TH12_PERIOD_MS + (ph + 300u) % TH12_PERIOD_MS;
@@ -91,9 +97,13 @@ void th12_rx(th12_t *t, const pmp_frame_t *f, uint32_t now, const mod_tlm_t *m, 
     t->t_rx = now;
     return;
   case TH12_PF_STARTSTOP: {                     /* C_M_24: this module's start / stop with V / I, confirmed by M_C_2 */
-    if (!to_me || f->dlc < 6u) return;          /* TH-AMB-3: addressed only — a broadcast cannot start every module */
-    bool ok = d[0] == 0xAAu || d[0] == 0x55u;
-    t->t_rx = now;
+    if (!to_me) return;                         /* TH-AMB-3: addressed only — a broadcast cannot start every module */
+    /* E82 (K-2): a short frame used to be dropped with no reply at all, indistinguishable from a bus glitch. It now
+       gets the same negative M_C_2 as a bad command byte — but unlike a genuine full-length frame it is not proof the
+       monitor is alive, so (unlike the pre-existing bad-command-byte case just below) it does not refresh presence. */
+    bool len_ok = f->dlc >= 6u;
+    bool ok = len_ok && (d[0] == 0xAAu || d[0] == 0x55u);
+    if (len_ok) t->t_rx = now;
     if (ok) { set_vi(t, m, pmp_get16(d + 2), pmp_get16(d + 4)); t->run = d[0] == 0xAAu; }
     pmp_frame_t c = { th12_id(2u, TH12_PF_CONFIRM, TH12_MONITOR_ADDR, own), 8u, { ok ? 1u : 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u } };
     (void)pmp_txq_push(tx, &c);
