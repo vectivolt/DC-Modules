@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-current--coordination_·_CLEAN-2ea44f?style=flat-square" alt="gate: current-coordination · CLEAN"/>
 </p>
 
@@ -307,7 +307,7 @@ The reverse-polarity Vienna fault (DESAT-blind by topology, R4) is covered by th
 | Output blocking diode DOUT (E67) | 67 % of the 150 / 200 / 250 A class · Tj 115 / 120 / 123 °C (50 kW air 128 °C) · 1600 V against 1000 V out = 63 % |
 | D1 at the F.01 fault peak | µ = 0.20 / 0.25 / 0.20 of initial — soft saturation, never a collapse |
 | Bank energy into an external short | 22.2 kA, τ 42 µs, 10,444 A²s ≪ the relay short-time class and the busbar I²t — µs-scale, contacts already closed |
-| Thermal envelope (grid) | 4,536 points, 0 failures, 0 folds · max Tj 139 °C |
+| Thermal envelope (grid) | 4,536 points · every point passes or is a **registered fold** (E81 F-L-1) · max Tj outside that set 149 °C |
 
 ## 9. What only hardware can close
 
@@ -351,10 +351,13 @@ sequenceDiagram
 PyOpenMagnetics' Kool Mµ 26 DC-bias data keeps 19–30 % of the permeability at those peaks against the engines' 15–23 %, so
 the simulated peaks are conservative. The bench confirms the pulse and the blank at EVT T-42.
 
+> [!TIP]
+> **How this page is checked** — `node calculations/system/current-coordination.mjs` in `run-all` — **102 checks**: every simulated peak ≥ 1.2× under its trip, every trip observable through its kill race, and flux, timing and parts holding at the fault point.
+
 ---
 
 <div align="center">
 <sub><a href="protection-thresholds.md">← Protection Thresholds</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="thermal-report.md">Thermal Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

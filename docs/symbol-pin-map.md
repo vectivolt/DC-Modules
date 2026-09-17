@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/owner-pin--map--export.mjs-5f8fc0?style=flat-square" alt="owner: pin-map-export.mjs"/>
 </p>
 
@@ -20,7 +20,7 @@
 
 | Part families | Families with a logical → physical remap | Pins mapped | Verification |
 |---:|---:|---:|---|
-| **119** | **28** | **665** | `kicad5-verify.mjs` — 100 % pin-by-pin across the six SHIP targets |
+| **127** | **27** | **683** | `kicad5-verify.mjs` — 100 % pin-by-pin across the six SHIP targets |
 
 > [!TIP]
 > A drawing that shows logical numbering is not a pinout error — it is a drawing that has not applied this map.
@@ -32,7 +32,7 @@
 |---|---|---|---|---|
 | `1N4148WS` | DA0P | -=A -=C | 2=A 1=C | C2128 |
 | `B3M010C075Z` | QA0A | 1=G 2=D 3=S -=DS | 4=G 1=D 2=S 3=DS | C5713521 |
-| `BZT52-C15` | DZAUX | -=A -=C | 2=A 1=C | ORDERABLE |
+| `BZX84-B15` | DZAUX | -=A -=C | 2=A 1=C | ORDERABLE |
 | `CMC-CAN-51uH` | LCAN | 1=A1 2=A2 8=B1 7=B2 | 1=A1 2=A2 4=B1 3=B2 | C55213551 |
 | `CONN-CARD-88-H` | JB | 1=PWM0 2=PWM1 4=PWM3 5=PWM4 6=PWM5 7=PWM6 8=PWM7 13=AIN0 16=AIN3 17=AIN4 18=AIN5 19=AIN6 20=AIN7 21=AIN8 22=AIN9 23=AIN10 24=AIN11 25=AIN12 26=ANA13 27=ANA14 28=ANA15 29=ANA16 30=ANA17 31=ANA18 32=ANA19 33=TSNS0 34=TSNS1 35=AVMID 36=AGND_2 37=DO0 38=DO1 39=DO2 43=DO6 44=DO7 45=DO8 46=DO9 47=DO10 54=DI6 55=DI7 56=DI8 57=DI9 58=DI10 59=GATE_EN 60=GATE_EN_A 61=FLT 62=EN_A 63=EN_B 64=DRV_RDY 65=CAN_TX 66=CAN_RX 67=HMI0 68=HMI1 69=HMI2 70=HMI3 71=HMI4 72=HMI5 73=HMI6 74=ROLE1 76=V15 79=V3P3 86=DGND 88=AGND | 1=PWM0 2=PWM1 4=PWM3 5=PWM4 6=PWM5 7=PWM6 8=PWM7 13=AIN0 16=AIN3 17=AIN4 18=AIN5 19=AIN6 20=AIN7 21=AIN8 22=AIN9 23=AIN10 24=AIN11 25=AIN12 26=ANA13 27=ANA14 28=ANA15 29=ANA16 30=ANA17 31=ANA18 32=ANA19 33=TSNS0 34=TSNS1 35=AVMID 36=AGND_2 37=DO0 38=DO1 39=DO2 43=DO6 44=DO7 45=DO8 46=DO9 47=DO10 54=DI6 55=DI7 56=DI8 57=DI9 58=DI10 59=GATE_EN 60=GATE_EN_A 61=FLT 62=EN_A 63=EN_B 64=DRV_RDY 65=CAN_TX 66=CAN_RX 67=HMI0 68=HMI1 69=HMI2 70=HMI3 71=HMI4 72=HMI5 73=HMI6 74=ROLE1 75=V15 77=V3P3 80=DGND 87=AGND | CLASS |
 | `CONN-CARD-88-R` | JCARD | 1=PWM0 2=PWM1 3=PWM2 4=PWM3 5=PWM4 6=PWM5 7=PWM6 8=PWM7 9=PWM8 10=PWM9 11=PWM10 12=PWM11 13=AIN0 14=AIN1 15=AIN2 16=AIN3 17=AIN4 18=AIN5 19=AIN6 20=AIN7 21=AIN8 22=AIN9 23=AIN10 24=AIN11 25=AIN12 26=ANA13 27=ANA14 28=ANA15 29=ANA16 30=ANA17 31=ANA18 32=ANA19 33=TSNS0 34=TSNS1 35=AVMID 36=AGND_2 37=DO0 38=DO1 39=DO2 40=DO3 41=DO4 42=DO5 43=DO6 44=DO7 45=DO8 46=DO9 47=DO10 48=DI0 49=DI1 50=DI2 51=DI3 52=DI4 53=DI5 54=DI6 55=DI7 56=DI8 57=DI9 58=DI10 59=GATE_EN 60=GATE_EN_A 61=FLT 62=EN_A 63=EN_B 64=DRV_RDY 65=CAN_TX 66=CAN_RX 67=HMI0 68=HMI1 69=HMI2 70=HMI3 71=HMI4 72=HMI5 73=HMI6 74=ROLE1 76=V15 79=V3P3 86=DGND 88=AGND | 1=PWM0 2=PWM1 3=PWM2 4=PWM3 5=PWM4 6=PWM5 7=PWM6 8=PWM7 9=PWM8 10=PWM9 11=PWM10 12=PWM11 13=AIN0 14=AIN1 15=AIN2 16=AIN3 17=AIN4 18=AIN5 19=AIN6 20=AIN7 21=AIN8 22=AIN9 23=AIN10 24=AIN11 25=AIN12 26=ANA13 27=ANA14 28=ANA15 29=ANA16 30=ANA17 31=ANA18 32=ANA19 33=TSNS0 34=TSNS1 35=AVMID 36=AGND_2 37=DO0 38=DO1 39=DO2 40=DO3 41=DO4 42=DO5 43=DO6 44=DO7 45=DO8 46=DO9 47=DO10 48=DI0 49=DI1 50=DI2 51=DI3 52=DI4 53=DI5 54=DI6 55=DI7 56=DI8 57=DI9 58=DI10 59=GATE_EN 60=GATE_EN_A 61=FLT 62=EN_A 63=EN_B 64=DRV_RDY 65=CAN_TX 66=CAN_RX 67=HMI0 68=HMI1 69=HMI2 70=HMI3 71=HMI4 72=HMI5 73=HMI6 74=ROLE1 75=V15 77=V3P3 80=DGND 87=AGND | CLASS |
@@ -42,18 +42,17 @@
 | `LED-2DIG-0.56CC` | DISP1 | -=A -=B -=C -=D -=E -=F -=G 8=DP 9=DIG1 10=DIG2 | 10=A 7=B 4=C 2=D 1=E 9=F 5=G 3=DP 8=DIG1 6=DIG2 | C9900021773 |
 | `NSI1042-DSWR` | UCAN | 4=VDD1 2=GND1 2=GND1 3=RXD 1=TXD 5=VDD2 8=GND2 8=GND2 8=GND2 6=CANL 7=CANH | 1=VDD1 2=GND1 8=GND1 3=RXD 6=TXD 16=VDD2 9=GND2 10=GND2 15=GND2 12=CANL 13=CANH | C3445856 |
 | `NSI6611` | UA0G | 15=VCC1 9=GND1 -=IN+ -=IN- -=RST#/EN -=FLT# -=DESAT 3=GND2 1=ASC 16=TEST 5=VCC2 4=OUTH 6=OUTL 7=CLAMP -=VEE2 12=RDY | 15=VCC1 9=GND1 10=IN+ 11=IN- 14=RST#/EN 13=FLT# 2=DESAT 3=GND2 1=ASC 16=TEST 5=VCC2 4=OUTH 6=OUTL 7=CLAMP 8=VEE2 12=RDY | C7470934 |
-| `QA01C` | PSQD | 1=VIN 2=GND -=+VO -=0V | 1=VIN 2=GND 7=+VO 6=0V | C2757491 |
-| `QA01C-18` | PSA0G | 1=VIN 2=GND -=+VO -=0V -=-VO | 1=VIN 2=GND 7=+VO 6=0V 5=-VO | REVIEW |
+| `QA01C-15` | PSQD | 1=VIN 2=GND -=+VO -=0V | 1=VIN 2=GND 7=+VO 6=0V | REVIEW |
 | `SG2M023120LJ` | Q1H | 1=G 2=D 3=S -=DS | 4=G 1=D 2=S 3=DS | C5713523 |
 | `SIC-SBD-1700V` | DCLA | -=A -=C | 2=A 1=C | CLASS |
 | `SICJBS-1200-10` | DA0C | -=A -=C | 2=A 1=C | C7435087 |
 | `SICJBS-1200-40` | DA0T | -=A -=C | 2=A 1=C | C7435099 |
-| `SMBJ16A` | DTVS15 | -=A -=C | 2=A 1=C | C151859 |
-| `SMBJ26A` | DTVS24 | -=A -=C | 2=A 1=C | C127562 |
-| `TLP152-class` | UQD | -=Anode -=Cathode -=GND -=VO 8=VCC | 1=Anode 3=Cathode 4=GND 5=VO 6=VCC | C17255258 |
+| `SMBJ18A` | DTVS15 | -=A -=C | 2=A 1=C | ORDERABLE |
+| `SMBJ28A` | DTVS24 | -=A -=C | 2=A 1=C | ORDERABLE |
+| `TLP152-class` | UQD | -=Anode -=Cathode -=GND -=VO 6=VCC | 1=Anode 3=Cathode 4=GND 5=VO 6=VCC | C17255258 |
 | `TLV9061-class` | UAVB | 1=OUT -=IN- -=IN+ -=V- -=V+ | 1=OUT 4=IN- 3=IN+ 2=V- 5=V+ | C398358 |
-| `TPS3430-class` | USUPCARD | 1=WDI 2=GND -=EP 3=SET0 4=SET1 -=WDO# -=VDD2 -=VDD1 8=CRST | 7=WDI 5=GND 11=EP 3=SET0 6=SET1 8=WDO# 10=VDD2 1=VDD1 4=CRST | C2870545 |
-| `TPS54202-class` | UBKA | 1=VIN 2=GND 3=SW 4=FB 5=EN -=BOOT | 3=VIN 1=GND 2=SW 4=FB 5=EN 6=BOOT | C191884 |
+| `TPS3430-class` | USUPCARD | 7=WDI 5=GND -=EP 3=SET0 6=SET1 -=WDO# 10=VDD2 -=VDD1 4=CRST | 7=WDI 5=GND 11=EP 3=SET0 6=SET1 8=WDO# 10=VDD2 1=VDD1 4=CRST | C2870545 |
+| `TPS54202-class` | UBKA | 3=VIN 1=GND 2=SW 4=FB 5=EN -=BOOT | 3=VIN 1=GND 2=SW 4=FB 5=EN 6=BOOT | C191884 |
 | `UF-400V-3A` | DAUX24 | -=A -=C | 2=A 1=C | C3039981 |
 | `US1M` | DA0GS1 | -=A -=C | 2=A 1=C | C412437 |
 | `US2G` | DAUX15 | -=A -=C | 2=A 1=C | C49263 |
@@ -61,13 +60,15 @@
 
 ## Families drawn with their physical numbering
 
-<details><summary>91 families — logical and physical numbering are identical</summary>
+<details><summary>100 families — logical and physical numbering are identical</summary>
 
 | Part | Example ref | Logical (as drawn) | Physical (as built) | LCSC |
 |---|---|---|---|---|
-| `0R` | FBCARDA | _(same)_ | 1=pin1 2=pin2 |  |
+| `0R` | R1HOFF | _(same)_ | 1=pin1 2=pin2 |  |
+| `1` | RGA0A1 | _(same)_ | 1=pin1 2=pin2 |  |
 | `1.2M` | RBR1A | _(same)_ | 1=pin1 2=pin2 |  |
-| `10` | RDMP1 | _(same)_ | 1=pin1 2=pin2 |  |
+| `1.2k` | RQDL | _(same)_ | 1=pin1 2=pin2 |  |
+| `10` | RA0SN | _(same)_ | 1=pin1 2=pin2 |  |
 | `100` | RQDG | _(same)_ | 1=pin1 2=pin2 |  |
 | `100k` | RAUXG | _(same)_ | 1=pin1 2=pin2 |  |
 | `100nF` | CV1VA | _(same)_ | 1=pin1 2=pin2 |  |
@@ -78,30 +79,34 @@
 | `11.5k` | RV1DL | _(same)_ | 1=pin1 2=pin2 |  |
 | `11k` | RCLA1 | _(same)_ | 1=pin1 2=pin2 |  |
 | `120` | RTERM | _(same)_ | 1=pin1 2=pin2 |  |
+| `12pF` | CCARDX1 | _(same)_ | 1=pin1 2=pin2 |  |
 | `13` | RA0B | _(same)_ | 1=pin1 2=pin2 |  |
 | `15k` | RROLEB | _(same)_ | 1=pin1 2=pin2 |  |
+| `18pF` | C1HBL | _(same)_ | 1=pin1 2=pin2 |  |
 | `1M` | RPET | _(same)_ | 1=pin1 2=pin2 |  |
-| `1k` | RA0F | _(same)_ | 1=pin1 2=pin2 |  |
+| `1k` | RCSF | _(same)_ | 1=pin1 2=pin2 |  |
 | `1nF` | CBPDF | _(same)_ | 1=pin1 2=pin2 |  |
 | `1uF` | C5BAC | _(same)_ | 1=pin1 2=pin2 |  |
-| `2.2` | R1HOFF | _(same)_ | 1=pin1 2=pin2 |  |
+| `2.2` | RG1H2 | _(same)_ | 1=pin1 2=pin2 |  |
 | `2.2k` | RZFB | _(same)_ | 1=pin1 2=pin2 |  |
 | `2.2nF` | CAVF | _(same)_ | 1=pin1 2=pin2 |  |
-| `2.2uF` | CDMP1 | _(same)_ | 1=pin1 2=pin2 |  |
+| `2.2uF` | CFA0 | _(same)_ | 1=pin1 2=pin2 |  |
 | `2.67k` | RF11M | _(same)_ | 1=pin1 2=pin2 |  |
+| `200` | RA0F | _(same)_ | 1=pin1 2=pin2 |  |
 | `220` | RSEG0 | _(same)_ | 1=pin1 2=pin2 |  |
 | `220pF` | C1CF | _(same)_ | 1=pin1 2=pin2 |  |
 | `220uF` | CAUX24 | _(same)_ | 1=pin1 2=pin2 |  |
-| `22pF` | C1HBL | _(same)_ | 1=pin1 2=pin2 |  |
+| `22k` | RBALT0A | _(same)_ | 1=pin1 2=pin2 |  |
 | `22uF` | CBKOA | _(same)_ | 1=pin1 2=pin2 |  |
 | `27k` | REN2A | _(same)_ | 1=pin1 2=pin2 |  |
 | `280m` | RAUXCS | _(same)_ | 1=pin1 2=pin2 |  |
 | `2k` | RF11H | _(same)_ | 1=pin1 2=pin2 |  |
 | `300m` | R1CT | _(same)_ | 1=pin1 2=pin2 |  |
-| `330` | RQDL | _(same)_ | 1=pin1 2=pin2 |  |
+| `330` | RKFBP | _(same)_ | 1=pin1 2=pin2 |  |
+| `330pF` | CA0SN | _(same)_ | 1=pin1 2=pin2 |  |
 | `33nF` | C1R0 | _(same)_ | 1=pin1 2=pin2 |  |
-| `4.7` | RA0GON | _(same)_ | 1=pin1 2=pin2 |  |
-| `4.7k` | RPVDB | _(same)_ | 1=pin1 2=pin2 |  |
+| `4.7` | RDMP1 | _(same)_ | 1=pin1 2=pin2 |  |
+| `4.7k` | RPL24 | _(same)_ | 1=pin1 2=pin2 |  |
 | `4.7nF` | CPET | _(same)_ | 1=pin1 2=pin2 |  |
 | `4.7uF` | CX01 | _(same)_ | 1=pin1 2=pin2 |  |
 | `45.3k` | RBKF1A | _(same)_ | 1=pin1 2=pin2 |  |
@@ -126,11 +131,12 @@
 | `CER-25W-160R-AX` | RDIS0 | _(same)_ | 1=A 2=B | CLASS |
 | `CER-25W-33R-AX` | RPRE1 | _(same)_ | 1=A 2=B | CLASS |
 | `CER-2k2-10W-AX` | RBDA0 | _(same)_ | 1=A 2=B | CLASS |
+| `CER-3W-R33-AX` | RFDMP | _(same)_ | 1=A 2=B | CLASS |
 | `CMC-3PH-2mH-SKU` | CMC1 | _(same)_ | 1=A1 2=B1 3=A2 4=B2 5=A3 6=B3 | CUSTOM |
 | `CT-RES-1:100-100A` | CT1 | _(same)_ | 1=S1 2=S2 | DIRECT |
 | `FUSE-gG-690V` | F1 | _(same)_ | 1=A 2=B | CLASS |
-| `GD32G553VET7` | UCARD | _(same)_ | 2=pin2 3=pin3 4=pin4 5=pin5 6=pin6 11=pin11 14=pin14 15=pin15 16=pin16 17=pin17 18=pin18 19=pin19 20=pin20 21=pin21 22=pin22 23=pin23 24=pin24 25=pin25 26=pin26 27=pin27 28=pin28 29=pin29 30=pin30 32=pin32 33=pin33 34=pin34 35=pin35 36=pin36 37=pin37 38=pin38 39=pin39 40=pin40 41=pin41 42=pin42 43=pin43 44=pin44 45=pin45 46=pin46 47=pin47 48=pin48 49=pin49 50=pin50 51=pin51 52=pin52 53=pin53 54=pin54 55=pin55 56=pin56 57=pin57 58=pin58 59=pin59 60=pin60 61=pin61 62=pin62 63=pin63 64=pin64 65=pin65 66=pin66 67=pin67 68=pin68 69=pin69 70=pin70 71=pin71 72=pin72 73=pin73 74=pin74 75=pin75 76=pin76 77=pin77 78=pin78 79=pin79 80=pin80 81=pin81 82=pin82 83=pin83 84=pin84 85=pin85 86=pin86 87=pin87 88=pin88 89=pin89 90=pin90 91=pin91 92=pin92 93=pin93 94=pin94 95=pin95 96=pin96 99=pin99 100=pin100 | REVIEW |
-| `GDT-3k5-20kA` | GDT1 | _(same)_ | 1=A 2=B | CLASS |
+| `GD32G553VET7` | UCARD | _(same)_ | 2=pin2 3=pin3 4=pin4 5=pin5 6=pin6 11=pin11 12=pin12 13=pin13 14=pin14 15=pin15 16=pin16 17=pin17 18=pin18 19=pin19 20=pin20 21=pin21 22=pin22 23=pin23 24=pin24 25=pin25 26=pin26 27=pin27 28=pin28 29=pin29 30=pin30 32=pin32 33=pin33 34=pin34 35=pin35 36=pin36 37=pin37 38=pin38 39=pin39 40=pin40 41=pin41 42=pin42 43=pin43 44=pin44 45=pin45 46=pin46 47=pin47 48=pin48 49=pin49 50=pin50 51=pin51 52=pin52 53=pin53 54=pin54 55=pin55 56=pin56 57=pin57 58=pin58 59=pin59 60=pin60 61=pin61 62=pin62 63=pin63 64=pin64 65=pin65 66=pin66 67=pin67 68=pin68 69=pin69 70=pin70 71=pin71 72=pin72 73=pin73 74=pin74 75=pin75 76=pin76 77=pin77 78=pin78 79=pin79 80=pin80 81=pin81 82=pin82 83=pin83 84=pin84 85=pin85 86=pin86 87=pin87 88=pin88 89=pin89 90=pin90 91=pin91 92=pin92 93=pin93 94=pin94 95=pin95 96=pin96 99=pin99 100=pin100 | REVIEW |
+| `GDT-2k5-20kA` | GDT1 | _(same)_ | 1=A 2=B | CLASS |
 | `HDR-1x5-2.54` | JSWDCARD | _(same)_ | 1=VCC 2=DIO 3=CLK 4=RST 5=GND | C492404 |
 | `IND-10u-3A` | LBKA | _(same)_ | 1=pin1 2=pin2 | C5189958 |
 | `IND-LR-E70-30` | L1R | _(same)_ | 1=pin1 2=pin2 | CUSTOM |
@@ -140,7 +146,7 @@
 | `NSI1200-DSWR` | USHO | _(same)_ | 1=VDD1 2=VINP 3=VINN 4=GND1 5=GND2 6=OUTN 7=OUTP 8=VDD2 | C3029747 |
 | `PESD1CAN` | TVSCAN | _(same)_ | 1=A 2=B 3=C | C143073 |
 | `PH-2` | JTPFC | _(same)_ | 1=P1 2=P2 | C20504437 |
-| `PH-4` | JCAN | _(same)_ | 1=CANH 2=CANL 3=SGND | C131334 |
+| `PH-4` | JCAN | _(same)_ | 1=CANH 2=CANL 3=SGND 4=SHLD | C131334 |
 | `PH-4-FAN` | JFAN1 | _(same)_ | 1=GND 2=V24 3=TACH 4=PWM | C131334 |
 | `RELAY-PCB-120A-24V` | KSER | _(same)_ | 1=C1 2=C2 3=A 4=B | DIRECT |
 | `S20K550` | MOV1 | _(same)_ | 1=A 2=B | CLASS |
@@ -152,10 +158,12 @@
 | `TAB-M4` | QDIS | _(same)_ |  | CLASS |
 | `TACT-6x6` | SW1 | _(same)_ | 1=P1 3=P3 | C318884 |
 | `TLV3202-class` | U1W | _(same)_ | 1=OUTA 2=INAN 3=INAP 4=GND 5=INBP 6=INBN 7=OUTB 8=VCC | CLASS |
-| `ULN2803A` | UPA | _(same)_ | 1=IN1 2=IN2 3=IN3 4=IN4 5=IN5 6=IN6 7=IN7 8=IN8 9=GND 10=COM 18=OUT1 | C2865085 |
+| `TP-1mm-PAD` | TPWDICARD | _(same)_ | 1=P | CLASS |
+| `ULN2803A` | UPA | _(same)_ | 1=IN1 2=IN2 3=IN3 4=IN4 5=IN5 6=IN6 7=IN7 8=IN8 9=GND 10=COM 17=OUT2 18=OUT1 | C2865085 |
 | `WW-470R-10W` | RA0C | _(same)_ | 1=A 2=B | CLASS |
 | `XFMR-AUX-FLY-E` | TAUX | _(same)_ | 1=P1 2=P2 3=AXA 4=AXB 5=S24A 6=S24B 7=S15A 8=S15B | CUSTOM |
 | `XFMR-LLC-CELL-2E70-30` | T1A | _(same)_ | 1=P1 2=P2 3=SH 4=SA 5=SB | CUSTOM |
+| `XTAL-8M-30PPM-3225` | XCARD | _(same)_ | 1=X1 2=G1 3=X2 4=G2 | CLASS |
 
 </details>
 
@@ -164,5 +172,5 @@
 <div align="center">
 <sub><a href="bom-guide.md">← BOM Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="dfm-production.md">DFM & Production Flow →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

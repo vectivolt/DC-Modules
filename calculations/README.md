@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/run--all-exit_0-2ea44f?style=flat-square" alt="run-all: exit 0"/>
 </p>
 
@@ -21,7 +21,18 @@
 sh calculations/run-all.sh
 ```
 
-## The battery, in the order it runs
+## At a glance
+
+| | |
+|---|---|
+| **One command** | `sh calculations/run-all.sh` — **exit 0** end to end; every gate runs as its own command so none can pass silently |
+| **What it produces** | the design CSVs in `out/`, the four module BOM pages, the four module magnetics pages, the busbar and pin-map pages |
+| **Standing gates** | stress-audit **158** · current-coordination **102** · mag-sync 48 · magnetics-envelope 30 · fault-energy 23 · conductor-audit 18 · temp-critique 10 |
+| **Clean-room check** | `verify-independent` **243 / 243** — its own netlist parser and its own physics |
+| **Firmware** | `sh firmware/run_tests.sh` — **291 checks** under ASan/UBSan across seven binaries |
+| **Documentation** | `docs-lint` — 42 registered pages, every link, anchor, masthead, footer and mermaid type |
+
+## 1. The battery, in the order it runs
 
 ```mermaid
 flowchart TB
@@ -47,7 +58,7 @@ flowchart TB
     direction LR
     VI["verify-independent 227"] --> FA["footprint-audit"] --> DL["docs-lint"]
   end
-  FW["6 · firmware run_tests.sh 63/63"]
+  FW["6 · firmware run_tests.sh<br/>291 checks · 7 binaries"]
   ENG --> BOM --> STR --> PHY --> IND --> FW
   style PHY stroke:#d19a00,stroke-width:2px
   style IND stroke:#2ea44f,stroke-width:2px
@@ -69,7 +80,7 @@ flowchart TB
 | `emi/lisn-precompliance.mjs` | conducted-emissions tendency per variant |
 | `thermal/loss-budget.mjs` | loss budgets from the power-solved LLC current, JBS vs SR, derating |
 | `thermal/mount.mjs` | the one device-mounting basis every Tj engine reads — clip-mounted TO-247 on Al2O3 (E68a) |
-| `system/envelope-grid.mjs` | the 4-SKU envelope grid — **4,536 points, 0 failures, 0 folds** |
+| `system/envelope-grid.mjs` | the 4-SKU envelope grid — **4,536 points**, every point passing or a registered fold (E81 F-L-1) |
 | `system/monte-carlo.mjs` · `system/fsm-sim.mjs` | §37 tolerance batches · §36 scenario suite |
 | `busbar/busbar-calc.mjs` | bulk-copper paths and the joint schedule → `docs/busbar-drawings.md` |
 | `control/umod-pinmap.mts` | **single source** for the card map, harness and MCU pins → `umod-map.gen.ts` |
@@ -117,7 +128,7 @@ flowchart LR
 
 | Tool | Measures |
 |---|---|
-| `kicad5-verify.mjs` | every connected pin against an independent netlist — **6,853 / 6,853 across five targets** |
+| `kicad5-verify.mjs` | every connected pin against an independent netlist — **7,285 / 7,285 across five targets** |
 | `kicad5-visual.mjs` | ink collisions |
 | `alignment-audit.mjs` · `wiring-audit.mjs` · `frame-padding.mjs` · `void-audit.mjs` | near-miss alignment · wiring rules · frame padding · worst enclosed hole |
 | `cell-uniformity.mjs` | every replicated cell identical to its twins (per-SKU families) |
@@ -139,10 +150,13 @@ flowchart LR
 
 Outputs land in `out/`; the CSVs are committed because documents cite them.
 
+> [!TIP]
+> **How this page is checked** — itself — `sh calculations/run-all.sh` is the gate, and it exits non-zero if any engine, audit, generator or the firmware suite fails.
+
 ---
 
 <div align="center">
 <sub><a href="../docs/reliability-budget.md">← Reliability Budget</a> &nbsp;·&nbsp; <a href="../docs/README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../spice/README.md">SPICE Simulation Suites →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

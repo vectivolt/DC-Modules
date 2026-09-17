@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-module--interconnect--audit-2ea44f?style=flat-square" alt="gate: module-interconnect-audit"/>
 </p>
 
@@ -60,6 +60,13 @@ the coldplates; the magnetics stand in the volume between the boards.
 ## 2. The 40-way harness (JICA ↔ JICB, E40)
 
 With one brain in the DC-DC slot, the harness carries the whole PFC bundle.
+
+> [!WARNING]
+> **The card-side pin assignment moved at E81.** So that the same card can take an STM32G474VET7, phase A's
+> comparator input and the LLC temperature channel swapped footprints — **I_A0 now sits on the old TSNS0 way and
+> T_LLC on the old AIN8 way**. The harness way numbers below are unchanged; `umod-map.gen.ts` is the code-verified
+> map, `port-pin-audit` locks the GD32 port to it, and bring-up **Stage 0** checks the harness pin for pin against
+> it before anything is powered → [E81 bring-up plan](e81-validation-report.md#11-first-prototype-bring-up-plan).
 
 <table>
 <tr><td valign="top" width="55%">
@@ -186,10 +193,13 @@ SKU across every physical boundary:
 | 88 card ways | wired on the board **and** landing on real electronics on the card |
 | RATING strap | encodes the SKU in its E24 rev G band |
 
+> [!TIP]
+> **How this page is checked** — `npx tsx calculations/module-interconnect-audit.mts` in `run-all` — it walks the built netlists and fails if a stud, a harness way or a slot pin does not land on real electronics on both sides.
+
 ---
 
 <div align="center">
-<sub><a href="e80-recheck-response.md">← E80 External Recheck — Response Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
+<sub><a href="e81-validation-report.md">← E81 Full-System Validation</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="control-card-scope.md">Control-Card Scope →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

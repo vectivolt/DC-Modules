@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/owner-bom--gen.mjs-5f8fc0?style=flat-square" alt="owner: bom-gen.mjs"/>
 </p>
 
@@ -20,52 +20,52 @@
 
 | | |
 |---|---|
-| **Build cost @10k** (India basis) | **₹30,032** · ₹1,001 / kW |
-| **China RFQ target @10k** (E69f) | **₹24,639** · ₹821 / kW — landed targets, not quotes |
-| **2U construction scenario** (E69e) | ₹28,441 · China target ₹23,347 — flagged estimate, not the design basis |
-| **1k · 5k · 100 pcs** | ₹36,984 · ₹33,030 · ₹47,990 |
-| **Red-line / stretch** | ₹25,000 / ₹22,000 → ⚠️ over by ₹5,032 |
-| **BOM lines · placed parts** | 142 lines · 610 parts (AC-DC 312 · DC-DC 250 · control card 48) |
+| **Build cost @10k** (India basis) | **₹31,533** · ₹1,051 / kW |
+| **China RFQ target @10k** (E69f) | **₹25,852** · ₹862 / kW — landed targets, not quotes |
+| **2U construction scenario** (E69e) | ₹29,611 · China target ₹24,288 — flagged estimate, not the design basis |
+| **1k · 5k · 100 pcs** | ₹38,832 · ₹34,676 · ₹50,409 |
+| **Red-line / stretch** | ₹25,000 / ₹22,000 → ⚠️ over by ₹6,533 |
+| **BOM lines · placed parts** | 153 lines · 656 parts (AC-DC 327 · DC-DC 274 · control card 55) |
 | **Built to our drawings** | 6 custom lines — specifications on the [30 kW magnetics page](magnetics-30kw.md) |
-| **Open sourcing decisions** | 8 REVIEW lines |
+| **Open sourcing decisions** | 7 REVIEW lines |
 
 ## Where the money goes
 
 ```mermaid
 pie showData title 30 kW module — ₹ @10k by section
-  "Mechanics, thermal and assembly" : 8431
-  "Vienna PFC stage" : 4730
-  "Resonant tank, transformer and rectifiers" : 4639
-  "AC input, surge and EMI filter" : 3742
-  "Full-bridge LLC legs" : 2057
+  "Mechanics, thermal and assembly" : 8762
+  "Vienna PFC stage" : 4737
+  "Resonant tank, transformer and rectifiers" : 4712
+  "AC input, surge and EMI filter" : 3764
+  "Full-bridge LLC legs" : 2828
   "Output banks, S/P relays and output diode" : 1853
-  "Split DC link and discharge" : 1563
+  "Split DC link and discharge" : 1838
   "Output and bank sensing" : 938
   "AC and bus sensing" : 884
-  "Auxiliary supply and fans" : 595
-  "Control card" : 310
-  "CAN and HMI" : 161
+  "Auxiliary supply and fans" : 604
+  "Control card" : 319
+  "CAN and HMI" : 163
   "DC-DC control interface" : 107
-  "AC-DC control interface" : 23
+  "AC-DC control interface" : 24
 ```
 
 | Section (schematic sheet) | Parts | Lines | ₹ @10k | Share | China target ₹ |
 |---|---:|---:|---:|---:|---:|
-| AC input, surge and EMI filter | 47 | 16 | 3,742 | 12.5 % | 3,050 |
-| Vienna PFC stage | 75 | 24 | 4,730 | 15.7 % | 3,735 |
-| Split DC link and discharge | 29 | 12 | 1,563 | 5.2 % | 1,268 |
-| AC and bus sensing | 99 | 18 | 884 | 2.9 % | 748 |
-| AC-DC control interface | 14 | 7 | 23 | 0.1 % | 19 |
-| Auxiliary supply and fans | 48 | 32 | 595 | 2 % | 470 |
-| Full-bridge LLC legs | 63 | 14 | 2,057 | 6.8 % | 1,618 |
-| Resonant tank, transformer and rectifiers | 40 | 13 | 4,639 | 15.4 % | 3,730 |
-| Output banks, S/P relays and output diode | 41 | 11 | 1,853 | 6.2 % | 1,522 |
-| Output and bank sensing | 61 | 14 | 938 | 3.1 % | 795 |
-| DC-DC control interface | 12 | 7 | 107 | 0.4 % | 90 |
-| CAN and HMI | 33 | 18 | 161 | 0.5 % | 138 |
-| Control card | 48 | 23 | 310 | 1 % | 269 |
-| Mechanics, thermal and assembly | — | 12 | 8,431 | 28.1 % | 7,188 |
-| **Module** | | | **30,032** | 100 % | **24,639** |
+| AC input, surge and EMI filter | 47 | 17 | 3,764 | 11.9 % | 3,068 |
+| Vienna PFC stage | 81 | 25 | 4,737 | 15 % | 3,739 |
+| Split DC link and discharge | 29 | 12 | 1,838 | 5.8 % | 1,487 |
+| AC and bus sensing | 100 | 19 | 884 | 2.8 % | 748 |
+| AC-DC control interface | 16 | 8 | 24 | 0.1 % | 20 |
+| Auxiliary supply and fans | 54 | 34 | 604 | 1.9 % | 478 |
+| Full-bridge LLC legs | 81 | 17 | 2,828 | 9 % | 2,238 |
+| Resonant tank, transformer and rectifiers | 43 | 15 | 4,712 | 14.9 % | 3,788 |
+| Output banks, S/P relays and output diode | 41 | 11 | 1,853 | 5.9 % | 1,522 |
+| Output and bank sensing | 61 | 14 | 938 | 3 % | 795 |
+| DC-DC control interface | 13 | 7 | 107 | 0.3 % | 90 |
+| CAN and HMI | 35 | 19 | 163 | 0.5 % | 140 |
+| Control card | 55 | 28 | 319 | 1 % | 277 |
+| Mechanics, thermal and assembly | — | 12 | 8,762 | 27.8 % | 7,461 |
+| **Module** | | | **31,533** | 100 % | **25,852** |
 
 > [!TIP]
 > Sections follow the release sheets, so a line here is found on the sheet of the same name. The small difference against the
@@ -79,17 +79,17 @@ pie showData title 30 kW module — ₹ @10k by section
 | 2 | `CMC-3PH-2mH-SKU` | 3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 … | 2 | 1,062 | **2,123** | 1,699 | CUSTOM |
 | 3 | `GC4D20120D` | SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT (exact p/n at RFQ; IFSM ≥ 250 A (10 ms … | 22 | 96 | **2,112** | 1,584 | REVIEW |
 | 4 | `XFMR-LLC-CELL-2E70-30` | D3-30 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n … | 2 | 935 | **1,870** | 1,590 | CUSTOM |
-| 5 | `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a-2: the 30 kW … | 4 | 312 | **1,248** | 936 | SECOND-SOURCE |
-| 6 | `ELH-470u450` | 470 µF 450 V snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C) (split bus: 415 … | 10 | 120 | **1,200** | 960 | CLASS |
-| 7 | `SIC-750V-20mR` | SiC MOSFET 750 V 20 mΩ class TO-247-4 (Vienna common-source pair, one die per position) | 6 | 144 | **864** | 648 | CLASS |
-| 8 | `IND-LR-E70-30` | D2-30 rev F (E67): EXTERNAL resonant inductor 5.16 µH ±3% on 2× E70/33/32 PC95-class (TDK … | 1 | 772 | **772** | 618 | CUSTOM |
-| 9 | `PP-2u2-630` | 2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of … | 18 | 36 | **648** | 518 | CLASS |
-| 10 | `RELAY-PCB-120A-24V` | PCB power relay 120 A, 24 V coil, no mirror contact (E67 S/P matrix, switched at ZERO … | 3 | 176 | **528** | 449 | DIRECT |
-| 11 | `NSI6611` | iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16 | 7 | 68 | **476** | 405 | ORDERABLE |
-| 12 | `AMC1311DWVR` | iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3; R4 note: on the 1311 … | 5 | 92 | **460** | 391 | ORDERABLE |
-| 13 | `HF167F/024-HATF(764)` | power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — … | 2 | 208 | **416** | 354 | DIRECT |
-| 14 | `X2-4u7-305` | X2 4.7 µF 305 VAC MKP safety film, 27.5 mm pitch (E68 InfyPower filter: twelve caps in … | 12 | 34 | **403** | 323 | CLASS |
-| 15 | `ISO5V-RFC-6K` | iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument … | 6 | 65 | **390** | 332 | REVIEW |
+| 5 | `ELH-470u500` | 470 µF **500 V** snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C). E81 … | 10 | 148 | **1,480** | 1,184 | CLASS |
+| 6 | `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a-2: the 30 kW … | 4 | 312 | **1,248** | 936 | SECOND-SOURCE |
+| 7 | `PP-1u-1100` | 1 µF 1100 V film (bridge commutation at the DC-DC entry — HR-1: 830 V ≤ 76%). E81 … | 16 | 54 | **870** | 696 | CLASS |
+| 8 | `SIC-750V-20mR` | SiC MOSFET 750 V 20 mΩ class TO-247-4 (Vienna common-source pair, one die per position) | 6 | 144 | **864** | 648 | CLASS |
+| 9 | `IND-LR-E70-30` | D2-30 rev F (E67): EXTERNAL resonant inductor 5.00 µH ±3% on 2× E70/33/32 PC95-class (TDK … | 1 | 772 | **772** | 618 | CUSTOM |
+| 10 | `PP-2u2-630` | 2.2 µF 630 V PP film, ripple-rated (E67 rectifier-side bank film: ≤ 10 A rms per part of … | 18 | 36 | **648** | 518 | CLASS |
+| 11 | `RELAY-PCB-120A-24V` | PCB power relay 120 A, 24 V coil, no mirror contact (E67 S/P matrix, switched at ZERO … | 3 | 176 | **528** | 449 | DIRECT |
+| 12 | `NSI6611` | iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16 | 7 | 68 | **476** | 405 | ORDERABLE |
+| 13 | `AMC1311DWVR` | iso voltage-sense amp 0–2 V input (bus/bank/output senses, E25/CB-3; R4 note: on the 1311 … | 5 | 92 | **460** | 391 | ORDERABLE |
+| 14 | `QA01C-15` | iso gate-bias module **+15/−3 V** (E81 F-C-15 — was +18/−4-configured) (E23 rev B: modules … | 8 | 55 | **440** | 374 | REVIEW |
+| 15 | `HF167F/024-HATF(764)` | power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — … | 2 | 208 | **416** | 354 | DIRECT |
 
 ## What is specific to this SKU
 
@@ -100,13 +100,13 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `SIC-750V-20mR` | QA0A · QA0B · QB0A · QB0B · QC0A · QC0B | 144 | E69a: 750 V 20 mΩ class single die per position (clip mount, grid Tj 112 °C) — RFQ target; ACCEPTANCE IDM ≥ 210 A @25 °C (165 A F.01 fault peak) |
 | `FUSE-gG-690V-80A` | F1 · F2 · F3 | 84 | gG fuse 690 VAC, 22×58 frame (rating per SKU — audit F6: 80 A @30 kW; the 63 A part ran 88% loaded at 55.9 A worst and NEGATIVE against the ~0.72× enclosed/+55 … |
 | `HF167F-80A-M` | KPRE1 · KPRE2 | 208 | power relay ≥80 A/line w/ mirror contact (precharge bypass carries full line current — CB-8; SKU class via override; MR-25: contact-gap withstand & insulation … |
-| `CMC-3PH-2mH-SKU` | CMC1 · CMC2 · RSHO | 1,062 | D7-30 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 9.9 W, ΔT 20 K — second source to the Schaffner catalog part |
-| `CMC-3PH-2mH-SKU` | CMC1 · CMC2 · RSHO | 1,062 | 3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 rev B (dm-choke-design D7 engine): acceptance L_cm ≥ 2 mH @10 kHz AND … |
-| `SHUNT-50MV-100A` | CMC1 · CMC2 · RSHO | 96 | manganin shunt, 50 mV at rated current, Kelvin 4-terminal (0.500 / 0.376 / 0.299 mΩ at the 100 / 133 / 167 A codes — E76: the value follows the order code, the … |
+| `CMC-3PH-2mH-SKU` | CMC1 · CMC2 · RSHO · DA0CM · CA0CM · RA0CM … | 1,062 | D7-30 rev B (E65 engine): T 80/50/25, A_Fe ≥ 281 mm², 3×8 T 20 mm², 9.9 W, ΔT 20 K — second source to the Schaffner catalog part |
+| `CMC-3PH-2mH-SKU` | CMC1 · CMC2 · RSHO · DA0CM · CA0CM · RA0CM … | 1,062 | 3-phase CM choke 2 mH nanocrystalline, line-current-rated winding per SKU (HR-18/D7). E65 rev B (dm-choke-design D7 engine): acceptance L_cm ≥ 2 mH @10 kHz AND … |
+| `SHUNT-50MV-100A` | CMC1 · CMC2 · RSHO · DA0CM · CA0CM · RA0CM … | 96 | manganin shunt, 50 mV at rated current, Kelvin 4-terminal (0.500 / 0.376 / 0.299 mΩ at the 100 / 133 / 167 A codes — E76: the value follows the order code, the … |
 
 ## Line items by section
 
-<details><summary><b>AC input, surge and EMI filter</b> — ₹3,742 @10k · 47 parts · 16 lines</summary>
+<details><summary><b>AC input, surge and EMI filter</b> — ₹3,764 @10k · 47 parts · 17 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -117,15 +117,16 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `X1-2u2-530` | X1 2.2 µF 530 VAC (delta across 475 VAC line-line — CB-1; inter-CMC stage CX1x · E65 CX2-node series-RC … | CDMP1 CDMP2 CDMP3 | 3 | 50 | 149 | — | CLASS |
 | `B72220S0551K101` | MOV 550 VAC 20 mm (Δ line-line + series w/ GDT to PE) | MOV1 MOV2 MOV3 MOVP1 MOVP2 MOVP3 | 6 | 18 | 106 | — | CLASS |
 | `STUD-M8` | M8 stud terminal | JACL1 JACL2 JACL3 JPE | 4 | 22 | 90 | — | CLASS |
-| `VY1472M63Y5UQ63V0` | Y1 4.7 nF 440 VAC (L-PE on AC1..3 and — E65 second CM stage — on AC1M..3M / output-PE / DGND-PE — MR-4; DC use … | CY1 CY2 CY3 CY4 CY5 CY6 | 6 | 13 | 77 | C499492 | ORDERABLE |
+| `Y2-10n-300` | Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 (E81 F-L-4: the pre-compliance CM ladder modelled only … | CY1 CY2 CY3 | 3 | 20 | 60 | — | CLASS |
 | `CER-25W-33R-AX` | 33 Ω 25 W ceramic pulse resistor, axial (AC precharge; R5-G: the ohms now live in the ORDER CODE — a … | RPRE1 RPRE2 | 2 | 22 | 45 | — | CLASS |
-| `GDT-3k5-20kA` | gas discharge tube 3.5 kV (L-PE surge path, HR-7) | GDT1 GDT2 GDT3 | 3 | 14 | 43 | — | CLASS |
+| `GDT-2k5-20kA` | gas discharge tube **2.5 kV** (L-PE surge path, HR-7). E81 (F-A-18): the MOV+GDT series path only conducts … | GDT1 GDT2 GDT3 | 3 | 14 | 43 | — | CLASS |
+| `VY1472M63Y5UQ63V0` | Y1 4.7 nF 440 VAC (E65 second CM stage on AC1M..3M, between the two CM chokes, where the trio works against 4 … | CY4 CY5 CY6 | 3 | 13 | 38 | C499492 | ORDERABLE |
 | `SQP-10R-25W` | 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH (E65 CX2-node series-RC damper RDMPx) | RDMP1 RDMP2 RDMP3 | 3 | 13 | 38 | — | CLASS |
-| `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RKFBP | 1 | 0 | 0 | — | CLASS |
+| `RC0603FR-07330RL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RKFBP | 1 | 0 | 0 | — | CLASS |
 
 </details>
 
-<details><summary><b>Vienna PFC stage</b> — ₹4,730 @10k · 75 parts · 24 lines</summary>
+<details><summary><b>Vienna PFC stage</b> — ₹4,737 @10k · 81 parts · 25 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -133,16 +134,17 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `SIC-750V-20mR` | SiC MOSFET 750 V 20 mΩ class TO-247-4 (Vienna common-source pair, one die per position) | QA0A QA0B QB0A QB0B QC0A QC0B | 6 | 144 | 864 | — | CLASS |
 | `GC4D20120D` | SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 … | DA0T DA0B DB0T DB0B DC0T DC0B | 6 | 96 | 576 | C7435099 | REVIEW |
 | `NSI6611` | iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16 | UA0G UB0G UC0G | 3 | 68 | 204 | C7470934 | ORDERABLE |
-| `QA01C-18` | iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs … | PSA0G PSB0G PSC0G | 3 | 55 | 165 | — | REVIEW |
+| `QA01C-15` | iso gate-bias module **+15/−3 V** (E81 F-C-15 — was +18/−4-configured) (E23 rev B: modules PERMANENT — at 10k … | PSA0G PSB0G PSC0G | 3 | 55 | 165 | — | REVIEW |
 | `PP-1u-600` | 1 µF 600 V film (Vienna per-phase commutation, CB-9) | CA0FP CA0FN CB0FP CB0FN CC0FP CC0FN | 6 | 26 | 154 | — | CLASS |
-| `GC4D10120H` | SiC JBS 1200 V 10 A TO-247-2 (RCD clamp) | DA0C DB0C DC0C | 3 | 44 | 132 | C7435087 | ORDERABLE |
-| `WW-470R-10W` | 470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating) | RA0C RB0C RC0C | 3 | 18 | 53 | — | CLASS |
-| `FILM-100n-250` | 100 nF 250 V film (Vienna RCD clamp) | CA0C CB0C CC0C | 3 | 14 | 43 | — | CLASS |
-| `CC1812JKNPODBN101` | 100 pF 1 kV C0G 1812 (Vienna snubber, E28 re-size: CV²f = 0.86 W) | CA0SN CB0SN CC0SN | 3 | 6 | 17 | C577319 | ORDERABLE |
+| `GC4D10120H` | SiC JBS 1200 V 10 A TO-247-2 (Vienna RCD clamp; E81 — D{x}0CM is the MIRRORED clamp diode for the negative … | DA0C DA0CM DB0C DB0CM DC0C DC0CM | 3 | 44 | 132 | C7435087 | ORDERABLE |
+| `WW-470R-10W` | 470 Ω 10 W wirewound axial (Vienna clamp bleeder — HR-3/MR-19: 4.3 W worst-case at 43% of rating) | RA0C RA0CM RB0C RB0CM RC0C RC0CM | 3 | 18 | 53 | — | CLASS |
+| `FILM-100n-250` | 100 nF 250 V film (Vienna RCD clamp; E81 — C{x}0CM is the mirrored clamp cap) | CA0C CA0CM CB0C CB0CM CC0C CC0CM | 3 | 14 | 43 | — | CLASS |
+| `C1812-330p-1k` | **330 pF** 1 kV C0G 1812 (Vienna snubber). E81 (F-C-3/F-C-13): the DPT that produced the audited 69.8 %-of-750 … | CA0SN CB0SN CC0SN | 3 | 7 | 22 | — | CLASS |
 | `CRM2512-FX-10R0ELF` | 10 Ω 2512 2 W (Vienna snubber — E28: 0.86 W actual) | RA0SN RB0SN RC0SN | 3 | 5 | 14 | C840605 | ORDERABLE |
-| `RC1206FR-7W4R7L` | gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard … | RA0GON RA0GOFF RB0GON RB0GOFF RC0GON RC0GOFF | 6 | 2 | 10 | C859161 | ORDERABLE |
+| `RC1206FR-7W4R7L` | gate resistor 1206, 0.5 W-rated (R_on 4.7 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard … | RA0GON RA0GOFF RB0GON RB0GOFF RC0GON RC0GOFF | 6 | 2 | 10 | C859161 | ORDERABLE |
 | `US1M` | 1 kV 1 A fast diode SMA (DESAT chain) | DA0GS1 DA0GS2 DB0GS1 DB0GS2 DC0GS1 DC0GS2 | 6 | 1 | 6 | C412437 | ORDERABLE |
 | `CL05A105KO5NNNC` | 1 µF 0805 (driver bias) | CA0GB1 CA0GB2 CB0GB1 CB0GB2 CC0GB1 CC0GB2 | 6 | 1 | 4 | — | CLASS |
+| `R0805-2R2` | per-device series gate R — BOTH branches incl. the original device (R5-E symmetry). LLC paralleled positions … | RGA0A1 RGA0B1 RGB0A1 RGB0B1 RGC0A1 RGC0B1 | 6 | 0 | 2 | — | CLASS |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CA0GBV CB0GBV CC0GBV | 3 | 0 | 1 | C14663 | ORDERABLE |
 | `RC0805FR-0710KL` | 10 kΩ gate-source | RA0GGS RB0GGS RC0GGS | 3 | 0 | 1 | C84376 | ORDERABLE |
 | `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RA0GPD RB0GPD RC0GPD | 3 | 0 | 1 | — | CLASS |
@@ -151,26 +153,26 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 </details>
 
-<details><summary><b>Split DC link and discharge</b> — ₹1,563 @10k · 29 parts · 12 lines</summary>
+<details><summary><b>Split DC link and discharge</b> — ₹1,838 @10k · 29 parts · 12 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
-| `ELH-470u450` | 470 µF 450 V snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C) (split bus: 415 V max per half) | CDT00 CDT01 CDT02 CDT03 CDT04 CDB00 CDB01 CDB02 … | 10 | 120 | 1,200 | — | CLASS |
+| `ELH-470u500` | 470 µF **500 V** snap-in 105 °C, −40 °C category (A11 rev C cold floor −30 °C). E81 (F-C-6/F-C-14): the 450 V … | CDT00 CDT01 CDT02 CDT03 CDT04 CDB00 CDB01 CDB02 … | 10 | 148 | 1,480 | — | CLASS |
 | `IMW120R350M1H` | SiC FET 1200 V 5 A (bus discharge QDISF / bank bleeders QDISA-B, HR-15; R7-B/R8 gate spec for the PV-driven … | QDISF | 1 | 96 | 96 | C536285 | ORDERABLE |
 | `CER-25W-160R-AX` | 160 Ω 25 W ceramic pulse resistor, axial (bus discharge string 4× in series; R5-G value-carrying order code; … | RDIS0 RDIS1 RDIS2 RDIS3 | 4 | 22 | 90 | — | CLASS |
 | `STUD-M8` | M8 stud terminal | JDCP JDCN JPEB | 3 | 22 | 67 | — | CLASS |
-| `QA01C` | iso 15→18 V module ≥6 kVDC (bus-discharge driver bias, CB-11; insulation cert class §K) | PSQD | 1 | 60 | 60 | C2757491 | REVIEW |
+| `QA01C-15` | iso gate-bias module **+15/−3 V** (E81 F-C-15 — was +18/−4-configured) (E23 rev B: modules PERMANENT — at 10k … | PSQD | 1 | 55 | 55 | — | REVIEW |
 | `TLP152` | opto gate driver (isolated bus-discharge control, default-OFF — CB-11) | UQD | 1 | 34 | 34 | C17255258 | ORDERABLE |
-| `PS122WF4702T4E` | 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (DC-link balance strings + … | RBALT0A RBALT0B RBALB0A RBALB0B | 4 | 3 | 10 | C2793932 | REVIEW |
+| `R2512-22k-HV-AS` | **22 kOhm** 2512 3 W anti-surge HV, Umax >= 250 V, 2-series per half. E81 (F-A-7): at 47 k the balance current … | RBALT0A RBALT0B RBALB0A RBALB0B | 4 | 3 | 10 | — | CLASS |
 | `TAB-M4` | discharge FET heatsink tab stud | QDIS | 1 | 5 | 5 | — | CLASS |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CQD | 1 | 0 | 0 | C14663 | ORDERABLE |
-| `RC0603FR-07330RL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RQDL | 1 | 0 | 0 | — | CLASS |
+| `R-small` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RQDL | 1 | 0 | 0 | — | CLASS |
 | `RC0805FR-07100RL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RQDG | 1 | 0 | 0 | C105577 | ORDERABLE |
 | `RC0805FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RQDPD | 1 | 0 | 0 | C84376 | ORDERABLE |
 
 </details>
 
-<details><summary><b>AC and bus sensing</b> — ₹884 @10k · 99 parts · 18 lines</summary>
+<details><summary><b>AC and bus sensing</b> — ₹884 @10k · 100 parts · 19 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -179,7 +181,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `ACX-1100` | line CT 2500:1, 100 A, ±1%, Ø14.6 mm window, 4 kV hipot, PCB pins (audit: catalog part closes the CT-100A … | CTA0 CTB0 CTC0 | 3 | 52 | 156 | — | DIRECT |
 | `ISO5V-RFC-6K` | iso 15→5 V reinforced-rated (iso-sense floating bias, E25/HR-16 — same barrier argument per domain: AC star / … | PS5AC PS5BUS | 2 | 65 | 130 | C20613048 | REVIEW |
 | `HV732BTTD4753F` | 475 kΩ 1206 1% anti-surge (HV divider — MR-3) | RV1D0 RV1D1 RV1D2 RV1D3 RV1D4 RV1D5 RV1D6 RV1D7 … | 40 | 1 | 44 | C4121673 | ORDERABLE |
-| `PS122WF4702T4E` | 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (DC-link balance strings + … | RNS1A RNS1B RNS2A RNS2B RNS3A RNS3B | 6 | 3 | 16 | C2793932 | REVIEW |
+| `PS122WF4702T4E` | 47 kOhm 2512 2 W anti-surge HV, Umax >= 250 V, 2-series per position (artificial-star network; also the X-cap … | RNS1A RNS1B RNS2A RNS2B RNS3A RNS3B | 6 | 3 | 16 | C2793932 | REVIEW |
 | `RT0805BRD0711K5L` | divider bottom 0.1% (6.8 k unipolar / 11.5 k AC) | RV1DL RV2DL RV3DL | 3 | 2 | 6 | C865153 | ORDERABLE |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CV1VA CV1VB CV2VA CV2VB CV3VA CV3VB CBPVA CBPVB … | 12 | 0 | 5 | C14663 | ORDERABLE |
 | `B2B-PH-K-S` | 2-way header (NTC/term) | JTPFC JTINL | 2 | 2 | 5 | C20504437 | ORDERABLE |
@@ -189,19 +191,21 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `CC0603KRX7R9BB102` | filter/decoupling MLCC 0402–0805 | CA0F CB0F CC0F | 3 | 0 | 1 | C100040 | ORDERABLE |
 | `CC0805KRX7R9BB103` | filter/decoupling MLCC 0402–0805 | CV1DF CV2DF CV3DF | 3 | 0 | 1 | — | CLASS |
 | `CL21B105KBFNNNE` | 1 µF 0805 bulk on module-fed floating rails (R5-C: Bias5/shunt-amp/CAN 5 V) | C5BAC C5BBUS | 2 | 1 | 1 | C28323 | ORDERABLE |
-| `RC0603FR-071KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RA0F RB0F RC0F | 3 | 0 | 1 | — | CLASS |
+| `R-small` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RA0F RB0F RC0F | 3 | 0 | 1 | — | CLASS |
 | `CC0805KRX7R9BB102` | filter/decoupling MLCC 0402–0805 | CBPDF CBMDF | 2 | 0 | 1 | — | CLASS |
 | `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RTPFCP RTINLP | 2 | 0 | 1 | — | CLASS |
+| `CL21B105KBFNNNE` | filter/decoupling MLCC 0402–0805 | CAVMA | 1 | 0 | 0 | C28323 | ORDERABLE |
 
 </details>
 
-<details><summary><b>AC-DC control interface</b> — ₹23 @10k · 14 parts · 7 lines</summary>
+<details><summary><b>AC-DC control interface</b> — ₹24 @10k · 16 parts · 8 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
-| `VY1472M63Y5UQ63V0` | Y1 4.7 nF 440 VAC (L-PE on AC1..3 and — E65 second CM stage — on AC1M..3M / output-PE / DGND-PE — MR-4; DC use … | CPET | 1 | 13 | 13 | C499492 | ORDERABLE |
+| `VY1472M63Y5UQ63V0` | Y1 4.7 nF 440 VAC (E65 second CM stage on AC1M..3M, between the two CM chokes, where the trio works against 4 … | CPET | 1 | 13 | 13 | C499492 | ORDERABLE |
 | `ULN2803A` | 8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8) | UPA | 1 | 7 | 7 | C2865085 | ORDERABLE |
 | `R0603-10k` | 10 kΩ 0603 card-interface pull-down (board-side default-OFF on GATE_EN/EN/DO ways — CARD_RULES/E27) | RPD0 RPD1 RPD2 RPD3 RPD4 RPD5 RPD6 | 7 | 0 | 1 | — | CLASS |
+| `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CM24 CM15 | 2 | 0 | 1 | C14663 | ORDERABLE |
 | `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RM24B RM15B | 2 | 0 | 1 | — | CLASS |
 | `RC1206FR-071ML` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RPET | 1 | 0 | 0 | — | CLASS |
 | `R-small` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RM24A | 1 | 0 | 0 | — | CLASS |
@@ -209,7 +213,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 </details>
 
-<details><summary><b>Auxiliary supply and fans</b> — ₹595 @10k · 48 parts · 32 lines</summary>
+<details><summary><b>Auxiliary supply and fans</b> — ₹604 @10k · 54 parts · 34 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -218,23 +222,25 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `SIC-SBD-1700V` | SiC Schottky ≥1700 V, IF(AV) ≥1 A, IFRM ≥10 A, no forward recovery (aux RCD clamp — E65: the 1200 V STTH112U … | DCLA | 1 | 120 | 120 | — | CLASS |
 | `MICROFIT3-40` | 40-way inter-board harness header, 5 A/contact (E40: the PFC bundle crosses here — PWM x3, 12 senses, … | JICA | 1 | 58 | 58 | — | CLASS |
 | `NCP1252DDR2G` | current-mode flyback controller, RT-set 65 kHz (66.5 kΩ, datasheet Rev 9), SOIC-8. R6-G: D-suffix REPLACES the … | UAUX | 1 | 19 | 19 | — | ORDERABLE |
+| `B4B-PH-K-S` | fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17) | JFAN1 JFAN2 JFAN3 | 3 | 5 | 14 | C131334 | ORDERABLE |
 | `TPS54202DDCR` | 15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; on the card since … | UBKA | 1 | 12 | 12 | C191884 | ORDERABLE |
 | `GR227M035F12RR0VL4FP0` | 220 µF 35 V | CAUX24 CAUX15 CVCC | 3 | 3 | 10 | C45078 | ORDERABLE |
 | `R2512-11k-2W-AS` | 11 kΩ 1 % 2512 2 W anti-surge, ≥200 V working (aux RCD clamp 3-series = 33 k — E65: ≤0.94 W/part at full load … | RCLA1 RCLA2 RCLA3 | 3 | 3 | 10 | — | CLASS |
-| `B4B-PH-K-S` | fan header 4-way (fan p/n must accept 3.3 V PWM — MR-9; 3/4 fitted at 120 kW, HR-17) | JFAN1 JFAN2 | 2 | 5 | 10 | C131334 | ORDERABLE |
 | `R2512-HV` | 2512 HV-rated 1 % (aux startup/brown-in — 2-series per 860 V) | RAUXST1 RAUXST2 RBR1A RBR1B | 4 | 2 | 8 | — | CLASS |
 | `PP-10n-1200` | 10 nF 1200 V film (aux RCD clamp) | CCLA | 1 | 7 | 7 | — | CLASS |
 | `US2G` | 400 V 2 A ultrafast SMB (aux 15 V / self-supply rectifiers — CB-19: PIV ≈ 157 V + ring) | DAUX15 DAUXVC | 2 | 2 | 5 | C49263 | ORDERABLE |
 | `CYA0630-10UH` | 10 µH 3 A shielded power inductor (3V3 buck) | LBKA | 1 | 5 | 5 | C5189958 | ORDERABLE |
 | `US3M` | 400 V 3 A ultrafast, SMC pad (aux 24 V rectifier — CB-19: PIV ≈ 176 V + leakage ring; 100 V Schottky … | DAUX24 | 1 | 4 | 4 | C3039981 | ORDERABLE |
-| `SMBJ26A` | TVS 26 V uni SMB (V24 rail clamp — MR-17 FB-open fault) | DTVS24 | 1 | 2 | 2 | C127562 | ORDERABLE |
-| `SMBJ16A` | TVS 16 V uni SMB (V15 rail clamp — MR-17) | DTVS15 | 1 | 2 | 2 | C151859 | ORDERABLE |
+| `HV732BTTD4753F` | 475 kΩ 1206 1% anti-surge (HV divider — MR-3) | RFPD1 RFPD2 RFPD3 | 3 | 1 | 3 | C4121673 | ORDERABLE |
+| `SMBJ28A` | TVS **28 V** uni SMB (V24 rail clamp — MR-17 FB-open fault). E81 (F-A-10): SMBJ26A's 26.0 V standoff sat AT … | DTVS24 | 1 | 2 | 2 | — | ORDERABLE |
+| `SMBJ18A` | TVS **18 V** uni SMB (V15 rail clamp — MR-17). E81 (F-A-10): SMBJ16A's 16.0 V standoff sat BELOW the V15 upper … | DTVS15 | 1 | 2 | 2 | — | ORDERABLE |
 | `R2512-R05-1W-1%` | 50 mΩ 1 % 1 W 2512 in the V24 distribution after CAUX24 (E65: holds a V24 hard-short loop ≥100 mΩ so the … | RAUX24 | 1 | 2 | 2 | — | CLASS |
 | `R1206-R28-1%-0.5W` | 0.28 Ω 1% 0.5 W 1206 current-sense (aux cycle-by-cycle limit — E65: with CCSF 100 pF the worst FCS margin at … | RAUXCS | 1 | 2 | 2 | — | CLASS |
+| `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RBEFB RBKF2A RFT1 RFT2 RFT3 | 5 | 0 | 2 | — | CLASS |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CAUXSS CVCCB CBSTA | 3 | 0 | 1 | C14663 | ORDERABLE |
-| `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RBEFB RBKF2A RFT1 RFT2 | 4 | 0 | 1 | — | CLASS |
+| `BZX84-B15` | 15 V **±2 %** zener (R4-3: primary-side regulation reference — VCC regulates at VZ+VBE, aux winding tracks the … | DZAUX | 1 | 1 | 1 | — | ORDERABLE |
+| `R2512-4k7-1W` | 4.7 kΩ 1 W 2512 V24 PRELOAD (E81 F-A-10): with every relay de-energised and the fans off — the normal standby … | RPL24 | 1 | 1 | 1 | — | CLASS |
 | `RC0603FR-07100KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RAUXG REN1A | 2 | 0 | 1 | — | CLASS |
-| `BZT52C15` | 15 V zener SOD-123 (R4-3: primary-side regulation reference — VCC regulates at VZ+VBE ≈ 15.7 V, aux winding … | DZAUX | 1 | 1 | 1 | — | ORDERABLE |
 | `R-small` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RAUXRT REN2A | 2 | 0 | 1 | — | CLASS |
 | `CC0603JRNPO9BN101` | 100 pF 0603 C0G ±5 % (aux CS filter — E65: 1 k ∥ 26.5 k ramp R → 96 ns lag; the 470 pF X7R part let the limit … | CCSF | 1 | 0 | 0 | C14665 | ORDERABLE |
 | `CC0603KRX7R9BB102` | filter/decoupling MLCC 0402–0805 | CFBF | 1 | 0 | 0 | C100040 | ORDERABLE |
@@ -248,43 +254,48 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 </details>
 
-<details><summary><b>Full-bridge LLC legs</b> — ₹2,057 @10k · 63 parts · 14 lines</summary>
+<details><summary><b>Full-bridge LLC legs</b> — ₹2,828 @10k · 81 parts · 17 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
 | `SG2M023120LJ` | SiC MOSFET 1200 V 23 mΩ TO-247-4L — RFQ ACCEPTANCE IDM ≥ 265 A @25 °C (E69a-2: the 30 kW single die carries … | Q1H Q1L Q2H Q2L | 4 | 312 | 1,248 | C5713523 | SECOND-SOURCE |
+| `PP-1u-1100` | 1 µF 1100 V film (bridge commutation at the DC-DC entry — HR-1: 830 V ≤ 76%). E81 (F-C-4/F-G-1): COUNT 4 → 16 … | CF0 CF1 CF2 CF3 CF4 CF5 CF6 CF7 … | 16 | 54 | 870 | — | CLASS |
 | `NSI6611` | iso gate driver 10 A, DESAT/Miller(CLAMP wired, CB-12)/UVLO, SOIC-16 | U1H U1L U2H U2L | 4 | 68 | 272 | C7470934 | ORDERABLE |
-| `QA01C-18` | iso gate-bias module +18/−4-configured (E23 rev B: modules PERMANENT — at 10k modules/yr (~90k+ pcs … | PS1H PS1L PS2H PS2L | 4 | 55 | 220 | — | REVIEW |
-| `PP-1u-1100` | 1 µF 1100 V film (bridge commutation at the DC-DC entry — HR-1: 830 V ≤ 76%) | CF0 CF1 CF2 CF3 | 4 | 54 | 218 | — | CLASS |
+| `QA01C-15` | iso gate-bias module **+15/−3 V** (E81 F-C-15 — was +18/−4-configured) (E23 rev B: modules PERMANENT — at 10k … | PS1H PS1L PS2H PS2L | 4 | 55 | 220 | — | REVIEW |
+| `PP-2u2-1100` | 2.2 µF 1100 V PP film — the capacitor half of the E81 DC-link entry DAMPER (F-G-1 FIX-D), in series with RFDMP … | CFDMP | 1 | 74 | 74 | — | CLASS |
 | `STUD-M8` | M8 stud terminal | JDCP JDCN JPEB | 3 | 22 | 67 | — | CLASS |
+| `C1206-1n-1kV-C0G` | 1 kV **C0G** 1206 LLC turn-off snubber, ONE per die, drain–source AT THE PACKAGE PINS (E81, C §SNUBBER SWEEP — … | C1HOS1 C1LOS1 C2HOS1 C2LOS1 | 4 | 8 | 32 | — | CLASS |
+| `CER-3W-R33-AX` | 0.33 Ω ≥3 W PULSE-rated axial (E81 DC-link entry damper, F-G-1 FIX-D — it takes the link ring energy, so a … | RFDMP | 1 | 12 | 12 | — | CLASS |
 | `US1M` | 1 kV 1 A fast diode SMA (DESAT chain) | D1HS1 D1HS2 D1LS1 D1LS2 D2HS1 D2HS2 D2LS1 D2LS2 | 8 | 1 | 8 | C412437 | ORDERABLE |
-| `RC1206FR-7W4R7L` | gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard … | R1HON R1LON R2HON R2LON | 4 | 2 | 6 | C859161 | ORDERABLE |
-| `SR1206FR-7W2R2L` | gate resistor 1206, 0.5 W-rated (4.7/2.2 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard … | R1HOFF R1LOFF R2HOFF R2LOFF | 4 | 2 | 6 | C873951 | ORDERABLE |
+| `RC1206FR-7W4R7L` | gate resistor 1206, 0.5 W-rated (R_on 4.7 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard … | R1HON R1LON R2HON R2LON | 4 | 2 | 6 | C859161 | ORDERABLE |
+| `R1206-RG-0.5W` | gate resistor 1206, 0.5 W-rated (R_on 4.7 Ω per E5/E6 — MR-16: LLC R_on dissipates ~0.2 W at 140 kHz; standard … | R1HOFF R1LOFF R2HOFF R2LOFF | 4 | 2 | 6 | — | CLASS |
 | `CL05A105KO5NNNC` | 1 µF 0805 (driver bias) | C1HB1 C1HB2 C1LB1 C1LB2 C2HB1 C2HB2 C2LB1 C2LB2 | 8 | 1 | 5 | — | CLASS |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | C1HBV C1LBV C2HBV C2LBV | 4 | 0 | 2 | C14663 | ORDERABLE |
 | `RC0805FR-0710KL` | 10 kΩ gate-source | R1HGS R1LGS R2HGS R2LGS | 4 | 0 | 2 | C84376 | ORDERABLE |
 | `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | R1HPD R1LPD R2HPD R2LPD | 4 | 0 | 1 | — | CLASS |
-| `CC0603JRNPO9BN220` | 22 pF 0603 C0G (DESAT blank, LLC ZVS turn-on — E60: 1.44 µs vs the 2 µs discrete-SiC SCWT class; the 100 pF … | C1HBL C1LBL C2HBL C2LBL | 4 | 0 | 1 | — | CLASS |
+| `MLCC-18p-0603` | **18 pF** 0603 C0G (DESAT blank, LLC ZVS turn-on; E81 lead: 10 pF sat under the 0.4 µs noise floor and 15 pF … | C1HBL C1LBL C2HBL C2LBL | 4 | 0 | 1 | — | CLASS |
 | `RC0603FR-07100RL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | R1HDS R1LDS R2HDS R2LDS | 4 | 0 | 1 | — | CLASS |
 
 </details>
 
-<details><summary><b>Resonant tank, transformer and rectifiers</b> — ₹4,639 @10k · 40 parts · 13 lines</summary>
+<details><summary><b>Resonant tank, transformer and rectifiers</b> — ₹4,712 @10k · 43 parts · 15 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
 | `XFMR-LLC-CELL-2E70-30` | D3-30 rev D (E67): full-bridge LLC transformer CELL (2 per module, primaries in SERIES → n = 2 overall) — 2× … | T1A T1B | 2 | 935 | 1,870 | — | CUSTOM |
 | `GC4D20120D` | SiC JBS 1200 V 40 A-class TO-247-2 REQUIREMENT (exact p/n at RFQ; IFSM ≥ 250 A (10 ms half-sine, 25 °C) — E73 … | D1A1 D1A1P2 D1A2 D1A2P2 D1A3 D1A3P2 D1A4 D1A4P2 … | 16 | 96 | 1,536 | C7435099 | REVIEW |
-| `IND-LR-E70-30` | D2-30 rev F (E67): EXTERNAL resonant inductor 5.16 µH ±3% on 2× E70/33/32 PC95-class (TDK former B66372A2000), … | L1R | 1 | 772 | 772 | — | CUSTOM |
+| `IND-LR-E70-30` | D2-30 rev F (E67): EXTERNAL resonant inductor 5.00 µH ±3% on 2× E70/33/32 PC95-class (TDK former B66372A2000), … | L1R | 1 | 772 | 772 | — | CUSTOM |
 | `PP-33n-1200V` | 33 nF 1200 V PP resonant-duty film (E67 full-bridge tank: 7/9/11 in parallel at 30/40/50 kW → ≤ 10.3 A rms per … | C1R0 C1R1 C1R2 C1R3 C1R4 C1R5 C1R6 | 7 | 54 | 381 | — | CLASS |
-| `CT-RES-1:100-100A` | resonant CT 1:100, 100 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary, so … | CT1 | 1 | 60 | 60 | — | DIRECT |
+| `CT-RES-1:100-100A` | resonant CT 1:100, 100 A rms class, 20–250 kHz, pass-through — the tank conductor is the primary, so … | CT1 | 1 | 132 | 132 | — | DIRECT |
 | `TLV3202-class` | dual 40 ns push-pull comparator SOIC/VSSOP-8, 2.7–5.5 V (E65 F.11 window: trips above F11_VH and below F11_VL, … | U1W | 1 | 13 | 13 | — | CLASS |
 | `R2512-0R47-1W-1%` | 0.47 Ω 1% 1 W 2512 resonant-CT burden (E67 full bridge: F.11 140 A pk = 0.66 V above AVMID; observable to 345 … | R1CT | 1 | 3 | 3 | — | CLASS |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | C1WB CF11H CF11L | 3 | 0 | 1 | C14663 | ORDERABLE |
 | `R-small` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RF11H RF11M RF11L | 3 | 0 | 1 | — | CLASS |
 | `1N4148WS` | clamp diode SOD-323 (to 3V3) | D1CP D1CN | 2 | 0 | 1 | C2128 | ORDERABLE |
+| `RC0805FR-071ML` | small-signal resistor 0402–0805 (pulls/filters/feedback) | R1WHA R1WHB | 2 | 0 | 1 | C107700 | ORDERABLE |
 | `BAT54A` | dual Schottky SOT-23 common anode (E65 F.11 window comparator diode-OR onto the FLT wire-OR) | D1W | 1 | 1 | 1 | — | CLASS |
 | `CC0603JRNPO9BN221` | filter/decoupling MLCC 0402–0805 | C1CF | 1 | 0 | 0 | C106210 | ORDERABLE |
+| `CL21B105KBFNNNE` | filter/decoupling MLCC 0402–0805 | C1AVM | 1 | 0 | 0 | C28323 | ORDERABLE |
 | `RC0603FR-071KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | R1CF | 1 | 0 | 0 | — | CLASS |
 
 </details>
@@ -318,7 +329,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `NSI1200-DSWR` | iso shunt amplifier SOIC-8 (differential OUTP/OUTN both routed, MR-6) | USHO | 1 | 56 | 56 | C3029747 | ORDERABLE |
 | `STUD-M8` | M8 stud terminal | JOUTP JOUTN | 2 | 22 | 45 | — | CLASS |
 | `HV732BTTD4753F` | 475 kΩ 1206 1% anti-surge (HV divider — MR-3) | ROAD0 ROAD1 ROAD2 ROAD3 ROAD4 ROAD5 ROAD6 ROAD7 … | 24 | 1 | 26 | C4121673 | ORDERABLE |
-| `VY1472M63Y5UQ63V0` | Y1 4.7 nF 440 VAC (L-PE on AC1..3 and — E65 second CM stage — on AC1M..3M / output-PE / DGND-PE — MR-4; DC use … | CYO1 CYO2 | 2 | 13 | 26 | C499492 | ORDERABLE |
+| `VY1472M63Y5UQ63V0` | Y1 4.7 nF 440 VAC (E65 second CM stage on AC1M..3M, between the two CM chokes, where the trio works against 4 … | CYO1 CYO2 | 2 | 13 | 26 | C499492 | ORDERABLE |
 | `ARG05BTC6801` | divider bottom 0.1% (6.8 k unipolar / 11.5 k AC) | ROADL ROBDL ROVDL | 3 | 2 | 6 | C3033907 | ORDERABLE |
 | `B2B-PH-K-S` | 2-way header (NTC/term) | JTLLC JTXFR | 2 | 2 | 5 | C20504437 | ORDERABLE |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CSH1 CSH2 COAVA COAVB COBVA COBVB COVVA COVVB … | 10 | 0 | 4 | C14663 | ORDERABLE |
@@ -328,7 +339,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 </details>
 
-<details><summary><b>DC-DC control interface</b> — ₹107 @10k · 12 parts · 7 lines</summary>
+<details><summary><b>DC-DC control interface</b> — ₹107 @10k · 13 parts · 7 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -337,12 +348,12 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `ULN2803A` | 8-ch relay coil driver SOIC-18 (unused inputs grounded, MR-8) | ULB | 1 | 7 | 7 | C2865085 | ORDERABLE |
 | `74HC02D` | quad NOR SOIC-14 (R4-8 hardware S/P exclusion — KSER coil = KSER ∧ ¬(KPARA∨KPARB); every destructive matrix … | UEXCL | 1 | 4 | 4 | — | ORDERABLE |
 | `R0603-10k` | 10 kΩ 0603 card-interface pull-down (board-side default-OFF on GATE_EN/EN/DO ways — CARD_RULES/E27) | RPDB0 RPDB1 RPDB2 RPDB3 RPDB4 RPDB5 | 6 | 0 | 1 | — | CLASS |
-| `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CEXCL | 1 | 0 | 0 | C14663 | ORDERABLE |
+| `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CROLEB CEXCL | 2 | 0 | 1 | C14663 | ORDERABLE |
 | `RC0603JR-070RL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RROLEB | 1 | 0 | 0 | — | CLASS |
 
 </details>
 
-<details><summary><b>CAN and HMI</b> — ₹161 @10k · 33 parts · 18 lines</summary>
+<details><summary><b>CAN and HMI</b> — ₹163 @10k · 35 parts · 19 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -355,6 +366,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `PESD1CAN` | CAN TVS | TVSCAN | 1 | 3 | 3 | C143073 | ORDERABLE |
 | `74HC595` | shift register SOIC-16 (HMI segments) | USR1 | 1 | 3 | 3 | C19192516 | ORDERABLE |
 | `B2B-PH-K-S` | 2-way header (NTC/term) | JTERM | 1 | 2 | 2 | C20504437 | ORDERABLE |
+| `HV732BTTD4753F` | 475 kΩ 1206 1% anti-surge (HV divider — MR-3) | RHPD1 RHPD2 | 2 | 1 | 2 | C4121673 | ORDERABLE |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CCV1 CCV2 CSW1 CSW2 CSR1 | 5 | 0 | 2 | C14663 | ORDERABLE |
 | `RC0603FR-07220RL` | 220 Ω segment | RSEG0 RSEG1 RSEG2 RSEG3 RSEG4 RSEG5 RSEG6 RSEG7 | 8 | 0 | 2 | C107696 | ORDERABLE |
 | `CL21B105KBFNNNE` | 1 µF 0805 bulk on module-fed floating rails (R5-C: Bias5/shunt-amp/CAN 5 V) | CCB5 | 1 | 1 | 1 | C28323 | ORDERABLE |
@@ -367,7 +379,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 </details>
 
-<details><summary><b>Control card</b> — ₹310 @10k · 48 parts · 23 lines</summary>
+<details><summary><b>Control card</b> — ₹319 @10k · 55 parts · 28 lines</summary>
 
 | Part | What it is | Refs | Qty | ₹ / unit @10k | ₹ @10k | LCSC | Status |
 |---|---|---|---:|---:|---:|---|---|
@@ -376,12 +388,14 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `TPS3430WDRCR` | external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps (HR-13 — symbol now carries supply + window … | USUPCARD | 1 | 28 | 28 | C2870545 | ORDERABLE |
 | `TPS54202DDCR` | 15→3.3 V 2 A sync buck SOT-23-6 (CB-17/18 — replaces the thermally-impossible 15 V-fed LDO; on the card since … | UBKCARD | 1 | 12 | 12 | C191884 | ORDERABLE |
 | `TLV9061IDBVR` | rail-to-rail op-amp (AVMID buffer, E31) | UAVB | 1 | 10 | 10 | C398358 | ORDERABLE |
+| `XTAL-8M-30PPM-3225` | 8 MHz ±30 ppm SMD crystal, 3.2 × 2.5 mm, CL 12 pF (E81 F-A-30/F-F-1): the module's ONLY external interface is … | XCARD | 1 | 7 | 7 | — | CLASS |
 | `PZ254V-11-05P` | SWD/boot header (EOL programming — CB-13; LV-only test state §45) | JSWDCARD | 1 | 6 | 6 | C492404 | ORDERABLE |
 | `74HC11` | triple 3-input AND (gate-enable wired-AND, E27) | UANDCARD | 1 | 6 | 6 | C5524384 | ORDERABLE |
 | `CC0603KRX7R9BB104` | filter/decoupling MLCC 0402–0805 | CCARDD0 CCARDD1 CCARDD2 CCARDD3 CCARDD4 CCARDA2 CCARDVR CCARDRST … | 13 | 0 | 5 | C14663 | ORDERABLE |
 | `CYA0630-10UH` | 10 µH 3 A shielded power inductor (3V3 buck) | LBKCARD | 1 | 5 | 5 | C5189958 | ORDERABLE |
-| `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RCARDBOOT RWPUCARD RGPDCARD RRDYCARD RGPACARD RBKF2CARD RAVH RAVL … | 10 | 0 | 3 | — | CLASS |
+| `RC0603FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RCARDBOOT RWPUCARD RGPDCARD RRDYCARD RWDICARD RGPACARD RBKF2CARD RAVH … | 11 | 0 | 3 | — | CLASS |
 | `RC0603FR-07100KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RENRCARD RENLCARD REN1CARD | 3 | 0 | 1 | — | CLASS |
+| `MLCC-small` | filter/decoupling MLCC 0402–0805 | CCARDX1 CCARDX2 | 2 | 0 | 1 | — | CLASS |
 | `CC0603KRX7R9BB102` | filter/decoupling MLCC 0402–0805 | CRSTCARD CFLTC | 2 | 0 | 1 | C100040 | ORDERABLE |
 | `CL21A106KAYNNNE` | filter/decoupling MLCC 0402–0805 | CBKICARD CAVO | 2 | 0 | 1 | C15850 | ORDERABLE |
 | `GZ2012D601TF` | ferrite bead 600 Ω@100 MHz (VDDA feed — MR-7) | FBCARDA | 1 | 1 | 1 | C1017 | ORDERABLE |
@@ -389,11 +403,14 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | `GRM21BR61C226ME44L` | filter/decoupling MLCC 0402–0805 | CBKOCARD | 1 | 0 | 0 | C86817 | ORDERABLE |
 | `CC0603KRX7R9BB222` | filter/decoupling MLCC 0402–0805 | CAVF | 1 | 0 | 0 | — | CLASS |
 | `RC0805FR-0710KL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RCARDRST | 1 | 0 | 0 | C84376 | ORDERABLE |
+| `RC0805FR-071ML` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RCARDXF | 1 | 0 | 0 | C107700 | ORDERABLE |
+| `RC0603JR-070RL` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RWDOLCARD | 1 | 0 | 0 | — | CLASS |
 | `R-small` | small-signal resistor 0402–0805 (pulls/filters/feedback) | REN2CARD | 1 | 0 | 0 | — | CLASS |
 | `RC0603FR-0745K3L` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RBKF1CARD | 1 | 0 | 0 | — | CLASS |
 | `RC0805FR-074R7L` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RAVI | 1 | 0 | 0 | C137513 | ORDERABLE |
 | `RC0603FR-074K7L` | small-signal resistor 0402–0805 (pulls/filters/feedback) | RFLTC | 1 | 0 | 0 | — | CLASS |
 | `RC0805JR-070RL` | card FLT wired-OR pull-up 4.7 k 0603 / AGND–DGND 0 Ω 0805 single-point tie (card-split rescue) | RAGTC | 1 | 0 | 0 | C96345 | ORDERABLE |
+| `TP-1mm-PAD` | 1 mm test pad on WDI (E81 F-F-8): the ATE fixture must kick the watchdog while the WDO→NRST link (RWDOL) is … | TPWDICARD | 1 | 0 | 0 | — | CLASS |
 
 </details>
 
@@ -401,10 +418,10 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 
 | Item | Qty | ₹ @1k | ₹ @10k | China target ₹ |
 |---|---:|---:|---:|---:|
-| PCB-ACDC 6L 420×300 | 1 | 1,200 | 1,044 | 783 |
-| PCB-DCDC 6L 460×320 | 1 | 1,400 | 1,218 | 914 |
+| PCB-ACDC 6L 440×500 | 1 | 1,250 | 1,088 | 816 |
+| PCB-DCDC 6L 440×500 | 1 | 1,450 | 1,262 | 946 |
 | Heatsink extrusions (2, sandwich outer faces) | 1 | 1,500 | 1,305 | 1,109 |
-| Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C, IP55, −30…+70 °C — E52/E60 field-reliability spec; IP55 premium at … | 2 | 560 | 487 | 414 |
+| Fans 120×38 PWM (3.3 V-PWM p/n, dual-ball-bearing, L10 ≥70 kh @40 °C, IP55, −30…+70 °C — E52/E60 field-reliability spec; IP55 premium at … | 3 | 840 | 731 | 621 |
 | Enclosure sheet metal + hardware | 1 | 1,000 | 870 | 740 |
 | Busbars/interconnect studs + harness (busbar-calc) | 1 | 724 | 630 | 535 |
 | NTC sensor assemblies (insulated tip spec, E25) | 4 | 72 | 63 | 53 |
@@ -413,7 +430,7 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | D1 choke mount kit (E65 D1): per stack — fiberglass-reinforced silicone gap pad 1.0 mm ≥3 W/mK (≥5 kVAC ASTM D149, basic insulation to the … | 3 | 315 | 274 | 233 |
 | Conformal coating (acrylic, both boards + card — E52/A11 rev B baseline) | 1 | 320 | 278 | 237 |
 | Assembly + calibration + EOL test | 1 | 1,900 | 1,653 | 1,653 |
-| **Total** | | **9,691** | **8,431** | **7,188** |
+| **Total** | | **10,071** | **8,762** | **7,461** |
 
 <details><summary><b>2U construction scenario lines</b> (E69e — estimate, not the design basis)</summary>
 
@@ -440,11 +457,11 @@ These lines replace the shared-cell default on the 30 kW module (`skuOverrides` 
 | ![ORDERABLE](https://img.shields.io/badge/-ORDERABLE-2ea44f?style=flat-square) | 58 | a specific catalogue part, verified against the rating |
 | ![SECOND-SOURCE](https://img.shields.io/badge/-SECOND--SOURCE-2ea44f?style=flat-square) | 1 | the primary is off-catalogue; a verified equivalent is named |
 | ![DIRECT](https://img.shields.io/badge/-DIRECT-1a9fb3?style=flat-square) | 6 | a vendor-direct order code (Talema, Hongfa, Mean Well class) |
-| ![CLASS](https://img.shields.io/badge/-CLASS-d19a00?style=flat-square) | 63 | the rating is the specification; purchasing selects to the spec line |
+| ![CLASS](https://img.shields.io/badge/-CLASS-d19a00?style=flat-square) | 75 | the rating is the specification; purchasing selects to the spec line |
 | ![CUSTOM](https://img.shields.io/badge/-CUSTOM-b8732e?style=flat-square) | 6 | built to our drawing — see the magnetics page |
-| ![REVIEW](https://img.shields.io/badge/-REVIEW-bc4e9c?style=flat-square) | 8 | a tracked open decision, closed before release |
+| ![REVIEW](https://img.shields.io/badge/-REVIEW-bc4e9c?style=flat-square) | 7 | a tracked open decision, closed before release |
 
-**Open REVIEW lines:** `GC4D20120D` · `QA01C-18` · `ISO5V-RFC-6K` · `GD32G553VET7` · `QA01C` · `PS122WF4702T4E` · `LED-2DIG-0.56CC` · `TACT-6x6` — each carries its action note in `lcsc-map.mjs`.
+**Open REVIEW lines:** `GC4D20120D` · `QA01C-15` · `ISO5V-RFC-6K` · `GD32G553VET7` · `PS122WF4702T4E` · `LED-2DIG-0.56CC` · `TACT-6x6` — each carries its action note in `lcsc-map.mjs`.
 
 Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family roll-up and cost per kW: [BOM & cost](bom-cost.md).
 
@@ -453,5 +470,5 @@ Method, price basis and the maturity gate: [BOM guide](bom-guide.md) · family r
 <div align="center">
 <sub><a href="bom-cost.md">← BOM & Cost Roll-up</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="bom-40kw.md">40 kW Module BOM →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

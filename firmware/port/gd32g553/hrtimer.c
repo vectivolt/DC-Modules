@@ -1,5 +1,5 @@
-/* hrtimer.c — E80 the switching engine (facts-hrtimer.md; UM chapter 25).
- *   LLC   ST0 = leg A (CH0/CH1 complementary, 120 ns dead time), ST1 = leg B. Up-counting, HALFM (CMP0 = CAR/2): CH0 set on
+/* hrtimer.c — E80 the switching engine (facts-hrtimer.md; UM chapter 25). E81: adaptive dead time, E81 pin swap, F-D-2/3/12.
+ *   LLC   ST0 = leg A (CH0/CH1 complementary, adaptive dead time), ST1 = leg B. Up-counting, HALFM (CMP0 = CAR/2): CH0 set on
  *         period, reset on CMP0 → 50 % square. ST1's counter resets on ST0's CMP1 (STxCNTRST bit 20), so ST0CMP1 = the leg-B
  *         lag = duty · CAR/2 counts (phase-shift modulation). CAR sets the frequency: f = 3.456 GHz / CAR (CNTCKDIV = 001).
  *         Shadow updates land on ST0's roll-over and ST1 updates with ST0 (UPBST0), so both legs re-time on the same cycle.
@@ -11,15 +11,25 @@
  *         at the next roll-over — the one-update transport delay the law models.
  *   LLC tick  the master timer runs at 10 kHz (CNTCKDIV = 101 → CAR = 21600) and its repetition interrupt is the LLC control
  *         ISR; master CMP0 feeds ADCTRIG1 (reserved for slower sequences if a port build wants a second rate).
- *   Faults  Table 25-21: FLT0 ← CMP1 (I_B0) · FLT2 ← PB10 pin (wire-OR, active LOW) · FLT3 ← CMP0 (VOUT) · FLT4 ← CMP2 (I_C0) ·
- *         FLT5 ← CMP4 (VBUS) · FLT7 ← CMP7 (I_A0). Every channel kills every power timer (CHxFLTOS = inactive), FLTAR = 0
- *         (latched); re-arm = software re-enable of the commanded outputs. IRQ76 attributes the channel to the app. */
+ *   Faults  Table 25-21: FLT0 ← CMP1 (I_B0) · FLT1 ← CMP3 (I_A0, E81 pin swap) · FLT2 ← PB10 pin (wire-OR, active LOW) ·
+ *         FLT3 ← CMP0 (VOUT) · FLT4 ← CMP2 (I_C0) · FLT5 ← CMP4 (VBUS). Every channel kills every power timer
+ *         (CHxFLTOS = inactive), FLTAR = 0 (latched); re-arm = software re-enable of the commanded outputs, per channel
+ *         (E81 F-E-11). IRQ76 attributes the channel to the app. */
 #include "port.h"
 
 #define LLC_FCK   3456000000.0f   /* ST0/ST1 counter clock, CNTCKDIV = 001 (289.35 ps) */
 #define PFC_CAR   34560u          /* 50 kHz center-aligned at CNTCKDIV = 001: CAR = f_PSC / (2 · 50 kHz) */
 #define MT_CAR    21600u          /* 10 kHz master at CNTCKDIV = 101 (216 MHz) */
 #define CMPMIN    0x30u           /* Table 25-1 minimum compare/period at CNTCKDIV = 001 */
+/* E81: the dead-time generator moves to DTGCKDIV = 0010 (f_DTGCK = 8·f_HRTIMER_CK/4 = 432 MHz → 2.3148 ns per step,
+   UM §25.5.2 HRTIMER_STxDTCTL). 9 writable bits → 511 steps = 1.183 µs, against 296 ns on the DTGCKDIV 0000 this carried.
+   The E81 adaptive schedule needs the range: a start into a deeply discharged pack has almost no magnetizing current and
+   asks for hundreds of ns to a microsecond of ZVS transition (C-sic-thermal §SNUBBER SWEEP). Resolution is still far finer
+   than the tank cares about. The schedule itself is clamped to llc.h's [60 ns, 900 ns]. */
+#define DT_DIV    2u
+#define DT_STEP_S 2.3148148e-9f
+#define DT_MAX    388u            /* 898.1 ns — the llc.h ceiling */
+#define DT_MIN    26u             /* 60.2 ns — the llc.h floor */
 
 static const uint8_t PFC_ST[3] = { 3u, 4u, 5u };
 
@@ -27,30 +37,35 @@ static void dac_write(uint8_t inst, uint8_t out, uint16_t counts) {
   if (out) DAC_R12DH1(inst) = counts; else DAC_R12DH0(inst) = counts;
 }
 
-/* the comparator DAC thresholds (E75 allocation): CMP7/I_A0 ← DAC3_OUT1 · CMP1/I_B0 ← DAC2_OUT1 · CMP2/I_C0 ← DAC2_OUT0 ·
- * CMP4/VBUS ← DAC3_OUT0 · CMP0/VOUT ← DAC0_OUT0 (MODE0 = 011 keeps PA4 analog) · the HW-REC-1 clamp value ← DAC0_OUT1 */
+/* E81 (reviewer I §7 pin swap): I_A0 moved PC2 → PB0, so phase A's trip is CMP3 (CMP3PSEL 0 = PB0, UM §19.4.6) instead of
+ * CMP7. CMP3's only internal-DAC references are DAC2_OUT1 (MSEL 100) and DAC0_OUT0 (MSEL 101); DAC0_OUT0 belongs to CMP0/VOUT
+ * and CMP0/CMP2 between them own both of {DAC2_OUT0, DAC0_OUT0}, so CMP3 must take DAC2_OUT1, I_B0/CMP1 moves to its other
+ * option DAC0_OUT1 (MSEL 101), and the HW-REC-1 clamp value moves to DAC3_OUT1 — freed by CMP7 leaving. Five independent
+ * thresholds, no sharing (F-D-10's bipolar F.01 needs each phase's own sign).
+ * E81 allocation: CMP3/I_A0 ← DAC2_OUT1 · CMP1/I_B0 ← DAC0_OUT1 · CMP2/I_C0 ← DAC2_OUT0 · CMP4/VBUS ← DAC3_OUT0 ·
+ * CMP0/VOUT ← DAC0_OUT0 (MODE = 011 keeps PA4/PA5 analog) · the HW-REC-1 clamp value ← DAC3_OUT1 */
 void cmpdac_init(void) {
   DAC_MDCR(0) = (3u << 16) | 3u;             /* DAC0 both outputs buffer-off, peripherals only */
   DAC_CTL0(0) = BIT(16) | BIT(0);
   DAC_CTL0(2) = BIT(16) | BIT(0);            /* DAC2/DAC3 are pin-less 15 MSPS converters */
   DAC_CTL0(3) = BIT(16) | BIT(0);
   delay_us(3u);                              /* t_WAKEUP */
-  /* CS: PSEL bit 20 · MSEL 18:16 · HST 001 (10 mV) · EN. Sources per facts-hrtimer §9. */
+  /* CS: PSEL bit 20 · MSEL 18:16 · HST 001 (10 mV) · EN. Sources per facts-hrtimer §9 / UM §19.4.3–19.4.10. */
   CMP_CS(0) = (0u << 20) | (5u << 16) | (1u << 8) | 1u;   /* PA1 vs DAC0_OUT0 */
-  CMP_CS(1) = (1u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PA3 vs DAC2_OUT1 */
+  CMP_CS(1) = (1u << 20) | (5u << 16) | (1u << 8) | 1u;   /* PA3 vs DAC0_OUT1 (E81) */
   CMP_CS(2) = (1u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PC1 vs DAC2_OUT0 */
+  CMP_CS(3) = (0u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PB0 vs DAC2_OUT1 (E81: phase A) */
   CMP_CS(4) = (0u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PB13 vs DAC3_OUT0 */
-  CMP_CS(7) = (0u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PC2 vs DAC3_OUT1 */
 }
 
 void cmpdac_thresholds(const float dac_v[APP_DAC_COUNT]) {
   static const struct { uint8_t inst, out; } M[APP_DAC_COUNT] = {
-    { 3, 1 },  /* APP_DAC_IA  → DAC3_OUT1 (CMP7) */
-    { 2, 1 },  /* APP_DAC_IB  → DAC2_OUT1 (CMP1) */
+    { 2, 1 },  /* APP_DAC_IA  → DAC2_OUT1 (CMP3, E81) */
+    { 0, 1 },  /* APP_DAC_IB  → DAC0_OUT1 (CMP1, E81) */
     { 2, 0 },  /* APP_DAC_IC  → DAC2_OUT0 (CMP2) */
     { 3, 0 },  /* APP_DAC_VBUS → DAC3_OUT0 (CMP4) */
     { 0, 0 },  /* APP_DAC_VOUT → DAC0_OUT0 (CMP0) */
-    { 0, 1 },  /* APP_DAC_CLAMP → DAC0_OUT1 (HW-REC-1: value armed; comparator routing lands with the hardware decision) */
+    { 3, 1 },  /* APP_DAC_CLAMP → DAC3_OUT1 (E81: freed by CMP7; comparator routing lands with the HW-REC-1 decision) */
   };
   for (int k = 0; k < APP_DAC_COUNT; k++) {
     float v = dac_v[k] * (4096.0f / 3.3f);
@@ -61,17 +76,21 @@ void cmpdac_thresholds(const float dac_v[APP_DAC_COUNT]) {
 
 static void fault_cfg(void) {
   /* FLTFDIV first, then per-channel {FC filter 8 samples · SRC0 · polarity · EN}; INSRC[1] bits stay 0 (codes 00 pin, 01 CMP) */
-  uint32_t cmp_hi = (0xFu << 3) | BIT(2) | BIT(1) | BIT(0);   /* SRC0 = 1 (internal CMP) · active HIGH · filtered · EN */
-  uint32_t pin_lo = (0xFu << 3) | (0u << 2) | (0u << 1) | BIT(0);   /* PB10 wire-OR: pin source, active LOW */
+  /* E81 (F-D-3): FC = 0b0011 = 8 samples at f_CK (216 MHz) = 37 ns. The 0b1111 this carried was f_CK/32 → 1.19 µs, 32× the
+     comment and past the F.11 "< 1 µs" row (UM §25.5.3 FLT0INFC: 0011 → fSAMP = fHRTIMER_CK, N = 8). */
+  uint32_t cmp_hi = (0x3u << 3) | BIT(2) | BIT(1) | BIT(0);   /* SRC0 = 1 (internal CMP) · active HIGH · filtered · EN */
+  uint32_t pin_lo = (0x3u << 3) | (0u << 2) | (0u << 1) | BIT(0);   /* PB10 wire-OR: pin source, active LOW */
   HRT_FLTINCFG1 = (0u << 24);                                  /* filter clock = f_CK */
-  HRT_FLTINCFG0 = cmp_hi | (pin_lo << 16) | (cmp_hi << 24);    /* FLT0 = CMP1 · FLT2 = PB10 · FLT3 = CMP0 */
+  HRT_FLTINCFG0 = cmp_hi | (cmp_hi << 8) | (pin_lo << 16) | (cmp_hi << 24);   /* FLT0 = CMP1 · FLT1 = CMP3 · FLT2 = PB10 · FLT3 = CMP0 */
   HRT_FLTINCFG1 |= cmp_hi | (cmp_hi << 8);                     /* FLT4 = CMP2 · FLT5 = CMP4 */
-  HRT_FLTINCFG4 = (cmp_hi << 8);                               /* FLT7 = CMP7 */
-  uint32_t en = BIT(0) | BIT(2) | BIT(3) | BIT(4) | BIT(5) | BIT(7);
+  uint32_t en = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5);
   for (int t = 0; t < 3; t++) HRT_STFLTCTL(PFC_ST[t]) = en;
   HRT_STFLTCTL(0) = en;
   HRT_STFLTCTL(1) = en;
-  HRT_INTEN = en | BIT(5);                                     /* FLTxIE + SYSFLT on IRQ76 (INTF bit 5 = SYSFLT, 6/7 = FLT5/6) */
+  /* E81 (F-D-2): HRTIMER_INTEN does NOT share STxFLTCTL's bit map — UM §25.5.3 puts SYSFLTIE at bit 5 and pushes FLT5/6/7 to
+     6/7/8. Reusing the STxFLTCTL mask left FLT5IE (bus OVP) clear, so F.03 never raised IRQ76 and hrtimer_pfc_apply re-armed
+     the outputs every 10 µs. The decoder below and hrtimer_rearm() use the same INTF map. */
+  HRT_INTEN = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5) /* SYSFLT */ | BIT(6) /* FLT5 */;
 }
 
 void hrtimer_init(void) {
@@ -79,12 +98,14 @@ void hrtimer_init(void) {
   while (!(HRT_INTF & BIT(16))) {}
   HRT_INTC = BIT(16);
 
-  /* ---- LLC ST0/ST1: up-count, continuous, shadow, HALFM; dead time 120 ns = 207 · 578.7 ps (DTGCKDIV 0000) */
+  /* ---- LLC ST0/ST1: up-count, continuous, shadow, HALFM; E81 adaptive dead time on DTGCKDIV = 0010 */
   for (int x = 0; x < 2; x++) {
     HRT_STCTL0(x) = BIT(27) | BIT(18) | BIT(5) | BIT(3) | 1u | (x ? BIT(19) : 0u);   /* SHWEN · UPRST · HALFM · CTNM · div001 · ST1: UPBST0 */
-    HRT_STDTCTL(x) = (207u << 16) | (0u << 10) | (207u << 0);   /* falling/rising 120 ns, positive signs */
+    HRT_STDTCTL(x) = (DT_MAX << 16) | (DT_DIV << 10) | (DT_MAX << 0);   /* falling/rising at the ceiling, positive signs */
     HRT_STCHOCTL(x) = BIT(8) | (2u << 4) | (2u << 20);          /* DTEN · both channels' fault state = inactive */
-    HRT_STCH0SET(x) = BIT(2);                                   /* set on period */
+    /* E81 (F-D-12): set on counter RESET or period. ST1's counter is reset by ST0 CMP1 on the same edge it would roll over,
+       so a period-only set can be pre-empted and leg B never turns on again — DC across the transformer primary. */
+    HRT_STCH0SET(x) = BIT(1) | BIT(2);                          /* set on reset OR period */
     HRT_STCH0RST(x) = BIT(3);                                   /* reset on CMP0 (= CAR/2 via HALFM) */
     HRT_STCAR(x) = (uint32_t)(LLC_FCK / 140000.0f);
   }
@@ -139,9 +160,19 @@ void hrtimer_pfc_apply(const app_pfc_out_t *o) {
   if (en) HRT_CHOUTEN = en;
 }
 
-/* ---- runtime: the LLC ISR writes frequency, phase-shift duty and the gate */
+/* ---- runtime: the LLC ISR writes frequency, phase-shift duty, the ZVS dead time and the gate */
 void hrtimer_llc_apply(const app_llc_out_t *o) {
   uint32_t four = BIT(0) | BIT(1) | BIT(2) | BIT(3);          /* ST0CH0/CH1 · ST1CH0/CH1 */
+  /* E81 (F-C-7): the adaptive dead time llc_step solved for this operating point, both edges, both legs, both signs positive */
+  /* E81 per-leg: ST0 = leg A, ST1 = leg B (llc.h dead_a_s / dead_b_s); a zero falls back to the common value */
+  float da = (o->dead_a_s > 0.0f) ? o->dead_a_s : o->dead_s, db = (o->dead_b_s > 0.0f) ? o->dead_b_s : o->dead_s;
+  uint32_t dta = (uint32_t)(da / DT_STEP_S), dtb = (uint32_t)(db / DT_STEP_S);
+  if (!(da > 0.0f) || dta > DT_MAX) dta = DT_MAX;
+  if (!(db > 0.0f) || dtb > DT_MAX) dtb = DT_MAX;
+  if (dta < DT_MIN) dta = DT_MIN;
+  if (dtb < DT_MIN) dtb = DT_MIN;
+  HRT_STDTCTL(0) = (dta << 16) | (DT_DIV << 10) | dta;
+  HRT_STDTCTL(1) = (dtb << 16) | (DT_DIV << 10) | dtb;
   if (!o->gate || o->f_hz < 1000.0f) { HRT_CHOUTDIS = four; return; }
   uint32_t car = (uint32_t)(LLC_FCK / o->f_hz);
   if (car < 2u * CMPMIN) car = 2u * CMPMIN;
@@ -154,16 +185,18 @@ void hrtimer_llc_apply(const app_llc_out_t *o) {
   HRT_CHOUTEN = four;
 }
 
-void hrtimer_rearm(uint16_t do_bits) {
-  /* clear the latched fault flags; outputs re-enable only for stages the app is commanding (STxCHyEN re-enable rule) */
-  HRT_INTC = BIT(0) | BIT(2) | BIT(3) | BIT(4) | BIT(7) | BIT(8) | BIT(5) | BIT(6);
+/* E81 (F-E-11): ch_mask is an APP_FLT_ channel mask, not "everything" — the E73 bypass-closure blank re-arms F.01's three
+   line-OC channels 60 times, and clearing F.03/F.13 with it would undo a hardware latch the blank has nothing to do with. */
+void hrtimer_rearm(uint16_t do_bits, uint16_t ch_mask) {
+  uint32_t f = (uint32_t)(ch_mask & 0x1Fu) | ((uint32_t)(ch_mask & BIT(5)) << 1);   /* channels → INTF bits (FLT5 at 6) */
+  HRT_INTC = f;
   if (do_bits & APP_DO_EN_LLC) HRT_CHOUTEN = 0xFu;
   /* the PFC phases re-enable from the next hrtimer_pfc_apply with en true */
 }
 
-uint16_t hrtimer_fault_read_clear(void) {   /* INTF fault bits → APP_FLT_ channel mask (INTF: FLT4..0 at 4:0, FLT5 6, FLT7 8) */
+uint16_t hrtimer_fault_read_clear(void) {   /* INTF fault bits → APP_FLT_ channel mask (INTF: FLT4..0 at 4:0, FLT5 at 6) */
   uint32_t f = HRT_INTF;
-  uint16_t ch = (uint16_t)((f & 0x1Fu) | ((f >> 1) & BIT(5)) | ((f >> 1) & BIT(7)));
+  uint16_t ch = (uint16_t)((f & 0x1Fu) | ((f >> 1) & BIT(5)));
   HRT_INTC = f & (0x1FFu);
   return ch;
 }

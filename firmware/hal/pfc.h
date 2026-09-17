@@ -26,7 +26,19 @@
  *     following the zero reference instead boosted the bus without limit at no load
  *   - pulses narrower than on_min are dropped or held on (gate-driver minimum pulse)
  *   - the phase sequence is a sign on w_line, so a module wired A-C-B keeps its feed-forward lead
- * Gains per rating come from calculations/pfc (see pfc_cfg_default) and are confirmed on HIL (firmware-architecture §5.4). */
+ * Gains per rating come from calculations/pfc (see pfc_cfg_default) and are confirmed on HIL (firmware-architecture §5.4).
+ *
+ * E81 — THE 50 kHz SINGLE-UPDATE FALLBACK IS FORBIDDEN ON 40 AND 50 kW. docs/firmware-architecture.md §3.5 offered "one
+ * update per carrier period (50 kHz), which halves the PFC load" as the answer if the 100 kHz ISR proves too expensive.
+ * It is not an answer: at Td = 30 µs the current loop's modulus margin against the DRAWN input filter collapses to 0.26
+ * (40 kW) and 0.17 (50 kW) against the project's own >= 0.50 criterion (F-G-5; the repo's margin() run with the shipped
+ * gains gives 30/40/50 kW = 0.315/0.257/0.170 at 30 µs versus 0.658/0.614/0.544 at 15 µs), and the repo's own switched
+ * model oscillates — 78.1 % of fundamental between 2 and 45 kHz on the 30 kW undamped case. kp_i is UNCHANGED and the
+ * 100 kHz double update STAYS; the CPU was bought back by moving grid_sample and the boot offset window out of the
+ * 100 kHz ISR (app.c), decimating the 10 kHz means in the writer (port.c) and enabling the flash prefetch buffer.
+ * `pfc_exec_us` (VMP object 0x0500) measures the result: the bring-up STOP criterion is <= 5 µs worst case. If that is
+ * ever missed, the honest levers are a lower crossover (~1.5 kHz, accepting the THD) or CDMP/RDMP on the damper —
+ * never this fallback. */
 #ifndef PMP_PFC_H
 #define PMP_PFC_H
 #include <stdbool.h>

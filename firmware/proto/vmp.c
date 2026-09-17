@@ -114,12 +114,18 @@ static void rx_ctrl(vmp_t *v, const pmp_frame_t *f, uint32_t now, pmp_txq_t *tx)
   int verdict = cnt_verdict(v->cnt_ok, v->cnt, c);
   if (verdict == 0) { v->rx_dup++; return; }
   if (verdict < 0) { nak(v, now, tx, src, VMP_F_CTRL, VMP_E_SEQUENCE, c); return; }
+  /* E81 (F-F-6): the CYCLIC setpoints get the coarse range check the WRITE path always had. The power stage was never
+     at risk — fsm.c's v_max and ctl.c's i_avail/p_avail clamp independently — but a broken controller got no NAK, no
+     rejection code, and telemetry echoed its impossible setpoint back as if the module had agreed to it. */
+  float vs = (float)pmp_get16(d + 1) * 0.1f, is = (float)pmp_get16(d + 3) * 0.05f;
+  if (vs > PMP_SER_VMAX_V * 1.1f) { nak(v, now, tx, src, VMP_F_CTRL, VMP_E_RANGE, 1u); return; }
+  if (is > 400.0f) { nak(v, now, tx, src, VMP_F_CTRL, VMP_E_RANGE, 3u); return; }
   take_owner(v, src);
   v->cnt = c; v->cnt_ok = true; v->t_ctrl = now; v->ctrl_seen = true; v->unicast = true;
   apply_run(v, d[0] & 1u);
   v->omode = (pmp_omode_t)((d[0] >> 1) & 3u);
-  v->v_set = (float)pmp_get16(d + 1) * 0.1f;
-  v->i_set = (float)pmp_get16(d + 3) * 0.05f;
+  v->v_set = vs;
+  v->i_set = is;
   uint16_t p = pmp_get16(d + 5);
   v->p_set = (p == 0xFFFFu) ? -1.0f : (float)p * 10.0f;
 }
@@ -369,13 +375,28 @@ static uint64_t warn_bits(const vmp_t *v, const mod_tlm_t *m, uint32_t age, pmp_
   if (v->conflict) w |= 1ull << VMP_W_ADDR_CONFL;
   if (tx->dropped) w |= 1ull << VMP_W_TX_DROP;
   if (v->rx_reject) w |= 1ull << VMP_W_RX_REJECT;
+  if (v->ev_suppressed) w |= 1ull << VMP_W_EV_SUPPRESS;   /* E81 (K7): events were rate-limited — 0x0502 has the count */
   return w;
 }
 
 #define W_REPORT (PMP_W_LINE_WAIT | PMP_W_IN_RIDE | PMP_W_DERATE_TH | PMP_W_DERATE_FAN | PMP_W_NO_SETPOINT | PMP_W_MEAS_GLITCH | \
                   PMP_W_RELAY_FB_OFF | PMP_W_RECOVERING | PMP_W_REARM)
 
+/* E81 (K7): one EVENT per {kind, code} per VMP_EVENT_GAP_MS. Returns false when this one is being suppressed. */
+static bool ev_allow(vmp_t *v, uint32_t now, uint8_t kind, uint8_t code) {
+  for (unsigned k = 0u; k < 8u; k++)
+    if (v->ev_gate[k].kind == kind && v->ev_gate[k].code == code) {
+      if (now - v->ev_gate[k].t < VMP_EVENT_GAP_MS) { v->ev_suppressed++; v->t_ev_sup = now; return false; }
+      v->ev_gate[k].t = now;
+      return true;
+    }
+  v->ev_gate[v->ev_gate_i].kind = kind; v->ev_gate[v->ev_gate_i].code = code; v->ev_gate[v->ev_gate_i].t = now;
+  v->ev_gate_i = (uint8_t)((v->ev_gate_i + 1u) & 7u);
+  return true;
+}
+
 static void tx_event(vmp_t *v, pmp_txq_t *tx, uint32_t now, uint8_t kind, uint8_t code) {
+  if (!ev_allow(v, now, kind, code)) return;
   uint8_t d[8] = { 0u };
   pmp_put16(d, ++v->event_no);
   d[2] = kind; d[3] = code;
@@ -490,6 +511,15 @@ void vmp_tick(vmp_t *v, uint32_t now, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_tx
     float z[8] = { m->t_inlet, m->t_coolant, m->t_pfc, m->t_llc, m->t_xfmr, m->t_diode, m->t_bank, m->t_mcu };
     for (unsigned k = 0u; k < 8u; k++) d[k] = (uint8_t)pmp_sat_i8(z[k], 1.0f);
     emit(tx, VMP_P_SLOW, VMP_F_TLM_THERMAL, VMP_ADDR_ALL, me, d);
+  }
+  /* E81 (K1): the pack / external node behind DOUT. UUGreen, ENR and GWBZ all carry it; a controller needs it to
+     pre-position its reference before the contactor closes and to sanity-check a setpoint against a plausible pack.
+     b0–1 pack voltage u16 0.1 V (0xFFFF = none or unknown) · b2 external node present · b3–7 reserved 0. */
+  if (due(&v->t_pack, now, v->cfg.slow_ms)) {
+    memset(d, 0, sizeof d);
+    pmp_put16(d, (m->ext_connected && isfinite(m->v_ext)) ? pmp_sat_u16(m->v_ext, 0.1f) : 0xFFFFu);
+    d[2] = m->ext_connected ? 1u : 0u;
+    emit(tx, VMP_P_SLOW, VMP_F_TLM_PACK, VMP_ADDR_ALL, me, d);
   }
   if (due(&v->t_cool, now, v->cfg.slow_ms)) {
     for (unsigned k = 0u; k < 4u; k++) d[k] = pmp_sat_u8((float)m->fan_rpm[k], 50.0f);

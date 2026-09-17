@@ -122,6 +122,8 @@ typedef struct {
   uint16_t p_bad, p_mid, p_inov, p_inuv, p_ph, p_busuv, p_ocf, p_ocs, p_ovpa, p_ovps;
   uint16_t p_relay, p_aux;  /* E78: F.19 persistence · aux-stable hold out of SAFE */
   uint16_t p_half;          /* E80: F.38 half-link persistence */
+  uint16_t p_bank;          /* E81 (F-E-06): F.17 bank-imbalance persistence — the doc's 10 ms, which it never had */
+  uint16_t p_line;          /* E81 (F-E-13): ms parked in PRECHG on an out-of-range line */
   uint16_t p_make;          /* E80 (review HR-08): ms since the matrix close command — no mirror contacts on the matrix
                                relays (E67), so the soft start waits out operate + bounce instead of trusting the coil bit */
   uint32_t lock_t[5];       /* E77: times of the last PMP_LOCK_COUNT (5) latches — F.31 counts inside PMP_LOCK_WINDOW_MS */
@@ -139,6 +141,7 @@ typedef struct {
 void pmp_fsm_init(pmp_fsm_t *f);
 void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in);   /* call every 1 ms */
 void pmp_fsm_set_comm_timeout_ms(pmp_fsm_t *f, uint32_t ms);   /* E78: profile-owned, clamped 100–60 000 ms */
+void pmp_fsm_resume_shutdown(pmp_fsm_t *f);                    /* E81 (F-E-02): resume a discharge that a reset interrupted */
 pmp_fclass_t pmp_fault_class(pmp_fault_t c);                   /* E78 */
 /* E80 (FW-21, firmware-architecture §7): the power a module may keep with failed fans — 4 fans (50 kW air): one failed 0.6, two
    0.3; 2–3 fans: one failed 0.5; fewer fans than that: 0, which is F.25 (AUTO_INT: it recovers when a fan runs again) */
@@ -234,6 +237,12 @@ static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac
                                         Vout is not compared with the command — behind DOUT a battery above it is normal */
 #define PMP_BAD_SAMPLE_MS      3u    /* non-finite or physically impossible measurement → F.29 */
 #define PMP_PRECHG_MAX_MS   5000u    /* an in-range line that never finishes precharge is bounded → F.20 */
+#define PMP_BANK_IMB_MS       10u    /* E81 (F-E-06): protection-thresholds row 17 — F.17 needs 10 ms, not one sample */
+#define PMP_LINE_WAIT_MS   10000u    /* E81 (F-E-13): PRECHG on an out-of-range line is reported after this, not held
+                                        silently with the precharge resistors carrying the 110 W bus-fed aux */
+#define PMP_BYPASS_CLOSE_K  0.97f    /* E81 (F-A-11): the bypass closes at this fraction of the rectified crest. At 0.90 the
+                                        residual step charged the link through the HF167F's 30 A making contacts at
+                                        165–280 A; 0.97 puts the pulse at ~40–60 A for ~100 ms more of precharge. */
 #define PMP_WARM_HOLD_MS   60000u    /* after STOP: PFC and matrix stay ready this long, then PFC off + matrix open at
                                         zero current (the E63 standby ≤ 10 W target cannot hold with the PFC switching) */
 #define PMP_DERATE_SLOPE      0.04f  /* thermal derate per °C above PMP_OT_DERATE_C: continuous, 60 % at the 115 °C trip */

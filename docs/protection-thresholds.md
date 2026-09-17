@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-review--checks_·_current--coordination-2ea44f?style=flat-square" alt="gate: review-checks · current-coordination"/>
 </p>
 
@@ -23,19 +23,34 @@
 | Path | 30 kW | 40 kW | 50 kW (liquid · air) | Response |
 |---|---|---|---|---|
 | **F.01** line over-current (CT → comparator → HRTIMER) | 120 A pk | 155 A pk | 195 A pk | ~2–3 µs design target |
-| **F.11** LLC tank over-current | 85 A pk | 115 A pk | 145 A pk | < 2 µs |
-| **F.02 / F.12** DESAT | Vienna 47 pF blank · LLC 22 pF blank | = | = | worst 2.21 µs · 1.44 µs |
+| **F.11** LLC tank over-current | **140 A pk** | **180 A pk** | **220 A pk** | < 1 µs (E67/E81 — one window comparator on the 1:100 tank CT, both polarities, 1 MΩ hysteresis; the 85 / 115 / 145 per-section classes of §5 are superseded) |
+| **F.02 / F.12** DESAT | Vienna 47 pF blank · LLC 22 pF blank (**two-die channels 10 pF**, E81 F-C-8) | = | = | worst 2.21 µs · 1.44 µs |
 | **F.03** bus OVP | 860 V | = | = | 10–20 µs |
 | **F.21** discharge window | 3 s | 4 s | 5 s | per SKU |
 | **F.21b** bank-bleed window | 10.3 s | 15.5 s | 20.7 s | per SKU |
 | Supervisory rows | 30 rows, 1 ms tick, latched pre-fault snapshot | | | 1 ms – 3 s |
+
+> [!WARNING]
+> **Read the trip classes from this table, not from §5.** The per-section F.11 classes (85 / 115 / 145 A pk) were
+> retired at E67 when the three half-bridge sections became one full bridge with one tank CT; the shipped firmware
+> sets **140 / 180 / 220 A pk** (`firmware/core/fsm.c`, `pmp_fsm_set_rating_kw`). The §5 tables are kept as the
+> register's history, with their arrow-notes.
+
+```mermaid
+xychart-beta
+  title "Fast trip classes per SKU (A peak) — F.01 line · F.11 tank"
+  x-axis ["30 kW", "40 kW", "50 kW liquid / air"]
+  y-axis "A peak" 0 --> 250
+  bar [120, 155, 195]
+  bar [140, 180, 220]
+```
 
 ## 1. The fault paths
 
 ```mermaid
 flowchart LR
   subgraph HW["HARDWARE-FAST — no firmware in the loop"]
-    CT["line CT ×3"] --> CMP["on-chip CMP7/CMP1/CMP2<br/>(instance-verified E48)"] --> KILL["HRTIMER FLT<br/>gate kill ~2–3 µs target"]
+    CT["line CT ×3"] --> CMP["on-chip CMP3/CMP1/CMP2<br/>(instance-verified E48; E81 pin swap A → CMP3, bipolar DAC)"] --> KILL["HRTIMER FLT<br/>gate kill ≤ 0.3 µs (E81 filter 0b0011)"]
     DST["NSI6611 DESAT<br/>(fwd polarity, 100 Ω R5-B)"] --> KILL
     RCT["resonant CT + comparator"] --> KILL
     OVP["bus OVP 860 V"] --> KILL
@@ -55,29 +70,29 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | # | Fault | Threshold | Act | Layer | Action | Code |
 |---|---|---|---|---|---|---|
 | 1 | PFC phase OC | 105 A pk (CT, per lane-phase; **27 Ω burden → 1.13 V above AVMID = 2.78 V at comparator; 150 A observability ceiling = 3.27 V, inside the rail — R3/audit**) → **E60: 120 / 155 / 195 A pk on 22 / 18 / 13 Ω** (§4) | <2 µs | HW comp→HRTIM kill | PFC PWM off, latch | F.01 |
-| 2 | PFC DESAT | VDS>9 V @on, 2.5 µs blank → **E60: 47 pF blank, worst response 2.21 µs** (§4) | <3 µs | HW driver | soft-off, FLT latch | F.02 |
+| 2 | PFC DESAT | VDS>9 V @on, 2.5 µs blank → **E60: 47 pF blank, worst response 2.21 µs** (§4). E81 (F-A-22): the NSI6611 threshold is reached at V_DS ≈ 8.1 V after the blank, i.e. **225–540 A hot** through the 750 V / 1200 V dies — DESAT is a short-circuit detector, not an over-current row; the LLC channels driving two dies blank with 10 pF (E81, F-C-8) | <3 µs | HW driver | soft-off, FLT latch | F.02 |
 | 3 | Bus OVP | **860 V** total (E2) | <25 µs¹ | HW comp | all PWM kill | F.03 |
 | 4 | Bus OV (fw) | 845 V, 1 ms | 1 ms | FW | controlled stop | F.04 |
 | 5 | Bus UV | <620 V in run | 10 ms | FW | stop, retry ×3 | F.05 |
-| 6 | Midpoint imbalance | |ΔV|>40 V, 10 ms | 10 ms | FW | derate→stop | F.06 |
+| 6 | Midpoint imbalance | \|ΔV\|>40 V, 10 ms | 10 ms | FW | derate→stop | F.06 |
 | 7 | Input OV | >500 VAC any line-line, 20 ms | 20 ms | FW | stop | F.07 |
 | 8 | Input UV / sag | <260 VAC, 100 ms (ride-through below) | 100 ms | FW | derate/stop | F.08 |
 | 9 | Phase loss | line current <10% expected 40 ms (validated `400-phloss` sim) | 40 ms | FW | fold back → stop | F.09 |
 | 10 | Phase sequence | PLL sign at start | start | FW | inhibit start (any rotation accepted, mapped) | F.10 |
-| 11 | LLC resonant OC | 70 A pk per section CT (**2.0 Ω burden → 1.40 V above AVMID = 3.05 V at comparator — R2 CB-16**; full-load 46 A rms = 0.92 V rms) → **E60: 85 / 115 / 145 A pk on 1.2 / 0.91 / 0.75 Ω** (§4) | <2 µs | HW comp | LLC PWM off | F.11 |
+| 11 | LLC resonant OC | **E67/E81 at a glance: 140 / 180 / 220 A pk (30 / 40 / 50 kW), one window comparator on the 1:100 tank CT, both polarities, 1 MΩ hysteresis (E81)** — history: 70 A pk per section (R2 CB-16) → E60 85 / 115 / 145 A pk per section on 1.2 / 0.91 / 0.75 Ω → E67 one tank, see the E67 row below | <1 µs (E81: HRTIMER fault filter 0b0011) | HW comp | all four positions off, latch | F.11 |
 | 12 | LLC DESAT | as #2 → **E60: 22 pF blank, worst response 1.44 µs** (§4) | <3 µs | HW | soft-off latch | F.12 |
-| 13 | Output OVP | 1050 V (or mode-max +6%) | <25 µs¹ | HW comp on OV iso-sense | LLC off, K_OUT opens after I≈0 | F.13 |
-| 14 | Output OV (fw) | cmd +4%, 2 ms | 2 ms | FW | CV clamp/stop | F.14 |
+| 13 | Output OVP | 1050 V in HIGH; **560 V in LOW** (the CMP0 threshold is scheduled by mode — `app.c` `th13`; E81 note: an older copy of this row said "mode-max +6 %" = 530 V, the code is authoritative) | <25 µs¹ | HW comp on OV iso-sense | LLC off, K_OUT opens after I≈0 | F.13 |
+| 14 | Output OV (fw) | stack > min(1050 V, mode-max × 1.05 + 20 V) for 2 ms (`PMP_OVP_MS`), or stack > command × 1.06 + 20 V for 200 ms while the module sources current (`PMP_OVP_SRC_MS`, a CV failure) — E81: the earlier "cmd +4 %, 2 ms" text never matched `fsm.c`; a film-only bank overshoots up to +10 % on a 100→50 % step (G SIL) and must not latch | 2 ms / 200 ms | FW | latch | F.14 |
 | 15 | Output OC | 102% Imax 100 ms / 130% 2 ms | — | FW (CC loop is primary) | CC fold, then stop | F.15 |
 | 16 | Output short | **rev B: V<50 V & I>90%·I_cmd sustained 10 ms** (a healthy CC loop never exceeds 110% — found by fsm-sim) | 10 ms | FW | burst-retry ×3 → latch | F.16 |
-| 17 | Bank imbalance (series) | |VA−VB|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
+| 17 | Bank imbalance (series) | \|VA−VB\|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
 | 18 | Relay weld | ΔV<1.5 V @200 ms, ≥10 A ref (E13) | 200 ms | FW | latch, inhibit mode change | F.18 |
-| 19 | Relay open-fail | mirror-contact readback mismatch 100 ms (hardware path per E30: RELAY_FB_* nets, KPRE series pair) | 100 ms | FW | latch | F.19 |
+| 19 | Relay open-fail | bypass auxiliary-contact readback mismatch 100 ms. E81: the HF167F auxiliary is **1 Form A (NO), not a mirror**; the two auxiliaries are wired in SERIES so the readback is LOW only when BOTH bypass contacts are closed (HIGH = at least one open). That is the start permit — a stuck-open contact would leave a precharge resistor in the line current — and a single weld is caught by the voltage-based weld test (`PMP_WELD_DV_V`/`PMP_WELD_MS`), not by this row | 100 ms | FW | latch | F.19 |
 | 20 | Precharge fail | **as implemented (fsm.c): abort iff t > 400 ms AND bus < 50% line pk** — tolerant of the per-SKU charge time (t95 ≈ 160/288/576 ms at 30/60/120 kW → **E60 per-SKU deck: 193 / 231 / 310 ms at 30 / 40 / 50 kW**); the earlier "<90% in 400 ms" wording described the completion check, not the abort (R2 HR-14 doc fix) | — | FW | abort, open KPRE | F.20 |
 | 21 | Discharge fail | bus >60 V after per-SKU timeout: **3 / 4 / 5 s** (`PMP_DISCH_TO_MS` rev G; powered-path physics 830→60 V ≈ 2.0/2.4/3.2 s at 640 Ω) — **R6: this timer's REAL coverage is the AC-PRESENT case** (bus held up by the permanent RPRE rectifier path → FC_DISCH = "isolate upstream first"); with AC removed the aux browns out at ~321 V mid-count and the passive path + enclosure label finish the job (R6 note below) | per SKU | FW | latch, discharge stays commanded | F.21 |
 | 21b | Bank discharge fail | either bank >60 V @ **2.5×** bank-bleed τ after `CTL_QDISBK` (E33; τ = 8.8 kΩ·C_bank ≈ 4.1/8.3/16.5 s → timeout 10.3/20.6/41.2 s per SKU → **E60: 10.3 / 15.5 / 20.7 s at 30 / 40 / 50 kW**; 2.0τ would false-fail a healthy bleed at 525·e⁻² = 71 V — caught by the per-SKU deck) | per SKU | FW | latch, inhibit touch-service bit | F.21 |
 | 22 | OT PFC/LLC/XFMR | 95/100/115 °C NTC | 1 s | FW | derate −2%/°C → stop @+10 °C | F.22–24 |
-| 23 | Fan fail | tach < 50% cmd 3 s | 3 s | FW | derate 50%, F-code | F.25 |
+| 23 | Fan fail | tach < 35 % of the commanded curve for 3 s (judged from 20 % duty; E80 curve, E81 doc sync) | 3 s | FW | derate by failed count (0.6 / 0.3 on a 4-fan build), F.25 latches when nothing can cool | F.25 |
 | 24 | Aux UV | V15<12.5 V | <100 µs | HW driver-UVLO chain | gates hold-low (§28) | F.26 |
 | 25 | Internal link loss | 50 ms no valid CRC frame → **retired at E40** (one brain, no inter-MCU link; code reserved) | 50 ms | FW both ends | controlled stop, needs re-ENABLE (§22) | F.27 |
 | 26 | External CAN timeout | 1 s no valid ctrl frame (config) | 1 s | FW | ramp to 0, standby (§23) | F.28 |
@@ -106,7 +121,7 @@ channel 5) and **F.13 = CMP0** (SNS_VOUT → PA1 = CMP0_IP + ADC01_IN1; referenc
 MODE0=011, buffer-off internal-only so PA4/SNS_VAC2 keeps its pin; CMP0 → fault channel 3).
 Verified against GD32G553xx Datasheet Rev 1.01 Table 2-4 and User Manual Rev 1.0 (CMPxMSEL
 source lists, DAC mode bits, HRTIMER Table 25-21 — which also confirms the three phase trips
-own distinct fault channels: CMP7→ch 7, CMP1→ch 0, CMP2→ch 4; the external FLT wire-OR stays
+own distinct fault channels: CMP3→ch 1 (E81: phase A moved from CMP7/ch 7 with the AIN8 ↔ TSNS0 pin swap), CMP1→ch 0, CMP2→ch 4; the external FLT wire-OR stays
 on PB10 = fault channel 2's pin source). Bank OV needs no comparator: its dV/dt is
 current-limited (F.11 tank kill + F.13 + F.17 cover the fast cases) and SNS_VBKA/VBKB stay
 ADC channels on PD9/PD8 — their CMP7_IM alternate functions are unused and unusable (CMP7 is
@@ -129,11 +144,12 @@ phases B and C on OPPOSITE INPUTS of the SAME comparator (pin 15/PC0 = CMP2_IM, 
 CMP2_IP; the DAC reference can only drive the IM side, so a signal there gets no independent
 comparison). Allocation is now INSTANCE- and POLARITY-aware, executed by swapping AIN9↔AIN11
 in the one pin-map generator (verified against GD32G553 Rev 2.0 Figure 2-3 + pin table):
-**I_A0 → PC2/CMP7_IP · I_B0 → PA3/CMP1_IP (ADC0_IN3 keeps metering) · I_C0 → PC1/CMP2_IP**;
-SNS_VAC1 → PC0/ADC01_IN5 (50 Hz metering, needs no CMP). Each phase gets ONE single-sided
-threshold **on the DESAT-blind polarity BY DESIGN** — the opposite polarity is DESAT's own
-µs-class coverage; this is the complement, not a window detector, and the register says so.
-Timing: burden → 1 k/1 n (τ = 1 µs) → CMP (≈50 ns) → HRTIMER FLT (sub-cycle) ≈ 2–3 µs is a
+**I_A0 → PB0/CMP3_IP (E81: was PC2/CMP7 — the swap makes the card pin-compatible with the STM32G474VET7; ADC0_IN12 meters) · I_B0 → PA3/CMP1_IP (ADC0_IN3 keeps metering) · I_C0 → PC1/CMP2_IP**;
+SNS_VAC1 → PC0/ADC01_IN5 (50 Hz metering, needs no CMP). Each phase gets ONE comparator whose DAC threshold the
+100 kHz ISR **re-signs to follow the measured current** (E81 F-D-10 / O-15 closed) — so the hardware trip covers BOTH
+half-cycles whichever way the line CT is fitted; the pre-E81 text ("one single-sided threshold on the DESAT-blind polarity by
+design") depended on a CT orientation nothing in the drawing fixed. DESAT remains the µs-class complement on the switch itself.
+Timing (E81): burden → 200 Ω / 1 nF (τ = 0.2 µs; the pre-E81 1 kΩ / 1 nF lag added 18 A to the fault peak, F-B-1) → CMP (≈ 50 ns) → HRTIMER FLT filter 0b0011 (≈ 37 ns; the pre-E81 0b1111 was 1.19 µs) → driver ≈ 60 ns → t_d,off ≈ 50 ns: ≈ 0.3 µs to gate-off, replacing the earlier "≈ 2–3 µs is a
 **DESIGN TARGET until measured** — the ACX line CT is catalogued for 50/60 Hz metering and
 its HF response is NOT vendor-specified; EVT T-xx measures the true threshold-crossing-to-
 gate-off time in BOTH polarities against the device short-circuit withstand. Until that
@@ -388,7 +404,7 @@ The deck had been simulating the E65 burdens; it now reads its operating peaks f
 **Rule (FW-E73):** F.01 is not latched for `PMP_PRE_BLANK_MS` = **60 ms** after the bypass command (relay operate ≤ 25 ms +
 bounce ≤ 5 ms + the pulse, with margin), and PFC enable waits for the window to end. The HRTIMER break stays armed; the HAL
 clears its fault latch when the window ends. A genuine short in that window is cleared by the gG fuses. Host tests: *inrush
-on F.01 blanked*, *no PFC enable inside the window*, *F.01 while switching latches* (host_sim 63 / 63).
+on F.01 blanked*, *no PFC enable inside the window*, *F.01 while switching latches* (`host_sim`, now 121 checks in the 291-check suite).
 
 **Parts held to the pulse (RFQ lines in parts-db):** precharge relays **make ≥ 260 / 280 / 360 A pk** at ≤ 70 V across the
 contacts and ≥ 30 000 makes · Vienna JBS **IFSM ≥ 250 A** (10 ms half-sine) — the pulse I²t is 20 / 27 / 45 A²s per diode,
@@ -481,10 +497,13 @@ under the sanitizers.
 | **F.34 coverage** | the energized PFC ramp counts inside the 8 s window | a boost that never reached 0.95 · ref was unsupervised (HR-28) |
 | **Matrix make discipline** | 40 ms settle wait after any matrix close command (no mirror contacts, E67); PAR make additionally requires bank mismatch ≤ 25 V (≈ 5 mJ equalization at 30.8 µF) | HR-08/HR-09 |
 
+> [!TIP]
+> **How this page is checked** — `review-checks` (R5-K, R6-B, R6-C, R7-A, R7-E, R8-A), `stress-audit` and `current-coordination` assert passages of this file **word for word** — an edit that changes a pinned sentence fails the gate. Edits here are additive: superseded values keep their arrow-note.
+
 ---
 
 <div align="center">
 <sub><a href="../boards/30kw/README.md">← 30 kW Module Walkthrough</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="current-coordination.md">Current & Protection Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

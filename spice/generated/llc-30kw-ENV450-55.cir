@@ -1,25 +1,28 @@
-* E67 full-bridge LLC 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss250p VBUS=830 VBANK=450 fsw=105.688k PFM
+* E67 full-bridge LLC 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p VBUS=830 VBANK=450 fsw=105.715k PFM tdeadA=120n tdeadB=120n
+* E81 Coss model: body-diode junction Cjo=4.875n Vj=2 M=0.5 per position (Qoss(800 V)=371 nC) + linear snubber 330 pF drain-source on BOTH devices
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
-.model DBODY D(Is=1e-12 N=4 Rs=0.03)
+.model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=4.87517e-9 Vj=2 M=0.5)
 VBUS bus 0 DC 830
 
-VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 4.59092e-6 9.46184e-6)
-VGLA glA 0 PULSE(0 1 4.73092e-6 20n 20n 4.59092e-6 9.46184e-6)
+VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 4.58970e-6 9.45940e-6)
+VGLA glA 0 PULSE(0 1 4.72970e-6 20n 20n 4.58970e-6 9.45940e-6)
 VHSA bus bhA DC 0
-BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*28.57)
-BSLA legA 0 I=v(legA)*(2e-5+v(glA)*28.57)
+BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*28.57142857142857)
+BSLA legA 0 I=v(legA)*(2e-5+v(glA)*28.57142857142857)
 DBHA legA bhA DBODY
 DBLA 0 legA DBODY
-CPARA legA 0 2.5e-10
+CSHA bhA legA 3.30000e-10
+CSLA legA 0 3.30000e-10
 
-VGHB ghB 0 PULSE(0 1 4.73092e-6 20n 20n 4.59092e-6 9.46184e-6)
-VGLB glB 0 PULSE(0 1 0.00000e+0 20n 20n 4.59092e-6 9.46184e-6)
+VGHB ghB 0 PULSE(0 1 4.72970e-6 20n 20n 4.58970e-6 9.45940e-6)
+VGLB glB 0 PULSE(0 1 0.00000e+0 20n 20n 4.58970e-6 9.45940e-6)
 VHSB bus bhB DC 0
-BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*28.57)
-BSLB legB 0 I=v(legB)*(2e-5+v(glB)*28.57)
+BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*28.57142857142857)
+BSLB legB 0 I=v(legB)*(2e-5+v(glB)*28.57142857142857)
 DBHB legB bhB DBODY
 DBLB 0 legB DBODY
-CPARB legB 0 2.5e-10
+CSHB bhB legB 3.30000e-10
+CSLB legB 0 3.30000e-10
 VSP legA tk DC 0
 CR tk tkb 2.31000e-7 ic=0
 LR tkb pri 5.60000e-6
@@ -50,7 +53,7 @@ VBKA bkA 0ba DC 450
 VBKB bkB 0bb DC 450
 RTA 0ba 0 1u
 RTB 0bb 0 1u
-.tran 30n 5.67710e-4 4.16321e-4 15n uic
+.tran 30n 5.67564e-4 4.16213e-4 15n uic
 .option method=gear reltol=1e-3 abstol=1e-6 vntol=1u itl4=100
 .control
 set filetype=ascii

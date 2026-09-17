@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/firmware-260_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 260 checks ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/firmware-291_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 291 checks ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -24,8 +24,8 @@
 |---|---|
 | **Language / dependencies** | portable C99 — no HAL, no RTOS assumptions |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
-| **Verification** | `firmware/test/host_sim.c` — **77 / 77** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror` (54 / 54 at E60 · 63 / 63 at E73 · E76 adds 14 adversarial checks incl. three every-tick invariants) |
-| **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 7 group share-law checks · the E67 output-mode latch · codec guards · 100 000-frame fuzz · the per-tick relay-exclusion invariant |
+| **Verification** | `sh firmware/run_tests.sh` — **291 checks** under AddressSanitizer + UndefinedBehaviorSanitizer, `-Werror`, across seven binaries: `boot_test` 21 · `host_sim` **121** · `ctl_test` 19 · `proto_test` 40 · `hal_test` 37 · `app_test` 24 · `e81_test` **29** (E81) |
+| **What the suite covers** | 26 fault scenarios · rating windows · E60 coordination rules · 7 group share-law checks · the E67 output-mode latch · codec guards · a 1M-frame fuzz · the per-tick relay-exclusion invariant · cycle-by-cycle Vienna and LLC plants · the signed boot chain and power-cut update storms · the E81 adaptive dead time, demand map, per-rating fan count and fault channels |
 | **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — selected by the RATING strap (the 3.32 k band is reserved) |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
 
@@ -36,7 +36,7 @@ The `firmware/` tree holds the **normative** control-plane logic, verified again
 sh firmware/run_tests.sh
 ```
 
-## Files
+## 1. Files
 
 | File | Contents |
 |---|---|
@@ -46,7 +46,7 @@ sh firmware/run_tests.sh
 | `firmware/test/host_sim.c` | the verification rig: behavioral plant + 26 scripted scenarios + CSU suite + codec round-trips + fuzz + the per-tick matrix-exclusion invariant |
 | `firmware/run_tests.sh` | one-command build & run with sanitizers, `-Werror` |
 
-## The FSM
+## 2. The FSM
 
 ```mermaid
 stateDiagram-v2
@@ -73,7 +73,7 @@ stateDiagram-v2
 > [!WARNING]
 > **E67 supersedes the K_OUT rows of this section.** The output blocking diode replaced K_OUT and the pre-insertion relays:
 > the output mode is latched in standby and the S/P relays close at zero current before the soft start — see
-> [E67 — two output modes and a diode output](#e67--two-output-modes-and-a-diode-output-2026-09-13). The E12b text below
+> [E67 — two output modes and a diode output](#11-e67--two-output-modes-and-a-diode-output-2026-09-13). The E12b text below
 > stays as the record of why a blind close was dangerous.
 
 Two rules that exist because verification **broke** their predecessors:
@@ -86,7 +86,7 @@ Two rules that exist because verification **broke** their predecessors:
    CC loop caps current at 100 % — found by the scenario suite. Now: V < 50 V **and** I > 90 %·I_cmd
    sustained 10 ms.
 
-## S/P transition, as the firmware actually runs it
+## 3. S/P transition, as the firmware actually runs it
 
 ```mermaid
 sequenceDiagram
@@ -106,7 +106,7 @@ sequenceDiagram
   LLC->>CAN: STATUS2 mode=HV · resume current
 ```
 
-## Porting to the GD32G553 (the HAL contract)
+## 4. Porting to the GD32G553 (the HAL contract)
 
 `pmp_fsm_step()` is pure logic over `pmp_in_t` → `pmp_out_t`. The MCU integration layer must:
 
@@ -130,7 +130,7 @@ same `F.xx` codes appear on the HMI and in CAN telemetry (STATUS2/FAULT_EVT).
 
 ---
 
-## Board rev C integration notes (2026-09-05)
+## 5. Board rev C integration notes (2026-09-05)
 
 > [!WARNING]
 > **Dated notes — read with this table.** The passages below are kept word for word because review gates assert
@@ -175,8 +175,8 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
   are low through every WDO-low and every boot.
 - **PFC reverse-direction hardware trip (R6/E47 · R7-A allocation):** the comparator channels
   are now pinned INSTANCE-aware (the R6 "CMP-capable" rule missed that B and C shared CMP2's
-  two inputs): **I_A0 = PC2/CMP7_IP, I_B0 = PA3/CMP1_IP, I_C0 = PC1/CMP2_IP**, DAC thresholds
-  on the IM sides, outputs → HRTIMER fault. ADC map change that rides along: **I_B0 is now
+  two inputs): **I_A0 = PB0/CMP3_IP (E81 pin swap; was PC2/CMP7), I_B0 = PA3/CMP1_IP, I_C0 = PC1/CMP2_IP**, DAC thresholds
+  on the IM sides (E81: the 100 kHz ISR sets the DAC sign from the measured current — both polarities trip), outputs → HRTIMER fault (A → FLT1, B → FLT0, C → FLT4). ADC map change that rides along: **I_B0 is now
   ADC0_IN3 (PA3) and SNS_VAC1 is ADC01_IN5 (PC0)** — update the channel table with the pin
   map, both regenerate from umod-pinmap. Each phase carries ONE threshold on the DESAT-blind
   polarity by design (the other polarity is DESAT's); the ~2–3 µs figure is a design target
@@ -208,7 +208,7 @@ The supervisory logic (`fsm.c`) is unchanged — these bind existing hooks to th
 - **Boot/provisioning:** BOOT0 strapped low, SWD on the JSWD headers (CB-13); EOL flow per
   dfm-production.md step 4 is now physically possible.
 
-## Card boot identity (E35/E37 — one image, straps decide)
+## 6. Card boot identity (E35/E37 — one image, straps decide)
 
 The control card is ONE part number and ONE firmware image for both converter roles and both
 ratings. At boot, before any enable, the HAL must:
@@ -251,7 +251,7 @@ the old 68k basis clipped at 25.7 V.
 
 ---
 
-## E60 — current coordination in firmware (2026-09-13)
+## 7. E60 — current coordination in firmware (2026-09-13)
 
 > [!IMPORTANT]
 > Four normative changes land in `firmware/core/fsm.c` and are proven by `firmware/test/host_sim.c`
@@ -263,14 +263,14 @@ the old 68k basis clipped at 25.7 V.
 | **FW-R6** PFC reference clamp | HAL current loop clamps the reference **amplitude** at 1.05 × the rated crest at 330 VAC | cycle-by-cycle Vienna: dips/phase jumps then add ≈3 A, not a trip |
 | **FW-R7** bus floor | `vbus_ref = clamp(max(2·bank/0.95, 1.08·√2·VLL), 650, 830)` (`PMP_BUS_LINE_K`) | 475/500 VAC on a 650 V floor: 75–92 % overmodulation, 15–40 % THD → 0.1 % with the floor |
 | **FW-R8** start mode | STANDBY selects SER only above `PMP_XOVER_DN_V` (525 V), the same threshold RUN uses | SER at 500–525 V = bank 250 V = 2× PAR tank current; the 40 kW LLC folds to 75–93 % there |
-| **OC DAC classes** | `pmp_fsm_set_rating_kw()` sets `oc_line_a` / `oc_tank_a` = **120/85 · 155/115 · 195/145 A pk** (30/40/50); HAL writes the CMP DACs from these — firmware may tighten, never loosen | 1.2 × simulated worst peak; observability through the 3 µs race on the E60 burdens |
+| **OC DAC classes** | `pmp_fsm_set_rating_kw()` sets `oc_line_a` / `oc_tank_a` = **120/140 · 155/180 · 195/220 A pk** (30/40/50 — E67: one full-bridge tank CT, so the tank class is the whole-bridge peak, not a per-section one); HAL writes the CMP DACs from these — firmware may tighten, never loosen | 1.2 × simulated worst peak; observability through the 3 µs race on the E60 burdens |
 
 Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥ 1.08·√2·VLL* ·
 *50 kW OC classes 195/145* · *40 kW OC classes 155/115*. Default before the strap is read = the
 30 kW classes (the lowest thresholds — an undecoded strap can only trip earlier, never later).
 
 
-## E65 — magnetics protection and bus-reference control (2026-09-13)
+## 8. E65 — magnetics protection and bus-reference control (2026-09-13)
 
 > [!IMPORTANT]
 > Additive. Normative in `firmware/core/fsm.c` / `fsm.h`, proven by `firmware/test/host_sim.c` (**55 / 55** after E66).
@@ -286,7 +286,7 @@ Host-sim checks added: *start at 510 V selects PAR* · *bus floor at 475 VAC ≥
 Host-sim checks added: *vcmd 800 V / battery 450 V starts PAR* · *bus reference follows a climbing bank (300 → 520 V)* ·
 *open NTC / cutout loop latches F.22* · *the guard passes a healthy −40 °C reading*.
 
-## E66 — group share law on every module card (2026-09-13)
+## 9. E66 — group share law on every module card (2026-09-13)
 
 > [!IMPORTANT]
 > `firmware/core/group.c` / `group.h` run on every module card. The RATING strap band 3.32 k (0.55–1.24 V) is
@@ -310,7 +310,7 @@ at the module cap* · *non-member never delivers* · *GROUP_SET codec round-trip
 
 ---
 
-## E65 — PFC current loop against the input filter (2026-09-13)
+## 10. E65 — PFC current loop against the input filter (2026-09-13)
 
 > [!IMPORTANT]
 > The input EMI filter was never inside a control model: `pfc-control.mjs` closed the current loop on a bare
@@ -331,7 +331,7 @@ Not firmware: EVT line — a grid-impedance step test at Lg ≈ 100 µH per phas
 transformer) with the loop delay measured on the scope, before the margins above are called verified.
 
 
-## E67 — two output modes and a diode output (2026-09-13)
+## 11. E67 — two output modes and a diode output (2026-09-13)
 
 > [!IMPORTANT]
 > E67 follows the charging-module convention in the UUGreen, ENR, Tonhe, NIUERA and Maxwell CAN protocols: a LOW
@@ -364,7 +364,7 @@ Host tests added (host_sim 60/60): `start490`, `start510`, `lowforced`, `highlow
 F.11 class checks 195 A / 220 A and 155 A / 180 A.
 
 
-## E73 — precharge-bypass closure window (2026-09-14)
+## 12. E73 — precharge-bypass closure window (2026-09-14)
 
 > [!IMPORTANT]
 > Additive. The bypass closure at 90 % of line peak drives a 200 / 218 / 280 A pk pulse through D1 while the PFC is idle —
@@ -377,10 +377,10 @@ F.11 class checks 195 A / 220 A and 155 A / 180 A.
 | PFC enable | `ST_STANDBY` returns early while `pre_blank_ms` is non-zero | F.01 is never blanked while the PFC switches |
 | HAL contract | clear the HRTIMER FLT2 event latch when the window ends, before the first PWM | the hardware break stays armed throughout |
 
-Host tests added (host_sim **63 / 63**): *E73 bypass-closure inrush on F.01 is blanked* · *no PFC enable inside the blank
+Host tests added (in `host_sim`, now 121 checks): *E73 bypass-closure inrush on F.01 is blanked* · *no PFC enable inside the blank
 window* · *F.01 line OC while switching latches*. Negative test: with the blank removed, the inrush scenario latches F.01.
 
-## E75 — OVP comparator allocation + mode-swap release margin (2026-09-14)
+## 13. E75 — OVP comparator allocation + mode-swap release margin (2026-09-14)
 
 > [!IMPORTANT]
 > Additive. An external review asked which comparator instances back the F.03/F.13 "HW comp" rows
@@ -394,10 +394,10 @@ window* · *F.01 line OC while switching latches*. Negative test: with the blank
 | ADC re-map | SNS_VBUSP = ADC2_IN4 · SNS_VOUT = ADC01_IN1 (were ADC3_IN1 / ADC1_IN12) | the two channel-table constants move with the pins |
 | Mode swap | `ST_MODESW` flips at **step 70** (was 40): open command at step 20 → earliest re-close ≥ 51 ms later | the ULN COM clamp freewheels the coil — diode-suppressed release stretches 2–3×; the matrix-relay RFQ line is release + bounce ≤ 35 ms suppressed. An overlap would dump a charged film bank (~3 J at 500 V) through two making contacts |
 
-Gates: `verify-independent` §J asserts pin 52 = ANA14 and pin 21 = AIN3 from the built card netlist; host_sim
-stays **63 / 63** (the per-tick exclusion invariant runs through the widened swap).
+Gates: `verify-independent` §J asserts pin 52 = ANA14 and pin 21 = AIN3 from the built card netlist; `host_sim`
+stays green (the per-tick exclusion invariant runs through the widened swap).
 
-## E76 — supervisory-logic hardening (2026-09-14)
+## 14. E76 — supervisory-logic hardening (2026-09-14)
 
 > [!IMPORTANT]
 > Additive. The fifth external review compiled the cores and reproduced nine defects with adversarial
@@ -424,7 +424,7 @@ node, and the lock scenario re-arms through the public contract instead of pokin
 `fsm-sim.mjs` (26 JS scenarios) still passes but lags the C core in the E76 areas — the C core is
 normative (E24); syncing the JS model is an open E76 line.
 
-## E78 — the protocol-neutral core (2026-09-15)
+## 15. E78 — the protocol-neutral core (2026-09-15)
 
 > [!IMPORTANT]
 > Additive. The firmware now has three layers — protocol profiles, one canonical model, the power core — specified with the
@@ -450,12 +450,13 @@ normative (E24); syncing the JS model is an open E76 line.
 | Protocol layer | `core/modapi.h` canonical model · `proto/` profiles and registry · `can_proto.{h,c}` (v1, never shipped) retired |
 | HAL 1 ms order | profile rx → profile tick → `pmp_cmd_to_in` → `pmp_fsm_step` → `pmp_cmd_to_ctl` → `pmp_ctl_step` → commit references → telemetry → TX |
 
-## E80 addendum (additive)
+## 16. E80 addendum (additive)
 
-- **Host suite is now six binaries / 260 checks**: `boot_test` (SHA-256 · ECDSA-P256 against OpenSSL + BigInt vectors ·
-  signed images · boot decision · update protocol on RAM flash) joins the five E79 suites; `run_tests.sh` runs all six.
+- **Host suite is now seven binaries / 291 checks**: `boot_test` (SHA-256 · ECDSA-P256 against OpenSSL + BigInt vectors ·
+  signed images · boot decision · update protocol on RAM flash) joined the five E79 suites at E80, and `e81_test` (29 checks)
+  at E81; `run_tests.sh` runs all seven.
 - **The GD32G553 register port is built** (`firmware/port/gd32g553/` — no vendor library; every register cited to UM
-  Rev 1.3): 216 MHz clock recipe, HRTIMER center-aligned Vienna carrier + PFM/PSM legs with 120 ns dead time, the six
+  Rev 1.3): 216 MHz clock recipe, HRTIMER center-aligned Vienna carrier + PFM/PSM legs (the fixed 120 ns dead time was **replaced at E81 by the per-leg adaptive law** — 60–900 ns, clamped, computed from Q_oss(V_bus) + C_s·V_bus over the commutating current), the six
   fault channels of Table 25-21, four ADCs on one 100 kHz trigger with double-buffered DMA rings, CMP/DAC thresholds,
   CAN mailbox driver with manual bus-off recovery, FWDGT + the TPS3430 WDI contract, TCM placement of the whole 100 kHz
   path, and `build.sh` producing the bootloader plus signed slot-A/B images. `port-pin-audit` (run-all) locks its pin
@@ -469,10 +470,13 @@ normative (E24); syncing the JS model is an open E76 line.
 - **Calibration policy (review HR-29)**: a card with NO calibration record latches F.30 at boot exactly like an
   implausible one — nominal-scaling delivery is gone; the EOL fixture is the only calibration writer.
 
+> [!TIP]
+> **How this page is checked** — `sh firmware/run_tests.sh` — **291 checks** under ASan/UBSan across seven binaries, with `-Werror`; several passages of this page are asserted word for word by `calculations/review-checks.mjs`.
+
 ---
 
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-architecture.md">Firmware Architecture →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -1,0 +1,15 @@
+* parallel closure with 10 V mismatch, 30kw film bank 19.8 uF/bank, loop 150 nH
+CA a 0 1.98000e-5 ic=405
+CB b 0 1.98000e-5 ic=395
+* relay closes at t=1ms: contact R ramps 1meg -> 2 mOhm over 100 us (arc/bounce abstracted)
+BREL a c I=v(a,c)/(0.002+1e6*(1-min(max((time-1m)/100u,0),1)))
+LW c b 150n
+.tran 0.2u 6m 0 0.1u uic
+.option method=gear reltol=1e-3
+.control
+set filetype=ascii
+run
+wrdata sp-30kw-10V-150n.out v(a,b) i(LW)
+quit
+.endc
+.end

@@ -1,0 +1,60 @@
+* sic-1200-c3m.lib — corrected behavioral 1200 V / 21-23 mOhm SiC MOSFET (E81)
+* =============================== PROVENANCE ==================================
+* NOT a vendor model. A behavioral VDMOS fitted to the PUBLIC datasheet of the
+* Wolfspeed C3M0021120K rev 4 (June 2025) — the part the repository's own LCSC
+* rows name for both SG2M023120LJ (C5713523 = C3M0016120K, same class) and
+* B3M010C075Z (C5713521 = C3M0021120K). It replaces the SIC1200_23R model in
+* sic-behavioral.lib for every LLC double-pulse run.
+*
+* WHAT CHANGED vs SIC1200_23R (and why it mattered):
+*   Cjo   3.4n -> 6.9n   the old value carried Qoss(800 V) = 177 nC against the
+*                        datasheet's 359 nC (3*Eoss/V with Eoss = 99 uJ @800 V),
+*                        i.e. 49 % of the real output charge. Every ZVS dead-time
+*                        and turn-off-softness conclusion drawn from it was wrong
+*                        in the optimistic direction (C-sic F-C-1 / F-C-7).
+*   Rg    2.0  -> 3.3    datasheet Rg(int) 3.3 Ohm.
+*
+* FITTED AGAINST (C3M0021120K rev 4, Tc 25 C unless noted):
+*   Vds 1200 V . Vgs(max) -8/+19 V transient, -4/+15 V operational STATIC
+*   Id 100 A @25 C / 74 A @100 C . IDM 200 A . Rth(j-c) 0.32 K/W
+*   Rds(on) 21 mOhm typ / 28.8 mOhm MAX @15 V, 50 A . 38 mOhm typ @175 C (x1.50 @150 C)
+*   Vgs(th) 1.8 min / 2.5 typ / 3.6 max @25 C . 2.0 typ @175 C
+*   Ciss 4818 pF . Coss 180 pF @1000 V . Crss 12 pF . Eoss 99 uJ @800 V
+*   Eon 0.69 mJ / Eoff 0.42 mJ @800 V, 50 A, Rg(ext) 2.5 Ohm, -4/+15 V, Tj 175 C
+*     -> koff = Eoff/(V*I) = 10.5 nJ/(V*A), the datasheet anchor for tanks.mjs
+*   Qg 162 nC . Qgs 49 nC . Qgd 50 nC . Vsd 4.6 V @25 A/25 C, 4.2 V @175 C, Vgs -4 V
+*
+* ACCURACY BAND. On the Eoff anchor this deck reads 13-15 nJ/(V*A) at the
+* un-snubbered, as-drawn gate network against the datasheet's 10.5 -> the model
+* is +40 % PESSIMISTIC on turn-off energy. Treat every Eoff/koff from it as an
+* upper bound (+40 % / -0 %). Vds overshoot depends on a commutation-loop
+* inductance that is a REQUIREMENT, not a measurement: nothing here substitutes
+* for the bench double-pulse (EVT T-01 / R14-HR-17).
+*
+* TEMPERATURE. Parameters are 25 C. Rds(on) temperature is handled analytically
+* downstream (envelope-grid, loss-budget); this lib is used for EDGE behaviour only.
+* =============================================================================
+
+* 1200 V / 23 mOhm class (LLC primary) — datasheet-fitted Coss and Rg(int)
+.model SIC1200_23R_C VDMOS(
++ Vto=3.5 Kp=70 Lambda=0.002
++ Rd=0.019 Rs=0.0012 Rg=3.3
++ Cgdmax=1.1n Cgdmin=45p a=0.55
++ Cgs=3.0n
++ Cjo=6.9n Vj=0.9 m=0.5
++ Is=1e-10 N=1.3 Rb=0.009
++ mtriode=0.4)
+
+* CONTROL GROUP for the false-turn-on rows: the same die at the datasheet's
+* MINIMUM threshold, hot. Vgs(th) min 1.8 V @25 C falls ~5 mV/K (typ 2.5 -> 2.0
+* over 150 K) -> ~1.4 V at 175 C. Any Miller peak above this turns the
+* complementary device on. The 2.5 V line the pre-E81 deck used was the TYPICAL
+* 25 C threshold, not a minimum.
+.model SIC1200_23R_LOWVT VDMOS(
++ Vto=1.4 Kp=70 Lambda=0.002
++ Rd=0.019 Rs=0.0012 Rg=3.3
++ Cgdmax=1.1n Cgdmin=45p a=0.55
++ Cgs=3.0n
++ Cjo=6.9n Vj=0.9 m=0.5
++ Is=1e-10 N=1.3 Rb=0.009
++ mtriode=0.4)

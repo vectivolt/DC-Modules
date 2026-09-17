@@ -100,6 +100,25 @@ export const FOOTPRINT = {
   "CONN-CARD-88-H": "HDR-TH_88P-2R-P2.54-V-M", // 2×44 keyed header — generated dual-row land
   "CONN-CARD-88-R": "SKT-TH_88P-2R-P2.54-V",   // mating receptacle — per the chosen series drawing
   "TLV3202-class": "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL", "BAT54A": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",
+  // ---- E81 (review E81): every new or re-classed part carries its intended package -------------
+  "ELH-470u500": "CAP-TH_L30.0-W30.0-P10.00",          // same 35 mm land as the 450 V can (F-C-6)
+  "PP-2u2-1100": "CAP-TH_L31.5-W13.0-P27.50",          // DC-link entry damper cap (F-G-1 FIX-D)
+  "CER-3W-R33-AX": "RES-TH_L25.0-W6.0-P30.00",         // 0.33 Ω >=3 W pulse axial, damper resistor
+  "C1206-1n-1kV-C0G": "C1206", "C1206-470p-1kV-C0G": "C1206",   // LLC per-die turn-off snubbers
+  "C1812-330p-1k": "C1812",                            // Vienna snubber re-size (F-C-3/13)
+  "MLCC-18p-0603": "C0603",                            // LLC DESAT blank (F-C-8)
+  "R2512-22k-HV-AS": "R2512",                          // DC-link balance string (F-A-7)
+  "R2512-4k7-1W": "R2512",                             // V24 preload (F-A-10)
+  "QA01C-15": "PWRM-TH_QA01C", "QA02C-15": "PWRM-TH_QA01C",     // +15/−3 V bias modules, 1 W / 2 W
+  "SMBJ18A": "SMB_L4.5-W3.6-LS5.3-RD", "SMBJ28A": "SMB_L4.5-W3.6-LS5.3-RD",
+  "BZX84-B15": "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR",    // ±2 % reference zener (F-A-10)
+  "GDT-2k5-20kA": "GDT-8mm_RM6",                       // 2.5 kV class (F-A-18)
+  "XTAL-8M-30PPM-3225": "XTAL-SMD_L3.2-W2.5-4PAD",     // CAN clock (F-A-30 / F-F-1)
+  "TP-1mm-PAD": "TP_PAD_1mm",                          // WDI fixture probe point (F-F-8)
+  "X1-4u7-530": "CAP-TH_L31.5-W17.0-P27.50",           // 50 kW filter damper cap (F-G-5)
+  "SQP-4R7-25W": "RES-TH_L60.0-W9.0-P66.00",           // 50 kW filter damper resistor
+  "HFE18V-250A-AUX": "CONTACTOR_250A_stud_aux",        // 50 kW bypass, contactor class (F-H-8)
+  "Y2-10n-300": "CAP-TH_L11.0-W6.0-P10.00",   // E81 F-L-4: 10 nF Y2, same 10 mm pitch, thicker body — layout re-check
 };
 export const footprintFor = (mpn) => FOOTPRINT[mpn] ?? "";
 

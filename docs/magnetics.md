@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-mag--sync_·_rfq--audit_·_magnetics--envelope-2ea44f?style=flat-square" alt="gate: mag-sync · rfq-audit · magnetics-envelope"/>
 </p>
 
@@ -21,10 +21,10 @@
 
 | Module | D1 PFC choke × 3 | D2 resonant inductor × 1 | D3 transformer cell × 2 | D7 CM choke × 2 | Page |
 |---|---|---|---|---|---|
-| **30 kW** | 3 × T79, N = 39 | 5.16 µH · litz 8000×0.05 | 2 × E70 · 6:6∥6 | T 80/50/25 (Schaffner catalog primary) | [magnetics-30kw.md](magnetics-30kw.md) |
-| **40 kW** | 5 × T79, N = 26 | 4.07 µH · litz 10000×0.05 | 3 × E70 · 4:4∥4 | T 80/50/25 | [magnetics-40kw.md](magnetics-40kw.md) |
-| **50 kW liquid** | 5 × T79, N = 24 · cutout | 3.28 µH · litz 12000×0.05 · plate-bonded | 3 × E70 · 4:4∥4 · plate-bonded | T 90/50/30 | [magnetics-50kw.md](magnetics-50kw.md) |
-| **50 kW air** | 5 × T79, N = 24 | 3.28 µH · web-bonded | 3 × E70 · 4:4∥4 · web-bonded | T 90/50/30 | [magnetics-50kwa.md](magnetics-50kwa.md) |
+| **30 kW** | 3 × T79, N = 39 | 5.00 µH · litz 8000×0.05 | 2 × E70 · 6:6∥6 | T 80/50/25 (Schaffner catalog primary) | [magnetics-30kw.md](magnetics-30kw.md) |
+| **40 kW** | 5 × T79, N = 26 | 3.99 µH · litz 10000×0.05 | 3 × E70 · 4:4∥4 | T 80/50/25 | [magnetics-40kw.md](magnetics-40kw.md) |
+| **50 kW liquid** | 5 × T79, N = 24 · cutout | 3.20 µH · litz 12000×0.05 · plate-bonded | 3 × E70 · 4:4∥4 · plate-bonded | T 90/50/30 | [magnetics-50kw.md](magnetics-50kw.md) |
+| **50 kW air** | 5 × T79, N = 24 | 3.20 µH · web-bonded | 3 × E70 · 4:4∥4 · web-bonded | T 90/50/30 | [magnetics-50kwa.md](magnetics-50kwa.md) |
 
 Each module page opens with a **critical review at a glance** — every magnetic against every failure mechanism (saturation,
 core loss and runaway, copper and proximity, winding temperature, current rating, insulation, leakage, DC bias, imbalance,
@@ -258,10 +258,13 @@ flowchart LR
 | E71 | PyOpenMagnetics cross-check of D2 / D3; fringing-corrected gap guides; D3 short-circuit R test | the docs said the tool could not install; the D2 gap guide ignored fringing |
 | E73 | critical-review matrix per module; startup inrush, fan-out, cell imbalance and CM-flux gates; D1 / D4 / D7 in the PyOpenMagnetics cross-check; D4 wire sizes, current rating and Rdc rows corrected | a closure event and three abnormal conditions had no computed check; the D4 sheet named no gauges and its Rdc rows did not match its build |
 
+> [!TIP]
+> **How this page is checked** — `magnetics-rfq-audit` addresses this page's sections **by their heading text** (`## Common requirements`, `## D4 …`), so an H2 here must not be renumbered or renamed; `mag-sync` (48 checks — every carrier agrees with the identity table), `magnetics-rfq-audit` (25 drawings, 0 missing fields), `conductor-audit`, `magnetics-envelope` and `temp-critique`, all inside `run-all`.
+
 ---
 
 <div align="center">
 <sub><a href="busbar-drawings.md">← Busbar Drawings & Joint Spec</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-30kw.md">30 kW Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

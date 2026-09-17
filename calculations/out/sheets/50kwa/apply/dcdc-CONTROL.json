@@ -443,6 +443,23 @@
       "signal_name": "DGND"
      }
     ]
+   },
+   {
+    "designator": "CROLEB",
+    "value": "100nF",
+    "block_name": "CARD-IF",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "RATING"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
    }
   ],
   [
@@ -859,5 +876,5 @@
   ]
  },
  "warnings": [],
- "total": 12
+ "total": 13
 }

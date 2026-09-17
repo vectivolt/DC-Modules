@@ -89,6 +89,10 @@ void pmp_fsm_init(pmp_fsm_t *f) {
   f->out.q_disch = false;
 }
 
+/* E81 (F-E-02): resume a commanded discharge after a reset — the HAL calls this from app_init when the no-init handoff
+   says a discharge was in progress. ST_SHUTDOWN re-commands the dump and hands to ST_DISCH with its own bounded window. */
+void pmp_fsm_resume_shutdown(pmp_fsm_t *f) { f->st = ST_SHUTDOWN; }
+
 void pmp_fsm_set_comm_timeout_ms(pmp_fsm_t *f, uint32_t ms) { f->can_to_ms = ms < 100u ? 100u : (ms > 60000u ? 60000u : ms); }
 
 const char *pmp_state_name(pmp_state_t s) {
@@ -121,7 +125,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   /* E77: a start needs a usable voltage setpoint or a battery that sets the operating point — a corrupted (NaN) command
      started the module and ran it to the mode ceiling (500 V in PAR). E78: the same test holds while delivering — losing the
      setpoint with no battery is a controlled stop, never a collapse of the output reference under load. */
-  bool have_sp = vcmd >= PMP_VCMD_START_MIN_V || (in->ext_connected && in->vext > 0.0f);
+  /* E81 (F-E-09): a battery alone is NOT an operating point. core/ctl.c's shaper has no path from vext to v_cmd, so a
+     start with a pack but no voltage setpoint slewed v_ref to 0, commanded u = 0, never reached its target and latched
+     F.34 after 8 s — every time, with no explanation. The module now stays in STANDBY and says PMP_W_NO_SETPOINT. */
+  bool have_sp = vcmd >= PMP_VCMD_START_MIN_V;
 
   /* ---------------- hardware-fast mirror (comparators do this in <µs; firmware re-asserts) */
   if (in->vbus > PMP_BUS_OVP_V) latch(f, FC_BUS_OVP);
@@ -136,6 +143,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   if (!in->aux_ok) {
     o->pfc_en = false; o->llc_en = false; o->stop_ramp = false;
     if (f->st == ST_RUN || f->st == ST_DERATE) { f->st = ST_SAFE; f->need_enable = true; }   /* E78: module-initiated → re-arm */
+    /* E81 (F-E-07): an aux dropout de-energises every coil physically while the FSM still commands them, so F.19 would
+       latch after 100 ms and replace the designed SAFE → (500 ms) → STANDBY recovery with a row needing a CAN CLEAR.
+       The matrix settle timer is re-armed too: when the aux returns the contacts have just re-closed and are bouncing. */
+    f->p_relay = 0; f->p_make = 0;
   }
 
   /* E76 (review R06): the enable release is the public STOP — and the RE-ARM. need_enable (set by a
@@ -148,7 +159,8 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   /* ---------------- E78 F.19: a relay contact that does not follow its command (mirror readback). 100 ms covers operate, bounce
      and the diode-suppressed release. Shutdown, discharge and off are exempt — a latch there would abandon the discharge. */
   if (!in->relay_fb_wired) o->warn |= PMP_W_RELAY_FB_OFF;
-  else if (f->st != ST_INIT && f->st != ST_SHUTDOWN && f->st != ST_DISCH && f->st != ST_OFF && f->st != ST_LOCK
+  else if (f->st != ST_INIT && f->st != ST_SAFE && f->st != ST_SHUTDOWN && f->st != ST_DISCH && f->st != ST_OFF
+           && f->st != ST_LOCK
            && persist(&f->p_relay, ((pmp_relay_cmd(o) ^ in->relay_fb) & in->relay_fb_wired) != 0u, PMP_RELAY_FB_MS))
     latch(f, FC_RELAY);
 
@@ -156,6 +168,16 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
      energized — a soft-start that stalls in STANDBY is otherwise unsupervised; LOAD checks stay
      bound to the delivering states) */
   bool operating = (f->st == ST_RUN || f->st == ST_DERATE);
+  /* E81 (F-A-7): the two LINK rows run whenever the link is CHARGED, not only while a stage is enabled. The 2 × 47 k
+     balance string carries 4.4 mA against a hot leakage imbalance of up to ~17 mA, so an idle charged link can drift one
+     half toward its can rating with nothing watching — the E24–E80 core only looked while the converter ran. */
+  if ((operating || o->pfc_en || o->llc_en || in->vbus > 100.0f) && f->st != ST_INIT && f->st != ST_LOCK) {
+    if (persist(&f->p_mid, fabsf(in->vmid_frac - 0.5f) * in->vbus > PMP_MID_IMB_V, PMP_MID_MS)) latch(f, FC_MID_IMB);
+    /* E80 (review HR-06/R10): each half-link absolutely — 860 V total and ±40 V midpoint together still let one
+       450 V bank reach 454–468 V without either row firing */
+    if (persist(&f->p_half, fmaxf(in->vmid_frac, 1.0f - in->vmid_frac) * in->vbus > PMP_HALF_OV_V, PMP_HALF_OV_MS))
+      latch(f, FC_HALF_OV);
+  } else { f->p_mid = 0; f->p_half = 0; }
   if (operating || o->pfc_en || o->llc_en) {
     float stack = (o->mode == MODE_SER) ? (o->k_ser ? in->vbank_a + in->vbank_b : in->vbank_a)
                                         : (o->k_para ? fmaxf(in->vbank_a, in->vbank_b) : in->vbank_a);
@@ -169,11 +191,6 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if (persist(&f->p_inov, inov, PMP_IN_OV_MS)) latch(f, FC_IN_OV);
     if (persist(&f->p_inuv, inuv, PMP_IN_UV_MS)) latch(f, FC_IN_UV);
     if (persist(&f->p_ph, ph, PMP_PH_LOSS_MS)) { o->derate = 0.0f; latch(f, FC_PH_LOSS); }
-    if (persist(&f->p_mid, fabsf(in->vmid_frac - 0.5f) * in->vbus > PMP_MID_IMB_V, PMP_MID_MS)) latch(f, FC_MID_IMB);
-    /* E80 (review HR-06/R10): each half-link absolutely — 860 V total and ±40 V midpoint together still let one
-       450 V bank reach 454–468 V without either row firing */
-    if (persist(&f->p_half, fmaxf(in->vmid_frac, 1.0f - in->vmid_frac) * in->vbus > PMP_HALF_OV_V, PMP_HALF_OV_MS))
-      latch(f, FC_HALF_OV);
     /* E77 F.13 firmware mirror on the module's OWN stack: above the mode ceiling (or Vout above 1050 V) for 2 ms, or above
        its command while it sources current for 200 ms (a CV failure). Comparing Vout with the command latched whenever a
        battery sat above the setpoint behind DOUT, or ENABLE arrived before the first SET_OUTPUT with a battery present. */
@@ -181,7 +198,13 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       latch(f, FC_OUT_OVP);
     if (persist(&f->p_ovps, o->llc_en && in->iout_meas > PMP_MAKE_IOUT_A && stack > vcmd * 1.06f + 20.0f, PMP_OVP_SRC_MS))
       latch(f, FC_OUT_OVP);
-    if (o->mode == MODE_SER && o->k_ser && fabsf(in->vbank_a - in->vbank_b) > PMP_BANK_IMB_V) latch(f, FC_BANK_IMB);
+    /* E81 (F-E-06): 10 ms, as protection-thresholds row 17 specifies, and the same >50 V gate the soft-start copy uses.
+       The calibrated bank channels are a ±1 % class at 500 V, so the static differential error alone can be 10 V before
+       ripple — one noisy sample had only to add 15 V to latch a LATCH row that ends the session. F.17's real job (a
+       welded KPARA in SER) is a persistent condition, so 10 ms costs it nothing. */
+    if (persist(&f->p_bank, o->mode == MODE_SER && o->k_ser && fmaxf(in->vbank_a, in->vbank_b) > 50.0f &&
+                            fabsf(in->vbank_a - in->vbank_b) > PMP_BANK_IMB_V, PMP_BANK_IMB_MS))
+      latch(f, FC_BANK_IMB);
     if (in->temp_max_c > PMP_OT_TRIP_C) latch(f, FC_OT);
     if (pmp_fan_derate(in) <= 0.0f) latch(f, FC_FAN);   /* E80: too few fans left for any power (FW-21) */
     /* E76: the plausibility check is LOW-SIDE ONLY — vout above the stack is a legitimate
@@ -226,7 +249,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     f->short_ms = (!o->stop_ramp && in->vout_meas < PMP_SHORT_V && in->iout_meas > fmaxf(icmd * PMP_SHORT_I_FRAC, 0.1f * f->i_rated_a))
                     ? f->short_ms + 1 : 0;
     if (f->short_ms > PMP_SHORT_MS) latch(f, FC_OUT_SHORT);
-    if (persist(&f->p_busuv, in->vbus < PMP_BUS_UV_V, PMP_BUS_UV_MS)) latch(f, FC_BUS_UV);   /* E77: row 5 had no code */
+    /* E81 (F-E-05): the bus-UV row tracks the line crest too — at 475 VAC the crest is 671.8 V, so a fixed 620 V row
+       left a 50 V band where the rectifier conducts uncontrolled and nothing fired. */
+    if (persist(&f->p_busuv, in->vbus < fmaxf(PMP_BUS_UV_V, 1.414f * in->vin_ll_max - 20.0f), PMP_BUS_UV_MS))
+      latch(f, FC_BUS_UV);   /* E77: row 5 had no code */
     /* E76 (review R06): honor the STOP. E78: through the controlled-stop ramp (current out first, then the LLC) */
     if ((!in->enable_req || !have_sp) && f->latched == FC_NONE && !o->stop_ramp) {
       o->stop_ramp = true; f->stop_ms = 0; f->stop_can = false;
@@ -258,9 +284,20 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     float crest = 1.414f * in->vin_ll_max;
     bool line_ok = in->vin_ll_min >= PMP_IN_UV_RECOVER_V && in->vin_ll_max <= PMP_IN_OV_RECOVER_V && in->phases_ok >= 3;
     o->k_pre = false;
-    if (!line_ok) { f->prechg_ms = 0; o->warn |= PMP_W_LINE_WAIT; break; }
+    /* E81 (F-E-13): an out-of-range line used to park the module here for ever — precharge resistors in circuit, the
+       110 W bus-fed aux drawn through them (5–25 W continuous in two 33 Ω parts), and only a warning bit, so the panel
+       showed the CAN address and a technician saw a module that "does nothing". After 10 s it is reported as the grid
+       row it is: F.07/F.08 are AUTO_EXT, so it clears itself the moment the supply comes back. */
+    if (!line_ok) {
+      f->prechg_ms = 0;
+      o->warn |= PMP_W_LINE_WAIT;
+      if (persist(&f->p_line, true, PMP_LINE_WAIT_MS))
+        latch(f, in->vin_ll_max > PMP_IN_OV_RECOVER_V ? FC_IN_OV : FC_IN_UV);
+      break;
+    }
+    f->p_line = 0;
     f->prechg_ms++;
-    if (in->vbus >= 0.9f * crest) { o->k_pre = true; f->pre_blank_ms = PMP_PRE_BLANK_MS; f->st = ST_STANDBY; }
+    if (in->vbus >= PMP_BYPASS_CLOSE_K * crest) { o->k_pre = true; f->pre_blank_ms = PMP_PRE_BLANK_MS; f->st = ST_STANDBY; }
     else if ((f->prechg_ms > 400 && in->vbus < 0.5f * crest) || f->prechg_ms > PMP_PRECHG_MAX_MS) latch(f, FC_PRECHG);
     break; }
   case ST_STANDBY:

@@ -1,0 +1,12 @@
+# E81/F-G-1 DC-link HF ripple share (ngspice-46); 40kw:FB n2/Lr4.35u/Cr9x33n/Lm43.5u/Coss1860p; 6 × 470 µF per half; netlists spice/generated/dclink-40kw-*.cir
+# DRAWN target: 16 × 1 µF bridge entry film + RC damper 2.2 µF + 0.33 Ω — current-coordination [DCLINK]/[SYNC] read this line
+# ASSUMED: can ESR 0.15 Ω @100 kHz, ESL 20 nH, class 3.5 A rms (2.5 A @120 Hz × 1.4); film ESR 5 mΩ, ESL 14.999999999999998 nH, line 10 A rms; Vienna stub 59.99999999999999 nH; source behind 50 µH/rail
+# GATE: per-can rms ≤ 0.8 × 3.5 A = 2.4 A, per-film rms ≤ 10 A
+# cheapest variant holding every can ≤ 80 % of the 3.5 A class and every film ≤ 10 A at BOTH corners: film16u-damped-stud40n — 760 rupees/module @10k
+corner,variant,bridge_film_uF,n_film,damper,stud_nH,P_sim_kW,Ibr_dc_A,Ibr_ac_rms_A,I_per_bridge_film_A,I_per_elyt_can_A,I_per_vienna_film_A,I_stud_ac_A,Vbus_p1_V,Vbus_p99_V,can_pct_of_class,film_pct_of_line,verdict,extra_films,rupees_at_10k
+SER250-full-bus764,as-drawn,4,4,no,40,31.81,43.44,58.22,29.89,8.77,13.1,76.22,563,968,250,299,OVER,0,0
+SER250-full-bus764,film16u-damped-stud40n,16,16,yes,40,31.3,42.53,47.83,3.29,0.92,1.37,7.98,689,808,26,33,OK,12,760
+SER250-full-bus764,film16u-damped-stud20n,16,16,yes,20,31.31,42.55,47.83,3.57,1.63,2.43,14.14,689,808,47,36,OK,12,760
+PAR400-full,as-drawn,4,4,no,40,37.89,46.48,32.14,8.45,7.37,7.31,45.11,817,854,210,85,OVER,0,0
+PAR400-full,film16u-damped-stud40n,16,16,yes,40,39.5,48.39,33.51,2.53,2.36,2.35,14.48,828,833,68,25,OK,12,760
+PAR400-full,film16u-damped-stud20n,16,16,yes,20,39.39,48.26,33.38,2.15,2.8,2.78,17.15,829,834,80,21,OVER,12,760

@@ -1,0 +1,32 @@
+* DPT-PFC V=425 I=157 Rgoff=4.7 Lloop=1e-8 snub=10/3.3e-10 clamp=1
+.include ../models/sic-behavioral.lib
+VBUS bus 0 DC 425
+CDC bus 0 100u ic=425
+LLP bus kd 1e-8
+DFW sw kd JBS1200_40
+RSN sw nsn 10
+CSN nsn 0 3.3e-10
+DCL sw clp JBS1200_40
+CCL clp bus 1.0000000000000001e-7 ic=0
+RCL clp bus 470
+LLD kd sw 0.000042 ic=157
+VSNS sw d1 0
+LD d1 d 2n
+M1 d g ks SIC750_10R
+LKS ks s 1.5n
+LSP s 0 2n
+VDRV drv ks PWL(0 18 4e-7 18 4.05e-7 -3 0.0000019 -3 0.000001905 18 0.0000027 18 0.000002705 -3)
+RGN drv gon 4.7
+DGN gon g DIDEAL
+DGF g goff DIDEAL
+RGF goff drv 4.7
+.model DIDEAL D(Is=1e-3 N=0.1)
+.tran 0.2n 0.0000032999999999999997 uic
+.option method=gear reltol=1e-3 abstol=1u vntol=1m
+.control
+set filetype=ascii
+run
+wrdata dpt-pfc-50kw-L10-clamped.out v(d,ks) v(g,ks) i(VSNS) v(sw)
+quit
+.endc
+.end

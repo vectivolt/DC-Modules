@@ -6,10 +6,18 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/findings-71_rows_·_2_reviews-d19a00?style=flat-square" alt="findings: 71 rows · 2 reviews"/>
 </p>
+
+> [!NOTE]
+> **Purpose** — the two external hardware rechecks of the E79 release, triaged claim by claim: what was fixed, what
+> was already closed, what was refuted against the built sources, and what maps to a test row. Superseded in part by
+> the [E81 full-system validation](e81-validation-report.md), which re-derived the same domains from first principles.
+>
+> **Gate coupling** — each FIXED row names the gate that re-ran for it (`kicad5-verify`, `review-checks`,
+> `verify-independent`, `run_tests.sh`); each EVT / RFQ HOLD row names its [EVT](evt-plan.md) test.
 
 Two independent reviews of the E79 release arrived 2026-09-17: register **HR-01…HR-33** and register **R01…R38**
 (overlapping scopes, occasionally contradicting each other). This page is the E45/E46/E74 pattern applied to both at
@@ -21,6 +29,15 @@ data already in the repository. Verdicts:
 - **REFUTED** — the claim does not hold against the built sources; the evidence is cited.
 - **EVT / RFQ HOLD** — a real qualification requirement no repository edit can discharge; mapped to its test row.
 - **OPEN** — a genuine open decision, registered with an owner.
+
+## At a glance
+
+| | |
+|---|---|
+| **Inputs** | two independent external hardware rechecks of the E79 release — **HR-01…HR-33** and **R01…R38** (71 rows, overlapping and occasionally contradicting each other) |
+| **Method** | the E45 / E46 / E74 pattern: every claim re-derived against the built netlists, the generated exports, the firmware sources and the vendor data already in the repository |
+| **Verdicts** | FIXED · ALREADY CLOSED · REFUTED · EVT / RFQ HOLD · OPEN — each with its evidence cited |
+| **Superseded in part by** | the [E81 full-system validation](e81-validation-report.md), which re-derived the same domains from first principles with nine reviewers |
 
 ## 1. Confirmed and fixed in E80
 
@@ -57,7 +74,7 @@ data already in the repository. Verdicts:
 | **HR-13** | Passive discharge after aux dropout needs a bounded service policy | R6-B: 370/445/593 s tails computed, IEC 62477-1 label rule, F.21’s real coverage stated |
 | **R13 (rails)** | QA01C −4 V does not exist as drawn | O-11 closed at E45 (+18/−3); E80 re-aligned the stale carriers (see §1) |
 | **HR-32 (F.11 values)** | “85/115/145 A headline is obsolete” | E60/E67: the ladders are 120/155/195 A and 140/180/220 A everywhere the gates read |
-| **R24 (fan count)** | Repo “still” 2/3/0/4 | 2/3/0/4 **is** the E41/E44 build (harness has exactly four tach ways); the other review asserts 3/4/5 — see OPEN row §5 |
+| **R24 (fan count)** | Repo “still” 2/3/0/4 | 2/3/0/4 **was** the E41/E44 build (harness has exactly four tach ways); the other review asserts 3/4/5 — resolved at E81 by user decision as **3/3/0/4** (O-16, §5) |
 
 ## 3. Refuted against the built sources
 
@@ -87,10 +104,10 @@ data already in the repository. Verdicts:
 
 | ID | Question | State |
 |---|---|---|
-| **O-15** | Fast-trip polarity: protection-thresholds §3 says +1 trips the DESAT-blind direction; both reviews argue the opposite sign. Contradiction between carriers = open decision (never “correct” one silently) | Decided by injection at EVT (both polarities demonstrated); `APP_OC_POL` is one constant in one place |
-| **O-16** | Fan complement: the build is 2/3/0/4 (E41/E44, four tach ways in HARNESS40); one review asserts a 3/4/5 basis that would need a fifth tach way (the 40-way harness has none spare — W40 is SHLD) | **User decision.** A fifth fan is a harness/connector change, not a BOM edit |
-| **O-17** | The 202 W secondary/output-diode accounting mismatch between `loss-budget` and `envelope-grid` operating points (R35/HR-31) — a model-reconciliation task, not a hardware change; neither 96 % nor 98 % is treated as measured | Reconciliation queued with the E63 engine set; cooling stays sized to the harsher ledger meanwhile |
-| **HW-REC-4** | No crystal on the card; IRC8M ±2.5 % is outside CAN’s ~±0.5 % tolerance need. The port runs the PLL from HXTAL when fitted (clock monitor armed, IRC8M fallback keeps regulating) and reports through the CAN warning path otherwise | Fit an 8–24 MHz crystal on OSCIN/OSCOUT (pins 12/13, currently unallocated) |
+| **O-15** | Fast-trip polarity: protection-thresholds §3 says +1 trips the DESAT-blind direction; both reviews argue the opposite sign. Contradiction between carriers = open decision (never “correct” one silently) | **Closed at E81:** F.01 is made bipolar in firmware — the 100 kHz ISR sets the comparator DAC sign from the measured phase-current sign, so the hardware trip covers both half-cycles whichever way the line CT is fitted; both polarities are still demonstrated by injection at EVT (T-12) |
+| **O-16** | Fan complement: the build is 2/3/0/4 (E41/E44, four tach ways in HARNESS40); one review asserts a 3/4/5 basis that would need a fifth tach way (the 40-way harness has none spare — W40 is SHLD) | **Closed at E81 (user decision 2026-09-17): 3/3/0/4.** The 30 kW gains a third fan on the existing FAN_TACH3/FAN_PWM2 ways (no harness change); the air budget at the 55 °C inlet density reads 1.65× / 1.27× / 1.27× (30 / 40 / 50 kW air), n−1 covered |
+| **O-17** | The 202 W secondary/output-diode accounting mismatch between `loss-budget` and `envelope-grid` operating points (R35/HR-31) — a model-reconciliation task, not a hardware change; neither 96 % nor 98 % is treated as measured | **Closed at E81:** not an accounting error — the two ledgers evaluate different operating points with the same formulas (reviewer C, F-C-18). Both now carry the LLC turn-off term the pre-E81 models lacked (a flat 1 W / 8 W per position where the decks turn off at 36–147 A), the grid runs on the per-SKU air base 74 / 75 / 77 °C, and the real worst corner (500 V SER at high line, hot) is in the grid's fold table |
+| **HW-REC-4** | No crystal on the card; IRC8M ±2.5 % is outside CAN’s ~±0.5 % tolerance need. The port runs the PLL from HXTAL when fitted (clock monitor armed, IRC8M fallback keeps regulating) and reports through the CAN warning path otherwise | **Closed at E81:** 8 MHz crystal + 2 × 12 pF + 1 MΩ on OSCIN/OSCOUT (pins 12/13) drawn on the card; `PORT_HXTAL_HZ` = 8 MHz in the port build (F-F-1/F-A-30: ISO 11898-1 budget ±0.485 % at 16 tq / SJW 2) |
 | **HW-REC-5** | Route DRV_RDY into the spare third inputs of the safety AND (asynchronous global-ready), per HR-23 | User decision; firmware already supervises `aux_ok` at 10 ms |
 
 ## 6. What the reviews got structurally right
@@ -103,10 +120,13 @@ signed-image chain by `boot_test` against OpenSSL-derived vectors. The full verd
 
 <sub>previous · [assumptions](assumptions.md) — hub · [README](README.md) — next · [verification matrix](verification-matrix.md)</sub>
 
+> [!TIP]
+> **How this page is checked** — each FIXED row names the gate that re-ran for it (`kicad5-verify`, `review-checks`, `verify-independent`, `run_tests.sh`) and each HOLD row names its EVT test; `sh calculations/run-all.sh` re-runs the lot.
+
 ---
 
 <div align="center">
-<sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="interconnect.md">Two-Board Sandwich & Interconnect →</a></sub>
+<sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="e81-validation-report.md">E81 Full-System Validation →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

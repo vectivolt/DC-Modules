@@ -1,0 +1,20 @@
+# E81/F-G-4 parallel-closure mismatch study; 50kwa: 14 × 2.2 µF FILM-ONLY bank = 30.8 µF/bank (E68c, was 1.5 mF)
+# relay 300 A make (HF161F/CHC-D120 class, RFQ) + 2 mΩ contact; loop inductance swept 50/150/300 nH
+# FW-42 permit |ΔV| ≤ 25 V needs loop L ≥ 107 nH — current-coordination [SP] gates that
+# weld detection: 10 A on one bank → dV/dt 324.7 kV/s → 1.5 V in 4.6 µs
+dV_V,loop_nH,Ipk_A,I2t_A2s,t_settle_ms,verdict_vs_make
+2,50,34,0.015,1.17,OK
+5,50,85,0.095,1.21,OK
+10,50,170,0.382,1.25,OK
+20,50,341,1.528,1.28,EXCEEDS make rating
+25,50,426,2.387,1.29,EXCEEDS make rating
+2,150,20,0.015,1.31,OK
+5,150,50,0.096,1.44,OK
+10,150,100,0.384,1.54,OK
+20,150,199,1.535,1.65,OK
+25,150,249,2.399,1.68,OK
+2,300,14,0.015,1.51,OK
+5,300,35,0.096,1.79,OK
+10,300,71,0.384,1.99,OK
+20,300,142,1.537,2.2,OK
+25,300,177,2.402,2.27,OK

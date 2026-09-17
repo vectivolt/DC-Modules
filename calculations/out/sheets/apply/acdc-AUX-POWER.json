@@ -281,7 +281,7 @@
    },
    {
     "designator": "DZAUX",
-    "value": "BZT52-C15",
+    "value": "BZX84-B15",
     "block_name": "FLYBACK",
     "pins": [
      {
@@ -594,7 +594,7 @@
    },
    {
     "designator": "DTVS24",
-    "value": "SMBJ26A",
+    "value": "SMBJ28A",
     "block_name": "RAILS",
     "pins": [
      {
@@ -611,7 +611,7 @@
    },
    {
     "designator": "DTVS15",
-    "value": "SMBJ16A",
+    "value": "SMBJ18A",
     "block_name": "RAILS",
     "pins": [
      {
@@ -640,6 +640,23 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "V24"
+     }
+    ]
+   },
+   {
+    "designator": "RPL24",
+    "value": "4.7k",
+    "block_name": "RAILS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
      }
     ]
    },
@@ -882,6 +899,23 @@
     ]
    },
    {
+    "designator": "RFPD1",
+    "value": "10k",
+    "block_name": "FANS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "FAN_PWM1"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
     "designator": "JFAN2",
     "value": "PH-4-FAN",
     "block_name": "FANS",
@@ -922,6 +956,84 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "FAN_TACH2"
+     }
+    ]
+   },
+   {
+    "designator": "RFPD2",
+    "value": "10k",
+    "block_name": "FANS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "FAN_PWM2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "JFAN3",
+    "value": "PH-4-FAN",
+    "block_name": "FANS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "GND",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 2,
+      "name": "V24",
+      "signal_name": "V24"
+     },
+     {
+      "pin_number": 3,
+      "name": "TACH",
+      "signal_name": "FAN_TACH3"
+     },
+     {
+      "pin_number": 4,
+      "name": "PWM",
+      "signal_name": "FAN_PWM2"
+     }
+    ]
+   },
+   {
+    "designator": "RFT3",
+    "value": "10k",
+    "block_name": "FANS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "V3P3"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "FAN_TACH3"
+     }
+    ]
+   },
+   {
+    "designator": "RFPD3",
+    "value": "10k",
+    "block_name": "FANS",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "FAN_PWM2"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
      }
     ]
    }
@@ -1138,5 +1250,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 48
+ "total": 54
 }

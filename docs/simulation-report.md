@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-EVIDENCE-1a9fb3?style=flat-square" alt="status: evidence record"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
 </p>
 
 > [!NOTE]
@@ -19,24 +19,33 @@
 
 | Evidence | Run | Result | Status |
 |---|---|---|---|
-| Device edge | double-pulse, behavioural SiC | overshoot 70 % with the RCD clamp · ± 40 % energy band | ✅ current |
+| Device edge | double-pulse, per SKU at the REAL turn-off currents (LLC 91–165 A, Vienna 94–157 A), −3 V, drawn networks + the E81 snubber, 5 nH design loop (E81) | LLC 84–89 % of 1200 V repetitive / ≤ 89 % at the +6 % bus row · Vienna 76–85 % of 750 V · k_off 2.4–5.2 · k_sw 22–26 nJ/(V·A); every final row PASS at the E81 lines (85 % / 90 %), gated by `stress-audit [DPT]` · ± 40 % energy band | ✅ current (E81) |
 | PFC control loops | analytical Bode + ngspice AC sweep | fc 2,976 Hz, PM 50.2° · voltage loop 15 Hz, PM 65° | ✅ current |
-| PFC line cycle | averaged-switch 3-level Vienna | THD-40 0.59 / 0.74 / 1.05 % full power | ✅ current |
+| PFC line cycle | averaged-switch 3-level Vienna | THD-40 0.59 / 0.74 / 1.05 % full power | ⛔ **superseded (E81 F-G-11)** — a 30 kW averaged deck on a retired law. The shipped number is the `hal_test` SIL's **0.76 / 0.65 / 0.69 %** per SKU |
 | Vienna cycle by cycle | JS switched model, catalog L(i) | peaks 97.0 / 127.2 / 159.4 A with dips and a 20° jump | ✅ current |
-| Filter and current loop | `pfc-control` with the star-X2 filter | modulus margin 0.65 / 0.61 / 0.54, no sustained oscillation | ✅ current |
-| Full-bridge LLC | power-solved ngspice per SKU, 32 corners | ZVS 64/64 on every corner · worst tank peak 112.7 / 148.1 / 182.8 A | ✅ current |
+| Filter and current loop | `pfc-control` with the star-X2 filter | modulus margin **0.66 / 0.61 / 0.54** at the shipped 15 µs delay (0.32 / 0.26 / 0.17 at 30 µs — why the single-update fallback is forbidden on 40 / 50 kW); 0.73 at 50 kW with the 4.7 µF / 4.7 Ω damper | ✅ current (E81) |
+| Full-bridge LLC | power-solved ngspice per SKU, 32 corners, E81: non-linear Coss (371 nC at 800 V) + the per-die snubber, 20 V ZVS window, per-leg adaptive dead time | ZVS on every switch at every corner EXCEPT the registered weak-leg (leg A) exceptions — PAR200-I_max and PS150-I_max on every SKU, SER250 at the high-line bus floor on the 30 kW — where the leg's charge exceeds the energy its decaying current can move; the deck reports the residual and the grid folds those corners · worst tank peak 112.7 / 148.1 / 182.8 A | ✅ current (E81) |
 | Tank tolerance | Monte-Carlo 10k per SKU on the E67 tanks | FHA peak gain p1 1.212–1.217 vs 1.205 · ZVS fail 0 % | ✅ current |
 | CT front ends | ngspice at the E67 burdens | F.11 + race ADC peak ≤ 3.131 V | ✅ current |
 | Precharge, discharge, bank bleed | ngspice per SKU | t95 193 / 231 / 310 ms · bus 1.99 / 2.39 / 3.19 s · banks 0.37 / 0.49 / 0.58 s | ✅ current |
 | Precharge-bypass closure | JS switched model: D1 L(i), CMC leakage, rectifier, link | 200 / 218 / 280 A pk ≈ 1.5 ms · F.01 blanked 60 ms (E73) · relays, diodes, fuses inside their lines | ✅ current |
 | Aux flyback | drawn-circuit ngspice per SKU, D4 rev E | 16 PASS rows + 1 recorded residual | ✅ current |
 | Magnetics second opinion | PyOpenMagnetics 1.4.0 (MKF), by hand | Rdc ± 2.5 % · D3 copper × 1.29–1.32 of 1-D · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line | 🟡 watch — first-article short-circuit R decides (T-31) |
-| Envelope grid | averaged, temperature-iterated | 4,536 points · 0 failures · 0 folds · max Tj 139 °C | ✅ current |
-| Conducted pre-compliance | per-phase LISN ladder | DM + 32.9 / + 30.6 / + 28.7 dB · CM + 8 dB at 200 pF | 🟡 estimate — never a compliance claim |
-| System scenarios | JS FSM + C host suite | 26 / 26 · 63 / 63 under ASan / UBSan | ✅ current at logic fidelity |
+| Envelope grid | averaged, temperature-iterated, E81 turn-off + DPT switching terms, 74 / 75 / 77 °C air base | 4,536 points · folds only at the 500 V series / 55 °C corner (30 kW 80–86 %, 50 kW-air 86–93 %) · max Tj 149 °C | ✅ current (E81) |
+| Conducted pre-compliance | per-phase LISN ladder, **E81: the LLC bridge counted as a second CM source** | DM + 32.9 / + 30.6 / + 28.7 dB · CM **−8.7 dB as drawn → + 3.1 dB** at the 100 pF leg-node requirement and **+ 7.1 dB** at the 50 pF design target with CY1-3 at 10 nF | 🟡 estimate (Cp ASSUMED, T-13 / T-39) — never a compliance claim |
+| System scenarios | JS FSM + C host suite | 26 / 26 · **291 checks** under ASan / UBSan (7 binaries) | ✅ current at logic fidelity (E81) |
 | Series / parallel physics | ngspice closure deck | 205 A through a contact at a 2 V bank mismatch | ✅ current — why the relays close only at 0 A |
 
-Solver for every SPICE run: **ngspice-46 (KLU), method = gear**, macOS arm64. Generated netlists are kept under
+```mermaid
+xychart-beta
+  title "Worst simulated tank peak vs the F.11 trip class (A peak)"
+  x-axis ["30 kW", "40 kW", "50 kW liquid / air"]
+  y-axis "A peak" 0 --> 250
+  bar [112.7, 148.1, 182.8]
+  bar [140, 180, 220]
+```
+
+Solver for every SPICE run: **ngspice-46 (KLU), `method=gear`** as the decks set it, macOS arm64. Generated netlists are kept under
 `spice/generated/*.cir` (waveform `.out` files are git-ignored); result CSVs under `simulation-results/<sku>/`.
 
 ## 1. Device edge — `spice/double-pulse/dpt-run.mjs`
@@ -105,15 +114,18 @@ Every result row carries the tank fingerprint (`FB n2/Lr…/Cr…/Lm…/Coss…`
 ## 8. System — grid, EMI and scenarios
 
 - **Envelope grid** (`system/envelope-grid.mjs`): 4 SKUs × 6 input voltages × 8 output voltages × 7 loads × 3 temperatures =
-  **4,536 points, 0 failures, 0 folds**; worst full-load η 94.2 % at the derated edge (50 kW air, 285 VAC, 150 V, hot); max Tj **139 °C**
-  on the clip-mount basis.
+  **4,536 points**, every point passing or a **registered fold** (E81): the 500 V series / 55 °C corner derates (30 kW 80–86 %,
+  50 kW-air 86–93 %) and the 150 V phase-shift corner is registered **NOT SUSTAINABLE** on the two-die SKUs (F-L-1); max Tj outside
+  that set **149 °C** on the clip-mount basis.
 - **Conducted pre-compliance** (`emi/lisn-precompliance.mjs`, ± 20 dB estimate): the drawn per-phase star-X2 ladder holds DM margin
-  **+ 32.9 / + 30.6 / + 28.7 dB** against the E65 filter's 19.6 / 19.1 / 18.4 dB; CM + 8 dB at 200 pF switch-node capacitance, and the
-  CM margin stays ≥ + 3 dB only while that capacitance is ≤ 350 pF. The chamber (T-08, T-39) arbitrates.
+  **+ 32.9 / + 30.6 / + 28.7 dB** against the E65 filter's 19.6 / 19.1 / 18.4 dB. **E81 re-derived CM with the LLC bridge counted as a
+  second source** (its fundamental sits inside the band above 150 kHz): **−8.7 dB as drawn → + 3.1 dB** at the 100 pF leg-node
+  requirement and **+ 7.1 dB** at the 50 pF design target, with CY1-3 raised to 10 nF. The analytic ladder flips sign between 200 and
+  600 pF of switch-node capacitance, so the chamber (T-08, T-39) arbitrates.
 - **Scenario suite** (`system/fsm-sim.mjs`, C `firmware/test/host_sim.c`): **26 / 26** scripted scenarios — start-up chain, load steps,
   CV ↔ CC, open and short, back-feed, phase loss, swell and sag, OVP, midpoint, output-mode changes, welded relay, fan fail, OT, stuck
-  sensor, aux collapse, DESAT, watchdog, CAN timeout, shutdown discharge, 5-fault lockout — and **63 / 63** host cases under ASan /
-  UBSan including the output-mode latch and hysteresis and a 100k-frame malformed-input fuzz.
+  sensor, aux collapse, DESAT, watchdog, CAN timeout, shutdown discharge, 5-fault lockout — and **291 host checks** under ASan /
+  UBSan across seven binaries, including the output-mode latch and hysteresis and a 1M-frame malformed-input fuzz.
 - **Series / parallel physics** (`spice/llc/sp-transition.mjs`): closing a parallel contact across a 2 / 5 / 10 / 20 V bank mismatch
   drives 205 / 512 / 1,023 / 2,047 A — the reason the E67 relays only ever close in standby at zero current.
 
@@ -123,10 +135,13 @@ Real switching energy and ring (T-01), both-polarity short-circuit timing (T-30)
 the EMI chamber (T-08, T-39), first-article magnetics — short-circuit R against the 1-D … MKF bracket, leakage, fr (T-31, T-34) — the clip-mount Rth (T-38), the die pulse
 class (T-41), relay life and partial discharge. These are hardware by nature; nothing else remains unrun.
 
+> [!TIP]
+> **How this page is checked** — the result CSVs under `simulation-results/<sku>/` are read by `current-coordination` and `magnetics-envelope` in `run-all`; a deck that changed without a re-run fails on its fingerprint.
+
 ---
 
 <div align="center">
 <sub><a href="simulation-toolchain.md">← Simulation Toolchain</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="verification-matrix.md">Verification Matrix & Risk Register →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

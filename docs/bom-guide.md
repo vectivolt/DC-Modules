@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/gate-bom--maturity_·_MATURE-2ea44f?style=flat-square" alt="gate: bom-maturity · MATURE"/>
 </p>
 
@@ -17,7 +17,17 @@
 > [BOM & cost](bom-cost.md) and one page per module — [30 kW](bom-30kw.md) · [40 kW](bom-40kw.md) ·
 > [50 kW liquid](bom-50kw.md) · [50 kW air](bom-50kwa.md).
 
-## How the BOM is made
+## At a glance
+
+| | |
+|---|---|
+| **Source of truth** | the **built boards** — `tsci` netlists + the audited sheet payloads, never a typed spreadsheet |
+| **Price basis** | `cost/parts-db.mjs` ₹ @1k with a p10k break; the China column is a landed **target**, not a quote |
+| **Family total @10k** | ₹31,533 · 35,970 · 42,628 · 40,555 → [BOM & cost](bom-cost.md) |
+| **Gate** | `bom-maturity` — every line ORDERABLE / SECOND-SOURCE / DIRECT / CLASS(spec) / CUSTOM(drawing) / tracked-REVIEW, or the battery stops |
+| **Open REVIEW lines** | 9 on live BOM lines (C-number read-back is purchasing work, listed on each module page) |
+
+## 1. How the BOM is made
 
 The BOM is **not a spreadsheet someone typed** — it is generated from the built boards and the audited release sheets:
 
@@ -39,7 +49,7 @@ Regenerate after any board or parts change: build the netlists, run the sheet pi
 state, not an opinion. Each module page groups cost by the schematic sheet section a part is drawn on, so a line on the page
 is found on the sheet of the same name.
 
-## Price basis and volume breaks
+## 2. Price basis and volume breaks
 
 | Tier | Electronics | Mechanical | Role |
 |---|---|---|---|
@@ -52,7 +62,7 @@ is found on the sheet of the same name.
 Never LCSC retail. Every line carries a **second source**, and every custom part carries a drawing — the module
 [magnetics pages](magnetics.md#the-four-module-pages) — so any winder or fabricator can quote.
 
-## Sourcing statuses
+## 3. Sourcing statuses
 
 | Status | On the sheet | Meaning | Who acts |
 |---|---|---|---|
@@ -66,7 +76,7 @@ Never LCSC retail. Every line carries a **second source**, and every custom part
 A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part number from `LCSC_BY_VALUE` in
 `lcsc-map.mjs`, keyed on family, value and the **drawn land** — the land on the sheet decides the package, never the other way round.
 
-## Sourcing policy
+## 4. Sourcing policy
 
 - **Two qualified vendors** for every power semiconductor position before production sign-off; qualification is the double-pulse
   simulation with that vendor's model plus a sample double-pulse bench test at EVT.
@@ -77,7 +87,7 @@ A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part nu
 - **Lifecycle** — every candidate is an active, volume part as of 2026-09; re-verified at RFQ.
 - **LCSC-only parts** (no direct manufacturer line) are not accepted for the production BOM.
 
-## BOM maturity — the standing gate
+## 5. BOM maturity — the standing gate
 
 > [!IMPORTANT]
 > `calculations/cost/bom-maturity.mjs` (in run-all) **fails the battery** if any part number the BOM can emit is unmapped in
@@ -85,10 +95,13 @@ A value-resolved passive (a 10 k 0603 resistor, a 100 nF MLCC) takes its part nu
 > invented order codes, every class names real candidate families, and the REVIEW lines listed on each module page are the
 > open sourcing worklist.
 
+> [!TIP]
+> **How this page is checked** — `bom-maturity` in `run-all` — every BOM line must be ORDERABLE, SECOND-SOURCE, DIRECT, CLASS(spec), CUSTOM(drawing) or a tracked REVIEW, or the battery stops.
+
 ---
 
 <div align="center">
 <sub><a href="bom-50kwa.md">← 50 kW Air Module BOM</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="symbol-pin-map.md">Symbol → Package Pin Map →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -1,25 +1,28 @@
-* E67 full-bridge LLC 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss500p VBUS=830 VBANK=450 fsw=104.128k PFM
+* E67 full-bridge LLC 50kwa:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p VBUS=830 VBANK=450 fsw=104.292k PFM tdeadA=120n tdeadB=120n
+* E81 Coss model: body-diode junction Cjo=9.750n Vj=2 M=0.5 per position (Qoss(800 V)=742 nC) + linear snubber 2000 pF drain-source on BOTH devices
 .model DREC D(Is=1e-9 N=1.8 Rs=0.022)
-.model DBODY D(Is=1e-12 N=4 Rs=0.03)
+.model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=9.75034e-9 Vj=2 M=0.5)
 VBUS bus 0 DC 830
 
-VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 4.66177e-6 9.60354e-6)
-VGLA glA 0 PULSE(0 1 4.80177e-6 20n 20n 4.66177e-6 9.60354e-6)
+VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 4.65421e-6 9.58843e-6)
+VGLA glA 0 PULSE(0 1 4.79421e-6 20n 20n 4.65421e-6 9.58843e-6)
 VHSA bus bhA DC 0
 BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*57.14285714285714)
 BSLA legA 0 I=v(legA)*(2e-5+v(glA)*57.14285714285714)
 DBHA legA bhA DBODY
 DBLA 0 legA DBODY
-CPARA legA 0 5e-10
+CSHA bhA legA 2.00000e-9
+CSLA legA 0 2.00000e-9
 
-VGHB ghB 0 PULSE(0 1 4.80177e-6 20n 20n 4.66177e-6 9.60354e-6)
-VGLB glB 0 PULSE(0 1 0.00000e+0 20n 20n 4.66177e-6 9.60354e-6)
+VGHB ghB 0 PULSE(0 1 4.79421e-6 20n 20n 4.65421e-6 9.58843e-6)
+VGLB glB 0 PULSE(0 1 0.00000e+0 20n 20n 4.65421e-6 9.58843e-6)
 VHSB bus bhB DC 0
 BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*57.14285714285714)
 BSLB legB 0 I=v(legB)*(2e-5+v(glB)*57.14285714285714)
 DBHB legB bhB DBODY
 DBLB 0 legB DBODY
-CPARB legB 0 5e-10
+CSHB bhB legB 2.00000e-9
+CSLB legB 0 2.00000e-9
 VSP legA tk DC 0
 CR tk tkb 3.63000e-7 ic=0
 LR tkb pri 3.56000e-6
@@ -50,7 +53,7 @@ VBKA bkA 0ba DC 450
 VBKB bkB 0bb DC 450
 RTA 0ba 0 1u
 RTB 0bb 0 1u
-.tran 30n 5.76212e-4 4.22556e-4 15n uic
+.tran 30n 5.75306e-4 4.21891e-4 15n uic
 .option method=gear reltol=1e-3 abstol=1e-6 vntol=1u itl4=100
 .control
 set filetype=ascii

@@ -54,7 +54,14 @@ const CARD_CONN_FIT = 6; // 88-way mated pair, vibration-relevant
 // E67 2757/2953/2999/3259, E64 3081/3297/3396/3552 — recomputed every run, ±1 % drift fails.
 // E69 RE-REGISTERED on the corrected classifier and a column-true BOM CSV (maker names with commas had shifted the custom
 // magnetics and CT rows out of the count; MLCCs had been filed as ICs and bias modules). E68c read 2613/2753/2791/2803.
-const REGISTERED = { "30kw": { fit: 2368, mtbfKh: 422 }, "40kw": { fit: 2490, mtbfKh: 402 }, "50kw": { fit: 2525, mtbfKh: 396 }, "50kwa": { fit: 2537, mtbfKh: 394 } };
+// E81 RE-REGISTERED. The gate is doing its job: E81 adds real parts, so FIT rises and MTBF falls,
+// and that has to be a DELIBERATE re-registration rather than a silently-moving number. The driver
+// is the DC-link entry film going 4 → 16 × 1 µF (F-C-4/F-G-1) plus the per-die LLC turn-off
+// snubbers, the mirrored Vienna clamp on the 50s and the 30 kW third fan — i.e. part COUNT, not
+// part stress. The 500 V link cans pull the other way (a can at 87 % of rating instead of 92–98 %
+// is the single biggest real-life improvement in this revision) but this model prices parts, not
+// derating, so it cannot see that; the honest reading is "more parts, each less stressed".
+const REGISTERED = { "30kw": { fit: 2439, mtbfKh: 410 }, "40kw": { fit: 2564, mtbfKh: 390 }, "50kw": { fit: 2666, mtbfKh: 375 }, "50kwa": { fit: 2680, mtbfKh: 373 } };
 let fails = 0;
 const ck = (name, ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${name} — ${msg}`); if (!ok) fails++; };
 const f0 = (x) => Math.round(x);

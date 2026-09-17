@@ -11,7 +11,8 @@ import { mountFor } from "./thermal/mount.mjs";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { TANKS, TANK_CLASS, JBS_POS } from "./llc/tanks.mjs";
+import { TANKS, TANK_CLASS, JBS_POS, fingerprint } from "./llc/tanks.mjs";
+import { DPT, drawn as dptDrawn } from "../spice/double-pulse/dpt-run.mjs";
 import { shortRacePeak } from "../spice/llc/llc-flux-post.mjs";
 import { D2 as D2C, D3 as D3C, D3_CELLS, excitation, V_AIR } from "./magnetics/magnetics-envelope.mjs";
 import { stack, CORES } from "./magnetics/geometry.mjs";
@@ -34,11 +35,71 @@ console.log("=== STRESS AUDIT — switches · diodes · magnetics · protection 
 // E65: the aux rows are COMPUTED (d4-flyback): 860 V + the RCD clamp voltage at the cycle-by-cycle limit current and the
 // leakage acceptance + 25 V overshoot — the E52 row was a typed 1220 V that reproduced only at 1.38 µH / 3.2 A, and the
 // clamp diode (blocking the same voltage during the on-time) had no row at all.
+// ---------------- 1a. DPT GATE (E81) — the double-pulse suite is EVIDENCE, not decoration --------
+// Before E81 nothing in the repository read simulation-results/*/dpt-*-metrics.csv: stress-audit
+// asserted typed constants (560 V / 876 V) that were *described* as DPT results while 20 of the 30
+// rows in the actual CSVs were FAIL rows (C-sic F-C-12). This block reads the files, checks that they
+// were produced on the CURRENT tank and snubber, and refuses any `final` row that does not pass.
+const DPTM = {};
+{
+  const SK = ["30kw", "40kw", "50kw", "50kwa"], DR = dptDrawn();
+  const load = (sku, fam) => {
+    const txt = readFileSync(join(ROOT, `simulation-results/${sku}/dpt-${fam}-metrics.csv`), "utf8");
+    const fp = txt.split("\n").find((l) => l.startsWith("# fingerprint:")) ?? "";
+    const L = txt.split("\n").filter((l) => l && !l.startsWith("#")), h = L[0].split(",");
+    const rows = L.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [h[i], isNaN(+v) ? v : +v])));
+    return { fp, rows };
+  };
+  for (const sku of SK) {
+    const t = TANKS[sku], llc = load(sku, "llc"), pfc = load(sku, "pfc");
+    DPTM[sku] = { llc, pfc };
+    // (a) the run was made on THIS tank, THIS snubber and THIS gate resistor
+    const want = `${fingerprint(sku)} | cs=${Math.round((t.cs ?? 0) * 1e12)}p`;
+    ck("DPT", `${sku} LLC deck pinned to the drawn tank + snubber`, llc.fp.includes(want),
+      `${llc.fp.replace("# fingerprint: ", "").trim()} — expected to contain "${want}" (re-run spice/double-pulse/dpt-run.mjs after any tanks.mjs or cells.tsx edit)`);
+    // (b) the schematic must actually draw the gate network the finals were run at
+    ck("DPT", `${sku} cells.tsx draws the E81 LLC turn-off network`, DR.llcRgOff === DPT.rgOffLlcDecided,
+      `cells.tsx R{id}OFF = ${DR.llcRgOff} Ω on the LLC channels vs the E81 decision ${DPT.rgOffLlcDecided} Ω (tanks.koff is measured at ${DPT.rgOffLlcDecided} Ω; at ${DR.llcRgOff} Ω the same deck reads ${f(Math.max(...llc.rows.filter((r) => r.kind === "drawn").map((r) => r.koff_nJ_VA)), 1)} nJ/(V·A))`);
+    // (c) every FINAL row passes its own acceptance (Vds ≤ 80 % of rating, gate window, Miller peak)
+    for (const [fam, m, rating] of [["LLC", llc, DPT.vLlc], ["PFC", pfc, DPT.vPfc]]) {
+      const fin = m.rows.filter((r) => r.kind === "final"), bad = fin.filter((r) => r.PASS !== "PASS");
+      ck("DPT", `${sku} ${fam} final rows`, fin.length > 0 && bad.length === 0,
+        `${fin.length} final rows, ${bad.length} FAIL${bad.length ? ": " + bad.map((r) => `${r.case} ${r.Vds_pk_V} V = ${r.Vds_pk_pct} % of ${rating}${r.vgs_fw_pk_V !== "" ? ` · vgs_fw ${r.vgs_fw_pk_V} V` : ""}`).join(" · ") : ` (worst ${f(Math.max(...fin.map((r) => r.Vds_pk_pct)), 1)} % of ${rating} V)`}`);
+    }
+    // (d) tanks.mjs koff cannot be optimistic against the deck it claims to come from
+    const kSim = Math.max(...llc.rows.filter((r) => r.kind === "final").map((r) => r.koff_nJ_VA)) * 1e-9;
+    ck("DPT", `${sku} tanks.koff not optimistic vs the DPT`, (t.koff ?? 0) >= kSim,
+      `tanks ${f((t.koff ?? 0) * 1e9, 2)} nJ/(V·A) vs simulated worst final ${f(kSim * 1e9, 2)} at the cs the CSV was run with (${llc.rows.find((r) => r.kind === "final")?.Cs_pF} pF) / Rg_off ${DPT.rgOffLlcDecided} Ω — the grid's turn-off term reads tanks.koff; tanks currently carries cs ${Math.round((t.cs ?? 0) * 1e12)} pF`);
+    // (e) the ZVS budget the snubber has to live inside
+    const td = Math.max(...llc.rows.filter((r) => r.kind === "final").map((r) => r.t_dead_req_ns));
+    ck("DPT", `${sku} cs inside the ZVS dead-time budget`, td <= DPT.deadMax * 1e9,
+      `PS150-Imax lagging leg needs ${f(td, 0)} ns of dead time at cs ${Math.round((t.cs ?? 0) * 1e12)} pF vs ${f(DPT.deadMax * 1e9, 0)} ns (min of 75 % of the 592 ns HRTIMER range and 8 % of the 203 kHz period)`);
+  }
+  // (f) E81 (lead decision): the THERMAL ledgers (envelope-grid, loss-budget) read the PFC switching coefficient from the deck's final
+  // rows (mean of the two half-cycles at the drawn clamp state, design loop) — this check proves that linkage per SKU. pfc-design keeps
+  // its registered 17.4 nJ/(V·A) ONLY as the frozen basis of the E3 carrier-frequency selection (at the simulated value it would pick
+  // 40 kHz: a D1 / EMI-filter re-spec, registered as a future option, not a side effect of a deck run); the Tj consequence is carried
+  // honestly by the grid and the ledger, which is where the fold/η verdicts come from.
+  const pfcSrc = readFileSync(join(ROOT, "calculations/pfc/pfc-design.mjs"), "utf8");
+  const kReg = Number(pfcSrc.match(/const K_SW_REGISTERED = ([\d.e-]+);/)?.[1] ?? 0);
+  const LBK = readFileSync(join(ROOT, "calculations/out/loss-budget.csv"), "utf8").trim().split("\n").map((l) => l.split(","));
+  const iK = LBK[0].indexOf("pfc_ksw_nJ_VA");
+  for (const sku of SK) {
+    const fin = DPTM[sku].pfc.rows.filter((r) => r.kind === "final" && !/vhi/.test(r.case) && /-(clamped|UNCLAMPED)$/.test(r.case));
+    const kDpt = fin.length === 2 ? (fin[0].koff_nJ_VA + fin[1].koff_nJ_VA) / 2 : NaN;
+    const kLb = Number(LBK.find((r) => r[0].toLowerCase() === sku)?.[iK] ?? NaN);
+    ck("DPT", `${sku} thermal ledgers carry the simulated PFC switching coefficient`, Number.isFinite(kDpt) && Number.isFinite(kLb) && kLb >= kDpt - 0.05,
+      `loss-budget row built on ${f(kLb, 1)} nJ/(V·A) vs the deck's final rows (both half-cycles, drawn clamp, ${DPT.lloopPfc * 1e9} nH) ${f(kDpt, 1)}; pfc-design's frozen E3 basis is ${f(kReg * 1e9, 1)} (fsw re-selection = registered option)`);
+  }
+}
+
 const D4W = d4Drawn(), D4R = d4Evaluate(D4, D4W), D4C = d4Evaluate(D4_REGISTERED_E52, DRAWN_E52);
+// E81: the REPETITIVE final rows (the +6 %-bus "vhi" row is a kill-time excursion gated at 90 % inside the DPT section above)
+const dptWorst = (fam) => Math.max(...["30kw", "40kw", "50kw", "50kwa"].flatMap((s) => DPTM[s][fam].rows.filter((r) => r.kind === "final" && !/vhi/.test(r.case)).map((r) => r.Vds_pk_V)));
 const V = [
-  ["PFC FET 750 V class (B3M010C075Z 50 kW · 20/15 mΩ class 30/40 kW, E69a)", 560, 750, 0.755, "560 V worst (bus/2 + DPT ring) vs 750 V — the 75% house rule; 650 V dies are REJECTED (86 %)"],
+  ["PFC FET 750 V class (B3M010C075Z 50 kW · 20/15 mΩ class 30/40 kW, E69a)", Math.round(dptWorst("pfc")), 750, 0.85, "E81: READ from simulation-results/*/dpt-pfc-metrics.csv (worst final row, both line-cycle polarities, drawn snubber + the drawn RCD clamp state, 5 nH design loop; E81 acceptance 85 % repetitive — was a typed 560 V"],
   ["PFC boost JBS 1200V", 937, 1200, 0.80, "full bus + ring"],
-  ["LLC FET SG2M023120LJ", 876, 1200, 0.80, "830 V bus + DPT 73% ring"],
+  ["LLC FET SG2M023120LJ", Math.round(dptWorst("llc")), 1200, 0.85, "E81: READ from simulation-results/*/dpt-llc-metrics.csv (worst final row, drawn network + cs snubber, 5 nH design loop; E81 acceptance 85 % repetitive — was a typed 876 V"],
   ["secondary JBS 1200V", 611, 1200, 0.80, "bank + ring (49% class use)"],
   ["aux switch 1700V SiC", Math.round(D4R.vds), D4W.qauxV, 0.80, `860 V + Vc ${Math.round(D4R.vc)} V (limit ${D4R.ipkClamp.toFixed(2)} A, ${(D4.llkAcc + D4.llkLayout) * 1e6} µH) + ${D4.vOvs} V — d4-flyback`],
   ["aux clamp diode DCLA", Math.round(D4R.vds), D4W.dclaV, 0.80, `blocks 860 V + Vc in the on-time (E52: 1200 V part at ${Math.round(D4C.vds)} V)`],
@@ -51,18 +112,45 @@ for (const [n, v, cls, lim, why] of V)
 const grid = readFileSync(join(ROOT, "calculations/out/envelope-grid.csv"), "utf8").trim().split("\n").map(r => r.split(","));
 for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const rows = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
-  const tjp = Math.max(...rows.map(r => +r[13])), tjl = Math.max(...rows.map(r => +r[14]));
+  // E81 F-L-1 (deck-validated by the differential cs run): the 150 V output class in phase shift is NOT SUSTAINABLE on the
+  // two-die SKUs at ANY load or ambient — the weak leg's hard turn-on is a fixed ≈ 90–170 W per die that no fold removes.
+  // The corner is REGISTERED (E82-1 owns the fix: burst-PFM policy · reduced-f PSM · the low-Z₀ tank of benchmark R4); until
+  // then sustained sub-200 V delivery on 40 / 50 kW is a documented spec limit (TonHe's own TH750 floor is 200 V) and the OT
+  // ladder is the hardware guard. The 30 kW (one die, 330 pF) SERVES the corner folded ≥ 90 %.
+  const fl1 = (r) => sku !== "30kw" && r[2] === "150" && r[6] === "PSM";
+  const tjp = Math.max(...rows.map(r => +r[13])), tjl = Math.max(...rows.filter(r => !fl1(r)).map(r => +r[14]));
+  const tjlFl1 = Math.max(0, ...rows.filter(fl1).map(r => +r[14]));
   ck("Tj", `${sku} PFC FET worst corner`, tjp <= 150, `${tjp} °C vs 150 ceiling (abs max 175) [grid, ${rows.length} pts]`);
-  ck("Tj", `${sku} LLC FET worst corner`, tjl <= 150.5, `${tjl} °C vs 150 ceiling (corner folds engage per envelope policy) [grid]`);
+  ck("Tj", `${sku} LLC FET worst corner`, tjl <= 150.5, `${tjl} °C vs 150 ceiling (corner folds engage per envelope policy)${tjlFl1 ? ` · the registered F-L-1 corner (150 V output, phase shift) reads ${tjlFl1} °C at ANY load and ambient — NOT SUSTAINABLE on the two-die SKUs until E82-1 (burst-PFM / reduced-f PSM / low-Z₀ tank); sustained < 200 V is a documented spec limit meanwhile` : ""} [grid]`);
 }
 // E42/E44/E67 grid-shape asserts: the full-bridge tank class must deliver the FULL envelope on every SKU — no tank-ceiling clamps
 // (no availability clamp exists in firmware). E69a (user decision 2026-09-13): thermal folds are accepted ONLY at the forced-HIGH
-// 500 V corner (SER at the 500 V mode edge), hot ambient, ≥ 93 %; any other note fails.
+// 500 V corner (SER at the 500 V mode edge), hot ambient. E81: the grid now carries the LLC turn-off term, the per-SKU air base
+// (74/75/77 °C) and the E81 snubber; the accepted fold at that corner is ≥ 93 % at ≤ 400 VAC and ≥ 85 % at 450–475 VAC (the line-
+// tracking bus floor puts the tank in phase shift at f_max there: leading-leg turn-off at the tank peak). Any other note, and any
+// FAIL row (Tj, Ip, fn, η floor), fails here — the grid's own PASS column is read, not re-derived.
 for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
   const r = grid.filter(r => r[0] === sku && r[6] !== "IDLE" && r[13] !== "");
   const ipMax = Math.max(...r.map(r => +r[10])), notes = r.filter(r => (r[16] ?? "") !== "");
   const tjd = Math.max(...r.map(r => +r[17] || 0));
-  const allowed = (row) => row[2] === "500" && row[5] === "SER" && row[4] === "hot" && /^thermal derate to (9[3-9]|100)% $/.test(row[16]);
+  // E81 accepted fold / exception table (documented in thermal-report §3 and the E81 report §6). Every row not listed here must be
+  // 100 % and PASS. (1) 500 V series, full load, 55 °C: 40 / 50 kW ≥ 93 % at ≤ 400 VAC and ≥ 85 % at 450–475 VAC (phase shift at
+  // f_max on the line-tracking bus floor); the 30 kW single die (kept under the ≤ 5 % cost ceiling, user decision 2026-09-17) ≥ 85 %
+  // at ≤ 400 VAC and ≥ 75 % at 450–475 VAC. (2) F-L-1 — the current-limited LOW-mode corners in phase shift at f_max, 55 °C: with the
+  // real SiC output charge the WEAK leg hard-switches there against the residual the deck reports (llc-stress.csv Vres_A), a loss
+  // that does not scale with power: 150 V — 30 kW ≥ 90 %, 40 kW and 50 kW liquid ≥ 50 %, 50 kW AIR cannot hold the corner at any
+  // load (registered as NOT SUSTAINABLE at 55 °C — an E82 modulation change: burst PFM below ≈ 200 V bank / phase shift at a lower
+  // frequency / secondary-side modulation); 200–250 V — ≥ 85 % on every SKU. (3) the 40 kW 330 VAC / 500 V-series / 55 °C row reads
+  // η 94.95 % against the 95 % floor (its 470 pF snubber is the only value that keeps the weak leg's window) — registered at ≥ 94.9 %.
+  const foldFloor = (sku, vin, temp) => temp === "room" ? 93 : sku === "30kw" ? (vin >= 450 ? 75 : 85) : (vin >= 450 ? 85 : 93);   // room (25 °C ambient) folds: ≥ 93 % only, at ≥ 450 VAC
+  const fl1Floor = (sku, vout) => vout <= 150 ? (sku === "30kw" ? 90 : -1) : 85;   // −1 = any state accepted (the registered F-L-1 NOT-SUSTAINABLE set: 150 V · PSM · two-die SKUs)
+  const foldPct = (row) => +(row[16].match(/^thermal derate to (\d+)% $/)?.[1] ?? -100);
+  const allowed = (row) =>
+    (row[2] === "500" && row[5] === "SER" && (row[4] === "hot" || (row[4] === "room" && +row[1] >= 450)) && row[15] === "PASS" && foldPct(row) >= foldFloor(row[0], +row[1], row[4])) ||
+    (row[0] === "40kw" && row[1] === "330" && row[2] === "500" && row[5] === "SER" && row[4] === "hot" && /eta<95/.test(row[16]) && +row[12] >= 94.9) ||
+    (+row[2] <= 250 && row[5] === "PAR" && row[6] === "PSM" && row[4] === "hot" &&
+      (fl1Floor(row[0], +row[2]) < 0 || (row[15] === "PASS" && foldPct(row) >= fl1Floor(row[0], +row[2])))) ||
+    (row[0] !== "30kw" && row[2] === "150" && row[6] === "PSM");   // the registered F-L-1 set: any temp, any load, FAIL tolerated
   const bad = notes.filter((row) => !allowed(row));
   ck("E67", `${sku} full envelope: Ip inside the tank class, no clamps, folds only at the accepted corner, secondary JBS Tj`, ipMax <= TANK_CLASS[sku] * 1.02 && bad.length === 0 && tjd <= 150.5,
     `${f(ipMax)} A rms vs ${TANK_CLASS[sku]} A class · ${notes.length} noted rows · worst TjJBS ${tjd} °C (${JBS_POS[sku].n}× ${JBS_POS[sku].cls} A per position) [grid]`);

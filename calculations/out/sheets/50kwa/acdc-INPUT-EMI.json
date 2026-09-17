@@ -278,9 +278,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "GDT-3k5-20kA",
-   "query": "GDT-3k5-20kA gas discharge tube 3.5 kV ",
-   "mpn": "GDT-3k5-20kA"
+   "value": "GDT-2k5-20kA",
+   "query": "GDT-2k5-20kA gas discharge tube **2.5 kV** ",
+   "mpn": "GDT-2k5-20kA"
   },
   {
    "designator": "GDT2",
@@ -298,9 +298,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "GDT-3k5-20kA",
-   "query": "GDT-3k5-20kA gas discharge tube 3.5 kV ",
-   "mpn": "GDT-3k5-20kA"
+   "value": "GDT-2k5-20kA",
+   "query": "GDT-2k5-20kA gas discharge tube **2.5 kV** ",
+   "mpn": "GDT-2k5-20kA"
   },
   {
    "designator": "GDT3",
@@ -318,9 +318,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "GDT-3k5-20kA",
-   "query": "GDT-3k5-20kA gas discharge tube 3.5 kV ",
-   "mpn": "GDT-3k5-20kA"
+   "value": "GDT-2k5-20kA",
+   "query": "GDT-2k5-20kA gas discharge tube **2.5 kV** ",
+   "mpn": "GDT-2k5-20kA"
   },
   {
    "designator": "CMC1",
@@ -658,9 +658,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "4.7nF",
-   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
-   "mpn": "Y1-4n7-440"
+   "value": "10nF",
+   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 ",
+   "mpn": "Y2-10n-300"
   },
   {
    "designator": "CY2",
@@ -678,9 +678,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "4.7nF",
-   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
-   "mpn": "Y1-4n7-440"
+   "value": "10nF",
+   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 ",
+   "mpn": "Y2-10n-300"
   },
   {
    "designator": "CY3",
@@ -698,9 +698,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "4.7nF",
-   "query": "Y1-4n7-440 Y1 4.7 nF 440 VAC ",
-   "mpn": "Y1-4n7-440"
+   "value": "10nF",
+   "query": "Y2-10n-300 Y2 **10 nF** 300 VAC, L-PE on the CONVERTER node AC1..3 ",
+   "mpn": "Y2-10n-300"
   },
   {
    "designator": "CY4",
@@ -778,7 +778,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
+   "value": "4.7uF",
    "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
    "mpn": "X1-2u2-530"
   },
@@ -798,7 +798,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
+   "value": "4.7uF",
    "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
    "mpn": "X1-2u2-530"
   },
@@ -818,7 +818,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "2.2uF",
+   "value": "4.7uF",
    "query": "X1-2u2-530 X1 2.2 µF 530 VAC ",
    "mpn": "X1-2u2-530"
   },
@@ -838,7 +838,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "10",
+   "value": "4.7",
    "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
    "mpn": "SQP-10R-25W"
   },
@@ -858,7 +858,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "10",
+   "value": "4.7",
    "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
    "mpn": "SQP-10R-25W"
   },
@@ -878,7 +878,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "10",
+   "value": "4.7",
    "query": "SQP-10R-25W 10 Ω 25 W wirewound pulse, axial, series L ≤ 10 µH ",
    "mpn": "SQP-10R-25W"
   },
@@ -1018,7 +1018,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "10k",
+   "value": "330",
    "query": "R-small small-signal resistor 0402–0805 ",
    "mpn": "R-small"
   }

@@ -251,10 +251,15 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     ["500-full-busFloor", { VLL: 500, lot: 1, fix: true }, "F.07 edge with the floor"],
   ];
   const rows = [["sku", "case", "VLL", "bus_V", "lot_AL", "Pout_W", "Irms_A", "I1pk_A", "Ipk_A", "ripple_half_A", "L_at_pk_uH", "Isw_rms_A", "Id_avg_A", "Id_rms_A", "Id_pk_A", "THD40_pct", "track_err", "overmod_pct", "vbus_min", "vbus_max", "mid_dev_V", "band150_pk_A", "lisn_basis_150_pk_A", "Ihf_rms_A", "dBpp_max_mT", "Pfe_igse_W", "vMN_pk_V", "vSwN_pk_V", "note"]];
-  const LISN_DIPP = { "30kw": 21.4, "40kw": 28.0, "50kw": 34.8 };   // lisn-precompliance/dm-choke-design triangular ripple basis
-  for (const sku of Object.keys(D1)) for (const [tag, c, note] of [...CASES, ...EV]) {
+  const LISN_DIPP = { "30kw": 21.4, "40kw": 28.0, "50kw": 34.8, "50kwa": 34.8 };   // lisn-precompliance/dm-choke-design triangular ripple basis
+  // E81 / review G (F-G-11): the air twin runs the 50 kW choke, link and control, so it is an ALIAS row — the CSV now covers
+  // all four product SKUs. D1 itself keeps three keys so every consumer that iterates Object.keys(D1) is untouched.
+  const ALIAS = { "50kwa": "50kw" };
+  const SKUS = [...Object.keys(D1), ...Object.keys(ALIAS)];
+  for (const sku of SKUS) for (const [tag, c, note] of [...CASES, ...EV]) {
+    const eng = ALIAS[sku] ?? sku;
     const vbus = c.fix ? floor(c.VLL) : c.vbus;
-    const r = vienna(sku, { VLL: c.VLL, vbus, lot: c.lot, Pout: D1[sku].P * (c.pf ?? 1), cycles: c.cycles ?? 4, event: c.event ?? null });
+    const r = vienna(eng, { VLL: c.VLL, vbus, lot: c.lot, Pout: D1[eng].P * (c.pf ?? 1), cycles: c.cycles ?? 4, event: c.event ?? null });
     rows.push([sku, tag, c.VLL, f(vbus, 0), c.lot, f(r.Pout, 0), f(r.Irms), f(r.I1pk), f(r.Ipk), f(r.ripHalf), f(r.L_at_pk * 1e6), f(r.Isw), f(r.Id.avg), f(r.Id.rms), f(r.Id.pk), f(r.thd, 2), f(r.track, 3), f(r.clipPct, 1), f(r.vbusMin, 0), f(r.vbusMax, 0), f(r.midDev, 1), f(r.band150pk, 3), f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3), f(r.Ihf, 2), f(r.dBpp * 1e3, 1), f(r.PfeW, 2), f(r.vMNpk, 0), f(r.vSwNpk, 0), `"${note}"`]);
     console.log(`${sku} ${tag.padEnd(24)} Irms ${f(r.Irms)} · I1pk ${f(r.I1pk)} · Ipk ${f(r.Ipk)} A (ripple/2 ${f(r.ripHalf)}; L@pk ${f(r.L_at_pk * 1e6)} µH) · sw ${f(r.Isw)} · diode avg ${f(r.Id.avg)}/pk ${f(r.Id.pk)} · THD ${f(r.thd, 2)}% · overmod ${f(r.clipPct, 1)}% · mid ${f(r.midDev, 1)} V · 150 kHz band ${f(r.band150pk, 3)} A pk-eq vs LISN basis ${f(4 * LISN_DIPP[sku] / (Math.PI ** 2 * 9), 3)} · D1 ripple ${f(r.Ihf, 2)} A rms, ΔB ${f(r.dBpp * 1e3, 1)} mT pp, Fe ${f(r.PfeW, 2)} W · switch end ${f(r.vSwNpk, 0)} V pk to N`);
   }

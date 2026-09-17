@@ -5,8 +5,11 @@
 //
 // PROVENANCE / ASSUMPTIONS (all marked, verify per component-selection.md):
 //  - Rds25 = 10 mΩ (B3M010C075Z class); Rds(T) = Rds25·(1+0.004·(Tj−25))  [≈1.5× @150 °C, SiC-typical, vendor curve TBD]
-//  - Esw_total = k_sw·V·I with k_sw = 17.4e-9 J/(V·A) — RECALIBRATED from DPT run dpt-pfc750-final
-//    (Eon+Eoff = 577 µJ @ 425 V/78 A, behavioral model; uncertainty band ±40% until vendor models)
+//  - Esw_total = k_sw·V·I. E81: k_sw is READ from the per-SKU DPT suite (simulation-results/<sku>/
+//    dpt-pfc-metrics.csv, the `L<loop>-clamped` row at the design loop and the simulated switch
+//    peak) instead of the hand-copied 17.4e-9 that came from a 78 A, 470 pF-snubber, −4 V deck no SKU
+//    ever ran. K_SW below asserts the constant is not optimistic for ANY sku and then uses the worst.
+//    Behavioral model, uncertainty band ±40 % until vendor models.
 //  - JBS Vf = 1.35 V @Tj,hot incl. Rd; no reverse recovery (SiC JBS), cap. charge folded into k_sw
 //  - Core: Kool Mµ-class T79 toroid stacks, 0077908A7 catalog geometry (geometry.mjs — datasheet rev 10/7/2021)
 //  - Bias roll-off µpu = 1/(1+1.455e-3·H_Oe^1.513) calibrated to 80%@30 Oe, 50%@75 Oe anchors (catalog curve, VERIFY)
@@ -17,7 +20,7 @@
 //  - Cost proxies: thermal system ₹60/W of stage loss; EMI filter proxy ₹ from ripple×freq weighting (documented inline)
 // Run: node calculations/pfc/pfc-design.mjs
 
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DATA, CORES, toroidWound } from "../magnetics/geometry.mjs";
@@ -28,6 +31,37 @@ const f = (x, d = 2) => Number(x.toFixed(d));
 
 // ---- operating point (design): 30 kW lane at 330 VAC full power (worst continuous)
 const P_LANE = +(process.env.PFC_P ?? 30e3);   // E41: 40e3 runs the hot-variant design point
+
+// ---- E81: k_sw from the DPT suite, not from a comment. Reads every SKU's design-loop clamped row and
+// takes the WORST; the registered 17.4 nJ/(V·A) is kept as a floor assertion so a deck re-run that
+// lowers k_sw cannot silently make this engine optimistic, and one that raises it is adopted.
+const K_SW_REGISTERED = 17.4e-9;
+function kSwFromDpt() {
+  const out = { perSku: {}, worst: 0, src: [] };
+  for (const sku of ["30kw", "40kw", "50kw", "50kwa"]) {
+    const f2 = join(OUT, "..", "..", "simulation-results", sku, "dpt-pfc-metrics.csv");
+    if (!existsSync(f2)) continue;
+    const L = readFileSync(f2, "utf8").split("\n").filter((l) => l && !l.startsWith("#"));
+    const h = L[0].split(","), r = L.slice(1).map((x) => x.split(",")).find((x) => /^L\d+-clamped$/.test(x[h.indexOf("case")]));
+    if (!r) continue;
+    const k = +r[h.indexOf("koff_nJ_VA")] * 1e-9 + (+r[h.indexOf("Eon_hard_uJ")] * 1e-6) / (+r[h.indexOf("V")] * +r[h.indexOf("I_A")]);
+    out.perSku[sku] = k; out.worst = Math.max(out.worst, k);
+    out.src.push(`${sku} ${(k * 1e9).toFixed(1)}`);
+  }
+  return out;
+}
+const KSW = kSwFromDpt();
+// The ENGINE keeps running on the registered constant so that the frozen fsw selection (E3) does not
+// move underneath every downstream engine on a model re-run. The GATE is what carries the truth:
+// stress-audit [DPT] fails while the registered constant is below the simulated one, and the line
+// below states the consequence. Raising K_SW_REGISTERED is a system decision (it re-opens E3), not a
+// side effect of re-running a SPICE deck.
+const K_SW = K_SW_REGISTERED;
+export const KSW_DPT = KSW;
+console.log(`k_sw (engine) = ${(K_SW * 1e9).toFixed(1)} nJ/(V·A) registered · DPT per SKU [${KSW.src.join(" · ")}] nJ/(V·A)` +
+  (KSW.worst > K_SW_REGISTERED
+    ? `\n  *** the registered constant is ${((KSW.worst / K_SW_REGISTERED - 1) * 100).toFixed(0)} % BELOW the simulated worst (${(KSW.worst * 1e9).toFixed(1)}). At the simulated value this engine REJECTS 50 kHz (Tj 152 °C) and selects 40 kHz — an E3 re-open, gated in stress-audit [DPT]. ***`
+    : ""));
 const VLL = 330, PIN = P_LANE / 0.965, VBUS = 800;
 const Vph_pk = (VLL / Math.sqrt(3)) * Math.SQRT2;          // 269.4 V
 const Iph_rms = PIN / (Math.sqrt(3) * VLL * 0.99);
@@ -59,7 +93,7 @@ function pairLoss(fsw) {
   for (let it = 0; it < 40; it++) {
     const rds = 0.010 * (1 + 0.004 * (Tj - 25));
     Pc = Isw_rms ** 2 * 2 * rds / PAR;                      // pair-position total, shared by PAR devices
-    Psw = 17.4e-9 * (VBUS / 2) * (2 / Math.PI) * Ipk * fsw;    // total switched (shared)
+    Psw = K_SW * (VBUS / 2) * (2 / Math.PI) * Ipk * fsw;    // total switched (shared)
     const Ppkg = (Isw_rms / PAR) ** 2 * 2 * rds / 2 + Psw / PAR;   // worst PACKAGE
     const TjNew = TAMB_HS + Ppkg * RTH_JA;
     if (Math.abs(TjNew - Tj) < 0.01) { Tj = TjNew; break; }

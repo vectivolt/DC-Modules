@@ -72,8 +72,20 @@ const KEPT: Record<string, number> = {
   //   I_A0 -> pin 17 PC2 = CMP7_IP · I_B0 -> pin 25 PA3 = CMP1_IP (ADC0_IN3 keeps metering)
   //   I_C0 -> pin 16 PC1 = CMP2_IP · SNS_VAC1 -> pin 15 PC0 = ADC01_IN5 (slow 50 Hz, no CMP)
   // Verified against GD32G553xx Rev 2.0 Figure 2-3 + pin-definition table.
-  AIN6: 56, AIN7: 55, AIN8: 17, AIN9: 25, AIN10: 16, AIN11: 15, AIN12: 26,
-  TSNS0: 32, TSNS1: 33, AVMID: 18, ROLE1: 38,
+  //
+  // E81 (F-I-2, MCU decision 2026-09-17) — DUAL-FOOTPRINT SWAP: **AIN8 ⇄ TSNS0**.
+  //   before: AIN8 (I_A0) = pin 17 PC2 · TSNS0 (T_LLC) = pin 32 PB0
+  //   after:  AIN8 (I_A0) = pin 32 PB0 · TSNS0 (T_LLC) = pin 17 PC2
+  // Phase A's current sense was the ONE signal of 75 that does not carry over to the second-source
+  // STM32G474VET7: on that part pin 17 (also PC2) lists only ADC12_IN8 — no comparator input — so
+  // GD32's hardware-speed OC trip on phase A would silently become software-only on an STM32 card.
+  // PB0 carries a comparator input on BOTH parts (GD32 CMP-capable; STM32 COMP4_INP at INPSEL = 0,
+  // RM0440 Rev 7 Table 196) and COMP4 reaches HRTIMER fault channel FLT2 directly (Table 213), so
+  // the direct COMPx→FLTx path survives the swap and the ADC-watchdog workaround is not needed.
+  // T_LLC is a slow NTC that never wanted a comparator, and PC2's ADC12_IN8 serves it on both parts.
+  // Ways, harness, connector and both power boards are untouched — this is a CARD-INTERNAL swap.
+  AIN6: 56, AIN7: 55, AIN8: 32, AIN9: 25, AIN10: 16, AIN11: 15, AIN12: 26,
+  TSNS0: 17, TSNS1: 33, AVMID: 18, ROLE1: 38,
   DO0: 59, DO1: 60, DO2: 89, DO3: 94, DO4: 96, DO5: 62, DO6: 34,
   DI0: 85, DI1: 86, DI4: 73, DI5: 78,
   FLT: 47, DRV_RDY: 81, EN_A: 82,

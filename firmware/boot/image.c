@@ -25,6 +25,10 @@ int img_verify(const uint8_t *img, uint32_t cap, uint32_t slot_base, uint32_t hw
   sha256(img, 0x40u, h);
   if (poll) poll();
   if (!p256_verify(key->xy, h, img + 0x40)) return IMG_E_SIGNATURE;   /* ≈ 9 ms at 216 MHz: inside one window */
+  /* E81 (F-F-9): kick here too. Without it the longest gap between two watchdog services in the whole verification is
+     p256_verify (≈9 ms) + the FIRST 32 KB body chunk (≈8–12 ms) back to back = 15–21 ms against the TPS3430's 23.375 ms
+     upper bound — likely inside, on two estimates and no measurement. Splitting it removes the dependency. */
+  if (poll) poll();
   sha256_t s;
   sha256_init(&s);
   for (uint32_t off = 0u; off < info->size; off += 0x8000u) {         /* the body in 32 KB pieces, a kick between them */

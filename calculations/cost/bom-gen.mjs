@@ -164,7 +164,7 @@ for (const sku of SKUS) {
 
 // ---- price per kW: ₹ / kW must fall 30 → 40 → 50 kW (E55 rule), with both 50 kW twins below the 40 kW module ----
 const PKW = [
-  ["30 kW module", 30, summary["30kw"].g10k, "air · 2 fans"],
+  ["30 kW module", 30, summary["30kw"].g10k, "air · 3 fans"],
   ["40 kW module", 40, summary["40kw"].g10k, "air · 3 fans"],
   ["50 kW liquid module", 50, summary["50kw"].g10k, "two coldplates · no fans"],
   ["50 kW air module", 50, summary["50kwa"].g10k, "air · 4 fans"],

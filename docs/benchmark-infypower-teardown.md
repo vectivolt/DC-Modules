@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
   <img src="https://img.shields.io/badge/verdict-architecture_and_BOM_cloned_E67–E69_·_cost_gap_open-d19a00?style=flat-square" alt="verdict: architecture and BOM cloned E67–E69 · cost gap open"/>
 </p>
@@ -21,11 +21,43 @@
 > [!IMPORTANT]
 > **Outcome.** The E62 audit found the macro-architecture already converged. The customer then directed a clone of InfyPower's
 > architecture and BOM: E67 adopted the full-bridge LLC, the two output modes and the output diode; E68 the clip mount, the
-> star-X2 EMI filter and film-only banks; E69 right-sized dies. Rated efficiency is 96.70 % at 40 kW against InfyPower's
-> "> 96 %". On the India price list the 40 kW module is still ≈ 47 % above the teardown estimate — the largest single step
-> left is to buy one REG1K0135A2 and measure it.
+> star-X2 EMI filter and film-only banks; E69 right-sized dies. Rated efficiency is **96.35 % at 40 kW** (E81 ledger, with
+> the LLC turn-off and DPT switching terms) against InfyPower's "> 96 %". On the India price list the 40 kW module is
+> **₹35,970 at E81, ≈ 52 % above the teardown estimate** — the largest single step left is to buy one REG1K0135A2 and
+> measure it.
+>
+> **Read the [E81 re-read](#1-e81-re-read-of-the-teardown-2026-09-17--corrections-and-validations) first.** Four of its
+> seven rows correct what the tables further down recorded at E67–E69 — most importantly, **their output banks are not
+> film-only** (R1).
 
-## How to read the evidence
+## At a glance
+
+| | |
+|---|---|
+| **Subject** | InfyPower **REG1K0135A2** 40 kW SiC module, opened by ChargerLAB (read 2026-09-13, re-read at E81) |
+| **What we cloned** | full-bridge LLC, two output modes, output blocking diode (E67) · clip mount, star-X2 EMI filter (E68) · right-sized dies (E69) |
+| **What we kept** | isolated sensing on every domain, DESAT + window comparators, one MCU, full-bus SiC aux |
+| **Efficiency** | ours **96.35 %** at 40 kW full power (E81 ledger) against their "> 96 %" |
+| **Cost** | ours **₹35,970** at 10k India basis vs an **estimated ₹23,600** for their BOM on our price list — **≈ +52 %**, and the estimate itself is the largest unknown |
+| **Next step** | buy one REG1K0135A2 and measure it — that replaces the estimate with data |
+
+## 1. E81 re-read of the teardown (2026-09-17) — corrections and validations
+
+The ChargerLab article (published 2025-11-10) was re-read line by line during the E81 full-system validation, with the E81
+questions in hand. Four findings correct or sharpen what this page recorded at E67, and two validate E81 decisions taken
+independently. Labels: [T] = stated in the teardown text.
+
+| # | Teardown fact [T] | What this page said | Consequence |
+|---|---|---|---|
+| R1 | The output filter is film (2 × 6 µF / 1000 V at the rectifiers) → **filter inductor** → **550 V electrolytics (220 µF and 47 µF classes)**, with four series discharge resistors and the 1500 V chopper across them | "Output banks: film only" — and E68c retired our Cf–Lf–Ce output filter to film-only **citing this page** | **The E68c premise was a misread.** Our film-only bank stands on its own E81 gates (CV step restated ≤ 10 %, F.14 code thresholds, S/P closure at 28 A), but the InfyPower-validated alternative — ≈ 2 × 220 µF / 550 V per bank behind the filter choke — is now a REGISTERED LEVER: it returns the CV load-step overshoot to ≈ +2 % (the G SIL showed capacitance is the only lever) for ≈ +₹500 / module and a vent-clearance rule |
+| R2 | The LLC bridge input carries **1000 V film, 6 µF parts, two visible per position group** (≈ 12–24 µF total at the bridge) | not recorded — our drawing carried 4 × 1 µF until E81 | **Validates F-G-1 / FIX-D**: the E81 entry-film bank (16–20 × 1 µF + RC damper) lands in the same decade as InfyPower's own practice; the pre-E81 4 µF was our gap, never their design |
+| R3 | The 40 kW LLC bridge runs **four APS ACM035P120QNN 1200 V 33 mΩ TO-247-4** — **one die per position** — potted, on the patented heatsink integration | this page recorded the die count as open [T?] | **Validates the E81 30 kW single-die decision as conservative**: InfyPower ships one 33 mΩ die per position at 40 kW / 133 A (≈ 115 W in that die at the 500 V-series corner on our numbers); our kept single die is 23 mΩ at 30 kW with a documented fold |
+| R4 | The resonant bank is **7 × 3.3 µF / 250 V** film in parallel (≈ 23 µF) with a Litz resonant inductor | this page treated the tank as not extractable | Their tank is a **low-Z₀, low-f_r, low-Q** design (250 V caps ⇒ V_cr swing tens of volts, f_r far below our 140 kHz) — a structurally different LLC operating point. Registered as an **E82 study**: a lower-Z₀ tank changes the F-L-1 weak-leg energy budget and the V_ds ring, at the price of tank rms and magnetics size — the corrected-Coss deck can score it |
+| R5 | The PFC switches are **Sanrise SRC60R022FBS — 600 V silicon superjunction, 22 mΩ** (the SiC in the PFC is only the 1200 V 40 A boost diodes); "full SiC" is the marketing name | this page carried the PFC die class as SiC | Registered **E82 cost option**: 600 V SJ per Vienna position (their practice, at 87 % of rating on a 475 V half-link) against our 750 V SiC class — a die-cost lever that re-opens E69a and the DPT family if taken |
+| R6 | The DC link is **Jianghai CD296 475 V / 680 µF** [T], glued | recorded ✓ | Adds the **475 V can** as the middle option in the E81 can-voltage lever (450 V = 97 % worst continuous · 475 V = 92 % · 500 V = 87 %) |
+| R7 | No DESAT anywhere: PFC drive is NSi6801 (no DESAT) + low-side drivers, LLC drive is **gate-drive transformers + 1 A isolators + a discrete PMOS**; protection is 3 mΩ shunts + AMC1200B + LMV393 comparators; both controllers are 60 MHz F28035 | partially recorded | No action — our NSI6611 DESAT + window comparators + one 216 MHz MCU is the stronger protection and control architecture, at a cost this page's ledger already carries |
+
+## 2. How to read the evidence
 
 | Tag | Meaning |
 |---|---|
@@ -39,13 +71,13 @@ Verdict scale of the E62 record below (applied to **our** design, per the audit 
 acceptable but less optimal · **3** unnecessarily complicated · **4** less efficient or more expensive · **5**
 less reliable · **6** missing an important function · **7** fundamentally incorrect.
 
-## The two machines
+## 3. The two machines
 
 | | InfyPower REG1K0135A2 | Vectivolt 40 kW module (E69) |
 |---|---|---|
 | AC input | 260–530 VAC 3-φ · 76 A max [T] | 3-φ 400 V nominal · F.07 trip > 500 VAC · 530 V filter-ready, product decision open (R14) |
 | DC output | **150–1000 V · 0–133 A** [T] | **150–1000 V · 133 A** — identical window and current |
-| Efficiency | > 96 % comprehensive · > 97 % peak [T] | full power 400 V **96.70 %** (output diode included) · peak **98.26 %** [R] |
+| Efficiency | > 96 % comprehensive · > 97 % peak [T] | full power 400 V **96.35 %** (E81 ledger — output diode included) · peak **98.26 %** [R] |
 | Semiconductors | full SiC [T] | full SiC |
 | Brain | 2 × TMS320F28035 (one per stage) [T] | 1 × GD32G553VET7 (both stages, E40) |
 | Build | two stacked PCBAs — PFC + LLC, wired [T] | two-board sandwich — AC-DC + DC-DC, 40-way harness |
@@ -54,9 +86,9 @@ less reliable · **6** missing an important function · **7** fundamentally inco
 | Mass | 15.5 kg → 2.58 kW/kg [T] | not computed (no mechanical design); likely heavier |
 | Environment | −40…+75 °C, derate from 55 °C · 95 % RH · 2000 m [D] | −30…+55 °C full, derate to +75 (A11 rev C) · 95 % RH · 2000 m |
 | Protection build | potting + rear conformal coating, heatsink-integration patent [T] | acrylic conformal coating both boards + card (E52); sealed liquid 50 kW variant |
-| Reliability claim | MTBF 500 kh [D], no stated basis | parts-count prediction **≈ 402 kh at 40 °C** [R] — method-for-method comparison only at EVT |
+| Reliability claim | MTBF 500 kh [D], no stated basis | parts-count prediction **≈ 390 kh at 40 °C** [R] — method-for-method comparison only at EVT |
 
-## Power architecture, side by side
+## 4. Power architecture, side by side
 
 ```mermaid
 flowchart LR
@@ -86,7 +118,7 @@ The same machine since E67. The divergences left are deliberate: two 23 mΩ dies
 55 °C HIGH-mode corner), the gate-drive class (the drive clone is approved but not executed), sensing (CTs and isolated amplifiers
 vs shunts), one brain instead of two, the split 450 V DC link, and packaging density.
 
-## Where we stand now — the E67–E69 clone
+## 5. Where we stand now — the E67–E69 clone
 
 > [!NOTE]
 > **Directive (2026-09-13)** — "use exactly their architecture and their BOM end to end (except where ours is better
@@ -103,9 +135,9 @@ vs shunts), one brain instead of two, the split 450 V DC link, and packaging den
 | Output protection | 1600 V series blocking diodes | **copied** — DOUT 1600 V, 150 / 200 / 250 A class; K_OUT and pre-insertion retired | E67 |
 | Device mounting | clip-mounted discrete TO-247 | **copied** — clip on Al2O3; single dies per position where the fault-pulse rule allows | E68a |
 | EMI filter | two CM chokes + 9 × 4.7 µF X2, no DM chokes | **copied** — 2 CMC + 12 × 4.7 µF X2 in three star stages; the damper stays (without it the current loop is unstable with either filter) | E68b |
-| Output banks | film only | **copied** — 9 / 12 / 14 × 2.2 µF 630 V per bank | E68c |
+| Output banks | ~~film only~~ → **film + filter choke + 550 V electrolytics** (E81 re-read R1 — the E68c premise was a misread) | **film-only, on its own gates** — 9 / 12 / 14 × 2.2 µF 630 V per bank; the electrolytic route is a registered ≈ +₹500 lever that returns the CV step to ≈ +2 % | E68c · E81 R1 |
 | PFC switches | 600 V 22 mΩ class | **adapted** — 750 V 20 / 15 mΩ class (650 V would be 86 % of rating at our 560 V worst switch stress; the house rule is 75 %) | E69a |
-| LLC switches | 4 × 1200 V 35 mΩ | **not copied** — one 23 mΩ die per position at 30 kW, two at 40 / 50 kW; a single 35 mΩ die fails our 55 °C HIGH-mode corner, and a single 16 mΩ die at 40 kW fails the fault-pulse rule | E68a / E69a-2 |
+| LLC switches | 4 × **APS ACM035P120QNN 1200 V 33 mΩ**, one die per position (E81 re-read R3) | **not copied** — one 23 mΩ die per position at 30 kW, two at 40 / 50 kW; a single 35 mΩ die fails our 55 °C HIGH-mode corner, and a single 16 mΩ die at 40 kW fails the fault-pulse rule | E68a / E69a-2 |
 | Gate drive and protection | gate-drive transformers + basic iso drivers, no DESAT | **approved, not executed** — about −₹470 at 40 kW against a protection-philosophy change (GDT design, D4 re-wind, new trip evidence) | E69 (e) |
 | Control | two TMS320F28035 | **kept ours** — one GD32G553 (cheaper by ≈ ₹170) | E40 |
 | Sensing | shunt + iso amp | **kept ours** — isolated senses on every domain (≈ ₹1.2k premium, a safety-architecture choice) | E25 |
@@ -142,23 +174,24 @@ what their BOM would cost us, not their real cost.
 | Assembly + EOL | 1,697 | ~1,000 | +697 | production process |
 | Secondary diodes | 1,536 | ~1,536 | 0 | parity |
 | Gate drive | 1,054 | ~260 | +794 | the approved drive clone (≈ −₹470) |
-| Output banks | 864 | ~400 | +464 | cloned (film only); the rest is film count at our 0.5 % ripple rule |
+| Output banks | 864 | ~400 | +464 | **not** a clone (E81 R1: theirs carry a choke and 550 V electrolytics); our film count follows the 0.5 % ripple rule |
 | Busbars, studs, harness | 705 | in mechanical | — | — |
 | Control | 516 | ~690 | −174 | ours is cheaper |
-| **Module** | **34,616** | **≈ 23,600** | **≈ +11,000 (+47 %)** | |
+| **Module (E69 basis)** | **34,616** | **≈ 23,600** | **≈ +11,000 (+47 %)** | |
+| **Module (E81 basis)** | **35,970** | ≈ 23,600 | **≈ +12,400 (+52 %)** | the E81 design changes (entry film, 500 V cans, bias, CY, snubber) add ₹1,354 — the per-section rows above are the E69 split |
 
 ```mermaid
 xychart-beta
   title "40 kW build cost at 10k (₹) — ours vs the InfyPower teardown estimate"
-  x-axis ["E65", "E67", "E68a", "E68b", "E68c", "E69", "E69 + 2U", "Infy est."]
+  x-axis ["E65", "E67", "E68a", "E68b", "E68c", "E69", "E81", "E69 + 2U", "Infy est."]
   y-axis "₹ @10k" 0 --> 45000
-  bar [42505, 38048, 36686, 35560, 35048, 34616, 32680, 23600]
+  bar [42505, 38048, 36686, 35560, 35048, 34616, 35970, 32680, 23600]
 ```
 
 > [!IMPORTANT]
 > **The honest verdict.** The architecture is now InfyPower's, and the clone took ₹7.9k (−19 %) out of the 40 kW
 > module since E65. On the India price list the module is still ≈ 47 % above the teardown estimate (≈ 38 % with the
-> unproven 2U construction). The China RFQ-target column (E69f) puts the 40 kW module at ₹28,319 (₹26,735 with 2U),
+> unproven 2U construction; ≈ 52 % on the E81 BOM). The China RFQ-target column puts the 40 kW module at **₹29,418**,
 > but that compares a landed China target with an estimate priced in India, so it is not a like-for-like gap. The
 > 2–5 % target is not met by any change the gates can prove today. The largest single unknown is whether the
 > estimate itself is right: **buy one REG1K0135A2 and measure it** (thermals at SER 500 V, device temperatures, gate
@@ -177,7 +210,7 @@ xychart-beta
 
 <details><summary><b>E62–E63 record — the block-level audit of the pre-clone design</b> (InfyPower's side stays valid; our side is the E62 state, superseded by E67–E69)</summary>
 
-## Verdict matrix
+## 6. Verdict matrix
 
 | # | Area | REG1K0135A2 | Ours | Verdict |
 |--:|---|---|---|---|
@@ -194,7 +227,7 @@ xychart-beta
 | 11 | V / I sensing | shunts + AMC1200 iso-amps, muxed | CTs (line + resonant) + output shunt + AMC1350/1311 | **1** — zero-loss, trip-grade bandwidth |
 | 12 | Hardware protection | shunt comparators + DSP, no DESAT seen [T] | DESAT + CMP/DAC trips + supervisory ladder | **1** — three layers by directive |
 | 13 | Fault handling | datasheet: SCP self-rollback, alarms [D] | F.xx ladder, per-SKU windows, host-proven 54/54 (60/60 since E67) | **1** (their firmware not inspectable) |
-| 14 | Gate drive | 3 iso-driver ICs + gate transformers, no Miller clamp seen | 9 × NSI6611 (DESAT, clamp, soft-off) + QA01C-18 ±bias | **1**, cost noted (~₹1k+) |
+| 14 | Gate drive | 3 iso-driver ICs + gate transformers, no Miller clamp seen | 9 × NSI6611 (DESAT, clamp, soft-off) + QA01C-15 / QA02C-15 (E81: +15 / −3 V) ±bias | **1**, cost noted (~₹1k+) |
 | 15 | Aux power | UCC28C45 flyback, 900 V Si, opto FB [T] | one 110 W 342–860 V flyback, 1700 V SiC, NCP1252D | **1/2** — dearer switch, full-range and balance-neutral |
 | 16 | Thermal / cooling | 3 fans + potted heatsink integration | 3 fans + extrusion tunnel; 50 kW liquid twin | **1**; density consequence in #20 |
 | 17 | EMI / EMC | 2 × CMC, 9 × X2, Y films, MOV + GDT | 2 × CMC, X1-class caps, per-phase DM chokes, MOV Δ + GDT | **1/2** — heavier filter, computed LISN margins |
@@ -211,7 +244,7 @@ pie showData
   "Ours costlier or bigger" : 4
 ```
 
-## 1 · AC input, fusing and surge
+## 7. AC input, fusing and surge
 
 | | |
 |---|---|
@@ -221,7 +254,7 @@ pie showData
 | **Assessment** | ours is the stricter selection on both axes. Their 100 A at 76 A max is 76 % continuous load — outside our own 0.72× gG rule — and a 500 VAC fuse under a 530 VAC-rated input is under-voltage-rated as read **[T?]**. Their 460 V MOV cannot sit line-to-line at 530 VAC, so their clamp must be phase-referenced; our 550 V Δ MOV is already legal line-to-line at 530 V — the E61-corrected input-range position (R14) is confirmed by their spec, not contradicted. |
 | **Verdict** | **1**. No change. Their fuse margin is a them-problem; ours is gated. |
 
-## 2 · EMI filter
+## 8. EMI filter
 
 | | |
 |---|---|
@@ -231,7 +264,7 @@ pie showData
 | **Assessment** | same architecture; we carry one extra filter element class (D6) because our margins are computed, not measured — the deliberate pre-hardware posture. Their capacitors are **X2**-class where ours are **X1 530 VAC** [T]; at a 530 V line, X1 is the defensible class. Their build is evidence a lighter DM section can pass, but only their EMC lab knows. |
 | **Verdict** | **1/2**. Keep D6 until the EVT LISN scan (T-08) says otherwise — that trim lever is already registered. |
 
-## 3 · Precharge / soft start
+## 9. Precharge / soft start
 
 | | |
 |---|---|
@@ -241,7 +274,7 @@ pie showData
 | **Assessment** | equivalent function. Their 3–8 s figure is the whole boot (aux + DSPs + CAN), comparable to our aux ~5–6 s cold-start reservoir plus 0.23 s precharge — not a precharge-speed gap. Their 40 A / 250 V bypass contacts on a 76 A / 530 V line only work because bypassed resistors see no steady current; ours are rated for the line. |
 | **Verdict** | **1**. No change. |
 
-## 4 · PFC stage
+## 10. PFC stage
 
 | | |
 |---|---|
@@ -258,7 +291,7 @@ P_{cond} = R_{pos,hot}\cdot I_{sw,rms}^2 \Rightarrow
 \begin{cases} \text{ours: } 15\ \mathrm{m\Omega} \to 16\ \mathrm{W/phase}\\ \text{theirs: } 33\text{–}66\ \mathrm{m\Omega} \to 36\text{–}72\ \mathrm{W/phase}\ \text{[C]}\end{cases}
 ```
 
-## 5 · DC link
+## 11. DC link
 
 | | |
 |---|---|
@@ -268,7 +301,7 @@ P_{cond} = R_{pos,hot}\cdot I_{sw,rms}^2 \Rightarrow
 | **Assessment** | identical architecture (series electrolytic halves, 450/475 V class). Their can count is unreadable from the text, so no J/kW comparison is honest — noted, not guessed. One structural difference: the Vienna needs a **driven midpoint**; our midpoint is sensed and balanced by control with F-rows on imbalance — their board must do the same (not visible). |
 | **Verdict** | **same choice — validated**. |
 
-## 6 · DC-DC stage
+## 12. DC-DC stage
 
 | | |
 |---|---|
@@ -285,7 +318,7 @@ P_{cond} \approx 2\cdot R_{hot}(\approx50\ \mathrm{m\Omega})\cdot57^2 \approx 32
 \;\;\text{vs}\;\; P_{FET,total}^{ours} = 151.6\ \mathrm{W\ [R]}
 ```
 
-## 7 · Magnetics
+## 13. Magnetics
 
 | | |
 |---|---|
@@ -295,7 +328,7 @@ P_{cond} \approx 2\cdot R_{hot}(\approx50\ \mathrm{m\Omega})\cdot57^2 \approx 32
 | **Assessment** | both designs put Lr **outside** the transformer — their external inductor is the same admission that leakage alone is not a production parameter. Our bin+trim scheme is heavier than industry (recorded at E51) but is what makes three parallel sections share current within the E60 mismatch analysis. |
 | **Verdict** | **1/2** — heavier, gated, intentional. |
 
-## 8 · Secondary rectification and the wide output range
+## 14. Secondary rectification and the wide output range
 
 | | |
 |---|---|
@@ -305,7 +338,7 @@ P_{cond} \approx 2\cdot R_{hot}(\approx50\ \mathrm{m\Omega})\cdot57^2 \approx 32
 | **Assessment** | same diode voltage/current budget (theirs 16 × 40 A = 640 A·units; ours 24 × 20 A = 480 A·units for the same 133 A — ours is actually the leaner diode buy). Same relay-count class (3 vs our 4). Identical range and knee. Their relays carry no visible mirror contacts or pre-insertion [T?] — the series blocking diode (next block) is what makes that survivable for them. |
 | **Verdict** | **same choice — validated**; our execution is the harder-specified one. |
 
-## 9 · Output protection and discharge
+## 15. Output protection and discharge
 
 | | |
 |---|---|
@@ -320,17 +353,17 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 1.1\ \mathrm V\times53\ \mathrm A \approx 58\ \mathrm W\ (0.15\,\%\ @\ 750\ \mathrm V)\ \text{[C]}
 ```
 
-## 10 · Gate drive
+## 16. Gate drive
 
 | | |
 |---|---|
 | **InfyPower** | 3 × NOVOSENSE NSi6801 single-channel iso drivers (PFC) + **gate-drive transformers** with low-side push drivers and a PMOS clamp for the LLC bridge [T]; no DESAT, Miller clamp or negative rail mentioned anywhere in the teardown [T]. |
 | **Why** | transformer drive is the cheapest way to four floating gates: no per-channel bias supplies, no iso-driver ICs. Its limits — duty range, no fault feedback, weak hold-off — are acceptable when protection lives in shunt comparators and device ruggedness. |
-| **Ours** | 9 iso-driver channels per module: **NSI6611** (DESAT with 22/47 pF blank, active Miller clamp, UVLO, soft-off) fed by reinforced **QA01C-18** ±bias modules (+18 / −3 V — O-11 closed E45/E80), split 4.7/4.7 Ω gate resistors, two 1 kV DESAT diodes + 100 Ω per channel. |
+| **Ours** | 9 iso-driver channels per module: **NSI6611** (DESAT with 22/47 pF blank, active Miller clamp, UVLO, soft-off) fed by reinforced **QA01C-15 / QA02C-15 (E81: +15 / −3 V)** ±bias modules (+18 / −3 V — O-11 closed E45/E80), split 4.7/4.7 Ω gate resistors, two 1 kV DESAT diodes + 100 Ω per channel. |
 | **Assessment** | ≈ ₹1–1.5k/module premium over their scheme [C, class prices]. What it buys: per-device short-circuit detection inside the SiC withstand time (next block), a clamped off-state at 140 kHz dv/dt, and a defined negative hold-off — the three things transformer drive cannot give. On a module spec'd for unattended DCFC duty at 55 °C full power, that is the correct side of the trade; their side is the correct one for their cost point. |
 | **Verdict** | **1**. Cost recorded as a known premium, not a lever — removing DESAT would breach the protection philosophy. |
 
-## 11 · Protection philosophy
+## 17. Protection philosophy
 
 | | |
 |---|---|
@@ -340,7 +373,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | this is the block where the two philosophies genuinely differ. Theirs is statistically fine at their price point; ours is the Wolfspeed-reference class (which also carries DESAT-class protection) and is the direct answer to the standing "works at 200 % in a harsh environment" directive. A teardown cannot show their trip latencies or coordination — the honest statement is that ours is *proven coordinated on paper and in simulation*, theirs is *unknown but field-proven commercially*. |
 | **Verdict** | **1**. No change in either direction. |
 
-## 12 · Sensing
+## 18. Sensing
 
 | | |
 |---|---|
@@ -350,7 +383,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | their shunt chain dissipates a few watts and its trip path crosses an iso-amp's bandwidth; our CTs put the fast trip on a passive magnetic path. The CT downsides (saturation, no DC) are exactly what the E58/E60 gates and EOL step 8 exist for. Both are sound; ours is the one aligned with the 3-layer protection stack. |
 | **Verdict** | **1**. |
 
-## 13 · Control architecture
+## 19. Control architecture
 
 | | |
 |---|---|
@@ -360,7 +393,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | their build proves dual-brain ships; ours removes the inter-processor link entirely — the exact failure class (link CRC, boot ordering, split fault state) we retired at E40 — and halves the firmware surface. The muxed-ADC pattern they use trades sampling latency for pins; we have the pins and keep every protection-relevant channel direct. Nothing in their partition suggests ours is under-resourced: our worst documented utilisation is the HRTIMER at 6/8 units. |
 | **Verdict** | **1**. |
 
-## 14 · Auxiliary power
+## 20. Auxiliary power
 
 | | |
 |---|---|
@@ -370,7 +403,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | a half-link aux loads the Vienna midpoint asymmetrically (small, controllable — their balance loop must absorb it) and dies with the half it feeds; ours is balance-neutral and rides the full documented brown-out window. We pay ~₹130 more for the switch. Their two-transformer/multi-rail spread is equivalent to our post-regulator tree. |
 | **Verdict** | **1/2** — ours is the cleaner electrical citizen at slightly higher cost; both correct. |
 
-## 15 · Thermal, mechanical, packaging
+## 21. Thermal, mechanical, packaging
 
 | | |
 |---|---|
@@ -380,7 +413,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | their density (3.96 kW/L) versus our estimate (2.1–2.6 kW/L) is the one place this module clearly beats us — consistent with the E51 finding, now with a second data point at 40 kW. The enablers are potting integration, 84 mm height and single-transformer magnetics, not better silicon. We decline potting deliberately: it makes every field failure a module swap, blocks EOL rework, adds ~2 kg, and complicates the E58 magnetics thermal story. The recovery path is the parked E36 layout phase (registered), not a philosophy change. Their 15.5 kg at 40 kW sets the mass bar we have not yet computed against — flagged as an open deliverable of the layout phase. |
 | **Verdict** | **2/4 on density and mass — theirs wins today**; the lever is registered, not new. |
 
-## 16 · Communication and paralleling
+## 22. Communication and paralleling
 
 | | |
 |---|---|
@@ -389,7 +422,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | different paralleling philosophies, both internally consistent. Their ±5 % passive share leans on the series diode; ours commands the share over CAN. Since E67 our modules also carry an output blocking diode, so a module can never back-feed a shared bus. |
 | **Verdict** | **1**. |
 
-## 17 · Environment and reliability claims
+## 23. Environment and reliability claims
 
 | | |
 |---|---|
@@ -398,7 +431,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Assessment** | full power to 55 °C is the same on both sides. Their −40 °C floor is a datasheet class; our −30 °C floor came from measured-material cold-start physics (E58/E60) against the verified competitor floors — moving to −40 would reopen electrolytic ESR and aux cold-start, and no customer requirement on file asks for it. The honest gaps on our side are certification and a defensible MTBF figure — both already on the roadmap, now with a competitor number (500 kh) to be measured against. |
 | **Verdict** | **1**, two honesty items already tracked. |
 
-## Techniques they use that we do not
+## 24. Techniques they use that we do not
 
 | Technique | Their reason | Our position |
 |---|---|---|
@@ -411,7 +444,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | **Output-side filter inductors** [T?] | DC-port EMI / ripple | **matches our open E52 decision line** — their build is one more market datapoint that the DC port carries filtering; our DNP pads + EVT output scan (T-08) already own this. No pre-hardware change. |
 | 550 V single electrolytics on output sections | halves can count, no balance parts | **RFQ lever, not a change**: our 2 × 450 V strings carry the ripple/endurance gate and the −40 °C category; a 550 V single-can bank is worth pricing at RFQ against its endurance data (recorded below) |
 
-## What E62 changes
+## 25. What E62 changes
 
 | # | Action | Where |
 |---|---|---|
@@ -421,7 +454,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | 4 | R14 (530 VAC input) gains confirmation: the benchmark module runs 260–530 VAC; our filter is already component-rated for it — the remaining work stays F.07 + bus headroom + ratings sweep | [decision register](assumptions.md) E62 row |
 | 5 | Density/mass bar restated at 40 kW: 3.96 kW/L / 2.58 kW/kg — the E36 layout phase inherits it as its acceptance context | recorded for a later layout phase (out of scope) |
 
-## Closing the economic gap — the E63 lever audit
+## 26. Closing the economic gap — the E63 lever audit
 
 > [!NOTE]
 > **E63 directive** — "close the economic gap and make ours more efficient — or say it is not worth it — end to
@@ -434,7 +467,7 @@ P_{diode} \approx V_f \cdot I_{out}:\quad 1.1\ \mathrm V\times133\ \mathrm A \ap
 | Line | Ours | Their-style | Premium | What it buys |
 |---|---:|---:|---:|---|
 | 3-φ interleaved LLC (6 FETs ₹1,872 + 3 transformers ₹1,632 + tank film ₹653) | 4,157 | ≈ 2,600 [est] | **≈ +1.5k** | +0.4–0.5 pt full-load η, interleaved ripple, smaller banks |
-| Gate drive with DESAT (9 × NSI6611 ₹612 + 9 × QA01C-18 ₹495) | ≈ 1,150 | ≈ 250 [est] | **≈ +0.9k** | per-device short-circuit off inside SCWT, Miller clamp, soft-off |
+| Gate drive with DESAT (9 × NSI6611 ₹612 + 9 × QA01C-15 / QA02C-15 (E81: +15 / −3 V) ₹495) | ≈ 1,150 | ≈ 250 [est] | **≈ +0.9k** | per-device short-circuit off inside SCWT, Miller clamp, soft-off |
 | CT sensing (line + resonant CTs + burdens) | ≈ 700 [est] | ≈ 300 [est] | **≈ +0.4k** | zero-loss, trip-grade bandwidth to the comparators |
 | Mirror-contact 1000 V relay matrix + pre-insertion | ≈ 2,850 | ≈ 1,100 [est] | **≈ +1.3k** | weld-checked isolation — and none of their permanent 0.15–0.44 % series-diode tax |
 | DM chokes + X1-class filter caps | ≈ 1,550 | ≈ 150 [est] | **≈ +1.4k** | computed LISN margin before any hardware exists |
@@ -502,20 +535,23 @@ let the 50 kW air (₹735/kW post-lever) carry the cost position — which the f
 
 </details>
 
-## Where the evidence ends
+## 27. Where the evidence ends
 
 > [!WARNING]
 > A teardown shows copper and silicon, not firmware: their control loops, trip latencies, coordination, derating
 > curves and EMC margins are invisible, and their ">96 % comprehensive" efficiency is a load-weighted marketing
 > figure, not a measured full-load point. Symmetrically, our numbers here are engine outputs and simulation —
 > reproducible to the digit, but pre-hardware. The comparison is therefore architecture-against-architecture and
-> spec-against-computation; EVT (T-00…T-41) is where our side of these tables becomes measured. Counts marked
+> spec-against-computation; EVT (T-00…T-64) is where our side of these tables becomes measured. Counts marked
 > **[T?]** could not be resolved from the article text and were not guessed.
+
+> [!TIP]
+> **How this page is checked** — our side of every table is engine output (`bom-gen`, `loss-budget`, `mtbf-budget`, `current-coordination`); their side is a teardown reading, labelled [T] where the article states it. The gap closes with a measurement, not a gate — buy one and measure it.
 
 ---
 
 <div align="center">
 <sub><a href="dfm-production.md">← DFM & Production Flow</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

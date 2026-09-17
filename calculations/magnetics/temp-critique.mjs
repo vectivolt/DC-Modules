@@ -47,18 +47,31 @@ const FE = 1.71, BE = 2.9;
 const pv = (f, B, T) => interp(base, T) * Math.pow(f / 100e3, FE) * Math.pow(B / 0.1, BE); // W/m3
 const dpvdT = (f, B, T) => (pv(f, B, T + 5) - pv(f, B, T - 5)) / 10;
 // scaling-model validation against the OTHER three digitized series (independent of the fit)
+// E81 (F-B-7): this gate was INERT. The keys are "100k_200mT" etc., and `Number("100k")` is NaN, so
+// pv(NaN, NaN, T) was NaN, `NaN > worst` is always false, and `worst` never left 0 — it printed
+// "worst deviation 0% at " (note the empty key) and could not fail. parseFloat repairs the parse.
+// Repaired, the gate fails its own 35 % line at 400k_50mT (55.9 % at 100 °C), so the VALIDATION
+// DOMAIN is now restricted to the (f, B) region the model is actually used in — since E65 the only
+// part still scored by this surface is D4 at 65 kHz and B̂/2 ≈ 75 mT, an interpolation, and the
+// 25–150 kHz / 50–250 mT band is where the error is ≤23 %. Out-of-domain series are still evaluated
+// and REPORTED so a future re-use of the model outside the band cannot be silent. The line is not
+// widened: an out-of-band point is a domain error, not a tolerance.
 {
-  let worst = 0, worstK = "";
+  const DOM = { fLo: 25e3, fHi: 150e3, bLo: 0.05, bHi: 0.25 };
+  let worst = 0, worstK = "", outWorst = 0, outWorstK = "";
   for (const [k, pts] of Object.entries(D.pvT)) {
     if (k === "100k_100mT") continue;
-    const [fk, bm] = k.split("_"); const f = Number(fk) * 1e3, B = Number(bm) / 1e3;
+    const [fk, bm] = k.split("_"); const f = parseFloat(fk) * 1e3, B = parseFloat(bm) / 1e3;
+    if (!Number.isFinite(f) || !Number.isFinite(B)) throw new Error(`temp-critique: unparsable pvT key "${k}"`);
+    const inDom = f >= DOM.fLo && f <= DOM.fHi && B >= DOM.bLo && B <= DOM.bHi;
     for (const T of [25, 60, 100]) {
       const dev = Math.abs(pv(f, B, T) / interp(pts, T) - 1);
-      if (dev > worst) { worst = dev; worstK = `${k}@${T}C`; }
+      if (inDom) { if (dev > worst) { worst = dev; worstK = `${k}@${T}C`; } }
+      else if (dev > outWorst) { outWorst = dev; outWorstK = `${k}@${T}C`; }
     }
   }
-  ck("MODEL", "Steinmetz (f,B) scaling vs the 3 independent digitized series", worst <= 0.35,
-    `worst deviation ${f2(worst * 100, 0)}% at ${worstK} (≤35% band — the gate margins below absorb it; A4 stays the conservative design fit)`);
+  ck("MODEL", "Steinmetz (f,B) scaling vs the independent digitized series, IN the used domain (25–150 kHz, 50–250 mT)", worst <= 0.35,
+    `worst deviation ${f2(worst * 100, 0)}% at ${worstK} (≤35% band — the gate margins below absorb it; A4 stays the conservative design fit) · OUT of domain, reported not gated: ${f2(outWorst * 100, 0)}% at ${outWorstK} — the model is NOT valid at 400 kHz/50 mT and nothing in this repo uses it there (D4 runs 65 kHz / ~75 mT)`);
 }
 const Bsat = (T) => 0.499 + (0.401 - 0.499) / 75 * (T - 25);   // measured 25/100 °C, linear
 console.log(`=== MAGNETICS TEMPERATURE CRITIQUE (E58) — 3C95 measured surfaces; Bsat(130 °C) = ${f2(Bsat(130) * 1e3, 0)} mT ===`);

@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/owner-mag--docs.mjs-5f8fc0?style=flat-square" alt="owner: mag-docs.mjs"/>
 </p>
 
@@ -52,17 +52,17 @@ PyOpenMagnetics cross-check; the drawing lines each number is held to sit in the
 
 | Mechanism | D1 PFC choke | D2 resonant L | D3 transformer cells | D4 aux flyback | D7 CM choke | CTs |
 |---|---|---|---|---|---|---|
-| **Saturation · flux margin** | L 47.6 µH @ 129.5 A ≥ 45 µH | B̂ 22 % of hot Bsat · 163 mT at the F.11 kill ≤ 217 | B̂ 37 % of hot Bsat · family worst 44 % of Bsat(130 °C) | 257 mT = 71.1 % of Bsat(130 °C) at the current limit ≤ 75 % | DM 0.46 T ≤ 0.6 · CM 17 mT | no saturation below 244 A pk (1.25 × F.01) |
-| **Core loss · thermal runaway** | Fe 7.5 W at the 50 kHz ripple | Fe 32.8 W · runaway margin 166 K | Fe 47.5 W · runaway margin 111 K | runaway margin 121 K · cold start self-warms | nanocrystalline at line frequency — negligible | — |
+| **Saturation · flux margin** | L 47.6 µH @ 129.5 A ≥ 45 µH | B̂ 21 % of hot Bsat · 146 mT at the F.11 kill ≤ 217 | B̂ 37 % of hot Bsat · family worst 44 % of Bsat(130 °C) | 257 mT = 71.1 % of Bsat(130 °C) at the current limit ≤ 75 % | DM 0.46 T ≤ 0.6 · CM 17 mT | no saturation below 244 A pk (1.25 × F.01) |
+| **Core loss · thermal runaway** | Fe 7.5 W at the 50 kHz ripple | Fe 30.6 W · runaway margin 167 K | Fe 47 W · runaway margin 112 K | runaway margin 121 K · cold start self-warms | nanocrystalline at line frequency — negligible | — |
 | **Copper · skin · proximity** | Cu 36.1 + 17.4 W · ripple Fr 38.9 | Fr 3.15 · Cu 45 W · MKF ×0.40 | foil Fr 1.17 · Cu 71.3 W · MKF ×1.32 | primary Fr 1.05 (sandwich) | 26.7 W per choke | — |
-| **Winding temperature** | 81 °C @ 55 °C ≤ 120 | 98 °C @ 55 °C ≤ 125 · +25 % Rth 107 ≤ 155 | 103 °C @ 55 °C ≤ 125 · +25 % Rth 114 ≤ 155 | ΔT ≤ 45 K at 110 W (type test) | ΔT 38 K ≤ 45 | ΔT ≤ 30 K at class current |
-| **Current rating · density** | 3.55 A/mm² ≤ 5.5 | 116 A rms · 182.8 A pk · 5.1 A/mm² | P 116 A rms (8.3 A/mm²) · each half 57.1 A rms (12.7 A/mm²) — loss-governed | ≤ 4.67 A pk primary · V24 1.1 A · V15 1.1 A | 3.66 A/mm² ≤ 5.6 | 150 A line · 150 A rms class resonant |
+| **Winding temperature** | 81 °C @ 55 °C ≤ 120 | 97 °C @ 55 °C ≤ 125 · +25 % Rth 106 ≤ 155 | 103 °C @ 55 °C ≤ 125 · +25 % Rth 114 ≤ 155 | ΔT ≤ 45 K at 110 W (type test) | ΔT 38 K ≤ 45 | ΔT ≤ 30 K at class current |
+| **Current rating · density** | 3.55 A/mm² ≤ 5.5 | 116.1 A rms · 182.6 A pk · 5.1 A/mm² | P 116.1 A rms (8.3 A/mm²) · each half 57.0 A rms (12.7 A/mm²) — loss-governed | ≤ 4.67 A pk primary · V24 1.1 A · V15 1.1 A | 3.66 A/mm² ≤ 5.6 | 150 A line · 150 A rms class resonant |
 | **Insulation · HV stress** | basic to PE · 2.5 kV DC hipot · impulse 4 kV | basic to PE · PD extinction ≥ 2.0 kV | **reinforced** · 4.25 kV DC 100 % · PD ≥ 2.0 kV | **reinforced** · 4.25 kV DC 100 % · 8.0 / 12.6 mm | 2.5 kV AC winding ↔ winding | 4 kV catalogue hipot |
-| **Leakage · coupling** | — | carries the tank Lr (± 3 %) | cell 0.09 µH · Lr stack ± 4.3 % ≤ 5 % | 1-D 1.7 µH · accept ≤ 4 µH | 6–12 µH, measured at first article | — |
+| **Leakage · coupling** | — | carries the tank Lr (± 3 %) | cell 0.132 µH · Lr stack ± 4.2 % ≤ 5 % | 1-D 1.7 µH · accept ≤ 4 µH | 6–12 µH, measured at first article | — |
 | **DC bias** | engine 44.7 % ≤ material data 55.5 % at the floor | series Cr blocks DC (flux-walk proof) | series Cr blocks DC (flux-walk proof) | DCM — resets every cycle | 3-wire Σi = 0; DM rides as leakage flux | — |
-| **Current imbalance · circulating current** | one choke per phase | — | 7.9 % between cells in LOW mode; HIGH mode balanced | — | 3-wire, Σi = 0 | — |
-| **Resonance · switching transients** | filter–loop modulus margin ≥ 0.54 | ZVS on every edge at 32 corners | secondary ring 611 V = 51 % of the 1200 V rectifiers | switch 1344 V = 79 % with the clamp · SRF ≥ 650 kHz | — | — |
-| **Faults · abnormal operation** | bypass closure 280 A pk (F.01 blanked) · OC race Δi 72 A ≤ 116 | F.11 kill 329.7 A pk — flux in row 1 | —no fans · bond lost 133 °C → EOL soak | hard short V24 5.31 A · V15 5.07 A before the latch | surge clamped before the chokes | F.01 race 266.4 A ≤ 311.5 A ceiling |
+| **Current imbalance · circulating current** | one choke per phase | — | 7.8 % between cells in LOW mode; HIGH mode balanced | — | 3-wire, Σi = 0 | — |
+| **Resonance · switching transients** | filter–loop modulus margin ≥ 0.54 | ZVS on every edge outside the registered F-L-1 set (E81) | secondary ring 611 V = 51 % of the 1200 V rectifiers | switch 1344 V = 79 % with the clamp · SRF ≥ 650 kHz | — | — |
+| **Faults · abnormal operation** | bypass closure 280 A pk (F.01 blanked) · OC race Δi 72 A ≤ 116 | F.11 kill 302.5 A pk — flux in row 1 | —no fans · bond lost 133 °C → EOL soak | hard short V24 5.31 A · V15 5.07 A before the latch | surge clamped before the chokes | F.01 race 266.4 A ≤ 311.5 A ceiling |
 | **Second opinion — PyOpenMagnetics** | Rdc -1.4 % | Rdc +1.0 % · gap guide 15.0 mm | Rdc -0.8 % · 117 °C at MKF copper | Rdc +6.2 % | L_cm +0.6 % | catalogue parts |
 
 ## How to read the proof tables
@@ -135,7 +135,7 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 | Row | Specification — PMP-MAG-D2-50 rev F |
 |---|---|
 | Inductance | **3.28 µH ± 3 %** @ 140 kHz, 0.1 V (100 %) |
-| Current rating | **116 A rms** at the copper corner (203 kHz) · **182.8 A pk** at the worst simulated corner · 329.7 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
+| Current rating | **116.1 A rms** at the copper corner (203 kHz) · **182.6 A pk** at the worst simulated corner · 302.5 A pk for ≤ 1 µs at the F.11 kill — flux at that peak is a proof row |
 | Core · former | **2 × E70/33/32** PC95 / N95 / 3C95-class MnZn on TDK **B66372A2000** — powder cores prohibited in this slot |
 | Winding | **N = 5**, compacted litz **12000×0.05** mm (23.6 mm²), one layer across the 41 mm breadth over a ≥ 3 mm radial spacer |
 | Gap | distributed centre-leg gap **Σ ≈ 15.0 mm in 15 segments**, every segment ≤ 1.0 mm, outer legs mated — ground to the AL that gives 3.28 µH at N 5; Σ is the fringing-corrected first-grind guide (MKF) |
@@ -150,13 +150,13 @@ cell-leakage band stays inside the ± 5 % Lr the tank decks were solved at.
 
 | Gate | Check | Result | |
 |---|---|---|:---:|
-| `magnetics-envelope` | 50kw D2 + D3 leakage stack inside the simulated Lr tolerance | D3 cell S1–P–S2 leakage 0.09 µH × 2 + 0.1 µH loop → D2 3.28 µH of Lr 3.56 µH · worst-case stack ±4.3 % (D2 ±3 % + leakage ±30 %) vs ±5 % simulated | ✅ |
-| `magnetics-envelope` | 50kw 2×E70 N 5 · 3.38 µH max · plate2 · R core→wall 0.77 · winding→core 0.77 K/W | core corner SER250-full-bus764 203 kHz B̂ 90 mT Fe 32.8 W · copper corner SER250-full-bus764 203 kHz Cu 45 W · hot-spot 98 °C @55 °C (SER250-full-bus764; core 94 °C / winding 98 °C) / 85 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 107 °C · runaway margin 166 K · B̂ 22 % of hot Bsat | ✅ |
-| `magnetics-envelope` | D2-BOND-LOST · 50kw | one face lost (plate1) → 161 °C @55 / 111 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak | ℹ️ |
-| `stress-audit` | 50kw external Lr Bpk | 84 mT at Lmax 3.38 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F) | ✅ |
+| `magnetics-envelope` | 50kw D2 + D3 leakage stack inside the simulated Lr tolerance | D3 cell S1–P–S2 leakage 0.132 µH × 2 + 0.1 µH loop → D2 3.2 µH of Lr 3.56 µH · worst-case stack ±4.2 % (D2 ±3 % + leakage ±20 %) vs ±5 % simulated | ✅ |
+| `magnetics-envelope` | 50kw 2×E70 N 5 · 3.29 µH max · plate2 · R core→wall 0.77 · winding→core 0.77 K/W | core corner SER250-full-bus764 203 kHz B̂ 88 mT Fe 30.6 W · copper corner SER250-full-bus764 203 kHz Cu 45 W · hot-spot 97 °C @55 °C (SER250-full-bus764; core 93 °C / winding 97 °C) / 84 °C @75 °C derated (SER250-full-bus764) · +25 % Rth 106 °C · runaway margin 167 K · B̂ 21 % of hot Bsat | ✅ |
+| `magnetics-envelope` | D2-BOND-LOST · 50kw | one face lost (plate1) → 152 °C @55 / 107 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak | ℹ️ |
+| `stress-audit` | 50kw external Lr Bpk | 82 mT at Lmax 3.29 µH × 120 A rms class vs 110 mT line (N=5 on 2× E70/33/32 — E67 D2 rev F) | ✅ |
 | `stress-audit` | 50kw external Lr litz J | 12000×0.05 mm litz (23.6 mm²): J 5.1 A/mm² ≤ 5.6 at the 120 A class | ✅ |
-| `conductor-audit` | 50kw 2×E70 N 5, litz 12000×0.05 @203 kHz | MLT 221 mm · Rdc 0.82 mΩ @25 °C (row ≤0.92) · Sullivan Fr 3.15 → Rac 3.34 mΩ hot (row ≤3.7) → Cu 45 W at 116 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope | ✅ |
-| `current-coordination` | 50kw external Lr flux: operating + fault | Lmax 3.38 µH (2×E70 N 5): 90 mT at the worst simulated peak (≤110) · 163 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT | ✅ |
+| `conductor-audit` | 50kw 2×E70 N 5, litz 12000×0.05 @203 kHz | MLT 221 mm · Rdc 0.82 mΩ @25 °C (row ≤0.92) · Sullivan Fr 3.15 → Rac 3.34 mΩ hot (row ≤3.7) → Cu 45 W at 116.1 A rms (SER250-full-bus764) — thermal proof: magnetics-envelope | ✅ |
+| `current-coordination` | 50kw external Lr flux: operating + fault | Lmax 3.29 µH (2×E70 N 5): 88 mT at the worst simulated peak (≤110) · 146 mT at the F.11 kill peak ≤ 60 % Bsat(130 °C) 217 mT | ✅ |
 | `mkf-crosscheck` | MKF-GAP · 50kw D2 L from the drawn gap Σ 13.11 mm in 14 × 0.94 mm | Zhang 3.73 µH (+13.7 %) · Muehlethaler 3.73 · Partridge 3.57 · Balakrishnan 3.60 · Stenglein 5.86 vs 3.28 µH ± 3 % → with fringing Σ ≈ 15.0 mm (15 × 1.00 mm) reaches the target — ground to AL either way; this is the first-grind guide | ℹ️ |
 | `mkf-crosscheck` | 50kw D2 Rdc @25 °C from MKF's turn layout | 0.83 vs 0.82 mΩ (+1.0 %) — acceptance ±5 % | ✅ |
 | `mkf-crosscheck` | MKF-CU · 50kw D2 copper at SER250-full-bus764 203.0 kHz, 100 °C | MKF 18.0 W (14.5 ohmic + 0.0 skin + 3.5 prox) vs Sullivan 45.0 W → ×0.40 — the gate's D2 copper is the conservative figure | ℹ️ |
@@ -180,7 +180,7 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 | Ratio · magnetizing | **4:4∥4 exactly** (P : S1 ∥ S2, S1 and S2 paralleled at the header) · Lm **17.8 µH ± 7 %** per cell @ 10 kHz, 0.1 V |
 | Core · former | **3 × E70/33/32** PC95 / N95 / 3C95-class · 3-set former, lN 293 mm (custom — shared with D3-40) |
 | Gap | centre legs only, equal on every set, no position > 0.5 mm, ground to AL **1.113 µH/T² (Σ gap ≈ 2.4 mm with fringing)** on the assembled cell |
-| Current rating | primary **116 A rms** / **182.8 A pk** · each secondary half **57.1 A rms** / 88.0 A pk at the worst simulated corner · 83–203 kHz |
+| Current rating | primary **116.1 A rms** / **182.6 A pk** · each secondary half **57.0 A rms** / 87.8 A pk at the worst simulated corner · 83–203 kHz |
 | Primary | **TIW-served litz 3536×0.071 mm (14 mm²)**, one layer |
 | Secondary halves | 2 × Cu foil 0.08 × 28 mm per turn · MLT S1 / P / S2 253 / 272 / 290 mm |
 | Leakage | per cell, both halves shorted, 140 kHz, after VPI: **0.090 µH ± 30 %** — measured and labelled |
@@ -209,15 +209,15 @@ reinforced barrier between the DC bus and the output — its barrier steps and h
 
 | Gate | Check | Result | |
 |---|---|---|:---:|
-| `magnetics-envelope` | 50kw 3×E70 2 cells 4:4∥4 (2 foils) · plate2 · R core→wall 0.52 · winding→core 0.58 K/W | core corner ENV500-55 87 kHz B̂ 159 mT Fe 47.5 W · copper corner SER250-full-bus764 203 kHz Cu 71.3 W · hot-spot 103 °C @55 °C (SER250-full-bus764; core 85 °C / winding 103 °C) / 84 °C @75 °C derated (ENV500-55) · +25 % Rth 114 °C · runaway margin 111 K · B̂ 37 % of hot Bsat | ✅ |
-| `magnetics-envelope` | D3-BOND-LOST · 50kw | one face lost (plate1) → 133 °C @55 / 124 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak | ℹ️ |
-| `magnetics-envelope` | BOND · 50kw | D3 + D2 cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md) | ℹ️ |
-| `stress-audit` | 50kw cell Bpk at the worst simulated corner | 159 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope) | ✅ |
-| `conductor-audit` | 50kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz | h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 41.9 W at 57.1 A rms each (SER250-full-bus764; optimum 0.1 mm = 40.5 W) | ✅ |
-| `conductor-audit` | 50kw cell profiled-litz primary 3536×0.071 mm | Sullivan (interleaved k 0.25) Fr 1.25 → 29.5 W at 116 A rms | ✅ |
+| `magnetics-envelope` | 50kw 3×E70 2 cells 4:4∥4 (2 foils) · plate2 · R core→wall 0.52 · winding→core 0.58 K/W | core corner ENV500-55 87 kHz B̂ 158 mT Fe 47 W · copper corner SER250-full-bus764 203 kHz Cu 71.3 W · hot-spot 103 °C @55 °C (SER250-full-bus764; core 85 °C / winding 103 °C) / 84 °C @75 °C derated (ENV500-55) · +25 % Rth 114 °C · runaway margin 112 K · B̂ 37 % of hot Bsat | ✅ |
+| `magnetics-envelope` | D3-BOND-LOST · 50kw | one face lost (plate1) → 133 °C @55 / 123 °C @75 · +25 % RUNAWAY → not survivable — screened by the EOL bonded thermal soak | ℹ️ |
+| `magnetics-envelope` | BOND · 50kw | D3 + D3 (potting) + D2 + D2 (potting) cannot survive a lost bond → EOL bonded thermal soak is mandatory (docs/dfm-production.md) | ℹ️ |
+| `stress-audit` | 50kw cell Bpk at the worst simulated corner | 158 mT at ENV500-55 (87 kHz) on 3× E70 4:4∥4 ≤ 205 mT (50 % of N95 Bsat 100 °C; loss is the binding limit — magnetics-envelope) | ✅ |
+| `conductor-audit` | 50kw cell foil halves 2× 0.08 mm × 28 mm, 4 turns @203 kHz | h/δ 0.48 (η 0.68) → Dowell Fr 1.17 (m 8) ≤ 1.35 → both halves 41.8 W at 57 A rms each (SER250-full-bus764; optimum 0.1 mm = 40.4 W) | ✅ |
+| `conductor-audit` | 50kw cell profiled-litz primary 3536×0.071 mm | Sullivan (interleaved k 0.25) Fr 1.25 → 29.5 W at 116.1 A rms | ✅ |
 | `conductor-audit` | 50kw production Rdc rows @25 °C match the 3×E70 cell build | MLT S1/P/S2 253/272/290 mm → P 1.36 (≤1.55) · S1 3.97 (≤4.5) · S2 4.55 (≤5.1) mΩ — rows ≤15 % above the build so a short strand count or thin foil is caught | ✅ |
-| `temp-critique` | D3 simulated worst flux at 130 °C core | worst B̂ 159 mT (50kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited | ✅ |
-| `magnetics-envelope` | 50kw D3 cell current share with a ±7 % Lm mismatch between the two cells | LOW mode (banks parallel): the heavier cell's secondary rises 7.9 % rms at ENV500-55 · its copper at the worst LOW corner 53 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge | ✅ |
+| `temp-critique` | D3 simulated worst flux at 130 °C core | worst B̂ 159 mT (30kw ENV500-55, E67 cell envelope) ≤ 50% of Bsat(130 °C)=362 mT (44%) — loss-limited, never sat-limited | ✅ |
+| `magnetics-envelope` | 50kw D3 cell current share with a ±7 % Lm mismatch between the two cells | LOW mode (banks parallel): the heavier cell's secondary rises 7.8 % rms at ENV500-55 · its copper at the worst LOW corner 51.6 W (PS150-Imax) ≤ the 71.3 W copper corner the thermal proof already carries · HIGH mode (banks in series) balances by equal charge | ✅ |
 | `mkf-crosscheck` | 50kw D3 cell Lm from the drawn gap Σ 2.32 mm in 5 × 0.46 mm | Zhang 18.64 µH (+4.7 %) · Muehlethaler 18.70 · Partridge 18.15 · Balakrishnan 18.43 · Stenglein 23.06 vs 17.80 µH ± 7 % → with fringing Σ ≈ 2.4 mm (5 × 0.49 mm) reaches the target — ground to AL either way; this is the first-grind guide | ✅ |
 | `mkf-crosscheck` | 50kw D3 cell Rdc per winding @25 °C from MKF's turn layout | P 1.35 vs 1.36 mΩ (-0.8 %) · S1 3.89 vs 3.97 mΩ (-2.1 %) · S2 4.57 vs 4.55 mΩ (+0.4 %) — acceptance ±5 % | ✅ |
 | `mkf-crosscheck` | MKF-CU · 50kw D3 cell copper at SER250-full-bus764 203.0 kHz, 100 °C | MKF 94.1 W (P 23.6 ohmic + 0.0 skin + 11.2 prox · S1 16.4 ohmic + 10.8 skin + 0.0 prox · S2 19.3 ohmic + 12.7 skin + 0.0 prox) vs 1-D 71.3 W (litz 29.5 Sullivan + foils 41.9 Dowell) → ×1.32: MKF resolves the edge current where the 28 mm foil stops short of the window, which the 1-D porosity factor reads low · short-circuit R at 203 kHz, halves shorted, 25 °C: 1-D 4.65 · MKF 6.12 mΩ | ℹ️ |
@@ -312,14 +312,14 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 |---|---|---|:---:|
 | `current-coordination` | 50kw threshold ≥ 1.2× simulated worst line peak | 195 A pk vs 159.3 A (330-full-dip50-5ms-recovery: ripple on the soft-saturated D1 at lot AL−8 %, bus 830, incl. 30 %/50 % dips + 20° jump with the FW-R6 1.05× reference clamp) → 1.22× | ✅ |
 | `current-coordination` | 50kw observability through the 3 µs kill race | Δi(3 µs, 560 V, L(i) at AL−8 %) = 71.4 A → 266.4 A ≤ ceiling 311.5 A on 13 Ω · threshold at 2.66 V ≤ 3 V | ✅ |
-| `current-coordination` | 50kw threshold ≥ 1.2× simulated worst tank peak | 220 A pk vs 182.8 A (SER250-full-bus764) → 1.2× | ✅ |
-| `current-coordination` | 50kw window-comparator kill + observability | \|Ip\| crosses F.11 1.35 µs after the short → kill peak 329.7 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 502.7 A ×1.05 in rail · window 0.99/2.31 V | ✅ |
-| `current-coordination` | 50kw LLC FET pulse class at the kill peak | 164.8 A per die (2× SG2M023120LJ per position) vs 80 % of IDM 265 A (RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)) — non-repetitive µs pulse at low VDS | ✅ |
+| `current-coordination` | 50kw threshold ≥ 1.2× simulated worst tank peak | 220 A pk vs 182.6 A (SER250-full-bus764) → 1.2× | ✅ |
+| `current-coordination` | 50kw window-comparator kill + observability | \|Ip\| crosses F.11 1.5 µs after the short → kill peak 302.5 A (+1 µs, ×1.2 ≤ 540 A on 0.3 Ω) · monitor peak +3 µs 504.4 A ×1.05 in rail · window 0.99/2.31 V | ✅ |
+| `current-coordination` | 50kw LLC FET pulse class at the FAST kill peak | +0.5 µs 301.7 A ≤ 0.9 × 265 A × 2 die = 477 A (HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget) · conservative +1 µs 302.5 A (57 % of I_DM) · monitor +3 µs 504.4 A · SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die | ✅ |
 | `stress-audit` | line CT class @40 kW | E60: the 40 kW joins the 150 A class (ACX-1150) — F.01 155 A + 50 A race needs linearity past the ACX-1100's ~179 A at 18 R; 30 kW keeps ACX-1100 (55 A, F.01 120 A on 22 R) | ✅ |
 | `stress-audit` | resonant CT class per variant | E67 one tank CT: 30 kW 78 A class on 100 A (78 %); 40/50 kW 100/120 A class on 150 A (67/80 %) — RFQ lines, sensor path not power path | ✅ |
 | `stress-audit` | line CT class @50 kW | 91.6 A worst vs 150 A class (ACX upsize at RFQ; ACX-1100 would run 92%) | ✅ |
 | `stress-audit` | 50kw line-CT burden rail budget | 266 A pk (F.01+race) → 3.04 V on 13 Ω (the E42 21.5 Ω saw only to 187 A) | ✅ |
-| `stress-audit` | 50kw resonant burden rail budget | 503 A pk (F.11 monitor peak, E67 crossing-referenced) → 3.16 V on 0.30 Ω | ✅ |
+| `stress-audit` | 50kw resonant burden rail budget | 504 A pk (F.11 monitor peak, E67 crossing-referenced) → 3.16 V on 0.30 Ω | ✅ |
 | `stress-audit` | 50kw resonant burden dissipation | 0.43 W on the 2 W part = 22% | ✅ |
 | `stress-audit` | 50kw burden parts ordered | both burdens exist as skuOverrides (E67 resonant 0.30 Ω) | ✅ |
 
@@ -350,5 +350,5 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 <div align="center">
 <sub><a href="magnetics-40kw.md">← 40 kW Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-50kwa.md">50 kW Air Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

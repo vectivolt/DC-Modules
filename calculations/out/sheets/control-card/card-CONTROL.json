@@ -57,6 +57,16 @@
      "signal_name": "WDI"
     },
     {
+     "pin_number": 12,
+     "name": "pin12",
+     "signal_name": "OSCIN_CARD"
+    },
+    {
+     "pin_number": 13,
+     "name": "pin13",
+     "signal_name": "OSCOUT_CARD"
+    },
+    {
      "pin_number": 14,
      "name": "pin14",
      "signal_name": "NRST_CARD"
@@ -74,7 +84,7 @@
     {
      "pin_number": 17,
      "name": "pin17",
-     "signal_name": "AIN8"
+     "signal_name": "TSNS0"
     },
     {
      "pin_number": 18,
@@ -144,7 +154,7 @@
     {
      "pin_number": 32,
      "name": "pin32",
-     "signal_name": "TSNS0"
+     "signal_name": "AIN8"
     },
     {
      "pin_number": 33,
@@ -483,8 +493,6 @@
     8,
     9,
     10,
-    12,
-    13,
     31,
     97,
     98
@@ -614,6 +622,96 @@
    "mpn": "R-small"
   },
   {
+   "designator": "XCARD",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "X1",
+     "signal_name": "OSCIN_CARD"
+    },
+    {
+     "pin_number": 2,
+     "name": "G1",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 3,
+     "name": "X2",
+     "signal_name": "OSCOUT_CARD"
+    },
+    {
+     "pin_number": 4,
+     "name": "G2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "XTAL-8M-30PPM-3225",
+   "query": "XTAL-8M-30PPM-3225 8 MHz ±30 ppm SMD crystal, 3.2 × 2.5 mm, CL 12 pF ",
+   "mpn": "XTAL-8M-30PPM-3225"
+  },
+  {
+   "designator": "CCARDX1",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OSCIN_CARD"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "12pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "CCARDX2",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OSCOUT_CARD"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "12pF",
+   "query": "MLCC-small filter/decoupling MLCC 0402–0805",
+   "mpn": "MLCC-small"
+  },
+  {
+   "designator": "RCARDXF",
+   "block_name": "MCU",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "OSCIN_CARD"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "OSCOUT_CARD"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1M",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
    "designator": "FBCARDA",
    "block_name": "MCU",
    "pins": [
@@ -629,7 +727,7 @@
     }
    ],
    "nc_pins": [],
-   "value": "0R",
+   "value": "50m",
    "query": "FB-600R-0805 ferrite bead 600 Ω@100 MHz ",
    "mpn": "FB-600R-0805"
   },
@@ -774,13 +872,8 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "WDI",
-     "signal_name": "WDI"
-    },
-    {
-     "pin_number": 2,
-     "name": "GND",
-     "signal_name": "DGND"
+     "name": "VDD",
+     "signal_name": "V3P3"
     },
     {
      "pin_number": 3,
@@ -789,27 +882,38 @@
     },
     {
      "pin_number": 4,
+     "name": "CRST",
+     "signal_name": "USUPCARD_CRST"
+    },
+    {
+     "pin_number": 5,
+     "name": "GND",
+     "signal_name": "DGND"
+    },
+    {
+     "pin_number": 6,
      "name": "SET1",
      "signal_name": "V3P3"
     },
     {
-     "pin_number": 5,
-     "name": "WDO",
-     "signal_name": "NRST_CARD"
-    },
-    {
-     "pin_number": 6,
-     "name": "VDD",
-     "signal_name": "V3P3"
+     "pin_number": 7,
+     "name": "WDI",
+     "signal_name": "WDI"
     },
     {
      "pin_number": 8,
-     "name": "CRST",
-     "signal_name": "USUPCARD_CRST"
+     "name": "WDO",
+     "signal_name": "WDO_CARD"
+    },
+    {
+     "pin_number": 10,
+     "name": "VDD2",
+     "signal_name": "V3P3"
     }
    ],
    "nc_pins": [
-    7
+    2,
+    9
    ],
    "value": "TPS3430-class",
    "query": "TPS3430-class external windowed watchdog SOT-23-6: VDD/GND/WDI/WDO/SET straps ",
@@ -827,7 +931,7 @@
     {
      "pin_number": 2,
      "name": "B1",
-     "signal_name": "NRST_CARD"
+     "signal_name": "WDO_CARD"
     },
     {
      "pin_number": 3,
@@ -837,7 +941,7 @@
     {
      "pin_number": 4,
      "name": "B2",
-     "signal_name": "NRST_CARD"
+     "signal_name": "WDO_CARD"
     },
     {
      "pin_number": 5,
@@ -904,7 +1008,7 @@
     {
      "pin_number": 2,
      "name": "pin2",
-     "signal_name": "NRST_CARD"
+     "signal_name": "WDO_CARD"
     }
    ],
    "nc_pins": [],
@@ -1033,6 +1137,61 @@
    "mpn": "R-small"
   },
   {
+   "designator": "RWDICARD",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "WDI"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DGND"
+    }
+   ],
+   "nc_pins": [],
+   "value": "10k",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
+   "designator": "TPWDICARD",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "P",
+     "signal_name": "WDI"
+    }
+   ],
+   "nc_pins": [],
+   "value": "TP-1mm-PAD",
+   "query": "TP-1mm-PAD 1 mm test pad on WDI ",
+   "mpn": "TP-1mm-PAD"
+  },
+  {
+   "designator": "RWDOLCARD",
+   "block_name": "SAFETY",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "WDO_CARD"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "NRST_CARD"
+    }
+   ],
+   "nc_pins": [],
+   "value": "0R",
+   "query": "R-small small-signal resistor 0402–0805 ",
+   "mpn": "R-small"
+  },
+  {
    "designator": "CANDCARD",
    "block_name": "SAFETY",
    "pins": [
@@ -1078,18 +1237,18 @@
    "pins": [
     {
      "pin_number": 1,
-     "name": "VIN",
-     "signal_name": "V15"
-    },
-    {
-     "pin_number": 2,
      "name": "GND",
      "signal_name": "DGND"
     },
     {
-     "pin_number": 3,
+     "pin_number": 2,
      "name": "SW",
      "signal_name": "UBKCARD_SW"
+    },
+    {
+     "pin_number": 3,
+     "name": "VIN",
+     "signal_name": "V15"
     },
     {
      "pin_number": 4,
@@ -1107,10 +1266,7 @@
      "signal_name": "UBKCARD_BST"
     }
    ],
-   "nc_pins": [
-    7,
-    8
-   ],
+   "nc_pins": [],
    "value": "TPS54202-class",
    "query": "TPS54202-class 15→3.3 V 2 A sync buck SOT-23-6 ",
    "mpn": "TPS54202-class"

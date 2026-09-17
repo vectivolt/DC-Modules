@@ -71,11 +71,14 @@ ck("R2-CB18", /TPS54202/.test(db) && !/AMS1117/.test(db), "3.3 V is a sync buck,
 ck("R2-CB19", /UF-400V-3A/.test(db) && /US2G/.test(db) && !/SS310/.test(db), "aux rectifiers 400 V ultrafast (PIV ≈ 160 V; 100 V Schottky retired)");
 ck("R2-CB20", /Lp 345/.test(cells) && /name="CCSF" capacitance="100pF"/.test(cells) && /ETD44/.test(db), "aux 110 W stage values in cells + D4 part (rev E ETD44 at E65 — the E52 ETD39 \"66 %\" assumed a 3.2 A clamp; the real limit through the CS filter + tILIM ran 113 % of Bsat 130 °C, rev E computes 71 %)");
 ck("R2-CB21", /flt="net.FLT" en="net.GATE_EN_B"/.test(boards), "E40 rev: the LLC driver fault wire-OR reaches the brain on the single merged FLT line");
-ck("R2-CB22", /crN: 11, lr: "3\.28uH"/.test(boards) && /crN: 9, lr: "4\.07uH"/.test(boards) && /crN: 7, lr: "5\.16uH"/.test(boards) && /PP-33n-1200V/.test(db) && /IND-LR-E70-30/.test(db) && /IND-LR-E70-40/.test(db) && /IND-LR-E70-50/.test(db), "tank (E67 full bridge): 7/9/11 × 33 nF with the D2 rev F external Lr 5.16/4.07/3.28 µH — asserted structurally");
+// E81 (F-B-3): D2 re-issued 5.16/4.07/3.28 → 5.00/3.99/3.20 µH after the leakage breadth fix
+// (b = the 28 mm conductor band, not the 41 mm window). Tank Lr is unchanged — only the split.
+ck("R2-CB22", /crN: 11, lr: "3\.20uH"/.test(boards) && /crN: 9, lr: "3\.99uH"/.test(boards) && /crN: 7, lr: "5\.00uH"/.test(boards) && /PP-33n-1200V/.test(db) && /IND-LR-E70-30/.test(db) && /IND-LR-E70-40/.test(db) && /IND-LR-E70-50/.test(db), "tank (E67 full bridge): 7/9/11 × 33 nF with the D2 rev F external Lr 5.00/3.99/3.20 µH — asserted structurally");
 ck("R2-HR14", /RPRE1: \{ price1k: 45/.test(db) && /RDIS0: \{ price1k: 45/.test(db) && /PMP_DISCH_TO_MS/.test(fsmH) && /disch_ms/.test(fsmC), "per-SKU pulse parts @120 kW + F.21 implemented in firmware");
 ck("R2-HR15", /QDISA/.test(boards) && /QDISB/.test(boards) && /RBDA0/.test(boards) && /CTL_QDISBK/.test(boards), "commanded bank bleeders exist (banks no longer hold 525 V for minutes)");
 ck("R2-HR16", /ISO5V-RFC-6K/.test(db) && !/B1505S-2WR2/.test(db), "iso-5V bias modules reinforced-rated (they ARE the barrier)");
-ck("R2-HR17", /FAN_PWM\$\{i \+ 1\}|nFans/.test(boards) && /lanes === 4 \? 4 : 2/.test(boards), "fan ports scale with SKU (4 @120 kW, each with tach)");
+// E81 (F-C-2/F-C-16, user decision): the 30 kW gains a THIRD fan — 3/3/0/4 across the family.
+ck("R2-HR17", /FAN_PWM\$\{i \+ 1\}|nFans/.test(boards) && /lanes === 4 \? 4 : 3/.test(boards) && /RFPD\$\{id\}/.test(cells), "fan ports scale with SKU (3 @30, 3 @40, 0 @50-liquid, 4 @50-air/120 kW), each with a tach and an E81 defined-low PWM pull-down");
 ck("R2-HR18", /CMC-3PH-2mH-SKU/.test(db) && /D7-40 custom wind 75 A/.test(db) && /D7-50 custom wind 95 A/.test(db), "CM chokes per-SKU rated (D7; E50: 60/120 kW rows retired)");
 ck("R2-HR19", !/qtyMul: 2/.test(db) && /name=\{k\} footprint=\{<RelayFP \/>\}/.test(cells), "matrix relays are schematic instances, not BOM multipliers (E67: single zero-current PCB relays per position)");
 ck("R2-HR20", /RBALT\$\{id\}A/.test(cells) && /RNS\d\[AB\]|RNS\$\{i\}A/.test(boards + db.replace(/\\/g, "")), "DC-link balance + star resistors 2-series HV (E67: the bank balance chains retired with the bank strings)");
@@ -128,9 +131,10 @@ ck("R4-2", /<OutputShunt inn="net\.BKBN"/.test(boards) && !/outn="net\.OUTN_SH"/
 // unbound pin. The check is that the pin is BOUND and that the part driving it exists.
 ck("R3-RDY", /\.U\$\{id\} > \.RDY`\} to="net\.DRV_RDY"/.test(cells) && /RRDY\$\{id\}/.test(cells),
   "NSI6611 RDY wired-OR to DRV_RDY with a per-board pull-up (was floating open-drain)");
-ck("R3-WDT/E80", /CRST\$\{id\}/.test(cells) && /pin7: "CWD", pin8: "CRST"/.test(cells) &&
-  !/name=\{`CWD\$\{id\}`\}/.test(cells) && /SET1`\} to="net\.V3P3"/.test(cells),
-  "TPS3430 fixed-window strap (E80/HR-02): CRST cap kept, CWD OPEN, SET0 low / SET1 high — 10 ms kicks sit inside 2.22-23.375 ms");
+// E81 (F-A-2): the symbol moved to the real VSON-10 numbering, so CWD is pin 2 and CRST pin 4.
+ck("R3-WDT/E80", /CRST\$\{id\}/.test(cells) && /pin2: "CWD", pin3: "SET0", pin4: "CRST"/.test(cells) &&
+  !/name=\{`CWD\$\{id\}`\}/.test(cells) && /SET1`\} to="net\.V3P3"/.test(cells) && /VDD2`\} to="net\.V3P3"/.test(cells),
+  "TPS3430 fixed-window strap (E80/HR-02): CRST cap kept, CWD OPEN, SET0 low / SET1 high — 10 ms kicks sit inside 2.22-23.375 ms; E81 adds the mandatory VDD2→VDD1 bond on the real 10-pin package");
 ck("R3-RT", /name="RAUXRT"/.test(cells) && /pin4: "RT"/.test(cells),
   "NCP1252 RT has its frequency-setting resistor (stage had no defined Fsw)");
 { // and the pins must actually be bound in the emitted netlist, not merely present in the source
@@ -364,8 +368,8 @@ ck("SHEET-VALUE-TEXT", (() => {
     mpnOf("LBKCARD") === "IND-10u-3A",
     "card-split designators all classify (MCU + 88-way + supervisor + AND + buck were absent from the BOM)");
   ck("AUD-DB-CARD-R", mpnOf("RPD0") === "R0603-10k" && mpnOf("RPDB0") === "R0603-10k" && mpnOf("RFLTC") === "R-small" &&
-    mpnOf("RAGTC") === "R-small" && mpnOf("RBALTA1") === "R2512-47k-HV-AS" && mpnOf("RV1D0") === "HV73-475k-1%",
-    "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts");
+    mpnOf("RAGTC") === "R-small" && mpnOf("RBALTA1") === "R2512-22k-HV-AS" && mpnOf("RNS1A") === "R2512-47k-HV-AS" && mpnOf("RV1D0") === "HV73-475k-1%",
+    "card resistors rescued from the HV/wirewound catch-alls WITHOUT stealing the catch-alls' own parts (E81 F-A-7: the link balance is its OWN 22 k rule now — the artificial star stays 47 k, and splitting the shared rule is what keeps them independent)");
 }
 ck("AUD-BURDEN27", cells.includes('burden = "22"') && cells.includes('R${id}B`} resistance={burden}') && /R1206-22R-1%/.test(db) && !/R1206-33R-1%/.test(db),
   "line-CT burden default 22 R (E60 re-point of R3: F.01 120 A pk observable through the D1 soft-sat race to 184 A; 40/50 kW 18/13 R via the burden prop; the 33 R clip must never return)");
@@ -377,8 +381,12 @@ ck("AUD-D6-REVC", !/DM-CHOKE|IND-BANK|sendust stack/.test(db) && /dm-choke-desig
   "E68: the D6 construction (E43 crest-biased rev C) is out of the BOM — AC DM chokes and D8 bank inductors retired; the D6 engine survives only as the E65 control row of the LISN gate");
 ck("AUD-FUSE80", /FUSE-gG-690V-80A/.test(db) && !/mpn: "FUSE-gG-690V-63A"/.test(db),
   "30 kW fuse is 80 A gG 22x58 (F6: 63 A was 88% loaded and negative after enclosure/ambient derate)");
-ck("AUD-CT-CATALOG", /ACX-1100/.test(db) && /CT-RES-1:100-100A/.test(db) && /AS-407/.test(db),
-  "line CT a named catalog part; the E67 tank CT a Talema AS-class RFQ line with the AS-407 catalog alternate named");
+// E81 (F-B-5): the tank CT's named source family CANNOT carry it — the Talema AS series tops out at
+// 15 amp-turns rms (AS-101 = 15 A primary) against our 78/100/120 A rms, i.e. 5–8× the secondary
+// rating. The row is CUSTOM (RFQ) with a written requirement, and the AS-407 "alternate" is gone
+// because it was never buildable. The line CT stays a real catalog part.
+ck("AUD-CT-CATALOG", /ACX-1100/.test(db) && /CT-RES-1:100-100A/.test(db) && /\*\*CUSTOM \(RFQ\)\*\* — NOT a Talema AS catalogue part/.test(db) && /secondary ≥ 1\.3 A rms continuous/.test(db) && !/AS-407/.test(db),
+  "line CT a named catalog part; the E67 tank CT re-labelled CUSTOM (RFQ) with a written ratio/secondary/bandwidth/phase requirement — the AS-class catalogue claim is withdrawn");
 ck("AUD-CARD-AGND2", /\["AGND_2",null\]/.test(umodGen) && /AGND_2" \? "net\.AGND"/.test(card),
   "AVMID's Kelvin return way exists (CARD_RULES said it; the map now does it)");
 ck("AUD-CARD-HRTIMER", /"FLT":47/.test(umodGen) && /"PWM0":69/.test(umodGen) && /"PWM6":70/.test(umodGen) && /CARD_PWM_CONTRACT/.test(card),
@@ -419,8 +427,12 @@ ck("R4-4", cells.includes('REN1${id}') && cells.includes('REN2${id}') && !cells.
   "TPS54202 EN off the 15 V rail (7 V abs max) — 100k/27k divider = 3.19 V + V15 UVLO at ~5.7 V");
 ck("R4-5", /Rail3V3 id="A"/.test(boards),
   "AC-DC board sources its own V3P3 (the E40 slot removal had left it a floating island — iso-amps, clamps and pull-ups unpowered)");
-ck("R4-6", /QA01C-18/.test(db),
-  "gate-bias pinned to the -18 variant (+18/-3): B3M +22 V abs and SG2M body-diode -4 V limits both hold with real margin (O-11 CLOSED)");
+// E81 (F-C-15) SUPERSEDES R4-6: the registered second source is −4/+15 V STATIC with a +19 V
+// transient absolute maximum, and a real gate loop's 1–3 V of overshoot on an 18 V drive crosses it.
+// The whole family moves to the +15/−3 V variant; the 2 W class lands only where a channel drives
+// two dies. O-11 (the −3 V off-bias) stays CLOSED — that half of R4-6 is unchanged.
+ck("R4-6/E81", /QA01C-15/.test(db) && /QA02C-15/.test(db) && !/mpn: "QA01C-18"/.test(db) && /P15/.test(cells) && /N3/.test(cells),
+  "gate-bias pinned to the **+15/−3 V** variant on every channel (E81 F-C-15; the +18 V drive exceeded the second source's static limit), 2 W QA02C only on the two-die LLC channels");
 ck("R4-7", /RM24A" resistance="82k"/.test(boards),
   "V24 monitor rescaled 68k->82k: full-scale 30.4 V (+26% observability; the old divider clipped at +7%)");
 ck("R4-8", /UEXCL/.test(boards) && /"net.KSER_STG1", "net.CTL_KPARA"/.test(boards),
@@ -431,6 +443,17 @@ ck("E44-UPGRADED-30", /lanes=\{1\} pw=\{50\} air/.test(readFileSync(join(ROOT, "
   "air-50 is ONE lane / ONE channel / ONE card — an upgraded 30, never a derated 60 (the user constraint, in the wrappers)");
 ck("E44-LLCPAR", /par=\{tank\.fetPar\}/.test(boards) && /Q\$\{id\}H\$\{k\}/.test(cells) && /RG\$\{id\}H\$\{k\}/.test(cells) && /Q\\d\+\[HL\]\[23\]\?/.test(db),
   "LLC paralleling: cell pattern (per-device 2.2R off shared gate nets, Kelvin shared) + board wiring + BOM rule");
+// ===== E81 structural asserts — the grep that would have caught each delta half-applied.
+ck("E81-SNUB", /snub=\{tank\.snub\}/.test(boards) && /C\$\{id\}HOS1/.test(cells) && /C\$\{id\}HOS\$\{k\}/.test(cells) && /C\\d\+\[HL\]OS\\d/.test(db) && /rgOff="0"/.test(cells),
+  "LLC turn-off snubber: one 1 kV C0G per DIE drain–source (original + every paralleled die), value from tanks.mjs cs, with R_off deleted — verify-independent §L walks the built netlist back to tanks.mjs");
+ck("E81-ENTRYFILM", /const ENTRY_FILM[^=]*=\s*\{\s*30:\s*16,\s*40:\s*16,\s*50:\s*20\s*\}/.test(boards) && /name="CFDMP"/.test(boards) && /name="RFDMP"/.test(boards) && /CFDMP\$/.test(db) && /RFDMP\$/.test(db),
+  "DC-link entry film is ONE per-SKU table (ENTRY_FILM 16/16/20) plus the 2.2 µF + 0.33 Ω series-RC damper — F-G-1 FIX-D close-out; verify-independent §G re-declares the counts and current-coordination [SYNC] ties boards to parts-db");
+ck("E81-PKG", /footprint="sot23_6"/.test(cells) && /footprint="dfn10"/.test(cells) && /footprint="soic6"/.test(cells) && /footprint="soic4"/.test(cells) && /PKG_GUARD/.test(readFileSync(join(ROOT, "calculations/sheet-netlist-gen.mjs"), "utf8")),
+  "the four datasheet-pinout defects (TPS54202 SOT-23-6 · TPS3430 VSON-10 · TLP152 SO-6 · VOM1271 SOP-4) are fixed in the SYMBOLS, and sheet-netlist-gen now guards symbol-vs-package numbering instead of translating it");
+ck("E81-MIRRORCLAMP", /mirrorClamp/.test(boards) && /D\$\{id\}CM/.test(cells) && /R\[ABC\]\\d\+CM\$/.test(db) && /export const MIRROR_CLAMP = \{ "30kw": false, "40kw": false, "50kw": true, "50kwa": true \}/.test(db),
+  "Vienna mirrored RCD clamp: the LAND is on every phase of every board (boards.tsx passes mirrorClamp unconditionally), and WHICH SKUs are populated lives in ONE exported table, MIRROR_CLAMP, which drives the per-part qtyMul — so the BOM, the DPT deck and any DFM sheet read the same source");
+ck("E81-BIAS15", /P15/.test(cells) && /N3/.test(cells) && !/"P18"/.test(cells) && /QA01C-15/.test(db) && /QA02C-15/.test(db) && /PS1H: \{ price1k: 140/.test(db),
+  "gate bias +18/−3 → +15/−3 on EVERY module (F-C-15: the second source is −4/+15 V static), 2 W QA02C class only where a channel drives two dies (40/50 kW)");
 ck("E44-TACH4", /DI10/.test(umodGen) && /"FAN_TACH4"/.test(umodGen) && /\[39,"FAN_TACH4"\]/.test(umodGen),
   "fan-4 tach end-to-end: card pin 90 (freed ROLE0) → way 88 → harness W39 (generator-asserted, donor-proven)");
 ck("E44-CLONE", /skuOverrides\["50kwa"\] = \{ \.\.\.skuOverrides\["50kw"\] \}/.test(db),
@@ -453,8 +476,10 @@ ck("R5-D", !/UEXCL2/.test(boards) && !/"net.CTL_KPREA"/.test(boards) && /\/\^UEX
   "E67: the pre-insertion exclusion stage is RETIRED with the pre-insertion pair (the output diode needs no matched-voltage make) — no orphan second stage may remain");
 ck("R5-D-FW", /o->k_ser = false; o->k_para = false; o->k_parb = false; o->q_disch_bk = true; f->p_make = 0; \}/.test(fsmSrc) && /excl_viol/.test(simSrc) && /matrix exclusion invariant/.test(simSrc),   /* E76: step 20 starts the bleeders (R03); E80: it also re-arms the make-settle wait (HR-08) */
   "ST_MODESW step-20 opens ALL three matrix contacts explicitly; host_sim asserts the exclusion invariant on every tick of every scenario");
-ck("R5-E", !/RG\$\{id\}A1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[123]"),
-  "paralleled pairs are SYMMETRIC: the original device gets its own 2.2 R branch (E68: the Vienna pairs are retired — one die per phase on the clip mount; the LLC positions that stay paralleled keep the symmetric branches)");
+// E81 (F-C-19) EXTENDS R5-E to the Vienna common-source pair: its two dies rode net.G_{id} directly
+// (an undamped gate loop through package lead inductance), so RG{id}A1/B1 are now REQUIRED, at 1 Ω.
+ck("R5-E/E81", /RG\$\{id\}A1/.test(cells) && /RG\$\{id\}B1/.test(cells) && /RG\$\{id\}H1/.test(cells) && /RG\$\{id\}L1/.test(cells) && db.includes("RG([ABC]\\d+[AB]|\\d+[HL])[123]"),
+  "every die sits behind its OWN series gate resistor: LLC paralleled positions 2.2 Ω incl. the original device, Vienna common-source pair 1 Ω per die (E81 de-Q)");
 ck("R5-F", /R5-F: DC input 13.5\u201316.5 V/.test(db),
   "QA01C-18 input range (13.5-16.5 V) vs V15 = 15.0 V recorded on the BOM line; cross-regulation re-verify staged for EVT");
 ck("R5-G", /CER-25W-33R-AX/.test(db) && /CER-50W-33R-AX/.test(db) && /CER-25W-160R-AX/.test(db) && /CER-50W-160R-AX/.test(db) && /SHUNT-50MV-100A/.test(db) && /SHUNT-50MV-133A/.test(db) && /SHUNT-50MV-167A/.test(db),

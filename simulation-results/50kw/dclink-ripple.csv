@@ -1,0 +1,48 @@
+# E81/F-G-1 DC-link HF ripple share (ngspice-46); 50kw:FB n2/Lr3.56u/Cr11x33n/Lm35.6u/Coss2500p; 8 × 470 µF per half; netlists spice/generated/dclink-50kw-*.cir
+# DRAWN target: 16 × 1 µF bridge entry film + RC damper 2.2 µF + 0.33 Ω — current-coordination [DCLINK]/[SYNC] read this line
+# ASSUMED: can ESR 0.15 Ω @100 kHz, ESL 20 nH, class 3.5 A rms (2.5 A @120 Hz × 1.4); film ESR 5 mΩ, ESL 14.999999999999998 nH, line 10 A rms; Vienna stub 59.99999999999999 nH; source behind 50 µH/rail
+# GATE: per-can rms ≤ 0.8 × 3.5 A = 2.4 A, per-film rms ≤ 10 A
+# cheapest variant holding every can ≤ 80 % of the 3.5 A class and every film ≤ 10 A at BOTH corners: film20u-bare-stud40n — 870 rupees/module @10k
+corner,variant,bridge_film_uF,n_film,damper,stud_nH,P_sim_kW,Ibr_dc_A,Ibr_ac_rms_A,I_per_bridge_film_A,I_per_elyt_can_A,I_per_vienna_film_A,I_stud_ac_A,Vbus_p1_V,Vbus_p99_V,can_pct_of_class,film_pct_of_line,verdict,extra_films,rupees_at_10k
+SER250-full-bus764,as-drawn,4,4,no,40,40.67,56.12,73.55,41.18,10.66,15.94,111.88,568,973,305,412,OVER,0,0
+SER250-full-bus764,film8u-bare-stud40n,8,8,no,40,40.16,54.93,74.07,11.82,2.7,4.03,28.33,572,947,77,118,OVER,4,218
+SER250-full-bus764,film8u-bare-stud20n,8,8,no,20,40.1,54.96,74.45,14.93,6.09,9.09,63.89,568,951,174,149,OVER,4,218
+SER250-full-bus764,film8u-damped-stud40n,8,8,yes,40,40.05,54.81,60,9.57,2.41,3.61,25.33,678,805,69,96,OVER,4,325
+SER250-full-bus764,film8u-damped-stud20n,8,8,yes,20,39.95,54.76,59.89,11.73,5.04,7.53,52.86,683,807,144,117,OVER,4,325
+SER250-full-bus764,film12u-bare-stud40n,12,12,no,40,39.99,54.64,76,7.23,1.53,2.28,16.06,593,934,44,72,OK,8,435
+SER250-full-bus764,film12u-bare-stud20n,12,12,no,20,40,54.64,76.07,8.1,3.05,4.55,32,595,931,87,81,OVER,8,435
+SER250-full-bus764,film12u-damped-stud40n,12,12,yes,40,39.95,54.63,60.03,5.81,1.44,2.15,15.11,682,810,41,58,OK,8,542
+SER250-full-bus764,film12u-damped-stud20n,12,12,yes,20,39.95,54.65,60.03,6.66,2.8,4.19,29.42,683,811,80,67,OVER,8,542
+SER250-full-bus764,film16u-bare-stud40n,16,16,no,40,39.92,54.49,77.19,5.27,1.07,1.59,11.2,599,928,31,53,OK,12,653
+SER250-full-bus764,film16u-bare-stud20n,16,16,no,20,39.92,54.51,77.06,5.65,2.02,3,21.14,598,927,58,56,OK,12,653
+SER250-full-bus764,film16u-damped-stud40n,16,16,yes,40,39.91,54.56,60.11,4.18,1.02,1.53,10.74,683,814,29,42,OK,12,760
+SER250-full-bus764,film16u-damped-stud20n,16,16,yes,20,39.9,54.56,60.12,4.61,1.91,2.85,20.04,684,813,55,46,OK,12,760
+SER250-full-bus764,film20u-bare-stud40n,20,20,no,40,39.88,54.46,77.33,4.13,0.82,1.22,8.6,607,941,24,41,OK,16,870
+SER250-full-bus764,film20u-bare-stud20n,20,20,no,20,39.88,54.48,77.13,4.34,1.51,2.23,15.75,607,936,43,43,OK,16,870
+SER250-full-bus764,film20u-damped-stud40n,20,20,yes,40,39.87,54.51,60.22,3.26,0.79,1.18,8.32,690,817,23,33,OK,16,978
+SER250-full-bus764,film20u-damped-stud20n,20,20,yes,20,39.87,54.52,60.23,3.52,1.44,2.16,15.15,689,817,41,35,OK,16,978
+SER250-full-bus764,film24u-bare-stud40n,24,24,no,40,39.85,54.45,77.55,3.41,0.67,0.99,6.98,613,921,19,34,OK,20,1088
+SER250-full-bus764,film24u-bare-stud20n,24,24,no,20,39.86,54.45,77.47,3.54,1.2,1.78,12.55,614,916,34,35,OK,20,1088
+SER250-full-bus764,film24u-damped-stud40n,24,24,yes,40,39.85,54.48,60.32,2.68,0.65,0.97,6.79,691,817,19,27,OK,20,1195
+SER250-full-bus764,film24u-damped-stud20n,24,24,yes,20,39.85,54.48,60.32,2.85,1.16,1.73,12.16,691,817,33,28,OK,20,1195
+PAR400-full,as-drawn,4,4,no,40,45.73,56.24,38.88,11.61,8.09,7.65,64.09,814,863,231,116,OVER,0,0
+PAR400-full,film8u-bare-stud40n,8,8,no,40,50.15,61.73,40.64,9.39,7.11,6.74,56.3,822,843,203,94,OVER,4,218
+PAR400-full,film8u-bare-stud20n,8,8,no,20,48.72,59.89,40.42,5.35,5.79,5.47,45.86,819,846,165,54,OVER,4,218
+PAR400-full,film8u-damped-stud40n,8,8,yes,40,49.4,60.77,40.82,7.37,5.48,5.19,43.36,826,836,156,74,OVER,4,325
+PAR400-full,film8u-damped-stud20n,8,8,yes,20,49.22,60.51,40.36,4.78,5.05,4.77,40.04,828,837,144,48,OVER,4,325
+PAR400-full,film12u-bare-stud40n,12,12,no,40,50.6,62.21,41.33,5.35,4,3.79,31.7,823,838,114,53,OVER,8,435
+PAR400-full,film12u-bare-stud20n,12,12,no,20,49.95,61.4,40.71,4.18,4.75,4.49,37.59,824,840,136,42,OVER,8,435
+PAR400-full,film12u-damped-stud40n,12,12,yes,40,50.67,62.29,41.05,4.67,3.46,3.28,27.41,827,834,99,47,OVER,8,542
+PAR400-full,film12u-damped-stud20n,12,12,yes,20,50.09,61.58,40.63,3.76,4.2,3.98,33.29,828,835,120,38,OVER,8,542
+PAR400-full,film16u-bare-stud40n,16,16,no,40,50.38,61.91,41.31,3.57,2.64,2.5,20.92,823,838,75,36,OVER,12,653
+PAR400-full,film16u-bare-stud20n,16,16,no,20,49.99,61.43,40.98,3.21,3.67,3.48,29.09,824,838,105,32,OVER,12,653
+PAR400-full,film16u-damped-stud40n,16,16,yes,40,50.03,61.47,41.24,3.29,2.42,2.29,19.15,828,833,69,33,OVER,12,760
+PAR400-full,film16u-damped-stud20n,16,16,yes,20,49.56,60.89,41.02,2.97,3.36,3.17,26.57,828,834,96,30,OVER,12,760
+PAR400-full,film20u-bare-stud40n,20,20,no,40,49.93,61.33,41.3,2.66,1.95,1.85,15.47,823,837,56,27,OK,16,870
+PAR400-full,film20u-bare-stud20n,20,20,no,20,50.1,61.55,41.01,2.53,2.89,2.74,22.9,824,837,83,25,OVER,16,870
+PAR400-full,film20u-damped-stud40n,20,20,yes,40,50.49,62.03,41.05,2.5,1.83,1.73,14.49,828,833,52,25,OK,16,978
+PAR400-full,film20u-damped-stud20n,20,20,yes,20,50.04,61.48,40.96,2.38,2.7,2.55,21.36,828,834,77,24,OVER,16,978
+PAR400-full,film24u-bare-stud40n,24,24,no,40,50.19,61.65,41.13,2.11,1.54,1.46,12.22,825,836,44,21,OK,20,1088
+PAR400-full,film24u-bare-stud20n,24,24,no,20,49.77,61.13,41.11,2.06,2.36,2.23,18.66,825,836,67,21,OK,20,1088
+PAR400-full,film24u-damped-stud40n,24,24,yes,40,49.54,60.85,41.23,2.03,1.47,1.39,11.67,829,833,42,20,OK,20,1195
+PAR400-full,film24u-damped-stud20n,24,24,yes,20,50.43,61.96,40.88,1.96,2.23,2.11,17.63,829,833,64,20,OK,20,1195

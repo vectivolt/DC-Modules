@@ -7,9 +7,11 @@
  ],
  "net_style_overrides": {
   "PHA0": "wire",
-  "G_A0": "wire",
+  "QA0A_G": "wire",
   "QA0A_S": "wire",
   "KS_A0": "wire",
+  "QA0B_G": "wire",
+  "G_A0": "wire",
   "UA0G_DST": "wire",
   "UA0G_OUTH": "wire",
   "UA0G_VCC2": "wire",
@@ -19,10 +21,13 @@
   "DA0GS_M": "wire",
   "CA0SN_RA0SN": "wire",
   "CA0C_DA0C": "wire",
+  "CA0CM_DA0CM": "wire",
   "PHB0": "wire",
-  "G_B0": "wire",
+  "QB0A_G": "wire",
   "QB0A_S": "wire",
   "KS_B0": "wire",
+  "QB0B_G": "wire",
+  "G_B0": "wire",
   "UB0G_DST": "wire",
   "UB0G_OUTH": "wire",
   "UB0G_VCC2": "wire",
@@ -32,10 +37,13 @@
   "DB0GS_M": "wire",
   "CB0SN_RB0SN": "wire",
   "CB0C_DB0C": "wire",
+  "CB0CM_DB0CM": "wire",
   "PHC0": "wire",
-  "G_C0": "wire",
+  "QC0A_G": "wire",
   "QC0A_S": "wire",
   "KS_C0": "wire",
+  "QC0B_G": "wire",
+  "G_C0": "wire",
   "UC0G_DST": "wire",
   "UC0G_OUTH": "wire",
   "UC0G_VCC2": "wire",
@@ -44,7 +52,8 @@
   "DC0GS1_RC0GDS": "wire",
   "DC0GS_M": "wire",
   "CC0SN_RC0SN": "wire",
-  "CC0C_DC0C": "wire"
+  "CC0C_DC0C": "wire",
+  "CC0CM_DC0CM": "wire"
  },
  "net_class_overrides": {},
  "components": [
@@ -75,7 +84,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "G_A0"
+     "signal_name": "QA0A_G"
     },
     {
      "pin_number": 2,
@@ -105,7 +114,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "G_A0"
+     "signal_name": "QA0B_G"
     },
     {
      "pin_number": 2,
@@ -127,6 +136,46 @@
    "value": "B3M010C075Z",
    "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
    "mpn": "B3M010C075Z"
+  },
+  {
+   "designator": "RGA0A1",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_A0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QA0A_G"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1",
+   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "mpn": "R0805-2R2"
+  },
+  {
+   "designator": "RGA0B1",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_A0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QA0B_G"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1",
+   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "mpn": "R0805-2R2"
   },
   {
    "designator": "UA0G",
@@ -454,7 +503,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "UA0G_VCC2"
     },
     {
@@ -464,14 +513,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "UA0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "DA0T",
@@ -589,9 +638,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "C1812-100p-1k 100 pF 1 kV C0G 1812 ",
-   "mpn": "C1812-100p-1k"
+   "value": "330pF",
+   "query": "C1812-330p-1k **330 pF** 1 kV C0G 1812 ",
+   "mpn": "C1812-330p-1k"
   },
   {
    "designator": "DA0C",
@@ -654,6 +703,66 @@
    "mpn": "WW-470R-10W"
   },
   {
+   "designator": "DA0CM",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CA0CM_DA0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PHA0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-10",
+   "query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2 ",
+   "mpn": "SICJBS-1200-10"
+  },
+  {
+   "designator": "CA0CM",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CA0CM_DA0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "FILM-100n-250 100 nF 250 V film ",
+   "mpn": "FILM-100n-250"
+  },
+  {
+   "designator": "RA0CM",
+   "block_name": "PHASE-A0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "CA0CM_DA0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "WW-470R-10W",
+   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder ",
+   "mpn": "WW-470R-10W"
+  },
+  {
    "designator": "LB0",
    "block_name": "PHASE-B0",
    "pins": [
@@ -680,7 +789,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "G_B0"
+     "signal_name": "QB0A_G"
     },
     {
      "pin_number": 2,
@@ -710,7 +819,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "G_B0"
+     "signal_name": "QB0B_G"
     },
     {
      "pin_number": 2,
@@ -732,6 +841,46 @@
    "value": "B3M010C075Z",
    "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
    "mpn": "B3M010C075Z"
+  },
+  {
+   "designator": "RGB0A1",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_B0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QB0A_G"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1",
+   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "mpn": "R0805-2R2"
+  },
+  {
+   "designator": "RGB0B1",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_B0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QB0B_G"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1",
+   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "mpn": "R0805-2R2"
   },
   {
    "designator": "UB0G",
@@ -1059,7 +1208,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "UB0G_VCC2"
     },
     {
@@ -1069,14 +1218,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "UB0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "DB0T",
@@ -1194,9 +1343,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "C1812-100p-1k 100 pF 1 kV C0G 1812 ",
-   "mpn": "C1812-100p-1k"
+   "value": "330pF",
+   "query": "C1812-330p-1k **330 pF** 1 kV C0G 1812 ",
+   "mpn": "C1812-330p-1k"
   },
   {
    "designator": "DB0C",
@@ -1259,6 +1408,66 @@
    "mpn": "WW-470R-10W"
   },
   {
+   "designator": "DB0CM",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CB0CM_DB0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PHB0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-10",
+   "query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2 ",
+   "mpn": "SICJBS-1200-10"
+  },
+  {
+   "designator": "CB0CM",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CB0CM_DB0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "FILM-100n-250 100 nF 250 V film ",
+   "mpn": "FILM-100n-250"
+  },
+  {
+   "designator": "RB0CM",
+   "block_name": "PHASE-B0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "CB0CM_DB0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "WW-470R-10W",
+   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder ",
+   "mpn": "WW-470R-10W"
+  },
+  {
    "designator": "LC0",
    "block_name": "PHASE-C0",
    "pins": [
@@ -1285,7 +1494,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "G_C0"
+     "signal_name": "QC0A_G"
     },
     {
      "pin_number": 2,
@@ -1315,7 +1524,7 @@
     {
      "pin_number": 1,
      "name": "G",
-     "signal_name": "G_C0"
+     "signal_name": "QC0B_G"
     },
     {
      "pin_number": 2,
@@ -1337,6 +1546,46 @@
    "value": "B3M010C075Z",
    "query": "B3M010C075Z SiC MOSFET 750 V 10 mΩ TO-247-4",
    "mpn": "B3M010C075Z"
+  },
+  {
+   "designator": "RGC0A1",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_C0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QC0A_G"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1",
+   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "mpn": "R0805-2R2"
+  },
+  {
+   "designator": "RGC0B1",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "G_C0"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "QC0B_G"
+    }
+   ],
+   "nc_pins": [],
+   "value": "1",
+   "query": "R0805-2R2 per-device series gate R — BOTH branches incl. the original device ",
+   "mpn": "R0805-2R2"
   },
   {
    "designator": "UC0G",
@@ -1664,7 +1913,7 @@
     },
     {
      "pin_number": 3,
-     "name": "P18",
+     "name": "P15",
      "signal_name": "UC0G_VCC2"
     },
     {
@@ -1674,14 +1923,14 @@
     },
     {
      "pin_number": 5,
-     "name": "N4",
+     "name": "N3",
      "signal_name": "UC0G_VEE"
     }
    ],
    "nc_pins": [],
-   "value": "QA01C-18",
-   "query": "QA01C-18 iso gate-bias module +18/−4-configured ",
-   "mpn": "QA01C-18"
+   "value": "QA01C-15",
+   "query": "QA01C-15 iso gate-bias module **+15/−3 V** ",
+   "mpn": "QA01C-15"
   },
   {
    "designator": "DC0T",
@@ -1799,9 +2048,9 @@
     }
    ],
    "nc_pins": [],
-   "value": "100pF",
-   "query": "C1812-100p-1k 100 pF 1 kV C0G 1812 ",
-   "mpn": "C1812-100p-1k"
+   "value": "330pF",
+   "query": "C1812-330p-1k **330 pF** 1 kV C0G 1812 ",
+   "mpn": "C1812-330p-1k"
   },
   {
    "designator": "DC0C",
@@ -1861,6 +2110,66 @@
    "nc_pins": [],
    "value": "WW-470R-10W",
    "query": "WW-470R-10W 470 Ω 10 W wirewound axial ",
+   "mpn": "WW-470R-10W"
+  },
+  {
+   "designator": "DC0CM",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CC0CM_DC0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "PHC0"
+    }
+   ],
+   "nc_pins": [],
+   "value": "SICJBS-1200-10",
+   "query": "SICJBS-1200-10 SiC JBS 1200 V 10 A TO-247-2 ",
+   "mpn": "SICJBS-1200-10"
+  },
+  {
+   "designator": "CC0CM",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "pin1",
+     "signal_name": "CC0CM_DC0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "pin2",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "100nF",
+   "query": "FILM-100n-250 100 nF 250 V film ",
+   "mpn": "FILM-100n-250"
+  },
+  {
+   "designator": "RC0CM",
+   "block_name": "PHASE-C0",
+   "pins": [
+    {
+     "pin_number": 1,
+     "name": "A",
+     "signal_name": "CC0CM_DC0CM"
+    },
+    {
+     "pin_number": 2,
+     "name": "B",
+     "signal_name": "DCN"
+    }
+   ],
+   "nc_pins": [],
+   "value": "WW-470R-10W",
+   "query": "WW-470R-10W 470 Ω 10 W wirewound axial — the MIRRORED Vienna clamp bleeder ",
    "mpn": "WW-470R-10W"
   }
  ]

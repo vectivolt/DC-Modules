@@ -98,11 +98,14 @@ void th12_rx(th12_t *t, const pmp_frame_t *f, uint32_t now, const mod_tlm_t *m, 
     pmp_frame_t c = { th12_id(2u, TH12_PF_CONFIRM, TH12_MONITOR_ADDR, own), 8u, { ok ? 1u : 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u } };
     (void)pmp_txq_push(tx, &c);
     return; }
-  case TH12_PF_ADDR_SET:                        /* C_M_23: stored; in force in manual mode; accepted only with the output off */
+  case TH12_PF_ADDR_SET:                        /* C_M_23: stored always (E81 K §5 fix 1), adopted at the next output-off */
     if (f->dlc < 1u) return;
     t->t_rx = now;
-    if (d[0] < 1u || d[0] > 240u || !output_off(m)) return;
-    if (t->addr_can != d[0]) { t->addr_can = d[0]; t->nv_dirty = true; t->have_state = false; t->have_ext = false; }
+    if (d[0] < 1u || d[0] > 240u) return;
+    if (output_off(m)) {
+      if (t->addr_can != d[0]) { t->addr_can = d[0]; t->nv_dirty = true; t->have_state = false; t->have_ext = false; }
+      t->addr_pending = 0u;
+    } else t->addr_pending = d[0];              /* renumbering a LIVE rack is legal; the SA moves when the output stops */
     return;
   case TH12_PF_ADDR_MODE:                       /* C_M_12: automatic / manual, accepted only with the output off */
     if (f->dlc < 1u) return;
@@ -116,6 +119,7 @@ void th12_rx(th12_t *t, const pmp_frame_t *f, uint32_t now, const mod_tlm_t *m, 
     if (d[0] != 1u) t->unsupported++;
     return;
   default:
+    t->unknown_pf++; t->last_unknown_pf = pf;   /* E81 (K §5 fix 2): accept-and-ignore with a counter, never a NAK */
     return;
   }
 }
@@ -150,6 +154,11 @@ void th12_enc_state(const th12_t *t, const mod_tlm_t *m, uint32_t now, pmp_frame
   if ((fb & (FB(11) | FB(12) | FB(17) | FB(19) | FB(20) | FB(29) | FB(30) | FB(32) | FB(33) | FB(34) | FB(35) | FB(36)))
       || m->rs == MOD_RS_SAFE)
     w |= 1u << 7;                                                    /* hardware fault */
+  /* E81 (K §5 fix 4): we deliberately read V = 0 as "no setpoint" rather than §9.2.2 note 1's "output the minimum" — a
+     monitor that restarts with C_M_1 before C_M_2 would otherwise put 200 V into an unknown pack. But the monitor must
+     not be left reading state 0x00 while believing it commanded a start: bit 0 "pre-level wave stop" is the only defined
+     bit whose meaning covers "commanded but not delivering", so it carries the deviation on the wire. */
+  if (t->run && t->v_set == 0.0f) w |= 1u << 0;
   if (fb & FB(1)) pfc |= 1u << 0;                                    /* input overcurrent */
   if (fb & FB(37)) pfc |= 1u << 1;                                   /* mains frequency fault (E79: F.37 from the HAL) */
   if (t->conflict) pfc |= 1u << 4;                                   /* address conflict (TH-AMB-1: the table, not the example) */
@@ -203,6 +212,16 @@ void th12_tick(th12_t *t, uint32_t now, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_
     if (output_off(m)) { t->v_set = 0.0f; t->i_set = 0.0f; }
   } else t->comm_lost = false;
   if (t->conflict && now - t->t_conflict > TH12_CONFLICT_HOLD_MS) t->conflict = false;
+  /* E81 (K §5 fix 1): a C_M_23 that arrived while delivering takes effect at the first output-off */
+  if (t->addr_pending && output_off(m)) {
+    if (t->addr_can != t->addr_pending) { t->addr_can = t->addr_pending; t->nv_dirty = true; t->have_state = false; t->have_ext = false; }
+    t->addr_pending = 0u;
+    own = th12_addr(t);
+  }
+  /* E81 (K §5 fix 3): §9.2.6 promises automatic assignment at power-on and defines no mechanism. With no panel address
+     this module is correctly silent — and invisible. After 5 s say so, so a commissioning engineer is not hunting a dark
+     slot for an hour. app.c turns this into a distinct HMI code. */
+  if (own == 0u) { if (now - t->t_noaddr >= 5000u) t->no_addr = true; } else { t->t_noaddr = now; t->no_addr = false; }
   bool on = m->rs == MOD_RS_ON;
   bool ovw = on && m->v_set > 0.0f && m->v_out > m->v_set * 1.03f + 10.0f, uvw = on && m->v_out < m->v_min;
   if (ovw && !t->ovw_on) t->t_ovw = now;

@@ -1,0 +1,240 @@
+* E81/F-G-1 DC-link HF ripple share — 30kw:FB n2/Lr5.6u/Cr7x33n/Lm56u/Coss580p corner SER250-full-bus764 VBUS=764 VBANK=250 fsw=202.9k d=0.3245
+.model DREC D(Is=1e-9 N=1.8 Rs=0.022)
+.model DBODY D(Is=1e-12 N=4 Rs=0.03 Cjo=4.87517e-9 Vj=2 M=0.5)
+* ---- DC link (E81/F-G-1): ideal source behind 50 uH per rail, MID grounded; 5 cans/half; 24 x 1uF bridge film; damper yes; stud 20 nH loop
+VSP src_p 0 DC 382
+LSP src_p dcp 0.00005 ic=3.98610e+1
+VSN src_n 0 DC -382
+LSN src_n dcn 0.00005 ic=-3.98610e+1
+RMID mid 0 1u
+VPC0 dcp pa0 DC 0
+RPC0 pa0 pb0 0.15
+LPC0 pb0 pc0 2e-8
+CPC0 pc0 mid 0.00047 ic=382
+VPC1 dcp pa1 DC 0
+RPC1 pa1 pb1 0.15
+LPC1 pb1 pc1 2e-8
+CPC1 pc1 mid 0.00047 ic=382
+VPC2 dcp pa2 DC 0
+RPC2 pa2 pb2 0.15
+LPC2 pb2 pc2 2e-8
+CPC2 pc2 mid 0.00047 ic=382
+VPC3 dcp pa3 DC 0
+RPC3 pa3 pb3 0.15
+LPC3 pb3 pc3 2e-8
+CPC3 pc3 mid 0.00047 ic=382
+VPC4 dcp pa4 DC 0
+RPC4 pa4 pb4 0.15
+LPC4 pb4 pc4 2e-8
+CPC4 pc4 mid 0.00047 ic=382
+LVSP dcp vsP 6e-8
+VVP0 vsP vPa0 DC 0
+RVP0 vPa0 vPb0 0.005
+LVP0 vPb0 vPc0 1.5e-8
+CVP0 vPc0 mid 0.000001 ic=382
+VVP1 vsP vPa1 DC 0
+RVP1 vPa1 vPb1 0.005
+LVP1 vPb1 vPc1 1.5e-8
+CVP1 vPc1 mid 0.000001 ic=382
+VVP2 vsP vPa2 DC 0
+RVP2 vPa2 vPb2 0.005
+LVP2 vPb2 vPc2 1.5e-8
+CVP2 vPc2 mid 0.000001 ic=382
+VNC0 mid na0 DC 0
+RNC0 na0 nb0 0.15
+LNC0 nb0 nc0 2e-8
+CNC0 nc0 dcn 0.00047 ic=382
+VNC1 mid na1 DC 0
+RNC1 na1 nb1 0.15
+LNC1 nb1 nc1 2e-8
+CNC1 nc1 dcn 0.00047 ic=382
+VNC2 mid na2 DC 0
+RNC2 na2 nb2 0.15
+LNC2 nb2 nc2 2e-8
+CNC2 nc2 dcn 0.00047 ic=382
+VNC3 mid na3 DC 0
+RNC3 na3 nb3 0.15
+LNC3 nb3 nc3 2e-8
+CNC3 nc3 dcn 0.00047 ic=382
+VNC4 mid na4 DC 0
+RNC4 na4 nb4 0.15
+LNC4 nb4 nc4 2e-8
+CNC4 nc4 dcn 0.00047 ic=382
+LVSN mid vsN 6e-8
+VVN0 vsN vNa0 DC 0
+RVN0 vNa0 vNb0 0.005
+LVN0 vNb0 vNc0 1.5e-8
+CVN0 vNc0 dcn 0.000001 ic=382
+VVN1 vsN vNa1 DC 0
+RVN1 vNa1 vNb1 0.005
+LVN1 vNb1 vNc1 1.5e-8
+CVN1 vNc1 dcn 0.000001 ic=382
+VVN2 vsN vNa2 DC 0
+RVN2 vNa2 vNb2 0.005
+LVN2 vNb2 vNc2 1.5e-8
+CVN2 vNc2 dcn 0.000001 ic=382
+LSTP dcp stp 1e-8
+RSTP stp busf 0.0005
+LSTN busnf stn 1e-8
+RSTN stn dcn 0.0005
+VBF0 busf bfa0 DC 0
+RBF0 bfa0 bfb0 0.005
+LBF0 bfb0 bfc0 1.5e-8
+CBF0 bfc0 busnf 0.000001 ic=764
+VBF1 busf bfa1 DC 0
+RBF1 bfa1 bfb1 0.005
+LBF1 bfb1 bfc1 1.5e-8
+CBF1 bfc1 busnf 0.000001 ic=764
+VBF2 busf bfa2 DC 0
+RBF2 bfa2 bfb2 0.005
+LBF2 bfb2 bfc2 1.5e-8
+CBF2 bfc2 busnf 0.000001 ic=764
+VBF3 busf bfa3 DC 0
+RBF3 bfa3 bfb3 0.005
+LBF3 bfb3 bfc3 1.5e-8
+CBF3 bfc3 busnf 0.000001 ic=764
+VBF4 busf bfa4 DC 0
+RBF4 bfa4 bfb4 0.005
+LBF4 bfb4 bfc4 1.5e-8
+CBF4 bfc4 busnf 0.000001 ic=764
+VBF5 busf bfa5 DC 0
+RBF5 bfa5 bfb5 0.005
+LBF5 bfb5 bfc5 1.5e-8
+CBF5 bfc5 busnf 0.000001 ic=764
+VBF6 busf bfa6 DC 0
+RBF6 bfa6 bfb6 0.005
+LBF6 bfb6 bfc6 1.5e-8
+CBF6 bfc6 busnf 0.000001 ic=764
+VBF7 busf bfa7 DC 0
+RBF7 bfa7 bfb7 0.005
+LBF7 bfb7 bfc7 1.5e-8
+CBF7 bfc7 busnf 0.000001 ic=764
+VBF8 busf bfa8 DC 0
+RBF8 bfa8 bfb8 0.005
+LBF8 bfb8 bfc8 1.5e-8
+CBF8 bfc8 busnf 0.000001 ic=764
+VBF9 busf bfa9 DC 0
+RBF9 bfa9 bfb9 0.005
+LBF9 bfb9 bfc9 1.5e-8
+CBF9 bfc9 busnf 0.000001 ic=764
+VBF10 busf bfa10 DC 0
+RBF10 bfa10 bfb10 0.005
+LBF10 bfb10 bfc10 1.5e-8
+CBF10 bfc10 busnf 0.000001 ic=764
+VBF11 busf bfa11 DC 0
+RBF11 bfa11 bfb11 0.005
+LBF11 bfb11 bfc11 1.5e-8
+CBF11 bfc11 busnf 0.000001 ic=764
+VBF12 busf bfa12 DC 0
+RBF12 bfa12 bfb12 0.005
+LBF12 bfb12 bfc12 1.5e-8
+CBF12 bfc12 busnf 0.000001 ic=764
+VBF13 busf bfa13 DC 0
+RBF13 bfa13 bfb13 0.005
+LBF13 bfb13 bfc13 1.5e-8
+CBF13 bfc13 busnf 0.000001 ic=764
+VBF14 busf bfa14 DC 0
+RBF14 bfa14 bfb14 0.005
+LBF14 bfb14 bfc14 1.5e-8
+CBF14 bfc14 busnf 0.000001 ic=764
+VBF15 busf bfa15 DC 0
+RBF15 bfa15 bfb15 0.005
+LBF15 bfb15 bfc15 1.5e-8
+CBF15 bfc15 busnf 0.000001 ic=764
+VBF16 busf bfa16 DC 0
+RBF16 bfa16 bfb16 0.005
+LBF16 bfb16 bfc16 1.5e-8
+CBF16 bfc16 busnf 0.000001 ic=764
+VBF17 busf bfa17 DC 0
+RBF17 bfa17 bfb17 0.005
+LBF17 bfb17 bfc17 1.5e-8
+CBF17 bfc17 busnf 0.000001 ic=764
+VBF18 busf bfa18 DC 0
+RBF18 bfa18 bfb18 0.005
+LBF18 bfb18 bfc18 1.5e-8
+CBF18 bfc18 busnf 0.000001 ic=764
+VBF19 busf bfa19 DC 0
+RBF19 bfa19 bfb19 0.005
+LBF19 bfb19 bfc19 1.5e-8
+CBF19 bfc19 busnf 0.000001 ic=764
+VBF20 busf bfa20 DC 0
+RBF20 bfa20 bfb20 0.005
+LBF20 bfb20 bfc20 1.5e-8
+CBF20 bfc20 busnf 0.000001 ic=764
+VBF21 busf bfa21 DC 0
+RBF21 bfa21 bfb21 0.005
+LBF21 bfb21 bfc21 1.5e-8
+CBF21 bfc21 busnf 0.000001 ic=764
+VBF22 busf bfa22 DC 0
+RBF22 bfa22 bfb22 0.005
+LBF22 bfb22 bfc22 1.5e-8
+CBF22 bfc22 busnf 0.000001 ic=764
+VBF23 busf bfa23 DC 0
+RBF23 bfa23 bfb23 0.005
+LBF23 bfb23 bfc23 1.5e-8
+CBF23 bfc23 busnf 0.000001 ic=764
+VDMP busf dmpa DC 0
+RDMP dmpa dmpb 0.33
+CDMP dmpb busnf 0.0000022 ic=764
+VBR busf bus DC 0
+VBRN busn busnf DC 0
+
+
+VGHA ghA 0 PULSE(0 1 0.00000e+0 20n 20n 2.32427e-6 4.92854e-6)
+VGLA glA 0 PULSE(0 1 2.46427e-6 20n 20n 2.32427e-6 4.92854e-6)
+VHSA bus bhA DC 0
+BSHA bhA legA I=v(bhA,legA)*(2e-5+v(ghA)*28.57142857142857)
+BSLA legA busn I=v(legA,busn)*(2e-5+v(glA)*28.57142857142857)
+DBHA legA bhA DBODY
+DBLA busn legA DBODY
+CSHA bhA legA 3.30000e-10
+CSLA legA busn 3.30000e-10
+
+VGHB ghB 0 PULSE(0 1 1.59931e-6 20n 20n 2.32427e-6 4.92854e-6)
+VGLB glB 0 PULSE(0 1 4.06358e-6 20n 20n 2.32427e-6 4.92854e-6)
+VHSB bus bhB DC 0
+BSHB bhB legB I=v(bhB,legB)*(2e-5+v(ghB)*28.57142857142857)
+BSLB legB busn I=v(legB,busn)*(2e-5+v(glB)*28.57142857142857)
+DBHB legB bhB DBODY
+DBLB busn legB DBODY
+CSHB bhB legB 3.30000e-10
+CSLB legB busn 3.30000e-10
+VSP2 legA tk DC 0
+CR tk tkb 2.31000e-7 ic=0
+LR tkb pri 5.60000e-6
+RW pri prib 0.004
+LM prib legB 5.60000e-5
+LS1 s1w s1n 1.40000e-5
+RW1 s1w s1p 0.002
+VSA s1p s1q DC 0
+LS2 s2w s2n 1.40000e-5
+RW2 s2w s2p 0.002
+VSB s2p s2q DC 0
+KA LM LS1 0.9999
+KB LM LS2 0.9999
+KC LS1 LS2 0.9999
+RB1 s1q 0ba 1meg
+RB2 s1n 0ba 1meg
+RB3 s2q 0bb 1meg
+RB4 s2n 0bb 1meg
+DA1 s1q bkA DREC
+DA2 0ba s1q DREC
+DA3 s1n bkA DREC
+DA4 0ba s1n DREC
+DB1 s2q bkB DREC
+DB2 0bb s2q DREC
+DB3 s2n bkB DREC
+DB4 0bb s2n DREC
+VBKA bkA 0ba DC 250
+VBKB bkB 0bb DC 250
+RTA 0ba 0 1u
+RTB 0bb 0 1u
+.tran 20n 4.00000e-4 3.40858e-4 10n uic
+.option method=gear reltol=1e-3 abstol=1e-6 vntol=1u itl4=100
+.control
+set filetype=ascii
+run
+wrdata dclink-30kw-SER250-full-bus764-film24u-damped-stud20n.out i(VBR) i(VPC0) i(VVP0) i(VBF0) v(bus,busn) i(VBKA) i(VBKB) i(LSTP)
+quit
+.endc
+.end

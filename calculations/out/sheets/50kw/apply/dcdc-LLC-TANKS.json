@@ -464,6 +464,23 @@
       "signal_name": "AGND"
      }
     ]
+   },
+   {
+    "designator": "C1AVM",
+    "value": "1uF",
+    "block_name": "TANK",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "AVMID"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "AGND"
+     }
+    ]
    }
   ],
   [
@@ -744,6 +761,40 @@
   ],
   [
    {
+    "designator": "R1WHA",
+    "value": "1M",
+    "block_name": "F11-WINDOW",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U1W_OUTA"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "F11_VH"
+     }
+    ]
+   },
+   {
+    "designator": "R1WHB",
+    "value": "1M",
+    "block_name": "F11-WINDOW",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "U1W_OUTB"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "I_RES1"
+     }
+    ]
+   },
+   {
     "designator": "RF11H",
     "value": "2k",
     "block_name": "F11-WINDOW",
@@ -832,5 +883,5 @@
  ],
  "nc": {},
  "warnings": [],
- "total": 44
+ "total": 47
 }

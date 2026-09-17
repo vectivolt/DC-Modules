@@ -117,6 +117,13 @@ import { readFileSync as readJson } from "node:fs";
 import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
 {
   const CH = JSON.parse(readJson(join(OUT, "dm-choke-design.json"), "utf8"));
+  // E81 / review G (F-G-5): the gate used to run on `2π·3 kHz·L_D1(Ipk, lot −8 %)` — close to, but not equal to, what the
+  // firmware ships. The SHIPPED proportional gain is now READ OUT of firmware/hal/pfc.c and gated, so a HIL retune that
+  // raises it has to pass this margin before it can land.
+  const PFC_C = readJson(join(OUT, "..", "..", "firmware", "hal", "pfc.c"), "utf8");
+  const kpm = PFC_C.match(/c->kp_i\s*=\s*\(kw == 50u\)\s*\?\s*([\d.]+)f\s*:\s*\(kw == 40u\)\s*\?\s*([\d.]+)f\s*:\s*([\d.]+)f;/);
+  if (!kpm) throw new Error("pfc-control: could not read c->kp_i out of firmware/hal/pfc.c — the gate must run on the shipped gain");
+  const KP_SHIP = { "50kw": +kpm[1], "40kw": +kpm[2], "30kw": +kpm[3] };
   const cx = (re, im = 0) => [re, im], cadd = (a, b) => [a[0] + b[0], a[1] + b[1]], csub = (a, b) => [a[0] - b[0], a[1] - b[1]];
   const cmul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
   const cdiv = (a, b) => { const q = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / q, (a[1] * b[0] - a[0] * b[1]) / q]; };
@@ -157,7 +164,8 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
     // P = the vienna-switched reference (3 kHz at the crest L); PI = the same proportional gain with the zero placed above
     // (KiI/KpI). The single-gain PI above was placed on a 100 µH plant: on the 40/50 kW D1 (crest 50–42 µH at lot −8 %) its
     // 1.87 V/A crosses at 5–7 kHz — FW-EMI-3 scales the gain per rating instead (printed below, not gated).
-    const CTL = { P: { Kp: 2 * Math.PI * 3000 * Ld1(d, Ipk, 0.92), wz: 0 }, PI: { Kp: 2 * Math.PI * 3000 * Ld1(d, Ipk, 0.92), wz: KiI / KpI }, "PI@1.87": { Kp: KpI * VHALF, wz: KiI / KpI } };
+    const CTL = { P: { Kp: 2 * Math.PI * 3000 * Ld1(d, Ipk, 0.92), wz: 0 }, PI: { Kp: 2 * Math.PI * 3000 * Ld1(d, Ipk, 0.92), wz: KiI / KpI },
+      SHIP: { Kp: KP_SHIP[sku], wz: 0 }, "PI@1.87": { Kp: KpI * VHALF, wz: KiI / KpI } };
     for (const [ctl0, c] of Object.entries(CTL)) for (const Td of [FWDELAY, delay]) for (const damp of [false, true]) for (const ff of [1, 0]) {
       if (!ff && !(damp && Td === FWDELAY && ctl0 !== "PI@1.87")) continue;   // no-feed-forward rows: why FW-EMI-2 exists (info)
       let worst = { m: Infinity };
@@ -188,8 +196,12 @@ import { vienna, D1, Ld1 } from "./vienna-switched.mjs";
     if (!(c30.oscPct >= 10)) bad++;                                // the control must still fail, or the detector is blind
     csv.push([sku, "time-domain", "P+FF", 30, "none", 100, f(c30.oscPct, 1), "", '"control: undamped at the pfc-control 1.5 Tsw basis"']);
     csv.push([sku, "time-domain", "P+FF", 30, "CDMP 2.2uF+RDMP 10R", 100, f(h30.oscPct, 2), f(h30.pDamp, 2), '"damper alone at 1.5 Tsw (P structure)"']);
-    csv.push([sku, "time-domain-info", "P+FF", 15, "none", 30, f(u15.oscPct, 2), "", '"undamped at 15 µs: quiet in the switched model, small-signal margin 0 — why the damper is kept"']);
-    console.log(`  ${sku} [control] undamped Td 30 µs Lg 100 µH: ${f(c30.oscPct, 1)} % (${c30.oscPct >= 10 ? "oscillates — detector live" : "DID NOT OSCILLATE — detector blind"}) · damped at 30 µs: ${f(h30.oscPct, 2)} % · [info] undamped at 15 µs Lg 30 µH: ${f(u15.oscPct, 2)} %`);
+    // E81 / review G (F-G-5): this row USED to be labelled "quiet in the switched model" — true only at 30 kW. At 40 and
+    // 50 kW the undamped filter runs 75 % and 195 % of fundamental in 2–45 kHz at the SHIPPED 15 µs delay: the damper is the
+    // only thing holding the current loop up, it is a single unmonitored film, and an open CDMP is an undetected instability.
+    csv.push([sku, "time-domain-HAZARD", "P+FF", 15, "none", 30, f(u15.oscPct, 2), "",
+      `"HAZARD: undamped at the SHIPPED 15 µs delay this rating runs ${f(u15.oscPct, 1)} % of fundamental in 2-45 kHz — CDMP is a single unmonitored part with no detection in pfc.c"`]);
+    console.log(`  ${sku} [control] undamped Td 30 µs Lg 100 µH: ${f(c30.oscPct, 1)} % (${c30.oscPct >= 10 ? "oscillates — detector live" : "DID NOT OSCILLATE — detector blind"}) · damped at 30 µs: ${f(h30.oscPct, 2)} % · [HAZARD] undamped at the shipped 15 µs, Lg 30 µH: ${f(u15.oscPct, 2)} % of fundamental${u15.oscPct > 10 ? " — the damper is load-bearing, not insurance" : ""}`);
     // damper resistor duty: simulated ripple share at 330 VAC + the 50 Hz share re-taken at 550 VAC (1.1 × the 500 VAC F.07 edge)
     const p50 = (v) => (v * 2 * Math.PI * 50 * CD) ** 2 * RD, pRes = (pD - 3 * p50(330)) / 3 + p50(550);
     const okR = pRes <= 0.5 * 25;

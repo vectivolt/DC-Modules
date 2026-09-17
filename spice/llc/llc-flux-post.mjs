@@ -24,10 +24,17 @@ export const ALPHA = 1.55, BETA = 2.8;
 // comparator (both polarities) diode-ORed onto HRTIMER_FLT2 — 1 µs covers the 220 ns front-end RC, the 40 ns comparator,
 // the fault input, the driver and the SiC fall with margin
 export const F11_KILL_US = 1.0;
+// E81 / review G: the E81 HRTIMER fault filter (0b0011) + comparator ~50 ns + driver ~60 ns + t_d,off ~50 ns makes the REAL kill
+// path ≈ 0.3 µs, so 0.5 µs is the budgeted window and 1 µs the conservative one; 3 µs is the observability (ADC-rail) window.
+// llc-short.csv now carries all three as columns, so a consumer never has to walk the envelope twice.
+export const F11_FAST_US = 0.5, F11_MON_US = 3.0;
+export const KILL_COLS = [F11_FAST_US, F11_KILL_US, F11_MON_US];
 export const shortRacePeak = (sku, thr, killUs = F11_KILL_US) => {
   const env = readFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), "utf8").split("\n").filter((l) => /^\d/.test(l)).map((l) => l.split(",").map(Number));
   const x = env.find(([, ip]) => ip >= thr); if (!x) return { tX: NaN, peak: env.at(-1)[1] };
-  return { tX: x[0], peak: (env.find(([t]) => t >= x[0] + killUs) ?? env.at(-1))[1] };
+  const ci = KILL_COLS.indexOf(killUs);
+  if (ci >= 0 && x.length > 2 + ci) return { tX: x[0], peak: x[2 + ci] };           // pre-computed column
+  return { tX: x[0], peak: (env.find(([t]) => t >= x[0] + killUs) ?? env.at(-1))[1] };   // legacy 2-column fallback
 };
 
 const readCsv = (p) => {
@@ -88,13 +95,14 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
     // (sampling at fixed times after the short under-read the 30/40 kW peaks by 17–21 A)
     const sf = join(ROOT, `spice/generated/llc-${sku}-internal-short.out`);
     if (existsSync(sf)) {
-      const env = [["t_after_short_us", "ip_abs_runmax_A"]], pts = readFileSync(sf, "utf8").trim().split("\n").map((l) => l.trim().split(/\s+/).map(Number));
+      const env = [["t_after_short_us", "ip_abs_runmax_A", ...KILL_COLS.map((u) => `ip_plus${u}us_A`)]];
+      const pts = readFileSync(sf, "utf8").trim().split("\n").map((l) => l.trim().split(/\s+/).map(Number));
+      const runMax = (us) => { const tEnd = 300e-6 + us * 1e-6; let m = 0; for (const p of pts) if (p[0] >= 300e-6 && p[0] <= tEnd) m = Math.max(m, Math.abs(p[1])); return m; };
       for (let k = 0; k <= 200; k++) {
-        const tEnd = 300e-6 + k * 0.05e-6;
-        let m = 0; for (const p of pts) if (p[0] >= 300e-6 && p[0] <= tEnd) m = Math.max(m, Math.abs(p[1]));
-        env.push([(k * 0.05).toFixed(2), m.toFixed(2)]);
+        const us = k * 0.05;
+        env.push([us.toFixed(2), runMax(us).toFixed(2), ...KILL_COLS.map((u) => runMax(us + u).toFixed(2))]);
       }
-      writeFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), `# E65 internal-short |Ip| running max after the 300 µs bank collapse; ${fingerprint(sku)}\n` + env.map((x) => x.join(",")).join("\n") + "\n");
+      writeFileSync(join(ROOT, `simulation-results/${sku}/llc-short.csv`), `# E65 internal-short |Ip| running max after the 300 µs bank collapse; ${fingerprint(sku)}\n# E81: ip_plusNus_A = the running max N µs LATER — the kill-path budgets (0.5 µs real, 1 µs conservative, 3 µs observability)\n` + env.map((x) => x.join(",")).join("\n") + "\n");
     } else { console.log(`  MISSING ${sf} — llc-short.csv not written`); process.exitCode = 1; }
     writeFileSync(join(ROOT, `simulation-results/${sku}/llc-flux.csv`),
       `# E65 magnetics excitation from ngspice waveforms; ${fingerprint(sku)}; iGSE alpha ${ALPHA} beta ${BETA}\n` + out.map((x) => x.join(",")).join("\n") + "\n");

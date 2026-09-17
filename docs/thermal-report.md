@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/grid-4536_pts_·_0_fail_·_0_folds-2ea44f?style=flat-square" alt="grid: 4536 pts · 0 fail · 0 folds"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/grid-4536_pts_·_fold_map_·_F--L--1-d19a00?style=flat-square" alt="grid: 4536 pts · fold map · F-L-1"/>
 </p>
 
 > [!NOTE]
@@ -32,10 +32,36 @@
 > efficiency basis only; the thermal corners (525 V bank, SER 250 V) are §4's.
 
 > [!IMPORTANT]
-> **E67–E69 basis.** One full-bridge LLC (E67), clip-mounted single dies on Al2O3 (E68a: `thermal/mount.mjs`,
-> 0.8 K/W junction-to-base at a 70 °C base on air, 0.65 K/W at a 65 °C plate on liquid; EVT T-38), the star-X2 EMI
-> filter with no DM chokes (E68b), film-only output banks with the output diode DOUT (E67/E68c), and the right-sized
-> PFC dies (E69a). Tables §1–§3 and §4.2–§4.5 are the engines' output on that basis.
+> **E67–E69 basis, E81 corrections.** One full-bridge LLC (E67), clip-mounted dies on Al2O3 (E68a: `thermal/mount.mjs`,
+> 0.8 K/W junction-to-base; on air the base is now the per-SKU air-side reference **74 / 75 / 77 °C at a 55 °C inlet**
+> (`AIR_REF`, E81 F-C-2 — the earlier 70 °C sat below the outlet-air temperature the fan budget itself computes); 0.65 K/W at a
+> 65 °C plate on liquid; EVT T-04 / T-38), the star-X2 EMI filter with no DM chokes (E68b), film-only output banks with the
+> output diode DOUT (E67/E68c), and the right-sized PFC dies (E69a). **E81 added the two loss terms the pre-E81 ledgers lacked:**
+> the LLC turn-off energy per position (k_off · V_bus · I_toff · f_sw, with k_off 3.4 / 5.3 / 4.0 nJ/(V·A) from the repo's
+> double-pulse deck at the real turn-off currents with the 330 / 680 / 1000 pF C0G snubber and R_g,off 0 Ω (the snubber is bounded
+> above by the weak leg's zero-voltage-switching energy window in phase shift — E81 F-L-1 — and at the phase-shift corners where
+> that window does not exist the grid carries the incoming die's hard turn-on against the residual the deck reports), and I_toff calibrated on the
+> power-solved decks: ≈ 1.45 · I_pk · sin φ in PFM, the tank peak on the leading leg in PSM) and the Vienna switching
+> coefficient read from the same deck (22–26 nJ/(V·A) at the drawn clamp state, against the 17.4 the E3 carrier choice was made
+> on). Tables §1–§3 and §4.2–§4.5 are the engines' output on that basis.
+
+## At a glance
+
+| | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
+|---|---:|---:|---:|---:|
+| **Loss at the rated point** (E81 ledger) | 1,126 W | 1,507 W | 1,910 W | 1,950 W |
+| **η at 400 VAC, full power** | **96.38 %** | **96.35 %** | **96.32 %** | **96.25 %** |
+| **Peak η** over the envelope | 97.80 % | 97.73 % | 97.72 % | 97.72 % |
+| **Cooling** | air · 3 fans | air · 3 fans | 2 coldplates · 0 fans | air · 4 fans |
+| **Airflow margin** at the 55 °C inlet density | **1.65×** | 1.27× | coolant ΔT 4.6 K | 1.27× |
+| **Worst LLC Tj** outside the registered fold set | **149 °C** | **149 °C** | 135 °C | 148 °C |
+| **Grid** | 4,536 points · every point passes or is a registered fold (§3) | | | |
+
+> [!WARNING]
+> **Two loss terms entered the ledger at E81** — the LLC turn-off energy per position and the Vienna switching
+> coefficient read from the double-pulse deck (22–26 nJ/(V·A) as drawn, against the 17.4 the E3 carrier choice was
+> made on). Every efficiency number below is on that basis. Pre-E81 pages quoting 96.62 / 96.70 / 96.56 / 96.48 %
+> are superseded — see [E81 recalculated numbers](e81-validation-report.md#6-recalculated-numbers).
 
 ## 1. Loss budget at the rated point (400 VAC, full power, JBS secondary)
 
@@ -43,28 +69,34 @@ From `calculations/out/loss-budget.csv`.
 
 | W | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---:|---:|---:|---:|
-| PFC semiconductors (one die per position; 20 mΩ · 15 mΩ · B3M010C075Z) | 227.6 | 303.5 | 340.9 | 340.9 |
-| PFC chokes (D1) | 84.1 | 94.5 | 127.2 | 127.2 |
+| PFC semiconductors (one die per position; 20 mΩ · 15 mΩ · B3M010C075Z) — incl. the E81 DPT switching share (× 1.04 / 1.12 / 1.09) | 229.0 | 308.5 | 345.7 | 345.7 |
+| PFC chokes (D1) | 83.9 | 94.5 | 127.2 | 127.2 |
 | DC-link ESR | 12.0 | 17.8 | 27.8 | 27.8 |
-| LLC primary FETs (4 · 8 · 8 · 8 × SG2M023120LJ) | 139.9 | 125.2 | 190.6 | 190.6 |
-| Transformer cells (D3 rev D, two cells) | 56.4 | 71.3 | 89.2 | 89.2 |
-| Tank (D2 rev F external Lr + Cr ESR) | 11.7 | 17.5 | 23.8 | 23.8 |
+| LLC primary FETs (4 · 8 · 8 · 8 × SG2M023120LJ) — **conduction + E81 turn-off** (140 + 66 · 124 + 136 · 193 + 122 W) | 206.3 | 260.6 | 315.0 | 315.0 |
+| Transformer cells (D3 rev D, two cells) | 56.4 | 71.5 | 88.9 | 88.9 |
+| Tank (D2 rev F external Lr + Cr ESR) | 11.3 | 16.9 | 23.4 | 23.4 |
 | Secondary SiC JBS (16 × 40 A) | 325.7 | 492.8 | 695.8 | 695.8 |
 | Output diode DOUT | 105.0 | 139.7 | 175.3 | 175.3 |
 | Busbar + shunt | 1.7 | 3.1 | 4.9 | 4.9 |
 | EMI filter (2 × D7 + damper) | 26.3 | 43.3 | 68.2 | 68.2 |
 | Aux + gate drive | 38 | 38 | 38 | 38 |
-| Fans | 20 | 20 | 0 | 40 |
-| **Total** | **1,048.5** | **1,366.6** | **1,781.7** | **1,821.7** |
-| **η (JBS baseline)** | **96.62 %** | **96.70 %** | **96.56 %** | **96.48 %** |
-| η with a one-FET-per-position synchronous rectifier (model) | 96.29 % | 96.06 % | 95.62 % | 95.54 % |
+| Fans | 30 | 20 | 0 | 40 |
+| **Total** | **1,125.7** | **1,506.7** | **1,910.3** | **1,950.3** |
+| **η (JBS baseline, E81)** | **96.38 %** | **96.35 %** | **96.32 %** | **96.25 %** |
+| η with a one-FET-per-position synchronous rectifier (model) | 96.05 % | 95.74 % | 95.38 % | 95.31 % |
 | *E65 figure (three half-bridge sections, paralleled PFC pairs, D6 + bank electrolytics)* | *97.22 %* | *97.00 %* | *96.79 %* | *96.94 %* |
 
 The step down from E65 is the price of the InfyPower architecture, and it was taken knowingly: the output diode alone
 is 105–175 W (0.35 pt), and one full bridge per bank carries the whole bank current through each rectifier position
-instead of a third of it per section. InfyPower states "> 96 %" for the REG1K0135A2; the 40 kW module is at 96.70 %.
+instead of a third of it per section. InfyPower states "> 96 %" for the REG1K0135A2; the 40 kW module is at 96.37 %
+with the E81 turn-off and switching terms in the ledger.
 
-**Peak efficiency** over the envelope (grid, 475 VAC / 750 V out, 25–50 % load): **98.11 / 98.26 / 98.30 / 98.30 %**,
+> [!NOTE]
+> **The 40 kW fan line reads 20 W** while [E81 decision 1](e81-validation-report.md#5-decisions-taken-at-e81) gives the
+> 40 kW three fans (the 30 kW line moved to 30 W). The ledger is quoted as the engine writes it; the ≈ 10 W is inside
+> the ±25 % the aux budget carries and does not move any margin in §2 — flagged for the next `loss-budget` pass.
+
+**Peak efficiency** over the envelope (E81 grid, 475 VAC / 750–1000 V out, 50–75 % load, cold): **97.80 / 97.73 / 97.72 / 97.72 %**,
 so the ≥ 97 % peak specification is met on every SKU. The grid's averaged model omits EMI-filter copper and DC-link
 ESR, which at part load are worth −0.05…−0.07 pt.
 
@@ -72,16 +104,16 @@ ESR, which at part load are worth −0.05…−0.07 pt.
 flagships' ≥97 % claim ([teardown benchmark](benchmark-infypower-teardown.md)).
 
 ```mermaid
-pie showData title 50 kW air module — where 1,822 W goes
+pie showData title 50 kW air module — where 1,950 W goes (E81 ledger)
   "Secondary SiC JBS" : 696
-  "PFC semiconductors" : 341
-  "LLC primary FETs" : 191
+  "PFC semiconductors" : 346
+  "LLC primary FETs (incl. turn-off)" : 315
   "Output diode DOUT" : 175
   "PFC chokes D1" : 127
   "Transformer cells D3" : 89
   "Aux, gate drive, fans" : 78
   "EMI filter" : 68
-  "DC link, tank, busbar" : 57
+  "DC link, tank, busbar" : 56
 ```
 
 > [!NOTE]
@@ -100,7 +132,7 @@ flowchart LR
     M["D2 · D3 stacks span the tunnel<br/>both yoke faces gap-padded (E65)"]
     U["upper extrusion<br/>DC-DC: LLC SiC + 24 JBS"]
   end
-  F["fans 2 / 3 / — / 4<br/>front-to-back"] --> L & T & U
+  F["fans 3 / 3 / — / 4 (E81)<br/>front-to-back"] --> L & T & U
   M -->|bond heat| L
   M -->|bond heat| U
   C["coldplate pair<br/>50 kW liquid · 6.5 L/min"] -.-> L & U
@@ -111,40 +143,56 @@ flowchart LR
 
 | SKU | Heat at rated | Face split: lower (AC-DC) / upper (DC-DC) | Cooling | Margin (`fault-energy`) |
 |---|---:|---|---|---|
-| 30 kW | 1,049 W | 228 / 571 W | 2 fans | **1.19×** air (need 162 m³/h @ ΔT 20 K vs 192) · one fan out covered |
-| 40 kW | 1,367 W | 304 / 758 W | 3 fans | **1.36×** (211 vs 288) · one fan out covered |
-| 50 kW liquid | 1,782 W | 341 / 1,062 W | coldplates, 0 fans | coolant ΔT **4.6 K** at 6.5 L/min 50/50 EG (≤ 5 K) |
-| 50 kW air | 1,822 W | 341 / 1,062 W | 4 fans (all tachs monitored) | **1.37×** (281 vs 384) · one fan out covered |
+| 30 kW | 1,126 W | 229 / 637 W | 3 fans (E81, O-16 closed) | **1.65×** air at the 55 °C inlet density · one fan out covered |
+| 40 kW | 1,507 W | 309 / 893 W | 3 fans (E81) | **1.27×** at the corrected density · one fan out covered |
+| 50 kW liquid | 1,910 W | 346 / 1,186 W | coldplates, 0 fans | coolant ΔT **4.6 K** at 6.5 L/min 50/50 EG (≤ 5 K) |
+| 50 kW air | 1,950 W | 346 / 1,186 W | 4 fans (all tachs monitored) | **1.27×** at the corrected density · one fan out covered |
 
 The face split puts the PFC semiconductors on the lower extrusion and the LLC FETs, secondary JBS and DOUT on the upper
 one; it counts silicon only. Since E65 the D2 and D3 stacks also bond to both faces and add their own heat
 ([§4.6](#46-heat-delivered-into-the-webs)). **The upper extrusion is the binding sink on every SKU.** At the 30 kW
-worst continuous corner (330 VAC, full power) `loss-budget` computes 1,082 W total, of which 774 W is heatsink-mounted
-silicon; at a 20 K sink-to-air rise that needs **Rth(s-a) ≤ 0.026 K/W** for the pair of extrusions. With the clip
+worst continuous corner (330 VAC, full power) `loss-budget` computes **≈ 1,148 W** total, of which **≈ 840 W** is
+heatsink-mounted silicon; at a 20 K sink-to-air rise that needs **Rth(s-a) ≤ 0.024 K/W** for the pair of extrusions. With the clip
 mount the devices reach their 70 °C base basis at 55 °C inlet only if the extrusion holds that line, so the extrusion
 RFQ carries it, and T-04 / T-38 measure it. The fan operating point is verified on the vendor static-pressure curve at
 EVT (A8).
 
 > [!WARNING]
-> **The 30 kW airflow margin fell from 1.45× to 1.19×** as the E67 architecture added the output diode and the
-> full-bridge rectifier loss. It still covers one fan out (96 m³/h against a derated need of 89), but it is the
-> thinnest air budget in the family; the E68a trial of one JBS per position was rejected because it cut this margin
-> to 1.11×.
+> **The 30 kW airflow margin** fell from 1.45× to 1.19× as the E67 architecture added the output diode and the
+> full-bridge rectifier loss, and to 1.10× once the air budget used the 55 °C inlet density it states (E81 F-C-16). The user's
+> E81 decision (O-16) gives the 30 kW its third fan on the existing FAN_TACH3 / FAN_PWM2 ways: **1.65×** with n−1 covered
+> (192 m³/h against a derated need of 96); the 40 kW and 50 kW-air budgets read 1.27× at the corrected density.
 
 ## 3. Junction temperatures — worst point of the 4,536-point grid
 
-| SKU | Vienna SiC | LLC SiC | Secondary JBS | Binding corner |
+| SKU | Vienna SiC | LLC SiC | Secondary JBS | Binding corner (E81 grid: turn-off term, DPT switching coefficient, 74 / 75 / 77 °C air base) |
 |---|---:|---:|---:|---|
-| 30 kW | 112 °C | **139 °C** | 91 °C | LLC at 330 VAC · HIGH 500 V · PSM · hot (single die per position) |
-| 40 kW | **127 °C** | 98 °C | 103 °C | PFC at 285 VAC · LOW 400 V · hot (15 mΩ class die) |
-| 50 kW liquid | **116 °C** | 99 °C | 102 °C | PFC at 285 VAC · LOW 400 V · hot |
-| 50 kW air | **135 °C** | 114 °C | 116 °C | PFC at 285 VAC · LOW 400 V · hot |
+| 30 kW | 117 °C | **149 °C** (after fold) | 92 °C | LLC at the 500 V series corner · 55 °C — the single die per position (E68, kept at E81 under the ≤ 5 % cost ceiling) |
+| 40 kW | 135 °C | **149 °C** | 108 °C | LLC at the 500 V series corner · 55 °C (two dies, 680 pF snubber) |
+| 50 kW liquid | **120 °C** | 135 °C | 102 °C | PFC at 285 VAC · LOW · 65 °C plate |
+| 50 kW air | **147 °C** | 148 °C (after fold) | 118 °C | PFC at 285 VAC · LOW · 55 °C (k_sw 26 nJ/(V·A) as drawn; the E81 mirror clamp trims it) |
 
-**No point folds.** The policy ceiling is **150 °C** (absolute rating 175 °C), and any point above it would fold power
-in 7 % steps; `stress-audit` allows a fold only at the forced-HIGH 500 V corner at 55 °C (the E69 decision), and none is
-needed on the E68a mount. The LLC binds at 30 kW, where one die per position carries the HIGH-mode 500 V corner; the
-low-line PFC corner binds everywhere else. Every value rests on the clip-mount Rth, which EVT T-38 must confirm
-within +15 %.
+**Where the grid folds (E81, final).** The policy ceiling is **150 °C** (absolute rating 175 °C); above it the FSM derate ladder
+folds power in 7 % steps. Two registered regions remain after the E81 corrections; everything else — every line, load, ambient and
+output point — runs at 100 % with the worst junction at 149 / 149 / 135 / 148 °C (30 / 40 / 50 / 50-air, excluding the registered set).
+
+| Region | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
+|---|---|---|---|---|
+| 500 V series, full load (phase shift / high fn at the line-tracking bus floor) | 55 °C: **86 %**, 75 % at ≥ 450 VAC · 25 °C: 93 % at ≥ 450 VAC | 100 % | 100 % | 55 °C: **86 %** at ≥ 450 VAC |
+| 150 V output, hot, LOW mode (30 kW only — the two-die SKUs are the F-L-1 register below) | 55 °C: **93 %** | — | — | — |
+
+> [!WARNING]
+> **F-L-1 (registered, deck-validated): the 150 V output class in continuous phase shift is NOT SUSTAINABLE on the two-die SKUs**
+> (40 kW, 50 kW liquid and air) at any load or ambient. With the real output charge the weak leg cannot slew its node at that
+> corner (the deck's residual is 85–95 % of the bus), and the incoming die's hard turn-on is a fixed ≈ 90–170 W per die that no
+> power fold removes — a differential deck run (1 000 pF vs 100 pF snubber, fixed duty) measured the charge-replacement energy at
+> 1.0–1.4 × the model now in the grid. Until the E82-1 modulation change lands (burst-PFM at low banks · reduced-frequency phase
+> shift · the low-Z₀ tank of the benchmark re-read R4), **sustained delivery below ≈ 200 V on those SKUs is a documented spec
+> limit** — TonHe's own TH750 floor is 200 V — and the OT ladder is the hardware guard. The 30 kW (one die, 330 pF) serves the
+> corner folded at 93 %.
+
+Every value rests on the clip-mount Rth, which EVT T-38 must confirm within +15 %, and on the air base,
+which T-04 measures on both extrusions.
 
 ## 4. Magnetics — core and winding temperatures
 
@@ -368,7 +416,7 @@ cold start self-warms toward the minimum instead of running away. Details: the
 | Case | Result |
 |---|---|
 | −30 °C cold start (A11 rev C, E60 competitor parity) | Rds low, losses −18 %; electrolytic ESR ×2.5 (cans now −40 °C category) → precharge + 60 s soft power limit of 50 % below −10 °C (FW-R3); ferrite Fe 2.05× but cores self-warm (§4.7); IP55 fans rated −30 °C; chamber proof T-32 |
-| +55 °C inlet | full power; grid Tj ≤ 139 °C with no folds (E68a clip mount) |
+| +55 °C inlet | full power except at the registered folds; grid Tj ≤ 149 °C outside them (E68a clip mount, E81 grid) |
 | +65 °C inlet | derate to 70 % |
 | +75 °C inlet | derate to 40 % — D3/D2 are solved here with copper at 40 % load and iron undiminished, because flux follows bank voltage (§4.4) |
 | Blocked filter (50 %) | airflow −30 % → treated as +8 °C inlet penalty; the firmware ΔT sink-inlet estimator shifts the derate curve left |
@@ -404,10 +452,13 @@ plot `simulation-results/30kw/plots/derating-curve.svg`.
 | Cutout loop: each thermostat opened in turn reports 150 °C and latches F.22 | bring-up |
 | TIM process spec (phase-change pad, 0.5 K·cm²/W class) in the DFM flow | DFM |
 
+> [!TIP]
+> **How this page is checked** — `loss-budget`, `envelope-grid`, `magnetics-envelope`, `temp-critique` and `fault-energy` in `run-all` — this page quotes their output files and changes only when they do.
+
 ---
 
 <div align="center">
 <sub><a href="current-coordination.md">← Current & Protection Coordination</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="insulation-coordination.md">Insulation Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

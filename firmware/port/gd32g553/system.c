@@ -24,11 +24,15 @@ void system_init(void) {
 
   RCU_APB1EN |= BIT(28);                       /* PMU */
   PMU_CTL0 = (PMU_CTL0 & ~(0x1Fu << 11)) | (0x0Eu << 11);   /* LDOVS = 1.15 V (216 MHz needs it), PLL still closed */
-  FMC_WS = (FMC_WS & ~0xFu) | 7u;              /* 7 wait states before raising the clock (Table 2-3) */
+  /* E81 (F-D-7): PFEN with the wait states. The reset value 0x00040600 already has DCEN and ICEN set but NOT the
+     prefetch buffer (UM §2.4.1), and the 1 ms tick runs from flash at 7 wait states — this is free throughput. */
+  FMC_WS = (FMC_WS & ~0xFu) | BIT(8) | 7u;     /* PFEN + 7 wait states before raising the clock (Table 2-3) */
 
 #if PORT_HXTAL_HZ
   RCU_CTL |= BIT(16);                          /* HXTALEN */
-  for (uint32_t t = 0u; t < 4000000u && !(RCU_CTL & BIT(17)); t++) {}
+  /* E81 (F-F-1): bounded to ~20 ms of IRC8M time (≈4 cycles/iteration at 8 MHz). A crystal starts in 1–5 ms; waiting the
+     old 4 M iterations (~2 s) would have let the TPS3430's 23.375 ms window reset the part before the first WDI edge. */
+  for (uint32_t t = 0u; t < 40000u && !(RCU_CTL & BIT(17)); t++) {}
   if (RCU_CTL & BIT(17)) {
     RCU_CTL |= BIT(19);                        /* CKMEN — a stuck crystal forces IRC8M and raises the NMI (CKMIF) */
     pll_config(1u);
@@ -98,8 +102,10 @@ void board_gpio_init(void) {
     /* analog stays in its reset (analog) mode — listed for the audit gate only */
     { BP_L1H, PM_AF, 13 }, { BP_L1L, PM_AF, 13 }, { BP_L2H, PM_AF, 13 }, { BP_L2L, PM_AF, 13 },
     { BP_PWM_A0, PM_AF, 13 }, { BP_PWM_B0, PM_AF, 3 }, { BP_PWM_C0, PM_AF, 13 }, { BP_FLT, PM_AF, 13 },
-    { BP_FAN1, PM_AF, 6 }, { BP_FAN2, PM_AF, 6 }, { BP_KSER, PM_AF, 2 }, { BP_KPARA, PM_AF, 2 },
+    { BP_FAN1, PM_AF, 6 }, { BP_FAN2, PM_AF, 6 }, { BP_KSER, PM_AF, 2 },
     { BP_CAN_RX, PM_AF, 9 }, { BP_CAN_TX, PM_AF, 9 },
+    /* E81 (F-D-6): KPARA leaves TIMER3_CH1 for plain GPIO — the UEXCL NOR needs a steady level, not a 20 kHz chop */
+    { BP_KPARA, PM_OUT, 0 },
     { BP_KPARB, PM_OUT, 0 }, { BP_KPRE, PM_OUT, 0 }, { BP_QDIS, PM_OUT, 0 }, { BP_QDISBK, PM_OUT, 0 },
     { BP_EN_PFC, PM_OUT, 0 }, { BP_EN_LLC, PM_OUT, 0 }, { BP_WDI, PM_OUT, 0 },
     { BP_HMI_DAT, PM_OUT, 0 }, { BP_HMI_CLK, PM_OUT, 0 }, { BP_HMI_LAT, PM_OUT, 0 },

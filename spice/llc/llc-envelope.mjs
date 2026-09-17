@@ -24,7 +24,8 @@ const f = (x, d = 2) => (Number.isFinite(x) ? Number(x.toFixed(d)) : "NaN");
 
 export const ENVELOPE_BANKS = [400, 425, 450, 475, 500];   // E67: 2-mode output caps the bank at 500 V
 export const ENVELOPE_LOADS = [1.0, 0.85, 0.7, 0.55];
-const HDR = ["bank_V", "bus_V", "P_frac", "P_target_W", "P_sim_W", "P_err_pct", "mode", "fsw_kHz", "Im_pk_A", "Ip_rms_A", "Ip_pk_A", "Isec_rms_A", "Vcr_ac_pk_V", "ZVS", "legs_in_rails"];
+// E81 (F-G-9): Icomm/t_dead/ZVS_fail appended at the end — magnetics-envelope and llc-flux-post read this header by name
+const HDR = ["bank_V", "bus_V", "P_frac", "P_target_W", "P_sim_W", "P_err_pct", "mode", "fsw_kHz", "Im_pk_A", "Ip_rms_A", "Ip_pk_A", "Isec_rms_A", "Vcr_ac_pk_V", "ZVS", "legs_in_rails", "Icomm_min_A", "t_dead_need_ns", "t_dead_used_ns", "ZVS_at_120ns", "ZVS_fail_legs"];
 
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const skus = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(TANKS);
@@ -39,8 +40,8 @@ if (fileURLToPath(import.meta.url) === process.argv[1]) {
         const P = t.P * frac;
         const s = solve(`ENV${bank}-${Math.round(frac * 100)}`, t, { VBANK: bank, P });
         const err = (100 * (s.P - P)) / P;
-        rows.push([bank, f(s.VBUS, 0), frac, f(P, 0), f(s.P, 0), f(err, 1), s.mode, f(s.fsw / 1e3, 1), f(s.imPk, 1), f(s.ipRms, 1), f(s.ipPk, 1), f(s.isRms, 1), f(s.vcrAc, 0), s.zvs, s.legOk ? "YES" : "NO"]);
-        console.log(`bank ${bank} V · ${Math.round(frac * 100)} % · ${s.mode} fsw ${f(s.fsw / 1e3, 1)} kHz · P ${f(s.P / 1e3, 2)}/${f(P / 1e3, 2)} kW · Im ${f(s.imPk, 1)} A · Ip ${f(s.ipRms, 1)} A rms · ZVS ${s.zvs} · legs ${s.legOk ? "ok" : "OUT OF RAILS"}`);
+        rows.push([bank, f(s.VBUS, 0), frac, f(P, 0), f(s.P, 0), f(err, 1), s.mode, f(s.fsw / 1e3, 1), f(s.imPk, 1), f(s.ipRms, 1), f(s.ipPk, 1), f(s.isRms, 1), f(s.vcrAc, 0), s.zvs, s.legOk ? "YES" : "NO", f(s.iComm, 1), f(s.tNeed * 1e9, 0), f(s.tDead * 1e9, 0), s.zvs120 ?? s.zvs, s.zvsBad || "-"]);
+        console.log(`bank ${bank} V · ${Math.round(frac * 100)} % · ${s.mode} fsw ${f(s.fsw / 1e3, 1)} kHz · P ${f(s.P / 1e3, 2)}/${f(P / 1e3, 2)} kW · Im ${f(s.imPk, 1)} A · Ip ${f(s.ipRms, 1)} A rms · ZVS ${s.zvs}${s.zvsBad ? ` FAIL:${s.zvsBad}` : ""} · t_dead ${f(s.tNeed * 1e9, 0)} ns · legs ${s.legOk ? "ok" : "OUT OF RAILS"}`);
       }
     }
     writeFileSync(join(RES, "llc-envelope.csv"),

@@ -179,7 +179,7 @@
      {
       "pin_number": 2,
       "name": "IN2",
-      "signal_name": "DGND"
+      "signal_name": "CTL_QDIS"
      },
      {
       "pin_number": 3,
@@ -222,6 +222,11 @@
       "signal_name": "V24"
      },
      {
+      "pin_number": 17,
+      "name": "OUT2",
+      "signal_name": "QDIS_LED"
+     },
+     {
       "pin_number": 18,
       "name": "OUT1",
       "signal_name": "COIL_KPRE"
@@ -260,7 +265,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
      }
     ]
    },
@@ -294,7 +299,41 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "AGND"
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CM24",
+    "value": "100nF",
+    "block_name": "RAIL-MON",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "SNS_V24"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CM15",
+    "value": "100nF",
+    "block_name": "RAIL-MON",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "SNS_V15"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
      }
     ]
    }
@@ -307,10 +346,9 @@
    13,
    14,
    15,
-   16,
-   17
+   16
   ]
  },
  "warnings": [],
- "total": 14
+ "total": 16
 }

@@ -33,7 +33,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_A0"
+      "signal_name": "QA0A_G"
      },
      {
       "pin_number": 1,
@@ -60,7 +60,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_A0"
+      "signal_name": "QA0B_G"
      },
      {
       "pin_number": 1,
@@ -76,6 +76,40 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KS_A0"
+     }
+    ]
+   },
+   {
+    "designator": "RGA0A1",
+    "value": "1",
+    "block_name": "PHASE-A0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QA0A_G"
+     }
+    ]
+   },
+   {
+    "designator": "RGA0B1",
+    "value": "1",
+    "block_name": "PHASE-A0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_A0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QA0B_G"
      }
     ]
    },
@@ -355,7 +389,7 @@
    },
    {
     "designator": "PSA0G",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "PHASE-A0",
     "pins": [
      {
@@ -472,7 +506,7 @@
    },
    {
     "designator": "CA0SN",
-    "value": "100pF",
+    "value": "330pF",
     "block_name": "PHASE-A0",
     "pins": [
      {
@@ -537,6 +571,57 @@
       "signal_name": "DCP"
      }
     ]
+   },
+   {
+    "designator": "DA0CM",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-A0",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "CA0CM_DA0CM"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHA0"
+     }
+    ]
+   },
+   {
+    "designator": "CA0CM",
+    "value": "100nF",
+    "block_name": "PHASE-A0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CA0CM_DA0CM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RA0CM",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-A0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "CA0CM_DA0CM"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCN"
+     }
+    ]
    }
   ],
   [
@@ -565,7 +650,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_B0"
+      "signal_name": "QB0A_G"
      },
      {
       "pin_number": 1,
@@ -592,7 +677,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_B0"
+      "signal_name": "QB0B_G"
      },
      {
       "pin_number": 1,
@@ -608,6 +693,40 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KS_B0"
+     }
+    ]
+   },
+   {
+    "designator": "RGB0A1",
+    "value": "1",
+    "block_name": "PHASE-B0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QB0A_G"
+     }
+    ]
+   },
+   {
+    "designator": "RGB0B1",
+    "value": "1",
+    "block_name": "PHASE-B0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_B0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QB0B_G"
      }
     ]
    },
@@ -887,7 +1006,7 @@
    },
    {
     "designator": "PSB0G",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "PHASE-B0",
     "pins": [
      {
@@ -1004,7 +1123,7 @@
    },
    {
     "designator": "CB0SN",
-    "value": "100pF",
+    "value": "330pF",
     "block_name": "PHASE-B0",
     "pins": [
      {
@@ -1069,6 +1188,57 @@
       "signal_name": "DCP"
      }
     ]
+   },
+   {
+    "designator": "DB0CM",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-B0",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "CB0CM_DB0CM"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHB0"
+     }
+    ]
+   },
+   {
+    "designator": "CB0CM",
+    "value": "100nF",
+    "block_name": "PHASE-B0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CB0CM_DB0CM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RB0CM",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-B0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "CB0CM_DB0CM"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCN"
+     }
+    ]
    }
   ],
   [
@@ -1097,7 +1267,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_C0"
+      "signal_name": "QC0A_G"
      },
      {
       "pin_number": 1,
@@ -1124,7 +1294,7 @@
      {
       "pin_number": 4,
       "name": "G",
-      "signal_name": "G_C0"
+      "signal_name": "QC0B_G"
      },
      {
       "pin_number": 1,
@@ -1140,6 +1310,40 @@
       "pin_number": 3,
       "name": "DS",
       "signal_name": "KS_C0"
+     }
+    ]
+   },
+   {
+    "designator": "RGC0A1",
+    "value": "1",
+    "block_name": "PHASE-C0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QC0A_G"
+     }
+    ]
+   },
+   {
+    "designator": "RGC0B1",
+    "value": "1",
+    "block_name": "PHASE-C0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "G_C0"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "QC0B_G"
      }
     ]
    },
@@ -1419,7 +1623,7 @@
    },
    {
     "designator": "PSC0G",
-    "value": "QA01C-18",
+    "value": "QA01C-15",
     "block_name": "PHASE-C0",
     "pins": [
      {
@@ -1536,7 +1740,7 @@
    },
    {
     "designator": "CC0SN",
-    "value": "100pF",
+    "value": "330pF",
     "block_name": "PHASE-C0",
     "pins": [
      {
@@ -1601,6 +1805,57 @@
       "signal_name": "DCP"
      }
     ]
+   },
+   {
+    "designator": "DC0CM",
+    "value": "SICJBS-1200-10",
+    "block_name": "PHASE-C0",
+    "pins": [
+     {
+      "pin_number": 2,
+      "name": "A",
+      "signal_name": "CC0CM_DC0CM"
+     },
+     {
+      "pin_number": 1,
+      "name": "C",
+      "signal_name": "PHC0"
+     }
+    ]
+   },
+   {
+    "designator": "CC0CM",
+    "value": "100nF",
+    "block_name": "PHASE-C0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "CC0CM_DC0CM"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DCN"
+     }
+    ]
+   },
+   {
+    "designator": "RC0CM",
+    "value": "WW-470R-10W",
+    "block_name": "PHASE-C0",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "A",
+      "signal_name": "CC0CM_DC0CM"
+     },
+     {
+      "pin_number": 2,
+      "name": "B",
+      "signal_name": "DCN"
+     }
+    ]
    }
   ]
  ],
@@ -1608,5 +1863,5 @@
  "warnings": [
   "blocks over 24 comps (split risk): PHASE-A0, PHASE-B0, PHASE-C0"
  ],
- "total": 75
+ "total": 90
 }

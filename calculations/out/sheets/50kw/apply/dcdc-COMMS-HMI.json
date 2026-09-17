@@ -142,6 +142,11 @@
       "pin_number": 3,
       "name": "SGND",
       "signal_name": "CGND"
+     },
+     {
+      "pin_number": 4,
+      "name": "SHLD",
+      "signal_name": "CGND"
      }
     ]
    },
@@ -759,6 +764,40 @@
       "signal_name": "DGND"
      }
     ]
+   },
+   {
+    "designator": "RHPD1",
+    "value": "10k",
+    "block_name": "HMI",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "HMI_CLK"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RHPD2",
+    "value": "10k",
+    "block_name": "HMI",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "HMI_LAT"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
    }
   ]
  ],
@@ -769,9 +808,6 @@
    7,
    11,
    14
-  ],
-  "JCAN": [
-   4
   ],
   "USR1": [
    9
@@ -786,5 +822,5 @@
   ]
  },
  "warnings": [],
- "total": 33
+ "total": 35
 }

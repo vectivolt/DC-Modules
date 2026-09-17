@@ -30,8 +30,17 @@ const ACDC: Rule[] = [
   { m: /^D([ABC])(\d)T$/, p1: { net: "^PH$1$2$" }, p2: { net: "^DCP$" } },  // Vienna boost top
   { m: /^D([ABC])(\d)B$/, p1: { net: "^DCN$" }, p2: { net: "^PH$1$2$" } },  // Vienna boost bottom
   { m: /^D([ABC])(\d)C$/, p1: { net: "^PH$1$2$" }, p2: { peer: "^C[ABC]\\d+C\\." } }, // phase clamp into RCD cap
+  // E81 (F-C-3/F-C-13): the MIRRORED clamp is the same network reflected to the LOWER rail, so its
+  // diode faces the other way — anode on the clamp cap, CATHODE on the phase node, catching the
+  // half-cycle where PH swings BELOW DCN. Getting this backwards would short DCN to PH through the
+  // cap on every positive half-cycle, which is exactly what this gate exists to catch.
+  { m: /^D([ABC])(\d)CM$/, p1: { peer: "^C[ABC]\\d+CM\\." }, p2: { net: "^PH$1$2$" } },
   { m: /^D([ABC])(\d)P$/, p1: { net: "^I_$1$2$" }, p2: { net: "^V3P3$" } }, // ADC clamp up
-  { m: /^D([ABC])(\d)N$/, p1: { net: "^AGND$" }, p2: { net: "^I_$1$2$" } }, // ADC clamp down
+  // E81 (F-A-9): the AC-DC board's analogue returns moved to its LOCAL DGND — the iso-amp
+  // secondaries draw from a DGND-referenced buck (UBKA, added at R4-5) and were returning over one
+  // harness way to the card's single-point tie. The clamp still points DOWN to the board's analogue
+  // return; only the NAME of that return changed, so the rule accepts either board's convention.
+  { m: /^D([ABC])(\d)N$/, p1: { net: "^(AGND|DGND)$" }, p2: { net: "^I_$1$2$" } }, // ADC clamp down
   { m: /^DTVS(24|15)$/, p1: { net: "^DGND$" }, p2: { net: "^V$1$" } },  // unidirectional rail TVS
   { m: /^DAUX15$/, p1: { peer: "^TAUX\\." }, p2: { net: "^V15$" } }, // flyback secondary rectifier
   { m: /^DAUX24$/, p1: { peer: "^TAUX\\." }, p2: { peer: "^(CAUX24|RAUX24)\\.pin1$" } }, // E65: cathode feeds the reservoir, RAUX24 then V24

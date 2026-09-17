@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E73-f2b705?style=flat-square" alt="revision E73"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--14-8b949e?style=flat-square" alt="updated 2026-09-14"/>
-  <img src="https://img.shields.io/badge/host-260_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 260 checks · ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/host-291_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 291 checks · ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -26,7 +26,7 @@
 
 | Level | Where | What it proves | Status |
 |---|---|---|---|
-| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, and (E80) the signed boot chain — SHA-256/ECDSA-P256 against OpenSSL-derived vectors, image acceptance, trial/rollback, the update protocol under drops and power cuts | **260 checks, green** |
+| **L1 host** | `firmware/run_tests.sh` | logic, protection rows and recovery, protocol conformance to the documents, malformed-input robustness, one core behind both profiles, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, and (E80) the signed boot chain — SHA-256/ECDSA-P256 against OpenSSL-derived vectors, image acceptance, trial/rollback, the update protocol under drops and power cuts, and (E81) the adaptive LLC dead time, the demand map, the per-rating fan count and the protocol fixes | **291 checks, green** |
 | **L2 static** | cppcheck + clang-tidy (bugprone, cert, misc), a MISRA C:2012 subset, stack-depth analysis | no undefined-behaviour classes, bounded stacks, no implicit narrowing on the wire path | planned |
 | **L3 HIL** | the production control card against a real-time plant, with two CAN interfaces and fault injection | timing, loops, sequencing, bus behaviour, NVM and update paths on the real MCU | planned |
 | **L4 EVT** | power hardware: T-44…T-49 with the existing T-03, T-06, T-16, T-35, T-42 | control transients, protection and interoperability on real power | planned |
@@ -34,7 +34,7 @@
 
 ```mermaid
 flowchart LR
-  SRC["firmware/core · firmware/proto · firmware/hal · firmware/boot"] --> L1["L1 host · run_tests.sh<br/>260 checks · sanitizers fatal"]
+  SRC["firmware/core · firmware/proto · firmware/hal · firmware/boot"] --> L1["L1 host · run_tests.sh<br/>291 checks · 7 binaries<br/>sanitizers fatal"]
   SRC --> L2["L2 static<br/>MISRA subset · stack depth"]
   L1 --> RA["run-all.sh<br/>every commit"]
   L2 --> L3["L3 HIL · nightly<br/>real card · real-time plant · CAN fuzz"]
@@ -246,7 +246,7 @@ non-deterministic outcome across repeated runs of the same injected sequence.
 T-44 firmware timing on the target · T-45 load dump at full current · T-46 TonHe V1.2 interoperability · T-47 parallel sharing ·
 T-48 control transients · T-49 fault and recovery cycling — procedures and criteria in the [EVT plan](evt-plan.md).
 
-## E80 additions
+## 5. E80 additions
 
 | ID | Behaviour under test | Where | Status |
 |---|---|---|---|
@@ -258,10 +258,13 @@ T-48 control transients · T-49 fault and recovery cycling — procedures and cr
 | X-14 | The target cross-build links boot + slot A/B and signs both images | `firmware/port/gd32g553/build.sh` (run-all when the ARM GCC exists) | **gate, green** |
 | T-52…T-56 | Boot/update on silicon · the TPS3430 window · the fan curve constant · the aux fault matrix · PV bleeder hot/humid | [EVT plan](evt-plan.md) | planned |
 
+> [!TIP]
+> **How this page is checked** — `sh firmware/run_tests.sh` is L1 and runs in `run-all` (291 checks, sanitizers fatal); L2–L4 are the HIL, fuzzing and endurance campaigns this page specifies.
+
 ---
 
 <div align="center">
 <sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E73 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E81 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -9,7 +9,10 @@
 // by tank fingerprint) · calculations/out/vienna-switched.csv (calculations/pfc/vienna-switched.mjs)
 // Run: node calculations/system/current-coordination.mjs        (run-all, after vienna-switched)
 import { mountFor } from "../thermal/mount.mjs";
-import { shortRacePeak } from "../../spice/llc/llc-flux-post.mjs";
+import { shortRacePeak, F11_FAST_US, F11_KILL_US, F11_MON_US } from "../../spice/llc/llc-flux-post.mjs";
+import { CAN, FILM, DRAWN as DCL_DRAWN, DAMP, drawnFor as dclDrawnFor } from "../../spice/dclink/dclink-ripple.mjs";
+import { ENTRY_FILM } from "../cost/parts-db.mjs";
+import { lMinFor, BANK_FILM, CBANK, RELAY_MAKE_A, FW42_PERMIT_V } from "../../spice/llc/sp-transition.mjs";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +25,14 @@ captureEvidence("current-coordination");
 // E69a: pulsed rating IDM (25 °C) per die — listings where they exist, otherwise the RFQ acceptance line the part must meet
 const PFC_DIE = { "30kw": { mpn: "SIC-750V-20mR", idm: 210, src: "RFQ acceptance IDM ≥ 210 A" }, "40kw": { mpn: "SIC-750V-15mR", idm: 260, src: "RFQ acceptance IDM ≥ 260 A" },
   "50kw": { mpn: "B3M010C075Z", idm: 480, src: "TME listing" }, "50kwa": { mpn: "B3M010C075Z", idm: 480, src: "TME listing" } };
-const LLC_IDM = { SG2M023120LJ: { idm: 265, src: "RFQ acceptance IDM ≥ 265 A (the C3M0021120K class lists 250 A)" } };
+// E81 (lead decision, F-C-10): the public PROXY (C3M0021120K) lists I_DM 200 A per die; the SG2M023120LJ is bought against the
+// E69a RFQ ACCEPTANCE line I_DM ≥ 265 A (parts-db) — that line is what the 30 kW single die is gated on here, and it is the
+// binding RFQ line of the 30 kW (the fast-kill peak reads 101 % of the proxy's 200 A). Fallbacks if the RFQ cannot meet it:
+// two dies per position (+₹1,560) or F.11 at 30 kW 140 → 125 A with a slower soft start.
+const LLC_IDM = { SG2M023120LJ: { idm: 265, src: "SG2M023120LJ RFQ acceptance I_DM ≥ 265 A (E69a line, parts-db) — the C3M0021120K proxy lists 200 A; BINDING RFQ LINE for the 30 kW single die" } };
+// E81 kill-path budget: HRTIMER fault filter 0b0011 (~0.14 µs at f_HRTIM/4, 4 events) + comparator ~50 ns + driver ~60 ns
+// + t_d(off) ~50 ns ≈ 0.3 µs, so 0.5 µs is the budgeted window with margin; 1 µs stays as the conservative one.
+const KILL_BUDGET = "HRTIMER filter 0b0011 ≈140 ns + comparator 50 ns + driver 60 ns + t_d,off 50 ns ≈ 0.3 µs → 0.5 µs budget";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const rd = (p) => readFileSync(join(ROOT, p), "utf8");
 const f = (x, d = 1) => Number(x.toFixed(d));
@@ -40,7 +50,7 @@ export const OC = {
   "50kw": { F01: 195, lineRb: 13, F11: 220, resRb: 0.30, lineMpn: "R1206-13R-1%", resMpn: "R2512-0R30-2W-1%" },
 };
 OC["50kwa"] = OC["50kw"];
-export const BLANK = { pfc: 47e-12, llc: 22e-12 };              // DESAT blanking caps (NSI66x1A)
+export const BLANK = { pfc: 47e-12, llc: 18e-12 };              // DESAT blanking caps (NSI66x1A) — E81 (F-C-8): LLC 22 → 18 pF: the two-die soft-off charge needs < 22 pF for the 75 %-of-SCWT response and the 0.4 µs noise floor needs ≥ 16 pF
 const RULE = { margin: 1.2, avmid: 1.65, rail: 3.27, thrMaxV: 3.0 };
 const Bsat130 = 0.499 + (0.401 - 0.499) / 75 * (130 - 25);      // measured 3C95 (temp-critique basis)
 console.log("=== CURRENT & PROTECTION COORDINATION (E60 gate, E67 full bridge) — simulated currents vs thresholds, ceilings, flux, timing, parts ===");
@@ -54,8 +64,31 @@ for (const sku of Object.keys(TANKS)) {
   const hdr = lines[0].split(","); LLC[sku] = lines.slice(1).map((l) => Object.fromEntries(l.split(",").map((v, i) => [hdr[i], v])));
   ck("SIM", `${sku} LLC deck pinned to the drawn tank`, s.fingerprint === fingerprint(sku),
     `${s.fingerprint} vs tanks.mjs ${fingerprint(sku)} — a tank change without a re-run fails here (the pre-E60 suite ran the 30 kW tank for everything)`);
-  ck("SIM", `${sku} deck physical + capable`, s.legsInRails && s.zvsAll && LLC[sku].every((r) => r.mode !== "NO-CAPABILITY" && (r.mode === "BURST" || Math.abs(+r.P_err_pct) <= 2.5)),
-    `legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · ZVS on all 4 switches every corner · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner`);
+  // E81 / review G (F-G-6): llc-short.csv carried a fingerprint that NO gate read, so a tank change plus an llc-run re-run
+  // WITHOUT llc-envelope (llc-flux-post then refuses to rewrite it) left the F.11 race checks on the previous tank, green.
+  const shortHdr = rd(`simulation-results/${sku}/llc-short.csv`).split("\n")[0];
+  ck("SIM", `${sku} short-race envelope pinned to the drawn tank`, shortHdr.includes(fingerprint(sku)),
+    `llc-short.csv header vs tanks.mjs ${fingerprint(sku)} — re-run spice/llc/llc-run.mjs → llc-envelope.mjs → llc-flux-post.mjs together, or this file stays on the old tank`);
+  // E81 / review G (F-G-9): physicality/capability and ZVS are now SEPARATE rows. They used to be one `&&`, so a ZVS loss
+  // read as "the deck is non-physical" and a physicality loss read as "ZVS". The ZVS row is also no longer free: the deck
+  // models the real non-linear Coss and reads the leg voltage BEFORE the gate rises, so a corner that hard-switches says so.
+  ck("SIM", `${sku} deck physical + capable`, s.legsInRails && LLC[sku].every((r) => r.mode !== "NO-CAPABILITY" && (r.mode === "BURST" || Math.abs(+r.P_err_pct) <= 2.5)),
+    `legs inside the rails on every corner (the no-body-diode deck swung ±6 kV) · power solved ≤2.5 % (BURST corners excepted: capability above target at f_max) incl. the gain-worst tolerance corner`);
+  // E81 close-out (lead, after the G deck and the dead-time-window sweep): in phase shift the WEAK leg (leg A) commutates on a
+  // decaying ~I_m and its slew is an ENERGY limit (½·Lr·i² against the leg charge). With the real Coss it loses zero-voltage turn-on
+  // at PAR200-I_max and PS150-I_max on EVERY SKU at ANY snubber value (an E67-era limit the linear 250 pF model hid), and at the
+  // high-line SER250 corner on the 30 kW (its single die, 5.6 µH tank). Those corners are REGISTERED here with the residual the deck
+  // reports (Vres_A → envelope-grid's hard-turn-on term folds them); any OTHER corner that loses ZVS, or a registered corner whose
+  // residual is missing, fails. The mitigation (phase-shift frequency policy · secondary-side modulation · Lr) is the E82 option.
+  const ZVS_REGISTERED = { "30kw": ["SER250-full-bus764", "PAR200-Imax", "PS150-Imax"], "40kw": ["SER250-full-bus764", "PAR200-Imax", "PS150-Imax"], "50kw": ["SER250-full-bus764", "PAR200-Imax", "PS150-Imax"], "50kwa": ["SER250-full-bus764", "PAR200-Imax", "PS150-Imax"] };   // the deck (residual column): residuals 28–584 V of the bus, worst at PS150
+  const zbad = LLC[sku].filter((r) => (r.ZVS_fail_legs ?? "-") !== "-");
+  const reg = ZVS_REGISTERED[sku] ?? [];
+  const unreg = zbad.filter((r) => !reg.includes(r.corner));
+  const regRows = LLC[sku].filter((r) => reg.includes(r.corner));
+  const resOk = regRows.every((r) => r.Vres_A_V !== undefined && Number.isFinite(+r.Vres_A_V));
+  ck("ZVS", `${sku} zero-voltage turn-on at the dead time the modulator programs (registered weak-leg exceptions excluded)`, unreg.length === 0 && resOk && regRows.length === reg.length,
+    (unreg.length ? `UNREGISTERED loss on ${unreg.map((r) => `${r.corner} ${r.ZVS} legs ${r.ZVS_fail_legs}`).join(" · ")} — ` : "") +
+    `registered weak-leg (leg A) exceptions: ${regRows.map((r) => `${r.corner} ${r.ZVS} (i_comm,A ${r.Icomm_min_A} A, residual ${r.Vres_A_V ?? "?"} V of ${r.bus_V} V → envelope-grid hard-turn-on term)`).join(" · ") || "none"} — non-linear Coss (Qoss ${Math.round(TANKS[sku].dieP.qoss800 * 1e9)} nC/die × ${TANKS[sku].par}) + ${Math.round((TANKS[sku].cs ?? 0) * 1e12)} pF snubber/die, 20 V window; every other corner ZVS on all four switches`);
 }
 const vs = rd("calculations/out/vienna-switched.csv").split("\n").filter((l) => l && !l.startsWith("#"));
 const vh = vs[0].split(","), VS = vs.slice(1).map((l) => { const c = l.match(/("[^"]*"|[^,]+)/g); return Object.fromEntries(c.map((v, i) => [vh[i], v])); });
@@ -102,9 +135,10 @@ for (const sku of Object.keys(TANKS)) {
   const di = racePk - c.F11, ceil = (RULE.rail - RULE.avmid) * 100 / c.resRb, thrV = RULE.avmid + c.F11 * c.resRb / 100;
   ck("F.11", `${sku} window-comparator kill + observability`, racePk * 1.2 <= ceil && mon * 1.05 <= ceil && thrV <= RULE.thrMaxV && 2 * RULE.avmid - thrV >= 0.3,
     `|Ip| crosses F.11 ${f(tX, 2)} µs after the short → kill peak ${f(racePk)} A (+1 µs, ×1.2 ≤ ${f(ceil)} A on ${c.resRb} Ω) · monitor peak +3 µs ${f(mon)} A ×1.05 in rail · window ${f(2 * RULE.avmid - thrV, 2)}/${f(thrV, 2)} V`);
-  const li = LLC_IDM[t.dieP.mpn];
-  ck("F.11", `${sku} LLC FET pulse class at the kill peak`, li && racePk / t.par <= 0.8 * li.idm,
-    `${f(racePk / t.par)} A per die (${t.par}× ${t.dieP.mpn} per position) vs 80 % of IDM ${li?.idm} A (${li?.src}) — non-repetitive µs pulse at low VDS`);
+  const li = LLC_IDM[t.dieP.mpn], fastPk = shortRacePeak(sku, c.F11, F11_FAST_US).peak;
+  // E81 (lead): the REAL kill path is ≈0.3 µs, so the die sees the +0.5 µs peak, not the +1 µs one. Limit = 0.9 × I_DM × par.
+  ck("F.11", `${sku} LLC FET pulse class at the FAST kill peak`, li && fastPk <= 0.9 * li.idm * t.par,
+    `+${F11_FAST_US} µs ${f(fastPk)} A ≤ 0.9 × ${li?.idm} A × ${t.par} die = ${f(0.9 * li?.idm * t.par)} A (${KILL_BUDGET}) · conservative +${F11_KILL_US} µs ${f(racePk)} A (${f(100 * racePk / (li.idm * t.par), 0)} % of I_DM) · monitor +${F11_MON_US} µs ${f(mon)} A · ${li?.src}`);
   const d2 = D2C[sku], Ae2 = stack(d2.core, d2.n).Ae;
   const bNorm = d2.Lmax * pkNom / (d2.N * Ae2), bFault = d2.Lmax * racePk / (d2.N * Ae2);
   ck("D2", `${sku} external Lr flux: operating + fault`, bNorm <= 0.110 && bFault <= 0.6 * Bsat130,
@@ -160,8 +194,8 @@ for (const sku of Object.keys(TANKS)) {
     ck("DESAT", `${stage} response inside 75 % of SCWT`, r <= 0.75 * scwt && blankMin(C) >= minBlank * 0.99,
       `${f(C * 1e12, 0)} pF: worst blank+LEB+delay+soft-off = ${f(r * 1e6, 2)} µs ≤ ${f(0.75 * scwt * 1e6, 2)} µs (SCWT class ${f(scwt * 1e6, 1)} µs) · min blank ${f(blankMin(C) * 1e6, 2)} µs ≥ ${f(minBlank * 1e6, 2)} µs noise floor — the as-drawn 100 pF computed ${f(r100 * 1e6, 2)} µs (${f(100 * r100 / scwt, 0)} % of SCWT)`);
   }
-  ck("DESAT", "blanking caps carried by the drawing", /cBlank = "100pF"/.test(cells) === false && /capacitance=\{cBlank\}/.test(cells) && /cBlank="47pF"/.test(cells) && /cBlank="22pF"/.test(cells),
-    "DriverCh takes cBlank per channel: Vienna pairs 47 pF, LLC half-bridges 22 pF");
+  ck("DESAT", "blanking caps carried by the drawing", /cBlank = "100pF"/.test(cells) === false && /capacitance=\{cBlank\}/.test(cells) && /cBlank="47pF"/.test(cells) && /cBlank="18pF"/.test(cells),
+    "DriverCh takes cBlank per channel: Vienna pairs 47 pF, LLC half-bridges 18 pF (E81 F-C-8: 10 / 15 pF sat under the 0.4 µs noise floor, 22 pF over 75 % of the SCWT with two dies)");
   void boards;
 }
 
@@ -227,6 +261,48 @@ for (const sku of ["30kw", "40kw", "50kw"]) {
     `${f(r.i2t, 0)} A²s per diode vs 50 % of the RFQ line IFSM ≥ ${ifsmLine} A (10 ms half-sine → ${f((ifsmLine ** 2 * 0.01) / 2, 0)} A²s)`);
   ck("INRUSH", `${sku} bypass relay make and gG fuse at closure`, make >= 1.25 * r.ipk && r.i2t <= 0.1 * GG_PREARC[sku],
     `make ${f(r.ipk, 0)} A pk at ≤ ${f(r.pk - r.vbc, 0)} V across the contacts vs the RFQ make line ${make} A pk (≥ 1.25×) · fuse ${f(r.i2t, 0)} A²s ≤ 10 % of the gG pre-arc ${GG_PREARC[sku]} A²s — no melting, no ageing`);
+}
+
+// ---------------- J2. DC-link HF ripple share (E81 / F-G-1) and S/P closure (F-G-4) ----------------
+{
+  const boards = rd("packages/common-components/boards.tsx");
+  for (const sku of Object.keys(TANKS)) {
+    let txt = null;
+    try { txt = rd(`simulation-results/${sku}/dclink-ripple.csv`); } catch { /* handled below */ }
+    if (!txt) { ck("DCLINK", `${sku} ripple-share result present`, false, `simulation-results/${sku}/dclink-ripple.csv missing — run node spice/dclink/dclink-ripple.mjs ${sku}`); continue; }
+    const lines = txt.split("\n").filter(Boolean);
+    ck("DCLINK", `${sku} ripple deck pinned to the drawn tank`, lines[0].includes(fingerprint(sku)),
+      `dclink-ripple.csv header vs tanks.mjs ${fingerprint(sku)}`);
+    const hdr = lines.find((l) => l.startsWith("corner,")).split(",");
+    const rows = lines.filter((l) => /^(SER|PAR)/.test(l)).map((l) => Object.fromEntries(l.split(",").map((v, i) => [hdr[i], v])));
+    const DCLS = dclDrawnFor(sku);   // E81: per-SKU film count (parts-db ENTRY_FILM: 16 / 16 / 20 / 20)
+    const drawn = rows.filter((r) => +r.n_film === DCLS.nFilm && (r.damper === "yes") === DCLS.damper && +r.stud_nH === 40);
+    // E81: the 20 nH stud row is a SENSITIVITY (a shorter stud moves the anti-resonance UP onto 2·fsw); the design stud is the
+    // bolted two-board path (≈ 40 nH, T-57 measures) — the 20 nH result is printed, the 40 nH result is gated
+    const sens20 = rows.filter((r) => +r.n_film === DCLS.nFilm && (r.damper === "yes") === DCLS.damper && +r.stud_nH === 20);
+    const sensCan = sens20.length ? Math.max(...sens20.map((r) => +r.I_per_elyt_can_A)) : NaN;
+    const base = rows.filter((r) => r.variant === "as-drawn");
+    const canLim = CAN.gateFrac * CAN.rfqA;   // E81: 80 % of the purchased can's 105 °C RFQ ripple line (3.0 A), see dclink-ripple.mjs
+    const worstCan = Math.max(...drawn.map((r) => +r.I_per_elyt_can_A)), worstFilm = Math.max(...drawn.map((r) => +r.I_per_bridge_film_A));
+    const baseCan = base.length ? Math.max(...base.map((r) => +r.I_per_elyt_can_A)) : NaN;
+    ck("DCLINK", `${sku} link electrolytic ripple at 2·fsw with ${DCLS.nFilm} × 1 µF entry film${DCLS.damper ? " + RC damper" : ""}`,
+      drawn.length >= 2 && worstCan <= canLim && worstFilm <= FILM.rmsA,
+      `per can ${f(worstCan, 2)} A rms ≤ ${f(canLim, 2)} A (${CAN.gateFrac * 100} % of the RFQ line ${CAN.rfqA} A @100 kHz / 105 °C on the 470 µF / 500 V can; the module can ambient ≤ 70 °C carries ≥ 1.3× that; the deck's first line was 60 % of an assumed ${CAN.classA} A class) · per entry film ${f(worstFilm, 1)} A ≤ ${FILM.rmsA} A — the 4 × 1 µF as drawn before E81 read ${f(baseCan, 2)} A per can (${f(100 * baseCan / CAN.classA, 0)} % of class): the entry film resonates with the stud loop and the Vienna films with their 60 nH stub, both at 350–400 kHz, and 2·fsw at the PSM ceiling is 406 kHz${Number.isFinite(sensCan) ? ` · SENSITIVITY at a 20 nH stud: ${f(sensCan, 2)} A per can (${f(100 * sensCan / CAN.classA, 0)} % of class) — if T-57 measures ≤ 25 nH the 20-film lever (+₹218) applies` : ""}`);
+  }
+  // the drawing must carry what the sweep chose
+  // count the DC-DC entry film bank: find the 1 µF CF capacitor and read the Array.from length that generates it
+  // E81: boards.tsx carries its own per-SKU table (tsci bundles cannot import the Node-side parts-db); this gate holds the two in step
+  const bt = boards.match(/const ENTRY_FILM[^=]*=\s*\{\s*30:\s*(\d+),\s*40:\s*(\d+),\s*50:\s*(\d+)\s*\}/);
+  const perSku = !!bt && +bt[1] === ENTRY_FILM["30kw"] && +bt[2] === ENTRY_FILM["40kw"] && +bt[3] === ENTRY_FILM["50kw"] && ENTRY_FILM["50kw"] === ENTRY_FILM["50kwa"];
+  ck("SYNC", "boards.tsx DC-DC entry film bank + RC damper (E81 / F-G-1)",
+    perSku && (!DCL_DRAWN.damper || (/CFDMP/.test(boards) && /RFDMP/.test(boards))),
+    `boards.tsx draws the entry film bank from parts-db ENTRY_FILM (${Object.entries(ENTRY_FILM).map(([k, v]) => `${k} ${v}`).join(" · ")} × 1 µF)${DCL_DRAWN.damper ? ` plus the RC damper CFDMP ${DAMP.C * 1e6} µF + RFDMP ${DAMP.R} Ω across DCP–DCN` : ""} — each SKU's drawn count holds its cans ≤ ${CAN.gateFrac * 100} % of the RFQ line at the 40 nH design stud (the 20-film variant on 30/40 kW = the lever)`);
+  // S/P closure: the FW-42 permit against the relay make line is a LOOP-INDUCTANCE requirement on the layout
+  for (const sku of Object.keys(TANKS)) {
+    const lMin = lMinFor(sku);
+    ck("SP", `${sku} S/P closure at the FW-42 |ΔV| ≤ ${FW42_PERMIT_V} V permit`, lMin <= 300e-9,
+      `${BANK_FILM[sku]} × 2.2 µF film bank (${f(CBANK(sku) * 1e6, 1)} µF) needs a closure loop ≥ ${f(lMin * 1e9, 0)} nH to keep the make current under ${RELAY_MAKE_A} A — a layout line, verifiable; the E60 deck's 1.5 mF bank made this 3 kA and its 205 A headline 7× pessimistic`);
+  }
 }
 
 // ---------------- K. carriers agree with the classes ----------------

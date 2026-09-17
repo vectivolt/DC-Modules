@@ -49,6 +49,16 @@
       "signal_name": "WDI"
      },
      {
+      "pin_number": 12,
+      "name": "pin12",
+      "signal_name": "OSCIN_CARD"
+     },
+     {
+      "pin_number": 13,
+      "name": "pin13",
+      "signal_name": "OSCOUT_CARD"
+     },
+     {
       "pin_number": 14,
       "name": "pin14",
       "signal_name": "NRST_CARD"
@@ -66,7 +76,7 @@
      {
       "pin_number": 17,
       "name": "pin17",
-      "signal_name": "AIN8"
+      "signal_name": "TSNS0"
      },
      {
       "pin_number": 18,
@@ -136,7 +146,7 @@
      {
       "pin_number": 32,
       "name": "pin32",
-      "signal_name": "TSNS0"
+      "signal_name": "AIN8"
      },
      {
       "pin_number": 33,
@@ -573,8 +583,86 @@
     ]
    },
    {
+    "designator": "XCARD",
+    "value": "XTAL-8M-30PPM-3225",
+    "block_name": "MCU",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "X1",
+      "signal_name": "OSCIN_CARD"
+     },
+     {
+      "pin_number": 2,
+      "name": "G1",
+      "signal_name": "DGND"
+     },
+     {
+      "pin_number": 3,
+      "name": "X2",
+      "signal_name": "OSCOUT_CARD"
+     },
+     {
+      "pin_number": 4,
+      "name": "G2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CCARDX1",
+    "value": "12pF",
+    "block_name": "MCU",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "OSCIN_CARD"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "CCARDX2",
+    "value": "12pF",
+    "block_name": "MCU",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "OSCOUT_CARD"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "RCARDXF",
+    "value": "1M",
+    "block_name": "MCU",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "OSCIN_CARD"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "OSCOUT_CARD"
+     }
+    ]
+   },
+   {
     "designator": "FBCARDA",
-    "value": "0R",
+    "value": "50m",
     "block_name": "MCU",
     "pins": [
      {
@@ -743,7 +831,7 @@
      {
       "pin_number": 8,
       "name": "WDO#",
-      "signal_name": "NRST_CARD"
+      "signal_name": "WDO_CARD"
      },
      {
       "pin_number": 10,
@@ -775,7 +863,7 @@
      {
       "pin_number": 2,
       "name": "B1",
-      "signal_name": "NRST_CARD"
+      "signal_name": "WDO_CARD"
      },
      {
       "pin_number": 3,
@@ -785,7 +873,7 @@
      {
       "pin_number": 4,
       "name": "B2",
-      "signal_name": "NRST_CARD"
+      "signal_name": "WDO_CARD"
      },
      {
       "pin_number": 5,
@@ -847,7 +935,7 @@
      {
       "pin_number": 2,
       "name": "pin2",
-      "signal_name": "NRST_CARD"
+      "signal_name": "WDO_CARD"
      }
     ]
    },
@@ -950,6 +1038,52 @@
       "pin_number": 2,
       "name": "pin2",
       "signal_name": "DRV_RDY"
+     }
+    ]
+   },
+   {
+    "designator": "RWDICARD",
+    "value": "10k",
+    "block_name": "SAFETY",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "WDI"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "DGND"
+     }
+    ]
+   },
+   {
+    "designator": "TPWDICARD",
+    "value": "TP-1mm-PAD",
+    "block_name": "SAFETY",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "P",
+      "signal_name": "WDI"
+     }
+    ]
+   },
+   {
+    "designator": "RWDOLCARD",
+    "value": "0R",
+    "block_name": "SAFETY",
+    "pins": [
+     {
+      "pin_number": 1,
+      "name": "pin1",
+      "signal_name": "WDO_CARD"
+     },
+     {
+      "pin_number": 2,
+      "name": "pin2",
+      "signal_name": "NRST_CARD"
      }
     ]
    },
@@ -1812,8 +1946,6 @@
    8,
    9,
    10,
-   12,
-   13,
    31,
    97,
    98
@@ -1839,5 +1971,5 @@
   ]
  },
  "warnings": [],
- "total": 48
+ "total": 55
 }
