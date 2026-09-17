@@ -21,7 +21,18 @@
 sh calculations/run-all.sh
 ```
 
-## The battery, in the order it runs
+## At a glance
+
+| | |
+|---|---|
+| **One command** | `sh calculations/run-all.sh` — **exit 0** end to end; every gate runs as its own command so none can pass silently |
+| **What it produces** | the design CSVs in `out/`, the four module BOM pages, the four module magnetics pages, the busbar and pin-map pages |
+| **Standing gates** | stress-audit **158** · current-coordination **102** · mag-sync 48 · magnetics-envelope 30 · fault-energy 23 · conductor-audit 18 · temp-critique 10 |
+| **Clean-room check** | `verify-independent` **243 / 243** — its own netlist parser and its own physics |
+| **Firmware** | `sh firmware/run_tests.sh` — **291 checks** under ASan/UBSan across seven binaries |
+| **Documentation** | `docs-lint` — 42 registered pages, every link, anchor, masthead, footer and mermaid type |
+
+## 1. The battery, in the order it runs
 
 ```mermaid
 flowchart TB
@@ -47,7 +58,7 @@ flowchart TB
     direction LR
     VI["verify-independent 227"] --> FA["footprint-audit"] --> DL["docs-lint"]
   end
-  FW["6 · firmware run_tests.sh 63/63"]
+  FW["6 · firmware run_tests.sh<br/>291 checks · 7 binaries"]
   ENG --> BOM --> STR --> PHY --> IND --> FW
   style PHY stroke:#d19a00,stroke-width:2px
   style IND stroke:#2ea44f,stroke-width:2px
@@ -69,7 +80,7 @@ flowchart TB
 | `emi/lisn-precompliance.mjs` | conducted-emissions tendency per variant |
 | `thermal/loss-budget.mjs` | loss budgets from the power-solved LLC current, JBS vs SR, derating |
 | `thermal/mount.mjs` | the one device-mounting basis every Tj engine reads — clip-mounted TO-247 on Al2O3 (E68a) |
-| `system/envelope-grid.mjs` | the 4-SKU envelope grid — **4,536 points, 0 failures, 0 folds** |
+| `system/envelope-grid.mjs` | the 4-SKU envelope grid — **4,536 points**, every point passing or a registered fold (E81 F-L-1) |
 | `system/monte-carlo.mjs` · `system/fsm-sim.mjs` | §37 tolerance batches · §36 scenario suite |
 | `busbar/busbar-calc.mjs` | bulk-copper paths and the joint schedule → `docs/busbar-drawings.md` |
 | `control/umod-pinmap.mts` | **single source** for the card map, harness and MCU pins → `umod-map.gen.ts` |
@@ -138,6 +149,9 @@ flowchart LR
 | `doc-chrome.mjs` | the page registry: banner, title, badges and footer for all 37 documentation pages |
 
 Outputs land in `out/`; the CSVs are committed because documents cite them.
+
+> [!TIP]
+> **How this page is checked** — itself — `sh calculations/run-all.sh` is the gate, and it exits non-zero if any engine, audit, generator or the firmware suite fails.
 
 ---
 

@@ -27,7 +27,7 @@
 | **Coating** | acrylic conformal coating on both boards and the card (E52) |
 | **First-article holds** | magnetics per lot · coating mask set · choke centre-bolt torque · clip force (E68a) · the bonded-soak accept band |
 
-## Build flow
+## 1. Build flow
 
 ```mermaid
 flowchart LR
@@ -46,7 +46,7 @@ flowchart LR
   style K stroke:#d19a00,stroke-width:2px
 ```
 
-## 1. Assembly sequence (per module)
+## 2. Assembly sequence (per module)
 
 | Step | Operation | Hold point |
 |---|---|---|
@@ -60,7 +60,7 @@ flowchart LR
 | **8 · Enclosure** | Tunnel baffles · fans (airflow-arrow check) · filter · front panel with display window, button actuators and CAN / termination access | — |
 | **9 · End-of-line** | The eight tests below → serialise, HMI address 00, ship configuration written over CAN IDENT | 100 % |
 
-## 2. Torque schedule
+## 3. Torque schedule
 
 | Joint | Hardware | Torque | Check |
 |---|---|---:|---|
@@ -77,7 +77,7 @@ flowchart LR
 > plated holes, because a ring lug cannot land in a hole (D1 terminations on each module magnetics page).
 > The busbar joint schedule is also the source for this table: [busbar drawings](busbar-drawings.md).
 
-## 3. End-of-line test (§45) — 100 % unless noted
+## 4. End-of-line test (§45) — 100 % unless noted
 
 | # | Test | Limit or window | What it proves |
 |---:|---|---|---|
@@ -112,7 +112,7 @@ flowchart LR
 
 Records go to MES as a serial-keyed CSV; firmware locks its lifetime counters at the first RUN.
 
-## 4. Coating and vents
+## 5. Coating and vents
 
 > [!IMPORTANT]
 > **E59 electrolytic vent rule** — keep ≥ 5 mm free space above every snap-in can's vent face; no conformal
@@ -129,7 +129,7 @@ Records go to MES as a serial-keyed CSV; firmware locks its lifetime counters at
 | Cost | mechanical line ₹320–360 per module | E52 |
 | Liquid 50 kW | the sealed, fanless enclosure covers the IP65 role — no potting | E60 (A11 rev C) |
 
-## 5. What stays common across the family (§44)
+## 6. What stays common across the family (§44)
 
 | Common to every SKU | Unique per SKU |
 |---|---|
@@ -138,6 +138,9 @@ Records go to MES as a serial-keyed CSV; firmware locks its lifetime counters at
 | one relay family, one fan part, one connector set | shunt rating |
 | two board designs per SKU from **one** cell library | busbar lengths |
 | one control card — its RATING strap tells it which SKU it runs | CT burden values (E60) |
+
+> [!TIP]
+> **How this page is checked** — the EOL steps derive from [EVT](evt-plan.md) rows and the torque and joint schedule from the generated [busbar drawings](busbar-drawings.md); the assembly content itself is proven at the first build, not by a gate.
 
 ---
 

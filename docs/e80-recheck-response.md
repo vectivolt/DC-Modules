@@ -11,6 +11,14 @@
   <img src="https://img.shields.io/badge/findings-71_rows_·_2_reviews-d19a00?style=flat-square" alt="findings: 71 rows · 2 reviews"/>
 </p>
 
+> [!NOTE]
+> **Purpose** — the two external hardware rechecks of the E79 release, triaged claim by claim: what was fixed, what
+> was already closed, what was refuted against the built sources, and what maps to a test row. Superseded in part by
+> the [E81 full-system validation](e81-validation-report.md), which re-derived the same domains from first principles.
+>
+> **Gate coupling** — each FIXED row names the gate that re-ran for it (`kicad5-verify`, `review-checks`,
+> `verify-independent`, `run_tests.sh`); each EVT / RFQ HOLD row names its [EVT](evt-plan.md) test.
+
 Two independent reviews of the E79 release arrived 2026-09-17: register **HR-01…HR-33** and register **R01…R38**
 (overlapping scopes, occasionally contradicting each other). This page is the E45/E46/E74 pattern applied to both at
 once: every claim re-derived against the built netlists, the generated exports, the firmware sources and the vendor
@@ -21,6 +29,15 @@ data already in the repository. Verdicts:
 - **REFUTED** — the claim does not hold against the built sources; the evidence is cited.
 - **EVT / RFQ HOLD** — a real qualification requirement no repository edit can discharge; mapped to its test row.
 - **OPEN** — a genuine open decision, registered with an owner.
+
+## At a glance
+
+| | |
+|---|---|
+| **Inputs** | two independent external hardware rechecks of the E79 release — **HR-01…HR-33** and **R01…R38** (71 rows, overlapping and occasionally contradicting each other) |
+| **Method** | the E45 / E46 / E74 pattern: every claim re-derived against the built netlists, the generated exports, the firmware sources and the vendor data already in the repository |
+| **Verdicts** | FIXED · ALREADY CLOSED · REFUTED · EVT / RFQ HOLD · OPEN — each with its evidence cited |
+| **Superseded in part by** | the [E81 full-system validation](e81-validation-report.md), which re-derived the same domains from first principles with nine reviewers |
 
 ## 1. Confirmed and fixed in E80
 
@@ -102,6 +119,9 @@ signed-image chain by `boot_test` against OpenSSL-derived vectors. The full verd
 [verification-matrix](verification-matrix.md); nothing on this page claims a bench result it does not have.
 
 <sub>previous · [assumptions](assumptions.md) — hub · [README](README.md) — next · [verification matrix](verification-matrix.md)</sub>
+
+> [!TIP]
+> **How this page is checked** — each FIXED row names the gate that re-ran for it (`kicad5-verify`, `review-checks`, `verify-independent`, `run_tests.sh`) and each HOLD row names its EVT test; `sh calculations/run-all.sh` re-runs the lot.
 
 ---
 

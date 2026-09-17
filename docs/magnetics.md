@@ -258,6 +258,9 @@ flowchart LR
 | E71 | PyOpenMagnetics cross-check of D2 / D3; fringing-corrected gap guides; D3 short-circuit R test | the docs said the tool could not install; the D2 gap guide ignored fringing |
 | E73 | critical-review matrix per module; startup inrush, fan-out, cell imbalance and CM-flux gates; D1 / D4 / D7 in the PyOpenMagnetics cross-check; D4 wire sizes, current rating and Rdc rows corrected | a closure event and three abnormal conditions had no computed check; the D4 sheet named no gauges and its Rdc rows did not match its build |
 
+> [!TIP]
+> **How this page is checked** — `magnetics-rfq-audit` addresses this page's sections **by their heading text** (`## Common requirements`, `## D4 …`), so an H2 here must not be renumbered or renamed; `mag-sync` (48 checks — every carrier agrees with the identity table), `magnetics-rfq-audit` (25 drawings, 0 missing fields), `conductor-audit`, `magnetics-envelope` and `temp-critique`, all inside `run-all`.
+
 ---
 
 <div align="center">

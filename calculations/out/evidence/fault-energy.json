@@ -114,13 +114,13 @@
    "status": "ok",
    "tag": "AIR",
    "name": "40kw airflow margin",
-   "detail": "need 251 m³/h @ΔT20 for 1506.7 W vs 3×160×0.6 = 288 — margin 1.15× (line 1.10, E81; module air rise at delivered flow 17.4 K)"
+   "detail": "need 252 m³/h @ΔT20 for 1516.7 W vs 3×160×0.6 = 288 — margin 1.14× (line 1.10, E81; module air rise at delivered flow 17.5 K)"
   },
   {
    "status": "ok",
    "tag": "AIR",
    "name": "40kw one-fan-out (FSM derate 0.6)",
-   "detail": "(n−1) = 192 m³/h vs derated need 138 (tachs all monitored — E44; OT ladder is the second net)"
+   "detail": "(n−1) = 192 m³/h vs derated need 139 (tachs all monitored — E44; OT ladder is the second net)"
   },
   {
    "status": "ok",

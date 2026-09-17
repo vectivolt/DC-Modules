@@ -22,7 +22,7 @@
 
 | Resource | Used | Available | Headroom |
 |---|---:|---:|---|
-| MCU pins (GD32G553VET7, LQFP100) | **75** | 82 usable | 7 spare |
+| MCU pins (GD32G553VET7, LQFP100) | **74** | 82 usable | **8 spare** |
 | PWM ways on the 88-way slot | **9** | 12 | 3 |
 | HRTIMER slave units | **6** — ST0–ST2 LLC pairs, ST3–ST5 PFC singles | 8 | 2 |
 | Analog ways on the slot | **22** | 22 | 0 |
@@ -34,7 +34,7 @@ xychart-beta
   title "Control-card utilisation (%)"
   x-axis ["MCU pins", "PWM ways", "HRTIMER units", "analog ways", "harness ways"]
   y-axis "used %" 0 --> 100
-  bar [91, 75, 75, 100, 100]
+  bar [90, 75, 75, 100, 100]
 ```
 
 > [!IMPORTANT]
@@ -43,7 +43,7 @@ xychart-beta
 > carry, so it would ship with two cards and cost what two smaller modules already cost. Chargers above 50 kW therefore
 > run modules in parallel, each with its own card; the 3.32 k strap band is reserved.
 
-## What one card does
+## 1. What one card does
 
 ```mermaid
 flowchart LR
@@ -61,7 +61,7 @@ Putting the whole LLC on the HRTIMER gives it sub-nanosecond resolution, native 
 dead-time per leg and a single filtered fault pin that gates every output in hardware. That was only possible once
 the card's scope was one lane: the historical 120 kW allocation below needed 24 LLC outputs from a 16-output timer.
 
-## The historical arithmetic — why one card could never serve 120 kW
+## 2. The historical arithmetic — why one card could never serve 120 kW
 
 > [!NOTE]
 > This analysis sized the card era (before E40) and still answers the recurring "why not a bigger single machine"
@@ -100,7 +100,7 @@ spent**, and that is before the extra per-lane fault lines and thermistors a 120
 
 #### 2. Timer outputs — the HRTIMER has 16, the job needs 24
 
-From `docs/history/mcu-pin-allocation-gd32.md` (GD32G553xx Rev 2.0, §3.22): the HRTIMER is
+From the R3 pin allocation `calculations/out/mcu-pin-allocation.json` (built against GD32G553xx Rev 2.0 Table 2-4 / §3.22; the prose page it came from was retired at E53 and lives in the git history): the HRTIMER is
 **8 slave units × 2 channels = 16 outputs**. A 120 kW LLC needs 24 complementary gate signals.
 
 The binding number is the **units, not the channels**. A half-bridge leg driven as a complementary
@@ -162,7 +162,7 @@ higher-power chargers parallel modules.
 
 #### 6. Open item the scope restriction actually *unlocks*
 
-`docs/history/mcu-pin-allocation-gd32.md` leaves the **HRTIMER-vs-advanced-timer choice for the LLC** open,
+That same allocation leaves the **HRTIMER-vs-advanced-timer choice for the LLC** open,
 and at 120 kW there was no choice to make: 24 outputs needed, 16 available, so the LLC had to go on
 TIMER0/7/19 and inherit the PA6 break-input conflict.
 
@@ -187,6 +187,9 @@ but it is an **architecture decision, not a layout one**, and it should be made 
 is frozen. Flagged, not decided.
 
 </details>
+
+> [!TIP]
+> **How this page is checked** — `cardMap()` throws for any configuration outside `CARD_SCOPE`, and `calculations/control/umod-pinmap.mts` regenerates the one pin map (`umod-map.gen.ts`) that every board, the interconnect audit and the GD32 port pin audit consume.
 
 ---
 

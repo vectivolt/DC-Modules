@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
   <img src="https://img.shields.io/badge/reviewers-9_·_12_refuted-d19a00?style=flat-square" alt="reviewers: 9 · 12 refuted"/>
+  <img src="https://img.shields.io/badge/verdict-READY_FOR_LOW--POWER_TEST-e3763c?style=flat-square" alt="verdict: READY FOR LOW-POWER TEST"/>
   <img src="https://img.shields.io/badge/gates-stress--audit_[DPT]_·_current--coordination-2ea44f?style=flat-square" alt="gates: stress-audit [DPT] · current-coordination"/>
 </p>
 
@@ -24,6 +25,23 @@
 > `current-coordination [DCLINK] [ZVS] [F.11] [SP] [SYNC]`, `fault-energy [VENT]`, `lisn-precompliance` CM with the LLC source,
 > `envelope-grid` with the turn-off term) and `sh firmware/run_tests.sh` (291 checks: 21 + 121 + 19 + 40 + 37 + 24 + 29). The reviewer reports and the lead's ledger are
 > archived with the session; this page is the register of record.
+
+## At a glance
+
+| | |
+|---|---|
+| **What this is** | nine independent reviews of the module as one working system — power stage, magnetics, thermal, control hardware, firmware, protections, communications, EMI and cost |
+| **Verdict** | **READY FOR LOW-POWER TEST** · full power only after bring-up Stages 0–9 and T-57 / T-59 (§11) · production **NOT READY** (§12) |
+| **Findings** | CRITICAL → MINOR in §4, each with evidence label, correction and the gate that proves it; **12 reviewer hypotheses refuted** (§9) |
+| **Numbers that moved** | §6 — efficiency ledger, junction temperatures, k_off / k_sw, per-can ripple, CM margin, dead time, THD |
+| **Design changes** | 17 decisions (§5): fans 3 / 3 / 0 / 4 · snubbers 330 / 680 / 1000 pF · entry film 16 / 16 / 20 / 20 × 1 µF + RC damper · CY 10 nF · bias +15 / −3 V · 500 V link cans |
+| **Cost** | +5.00 / +3.91 / +5.30 / +5.60 % of the E80 India COGS (§8), against the user's 5 % ceiling |
+| **Reproduce** | `sh calculations/run-all.sh` (exit 0) · `sh firmware/run_tests.sh` (291 checks) · §13 |
+
+> [!WARNING]
+> **One corner is registered NOT SUSTAINABLE.** The 150 V phase-shift corner on the 40 / 50 kW SKUs hard-switches the
+> weak leg (F-L-1). Sustained operation below 200 V on those SKUs is a documented specification limit until E82-1; the
+> 30 kW serves that corner folded to 93 %. Do not plan a bench run there without reading §4.2 and §11.
 
 ## 0. How to read this page
 
@@ -47,7 +65,7 @@
 
 ```mermaid
 flowchart LR
-  A["Battery reproduced<br/>run-all exit 0 · 260 checks"] --> B["Nine reviewers on<br/>scratch copies of the tree"]
+  A["Battery reproduced<br/>run-all exit 0 · battery green at E80"] --> B["Nine reviewers on<br/>scratch copies of the tree"]
   B --> C["Lead cross-checks:<br/>datasheets · code · re-runs"]
   C --> D{"Reviewer claim<br/>holds?"}
   D -- "no" --> E["Refuted, recorded (§9)"]
@@ -203,7 +221,7 @@ Eight public repositories and three vendor application notes (TI C2000 Vienna / 
 | 7 | DC-link entry film **16 × 1 µF (30 / 40 kW) · 20 × 1 µF (50 kW pair) + 2.2 µF / 0.33 Ω damper** | anti-resonance at 2·f_sw; per can 2.03 / 2.36 / 1.83 / 1.83 A (30 / 40 kW at 16 films, 50 kW pair at 20 films; 68 / 79 / 61 / 61 % of the purchased can's 3.0 A @100 kHz / 105 °C RFQ line at the 40 nH design stud) A | lead (G sweep) |
 | 8 | Gate bias **+15 / −3 V** everywhere; 2 W class on two-die channels | second-source static maximum; bias load 1.1–1.6 W with two dies | lead |
 | 9 | **kp_i unchanged, 100 kHz double update kept**, ISR trimmed, single-update fallback **forbidden on 40 / 50 kW**; damper 4.7 µF / 4.7 Ω at 50 kW (+₹155), 6.8 Ω at 30 / 40 kW | E sweep: kp_i is not the lever (≤ +0.07), Td 30 µs not solvable at 50 kW, 4.7 µF / 4.7 Ω → 0.62–0.73 at Td 20 µs | lead |
-| 10 | **MCU: GD32G553VET7 primary for the prototype; card pin-compatible with STM32G474VET7** (AIN8 ↔ TSNS0 swap); production primary chosen after T-64 | 216 MHz + TCM vs 170 MHz; the port and its 260-check suite exist; the STM32 would force the forbidden fallback | lead, under the user's "change if needed" |
+| 10 | **MCU: GD32G553VET7 primary for the prototype; card pin-compatible with STM32G474VET7** (AIN8 ↔ TSNS0 swap); production primary chosen after T-64 | 216 MHz + TCM vs 170 MHz; the port and its 291-check suite exist; the STM32 would force the forbidden fallback | lead, under the user's "change if needed" |
 | 11 | Mode edge stays **500 V** | PAR mode cannot exceed ≈ 510 V at full load (fn floor 0.55 on this tank); moving the edge would touch F.13, the 630 V bank film, protocol range tables — no benefit once the snubber is in | lead (probe recorded) |
 | 12 | KPRE auxiliaries stay in **series** (1 Form A NO) | the series chain alone detects a stuck-open bypass contact (precharge resistor in the line current = fire risk); a single weld is caught by the voltage-based weld test | lead (A's fix rejected) |
 | 13 | F.13 / F.14 / F.19 rows in the thresholds document rewritten to the **code's** semantics | code is the E75–E80 design of record; the rows had drifted | lead |
@@ -216,10 +234,10 @@ Eight public repositories and three vendor application notes (TI C2000 Vienna / 
 
 | Quantity | The carriers said (E80) | E81 result | Label |
 |---|---|---|---|
-| η at 400 VAC / 400 V, full power, 30 / 40 / 50 / 50-air (loss ledger, rated point) | 96.62 / 96.70 / 96.56 / 96.48 % | **96.43 / 96.36 / 96.31 / 96.24 %** (turn-off 53 / 111 / 121 W and the DPT switching share included) | CALCULATED |
+| η at 400 VAC / 400 V, full power, 30 / 40 / 50 / 50-air (loss ledger, rated point) | 96.62 / 96.70 / 96.56 / 96.48 % | **96.38 / 96.35 / 96.32 / 96.25 %** (turn-off 53 / 111 / 121 W and the DPT switching share included) | CALCULATED |
 | η at 400 VAC / 400 V, 55 °C (grid, hot corner) | 96.7 / 96.75 / 96.63 / 96.61 % | 97.21 / 96.97 / 97.03 / 97.00 % (grid model, air base 74–77 °C) | CALCULATED |
 | Grid folds and registered corners | 0 folds | Folds: 500 V series full load — 30 kW 86 % (75 % at ≥ 450 VAC hot, 93 % at 25 °C ≥ 450 VAC), 50 kW-air 86 % at ≥ 450 VAC hot; 30 kW 150–250 V hot 93 %. Registered NOT-SUSTAINABLE: the 150 V phase-shift corner on the two-die SKUs (F-L-1) | CALCULATED + SIMULATED |
-| Max LLC / Vienna / JBS Tj (outside the registered F-L-1 set) | 139 / 135 / 116 °C | **150 / 145 / 123 °C** — LLC per SKU 150 / 149 / 135 / 148 °C | CALCULATED |
+| Max LLC / Vienna / JBS Tj (outside the registered F-L-1 set) | 139 / 135 / 116 °C | **150 / 147 / 118 °C** — LLC per SKU 150 / 149 / 135 / 148 °C | CALCULATED |
 | LLC turn-off per position, 500 V series full (30 / 40 / 50 kW) | 1 W (PFM) / 8 W (PSM) | 21 / 104 / 76 W at 400 VAC (PFM); 28 / 150 / 150 W at 475 VAC (PSM at f_max) | SIMULATED (DPT) + CALCULATED |
 | k_off, nJ/(V·A) | not modelled (datasheet 10.5 at R_g 2.5 Ω) | as drawn 13–15 → **3.4 / 5.3 / 4.0** with the snubber the weak leg's ZVS window and the 85 % V_ds line allow (330 / 680 / 1000 pF) | SIMULATED |
 | Vienna k_sw, nJ/(V·A) | 17.4 (78 A, 470 pF, −4 V deck) | **23.6 / 24.8 / 26.0** as drawn (single clamp, 5 nH); 22.4 / 23.3 / 24.3 with the mirror clamp | SIMULATED |
@@ -239,6 +257,12 @@ Eight public repositories and three vendor application notes (TI C2000 Vienna / 
 | THD-40 at full power | 0.59–1.05 % (30 kW averaged deck, retired law) | 0.76 / 0.65 / 0.69 % THD-40 at 400 VAC full load (30 / 40 / 50 kW) (firmware law in the SIL, per SKU) | SIMULATED |
 | S/P relay make current at 25 V mismatch | 205 A (1.5 mF bank) | ≈ 28 A (film-only bank) | SIMULATED |
 | Adaptive dead time at PS150-I_max | 120 ns fixed (≥ 169 ns needed → ZVS lost) | per leg: leg A on I_m ≈ 208 / 300 / 330 ns (× 1.25), leg B on the measured tank peak; clamp 60–900 ns — and at the phase-shift corners the weak leg still hard-switches (F-L-1), which the grid now carries | CALCULATED + SIMULATED |
+
+> [!NOTE]
+> **The efficiency row was recorded mid-review.** The ledger re-ran once more before the E81 commit, and
+> `calculations/out/loss-budget.csv` now reads **96.38 / 96.35 / 96.32 / 96.25 %** at the rated point
+> (totals 1,126 / 1,507 / 1,910 / 1,950 W) with the same two new loss terms. That file is what the gate reads and
+> what every other page quotes — see the [thermal report §1](thermal-report.md#1-loss-budget-at-the-rated-point-400-vac-full-power-jbs-secondary).
 
 ## 7. Protection coordination — every row, as built (E81)
 
@@ -278,10 +302,20 @@ Basis: `parts-db` price1k × 0.8 at 10 k, India, against the E80 BOM totals (₹
 |---|---:|---:|---:|---:|---|
 | 30 kW | 30,032 | **31,533** | +1,501 | **+5.00 %** | third fan + PCB line correction +332 · entry film +652 · 500 V cans +280 · bias +15/−3 V variant +170 · CY 10 nF +60 · snubber +32 · custom CT +72 · damper/misc |
 | 40 kW | 34,616 | **35,970** | +1,354 | **+3.91 %** | entry film +652 · cans +336 · bias +175 · CY +60 · snubber +56 · misc |
-| 50 kW liquid | 40,481 | **42,410** | +1,929 | **+4.77 %** | entry film +652 · cans +448 · mirror clamp +228 · 250 A contactor line +160 · damper 4.7 µF / 4.7 Ω +86 · bias +175 · CY +60 · snubber +64 |
-| 50 kW air | 38,404 | **40,338** | +1,934 | **+5.04 %** | as 50 kW liquid |
+| 50 kW liquid | 40,481 | **42,628** | +2,147 | **+5.30 %** | entry film (20 × 1 µF) +652 · cans +448 · mirror clamp +228 · 250 A contactor line +160 · damper 4.7 µF / 4.7 Ω +86 · bias +175 · CY +60 · snubber +64 |
+| 50 kW air | 38,404 | **40,555** | +2,151 | **+5.60 %** | as 50 kW liquid |
 
-Every SKU sits at or under the 5 % ceiling except the 50 kW-air twin by 0.04 %; the levers below take any SKU under.
+The 30 kW lands exactly **at** the 5 % ceiling and the 40 kW inside it; the 50 kW pair exceeds it through the 20-film DC-link bank its cans
+need. Totals and Δ are the generated [BOM roll-up](bom-cost.md) at the E81 commit (₹31,533 / 35,970 / 42,628 / 40,555);
+the levers below take either 50 kW SKU under.
+
+```mermaid
+xychart-beta
+  title "E81 design change as % of the E80 India COGS (ceiling 5 %)"
+  x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
+  y-axis "Δ % vs E80" 0 --> 6
+  bar [5.00, 3.91, 5.30, 5.60]
+```
 
 **Levers if a SKU must come in lower:** keep 450 V link cans (−₹300 / 360 / 480; 97 % of rating worst-case); DC-link film 16 → 12 × 1 µF (−₹217) if the E81 sweep confirms the per-can line at 12 µF; the mirror clamp only where T-59 measures > 85 %.
 
@@ -295,7 +329,7 @@ Every SKU sits at or under the 5 % ceiling except the 50 kW-air twin by 0.04 %; 
 | SiC die price gap 9–25× vs the BOM basis | H | compared Wolfspeed 10-piece retail with a Chinese die at 10 k | tempered to an unverified 1.5–3× risk band |
 | LLC turn-off is the magnetizing current only (lead's first model) | lead | the FHA assigned phase shift where the power-solved deck runs PFM at fn 1.4 with 90.7 A turn-off; I_toff under-read ×1.45 | model calibrated on the deck |
 | F.14 latches on a 100 → 50 % CV step | G | evaluated against the document's "cmd +4 % / 2 ms"; the code is mode-max × 1.05 + 20 V / 2 ms and command × 1.06 + 20 V / 200 ms | doc row rewritten; the plant-capacitance finding stands |
-| `method=gear` damps the DPT ringing | C | the deck uses trapezoidal | refuted |
+| `method=gear` damps the DPT ringing | C | the decks do run `method=gear`; the concern is bounded, not refuted — the V_ds acceptance carries the ±40 % model band, the 10 nH loop sensitivity rows bracket the ring, and T-59 measures the real overshoot on the bench | re-graded: bounded by band + T-59 |
 | 100 kHz Vienna carrier; 16-bit PFM overflow; flash in the ISR path; 0.44 kW idle; KSER carries full current; MCU reset opens contacts under load; Lm 28 µH at N = 4; CT bandwidth | various | each checked against the register values, the pin map, the decks or the datasheet | refuted, recorded in the archive |
 | Move the LOW/HIGH mode edge to 540–600 V (lead's own probe) | lead | PAR mode cannot reach beyond ≈ 510 V at full load — the firmware fn floor (0.55) is the tank's D3-flux / Cr-voltage limit | recorded as closed |
 | Cs = 470 pF → k_off 2.0 at 30 kW (first snubber sweep) | C | at the real per-SKU currents with a 5 nH loop the worst corner reads 3.7 (470 pF) / 2.4 (1 nF) | tanks.mjs carries the per-SKU deck values, gated |
@@ -312,7 +346,7 @@ Every SKU sits at or under the 5 % ceiling except the 50 kW-air twin by 0.04 %; 
 | Thermal | **READY FOR LOW-POWER TEST** | both loss terms are in both ledgers; the fold table is explicit; T-04 (base) and T-38 (clip Rth) hold every junction number |
 | Control hardware | **READY FOR BENCH BRING-UP** | sense chains re-scaled, apertures fixed, crystal fitted, card pin-compatible with both MCUs; Stage 3 checks every channel before the engine runs |
 | MCU capability | **READY FOR BENCH BRING-UP, conditional** | the ISR trims are in; the STOP line (≤ 5 µs) is measured, not assumed; the fallback is forbidden on 40 / 50 kW |
-| Firmware | **READY FOR LOW-POWER TEST** | 290 host checks green (260 + 28 E81 + 2) after 49 fixes; the CV-step, dead-time, tick-backlog and fault-map checks fail without their fixes |
+| Firmware | **READY FOR LOW-POWER TEST** | 291 host checks green (21 + 121 + 19 + 40 + 37 + 24 + 29) after 49 fixes; the CV-step, dead-time, tick-backlog and fault-map checks fail without their fixes |
 | HW / FW coordination | **READY FOR BENCH BRING-UP** | the fault-map, filter, aperture, polarity and economiser findings are closed in both carriers; the pin swap is in the map, the card and the port |
 | Protections | **READY FOR LOW-POWER TEST** | every row has source → threshold → filter → HW → FW → kill time → restart (§7); Stage 12 injects every row |
 | Communications | **READY FOR BENCH BRING-UP** | TonHe byte-exact with the deviations listed; VMP 2.0 with the two new frames; interoperability is T-46 / T-47 |
@@ -336,7 +370,7 @@ Every SKU sits at or under the 5 % ceiling except the 50 kW-air twin by 0.04 %; 
 | **6 — Low-voltage power stage** (bus 100–150 V from the lab supply, LLC into a resistive load; Vienna from a 30–60 VAC 3-φ source) | power stage at ≤ 5 % stress | LLC: ZVS on both legs at light load (leg node reaches the rail before the incoming gate — residual ≤ 20 V, SIMULATED F-G-9 corrected model); tank current sinusoidal at fr 140 ± 7 kHz; Vienna: midpoint balanced within 2 %, current sense sign correct (the loop pulls current, not pushes), THD ≤ 3 % at this level | loss of ZVS; current sense sign flipped (LIMIT tier trips); midpoint drift > 10 % |
 | **7 — Magnetics verification** (before HV) | none (LCR / impedance) | fr = 140 kHz ± 5 % per SKU (tanks.mjs, CALCULATED); Lr total 5.6 / 4.35 / 3.56 µH ± 20 % (E81 F-B-3 acceptance); Lm 56 / 43.5 / 35.6 µH ± 7 %; D3 leakage per cell ≈ 0.25 µH (E81 corrected b = CB); D1 above its floor at Ipk (catalog roll-off); CT ratio 1:100, secondary ≥ 1.3 A rms capable (E81 custom CT RFQ, F-B-5) | fr outside ±5 %; Lr outside ±20 %; Lm outside ±7 %; D1 below its floor at Ipk |
 | **8 — DC link, precharge, bypass, discharge** (AC 330 VAC through current-limit resistors first, then direct) | AC-DC at no load | Precharge t95 193 / 231 / 310 ms (SIMULATED prechg-disch); bypass closes at 0.97 × crest (E81 F-A-11) with a closure pulse ≈ 40–60 A pk (CALCULATED; the old 0.90 rule gave 165–280 A); F.01 blanked 60 ms; RELAY_FB LOW after both close, F.19 if not within 100 ms; discharge 1.99 / 2.39 / 3.19 s to 60 V (SIMULATED); bank bleed 0.37 / 0.49 / 0.58 s; link balance 2 × 22 kΩ (E81), midpoint within 5 V at rest; per-can no ripple yet; assembled-link impedance sweep (T-57): first anti-resonance > 500 kHz with the 16 µF film | closure pulse > 1.2 × expected; F.19 in PRECHG/STANDBY; discharge slower than its window; midpoint off > 10 V; anti-resonance below 450 kHz |
-| **9 — Gradual power increase** (battery emulator, 400 VAC, PAR 400 V, 10 % steps) | full system | At each step: η within 1 point of the ledger at that load (CALCULATED — 400 V full: 96.43 / 96.36 / 96.32 / 96.25 %); tank rms ≤ 0.9 × class (78/100/120 A); DC-link per-can rms ≤ 2.4 A at full (SIMULATED: 2.0 / 2.4 / 1.8 A expected at 16 / 16 / 20 films; 5.8–8 A would mean the deck's stud/stub assumption is wrong — STOP); bus ripple ≤ 20 V pp; case temperatures extrapolating to ≤ 70 °C (air) at the next step; no warning bit; PFC ISR worst ≤ 5 µs (T-64) | any of the above exceeded; η two points below the model; ISR > 5 µs |
+| **9 — Gradual power increase** (battery emulator, 400 VAC, PAR 400 V, 10 % steps) | full system | At each step: η within 1 point of the ledger at that load (CALCULATED — 400 V full: 96.38 / 96.35 / 96.32 / 96.25 %); tank rms ≤ 0.9 × class (78/100/120 A); DC-link per-can rms ≤ 2.4 A at full (SIMULATED: 2.0 / 2.4 / 1.8 A expected at 16 / 16 / 20 films; 5.8–8 A would mean the deck's stud/stub assumption is wrong — STOP); bus ripple ≤ 20 V pp; case temperatures extrapolating to ≤ 70 °C (air) at the next step; no warning bit; PFC ISR worst ≤ 5 µs (T-64) | any of the above exceeded; η two points below the model; ISR > 5 µs |
 | **10 — Corners at full load** (285 / 400 / 475 VAC × 150 / 250 / 400 / 500 PAR / 500 SER / 750 / 1000 V; **150 V on the 40 / 50 kW SKUs: short-dwell only — ≤ 10 s captures, no sustained delivery — the registered F-L-1 corner until E82-1**) | full system, 25 °C | Every corner inside the grid's PASS envelope; the 500 V SER corner at 25 °C runs 100 % (fold only at 55 °C); Tj estimates (NTC + model) ≤ grid + 10 K; ZVS held at PS150-Imax with the per-leg adaptive dead time (leg A ≈ 373 / 457 / 474 ns as compiled, leg B shorter on the measured tank peak; T-58 records the leg-node timing); F.11 monitor peak ≥ 20 % below the window at every corner; the 475 VAC / 500 V SER corner runs PSM at f_max with a leading-leg turn-off ≈ 95 / 102 / 128 A (CALCULATED) | Tj estimate > grid + 10 K; ZVS lost; F.11 within 20 % of its window; PSM corner Woff per position > 1.3 × the grid |
 | **11 — Thermal** (chamber 25 → 55 °C inlet, full power, then derated) | full system | Base 74 / 75 / 77 °C at 55 °C inlet (CALCULATED AIR_REF — T-04 measures both extrusions); module air rise 16–18 K; fans at the E80 curve; derate ladder engages at the 500 V SER corner only (30 kW 86 %, 80 % at 475 VAC; 50 kW-air 93 % at 400 VAC, 86 % at 450–475 VAC; 40 kW and 50 kW liquid none); D2/D3 hot-spots ≤ 106 °C (thermal report); one fan out: FSM derate 0.6 covers the load | base > 80 °C at 55 °C inlet; any NTC zone in derate at full power at 40 °C; hot-spot > 120 °C |
 | **12 — Fault injection and protection verification** (every F row, both polarities, hot and cold) | full system | Each row within ±5 % of its table threshold and inside its class time; PWM shutdown ≤ 0.3 µs on hardware rows; restart only by a fresh ENABLE for LATCH-class rows, AUTO rows recover per their rule; F.14 does not latch on a 100→50 % CV step (T-60); the series NO auxiliary chain (T-62); bipolar F.01 on both CT orientations (T-63); DESAT type I/II (T-30) | any row outside ±5 %; any trip slower than its class; any gate pulse after a fault; any weld; any restart without ENABLE |
@@ -378,6 +412,9 @@ sh firmware/port/gd32g553/build.sh
 ```
 
 New at E81: `stress-audit [DPT]` (reads the per-SKU double-pulse CSVs), `current-coordination [DCLINK] [ZVS] [F.11 fast kill] [SP] [SYNC]`, `fault-energy [VENT]` on the 500 V can rule, `lisn-precompliance` with the LLC common-mode source, `envelope-grid` with the turn-off term and the DPT switching coefficient, `hal_test` CV load-step and THD-40 rows, `e81_test` (28 checks: fault map, filter, dead time per leg, tick backlog, bipolar F.01, watchdog, boot poll …).
+
+> [!TIP]
+> **How this page is checked** — `sh calculations/run-all.sh` (exit 0) with the E81 gates — `stress-audit [DPT]`, `current-coordination [DCLINK] [ZVS] [F.11] [SP] [SYNC]`, `fault-energy [VENT]`, `lisn-precompliance` with the LLC CM source, `envelope-grid` with the turn-off term — and `sh firmware/run_tests.sh` (291 checks). §13 lists the exact commands.
 
 ---
 

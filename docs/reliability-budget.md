@@ -22,7 +22,28 @@
 > `calculations/out/bom-*.csv` on every battery run and fails on ±1 % drift from this page's registered table:
 > a BOM change that moves the reliability picture must re-register consciously.
 
-## The prediction — parts-count, basis declared
+## At a glance
+
+| | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
+|---|---:|---:|---:|---:|
+| **Σ failure rate** | 2,439 FIT | 2,564 FIT | 2,674 FIT | 2,688 FIT |
+| **MTBF (random failure)** | **≈ 410 kh** | ≈ 390 kh | ≈ 374 kh | ≈ 372 kh |
+| **Basis** | Telcordia SR-332-class parts count · **40 °C** module internal · ground fixed, controlled · quality II | | | |
+| **Excluded** | wear-out clocks (fans, electrolytic endurance, relay cycles) — tabled separately in §2 | | | |
+
+```mermaid
+xychart-beta
+  title "Parts-count MTBF prediction at 40 °C (kh)"
+  x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
+  y-axis "kh" 0 --> 450
+  bar [410, 390, 374, 372]
+```
+
+> [!TIP]
+> **Compare like with like.** The benchmark module publishes "MTBF 500 kh" with no stated basis; a 25 °C basis alone
+> moves a parts-count number by roughly this much. The basis above is declared so the comparison is possible at all.
+
+## 1. The prediction — parts-count, basis declared
 
 | Basis choice | Value | Why |
 |---|---|---|
@@ -33,10 +54,10 @@
 
 | SKU | Σ failure rate | **MTBF (random-failure)** | Top drivers |
 |---|---:|---:|---|
-| 30 kW | 2,368 FIT | **≈ 422 kh** (≈ 48 y) | SiC dies 34 % · Si semis 16 % · iso drive 9 % · film caps 5 % |
-| 40 kW | 2,490 FIT | **≈ 402 kh** | SiC dies 35 % (two LLC dies per position) · same tail |
-| 50 kW liquid | 2,525 FIT | **≈ 396 kh** | SiC dies 35 % · no fans in the wear table |
-| 50 kW air | 2,537 FIT | **≈ 394 kh** | SiC dies 35 % — electrically the liquid module since E68a |
+| 30 kW | 2,439 FIT | **≈ 410 kh** (≈ 47 y) | SiC dies 34 % · Si semis 16 % · iso drive 9 % · film caps 5 % |
+| 40 kW | 2,564 FIT | **≈ 390 kh** | SiC dies 35 % (two LLC dies per position) · same tail |
+| 50 kW liquid | 2,674 FIT | **≈ 374 kh** | SiC dies 35 % · no fans in the wear table |
+| 50 kW air | 2,688 FIT | **≈ 372 kh** | SiC dies 35 % — electrically the liquid module since E68a |
 
 > [!NOTE]
 > **E69 re-registration.** The E64–E68 figures (325 → 383 kh at 30 kW) came from a classifier that matched keywords
@@ -66,7 +87,7 @@ pie showData
 > basis, this platform's numbers land in the same band. The honest comparison is method-for-method at EVT and in
 > field data, not number-for-number; this page states its basis so that comparison is possible.
 
-## Wear-out clocks — scheduled, not statistical
+## 2. Wear-out clocks — scheduled, not statistical
 
 | Item | Clock | Position |
 |---|---|---|
@@ -75,7 +96,7 @@ pie showData
 | HV relays | cycle-rated per session | mirror contacts are **read back at every operation** (E30) — a welded contact is detected on the cycle it happens, not at the annual inspection |
 | Acrylic coating | re-inspection at service | the E52 answer to the #1 field killer (dust + condensation) |
 
-## How a module fails safe
+## 3. How a module fails safe
 
 | Level | Mechanism |
 |---|---|
@@ -88,7 +109,7 @@ The one accepted module-level single point is the control card itself — delibe
 mode is a safe stop (pull-downs hold every gate and relay OFF when the card is absent, unpowered or unbooted),
 and availability above one module comes from running modules in parallel, not from the card.
 
-## What moves these numbers
+## 4. What moves these numbers
 
 | Lever | Effect | Status |
 |---|---|---|
@@ -96,6 +117,9 @@ and availability above one module comes from running modules in parallel, not fr
 | Vendor FIT data at RFQ (SiC dies, relays, modules) | replaces class rates with part rates | RFQ round 1 |
 | Field return data | replaces prediction with observation | MES serial-keyed records are already specified (§45) |
 | Fan count / liquid variant | the air SKUs' first wear item disappears on the 50 kW liquid | SKU choice per site |
+
+> [!TIP]
+> **How this page is checked** — `calculations/reliability/mtbf-budget.mjs` recomputes every number here from the generated `bom-*.csv` on every battery run and fails on ±1 % drift from the registered table.
 
 ---
 

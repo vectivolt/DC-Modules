@@ -68,7 +68,7 @@ function secondary(IoutCh, sku = "30kw") {
 // ---------------- SKU roll-up at rated point (400 VAC in, 800 V bus, out ≥300 V full power)
 const SKUS = [
   { name: "30kW", P: 30e3, lanes: 1, ch: 1, Iout: 100, fans: 3 },   // E81 (user 2026-09-17): 3 / 3 / 0 / 4 fans
-  { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 2 },   // E41: engine decides if 2 fans hold
+  { name: "40kW", P: 40e3, lanes: 1, ch: 1, Iout: 133, fans: 3 },   // E81 (user 2026-09-17): 3 / 3 / 0 / 4 fans
   { name: "50kW", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 0 },   // E42 LIQUID: sealed, zero fans — total heat goes to the coolant loop (ΔT ≈ 5 K at 6.5 L/min)
   { name: "50kWa", P: 50e3, lanes: 1, ch: 1, Iout: 167, fans: 4, parL: 2 },   // E44 AIR: 4 fans; LLC paralleled (pri conduction halves)
 ];

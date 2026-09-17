@@ -24,11 +24,21 @@
 > stale or misaligned. The JS engines run inside `run-all.sh`; none of them calls ngspice. The PyOpenMagnetics
 > cross-check runs by hand and never gates the battery.
 
+## At a glance
+
+| | |
+|---|---|
+| **Engine** | **ngspice-46** (KLU, trapezoidal) on macOS arm64 · Node 20 for the JS engines · PyOpenMagnetics 1.4.0 by hand |
+| **Levels** | L1 closed form → L2 JS engines → L3 averaged system grid → L4 switched SPICE → **L5 hardware (EVT T-00…T-64)** |
+| **What gates read** | SPICE result CSVs are consumed by `current-coordination` (stale-deck fingerprint, physicality guard) and `magnetics-envelope` |
+| **Rule** | a simulation must be able to **fail** — every deck carries a physicality guard, a power-solve and a model fingerprint; fourteen falsification injections were run at E81 |
+| **Where fidelity ends** | §6 — and nothing here is a compliance claim |
+
 ## 1. The fidelity ladder — each level answers a different question
 
 ```mermaid
 flowchart TB
-  L5["L5 · hardware (EVT T-00…T-41)<br/>DPT · SC · calorimetric η · chamber EMI · thermal"]
+  L5["L5 · hardware (EVT T-00…T-64)<br/>DPT · SC · calorimetric η · chamber EMI · thermal"]
   L4["L4 · magnetics physics<br/>magnetics-envelope: two-node thermal at 32 power-solved corners · iGSE on ngspice waveforms<br/>conductor-audit (Dowell / Sullivan) · temp-critique (measured 3C95) · mkf-crosscheck (PyOpenMagnetics, by hand)"]
   L3["L3 · system / statistics — JS + C<br/>envelope grid 4,536 pts · Monte-Carlo 8 × 10k · FSM 26 · C host-sim 63<br/>current-coordination: F.11 race · bypass-closure inrush"]
   L2["L2 · switched stage — ngspice + JS<br/>power-solved full-bridge LLC + magnetics envelope · cycle-by-cycle Vienna · aux flyback · CT front ends"]
@@ -254,7 +264,7 @@ ok    [D3] 40kw 3×E70 2 cells 4:4∥4 (2 foils) · web2 · R core→wall 0.52 �
 | conductor-audit `info [GAP]` | Dowell and Sullivan are 1-D and under-read loss where a gap's fringing field crosses a conductor | informational — mitigated by construction (D2 distributed gap ≤ 1.0 mm per segment with ≥ 3 mm clearance; D3 gap split per set), closed by FEMMT / FEMM and T-31 |
 | temp-critique `[BSAT] D3` | the worst simulated flux against 50 % of Bsat at 130 °C: **159 mT vs 362 mT (44 %)** | more turns or sets — the D3 is loss-limited, so a failure means the construction drifted |
 | temp-critique `[BSAT] D2 fault flux` | L(max) × the window-comparator kill peak against 60 % of Bsat(130 °C) = 217 mT: **163–164 mT** | a faster kill or more D2 N·Ae |
-| current-coordination `[F.11] window-comparator kill + observability` | when |Ip| crosses F.11 on `llc-short.csv`; the kill peak 1 µs later ×1.2 must stay under the CT ceiling (**209.1 A → 344.7 A limit** at 30 kW); the +3 µs monitor peak ×1.05 inside the rail; both window thresholds inside the ADC span | re-burden or re-threshold, then re-run `ct-frontend`. Never return to fixed-time sampling |
+| current-coordination `[F.11] window-comparator kill + observability` | when \|Ip\| crosses F.11 on `llc-short.csv`; the kill peak 1 µs later ×1.2 must stay under the CT ceiling (**209.1 A → 344.7 A limit** at 30 kW); the +3 µs monitor peak ×1.05 inside the rail; both window thresholds inside the ADC span | re-burden or re-threshold, then re-run `ct-frontend`. Never return to fixed-time sampling |
 | current-coordination `[F.11] LLC FET pulse class at the kill peak` | the kill peak per die against 80 % of the RFQ IDM acceptance line | parallel a die or tighten the trip |
 | current-coordination `[INRUSH]` | the precharge-bypass closure at 90 % of line peak (475 VAC, stiff grid, closure instant swept every 2°): peak through D1, D1 inductance at the peak, bus overshoot, the F.01 blank window, JBS I²t against the IFSM line, relay make and fuse pre-arc | an unblanked F.01, a relay or diode line below the pulse — change the window or the RFQ line, never the trip class |
 | stress-audit `[D7] common-mode flux` | Cp·V_sw pushed into the converter-side Y trio for half a switching period, across the D7 turns and iron | above 10 % of the hot Bsat — more Y capacitance or turns |
@@ -317,6 +327,9 @@ copper corner. Read it in this order:
 | **sweep the instant, not the case** — the bypass closure swept every 2° over the six-pulse period | `current-coordination.mjs` [INRUSH] | a 10° sweep read the 30 kW peak 17 % low (166 vs 200 A) |
 | **a failing gate is never published** — evidence JSON carries the exit code | `evidence.mjs` · `mag-docs.mjs` | proof pages quoting a run that failed |
 | **deck writes no docs** · **main-guard for paths with spaces** | `aux-flyback.mjs` · `fileURLToPath(import.meta.url) === process.argv[1]` | a re-run overwriting a maintained drawing · runners that silently do nothing |
+
+> [!TIP]
+> **How this page is checked** — the gates that consume the result files: `current-coordination` fails on a stale tank fingerprint or a non-physical deck, and `magnetics-envelope` fails on a stale or misaligned excitation table. The PyOpenMagnetics cross-check runs by hand and never gates the battery.
 
 ---
 

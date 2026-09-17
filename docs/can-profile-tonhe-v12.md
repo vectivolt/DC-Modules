@@ -49,6 +49,20 @@
 | **Selection** | stored profile id — VMP object 0x0204 = 1 or the HMI service menu — applied at the next boot; `PMP_WITH_TONHE_V12=0` removes the profile from an image |
 | **Not in V1.2** | power limit · output-mode selection · fan mode · identity · capability · fault clear · command acknowledgement codes |
 
+```mermaid
+sequenceDiagram
+  participant M as Monitor (0xA0)
+  participant D as Module (addr 1–240)
+  M->>D: timing frame (every 5 s)
+  M->>D: set voltage 0.1 V · current 0.01 A
+  M->>D: start event 0xAA (per module or 24-bit bitmap)
+  D-->>M: state 500 ms + on change (gap ≥ 200 ms, E81)
+  D-->>M: AC frame 500 ms · extended state 500 ms
+  Note over M,D: no monitor frame for 20 s
+  D->>D: stop ramp → STANDBY (F.28)
+  Note over M,D: V = 0 is treated as "no setpoint", not V_min — a deliberate deviation
+```
+
 ## 1. Identifier
 
 `P (3) · R = 0 · DP = 0 · PF (8) · PS = destination (8) · SA (8)`. A frame with R or DP set belongs to another protocol family
@@ -206,6 +220,9 @@ The periodic frames are phased by address (37 ms × address, modulo 500 ms), so 
 
 Hardware interoperability — our module on a TonHe-class monitor, a mixed rack, and captures of a real TonHe module — is EVT
 T-46 in the [firmware verification plan](firmware-verification.md).
+
+> [!TIP]
+> **How this page is checked** — `firmware/test/proto_test.c` checks this page against `firmware/proto/tonhe_v12.c`, including every example frame of the vendor document byte for byte and the end-to-end start → 20 s loss → restart through the real FSM.
 
 ---
 

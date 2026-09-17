@@ -19,7 +19,17 @@
 > `../simulation-results/`. Netlists (`*.cir`, 639 committed at E81) are kept for traceability (§49-11); raw waveform dumps
 > (`*.out`, hundreds of MB) are git-ignored — re-run a suite to regenerate them.
 
-## How a result is produced
+## At a glance
+
+| | |
+|---|---|
+| **Engine** | ngspice-46 (KLU, trapezoidal), batch mode |
+| **Committed** | the decks — `generated/*.cir` (639 at E81); raw `*.out` waveforms are git-ignored |
+| **Results** | `../simulation-results/<sku>/*.csv` + `plots/*.svg` — read by `current-coordination` and `magnetics-envelope` |
+| **Guards** | physicality (legs inside the rails), power-solve (the deck must deliver the rated power), and a tank **fingerprint** so a changed tank fails the gate instead of reusing a stale result |
+| **Read the results at** | [simulation report](../docs/simulation-report.md) · method in the [simulation toolchain](../docs/simulation-toolchain.md) |
+
+## 1. How a result is produced
 
 ```mermaid
 flowchart LR
@@ -32,7 +42,7 @@ flowchart LR
   style G stroke:#2ea44f,stroke-width:2.5px
 ```
 
-## Runners
+## 2. Runners
 
 | Runner | What it proves | Key outputs |
 |---|---|---|
@@ -54,7 +64,7 @@ node spice/dclink/dclink-ripple.mjs
 node spice/protection/ct-frontend.mjs && node spice/protection/prechg-disch.mjs && node spice/aux/aux-flyback.mjs && node spice/llc/sp-transition.mjs
 ```
 
-## Models
+## 3. Models
 
 `models/sic-behavioral.lib` holds behavioural VDMOS and JBS fits with a full provenance header: what they
 approximate, what they do not, and why vendor-encrypted PSpice models cannot run here (§8). The ± 40 %
@@ -65,6 +75,9 @@ switching-energy band is carried through every downstream decision and closes at
 > diodes (legs swung ± 6 kV on a 650 V bus); its results were withdrawn and its decks deleted. Every runner that
 > produces power-stage evidence must clamp its switch nodes physically — `llc-run.mjs` now fails any corner whose
 > legs leave the rails. How to run and read every suite: [simulation toolchain](../docs/simulation-toolchain.md).
+
+> [!TIP]
+> **How this page is checked** — the runners' own physicality, power-solve and fingerprint guards, and then `current-coordination` and `magnetics-envelope` in `run-all`, which refuse a stale or non-physical result file.
 
 ---
 

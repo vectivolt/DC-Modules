@@ -23,12 +23,27 @@
 | Path | 30 kW | 40 kW | 50 kW (liquid · air) | Response |
 |---|---|---|---|---|
 | **F.01** line over-current (CT → comparator → HRTIMER) | 120 A pk | 155 A pk | 195 A pk | ~2–3 µs design target |
-| **F.11** LLC tank over-current | 85 A pk | 115 A pk | 145 A pk | < 2 µs |
-| **F.02 / F.12** DESAT | Vienna 47 pF blank · LLC 22 pF blank | = | = | worst 2.21 µs · 1.44 µs |
+| **F.11** LLC tank over-current | **140 A pk** | **180 A pk** | **220 A pk** | < 1 µs (E67/E81 — one window comparator on the 1:100 tank CT, both polarities, 1 MΩ hysteresis; the 85 / 115 / 145 per-section classes of §5 are superseded) |
+| **F.02 / F.12** DESAT | Vienna 47 pF blank · LLC 22 pF blank (**two-die channels 10 pF**, E81 F-C-8) | = | = | worst 2.21 µs · 1.44 µs |
 | **F.03** bus OVP | 860 V | = | = | 10–20 µs |
 | **F.21** discharge window | 3 s | 4 s | 5 s | per SKU |
 | **F.21b** bank-bleed window | 10.3 s | 15.5 s | 20.7 s | per SKU |
 | Supervisory rows | 30 rows, 1 ms tick, latched pre-fault snapshot | | | 1 ms – 3 s |
+
+> [!WARNING]
+> **Read the trip classes from this table, not from §5.** The per-section F.11 classes (85 / 115 / 145 A pk) were
+> retired at E67 when the three half-bridge sections became one full bridge with one tank CT; the shipped firmware
+> sets **140 / 180 / 220 A pk** (`firmware/core/fsm.c`, `pmp_fsm_set_rating_kw`). The §5 tables are kept as the
+> register's history, with their arrow-notes.
+
+```mermaid
+xychart-beta
+  title "Fast trip classes per SKU (A peak) — F.01 line · F.11 tank"
+  x-axis ["30 kW", "40 kW", "50 kW liquid / air"]
+  y-axis "A peak" 0 --> 250
+  bar [120, 155, 195]
+  bar [140, 180, 220]
+```
 
 ## 1. The fault paths
 
@@ -59,7 +74,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 3 | Bus OVP | **860 V** total (E2) | <25 µs¹ | HW comp | all PWM kill | F.03 |
 | 4 | Bus OV (fw) | 845 V, 1 ms | 1 ms | FW | controlled stop | F.04 |
 | 5 | Bus UV | <620 V in run | 10 ms | FW | stop, retry ×3 | F.05 |
-| 6 | Midpoint imbalance | |ΔV|>40 V, 10 ms | 10 ms | FW | derate→stop | F.06 |
+| 6 | Midpoint imbalance | \|ΔV\|>40 V, 10 ms | 10 ms | FW | derate→stop | F.06 |
 | 7 | Input OV | >500 VAC any line-line, 20 ms | 20 ms | FW | stop | F.07 |
 | 8 | Input UV / sag | <260 VAC, 100 ms (ride-through below) | 100 ms | FW | derate/stop | F.08 |
 | 9 | Phase loss | line current <10% expected 40 ms (validated `400-phloss` sim) | 40 ms | FW | fold back → stop | F.09 |
@@ -70,7 +85,7 @@ Display code `F.xx` per docs/interconnect.md HMI.
 | 14 | Output OV (fw) | stack > min(1050 V, mode-max × 1.05 + 20 V) for 2 ms (`PMP_OVP_MS`), or stack > command × 1.06 + 20 V for 200 ms while the module sources current (`PMP_OVP_SRC_MS`, a CV failure) — E81: the earlier "cmd +4 %, 2 ms" text never matched `fsm.c`; a film-only bank overshoots up to +10 % on a 100→50 % step (G SIL) and must not latch | 2 ms / 200 ms | FW | latch | F.14 |
 | 15 | Output OC | 102% Imax 100 ms / 130% 2 ms | — | FW (CC loop is primary) | CC fold, then stop | F.15 |
 | 16 | Output short | **rev B: V<50 V & I>90%·I_cmd sustained 10 ms** (a healthy CC loop never exceeds 110% — found by fsm-sim) | 10 ms | FW | burst-retry ×3 → latch | F.16 |
-| 17 | Bank imbalance (series) | |VA−VB|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
+| 17 | Bank imbalance (series) | \|VA−VB\|>25 V 10 ms | 10 ms | FW | stop, re-match | F.17 |
 | 18 | Relay weld | ΔV<1.5 V @200 ms, ≥10 A ref (E13) | 200 ms | FW | latch, inhibit mode change | F.18 |
 | 19 | Relay open-fail | bypass auxiliary-contact readback mismatch 100 ms. E81: the HF167F auxiliary is **1 Form A (NO), not a mirror**; the two auxiliaries are wired in SERIES so the readback is LOW only when BOTH bypass contacts are closed (HIGH = at least one open). That is the start permit — a stuck-open contact would leave a precharge resistor in the line current — and a single weld is caught by the voltage-based weld test (`PMP_WELD_DV_V`/`PMP_WELD_MS`), not by this row | 100 ms | FW | latch | F.19 |
 | 20 | Precharge fail | **as implemented (fsm.c): abort iff t > 400 ms AND bus < 50% line pk** — tolerant of the per-SKU charge time (t95 ≈ 160/288/576 ms at 30/60/120 kW → **E60 per-SKU deck: 193 / 231 / 310 ms at 30 / 40 / 50 kW**); the earlier "<90% in 400 ms" wording described the completion check, not the abort (R2 HR-14 doc fix) | — | FW | abort, open KPRE | F.20 |
@@ -389,7 +404,7 @@ The deck had been simulating the E65 burdens; it now reads its operating peaks f
 **Rule (FW-E73):** F.01 is not latched for `PMP_PRE_BLANK_MS` = **60 ms** after the bypass command (relay operate ≤ 25 ms +
 bounce ≤ 5 ms + the pulse, with margin), and PFC enable waits for the window to end. The HRTIMER break stays armed; the HAL
 clears its fault latch when the window ends. A genuine short in that window is cleared by the gG fuses. Host tests: *inrush
-on F.01 blanked*, *no PFC enable inside the window*, *F.01 while switching latches* (host_sim 63 / 63).
+on F.01 blanked*, *no PFC enable inside the window*, *F.01 while switching latches* (`host_sim`, now 121 checks in the 291-check suite).
 
 **Parts held to the pulse (RFQ lines in parts-db):** precharge relays **make ≥ 260 / 280 / 360 A pk** at ≤ 70 V across the
 contacts and ≥ 30 000 makes · Vienna JBS **IFSM ≥ 250 A** (10 ms half-sine) — the pulse I²t is 20 / 27 / 45 A²s per diode,
@@ -481,6 +496,9 @@ under the sanitizers.
 | **F.21 completion and abort** | discharged = link **and both banks** < 60 V; at the window timeout F.21 latches **and both dump commands end** (isolate upstream, then verify — the permanent precharge path can hold the bus from a live source at ~439 W into the 640 Ω string) | HR-11/HR-12 |
 | **F.34 coverage** | the energized PFC ramp counts inside the 8 s window | a boost that never reached 0.95 · ref was unsupervised (HR-28) |
 | **Matrix make discipline** | 40 ms settle wait after any matrix close command (no mirror contacts, E67); PAR make additionally requires bank mismatch ≤ 25 V (≈ 5 mJ equalization at 30.8 µF) | HR-08/HR-09 |
+
+> [!TIP]
+> **How this page is checked** — `review-checks` (R5-K, R6-B, R6-C, R7-A, R7-E, R8-A), `stress-audit` and `current-coordination` assert passages of this file **word for word** — an edit that changes a pinned sentence fails the gate. Edits here are additive: superseded values keep their arrow-note.
 
 ---
 

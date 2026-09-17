@@ -316,6 +316,25 @@ Keep the load below 50 % (lengthen the telemetry periods or raise the bit rate).
 
 ## 9. Rules a controller follows
 
+```mermaid
+sequenceDiagram
+  participant C as Controller
+  participant M as Module
+  C->>M: read capability objects 0x0100–0x0107
+  C->>M: CTRL_HB (new session id)
+  C->>M: CTRL · RUN = 0 (+ group / slot if paralleled)
+  M-->>C: MOD_HB · state READY
+  C->>M: CTRL · RUN = 1 · V, I, P limit · counter++ · CRC-8
+  M-->>C: TLM_FAST / TLM_LIMITS (applied, clamped values)
+  loop every 100 ms (timeout 1 s)
+    C->>M: CTRL · counter++
+  end
+  M-->>C: FAULT_DETAIL · re-arm = 1 (module-initiated stop)
+  C->>M: ACTION CLEAR (latched faults only)
+  C->>M: CTRL · RUN = 0 → RUN = 1
+  Note over C,M: before service — ACTION SHUTDOWN, then verify < 60 V at the link, the banks and the output studs
+```
+
 1. **Start:** assign group and slot if modules are paralleled → send RUN = 0 until the module reports READY → send RUN = 1
    with voltage, current and power.
 2. **Keep the stream fresh:** a control frame every 100 ms (the timeout defaults to 1 s).
@@ -360,6 +379,9 @@ Keep the load below 50 % (lengthen the telemetry periods or raise the bit rate).
 | Liveness | SET_OUTPUT age only | counters, ownership, controller and module heartbeat sessions |
 | Faults | 16 + 16 bits across two frames | u64 bits, class, recovery countdown, events |
 | Versioning | none | major.minor, must-understand, reserved-field rules |
+
+> [!TIP]
+> **How this page is checked** — `firmware/test/proto_test.c` (40 checks in the 291-check suite) — codec conformance, the worked examples, a 1M-frame malformed-input fuzz, and one core driven through both profiles.
 
 ---
 

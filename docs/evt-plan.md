@@ -2,7 +2,7 @@
 
 # 🔬 EVT Test Plan
 
-<sub>The first-hardware campaign T-00…T-56, and the rule that lets bench results reopen a calculation</sub>
+<sub>The first-hardware campaign T-00…T-64, and the rule that lets bench results reopen a calculation</sub>
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
@@ -36,6 +36,7 @@
 | Magnetics and tank | T-25 · **T-31** · **T-34** |
 | Firmware, control and protocol | **T-44** · **T-45** · **T-46** · **T-47** · **T-48** · **T-49** · **T-52** · **T-53** · **T-54** (E80) |
 | Auxiliary and slow-path hardware (E80) | **T-55** · **T-56** |
+| **Full-system validation (E81)** | **T-57** link impedance · **T-58** ZVS at PS150 · **T-59** loop inductance · **T-60** CV step · **T-61**…**T-63** · **T-64** ISR budget |
 
 </td><td valign="top" width="48%">
 
@@ -211,6 +212,9 @@ gate it reopens on a miss. Expected values are the design's own numbers (CALCULA
 | T-62 | **Bypass auxiliary chain (E81, F-A-5)** — with one KPRE held open (coil disconnected) and with one contact bridged (weld emulation): start attempt and the post-run weld test | held-open: the PFC never starts and F.19 latches (series NO chain HIGH); bridged: the voltage-based weld test (`PMP_WELD_DV_V` / `PMP_WELD_MS`) latches at the next open; no state passes both |
 | T-63 | **Bipolar F.01 on both CT orientations (E81, O-15)** — line-CT fitted both ways in turn; current injection to the 120 / 155 / 195 A pk line in both half-cycles | the hardware trip fires within the row's class in BOTH half-cycles for BOTH orientations (the ISR sets the DAC sign from the measured current); attribution F.01-A/B/C correct |
 | T-64 | **PFC interrupt budget (E81, F-D-7)** — `pfc_exec_us` telemetry and a GPIO marker over 24 h at full telemetry, CAN flood, line-cycle close, and the 3 kHz current-loop injection | worst case ≤ 5 µs (STOP line); typical ≤ 3.5 µs; if the STOP line is missed the ISR is trimmed further — the single-update fallback is not an option on 40 / 50 kW (T-44 note) |
+
+> [!TIP]
+> **How this page is checked** — nothing here is checked by a gate yet — that is the point of the page. Every row logs back into the [verification matrix](verification-matrix.md), and a simulation-vs-bench delta above 20 % reopens the owning calculation.
 
 ---
 

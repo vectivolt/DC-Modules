@@ -18,19 +18,37 @@
 > ([thermal report](../docs/thermal-report.md)); MTBF by `mtbf-budget` ([reliability budget](../docs/reliability-budget.md));
 > the module boundary by `module-interconnect-audit`; the parallel-operation share law by `host_sim`.
 
-## The four modules
+## At a glance
+
+| | |
+|---|---|
+| **What is shared** | one parameterized source (`boards.tsx` + `cells.tsx`), one control card, one firmware image, one connector set |
+| **What scales** | fuse class, Vienna die, PFC choke stack, LLC die count, tank, transformer cells, bank films, trip classes |
+| **What selects the SKU** | a single **RATING strap** read at boot — 0 Ω · 1 kΩ · 10 kΩ · 15 kΩ (3.32 kΩ reserved, E66) |
+| **Top of the envelope** | **50 kW** — one lane, one brain; above it chargers run modules in parallel (§3) |
+| **Cheapest per kW** | **50 kW air — ₹811 / kW** at the 10k India basis |
+
+## 1. The four modules
 
 | | **30 kW** | **40 kW** | **50 kW liquid** | **50 kW air** |
 |---|:---:|:---:|:---:|:---:|
 | Output | 150–1000 VDC · 100 A | 150–1000 VDC · 133 A | 150–1000 VDC · 167 A | 150–1000 VDC · 167 A |
-| Cooling | air · 2 fans | air · 3 fans | two coldplates · no fans | air · 4 fans |
-| Efficiency at full power, 400 VAC | 96.62 % | 96.70 % | 96.56 % | 96.48 % |
-| Worst junction on the 4,536-point grid | 139 °C | 127 °C | 116 °C | 135 °C |
-| MTBF (parts count, 40 °C) | 422 kh | 402 kh | 396 kh | 394 kh |
-| Build cost @10k · India basis | ₹30,033 | ₹34,616 | ₹40,481 | ₹38,404 |
-| China RFQ target @10k | ₹24,639 | ₹28,319 | ₹33,182 | ₹31,398 |
-| **₹ / kW** | 1,001 | 865 | 810 | **768** |
+| Cooling | air · **3 fans** (E81) | air · 3 fans | two coldplates · no fans | air · 4 fans |
+| Efficiency at full power, 400 VAC (E81 ledger) | 96.38 % | 96.37 % | 96.32 % | 96.25 % |
+| Worst LLC junction outside the registered fold set (E81) | 149 °C | 149 °C | 135 °C | 148 °C |
+| MTBF (parts count, 40 °C) | 410 kh | 390 kh | 374 kh | 372 kh |
+| Build cost @10k · India basis (E81) | ₹31,533 | ₹35,970 | ₹42,628 | ₹40,555 |
+| China RFQ target @10k | ₹25,852 | ₹29,418 | ₹34,922 | ₹33,142 |
+| **₹ / kW** | 1,051 | 899 | 853 | **811** |
 | RATING strap | 0 Ω | 1 kΩ | 10 kΩ | 15 kΩ |
+
+```mermaid
+xychart-beta
+  title "Build cost per kW at 10k volume (₹) — generated in docs/bom-cost.md"
+  x-axis ["30 kW", "40 kW", "50 kW liquid", "50 kW air"]
+  y-axis "₹ / kW" 0 --> 1200
+  bar [1051, 899, 853, 811]
+```
 
 ```mermaid
 flowchart LR
@@ -38,11 +56,11 @@ flowchart LR
     direction TB
     SRC["boards.tsx + cells.tsx<br/>one parameterized source"]
     CARD["one control card<br/>GD32G553VET7 · 88-way slot"]
-    FW["one firmware image<br/>C99 · host_sim 77/77"]
+    FW["one firmware image<br/>C99 · 291 checks"]
   end
   STRAP{"RATING strap<br/>read at boot"}
   SHARED --> STRAP
-  STRAP -- "0 Ω" --> M30["30 kW<br/>100 A · 2 fans"]
+  STRAP -- "0 Ω" --> M30["30 kW<br/>100 A · 3 fans"]
   STRAP -- "1 kΩ" --> M40["40 kW<br/>133 A · 3 fans"]
   STRAP -- "10 kΩ" --> M50L["50 kW liquid<br/>167 A · coldplates"]
   STRAP -- "15 kΩ" --> M50A["50 kW air<br/>167 A · 4 fans"]
@@ -50,7 +68,7 @@ flowchart LR
   style M50A stroke:#b8732e,stroke-width:2.5px
 ```
 
-### What scales with the rating
+## 2. What scales with the rating
 
 | Stage | 30 kW | 40 kW | 50 kW liquid · air |
 |---|---|---|---|
@@ -66,7 +84,7 @@ flowchart LR
 Everything else — the EMI filter topology, the precharge, the control card, the auxiliary supply, the harness, the HMI
 and the firmware — is the same part on every SKU. That shared content is why cost per kW falls from 30 to 50 kW.
 
-## Why a module stops at 50 kW
+## 3. Why a module stops at 50 kW
 
 A module is **one lane**: three Vienna phases and one full-bridge LLC under one control card. A second lane needs about
 18 PWM and 30 analog signals, which is past any single card (`cardMap()` throws), so a monolithic 60 kW module would
@@ -75,7 +93,7 @@ cooling cannot move: silicon paralleling count, choke-stack feasibility, the fus
 and PCB copper. **50 kW is the top of the single-lane, single-brain envelope** — chargers above it run modules in
 parallel, using the contract below. → [control-card scope](../docs/control-card-scope.md)
 
-## Two cooling lines at 50 kW
+## 4. Two cooling lines at 50 kW
 
 The two 50 kW modules are **electrically identical** since E68a; only the way heat leaves the module differs.
 
@@ -83,11 +101,16 @@ The two 50 kW modules are **electrically identical** since E68a; only the way he
 |---|---|---|
 | **Heat path** | two coldplates replace the extrusions; sealed module, zero fans | extrusions + 4 fans (3 front, 1 rear) |
 | **Device mount** | clip on Al2O3 · 0.65 K/W to a 65 °C plate | clip on Al2O3 · 0.8 K/W to a 70 °C base |
-| **Thermal proof** | 0 failures, 0 folds · worst Tj 116 °C (PFC) | 0 failures, 0 folds · worst Tj 135 °C (PFC) |
-| **Efficiency at full power** | 96.56 % | 96.48 % (the fans' 40 W) |
+| **Thermal proof** | worst Tj 120 °C (PFC) · 135 °C (LLC) | worst Tj 147 °C (PFC) · 148 °C (LLC) |
+| **Efficiency at full power** | 96.32 % | 96.25 % (the fans' 40 W) |
 | **System boundary** | charger-level cooling loop: coolant ≤ 60 °C, 6.5 L/min per module; plate NTCs and the over-temperature ladder are the module's dry-run protection | airflow only |
 | **Reliability** | no wear-out fans | four monitored fans; a fan death is an alarm and a derate |
-| **₹ / kW @10k** | 810 | **768** |
+| **₹ / kW @10k** | 853 | **811** |
+
+> [!WARNING]
+> **Both 50 kW SKUs carry the F-L-1 limit (E81).** The 150 V phase-shift corner is registered **NOT SUSTAINABLE** on
+> the two-die SKUs (40 kW and both 50 kW twins): sustained operation below 200 V is a documented specification limit
+> until E82-1. The 30 kW serves that corner folded to 93 %. → [E81 validation report](../docs/e81-validation-report.md)
 
 <details>
 <summary><b>Record — why there are two 50 kW modules</b></summary>
@@ -101,7 +124,7 @@ and service model, not electrical design.
 
 </details>
 
-## What a charger gets from every module
+## 5. What a charger gets from every module
 
 | Area | Provision, per module |
 |---|---|
@@ -112,7 +135,7 @@ and service model, not electrical design.
 | **Accuracy** | ± 0.18 % voltage and ± 0.2 % current after the two-point EOL calibration, so paralleled modules share inside constant-current regulation |
 | **Service** | commanded bank and bus discharge, touch-safe SELV control face, per-module HMI fault ring and CAN telemetry |
 
-### Running modules in parallel
+## 6. Running modules in parallel
 
 When a charger runs several modules on one output, its controller is the **group master**. It broadcasts
 `GROUP_SET` at 10 Hz — total current demand plus a membership bitmap — and every module card runs the same share law
@@ -133,6 +156,9 @@ sequenceDiagram
 
 The host suite proves the sum of shares never exceeds the demand through join, drop, partition and re-join.
 Controllers that prefer to set unequal shares keep the per-module `SET_OUTPUT` form.
+
+> [!TIP]
+> **How this page is checked** — `bom-gen` (cost), `loss-budget` (efficiency), `mtbf-budget` (reliability), `module-interconnect-audit` (the module boundary) and `host_sim` (the parallel share law) — all inside `sh calculations/run-all.sh`.
 
 ---
 

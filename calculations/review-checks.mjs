@@ -446,8 +446,8 @@ ck("E44-LLCPAR", /par=\{tank\.fetPar\}/.test(boards) && /Q\$\{id\}H\$\{k\}/.test
 // ===== E81 structural asserts — the grep that would have caught each delta half-applied.
 ck("E81-SNUB", /snub=\{tank\.snub\}/.test(boards) && /C\$\{id\}HOS1/.test(cells) && /C\$\{id\}HOS\$\{k\}/.test(cells) && /C\\d\+\[HL\]OS\\d/.test(db) && /rgOff="0"/.test(cells),
   "LLC turn-off snubber: one 1 kV C0G per DIE drain–source (original + every paralleled die), value from tanks.mjs cs, with R_off deleted — verify-independent §L walks the built netlist back to tanks.mjs");
-ck("E81-ENTRYFILM", /const nEntryFilm = \d+;/.test(boards) && /name="CFDMP"/.test(boards) && /name="RFDMP"/.test(boards) && /CFDMP\$/.test(db) && /RFDMP\$/.test(db),
-  "DC-link entry film is ONE constant (nEntryFilm) plus the 2.2 µF + 0.33 Ω series-RC damper — F-G-1 FIX-D, and the count is a single-place cost lever");
+ck("E81-ENTRYFILM", /const ENTRY_FILM[^=]*=\s*\{\s*30:\s*16,\s*40:\s*16,\s*50:\s*20\s*\}/.test(boards) && /name="CFDMP"/.test(boards) && /name="RFDMP"/.test(boards) && /CFDMP\$/.test(db) && /RFDMP\$/.test(db),
+  "DC-link entry film is ONE per-SKU table (ENTRY_FILM 16/16/20) plus the 2.2 µF + 0.33 Ω series-RC damper — F-G-1 FIX-D close-out; verify-independent §G re-declares the counts and current-coordination [SYNC] ties boards to parts-db");
 ck("E81-PKG", /footprint="sot23_6"/.test(cells) && /footprint="dfn10"/.test(cells) && /footprint="soic6"/.test(cells) && /footprint="soic4"/.test(cells) && /PKG_GUARD/.test(readFileSync(join(ROOT, "calculations/sheet-netlist-gen.mjs"), "utf8")),
   "the four datasheet-pinout defects (TPS54202 SOT-23-6 · TPS3430 VSON-10 · TLP152 SO-6 · VOM1271 SOP-4) are fixed in the SYMBOLS, and sheet-netlist-gen now guards symbol-vs-package numbering instead of translating it");
 ck("E81-MIRRORCLAMP", /mirrorClamp/.test(boards) && /D\$\{id\}CM/.test(cells) && /R\[ABC\]\\d\+CM\$/.test(db) && /export const MIRROR_CLAMP = \{ "30kw": false, "40kw": false, "50kw": true, "50kwa": true \}/.test(db),

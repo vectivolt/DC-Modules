@@ -33,7 +33,7 @@
 | **Protection** | six response levels; every F.xx row carries a recovery class — AUTO_EXT · AUTO_INT · LATCH · LOCK |
 | **Smoothness** | bumpless soft start from the output node, slew-limited references, a 100 ms controlled stop, min-select CV/CC with back-calculation anti-windup, CV share trim |
 | **MCU** | one GD32G553 runs both stages. E79 estimated ≈ 35 % CPU; the E81 disassembly count (reviewer D) put the 100 kHz PFC ISR at 5.8–7.4 µs of its 10 µs period before the E81 trims (grid sampling out of the 100 kHz context, reciprocal, PFEN) — the binding item, measured at T-64 with a **STOP line of ≤ 5 µs worst case** (§3.5) |
-| **Verified on the host** | 222 checks: the 26 fault scenarios, E60–E79 regressions, every-tick invariants, both protocols against their documents, 2 M fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end |
+| **Verified on the host** | **291 checks** across seven binaries: the 26 fault scenarios, E60–E81 regressions, every-tick invariants, both protocols against their documents, fuzzed frames, the Vienna and LLC laws on cycle-by-cycle plants, the application end to end, the signed boot chain, and the E81 adaptive dead time |
 | **Before hardware** | loop gains on HIL (§5.4) · T-44/T-47/T-48 on silicon · HW-REC-1/4/5 (§10) — the register port itself is built and gated (E80: `firmware/port/gd32g553/`, no vendor library) |
 
 ## 1. What the review found
@@ -635,6 +635,9 @@ no J1939 PDU1 frame sets the native marker.
 - TonHe V1.2 interoperability on real equipment (T-46) — resolves TH-AMB-1 … TH-AMB-11.
 - `fsm-sim.mjs` (the JS twin) lags the C core since E76; the C core is normative (E24).
 - The fan-complement decision O-16 (2/3/4 fans as built vs a 3/4/5 basis one review asserts — a fifth tach needs a harness way).
+
+> [!TIP]
+> **How this page is checked** — `sh firmware/run_tests.sh` (291 checks, sanitizers fatal) and `npx tsx calculations/control/port-pin-audit.mjs`, which locks the GD32G553 port's pin table to the card generator (56 pins).
 
 ---
 

@@ -131,6 +131,9 @@ A magnetic that is gap-padded or clamped to PE-bonded metal is part of the **bas
   voltage, and never add low-value earthing resistors just to force a centre (they change the floating system and the IMD).
 - **Control domain to PE**: 1 MΩ ∥ 4.7 nF Y1 soft bond — no hard earth loop, leakage < 1 mA budget.
 
+> [!TIP]
+> **How this page is checked** — `stress-audit`'s INS rows in `run-all`, plus the hipot and leakage plan in the [EVT plan](evt-plan.md); the barrier map is walked by `module-interconnect-audit`.
+
 ---
 
 <div align="center">

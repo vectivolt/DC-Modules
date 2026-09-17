@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/verify--independent-227%2F227-2ea44f?style=flat-square" alt="verify-independent: 227/227"/>
+  <img src="https://img.shields.io/badge/verify--independent-243%2F243-2ea44f?style=flat-square" alt="verify-independent: 243/243"/>
 </p>
 
 > [!NOTE]
@@ -18,52 +18,60 @@
 > **Gate coupling** — `sh calculations/run-all.sh` reproduces the battery this matrix cites; a single failing gate
 > stops it.
 
+## At a glance
+
+| | |
+|---|---|
+| **One command** | `sh calculations/run-all.sh` — **exit 0** end to end; a single failing gate stops the battery |
+| **Clean-room recompute** | `verify-independent` **243 / 243** from its own netlist parser and its own physics |
+| **Firmware** | **291 checks** under ASan/UBSan across seven binaries |
+| **Release sheets** | **7,285 / 7,285** connected pins across five KiCad-5 SHIP targets → nine board PDFs |
+| **Documentation** | `docs-lint` clean · **42 registered pages** |
+| **Status letters** | **V** verified by an executed artifact · **P** planned, not executed · **N** not applicable at this phase |
+
 ## Scoreboard
 
 | Gate | What it checks | Result |
 |---|---|---|
-| `envelope-grid` | 4 SKUs × 6 input voltages × 8 output voltages × 7 loads × 3 temperatures (E67 LOW/HIGH modes) | **4,536 points · 0 failures · max Tj 139 °C** |
+| `envelope-grid` | 4 SKUs × 6 input voltages × 8 output voltages × 7 loads × 3 temperatures (E67 LOW/HIGH modes) | **4,536 points** · every point passes or is a **registered fold**; the 324 LIMIT rows are the 150 V phase-shift corner registered NOT SUSTAINABLE on the two-die SKUs (E81 F-L-1) · worst LLC Tj outside that set **149 °C** |
 | `monte-carlo` | tank gain per SKU on the E67 tanks, choke lots, voltage and current chains, full-bridge dead time | **8 batches × 10k samples · pass** |
-| `fsm-sim` + `host_sim` | fault scenarios · C firmware under ASan/UBSan | **26 / 26 · 63 / 63** → E78: `host_sim` 114 · `ctl_test` 18 · `proto_test` 40 → E79: + `hal_test` 34 · `app_test` 16 → **E80: 260 total** (`boot_test` 21 — signed A/B chain; the E80 recheck rows in `host_sim`/`app_test`; [firmware verification](firmware-verification.md)) |
-| `stress-audit` | every device, magnetic, pulse part and protection class against its acceptance line | **130 checks · clean** (incl. the E69a PFC die classes, the E67 grid-shape assert, and the E73 D7 CM-flux and D4 Rdc rows) |
-| `current-coordination` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux, **per-die fault pulse ≤ 0.8 × IDM (E69a-2)**, film-bank ripple (E68c), output diode, **precharge-bypass closure (E73)** | **81 checks · clean** |
-| `temp-critique` · `conductor-audit` · `magnetics-envelope` · `mag-sync` | core temperature, AC copper, D3 cells / D2 at every simulated corner, identity sync across five carriers | **11 · 18 · 30 · 48 · clean** (E73: fan-out and cell-imbalance rows) |
-| `fault-energy` | stored energy, wire vs fuse, surge, air and coolant budget | **22 checks · clean** |
-| `verify-independent` | clean-room recompute from its own netlist parser and physics | **226 / 226** |
-| `review-checks` | every audit and external-review closure as an assertion | **140 pass** |
-| `kicad5-verify` | release-sheet pins against the netlists | **6,853 / 6,853 · 5 targets** |
-| `docs-lint` | links, anchors, page chrome, diagram types | **clean · 37 documents** |
+| `fsm-sim` + `run_tests.sh` | fault scenarios · C firmware under ASan/UBSan | **26 / 26** · **291 checks**: `boot_test` 21 · `host_sim` 121 · `ctl_test` 19 · `proto_test` 40 · `hal_test` 37 · `app_test` 24 · `e81_test` 29 ([firmware verification](firmware-verification.md)) |
+| `stress-audit` | every device, magnetic, pulse part and protection class against its acceptance line | **158 checks · clean** (incl. the E69a PFC die classes, the E67 grid-shape assert, the E73 D7 CM-flux and D4 Rdc rows, and the E81 `[DPT]` snubber and ZVS-budget rows) |
+| `current-coordination` | simulated peaks vs trips, observability, DESAT vs SCWT, fault flux, **per-die fault pulse ≤ 0.8 × IDM (E69a-2)**, film-bank ripple (E68c), output diode, **precharge-bypass closure (E73)**, the E81 `[DCLINK] [ZVS] [F.11] [SP] [SYNC]` rows | **102 checks · clean** |
+| `temp-critique` · `conductor-audit` · `magnetics-envelope` · `mag-sync` | core temperature, AC copper, D3 cells / D2 at every simulated corner, identity sync across five carriers | **10 · 18 · 30 · 48 · clean** (E73: fan-out and cell-imbalance rows) |
+| `fault-energy` | stored energy, wire vs fuse, surge, air and coolant budget | **23 checks · clean** |
+| `verify-independent` | clean-room recompute from its own netlist parser and physics | **243 / 243** |
+| `review-checks` *(outside run-all)* | every audit and external-review closure as an assertion | **144 pass · 1 stale assertion** — `E81-ENTRYFILM` greps for a literal entry-film count after the per-SKU 16 / 16 / 20 / 20 table landed |
+| `kicad5-verify` | release-sheet pins against the netlists | **7,285 / 7,285 · 5 targets** (1,682 · 1,750 · 1,762 · 1,786 · 305) |
+| `docs-lint` | links, anchors, page chrome, diagram types | **clean · 42 registered pages** |
 | `magnetics-rfq-audit` | every magnetic drawing on the module pages carries every field a winder quotes against (E70: in run-all) | **0 missing · 25 drawings** |
 | `bom-gen` · `mag-docs` | the per-module BOM and magnetics pages, generated from the built boards and the gate evidence (E70) | **4 + 4 pages** |
 | `mkf-crosscheck` *(by hand)* | PyOpenMagnetics second opinion on every custom magnetic: D1 toroid Rdc and Kool Mµ DC bias, D2 / D3 Rdc, gap fringing, 2-D copper and thermal, D4 gap and copper, D7 permeability (E71 · E73) | **40 rows · Rdc within 6 % · D1 DC-bias conservative · class lines hold · 50 kW air D3 130 °C vs the 125 °C design line → T-31 watch** |
 | `footprint-audit` | unnamed packages and MPN / land conflicts on the release sheets | **0 · 0 — queue closed (E64), ratchet at zero** |
 | `standby-budget` | drawn HV passive network vs the registered standby arithmetic and the ≤ 10 W target (E64) | **consistent · EVT measures** |
-| `mtbf-budget` | parts-count reliability prediction vs the registered table (E64) | **394–422 kh · consistent** (re-registered at E69 on the corrected classifier) |
+| `mtbf-budget` | parts-count reliability prediction vs the registered table (E64) | **372–410 kh · consistent** (re-registered at E69 on the corrected classifier) |
 
 ```mermaid
 flowchart LR
   SRC["cells.tsx · boards.tsx<br/>control-card.tsx · parts-db"] --> BUILD["tsci netlist builds<br/>9 boards · 0 errors"]
   BUILD --> ENG["engines<br/>pfc · llc · dm-choke · loss<br/>grid 4,536 pts · Monte-Carlo · fsm-sim · vienna-switched"]
   ENG --> GATES["computing gates<br/>stress · coordination · conductor · temp · fault-energy<br/>interconnect · polarity · schematic"]
-  GATES --> IND["verify-independent<br/>226 clean-room checks"]
-  IND --> REV["review-checks<br/>140 assertions"]
+  GATES --> IND["verify-independent<br/>243 clean-room checks"]
+  IND --> REV["review-checks<br/>144 assertions"]
   REV --> SHIP["KiCad-5 SHIP zips × 5<br/>pin-verify · uniformity"]
-  SHIP --> PDF["10 release PDFs"]
-  FW["firmware run_tests<br/>260 checks (E80)"] --> REV
+  SHIP --> PDF["9 release PDFs"]
+  FW["firmware run_tests<br/>291 checks (E81)"] --> REV
   style GATES stroke:#d19a00,stroke-width:2.5px
   style IND stroke:#2ea44f,stroke-width:2.5px
 ```
-
-**Status letters:** **V** verified by an executed calculation, simulation or audit (artifact cited) · **P** planned
-or specified, not yet executed · **N** not applicable at this phase.
 
 ## 1. Requirements → evidence
 
 | Requirement (§2) | Evidence | Status |
 |---|---|---|
 | PF ≥ 0.99 · THD ≤ 5 % (stretch 3 %) | `hal_test` SIL with the shipped law (E81): THD-40 0.76 / 0.65 / 0.69 % at 400 VAC full load, PF 0.9999; cycle-by-cycle Vienna 0.09–0.15 % at 330 VAC; the 30 kW averaged deck (0.59–1.05 %) is superseded | V (averaged + switched fidelity) · P bench T-02 |
-| Output 150–1000 V CV/CC envelope | `simulation-results/<sku>/llc-stress.csv` — power-solved full-bridge decks (E67), ZVS 64/64 on every corner, legs in rails · grid 4,536 points, 0 failures, 0 folds | V analysis · P bench |
-| Peak η ≥ 97 % | `loss-budget.csv` full load 96.62 / 96.70 / 96.56 / 96.48 % (E69, DOUT included); grid peaks 98.11 / 98.26 / 98.30 / 98.30 % | V calc · P calorimetric T-03 |
+| Output 150–1000 V CV/CC envelope | `simulation-results/<sku>/llc-stress.csv` — power-solved full-bridge decks (E67), legs in rails · grid 4,536 points, every point passing or a registered fold. **ZVS is no longer claimed on every edge** (E81 F-G-9: the old claim rested on a linear C_oss); the deck now carries non-linear C_oss + the snubber, ZVS is held by the per-leg adaptive dead time, and the phase-shift corners hard-switch the weak leg (F-L-1) | V analysis · P bench **T-58** |
+| Peak η ≥ 97 % | `loss-budget.csv` full load **96.38 / 96.35 / 96.32 / 96.25 %** (E81 ledger — DOUT, LLC turn-off and the DPT switching share included); grid peaks **97.80 / 97.73 / 97.72 / 97.72 %** | V calc · P calorimetric T-03 |
 | Full power to +55 °C, derate to +75 °C | `derating.csv`; worst Tj ≤ 150 °C with computed folds (`envelope-grid`, `stress-audit`) | V calc · P chamber T-04 |
 | Environment −30…+75 °C (A11 rev C) | `temp-critique` COLD rows at −30 °C; −40 °C-category DC-link class spec; IP55 fan spec line | V spec · P cold soak T-32 |
 | Ripple ≤ ± 0.5 % | film-only banks (E68c): 9 / 12 / 14 × 2.2 µF per bank, ≤ 0.5 % RMS at −10 % C on every simulated corner (`current-coordination` [OUT]; worst 0.47 / 0.46 / 0.49 % at PS150-Imax) | V calc · P bench T-03 / T-40 |
@@ -82,7 +90,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | Loss budget and air budget use physical inputs | `loss-budget` reads the PAR400 nominal corner; `fault-energy` reads `loss-budget.csv` | V |
 | EOL and EVT windows belong to the product SKUs | `dfm-production` steps 4 / 5 / 8; `evt-plan` T-08 / T-17 / T-22 restated (T-24 retired with K_OUT at E67) | V doc · P first EOL lot |
 | Device mounting basis (E68a) | `thermal/mount.mjs`: clip-mounted TO-247 on Al2O3, 0.8 K/W at a 70 °C base (air), 0.65 K/W at 65 °C (liquid) — read by every Tj engine | V model · **P T-38** |
-| EMI filter without DM chokes (E68b) | `lisn-precompliance`: drawn star-X2 per-phase ladder, DM margin 32.9 / 30.6 / 28.7 dB against the E65 control 19.6 / 19.1 / 18.4; `pfc-control` modulus margin 0.65 / 0.61 / 0.54 with the damper | V sim · P T-08 / **T-39** |
+| EMI filter without DM chokes (E68b) | `lisn-precompliance`: drawn star-X2 per-phase ladder, DM margin 32.9 / 30.6 / 28.7 dB against the E65 control 19.6 / 19.1 / 18.4; `pfc-control` modulus margin **0.66 / 0.61 / 0.54** at the shipped 15 µs delay (E81; 0.73 at 50 kW with the 4.7 µF / 4.7 Ω damper) | V sim · P T-08 / **T-39** |
 | Right-sized SiC dies survive their trip (E69a-2) | `current-coordination` per-die pulse: PFC 165 / 205 / 266 A and LLC 209 / 134 / 165 A per die ≤ 0.8 × IDM; IDM acceptance lines in `parts-db` | V calc · P RFQ + **T-41** |
 | Output diode and zero-current relays (E67) | `current-coordination` [OUT]: DOUT at 67 % of class, Tj 115 / 120 / 123 / 128 °C | V calc · P **T-36** |
 
@@ -91,13 +99,13 @@ or specified, not yet executed · **N** not applicable at this phase.
 | Check | Result |
 |---|---|
 | Netlist build errors | **0 on all 9 boards** (4 SKU pairs + card) |
-| Release-sheet pins | `kicad5-verify.mjs`: **6,853 / 6,853** connected pins across the five SHIP targets (title blocks carry each board's E67–E69 content) |
+| Release-sheet pins | `kicad5-verify.mjs`: **7,285 / 7,285** connected pins across the five SHIP targets (title blocks carry each board's E67–E69 content) |
 | Schematic symbol overlaps | **0** on every SKU pair |
 | Module interconnect | clean — studs, all 40 harness ways, the 88-way slot, RATING straps |
 | Polarity | every polarized part has its + / anode on pin 1 as the glyphs draw it (E38 gate + R4-1 seating fix) |
 | Driver channels | one `DriverCh` cell for all 7 channels per module — 3 Vienna + 4 full-bridge LLC since E67 (real NSI6611 map R4-2, DESAT series R R5-B, per-stage blank E60) |
 | BOM coverage | 0 unmatched designators; every class part carries a value-carrying order code; `bom-maturity` MATURE |
-| Supervisory logic | C99 FSM + CAN codec + group share law + the E73 bypass-closure window: **63 / 63** under ASan/UBSan |
+| Supervisory logic | C99 FSM + CAN codec + group share law + the E73 bypass-closure window + the E81 rows: **291 checks** under ASan/UBSan |
 | PCB layout | **N** — out of scope: the design face ends at the audited KiCad-5 schematics (E36, E70) |
 
 ## 3. Simulation matrix
@@ -138,7 +146,7 @@ or specified, not yet executed · **N** not applicable at this phase.
 | R4 | 1000 V relay make / weld qualification, mirror variant | H × M | pre-insertion, matched-voltage make, two-stage exclusion; Hongfa RFQ · **E67:** the S/P relays switch at 0 A behind DOUT, K_OUT and pre-insertion are retired — the residual is a welded KPARA (F.17, T-35) | narrowed (E67) |
 | R5 | Behavioural SiC model band (± 40 % switching energy) | M × H | worst-case k_sw used for fsw; bench DPT T-01 | mitigated |
 | R6 | Transformer partial discharge at the 1 kV class | H × M | D3 insulation system + PD sampling | open (specified) |
-| R7 | EMI pre-compliance gap | M × H | per-variant LISN margins on the drawn E68b star-X2 ladder (no DM chokes) with the E65 filter as control; CM holds +3 dB only while switch-node→PE Cp ≤ 350 pF; chamber at EVT (T-08 / T-39) | mitigated (analysis) |
+| R7 | EMI pre-compliance gap | M × H | per-variant LISN margins on the drawn E68b star-X2 ladder (no DM chokes) with the E65 filter as control; **E81:** with the LLC bridge counted as a second CM source the margin is **+3.1 dB at the 100 pF leg-node requirement and +7.1 dB at the 50 pF design target** with CY1-3 raised to 10 nF — the analytic ladder flips sign between 200 and 600 pF of switch-node capacitance; chamber at EVT (T-08 / **T-39**) | mitigated (analysis) · **Cp is ASSUMED** |
 | R8 | GD32G553 alternate-function / comparator table deltas | M × M | pin map regenerated from the vendor table; comparator instances pinned (E48) | open (narrowed) |
 | R9 | PV bleeder gate drive over temperature | M × M | guaranteed 10 mA drive + 25 °C-endpoint model; EVT loaded-Vgs gates BOM freeze | open (measurement) |
 | R10 | Aux cold start at low line and −30 °C | L × M | NCP1252D + 220 µF (3 × budget); T-29 / T-32 waveforms | mitigated (design) |
@@ -155,7 +163,15 @@ or specified, not yet executed · **N** not applicable at this phase.
 | R21 | Cost gap to InfyPower: the India 10k basis is ~38–47 % above the E62 teardown estimate (≈ ₹23.6k at 40 kW) | H × H | China RFQ-target column (E69f); 2U construction scenario (E69e); deferred drive clone (−₹470) and aux / relay levers; buy and measure one REG1K0135A2 to replace estimates with data | open (commercial) |
 | R22 | 2U construction prerequisites unproven: the PFC choke must lie in a well (T79 stacks 60–95 mm), a 3-core 40 kW D1 fails F.01, the chassis must hold a 70 °C base at 55 °C | M × H | scenario only — the design basis stays the 3U card; needs a flat-core D1 and a mechanical design with quotes | open (design) |
 
+| **R23** | **Sub-200 V output on the 40 / 50 kW SKUs (E81 F-L-1)**: the 150 V phase-shift corner hard-switches the weak leg and is registered **NOT SUSTAINABLE** | H × H | documented specification limit (sustained delivery ≥ 200 V, matching TonHe's own TH750 floor) until **E82-1**; the FSM derate ladder folds the corner and **T-58** measures the leg-node timing; the 30 kW serves it folded to 93 % | **open — user decision (§12 of the [E81 report](e81-validation-report.md#12-what-remains-open))** |
+| **R24** | PFC ISR budget on real silicon: 5.8 µs static by disassembly against a **≤ 5 µs** STOP line | H × M | trims are in; the single-update fallback is **forbidden** on 40 / 50 kW; GD32G553 at 216 MHz chosen over the STM32G474 for this reason | open (**T-64**) |
+| **R25** | Layout promises the DPT and DC-link decks assume: link impedance 40 / 60 nH and loop inductance 5 / 7 nH | H × M | layout rules in the netlists; every final DPT row passes at those loops — a miss reopens the snubber set | open (**T-57 / T-59**) |
+| **R26** | CV load-step overshoot on the film-only bank (+4.9 … +9.7 % at the stud) | M × M | spec restated ≤ 10 % with the code's F.14 thresholds; the ≈ +₹500 electrolytic route is registered — the E81 teardown re-read shows the benchmark's banks are **not** film-only | open (user decision · **T-60**) |
+
 The bench campaign that retires the P rows is the [EVT test plan](evt-plan.md).
+
+> [!TIP]
+> **How this page is checked** — `sh calculations/run-all.sh` reproduces the whole battery this matrix cites — a single failing gate stops it — and `verify-independent` recomputes 243 of its claims from its own parser and physics.
 
 ---
 

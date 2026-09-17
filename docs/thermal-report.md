@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E81-f2b705?style=flat-square" alt="revision E81"/>
   <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/grid-4536_pts_·_0_fail_·_0_folds-2ea44f?style=flat-square" alt="grid: 4536 pts · 0 fail · 0 folds"/>
+  <img src="https://img.shields.io/badge/grid-4536_pts_·_fold_map_·_F--L--1-d19a00?style=flat-square" alt="grid: 4536 pts · fold map · F-L-1"/>
 </p>
 
 > [!NOTE]
@@ -45,32 +45,56 @@
 > coefficient read from the same deck (22–26 nJ/(V·A) at the drawn clamp state, against the 17.4 the E3 carrier choice was made
 > on). Tables §1–§3 and §4.2–§4.5 are the engines' output on that basis.
 
+## At a glance
+
+| | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
+|---|---:|---:|---:|---:|
+| **Loss at the rated point** (E81 ledger) | 1,126 W | 1,507 W | 1,910 W | 1,950 W |
+| **η at 400 VAC, full power** | **96.38 %** | **96.35 %** | **96.32 %** | **96.25 %** |
+| **Peak η** over the envelope | 97.80 % | 97.73 % | 97.72 % | 97.72 % |
+| **Cooling** | air · 3 fans | air · 3 fans | 2 coldplates · 0 fans | air · 4 fans |
+| **Airflow margin** at the 55 °C inlet density | **1.65×** | 1.27× | coolant ΔT 4.6 K | 1.27× |
+| **Worst LLC Tj** outside the registered fold set | **149 °C** | **149 °C** | 135 °C | 148 °C |
+| **Grid** | 4,536 points · every point passes or is a registered fold (§3) | | | |
+
+> [!WARNING]
+> **Two loss terms entered the ledger at E81** — the LLC turn-off energy per position and the Vienna switching
+> coefficient read from the double-pulse deck (22–26 nJ/(V·A) as drawn, against the 17.4 the E3 carrier choice was
+> made on). Every efficiency number below is on that basis. Pre-E81 pages quoting 96.62 / 96.70 / 96.56 / 96.48 %
+> are superseded — see [E81 recalculated numbers](e81-validation-report.md#6-recalculated-numbers).
+
 ## 1. Loss budget at the rated point (400 VAC, full power, JBS secondary)
 
 From `calculations/out/loss-budget.csv`.
 
 | W | 30 kW | 40 kW | 50 kW liquid | 50 kW air |
 |---|---:|---:|---:|---:|
-| PFC semiconductors (one die per position; 20 mΩ · 15 mΩ · B3M010C075Z) | 227.6 | 303.5 | 340.9 | 340.9 |
-| PFC chokes (D1) | 84.1 | 94.5 | 127.2 | 127.2 |
+| PFC semiconductors (one die per position; 20 mΩ · 15 mΩ · B3M010C075Z) — incl. the E81 DPT switching share (× 1.04 / 1.12 / 1.09) | 229.0 | 308.5 | 345.7 | 345.7 |
+| PFC chokes (D1) | 83.9 | 94.5 | 127.2 | 127.2 |
 | DC-link ESR | 12.0 | 17.8 | 27.8 | 27.8 |
-| LLC primary FETs (4 · 8 · 8 · 8 × SG2M023120LJ) | 139.9 | 125.2 | 190.6 | 190.6 |
-| Transformer cells (D3 rev D, two cells) | 56.4 | 71.3 | 89.2 | 89.2 |
-| Tank (D2 rev F external Lr + Cr ESR) | 11.7 | 17.5 | 23.8 | 23.8 |
+| LLC primary FETs (4 · 8 · 8 · 8 × SG2M023120LJ) — **conduction + E81 turn-off** (140 + 66 · 124 + 136 · 193 + 122 W) | 206.3 | 260.6 | 315.0 | 315.0 |
+| Transformer cells (D3 rev D, two cells) | 56.4 | 71.5 | 88.9 | 88.9 |
+| Tank (D2 rev F external Lr + Cr ESR) | 11.3 | 16.9 | 23.4 | 23.4 |
 | Secondary SiC JBS (16 × 40 A) | 325.7 | 492.8 | 695.8 | 695.8 |
 | Output diode DOUT | 105.0 | 139.7 | 175.3 | 175.3 |
 | Busbar + shunt | 1.7 | 3.1 | 4.9 | 4.9 |
 | EMI filter (2 × D7 + damper) | 26.3 | 43.3 | 68.2 | 68.2 |
 | Aux + gate drive | 38 | 38 | 38 | 38 |
-| Fans | 20 | 20 | 0 | 40 |
-| **Total** | **1,048.5** | **1,366.6** | **1,781.7** | **1,821.7** |
-| **η (JBS baseline)** | **96.62 %** | **96.70 %** | **96.56 %** | **96.48 %** |
-| η with a one-FET-per-position synchronous rectifier (model) | 96.29 % | 96.06 % | 95.62 % | 95.54 % |
+| Fans | 30 | 20 | 0 | 40 |
+| **Total** | **1,125.7** | **1,506.7** | **1,910.3** | **1,950.3** |
+| **η (JBS baseline, E81)** | **96.38 %** | **96.35 %** | **96.32 %** | **96.25 %** |
+| η with a one-FET-per-position synchronous rectifier (model) | 96.05 % | 95.74 % | 95.38 % | 95.31 % |
 | *E65 figure (three half-bridge sections, paralleled PFC pairs, D6 + bank electrolytics)* | *97.22 %* | *97.00 %* | *96.79 %* | *96.94 %* |
 
 The step down from E65 is the price of the InfyPower architecture, and it was taken knowingly: the output diode alone
 is 105–175 W (0.35 pt), and one full bridge per bank carries the whole bank current through each rectifier position
-instead of a third of it per section. InfyPower states "> 96 %" for the REG1K0135A2; the 40 kW module is at 96.70 %.
+instead of a third of it per section. InfyPower states "> 96 %" for the REG1K0135A2; the 40 kW module is at 96.37 %
+with the E81 turn-off and switching terms in the ledger.
+
+> [!NOTE]
+> **The 40 kW fan line reads 20 W** while [E81 decision 1](e81-validation-report.md#5-decisions-taken-at-e81) gives the
+> 40 kW three fans (the 30 kW line moved to 30 W). The ledger is quoted as the engine writes it; the ≈ 10 W is inside
+> the ±25 % the aux budget carries and does not move any margin in §2 — flagged for the next `loss-budget` pass.
 
 **Peak efficiency** over the envelope (E81 grid, 475 VAC / 750–1000 V out, 50–75 % load, cold): **97.80 / 97.73 / 97.72 / 97.72 %**,
 so the ≥ 97 % peak specification is met on every SKU. The grid's averaged model omits EMI-filter copper and DC-link
@@ -80,16 +104,16 @@ ESR, which at part load are worth −0.05…−0.07 pt.
 flagships' ≥97 % claim ([teardown benchmark](benchmark-infypower-teardown.md)).
 
 ```mermaid
-pie showData title 50 kW air module — where 1,822 W goes
+pie showData title 50 kW air module — where 1,950 W goes (E81 ledger)
   "Secondary SiC JBS" : 696
-  "PFC semiconductors" : 341
-  "LLC primary FETs" : 191
+  "PFC semiconductors" : 346
+  "LLC primary FETs (incl. turn-off)" : 315
   "Output diode DOUT" : 175
   "PFC chokes D1" : 127
   "Transformer cells D3" : 89
   "Aux, gate drive, fans" : 78
   "EMI filter" : 68
-  "DC link, tank, busbar" : 57
+  "DC link, tank, busbar" : 56
 ```
 
 > [!NOTE]
@@ -108,7 +132,7 @@ flowchart LR
     M["D2 · D3 stacks span the tunnel<br/>both yoke faces gap-padded (E65)"]
     U["upper extrusion<br/>DC-DC: LLC SiC + 24 JBS"]
   end
-  F["fans 2 / 3 / — / 4<br/>front-to-back"] --> L & T & U
+  F["fans 3 / 3 / — / 4 (E81)<br/>front-to-back"] --> L & T & U
   M -->|bond heat| L
   M -->|bond heat| U
   C["coldplate pair<br/>50 kW liquid · 6.5 L/min"] -.-> L & U
@@ -119,16 +143,16 @@ flowchart LR
 
 | SKU | Heat at rated | Face split: lower (AC-DC) / upper (DC-DC) | Cooling | Margin (`fault-energy`) |
 |---|---:|---|---|---|
-| 30 kW | 1,049 W | 228 / 571 W | 3 fans (E81, O-16 closed) | **1.65×** air (need 175 m³/h @ ΔT 20 K at the 55 °C inlet density vs 288) · one fan out covered |
-| 40 kW | 1,367 W | 304 / 758 W | 3 fans | **1.36×** (211 vs 288) · one fan out covered |
-| 50 kW liquid | 1,782 W | 341 / 1,062 W | coldplates, 0 fans | coolant ΔT **4.6 K** at 6.5 L/min 50/50 EG (≤ 5 K) |
-| 50 kW air | 1,822 W | 341 / 1,062 W | 4 fans (all tachs monitored) | **1.37×** (281 vs 384) · one fan out covered |
+| 30 kW | 1,126 W | 229 / 637 W | 3 fans (E81, O-16 closed) | **1.65×** air at the 55 °C inlet density · one fan out covered |
+| 40 kW | 1,507 W | 309 / 893 W | 3 fans (E81) | **1.27×** at the corrected density · one fan out covered |
+| 50 kW liquid | 1,910 W | 346 / 1,186 W | coldplates, 0 fans | coolant ΔT **4.6 K** at 6.5 L/min 50/50 EG (≤ 5 K) |
+| 50 kW air | 1,950 W | 346 / 1,186 W | 4 fans (all tachs monitored) | **1.27×** at the corrected density · one fan out covered |
 
 The face split puts the PFC semiconductors on the lower extrusion and the LLC FETs, secondary JBS and DOUT on the upper
 one; it counts silicon only. Since E65 the D2 and D3 stacks also bond to both faces and add their own heat
 ([§4.6](#46-heat-delivered-into-the-webs)). **The upper extrusion is the binding sink on every SKU.** At the 30 kW
-worst continuous corner (330 VAC, full power) `loss-budget` computes 1,082 W total, of which 774 W is heatsink-mounted
-silicon; at a 20 K sink-to-air rise that needs **Rth(s-a) ≤ 0.026 K/W** for the pair of extrusions. With the clip
+worst continuous corner (330 VAC, full power) `loss-budget` computes **≈ 1,148 W** total, of which **≈ 840 W** is
+heatsink-mounted silicon; at a 20 K sink-to-air rise that needs **Rth(s-a) ≤ 0.024 K/W** for the pair of extrusions. With the clip
 mount the devices reach their 70 °C base basis at 55 °C inlet only if the extrusion holds that line, so the extrusion
 RFQ carries it, and T-04 / T-38 measure it. The fan operating point is verified on the vendor static-pressure curve at
 EVT (A8).
@@ -392,7 +416,7 @@ cold start self-warms toward the minimum instead of running away. Details: the
 | Case | Result |
 |---|---|
 | −30 °C cold start (A11 rev C, E60 competitor parity) | Rds low, losses −18 %; electrolytic ESR ×2.5 (cans now −40 °C category) → precharge + 60 s soft power limit of 50 % below −10 °C (FW-R3); ferrite Fe 2.05× but cores self-warm (§4.7); IP55 fans rated −30 °C; chamber proof T-32 |
-| +55 °C inlet | full power; grid Tj ≤ 139 °C with no folds (E68a clip mount) |
+| +55 °C inlet | full power except at the registered folds; grid Tj ≤ 149 °C outside them (E68a clip mount, E81 grid) |
 | +65 °C inlet | derate to 70 % |
 | +75 °C inlet | derate to 40 % — D3/D2 are solved here with copper at 40 % load and iron undiminished, because flux follows bank voltage (§4.4) |
 | Blocked filter (50 %) | airflow −30 % → treated as +8 °C inlet penalty; the firmware ΔT sink-inlet estimator shifts the derate curve left |
@@ -427,6 +451,9 @@ plot `simulation-results/30kw/plots/derating-curve.svg`.
 | Bond durability type test: ≥ 500 cycles −40 ↔ +135 °C or ≥ 3,000 power cycles (joint resistance change ≤ 10 %, AL/Lm ±3 %, hipot pass); thermal-shock screen upper temperature ≥ 135 °C | first article |
 | Cutout loop: each thermostat opened in turn reports 150 °C and latches F.22 | bring-up |
 | TIM process spec (phase-change pad, 0.5 K·cm²/W class) in the DFM flow | DFM |
+
+> [!TIP]
+> **How this page is checked** — `loss-budget`, `envelope-grid`, `magnetics-envelope`, `temp-critique` and `fault-energy` in `run-all` — this page quotes their output files and changes only when they do.
 
 ---
 
