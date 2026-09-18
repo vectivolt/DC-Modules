@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
   <img src="https://img.shields.io/badge/gate-review--checks_·_current--coordination-2ea44f?style=flat-square" alt="gate: review-checks · current-coordination"/>
 </p>
 
@@ -67,7 +67,7 @@ never counts. Display codes `F.xx` per [interconnect](interconnect.md) HMI.
 
 | Fault | Threshold | Detect | Layer | Action | Class |
 |---|---|---|---|---|---|
-| **F.01** PFC phase OC | 120 / 155 / 195 A pk on the 22 / 18 / 13 Ω burden (§5). The comparator reference is **positive-only** — a sub-AVMID reference on a non-inverting comparator into an active-high fault input would assert the fault through every negative half-cycle. The negative polarity is a 100 kHz software magnitude trip in `app_pfc_isr` (`\|i\| > oc_line_a` → the same `trip_n`/`trip_ack` path, outputs off inside the same ISR), and Σi = 0 makes the other two comparators the hardware backstop at 2 × I_trip | < 2 µs (≤ 10 µs negative) | HW comp → HRTIMER · FW magnitude trip | PFC PWM off, latch | LATCH |
+| **F.01** PFC phase OC | 120 / 155 / 195 A pk on the 22 / 18 / 13 Ω burden (§5). The comparator reference is **positive-only** — a sub-AVMID reference on a non-inverting comparator into an active-high fault input would assert the fault through every negative half-cycle. The negative polarity is a 100 kHz software magnitude trip in `app_pfc_isr` (`\|i\| > oc_line_a` → the same `trip_n`/`trip_ack` path, outputs off inside the same ISR), and Σi = 0 makes the other two comparators the hardware backstop at 2 × I_trip | < 2 µs (≤ 19 µs negative: one sample period plus the interrupt's own execution, before the CT's lag) | HW comp → HRTIMER · FW magnitude trip | PFC PWM off, latch | LATCH |
 | **F.01 → F.08** line-return exception | an F.01 inside `PMP_LINE_EVT_MS` (500 ms) of a disturbed line — a phase missing, or the lowest line-line below `PMP_LINE_EVT_K` (0.90) of what the site normally shows — is filed as **F.08**. At a line return the EMI filter rings 121–199 A pk into a link that has sagged to its crest, through the boost **diodes**, which no switch can stop. On a quiet line F.01 still latches | 500 ms window | FW | bypass opens, recovery re-precharges | AUTO_EXT |
 | **F.02** DESAT | V_DS > 9 V at on, blank 47 pF (Vienna) / 18 pF (the LLC bridge legs) → worst response 2.21 / 1.34 µs (§5). The NSI6611 threshold is reached at V_DS ≈ 8.1 V after the blank, i.e. 225–540 A hot through the dies: DESAT is a short-circuit detector, not an over-current row | < 3 µs | HW driver | soft-off, FLT latch | LATCH |
 | **F.03** bus OVP | **860 V** total, CMP4 on SNS_VBUSP | 10–20 µs¹ | HW comp | all PWM kill | LATCH |
@@ -314,7 +314,7 @@ A²s per diode, ≤ 15 % of that class · gG fuses see ≤ 3 % of their pre-arc 
 
 | Row | What the HAL does with it | Code |
 |---|---|---|
-| comparator references | recomputed every tick from the rating class and the calibration in force — at 50 kW: F.01 2.664 V · F.03 2.158 V · F.13 2.328 V | `hal/app.c` |
+| comparator references | recomputed every tick from the rating class and the calibration in force, as the **inverse of the reference-corrected measurement**: the DACs are VREFP-referenced like the ADC (V = VREFP · code / 4096), so the code carries the same `k_ref` the reading removes — at 50 kW on a nominal rail: F.01 2.664 V · F.03 2.208 V · F.13 2.378 V (HIGH) / 1.940 V (LOW). VREFP is read once at boot (the bandgap cannot be sampled inside the 10 µs frame), so every code carries the rail's post-boot movement: ≤ ±1 % for the buck class, ≈ ±25 V at F.03 and ±22 V at F.13 LOW, inside the ±3 % chain class of the row budget | `hal/app.c` `dac_v` · `app_test` |
 | F.03 margin | every switch off 9 V above the bus reference, plus a light-load burst; while the bus is above its reference the voltage integrator may not claim more than 0.2 × `p_clamp_w` on top of the load feed-forward. The switched Vienna plant peaks at **833 V** against the 860 V trip across 30 / 40 / 50 kW × link C 1.00 / 0.80 / 0.64 at 475 VAC, with or without either lever — a regression guard, not a proof: an independent model that carries the drawn CX/CMC input filter ringing into the link on the commutation reads 856–872 V, and the plant has an ideal source behind the boost choke and no filter at all. The bench row (T-78) is the arbiter | `hal/pfc.c` |
 | PFC LIMIT tier (below F.01) | a phase current above its reference by 15 % of the clamp turns that switch off for the update; the amplitude limit leaves room for the line to step back, because the 15 µs transport delay adds ΔV/L before any sample answers. Sag recoveries reach 152 A (50 %) and 144 A (75 %) at 50 kW, and 93 A for a 50 % sag of 480 VAC at 30 kW — each under F.01 / 1.2 | `hal/pfc.c` |
 | F.05 | the LLC current folds back between the bus reference − 10 V and 625 V, so a sag rides on the power the PFC can still draw: 230 VAC for 60 ms at 50 kW keeps the bus above 705 V | `hal/app.c` |
@@ -330,5 +330,5 @@ A²s per diode, ≤ 15 % of that class · gG fuses see ≤ 3 % of their pre-arc 
 <div align="center">
 <sub><a href="../boards/30kw/README.md">← 30 kW Module Walkthrough</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="current-coordination.md">Current & Protection Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

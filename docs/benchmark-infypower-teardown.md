@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
   <img src="https://img.shields.io/badge/source-chargerlab_·_read_2026--09--13-8b949e?style=flat-square" alt="source: chargerlab · read 2026-09-13"/>
   <img src="https://img.shields.io/badge/verdict-architecture_and_BOM_cloned_·_cost_gap_open-d19a00?style=flat-square" alt="verdict: architecture and BOM cloned · cost gap open"/>
 </p>
@@ -232,5 +232,5 @@ variant; the revisit trigger is 1200 V ≤ 40 mΩ SiC under ≈ ₹200 @10k.
 <div align="center">
 <sub><a href="dfm-production.md">← DFM & Production Flow</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

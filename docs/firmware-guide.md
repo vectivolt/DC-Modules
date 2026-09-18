@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/firmware-330_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 330 checks ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/firmware-334_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 334 checks ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -28,7 +28,7 @@
 | **Language / dependencies** | portable C99 in `core/`, `proto/`, `hal/` and `boot/` — no HAL, no RTOS, no heap; the MCU port is the only file set that touches a register |
 | **Tick** | `pmp_fsm_step()` every 1 ms, watchdog-supervised |
 | **Verification** | `sh firmware/run_tests.sh` — seven binaries under AddressSanitizer + UndefinedBehaviorSanitizer with `-Werror` |
-| **What the suite covers** | the 26 fault scenarios · rating windows · the current-coordination classes · the group share law · the output-mode latch · codec conformance and a 1 M-frame fuzz · the per-tick relay-exclusion invariant · cycle-by-cycle Vienna and LLC plants · the signed boot chain and power-cut update storms · the adaptive dead time and the weak-leg edge · the junction observer and its decline · the positive-only F.01 with its 100 kHz magnitude trip |
+| **What the suite covers** | the 26 fault scenarios · rating windows · the current-coordination classes · the group share law · the output-mode latch · codec conformance and a 1 M-frame fuzz · the per-tick relay-exclusion invariant · cycle-by-cycle Vienna and LLC plants · the signed boot chain and power-cut update storms · the adaptive dead time and the weak-leg edge · the junction observer and its decline · the positive-only F.01 with its 100 kHz magnitude trip · the comparator codes as the inverse of the corrected measurement · the ratiometric AVMID check · a discharge resumed from the pre-reset record · the link rows on the shutdown path |
 | **Identities in one image** | 30 kW · 40 kW · 50 kW liquid · 50 kW air — selected by the RATING strap (the 3.32 k band is reserved) |
 | **Fault vocabulary** | the `F.xx` codes of [protection thresholds](protection-thresholds.md), shown on the HMI and sent in CAN telemetry |
 
@@ -132,11 +132,12 @@ What a port therefore has to provide is the peripheral layer only:
    the external FLT input — firmware re-asserts, silicon acts first;
 4. the comparator and DAC references from `app_tick_out_t.dac_v[]`, the digital outputs from `do_bits`, and the relay
    economizer duties from `relay_duty[]`;
-5. the mirror-contact and driver-ready inputs in `di`, the tach edge counters, and the panel shift register;
+5. the mirror-contact and driver-ready inputs in `di`, the tach edge counters (handed over in hertz), and the panel shift register;
 6. CAN (receive into a ring, transmit from the queue, bus-off restart on request) and the flash primitives behind
    `nvm_port_*`;
 7. the WDI pulse on the port's own 10 ms of real time, taken only when `app_tick` grants permission;
-8. DWT execution timing, the reset-cause byte, the silicon UID, the factory reference word and the no-init handoff page.
+8. DWT execution timing, the reset-cause byte, the silicon UID, the factory reference word, the no-init handoff page and the
+   application's own sealed record of a commanded discharge (`disch_intent` out, `disch_pending` back in at boot).
 
 There is no inter-MCU link: one card runs both stages, so a starved external CAN stream is F.28 and nothing else. Enable
 outputs must never be configured with reset retention — the whole safety argument relies on reset meaning pulled-down
@@ -293,5 +294,5 @@ with `-fno-sanitize-recover=undefined`, and runs them in order:
 <div align="center">
 <sub><a href="control-card-scope.md">← Control-Card Scope</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-architecture.md">Firmware Architecture →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

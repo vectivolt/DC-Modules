@@ -245,6 +245,20 @@ static void fsm_checks(void) {
     ck("a resumed shutdown re-commands the dump and never re-precharges the link",
        f.st == ST_DISCH && f.out.q_disch && f.out.q_disch_bk && !f.out.k_pre); }
 
+  /* the two link rows (F.06 midpoint, F.38 half-link) run whenever the link is charged — but not on the shutdown path: the
+     dump IS the cure for a charged link and ST_FAULT would end it; F.06 is even an AUTO row that would recover into
+     precharge with the shutdown forgotten. */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u);
+    pmp_in_t in = fsm_base();
+    in.vbus = 900.0f; in.vmid_frac = 0.44f; in.vbank_a = in.vbank_b = 350.0f;   /* 108 V of midpoint error, 504 V on one half */
+    pmp_fsm_resume_shutdown(&f);
+    for (int k = 0; k < 50; k++) pmp_fsm_step(&f, &in);
+    bool kept = f.st == ST_DISCH && f.out.q_disch && f.out.q_disch_bk && f.latched == FC_NONE;
+    in.vbus = 30.0f; in.vmid_frac = 0.5f; in.vbank_a = in.vbank_b = 30.0f; in.vout_meas = 30.0f;
+    for (int k = 0; k < 400; k++) pmp_fsm_step(&f, &in);
+    ck("a midpoint or half-link excursion during the commanded discharge does not end the dump — the link comes down and the module reaches OFF",
+       kept && f.st == ST_OFF && f.latched == FC_NONE); }
+
   /* ---------------- the discharge, over-current and recovery rows. */
 
   /* F.18: a bypass pole that never releases. Precharge cannot see it — the settled-link rule leaves in 61 ms,

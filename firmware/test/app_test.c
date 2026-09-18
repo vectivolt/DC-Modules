@@ -65,7 +65,13 @@ static long kicks = 0;
 static int state_byte = -1;
 static uint8_t rsp_txn; static uint32_t rsp_val; static int rsp_got;   /* last READ_RSP seen by run_ms */
 
-static float counts(int ch, double value) { return (float)(value / pl.cal.ch[ch].gain + pl.cal.ch[ch].off); }
+static float vref_k = 1.0f, avmid_k = 1.0f;   /* VREFP / 3.3 V · the AVMID buffer's ratio to half the rail */
+/* the ADC reads against the ACTUAL VREFP: an absolute channel's whole reading scales by 1/k, a ratiometric one's swing
+   about AVMID only, because AVMID (V3P3 / 2) tracks the rail */
+static float counts(int ch, double value) {
+  double c = value / pl.cal.ch[ch].gain + pl.cal.ch[ch].off;
+  return (float)(ch <= MCH_RATIO_LAST ? pl.cal.ch[ch].off + (c - pl.cal.ch[ch].off) / vref_k : c / vref_k);
+}
 static double gain(double fn, double q) { return 1.0 / hypot(1.0 + 0.1 * (1.0 - 1.0 / (fn * fn)), q * (fn - 1.0 / fn)); }
 
 static void plant_pfc(app_pfc_adc_t *s) {
@@ -105,7 +111,7 @@ static void plant_llc(app_llc_adc_t *s) {
   pl.iout = iload + (pl.vo - vo0) * 100e-6 / dt;
   pl.p_llc_in = pl.vb * pl.ib / 0.975;
   double d = pl.iout / pl.cal.ch[MCH_IOUT].gain;
-  s->vout = counts(MCH_VOUT, pl.vo); s->iout_p = (float)(1601.0 + d / 2); s->iout_n = (float)(1601.0 - d / 2);
+  s->vout = counts(MCH_VOUT, pl.vo); s->iout_p = (float)(1601.0 + d / 2 / vref_k); s->iout_n = (float)(1601.0 - d / 2 / vref_k);
   s->ires = counts(MCH_IRES, 1.5 * pl.ib); s->vbka = counts(MCH_VBKA, pl.vb); s->vbkb = counts(MCH_VBKB, pl.vb);
 }
 
@@ -122,8 +128,8 @@ static void plant_tick(app_tick_in_t *ti) {
     double rs = 1e4 * exp(3435.0 * (1.0 / (pl.t_sink_c + 273.15) - 1.0 / 298.15));
     ti->t_pfc = ti->t_llc = (float)(4095.0 * rs / (1e4 + rs));
   }
-  ti->v24 = (float)(24.0 / (LSB * 9.2)); ti->v15 = (float)(15.0 / (LSB * 5.7)); ti->vrefint = (float)(1.20 / 3.3 * 4096.0);
-  ti->avmid = (float)(1.65 / 3.3 * 4095.0);   /* the AVMID buffer reads back mid-rail */
+  ti->v24 = (float)(24.0 / (LSB * 9.2) / vref_k); ti->v15 = (float)(15.0 / (LSB * 5.7) / vref_k); ti->vrefint = (float)(1.20 / 3.3 * 4096.0 / vref_k);
+  ti->avmid = (float)(1.65 / 3.3 * 4095.0 * avmid_k);   /* the AVMID buffer reads back mid-rail (ratiometric: no 1/k) */
   ti->di = (uint16_t)(APP_DI_DRV_RDY | (pl.kpre_fb ? APP_DI_RLY_PRE : 0u));
   for (int n = 0; n < 4; n++) ti->tach_hz[n] = last_o.fan_duty[0] * 120.0f * tach_scale[n];
   ti->can_state = pl.can_state;
@@ -153,6 +159,7 @@ static void run_ms(long n) {
 }
 
 static bool boot_no_cal;                                     /* a factory-blank card (no calibration record) */
+static bool boot_disch;                                      /* the no-init record says a discharge was commanded */
 static void boot_as(bool wdt, const meas_cal_t *cal, uint8_t profile) {
   memset(flash, 0xFF, sizeof flash);
   nvm_t n; nvm_mount(&n, 0u, PG);
@@ -170,7 +177,8 @@ static void boot_as(bool wdt, const meas_cal_t *cal, uint8_t profile) {
      reset the TPS3430's WDO produces, which is the card's dominant watchdog path; bit 3 is POR. */
   app_boot_t b = { .rating_counts = AIR50, .reset_cause = (uint8_t)(wdt ? (1u << 2) : (1u << 3)),
                    .uid = 0x12345678u, .fw = 0x00010203u, .nvm_page_size = PG,
-                   .fw_crc = 0xC0DEC0DEu, .boot_ver = 0x01000000u, .boot_state = 0u, .evlog_pages = 2u };
+                   .fw_crc = 0xC0DEC0DEu, .boot_ver = 0x01000000u, .boot_state = 0u, .evlog_pages = 2u,
+                   .disch_pending = boot_disch };
   app_init(&app, &b);
   rx_n = 0; state_byte = -1;
 }
@@ -217,6 +225,38 @@ int main(void) {
      app.kw == 50u && app.n_fans == 4u && fabsf(last_o.dac_v[APP_DAC_IA] - 2.664f) < 0.01f &&
      fabsf(last_o.dac_v[APP_DAC_VBUS] - 2.208f) < 0.01f && fabsf(last_o.dac_v[APP_DAC_VOUT] - 1.940f) < 0.01f);
   ck("app: idle, the HW-REC-1 clamp reference arms at the mode's F.13 threshold", fabsf(last_o.dac_v[APP_DAC_CLAMP] - last_o.dac_v[APP_DAC_VOUT]) < 0.005f);
+  int idle_clear = !last_o.disch_intent;
+
+  /* the comparator references are the INVERSE of the reference-corrected measurement. The DAC is VREFP-referenced like
+     the ADC, so a rail off nominal must move neither the reading nor the trip: the code the tick writes, read back
+     through meas_val at the k_ref in force, must land on the threshold the row names. */
+  vref_k = 1.025f; boot(false, NULL); run_ms(1500);
+  { float k = app.k_ref;
+    float cb = last_o.dac_v[APP_DAC_VBUS] / (float)LSB, ca = last_o.dac_v[APP_DAC_IA] / (float)LSB, co = last_o.dac_v[APP_DAC_VOUT] / (float)LSB;
+    printf("      VREFP +2.5 %%: k_ref %.4f · the F.03 code reads %.1f V, F.01 %.1f A, F.13 %.1f V through meas_val\n",
+           (double)k, (double)meas_val(&app.cal, MCH_VBUS, cb, k), (double)meas_val(&app.cal, MCH_IA, ca, k), (double)meas_val(&app.cal, MCH_VOUT, co, k));
+    ck("app: with VREFP 2.5 % high the comparator codes are the inverse of the corrected measurement — F.03 lands on 860 V, F.01 on its class, F.13 (LOW) on 560 V — and the module reaches STANDBY clean",
+       fabsf(k - 1.025f) < 0.002f && app.fsm.st == ST_STANDBY && app.fsm.latched == FC_NONE &&
+       fabsf(meas_val(&app.cal, MCH_VBUS, cb, k) - 860.0f) < 1.0f && fabsf(meas_val(&app.cal, MCH_IA, ca, k) - app.fsm.oc_line_a) < 0.3f &&
+       fabsf(meas_val(&app.cal, MCH_VOUT, co, k) - 560.0f) < 1.0f); }
+  /* AVMID is judged against its own rail: a healthy buffer reads half scale whatever VREFP does, so a rail 4 % high (inside the
+     ±5 % reference window) must not fail it, and a buffer 4 % off the rail must */
+  vref_k = 1.04f; boot(false, NULL); run_ms(1500);
+  { int healthy = app.fsm.latched == FC_NONE && fabsf(app.k_ref - 1.04f) < 0.002f && app.avmid_bad_ms == 0u;
+    avmid_k = 1.04f; run_ms(300);
+    ck("app: AVMID is judged ratiometrically — a healthy buffer on a rail 4 % high passes, a buffer 4 % off its rail is F.29 in 100 ms",
+       healthy && app.fsm.latched == FC_SENSOR && app.avmid_bad_ms >= 100u); }
+  vref_k = 1.0f; avmid_k = 1.0f;
+  /* a reset in the middle of a commanded discharge: the pre-reset record says so, and the module resumes the bounded dump
+     instead of pmp_fsm_init's INIT → PRECHG. The AC is already off (the discharge that can complete). */
+  boot_disch = true; boot(false, NULL); boot_disch = false;
+  pl.vbus = 700.0; pl.vb = 100.0; pl.vo = 30.0; pl.amp = 0.0;
+  run_ms(5);
+  { int resumed = app.fsm.st == ST_DISCH && (last_o.do_bits & APP_DO_QDIS) && !(last_o.do_bits & APP_DO_KPRE) && last_o.disch_intent;
+    run_ms(8000);
+    ck("app: a discharge commanded before a reset resumes as a bounded dump — never INIT → PRECHG — reaches OFF and clears the intent; an idle module never raises it",
+       idle_clear && resumed && app.fsm.st == ST_OFF && !last_o.disch_intent && app.fsm.latched == FC_NONE && !(last_o.do_bits & APP_DO_KPRE)); }
+  boot(false, NULL); run_ms(1000);
 
   pl.load_r = 5.0;
   long t_run = start_run(400.0, 100.0, 6000);

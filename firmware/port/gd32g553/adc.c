@@ -119,10 +119,14 @@ uint16_t adc_read_once(unsigned n, uint8_t ch) { return adc_once(n, ch, 100u, 0u
    72 MHz the engine runs at, which is short. ADCCK 0001 halves the asynchronous ADC clock to 36 MHz (UM §17.7.26
    ADC_SYNCCTL: ADCCK[3:0] at 23:20, 0000 = div1 … 0001 = div2; "All ADCs are common"), making it 28.5 µs. The divider
    is restored here and adc_init() rewrites ADC_SYNCCTL = 0 anyway, so the 100 kHz engine still runs at 72 MHz.
-   Boot-only is enough: V3P3 is a ±2.5 % buck, VREFP = VDDA = V3P3, and a rail that later leaves that band is caught by
-   the V15/V24 rails check and by the LVD. A periodic refresh is deliberately not added: it needs either a software-triggered
-   conversion on an ADC the 100 kHz engine owns, or a slot in its sequence — risk to the fast path for a quantity with no
-   runtime drift source the rail checks do not already see. */
+   Boot-only, with its budget stated: VREFP = VDDA = V3P3, so the boot reading removes the rail's whole initial error
+   (buck reference and divider tolerance) and what is left is the rail's movement AFTER boot — the buck reference's
+   drift over the card's temperature excursion plus line / load regulation, ≤ ±1 % for the TPS54202 class (its ±1.5 %
+   reference band spans −40…125 °C). Every measurement and, through app.c's dac_v(), every comparator reference carries
+   that ±1 % (≈ ±25 V at F.03, ±22 V at F.13 LOW), inside the ±3 % chain class the threshold budget already holds. It is
+   NOT caught by the V15 / V24 rails check — those read against the same VREFP — nor by the LVD, which only sees a gross
+   drop. A periodic refresh is deliberately not added: the bandgap cannot be sampled inside the 10 µs frame, and a
+   software-triggered conversion on an ADC the 100 kHz engine owns is a risk to the fast path for a ±1 % quantity. */
 uint16_t adc_vrefint_read(void) {
   ADC_SYNCCTL = (1u << 20);                      /* ADCCK = div2 → 36 MHz */
   uint16_t v = adc_once(3u, 20u, 1023u, BIT(24));   /* ADC3_IN20, INREFEN */

@@ -27,4 +27,5 @@
 #define FM_RESERVED      0x08078000u   /* 32 KB, bank 1, unused */
 /* no-init RAM shared by the bootloader and the application (boot_handoff_t), the last 64 bytes of SRAM0 */
 #define FM_HANDOFF       0x20013FC0u
+#define FM_HANDOFF_APP   0x20013FE0u   /* the application's own sealed record (handoff.h app_handoff_t), upper half of the tail */
 #endif

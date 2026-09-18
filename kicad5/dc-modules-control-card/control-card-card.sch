@@ -845,11 +845,11 @@ DGND
 Wire Wire Line
 	1400 2300 1200 2300
 Text Label 1200 2300 2    45   ~ 0
-V3P3
+DRV_RDY
 Wire Wire Line
 	1400 2400 1200 2400
 Text Label 1200 2400 2    45   ~ 0
-V3P3
+DRV_RDY
 Wire Wire Line
 	1400 2500 1200 2500
 Text Label 1200 2500 2    45   ~ 0

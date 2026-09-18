@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
 </p>
 
 > [!NOTE]
@@ -34,7 +34,7 @@
 | EMI and insulation | T-08 · T-13 · T-14 · **T-39** |
 | Relays, output modes and output stage | T-07 · **T-35** · **T-36** · **T-40** · T-45 |
 | Magnetics and tank | T-25 · **T-31** · **T-34** |
-| Firmware, control and protocol | T-44 · T-46 · T-47 · T-48 · T-49 · T-52 · T-53 · T-54 · T-64 · T-65 · T-66 · T-67 · T-75 |
+| Firmware, control and protocol | T-44 · T-46 · T-47 · T-48 · T-49 · T-52 · T-53 · T-54 · T-64 · T-65 · T-66 · T-67 · T-75 · T-80 |
 | Link, layout and commutation loop | T-57 · T-58 · T-59 · T-60 · T-61 · T-71 · T-72 · T-74 |
 | Line and load events | T-69 · T-76 · T-78 |
 
@@ -77,7 +77,7 @@ flowchart LR
   VB["T-33<br/>D1 as-mounted<br/>vibration + bond"] --> K
   IP["T-34…T-43<br/>power-stage hardware<br/>tank · modes · DOUT · clip mount · filter · films · die pulse · bypass closure · link ripple"] --> K
   FWP["T-44…T-56<br/>firmware timing · load dump · TonHe interop<br/>sharing · transients · fault cycling"] --> K
-  PB["T-57…T-79<br/>link impedance · commutation loop<br/>boot · journal · line events"] --> K
+  PB["T-57…T-80<br/>link impedance · commutation loop<br/>boot · journal · line events"] --> K
   H --> K(["BOM freeze gates<br/>loaded PV Vgs · both-polarity trip<br/>D4 clamp · magnetics first articles"])
   I --> K
   J --> K
@@ -130,7 +130,7 @@ Sampling = thermal spot (1/50), full envelope sweep (1/200), PD on the transform
 | T-22 | Precharge/discharge timing per SKU (extends T-05) | t95 within ±25 % of **193 / 231 / 310 ms** (30/40/50 kW); discharge ≤ 3/4/5 s (deck 1.99/2.39/3.19 s); pulse parts < 180 °C at the 50 W parts on the 50 kW modules |
 | T-23 | CM choke thermography at rated line current per SKU (extends T-04) | ΔT ≤ 45 K on the D7 windings |
 | T-25 | Tolerance-corner gain capability (deliberate worst-bin trim + low-Lm transformer build) | bank_max ≥ 525 V at full load |
-| T-26 | PFC fast-trip timing, BOTH current polarities | measured threshold-crossing → gate-off ≤ the registered budget on every phase; CT polarity ↔ comparator-trip polarity confirmed per phase; DESAT covers the forward direction, the comparator the reverse |
+| T-26 | PFC fast-trip timing, BOTH current polarities | measured threshold-crossing → gate-off ≤ the registered budget on every phase; CT polarity ↔ comparator-trip polarity confirmed per phase; DESAT covers the forward direction, the comparator the reverse; with VREFP swept ±3 % (bench supply on the card's 3.3 V) the measured crossings of every comparator follow the programmed volts within ±1 % — the codes are the inverse of the corrected measurement |
 | T-27 | Discharge hold-up waveform | active phase reaches ≤~330 V before aux brown-out; passive continuation matches the per-SKU 370/222/296 s model ±tolerances; label wait verified with residual-V measurement |
 | T-28 | PV bleeder loaded drive | loaded V_GS, drain current and FET temperature with the exact orderable QDIS part across the declared ≤70 °C bleed ambient; discharge time per bank model |
 | T-29 | Aux cold-start waveform — **also at −30 °C after cold soak** | first switching ≤11 s from AC apply at 320–480 VLL (worst case 10.7 s at 320 VLL); VCC never crosses VCC(off) during soft-start + takeover; V15 floor during commanded bleed recorded (feeds T-28) |
@@ -174,7 +174,7 @@ interoperability. The IDs in brackets are rows of the [firmware verification pla
 
 | Test | Procedure | Pass criterion |
 |---|---|---|
-| T-44 | **Firmware timing on the target** — DWT per ISR for 24 h at full telemetry and under a CAN flood; GPIO markers on the reference commit and on GATE_EN; analyzer timestamps | PFC ISR ≤ 3 µs · LLC ISR ≤ 30 µs · 1 ms tick ≤ 400 µs · CPU ≤ 60 % steady, ≤ 75 % under flood · control frame → reference ≤ 5 ms (99.9 %) · FAULT_BITS ≤ 20 ms after an injected latch (N-11, F-04) |
+| T-44 | **Firmware timing on the target** — DWT per ISR for 24 h at full telemetry and under a CAN flood; GPIO markers on the reference commit and on GATE_EN; analyzer timestamps | PFC ISR ≤ 3 µs · LLC ISR ≤ 30 µs · 1 ms tick ≤ 400 µs · CPU ≤ 60 % steady, ≤ 75 % under flood · control frame → reference ≤ 5 ms (99.9 %) · FAULT_BITS ≤ 20 ms after an injected latch (N-11, F-04) · a watchdog and a software reset at every discharge transition resume the bounded dump, never precharge · a fault pulse injected at every boundary between the enable decision and the CHOUTEN write never re-arms an output |
 | T-45 | **Load dump at full current** — contactor opened under 167 / 133 / 100 A in LOW (480 V) and HIGH (950 V), with and without the output clamp | peak ≤ V_set · 1.05 + 10 V · no F.13 latch · banks and terminal capacitors inside their ratings (C-08) |
 | T-46 | **TonHe V1.2 interoperability** — our module on a TonHe-class monitor (start, setpoints, groups, the 20 s loss, addressing); a mixed rack with a TonHe module; captures of a real TonHe module replayed against the `proto_test` expectations | every frame read as the monitor expects · sharing within ± 10 % in the mixed rack · TH-AMB-1…11 confirmed or re-registered (N-14, G-08) |
 | T-47 | **Parallel sharing** — four modules on one output in CC and CV (battery emulator reaching its CV point), voltage calibration spread ± 0.3 % on purpose; hot join, member removal, one module derated with the LEVEL law | ± 5 % of the average at ≥ 10 % load · ± 10 % within 3 s of a change · group sum ≤ request + 1 % (G-01…G-07) |
@@ -182,7 +182,7 @@ interoperability. The IDs in brackets are rows of the [firmware verification pla
 | T-49 | **Fault and recovery cycling** — 1 000 cycles each of grid sag, phase loss, over-temperature (heater on the NTC), communication loss, relay feedback open, watchdog reset and aux brownout | every cycle ends in the documented state and recovers by the documented rule · no lockout from grid rows · no spurious gate pulse (D-03, D-05) |
 | T-52 | **Boot and update on the target** — 100 field updates over CAN at each bit rate incl. power cuts at every stage (block, FINISH, trial boot 1–3, confirm), a corrupted image, a foreign signature, a downgrade below the baseline, and the reset-streak path into safe mode | the confirmed image always runs · no cut leaves an unbootable module · every refusal matches `boot_test`'s codes · trial confirm at 60 s healthy standby exactly |
 | T-53 | **Watchdog window on the fitted TPS3430** — WDI/WDO/NRST scoped over −40…105 °C: the 10 ms kick train, boot-to-first-kick incl. the bootloader's chunked verification, one deliberately early (< 2.22 ms) and one late (> 23.375 ms) kick | normal operation never resets · the early and the late kick each reset through NRST · gate enables provably low through every reset |
-| T-54 | **Fan tach curve calibration** — the selected fan's tach vs duty at 24 V ± 10 %, −20…70 °C, clean and dust-loaded | `APP_TACH_FULL_HZ` set from data · the 35 % curve floor sits ≥ 2 × above the healthy worst case at every duty ≥ 20 % · a blocked rotor and a 50 % obstruction both fail inside 3 s |
+| T-54 | **Fan tach curve calibration** — the selected fan's tach vs duty at 24 V ± 10 %, −20…70 °C, clean and dust-loaded | `APP_TACH_FULL_HZ` set from data · the 35 % curve floor sits ≥ 2 × above the healthy worst case at every duty ≥ 20 % · a blocked rotor and a 50 % obstruction both fail inside 3 s · 20 / 60 / 120 Hz injected at the tach pins read 600 / 1 800 / 3 600 rpm, and 10 Hz at full duty fails the curve |
 | T-55 | **Auxiliary fault matrix** — per-rail budgets with the FINAL fan MPN (steady, cold fan start, stall), feedback open/short, one rail unloaded, reservoir/rectifier short; V15/V24 TVS energy and clamp voltages recorded | rails inside their windows at every corner · a feedback fault ends within the TVS pulse ratings with the downstream absolute maxima honoured · fan inrush does not brown the control domain |
 | T-56 | **PV bleeder drive hot and humid** — loaded V_GS and bank decay with the exact MOSFET at 85 °C / 85 % RH coupons and the LED at its rail floor | measured decay ≤ 1.5 × the drawn model · V_GS ≥ V_th(max) + 2 V loaded · a contaminated coupon still meets the F.21b window |
 
@@ -210,7 +210,7 @@ numbers (CALCULATED / SIMULATED); nothing here is measured yet.
 | T-64 | **PFC interrupt budget** — `pfc_exec_us` telemetry and a GPIO marker over 24 h at full telemetry, CAN flood, line-cycle close, and the 3 kHz current-loop injection | the deadline is the carrier roll-over, ≈ 7.2 µs, and the interrupt enters ≈ 2.8 µs after the trigger (ADC end-of-sequence DMA, not a timer compare): **entry at 2.8 µs, exit before 10 µs, with no alternation between consecutive periods; typical ≤ 3.5 µs**. If the budget is missed the ISR is trimmed further — the single-update fallback is not an option on 40 / 50 kW (T-44 note) |
 
 
-## 8. Port, boot and device-physics closure (T-65…T-79)
+## 8. Port, boot and device-physics closure (T-65…T-80)
 
 The register-level GD32G553 port and both control interrupts have never run on silicon, and the commutation-loop inductance
 cannot be closed on paper at all. These rows are what the bench has to answer; each names the gate or constant it reopens on a
@@ -233,6 +233,7 @@ miss.
 | T-77 | **Sacrificial precharge resistor** — one `RPRE` across a deliberately shorted link | it **opens without flame**. Nothing in the module can disconnect 4.8–8.4 kW from that part, so the fail-open behaviour is the protection |
 | T-78 | **Load dump at an 830 V link** — full power at 475 VAC into an electronic load, open the load contactor, cans at the low end of tolerance | the repo's switched plant reads **833 V** and an independent model **856–872 V** against the 860 V trip; the bench decides. If it agrees with the plant, the two zero-cost levers taken as insurance (skip band 15 → 9 V, integrator bound) may be reverted |
 | T-79 | **Junction observer end to end** — at a 55 °C inlet, drive the corners of the [thermal report](thermal-report.md) fold table | each fold appears as `PMP_DR_THERMAL` with the listed availability, and a **declined** point reads **0 A available, not a fault**; a stop and a fresh start at a healthy point delivers (the refusal is not inherited through the warm hold). A miss reopens `DIELIM_*` and the loss coefficients |
+| T-80 | **Driver-bias collapse → global inhibit** — drop one gate-bias module at a time with PWM present at safe energy (Stage 5 conditions), each of the seven channels in turn; scope DRV_RDY, both GATE_EN and every gate | DRV_RDY low → both enables low within 1 µs and every gate off; the module reports SAFE within 2 ms and needs a fresh ENABLE; restoring the bias restarts nothing |
 
 
 > [!TIP]
@@ -243,5 +244,5 @@ miss.
 <div align="center">
 <sub><a href="verification-matrix.md">← Verification Matrix & Risk Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-verification.md">Firmware Verification Plan →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
   <img src="https://img.shields.io/badge/port-built_·_not_yet_run_on_silicon-d19a00?style=flat-square" alt="port: built · not yet run on silicon"/>
 </p>
 
@@ -187,7 +187,7 @@ with every enable low instead of re-arming milliseconds later with its enable pi
 | Output V and I, banks, resonant current | 100 kHz | ten samples decimated into each 100 µs control period · 1 ms mean for the FSM and shaper · the profile's period for telemetry | ≤ 100 µs loop · ≤ 60 ms telemetry age | V_out not far below a delivering stack (F.29) |
 | Bus halves | 100 kHz | 1 ms mean | 1 ms | each half within its own ceiling (F.06, F.38) |
 | Temperatures | every tick from the ADC ring | the zone map of §7 | 1 s | open NTC or cutout loop reads 150 °C instead of "very cold" |
-| ADC health | every tick | — | — | the internal reference within ± 5 % for 100 ms, the AVMID bias 1.65 V ± 50 mV for 100 ms → F.29 |
+| ADC health | every tick | — | — | the internal reference within ± 5 % for 100 ms, the AVMID bias at half the rail (1.65 V ± 50 mV on the nominal scale, uncorrected — it is ratiometric) for 100 ms → F.29 |
 
 A plausibility row only affects what it covers. F.29 latches when a signal a protection row depends on is invalid for its
 persistence (3 ms).
@@ -543,6 +543,7 @@ assurance belongs to the cooling cart.
 | Flash ECC fault in a journal | an uncorrectable row raises an NMI | inside the journal window: cleared, counted (budget 16) and returned from, so the reader's CRC treats the entry as torn; anywhere else it resets | service | `boot_test` · the torn-entry rule |
 | ISR overrun | DWT and heartbeat counts | warning; persistent → F.35 | CLEAR | `host_sim` · HIL F-04 |
 | Watchdog reset | WDO ≡ NRST | gates low in hardware; reset cause logged; F.32 visible; no automatic restart | fresh request | `app_test` · HIL F-06 · T-16 |
+| Reset during a commanded discharge | the intent in the application's own sealed no-init record | the bounded dump resumes — never INIT → PRECHG | the dump completes (OFF) or F.21 | `app_test` · T-44 |
 | Boot loop | reset streak in no-init RAM | ≥ 3 unexpected resets of a confirmed image in 10 min → safe mode, outputs off | service / power cycle | `boot_test` · HIL F-08 |
 | Brownout during operation | `aux_ok`; the low-voltage detector; NVM writes only with the rails healthy | SAFE, then F.26 if the rail does not return; or reset | aux stable 500 ms + fresh request | `host_sim` · HIL F-12 |
 | NVM corruption or wear | A/B records, CRC-32, sequence number; writes only on change, ≤ 1 per 10 s per record | newest valid record; none → configuration defaults (warning) | service | HIL F-09 |
@@ -612,14 +613,14 @@ supervisor windows, so the hashing is split into 4 KB pieces and the signature l
 | HW-REC-2 | Confirm every matrix relay and the bypass pair land their mirror contacts on the card ways the HAL reads | F.19 needs them; today only the bypass pair is wired, and the matrix soft start waits out operate + bounce instead | HAL mapping check | confirm at bring-up |
 | HW-REC-3 | A hard-wired module inhibit input | modules of the TH750 class carry a "module shutdown signal" pair on the output connector; some cabinets wire it | one opto-isolated digital input | per customer |
 | HW-REC-4 | Fit the 8 MHz crystal on OSCIN/OSCOUT with its two 12 pF loads and 1 MΩ | the internal RC is ± 2.5 % over temperature; classic CAN needs about ± 0.5 %. The port runs HXTAL-PLL with the clock monitor when the crystal is fitted and falls back to the RC inside a 10 ms bounded wait when it is not, so a crystal-less prototype boots — with best-effort CAN | two pads + crystal + loads | **fit before EVT CAN interop (T-46)** |
-| HW-REC-5 | Route DRV_RDY into the safety AND's spare third inputs | an asynchronous global gate-off when any driver bias fails, ahead of the 10 ms firmware supervision | rewire two AND inputs on the card | user decision |
+| HW-REC-5 | Route DRV_RDY into the safety AND's spare third inputs | an asynchronous global gate-off when any driver bias fails, ahead of the 1 ms firmware supervision | rewire two AND inputs on the card | **done** — `SafetyChain` C1 / C2 carry DRV_RDY; T-80 measures |
 
 ## 11. Open before release
 
 - Loop gains per rating on HIL (§5.4), with the §5.5 CC-arrival overshoot as the acceptance those gains must close.
 - The timing budget measured on the target (T-44, T-64) and the boot/update chain exercised on silicon (T-52); the watchdog
   window on the fitted supervisor (T-53); the tach curve's full-speed constant for the selected fan (T-54).
-- HW-REC-1 (the non-latching output clamp), HW-REC-4 (crystal) and HW-REC-5 (DRV_RDY into the AND) — hardware decisions.
+- HW-REC-1 (the non-latching output clamp) and HW-REC-4 (crystal) — hardware decisions.
 - The board-revision strap: the card carries one identity strap (RATING), which encodes the rating and not the revision, so a
   signed image cannot tell rev A from rev B and the updater would push either image to either board. The port reports a
   build-time constant until the strap exists on a card way.
@@ -635,5 +636,5 @@ supervisor windows, so the hashing is split into 4 KB pieces and the signature l
 <div align="center">
 <sub><a href="firmware-guide.md">← Firmware Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">VMP 2.0 Native CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -569,5 +569,29 @@ ck("MAG-DRAWINGS-READ-GATES", /L: d2L\("30kw"\)/.test(magDocs) && /llk: d3Lk\("3
   "the four generated magnetics DRAWINGS read D2's inductance and D3's cell leakage from magnetics-envelope instead of repeating them: a repeated number goes stale while every other carrier moves, and a winder builds to the drawing (mag-sync asserts it per page)");
 ck("FW-CONSTANTS-GATED", /fw-constants-sync/.test(runAll), "a gate reads hal/meas.c, hal/llc.c and hal/pfc.c against boards.tsx / cells.tsx / tanks.mjs / parts-db — every ADC scale and tank number in the C is hand-copied, so nothing else would catch a drift");
 
+// --- Target integration: the edge where the port meets the HAL (each row is a defect found there, inverted)
+const portC = readFileSync(join(ROOT, "firmware/port/gd32g553/port.c"), "utf8");
+const hrtC = readFileSync(join(ROOT, "firmware/port/gd32g553/hrtimer.c"), "utf8");
+const appC = readFileSync(join(ROOT, "firmware/hal/app.c"), "utf8");
+ck("DAC-INVERSE-KREF", /static float dac_v\(const meas_cal_t \*c, int ch, float value, float k\)/.test(appC) && /\(value \/ c->ch\[ch\]\.gain \+ c->ch\[ch\]\.off\) \/ k/.test(appC) && /value \/ \(c->ch\[ch\]\.gain \* k\)/.test(appC)
+  && appC.split("\n").filter((l) => l.includes("dac_v(&a->cal")).length >= 4 && appC.split("\n").filter((l) => l.includes("dac_v(&a->cal")).every((l) => /, a->k_ref\);/.test(l)),
+  "the comparator DAC codes are the inverse of the reference-corrected measurement: every dac_v call carries k_ref (absolute channels on the whole reading, AVMID-ratiometric ones on the swing) — the DACs are VREFP-referenced like the ADC, and a nominal-scale code moved F.03 from 860 V to 922 V on a rail 2.5 % high");
+ck("AVMID-RATIOMETRIC", /float avmid = ti->avmid \* \(3\.3f \/ 4095\.0f\);/.test(appC) && !/ti->avmid[^;]*k_ref/.test(appC),
+  "the AVMID half-rail check is judged on the nominal scale with NO reference correction — it is ratiometric to the rail that is VREFP; divided by k_ref it failed a healthy buffer on a +3.1 % rail and hid a buffer drifting with the rail");
+ck("TRIP-GUARD-AFTER-ENABLE", (portC.match(/trip_guard\(\);/g) || []).length === 3 && /hrtimer_pfc_apply\(&po\);\n  trip_guard\(\);/.test(portC) && /hrtimer_llc_apply\(&lo\);\n  trip_guard\(\);/.test(portC)
+  && /hrtimer_rearm\(d, out\.fault_rearm\); trip_guard\(\);/.test(portC) && /bool hrtimer_trip_pending\(void\) \{ return \(HRT_INTF & \(0x1Fu \| BIT\(6\)\)\) != 0u; \}/.test(hrtC) && !/HRT_INTC = f;\n  if \(do_bits & APP_DO_EN_LLC\)/.test(hrtC),
+  "after every write that can enable a power output (both control interrupts, the tick's re-arm) the port tests the software trip count AND the HRTIMER fault flags and disables everything if either moved — a fault landing between the decision and the CHOUTEN write otherwise re-arms a killed stage; and the tick never clears a fault flag the fault interrupt has not consumed");
+ck("LLC-UPDATE-COHERENT", /HRT_CTL0 \|= BIT\(1\) \| BIT\(2\);\n  HRT_STDTCTL\(0\)[\s\S]*?HRT_STCMP1V\(0\) = lag; \}\n  HRT_CTL0 &= ~\(BIT\(1\) \| BIT\(2\)\);/.test(hrtC),
+  "dead time, both periods and the phase compare of the LLC are written under ST0UPDIS / ST1UPDIS so one roll-over takes the set whole — a transfer landing between the writes runs one cycle with leg A on the new period and leg B on the old one");
+ck("TACH-IN-HERTZ", /tach_hz\[k\] = el \? \(float\)\(c - tach_last\[k\]\) \* 1000\.0f \/ \(float\)el : 0\.0f;/.test(portC) && !/10000u/.test(portC) && /ti\.tach_hz\[k\] = tach_hz\[k\];/.test(portC),
+  "the port hands the HAL tach frequencies in HERTZ (edges per ms × 1000): the tenths-of-hertz accumulator it once carried read a 300 rpm fan as 3 000 and passed the full-duty floor");
+ck("DISCH-INTENT-SEALED", /HANDOFF_APP\.disch = disch_kept \? 1u : 0u;\n    app_handoff_seal\(&HANDOFF_APP\);/.test(portC) && /b\.disch_pending = app_handoff_valid\(&HANDOFF_APP\) && HANDOFF_APP\.disch != 0u;/.test(portC)
+  && /#define FM_HANDOFF_APP   0x20013FE0u/.test(readFileSync(join(ROOT, "firmware/port/gd32g553/flash_map.h"), "utf8")),
+  "a commanded discharge outlives a reset on the target: the tick seals the HAL's disch_intent into the application's own no-init record before acting, and main() reads it back into disch_pending — the HAL could resume a dump the port never told it about");
+ck("LINK-ROWS-EXEMPT-ON-SHUTDOWN", /in->vbus > 100\.0f\) && f->st != ST_INIT && f->st != ST_LOCK && !on_shutdown\) \{/.test(fsmC),
+  "the midpoint and half-link rows carry the shutdown exemption: latched during the dump they end it (ST_FAULT stops the dump) and F.06, an AUTO row, recovers into precharge with the shutdown forgotten");
+ck("DRV-RDY-IN-AND", /UAND\$\{id\} > \.C1`\} to="net\.DRV_RDY"/.test(cells) && /UAND\$\{id\} > \.C2`\} to="net\.DRV_RDY"/.test(cells) && !/UAND\$\{id\} > \.C[12]`\} to="net\.V3P3"/.test(cells),
+  "the drivers' wired-OR ready line is the third input of BOTH enable AND gates — a collapsing gate-drive bias drops the enables in hardware; the pages had credited this path while the inputs were tied high");
+
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);
