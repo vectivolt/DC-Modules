@@ -1047,16 +1047,20 @@ export const SafetyChain = ({ id, enA, enB, wdi, gateEnA, gateEnB, nrst, sec = "
     <trace from={`.CAND${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
     <trace from={`.RENR${id} > .pin1`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
     <trace from={`.RENR${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />
-    {/* ONE brain, TWO gated chains: gate 1 = EN_B AND WDO -> local (DC-DC) GATE_EN;
-        gate 2 = EN_A AND WDO -> harness (AC-DC) GATE_EN_A. The third inputs tie high so each
-        output is exactly (its EN) AND (watchdog verdict); gate 3 stays spare. */}
+    {/* ONE brain, TWO gated chains: gate 1 = EN_B AND WDO AND DRV_RDY -> local (DC-DC) GATE_EN;
+        gate 2 = EN_A AND WDO AND DRV_RDY -> harness (AC-DC) GATE_EN_A. The third input is the
+        drivers' wired-OR ready line (RRDY above): a gate-drive bias that collapses on ANY of the
+        seven channels drops both enables in nanoseconds, so an unpowered driver's gate — no clamp,
+        no UVLO hold — is never left facing the others' dv/dt for the 1 ms the firmware needs to
+        see DRV_RDY low (app.c rails → aux_ok → SAFE, fresh ENABLE required). Bias returning does
+        not restart anything: EN is already low by then. Gate 3 stays spare. */}
     <trace from={`.UAND${id} > .A1`} to={enB} schDisplayLabel={enB.replace("net.", "")} />
     <trace from={`.UAND${id} > .B1`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
-    <trace from={`.UAND${id} > .C1`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.UAND${id} > .C1`} to="net.DRV_RDY" schDisplayLabel="DRV_RDY" />
     <trace from={`.UAND${id} > .Y1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
     <trace from={`.UAND${id} > .A2`} to={enA} schDisplayLabel={enA.replace("net.", "")} />
     <trace from={`.UAND${id} > .B2`} to={`net.WDO_${id}`} schDisplayLabel={`WDO_${id}`} />
-    <trace from={`.UAND${id} > .C2`} to="net.V3P3" schDisplayLabel="V3P3" />
+    <trace from={`.UAND${id} > .C2`} to="net.DRV_RDY" schDisplayLabel="DRV_RDY" />
     <trace from={`.UAND${id} > .Y2`} to={gateEnA} schDisplayLabel={gateEnA.replace("net.", "")} />
     <trace from={`.RGPD${id} > .pin1`} to={gateEnB} schDisplayLabel={gateEnB.replace("net.", "")} />
     <trace from={`.RGPD${id} > .pin2`} to="net.DGND" schDisplayLabel="DGND" />

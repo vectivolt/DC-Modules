@@ -329,8 +329,12 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
 
   /* AVMID is converted and judged. Every bipolar sense (three line CTs, the resonant CT, the F.11 window)
      is referenced to this buffer; if it or its 10 k/10 k ladder drifts, all three phase currents and the F.01/F.11
-     thresholds shift together and only the once-per-boot offset window would ever have noticed. 1.65 V ± 50 mV. */
-  float avmid = ti->avmid * (3.3f / 4095.0f) / a->k_ref;
+     thresholds shift together and only the once-per-boot offset window would ever have noticed. 1.65 V ± 50 mV on the
+     NOMINAL scale, with no reference correction: the ladder hangs on the same V3P3 that is VREFP, so a healthy buffer
+     reads half scale whatever the rail does, and this is the one reading that sees the ladder and the buffer alone.
+     Divided by k_ref it failed a healthy buffer on a rail 3.1 % high (inside the ±5 % reference window) and passed a
+     buffer that had drifted with the rail. */
+  float avmid = ti->avmid * (3.3f / 4095.0f);
   bool avmid_ok = isfinite(avmid) && fabsf(avmid - 1.65f) <= 0.05f;
   a->avmid_bad_ms = avmid_ok ? 0u : sat16(a->avmid_bad_ms + 1u);
 
@@ -461,7 +465,16 @@ static void commit(app_t *a) {
   a->llc_commit = 1u;
 }
 
-static float dac_v(const meas_cal_t *c, int ch, float value) { return (value / c->ch[ch].gain + c->ch[ch].off) * LSB; }
+/* The comparator references are the INVERSE of meas_val (meas.h). The DAC is VREFP-referenced exactly as the ADC is
+   (UM §18: V_out = VREFP · code / 4096), so the code that lands a threshold on a given SENSOR voltage must carry the
+   same k_ref the measurement removes: an absolute channel on the whole reading, a ratiometric (AVMID) channel on the
+   swing alone, because AVMID itself tracks VREFP. Without it a rail 2.5 % high moved F.03 from 860 V to 922 V while the
+   telemetry still read the bus correctly. Returned in volts on the nominal 3.3 V scale (counts · LSB); the port
+   truncates to a code, which only ever tightens an upper threshold. */
+static float dac_v(const meas_cal_t *c, int ch, float value, float k) {
+  float counts = (ch <= MCH_RATIO_LAST) ? c->ch[ch].off + value / (c->ch[ch].gain * k) : (value / c->ch[ch].gain + c->ch[ch].off) / k;
+  return counts * LSB;
+}
 
 static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
   const pmp_out_t *fo = &a->fsm.out;
@@ -474,18 +487,18 @@ static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
      negative half cycle — including at idle, where the sign of ≈ 0 A is noise. The negative polarity is covered
      instead by Σi = 0 and the 100 kHz magnitude test in app_pfc_isr. */
   for (int n = 0; n < 3; n++) {
-    a->dac_oc_pos[n] = dac_v(&a->cal, MCH_IA + n, a->fsm.oc_line_a);
+    a->dac_oc_pos[n] = dac_v(&a->cal, MCH_IA + n, a->fsm.oc_line_a, a->k_ref);
     o->dac_v[APP_DAC_IA + n] = a->dac_oc_pos[n];
   }
-  o->dac_v[APP_DAC_VBUS] = dac_v(&a->cal, MCH_VBUS, PMP_BUS_OVP_V);
+  o->dac_v[APP_DAC_VBUS] = dac_v(&a->cal, MCH_VBUS, PMP_BUS_OVP_V, a->k_ref);
   /* the F.13 comparator threshold follows the output mode — LOW mode's banks meet a hardware limit at 560 V instead
      of the HIGH-mode 1050 V (the documented interim until HW-REC-1 is decided; an EV contactor opening ends the
      session anyway, so the latch is the protective outcome, not a nuisance) */
   float th13 = (fo->v_max <= PMP_PAR_VMAX_V) ? 560.0f : PMP_OUT_OVP_ABS_V;
-  o->dac_v[APP_DAC_VOUT] = dac_v(&a->cal, MCH_VOUT, th13);
+  o->dac_v[APP_DAC_VOUT] = dac_v(&a->cal, MCH_VOUT, th13, a->k_ref);
   /* HW-REC-1 readiness: the non-latching clamp reference rides the active CV setpoint; armed high when idle */
   float vr = a->ctl.v_ref;
-  o->dac_v[APP_DAC_CLAMP] = dac_v(&a->cal, MCH_VOUT, (vr > 50.0f) ? fminf(vr * 1.05f + 10.0f, th13) : th13);
+  o->dac_v[APP_DAC_CLAMP] = dac_v(&a->cal, MCH_VOUT, (vr > 50.0f) ? fminf(vr * 1.05f + 10.0f, th13) : th13, a->k_ref);
   /* relay-coil economizer (docs/firmware-guide.md, relay economization) — 60 ms pull-in, then 40 % hold at 20 kHz, which is what keeps the coils inside the aux budget */
   static const uint16_t RLY_DO[APP_RLY_COUNT] = { APP_DO_KPRE, APP_DO_KSER, APP_DO_KPARA, APP_DO_KPARB };
   for (int r = 0; r < APP_RLY_COUNT; r++) {

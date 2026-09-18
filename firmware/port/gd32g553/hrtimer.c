@@ -114,8 +114,8 @@ static void fault_cfg(void) {
   /* Freeze the six fault inputs. FLTxINPROT is bit 7 of each channel's byte (UM §25.5.3: PROT 7 · FC 6:3 ·
      SRC0 2 · P 1 · EN 0) and is write-once — "this bit-field cannot be modified when FLTxINPROT has been programmed".
      The hardware protection layer exists because firmware can be wrong, so the firmware must not be able to unarm it:
-     nothing after this point has any business rewriting a fault source, polarity or filter. hrtimer_rearm() clears INTF
-     and re-enables outputs, which these bits do not touch. STxFLTCTL (which timers listen) is deliberately left writable:
+     nothing after this point has any business rewriting a fault source, polarity or filter. hrtimer_rearm() only
+     re-enables outputs, which these bits do not touch. STxFLTCTL (which timers listen) is deliberately left writable:
      locking it adds nothing the input lock does not already cover, and CMPxLK would freeze the comparator polarity too. */
   HRT_FLTINCFG0 |= BIT(7) | BIT(15) | BIT(23) | BIT(31);
   HRT_FLTINCFG1 |= BIT(7) | BIT(15);
@@ -198,25 +198,47 @@ void hrtimer_llc_apply(const app_llc_out_t *o) {
   if (!(db > 0.0f) || dtb > DT_MAX) dtb = DT_MAX;
   if (dta < DT_MIN) dta = DT_MIN;
   if (dtb < DT_MIN) dtb = DT_MIN;
+  bool run = o->gate && o->f_hz >= 1000.0f;
+  uint32_t car = 0u, lag = 0u;
+  if (run) {
+    car = (uint32_t)(LLC_FCK / o->f_hz);
+    if (car < 2u * CMPMIN) car = 2u * CMPMIN;
+    if (car > 0xFFEFu) car = 0xFFEFu;                         /* Table 25-1 max at div001 */
+    lag = (uint32_t)(o->duty * 0.5f * (float)car);
+    if (lag < CMPMIN) lag = CMPMIN;
+  }
+  /* ONE coherent set per cycle. The shadows transfer at ST0's roll-over (ST1 with it), and that roll-over lands
+     between these writes whenever the 100 kHz PFC interrupt pre-empts the sequence — one cycle then runs leg A on the
+     new period with leg B on the old one and the old phase, a volt-second glitch on the primary at exactly the
+     transient that asked for a big step. ST0UPDIS / ST1UPDIS (HRTIMER_CTL0 bits 1 / 2, UM §25.5.3: "1 = update event
+     generation disabled") hold the transfer while the set is written; clearing them lets the next roll-over take
+     dead time, period and phase together. Nothing else writes CTL0 after init, so the read-modify-write is safe. */
+  HRT_CTL0 |= BIT(1) | BIT(2);
   HRT_STDTCTL(0) = (dta << 16) | (DT_DIV << 10) | dta;
   HRT_STDTCTL(1) = (dtb << 16) | (DT_DIV << 10) | dtb;
-  if (!o->gate || o->f_hz < 1000.0f) { HRT_CHOUTDIS = four; return; }
-  uint32_t car = (uint32_t)(LLC_FCK / o->f_hz);
-  if (car < 2u * CMPMIN) car = 2u * CMPMIN;
-  if (car > 0xFFEFu) car = 0xFFEFu;                           /* Table 25-1 max at div001 */
-  uint32_t lag = (uint32_t)(o->duty * 0.5f * (float)car);
-  if (lag < CMPMIN) lag = CMPMIN;
-  HRT_STCAR(0) = car;
-  HRT_STCAR(1) = car;
-  HRT_STCMP1V(0) = lag;
-  HRT_CHOUTEN = four;
+  if (run) { HRT_STCAR(0) = car; HRT_STCAR(1) = car; HRT_STCMP1V(0) = lag; }
+  HRT_CTL0 &= ~(BIT(1) | BIT(2));
+  if (run) HRT_CHOUTEN = four; else HRT_CHOUTDIS = four;
 }
 
-/* ch_mask is an APP_FLT_ channel mask, not "everything" — the bypass-closure blank re-arms F.01's three line-OC
-   channels 60 times, and clearing F.03/F.13 with it would undo a hardware latch the blank has nothing to do with. */
+/* The enable-write race. A control interrupt decides its outputs from trip_n == trip_ack and then writes CHOUTEN; a
+   fault that lands between the two has already put every output in its fault state, and the write re-arms them —
+   for one control period (10 µs PFC, 100 µs LLC) before the next interrupt sees trip_n move, or for good under the UM's
+   resume rule ("PWM output can only be resumed after the fault source inactive and the channel output is re-enabled")
+   if the fault was a pulse. Masking interrupts cannot close it: the kill is asynchronous hardware. What closes it is
+   testing, AFTER the write, both the software count and the fault flags (INTF FLT4..0 at 4:0, FLT5 at 6), which the
+   HRTIMER sets in the same clock domain as the kill, before the NVIC has taken IRQ76 — and disabling everything if either
+   says a trip landed. The fault ISR is the only place the flags are cleared, so a flag it has not consumed is still set. */
+bool hrtimer_trip_pending(void) { return (HRT_INTF & (0x1Fu | BIT(6))) != 0u; }
+void hrtimer_all_off(void) { HRT_CHOUTDIS = 0xFu | BIT(6) | BIT(8) | BIT(10); }   /* ST0/1 CH0/1 · ST3/4/5 CH0 */
+
+/* Re-arm after the supervisor has cleared the latch (ch_mask = the APP_FLT_ channels it cleared). The fault FLAGS are
+   deliberately not touched here: the fault ISR clears exactly the flags it attributed, and a flag set since then belongs
+   to a fault IRQ76 has not taken yet — clearing it from the tick would lose that trip (ch = 0 in the ISR, trip_n never
+   moves) while the CHOUTEN below re-armed the outputs it killed. Re-enabling needs no flag clear (UM §25.3: outputs
+   resume when the source is inactive and STxCHyEN is set). */
 void hrtimer_rearm(uint16_t do_bits, uint16_t ch_mask) {
-  uint32_t f = (uint32_t)(ch_mask & 0x1Fu) | ((uint32_t)(ch_mask & BIT(5)) << 1);   /* channels → INTF bits (FLT5 at 6) */
-  HRT_INTC = f;
+  (void)ch_mask;
   if (do_bits & APP_DO_EN_LLC) HRT_CHOUTEN = 0xFu;
   /* the PFC phases re-enable from the next hrtimer_pfc_apply with en true */
 }

@@ -26,4 +26,18 @@ static inline void handoff_seal(boot_handoff_t *h) {
 static inline bool handoff_valid(const boot_handoff_t *h) {
   return h->magic == HANDOFF_MAGIC && h->crc == pmp_crc32((const uint8_t *)h, offsetof(boot_handoff_t, crc));
 }
+
+/* The application's OWN no-init record (FM_HANDOFF_APP): a commanded discharge that must outlive a reset
+ * (app.h disch_intent → disch_pending). Kept apart from boot_handoff_t so the bootloader's layout, seal and streak logic
+ * never touch it — it survives a service round trip and a bootloader update alike. A power-on reset leaves garbage
+ * that fails the seal and reads as "no discharge pending", which is right: the link is not being fed then either. */
+#define APP_HANDOFF_MAGIC 0x48434944u   /* "DICH" */
+typedef struct { uint32_t magic, disch, crc; } app_handoff_t;
+static inline void app_handoff_seal(app_handoff_t *h) {
+  h->magic = APP_HANDOFF_MAGIC;
+  h->crc = pmp_crc32((const uint8_t *)h, offsetof(app_handoff_t, crc));
+}
+static inline bool app_handoff_valid(const app_handoff_t *h) {
+  return h->magic == APP_HANDOFF_MAGIC && h->crc == pmp_crc32((const uint8_t *)h, offsetof(app_handoff_t, crc));
+}
 #endif

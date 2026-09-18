@@ -3,8 +3,8 @@
 // docs-lint asserts every tracked page is registered here and carries exactly this chrome.
 import { dirname, relative } from "node:path";
 
-export const REV = "E83";
-export const UPDATED = "2026-09-17";
+export const REV = "E84";
+export const UPDATED = "2026-09-18";
 
 const STATUS = {
   OVERVIEW: ["0969da", "overview"], HUB: ["0969da", "navigation hub"], LIVE_SPEC: ["2ea44f", "live specification"],
@@ -22,7 +22,7 @@ export const PAGES = [
   ["docs/validation-report.md", "platform", "🛡️", "Validation Report", "What the independent validation found, what is fixed, what is still open and why — with the decision table for every proposed part and the first-prototype bring-up plan", "LIVE_SPEC", [["verdict", "READY_FOR_BENCH_BRING--UP", "d19a00"], ["open", "C--10_needs_the_layout", "d19a00"]]],
   ["docs/interconnect.md", "platform", "🔌", "Two-Board Sandwich & Interconnect", "Stud pillars, the 40-way harness, grounding, discharge control and the HMI contract", "LIVE_SPEC", [["gate", "module--interconnect--audit", "2ea44f"]]],
   ["docs/control-card-scope.md", "platform", "🧠", "Control-Card Scope", "Why one card runs one module up to 50 kW — connector ways, HRTIMER units and MCU pins", "LIVE_SPEC", [["gate", "cardMap()_refuses_out--of--scope", "2ea44f"]]],
-  ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["firmware", "330_checks_ASan%2FUBSan", "2ea44f"]]],
+  ["docs/firmware-guide.md", "platform", "💾", "Firmware Guide", "The supervisory C99 core — state machine, fault ladder, HAL contract and the host-proven test suite", "LIVE_SPEC", [["firmware", "334_checks_ASan%2FUBSan", "2ea44f"]]],
   ["docs/firmware-architecture.md", "platform", "🧬", "Firmware Architecture", "Layers, timing, state machines, control and ramping, the protection hierarchy and exception handling", "LIVE_SPEC", [["port", "built_·_not_yet_run_on_silicon", "d19a00"]]],
   ["docs/can-protocol.md", "platform", "📡", "VMP 2.0 Native CAN Protocol", "The module's own protocol — addressing, control, acknowledgement, telemetry, discovery, versioning and the controller contract", "LIVE_SPEC", [["codec", "vmp.c_conformance_·_1M_fuzz", "2ea44f"]]],
   ["docs/can-profile-tonhe-v12.md", "platform", "🔁", "TonHe V1.2 Compatibility Profile", "How a module on the TonHe V1.2 profile behaves on the wire, what it maps to inside, and every ambiguity resolved", "LIVE_SPEC", [["conformance", "spec_examples_byte--exact", "2ea44f"]]],
@@ -43,7 +43,7 @@ export const PAGES = [
   ["docs/simulation-report.md", "verification", "📈", "Simulation Report", "The simulation-truth ledger — every executed run, its result, and what it may be used to claim", "EVIDENCE"],
   ["docs/verification-matrix.md", "verification", "✅", "Verification Matrix & Risk Register", "Every requirement mapped to its evidence, and the risks still open", "LIVE_SPEC", [["verify--independent", "243%2F243", "2ea44f"]]],
   ["docs/evt-plan.md", "verification", "🔬", "EVT Test Plan", "The first-hardware campaign, test by test, and the rule that lets bench results reopen a calculation", "LIVE_SPEC"],
-  ["docs/firmware-verification.md", "verification", "🧪", "Firmware Verification Plan", "Every firmware feature as behaviour, timing, failure, recovery, test and pass criterion — host, HIL, fuzzing, conformance and endurance", "LIVE_SPEC", [["host", "330_checks_·_ASan%2FUBSan", "2ea44f"]]],
+  ["docs/firmware-verification.md", "verification", "🧪", "Firmware Verification Plan", "Every firmware feature as behaviour, timing, failure, recovery, test and pass criterion — host, HIL, fuzzing, conformance and endurance", "LIVE_SPEC", [["host", "334_checks_·_ASan%2FUBSan", "2ea44f"]]],
   ["docs/reliability-budget.md", "verification", "🛡️", "Reliability Budget", "Parts-count MTBF prediction with its basis declared, the wear-out clocks, and how a module fails safe", "LIVE_SPEC", [["gate", "mtbf--budget_·_CONSISTENT", "2ea44f"]]],
   ["calculations/README.md", "verification", "🧮", "Calculations & Gates", "Every engine, audit and generator — and the one command that reproduces the design", "OVERVIEW", [["run--all", "exit_0", "2ea44f"]]],
   ["spice/README.md", "verification", "🖥️", "SPICE Simulation Suites", "The ngspice runners, what each one proves, and where its results land", "OVERVIEW"],

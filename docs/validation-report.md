@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
   <img src="https://img.shields.io/badge/verdict-READY_FOR_BENCH_BRING--UP-d19a00?style=flat-square" alt="verdict: READY FOR BENCH BRING-UP"/>
   <img src="https://img.shields.io/badge/open-C--10_needs_the_layout-d19a00?style=flat-square" alt="open: C-10 needs the layout"/>
 </p>
@@ -33,7 +33,7 @@
 | **Answer** | the power-stage architecture and its arithmetic are sound; the first prototype **would not have started**, and once started would not have been safe — five independent defects each stopped it delivering power, four made a running module unsafe, one left die survival to a heatsink sensor that cannot see the die |
 | **State now** | every CRITICAL and every firmware MAJOR is implemented and tested; the hardware value and rating corrections are drawn, costed and gated |
 | **Cost of the corrections** | **₹80 / 133 / 133 / 133 per module** (0.25–0.37 % of COGS) — §7 |
-| **Firmware** | 330 checks under ASan/UBSan across seven binaries: `boot_test` 22 · `host_sim` 122 · `ctl_test` 20 · `proto_test` 42 · `hal_test` 45 · `app_test` 29 · `rules_test` 50 · target build clean |
+| **Firmware** | 334 checks under ASan/UBSan across seven binaries: `boot_test` 22 · `host_sim` 122 · `ctl_test` 20 · `proto_test` 42 · `hal_test` 45 · `app_test` 32 · `rules_test` 51 · target build clean |
 | **First-prototype verdict** | **READY FOR BENCH BRING-UP** — the port has never run on silicon, and full power waits on the commutation-loop measurement (§9) |
 
 ## 1. Scope and method
@@ -62,7 +62,11 @@ coefficients; the relay matrix and its exclusion gate; TonHe V1.2 byte-exact; CA
 the GD32G553's resources.
 
 **Corrected.** Five defects that each stopped the module starting, four that made a running module unsafe, one that
-left die survival to a sensor that cannot see the die, and the analogue, timing, rating and sourcing work behind them.
+left die survival to a sensor that cannot see the die, and the analogue, timing, rating and sourcing work behind them —
+then, at the edge where the port meets the HAL: comparator codes that ignored the ADC's own reference correction, an
+enable write that could re-arm a tripped stage, an LLC period written in two halves, a fan tach handed over ten times
+too fast, a discharge intent the port never kept across a reset, two link rows that could end a commanded dump, and a
+driver-ready inhibit the pages credited while the gate inputs were tied high.
 §3 is the list, and it is the list a bench engineer should read before Stage 0: each row names the check that will fail
 if the fix is ever undone.
 
@@ -96,6 +100,14 @@ check is what keeps it that way.
 | **Drawing ↔ engine ↔ BOM** | the input-filter damper is drawn 2.2 µF / 6.8 Ω (30–40 kW) and 4.7 µF / 4.7 Ω (50 kW) while the stability engine modelled 2.2 µF / 10 Ω everywhere and the BOM bought 10 Ω; the aux deck modelled 26 / 16 V rail TVS against the drawn 28 / 18 V parts; sheet title blocks typed the wrong snubber values; the 40 and 50 kW fuse-holder packages were swapped on the sheets | `pfc-control` reads the damper from the drawing (modulus margin 0.63 / 0.61 / 0.71); the BOM buys the drawn value; the deck models the drawn TVS; the title-block line is computed from `tanks.mjs`; the footprint map is corrected | `review-checks` `FILTER-DAMPER-VALUE` and `FUSE-FRAME` · `repo-hygiene` footprint rules |
 | **Stale evidence** | post-processed results were older than their inputs — the internal-short envelope, the magnetics excitation table, the CT front-end results and the double-pulse turn-off current had not been regenerated after the runner that feeds them changed (the 30 kW internal-short kill peak read 196 A against 210 A) | every SPICE suite re-run; derived result files carry `# inputs <hash> <- files` | `repo-hygiene`: a derived file whose inputs have moved fails the battery |
 | **Dead and duplicated table entries** | a bypass relay defined twice at 50 kW (the first definition silently dead), BOM rules matching no part, a ₹0 line for a part that does not exist, overrides describing the wrong part (an 18 Ω burden printed as 22 Ω), 60-odd sourcing and footprint entries for parts the BOM cannot emit, a footprint library that missed the Y-capacitor land and shipped two unused ones | removed or corrected; the footprint generator scans every sheet, the control card included, and prunes | `repo-hygiene`: dead rules, dead map entries, repeated keys, library ≡ what the sheets ask for |
+| **Comparator codes vs the reference** | the DAC references inverted the NOMINAL transfer: the ADC path corrects every absolute reading by the measured VREFP (`k_ref`) while the codes written to the VREFP-referenced DACs did not, so a rail 2.5 % high moved F.03 from 860 V to 922 V and F.13 (LOW) from 560 V to 614 V with the telemetry reading correctly | `dac_v` inverts `meas_val` at the `k_ref` in force — absolute channels on the whole reading, AVMID-ratiometric ones on the swing; VREFP is read once at boot, so the codes carry the rail's post-boot movement, ≤ ±1 % for the buck class (§9) | `app_test`: the code read back through `meas_val` lands on 860 / 560 V and the F.01 class with VREFP 2.5 % high · `review-checks` `DAC-INVERSE-KREF` · T-26 |
+| **AVMID judged on the wrong scale** | the half-rail check divided a RATIOMETRIC reading by `k_ref`: a healthy buffer on a rail 3.1 % high (inside the ±5 % reference window) failed F.29, and a buffer that drifted with the rail passed | judged on the nominal scale with no correction — the one reading that sees the ladder and the buffer alone | `app_test`: rail +4 % passes, buffer +4 % is F.29 · `review-checks` `AVMID-RATIOMETRIC` |
+| **The enable write after a trip** | each control interrupt decided its outputs from `trip_n == trip_ack` and then wrote CHOUTEN; a fault landing between the two had already killed every output in hardware and the write re-armed them — for one control period, or for good, since the timer resumes a pulse fault the moment the source is gone; the tick's re-arm also cleared fault flags the fault interrupt had not yet consumed | after every enable write the port tests the software count AND the HRTIMER's own fault flags (set in the kill's clock domain, before the NVIC has taken the interrupt) and disables everything if either moved; only the fault interrupt clears flags | `review-checks` `TRIP-GUARD-AFTER-ENABLE` · T-44 fault-at-every-boundary injection |
+| **LLC period written in two halves** | dead time, both periods and the phase compare were five separate shadow writes with the transfer free to land between them (the 100 kHz interrupt pre-empts the sequence about 1 % of the time): one cycle with leg A on the new period and leg B on the old one and the old phase | ST0UPDIS / ST1UPDIS hold the transfer while the set is written; one roll-over takes it whole | `review-checks` `LLC-UPDATE-COHERENT` · T-72 gate capture through a frequency step |
+| **Tach units** | the port computed tenths of hertz and handed them to the HAL as hertz: a fan at 10 Hz (300 rpm) read 100 Hz and passed the full-duty floor of 42 Hz; telemetry read 36 000 rpm for 3 600 | hertz end to end | `review-checks` `TACH-IN-HERTZ` · T-54 injection |
+| **A reset during a commanded discharge** | the HAL emitted the intent and could resume from it, but the port never stored it and the boot record had no field: a watchdog reset mid-dump booted into INIT → PRECHG with the link recharging and the banks left as they were | the intent is sealed into the application's own no-init record before the tick acts and read back at boot; the record is apart from the bootloader's, so a service round trip or a bootloader update keeps it | `app_test`: a pre-reset record resumes the bounded dump, never precharges, reaches OFF · `review-checks` `DISCH-INTENT-SEALED` · T-44 reset at every discharge transition |
+| **Link rows on the shutdown path** | F.06 (midpoint) and F.38 (half-link) ran during the dump; a midpoint excursion while the link came down latched, ST_FAULT ended the dump, and F.06 — an AUTO row — recovered into precharge with the shutdown forgotten | both rows carry the shutdown exemption every other row already had | `rules_test`: a 108 V midpoint error during the dump does not end it · `review-checks` `LINK-ROWS-EXEMPT-ON-SHUTDOWN` |
+| **Driver-ready inhibit** | the pages credited a global asynchronous gate-off on DRV_RDY, but the line only reached a firmware input read every millisecond — the safety AND gates' third inputs were tied high | DRV_RDY is the third input of both enable gates: a collapsing bias on any of the seven channels drops both enables in nanoseconds; the firmware's 1 ms path (rails → `aux_ok` → SAFE, fresh ENABLE required) keeps them down | `review-checks` `DRV-RDY-IN-AND` · T-80 |
 
 ## 4. Does it earn its place? — the decision table
 
@@ -137,7 +149,7 @@ D_OUT.
 | leg shoot-through, die short | 2–3 µs | **hardware** | driver DESAT → soft-off, DRV_RDY low → GATE_EN |
 | output short, tank over-current | ≈ 1 µs | **hardware** | TLV3202 window → HRTIMER fault → all outputs idle |
 | line over-current, link and output over-voltage | µs | **hardware** | on-chip comparators → HRTIMER fault; the supervisor latches, and **nothing re-arms until it has** |
-| gate-drive under-voltage | µs | **hardware** | driver UVLO |
+| gate-drive under-voltage, bias collapse | µs · ns | **hardware** | driver UVLO; DRV_RDY low → both GATE_EN low in the safety AND; firmware SAFE within 1 ms, fresh ENABLE required |
 | hung firmware | 30–55 ms | **hardware** + firmware | TPS3430 window and the internal watchdog, fed only while the main loop pays |
 | negative-polarity line over-current | 10 µs | firmware | 100 kHz magnitude trip; Σi = 0 gives a hardware answer at 2 × I_trip |
 | die over-temperature at a point the NTC cannot see | 0.1–1 s | firmware | junction observer → fold → decline |
@@ -230,6 +242,7 @@ Genuine dependencies only — each one is a thing paper cannot settle, with the 
 | **weak-leg residual map (leg-node probe)** | two independent switched models disagree by 2× on the residual at the same operating point | the firmware's map errs high; Stage 8 / T-58 probes the leg-A node through phase shift at 25 / 50 / 100 % load and sweeps `LLC_DT_WEAK_K` to relax it |
 | snubber value on the two-die legs | per die, 330 pF and 1 nF read the same overshoot at 10–30 nH, and every pF costs C_s·V²·f in the weak leg | the drawn values stand; Stage 7 picks the smallest C_s that meets the overshoot line at the real loop |
 | load dump at an 830 V link (M-32) | it reproduces on one independent model (856–872 V) and not on the repo's plant (833 V) | both ₹0 firmware levers are in; Stage 11 with low-tolerance cans is the arbiter, and the link must never exceed 880 V |
+| the rail's movement after boot | the internal reference cannot be sampled inside the 10 µs control frame (it needs ≥ 17.1 µs), so VREFP — the ADC's and the DACs' reference — is measured once at boot | ≤ ±1 % of post-boot drift for the TPS54202 class (its ±1.5 % reference band spans −40…125 °C, plus line / load regulation), carried by every reading and every comparator code — ≈ ±25 V at F.03, ±22 V at F.13 LOW, inside the ±3 % chain class of the threshold budget; T-26 sweeps VREFP ±3 % and requires the measured crossings to follow the corrected codes |
 
 ## 10. Reproduction
 
@@ -248,5 +261,5 @@ sh firmware/port/gd32g553/build.sh  # Cortex-M33 images, -Werror
 <div align="center">
 <sub><a href="assumptions.md">← Decision Register</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="interconnect.md">Two-Board Sandwich & Interconnect →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

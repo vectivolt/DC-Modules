@@ -221,7 +221,9 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   /* The two LINK rows run whenever the link is CHARGED, not only while a stage is enabled. The 2 × 47 k balance string
      carries 4.4 mA against a hot leakage imbalance of up to ~17 mA, so an idle charged link can drift one half toward
      its can rating; looking only while the converter runs would leave that unwatched. */
-  if ((operating || o->pfc_en || o->llc_en || in->vbus > 100.0f) && f->st != ST_INIT && f->st != ST_LOCK) {
+  /* … and not on the shutdown path either: the dump is the cure for a charged link, and F.06 / F.38 latching in DISCH
+     would end it (ST_FAULT stops the dump) — F.06 is an AUTO row, so it would even recover into precharge. */
+  if ((operating || o->pfc_en || o->llc_en || in->vbus > 100.0f) && f->st != ST_INIT && f->st != ST_LOCK && !on_shutdown) {
     if (persist(&f->p_mid, fabsf(in->vmid_frac - 0.5f) * in->vbus > PMP_MID_IMB_V, PMP_MID_MS)) latch(f, FC_MID_IMB);
     /* each half-link absolutely — 860 V total and ±40 V midpoint together still let one 450 V bank
        reach 454–468 V without either row firing */

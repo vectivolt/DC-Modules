@@ -879,7 +879,7 @@
      {
       "pin_number": 5,
       "name": "C2",
-      "signal_name": "V3P3"
+      "signal_name": "DRV_RDY"
      },
      {
       "pin_number": 6,
@@ -914,7 +914,7 @@
      {
       "pin_number": 13,
       "name": "C1",
-      "signal_name": "V3P3"
+      "signal_name": "DRV_RDY"
      },
      {
       "pin_number": 14,

@@ -29,6 +29,11 @@ static uint8_t hmi_phase;
 static uint16_t vrefint_counts;
 
 #define HANDOFF (*(boot_handoff_t *)FM_HANDOFF)
+#define HANDOFF_APP (*(app_handoff_t *)FM_HANDOFF_APP)
+static bool disch_kept;                              /* what the sealed application record says (rewritten on change only) */
+
+/* after EVERY write that can enable a power output (the two control interrupts, the tick's re-arm): see hrtimer.c */
+static inline void trip_guard(void) { if (app.trip_n != app.trip_ack || hrtimer_trip_pending()) hrtimer_all_off(); }
 
 /* ---------------- 100 kHz: sample set from the previous roll-over trigger, control law, duties for the next roll-over.
    Raised by the END of the longest ADC sequence (DMA0 channel 2 half/full transfer, adc.c CTL_DMACH), not by an ST3
@@ -43,6 +48,7 @@ RAMFUNC void pfc_ctl_isr(void) {
   app_pfc_out_t po;
   app_pfc_isr(&app, &s, &po);
   hrtimer_pfc_apply(&po);
+  trip_guard();
   lsum[0] += vout; lsum[1] += ioutp; lsum[2] += ioutn; lsum[3] += ires; lsum[4] += vbka; lsum[5] += vbkb;
   if (++lsum_n >= 10u) {                             /* decimate in the writer, publish, then reset */
     uint8_t w = (uint8_t)(lmean_i ^ 1u);
@@ -64,6 +70,7 @@ RAMFUNC void hrtimer_mt_isr(void) {
   app_llc_out_t lo;
   app_llc_isr(&app, &lmean[lmean_i], &lo);
   hrtimer_llc_apply(&lo);
+  trip_guard();
   uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
   if (us > llc_us_max) llc_us_max = (uint16_t)us;
 }
@@ -182,7 +189,7 @@ static bootctl_t boot_ctl;
    flash stall, which happens with both stages off, so the supervisory timers lose nothing that matters. */
 static void tick(uint32_t n) {
   static uint32_t tach_last[4], tach_ms;
-  static uint16_t tach_hz_x10[4];
+  static float tach_hz[4];                           /* hertz — the unit app.h's tach_hz carries */
   static uint8_t stack_pct_cached;
   static uint32_t ms;
   uint32_t ms0 = ms;
@@ -208,12 +215,12 @@ static void tick(uint32_t n) {
     uint32_t el = ms - tach_ms;
     for (int k = 0; k < 4; k++) {
       uint32_t c = tach_cnt[k];
-      tach_hz_x10[k] = (uint16_t)(el ? (c - tach_last[k]) * 10000u / el : 0u);
+      tach_hz[k] = el ? (float)(c - tach_last[k]) * 1000.0f / (float)el : 0.0f;   /* edges per millisecond × 1000 = Hz */
       tach_last[k] = c;
     }
     tach_ms = ms;
   }
-  for (int k = 0; k < 4; k++) ti.tach_hz[k] = (float)tach_hz_x10[k];
+  for (int k = 0; k < 4; k++) ti.tach_hz[k] = tach_hz[k];
   ti.can_state = can_state(); ti.can_rx_ovr = can_rx_congested;
   /* the paint scan is ~43 µs of the 1 ms tick for one diagnostic byte that moves on a scale of minutes, so it runs
      at 1 Hz (firmware-architecture §3.2). */
@@ -226,6 +233,14 @@ static void tick(uint32_t n) {
 
   app_tick(&app, &ti, &out);
 
+  /* A commanded discharge outlives a reset: the intent is sealed into the application's no-init record BEFORE anything
+     below acts on this tick, and read back by main() into app_boot_t.disch_pending, from which app_init resumes the
+     bounded dump instead of pmp_fsm_init's INIT → PRECHG. RAM only — rewritten when the intent changes, never per tick. */
+  if (out.disch_intent != disch_kept) {
+    disch_kept = out.disch_intent;
+    HANDOFF_APP.disch = disch_kept ? 1u : 0u;
+    app_handoff_seal(&HANDOFF_APP);
+  }
   uint16_t d = out.do_bits;
   pin_set(BP_QDIS, (d & APP_DO_QDIS) != 0);
   pin_set(BP_QDISBK, (d & APP_DO_QDISBK) != 0);
@@ -234,7 +249,7 @@ static void tick(uint32_t n) {
   pwm_relay(out.relay_duty);                                          /* carries KPRE/KSER/KPARA/KPARB incl. pull-in */
   pwm_fan(out.fan_duty[0], out.fan_duty[1]);
   cmpdac_thresholds(out.dac_v);
-  if (out.fault_rearm) hrtimer_rearm(d, out.fault_rearm);
+  if (out.fault_rearm) { hrtimer_rearm(d, out.fault_rearm); trip_guard(); }
   if (out.wdt_kick) port_kick_grant(PORT_KICK_TOKENS); else kick_tokens = 0u;   /* SysTick owns the cadence, the tick owns the permission */
   hmi_phase = out.hmi_dig;
   hmi_drive(out.hmi_seg, out.hmi_dig);
@@ -305,6 +320,8 @@ int main(void) {
      leave F.32 silent on the dominant hang path. RSTSCK's flags live at 25..31, so the byte carries all of them. */
   b.reset_cause = (uint8_t)((port_reset_cause >> 24) & 0xFFu);
   b.handoff_reboot = have_h && h.reason == HANDOFF_REBOOT;
+  b.disch_pending = app_handoff_valid(&HANDOFF_APP) && HANDOFF_APP.disch != 0u;   /* a discharge was in progress at the reset */
+  disch_kept = b.disch_pending;
   b.hw_rev = PORT_HW_REV;                                             /* board.h — no strap on the card */
   b.uid = pmp_crc32((const uint8_t *)UID_BASE, 12u);                  /* all 96 bits — the first word alone is the wafer lot, shared by a whole reel; same identity as the bootloader's */
   b.vrefint_v = (VREFINT_CAL > 1000u && VREFINT_CAL < 2000u) ? (float)VREFINT_CAL * 3.3f / 4096.0f : 0.0f;   /* factory counts at 3.3 V */

@@ -6,14 +6,14 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-OVERVIEW-0969da?style=flat-square" alt="status: overview"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/envelope_grid-4536_pts_·_no_FAIL_row-d19a00?style=for-the-badge" alt="envelope grid 4536 points, no FAIL row"/>
   <img src="https://img.shields.io/badge/independent_checks-243%2F243-2ea44f?style=for-the-badge" alt="independent verifier 243 of 243"/>
-  <img src="https://img.shields.io/badge/firmware-330_checks_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 330 checks"/>
+  <img src="https://img.shields.io/badge/firmware-334_checks_ASan%2FUBSan-2ea44f?style=for-the-badge" alt="firmware 334 checks"/>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/schematic_pins-7409%2F7409_·_5_targets-2ea44f?style=flat-square" alt="7409 of 7409 schematic pins verified"/>
@@ -124,11 +124,11 @@ flowchart LR
 
 | | Where it stands |
 |---|---|
-| **Design battery** | `run-all` **exit 0** · `review-checks` **154 / 154** closure assertions · `verify-independent` **243 / 243** clean-room checks |
+| **Design battery** | `run-all` **exit 0** · `review-checks` **162 / 162** closure assertions · `verify-independent` **243 / 243** clean-room checks |
 | **Physics gates** | stress-audit **163** · current-coordination **107** · mag-sync **52** · magnetics-envelope **30** · fw-constants-sync **30 rows** · fault-energy **24** · conductor-audit **18** · temp-critique **11** · repo-hygiene **7** |
 | **Thermal envelope** | **4,536** grid points (1,134 per SKU), **0 FAIL**, worst junction 150 °C |
 | **Release schematics** | **7,409 / 7,409** connected pins across five KiCad-5 targets · nine board PDFs |
-| **Firmware** | **330 checks** under ASan/UBSan across seven binaries · target build clean: bootloader 11.9 kB of 32 kB, application ≈ 49.6 kB of a 207.5 kB slot · `port-pin-audit` 56 pins |
+| **Firmware** | **334 checks** under ASan/UBSan across seven binaries · target build clean: bootloader 11.9 kB of 32 kB, application ≈ 49.9 kB of a 207.5 kB slot · `port-pin-audit` 56 pins |
 | **Documentation** | **41** registered pages, `docs-lint` clean |
 | **Build cost @10k** | India basis ₹31,613 / 36,103 / 42,761 / 40,688 · China RFQ target ₹25,920 / 29,520 / 35,023 / 33,243 |
 | **First prototype** | **READY FOR BENCH BRING-UP.** The port has never run on silicon, and full power waits on the commutation-loop measurement — [validation report](docs/validation-report.md) |
@@ -238,7 +238,7 @@ Portable **C99**, sans-IO, one image for every seat: the supervisory core (`firm
 profiles (`firmware/proto/`), the real-time HAL with the Vienna and LLC laws (`firmware/hal/`), the signed A/B boot chain
 (`firmware/boot/` — SHA-256 + ECDSA-P256, trial/confirm/rollback, CAN field update) and the **register-level GD32G553
 port** (`firmware/port/gd32g553/`, no vendor library — built and signed by `port/gd32g553/build.sh`, its pin table gated
-against the card generator). The host suite runs **330 checks under ASan/UBSan** across seven binaries, from the 26 fault
+against the card generator). The host suite runs **334 checks under ASan/UBSan** across seven binaries, from the 26 fault
 scenarios to cycle-by-cycle converter plants and power-cut update storms. → [firmware guide](docs/firmware-guide.md) ·
 [CAN protocol](docs/can-protocol.md)
 
@@ -251,7 +251,7 @@ scenarios to cycle-by-cycle converter plants and power-cut update storms. → [f
 | `hal_test` | the portable real-time HAL on cycle-by-cycle Vienna and LLC plants, measurement, power-cut-safe NVM, the junction observer | 45 |
 | `app_test` | the module application end to end: interrupts, the 1 ms sequence, faults, NVM, CAN, the F.01 magnitude trip and the fold / decline | 29 |
 | `rules_test` | the review suites' own checks — dead-time floor and weak-leg edge, the FSM rows, the fold, the protocol fixes | **50** |
-| | **`sh firmware/run_tests.sh`** | **330** |
+| | **`sh firmware/run_tests.sh`** | **334** |
 
 ```mermaid
 stateDiagram-v2
@@ -326,5 +326,5 @@ estimates with data, run RFQ round 1 against the IDM and duty acceptance lines, 
 <div align="center">
 <sub><a href="docs/README.md">Documentation Hub →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -6,9 +6,9 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E83-f2b705?style=flat-square" alt="revision E83"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--17-8b949e?style=flat-square" alt="updated 2026-09-17"/>
-  <img src="https://img.shields.io/badge/host-330_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 330 checks · ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/host-334_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 334 checks · ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -273,5 +273,5 @@ the weak-leg dead time · T-64 the PFC interrupt budget measured with DWT.
 <div align="center">
 <sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E83 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
