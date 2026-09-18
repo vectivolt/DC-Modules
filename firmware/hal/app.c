@@ -476,7 +476,7 @@ static float dac_v(const meas_cal_t *c, int ch, float value, float k) {
   return counts * LSB;
 }
 
-static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
+static void outputs(app_t *a, app_tick_out_t *o) {
   const pmp_out_t *fo = &a->fsm.out;
   o->do_bits = (uint16_t)((fo->k_pre ? APP_DO_KPRE : 0u) | (fo->k_ser ? APP_DO_KSER : 0u) | (fo->k_para ? APP_DO_KPARA : 0u) |
                           (fo->k_parb ? APP_DO_KPARB : 0u) | (fo->q_disch ? APP_DO_QDIS : 0u) | (fo->q_disch_bk ? APP_DO_QDISBK : 0u) |
@@ -508,12 +508,9 @@ static void outputs(app_t *a, app_tick_out_t *o, pmp_state_t st0) {
       o->relay_duty[r] = (a->rly_ms[r] <= APP_RLY_PULL_MS) ? 1.0f : APP_RLY_HOLD;
     }
   }
-  /* the latches clear through the bypass-closure blank, and once a latched row has cleared. The blank is an F.01 rule,
-     so only the three line-OC channels clear inside it: clearing F.03 (bus OVP) or F.13 (output OVP) sixty times in a
-     row would undo a hardware latch the blank has nothing to say about, and the closure inrush itself (605 → 726 V)
-     is close enough to F.03 to matter the moment a stage is enabled in the window. */
-  o->fault_rearm = a->fsm.pre_blank_ms > 0u ? (uint16_t)APP_FLT_LINE_OC
-                 : (st0 == ST_FAULT && a->fsm.st != ST_FAULT && a->fsm.st != ST_LOCK) ? (uint16_t)APP_FLT_ALL : 0u;
+  /* No re-arm output: a tripped stage comes back only through its own control interrupt, which re-enables its outputs
+     once trip_ack has caught up with trip_n (this tick's commit) and the FSM commands the stage again — through the
+     bypass-closure blank (F.01 blanked, the stage held off) and after a latched row has cleared alike. */
   o->disch_intent = a->fsm.st == ST_SHUTDOWN || a->fsm.st == ST_DISCH;   /* the port keeps it across a reset */
 }
 
@@ -740,7 +737,6 @@ void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   for (uint8_t k = 0u; k < ti->rx_n; k++) a->prof->rx(a->prof_ctx, &ti->rx[k], a->now_ms, &a->tlm, &a->cmd, &a->txq);
   a->prof->tick(a->prof_ctx, a->now_ms, &a->tlm, &a->cmd, &a->txq);
   pmp_cmd_to_in(&a->cmd, &a->in, &a->fsm);
-  pmp_state_t st0 = a->fsm.st;
   pmp_fsm_step(&a->fsm, &a->in);
   pmp_ctl_in_t ci;
   pmp_cmd_to_ctl(&a->cmd, &a->fsm, &a->in, a->reg.cv, &ci);
@@ -748,7 +744,7 @@ void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   pmp_ctl_step(&a->ctl, &a->ctl_cfg, &ci, 1.0e-3f);
   commit(a);
   a->trip_ack = trip_snap;         /* the FSM has seen those trips and its (dis)enables are committed to the ISRs */
-  outputs(a, o, st0);
+  outputs(a, o);
   fans(a, ti, o);
   panel(a, ti, o);
   telemetry(a, ti);

@@ -249,7 +249,6 @@ static void tick(uint32_t n) {
   pwm_relay(out.relay_duty);                                          /* carries KPRE/KSER/KPARA/KPARB incl. pull-in */
   pwm_fan(out.fan_duty[0], out.fan_duty[1]);
   cmpdac_thresholds(out.dac_v);
-  if (out.fault_rearm) { hrtimer_rearm(d, out.fault_rearm); trip_guard(); }
   if (out.wdt_kick) port_kick_grant(PORT_KICK_TOKENS); else kick_tokens = 0u;   /* SysTick owns the cadence, the tick owns the permission */
   hmi_phase = out.hmi_dig;
   hmi_drive(out.hmi_seg, out.hmi_dig);

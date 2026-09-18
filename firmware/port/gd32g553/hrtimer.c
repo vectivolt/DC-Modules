@@ -23,8 +23,10 @@
  *         ISR; master CMP0 feeds ADCTRIG1 (reserved for slower sequences if a port build wants a second rate).
  *   Faults  Table 25-21: FLT0 ← CMP1 (I_B0) · FLT1 ← CMP3 (I_A0) · FLT2 ← PB10 pin (wire-OR, active LOW) ·
  *         FLT3 ← CMP0 (VOUT) · FLT4 ← CMP2 (I_C0) · FLT5 ← CMP4 (VBUS). Every channel kills every power timer
- *         (CHxFLTOS = inactive), FLTAR = 0 (latched); re-arm = software re-enable of the commanded outputs, per
- *         channel. IRQ76 attributes the channel to the app. */
+ *         (CHxFLTOS = inactive), FLTAR = 0 (latched). There is no separate re-arm: the ONLY re-enable is each control
+ *         interrupt's own CHOUTEN write, which it issues once the supervisor has acknowledged the trip (trip_n == trip_ack)
+ *         and commands the stage, and verifies afterwards (hrtimer_trip_pending). IRQ76 attributes the channel to the
+ *         app and is the only place the fault flags are cleared. */
 #include "port.h"
 
 #define LLC_FCK   3456000000.0f   /* ST0/ST1 counter clock, CNTCKDIV = 001 (289.35 ps) */
@@ -109,13 +111,13 @@ static void fault_cfg(void) {
   HRT_STFLTCTL(1) = en;
   /* HRTIMER_INTEN does NOT share STxFLTCTL's bit map — UM §25.5.3 puts SYSFLTIE at bit 5 and pushes FLT5/6/7 to
      6/7/8. Reusing the STxFLTCTL mask leaves FLT5IE (bus OVP) clear, so F.03 never raises IRQ76 and hrtimer_pfc_apply
-     re-arms the outputs every 10 µs. The decoder below and hrtimer_rearm() use the same INTF map. */
+     re-arms the outputs every 10 µs. hrtimer_fault_read_clear() and hrtimer_trip_pending() use the same INTF map. */
   HRT_INTEN = BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5) /* SYSFLT */ | BIT(6) /* FLT5 */;
   /* Freeze the six fault inputs. FLTxINPROT is bit 7 of each channel's byte (UM §25.5.3: PROT 7 · FC 6:3 ·
      SRC0 2 · P 1 · EN 0) and is write-once — "this bit-field cannot be modified when FLTxINPROT has been programmed".
      The hardware protection layer exists because firmware can be wrong, so the firmware must not be able to unarm it:
-     nothing after this point has any business rewriting a fault source, polarity or filter. hrtimer_rearm() only
-     re-enables outputs, which these bits do not touch. STxFLTCTL (which timers listen) is deliberately left writable:
+     nothing after this point has any business rewriting a fault source, polarity or filter. The control interrupts'
+     CHOUTEN writes re-enable outputs, which these bits do not touch. STxFLTCTL (which timers listen) is deliberately left writable:
      locking it adds nothing the input lock does not already cover, and CMPxLK would freeze the comparator polarity too. */
   HRT_FLTINCFG0 |= BIT(7) | BIT(15) | BIT(23) | BIT(31);
   HRT_FLTINCFG1 |= BIT(7) | BIT(15);
@@ -231,17 +233,6 @@ void hrtimer_llc_apply(const app_llc_out_t *o) {
    says a trip landed. The fault ISR is the only place the flags are cleared, so a flag it has not consumed is still set. */
 bool hrtimer_trip_pending(void) { return (HRT_INTF & (0x1Fu | BIT(6))) != 0u; }
 void hrtimer_all_off(void) { HRT_CHOUTDIS = 0xFu | BIT(6) | BIT(8) | BIT(10); }   /* ST0/1 CH0/1 · ST3/4/5 CH0 */
-
-/* Re-arm after the supervisor has cleared the latch (ch_mask = the APP_FLT_ channels it cleared). The fault FLAGS are
-   deliberately not touched here: the fault ISR clears exactly the flags it attributed, and a flag set since then belongs
-   to a fault IRQ76 has not taken yet — clearing it from the tick would lose that trip (ch = 0 in the ISR, trip_n never
-   moves) while the CHOUTEN below re-armed the outputs it killed. Re-enabling needs no flag clear (UM §25.3: outputs
-   resume when the source is inactive and STxCHyEN is set). */
-void hrtimer_rearm(uint16_t do_bits, uint16_t ch_mask) {
-  (void)ch_mask;
-  if (do_bits & APP_DO_EN_LLC) HRT_CHOUTEN = 0xFu;
-  /* the PFC phases re-enable from the next hrtimer_pfc_apply with en true */
-}
 
 uint16_t hrtimer_fault_read_clear(void) {   /* INTF fault bits → APP_FLT_ channel mask (INTF: FLT4..0 at 4:0, FLT5 at 6) */
   uint32_t f = HRT_INTF;
