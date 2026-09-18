@@ -85,9 +85,17 @@ void grid_sample(grid_t *g, const float v[3], const float i[3], float fs) {
     g->isum = sqrtf(g->a_is * inv);
     g->hz = hz;
     if (cycle) g->abc = ll[1] < 0.0f;   /* at V_AB's rising crossing V_BC is negative in sequence A-B-C */
-    if (clean) for (int k = 0; k < 3; k++) {
-      g->dcv[k] = clampf(g->dcv[k] + (g->a_dcv[k] * inv - g->dcv[k]) * GRID_DC_KV, -GRID_DC_V_MAX, GRID_DC_V_MAX);
-      g->dci[k] = clampf(g->dci[k] + (g->a_dci[k] * inv - g->dci[k]) * GRID_DC_KI, -GRID_DC_I_MAX, GRID_DC_I_MAX);
+    if (clean) {
+      /* the common part of the three voltage means is the reference moving, not the line (meas.h): the median of three,
+         blind to one broken channel, goes to dcc; each channel keeps only its own residual */
+      float m[3];
+      for (int k = 0; k < 3; k++) m[k] = g->a_dcv[k] * inv;
+      float c = fmaxf(fminf(m[0], m[1]), fminf(fmaxf(m[0], m[1]), m[2]));
+      g->dcc = clampf(g->dcc + (c - g->dcc) * GRID_DC_KV, -GRID_DC_C_MAX, GRID_DC_C_MAX);
+      for (int k = 0; k < 3; k++) {
+        g->dcv[k] = clampf(g->dcv[k] + (m[k] - c - g->dcv[k]) * GRID_DC_KV, -GRID_DC_V_MAX, GRID_DC_V_MAX);
+        g->dci[k] = clampf(g->dci[k] + (g->a_dci[k] * inv - g->dci[k]) * GRID_DC_KI, -GRID_DC_I_MAX, GRID_DC_I_MAX);
+      }
     }
     g->seq++;
   }

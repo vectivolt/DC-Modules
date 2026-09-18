@@ -32,8 +32,32 @@ static uint16_t vrefint_counts;
 #define HANDOFF_APP (*(app_handoff_t *)FM_HANDOFF_APP)
 static bool disch_kept;                              /* what the sealed application record says (rewritten on change only) */
 
-/* after EVERY write that can enable a power output (the two control interrupts, the tick's re-arm): see hrtimer.c */
-static inline void trip_guard(void) { if (app.trip_n != app.trip_ack || hrtimer_trip_pending()) hrtimer_all_off(); }
+/* The ONE place a power output is enabled. Enable authority is separate from modulation: hrtimer_*_apply() program the
+   timers and only RETURN the outputs that should be on; this commits the difference against a software shadow of what is
+   on (the register's own STxCHyEN bit "does not correctly indicate the actual output state" after a fault resume, UM
+   §25.3 note), so an output is written ON only on its OFF → ON transition — a stage start, a burst restart, a phase back
+   from a sliver cycle, or the supervisor's re-command after a cleared latch — never as a routine every-cycle write.
+   The write itself sits in a ≈ 100 ns critical section: the supervisor's acknowledgement (trip_n == trip_ack) and the
+   timer's own fault flags (set in the kill's clock domain, before the NVIC could take IRQ76) are tested immediately before
+   the write, and the flags again immediately after it, with nothing — not the 100 kHz interrupt, not the fault interrupt
+   — able to run in between. A completed fault pulse before the write is therefore never followed by a stale enable; a
+   fault landing inside the write's own bus cycle is caught by the read-back and undone within the same section; and a
+   fault after it is the ordinary enable-then-fault path the hardware latches. Every path out with a trip leaves ALL
+   outputs disabled and the shadow empty, so the next interrupts re-decide from the supervisor. */
+static uint32_t out_en;
+TCM_INLINE void outputs_commit(uint32_t want, uint32_t group) {
+  uint32_t cur = out_en & group, dis = cur & ~want, en = want & ~cur;
+  if (dis) HRT_CHOUTDIS = dis;
+  if (en) {
+    __asm volatile ("cpsid i");
+    bool trip = app.trip_n != app.trip_ack || hrtimer_trip_pending();
+    if (!trip) { HRT_CHOUTEN = en; trip = hrtimer_trip_pending(); }
+    if (trip) hrtimer_all_off();
+    __asm volatile ("cpsie i");
+    if (trip) { out_en = 0u; return; }
+  }
+  out_en = (out_en & ~group) | want;
+}
 
 /* ---------------- 100 kHz: sample set from the previous roll-over trigger, control law, duties for the next roll-over.
    Raised by the END of the longest ADC sequence (DMA0 channel 2 half/full transfer, adc.c CTL_DMACH), not by an ST3
@@ -47,8 +71,7 @@ RAMFUNC void pfc_ctl_isr(void) {
   adc_read_pfc(&s, &ires, &vout, &ioutp, &ioutn, &t_inlet, &vbka, &vbkb, &v24);
   app_pfc_out_t po;
   app_pfc_isr(&app, &s, &po);
-  hrtimer_pfc_apply(&po);
-  trip_guard();
+  outputs_commit(hrtimer_pfc_apply(&po), HRT_OUT_PFC);
   lsum[0] += vout; lsum[1] += ioutp; lsum[2] += ioutn; lsum[3] += ires; lsum[4] += vbka; lsum[5] += vbkb;
   if (++lsum_n >= 10u) {                             /* decimate in the writer, publish, then reset */
     uint8_t w = (uint8_t)(lmean_i ^ 1u);
@@ -69,8 +92,7 @@ RAMFUNC void hrtimer_mt_isr(void) {
   HRT_MTINTC = BIT(4);                               /* REPIF */
   app_llc_out_t lo;
   app_llc_isr(&app, &lmean[lmean_i], &lo);
-  hrtimer_llc_apply(&lo);
-  trip_guard();
+  outputs_commit(hrtimer_llc_apply(&lo), HRT_OUT_LLC);
   uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
   if (us > llc_us_max) llc_us_max = (uint16_t)us;
 }

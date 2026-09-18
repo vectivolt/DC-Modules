@@ -19,11 +19,16 @@ void port_reboot(void);
 void hrtimer_init(void);
 void cmpdac_init(void);
 void cmpdac_thresholds(const float dac_v[APP_DAC_COUNT]);
-void hrtimer_pfc_apply(const app_pfc_out_t *o);
-void hrtimer_llc_apply(const app_llc_out_t *o);
+uint32_t hrtimer_pfc_apply(const app_pfc_out_t *o);   /* programs the compares; returns the ST3/4/5 outputs that should be enabled */
+uint32_t hrtimer_llc_apply(const app_llc_out_t *o);   /* programs period, phase and dead time; returns HRT_OUT_LLC or 0 */
 uint16_t hrtimer_fault_read_clear(void);
-bool hrtimer_trip_pending(void);               /* a fault flag the fault ISR has not taken yet — set in the kill's own clock domain */
-void hrtimer_all_off(void);                    /* every power output disabled, now */
+#define HRT_OUT_LLC 0xFu                                /* ST0/1 CH0/1 — CHOUTEN / CHOUTDIS bit 2x + y */
+#define HRT_OUT_PFC (BIT(6) | BIT(8) | BIT(10))         /* ST3/4/5 CH0 */
+/* Inlined on purpose: the control interrupts run from TCM and must never fetch from flash (§3.5), and a plain function —
+   even a static inline at -Os — lands in flash with a veneer in TCM to reach it. build.sh audits the linked image. */
+#define TCM_INLINE static inline __attribute__((always_inline))
+TCM_INLINE bool hrtimer_trip_pending(void) { return (HRT_INTF & (0x1Fu | BIT(6))) != 0u; }   /* a fault flag IRQ76 has not taken yet — set in the kill's own clock domain */
+TCM_INLINE void hrtimer_all_off(void) { HRT_CHOUTDIS = HRT_OUT_LLC | HRT_OUT_PFC; }         /* every power output disabled, now */
 
 void adc_init(void);
 uint16_t adc_read_once(unsigned adc, uint8_t ch);

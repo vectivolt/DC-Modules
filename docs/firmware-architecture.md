@@ -187,7 +187,7 @@ with every enable low instead of re-arming milliseconds later with its enable pi
 | Output V and I, banks, resonant current | 100 kHz | ten samples decimated into each 100 µs control period · 1 ms mean for the FSM and shaper · the profile's period for telemetry | ≤ 100 µs loop · ≤ 60 ms telemetry age | V_out not far below a delivering stack (F.29) |
 | Bus halves | 100 kHz | 1 ms mean | 1 ms | each half within its own ceiling (F.06, F.38) |
 | Temperatures | every tick from the ADC ring | the zone map of §7 | 1 s | open NTC or cutout loop reads 150 °C instead of "very cold" |
-| ADC health | every tick | — | — | the internal reference within ± 5 % for 100 ms, the AVMID bias at half the rail (1.65 V ± 50 mV on the nominal scale, uncorrected — it is ratiometric) for 100 ms → F.29 |
+| ADC health | every tick | — | — | the boot reference within ± 5 %, the live reference tracker within ± 2 % of it, and the AVMID bias at half the rail (1.65 V ± 50 mV on the nominal scale, uncorrected — it is ratiometric), each for 100 ms → F.29 |
 
 A plausibility row only affects what it covers. F.29 latches when a signal a protection row depends on is invalid for its
 persistence (3 ms).
@@ -197,7 +197,7 @@ persistence (3 ms).
 **Yes.** The GD32G553VET7 runs the Vienna PFC, the LLC and the supervisory stack from one Cortex-M33 core, on two conditions:
 both control interrupts execute from TCM RAM, and EVT T-44 / T-64 confirm the budget below with the DWT counter. The port
 enforces the first condition — `app.ld.in` places the whole 100 kHz path (`pfc_step`, the ISR glue, `grid_sample`, the DMA
-readers) in TCM and the built ELF proves it.
+readers) in TCM — with their tables and `memset` — and `build.sh` proves it on every link: it walks the image from the three interrupts and fails on any branch, indirect call or literal into flash (a compiler-out-lined helper with a veneer and the LLC's ZVS table were both found there this way).
 
 | Resource | Needed | GD32G553VET7 |
 |---|---|---|

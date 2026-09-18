@@ -36,7 +36,7 @@ void app_cfg_default(app_cfg_t *c) {
 
 void app_init(app_t *a, const app_boot_t *b) {
   memset(a, 0, sizeof *a);
-  a->k_ref = 1.0f;
+  a->k_ref = a->k_boot = a->k_track = 1.0f;
   a->w_line = 314.16f;
   a->kw = meas_rating_kw(b->rating_counts * 3.3f / 4095.0f, &a->liquid);
   a->strap_bad = a->kw == 0u;
@@ -321,10 +321,20 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   pmp_in_t *in = &a->in;
   const meas_cal_t *c = &a->cal;
 
-  /* the internal reference gives VREF / 3.3 V; beyond ±5 % the ADC reference itself is broken (F.29 after 100 ms) */
+  /* The reference, in two parts. k_boot: VREFINT against VREFP, read once at boot with its legal aperture (adc.c) — the
+     rail's whole initial error; beyond ±5 % the reference itself is broken (F.29 after 100 ms). k_track: where VREFP has
+     gone SINCE, read every line cycle from the three AC channels' common DC (meas.h dcc): a 3-wire set sums to zero, so the
+     line cannot put a common offset there — only VREFP moving against the three isolators' 1.44 V common mode can, and the
+     DACs move with VREFP exactly as the ADC does. Driven to zero as an integrator (≈ 0.2 s behind the estimator's 80 ms,
+     updated below where a cycle closes), it holds while no clean cycle closes, is off on a card without a calibration
+     record (its AC offsets are then part tolerance, not drift) and is bounded: beyond ±2 % neither the rail nor the
+     isolators can legitimately have moved, so that too is F.29. The comparator codes (outputs()) carry k_ref, so a trip
+     threshold follows the rail instead of drifting ≈ 25 V per percent. Its floor is the common drift of the three
+     isolators' output common mode; T-26 measures it. */
   float kr = (ti->vrefint > 100.0f) ? c->vrefint_v * 4096.0f / (3.3f * ti->vrefint) : NAN;
-  bool ref_ok = isfinite(kr) && fabsf(kr - 1.0f) <= 0.05f;
-  if (ref_ok) a->k_ref += (kr - a->k_ref) * 0.01f;
+  bool ref_ok = isfinite(kr) && fabsf(kr - 1.0f) <= 0.05f && fabsf(a->k_track - 1.0f) <= 0.02f;
+  if (ref_ok) a->k_boot += (kr - a->k_boot) * 0.01f;
+  a->k_ref = a->k_boot * a->k_track;
   a->ref_bad_ms = ref_ok ? 0u : sat16(a->ref_bad_ms + 1u);
 
   /* AVMID is converted and judged. Every bipolar sense (three line CTs, the resonant CT, the F.11 window)
@@ -370,15 +380,18 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   in->vext = vout;
 
   const volatile grid_t *g = &a->grid;
-  float vph[3], vll[3], irms[3], isum, hz;
+  float vph[3], vll[3], irms[3], isum, hz, dcc;
   bool abc;
   do {
     q = g->seq;
     for (int n = 0; n < 3; n++) { vph[n] = g->vph[n]; vll[n] = g->vll[n]; irms[n] = g->irms[n]; }
-    isum = g->isum; hz = g->hz; abc = g->abc;
+    isum = g->isum; hz = g->hz; abc = g->abc; dcc = g->dcc;
   } while ((q & 1u) || q != g->seq);
   if (q != a->grid_seen) {   /* a line cycle closed */
     a->grid_seen = q;
+    /* the live reference (see the reference block above): the common DC reads ≈ gain · off · (k_ref / k_true − 1) */
+    float frac = dcc / (c->ch[MCH_VAC1].gain * c->ch[MCH_VAC1].off);
+    if (!a->uncal && !a->cal_bad && isfinite(frac)) a->k_track = clampf(a->k_track * (1.0f - 0.1f * frac), 0.97f, 1.03f);
     float mx = fmaxf(fmaxf(vll[0], vll[1]), vll[2]), mn = fminf(fminf(vll[0], vll[1]), vll[2]);
     in->vin_ll = (mx - 400.0f > 400.0f - mn) ? mx : mn;          /* display keeps the line farthest from nominal */
     in->vin_ll_min = mn; in->vin_ll_max = mx;                    /* each protection row reads its own side */
