@@ -103,7 +103,6 @@ typedef struct {
   float fan_duty[2];                     /* FAN_PWM1 · FAN_PWM2 (fans 3 and 4 share PWM2) */
   float dac_v[APP_DAC_COUNT];            /* comparator references, volts on the 3.3 V DAC scale */
   bool wdt_kick;                         /* kicking is PERMITTED — the port owns the 10 ms cadence */
-  uint16_t fault_rearm;                  /* the HRTIMER fault channels to clear (APP_FLT_* bits; 0 = none) */
   bool disch_intent;                     /* a commanded discharge is in progress — survive a reset */
   bool can_restart; uint32_t can_bitrate;
   bool reboot;                           /* a profile's reboot, once its acknowledgement has left */

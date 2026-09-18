@@ -69,7 +69,7 @@ enum { PM_AN = 0, PM_IN, PM_IN_PU, PM_OUT, PM_AF, PM_AF_OD };
 #define BP_QDISBK   PB, 2     /* DO6 · GPIO */
 #define BP_EN_PFC   PD, 0     /* EN_A into the GATE_EN_A safety AND */
 #define BP_EN_LLC   PD, 1     /* EN_B into the GATE_EN safety AND */
-#define BP_DRV_RDY  PC, 12    /* wired-OR driver power-good, pull-up on the board */
+#define BP_DRV_RDY  PC, 12    /* wired-OR driver power-good, pull-up on the card; also the third input of both safety AND gates */
 #define BP_RLY_FB   PD, 6     /* DI8 · RELAY_FB_KPRE (series NO auxiliary chain — LOW = both bypass contacts
                                  closed, HIGH = at least one open → invert) */
 #define BP_WDI      PF, 10    /* internal · TPS3430 WDI: a FALLING edge every 10 ms (fixed window 2.22–23.375 ms) */

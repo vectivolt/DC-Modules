@@ -249,8 +249,8 @@ scenarios to cycle-by-cycle converter plants and power-cut update storms. → [f
 | `ctl_test` | the reference shaper and regulator kernel, the share trim against the peer refresh | 20 |
 | `proto_test` | TonHe V1.2 + VMP 2.0 conformance and fuzz, one core through both profiles | 42 |
 | `hal_test` | the portable real-time HAL on cycle-by-cycle Vienna and LLC plants, measurement, power-cut-safe NVM, the junction observer | 45 |
-| `app_test` | the module application end to end: interrupts, the 1 ms sequence, faults, NVM, CAN, the F.01 magnitude trip and the fold / decline | 29 |
-| `rules_test` | the review suites' own checks — dead-time floor and weak-leg edge, the FSM rows, the fold, the protocol fixes | **50** |
+| `app_test` | the module application end to end: interrupts, the 1 ms sequence, faults, NVM, CAN, the F.01 magnitude trip, the fold / decline, the comparator codes at an off-nominal reference, the ratiometric AVMID check and a discharge resumed from the pre-reset record | 32 |
+| `rules_test` | the review suites' own checks — dead-time floor and weak-leg edge, the FSM rows (the link rows on the shutdown path among them), the fold, the protocol fixes | **51** |
 | | **`sh firmware/run_tests.sh`** | **334** |
 
 ```mermaid

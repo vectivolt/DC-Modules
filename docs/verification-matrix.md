@@ -83,7 +83,7 @@ flowchart LR
 | DESAT response ≤ 75 % of SiC short-circuit withstand | NSI66x1A worst timing vs SCWT class (18 pF LLC / 47 pF Vienna blanks) | V datasheet-class · P T-30 |
 | Protection hardware paths present | DESAT chains, comparator allocation, OVP, exclusion, WDO ≡ NRST — in the netlists | V design · P injection T-06 |
 | Mode-change safety | LOW/HIGH latched in standby, KSER / KPARA / KPARB switched at 0 A behind DOUT, 74HC02 exclusion; per-tick exclusion invariant in `host_sim`; welded KPARA → F.17 at the SER soft start | V sim · P bench T-07 / T-35 |
-| Discharge to < 60 V | two-phase model per SKU (active 1.99 / 2.39 / 3.19 s; passive 370 / 222 / 296 s, netlist-proven strings) + label + F.21 AC-present latch | V calc · P hold-up waveform |
+| Discharge to < 60 V | two-phase model per SKU (active 1.99 / 2.39 / 3.19 s; passive 370 / 222 / 296 s, netlist-proven strings) + the intent sealed across a reset (`app_test`) + label + F.21 AC-present latch | V calc · P hold-up waveform |
 | Winding AC copper inside the drawing rows | `conductor-audit` + the clean-room copper recompute | V model · P first-article Rac T-31 |
 | D3 gap fringing on the innermost foil | gap split per core set (drawing + build instructions) + FEMMT run | construction · P T-31 |
 | Models anchored to sources they did not produce | `verify-independent` §K: Vienna vs Friedli–Kolar ± 0.7 %; LLC vs Wolfspeed CRD-30DD12N-K measurement −8 % pk | V |
@@ -103,7 +103,7 @@ flowchart LR
 | Schematic symbol overlaps | **0** on every SKU pair |
 | Module interconnect | clean — studs, all 40 harness ways, the 88-way slot, RATING straps |
 | Polarity | every polarized part has its + / anode on pin 1 as the glyphs draw it, gated |
-| Driver channels | one `DriverCh` cell for all 7 channels per module — 3 Vienna + 4 full-bridge LLC — on the NSI6611 pin map, with a DESAT series resistor and a per-stage blanking capacitor |
+| Driver channels | one `DriverCh` cell for all 7 channels per module — 3 Vienna + 4 full-bridge LLC — on the NSI6611 pin map, with a DESAT series resistor and a per-stage blanking capacitor; the seven RDY outputs wire-OR onto DRV_RDY, which is the third input of both safety AND gates and a firmware input |
 | BOM coverage | 0 unmatched designators; every class part carries a value-carrying order code; `bom-maturity` MATURE |
 | Supervisory logic | C99 FSM + CAN codec + group share law + the bypass-closure window, under ASan/UBSan |
 | PCB layout | **N** — out of scope: the design face ends at the audited KiCad-5 schematics |

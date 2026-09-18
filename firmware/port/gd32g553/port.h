@@ -21,7 +21,6 @@ void cmpdac_init(void);
 void cmpdac_thresholds(const float dac_v[APP_DAC_COUNT]);
 void hrtimer_pfc_apply(const app_pfc_out_t *o);
 void hrtimer_llc_apply(const app_llc_out_t *o);
-void hrtimer_rearm(uint16_t do_bits, uint16_t ch_mask);   /* re-enables the commanded outputs after the supervisor cleared the latch */
 uint16_t hrtimer_fault_read_clear(void);
 bool hrtimer_trip_pending(void);               /* a fault flag the fault ISR has not taken yet — set in the kill's own clock domain */
 void hrtimer_all_off(void);                    /* every power output disabled, now */
