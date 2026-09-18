@@ -254,7 +254,9 @@ static void fsm_checks(void) {
     pmp_fsm_resume_shutdown(&f);
     for (int k = 0; k < 50; k++) pmp_fsm_step(&f, &in);
     bool kept = f.st == ST_DISCH && f.out.q_disch && f.out.q_disch_bk && f.latched == FC_NONE;
-    in.vbus = 30.0f; in.vmid_frac = 0.5f; in.vbank_a = in.vbank_b = 30.0f; in.vout_meas = 30.0f;
+    in.vbus = 30.0f; in.vmid_frac = 0.5f;
+    for (int k = 0; k < 120; k++) { in.vbank_a *= 0.97f; in.vbank_b *= 0.97f; pmp_fsm_step(&f, &in); }   /* the banks fall on their bleeders */
+    in.vbank_a = in.vbank_b = 30.0f; in.vout_meas = 30.0f;
     for (int k = 0; k < 400; k++) pmp_fsm_step(&f, &in);
     ck("a midpoint or half-link excursion during the commanded discharge does not end the dump — the link comes down and the module reaches OFF",
        kept && f.st == ST_OFF && f.latched == FC_NONE); }
@@ -271,7 +273,9 @@ static void fsm_checks(void) {
     pmp_fsm_resume_shutdown(&f);
     pmp_fsm_step(&f, &in);
     bool dumping = f.st == ST_DISCH && f.out.q_disch && !f.out.k_pre;
-    in.vbus = 30.0f; in.vbank_a = in.vbank_b = 30.0f;
+    in.vbus = 30.0f;
+    for (int k = 0; k < 120; k++) { in.vbank_a *= 0.97f; in.vbank_b *= 0.97f; pmp_fsm_step(&f, &in); }   /* the banks fall on their bleeders */
+    in.vbank_a = in.vbank_b = 30.0f;
     for (int k = 0; k < 400 && f.latched == FC_NONE; k++) pmp_fsm_step(&f, &in);
     pmp_fsm_t g; pmp_fsm_init(&g); pmp_fsm_set_rating_kw(&g, 50u);
     pmp_in_t in2 = fsm_base();                      /* the healthy contact releases: OFF, no row */
@@ -390,7 +394,9 @@ static void fsm_checks(void) {
     in.vbus = 700.0f; in.vbank_a = in.vbank_b = 350.0f;
     pmp_fsm_step(&f, &in);
     bool held = f.st == ST_DISCH && f.out.q_disch;
-    in.vbus = 30.0f; in.vbank_a = in.vbank_b = 30.0f; in.vout_meas = 400.0f;   /* studs still live: not discharged */
+    in.vbus = 30.0f; in.vout_meas = 400.0f;   /* studs still live: not discharged */
+    for (int k = 0; k < 120; k++) { in.vbank_a *= 0.97f; in.vbank_b *= 0.97f; pmp_fsm_step(&f, &in); }   /* the banks fall on their bleeders */
+    in.vbank_a = in.vbank_b = 30.0f;
     for (int k = 0; k < 300; k++) pmp_fsm_step(&f, &in);
     bool node = f.st == ST_DISCH && !f.out.q_disch;
     in.vout_meas = 30.0f;
@@ -412,6 +418,88 @@ static void fsm_checks(void) {
     fsm_steps(&f, &in, 700);
     ck("an aux dropout opens the matrix commands with the coils, so the re-make goes through the permit (bleeders on, contacts open) instead of closing on hardware",
        opened && !f.out.k_para && !f.out.k_parb && f.out.q_disch_bk && f.latched == FC_NONE); }
+
+  /* a warm stop keeps the previous mode's contacts; a start that derives the OTHER mode opens them through MODESW before
+     the new pair closes — UEXCL drops the KSER coil as KPARA / KPARB make, and its release (≤ 35 ms) outlives the make */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u); pmp_in_t in = fsm_base();
+    f.st = ST_STANDBY; f.out.k_pre = true; f.out.pfc_en = true; f.out.k_ser = true;   /* a SER session, warm-stopped */
+    in.vbus = 830.0f; in.vout_meas = 60.0f; in.vbank_a = in.vbank_b = 30.0f; in.vcmd = 400.0f; in.enable_req = true;
+    bool overlap = false, modesw = false;
+    for (int k = 0; k < 300; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in);
+      if (f.out.k_ser && (f.out.k_para || f.out.k_parb)) overlap = true; if (f.st == ST_MODESW) modesw = true; }
+    ck("a 400 V start after a warm-stopped SER session opens the series contact through MODESW before the parallel pair closes — the three are never commanded together",
+       !overlap && modesw && f.out.k_para && f.out.k_parb && !f.out.k_ser); }
+
+  /* a communication timeout inside MODESW lets the 70 ms sequence finish: every contact open before STANDBY */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u); pmp_in_t in = fsm_base();
+    f.st = ST_MODESW; f.sw_step = 5; f.out.k_ser = true; f.out.pfc_en = true; f.out.k_pre = true; in.vbus = 830.0f; in.enable_req = true;
+    in.can_age_ms = 99999u; pmp_fsm_step(&f, &in);
+    bool stayed = f.st == ST_MODESW;
+    for (int k = 0; k < 80; k++) pmp_fsm_step(&f, &in);
+    ck("a comms timeout inside MODESW does not abandon the sequence with the old matrix closed",
+       stayed && f.st == ST_STANDBY && !f.out.k_ser && !f.out.k_para && !f.out.k_parb && f.need_enable); }
+
+  /* a line alternating across the start window every cycle resets the two PRECHG windows in turn */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_in_t in = fsm_base(); in.vbus = 360.0f;
+    for (int k = 0; k < 40000; k++) { float v = ((k / 20) % 2) ? 272.0f : 278.0f; in.vin_ll = in.vin_ll_min = in.vin_ll_max = v; pmp_fsm_step(&f, &in); }
+    ck("a line alternating across the start window does not park the module in PRECHG for ever — it is reported as the grid row",
+       f.latched == FC_IN_UV && f.st == ST_FAULT); }
+
+  /* a dead aux in STANDBY is SAFE (a fresh ENABLE afterwards) and F.26 when the rail never returns */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u); pmp_in_t in = fsm_base();
+    f.st = ST_STANDBY; f.out.k_pre = true; in.vbus = 600.0f; in.enable_req = true;   /* ENABLE held: the re-arm stays observable */
+    in.aux_ok = false; pmp_fsm_step(&f, &in);
+    bool safe = f.st == ST_SAFE && f.need_enable;
+    for (int k = 0; k < 6000 && f.latched == FC_NONE; k++) pmp_fsm_step(&f, &in);
+    ck("a dead aux in STANDBY goes to SAFE and is F.26 when it never returns — not READY for ever", safe && f.latched == FC_AUX_UV); }
+
+  /* both bank channels dropping to 0 V in a millisecond with the bridge stopped is a lie the make-permit must not act on */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u); pmp_in_t in = fsm_base();
+    f.st = ST_STANDBY; f.out.k_pre = true; f.out.pfc_en = true;
+    in.vbus = 830.0f; in.vout_meas = 60.0f; in.vbank_a = in.vbank_b = 490.0f;   /* banks still charged from the last session */
+    for (int k = 0; k < 300; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }   /* idle, matrix untouched */
+    in.vbank_a = in.vbank_b = 0.0f; in.enable_req = true; in.vcmd = 400.0f;
+    bool closed = false;
+    for (int k = 0; k < 50; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); if (f.out.k_para || f.out.k_parb) closed = true; }
+    ck("bank channels that read 0 V a millisecond after 490 V with the bridge stopped are F.29, and the make-permit never closes onto the banks they hid",
+       !closed && f.latched == FC_SENSOR); }
+
+  /* a single high line sample must not make the settled line read as disturbed for seconds */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 30u); pmp_in_t in = fsm_base();
+    f.st = ST_RUN; f.out.pfc_en = true; f.out.llc_en = true; f.out.k_pre = true; f.out.k_para = true; f.out.k_parb = true;
+    in.enable_req = true; in.vbus = 700.0f; in.vbank_a = in.vbank_b = 400.0f; in.vout_meas = 399.0f; in.vcmd = 400.0f; in.icmd = 50.0f;
+    for (int k = 0; k < 2000; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }   /* the site line learnt at 400 V */
+    in.vin_ll = in.vin_ll_min = in.vin_ll_max = 470.0f; for (int k = 0; k < 20; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }   /* one swell */
+    in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400.0f; for (int k = 0; k < 20; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }
+    in.oc_pfc_flt = true; in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in);
+    ck("one 20 ms swell does not exempt a later F.01 on a settled line from latching as the module's own",
+       f.latched == FC_OC_PFC && pmp_fault_class(f.latched) == FCL_LATCH); }
+
+  /* persistence windows reset with their gate: a 99 ms near-miss of F.08 must not become a 1 ms latch next session */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u); pmp_in_t in = fsm_base();
+    f.st = ST_RUN; f.out.pfc_en = true; f.out.llc_en = true; f.out.k_pre = true; f.out.k_para = true; f.out.k_parb = true;
+    in.enable_req = true; in.vbus = 700.0f; in.vbank_a = in.vbank_b = 400.0f; in.vout_meas = 399.0f; in.vcmd = 400.0f; in.icmd = 50.0f;
+    in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250.0f;
+    for (int k = 0; k < 99; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }
+    bool armed = f.latched == FC_NONE;
+    in.vin_ll = in.vin_ll_min = in.vin_ll_max = 400.0f; f.st = ST_STANDBY; f.out.pfc_en = false; f.out.llc_en = false; in.enable_req = false;
+    in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in);                                        /* a cold stop */
+    f.st = ST_RUN; f.out.pfc_en = true; f.out.llc_en = true; in.enable_req = true; in.vin_ll = in.vin_ll_min = in.vin_ll_max = 250.0f;
+    for (int k = 0; k < 2; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }
+    ck("a near-miss persistence does not carry across a stop into a 1 ms latch in the next session", armed && f.latched == FC_NONE); }
+
+  /* a HIGH start below its range says why; the AUTO crossover reaches SER for a pack the module charges past 500 V itself */
+  { pmp_fsm_t f; pmp_fsm_init(&f); pmp_fsm_set_rating_kw(&f, 50u); pmp_in_t in = fsm_base();
+    f.st = ST_STANDBY; f.out.k_pre = true; f.omode = OMODE_HIGH; in.omode_req = OMODE_HIGH; in.vcmd = 300.0f; in.enable_req = true; in.vbus = 600.0f;
+    for (int k = 0; k < 3; k++) { in.relay_fb = pmp_relay_cmd(&f.out); pmp_fsm_step(&f, &in); }
+    bool said = (f.out.warn & PMP_W_NO_SETPOINT) != 0u && f.st == ST_STANDBY;
+    pmp_fsm_t g; pmp_fsm_init(&g); pmp_fsm_set_rating_kw(&g, 50u); pmp_in_t in2 = fsm_base();
+    g.st = ST_RUN; g.out.pfc_en = true; g.out.llc_en = true; g.out.k_pre = true; g.out.k_para = true; g.out.k_parb = true; g.out.mode = MODE_PAR;
+    in2.enable_req = true; in2.vbus = 830.0f; in2.ext_connected = true; in2.vext = 496.0f; in2.vout_meas = 496.0f; in2.vbank_a = in2.vbank_b = 497.0f;
+    in2.vcmd = 800.0f; in2.icmd = 50.0f;
+    for (int k = 0; k < 1100 && g.st != ST_MODESW; k++) { in2.relay_fb = pmp_relay_cmd(&g.out); pmp_fsm_step(&g, &in2); }
+    ck("a HIGH start below 480 V reports NO_SETPOINT instead of a silent READY, and a pack held at the PAR ceiling with more commanded crosses to SER",
+       said && g.st == ST_MODESW); }
 
   /* the comms timeout stops the module and writes no fault code, so the warning bit is the only reason on the panel */
   { pmp_fsm_t f; pmp_fsm_init(&f); pmp_in_t in = fsm_base();
@@ -506,7 +594,8 @@ static void app_checks(void) {
     ti.vrefint = (float)(1.20 / 3.3 * 4096.0); ti.avmid = (float)(1.65 / 3.3 * 4095.0);
     ti.v24 = 24.0f / (3.3f / 4096.0f * 9.2f); ti.v15 = 15.0f / (3.3f / 4096.0f * 5.7f);
     ti.di = APP_DI_DRV_RDY;
-    ti.t_pfc = ti.t_inlet = ti.t_llc = ti.t_xfmr = 2047.0f;    /* 25 °C: cooling is wanted, nothing is hot */
+    ti.t_pfc = ti.t_inlet = ti.t_llc = ti.t_xfmr = 2047.0f;    /* 25 °C everywhere … */
+    ti.t_pfc = 740.0f;                                          /* … but a 70 °C PFC sink: cooling is wanted from a SINK, never from the inlet */
     app_tick_out_t o;
     uint32_t t_a = 0u, t_b = 0u;
     int early = 0;

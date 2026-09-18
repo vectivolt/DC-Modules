@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
   <img src="https://img.shields.io/badge/port-built_·_not_yet_run_on_silicon-d19a00?style=flat-square" alt="port: built · not yet run on silicon"/>
 </p>
 
@@ -170,7 +170,7 @@ reaches them.
 | ISR heartbeats | at each 1 ms tick: PFC ISR count advanced 100 ± 2, LLC ISR 10 ± 1 | a miss is an overrun event |
 | Execution time | DWT per ISR; an overrun is execution beyond its own period | counted, high-water in diagnostics (VMP object 0x0500) |
 | Overrun verdict (`ctl_overrun`) | ≥ 10 overrun events inside a 100 ms window, **or** three ticks inside that window that each saw three or more LLC periods missing | **F.35** LATCH. A single late millisecond is not evidence — the hardware trips do not depend on this row, so it can afford to wait — but a stopped interrupt still latches inside 3 ms |
-| Collapsed backlog | a tick that stands for several lost milliseconds is flagged `late`: the heartbeat re-baselines and judges nothing | the firmware's own flash writes cannot latch F.35 |
+| Collapsed backlog | a tick that stands for several lost milliseconds is flagged `late`: the overrun verdict re-baselines and judges nothing, but the heartbeat still counts — interrupts that ran during the backlog advanced their counters, and ones that did not stop the watchdog service | the firmware's own flash writes cannot latch F.35, and a late tick is no excuse for dead interrupts |
 | Watchdog cadence | SysTick pulses WDI every 10 ms of **real** time, so a blocking flash erase cannot bunch two edges inside the supervisor's early window or stretch past its late one | the fixed window is 2.22–23.375 ms |
 | Watchdog permission | each edge spends a token, and the tick tops the purse up only when both control interrupts advanced on each of the last ten ticks; a flash operation buys its own bounded allowance | a hung main loop is reset ≤ 30 ms plus one window later, even though SysTick is still running |
 | Reset cause | the raw reset-flag byte is read at boot, classified by the HAL and published (VMP object 0x000A) | a watchdog reset raises F.32 once; there is no automatic restart |
@@ -506,7 +506,7 @@ at the thermal time constant. The junction observer of §5.4 sits above this lad
 hotter than the sink.
 
 **Fans.** Three on the 30 and 40 kW modules, four on the 50 kW air module, none on the 50 kW liquid module. Duty = max(a
-temperature curve from 25 % at 60 °C to full at 100 °C, a load feed-forward of 25 % + 75 % of load), 10 % hysteresis on the way
+sink-temperature curve (the hottest PFC / LLC / transformer zone — the inlet the fans blow with never drives it) from 25 % at 60 °C to full at 100 °C, a load feed-forward of 25 % + 75 % of load), 10 % hysteresis on the way
 down, ≥ 10 s minimum on-time; quiet mode caps it at 60 % and lets the thermal derate absorb the rest, boost runs 100 %.
 Nothing starts until the rails have been in spec for 500 ms, and the second PWM group trails the first by 300 ms, because the
 aux stage is close to its budget and its controller's over-current protection is a latch only a power cycle clears. A tach is
@@ -539,10 +539,10 @@ assurance belongs to the cooling cart.
 | Race condition | single writer, shadow commit, sequence snapshots, double-buffered decimation | — | — | code rule · static analysis |
 | Deadlock, priority inversion | no locks, no RTOS | impossible by construction | — | — |
 | Stack or heap exhaustion | no heap; painted stacks scanned at 1 Hz | 70 % warning, 90 % F.36 | reboot | HIL F-13 |
-| Unhandled CPU fault | HardFault, MemManage, BusFault, UsageFault, LVD, an unexpected vector | every HRTIMER output idle-inactive, both enables low, no further watchdog service → reset | reboot | code path in `startup.c` |
+| Unhandled CPU fault | HardFault, MemManage, BusFault, UsageFault, LVD, an unexpected vector | every HRTIMER output idle-inactive, both enables low, no further watchdog service → reset; the handler runs from RAM, so a fault taken while a flash bank is held by an erase still kills the outputs at once | reboot | code path in `startup.c` |
 | Flash ECC fault in a journal | an uncorrectable row raises an NMI | inside the journal window: cleared, counted (budget 16) and returned from, so the reader's CRC treats the entry as torn; anywhere else it resets | service | `boot_test` · the torn-entry rule |
 | ISR overrun | DWT and heartbeat counts | warning; persistent → F.35 | CLEAR | `host_sim` · HIL F-04 |
-| Watchdog reset | WDO ≡ NRST | gates low in hardware; reset cause logged; F.32 visible; no automatic restart | fresh request | `app_test` · HIL F-06 · T-16 |
+| Watchdog reset | WDO ≡ NRST | gates low in hardware; reset cause logged (the bootloader hands its RCU_RSTSCK snapshot and the application's sealed reboot reason over in the handoff record — the shared clock start-up clears the flags before the application runs); F.32 visible; no automatic restart | fresh request | `app_test` · HIL F-06 · T-16 |
 | Reset during a commanded discharge | the intent in the application's own sealed no-init record | the bounded dump resumes — never INIT → PRECHG | the dump completes (OFF) or F.21 | `app_test` · T-44 |
 | Boot loop | reset streak in no-init RAM | ≥ 3 unexpected resets of a confirmed image in 10 min → safe mode, outputs off | service / power cycle | `boot_test` · HIL F-08 |
 | Brownout during operation | `aux_ok`; the low-voltage detector; NVM writes only with the rails healthy | SAFE, then F.26 if the rail does not return; or reset | aux stable 500 ms + fresh request | `host_sim` · HIL F-12 |
@@ -595,7 +595,9 @@ transfers a blank card still carries the sense chains' full part tolerances.
 the two-button service entry on any profile) → a sealed handoff and a reset into the bootloader on the same bit rate → 1 KB
 blocks with CRC-32 and re-request → whole-image CRC-32, then the signed header, key, ECDSA-P256 signature and body SHA-256 →
 written to the inactive slot → marked pending → reboot → the application confirms after 60 s of healthy standby with no
-LATCH or LOCK row since boot, else the slot rolls back after 3 trial boots. A minimum-version field in the header prevents
+LATCH or LOCK row since boot and both stages stopped (the confirm is a flash write from the tick), else the slot rolls back
+after 3 trial boots. A service session the tool abandons ends on its own: 60 s without a frame in update mode reboots into
+the application; safe mode, with nothing to boot, waits. A minimum-version field in the header prevents
 downgrade below the security baseline, which rises when an image is confirmed. `firmware/tools/fw-sign.mjs` signs release
 images; a production build refuses a development key, and two signing keys ship from day one so rotation is "sign the next
 release with key 2" and needs no bootloader change.
@@ -609,7 +611,7 @@ supervisor windows, so the hashing is split into 4 KB pieces and the signature l
 
 | ID | Recommendation | Why | Effort | Decision |
 |---|---|---|---|---|
-| HW-REC-1 | A non-latching, cycle-by-cycle output-overvoltage clamp: SNS_VOUT on a second comparator into an HRTIMER external event at v_ref · 1.05 + 10 V; keep CMP0 as the latching F.13 with its threshold scheduled by mode (LOW 560 V · HIGH 1 050 V) | a load dump in LOW mode has no hardware clamp below 1 050 V, and a lowered latch would trip on every dump. The firmware side is ready: the clamp reference is computed and armed on its own DAC channel | a pin re-allocation if a comparator input is free, else one external comparator | user decision; T-45 measures |
+| HW-REC-1 | A non-latching, cycle-by-cycle output-overvoltage clamp: SNS_VOUT on a second comparator into an HRTIMER external event at v_ref · 1.05 + 10 V; keep CMP0 as the latching F.13 with its threshold scheduled by mode while the LLC runs (LOW 560 V · HIGH 1 050 V · 1 050 V with the bridge off, since an idle module's terminals carry the bus) | a load dump in LOW mode has no hardware clamp below 1 050 V, and a lowered latch would trip on every dump. The firmware side is ready: the clamp reference is computed and armed on its own DAC channel | a pin re-allocation if a comparator input is free, else one external comparator | user decision; T-45 measures |
 | HW-REC-2 | Confirm every matrix relay and the bypass pair land their mirror contacts on the card ways the HAL reads | F.19 needs them; today only the bypass pair is wired, and the matrix soft start waits out operate + bounce instead | HAL mapping check | confirm at bring-up |
 | HW-REC-3 | A hard-wired module inhibit input | modules of the TH750 class carry a "module shutdown signal" pair on the output connector; some cabinets wire it | one opto-isolated digital input | per customer |
 | HW-REC-4 | Fit the 8 MHz crystal on OSCIN/OSCOUT with its two 12 pF loads and 1 MΩ | the internal RC is ± 2.5 % over temperature; classic CAN needs about ± 0.5 %. The port runs HXTAL-PLL with the clock monitor when the crystal is fitted and falls back to the RC inside a 10 ms bounded wait when it is not, so a crystal-less prototype boots — with best-effort CAN | two pads + crystal + loads | **fit before EVT CAN interop (T-46)** |
@@ -636,5 +638,5 @@ supervisor windows, so the hashing is split into 4 KB pieces and the signature l
 <div align="center">
 <sub><a href="firmware-guide.md">← Firmware Guide</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-protocol.md">VMP 2.0 Native CAN Protocol →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

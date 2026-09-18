@@ -244,7 +244,7 @@ void app_fault_isr(app_t *a, uint16_t ch, float ires_counts) {
 }
 
 static bool took(app_t *a, int kind) {   /* a fault event the tick has not seen yet (each counter has one writer) */
-  uint8_t n = a->flt_n[kind];
+  uint16_t n = a->flt_n[kind];
   if (n == a->flt_seen[kind]) return false;
   a->flt_seen[kind] = n;
   return true;
@@ -297,10 +297,12 @@ static void supervise(app_t *a, const app_tick_in_t *ti) {
   /* A tick that stands for a backlog of missed milliseconds is not evidence about the ISRs. Judged, catch-up ticks run
      back to back, each seeing dl ≈ 0, and fire the "three LLC periods missing" verdict — so the firmware's own flash
      writes would latch F.35 (a LATCH row, which also blocks A/B image confirmation) on the first configuration write
-     of every module's life. Re-baseline and judge nothing. */
-  if (ti->late) { a->hb_ok = true; a->in.ctl_overrun = false; return; }
-  bool warm = a->now_ms > 20u;                                  /* the first ticks line the ISR phases up */
+     of every module's life. Re-baseline and judge no overrun — but a heartbeat is still a heartbeat: interrupts that ran
+     during the backlog advanced their counters, and ones that did not must not keep the watchdog fed. */
   a->hb_ok = dp > 0u && dl > 0u;
+  a->wdt_good = a->hb_ok ? (uint8_t)(a->wdt_good < 255u ? a->wdt_good + 1u : 255u) : 0u;
+  if (ti->late) { a->in.ctl_overrun = false; return; }
+  bool warm = a->now_ms > 20u;                                  /* the first ticks line the ISR phases up */
   bool miss = warm && (dp < 98u || dp > 102u || dl < 9u || dl > 11u);
   bool slow = ti->pfc_exec_us > 10u || ti->llc_exec_us > 100u;  /* ran past its own period */
   if (miss || slow) a->ovr_win++;
@@ -311,7 +313,6 @@ static void supervise(app_t *a, const app_tick_in_t *ti) {
   bool verdict = a->ovr_hard >= 3u;                              /* a STOPPED interrupt still latches inside 3 ms */
   if (a->now_ms % 100u == 0u) { verdict = verdict || a->ovr_win >= 10u; a->ovr_seen = a->ovr_win > 0u; a->ovr_win = 0u; a->ovr_hard = 0u; }
   a->in.ctl_overrun = verdict;
-  a->wdt_good = a->hb_ok ? (uint8_t)(a->wdt_good < 255u ? a->wdt_good + 1u : 255u) : 0u;
 }
 
 static const struct { float derate, trip; } ZONE[4] = {   /* §7: T_PFC · inlet (air or coolant) · T_LLC · T_XFMR */
@@ -356,15 +357,18 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   /* each zone's own derate and trip mapped onto the core's 105 / 115 °C scale — the zone nearest its limit drives both (§7) */
   float t[4] = { meas_ntc_c(ti->t_pfc / 4095.0f), meas_ntc_c(ti->t_inlet / 4095.0f), meas_ntc_c(ti->t_llc / 4095.0f),
                  meas_ntc_c(ti->t_xfmr / 4095.0f) };
-  float worst = -60.0f;
+  float worst = -60.0f, sink = -60.0f, margin = 1000.0f;
   for (int z = 0; z < 4; z++) {
     float d = ZONE[z].derate;
     float core = (t[z] < d) ? PMP_OT_DERATE_C - (d - t[z])
                             : PMP_OT_DERATE_C + (t[z] - d) * (PMP_OT_TRIP_C - PMP_OT_DERATE_C) / (ZONE[z].trip - d);
     worst = fmaxf(worst, core);
+    if (z != 1) sink = fmaxf(sink, core);   /* the fans blow with the inlet — they can only ever lower a SINK */
+    margin = fminf(margin, d - t[z]);
     a->t_zone[z] = t[z];
   }
   in->temp_max_c = worst;
+  a->t_sink_core = sink; a->t_margin_k = margin;
 
   float vbus, vmid, vout, iout, va, vb;
   uint32_t q;
@@ -372,6 +376,15 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
   do { q = a->pub_llc_seq; vout = a->pub_vout; iout = a->pub_iout; va = a->pub_vbka; vb = a->pub_vbkb; }
   while ((q & 1u) || q != a->pub_llc_seq);
   in->vbus = vbus;
+  /* The output current channel has no twin, and everything that limits the vehicle's current reads it — the CC loop,
+     F.15, F.16, the ZVS load estimate. Its one independent witness is the Vienna: the power it is commanded to draw
+     (1.5 · V̂ · Î at its efficiency) must agree with what the output says leaves, inside the losses, the link's own
+     charging (< 0.4 kW at the 250 V/s reference slew) and a burst. A channel stuck at zero read a full-power session as
+     0 A — no current limit of any kind left — and one stuck high reads current that is not flowing. Either is F.29. */
+  { float p_pfc = a->pfc.run ? 1.5f * sqrtf(fmaxf(a->pfc.vpk2, 2500.0f)) * a->pfc.i_pk * 0.985f : 0.0f;
+    float p_out = fmaxf(vout * iout, 0.0f), slack = 0.15f * a->ctl_cfg.p_rated_w;
+    bool bad = a->fsm.out.llc_en && (p_pfc > slack + 2.0f * p_out || p_out > slack + 2.0f * p_pfc);
+    a->pbal_bad_ms = bad ? sat16(a->pbal_bad_ms + 1u) : 0u; }
   in->vmid_frac = (vbus > 50.0f) ? clampf(vmid / vbus, 0.0f, 1.0f) : 0.5f;
   in->vout_meas = vout; in->iout_meas = iout; in->vbank_a = va; in->vbank_b = vb;
   /* a node above 60 V with the LLC off sets the operating point — a battery, or terminal capacitors still charged */
@@ -441,7 +454,9 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
        still carries the sense chains' full part tolerances; the EOL fixture writes the record (there is deliberately
        no CAN write path for calibration). APP_W_UNCAL names the cause next to F.30. */
     if (a->strap_bad || a->cal_bad || a->uncal) h = FC_CAL;
-    else if (a->az_bad || a->ref_bad_ms >= 100u || a->isum_bad_ms >= 20u || a->avmid_bad_ms >= 100u) h = FC_SENSOR;
+    /* isum is republished once per line cycle and held between publishes, so its window is counted in cycles: three
+       consecutive bad cycles (60 ms) — one disturbed cycle latched a LATCH row before */
+    else if (a->az_bad || a->ref_bad_ms >= 100u || a->isum_bad_ms >= 60u || a->avmid_bad_ms >= 100u || a->pbal_bad_ms >= 500u) h = FC_SENSOR;
     else if (ti->stack_pct >= 90u) h = FC_INTERNAL;
     else if (a->hz_bad_ms >= 200u) h = FC_LINE_HZ;
   }
@@ -504,10 +519,13 @@ static void outputs(app_t *a, app_tick_out_t *o) {
     o->dac_v[APP_DAC_IA + n] = a->dac_oc_pos[n];
   }
   o->dac_v[APP_DAC_VBUS] = dac_v(&a->cal, MCH_VBUS, PMP_BUS_OVP_V, a->k_ref);
-  /* the F.13 comparator threshold follows the output mode — LOW mode's banks meet a hardware limit at 560 V instead
-     of the HIGH-mode 1050 V (the documented interim until HW-REC-1 is decided; an EV contactor opening ends the
-     session anyway, so the latch is the protective outcome, not a nuisance) */
-  float th13 = (fo->v_max <= PMP_PAR_VMAX_V) ? 560.0f : PMP_OUT_OVP_ABS_V;
+  /* the F.13 comparator threshold follows the output mode WHILE THE LLC RUNS — LOW mode's banks meet a hardware limit at
+     560 V instead of the HIGH-mode 1050 V (the documented interim until HW-REC-1 is decided; an EV contactor opening
+     ends the session anyway, so the latch is the protective outcome, not a nuisance). Idle, the terminals belong to
+     whatever the bus carries: a spare module in LOW mode beside an 800 V session sees 800 V through SNS_VOUT with DOUT
+     blocking and nothing of its own to protect — at 560 V that is a counted LATCH per session start, F.31 after five.
+     The stage cannot raise its output while it is off, so the absolute limit is the right one until it runs. */
+  float th13 = (fo->llc_en && fo->v_max <= PMP_PAR_VMAX_V) ? 560.0f : PMP_OUT_OVP_ABS_V;
   o->dac_v[APP_DAC_VOUT] = dac_v(&a->cal, MCH_VOUT, th13, a->k_ref);
   /* HW-REC-1 readiness: the non-latching clamp reference rides the active CV setpoint; armed high when idle */
   float vr = a->ctl.v_ref;
@@ -531,7 +549,9 @@ static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   if (a->n_fans == 0u) { a->in.fan_ok = true; return; }       /* 50 kW liquid: sealed, no fans */
   if (a->now_ms % 10u == 0u) {
     const pmp_out_t *fo = &a->fsm.out;
-    float t = a->in.temp_max_c, p = fmaxf(a->in.vout_meas * a->in.iout_meas, 0.0f) / a->ctl_cfg.p_rated_w;
+    /* the SINK zones on the core scale, never the inlet: the inlet is what the fans blow with, and on the worst-zone
+       scale a 40 °C ambient alone read as 81 % duty in cold standby — fans that never stopped above 0 °C */
+    float t = a->t_sink_core, p = fmaxf(a->in.vout_meas * a->in.iout_meas, 0.0f) / a->ctl_cfg.p_rated_w;
     bool need = fo->pfc_en || fo->llc_en || t > 50.0f;
     /* §7: the larger of the temperature curve (the core's scale, 25 % at 60 °C to full at 100 °C) and the load feed-forward */
     float d = need ? fmaxf(clampf(0.25f + (t - 60.0f) * 0.01875f, 0.25f, 1.0f), fo->llc_en ? 0.25f + 0.75f * clampf(p, 0.0f, 1.0f) : 0.0f)
@@ -554,8 +574,13 @@ static void fans(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
          commanded speed would read healthy. Below 20 % duty the tach is too slow to judge (the running floor when
          cooling is needed is 25 %, so a needed fan is always judged). A failed fan that recovers clears its bit and
          the count-based derate recovers through the FSM's slew. */
-      bool judged = a->fan_duty >= 0.2f;
-      bool slow = judged && !(ti->tach_hz[k] >= fmaxf(5.0f, 0.35f * a->fan_duty * APP_TACH_FULL_HZ));
+      /* each fan against the duty of ITS OWN PWM group — fans 3 and 4 trail group 1 by the 300 ms stagger, which used
+         to count against their 3 s window; and a tach reading three times full speed is noise on an open or chattering
+         line, not a fan: it reads as stopped, so a disconnected fan cannot pass as healthy */
+      float dk = (k >= 2u && a->now_ms - a->fan_on_ms < 300u) ? 0.0f : a->fan_duty;
+      float hz = (ti->tach_hz[k] > 3.0f * APP_TACH_FULL_HZ) ? 0.0f : ti->tach_hz[k];
+      bool judged = dk >= 0.2f;
+      bool slow = judged && !(hz >= fmaxf(5.0f, 0.35f * dk * APP_TACH_FULL_HZ));
       a->fan_still_ms[k] = slow ? sat16(a->fan_still_ms[k] + 10u) : 0u;
       if (a->fan_still_ms[k] >= 3000u) fail = (uint8_t)(fail | (1u << k));
     }
@@ -601,7 +626,7 @@ static void panel(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   /* BOTH buttons held for 3 s inside the first 10 s after power-up = service request. It is the only way into the
      bootloader that needs no VMP controller: a TonHe-profile module has no ENTER_BOOT action and its SWD header is
      behind the 88-way connector. Both stages must be off, like every other reboot. */
-  if (a->now_ms < 10000u && idle && a->b1_ms >= 3000u && a->b2_ms >= 3000u) o->enter_boot = true;
+  if (a->now_ms < 10000u && !a->wrapped && idle && a->b1_ms >= 3000u && a->b2_ms >= 3000u) o->enter_boot = true;
 
   uint8_t d1, d2;
   int f = (int)a->tlm.fault;
@@ -639,6 +664,8 @@ static void telemetry(app_t *a, const app_tick_in_t *ti) {
   for (int n = 0; n < 3; n++) m->vin_ph[n] = a->g_vph[n];
   m->t_pfc = a->t_zone[0]; m->t_inlet = a->t_zone[1]; m->t_llc = a->t_zone[2]; m->t_xfmr = a->t_zone[3];
   m->t_diode = NAN; m->t_bank = NAN; m->t_mcu = NAN; m->t_coolant = a->liquid ? a->t_zone[1] : NAN;
+  m->t_margin_k = a->t_margin_k;
+  m->derate = m->derate * (1.0f - a->die_fold);   /* the availability the controller is TOLD includes the observer's fold — a declined point read 100 % */
   for (int n = 0; n < 4; n++)                                /* two tach pulses per revolution */
     m->fan_rpm[n] = (n < a->n_fans && ti->tach_hz[n] > 0.0f) ? (uint16_t)(fminf(ti->tach_hz[n], 2000.0f) * 30.0f) : 0u;
   m->fan_duty = (uint8_t)(a->fan_duty * 100.0f + 0.5f);
@@ -701,7 +728,6 @@ static void nvm_service(app_t *a) {
 }
 
 static void can_service(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
-  o->can_bitrate = a->bitrate;
   if (!a->busoff) {
     if (ti->can_state == 2u && a->now_ms - a->t_busoff >= 50u) {   /* 50 ms after a restart the controller has had its chance */
       a->busoff = true; a->t_busoff = a->now_ms;
@@ -728,18 +754,19 @@ static void can_service(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
    for 60 s after a stop, and a session restarted at a voltage the module CAN serve must not inherit the refusal. */
 static void die_limit(app_t *a, pmp_ctl_in_t *ci) {
   const pmp_out_t *fo = &a->fsm.out;
-  if (!fo->llc_en) { a->die.tj_llc = NAN; a->die.declined = false; }
+  if (!fo->llc_en) { a->die.tj_llc = NAN; a->die.declined = false; a->die.over_s = 0.0f; }
   if (!fo->pfc_en) a->die.tj_pfc = NAN;
   float vbank = (fo->mode == MODE_SER) ? 0.5f * a->in.vout_meas : a->in.vout_meas;
   float w_llc = dielim_llc_w(&a->die_cfg, vbank, a->vbus_now, a->llc.f_hz, a->llc.duty, a->llc.i_rms, fo->llc_en && a->llc.gate, a->die.tj_llc);
   float w_pfc = dielim_pfc_w(&a->die_cfg, a->in.vin_ll_min, a->vbus_now, a->iline_rms, fo->pfc_en && a->pfc.run, a->die.tj_pfc);
   ci->die_fold = dielim_step(&a->die, &a->die_cfg, w_llc, a->t_zone[2], w_pfc, a->t_zone[0], 1.0e-3f);
+  a->die_fold = ci->die_fold;
 }
 
 void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   memset(o, 0, sizeof *o);
-  a->now_ms++;
-  uint8_t trip_snap = a->trip_n;   /* only the trips that exist NOW are acknowledged at the end of this tick */
+  if (++a->now_ms == 0u) a->wrapped = true;   /* 49.7 days: the boot-window tests below must not re-open */
+  uint16_t trip_snap = a->trip_n;   /* only the trips that exist NOW are acknowledged at the end of this tick */
   a->pfc_us = ti->pfc_exec_us > a->pfc_us ? ti->pfc_exec_us : a->pfc_us;   /* T-44: high-water since boot */
   a->llc_us = ti->llc_exec_us > a->llc_us ? ti->llc_exec_us : a->llc_us;
   a->stack_pct = ti->stack_pct > a->stack_pct ? ti->stack_pct : a->stack_pct;
@@ -763,8 +790,11 @@ void app_tick(app_t *a, const app_tick_in_t *ti, app_tick_out_t *o) {
   telemetry(a, ti);
   events(a);
   /* a pending image confirms after 60 s of healthy standby — no LATCH/LOCK row since boot (AUTO grid rows do
-     not block a good image; F.30/F.29/F.32 do). The port acts on the rising edge (boot/bootctl.h). */
-  o->boot_ok = a->now_ms >= 60000u && !a->latch_seen && !a->strap_bad && !a->cal_bad && !a->uncal;
+     not block a good image; F.30/F.29/F.32 do). The port acts on the rising edge (boot/bootctl.h) with a flash
+     program, possibly a page erase, from the tick — so only with both stages stopped, the discipline every journal
+     write keeps (nvm_service): a 20 ms erase stall under power would freeze every supervisory row while the TCM loops ran on. */
+  o->boot_ok = a->now_ms >= 60000u && !a->latch_seen && !a->strap_bad && !a->cal_bad && !a->uncal &&
+               !a->fsm.out.pfc_en && !a->fsm.out.llc_en;
   nvm_service(a);
   can_service(a, ti, o);
   /* the sequenced watchdog: the HAL says whether kicking is PERMITTED — both ISRs advanced on each of the last

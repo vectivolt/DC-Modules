@@ -62,7 +62,7 @@ for SLOT in A B; do
           if ($(i+1) ~ /^1000/) calls[fn] = calls[fn] " " tgt; else esc[fn] = esc[fn] "\n  " fn ": " $i " " $(i+1) " " $(i+2) }
         if ($i == "blx" && $(i+1) ~ /^r[0-9]+$/) esc[fn] = esc[fn] "\n  " fn ": blx " $(i+1) " (indirect call)"
         if ($i == ".word" && $(i+1) ~ /^0x08/) esc[fn] = esc[fn] "\n  " fn ": literal " $(i+1) " points into flash" } }
-    END { n = split("pfc_ctl_isr hrtimer_mt_isr hrtimer_flt_isr", q, " "); for (k = 1; k <= n; k++) seen[q[k]] = 1
+    END { n = split("pfc_ctl_isr hrtimer_mt_isr hrtimer_flt_isr default_handler", q, " "); for (k = 1; k <= n; k++) seen[q[k]] = 1
           head = 1; tail = n
           while (head <= tail) { f = q[head++]; m = split(calls[f], t, " "); for (k = 1; k <= m; k++) if (t[k] != "" && !(t[k] in seen)) { seen[t[k]] = 1; q[++tail] = t[k] } }
           for (f in seen) { if (!(f in reach)) reach[f] = 1; if (f in esc) printf "%s", esc[f] }

@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
   <img src="https://img.shields.io/badge/codec-vmp.c_conformance_·_1M_fuzz-2ea44f?style=flat-square" alt="codec: vmp.c conformance · 1M fuzz"/>
 </p>
 
@@ -87,7 +87,9 @@ id = prio << 26 | 1 << 25 | space << 24 | fn << 16 | dst << 8 | src;   // vmp_id
 
 Within a priority the lower source address wins arbitration, so the order is deterministic. Module acceptance filters: native
 marker set, and destination = own address, own group address or 0xFF — plus module-to-controller functions from any source,
-which carry the address-conflict and share-trim information.
+which carry the address-conflict and share-trim information. A module whose address is in conflict (another node transmitting
+with it) holds RUN off until the conflict has been quiet for its hold time — every unicast may be meant for the other node —
+which is the rule the TonHe profile applies as well.
 
 ## 3. Addressing, discovery and ownership
 
@@ -375,5 +377,5 @@ sequenceDiagram
 <div align="center">
 <sub><a href="firmware-architecture.md">← Firmware Architecture</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="can-profile-tonhe-v12.md">TonHe V1.2 Compatibility Profile →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

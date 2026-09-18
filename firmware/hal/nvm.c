@@ -14,9 +14,19 @@ static void put32(uint8_t *b, uint32_t v) { b[0] = (uint8_t)v; b[1] = (uint8_t)(
 static uint32_t get32(const uint8_t *b) { return (uint32_t)b[0] | ((uint32_t)b[1] << 8) | ((uint32_t)b[2] << 16) | ((uint32_t)b[3] << 24); }
 static uint32_t entry_len(uint32_t len) { return (8u + ((len + 3u) & ~3u) + 4u + 7u) & ~7u; }
 
-uint32_t pmp_crc32(const uint8_t *p, size_t n) {
-  uint32_t c = 0xFFFFFFFFu;
+uint32_t pmp_crc32_step(uint32_t c, const uint8_t *p, size_t n) {
   while (n--) { c ^= *p++; for (int k = 0; k < 8; k++) c = (c >> 1) ^ (0xEDB88320u & (0u - (c & 1u))); }
+  return c;
+}
+uint32_t pmp_crc32(const uint8_t *p, size_t n) { return ~pmp_crc32_step(0xFFFFFFFFu, p, n); }
+uint32_t pmp_crc32_polled(const uint8_t *p, size_t n, void (*poll)(void)) {
+  uint32_t c = 0xFFFFFFFFu;
+  while (n) {
+    size_t k = n > 4096u ? 4096u : n;
+    c = pmp_crc32_step(c, p, k);
+    p += k; n -= k;
+    if (poll) poll();
+  }
   return ~c;
 }
 

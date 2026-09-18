@@ -554,6 +554,33 @@ static void llc_tests(void) {
     printf("      PAR 150/200/250 V x 2/20/100 %% load: worst ripple %.2f %% of setpoint\n", worst * 100);
     ck("the CV loop holds PAR 150 / 200 / 250 V at 2, 20 and 100 % load without a limit cycle (worst pk-pk <= 3 %)", ok); }
 
+  { /* the normalisation must not survive a stop: a 400 V session leaves k_norm at 1.0, and a restart into a 150 V pack
+       then ran the first ~7 ms at 2.9× the validated loop gain — the very limit cycle the normalisation removes. The
+       restart with the carried modulator must behave exactly like one with a fresh modulator on the same plant. */
+    static lsim_t s, b; lsim_init_sku(&s, 50, true);
+    s.vbus = 830.0; s.load_r = 400.0 * 400.0 / 50e3; s.i_ref = 175.0; s.v_ref = 400.0; s.vo = 400.0;
+    lsim_run(&s, 0.30, false);                                                     /* a 400 V session */
+    llc_t carried = s.l;
+    for (int k = 0; k < 5000; k++) llc_step(&carried, &s.c, false, 0.0f, 400.0f, 0.0f, 830.0f);   /* stopped for 0.5 s */
+    lsim_init_sku(&s, 50, true); s.l = carried;                                    /* the plant restarts, the modulator's state carries */
+    lsim_init_sku(&b, 50, true);                                                   /* the same restart with a fresh modulator */
+    s.vbus = b.vbus = 650.0; s.load_r = b.load_r = 150.0 * 150.0 / (fmin(50e3, 150.0 * 166.7) * 0.20);
+    s.i_ref = b.i_ref = 175.0; s.v_ref = b.v_ref = 150.0; s.vo = b.vo = 150.0;
+    double lo = 1e9, hi = 0.0, lob = 1e9, hib = 0.0;
+    for (int k = 0; k < 400; k++) { lsim_run(&s, 100e-6, true); lo = fmin(lo, s.vo); hi = fmax(hi, s.vo);
+                                    lsim_run(&b, 100e-6, true); lob = fmin(lob, b.vo); hib = fmax(hib, b.vo); }
+    printf("      restart into 150 V after a 400 V session: carried modulator %.1f–%.1f V · fresh %.1f–%.1f V · k_norm carried in %.2f\n", lo, hi, lob, hib, (double)carried.k_norm);
+    ck("a restart into a 150 V pack after a 400 V session begins with the point's own sensitivity — the carried modulator behaves like a fresh one (no extra limit cycle)",
+       carried.k_norm == 0.0f && fabs(hi - hib) < 1.0 && fabs(lo - lob) < 1.0); }
+
+  { /* the ZVS floor under a collapsing bank: from P and a 50 V floor it read Q 0.16 where the tank's true Q was 3.9, and the
+       floor sat 75 kHz under the boundary — a short is the heaviest load there is */
+    llc_t l; llc_cfg_t c; llc_cfg_default(&c, 50u); memset(&l, 0, sizeof l);
+    for (int k = 0; k < 20; k++) llc_step(&l, &c, true, 1.0f, 10.0f, 10.0f * 40.0f, 830.0f);   /* a 10 V bank carrying 40 A */
+    double q_true = c.z0_ohm * 40.0 / (3.2423 * 10.0);
+    ck("the ZVS floor under a collapsed 10 V bank carrying 40 A sits at the boundary of the tank's true Q (a short), not at the map's floor",
+       l.f_min_hz >= 1.03f * (float)zvs_worst(q_true) * c.fr_hz - 1.0f); }
+
   { /* the §5.5 current-step targets through the documented shaper slews (up 1000 A/s, down i_rated / 0.08 s):
        10 → 90 % of rated into the battery, t90 ≤ 150 ms up and ≤ 100 ms down, overshoot ≤ 2 % of rated */
     static lsim_t s; lsim_init(&s); s.bat = true; s.bat_e = 350.0; s.bat_r = 0.3; s.vo = 351.0; s.v_ref = 450.0; s.i_ref = 16.7;   /* the §5.4 battery class (~0.3 Ω incremental); 0.1 Ω stability is the check above */

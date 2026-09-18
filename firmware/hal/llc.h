@@ -33,7 +33,7 @@
  * with Qoss(V) = qoss800 · sqrt(V/800) (3·Eoss/V on the datasheet's Eoss ∝ V^1.5 curve — 335 nC at 650 V, 363 nC at 764 V,
  * against the 250 pF linear model's 49 %) and I_toff the magnetizing peak Im_pk = n·v_bank/(4·f·Lm). Constants are copied from
  * calculations/llc/tanks.mjs (par, cs, Lm, n) and DIES["23m"].qoss800; the coefficient below is that n_die,leg = 2·par.
- * The result is clamped to [60 ns, 900 ns]: a start into a deeply discharged pack (a 50 V bank at f_max) asks for more than
+ * The result is clamped to [120 ns, 900 ns]: a start into a deeply discharged pack (a 50 V bank at f_max) asks for more than
  * a microsecond on paper and must be bounded, and 60 ns is the shortest transition the drivers' propagation-delay match can
  * honour. The port's generator runs at DTGCKDIV = 0010 (2.315 ns per step, 9 bits → 1.18 µs), so 900 ns is inside range.
  *

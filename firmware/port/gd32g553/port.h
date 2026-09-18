@@ -27,7 +27,7 @@ uint16_t hrtimer_fault_read_clear(void);
 /* Inlined on purpose: the control interrupts run from TCM and must never fetch from flash (§3.5), and a plain function —
    even a static inline at -Os — lands in flash with a veneer in TCM to reach it. build.sh audits the linked image. */
 #define TCM_INLINE static inline __attribute__((always_inline))
-TCM_INLINE bool hrtimer_trip_pending(void) { return (HRT_INTF & (0x1Fu | BIT(6))) != 0u; }   /* a fault flag IRQ76 has not taken yet — set in the kill's own clock domain */
+TCM_INLINE bool hrtimer_trip_pending(void) { return (HRT_INTF & 0x7Fu) != 0u; }   /* FLT0..4 · SYSFLT · FLT5: a fault flag IRQ76 has not taken yet — set in the kill's own clock domain */
 TCM_INLINE void hrtimer_all_off(void) { HRT_CHOUTDIS = HRT_OUT_LLC | HRT_OUT_PFC; }         /* every power output disabled, now */
 
 void adc_init(void);

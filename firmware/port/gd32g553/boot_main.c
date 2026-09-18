@@ -71,6 +71,8 @@ int main(void) {
   boot_plan_t p = upd_boot(&u, service, &streak);
 
   HANDOFF.reason = HANDOFF_NONE;                  /* next reset without a sealed reason counts toward the streak */
+  HANDOFF.prev = have_h ? h.reason : (uint8_t)HANDOFF_NONE;    /* what the application sealed — it reads it back as prev */
+  HANDOFF.cause = (uint8_t)((port_reset_cause >> 24) & 0xFFu);  /* system_init() cleared the flags: this is the only copy */
   HANDOFF.streak = streak;
   HANDOFF.addr = have_h ? h.addr : 0xFEu;
   HANDOFF.bitrate = (have_h && h.bitrate) ? h.bitrate : 250000u;   /* VMP default bit rate */
@@ -125,6 +127,14 @@ int main(void) {
       continue;
     }
     if (seen && listening) { can_init(bitrate, 0); listening = 0; }   /* heard traffic on this rate: rejoin for real */
+    /* UPDATE mode is entered on the application's own request (HANDOFF_ENTER). A tool that never speaks, or died
+       mid-session, would otherwise park the module here delivering nothing until someone power-cycles it: 60 s without a
+       frame hands control back to the application, which is what the tool's RESET would do. SAFE mode has nothing to go
+       back to and waits. */
+    if (u.mode == SVC_MODE_UPDATE && silent >= 60000u) {
+      HANDOFF.reason = HANDOFF_REBOOT; HANDOFF.streak = 0u; handoff_seal(&HANDOFF);
+      port_reboot();
+    }
     svc_tick(&s, now_ms);
     while (tx.n && can_tx_ready()) {
       pmp_frame_t o;

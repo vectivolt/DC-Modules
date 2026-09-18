@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-GENERATED-5f8fc0?style=flat-square" alt="status: generated — do not hand-edit"/>
-  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
   <img src="https://img.shields.io/badge/owner-mag--docs.mjs-5f8fc0?style=flat-square" alt="owner: mag-docs.mjs"/>
 </p>
 
@@ -349,5 +349,5 @@ The same part on every SKU (ETD44, reinforced barrier, 100 % hipot), qty 1 per m
 <div align="center">
 <sub><a href="magnetics-30kw.md">← 30 kW Module Magnetics</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="magnetics-50kw.md">50 kW Liquid Module Magnetics →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

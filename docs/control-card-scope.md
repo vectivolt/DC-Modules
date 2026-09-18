@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
   <img src="https://img.shields.io/badge/gate-cardMap()_refuses_out--of--scope-2ea44f?style=flat-square" alt="gate: cardMap() refuses out-of-scope"/>
 </p>
 
@@ -89,5 +89,5 @@ the same table, and `module-interconnect-audit` proves every way lands on real e
 <div align="center">
 <sub><a href="interconnect.md">← Two-Board Sandwich & Interconnect</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="firmware-guide.md">Firmware Guide →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -4,7 +4,9 @@
  *   streak     unexpected resets of a confirmed image in a row (the bootloader counts; the application clears it after 10 min)
  *   addr       the module's CAN source address for service-space responses (0xFE when it has none)
  *   bitrate    the bus bit rate in use, the bootloader's first candidate
- *   slot       the slot the bootloader started, for the application */
+ *   slot       the slot the bootloader started, for the application
+ *   cause      RCU_RSTSCK bits 31:24 as the bootloader saw them — system_init() clears the flags, so the application's own read is 0
+ *   prev       the reason the record carried INTO the bootloader: what the application sealed before its reset */
 #ifndef PMP_HANDOFF_H
 #define PMP_HANDOFF_H
 #include "../hal/nvm.h"
@@ -15,6 +17,7 @@ enum { HANDOFF_NONE = 0, HANDOFF_REBOOT = 1, HANDOFF_ENTER = 2, HANDOFF_FAULT = 
 typedef struct {
   uint32_t magic;
   uint8_t reason, streak, addr, slot;
+  uint8_t cause, prev, rsv[2];
   uint32_t bitrate;
   uint32_t crc;
 } boot_handoff_t;

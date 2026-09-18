@@ -67,32 +67,44 @@ static void dac_write(uint8_t inst, uint8_t out, uint16_t counts) {
  * tick.
  * Allocation: CMP3/I_A0 ← DAC2_OUT1 · CMP1/I_B0 ← DAC0_OUT1 · CMP2/I_C0 ← DAC2_OUT0 · CMP4/VBUS ← DAC3_OUT0 ·
  * CMP0/VOUT ← DAC0_OUT0 (MODE = 011 keeps PA4/PA5 analog) · the HW-REC-1 clamp value ← DAC3_OUT1 */
+static const struct { uint8_t inst, out; } M[APP_DAC_COUNT] = {
+  { 2, 1 },  /* APP_DAC_IA  → DAC2_OUT1 (CMP3) */
+  { 0, 1 },  /* APP_DAC_IB  → DAC0_OUT1 (CMP1) */
+  { 2, 0 },  /* APP_DAC_IC  → DAC2_OUT0 (CMP2) */
+  { 3, 0 },  /* APP_DAC_VBUS → DAC3_OUT0 (CMP4) */
+  { 0, 0 },  /* APP_DAC_VOUT → DAC0_OUT0 (CMP0) */
+  { 3, 1 },  /* APP_DAC_CLAMP → DAC3_OUT1 (its comparator routing lands with the HW-REC-1 decision) */
+};
+
 void cmpdac_init(void) {
   DAC_MDCR(0) = (3u << 16) | 3u;             /* DAC0 both outputs buffer-off, peripherals only */
   DAC_CTL0(0) = BIT(16) | BIT(0);
   DAC_CTL0(2) = BIT(16) | BIT(0);            /* DAC2/DAC3 are pin-less 15 MSPS converters */
   DAC_CTL0(3) = BIT(16) | BIT(0);
   delay_us(3u);                              /* t_WAKEUP */
+  /* Every reference at FULL SCALE before a comparator is enabled. The holding registers reset to 0 (UM §18.4.3) — a 0 V
+     threshold under sensors that rest at 1.44–1.65 V: enabled first, all five comparators would assert at once,
+     fault_cfg() would latch FLT0/1/3/4/5 in the same microsecond, and the first tick would report F.01/F.03/F.13 on a
+     module that had done nothing — one counted LATCH per power-up, F.31 after five. The tick writes the real thresholds
+     1 ms later, seconds before any output is enabled. */
+  for (int k = 0; k < APP_DAC_COUNT; k++) dac_write(M[k].inst, M[k].out, 4095u);
+  delay_us(3u);                              /* settled at the rail before the comparators look */
   /* CS: PSEL bit 20 · MSEL 18:16 · HST 001 (10 mV) · EN. Sources per facts-hrtimer §9 / UM §19.4.3–19.4.10. */
   CMP_CS(0) = (0u << 20) | (5u << 16) | (1u << 8) | 1u;   /* PA1 vs DAC0_OUT0 */
   CMP_CS(1) = (1u << 20) | (5u << 16) | (1u << 8) | 1u;   /* PA3 vs DAC0_OUT1 */
   CMP_CS(2) = (1u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PC1 vs DAC2_OUT0 */
   CMP_CS(3) = (0u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PB0 vs DAC2_OUT1 (phase A) */
   CMP_CS(4) = (0u << 20) | (4u << 16) | (1u << 8) | 1u;   /* PB13 vs DAC3_OUT0 */
+  /* CMPxLK (bit 31, UM §19.3.4): the register, lock included, is read-only until the next reset. Nothing rewrites a
+     comparator after this point, and a stray write could invert a polarity or clear an EN — a hardware trip silently
+     disarmed, which the fault-input lock in fault_cfg() cannot see. */
+  for (int n = 0; n < 5; n++) CMP_CS(n) |= BIT(31);
 }
 
 void cmpdac_thresholds(const float dac_v[APP_DAC_COUNT]) {
-  static const struct { uint8_t inst, out; } M[APP_DAC_COUNT] = {
-    { 2, 1 },  /* APP_DAC_IA  → DAC2_OUT1 (CMP3) */
-    { 0, 1 },  /* APP_DAC_IB  → DAC0_OUT1 (CMP1) */
-    { 2, 0 },  /* APP_DAC_IC  → DAC2_OUT0 (CMP2) */
-    { 3, 0 },  /* APP_DAC_VBUS → DAC3_OUT0 (CMP4) */
-    { 0, 0 },  /* APP_DAC_VOUT → DAC0_OUT0 (CMP0) */
-    { 3, 1 },  /* APP_DAC_CLAMP → DAC3_OUT1 (its comparator routing lands with the HW-REC-1 decision) */
-  };
   for (int k = 0; k < APP_DAC_COUNT; k++) {
     float v = dac_v[k] * (4096.0f / 3.3f);
-    uint16_t c = v <= 0.0f ? 0u : v >= 4095.0f ? 4095u : (uint16_t)v;
+    uint16_t c = !(v > 0.0f) ? 0u : v >= 4095.0f ? 4095u : (uint16_t)v;   /* NaN → 0 = trip now, deterministically: a float→unsigned cast of NaN is undefined */
     dac_write(M[k].inst, M[k].out, c);
   }
 }
@@ -222,9 +234,12 @@ uint32_t hrtimer_llc_apply(const app_llc_out_t *o) {
   return run ? HRT_OUT_LLC : 0u;
 }
 
-uint16_t hrtimer_fault_read_clear(void) {   /* INTF fault bits → APP_FLT_ channel mask (INTF: FLT4..0 at 4:0, FLT5 at 6) */
+uint16_t hrtimer_fault_read_clear(void) {   /* INTF fault bits → APP_FLT_ channel mask (INTF: FLT4..0 at 4:0, SYSFLT at 5, FLT5 at 6) */
   uint32_t f = HRT_INTF;
-  uint16_t ch = (uint16_t)((f & 0x1Fu) | ((f >> 1) & BIT(5)));
+  /* SYSFLT (HXTAL loss, core lockup, LVD — UM §25.4.7) is OR'd into every enabled fault channel and kills the outputs
+     like one; reported as APP_FLT_SYS so the trip hold sees it rather than a stage that looks alive over dead outputs.
+     Each of its three sources also ends in a reset of its own (nmi_handler, lvd_isr, the lockup itself). */
+  uint16_t ch = (uint16_t)((f & 0x1Fu) | ((f >> 1) & BIT(5)) | ((f & BIT(5)) << 1));
   HRT_INTC = f & (0x1FFu);
   return ch;
 }

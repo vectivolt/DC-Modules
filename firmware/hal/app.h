@@ -41,8 +41,9 @@
 #define APP_FLT_VOUT   3u   /* CMP0 ← SNS_VOUT */
 #define APP_FLT_IC     4u   /* CMP2 ← I_C0 */
 #define APP_FLT_VBUS   5u   /* CMP4 ← SNS_VBUSP */
+#define APP_FLT_SYS    6u   /* the HRTIMER system fault (HXTAL loss, lockup, LVD): a trip hold only, no row — each source resets the card itself */
 #define APP_FLT_LINE_OC ((1u << APP_FLT_IA) | (1u << APP_FLT_IB) | (1u << APP_FLT_IC))
-#define APP_FLT_ALL    0x3Fu
+#define APP_FLT_ALL    0x7Fu
 
 #define APP_DO_KPRE    (1u << 0)   /* CTL_KPRE — precharge bypass */
 #define APP_DO_KSER    (1u << 1)
@@ -104,7 +105,7 @@ typedef struct {
   float dac_v[APP_DAC_COUNT];            /* comparator references, volts on the 3.3 V DAC scale */
   bool wdt_kick;                         /* kicking is PERMITTED — the port owns the 10 ms cadence */
   bool disch_intent;                     /* a commanded discharge is in progress — survive a reset */
-  bool can_restart; uint32_t can_bitrate;
+  bool can_restart;
   bool reboot;                           /* a profile's reboot, once its acknowledgement has left */
   bool enter_boot;                       /* ACTION ENTER_BOOT accepted — reset into the bootloader (handoff.h) */
   bool boot_ok;                          /* 60 s of healthy standby and no LATCH/LOCK row since boot — the port
@@ -168,12 +169,12 @@ typedef struct {
   app_azs_t azl;                          /* ch 0 I_RES, ch 1 the output differential */
   uint32_t az_gen; bool az_done, az_bad, az_gave_up; uint8_t az_try;
   /* fault ISR — one counter per kind, the tick keeps what it has seen */
-  volatile uint8_t flt_n[5]; uint8_t flt_seen[5];
+  volatile uint16_t flt_n[5]; uint16_t flt_seen[5];   /* 16 bits: a chattering input re-arms the flag every ISR round trip (≈ 1 µs), and 8 bits could wrap onto "seen" inside one tick */
   /* The hardware trip HOLD. trip_n counts HRTIMER fault interrupts (one writer: app_fault_isr); trip_ack is the count
      the 1 ms sequence has carried through the FSM and committed (one writer: app_tick). While they differ the two
      control interrupts command their outputs OFF — without it the port's unconditional CHOUTEN writes re-arm a tripped
      stage 10 µs (PFC) / 100 µs (LLC) later, for as long as the tick takes to latch (1 ms, or 20+ ms behind a flash erase). */
-  volatile uint8_t trip_n; uint8_t trip_ack;
+  volatile uint16_t trip_n; uint16_t trip_ack;   /* 16 bits for the same reason: a wrap onto trip_ack mid-storm would read as "acknowledged" */
   /* tick state */
   uint32_t pfc_last, llc_last, ovr_win; uint8_t wdt_good, ovr_hard; bool hb_ok, ovr_seen;
   uint32_t grid_seen; float g_vph[3], g_hz; uint16_t hz_bad_ms, isum_bad_ms, ref_bad_ms, rails_ms, avmid_bad_ms;
@@ -185,6 +186,9 @@ typedef struct {
   float dac_oc_pos[3];                    /* the F.01 comparator reference, positive polarity only */
   float t_zone[4];
   float fan_duty; uint32_t fan_on_ms; uint16_t fan_still_ms[4]; uint8_t fan_fail;
+  float t_sink_core, t_margin_k, die_fold; uint16_t pbal_bad_ms; bool wrapped;   /* the sink zones' worst on the core scale (the
+                                          fans' input) · kelvin to the nearest derate onset · the observer's fold · the output-power
+                                          witness · now_ms has wrapped (49.7 days) */
   uint16_t b1_ms, b2_ms; bool edit; uint8_t edit_addr; uint16_t edit_ms;
   uint32_t op_ms, t_cfg, t_cnt; float e_mws; bool llc_was, cnt_due; uint8_t nvm_fail;
   /* event log, bootloader glue, diagnostics, relay economizer */

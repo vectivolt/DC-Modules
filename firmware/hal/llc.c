@@ -96,7 +96,10 @@ static float weak_dead_s(const llc_cfg_t *c, float v_bus) {
 }
 
 void llc_step(llc_t *l, const llc_cfg_t *c, bool en, float u, float v_bank, float p_out, float v_bus) {
-  float vb = fmaxf(isfinite(v_bank) ? v_bank : 0.0f, 50.0f);
+  /* floored at 10 V, not 50: Q = z0·P/(3.24·V²) with the floor in the denominator under-read a collapsed bank by
+     (V/50)² — a 10 V bank carrying 40 A (a short, the heaviest load there is) read Q 0.16 for a true 3.9 and put the ZVS
+     floor 75 kHz under the boundary */
+  float vb = fmaxf(isfinite(v_bank) ? v_bank : 0.0f, 10.0f);
   float p = (isfinite(p_out) && p_out > 0.0f) ? p_out : 0.0f;
   l->q = c->z0_ohm * p / (3.2423f * vb * vb);   /* Z0 / Rac with Rac = (8 n² / π²) · Vbank² / P, n = 2 (llc-design.mjs) */
   /* the ZVS guard's load estimate rises INSTANTLY and decays over ~10 ms. Losing ZVS is a hard failure, so
@@ -108,6 +111,8 @@ void llc_step(llc_t *l, const llc_cfg_t *c, bool en, float u, float v_bank, floa
   float f_max = c->fn_max * c->fr_hz;
   if (!en || !isfinite(u)) {
     l->gate = false; l->burst = false; l->f_hz = f_max; l->duty = 0.0f;
+    l->k_norm = 0.0f;   /* the next enabled call starts from the point's own sensitivity: a 400 V session's 1.0 carried into
+                           a 150 V start ran the first ~7 ms at 2.9× the validated loop gain — the 5 kHz limit cycle */
     l->dead_a_s = l->dead_b_s = l->dead_s = zvs_dead_s(c, f_max, v_bank, v_bus, 0.0f);
     return;
   }

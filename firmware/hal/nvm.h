@@ -38,6 +38,11 @@ bool nvm_port_prog(uint8_t page, uint32_t off, const uint8_t *p, uint32_t n);
 bool nvm_port_erase(uint8_t page);
 
 uint32_t pmp_crc32(const uint8_t *p, size_t n);   /* CRC-32/ISO-HDLC, check "123456789" = 0xCBF43926 */
+uint32_t pmp_crc32_step(uint32_t c, const uint8_t *p, size_t n);   /* running state: seed 0xFFFFFFFF, finish with ~c */
+/* pmp_crc32 in 4 KB pieces with poll() between them. The CRC is bit-serial (≈ 40 cycles a byte): a full 208 KB image slot is
+   ≈ 38 ms at 216 MHz, past the TPS3430's 23.375 ms window when hashed in one call — the bootloader's FINISH and the
+   application's start-up identity both hash a whole image. poll may be NULL. */
+uint32_t pmp_crc32_polled(const uint8_t *p, size_t n, void (*poll)(void));
 void nvm_mount(nvm_t *s, uint8_t base, uint32_t page_size);   /* formats the first page only when neither holds a valid header */
 bool nvm_get(nvm_t *s, uint8_t kind, uint8_t *buf, uint8_t len);
 /* true when the payload is stored (or already was); false when it is not — a write error, or a compaction is due and

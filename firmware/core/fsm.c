@@ -45,6 +45,9 @@ static void latch(pmp_fsm_t *f, pmp_fault_t code) {
      and ONE boost diode: 380–650 A against a 250 A IFSM class. The FAULT exit routes through ST_PRECHG when k_pre is
      false, so recovery re-precharges through the 33 Ω parts and re-proves F.20. */
   f->out.k_pre = false;
+  /* The matrix stays as it was: nothing flows through DOUT with both stages off, the same-mode restart then needs no
+     make-permit, and a restart that derives the OTHER mode takes MODESW's release gap first (STANDBY). LOCK and
+     SHUTDOWN open it — nothing stays energized in a state that never restarts by itself. */
   f->rec_ms = 0;
   if (cl == FCL_AUTO_EXT || cl == FCL_AUTO_INT) {      /* the recovery hold doubles per consecutive AUTO latch */
     if (f->t_ms - f->last_auto_ms > PMP_LOCK_WINDOW_MS) f->auto_streak = 0;
@@ -58,7 +61,10 @@ static void latch(pmp_fsm_t *f, pmp_fault_t code) {
   f->lock_i = (uint8_t)((f->lock_i + 1u) % PMP_LOCK_COUNT);
   /* F.31 is PMP_LOCK_COUNT latches inside PMP_LOCK_WINDOW_MS (row 29). lock_i indexes the oldest of the last five: the
      window is what makes the count decay, and without it five latches spread over a module's life lock it for good. */
-  if (f->counted >= PMP_LOCK_COUNT && f->t_ms - f->lock_t[f->lock_i] <= PMP_LOCK_WINDOW_MS) { f->lock = true; f->st = ST_LOCK; }
+  if (f->counted >= PMP_LOCK_COUNT && f->t_ms - f->lock_t[f->lock_i] <= PMP_LOCK_WINDOW_MS) {
+    f->lock = true; f->st = ST_LOCK;
+    f->out.k_ser = false; f->out.k_para = false; f->out.k_parb = false; f->p_make = 0;   /* a locked module holds nothing energized */
+  }
 }
 
 /* Re-file a latched row as another one and TAKE BACK the count it made toward F.31. Only the counting is
@@ -151,6 +157,16 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
               && in_range(in->vbank_a, -20.0f, 650.0f) && in_range(in->vbank_b, -20.0f, 650.0f)
               && in_range(in->vout_meas, -50.0f, 1150.0f) && in_range(in->iout_meas, -50.0f, 400.0f)
               && in_range(in->temp_max_c, -60.0f, 200.0f) && (!in->ext_connected || in_range(in->vext, -1150.0f, 1150.0f));
+  /* A bank cannot lose half its voltage in a millisecond while the bridge is stopped — the bleeders' τ is ≥ 0.27 s and
+     DOUT blocks the other way — so a channel that reads that is lying, and the make-permit and F.17 both trust it: a bank
+     channel stuck at 0 V granted the permit onto a bank still at 490 V. The previous reading is kept while the jump
+     stands, so a channel that stays wrong stays flagged (F.29 through p_bad); a real fall follows the bleeder and tracks. */
+  { uint8_t mtx = (uint8_t)(pmp_relay_cmd(o) & (PMP_RLY_SER | PMP_RLY_PARA | PMP_RLY_PARB));
+    if (mtx != f->mtx_prev) { f->mtx_prev = mtx; f->mtx_ms = 0u; } else if (f->mtx_ms < 0xFFFFu) f->mtx_ms++; }
+  bool bank_jump = !o->llc_en && f->mtx_ms > PMP_RELAY_FB_MS && ((f->vbk_prev[0] > 100.0f && in->vbank_a < 0.5f * f->vbk_prev[0]) ||
+                                  (f->vbk_prev[1] > 100.0f && in->vbank_b < 0.5f * f->vbk_prev[1]));
+  if (!bank_jump) { if (isfinite(in->vbank_a)) f->vbk_prev[0] = in->vbank_a; if (isfinite(in->vbank_b)) f->vbk_prev[1] = in->vbank_b; }
+  meas_ok = meas_ok && !bank_jump;
   if (f->st != ST_INIT && f->st != ST_OFF && f->st != ST_LOCK) {
     if (!meas_ok) o->warn |= PMP_W_MEAS_GLITCH;
     if (persist(&f->p_bad, !meas_ok, PMP_BAD_SAMPLE_MS) && !on_shutdown) latch(f, FC_SENSOR);   /* exempt on the shutdown path */
@@ -171,7 +187,10 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   if (in->desat_flt && !on_shutdown) latch(f, FC_DESAT);
   /* the site's normal line and the time since it was last disturbed (fsm.h PMP_LINE_EVT_*) */
   if (isfinite(in->vin_ll_min)) {
-    if (in->vin_ll_min > f->vin_nom) f->vin_nom = in->vin_ll_min; else f->vin_nom += (in->vin_ll_min - f->vin_nom) * 2.0e-4f;
+    /* up over ≈ 0.1 s, down over ≈ 5 s. Following a single high sample up let one 20 ms swell (a capacitor bank
+       switching) set the "normal" line 15 % high, after which the real line read as disturbed for seconds and a genuine
+       F.01 in that window was filed as the grid's — self-clearing, uncounted, retried into the fault. */
+    f->vin_nom += (in->vin_ll_min - f->vin_nom) * (in->vin_ll_min > f->vin_nom ? 0.01f : 2.0e-4f);
   }
   bool line_evt = in->phases_ok < 3 || in->vin_ll_min < PMP_LINE_EVT_K * f->vin_nom;
   f->line_evt_ms = line_evt ? 0u : (uint16_t)(f->line_evt_ms < 0xFFFFu ? f->line_evt_ms + 1u : 0xFFFFu);
@@ -187,7 +206,9 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   if (in->can_age_ms > f->can_to_ms) o->warn |= PMP_W_COMMS_LOST;
   if (!in->aux_ok) {
     o->pfc_en = false; o->llc_en = false; o->stop_ramp = false;
-    if (f->st == ST_RUN || f->st == ST_DERATE) { f->st = ST_SAFE; f->need_enable = true; }   /* module-initiated → re-arm */
+    /* module-initiated → re-arm. STANDBY too: left there with a dead rail the module reported READY for ever (no F.26 —
+       that bound lives in INIT and SAFE) and restarted on the tick the rail flickered back, without SAFE's 500 ms hold. */
+    if (f->st == ST_RUN || f->st == ST_DERATE || f->st == ST_STANDBY) { f->st = ST_SAFE; f->need_enable = true; f->start_ms = 0; }
     /* An aux dropout de-energises every coil physically while the FSM still commands them, so F.19 would latch after
        100 ms and replace the designed SAFE → (500 ms) → STANDBY recovery with a row needing a CAN CLEAR.
        The matrix settle timer is re-armed too: when the aux returns the contacts have just re-closed and are bouncing. */
@@ -282,13 +303,16 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     if (in->can_age_ms > f->can_to_ms && f->latched == FC_NONE) {
       f->need_enable = true;
       if (operating) { if (!o->stop_ramp) f->stop_ms = 0; o->stop_ramp = true; f->stop_can = true; }
-      else { f->st = ST_STANDBY; o->llc_en = false; o->pfc_en = false; }
+      /* never out of MODESW: its 70 ms sequence ends in STANDBY with every contact open, and the stop would have left
+         the old matrix closed with need_enable set — the restart then closes the new pair on top of it */
+      else if (f->st != ST_MODESW) { f->st = ST_STANDBY; o->llc_en = false; o->pfc_en = false; }
     }
     if (in->link_age_ms > PMP_LINK_TO_MS) latch(f, FC_LINK);
     /* recomputed every tick — set only on the way through STANDBY, a session that starts low (bus 650 V) and climbs
        to a 525 V bank would run gain 1.6, outside every simulated corner */
     o->vbus_ref = bus_ref_for(o->mode, fmaxf(fminf(vcmd, in->vout_meas + PMP_BUS_LEAD_V), in->vout_meas), in->vin_ll_max);   /* the floor tracks the HIGHEST line · the output leads, not the command */
-  }
+  } else { f->p_inov = 0; f->p_inuv = 0; f->p_ph = 0; f->p_ovpa = 0; f->p_ovps = 0; f->p_bank = 0; }   /* a stop resets the
+                                                                 windows: frozen, a 9 ms near-miss latched 1 ms into the next session */
   if (operating) {
     /* row 15 as documented: relative to the RATED current, 130 % for 2 ms or 102 % for 100 ms — the CC loop limits below
        that. Testing against the command alone (iout > 1.3 · icmd) latches F.15 whenever a controller lowers its current
@@ -315,7 +339,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       o->stop_ramp = true; f->stop_ms = 0; f->stop_can = false;
     }
     if (!have_sp) o->warn |= PMP_W_NO_SETPOINT;
-  }
+  } else { f->p_ocf = 0; f->p_ocs = 0; f->p_occ = 0; f->p_busuv = 0; f->short_ms = 0; f->dwell_ms = 0; }
 
   /* ---------------- the public controlled shutdown: a real input, not something a test writes into the state
      variable. Rising edge only, so a held request cannot restart a supervised discharge that has already latched F.21. */
@@ -338,7 +362,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
   case ST_INIT:
     /* the wait for the aux is bounded and reported (F.26). p_aux is free here — SAFE's stable hold uses it only in
        SAFE — but it is cleared on the way out so that hold still starts from zero. */
-    if (in->aux_ok) { f->st = ST_PRECHG; f->p_aux = 0; }
+    if (in->aux_ok) { f->st = ST_PRECHG; f->p_aux = 0; f->pre_total_ms = 0; }
     else if (persist(&f->p_aux, true, PMP_AUX_WAIT_MS)) latch(f, FC_AUX_UV);
     break;
   case ST_PRECHG: {
@@ -353,6 +377,13 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
     float crest = 1.414f * in->vin_ll_max;
     bool line_ok = in->vin_ll_min >= PMP_IN_UV_RECOVER_V && in->vin_ll_max <= PMP_IN_OV_RECOVER_V && in->phases_ok >= 3;
     o->k_pre = false;
+    /* the two windows below reset each other — a line alternating across the start window every cycle parked the
+       module here for ever, reported nothing, with the aux drawn through the precharge parts — so a third bound counts
+       every millisecond spent here and files the grid row it must be */
+    if (++f->pre_total_ms > PMP_LINE_WAIT_MS + PMP_PRECHG_MAX_MS) {
+      latch(f, in->vin_ll_max > PMP_IN_OV_RECOVER_V ? FC_IN_OV : FC_IN_UV);
+      break;
+    }
     /* an out-of-range line must not park the module here for ever — precharge resistors in circuit, the 110 W bus-fed
        aux drawn through them (5–25 W continuous in two 33 Ω parts), and only a warning bit, so the panel shows the CAN
        address and a technician sees a module that "does nothing". After 10 s it is reported as the grid row it is:
@@ -411,7 +442,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
        * below it, and choosing SER from vcmd then runs banks under the 250 V SER floor */
       float v_start = (in->ext_connected && in->vext > 0.0f) ? in->vext : vcmd;
       /* HIGH below its range is a setting the module does not accept — it stays in STANDBY (the monitor re-selects) */
-      if (f->omode == OMODE_HIGH && v_start < PMP_XOVER_UP_V) break;
+      if (f->omode == OMODE_HIGH && v_start < PMP_XOVER_UP_V) { o->warn |= PMP_W_NO_SETPOINT; break; }
       pmp_mode_t m = (f->omode == OMODE_LOW) ? MODE_PAR : (f->omode == OMODE_HIGH) ? MODE_SER
                    : (v_start > PMP_XOVER_DN_V) ? MODE_SER : MODE_PAR;
       o->pfc_en = true;
@@ -428,6 +459,11 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
         if (in->ext_connected && in->vext < 0.0f) { latch(f, FC_BACKFEED); break; }
         o->mode = m;
         o->v_max = (m == MODE_SER) ? PMP_SER_VMAX_V : PMP_PAR_VMAX_V;
+        /* the OTHER mode's contacts may still be closed from a warm stop (a SER session, then a 400 V start inside the
+           hold). Closing the new pair on top of them is the one state UEXCL exists to forbid: it drops the KSER coil as
+           KPARA / KPARB make, and the diode-suppressed release (≤ 35 ms) outlives the make (≤ 25 ms) — three contacts
+           closed, both banks shorted through a making contact. Every reconfiguration takes MODESW's release gap. */
+        if ((m == MODE_SER) ? (o->k_para || o->k_parb) : o->k_ser) { f->st = ST_MODESW; f->sw_step = 0; break; }
         bool ready = (o->mode == MODE_SER) ? o->k_ser : (o->k_para && o->k_parb);
         if (!ready) {
           /* the make-permit, PROVED rather than assumed: after a PAR→SER crossover the banks
@@ -441,7 +477,7 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
           /* PAR additionally bounds the BANK-TO-BANK mismatch — closing both parallel contacts equalizes the banks
              through them (E = C·ΔV²/4), which the output current cannot see; 25 V on 30.8 µF is < 5 mJ. The bleeders
              run until both conditions hold. */
-          bool safe = fabsf(in->iout_meas) < PMP_MAKE_IOUT_A &&
+          bool safe = f->p_bad == 0u && fabsf(in->iout_meas) < PMP_MAKE_IOUT_A &&   /* no implausible sample pending (F.29's window) */
                       ((o->mode == MODE_SER) ? (in->vbank_a + in->vbank_b <= vlim)
                                              : (fmaxf(in->vbank_a, in->vbank_b) <= vlim &&
                                                 fabsf(in->vbank_a - in->vbank_b) <= PMP_BANK_IMB_V));
@@ -496,7 +532,9 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
       break;
     }
     if (f->omode == OMODE_AUTO) { float v_x = in->ext_connected ? in->vout_meas : vcmd;   /* crossover on the real battery voltage */
-    if ((o->mode == MODE_PAR && v_x > PMP_XOVER_DN_V) ||
+    /* PAR clamps the output at its 500 V ceiling, so a pack the module charges past 500 V itself can never read above
+       it: the crossover also fires when the command asks for more and the node sits at the ceiling */
+    if ((o->mode == MODE_PAR && (v_x > PMP_XOVER_DN_V || (vcmd > PMP_XOVER_DN_V && in->vout_meas >= PMP_PAR_VMAX_V - 5.0f))) ||
         (o->mode == MODE_SER && v_x < PMP_XOVER_UP_V)) {
       if (++f->dwell_ms > PMP_MODE_DWELL_MS) { f->st = ST_MODESW; f->sw_step = 0; }
     } else f->dwell_ms = 0; }
@@ -539,13 +577,15 @@ void pmp_fsm_step(pmp_fsm_t *f, const pmp_in_t *in) {
          would re-enter precharge with the counter already past PMP_PRECHG_MAX_MS and re-latch F.20 on the next tick,
          for ever — the one fault a technician clears at the panel would be the one that could not be cleared. */
       f->latched = FC_NONE; f->st = o->k_pre ? ST_STANDBY : ST_PRECHG; f->need_enable = true; f->rec_ms = 0;
-      f->prechg_ms = 0; f->pre_v_prev = 0.0f; f->pre_v_last = 0.0f;
+      f->prechg_ms = 0; f->pre_total_ms = 0; f->pre_v_prev = 0.0f; f->pre_v_last = 0.0f;
+      o->derate = 1.0f;   /* recomputed from present conditions on the next energized tick — a 0.0 seeded by F.09 otherwise slews up over 5 s */
     }
     break; }
   case ST_LOCK:                                                     /* only power-cycle/service exits */
     break;
   case ST_SHUTDOWN:
     o->pfc_en = false; o->llc_en = false; o->k_pre = false; o->q_disch = true;
+    o->k_ser = false; o->k_para = false; o->k_parb = false; f->p_make = 0;   /* nothing stays energized into OFF */
     o->q_disch_bk = true;   /* banks bleed with the bus (the shutdown contract; F.21b supervises HAL-side) */
     f->disch_ms = 0;
     f->p_disch = 0; f->stall_n = 0; f->weld_ms = 0; f->disch_v = in->vbus;   /* the dump's supervisors start clean */
