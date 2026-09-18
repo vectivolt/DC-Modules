@@ -324,7 +324,7 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
 
   /* The reference, in two parts. k_boot: VREFINT against VREFP, read once at boot with its legal aperture (adc.c) — the
      rail's whole initial error; beyond ±5 % the reference itself is broken (F.29 after 100 ms). k_track: where VREFP has
-     gone SINCE, read every line cycle from the three AC channels' common DC (meas.h dcc): a 3-wire set sums to zero, so the
+     gone SINCE, read once per CLEAN line cycle from the three AC channels' common DC (meas.h dcc / dcc_seq): a 3-wire set sums to zero, so the
      line cannot put a common offset there — only VREFP moving against the three isolators' 1.44 V common mode can, and the
      DACs move with VREFP exactly as the ADC does. Driven to zero as an integrator (≈ 0.2 s behind the estimator's 80 ms,
      updated below where a cycle closes), it holds while no clean cycle closes, is off on a card without a calibration
@@ -394,17 +394,25 @@ static void measure(app_t *a, const app_tick_in_t *ti) {
 
   const volatile grid_t *g = &a->grid;
   float vph[3], vll[3], irms[3], isum, hz, dcc;
+  uint32_t dq = 0u;
   bool abc;
   do {
     q = g->seq;
     for (int n = 0; n < 3; n++) { vph[n] = g->vph[n]; vll[n] = g->vll[n]; irms[n] = g->irms[n]; }
-    isum = g->isum; hz = g->hz; abc = g->abc; dcc = g->dcc;
+    isum = g->isum; hz = g->hz; abc = g->abc; dcc = g->dcc; dq = g->dcc_seq;
   } while ((q & 1u) || q != g->seq);
   if (q != a->grid_seen) {   /* a line cycle closed */
     a->grid_seen = q;
     /* the live reference (see the reference block above): the common DC reads ≈ gain · off · (k_ref / k_true − 1) */
-    float frac = dcc / (c->ch[MCH_VAC1].gain * c->ch[MCH_VAC1].off);
-    if (!a->uncal && !a->cal_bad && isfinite(frac)) a->k_track = clampf(a->k_track * (1.0f - 0.1f * frac), 0.97f, 1.03f);
+    /* The tracker integrates a NEW estimate once (dcc_seq), never a republished one: a 60 ms timeout or a disturbed cycle
+       advances seq with dcc HELD, and integrating that held residual on every publication walked k_track to its ±2 % bound
+       (F.29) inside a few seconds of a line outage with a residual left from a move in progress. Held is right: the rail
+       moves thermally, and the line is back — through precharge, seconds before any output — long before the residual matters. */
+    if (dq != a->dcc_seen) {
+      a->dcc_seen = dq;
+      float frac = dcc / (c->ch[MCH_VAC1].gain * c->ch[MCH_VAC1].off);
+      if (!a->uncal && !a->cal_bad && isfinite(frac)) a->k_track = clampf(a->k_track * (1.0f - 0.1f * frac), 0.97f, 1.03f);
+    }
     float mx = fmaxf(fmaxf(vll[0], vll[1]), vll[2]), mn = fminf(fminf(vll[0], vll[1]), vll[2]);
     in->vin_ll = (mx - 400.0f > 400.0f - mn) ? mx : mn;          /* display keeps the line farthest from nominal */
     in->vin_ll_min = mn; in->vin_ll_max = mx;                    /* each protection row reads its own side */

@@ -63,6 +63,8 @@ typedef struct {
                                                 common part of the three voltage means (the reference tracker's input) */
   bool abc;
   uint32_t seq;
+  uint32_t dcc_seq;                          /* advances only when a CLEAN cycle updated dcc: the reference tracker integrates each estimate once.
+                                                A timeout (hz = 0) or a disturbed cycle republishes the HELD estimate under a new seq */
   float a_vph[3], a_vll[3], a_i[3], a_is;    /* working state */
   float a_dcv[3], a_dci[3];                  /* the same cycle's LINEAR sums */
   uint32_t n;

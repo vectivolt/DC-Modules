@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
   <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
-  <img src="https://img.shields.io/badge/host-353_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 353 checks · ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/host-355_checks_·_ASan%2FUBSan-2ea44f?style=flat-square" alt="host: 355 checks · ASan/UBSan"/>
 </p>
 
 > [!NOTE]
