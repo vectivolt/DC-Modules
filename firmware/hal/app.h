@@ -154,7 +154,7 @@ typedef struct {
   th12_t th;
 #endif
   pmp_txq_t txq; uint32_t bitrate, now_ms;
-  float k_ref, w_line;
+  float k_ref, k_boot, k_track, w_line;   /* k_ref = k_boot (VREFINT at boot) · k_track (the live AC common-mode tracker) */
   /* PFC ISR */
   pfc_t pfc; pfc_ref_t pfc_sh, pfc_ref; volatile uint8_t pfc_commit;
   grid_t grid; uint8_t grid_div;

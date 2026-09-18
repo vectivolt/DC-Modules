@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
   <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
   <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
-  <img src="https://img.shields.io/badge/firmware-334_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 334 checks ASan/UBSan"/>
+  <img src="https://img.shields.io/badge/firmware-336_checks_ASan%2FUBSan-2ea44f?style=flat-square" alt="firmware: 336 checks ASan/UBSan"/>
 </p>
 
 > [!NOTE]
@@ -129,7 +129,10 @@ What a port therefore has to provide is the peripheral layer only:
    (10 kHz) — both placed in TCM, with the vector table in RAM;
 2. calibrated ADC groups and DMA rings behind `app_pfc_adc_t`, `app_llc_adc_t` and the slow channels;
 3. the HRTIMER carrier, the per-leg dead times the modulator asks for, and the fault channels wired to the comparators and
-   the external FLT input — firmware re-asserts, silicon acts first;
+   the external FLT input — firmware re-asserts, silicon acts first. An output is enabled in one place only, on its OFF → ON
+   transition, inside a critical section that checks the supervisor's acknowledgement (`trip_n == trip_ack`) and the
+   timer's own fault flags before the write and the flags again after it; everything the control interrupts execute or
+   read lives in TCM and the build audits the linked image;
 4. the comparator and DAC references from `app_tick_out_t.dac_v[]`, the digital outputs from `do_bits`, and the relay
    economizer duties from `relay_duty[]`;
 5. the mirror-contact and driver-ready inputs in `di`, the tach edge counters (handed over in hertz), and the panel shift register;

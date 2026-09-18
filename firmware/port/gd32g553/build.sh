@@ -47,6 +47,28 @@ for SLOT in A B; do
     $APPOBJS "$LIBGCC" -o "$OUT/app_$SLOT.elf" 2> "$OUT/app_$SLOT.mem"
   cat "$OUT/app_$SLOT.mem"
   arm-none-eabi-objcopy -O binary "$OUT/app_$SLOT.elf" "$OUT/app_$SLOT.body"
+  # TCM audit (§3.5): nothing the three control interrupts execute or read lives in flash. The disassembly of the TCM
+  # region is walked from pfc_ctl_isr / hrtimer_mt_isr / hrtimer_flt_isr along every branch; a reachable function that
+  # branches out of TCM, calls through a register, or holds a literal pointing into flash (a table, a function, a veneer)
+  # fails the build. Scoped to the control path on purpose: the RAM-resident flash primitives legitimately hold flash
+  # addresses as data. (A static inline helper at -Os once landed in flash with a veneer in TCM to reach it, and the LLC's
+  # ZVS table sat in flash for two revisions — both invisible to a symbol-name check.)
+  arm-none-eabi-objdump -d --start-address=0x10000000 --stop-address=0x10008000 "$OUT/app_$SLOT.elf" > "$OUT/app_$SLOT.tcm.dis"
+  ESC=$(awk '
+    /^[0-9a-f]+ <[^>]*>:/ { fn = $2; gsub(/[<>:]/, "", fn); next }
+    /^ *[0-9a-f]+:/ { for (i = 2; i <= NF; i++) {
+        if ($i ~ /^b[a-z]*(\.[nw])?$/ && length($(i+1)) == 8 && $(i+1) ~ /^[0-9a-f]+$/) {
+          tgt = $(i+2); gsub(/[<>]/, "", tgt); sub(/\+0x[0-9a-f]+$/, "", tgt)
+          if ($(i+1) ~ /^1000/) calls[fn] = calls[fn] " " tgt; else esc[fn] = esc[fn] "\n  " fn ": " $i " " $(i+1) " " $(i+2) }
+        if ($i == "blx" && $(i+1) ~ /^r[0-9]+$/) esc[fn] = esc[fn] "\n  " fn ": blx " $(i+1) " (indirect call)"
+        if ($i == ".word" && $(i+1) ~ /^0x08/) esc[fn] = esc[fn] "\n  " fn ": literal " $(i+1) " points into flash" } }
+    END { n = split("pfc_ctl_isr hrtimer_mt_isr hrtimer_flt_isr", q, " "); for (k = 1; k <= n; k++) seen[q[k]] = 1
+          head = 1; tail = n
+          while (head <= tail) { f = q[head++]; m = split(calls[f], t, " "); for (k = 1; k <= m; k++) if (t[k] != "" && !(t[k] in seen)) { seen[t[k]] = 1; q[++tail] = t[k] } }
+          for (f in seen) { if (!(f in reach)) reach[f] = 1; if (f in esc) printf "%s", esc[f] }
+          printf "\n  (%d functions reachable from the control interrupts)\n", tail > "/dev/stderr" }' "$OUT/app_$SLOT.tcm.dis")
+  if [ -n "$ESC" ]; then echo "TCM AUDIT FAILED (slot $SLOT) — the control path reaches into flash:$ESC"; exit 1; fi
+  echo "TCM AUDIT OK (slot $SLOT): no branch, indirect call or pointer from the control path into flash"
 done
 
 # bootloader

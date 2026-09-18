@@ -18,12 +18,13 @@ SECTIONS
   .ramfunc : {
     . = ALIGN(4); _sramfunc = .;
     *(.ramfunc*)
-    */pfc.o(.text*) */llc.o(.text*)                       /* the 100 kHz law and the modulator */
-    */ctl.o(.text.pmp_reg_step*)                          /* the 10 kHz regulator kernel */
+    */pfc.o(.text* .rodata*) */llc.o(.text* .rodata*)     /* the 100 kHz law and the modulator, with their tables (ZVS_FN) */
+    */ctl.o(.text* .rodata*)                              /* the 10 kHz regulator kernel (pmp_reg_step and its reset) */
+    */lib.o(.text*)                                       /* memset / memcpy — grid_sample clears its accumulators */
     */app.o(.text.app_pfc_isr* .text.app_llc_isr* .text.app_fault_isr* .text.az_add*)
-    */meas.o(.text.grid_sample*)
+    */meas.o(.text.grid_sample* .rodata*)
     */adc.o(.text.adc_read_pfc*)
-    */hrtimer.o(.text.hrtimer_pfc_apply* .text.hrtimer_llc_apply* .text.hrtimer_fault_read_clear*)
+    */hrtimer.o(.text.hrtimer_pfc_apply* .text.hrtimer_llc_apply* .text.hrtimer_fault_read_clear* .rodata*)   /* PFC_ST */
     . = ALIGN(4); _eramfunc = .;
   } > TCM AT> FLASH
 

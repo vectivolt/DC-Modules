@@ -66,6 +66,7 @@ static int state_byte = -1;
 static uint8_t rsp_txn; static uint32_t rsp_val; static int rsp_got;   /* last READ_RSP seen by run_ms */
 
 static float vref_k = 1.0f, avmid_k = 1.0f;   /* VREFP / 3.3 V · the AVMID buffer's ratio to half the rail */
+static float vref_boot = 1.0f;                /* the VREFP the target read at boot — VREFINT is cached from then on */
 /* the ADC reads against the ACTUAL VREFP: an absolute channel's whole reading scales by 1/k, a ratiometric one's swing
    about AVMID only, because AVMID (V3P3 / 2) tracks the rail */
 static float counts(int ch, double value) {
@@ -128,7 +129,7 @@ static void plant_tick(app_tick_in_t *ti) {
     double rs = 1e4 * exp(3435.0 * (1.0 / (pl.t_sink_c + 273.15) - 1.0 / 298.15));
     ti->t_pfc = ti->t_llc = (float)(4095.0 * rs / (1e4 + rs));
   }
-  ti->v24 = (float)(24.0 / (LSB * 9.2) / vref_k); ti->v15 = (float)(15.0 / (LSB * 5.7) / vref_k); ti->vrefint = (float)(1.20 / 3.3 * 4096.0 / vref_k);
+  ti->v24 = (float)(24.0 / (LSB * 9.2) / vref_k); ti->v15 = (float)(15.0 / (LSB * 5.7) / vref_k); ti->vrefint = (float)(1.20 / 3.3 * 4096.0 / vref_boot);
   ti->avmid = (float)(1.65 / 3.3 * 4095.0 * avmid_k);   /* the AVMID buffer reads back mid-rail (ratiometric: no 1/k) */
   ti->di = (uint16_t)(APP_DI_DRV_RDY | (pl.kpre_fb ? APP_DI_RLY_PRE : 0u));
   for (int n = 0; n < 4; n++) ti->tach_hz[n] = last_o.fan_duty[0] * 120.0f * tach_scale[n];
@@ -170,6 +171,7 @@ static void boot_as(bool wdt, const meas_cal_t *cal, uint8_t profile) {
   if (!cal && !boot_no_cal) { meas_cal_default(&def, 50); cal = &def; }   /* tests run CALIBRATED */
   if (cal) nvm_put(&n, APP_NV_CAL, (const uint8_t *)cal, (uint8_t)sizeof *cal, true);
   for (int k = 0; k < 4; k++) tach_scale[k] = 1.0f;
+  vref_boot = vref_k;
   memset(&pl, 0, sizeof pl); memset(&last_o, 0, sizeof last_o); memset(&po, 0, sizeof po); memset(&lo, 0, sizeof lo);
   pl.amp = 400.0 * sqrt(2.0 / 3.0); pl.hz = 50.0; pl.load_r = 1e6;
   meas_cal_default(&pl.cal, 50);
@@ -246,6 +248,21 @@ int main(void) {
     avmid_k = 1.04f; run_ms(300);
     ck("app: AVMID is judged ratiometrically — a healthy buffer on a rail 4 % high passes, a buffer 4 % off its rail is F.29 in 100 ms",
        healthy && app.fsm.latched == FC_SENSOR && app.avmid_bad_ms >= 100u); }
+  /* the reference moves AFTER boot — the target keeps its boot VREFINT reading, so only the AC common-mode tracker can see
+     it. Calibrate once, keep running, move VREFP: the codes must follow; a move neither the rail nor the isolators can
+     make is F.29. */
+  vref_k = 1.0f; avmid_k = 1.0f; boot(false, NULL); run_ms(1500);
+  { vref_k = 1.01f; run_ms(3000);                                      /* +1 % into the session, no reboot */
+    float cb = last_o.dac_v[APP_DAC_VBUS] / (float)LSB, trip = meas_val(&app.cal, MCH_VBUS, cb, vref_k);
+    printf("      VREFP +1 %% after boot: k_ref %.4f (boot %.4f · tracker %.4f) · the F.03 comparator crosses at %.1f V\n",
+           (double)app.k_ref, (double)app.k_boot, (double)app.k_track, (double)trip);
+    int tracked = fabsf(app.k_ref - 1.01f) < 0.0015f && fabsf(trip - 860.0f) < 3.0f && app.fsm.latched == FC_NONE && app.fsm.st == ST_STANDBY;
+    vref_k = 0.99f; run_ms(3000);
+    float cb2 = last_o.dac_v[APP_DAC_VBUS] / (float)LSB, trip2 = meas_val(&app.cal, MCH_VBUS, cb2, vref_k);
+    int back = fabsf(app.k_ref - 0.99f) < 0.0015f && fabsf(trip2 - 860.0f) < 3.0f && app.fsm.latched == FC_NONE;
+    vref_k = 1.05f; run_ms(1500);
+    ck("app: VREFP moving ±1 % after boot is tracked from the AC channels' common mode — the F.03 crossing stays at 860 V ± 3 V without a reboot — and a +5 % move is F.29",
+       tracked && back && app.fsm.latched == FC_SENSOR); }
   vref_k = 1.0f; avmid_k = 1.0f;
   /* a reset in the middle of a commanded discharge: the pre-reset record says so, and the module resumes the bounded dump
      instead of pmp_fsm_init's INIT → PRECHG. The AC is already off (the discharge that can complete). */

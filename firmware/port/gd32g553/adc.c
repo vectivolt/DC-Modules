@@ -119,14 +119,15 @@ uint16_t adc_read_once(unsigned n, uint8_t ch) { return adc_once(n, ch, 100u, 0u
    72 MHz the engine runs at, which is short. ADCCK 0001 halves the asynchronous ADC clock to 36 MHz (UM §17.7.26
    ADC_SYNCCTL: ADCCK[3:0] at 23:20, 0000 = div1 … 0001 = div2; "All ADCs are common"), making it 28.5 µs. The divider
    is restored here and adc_init() rewrites ADC_SYNCCTL = 0 anyway, so the 100 kHz engine still runs at 72 MHz.
-   Boot-only, with its budget stated: VREFP = VDDA = V3P3, so the boot reading removes the rail's whole initial error
-   (buck reference and divider tolerance) and what is left is the rail's movement AFTER boot — the buck reference's
-   drift over the card's temperature excursion plus line / load regulation, ≤ ±1 % for the TPS54202 class (its ±1.5 %
-   reference band spans −40…125 °C). Every measurement and, through app.c's dac_v(), every comparator reference carries
-   that ±1 % (≈ ±25 V at F.03, ±22 V at F.13 LOW), inside the ±3 % chain class the threshold budget already holds. It is
-   NOT caught by the V15 / V24 rails check — those read against the same VREFP — nor by the LVD, which only sees a gross
-   drop. A periodic refresh is deliberately not added: the bandgap cannot be sampled inside the 10 µs frame, and a
-   software-triggered conversion on an ADC the 100 kHz engine owns is a risk to the fast path for a ±1 % quantity. */
+   Boot-only here, and that is not the whole reference. VREFP = VDDA = V3P3, so this reading removes the rail's initial
+   error (buck reference and divider tolerance: the TPS54202 class specifies its feedback reference 0.581 / 0.596 / 0.611 V
+   over the population and −40…125 °C, which bounds nothing about one unit's movement after boot). What the rail does AFTER
+   boot is tracked live by the HAL from a quantity the line cannot produce — the common DC of the three AC channels
+   (meas.h dcc, app.c k_track): every measurement and, through app.c's dac_v(), every comparator reference follows VREFP
+   with it, so a trip threshold no longer drifts ≈ 25 V per percent of rail movement. The V15 / V24 rails check does not
+   see such a drift (those read against the same VREFP) and the LVD only sees a gross drop. A periodic bandgap refresh is
+   deliberately not added: it cannot be sampled inside the 10 µs frame, and a software-triggered conversion on an ADC
+   the 100 kHz engine owns is a risk to the fast path. */
 uint16_t adc_vrefint_read(void) {
   ADC_SYNCCTL = (1u << 20);                      /* ADCCK = div2 → 36 MHz */
   uint16_t v = adc_once(3u, 20u, 1023u, BIT(24));   /* ADC3_IN20, INREFEN */

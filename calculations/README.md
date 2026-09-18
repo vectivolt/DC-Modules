@@ -27,9 +27,9 @@ sh calculations/run-all.sh
 |---|---|
 | **One command** | `sh calculations/run-all.sh` — **exit 0** end to end; every gate runs as its own command so none can pass silently |
 | **What it produces** | the design CSVs in `out/`, the four module BOM pages, the four module magnetics pages, the busbar and pin-map pages |
-| **Standing gates** | stress-audit **163** · current-coordination **107** · review-checks **162** · mag-sync 52 · magnetics-envelope 30 · fw-constants-sync 30 · fault-energy 24 · conductor-audit 18 · temp-critique 11 · repo-hygiene 7 |
+| **Standing gates** | stress-audit **163** · current-coordination **107** · review-checks **163** · mag-sync 52 · magnetics-envelope 30 · fw-constants-sync 30 · fault-energy 24 · conductor-audit 18 · temp-critique 11 · repo-hygiene 7 |
 | **Clean-room check** | `verify-independent` **243 / 243** — its own netlist parser and its own physics |
-| **Firmware** | `sh firmware/run_tests.sh` — **334 checks** under ASan/UBSan across seven binaries; `port-pin-audit` holds 56 port pins against the card generator |
+| **Firmware** | `sh firmware/run_tests.sh` — **336 checks** under ASan/UBSan across seven binaries; `port-pin-audit` holds 56 port pins against the card generator |
 | **Documentation** | `docs-lint` — 41 registered pages, every link, anchor, masthead, footer and mermaid type |
 
 ## 1. The battery, in the order it runs
@@ -58,7 +58,7 @@ flowchart TB
     direction LR
     VI["verify-independent 243"] --> FP["footprint-audit"] --> RH["repo-hygiene"] --> RC["review-checks"] --> DL["docs-lint 41 pages"]
   end
-  FW["6 · port-pin-audit · fw-constants-sync<br/>run_tests.sh 334 checks · 7 binaries<br/>GD32G553 target build"]
+  FW["6 · port-pin-audit · fw-constants-sync<br/>run_tests.sh 336 checks · 7 binaries<br/>GD32G553 target build"]
   ENG --> BOM --> STR --> PHY --> IND --> FW
   style PHY stroke:#d19a00,stroke-width:2px
   style IND stroke:#2ea44f,stroke-width:2px

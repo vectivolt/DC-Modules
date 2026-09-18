@@ -40,7 +40,13 @@ uint16_t meas_rating_kw(float volts, bool *liquid); /* 30 · 40 · 50, or 0 for 
    The estimate is slow (≈ 1 s, GRID_DC_K per cycle) and frozen on any cycle that is not a clean locked 45–65 Hz cycle whose
    rms did not move — a clamp entering or leaving mid-cycle is exactly what moves rms, so that one test covers it. The bands
    are wide enough for every plausible residual and far too narrow to absorb a broken channel, which still reaches F.29
-   through isum and the boot window (both of which stay on the RAW samples). */
+   through isum and the boot window (both of which stay on the RAW samples).
+   The three phase-voltage means are first split into their COMMON part and each channel's residual. The line cannot put a
+   common DC on a 3-wire set (the phase-to-star voltages sum to zero at the resistive star, whatever the weights), so a common
+   part is measurement only: the ADC reference moving against the three isolators' 1.44 V output common mode. It is
+   published as dcc — the live reference tracker's input (app.c k_track) — with its own wider clamp (2 % of the 1.44 V
+   common mode's line-equivalent); the median of three keeps one broken channel out of it. Only the residual is a channel's
+   own offset (dcv). */
 /* Two rates, because the two means are not equally trustworthy. The phase voltages' true mean is zero by physics at every
    instant, whatever the line or the load is doing, so that estimate can be quick. The line currents' mean is only the
    channel's offset once the CT has finished passing whatever real DC is present (its magnetizing pole is 0.2–1 s), so that
@@ -48,11 +54,13 @@ uint16_t meas_rating_kw(float volts, bool *liquid); /* 30 · 40 · 50, or 0 for 
    two chase each other for seconds. */
 #define GRID_DC_KV    0.25f  /* per closed cycle → τ ≈ 80 ms at 50 Hz (the sensed phase voltages) */
 #define GRID_DC_KI    0.03f   /* per closed cycle → τ ≈ 0.7 s at 50 Hz (the CT channels) */
-#define GRID_DC_V_MAX 15.0f   /* V — ≈ 11 LSB of SNS_VAC */
+#define GRID_DC_V_MAX 15.0f   /* V — ≈ 11 LSB of SNS_VAC, per channel after the common part is removed */
+#define GRID_DC_C_MAX 48.0f   /* V — the common part: 2 % of the AC chain's 1.44 V common mode (2 408 V line-equivalent) */
 #define GRID_DC_I_MAX 1.6f    /* A — 2 % of the smallest SKU's i_clamp (80.8 A); ≈ 17 LSB on the 30 kW CT chain */
 typedef struct {
   float vph[3], vll[3], irms[3], isum, hz;   /* published; hz = 0 when no cycle closed inside 60 ms */
-  float dcv[3], dci[3];                      /* published DC estimate of the sensed phase voltages and line currents */
+  float dcv[3], dci[3], dcc;                 /* published DC estimate of the sensed phase voltages and line currents; dcc = the
+                                                common part of the three voltage means (the reference tracker's input) */
   bool abc;
   uint32_t seq;
   float a_vph[3], a_vll[3], a_i[3], a_is;    /* working state */

@@ -328,6 +328,21 @@ static void pfc_tests(void) {
     ck("a grossly broken voltage or current channel saturates the correction's clamp instead of being absorbed, and still shows up in isum for F.29",
        fabsf(g.dcv[0]) <= GRID_DC_V_MAX + 1e-3f && fabsf(g.dcv[0]) >= GRID_DC_V_MAX - 1e-3f &&
        fabsf(g.dci[1]) <= GRID_DC_I_MAX + 1e-3f && fabsf(g.dci[1]) >= GRID_DC_I_MAX - 1e-3f && g.isum > 20.0f); }
+
+  { /* the reference tracker's input: a DC common to all three sensed phases cannot come from the line (a 3-wire set sums to
+       zero), so it is published as dcc and kept out of the per-channel residuals; one channel's own offset stays its own */
+    grid_t g; memset(&g, 0, sizeof g);
+    const double fs = 1e4, w = 2 * PI * 50.0, amp = 326.6;
+    for (long k = 0; k < 30000; k++) {
+      float v[3], i[3];
+      for (int p = 0; p < 3; p++) {
+        v[p] = (float)(amp * sin(w * k / fs - p * 2 * PI / 3) + 4.04 + (p == 0 ? 4.04 : 0.0));   /* 3 LSB common, 3 more on channel 0 */
+        i[p] = (float)(60.0 * sin(w * k / fs - p * 2 * PI / 3));
+      }
+      grid_sample(&g, v, i, (float)fs);
+    }
+    ck("grid: a DC common to the three phase channels lands in dcc (the reference tracker's input) and only channel 0's own extra offset in its residual",
+       fabsf(g.dcc - 4.04f) < 0.15f && fabsf(g.dcv[0] - 4.04f) < 0.15f && fabsf(g.dcv[1]) < 0.15f && fabsf(g.dcv[2]) < 0.15f); }
 }
 
 
