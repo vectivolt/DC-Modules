@@ -177,7 +177,7 @@ typedef struct {
   volatile uint16_t trip_n; uint16_t trip_ack;   /* 16 bits for the same reason: a wrap onto trip_ack mid-storm would read as "acknowledged" */
   /* tick state */
   uint32_t pfc_last, llc_last, ovr_win; uint8_t wdt_good, ovr_hard; bool hb_ok, ovr_seen;
-  uint32_t grid_seen; float g_vph[3], g_hz; uint16_t hz_bad_ms, isum_bad_ms, ref_bad_ms, rails_ms, avmid_bad_ms;
+  uint32_t grid_seen, dcc_seen; float g_vph[3], g_hz; uint16_t hz_bad_ms, isum_bad_ms, ref_bad_ms, rails_ms, avmid_bad_ms;
   bool hz_bad, isum_bad, ext;
   /* The 1-in-10 line-cycle work is kept out of the 100 kHz ISR. The PFC ISR fills the spare half of a double buffer
      and publishes an index; the 10 kHz LLC ISR does grid_sample() and the boot offset window from it. */

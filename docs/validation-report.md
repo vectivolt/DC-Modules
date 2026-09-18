@@ -33,7 +33,7 @@
 | **Answer** | the power-stage architecture and its arithmetic are sound; the first prototype **would not have started**, and once started would not have been safe — five independent defects each stopped it delivering power, four made a running module unsafe, one left die survival to a heatsink sensor that cannot see the die |
 | **State now** | every CRITICAL and every firmware MAJOR is implemented and tested; the hardware value and rating corrections are drawn, costed and gated |
 | **Cost of the corrections** | **₹80 / 133 / 133 / 133 per module** (0.25–0.37 % of COGS) — §7 |
-| **Firmware** | 336 checks under ASan/UBSan across seven binaries: `boot_test` 22 · `host_sim` 122 · `ctl_test` 20 · `proto_test` 42 · `hal_test` 46 · `app_test` 33 · `rules_test` 51 · target build clean, TCM audit clean |
+| **Firmware** | 355 checks under ASan/UBSan across seven binaries: `boot_test` 24 · `host_sim` 122 · `ctl_test` 20 · `proto_test` 43 · `hal_test` 49 · `app_test` 38 · `rules_test` 59 · target build clean, TCM audit clean |
 | **First-prototype verdict** | **READY FOR BENCH BRING-UP** — the port has never run on silicon, and full power waits on the commutation-loop measurement (§9) |
 
 ## 1. Scope and method

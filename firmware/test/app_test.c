@@ -265,6 +265,19 @@ int main(void) {
     ck("app: VREFP moving ±1 % after boot is tracked from the AC channels' common mode — the F.03 crossing stays at 860 V ± 3 V without a reboot — and a +5 % move is F.29",
        tracked && back && app.fsm.latched == FC_SENSOR); }
   vref_k = 1.0f; avmid_k = 1.0f;
+  /* the line drops while a reference move is still being tracked: the timeouts that follow republish the HELD estimate every
+     60 ms, and integrating it again each time walked k_track past its ±2 % bound — F.29, a LATCH, out of a grid outage that
+     F.07 would have recovered from on its own. Held it stays; the line's return re-converges it before anything runs. */
+  boot(false, NULL); run_ms(1500);
+  { vref_k = 1.01f; run_ms(40);                                        /* two clean cycles into the move */
+    float kt = app.k_track; double amp = pl.amp;
+    pl.amp = 1.0; run_ms(3000);                                        /* no line: 50 timeout publications */
+    int held = fabsf(app.k_track - kt) < 1e-4f && app.ref_bad_ms == 0u && app.fsm.latched != FC_SENSOR;
+    printf("      line lost mid-move: k_track %.5f before, %.5f after 3 s of timeouts (%s) · latched %d\n", (double)kt, (double)app.k_track, held ? "held" : "WALKED", (int)app.fsm.latched);
+    pl.amp = amp; run_ms(3000);
+    ck("app: a line outage republishes the held reference estimate without integrating it again — k_track holds through 3 s of timeouts (no F.29) and re-converges to the +1 % move once the line is back",
+       held && fabsf(app.k_track - 1.01f) < 0.0015f && app.fsm.latched != FC_SENSOR); }
+  vref_k = 1.0f;
   /* a reset in the middle of a commanded discharge: the pre-reset record says so, and the module resumes the bounded dump
      instead of pmp_fsm_init's INIT → PRECHG. The AC is already off (the discharge that can complete). */
   boot_disch = true; boot(false, NULL); boot_disch = false;

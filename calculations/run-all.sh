@@ -55,7 +55,12 @@ npx tsx calculations/control/port-pin-audit.mjs
 node calculations/control/fw-constants-sync.mjs
 # the banner COUNTS what ran, so it can never quote a number typed at the last revision
 FW_LOG=$(mktemp); sh firmware/run_tests.sh > "$FW_LOG"
-echo "FIRMWARE LOGIC OK — $(grep -c '^PASS' "$FW_LOG") checks across $(grep -c '^RESULT' "$FW_LOG") binaries ($(grep '^RESULT' "$FW_LOG" | sed 's/RESULT: \([0-9]*\)\/.*/\1/' | paste -sd'+' -)), sanitizers fatal"; rm -f "$FW_LOG"
+FW_N=$(grep -c '^PASS' "$FW_LOG")
+echo "FIRMWARE LOGIC OK — $FW_N checks across $(grep -c '^RESULT' "$FW_LOG") binaries ($(grep '^RESULT' "$FW_LOG" | sed 's/RESULT: \([0-9]*\)\/.*/\1/' | paste -sd'+' -)), sanitizers fatal"; rm -f "$FW_LOG"
+# every check count a page or badge types by hand must be the one that just ran — a stale 336 outlived two revisions once
+STALE=$( { grep -rhoE '[0-9]+_checks' README.md docs calculations/doc-chrome.mjs; grep -rhoE '\*?\*?[0-9]+ checks\*?\*? ?(under|across|\|)' README.md docs; } | grep -oE '[0-9]+' | sort -u | grep -vx "$FW_N" || true)
+[ -z "$STALE" ] || { echo "STALE CHECK COUNT — a page or badge says $(echo $STALE | tr ' ' ',') checks, the suite ran $FW_N"; exit 1; }
+echo "CHECK COUNTS IN SYNC — every page and badge says $FW_N"
 # the GD32G553 target cross-build (register-level port, no vendor library) — runs where the bare-metal GCC exists
 if command -v arm-none-eabi-gcc > /dev/null 2>&1; then
   sh firmware/port/gd32g553/build.sh > /dev/null 2>&1

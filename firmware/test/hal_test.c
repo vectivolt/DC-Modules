@@ -342,7 +342,27 @@ static void pfc_tests(void) {
       grid_sample(&g, v, i, (float)fs);
     }
     ck("grid: a DC common to the three phase channels lands in dcc (the reference tracker's input) and only channel 0's own extra offset in its residual",
-       fabsf(g.dcc - 4.04f) < 0.15f && fabsf(g.dcv[0] - 4.04f) < 0.15f && fabsf(g.dcv[1]) < 0.15f && fabsf(g.dcv[2]) < 0.15f); }
+       fabsf(g.dcc - 4.04f) < 0.15f && fabsf(g.dcv[0] - 4.04f) < 0.15f && fabsf(g.dcv[1]) < 0.15f && fabsf(g.dcv[2]) < 0.15f);
+    /* the estimate's OWN generation: a 60 ms timeout republishes the held dcc under a new seq (hz = 0) and a disturbed cycle
+       (current rms moved by half) publishes too — neither is a new estimate; the next clean cycle is */
+    uint32_t s0 = g.seq, d0 = g.dcc_seq; float dcc0 = g.dcc;
+    for (long k = 0; k < 700; k++) { float z[3] = { 0.0f, 0.0f, 0.0f }; grid_sample(&g, z, z, (float)fs); }
+    int timeout_held = g.seq != s0 && g.hz == 0.0f && g.dcc_seq == d0 && g.dcc == dcc0;
+    /* relock at the next rising crossing, then feed until each publication: the first closed cycle compares its current rms
+       against the timeout's (zero) — unclean; the second is clean */
+    uint32_t sp = g.seq; long k = 0; int pubs = 0, unclean_held = 0, clean_counted = 0;
+    for (; k < 2000 && pubs < 2; k++) {
+      float v[3], i[3];
+      for (int p = 0; p < 3; p++) { v[p] = (float)(amp * sin(w * k / fs - p * 2 * PI / 3) + 4.04); i[p] = (float)(120.0 * sin(w * k / fs - p * 2 * PI / 3)); }
+      grid_sample(&g, v, i, (float)fs);
+      if (g.seq != sp) {
+        sp = g.seq; pubs++;
+        if (pubs == 1) unclean_held = g.hz > 45.0f && g.dcc_seq == d0;
+        if (pubs == 2) clean_counted = g.hz > 45.0f && g.dcc_seq == d0 + 1u;
+      }
+    }
+    ck("grid: dcc_seq advances only with a clean cycle — a 60 ms timeout and a disturbed cycle republish the held estimate under a new seq without it, the next clean cycle counts once",
+       timeout_held && unclean_held && clean_counted); }
 }
 
 

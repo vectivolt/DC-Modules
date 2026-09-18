@@ -93,6 +93,7 @@ void grid_sample(grid_t *g, const float v[3], const float i[3], float fs) {
       for (int k = 0; k < 3; k++) m[k] = g->a_dcv[k] * inv;
       float c = fmaxf(fminf(m[0], m[1]), fminf(fmaxf(m[0], m[1]), m[2]));
       g->dcc = clampf(g->dcc + (c - g->dcc) * GRID_DC_KV, -GRID_DC_C_MAX, GRID_DC_C_MAX);
+      g->dcc_seq++;
       for (int k = 0; k < 3; k++) {
         g->dcv[k] = clampf(g->dcv[k] + (m[k] - c - g->dcv[k]) * GRID_DC_KV, -GRID_DC_V_MAX, GRID_DC_V_MAX);
         g->dci[k] = clampf(g->dci[k] + (g->a_dci[k] * inv - g->dci[k]) * GRID_DC_KI, -GRID_DC_I_MAX, GRID_DC_I_MAX);
