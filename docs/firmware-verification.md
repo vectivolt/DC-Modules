@@ -265,6 +265,35 @@ T-48 and T-60 control transients and the CV step · T-49 fault and recovery cycl
 the watchdog window, the fan-curve constant, the aux fault matrix and the PV bleeder · T-58 the leg-node probe that trims
 the weak-leg dead time · T-64 the PFC interrupt budget measured with DWT.
 
+## 5. Reference-firmware cross-check
+
+The public reference firmwares were read at source level and each protection or edge-case behaviour was matched to a
+row here. Read: Microchip's 11 kW three-phase SiC PFC ([`11kw-three-phase-pfc-demonstration-application`](https://github.com/microchip-pic-avr-examples/11kw-three-phase-pfc-demonstration-application)),
+Microchip's interleaved LLC ([`llc50w-power-voltage-mode-control-with-active-current-sharing`](https://github.com/microchip-pic-avr-examples/llc50w-power-voltage-mode-control-with-active-current-sharing)),
+NXP's half-bridge LLC ([`an-hbllc_mc56f8xxxx`](https://github.com/nxp-appcodehub/an-hbllc_mc56f8xxxx)), the STM32 three-phase
+[`PFController`](https://github.com/StanKarpikov/PFController), [`VMCharger`](https://github.com/valerun/VMCharger), and TI's
+[TIDM-1000 design guide](https://www.ti.com/lit/ug/tiducj0c/tiducj0c.pdf) (its source ships inside the C2000Ware SDK behind a login).
+No production charger-module firmware is public.
+
+| Reference behaviour | Source | Here |
+|---|---|---|
+| per-phase AC monitor: UV 60 V + 2 V hysteresis · OV 350 V · 40–65 Hz · 2 ms zero-cross timeout · an AC drop rides through 25 ms, then standby · 20 stable half-cycles before the line is accepted | Microchip PFC `vac_monitor.c` | F.07 / F.08 / F.09 (100 / 20 / 40 ms), 45–65 Hz, positive-sequence lock, the slow-up line reference; a dip inside 100 ms rides through, a longer one is AUTO_EXT and re-precharges; the bus row F.05 covers heavy load (the reference has no bus-UV row) |
+| relay pre-delay 1 s after the line is accepted, 100 ms post-delay, a 2 s offset-calibration window | Microchip PFC `main_tasks.c` | precharge to the crest, bypass close on feedback, 40 ms operate + bounce, 60 ms F.01 blank, the boot-offset window (F.29 / F.30) |
+| line OC (30 A) and bus OV (950 V) tested in the ADC interrupt → PWM override; setpoint clamped at 890 V | Microchip PFC `drv_adc.c` | hardware comparators F.01 / F.03 / F.13 into the timer fault inputs, plus the 100 kHz software \|i\| trip; 830 V setpoint under the 860 V trip |
+| PWM enabled per phase at the next voltage zero crossing | Microchip PFC `drv_pwrctrl_app_TPBLPFC.c` | not applicable — the Vienna switch is bidirectional and the current reference starts at zero |
+| DC on the AC terminals accepted as a boost source | Microchip PFC `vac_monitor.c` | refused by design (`proto_test` DC-input refusal) |
+| fault → stop, restart as soon as the line is back, no retry limit | Microchip PFC `main_tasks.c` | AUTO rows hold 2 s doubling to 64 s; LATCH rows wait for a clear; F.31 locks after five counted latches in 10 min |
+| generic fault object (threshold + hysteresis, 30 samples to set, 10 000 to clear, auto-restart); comparator OC → PWM override | Microchip LLC `fault_common.c`, `drv_adc.c` | per-row persistence in `fsm.h`; F.11 and DESAT are hardware and LATCH; F.15 graded 130 % / 2 ms · 102 % / 100 ms · command-relative |
+| Vin UV / OV, Vout OV, aux rail range, per-phase Iout OC; soft start as a frequency sweep from f_max; SR gated on Vout / Iout | Microchip LLC `drv_pwrctrl_ILLC_*.c` | F.05 / F.03, F.13 hardware, F.26, F.15; start at f_n 1.45 and PFM down; no SR (diode rectifiers) |
+| Vout OV immediate · Vout UV with the load on 5 ms → load off + fault · Iout OC immediate · overload 150 % / 5 ms and 120 % / 20 ms · primary OC software and HARDWARE (never auto-restarts) · software faults restart after 5 s clean · burst by duty hysteresis · 12 ms message watchdog to the front-end MCU | NXP LLC `LLC_statemachine.c` | F.13, F.16 (V_out < 50 V with current, 10 ms), F.15 graded, F.11 hardware LATCH, the recovery classes, burst on the 100 V bank floor; one MCU, the CAN timeout is the profile's |
+| CMPSS windowed comparator trips into the PWM trip zone from DAC references; manual `clearTrip`; four build levels; proportional midpoint balance | TI TIDM-1000 guide | the same comparator-into-timer-fault structure with locked inputs; F.06; T-44 pre-energisation checks and the EVT ladder |
+| INIT → STOP → SYNC (phase lock < 0.03 rad) → PRECHARGE → WORK → FAULTBLOCK; 1 ms checks with 4-tick persistence (raw ADC at the rails, cap voltage, temperature, U / F / I windows, bad sync); fault block cleared by command only; no PWM break input | `PFController` | the same shape with hardware trips; F.29 judges converted values against physical ranges — a CT channel stuck at a rail lands on the software \|i\| trip (F.01) instead, the stage off either way (T-05) |
+| ADC exactly 0 at power-on → sensor error; 110 / 220 V detection → power limit; CV and session time-outs | `VMCharger` | boot offsets → F.29 / F.30; input derate (C-10); end-of-charge timing belongs to the charger controller |
+
+No reference handles a case this firmware does not; the per-phase zero-crossing start and DC-input acceptance are the two
+deliberate differences. The certification test lists (NB/T 33001-2018 / NB/T 33008.1-2018, IEC 61851-23, the IEC 61000-4-11 /
+-4-34 dip profiles in T-49) remain the edge-case checklist the module is judged against.
+
 > [!TIP]
 > **How this page is checked** — `sh firmware/run_tests.sh` is L1 and runs in `run-all` (sanitizers fatal); L2–L4 are the HIL, fuzzing and endurance campaigns this page specifies.
 
