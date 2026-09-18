@@ -113,9 +113,12 @@ typedef struct {
   uint8_t fault_count;      /* lifetime latches (saturating) */
   uint8_t counted;          /* latches that count toward F.31 — AUTO_EXT rows do not */
   bool lock, need_enable;
-  uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, disch_ms, pre_blank_ms;
-  float vin_nom;            /* the line this site normally has — follows vin_ll_min up at once, falls over ≈ 5 s */
+  uint32_t t_ms, dwell_ms, sw_step, short_ms, weld_ms, prechg_ms, pre_total_ms, disch_ms, pre_blank_ms;
+  float vin_nom;            /* the line this site normally has — follows vin_ll_min up over ≈ 0.1 s, down over ≈ 5 s */
+  float vbk_prev[2];        /* the bank readings a tick ago, for the stopped-bridge plausibility test (a bank cannot halve in 1 ms) */
   uint16_t line_evt_ms;     /* ms since the line was last disturbed (saturating) */
+  uint16_t mtx_ms; uint8_t mtx_prev;   /* ms since a matrix contact was last commanded, and those commands — a make (or a welded
+                                          contact behind one) can move a bank in a millisecond, so the bank test waits it out */
   float pre_v_prev, pre_v_last;   /* the two last PMP_PRE_SETTLE_MS link samples of the running precharge */
   uint32_t start_ms;        /* STANDBY energized-start supervision (F.34 window) */
   uint32_t disch_to_ms;     /* F.21 window — runtime per rating (card strap), default = macro */
@@ -200,9 +203,10 @@ const char *pmp_state_name(pmp_state_t s);
    would hold a battery that climbed past the 500 V PAR ceiling at zero current for 30 s. The 20 V hysteresis below
    prevents chatter; the dwell only has to outlast measurement noise and a load step. */
 #define PMP_MODE_DWELL_MS 1000u
-/* Absolute half-link ceiling, either half, 450 V cans. Normal worst half = 415 (830 ref) + 20 (F.06 lets the midpoint
+/* Absolute half-link ceiling, either half, 500 V cans. Normal worst half = 415 (830 ref) + 20 (F.06 lets the midpoint
    move 40 V) + 3 ripple = 438 at the F.06 boundary; the 10 ms persistences overlap so whichever row's condition holds
-   fires. Sensing is the calibrated ±1 % class: trip spans 435.6–444.4 V, under the can rating. */
+   fires. Sensing is the calibrated ±1 % class plus the live reference (±0.2 % class, bounded at ±2 % → F.29): the trip
+   spans 431–449 V at the bound, under the can rating. */
 #define PMP_HALF_OV_V      440.0f
 #define PMP_HALF_OV_MS      10u
 /* Matrix relays carry no mirror contacts — the LLC waits out the RFQ operate ≤ 25 ms + bounce ≤ 5 ms with margin
@@ -282,7 +286,9 @@ static inline float pmp_ntc_guard_c(float t_c, float adc_frac) { return adc_frac
 #define PMP_DERATE_SLOPE      0.04f  /* thermal derate per °C above PMP_OT_DERATE_C: continuous, 60 % at the 115 °C trip */
 #define PMP_DERATE_MIN_TH     0.60f
 #define PMP_DERATE_UP_PER_MS  0.0002f /* recovery ≤ 20 %/s, reduction immediate — a limit that steps back up re-heats and hunts */
-#define PMP_VCMD_START_MIN_V 100.0f  /* no start without a real voltage setpoint unless a battery sets the operating point */
+#define PMP_VCMD_START_MIN_V 150.0f  /* no start without a real voltage setpoint unless a battery sets the operating point — the
+                                        shaper's lowest regulated output (ctl.c v_min_v): a 100–122 V command was accepted here,
+                                        raised to 150 V there, and then latched F.13's sourcing row against its own command */
 /* Recovery (AUTO rows) and the controlled stop. The start / recovery line window sits 15 V inside the run window, so a grid
    at the edge cannot cycle the module (TonHe TH750 publishes the same 15 V class: 270/285, 490/475 VAC). */
 #define PMP_IN_OV_RECOVER_V  485.0f

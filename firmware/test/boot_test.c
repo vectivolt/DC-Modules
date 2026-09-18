@@ -18,6 +18,7 @@
 #include "../boot/p256.h"
 #include "../boot/image.h"
 #include "../boot/bootctl.h"
+#include "../boot/handoff.h"
 #include "../boot/svc.h"
 #include "../boot/updater.h"
 #include "../port/gd32g553/flash_map.h"
@@ -390,7 +391,19 @@ static void update_tests(void) {
   ck("update: the boot record store never re-programmed a 64-bit flash row across the whole sequence", store_pgerr == 0);
 }
 
+static void crc_tests(void) {
+  static uint8_t buf[9001];
+  for (uint32_t k = 0u; k < sizeof buf; k++) buf[k] = (uint8_t)(k * 7u + (k >> 5));
+  int p0 = polls;
+  ck("crc: pmp_crc32_polled hashes an image in 4 KB pieces — three polls for 9001 bytes — and equals pmp_crc32 exactly",
+     pmp_crc32((const uint8_t *)"123456789", 9u) == 0xCBF43926u && pmp_crc32_polled(buf, sizeof buf, boot_poll) == pmp_crc32(buf, sizeof buf) &&
+     polls - p0 == 3 && pmp_crc32_polled(buf, 4096u, NULL) == pmp_crc32(buf, 4096u));
+  ck("handoff: the bootloader's record (cause and prev included) fits its 32 bytes ahead of the application's",
+     sizeof(boot_handoff_t) <= 32u && sizeof(app_handoff_t) <= 32u);
+}
+
 int main(void) {
+  crc_tests();
   crypto_tests();
   image_tests();
   bootctl_tests();

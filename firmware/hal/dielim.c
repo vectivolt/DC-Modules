@@ -20,7 +20,7 @@ void dielim_cfg_default(dielim_cfg_t *c, uint16_t kw, bool liquid) {
   c->pfc_fsw_hz = 50.0e3f;
 }
 
-void dielim_reset(dielim_t *d) { d->tj_llc = d->tj_pfc = NAN; d->declined = false; }
+void dielim_reset(dielim_t *d) { d->tj_llc = d->tj_pfc = NAN; d->declined = false; d->over_s = 0.0f; }
 
 static float rds_at(float r25, float tj_c) {
   float t = (isfinite(tj_c) && tj_c > 25.0f) ? fminf(tj_c, 175.0f) : 25.0f;
@@ -65,9 +65,14 @@ static float track(float tj, float w, float t_base, float rth, float dt) {
 float dielim_step(dielim_t *d, const dielim_cfg_t *c, float w_llc, float t_llc, float w_pfc, float t_pfc, float dt) {
   d->tj_llc = track(d->tj_llc, w_llc, t_llc, c->rth_kpw, dt);
   d->tj_pfc = track(d->tj_pfc, w_pfc, t_pfc, c->rth_kpw, dt);
-  float tj = fmaxf(isfinite(d->tj_llc) ? d->tj_llc : -60.0f, isfinite(d->tj_pfc) ? d->tj_pfc : -60.0f);
-  float fold = (tj - (DIELIM_TJ_C - DIELIM_BAND_K)) / DIELIM_BAND_K;
-  fold = fold < 0.0f ? 0.0f : (fold > 1.0f ? 1.0f : fold);
-  if (fold >= 1.0f) d->declined = true;
-  return d->declined ? 1.0f : fold;
+  /* two folds, one latch. Only the LLC's load-INDEPENDENT weak-leg term needs the decline (dielim.h): a Vienna die the
+     fold has cooled must come back on its own. And not on one sample — the τ 0.5 s estimate overshoots the band on a
+     load step at a hot corner — but after DIELIM_DECLINE_S at the ceiling. */
+  float fl = isfinite(d->tj_llc) ? (d->tj_llc - (DIELIM_TJ_C - DIELIM_BAND_K)) / DIELIM_BAND_K : 0.0f;
+  float fp = isfinite(d->tj_pfc) ? (d->tj_pfc - (DIELIM_TJ_C - DIELIM_BAND_K)) / DIELIM_BAND_K : 0.0f;
+  fl = fl < 0.0f ? 0.0f : (fl > 1.0f ? 1.0f : fl);
+  fp = fp < 0.0f ? 0.0f : (fp > 1.0f ? 1.0f : fp);
+  d->over_s = (fl >= 1.0f) ? d->over_s + dt : 0.0f;
+  if (d->over_s >= DIELIM_DECLINE_S) d->declined = true;
+  return fmaxf(d->declined ? 1.0f : fl, fp);
 }

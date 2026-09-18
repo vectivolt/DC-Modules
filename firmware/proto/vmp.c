@@ -367,11 +367,6 @@ void vmp_rx(vmp_t *v, const pmp_frame_t *f, uint32_t now, const mod_tlm_t *m, mo
 
 /* ---------------- transmit ---------------- */
 
-static float tmax_zone(const mod_tlm_t *m) {
-  float z[3] = { m->t_pfc, m->t_llc, m->t_xfmr }, t = NAN;
-  for (unsigned k = 0u; k < 3u; k++) if (isfinite(z[k]) && !(t >= z[k])) t = z[k];
-  return t;
-}
 
 static uint64_t warn_bits(const vmp_t *v, const mod_tlm_t *m, uint32_t age, pmp_txq_t *tx) {
   uint64_t w = m->warn;
@@ -428,7 +423,7 @@ void vmp_tick(vmp_t *v, uint32_t now, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_tx
 
   /* canonical intent. RUN is a level: it is NOT dropped on a timeout — the core then holds the module until the controller
      is seen sending RUN = 0 again, so a stream that simply resumes cannot restart a stopped module. */
-  cmd->run = v->run && addressed(v);
+  cmd->run = v->run && addressed(v) && !v->conflict;   /* another node speaks with this address: any unicast may be meant for it — hold, as the TonHe profile does */
   cmd->omode = v->omode; cmd->v_set_v = v->v_set;
   cmd->p_set_w = v->p_set;
   if (v->cfg.p_cap_10w != 0xFFFFu) {
@@ -493,10 +488,9 @@ void vmp_tick(vmp_t *v, uint32_t now, const mod_tlm_t *m, mod_cmd_t *cmd, pmp_tx
   bool why_ch = m->derate_why != v->sent_why && now - v->t_derate >= 20u;
   if (why_ch || due(&v->t_derate, now, 1000u)) {
     v->t_derate = now; v->sent_why = m->derate_why;
-    float tz = tmax_zone(m);
     d[0] = pmp_sat_u8(m->derate * 100.0f, 0.5f);
     pmp_put16(d + 1, m->derate_why); pmp_put16(d + 3, pmp_sat_u16(m->p_lim, 10.0f));
-    d[5] = (uint8_t)pmp_sat_i8(isfinite(tz) ? PMP_OT_DERATE_C - tz : NAN, 1.0f);
+    d[5] = (uint8_t)pmp_sat_i8(m->t_margin_k, 1.0f);   /* kelvin to the nearest zone's own derate onset, inlet included */
     d[6] = (uint8_t)((m->rs == MOD_RS_MODE_CHANGE ? 3u : (m->mode == MODE_SER ? 2u : 1u)) | ((uint8_t)m->omode << 4));
     d[7] = 0u;
     emit(tx, VMP_P_MED, VMP_F_TLM_DERATE, VMP_ADDR_ALL, me, d);

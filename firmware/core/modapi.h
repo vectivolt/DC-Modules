@@ -50,6 +50,7 @@ typedef struct {                /* module truth — core + HAL write it once per
   float v_ext; bool ext_connected;        /* the pack/external node behind DOUT — 3 of 5 vendors carry it */
   float vin_ll, vin_ph[3], line_hz;
   float t_inlet, t_pfc, t_llc, t_xfmr, t_diode, t_bank, t_mcu, t_coolant;
+  float t_margin_k;             /* kelvin to the nearest zone's derate onset (the inlet zone included) — the HAL's zone map, not one scale */
   uint16_t fan_rpm[4]; uint8_t fan_duty, fan_fail;
   uint32_t uptime_s, op_s, energy_wh, starts; uint16_t fault_total;
   bool log_overflow, quiet_fan;

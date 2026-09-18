@@ -518,6 +518,7 @@ int main(void) {
       in.vbank_a = 300; in.vbank_b = 20;   /* both below the node - the old permit closed here */
       for (int t_ = 0; t_ < 140; t_++) { if (f.out.pfc_en) in.vbus = f.out.vbus_ref; E78_STEP(1); }   /* through the 60 ms bypass blank */
       int blocked = !f.out.k_para && !f.out.k_parb && f.out.q_disch_bk;
+      for (int t_ = 0; t_ < 80; t_++) { in.vbank_a *= 0.97f; E78_STEP(1); }   /* the bleeder brings bank A down on its τ, not in a sample */
       in.vbank_a = 30; E78_STEP(3);
       ck("a 280 V bank mismatch holds the PAR make (bleeders on); 10 V of mismatch closes it",
          blocked && f.out.k_para && f.out.k_parb); }
@@ -566,6 +567,8 @@ int main(void) {
     { /* the link alone below 60 V is NOT discharged — both banks must be too, nor is it discharged
          while the output studs hold 400 V, and the exit carries a 100 ms persistence */
       int held = f.st == ST_DISCH && f.out.q_disch_bk;
+      /* the banks fall on the bleeders (τ ≈ 0.27 s), never by half in a millisecond — a channel that reads that is lying */
+      for (int t = 0; t < 120; t++) { in.vbank_a *= 0.97f; in.vbank_b *= 0.97f; E78_STEP(1); }
       in.vbank_a = in.vbank_b = 30; in.vout_meas = 30; E78_STEP(105);
       int off = f.st == ST_OFF && !f.out.q_disch && !f.out.q_disch_bk;
       in.wake_req = true; E78_STEP(1); in.wake_req = false;

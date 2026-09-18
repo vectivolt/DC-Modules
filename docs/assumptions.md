@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
   <img src="https://img.shields.io/badge/gate-stress--audit_·_review--checks-2ea44f?style=flat-square" alt="gate: stress-audit · review-checks"/>
 </p>
 
@@ -239,7 +239,7 @@
 | 13.8 | Modelling inputs | fan static pressure 110 Pa at the 160 m³/h class; grid impedance 30 µH + 20 mΩ per phase, and a stiff 50 µH site for the line-return surge; prices ±25 % | site- and lot-dependent inputs the design is only weakly sensitive to — except the fan curve, which the whole air budget rests on | ASSUMED | vendor static-pressure curve · site survey if asked · RFQ round 1 |
 | 13.9 | Load dump at an 830 V link | the repo plant reads 833 V, an independent model 856–872 V; both zero-cost firmware levers are already in | two models disagree and only a bench settles it | ASSUMED | T-78 |
 | 13.10 | Weak-leg residual map | two independent switched models disagree by 2× at the same point; the firmware map deliberately errs high | neither model is measured | ASSUMED | T-58 / T-72 relax it |
-| 13.11 | LOW-mode output clamp | no hardware clamp below 1 050 V in LOW mode; the interim is the F.13 comparator scheduled by mode (560 V in LOW) on its own DAC reference | whether a second hardware clamp earns its place is a hardware decision, not a calculation | ASSUMED | a hardware decision, then T-06 / T-30 |
+| 13.11 | LOW-mode output clamp | no hardware clamp below 1 050 V in LOW mode; the interim is the F.13 comparator scheduled by mode while the LLC runs (560 V in LOW; 1 050 V with the bridge off, since an idle module's terminals carry the bus) on its own DAC reference | whether a second hardware clamp earns its place is a hardware decision, not a calculation | ASSUMED | a hardware decision, then T-06 / T-30 |
 | 13.12 | Loss-ledger reconciliation | the ledger and the thermal grid differ by ≈ 202 W of accounting split | the two engines apportion the same watts differently | ASSUMED | **O-17** |
 
 ## 14. Simulation-fidelity decisions
@@ -263,5 +263,5 @@
 <div align="center">
 <sub><a href="architecture.md">← Platform Architecture</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="validation-report.md">Validation Report →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

@@ -56,6 +56,7 @@ typedef struct {
 
 static app_t app;
 static plant_t pl;
+static bool iout_stuck;                                    /* the output shunt amplifier's pair stuck at its common mode: reads 0 A */
 static app_tick_out_t last_o;
 static app_pfc_out_t po;
 static app_llc_out_t lo;
@@ -111,7 +112,7 @@ static void plant_llc(app_llc_adc_t *s) {
   if (pl.vb > pl.vo + 1.0) { double v = (400e-6 * (pl.vb - 1.0) + 100e-6 * pl.vo) / 500e-6; pl.vb = v + 1.0; pl.vo = v; }   /* DOUT */
   pl.iout = iload + (pl.vo - vo0) * 100e-6 / dt;
   pl.p_llc_in = pl.vb * pl.ib / 0.975;
-  double d = pl.iout / pl.cal.ch[MCH_IOUT].gain;
+  double d = iout_stuck ? 0.0 : pl.iout / pl.cal.ch[MCH_IOUT].gain;
   s->vout = counts(MCH_VOUT, pl.vo); s->iout_p = (float)(1601.0 + d / 2 / vref_k); s->iout_n = (float)(1601.0 - d / 2 / vref_k);
   s->ires = counts(MCH_IRES, 1.5 * pl.ib); s->vbka = counts(MCH_VBKA, pl.vb); s->vbkb = counts(MCH_VBKB, pl.vb);
 }
@@ -223,9 +224,9 @@ int main(void) {
   printf("      comparator references: F.01 %.3f V · F.03 %.3f V · F.13 %.3f V · clamp %.3f V\n",
          last_o.dac_v[APP_DAC_IA], last_o.dac_v[APP_DAC_VBUS], last_o.dac_v[APP_DAC_VOUT], last_o.dac_v[APP_DAC_CLAMP]);
   /* F.03 carries the AMC1311 1.44 V common mode; F.13 is scheduled by mode — 560 V in LOW */
-  ck("app: the 50 kW air strap gives four fans and the comparator references F.01 2.664 V, F.03 2.208 V, F.13 (LOW) 1.940 V",
+  ck("app: the 50 kW air strap gives four fans and the comparator references F.01 2.664 V, F.03 2.208 V, F.13 2.378 V (1050 V while the LLC is off, whatever the mode)",
      app.kw == 50u && app.n_fans == 4u && fabsf(last_o.dac_v[APP_DAC_IA] - 2.664f) < 0.01f &&
-     fabsf(last_o.dac_v[APP_DAC_VBUS] - 2.208f) < 0.01f && fabsf(last_o.dac_v[APP_DAC_VOUT] - 1.940f) < 0.01f);
+     fabsf(last_o.dac_v[APP_DAC_VBUS] - 2.208f) < 0.01f && fabsf(last_o.dac_v[APP_DAC_VOUT] - 2.378f) < 0.01f);
   ck("app: idle, the HW-REC-1 clamp reference arms at the mode's F.13 threshold", fabsf(last_o.dac_v[APP_DAC_CLAMP] - last_o.dac_v[APP_DAC_VOUT]) < 0.005f);
   int idle_clear = !last_o.disch_intent;
 
@@ -237,10 +238,10 @@ int main(void) {
     float cb = last_o.dac_v[APP_DAC_VBUS] / (float)LSB, ca = last_o.dac_v[APP_DAC_IA] / (float)LSB, co = last_o.dac_v[APP_DAC_VOUT] / (float)LSB;
     printf("      VREFP +2.5 %%: k_ref %.4f · the F.03 code reads %.1f V, F.01 %.1f A, F.13 %.1f V through meas_val\n",
            (double)k, (double)meas_val(&app.cal, MCH_VBUS, cb, k), (double)meas_val(&app.cal, MCH_IA, ca, k), (double)meas_val(&app.cal, MCH_VOUT, co, k));
-    ck("app: with VREFP 2.5 % high the comparator codes are the inverse of the corrected measurement — F.03 lands on 860 V, F.01 on its class, F.13 (LOW) on 560 V — and the module reaches STANDBY clean",
+    ck("app: with VREFP 2.5 % high the comparator codes are the inverse of the corrected measurement — F.03 lands on 860 V, F.01 on its class, F.13 (idle) on 1050 V — and the module reaches STANDBY clean",
        fabsf(k - 1.025f) < 0.002f && app.fsm.st == ST_STANDBY && app.fsm.latched == FC_NONE &&
        fabsf(meas_val(&app.cal, MCH_VBUS, cb, k) - 860.0f) < 1.0f && fabsf(meas_val(&app.cal, MCH_IA, ca, k) - app.fsm.oc_line_a) < 0.3f &&
-       fabsf(meas_val(&app.cal, MCH_VOUT, co, k) - 560.0f) < 1.0f); }
+       fabsf(meas_val(&app.cal, MCH_VOUT, co, k) - 1050.0f) < 1.0f); }
   /* AVMID is judged against its own rail: a healthy buffer reads half scale whatever VREFP does, so a rail 4 % high (inside the
      ±5 % reference window) must not fail it, and a buffer 4 % off the rail must */
   vref_k = 1.04f; boot(false, NULL); run_ms(1500);
@@ -282,6 +283,8 @@ int main(void) {
   ck("app: a TonHe start (400 V, 100 A) into 5 Ω reaches RUN within 3 s and holds 400 V ± 2 % at 80 A",
      t_run >= 0 && t_run < 3000 && fabs(pl.vo - 400.0) < 8.0 && fabs(pl.iout - 80.0) < 4.0 && app.fsm.latched == FC_NONE);
   ck("app: telemetry reads ON and the TonHe state frame carries it (0x01)", app.tlm.rs == MOD_RS_ON && state_byte == 0x01);
+  ck("app: delivering in LOW mode the F.13 comparator reference drops to the 560 V bank limit (1.940 V); it was 1050 V while idle",
+     fabsf(last_o.dac_v[APP_DAC_VOUT] - 1.940f) < 0.01f);
   /* economizer duty — closed coils hold at 40 % after the 60 ms pull-in; open coils read 0 */
   ck("app: relay-coil economizer holds KPRE and the closed matrix pair at 40 % after pull-in, open coils at 0",
      last_o.relay_duty[APP_RLY_KPRE] == 0.4f && last_o.relay_duty[APP_RLY_KPARA] == 0.4f &&
@@ -387,7 +390,7 @@ int main(void) {
     ck("app: 285 VAC on the 830 V link runs unfolded on a 40 °C sink and folds 3–25 % on a 77 °C sink — thermal derate reported, the Vienna junction estimate inside its band, no fault",
        cool_ok && i_cool > 100.0 && fold_ok);
     ck("app: 150 V into a resistor on a 77 °C sink is DECLINED on the two-die 50 kW air — 0 A available with the thermal-derate bit, no fault latched, the link at its 650 V floor",
-       app.die.declined && app.fsm.latched == FC_NONE && (app.ctl.derate_why & PMP_DR_THERMAL) && pl.iout < 5.0 && app.ctl.i_avail == 0.0f && pl.vbus < 670.0);
+       app.die.declined && app.fsm.latched == FC_NONE && (app.ctl.derate_why & PMP_DR_THERMAL) && pl.iout < 5.0 && app.ctl.i_avail == 0.0f && pl.vbus < 670.0 && app.tlm.derate < 0.05f);
     /* … and the refusal belongs to that POINT, not to the module: stop (the PFC stays warm), ask for 400 V, get it */
     th_stop(); run_ms(400); pl.load_r = 5.0;
     hold(400.0, 100.0, 4000);
@@ -444,6 +447,26 @@ int main(void) {
   printf("      fan curve: one slow fan -> fail 0x%02X derate %.2f · three failed -> F.%d\n", 0x04, d_target, (int)app.fsm.latched);
   ck("app: a fan at 15 %% of commanded speed fails the curve in 3 s (0.6 derate on the 4-fan SKU); three failed latch F.25",
      one_failed && d_target <= 0.61f && d_target > 0.35f && app.fsm.latched == FC_FAN);
+
+  /* the output current channel's only witness is the Vienna's commanded power: a pair stuck at its common mode reads
+     0 A while 30 kW leave — no CC loop, no F.15, no F.16 — and must be F.29 inside a second */
+  boot(false, NULL); run_ms(1000); pl.load_r = 5.0; (void)start_run(400.0, 100.0, 6000); hold(400.0, 100.0, 1000);
+  iout_stuck = true; hold(400.0, 100.0, 1500); iout_stuck = false;
+  ck("app: an output current channel that reads 0 A while the Vienna delivers 30 kW is F.29 within a second (the energy-balance witness)",
+     app.fsm.latched == FC_SENSOR && !(last_o.do_bits & (APP_DO_EN_PFC | APP_DO_EN_LLC)));
+
+  /* fans follow the SINK zones: idle at a 40 °C ambient with both stages off they stop — on the worst-zone scale the
+     inlet alone commanded 81 % for ever */
+  boot(false, NULL); run_ms(1500);
+  ck("app: in cold standby at a 40 °C ambient the fans are off — the curve reads the sinks, not the inlet",
+     app.fsm.st == ST_STANDBY && last_o.fan_duty[0] == 0.0f && last_o.fan_duty[1] == 0.0f);
+
+  /* isum is republished per line cycle: ONE disturbed cycle must not latch F.29 (a LATCH row); three in a row do */
+  boot(false, NULL); run_ms(1000); pl.load_r = 5.0; (void)start_run(400.0, 100.0, 6000); hold(400.0, 100.0, 500);
+  pl.i_inject[0] = 12.0; hold(400.0, 100.0, 20); pl.i_inject[0] = 0.0; hold(400.0, 100.0, 300);
+  int one_ok = app.fsm.latched == FC_NONE;
+  pl.i_inject[0] = 12.0; hold(400.0, 100.0, 90); pl.i_inject[0] = 0.0;
+  ck("app: one disturbed line cycle of Σi does not latch F.29; three consecutive cycles do", one_ok && app.fsm.latched == FC_SENSOR);
 
   boot_as(false, NULL, (uint8_t)PMP_PROFILE_NATIVE); run_ms(1200);
   { /* the event ring holds the boot event and a fault set/clear pair; the VMP objects read it back */

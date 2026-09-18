@@ -44,19 +44,25 @@ static bool disch_kept;                              /* what the sealed applicat
    fault landing inside the write's own bus cycle is caught by the read-back and undone within the same section; and a
    fault after it is the ordinary enable-then-fault path the hardware latches. Every path out with a trip leaves ALL
    outputs disabled and the shadow empty, so the next interrupts re-decide from the supervisor. */
-static uint32_t out_en;
-TCM_INLINE void outputs_commit(uint32_t want, uint32_t group) {
-  uint32_t cur = out_en & group, dis = cur & ~want, en = want & ~cur;
+/* One shadow per group, each with ONE writer (its own interrupt). The 100 kHz interrupt pre-empts the 10 kHz one, so a
+   shared word read-modified-written by both could hand the LLC's final store a stale PFC half: a PFC output the shadow
+   then calls on while it is off never gets its enable write again — a stuck-off stage. A trip zeroes this group's shadow
+   only; the other group's outputs are off as well (hrtimer_all_off) under a shadow still saying on, which is the safe
+   side, and it is refreshed within one of its own cycles because the unacknowledged trip makes its apply() ask for
+   nothing. The "memory" clobbers keep the trip_ack read and the register accesses inside the masked section. */
+static uint32_t out_en_pfc, out_en_llc;
+TCM_INLINE void outputs_commit(uint32_t want, uint32_t *shadow) {
+  uint32_t cur = *shadow, dis = cur & ~want, en = want & ~cur;
   if (dis) HRT_CHOUTDIS = dis;
   if (en) {
-    __asm volatile ("cpsid i");
+    __asm volatile ("cpsid i" ::: "memory");
     bool trip = app.trip_n != app.trip_ack || hrtimer_trip_pending();
     if (!trip) { HRT_CHOUTEN = en; trip = hrtimer_trip_pending(); }
     if (trip) hrtimer_all_off();
-    __asm volatile ("cpsie i");
-    if (trip) { out_en = 0u; return; }
+    __asm volatile ("cpsie i" ::: "memory");
+    if (trip) { *shadow = 0u; return; }
   }
-  out_en = (out_en & ~group) | want;
+  *shadow = want;
 }
 
 /* ---------------- 100 kHz: sample set from the previous roll-over trigger, control law, duties for the next roll-over.
@@ -71,7 +77,7 @@ RAMFUNC void pfc_ctl_isr(void) {
   adc_read_pfc(&s, &ires, &vout, &ioutp, &ioutn, &t_inlet, &vbka, &vbkb, &v24);
   app_pfc_out_t po;
   app_pfc_isr(&app, &s, &po);
-  outputs_commit(hrtimer_pfc_apply(&po), HRT_OUT_PFC);
+  outputs_commit(hrtimer_pfc_apply(&po), &out_en_pfc);
   lsum[0] += vout; lsum[1] += ioutp; lsum[2] += ioutn; lsum[3] += ires; lsum[4] += vbka; lsum[5] += vbkb;
   if (++lsum_n >= 10u) {                             /* decimate in the writer, publish, then reset */
     uint8_t w = (uint8_t)(lmean_i ^ 1u);
@@ -92,7 +98,7 @@ RAMFUNC void hrtimer_mt_isr(void) {
   HRT_MTINTC = BIT(4);                               /* REPIF */
   app_llc_out_t lo;
   app_llc_isr(&app, &lmean[lmean_i], &lo);
-  outputs_commit(hrtimer_llc_apply(&lo), HRT_OUT_LLC);
+  outputs_commit(hrtimer_llc_apply(&lo), &out_en_llc);
   uint32_t us = (DWT_CYCCNT - t0) / (PORT_SYSCLK_HZ / 1000000u);
   if (us > llc_us_max) llc_us_max = (uint16_t)us;
 }
@@ -138,11 +144,18 @@ void flash_service(void) {
   __asm volatile ("cpsie i");
 }
 
-/* tach edges (two pulses per revolution): EXTI 2 (PF2) · 14 (PD14) · 5 (PD5) · 3 (PB3) */
-void exti2_isr(void)  { EXTI_PD = BIT(2);  tach_cnt[0]++; }
-void exti14_isr(void) { EXTI_PD = BIT(14); tach_cnt[1]++; }
-void exti5_isr(void)  { EXTI_PD = BIT(5);  tach_cnt[2]++; }
-void exti3_isr(void)  { EXTI_PD = BIT(3);  tach_cnt[3]++; }
+/* tach edges (two pulses per revolution): EXTI 2 (PF2) · 14 (PD14) · 5 (PD5) · 3 (PB3). An edge inside 500 µs of the
+   previous one is ringing or the 25 kHz fan PWM coupling into the tach line, not a revolution (full speed is 120 Hz,
+   8.3 ms between edges); counted, a doubled edge reads a fan at 35 % of its command as 70 % and hides the failure. */
+static uint32_t tach_t[4];
+static void tach_edge(int k) {
+  uint32_t now = DWT_CYCCNT;
+  if (now - tach_t[k] >= PORT_SYSCLK_HZ / 2000u) { tach_t[k] = now; tach_cnt[k]++; }
+}
+void exti2_isr(void)  { EXTI_PD = BIT(2);  tach_edge(0); }
+void exti14_isr(void) { EXTI_PD = BIT(14); tach_edge(1); }
+void exti5_isr(void)  { EXTI_PD = BIT(5);  tach_edge(2); }
+void exti3_isr(void)  { EXTI_PD = BIT(3);  tach_edge(3); }
 
 static void exti_init(void) {
   SYSCFG_EXTISS(0) = (SYSCFG_EXTISS(0) & ~(0xFu << 8)) | (5u << 8);     /* EXTI2 ← PF */
@@ -173,12 +186,13 @@ void pwm_out_init(void) {
   TIM_CH0CV(TIM3) = 0u;
   TIM_CTL0(TIM3) = BIT(7) | BIT(0);
 }
+static uint32_t duty_counts(float d, float full) { return (d > 0.0f) ? (uint32_t)((d < 1.0f ? d : 1.0f) * full) : 0u; }   /* NaN / negative → 0: casting either to unsigned is undefined */
 void pwm_fan(float d1, float d2) {
-  TIM_CH1CV(TIM19) = (uint32_t)(d1 * 8640.0f);
-  TIM_MCH0CV(TIM19) = (uint32_t)(d2 * 8640.0f);
+  TIM_CH1CV(TIM19) = duty_counts(d1, 8640.0f);
+  TIM_MCH0CV(TIM19) = duty_counts(d2, 8640.0f);
 }
 void pwm_relay(const float duty[APP_RLY_COUNT]) {
-  TIM_CH0CV(TIM3) = (uint32_t)(duty[APP_RLY_KSER] * 10800.0f);
+  TIM_CH0CV(TIM3) = duty_counts(duty[APP_RLY_KSER], 10800.0f);
   /* KPARA is DC, like KPARB. The UEXCL 74HC02 interlock is a LEVEL gate — a 20 kHz / 40 % chop would hold
      Y3 = KPARA ∨ KPARB low for 60 % of every 50 µs, so a faulted {KSER, KPARA, ¬KPARB} would drive the KSER coil at
      60 % of 24 V, far above must-operate, in exactly the fault the gate exists for. The DC coil costs +0.42 W of the
@@ -339,8 +353,13 @@ int main(void) {
   /* Report the RAW cause and let the HAL classify. The design's primary supervisor is the TPS3430, whose WDO is
      wire-ORed onto NRST and therefore arrives as EPRSTF (bit 26), not FWDGTRSTF — testing for FWDGTRSTF alone would
      leave F.32 silent on the dominant hang path. RSTSCK's flags live at 25..31, so the byte carries all of them. */
-  b.reset_cause = (uint8_t)((port_reset_cause >> 24) & 0xFFu);
-  b.handoff_reboot = have_h && h.reason == HANDOFF_REBOOT;
+  /* system_init() clears RCU_RSTSCK after reading it, and the BOOTLOADER's system_init ran first: read here the flags
+     are always zero and F.32 (a watchdog reset) could never be attributed. The bootloader hands over its snapshot and
+     the reason the application itself sealed before the reset (the record's own reason is NONE by now — rewritten
+     before the jump so that an unsealed crash counts toward the streak). The raw flags remain the fallback for an
+     image a debugger loaded with no bootloader in front of it. */
+  b.reset_cause = have_h ? h.cause : (uint8_t)((port_reset_cause >> 24) & 0xFFu);
+  b.handoff_reboot = have_h && h.prev == HANDOFF_REBOOT;
   b.disch_pending = app_handoff_valid(&HANDOFF_APP) && HANDOFF_APP.disch != 0u;   /* a discharge was in progress at the reset */
   disch_kept = b.disch_pending;
   b.hw_rev = PORT_HW_REV;                                             /* board.h — no strap on the card */
@@ -352,7 +371,7 @@ int main(void) {
   const uint8_t *hdr = (const uint8_t *)((port_slot_vtor >= FM_SLOT_B) ? FM_SLOT_B : FM_SLOT_A);
   uint32_t body = *(const uint32_t *)(hdr + 0x08);
   b.fw = *(const uint32_t *)(hdr + 0x10);                             /* image header fields (boot/image.h) */
-  b.fw_crc = (body >= 0x40u && body <= FM_SLOT_SIZE - IMG_HDR_LEN) ? pmp_crc32(hdr, IMG_HDR_LEN + body) : 0u;
+  b.fw_crc = (body >= 0x40u && body <= FM_SLOT_SIZE - IMG_HDR_LEN) ? pmp_crc32_polled(hdr, IMG_HDR_LEN + body, boot_kick) : 0u;   /* ≈ 9 ms for today's image, serviced every 4 KB */
   b.boot_ver = 0x01000000u;                                           /* the shipped bootloader build (VMP object 0x0008) */
   nvm_mount(&boot_store, 2u, nvm_port_page_size());
   if (!nvm_get(&boot_store, BOOTCTL_KIND, (uint8_t *)&boot_ctl, (uint8_t)sizeof boot_ctl)) bootctl_default(&boot_ctl);

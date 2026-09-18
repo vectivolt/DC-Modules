@@ -81,6 +81,7 @@ void grid_sample(grid_t *g, const float v[3], const float i[3], float fs) {
       if (fabsf(ir - g->irms[k]) > 0.25f * fmaxf(fmaxf(ir, g->irms[k]), 1.0f)) clean = false;
     }
     g->seq++;
+    __asm__ volatile ("" ::: "memory");   /* the published stores stay between the two seq writes (C11 orders volatile against volatile only) */
     for (int k = 0; k < 3; k++) { g->vph[k] = sqrtf(g->a_vph[k] * inv); g->vll[k] = sqrtf(g->a_vll[k] * inv); g->irms[k] = sqrtf(g->a_i[k] * inv); }
     g->isum = sqrtf(g->a_is * inv);
     g->hz = hz;
@@ -97,6 +98,7 @@ void grid_sample(grid_t *g, const float v[3], const float i[3], float fs) {
         g->dci[k] = clampf(g->dci[k] + (g->a_dci[k] * inv - g->dci[k]) * GRID_DC_KI, -GRID_DC_I_MAX, GRID_DC_I_MAX);
       }
     }
+    __asm__ volatile ("" ::: "memory");
     g->seq++;
   }
   memset(g->a_vph, 0, sizeof g->a_vph); memset(g->a_vll, 0, sizeof g->a_vll); memset(g->a_i, 0, sizeof g->a_i);

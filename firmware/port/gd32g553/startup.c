@@ -44,6 +44,7 @@ void reset_handler(void) {
   for (;;) {}
 }
 
+__attribute__((section(".ramfunc"), noinline))   /* in RAM: a fault taken while a flash bank is held by an erase still kills the outputs NOW, not after the stall */
 void default_handler(void) {
   HRT_CHOUTDIS = 0xFFFFu;                       /* every output to idle-inactive */
   GPIO_BOP(PD) = (BIT(0) | BIT(1)) << 16;       /* EN_PFC / EN_LLC low */

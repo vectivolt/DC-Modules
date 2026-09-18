@@ -6,8 +6,8 @@
 
 <p>
   <img src="https://img.shields.io/badge/status-LIVE__SPEC-2ea44f?style=flat-square" alt="status: live specification"/>
-  <img src="https://img.shields.io/badge/rev-E84-f2b705?style=flat-square" alt="revision E84"/>
-  <img src="https://img.shields.io/badge/updated-2026--09--18-8b949e?style=flat-square" alt="updated 2026-09-18"/>
+  <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
+  <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
   <img src="https://img.shields.io/badge/gate-review--checks_·_current--coordination-2ea44f?style=flat-square" alt="gate: review-checks · current-coordination"/>
 </p>
 
@@ -27,7 +27,7 @@
 | **F.11** LLC tank over-current (one window comparator on the tank CT, both polarities) | **140 A pk** | **180 A pk** | **220 A pk** | < 1 µs |
 | **F.02** DESAT | Vienna 47 pF blank · LLC 18 pF blank | = | = | worst 2.21 µs · 1.34 µs |
 | **F.03** bus OVP | 860 V | = | = | 10–20 µs |
-| **F.13** output OVP | 560 V in LOW mode · 1050 V in HIGH | = | = | 10–20 µs |
+| **F.13** output OVP | 560 V while the LLC runs in LOW mode · 1050 V in HIGH and whenever the LLC is off | = | = | 10–20 µs |
 | **F.21** discharge window | 3 s | 4 s | 5 s | per SKU |
 | **F.21b** bank bleed · measured of the registered window | 0.37 of 10.3 s | 0.49 of 15.5 s | 0.58 of 20.7 s | per SKU |
 | Supervisory rows | 1 ms tick, latched pre-fault snapshot | | | 1 ms – 5 s |
@@ -73,13 +73,13 @@ never counts. Display codes `F.xx` per [interconnect](interconnect.md) HMI.
 | **F.03** bus OVP | **860 V** total, CMP4 on SNS_VBUSP | 10–20 µs¹ | HW comp | all PWM kill | LATCH |
 | **F.05** bus UV | link below max(620 V, 1.414 · V_LL,max − 20 V) for 10 ms while delivering — the crest term closes the band in which the rectifier conducts uncontrolled at high line. If the line is found outside its window within `PMP_BUSUV_GRID_MS` (200 ms) of the latch, the row is re-filed as F.07 / F.08 / F.09 and its F.31 count is taken back: the rms line values are up to a cycle stale when F.05 fires. A collapse on a healthy line — a failing PFC, a shorted link — keeps its class and its count | 10 ms | FW | controlled stop | AUTO_INT |
 | **F.06** midpoint imbalance | \|ΔV\| > 40 V for 10 ms, whenever the link is above 100 V | 10 ms | FW | derate → stop | AUTO_INT |
-| **F.38** half-link OV | either half above **440 V** for 10 ms. F.03 (860 V total) and F.06 (±40 V midpoint) together still allow one 450 V bank to sit at 454–468 V; the trip spans 435.6–444.4 V at the calibrated ±1 % class against a normal worst half of ≈ 438 V | 10 ms | FW | stop, latch | LATCH |
+| **F.38** half-link OV | either half above **440 V** for 10 ms. F.03 (860 V total) and F.06 (±40 V midpoint) together still allow one half of the 500 V cans to sit at 454–468 V; sensing is the calibrated ±1 % class plus the live reference (±0.2 % class, bounded at ±2 % where F.29 takes over), so the trip spans 431–449 V at that bound — under the can rating and above the normal worst half of ≈ 435 V (415 V at the 830 V reference plus the 20 V the midpoint row allows) | 10 ms | FW | stop, latch | LATCH |
 | **F.07** input OV | **highest** line-line > 500 VAC, 20 ms | 20 ms | FW | stop | AUTO_EXT |
 | **F.08** input UV / sag | **lowest** line-line < 260 VAC, 100 ms (ride-through below that) | 100 ms | FW | derate / stop | AUTO_EXT |
 | **F.09** phase loss | fewer than three live phases for 40 ms | 40 ms | FW | fold back → stop | AUTO_EXT |
 | **F.37** line frequency | outside 45–65 Hz, or no zero crossing on a live line, for 200 ms | 200 ms | FW (HAL) | stop | AUTO_EXT |
 | **F.11** LLC tank OC | **140 / 180 / 220 A pk** — one window comparator on the 1:100 tank CT, both polarities, 1 MΩ hysteresis (§5, §6) | < 1 µs | HW comp | all four bridge positions off, latch | LATCH |
-| **F.13** output OVP | **1050 V in HIGH, 560 V in LOW** — the CMP0 reference is scheduled by mode every tick. Firmware mirror: stack above min(1050 V, mode ceiling × 1.05 + 20 V) for 2 ms (`PMP_OVP_MS`), or above command × 1.06 + 20 V for 200 ms while the module sources current (`PMP_OVP_SRC_MS`, a CV failure). A film-only bank overshoots up to +10 % on a 100 → 50 % step, which must not latch | 10–20 µs¹ / 2 ms / 200 ms | HW comp + FW | LLC off, latch | LATCH |
+| **F.13** output OVP | **1050 V in HIGH, 560 V in LOW while the LLC runs** — the CMP0 reference is scheduled every tick from the mode and the LLC enable: with the bridge off the terminals carry whatever the bus does (a spare LOW-mode module beside an 800 V session reads 800 V through DOUT with nothing of its own to protect), so the absolute limit applies until the stage runs. Firmware mirror: stack above min(1050 V, mode ceiling × 1.05 + 20 V) for 2 ms (`PMP_OVP_MS`), or above command × 1.06 + 20 V for 200 ms while the module sources current (`PMP_OVP_SRC_MS`, a CV failure). A film-only bank overshoots up to +10 % on a 100 → 50 % step, which must not latch | 10–20 µs¹ / 2 ms / 200 ms | HW comp + FW | LLC off, latch | LATCH |
 | **F.15** output OC | 102 % of **rated** for 100 ms · 130 % for 2 ms · and a command-relative arm, I_out > I_cmd + max(0.15 × I_rated, 5 A) for 500 ms — suppressed while `stop_ramp` is set and while the command is ≤ 0. Rated-only rows would let a failed CC loop deliver 0.96 of rated into a 0.06 request | 2 ms / 100 ms / 500 ms | FW (the CC loop is the primary limiter) | latch | LATCH |
 | **F.16** output short | V_out < 50 V with I_out above max(90 % of the command, 10 % of rated) for 10 ms. Not evaluated during a controlled stop: a stop into a resistive load reads as low voltage with current | 10 ms | FW | latch — the charger decides whether to retry | LATCH |
 | **F.17** bank imbalance | in SER with the stack made: \|VA − VB\| > 25 V for 10 ms once either bank passes 50 V. This is also the weld screen for a parallel relay: a welded KPARA ties the bank tops together, so the banks cannot split in SER | 10 ms | FW | stop, latch | LATCH |
@@ -91,14 +91,14 @@ never counts. Display codes `F.xx` per [interconnect](interconnect.md) HMI.
 | **F.25** fan fail | a fan is failed when its tach sits below 35 % of its commanded speed (floor 5 Hz) for 3 s, judged from 20 % duty. Derate is by failed **count** — 4-fan SKU: one failed 0.6, two 0.3; 2–3-fan: one failed 0.5. No fan able to cool latches | 3 s | FW | derate by count, then latch | AUTO_INT |
 | **F.26** aux UV | V15 < 12.5 V: the driver UVLO chain holds the gates low in hardware, and 5 s in INIT or SAFE without `aux_ok` latches the row. `recovered()` reads `aux_ok` for it rather than the line, so it cannot self-clear into the same dead rail | < 100 µs (HW) · 5 s (FW) | HW driver UVLO + FW | gates hold low, latch | AUTO_INT |
 | **F.28** CAN timeout | no valid control frame for the profile's timeout (VMP 1 s default, TonHe 20 s). Reported as `PMP_W_COMMS_LOST` in every state whenever `can_age_ms` is past the timeout | per profile | FW | ramp the current out in ≤ 100 ms, then standby — **not latched** | — |
-| **F.29** sensor implausible | a non-finite or physically impossible sample for 3 ms · V_out more than 20 % below a delivering stack (low side only: a stuck-low sensor blinds OVP, while V_out above the stack is a legitimate reverse-biased-diode condition) · the ADC reference beyond ±5 % for 100 ms · the sum of the line currents beyond 10 % of rated rms for 20 ms · AVMID out of window for 100 ms · a boot offset more than 150 counts from nominal | 3–100 ms | FW | stop, latch | LATCH |
+| **F.29** sensor implausible | a non-finite or physically impossible sample for 3 ms · either bank channel falling by half in one sample with the matrix at rest for 100 ms (a lying channel, not a discharge) · V_out more than 20 % below a delivering stack (low side only: a stuck-low sensor blinds OVP, while V_out above the stack is a legitimate reverse-biased-diode condition) · the ADC reference beyond ±5 % for 100 ms, or the live reference tracker at its ±2 % bound · the sum of the line currents beyond 10 % of rated rms for three consecutive line cycles (60 ms) · AVMID out of window for 100 ms · a boot offset more than 150 counts from nominal · the PFC's input power and the delivered output power disagreeing by more than 2 : 1 beyond 15 % of rating for 500 ms while the LLC runs (an output current channel stuck at zero or at full scale) | 3–500 ms | FW | stop, latch | LATCH |
 | **F.30** calibration / identity | at boot: a calibration record outside ±10 % gain or ±150 counts of nominal, **no** record at all, or no valid rating strap | boot | FW | no output | LATCH |
 | **F.31** repeated-fault lockout | 5 counted latches inside 10 min (AUTO_EXT rows never count) | — | FW | lock until CAN clear + ENABLE | LOCK |
 | **F.32** watchdog | window watchdog; the open-drain WDO gates the GATE_EN AND **and** rides NRST_CARD, so a hung MCU restarts with the enables low | HW | HW card supervisor | gates default-disabled through WDO-low and boot | LATCH |
 | **F.33** reverse output | a connected pack measured below 0 V at the readiness gate | at start | FW | inhibit, latch | LATCH |
 | **F.34** start / make-permit stall | energized in STANDBY — PFC or LLC on, or the banks bleeding toward the make-permit — without reaching RUN. The PFC boost ramp counts inside the window | 8 s | FW | latch | LATCH |
 | **F.35** control-deadline overrun | the HAL's verdict: ≥ 10 overruns inside a 100 ms window, or three ticks inside one 100 ms window that each missed three LLC periods. One late tick is not a deadline failure; a stopped interrupt still latches inside 3 ms | 3–100 ms | FW (HAL) | latch | LATCH |
-| **F.36** internal | an FSM state value the enum does not define | 1 ms | FW | latch | LATCH |
+| **F.36** internal | an FSM state value the enum does not define · the painted stack's high-water mark at 90 % or more | 1 ms | FW | latch | LATCH |
 
 ¹ The iso-sense channels that feed the OVP comparators carry a 1 nF filter (pole ≈ 23 kHz) plus the AMC1311 group
 delay, so the total trip path is ≈ 10–20 µs. At the trip dV/dt of a load dump (≈ 18 V/ms) the overshoot is ≤ 0.5 V.
@@ -330,5 +330,5 @@ A²s per diode, ≤ 15 % of that class · gG fuses see ≤ 3 % of their pre-arc 
 <div align="center">
 <sub><a href="../boards/30kw/README.md">← 30 kW Module Walkthrough</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="current-coordination.md">Current & Protection Coordination →</a></sub>
 
-<sub>Vectivolt DC-Modules · documentation rev E84 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
+<sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

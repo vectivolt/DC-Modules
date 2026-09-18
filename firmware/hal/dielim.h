@@ -30,6 +30,7 @@
 #define DIELIM_BAND_K      8.0f    /* the fold works from 142 °C to 150 °C. Narrow on purpose: the grid folds ABOVE 150 °C, so a corner
                                       it lists at 100 % (a die at 135–149 °C) must not lose more than a few percent here; wide enough
                                       that the estimate's ripple (line-cycle current, burst gating) does not chatter the availability */
+#define DIELIM_DECLINE_S   0.2f    /* a fold at 1 must hold this long before it declines: the τ 0.5 s estimate overshoots on a load step at a hot corner */
 #define DIELIM_TAU_S       0.5f    /* junction → base: TO-247 on Al2O3 + grease reaches ≈ 70 % in 0.3–0.5 s */
 #define DIELIM_RDS_TC    0.0054f   /* R_DS(on) slope per K from 25 °C — C3M0021120K rev 4: 21 → 38 mΩ at 175 °C */
 
@@ -52,7 +53,8 @@ typedef struct {
 
 typedef struct {
   float tj_llc, tj_pfc;     /* junction estimates, °C */
-  bool declined;            /* the fold reached 1 with the stage running: held until dielim_reset */
+  float over_s;             /* seconds the LLC fold has sat at 1 — the decline latches after DIELIM_DECLINE_S, not on one sample */
+  bool declined;            /* the LLC fold reached 1 with the stage running: held until dielim_reset */
 } dielim_t;
 
 void dielim_cfg_default(dielim_cfg_t *c, uint16_t kw, bool liquid);

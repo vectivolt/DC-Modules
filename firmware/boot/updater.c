@@ -78,7 +78,7 @@ uint8_t svc_port_finish(void *ctx, uint8_t slot, uint32_t size, uint32_t crc, ui
   if (slot > 1u || slot == u->ctl.confirmed || size > u->cap) return SVC_E_STATE;
   const uint8_t *img = boot_flash_map(u->base[slot]);
   img_info_t inf;
-  int r = (pmp_crc32(img, size) != crc) ? 0x100
+  int r = (pmp_crc32_polled(img, size, boot_poll) != crc) ? 0x100
         : img_verify(img, u->cap, u->base[slot], u->hw_id, u->ctl.min_version, u->keys, u->n_keys, &inf, boot_poll);
   if (r == IMG_OK && inf.size + IMG_HDR_LEN != size) r = IMG_E_SIZE;
   *reason = (uint16_t)r;

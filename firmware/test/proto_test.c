@@ -406,8 +406,11 @@ static void vmp_tests(void) {
   { vmp_t a, b; vsetup(&a, &ID, 0x10, 0, 0, 0); vsetup(&b, &ID2, 0x10, 0, 0, 5000); mod_cmd_init(&cmd); memset(&q, 0, sizeof q);
     uint8_t z[8] = { 0 }; pmp_frame_t tf = mk(vmp_id(VMP_P_FAST, 0u, VMP_F_TLM_FAST, 0xFF, 0x10), 8u, z);
     vmp_rx(&a, &tf, 5000, &m, &cmd, &q); vmp_rx(&b, &tf, 5100, &m, &cmd, &q); drain(&q);
+    a.run = true; vmp_tick(&a, 5200, &m, &cmd, &q); int held = !cmd.run; drain(&q);
     ck("VMP: on a duplicate address the incumbent keeps it and reports the conflict; the newcomer yields to unaddressed",
-       a.conflict && a.cfg.addr == 0x10 && b.cfg.addr == VMP_ADDR_NULL); }
+       a.conflict && a.cfg.addr == 0x10 && b.cfg.addr == VMP_ADDR_NULL);
+    a.conflict = false; vmp_tick(&a, 5300, &m, &cmd, &q); drain(&q);
+    ck("VMP: RUN is held while the address is in conflict — the TonHe profile's rule — and returns when the conflict clears", held && cmd.run); }
 
   { vsetup(&v, &ID, 0x10, 0, 0, 0); mod_cmd_init(&cmd); memset(&q, 0, sizeof q); m = tlm(); m.rs = MOD_RS_ON; m.v_out = 400.0f; m.i_out = 100.0f;
     int nfast = 0, t_bits = -1, nev = 0, mono = 1; uint16_t prev = 0; pmp_frame_t fast; memset(&fast, 0, sizeof fast);
