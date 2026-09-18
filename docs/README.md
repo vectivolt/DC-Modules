@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/status-HUB-0969da?style=flat-square" alt="status: navigation hub"/>
   <img src="https://img.shields.io/badge/rev-E85-f2b705?style=flat-square" alt="revision E85"/>
   <img src="https://img.shields.io/badge/updated-2026--09--19-8b949e?style=flat-square" alt="updated 2026-09-19"/>
-  <img src="https://img.shields.io/badge/pages-41_·_5_families-0969da?style=flat-square" alt="pages: 41 · 5 families"/>
+  <img src="https://img.shields.io/badge/pages-42_·_5_families-0969da?style=flat-square" alt="pages: 42 · 5 families"/>
 </p>
 
 > [!NOTE]
@@ -21,7 +21,7 @@
 
 | | |
 |---|---|
-| **Registered pages** | **41**, in five families — every one carries a banner, a status badge, and previous / next navigation generated from one registry |
+| **Registered pages** | **42**, in five families — every one carries a banner, a status badge, and previous / next navigation generated from one registry |
 | **Registry** | `calculations/doc-chrome.mjs` — the masthead, badges and footer of every page; never hand-edited on the page |
 | **Gate** | `node calculations/docs-lint.mjs` — every relative link, every `#anchor`, every masthead and footer, every mermaid type, on every registered page. It runs inside `sh calculations/run-all.sh` |
 | **Start here** | [validation report](validation-report.md) for the state of the design · [platform architecture](architecture.md) for the module itself |
@@ -153,6 +153,7 @@ inlet or ambient unless labelled Tj or core.
 | ✅ | [Verification matrix](verification-matrix.md) | requirement → evidence, open risks | `verify-independent` |
 | 🔬 | [EVT test plan](evt-plan.md) | the bench campaign T-00…T-64 | sim-vs-bench > 20 % reopens a calc |
 | 🧪 | [Firmware verification plan](firmware-verification.md) | every firmware feature as behaviour → timing → failure → recovery → test → pass, host to endurance | `run_tests.sh` · HIL and EVT planned |
+| 📚 | [Reference library](reference/README.md) | the public reference designs and firmwares kept in the repository, with their licences and what each one proved | third-party material, kept as received |
 | 🛡️ | [Reliability budget](reliability-budget.md) | MTBF prediction with its basis, wear-out clocks, no-single-point-of-darkness view | `mtbf-budget` · registered table |
 | 🧮 | [Calculations & gates](../calculations/README.md) | every engine, audit and generator | `run-all` exit 0 |
 | 🖥️ | [SPICE suites](../spice/README.md) | the ngspice runners and their outputs | result CSVs |

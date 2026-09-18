@@ -16,7 +16,7 @@ const STATUS = {
 // Reading order = footer prev/next order. [path, family, icon, title, subtitle, status, extra badges [label, message, color]]
 export const PAGES = [
   ["README.md", "hero", "", "DC-Modules", "Engineering repository for the Vectivolt 30 / 40 / 50 kW SiC EV charging modules", "OVERVIEW"],
-  ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB", [["pages", "41_·_5_families", "0969da"]]],
+  ["docs/README.md", "platform", "🧭", "Documentation Hub", "Every governing document, what each one decides, and the order to read them in", "HUB", [["pages", "42_·_5_families", "0969da"]]],
   ["docs/architecture.md", "platform", "🏗️", "Platform Architecture", "The module in one read — power path, control plane, protection layers, rails and the product family", "LIVE_SPEC"],
   ["docs/assumptions.md", "platform", "📒", "Decision Register", "The design decisions in force — each value, why it holds, and what would invalidate it", "LIVE_SPEC", [["gate", "stress--audit_·_review--checks", "2ea44f"]]],
   ["docs/validation-report.md", "platform", "🛡️", "Validation Report", "What the independent validation found, what is fixed, what is still open and why — with the decision table for every proposed part and the first-prototype bring-up plan", "LIVE_SPEC", [["verdict", "READY_FOR_BENCH_BRING--UP", "d19a00"], ["open", "C--10_needs_the_layout", "d19a00"]]],
@@ -44,6 +44,7 @@ export const PAGES = [
   ["docs/verification-matrix.md", "verification", "✅", "Verification Matrix & Risk Register", "Every requirement mapped to its evidence, and the risks still open", "LIVE_SPEC", [["verify--independent", "243%2F243", "2ea44f"]]],
   ["docs/evt-plan.md", "verification", "🔬", "EVT Test Plan", "The first-hardware campaign, test by test, and the rule that lets bench results reopen a calculation", "LIVE_SPEC"],
   ["docs/firmware-verification.md", "verification", "🧪", "Firmware Verification Plan", "Every firmware feature as behaviour, timing, failure, recovery, test and pass criterion — host, HIL, fuzzing, conformance and endurance", "LIVE_SPEC", [["host", "355_checks_·_ASan%2FUBSan", "2ea44f"]]],
+  ["docs/reference/README.md", "verification", "📚", "Reference Library", "The public reference designs and firmwares kept in the repository — what each is, where it came from, its licence and what it proved", "EVIDENCE"],
   ["docs/reliability-budget.md", "verification", "🛡️", "Reliability Budget", "Parts-count MTBF prediction with its basis declared, the wear-out clocks, and how a module fails safe", "LIVE_SPEC", [["gate", "mtbf--budget_·_CONSISTENT", "2ea44f"]]],
   ["calculations/README.md", "verification", "🧮", "Calculations & Gates", "Every engine, audit and generator — and the one command that reproduces the design", "OVERVIEW", [["run--all", "exit_0", "2ea44f"]]],
   ["spice/README.md", "verification", "🖥️", "SPICE Simulation Suites", "The ngspice runners, what each one proves, and where its results land", "OVERVIEW"],
