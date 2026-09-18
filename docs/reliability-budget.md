@@ -113,7 +113,7 @@ unbooted), and availability above one module comes from running modules in paral
 ---
 
 <div align="center">
-<sub><a href="firmware-verification.md">← Firmware Verification Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../calculations/README.md">Calculations & Gates →</a></sub>
+<sub><a href="reference/README.md">← Reference Library</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="../calculations/README.md">Calculations & Gates →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>

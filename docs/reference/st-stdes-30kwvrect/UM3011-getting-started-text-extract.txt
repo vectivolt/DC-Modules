@@ -1,0 +1,89 @@
+UM3011 Rev 1 (April 2022) — "Getting started with the STDES-30KWVRECT 30 kW Vienna PFC rectifier reference design", STMicroelectronics.
+Text extract of pages 1–13, 17 and 18–31, taken through the PDF's own text layer on 2026-09-19 (the file could not be downloaded from this network; the
+schematic pages 32–41 repeat the schematic PDF kept beside this file, pages 42–58 are the BOM and the licence pages of the BOM PDF).
+Source: https://www.st.com/resource/en/user_manual/um3011-getting-started-with-the-stdes30kwvrect-30-kw-vienna-pfc-rectifier-reference-design-stmicroelectronics.pdf
+© 2022 STMicroelectronics — reproduced here for internal engineering reference only.
+
+[[page 1]]
+Introduction. The STDES-30KWVRECT reference design introduces a complete digital power solution for high-power three-phase active front end (AFE) rectifier applications based on the three-level Vienna topology. This platform achieves a peak efficiency of more than 98.5% by using the SCTWA90N65G2V-4 and the STPSC40H12CWL. It features a fully digital control with the STM32G474RET3 mixed-signal high-performance microcontroller, providing the full control of the PF, DC voltage, and soft startup procedure. The STDES-30KWVRECT achieves a low total harmonic distortion (less than 5% THD at full load) and a high-power factor (higher than 0.99 at full load), providing a high-bandwidth continuous conduction mode (CCM) current regulation. The STDES-30KWVRECT is a fully assembled kit developed for performance evaluation only, not available for sale.
+
+[[page 2]]
+1 Overview. 1.1 Safety instructions. Attention: This reference design is designed for demonstration purposes only and is not intended for domestic or industrial installations. Danger: The high-voltage levels used to operate this reference design could provoke a serious electrical shock. This reference design has to be used in a suitable laboratory by qualified personnel only, familiar with the installation, use, and maintenance of power electrical systems. During operation, do not touch the reference design as some of its components could reach a very high temperature.
+1.2 Features. 1.3 Architecture. The DC fast charging supply consists of a three-phase active front end (AFE) rectifier, which provides a regulated DC link from a universal three-phase AC input, while it demands a high-quality current from the grid.
+• Three-phase, three-level AC-DC power converter: nominal rate for DC voltage 800 V DC; nominal rate for AC voltage 400 V AC at 50 Hz; maximum power 30 kW; power factor > 0.99; inrush current control and soft start-up; THD lower than 5% at nominal operation.
+• Power section based on SiC MOSFETs and SiC diodes: high frequency operation (70 kHz); high efficiency > 98.5%; paralleled SiC MOSFETs for higher power with balanced sharing current; passive element weight and size reduction.
+• Control section based on the STM32G474RE microcontroller: control and monitoring interfaces SWD–UART, I²C, and DACs; 64-pin digital power connector; LED status as UI; four integrated high-performance op-amps for additional features.
+
+[[page 3]]
+The Vienna rectifier works as a three-phase boost converter that steps up the AC mains input voltage to 800 V DC output while forcing a sinusoidal input current that is in-phase with the input voltage on all three phases. Each phase consists of a boost inductor, a pair of rectifiers (STPSC40H12C SiC Schottky diodes) and a set of series connected MOSFETs (each position uses two paralleled SCTWA90N65G2V-4 SiC MOSFET). The MOSFETs are connected to the center point of a capacitive divider, which reduces the voltage stress on the SiC MOSFETs. Two SiC Schottky diodes of each phase are used for boosting during the input AC voltage positive and negative alternation. The driving circuit is an STGAP2SICS galvanic isolated driver IC for SiC MOSFETs. It provides 4 A driving current capability and a common mode transient immunity (CMTI) up to 100 V/ns. The control of the Vienna PFC is implemented with an STM32G474RE microcontroller, which includes PFC, THD, voltage regulation, input overcurrent protection (OCP), overvoltage protection (OVP), soft-start, and inrush current limit functions.
+1.4 Specifications — Table 1. Electrical characteristics: VAC(L-L) input line-line AC voltage 345 / 400 / 460 Vrms; fAC 47 / 50 / 63 Hz; Vout 700 / 800 / 850 V; Pout 30 kW max; Iout 37.5 A max at VDC = 800 V; Iin 50 A max at VAC(L-L) = 350 V; peak efficiency 98.56 % at 400 V / 800 V and 98.7 % at 450 V / 800 V.
+
+[[page 4]]
+iTHD < 5 % at load > 50 %; PF 0.99 at load > 50 %; Iinrush 30 A max at VAC(L-L) = 450 V.
+1.5 Kit component overview. 1.5.1 Power board components: 1 AC input connector, 2 fuse, 3 EMI filter, 4 inrush current limiter, 5 PFC choke, 6 SiC MOSFET, diode and heatsink, 7 drive circuit, 8 PFC output capacitors, 9 sensing and amplifier circuit, 10 control board, 11 fans.
+
+[[page 5–6]]
+Topology: a set of Y-connected 120-degree three-phase AC voltages; each phase a boost inductor, a pair of SiC Schottky diodes and a set of series-connected SiC MOSFETs connected to the centre point of the capacitive divider. When iLA > 0 and SA = 1 the phase node is clamped to the midpoint; when SA = 0 the current flows through DA+ and the node is clamped to VDC+. Symmetrically for iLA < 0. Each phase is two boost converters in series sharing the same inductor and switch.
+1.5.2.1 Power stage calculation: VA(t) = √(2/3)·VAC(L-L)·sin(ω0 t) (1–3); Pin = Pout/η (4); IAPK = √2·Pin/(√3·VAC(L-L)) (5–6); DA(t) = 1 − VA(t)/(Vo/2) (7); M = Vo/(2·VAC(L-L)) (8); IQ_ave = IAPK·(1/2 − 1/(3M)) (9); IQ_RMS = IAPK·√(1/2 − 8/(3√3·π·M)) (10); Id_ave = IAPK/(2√3·M) (11); Id_RMS = IAPK·√(4/(3√3·π·M)) (12).
+
+[[page 7–9]]
+1.5.2.2 Inductor design: VA(t) = Δipp/(DA(t))·L·fs (13); Δipp maximum at sin(ω0 t) = 3M/2: Δipp,max = Vo/(8·L·fs) (15); L = Vo/(8·Δipp,max·fs) (16).
+Table 2. Inductor: Sunlord ARLDC724676C271N1B; core Fe-Ni alloy T62×32×6×25.0, µi = 60; winding polyester-enamelled copper wire Φ2.1 mm × 2; 38 turns; peak current 65 A; max current ripple 13 A (20 %); fs 70 kHz; inductance 275 µH at 0 A, 105 µH at 65 A.
+1.5.3 Sensing circuit. 1.5.3.1 Inductor current: an isolated Hall sensor per phase; its 2.5 V offset output is conditioned to the 0–3.3 V ADC range. 1.5.3.2 AC voltage: a two-stage circuit — an isolated op-amp measuring the HV through a divider with an isolation barrier, then a second op-amp stage with gain and bias; referenced to a virtual or grid neutral point; replicated per phase.
+
+[[page 10–13]]
+1.5.3.3 DC current: a Hall sensor with a conditioning circuit subtracting the 2.5 V offset. 1.5.3.4 DC voltage: two-stage sensing; the total DC bus is split by two voltage dividers — both half voltages are needed to monitor each capacitor to avoid overvoltage, offering independent DC voltages for the control.
+1.5.4 LEDs: D8 external 7 V, D13 external 12 V, D11 VDD_5V, D12 VDD_3.3V; D25/D26, D29/D30, D33/D34 the driving supply of each paralleled MOSFET pair (on = normal, blink/off = abnormal).
+Table 4. Control board LEDs and the state machine: D13 on, D15 off = Wait, Idle, Init, Start; D13 on, D15 on = Run; D13 off, D15 off = Stop, Error, Fault.
+
+[[page 17]]
+4 Power on/off sequence. 4.1 Power on: Step 1 turn on the external auxiliary supply and check the control and drive LEDs. Step 2 set the AC source to 20 V AC 50 Hz and measure every sensing test point. Caution: place probes before powering; do not remove a probe while powered (short-circuit risk). Step 3 turn off the AC source and press the reset button. Step 4 power the external fan. Caution: the board may be damaged without fan cooling at heavy load. Step 5 set the AC source between 350 and 450 V AC, 47–63 Hz, with zero output load. Step 6 turn on the AC source; the output ramps gradually to 800 V DC. Step 7 set the input and load for the test. Warning: do not touch components while powered.
+4.2 Power off: remove the load gradually to 0 A; turn off the AC source; ensure the bus capacitors are discharged below 60 V before touching; turn off the fan and external supplies.
+
+[[page 18–21]]
+5 Control strategy analysis: voltage-oriented control in the dq synchronous frame (Table 5 compares abc, αβ and dq frames — dq: zero steady-state error, simple PI, low bandwidth allowed, best transient; cost: the frame transformation, digital only).
+5.1 Control model: with ea + eb + ec = 0 and ia + ib + ic = 0, L·dia/dt + R·ia = Vsa − Vta (per phase) (17–18); in αβ (19); in dq: L·did/dt + R·id − ωt·L·iq = Vsd − Vtd, L·diq/dt + R·iq + ωt·L·id = Vsq − Vtq, dρ/dt = ωt (20).
+5.2 Control strategy: the converter is a second-order system (L and C) treated as two decoupled first-order systems: a current control and a voltage control in cascade.
+5.2.1 Current decoupling control: PI regulators on id and iq (22) with the feed-forward decoupling terms ω0·L·iq and ω0·L·id and the source voltage (23); closed loop (Ls + R)·id = (kp + ki/s)·(id* − id) (24–25). With the small inductor the 70 kHz design allows, the decoupling term is very small and good performance is obtained even with it disabled.
+5.2.2 Voltage control: an outer PI on the DC voltage feeding id*.
+5.2.3 Neutral point potential balance: iNP = Σ sx·ix (26–27); a zero-sequence voltage V0 injected into the modulation wave (28) with V0 = (Vdcp − Vdcn)·k0 (29); k0 set from experience.
+
+[[page 22–23]]
+5.2.4 Phase locked loop: Vsd = Vm·cos(ω0 t + θ0 − ρ), Vsq = Vm·sin(ω0 t + θ0 − ρ) (31); with ρ = ω0 t + θ0, Vsd = Vm and Vsq = 0 (32); the compensator ωt = H(s)·Vsq (34) gives dρ/dt = H(s)·Vm·sin(ω0 t + θ0 − ρ) ≈ H(s)·Vsq (35–36) — the PLL tracks ρ.
+
+[[page 24]]
+6 Firmware implementation. 6.1 Firmware ecosystem: STM32Cube (CubeMX for peripherals and pins; CubeIDE, IAR and Keil supported; programmed through the IDE or STM32CubeProgrammer; monitored and controlled through a GUI based on STM32CubeMonitor). The DPC (digital power converter) development flow: power conversion requirements → application specs (MCU peripherals and DPC application configuration) → CubeMX project → the needed DPC modules included and configured → IDE project → flash → test and debug through CubeMonitor → release.
+
+[[page 25]]
+6.2 MCU pin definition — Table 6: ADC_IA PC0 (ADC1_IN6), ADC_IB PC1 (ADC1_IN7), ADC_IC PC2 (ADC1_IN8), ADC_bus_down PA0 (ADC2_IN1), ADC_bus_up PA1 (ADC2_IN2), ADC_Iout PA2 (ADC1_IN3), ADC_VA PA3 (ADC1_IN4), ADC_VB PA7 (ADC2_IN4), ADC_VC PC4 (ADC2_IN5), ADC_Temp PB2 (ADC2_IN12), DAC1 PA4 (DAC1_OUT1), DAC2 PA5 (DAC1_OUT2), DAC3 PA6 (DAC2_OUT1), Phase_A_T1 PA9 (HRTIM1_CHA2), Phase_A_T2 PA11 (HRTIM1_CHB2), Phase_B_T3 PB13 (HRTIM1_CHC2), Phase_B_T4 PB15 (HRTIM1_CHD2), Phase_C_T5 PC7 (HRTIM1_CHE2), Phase_C_T6 PC9 (HRTIM1_CHF2), Relay_BP_COIL2 PF1, Relay_BP_COIL1 PC12, LED1 PC14, LED2 PC15.
+
+[[page 26–27]]
+6.3 Timers. 6.3.1 Application timer: the outer voltage regulator and the inner current control run at fixed periods and the monitoring tasks are scheduled in time, from four basic-timer ISRs with NVIC priorities set accordingly (Figures 34–35). 6.3.2 Actuator timer: the six PWM signals come from the HRTIM (Figure 36).
+
+[[page 28]]
+6.4 Finite state machine: the control supervisor is a passthrough implementation of a finite state machine with events and status (Figure 37: Init, Idle, Wait, Start, Run, Stop, Error, Fault). 6.5 Relay and inrush current control: to avoid a current spike and protect the AC capacitor, inrush resistors and relays are used in phases A and C (Figure 38).
+
+[[page 29]]
+When the AC power is on, the relays are off and the AC current flows through the inrush resistors to charge the capacitor. After the inrush state is completed, the converter enters the soft-start state followed by the normal run state. Then, the relays turn on and the inrush resistors are shorted. The relays are off when the converter shuts down or fails. The relay is the EW60 power-latching relay: polarized bistable with two coils and three terminals (A1 to ground; the MCU drives A2 and A3). The on/off operation is two steps: set the coil terminal (turn on → A2, turn off → A3) high, and 100 ms later set it low, so that the efficiency can be improved. 6.6 Modulation (Figure 40, phase A).
+
+[[page 30]]
+6.7 Protection. The STDES-30KWVRECT detects the voltage and current values in real time and compares them with the preset protection thresholds to prevent the converter from damage: overvoltage, undervoltage, overcurrent, inrush fault protection and so on.
+Table 7. STDES-30KWVRECT protections (Item · Description · Threshold · Behaviour):
+Fault OVS · AC source overvoltage protection · DPC_VAC_RMS_OV 270, DPC_VAC_PK_OV 270·√2 · turn into stop (→ error → fault) state, turn off PWM and relays.
+Fault OCS · AC source overcurrent protection · DPC_IAC_MAX 75 · stop → error → fault, PWM and relays off.
+Fault OVL · loads overvoltage protection · DPC_VDC_OV 800 × 1.1 (when the output voltage is 800) · stop → error → fault, PWM and relays off.
+Fault OVC · DC capacitor overvoltage protection · DPC_VCAP_LIM 800 × 0.65 (when the output voltage is 800) · stop → error → fault, PWM and relays off.
+Fault OCL · loads overcurrent protection · DPC_OVER_LOAD_CURR 48 · stop → error → fault, PWM and relays off.
+
+[[page 31]]
+Fault INR · inrush state → the output voltage is out of the range of the diode uncontrolled rectification · DPC_VAC 230, INRUSH_VREF_V 230·√6, range (230·√6 − 80, 230·√6 + 100) · stop → error → fault, PWM and relays off.
+Fault BRS · start state → the output voltage is out of the preset range · STARTBURST_VREF_V 800, range (790, 810) when the output voltage is 800 · stop → error → fault, PWM and relays off.
+Fault PLL OR · Error PLL OR happened and PC_State is FSM_Run · turn into fault state, PWM and relays off.
+Fault AC UVLO · Error AC UVLO happened and PC_State is FSM_Run or FSM_StartUp_burst · fault state, PWM and relays off.
+Fault AC UV · Error AC UV happened and PC_State is FSM_Run or FSM_StartUp_burst · fault state, PWM and relays off.
+Fault AC OFF · Error AC OFF happened and PC_State is FSM_Run or FSM_StartUp_burst · fault state, PWM and relays off.
+Error IDLE · idle state → the load is not in NO_LOAD status · turn into stop (→ error) state.
+Error AC UV · AC source undervoltage protection · DPC_VAC_RMS_UV 150, DPC_VAC_PK_UV 150·√2 · stop (→ error).
+Error AC UVLO · AC source undervoltage lock-out protection · DPC_VAC_RMS_UVLO 170, DPC_VAC_PK_UVLO 170·√2 · stop (→ error).
+Error PLL OR · frequency out of the preset range · PLL_FF_Hz 50, PLL_DELTA_F 20, range (50 − 20, 50 + 20) · stop (→ error).
+Error AC OFF · AC source voltage less than the minimum threshold · DPC_VAC_MIN 40 · stop (→ error).

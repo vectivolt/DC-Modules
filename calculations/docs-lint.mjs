@@ -14,7 +14,8 @@ import { PAGES, REV, footer, masthead, page } from "./doc-chrome.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MERMAID = /^(flowchart|graph|sequenceDiagram|stateDiagram-v2|classDiagram|erDiagram|pie|xychart-beta|quadrantChart|timeline|gantt|mindmap|journey)\b/;
 
-const files = execFileSync("git", ["ls-files", "*.md"], { cwd: ROOT, encoding: "utf8" }).trim().split("\n").filter(Boolean);
+const files = execFileSync("git", ["ls-files", "*.md"], { cwd: ROOT, encoding: "utf8" }).trim().split("\n").filter(Boolean)
+  .filter((f) => !f.startsWith("docs/reference/") || f === "docs/reference/README.md");   // third-party snapshots keep their own READMEs
 let fails = 0;
 const fail = (f, msg) => { console.log(`  FAIL  ${f} — ${msg}`); fails++; };
 

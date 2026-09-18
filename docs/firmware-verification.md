@@ -273,7 +273,10 @@ Microchip's interleaved LLC ([`llc50w-power-voltage-mode-control-with-active-cur
 NXP's half-bridge LLC ([`an-hbllc_mc56f8xxxx`](https://github.com/nxp-appcodehub/an-hbllc_mc56f8xxxx)), the STM32 three-phase
 [`PFController`](https://github.com/StanKarpikov/PFController), [`VMCharger`](https://github.com/valerun/VMCharger), and TI's
 [TIDM-1000 design guide](https://www.ti.com/lit/ug/tiducj0c/tiducj0c.pdf) (its source ships inside the C2000Ware SDK behind a login).
-No production charger-module firmware is public.
+No production charger-module firmware is public. The material is kept in the [reference library](reference/README.md), so the
+comparison can be re-read without a download. ST's **STDES-30KWVRECT** 30 kW Vienna rectifier (STM32G474, 400 V AC, 800 V DC,
+70 kHz, paralleled 650 V SiC, 1200 V SiC diodes) is the closest public match to this front end; its firmware ships as a binary, so
+its protection table (UM3011 Table 7), schematic and BOM stand in for the source.
 
 | Reference behaviour | Source | Here |
 |---|---|---|
@@ -289,6 +292,9 @@ No production charger-module firmware is public.
 | CMPSS windowed comparator trips into the PWM trip zone from DAC references; manual `clearTrip`; four build levels; proportional midpoint balance | TI TIDM-1000 guide | the same comparator-into-timer-fault structure with locked inputs; F.06; T-44 pre-energisation checks and the EVT ladder |
 | INIT → STOP → SYNC (phase lock < 0.03 rad) → PRECHARGE → WORK → FAULTBLOCK; 1 ms checks with 4-tick persistence (raw ADC at the rails, cap voltage, temperature, U / F / I windows, bad sync); fault block cleared by command only; no PWM break input | `PFController` | the same shape with hardware trips; F.29 judges converted values against physical ranges — a CT channel stuck at a rail lands on the software \|i\| trip (F.01) instead, the stage off either way (T-05) |
 | ADC exactly 0 at power-on → sensor error; 110 / 220 V detection → power limit; CV and session time-outs | `VMCharger` | boot offsets → F.29 / F.30; input derate (C-10); end-of-charge timing belongs to the charger controller |
+| AC source OV 270 V rms line-to-neutral (468 V line-to-line) · AC UV 150 V rms (260 V) · UVLO 170 V rms (294 V) · AC OFF below 40 V · PLL window 50 ± 20 Hz · AC over-current 75 A · load OV 880 V on an 800 V bus · capacitor-half OV 520 V · load OC 48 A · an inrush-state window on the uncontrolled-rectified voltage (230 · √6 − 80 … + 100 V) · a start-burst window 790–810 V; every fault → Stop → Error → Fault with PWM and relays off, an Error inside Run or the start burst becomes a Fault; a load present in Idle is an Error | ST STDES-30KWVRECT (UM3011 Table 7) | F.07 500 V / F.08 260 V line-to-line and the 275 / 485 V recovery band — the same window; F.09 45–65 Hz (theirs 30–70); F.01 line OC in hardware; F.03 860 V in hardware under an 830 V setpoint (theirs 880 V in software on 800 V); F.38 at 440 V on 500 V cans against their 520 V half on 450 V cans; F.15 graded; F.20 precharge time-out and F.21 bleed rows where they watch an inrush window; a DC load present before start is refused by the make-permit |
+| inrush through PTC thermistors in two phases, bypassed by two-coil latching relays pulsed for 100 ms; relays off on shutdown or fault; 30 A inrush max; soft start as a burst to the 800 V window, then Run | ST STDES-30KWVRECT (UM3011 §6.5, BOM) | precharge resistors with a bypass contactor and its auxiliary-contact feedback, the 60 ms F.01 blank, the reference slew for the soft start; the matrix and bypass open on LOCK and SHUTDOWN |
+| LEM Hall sensors on each line and on the DC output; AMC1301 isolated amplifiers on each bus half and each line-to-neutral voltage; per-phase zero-voltage-detect lines; one STLM20 board temperature; control-board comparator outputs OCP_A / B / C / DC and AC_FAULT into two FAULT lines; no over-temperature row in the protection table | ST STDES-30KWVRECT (schematic, UM3011 Table 6) | line CTs and the bus into five comparators on the timer fault inputs, the drivers' DESAT and the tank window on the wire-OR, four NTC zones with the F.22 ladder, the fan supervision |
 
 No reference handles a case this firmware does not; the per-phase zero-crossing start and DC-input acceptance are the two
 deliberate differences. The certification test lists (NB/T 33001-2018 / NB/T 33008.1-2018, IEC 61851-23, the IEC 61000-4-11 /
@@ -300,7 +306,7 @@ deliberate differences. The certification test lists (NB/T 33001-2018 / NB/T 330
 ---
 
 <div align="center">
-<sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reliability-budget.md">Reliability Budget →</a></sub>
+<sub><a href="evt-plan.md">← EVT Test Plan</a> &nbsp;·&nbsp; <a href="README.md">🧭 Documentation hub</a> &nbsp;·&nbsp; <a href="reference/README.md">Reference Library →</a></sub>
 
 <sub>Vectivolt DC-Modules · documentation rev E85 · every number reproduces with <code>sh calculations/run-all.sh</code></sub>
 </div>
