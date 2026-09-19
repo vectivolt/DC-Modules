@@ -643,10 +643,10 @@ ck("REF-ESTIMATE-ONCE", /g->dcc_seq\+\+;/.test(readFileSync(join(ROOT, "firmware
   && /dcc = g->dcc; dq = g->dcc_seq;/.test(appE) && /if \(dq != a->dcc_seen\) \{\n\s+a->dcc_seen = dq;\n\s+float frac = dcc/.test(appE),
   "the reference tracker integrates each clean-cycle estimate ONCE (dcc_seq): a 60 ms timeout or a disturbed cycle republishes the held estimate under a new grid seq, and integrating it again on every publication walked k_track to its ±2 % bound — F.29, a LATCH, out of a line outage F.07 recovers from on its own");
 ck("BANK-FILM-RATING", (() => { const pdb = readFileSync(join(ROOT, "calculations/cost/parts-db.mjs"), "utf8"), fh = readFileSync(join(ROOT, "firmware/core/fsm.h"), "utf8");
-  const rating = 630, ovp = parseFloat((fh.match(/#define PMP_OUT_OVP_ABS_V\s+([\d.]+)f/) || [])[1]), imb = parseFloat((fh.match(/#define PMP_BANK_IMB_V\s+([\d.]+)f/) || [])[1]);
+  const rating = 630, par = parseFloat((fh.match(/#define PMP_PAR_VMAX_V\s+([\d.]+)f/) || [])[1]), ovp = parseFloat((fh.match(/#define PMP_OUT_OVP_ABS_V\s+([\d.]+)f/) || [])[1]), imb = parseFloat((fh.match(/#define PMP_BANK_IMB_V\s+([\d.]+)f/) || [])[1]);
   const hw13 = parseFloat((appE.match(/\? (560\.0)f : PMP_OUT_OVP_ABS_V;/) || [])[1]);
-  return /m: \/\^CF\[AB\]\\d\+\$\/, mpn: "PP-2u2-630"/.test(pdb) && ovp === 1050 && imb === 25 && hw13 === 560 && hw13 <= 0.9 * rating && (ovp + imb) / 2 <= 0.9 * rating && 480 * 1.1 <= 0.9 * rating; })(),
-  "the BANK films CFA/CFB are 630 V PP parts (PP-2u2-630) — the 1200 V films are the terminal COF1/COF2 and the resonant Cr — and every bank envelope sits under 90 % of that rating: the 560 V LOW-mode hardware trip (89 %), the +10 % overshoot on a 480 V command (84 %), the worst SER half at (1050 V + the 25 V F.17 imbalance) / 2 (85 %)");
+  return /m: \/\^CF\[AB\]\\d\+\$\/, mpn: "PP-2u2-630"/.test(pdb) && ovp === 1050 && imb === 25 && hw13 === 560 && hw13 <= 0.9 * rating && (ovp + imb) / 2 <= 0.9 * rating && par === 500 && par * 1.1 <= 0.9 * rating; })(),
+  "the BANK films CFA/CFB are 630 V PP parts (PP-2u2-630) — the 1200 V films are the terminal COF1/COF2 and the resonant Cr — and every bank envelope sits under 90 % of that rating: the 560 V LOW-mode hardware trip (89 %), the +10 % overshoot on the 500 V LOW ceiling (87 %), the worst SER half at (1050 V + the 25 V F.17 imbalance) / 2 (85 %)");
 
 console.log(fail ? `\n${fail} CHECK(S) FAILED` : "\nALL REVIEW CHECKS PASS");
 process.exit(fail ? 1 : 0);
